@@ -336,6 +336,8 @@ export const gameModeSelector = state => state.game.gameStatus.mode;
 
 export const userSettingsSelector = state => state.userSettings;
 
+export const gameUseChatSelector = state => state.game.useChat;
+
 export const gameAlertsSelector = state => state.game.alerts;
 
 export const isOpponentInGameSelector = state => {

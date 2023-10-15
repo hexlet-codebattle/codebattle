@@ -58,8 +58,8 @@ const establishChat = () => dispatch => {
   return clearChatListeners;
 };
 
-export const connectToChat = () => dispatch => {
-  if (!isRecord) {
+export const connectToChat = (useChat = true) => dispatch => {
+  if (!isRecord && useChat) {
     const clearChatConnection = establishChat()(dispatch);
 
     return clearChatConnection;

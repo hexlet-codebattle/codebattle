@@ -140,6 +140,7 @@ const preloadedState = {
       level: 'medium',
     },
     players,
+    useChat: true,
   },
   editor: {
     meta: {

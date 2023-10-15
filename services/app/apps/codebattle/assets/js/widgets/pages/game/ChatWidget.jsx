@@ -33,13 +33,14 @@ function ChatWidget() {
   const isOnline = useSelector(selectors.chatChannelStateSelector);
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
+  const useChat = useSelector(selectors.gameUseChatSelector);
 
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
 
   const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = (gameMode === GameRoomModes.standard);
-  const showChatInput = !openedReplayer && !isTestingRoom;
+  const showChatInput = !openedReplayer && !isTestingRoom && useChat;
 
   const inputRef = useRef(null);
 
@@ -72,10 +73,10 @@ function ChatWidget() {
             'game-chat-container cb-messages-container',
           )}
         >
-          <ChatHeader showRooms={isStandardGame} disabled={!isOnline} />
+          <ChatHeader showRooms={isStandardGame} disabled={!isOnline || !useChat} />
           {openedReplayer
-            ? <Messages messages={historyMessages} />
-            : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
+            ? <Messages messages={historyMessages} disabled={!useChat} />
+            : <Messages displayMenu={displayMenu} messages={filteredMessages} disabled={!useChat} />}
           {showChatInput && <ChatInput inputRef={inputRef} disabled={!isOnline} />}
           {isTestingRoom && (
             <div

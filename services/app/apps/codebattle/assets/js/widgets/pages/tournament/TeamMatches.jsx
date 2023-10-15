@@ -85,7 +85,6 @@ function TeamMatches({
         <div className="row px-3 pt-2">
           {[teams[0], teams[1]].map(team => (
             <div key={`team-players-${team.id}`} className="col">
-              {console.log(team, players)}
               <div className="d-flex align-items-center ml-2">
                 <JoinButton
                   isShow={state === TournamentStates.waitingParticipants}

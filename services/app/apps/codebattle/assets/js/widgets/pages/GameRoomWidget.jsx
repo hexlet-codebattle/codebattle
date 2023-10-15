@@ -20,7 +20,7 @@ import {
 } from '../machines/selectors';
 import * as ChatActions from '../middlewares/Chat';
 import * as GameRoomActions from '../middlewares/Game';
-import { gameStatusSelector, isShowGuideSelector } from '../selectors';
+import { gameStatusSelector, gameUseChatSelector, isShowGuideSelector } from '../selectors';
 import { actions } from '../slices';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
@@ -199,6 +199,7 @@ function GameRoomWidget({
   const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
+  const useChat = useSelector(gameUseChatSelector);
   const mute = useSelector(state => state.userSettings.mute);
   const machines = useGameRoomMachine({
     setTaskModalShowing,
@@ -233,7 +234,7 @@ function GameRoomWidget({
     const clearGame = GameRoomActions.connectToGame(machines.mainService)(
       dispatch,
     );
-    const clearChat = ChatActions.connectToChat()(dispatch);
+    const clearChat = ChatActions.connectToChat(useChat)(dispatch);
 
     return () => {
       clearGame();

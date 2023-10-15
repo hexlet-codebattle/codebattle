@@ -64,15 +64,15 @@ function TournamentTimer({ startsAt, isOnline }) {
 }
 
 function TournamentRemainingTimer({
-  lastRoundEndedAt,
+  startsAt,
   duration,
 }) {
-  const startsAt = useMemo(
-    () => moment.utc(lastRoundEndedAt)
-      .add(duration, 'seconds').local().format('HH:mm:ss'),
-    [lastRoundEndedAt, duration],
+  const endsAt = useMemo(
+    () => moment.utc(startsAt)
+      .add(duration, 'seconds'),
+    [startsAt, duration],
   );
-  const [time, seconds] = useTimer(startsAt);
+  const [time, seconds] = useTimer(endsAt);
 
   return seconds > 0 ? time : '';
 }
@@ -83,6 +83,7 @@ function TournamentStateDescription({
   breakState,
   breakDurationSeconds,
   matchTimeoutSeconds,
+  lastRoundStartedAt,
   lastRoundEndedAt,
   isOnline,
 }) {
@@ -95,7 +96,8 @@ function TournamentStateDescription({
       <span>
         {'Round ends in '}
         <TournamentRemainingTimer
-          lastRoundEndedAt={lastRoundEndedAt}
+          key={lastRoundStartedAt}
+          startsAt={lastRoundStartedAt}
           duration={matchTimeoutSeconds}
         />
       </span>
@@ -107,7 +109,8 @@ function TournamentStateDescription({
       <span>
         {'Next round will start in '}
         <TournamentRemainingTimer
-          lastRoundEndedAt={lastRoundEndedAt}
+          key={lastRoundEndedAt}
+          startsAt={lastRoundEndedAt}
           duration={breakDurationSeconds}
         />
       </span>
@@ -123,6 +126,7 @@ function TournamentHeader({
   breakState,
   breakDurationSeconds,
   matchTimeoutSeconds,
+  lastRoundStartedAt,
   lastRoundEndedAt,
   startsAt,
   type,
@@ -268,6 +272,7 @@ function TournamentHeader({
               breakState={breakState}
               breakDurationSeconds={breakDurationSeconds}
               matchTimeoutSeconds={matchTimeoutSeconds}
+              lastRoundStartedAt={lastRoundStartedAt}
               lastRoundEndedAt={lastRoundEndedAt}
               isLive={isLive}
               isOver={isOver}

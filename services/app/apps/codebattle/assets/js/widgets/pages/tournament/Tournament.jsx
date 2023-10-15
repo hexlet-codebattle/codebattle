@@ -74,10 +74,6 @@ function Tournament() {
     () => Object.keys(tournament.players).length,
     [tournament.players],
   );
-  const showChat = useMemo(
-    () => tournament.type !== 'swiss' && tournament.type === 'ladder',
-    [tournament.type],
-  );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
       tournament.state,
@@ -106,8 +102,8 @@ function Tournament() {
   }, []);
 
   useEffect(() => {
-    if (tournament.isLive && showChat) {
-      const clearChat = connectToChat()(dispatch);
+    if (tournament.isLive) {
+      const clearChat = connectToChat(tournament.useChat)(dispatch);
 
       return () => {
         clearChat();
@@ -142,6 +138,10 @@ function Tournament() {
         <TournamentHeader
           id={tournament.id}
           state={tournament.state}
+          breakDurationSeconds={tournament.breakDurationSeconds}
+          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+          lastRoundEndedAt={tournament.lastRoundEndedAt}
+          lastRoundStartedAt={tournament.lastRoundStartedAt}
           startsAt={tournament.startsAt}
           type={tournament.type}
           accessType={tournament.accessType}
@@ -188,6 +188,10 @@ function Tournament() {
         <TournamentHeader
           id={tournament.id}
           state={tournament.state}
+          breakDurationSeconds={tournament.breakDurationSeconds}
+          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+          lastRoundEndedAt={tournament.lastRoundEndedAt}
+          lastRoundStartedAt={tournament.lastRoundStartedAt}
           startsAt={tournament.startsAt}
           type={tournament.type}
           accessType={tournament.accessType}
@@ -225,7 +229,7 @@ function Tournament() {
               }
               handleKick={handleKick}
             />
-            {showChat && (<TournamentChat />)}
+            {tournament.useChat && (<TournamentChat />)}
           </div>
         </div>
       </div>

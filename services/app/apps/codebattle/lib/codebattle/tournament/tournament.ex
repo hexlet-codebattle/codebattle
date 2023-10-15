@@ -11,7 +11,10 @@ defmodule Codebattle.Tournament do
            only: [
              :access_token,
              :access_type,
+             :last_round_ended_at,
+             :last_round_started_at,
              :break_duration_seconds,
+             :match_timeout_seconds,
              :break_state,
              :creator,
              :creator_id,

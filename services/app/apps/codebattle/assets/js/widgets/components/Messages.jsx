@@ -12,7 +12,7 @@ const getKey = (id, time, name) => {
   return `${time}-${name}`;
 };
 
-function Messages({ messages, displayMenu = () => {} }) {
+function Messages({ messages, displayMenu = () => {}, disabled = false }) {
   const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
@@ -21,6 +21,17 @@ function Messages({ messages, displayMenu = () => {} }) {
   useLayoutEffect(() => {
     stayScrolled();
   }, [messages.length, stayScrolled]);
+
+  if (disabled) {
+    return (
+      <div className="h-100 position-relative" ref={listRef}>
+        <span className="d-flex text-primary position-absolute h-100 w-100 justify-content-center align-items-center">
+          Chat is disabled
+        </span>
+        <div className="position-absolute h-100 w-100 bg-dark cb-opacity-50" />
+      </div>
+    );
+  }
 
   return (
     <>

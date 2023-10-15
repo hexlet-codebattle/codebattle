@@ -77,6 +77,8 @@ const initialGameTask = gameParams
   ? gameParams.task
   : null;
 
+const initialUseChat = gameParams ? gameParams.useChat : false;
+
 const initialPlayers = gameParams
   ? getGamePlayers(gameParams.players)
     .reduce(setPlayerToSliceState, {})
@@ -226,6 +228,7 @@ const defaultTournamentParams = {
   playersPageSize: 20,
 
   channel: { online: false },
+  useChat: false,
 };
 
 const initialTournament = tournamentParams
@@ -245,6 +248,7 @@ const initial = {
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
+    useChat: initialUseChat,
     alerts: {},
   },
   tournament: initialTournament,
