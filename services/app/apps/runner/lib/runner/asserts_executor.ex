@@ -10,7 +10,7 @@ defmodule Runner.AssertsExecutor do
   @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
-          Runner.generate_arguments()
+          Runner.execution_result()
   def call(task, lang_meta, solution_text, arguments_generator_text) do
     seed = get_seed()
 

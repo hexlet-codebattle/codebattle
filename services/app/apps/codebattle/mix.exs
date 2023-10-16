@@ -40,7 +40,7 @@ defmodule Codebattle.MixProject do
   defp deps do
     [
       {:runner, in_umbrella: true, runtime: false},
-      {:phoenix_gon, in_umbrella: true, runtime: false},
+      {:phoenix_gon, in_umbrella: true},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto_sql, "~> 3.6"},

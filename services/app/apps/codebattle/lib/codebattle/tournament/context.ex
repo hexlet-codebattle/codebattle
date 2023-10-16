@@ -6,10 +6,12 @@ defmodule Codebattle.Tournament.Context do
   import Ecto.Query
   import Ecto.Changeset
 
+  @type tournament_id :: pos_integer() | String.t()
+
   @states_from_restore ["waiting_participants"]
   @max_alive_tournaments 7
 
-  @spec get!(pos_integer()) :: Tournament.t() | no_return()
+  @spec get!(tournament_id()) :: Tournament.t() | no_return()
   def get!(id) do
     case Tournament.Server.get_tournament(id) do
       nil -> get_from_db!(id)
@@ -17,7 +19,7 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec get(pos_integer()) :: Tournament.t() | nil
+  @spec get(tournament_id()) :: Tournament.t() | nil
   def get(id) do
     get!(id)
   rescue
@@ -25,7 +27,7 @@ defmodule Codebattle.Tournament.Context do
       nil
   end
 
-  @spec get_from_db!(pos_integer()) :: Tournament.t() | no_return()
+  @spec get_from_db!(tournament_id()) :: Tournament.t() | no_return()
   def get_from_db!(id) do
     Tournament
     |> Repo.get!(id)
@@ -33,7 +35,7 @@ defmodule Codebattle.Tournament.Context do
     |> add_module()
   end
 
-  @spec get_from_db(pos_integer()) :: Tournament.t() | nil
+  @spec get_from_db(tournament_id()) :: Tournament.t() | nil
   def get_from_db(id) do
     get_from_db!(id)
   rescue
@@ -118,7 +120,7 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec send_event(Tournament.t() | pos_integer(), atom(), map()) :: :ok
+  @spec send_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
   def send_event(%Tournament{id: id}, event_type, params) do
     send_event(id, event_type, params)
   end

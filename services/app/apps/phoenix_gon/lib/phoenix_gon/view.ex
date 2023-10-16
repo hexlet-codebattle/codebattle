@@ -59,7 +59,7 @@ defmodule PhoenixGon.View do
   end
 
   @doc false
-  @spec resolve_assets_case(Map.t(), Plug.Conn.t()) :: Map.t()
+  @spec resolve_assets_case(map(), Plug.Conn.t()) :: map()
   defp resolve_assets_case(assets, conn) do
     if settings(conn)[:camel_case],
       do: to_camel_case(assets),
@@ -67,7 +67,7 @@ defmodule PhoenixGon.View do
   end
 
   @doc false
-  @spec to_camel_case(Map.t()) :: Map.t()
+  @spec to_camel_case(map()) :: map()
   defp to_camel_case(map) when is_map(map) do
     for {key, value} <- map, into: %{} do
       new_key =

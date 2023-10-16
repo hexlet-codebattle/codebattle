@@ -16,7 +16,7 @@ defmodule Codebattle.Chat do
           required(:text) => String.t(),
           optional(:user_id) => user_id(),
           optional(:name) => String.t(),
-          optional(:meta) => Chat.Message.meta()
+          optional(:meta) => Chat.Message.meta_type()
         }
 
   @type ban_user_params() :: %{
@@ -79,7 +79,7 @@ defmodule Codebattle.Chat do
       %{
         type: :info,
         text: "#{params.name} has been banned by #{params.admin_name}",
-        meta: %{"type" => "system", "target_user_id" => params.user_id}
+        meta: %{type: "system", target_user_id: params.user_id}
       }
     )
 

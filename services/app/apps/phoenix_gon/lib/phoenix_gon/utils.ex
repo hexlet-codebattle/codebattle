@@ -6,13 +6,13 @@ defmodule PhoenixGon.Utils do
   @doc """
   Return if mix env dev
   """
-  @spec mix_env_dev?(Plug.Conn.t()) :: Boolean.t()
+  @spec mix_env_dev?(Plug.Conn.t()) :: boolean()
   def mix_env_dev?(conn), do: variables(conn).env == :dev
 
   @doc """
   Return if mix env prod
   """
-  @spec mix_env_prod?(Plug.Conn.t()) :: Booleant.t()
+  @spec mix_env_prod?(Plug.Conn.t()) :: boolean()
   def mix_env_prod?(conn), do: variables(conn).env == :prod
 
   @doc """
@@ -24,13 +24,13 @@ defmodule PhoenixGon.Utils do
   @doc """
   Retusn elixir assets.
   """
-  @spec assets(Plug.Conn.t()) :: Map.t()
+  @spec assets(Plug.Conn.t()) :: map()
   def assets(conn), do: variables(conn).assets
 
   @doc """
   Returns all elixir settings.
   """
-  @spec settings(Plug.Conn.t()) :: List.t()
+  @spec settings(Plug.Conn.t()) :: list()
   def settings(conn) do
     Enum.filter(Map.from_struct(variables(conn)), fn {key, _} ->
       key != :assets
@@ -38,7 +38,7 @@ defmodule PhoenixGon.Utils do
   end
 
   @doc false
-  @spec settings(Plug.Conn.t(), Atom.t()) :: any()
+  @spec settings(Plug.Conn.t(), atom()) :: any()
   def settings(conn, key), do: settings(conn)[key]
 
   @doc """

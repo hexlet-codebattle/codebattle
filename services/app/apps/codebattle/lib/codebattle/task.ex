@@ -183,7 +183,7 @@ defmodule Codebattle.Task do
     !result
   end
 
-  @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t()
+  @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t() | nil
   def get_task_by_tags_for_user(user, tags) do
     __MODULE__
     |> filter_visibility(user)
@@ -260,12 +260,12 @@ defmodule Codebattle.Task do
   def can_see_task?(%{visibility: "public"}, _user), do: true
   def can_see_task?(task, user), do: can_access_task?(task, user)
 
-  @spec can_access_task?(Task.t(), User.t()) :: boolean()
+  @spec can_access_task?(Codebattle.Task.t(), User.t()) :: boolean()
   def can_access_task?(task, user) do
     task.creator_id == user.id || Codebattle.User.admin?(user)
   end
 
-  @spec can_delete_task?(Task.t(), User.t()) :: boolean()
+  @spec can_delete_task?(Codebattle.Task.t(), User.t()) :: boolean()
   def can_delete_task?(task, user) do
     (task.creator_id == user.id || Codebattle.User.admin?(user)) && task.origin == "user"
   end

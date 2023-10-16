@@ -7,6 +7,8 @@ defmodule Codebattle.Tournament do
   alias Codebattle.AtomizedMap
   alias Codebattle.Tournament.Individual
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder,
            only: [
              :access_token,

@@ -8,7 +8,7 @@ defmodule PhoenixGon.Pipeline do
   @doc """
   Initializer methods. Returns map wiith configuration settings.
   """
-  @spec init(Keyword.t()) :: Map.t()
+  @spec init(Keyword.t()) :: map()
   def init(defaults) do
     %{
       env: Keyword.get(defaults, :env, Mix.env()),
@@ -21,7 +21,7 @@ defmodule PhoenixGon.Pipeline do
   @doc """
   Call method adds to conn %PhoenixGon.Store object with data.
   """
-  @spec call(Plug.Conn.t(), Map.t()) :: Plug.Conn.t()
+  @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def call(conn, defaults) do
     session_gon = get_session(conn, "phoenix_gon")
 
@@ -45,7 +45,7 @@ defmodule PhoenixGon.Pipeline do
   end
 
   @doc false
-  @spec variables_with(Map.t()) :: PhoenixGon.Storage.t()
+  @spec variables_with(map()) :: PhoenixGon.Storage.t()
   defp variables_with(%{assets: fun} = defaults) when is_function(fun), do: variables_with(Map.merge(defaults, %{assets: fun.()}))
   defp variables_with(defaults), do: Map.merge(%PhoenixGon.Storage{}, defaults)
 

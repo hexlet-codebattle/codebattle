@@ -8,10 +8,10 @@ defmodule CodebattleWeb.TournamentChannel do
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
 
-    with tournament when not is_nil(tournament) <- Tournament.Context.get!(tournament_id),
-         true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
-      active_match = Helpers.get_active_match(tournament, current_user)
-      Codebattle.PubSub.subscribe(topic_name(tournament))
+    with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
+         true <- Tournament.Helpers.can_access?(tournament, current_user, payload),
+         active_match = Helpers.get_active_match(tournament, current_user) do
+      tournament |> topic_name |> Codebattle.PubSub.subscribe()
 
       {:ok,
        %{

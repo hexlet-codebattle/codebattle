@@ -6,15 +6,14 @@ defmodule CodebattleWeb.RootController do
   alias Codebattle.Repo
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
+  alias CodebattleWeb.LayoutView
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
 
     case current_user.is_guest do
       true ->
-        conn
-        |> put_layout("landing.html")
-        |> render("landing.html")
+        render(conn, "landing.html", layout: {LayoutView, "landing.html"})
 
       _ ->
         %{
