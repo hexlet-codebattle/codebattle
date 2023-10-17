@@ -1,5 +1,7 @@
 import React, { useRef, useLayoutEffect } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
@@ -24,9 +26,9 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
 
   if (disabled) {
     return (
-      <div className="h-100 position-relative" ref={listRef}>
-        <span className="d-flex text-primary position-absolute h-100 w-100 justify-content-center align-items-center">
-          Chat is disabled
+      <div title="Chat is disabled" className="h-100 position-relative" ref={listRef}>
+        <span className="d-flex text-muted position-absolute h-100 w-100 justify-content-center align-items-center">
+          <FontAwesomeIcon className="h-25 w-25" icon="comment-slash" />
         </span>
         <div className="position-absolute h-100 w-100 bg-dark cb-opacity-50" />
       </div>

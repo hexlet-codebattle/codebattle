@@ -51,9 +51,9 @@ const UserName = ({
         })}
       >
         <p
-          className={`text-truncate m-0 ${
-              truncate ? 'x-username-truncated' : ''
-            }`}
+          className={cn('text-truncate m-0', {
+            'x-username-truncated': truncate,
+          })}
         >
           <u>{renderUserName(user)}</u>
         </p>

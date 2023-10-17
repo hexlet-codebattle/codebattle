@@ -63,13 +63,9 @@ function TournamentTimer({ startsAt, isOnline }) {
   );
 }
 
-function TournamentRemainingTimer({
-  startsAt,
-  duration,
-}) {
+function TournamentRemainingTimer({ startsAt, duration }) {
   const endsAt = useMemo(
-    () => moment.utc(startsAt)
-      .add(duration, 'seconds'),
+    () => moment.utc(startsAt).add(duration, 'seconds'),
     [startsAt, duration],
   );
   const [time, seconds] = useTimer(endsAt);
@@ -162,7 +158,7 @@ function TournamentHeader({
 
   return (
     <>
-      <div className="col bg-white shadow-sm rounded-lg p-2">
+      <div className="col bg-white shadow-sm rounded-lg p-2 overflow-auto">
         <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between border-bottom">
           <div className="d-flex align-items-center pb-2">
             <h2
@@ -246,12 +242,13 @@ function TournamentHeader({
           )}
         </div>
         <div className="d-flex small text-nowrap text-muted mt-1 cb-grid-divider">
-          <div title={type} className="d-flex align-items-center mr-2">
+          <div title={type} className="d-flex align-items-center">
             Mode:
             <span className="ml-2">
               <TournamentType type={type} />
             </span>
           </div>
+          <span className="mx-2">|</span>
           <div
             title={`Players limit is ${playersLimit}`}
             className="d-flex align-items-center"
@@ -259,23 +256,26 @@ function TournamentHeader({
             {`Players limit: ${playersLimit}`}
           </div>
           {canModerate && accessType === 'token' && (
-            <div className="d-flex input-group ml-2">
-              <div title="Access token" className="input-group-prepend">
-                <span className="input-group-text">
-                  <FontAwesomeIcon icon="key" />
-                </span>
+            <>
+              <span className="mx-2">|</span>
+              <div className="d-flex input-group ml-2">
+                <div title="Access token" className="input-group-prepend">
+                  <span className="input-group-text">
+                    <FontAwesomeIcon icon="key" />
+                  </span>
+                </div>
+                <CopyButton
+                  className="btn btn-secondary rounded-right"
+                  value={accessToken}
+                  disabled={!isLive}
+                />
               </div>
-              <CopyButton
-                className="btn btn-secondary rounded-right"
-                value={accessToken}
-                disabled={!isLive}
-              />
-            </div>
+            </>
           )}
         </div>
       </div>
-      <div className="col bg-white shadow-sm rounded-lg p-2 mt-2">
-        <p className="h5 mb-0">
+      <div className="col bg-white shadow-sm rounded-lg p-2 mt-2 overflow-auto">
+        <p className="h5 mb-0 text-nowrap">
           <span className={stateClassName}>{stateBadgeTitle}</span>
           <span className="h6 text-nowrap">
             <TournamentStateDescription

@@ -57,7 +57,7 @@ function GameResult() {
   ]);
 
   if (result) {
-    return (<Alert variant={result.alertStyle}>{result.msg}</Alert>);
+    return (<Alert className="mt-2" variant={result.alertStyle}>{result.msg}</Alert>);
   }
   return null;
 }

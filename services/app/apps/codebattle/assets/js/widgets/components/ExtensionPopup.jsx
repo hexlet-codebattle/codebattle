@@ -42,7 +42,8 @@ function ExtensionPopup() {
       </Modal.Body>
       <Modal.Footer className="mx-auto">
         <Button
-          variant="outline-success"
+          variant="success"
+          className="text-white rounded-lg"
           target="_blank"
           rel="noreferrer"
           href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
@@ -50,7 +51,8 @@ function ExtensionPopup() {
           Install
         </Button>
         <Button
-          variant="outline-secondary"
+          variant="secondary"
+          className="rounded-lg"
           onClick={handleHide}
         >
           Close

@@ -91,7 +91,7 @@ function ChatWidget() {
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />
             </div>
-            {!isTestingRoom && (
+            {!isTestingRoom && useChat && (
               <div className="px-3 py-3 w-100 border-top">
                 <p className="mb-1 text-nowrap">
                   {`Online players: ${listOfUsers.length}`}

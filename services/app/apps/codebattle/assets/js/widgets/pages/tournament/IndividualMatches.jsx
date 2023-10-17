@@ -76,7 +76,7 @@ const getLinkParams = (match, currentUserId) => {
   switch (true) {
     case match.state === 'waiting' && isParticipant:
       return ['Wait', cn(cardClassName, 'bg-warning')];
-    case (match.state === 'active' && isParticipant):
+    case (match.state === 'playing' && isParticipant):
       return ['Join', cn(cardClassName, 'bg-winner')];
     case isWinner:
       return ['Show', cn(cardClassName, 'bg-winner')];
@@ -104,7 +104,7 @@ const getMatchesByRound = (matches, type, playersCount) => {
   return result;
 };
 
-const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy' : '');
+const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy text-warning' : '');
 
 function Round({
  matches, players, playersCount, type, currentUserId,
@@ -136,7 +136,7 @@ function Round({
                     <div id={match.gameId}>
                       <a
                         href={`/games/${match.gameId}`}
-                        className="btn btn-sm btn-success m-1"
+                        className="btn btn-sm btn-success text-white rounded-lg m-1"
                       >
                         {getLinkParams(match, currentUserId)[0]}
                       </a>

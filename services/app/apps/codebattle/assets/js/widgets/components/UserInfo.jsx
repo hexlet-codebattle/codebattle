@@ -62,7 +62,9 @@ function UserInfo({
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
-  const userClassName = cn({ 'cb-opacity-50': loading });
+  const userClassName = cn({
+    'cb-opacity-50': loading,
+  });
 
   if (hideInfo) {
     return (

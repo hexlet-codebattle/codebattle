@@ -25,6 +25,19 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def get_matches(id, player_ids) do
+    try do
+      GenServer.call(server_name(id), {:get_matches, player_ids})
+    catch
+      :exit, {:noproc, _} ->
+        nil
+
+      :exit, reason ->
+        Logger.error("Error to get tournament: #{inspect(reason)}")
+        nil
+    end
+  end
+
   def update_tournament(tournament) do
     try do
       GenServer.call(server_name(tournament.id), {:update, tournament})
@@ -86,6 +99,12 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_call(:get_tournament, _from, state) do
     {:reply, state.tournament, state}
+  end
+
+  def handle_call({:get_matches, player_ids}, _from, state) do
+    matches = get_matches_by_players(state.tournament, player_ids)
+
+    {:reply, matches, state}
   end
 
   def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do

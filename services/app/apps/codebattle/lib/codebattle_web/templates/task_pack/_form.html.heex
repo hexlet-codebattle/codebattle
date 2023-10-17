@@ -36,6 +36,9 @@
   <%= error_tag(f, :task_ids) %>
 </div>
 <div class="d-flex">
-  <%= submit("Save", phx_disable_with: "Saving...", class: "btn btn-success mb-2") %>
-  <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto") %>
+  <%= submit("Save",
+    phx_disable_with: "Saving...",
+    class: "btn btn-success text-white mb-2 rounded-lg"
+  ) %>
+  <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "btn btn-link ml-auto") %>
 </div>

@@ -128,6 +128,13 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
+    tournament_id = socket.assigns.tournament_id
+    matches = Tournament.Server.get_matches(tournament_id, [id])
+
+    {:reply, {:ok, %{matches: matches}}, socket}
+  end
+
   def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
     push(socket, "tournament:update", %{
       tournament: payload.tournament

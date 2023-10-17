@@ -212,7 +212,7 @@ function Tournament() {
       <div className="container-fluid">
         <div className="row flex-lg-row-reverse">
           <div className="col-12 col-lg-9 mb-2 mb-lg-0">
-            <div className="bg-white h-100 shadow-sm rounded-lg p-3">
+            <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
               <Matches
                 tournament={tournament}
                 playersCount={playersCount}

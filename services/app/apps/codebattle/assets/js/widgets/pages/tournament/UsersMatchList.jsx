@@ -35,7 +35,7 @@ function UsersMatchList({ currentUserId, matches }) {
     <div className="d-flex flex-column">
       {matches.map((match, index) => {
         const matchClassName = cn(
-          'd-flex flex-column flex-lg-row flex-md-row',
+          'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
           'justify-content-between border-bottom p-2',
         );
         const currentUserIsPlayer = currentUserId === match.playerIds[0]
@@ -56,14 +56,14 @@ function UsersMatchList({ currentUserId, matches }) {
                   currentUserIsPlayer={currentUserIsPlayer}
                 />
               </span>
-              <div className="d-flex flex-column flex-lg-row flex-md-row flex-sm-row">
+              <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
                 <div className="d-flex align-items-center">
                   {match.winnerId === match.playerIds[0] && (
                     <FontAwesomeIcon className="text-warning mx-2" icon="trophy" />
                   )}
                   <UserTournamentInfo userId={match.playerIds[0]} />
                 </div>
-                <span className="text-center px-2">VS</span>
+                <span className="px-2 pl-5 pl-xl-2 pl-lg-2 pl-md-2 pl-sm-2">VS</span>
                 <div className="d-flex align-items-center">
                   {match.winnerId === match.playerIds[1] && (
                     <FontAwesomeIcon className="text-warning mx-2" icon="trophy" />
@@ -72,7 +72,7 @@ function UsersMatchList({ currentUserId, matches }) {
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-end ml-lg-2">
+            <div className="d-flex justify-content-end ml-lg-2 ml-xl-2">
               <MatchAction
                 match={match}
                 currentUserIsPlayer={currentUserIsPlayer}

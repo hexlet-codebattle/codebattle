@@ -76,6 +76,10 @@ defmodule CodebattleWeb.Router do
         get("/completed", GameController, :completed)
       end
 
+      scope("/tournaments/:tournament_id") do
+        get("/matches", TournamentController, :get_matches)
+      end
+
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)

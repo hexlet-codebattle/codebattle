@@ -56,7 +56,7 @@
     <!--End Google Tag Manager-->
   </head>
 
-  <body class="position-relative h-100">
+  <body class="position-relative dark-bg h-100">
     <!--Google Tag Manager (noscript)-->
     <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
       <noscript>
@@ -242,28 +242,35 @@
           </nav>
         </div>
       </div>
-      <div class="container-lg">
-        <%= for {type, message} <- @flash || [] do %>
-          <div
-            class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"}
-            role="alert"
-          >
-            <%= message %>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <% end %>
+      <div class="bg-light">
+        <div class="container-lg">
+          <%= for {type, message} <- @flash || [] do %>
+            <div
+              class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"}
+              role="alert"
+            >
+              <%= message %>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <% end %>
+        </div>
       </div>
       <div id="extension"></div>
-      <div class="content my-1"></div>
-      <%= @inner_content %>
+      <div class="content bg-light py-1"></div>
+      <main class="bg-light">
+        <%= @inner_content %>
+      </main>
       <footer>
         <div class="footer-container container-lg">
           <div>
-            <p class="text-nowrap mb-0 mr-4">
+            <p class="text-nowrap text-white mb-0 mr-4">
               ©
-              <a href="https://hexlet.io/?promo_name=main&promo_position=body&promo_type=link">
+              <a
+                class="text-white"
+                href="https://hexlet.io/?promo_name=main&promo_position=body&promo_type=link"
+              >
                 Hexlet ltd
               </a>
               , 2023
@@ -272,7 +279,8 @@
           <div>
             <p>
               <%= link("Current version: #{app_short_version()}",
-                to: github_commit_link()
+                to: github_commit_link(),
+                class: "btn btn-link p-0 text-white"
               ) %>
             </p>
             <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>

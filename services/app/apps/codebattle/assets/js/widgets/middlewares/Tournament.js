@@ -1,7 +1,9 @@
+import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 
 import socket from '../../socket';
+import TournamentStates from '../config/tournament';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
@@ -89,14 +91,34 @@ export const connectToTournament = () => dispatch => {
 };
 
 // TODO (tournaments): request matches by searched player id
-export const uploadPlayersMatches = playerId => dispatch => {
-  channel.push('tournament:matches:request', { player_id: playerId })
-    .receive('ok', response => {
-      const data = camelizeKeys(response);
+export const uploadPlayersMatches = playerId => (dispatch, getState) => {
+  const state = getState();
 
-      dispatch(actions.updateTournamentMatches(data.matches));
-    })
-    .receive('error', error => console.error(error));
+  const { isLive, state: tournamentState, id } = state.tournament;
+
+  if (isLive && tournamentState === TournamentStates.active) {
+    channel.push('tournament:matches:request', { player_id: playerId })
+      .receive('ok', response => {
+        const data = camelizeKeys(response);
+
+        dispatch(actions.updateTournamentMatches(data.matches));
+      })
+      .receive('error', error => console.error(error));
+  } else {
+    axios
+      .get(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': window.csrf_token,
+        },
+      })
+      .then(response => {
+        const data = camelizeKeys(response.data);
+
+        dispatch(actions.updateTournamentMatches(data.matches));
+      })
+      .catch(error => console.error(error));
+  }
 };
 
 export const subscribePlayers = players => {
@@ -110,12 +132,13 @@ export const subscribePlayers = players => {
 };
 
 export const joinTournament = teamId => {
-  const params = teamId ? { team_id: teamId } : {};
+  const params = teamId !== undefined ? { team_id: teamId } : {};
   channel.push('tournament:join', params).receive('error', error => console.error(error));
 };
 
 export const leaveTournament = teamId => {
-  const params = teamId ? { team_id: teamId } : {};
+  const params = teamId !== undefined ? { team_id: teamId } : {};
+
   channel.push('tournament:leave', params).receive('error', error => console.error(error));
 };
 

@@ -15,7 +15,8 @@ import Players from './Participants';
 
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {
-      const [gameResultPlayer1, gameResultPlayer2] = match.players.map(
+      console.log(match);
+      const [gameResultPlayer1, gameResultPlayer2] = match.playerResults.map(
         p => p.result,
       );
 
@@ -33,12 +34,13 @@ const calcRoundResult = matches => matches.reduce(
 
 const getLinkParams = (match, currentUserId) => {
   const isWinner = match.winnerId === currentUserId;
-  const isParticipant = match.players.some(({ id }) => id === currentUserId);
+  const isParticipant = match.playerIds.some(id => id === currentUserId);
 
+  console.log(match);
   switch (true) {
     case match.state === 'waiting' && isParticipant:
       return ['Wait', 'bg-warning'];
-    case match.state === 'active' && isParticipant:
+    case match.state === 'playing' && isParticipant:
       return ['Join', 'bg-warning'];
     case isWinner:
       return ['Show', 'bg-warning'];
@@ -76,7 +78,10 @@ function TeamMatches({
       <div className="py-2 bg-white border shadow-sm rounded-lg">
         <div className="row">
           {[teams[0], teams[1]].map(team => (
-            <div key={`team-title-${team.id}`} className="col d-flex align-items-center justify-content-between">
+            <div
+              key={`team-title-${team.id}`}
+              className="col d-flex align-items-center justify-content-between"
+            >
               <h3 className="mb-0 px-3 font-weight-light">{team.title}</h3>
               <span className="h1 px-3">{team.score}</span>
             </div>
@@ -85,6 +90,7 @@ function TeamMatches({
         <div className="row px-3 pt-2">
           {[teams[0], teams[1]].map(team => (
             <div key={`team-players-${team.id}`} className="col">
+              {console.log(team)}
               <div className="d-flex align-items-center ml-2">
                 <JoinButton
                   isShow={state === TournamentStates.waitingParticipants}
@@ -109,42 +115,47 @@ function TeamMatches({
         <div className="col-12 mt-3 py-2 bg-white shadow-sm rounded">
           <div className="row mb-3">
             <div className="col-5">
-              <h3 className="font-weight-light mb-0">{`round ${round}`}</h3>
+              <h3 className="font-weight-light mb-0">{`Round ${round}`}</h3>
             </div>
             <div className="col-1 text-center">
-              <span className="font-weight-light mb-0">
+              <span className="h3 font-weight-light mb-0">
                 {calcRoundResult(mapRoundToMatches[round]).first}
               </span>
             </div>
             <div className="col-1 text-center">
-              <span className="font-weight-light mb-0">
+              <span className="h3 font-weight-light mb-0">
                 {calcRoundResult(mapRoundToMatches[round]).second}
               </span>
             </div>
-            {mapRoundToMatches[round].map(match => {
-              const [player1, player2] = match.players;
-              const [linkName, bgClass] = getLinkParams(match, currentUserId);
-
-              return (
-                <div className={`row align-items-center py-2 ${bgClass}`}>
-                  <div className="col-6">
-                    <UserInfo user={player1} hideOnlineIndicator />
-                  </div>
-                  <div className="col-4">
-                    <UserInfo user={player2} hideOnlineIndicator />
-                  </div>
-                  <div className="col-2 text-right">
-                    <a
-                      className="btn btn-success"
-                      href={`/games/${match.gameId}`}
-                    >
-                      {linkName}
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
           </div>
+          {mapRoundToMatches[round].map(match => {
+            const [firstPlayerId, secondPlayerId] = match.playerIds;
+            const [linkName, bgClass] = getLinkParams(match, currentUserId);
+
+            return (
+              <div
+                className={`d-flex row justify-content-between align-items-center overflow-auto py-2 ${bgClass}`}
+              >
+                <div className="ml-2">
+                  <UserInfo user={players[firstPlayerId]} hideOnlineIndicator />
+                </div>
+                <div className="ml-2">
+                  <UserInfo
+                    user={players[secondPlayerId]}
+                    hideOnlineIndicator
+                  />
+                </div>
+                <div className="text-right mr-2 ml-4">
+                  <a
+                    className="btn btn-success text-white rounded-lg"
+                    href={`/games/${match.gameId}`}
+                  >
+                    {linkName}
+                  </a>
+                </div>
+              </div>
+            );
+          })}
         </div>
       ))}
     </>

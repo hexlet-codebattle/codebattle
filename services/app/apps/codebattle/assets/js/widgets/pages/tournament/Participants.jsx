@@ -8,7 +8,7 @@ const Players = ({ players, canBan, handleKick }) => {
   const playersCount = useMemo(() => Object.keys(players).length, [players]);
 
   return (
-    <div className="bg-white shadow-sm p-3 rounded-lg">
+    <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
       <div className="d-flex align-items-center flex-wrap justify-content-start">
         <h5 className="mb-2 mr-5 text-nowrap">
           {playersCount > 99 ? (
@@ -25,10 +25,9 @@ const Players = ({ players, canBan, handleKick }) => {
         {playersCount === 0 ? (
           <p className="test-nowrap">NO_PARTICIPANTS_YET</p>
         ) : (
-          Object.values(players).map((player, index) => (
+          Object.values(players).map(player => (
             <div key={player.id} className="my-3 d-flex">
-              <span>{index}</span>
-              <div className="ml-4">
+              <div className="ml-1">
                 <UserInfo user={player} hideOnlineIndicator />
               </div>
               {canBan && (

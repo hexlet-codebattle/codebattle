@@ -13,6 +13,16 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
+  def get_matches_by_players(tournament, player_ids) do
+    tournament
+    |> get_matches()
+    |> Enum.filter(fn match ->
+      player_ids
+      |> Enum.map(&is_match_player?(match, &1))
+      |> Enum.any?()
+    end)
+  end
+
   def get_round_matches(tournament) do
     tournament
     |> get_matches()
@@ -149,12 +159,12 @@ defmodule Codebattle.Tournament.Helpers do
   #   end
   # end
 
-  def get_active_match(tournament, current_user) do
+  def get_active_match(tournament, player) do
     match =
       tournament
       |> get_matches
       |> Enum.find(fn match ->
-        match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == current_user.id end)
+        match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == player.id end)
       end)
 
     case match do

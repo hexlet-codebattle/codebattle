@@ -2,6 +2,7 @@ import React, {
  memo, useMemo, useState, useEffect, useCallback,
 } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import range from 'lodash/range';
 import reverse from 'lodash/reverse';
@@ -59,14 +60,18 @@ function PlayersFilterPanel({ option, setOption }) {
     [allPlayers],
   );
 
-  if (!isAdmin) {
+  if (isAdmin) {
     return <></>;
   }
 
   return (
-    <div className="d-flex justify-content-between mb-2 w-50">
+    <div className="mb-2 input-group flex-nowrap">
+      <div className="input-group-prepend">
+        <span className="input-group-text" id="search-icon">
+          <FontAwesomeIcon icon="search" />
+        </span>
+      </div>
       <AsyncSelect
-        className="w-75"
         value={
           option && {
             label: <UserLabel user={option} />,
@@ -74,6 +79,7 @@ function PlayersFilterPanel({ option, setOption }) {
           }
         }
         defaultOptions
+        classNamePrefix="rounded-0 "
         onChange={onChangeSearchedPlayer}
         loadOptions={loadOptions}
       />
@@ -93,6 +99,33 @@ const mapStagesToTitle = {
   8: 'nine',
   9: 'ten',
 };
+
+const SearchedUserPanel = memo(({
+  searchedUser,
+  matchList,
+  mapPlayerIdToLocalRating,
+  currentUserId,
+}) => {
+  if (!searchedUser) {
+    return <></>;
+  }
+
+  const userMatches = matchList.filter(match => match.playerIds.includes(searchedUser.id));
+
+  return (
+    <TournamentUserPanel
+      key={`search-user-panel-${searchedUser.id}`}
+      matches={userMatches}
+      currentUserId={currentUserId}
+      userId={searchedUser.id}
+      name={searchedUser.name}
+      score={searchedUser.score}
+      place={searchedUser.rank}
+      localPlace={mapPlayerIdToLocalRating[searchedUser.id]}
+      searchedUserId={searchedUser.id}
+    />
+  );
+});
 
 const PlayersList = memo(
   ({
@@ -134,16 +167,21 @@ function CustomMatchesPanel({
   const [searchedUser, setSearchedUser] = useState();
   const [openedStage, setOpenedStage] = useState(0);
 
-  const playersList = useMemo(
-    () => Object.values(players).reduce((acc, player) => {
-        if (player.id === currentUserId) {
-          return [player, ...acc];
-        }
+  const pageNumber = useSelector(state => state.tournament.playersPageNumber);
+  const pageSize = useSelector(state => state.tournament.playersPageSize);
 
-        acc.push(player);
-        return acc;
-      }, []),
-    [players, currentUserId],
+  const playersList = useMemo(
+    () => Object.values(players)
+        .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
+        .reduce((acc, player) => {
+          if (player.id === currentUserId) {
+            return [player, ...acc];
+          }
+
+          acc.push(player);
+          return acc;
+        }, []),
+    [players, currentUserId, pageSize, pageNumber],
   );
   const mapPlayerIdToLocalRating = useMemo(
     () => playersList
@@ -154,9 +192,6 @@ function CustomMatchesPanel({
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 
-  const pageNumber = useSelector(state => state.tournament.playersPageNumber);
-  const pageSize = useSelector(state => state.tournament.playersPageSize);
-
   useEffect(() => {
     if (playersList.length !== 0) {
       dispatch(actions.updateUsers({ users: playersList }));
@@ -165,9 +200,7 @@ function CustomMatchesPanel({
 
   useEffect(() => {
     if (searchedUser) {
-      dispatch(
-        uploadPlayersMatches(searchedUser?.id),
-      );
+      dispatch(uploadPlayersMatches(searchedUser?.id));
     }
   }, [dispatch, searchedUser]);
 
@@ -178,23 +211,12 @@ function CustomMatchesPanel({
       <PlayersFilterPanel option={searchedUser} setOption={setSearchedUser} />
       {roundsLimit < 2 ? (
         <>
-          {searchedUser
-            && (() => {
-              const userMatches = matchList.filter(match => match.playerIds.includes(searchedUser.id));
-
-              return (
-                <TournamentUserPanel
-                  key={`user-panel-${searchedUser.id}`}
-                  matches={userMatches}
-                  currentUserId={currentUserId}
-                  userId={searchedUser.id}
-                  name={searchedUser.name}
-                  score={searchedUser.score}
-                  place={searchedUser.rank}
-                  searchedUserId={searchedUser.id}
-                />
-              );
-            })}
+          <SearchedUserPanel
+            searchedUser={searchedUser}
+            matchList={matchList}
+            mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
+            currentUserId={currentUserId}
+          />
           <PlayersList
             players={playersList}
             mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
@@ -242,7 +264,15 @@ function CustomMatchesPanel({
                   role="tabpanel"
                   aria-labelledby={`stage-${mapStagesToTitle[stage]}-tab`}
                 >
+                  <SearchedUserPanel
+                    key={`search-stage-${stage}-user-panel`}
+                    searchedUser={searchedUser}
+                    matchList={stageMatches}
+                    mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
+                    currentUserId={currentUserId}
+                  />
                   <PlayersList
+                    key={`stage-${stage}-user-list`}
                     players={playersList}
                     mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
                     matchList={stageMatches}
