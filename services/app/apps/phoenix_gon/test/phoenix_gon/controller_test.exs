@@ -11,7 +11,7 @@ defmodule PhoenixGon.ControllerTest do
       conn =
         %Conn{}
         |> with_gon
-        |> put_gon(:test, :test)
+        |> put_gon(test: :test)
 
       actual = conn.private[:phoenix_gon].assets[:test]
       expectation = :test
@@ -25,8 +25,8 @@ defmodule PhoenixGon.ControllerTest do
       conn =
         %Conn{}
         |> with_gon
-        |> put_gon(:test, :not_test)
-        |> update_gon(:test, :test)
+        |> put_gon(test: :not_test)
+        |> update_gon(test: :test)
 
       actual = conn.private[:phoenix_gon].assets[:test]
       expectation = :test
@@ -40,7 +40,7 @@ defmodule PhoenixGon.ControllerTest do
       conn =
         %Conn{}
         |> with_gon
-        |> put_gon(:test, :test)
+        |> put_gon(test: :test)
         |> drop_gon(:test)
 
       actual = conn.private[:phoenix_gon].assets[:test]
@@ -55,7 +55,7 @@ defmodule PhoenixGon.ControllerTest do
       conn =
         %Conn{}
         |> with_gon
-        |> put_gon(:test, :test)
+        |> put_gon(test: :test)
 
       actual = conn.private[:phoenix_gon].assets[:test]
       expectation = get_gon(conn, :test)

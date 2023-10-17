@@ -25,9 +25,10 @@ defmodule PhoenixGon.ViewTest do
         |> with_gon
 
       conn =
+        conn
+        |>
         put_gon(
-          conn,
-          :malicious,
+          malicious:
           "all your base</script><script>alert('are belong to us!')</script>"
         )
 
@@ -46,8 +47,8 @@ defmodule PhoenixGon.ViewTest do
 
       actual_assets =
         conn
-        |> put_gon(:foo_bar, "Foo Bar")
-        |> put_gon(:test_map, %{map_key: "Foo Bar"})
+        |> put_gon(foo_bar: "Foo Bar")
+        |> put_gon(test_map: %{map_key: "Foo Bar"})
         |> PhoenixGon.View.escape_assets()
 
       expected_assets =
@@ -63,7 +64,7 @@ defmodule PhoenixGon.ViewTest do
 
       actual_assets =
         conn
-        |> put_gon(:test_map, %{map_key: "Foo Bar"})
+        |> put_gon(test_map: %{map_key: "Foo Bar"})
         |> PhoenixGon.View.escape_assets()
 
       expected_assets = "{\\\"test_map\\\":{\\\"map_key\\\":\\\"Foo Bar\\\"}}"
