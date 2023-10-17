@@ -194,11 +194,11 @@ defmodule Runner.Languages do
     "kotlin" => %LanguageMeta{
       name: "Kotlin",
       slug: "kotlin",
-      version: "1.6.21",
+      version: "1.9.10",
       check_dir: "check",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
-      docker_image: "codebattle/kotlin:1.6.21",
+      docker_image: "codebattle/kotlin:1.9.10",
       solution_template:
         "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},

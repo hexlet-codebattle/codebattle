@@ -1,6 +1,6 @@
-FROM amazoncorretto:20-alpine3.15-full
+FROM amazoncorretto:21-alpine3.18-full
 
-ENV KOTLIN_VERSION=1.6.21 \
+ENV KOTLIN_VERSION=1.9.10 \
   KOTLIN_HOME=/usr/share/kotlin
 
 RUN apk add --update bash && \
