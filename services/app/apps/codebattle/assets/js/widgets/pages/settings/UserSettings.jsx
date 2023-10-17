@@ -1,17 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
 import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
+import noop from 'lodash/noop';
+import Alert from 'react-bootstrap/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Loading from '../../components/Loading';
+import i18n from '../../../i18n';
 import { userSettingsSelector } from '../../selectors';
-import { updateUserSettings } from '../../slices/userSettings';
+import { actions } from '../../slices';
 
 import UserSettingsForm from './UserSettingsForm';
 
 const PROVIDERS = ['github', 'discord'];
+const notifications = {
+  success: { variant: 'success', message: i18n.t('Settings changed successfully') },
+  error: { variant: 'danger', message: i18n.t('Something went wrong') },
+  empty: {},
+};
+
+const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute('content');
+
+function Notification({ notification, onClose }) {
+  const { variant, message } = notification;
+
+  useEffect(() => {
+    if (!message) return noop;
+
+    const timerId = setTimeout(() => onClose(notifications.empty), 1600);
+
+    return () => clearTimeout(timerId);
+  }, [onClose, message]);
+
+  return (
+    <Alert show={!!message} variant={variant}>{message}</Alert>
+  );
+}
 
 const BindSocialBtn = ({ provider, disabled, isBinded }) => {
   const formatedProviderName = capitalize(provider);
@@ -61,73 +87,37 @@ const renderSocialBtns = currentUserSettings => {
 };
 
 function UserSettings() {
-  const [notification, setNotification] = useState('pending');
-  const [animation, setAnimation] = useState('done');
-
+  const [notification, setNotification] = useState(notifications.empty);
   const settings = useSelector(userSettingsSelector);
   const dispatch = useDispatch();
 
-  const notificationStyles = cn({
-    'alert-success': notification === 'editSuccess',
-    'alert-danger': notification === 'editError',
-    alert: true,
-    fade: animation === 'done',
-  });
+  const handleUpdateUserSettings = useCallback(async (values, { setErrors }) => {
+    try {
+      const { data } = await axios.patch('/api/v1/settings', values, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
+        },
+      });
 
-  const handleUpdateUserSettings = async (values, formikHelpers) => {
-    const resultAction = await dispatch(updateUserSettings(values));
-    if (updateUserSettings.fulfilled.match(resultAction)) {
-      // const userSettings = resultAction.payload;
-      setAnimation('progress');
-      setNotification('editSuccess');
-    } else if (resultAction.payload) {
-      setAnimation('progress');
-      setNotification('editError');
-      formikHelpers.setErrors(resultAction.payload.field_errors);
-    } else {
-      setNotification('editError');
-    }
-    await setTimeout(() => setAnimation('done'), 1600);
-  };
+      dispatch(actions.updateUserSettings(data));
+      setNotification(notifications.success);
+    } catch (error) {
+      if (!error.response) {
+        setNotification(notifications.error);
+        throw error;
+      }
 
-  const getNotificationMessage = status => {
-    let message;
-    switch (status) {
-      case 'editSuccess': {
-        message = 'Your settings has been changed';
-        break;
-      }
-      case 'editError': {
-        message = 'Oops, something has gone wrong';
-        break;
-      }
-      case 'pending': {
-        message = 'pending';
-        break;
-      }
-      default: {
-        message = 'unfamiliar status';
-        break;
-      }
+      const { name: userNameErrors = [] } = error.response.data.errors;
+      setErrors({ name: userNameErrors.map(capitalize).join(', ') });
     }
-    return message;
-  };
-  if (!settings) {
-    return <Loading />;
-  }
+  }, [dispatch]);
+
   return (
     <div className="container bg-white shadow-sm py-4">
-      <div className="text-center">
-        <div className={notificationStyles} role="alert">
-          {getNotificationMessage(notification)}
-        </div>
-
-        <h2 className="font-weight-normal">Settings</h2>
-      </div>
-      <UserSettingsForm
-        settings={settings}
-        onSubmit={handleUpdateUserSettings}
-      />
+      <Notification notification={notification} onClose={setNotification} />
+      <h2 className="font-weight-normal">Settings</h2>
+      <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />
       <div className="mt-3 ml-2 d-flex flex-column">
         <h3 className="mb-3 font-weight-normal">Socials</h3>
         {renderSocialBtns(settings)}

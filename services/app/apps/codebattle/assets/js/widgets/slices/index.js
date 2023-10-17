@@ -18,7 +18,6 @@ import storeLoaded, { actions as storeLoadedActions } from './store';
 import tournament, { actions as tournamentActions } from './tournament';
 import tournamentPlayer, { actions as tournamentPlayerActions } from './tournamentPlayer';
 import user, { actions as userActions } from './user';
-import userSettings, { actions as userSettingActions } from './userSettings';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
 
 const setError = error => ({
@@ -45,7 +44,6 @@ export const actions = {
   ...tournamentActions,
   ...tournamentPlayerActions,
   ...userActions,
-  ...userSettingActions,
   ...usersInfoActions,
 };
 
@@ -70,6 +68,5 @@ export default {
   tournament,
   tournamentPlayer,
   user,
-  userSettings,
   usersInfo,
 };

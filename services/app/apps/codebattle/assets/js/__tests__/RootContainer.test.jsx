@@ -124,7 +124,11 @@ const players = {
 };
 
 const preloadedState = {
-  user: { currentUserId: 1, users: players },
+  user: {
+    currentUserId: 1,
+    users: players,
+    settings: { mute: null },
+  },
   game: {
     gameStatus: {
       state: GameStateCodes.playing,

@@ -7,9 +7,7 @@ import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import { Provider } from 'react-redux';
 
-import languages from '../widgets/config/languages';
 import UserSettings from '../widgets/pages/settings';
-import UserSettingsForm from '../widgets/pages/settings/UserSettingsForm';
 import reducers from '../widgets/slices';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -18,23 +16,23 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 
 jest.mock('axios');
 
-jest.useFakeTimers();
-
 const reducer = combineReducers(reducers);
 
 const preloadedState = {
-  userSettings: {
-    sound_settings: {
-      type: 'standart',
-      level: 6,
+  user: {
+    settings: {
+      sound_settings: {
+        type: 'standart',
+        level: 6,
+      },
+      id: 11,
+      name: 'Diman',
+      lang: 'ts',
+      avatar_url: '/assets/images/logo.svg',
+      discord_name: null,
+      discord_id: null,
+      error: '',
     },
-    id: 11,
-    name: 'Diman',
-    lang: 'ts',
-    avatar_url: '/assets/images/logo.svg',
-    discord_name: null,
-    discord_id: null,
-    error: '',
   },
 };
 const store = configureStore({
@@ -54,8 +52,6 @@ jest.mock(
   { virtual: true },
 );
 
-const settings = Object.keys(languages);
-
 describe('UserSettings test cases', () => {
   function setup(jsx) {
     return {
@@ -73,88 +69,58 @@ describe('UserSettings test cases', () => {
     expect(getByText(/settings/i)).toBeInTheDocument();
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('show success notification', async () => {
+  test('successfull user settings update', async () => {
     const settingUpdaterSpy = jest.spyOn(axios, 'patch').mockResolvedValueOnce({ data: {} });
     const {
-      getByRole,
-      getByLabelText,
-      getByTestId,
-      user,
+      getByRole, getByLabelText, getByTestId, user,
     } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
     const submitButton = getByLabelText('SubmitForm');
-    const alert = getByRole('alert');
+    const nameInput = getByTestId('nameInput');
+    const langSelect = getByTestId('langSelect');
 
-    await userEvent.type(getByTestId('nameInput'), 'Dmitry');
+    await user.clear(nameInput);
+    await user.type(nameInput, 'Dmitry');
+    await user.selectOptions(langSelect, 'Javascript');
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(settingUpdaterSpy).toHaveBeenCalled();
-      expect(alert).toHaveClass('alert-success');
-    });
-  });
-
-  test.skip.each(settings)('editing profile test with lang %s', async lang => {
-    const handleSubmit = jest.fn();
-    const {
-      user,
-      getByTestId,
-      getByLabelText,
-    } = setup(
-      <UserSettingsForm
-        onSubmit={handleSubmit}
-        settings={preloadedState.userSettings}
-      />,
-    );
-
-    await userEvent.type(getByTestId('nameInput'), 'Dmitry');
-    await userEvent.type(getByTestId('langSelect'), lang);
-
-    const submitButton = getByLabelText('SubmitForm');
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      expect(handleSubmit).toHaveBeenCalled();
-      expect(handleSubmit).toHaveBeenCalledWith({
+      expect(settingUpdaterSpy).toHaveBeenCalledWith(expect.anything(), {
         name: 'Dmitry',
-        lang,
+        lang: 'js',
         sound_settings: {
           level: 6,
           type: 'standart',
         },
       }, expect.anything());
+      expect(getByRole('alert')).toHaveClass('alert-success');
     });
   });
 
-  test('show error when username is not trimmed string or it is empty', async () => {
+  test('show validation error', async () => {
     const {
-      getByText, getByTestId, getByLabelText,
+      getByTestId, getByLabelText, findByText, user,
     } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
     );
-
     const submitButton = getByLabelText('SubmitForm');
+    const nameInput = getByTestId('nameInput');
 
-    userEvent.clear(getByTestId('nameInput'));
+    await user.clear(nameInput);
 
     expect(submitButton).toBeEnabled();
 
-    userEvent.click(submitButton);
+    await user.tab();
 
-    await waitFor(() => {
-      expect(getByText(/Field can't be empty/i)).toBeInTheDocument();
-    });
+    expect(await findByText(/Field can't be empty/i)).toBeInTheDocument();
 
-    userEvent.type(getByTestId('nameInput'), '   ');
+    await user.type(getByTestId('nameInput'), '   ');
 
-    await waitFor(() => {
-      expect(getByText(/name must be a trimmed string/i)).toBeInTheDocument();
-    });
+    expect(await findByText(/name must be a trimmed string/i)).toBeInTheDocument();
   });
 });
