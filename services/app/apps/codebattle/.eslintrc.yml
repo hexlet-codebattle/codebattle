@@ -60,3 +60,6 @@ rules:
   template-curly-spacing: "off"
   indent: "off"
   max-len: ["error", 140, 2]
+  jsx-a11y/label-has-associated-control:
+    - 2
+    - assert: "either"

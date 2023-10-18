@@ -39,52 +39,38 @@ function Notification({ notification, onClose }) {
   );
 }
 
-const BindSocialBtn = ({ provider, disabled, isBinded }) => {
-  const formatedProviderName = capitalize(provider);
-
-  return (
-    <div className="d-flex mb-2 align-items-center">
-      <FontAwesomeIcon
-        className={cn({
-          'mr-2': true,
-          'text-muted': isBinded,
-        })}
-        icon={['fab', provider]}
-      />
-      {isBinded ? (
-        <button
-          type="button"
-          className="bind-social"
-          data-method="delete"
-          data-csrf={window.csrf_token}
-          data-to={`/auth/${provider}`}
-          disabled={disabled}
-        >
-          {`Unlink ${formatedProviderName}`}
-        </button>
-      ) : (
-        <a className="bind-social" href={`/auth/${provider}/bind/`}>
-          {`Link ${formatedProviderName}`}
-        </a>
-      )}
-    </div>
-  );
-};
-
-const renderSocialBtns = currentUserSettings => {
-  const getProviderName = slug => currentUserSettings[`${slug}_name`];
+function SocialButtons({ settings }) {
   return PROVIDERS.map(provider => {
-    const providerName = getProviderName(provider);
+    const providerName = settings[`${provider}_name`];
+    const isSocialLinked = !!providerName?.length;
+    const formatedProviderName = capitalize(provider);
+
     return (
-      <BindSocialBtn
-        provider={provider}
-        isBinded={providerName && providerName.length}
-        disabled={providerName && providerName.length}
-        key={provider}
-      />
+      <div key={provider} className="d-flex mb-2 align-items-center">
+        <FontAwesomeIcon
+          className={cn('mr-2', { 'text-muted': isSocialLinked })}
+          icon={['fab', provider]}
+        />
+        {isSocialLinked ? (
+          <button
+            type="button"
+            className="bind-social"
+            data-method="delete"
+            data-csrf={window.csrf_token}
+            data-to={`/auth/${provider}`}
+            disabled
+          >
+            {`Unlink ${formatedProviderName}`}
+          </button>
+        ) : (
+          <a className="bind-social" href={`/auth/${provider}/bind/`}>
+            {`Link ${formatedProviderName}`}
+          </a>
+        )}
+      </div>
     );
   });
-};
+}
 
 function UserSettings() {
   const [notification, setNotification] = useState(notifications.empty);
@@ -105,7 +91,7 @@ function UserSettings() {
     } catch (error) {
       if (!error.response) {
         setNotification(notifications.error);
-        throw error;
+        return;
       }
 
       const { name: userNameErrors = [] } = error.response.data.errors;
@@ -120,7 +106,7 @@ function UserSettings() {
       <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />
       <div className="mt-3 ml-2 d-flex flex-column">
         <h3 className="mb-3 font-weight-normal">Socials</h3>
-        {renderSocialBtns(settings)}
+        <SocialButtons settings={settings} />
       </div>
     </div>
   );

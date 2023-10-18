@@ -100,9 +100,9 @@ describe('UserSettings test cases', () => {
     });
   });
 
-  test('show validation error', async () => {
+  test('failed user settings update', async () => {
     const {
-      getByTestId, getByLabelText, findByText, user,
+      getByTestId, getByLabelText, findByRole, findByText, user,
     } = setup(
       <Provider store={store}>
         <UserSettings />
@@ -113,14 +113,39 @@ describe('UserSettings test cases', () => {
 
     await user.clear(nameInput);
 
-    expect(submitButton).toBeEnabled();
-
-    await user.tab();
-
     expect(await findByText(/Field can't be empty/i)).toBeInTheDocument();
+    expect(submitButton).toBeDisabled();
 
-    await user.type(getByTestId('nameInput'), '   ');
+    await user.type(nameInput, '   ');
 
     expect(await findByText(/name must be a trimmed string/i)).toBeInTheDocument();
+    expect(submitButton).toBeDisabled();
+
+    axios.patch.mockRejectedValueOnce({
+      response: {
+        data: {
+          errors: {
+            name: ['has already been taken'],
+          },
+        },
+      },
+    });
+
+    await user.clear(nameInput);
+    await user.type(nameInput, 'ExistingUserName');
+
+    expect(submitButton).toBeEnabled();
+
+    await user.click(submitButton);
+
+    expect(await findByText(/Has already been taken/i)).toBeInTheDocument();
+
+    axios.patch.mockRejectedValueOnce({ response: undefined, message: 'Network Error' });
+
+    await user.clear(nameInput);
+    await user.type(nameInput, 'CoolUserName');
+    await user.click(submitButton);
+
+    expect(await findByRole('alert')).toHaveClass('alert-danger');
   });
 });
