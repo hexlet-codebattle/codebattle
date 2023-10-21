@@ -142,6 +142,8 @@ defmodule CodebattleWeb.TournamentChannel do
       Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
     end)
 
+    # TODO: add Game created
+
     {:reply, {:ok, %{}}, socket}
   end
 

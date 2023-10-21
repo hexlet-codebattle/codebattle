@@ -25,6 +25,7 @@ function TournamentPlayer() {
       </>
     );
   }
+  // TODO: if there is not active_match set html, LOADING
 
   useEffect(() => {
     if (tournament.isLive) {
@@ -39,6 +40,7 @@ function TournamentPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TODO: subscribe to game channel
   return (
     <>
       <div className="container-fluid">

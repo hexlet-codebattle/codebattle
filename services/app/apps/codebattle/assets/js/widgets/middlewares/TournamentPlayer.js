@@ -35,7 +35,7 @@ const initTournamentPlayerChannel = dispatch => {
   });
 };
 
-const connectToTournamentPlayer = () => dispatch => {
+export const connectToTournamentPlayer = () => dispatch => {
   initTournamentPlayerChannel(dispatch);
 
   const handleRoundFinished = response => {

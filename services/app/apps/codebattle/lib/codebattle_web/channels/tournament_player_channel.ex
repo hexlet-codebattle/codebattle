@@ -8,17 +8,21 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   def join("tournament_player:" <> tournament_player_ids, payload, socket) do
     current_user = socket.assigns.current_user
     [tournament_id, player_id] = String.split(tournament_player_ids, "_")
+    player_id = String.to_integer(player_id)
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
       Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
-      active_match = Helpers.get_active_match(tournament, current_user)
+
+      game_id = tournament |> Helpers.get_active_game_id(player_id)
 
       {:ok,
        %{
-         active_match: active_match,
-         tournament: tournament
+         game_id: game_id,
+         tournament_id: tournament_id,
+         tournament_state: tournament.state,
+         tournament_break_state: tournament.break_state
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else
       _ ->
@@ -37,7 +41,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   end
 
   def handle_info(%{event: "game:created", payload: payload}, socket) do
-    push(socket, "game:created", %{game_id: payload.game_id, player_id: payload.player_id})
+    push(socket, "game:created", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

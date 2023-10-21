@@ -159,10 +159,24 @@ defmodule Codebattle.Tournament.Helpers do
   #   end
   # end
 
+  # TODO: optimize search active_game algo
+  def get_active_game_id(tournament, player_id) do
+    tournament
+    |> get_matches()
+    |> Enum.find(fn match ->
+      match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == player_id end)
+    end)
+    |> case do
+      nil -> nil
+      match -> match.game_id
+    end
+  end
+
+  # TODO: optimize search active_match algo
   def get_active_match(tournament, player) do
     match =
       tournament
-      |> get_matches
+      |> get_matches()
       |> Enum.find(fn match ->
         match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == player.id end)
       end)

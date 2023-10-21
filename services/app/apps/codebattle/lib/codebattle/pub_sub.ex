@@ -47,4 +47,8 @@ defmodule Codebattle.PubSub do
   def subscribe(topic) do
     Phoenix.PubSub.subscribe(Codebattle.PubSub, topic)
   end
+
+  def unubscribe(topic) do
+    Phoenix.PubSub.unsubscribe(Codebattle.PubSub, topic)
+  end
 end

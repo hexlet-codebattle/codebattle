@@ -1,7 +1,6 @@
 defmodule CodebattleWeb.LiveViewTournamentController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
   alias Codebattle.Tournament
 
   def index(conn, _params) do

@@ -43,8 +43,13 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:round_finished", params) do
     [
       %Message{
+        topic: "tournaments",
+        event: "tournament:round_finished",
+        payload: %{tournament_id: params.tournament_id}
+      },
+      %Message{
         topic: "tournament:#{params.tournament_id}",
-        event: "tournament:round_created",
+        event: "tournament:round_finished",
         payload: %{}
       }
     ]
