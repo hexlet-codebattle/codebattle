@@ -217,7 +217,7 @@ defmodule Codebattle.Bot.Server do
   end
 
   defp server_name(game_id, bot_id) do
-    {:via, Registry, {Codebattle.Registry, "bot:#{game_id}:#{bot_id}"}}
+    {:via, Registry, {Codebattle.Registry, "bot:#{game_id}_#{bot_id}"}}
   end
 
   defp bot_token(bot_id) do

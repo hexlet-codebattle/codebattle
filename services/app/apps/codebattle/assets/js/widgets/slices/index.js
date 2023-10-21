@@ -16,6 +16,7 @@ import playbook, { actions as playbookActions } from './playbook';
 import stairwayGame, { actions as stairwayGameActions } from './stairway';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import tournament, { actions as tournamentActions } from './tournament';
+import tournamentPlayer, { actions as tournamentPlayerActions } from './tournamentPlayer';
 import user, { actions as userActions } from './user';
 import userSettings, { actions as userSettingActions } from './userSettings';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
@@ -32,19 +33,20 @@ export const actions = {
   ...chatActions,
   ...completedGamesActions,
   ...editorActions,
-  ...gameActions,
-  ...storeLoadedActions,
   ...executionOutputActions,
-  ...playbookActions,
-  ...usersInfoActions,
+  ...gameActions,
   ...gameUIActions,
-  ...userActions,
-  ...lobbyActions,
-  ...leaderboardActions,
   ...invitesActions,
-  ...userSettingActions,
+  ...leaderboardActions,
+  ...lobbyActions,
+  ...playbookActions,
   ...stairwayGameActions,
+  ...storeLoadedActions,
   ...tournamentActions,
+  ...tournamentPlayerActions,
+  ...userActions,
+  ...userSettingActions,
+  ...usersInfoActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -52,21 +54,22 @@ export const redirectToNewGame = gameId => {
 };
 
 export default {
-  game,
   builder,
-  usersInfo,
-  editor,
-  gameUI,
-  playbook,
-  user,
   chat,
   completedGames,
-  lobby,
-  storeLoaded,
+  editor,
   executionOutput,
-  leaderboard,
+  game,
+  gameUI,
   invites,
-  userSettings,
+  leaderboard,
+  lobby,
+  playbook,
   stairwayGame,
+  storeLoaded,
   tournament,
+  tournamentPlayer,
+  user,
+  userSettings,
+  usersInfo,
 };

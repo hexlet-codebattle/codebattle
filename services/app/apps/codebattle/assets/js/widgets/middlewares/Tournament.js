@@ -127,7 +127,7 @@ export const subscribePlayers = players => {
   }
 
   const ids = players.map(p => p.id);
-  // TODO (tournaments): subscribe on players updates
+  // TODO (tournaments): Implement unsubscribe
   channel.push('tournament:subscribe_players', { player_ids: ids });
 };
 

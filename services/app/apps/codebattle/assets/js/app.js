@@ -31,17 +31,18 @@ import { LiveSocket } from 'phoenix_live_view';
 // paths "./socket" or full ones "web/static/js/socket".
 
 import {
-  renderInvitesWidget,
-  renderGameWidget,
   renderBuilderWidget,
-  renderLobby,
+  renderGameWidget,
   renderHeatmapWidget,
-  renderUsersRating,
-  renderUserPage,
-  renderSettingPage,
+  renderInvitesWidget,
+  renderLobby,
   renderRegistrationPage,
+  renderSettingPage,
   renderStairwayGamePage,
   renderTournamentPage,
+  renderTournamentPlayerPage,
+  renderUserPage,
+  renderUsersRating,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
@@ -85,18 +86,19 @@ window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 
 liveSocket.connect();
 
-const invitesRoot = document.getElementById('invites-root');
+const builderWidgetRoot = document.getElementById('builder-widget-root');
 const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
-const builderWidgetRoot = document.getElementById('builder-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
+const invitesRoot = document.getElementById('invites-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
-const userPageRoot = document.getElementById('user-page-root');
-const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
+const settingsRoot = document.getElementById('settings');
 const stairwayGameRoot = document.getElementById('stairway-game-root');
+const tournamentPlayerRoot = document.getElementById('tournament-player-root');
 const tournamentRoot = document.getElementById('tournament-root');
+const userPageRoot = document.getElementById('user-page-root');
 
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);
@@ -140,6 +142,10 @@ if (registrationRoot) {
 
 if (stairwayGameRoot) {
   renderStairwayGamePage(stairwayGameRoot);
+}
+
+if (tournamentPlayerRoot) {
+  renderTournamentPlayerPage(tournamentPlayerRoot);
 }
 
 if (tournamentRoot) {

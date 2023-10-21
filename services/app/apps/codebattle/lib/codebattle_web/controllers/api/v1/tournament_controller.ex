@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Api.V1.TournamentController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, Tournament}
+  alias Codebattle.Tournament
 
   import Ecto.Query, warn: false
 

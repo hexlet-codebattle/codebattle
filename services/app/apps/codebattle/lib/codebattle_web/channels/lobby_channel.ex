@@ -74,6 +74,16 @@ defmodule CodebattleWeb.LobbyChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "game:created", payload: payload}, socket) do
+    current_user = socket.assigns.current_user
+
+    if can_user_see_game?(payload.game, current_user) do
+      push(socket, "game:upsert", payload)
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:created", payload: payload}, socket) do
     push(socket, "tournament:created", payload)
     {:noreply, socket}

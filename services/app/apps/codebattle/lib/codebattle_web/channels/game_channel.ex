@@ -11,6 +11,7 @@ defmodule CodebattleWeb.GameChannel do
       score = Context.fetch_score_by_game_id(game_id)
 
       if game.tournament_id do
+        # TODO: use subscription for tournament_player:tournament_id_player_id topic events
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
       end
 

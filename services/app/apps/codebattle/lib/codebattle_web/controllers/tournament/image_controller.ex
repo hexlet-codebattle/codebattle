@@ -4,6 +4,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
   alias Codebattle.Tournament
 
   def show(conn, %{"id" => id}) do
+    # TODO: add ets cache for image
     case Tournament.Context.get(id) do
       nil ->
         send_resp(conn, :ok, "")

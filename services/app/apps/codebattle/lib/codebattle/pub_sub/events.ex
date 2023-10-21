@@ -13,16 +13,6 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("tournament:finished", params) do
-    [
-      %Message{
-        topic: "tournaments",
-        event: "tournament:finished",
-        payload: %{tournament: params.tournament}
-      }
-    ]
-  end
-
   def get_messages("tournament:updated", params) do
     [
       %Message{
@@ -50,6 +40,31 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:round_finished", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament_id}",
+        event: "tournament:round_created",
+        payload: %{}
+      }
+    ]
+  end
+
+  def get_messages("tournament:finished", params) do
+    [
+      %Message{
+        topic: "tournaments",
+        event: "tournament:finished",
+        payload: %{tournament: params.tournament}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament_id}",
+        event: "tournament:finished",
+        payload: %{}
+      }
+    ]
+  end
+
   def get_messages("chat:new_msg", params) do
     [
       %Message{
@@ -68,6 +83,46 @@ defmodule Codebattle.PubSub.Events do
         payload: params.payload
       }
     ]
+  end
+
+  def get_messages("game:created", %{game: game}) do
+    payload = %{
+      game: %{
+        id: Game.Helpers.get_game_id(game),
+        inserted_at: Game.Helpers.get_inserted_at(game),
+        is_bot: Game.Helpers.bot_game?(game),
+        level: Game.Helpers.get_level(game),
+        players: Game.Helpers.get_players(game),
+        state: Game.Helpers.get_state(game),
+        timeout_seconds: Game.Helpers.get_timeout_seconds(game),
+        type: Game.Helpers.get_type(game),
+        visibility_type: Game.Helpers.get_visibility_type(game)
+      }
+    }
+
+    game_events =
+      [
+        %Message{
+          topic: "games",
+          event: "game:created",
+          payload: payload
+        }
+      ]
+
+    tournament_player_events =
+      if game.tournament_id do
+        Enum.map(game.players, fn player ->
+          %Message{
+            topic: "tournament_player:#{game.tournament_id}_#{player.id}",
+            event: "game:created",
+            payload: %{game_id: game.id, player_id: player.id}
+          }
+        end)
+      else
+        []
+      end
+
+    game_events ++ tournament_player_events
   end
 
   def get_messages("game:updated", %{game: game}) do

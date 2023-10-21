@@ -22,13 +22,15 @@ import {
   setPlayerToSliceState,
 } from '../utils/gameRoom';
 
+const activeGamesData = Gon.getAsset('active_games');
+const completedGamesData = Gon.getAsset('completed_games');
 const currentUserParams = Gon.getAsset('current_user');
-const isRecord = Gon.getAsset('is_record') || false;
 const gameData = Gon.getAsset('game');
+const isRecord = Gon.getAsset('is_record') || false;
+const playerIdData = Gon.getAsset('player_id');
 const taskData = Gon.getAsset('task');
 const tournamentData = Gon.getAsset('tournament');
-const completedGamesData = Gon.getAsset('completed_games');
-const activeGamesData = Gon.getAsset('active_games');
+const tournamentIdData = Gon.getAsset('tournament_id');
 const tournamentsData = Gon.getAsset('tournaments');
 const usersRatingData = Gon.getAsset('users_rating');
 
@@ -242,6 +244,15 @@ const initialTournament = tournamentParams
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
 const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
 
+const defaultTournamentPlayerParams = {
+  isLive: false,
+  tournamentId: tournamentIdData,
+  playerId: playerIdData,
+  activeGameId: null,
+  task: null,
+  testResults: null,
+};
+
 const initial = {
   game: {
     gameStatus: initialGameStatus,
@@ -252,6 +263,7 @@ const initial = {
     alerts: {},
   },
   tournament: initialTournament,
+  tournamentPlayer: defaultTournamentPlayerParams,
   editor: {
     meta: initialMeta,
     text: initialText,

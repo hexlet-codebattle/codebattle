@@ -167,12 +167,19 @@ defmodule Codebattle.Tournament.Base do
         )
       end
 
-      def maybe_start_next_round(tournament) do
+      def finish_match(tournament, params) do
+        tournament
+        |> handle_game_result(params)
+        |> maybe_start_rematch(params)
+        |> maybe_finish_round()
+      end
+
+      def maybe_finish_round(tournament) do
         if round_ends_by_time?(tournament) or
              Enum.any?(get_matches(tournament), &(&1.state == "playing")) do
           tournament
         else
-          start_next_round(tournament)
+          do_finish_round_and_next_step(tournament)
         end
       end
 
@@ -185,22 +192,16 @@ defmodule Codebattle.Tournament.Base do
             update_in(acc.matches[to_id(match_to_finish.id)], &%{&1 | state: "timeout"})
           end)
 
-        start_next_round(new_tournament)
+        do_finish_round_and_next_step(new_tournament)
       end
 
-      def start_next_round(tournament) do
+      def do_finish_round_and_next_step(tournament) do
         tournament
         |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
         |> calculate_round_results()
-        |> maybe_finish()
+        |> broadcast_round_finished()
+        |> maybe_finish_tournament()
         |> start_round_or_break_or_finish()
-      end
-
-      def finish_match(tournament, params) do
-        tournament
-        |> handle_game_result(params)
-        |> maybe_start_rematch(params)
-        |> maybe_start_next_round()
       end
 
       defp maybe_start_rematch(tournament, params) do
@@ -236,9 +237,6 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp start_round_or_break_or_finish(tournament = %{state: "finished"}) do
-        # TODO: implement tournament termination in 15 mins
-        # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
-
         tournament
       end
 
@@ -278,7 +276,7 @@ defmodule Codebattle.Tournament.Base do
         |> maybe_set_task_for_round()
         |> build_matches()
         |> db_save!()
-        |> broadcast_new_round()
+        |> broadcast_round_created()
       end
 
       def create_game(tournament, ref, players) do
@@ -303,13 +301,17 @@ defmodule Codebattle.Tournament.Base do
 
       def db_save!(tournament), do: Tournament.Context.upsert!(tournament)
 
-      defp maybe_finish(tournament) do
+      defp maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
           tournament
           |> update_struct(%{state: "finished", finished_at: TimeHelper.utc_now()})
           |> set_stats()
           |> set_winner_ids()
           |> db_save!()
+          |> broadcast_tournament_finished()
+
+          # TODO: implement tournament termination in 15 mins
+          # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
         else
           tournament
         end
@@ -361,8 +363,18 @@ defmodule Codebattle.Tournament.Base do
         Codebattle.Task.get_task_by_level(tournament.level)
       end
 
-      defp broadcast_new_round(tournament) do
+      defp broadcast_round_created(tournament) do
         Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
+        tournament
+      end
+
+      defp broadcast_round_finished(tournament) do
+        Codebattle.PubSub.broadcast("tournament:round_finished", %{tournament_id: tournament.id})
+        tournament
+      end
+
+      defp broadcast_tournament_finished(tournament) do
+        Codebattle.PubSub.broadcast("tournament:finished", %{tournament_id: tournament.id})
         tournament
       end
 

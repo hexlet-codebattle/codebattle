@@ -18,10 +18,10 @@ outdated:
 	mix hex.outdated
 
 lint-js:
-	yarn lint
+	cd apps/codebattle && yarn lint
 
 lint-js-fix:
-	yarn lint --fix
+	cd apps/codebattle && yarn lint --fix
 
 start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"

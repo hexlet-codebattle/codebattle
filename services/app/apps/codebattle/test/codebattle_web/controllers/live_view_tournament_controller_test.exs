@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.TournamentControllerTest do
+defmodule CodebattleWeb.LiveViewTournamentControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
   alias Codebattle.Tournament

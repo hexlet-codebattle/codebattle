@@ -59,7 +59,7 @@ defmodule Codebattle.Game.Engine do
          game = mark_as_live(game),
          {:ok, _} <- Game.GlobalSupervisor.start_game(game),
          :ok <- maybe_fire_playing_game_side_effects(game),
-         :ok <- broadcast_active_game(game) do
+         :ok <- broadcast_game_created(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -76,7 +76,7 @@ defmodule Codebattle.Game.Engine do
            }),
          update_game!(game, %{state: "playing"}),
          :ok <- maybe_fire_playing_game_side_effects(game),
-         :ok <- broadcast_active_game(game) do
+         :ok <- broadcast_game_updated(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -352,7 +352,12 @@ defmodule Codebattle.Game.Engine do
     Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
-  defp broadcast_active_game(game) do
+  defp broadcast_game_created(game) do
+    Codebattle.PubSub.broadcast("game:created", %{game: game})
+    :ok
+  end
+
+  defp broadcast_game_updated(game) do
     Codebattle.PubSub.broadcast("game:updated", %{game: game})
     :ok
   end

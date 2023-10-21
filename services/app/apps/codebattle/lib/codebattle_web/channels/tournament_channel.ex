@@ -135,6 +135,16 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{matches: matches}}, socket}
   end
 
+  def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
+    tournament_id = socket.assigns.tournament_id
+
+    Enum.each(player_ids, fn player_id ->
+      Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
+    end)
+
+    {:reply, {:ok, %{}}, socket}
+  end
+
   def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
     push(socket, "tournament:update", %{
       tournament: payload.tournament

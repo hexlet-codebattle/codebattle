@@ -122,17 +122,19 @@ defmodule CodebattleWeb.Router do
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)
 
-    resources("/tournaments", TournamentController, only: [:index, :show, :edit]) do
-      get("/live", TournamentController, :live, as: :live)
-    end
-
-    resources("/users", UserController, only: [:new])
-
-    resources("/react_tournaments", ReactTournamentController, only: [:index, :show])
+    resources("/tournaments", TournamentController, only: [:index, :show])
 
     scope "/tournaments" do
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
+      get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
     end
+
+    # only for dev-admin liveView experiments
+    resources("/live_view_tournaments", LiveViewTournamentController,
+      only: [:index, :show, :edit]
+    )
+
+    resources("/users", UserController, only: [:new])
 
     resources("/feedback", FeedbackController, only: [:index])
 
