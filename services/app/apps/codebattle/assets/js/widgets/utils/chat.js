@@ -2,9 +2,8 @@ import Gon from 'gon';
 
 import messageTypes from '../config/messageTypes';
 import rooms from '../config/rooms';
-// import { store } from '../App';  Dependency cycle
 
-const currentUser = Gon.getAsset('current_user');
+const currentUserId = Gon.getAsset('current_user').id;
 
 export const isGeneralRoom = room => room.name === rooms.general.name;
 
@@ -20,14 +19,14 @@ export const isMessageForCurrentPrivateRoom = (room, message) => (
 
 export const isMessageForCurrentUser = message => (
   message.meta?.type === messageTypes.private
-  && (message.userId === currentUser.id || message.meta.targetUserId === currentUser.id)
+  && (message.userId === currentUserId || message.meta.targetUserId === currentUserId)
 );
 
 export const isMessageForEveryone = message => !message.meta || message.meta.type === messageTypes.general;
 
 const isProperPrivateRoomActive = (message, room) => (
-  (room.targetUserId === message.meta.targetUserId && message.userId === currentUser.id)
-  || (room.targetUserId === message.userId && message.meta.targetUserId === currentUser.id)
+  (room.targetUserId === message.meta.targetUserId && message.userId === currentUserId)
+  || (room.targetUserId === message.userId && message.meta.targetUserId === currentUserId)
 );
 
 export const shouldShowMessage = (message, room) => {

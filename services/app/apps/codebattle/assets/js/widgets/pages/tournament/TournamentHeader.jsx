@@ -241,7 +241,7 @@ function TournamentHeader({
             </div>
           )}
         </div>
-        <div className="d-flex small text-nowrap text-muted mt-1 cb-grid-divider">
+        <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider">
           <div title={type} className="d-flex align-items-center">
             Mode:
             <span className="ml-2">
@@ -265,7 +265,7 @@ function TournamentHeader({
                   </span>
                 </div>
                 <CopyButton
-                  className="btn btn-secondary rounded-right"
+                  className="btn btn-sm btn-secondary rounded-right"
                   value={accessToken}
                   disabled={!isLive}
                 />

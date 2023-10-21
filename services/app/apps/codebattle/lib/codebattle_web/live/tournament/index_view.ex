@@ -39,7 +39,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
               <th>level</th>
               <th>state</th>
               <th>starts_at</th>
-              <th>players</th>
               <th>actions</th>
             </tr>
           </thead>
@@ -54,9 +53,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
                 <td class="align-middle text-nowrap"><%= tournament.state %></td>
                 <td class="align-middle text-nowrap">
                   <%= format_datetime(tournament.starts_at, @user_timezone) %>
-                </td>
-                <td class="align-middle text-nowrap">
-                  <%= tournament.players_count %>
                 </td>
                 <td class="align-middle text-nowrap">
                   <%= link("Show",

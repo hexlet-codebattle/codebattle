@@ -12,7 +12,8 @@ import * as selectors from '../../selectors';
 
 import CustomMatchesPanel from './CustomMatchesPanel';
 import IndividualMatches from './IndividualMatches';
-import Players from './Participants';
+import MatchConfirmationModal from './MatchConfirmationModal';
+import Players from './PlayersPanel';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
@@ -184,6 +185,11 @@ function Tournament() {
 
   return (
     <>
+      <MatchConfirmationModal
+        players={tournament.players}
+        matches={tournament.matches}
+        currentUserId={currentUserId}
+      />
       <div className="container-fluid mb-2">
         <TournamentHeader
           id={tournament.id}
@@ -198,7 +204,7 @@ function Tournament() {
           accessToken={tournament.accessToken}
           name={tournament.name}
           players={tournament.players}
-          playersCount={playersCount}
+          playersCount={tournament.playersCount}
           playersLimit={tournament.playersLimit}
           breakState={tournament.breakState}
           creatorId={tournament.creatorId}
@@ -222,6 +228,7 @@ function Tournament() {
           </div>
           <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
             <Players
+              playersCount={tournament.playersCount}
               players={tournament.players}
               canBan={
                 isAdmin

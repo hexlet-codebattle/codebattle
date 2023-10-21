@@ -28,6 +28,11 @@ const maxPlayersPerRoundType = {
 };
 
 const roundTypesValues = Object.values(RoundTypes);
+const maxRoundsCount = roundTypesValues.length;
+
+const getRoundCounts = playersCount => (
+  roundTypesValues.filter(type => maxPlayersPerRoundType[type] / 2 < playersCount).length
+);
 
 const getTitleByRoundType = (type, playersCount) => {
   switch (type) {
@@ -87,33 +92,21 @@ const getLinkParams = (match, currentUserId) => {
   }
 };
 
-const getRange = (count, min, max) => (
-  count - min === count - max
-    ? [count - min]
-    : [count - max, count - min]
+const getMatchesByRound = (matches, round) => (
+  Object.values(matches).filter(match => match.round === round)
 );
-
-const getMatchesByRound = (matches, type, playersCount) => {
-  const maxPlayers = maxPlayersPerRoundType[type];
-  const minPlayers = maxPlayers / 2 + 1;
-
-  const result = Object.values(matches).slice(
-    ...getRange(playersCount, minPlayers, maxPlayers),
-  );
-
-  return result;
-};
 
 const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy text-warning' : '');
 
 function Round({
- matches, players, playersCount, type, currentUserId,
+ matches, players, playersCount, type, round, currentUserId,
 }) {
+  console.log(type, round);
   const showRound = playersCount > maxPlayersPerRoundType[type] / 2;
 
   const matchesPerRound = useMemo(
-    () => (showRound ? getMatchesByRound(matches, type, playersCount) : []),
-    [matches, type, playersCount, showRound],
+    () => (showRound ? getMatchesByRound(matches, round) : []),
+    [matches, round, showRound],
   );
 
   if (!showRound) {
@@ -172,15 +165,18 @@ function IndividualMatches({
   playersCount = 0,
   currentUserId,
 }) {
+  const roundsCount = useMemo(() => getRoundCounts(playersCount), [playersCount]);
+
   return (
     <>
       <div className="overflow-auto mt-2">
         <div className="bracket">
-          {roundTypesValues.map(type => (
+          {roundTypesValues.map((type, index) => (
             <Round
               matches={matches}
               players={players}
               playersCount={playersCount}
+              round={roundsCount - maxRoundsCount + index}
               type={type}
               currentUserId={currentUserId}
             />
@@ -190,5 +186,7 @@ function IndividualMatches({
     </>
   );
 }
+
+// 7 | [0 - 6] | 6 - 7 + 1
 
 export default memo(IndividualMatches);

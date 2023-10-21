@@ -267,10 +267,7 @@
           <div>
             <p class="text-nowrap text-white mb-0 mr-4">
               ©
-              <a
-                class="text-white"
-                href="https://hexlet.io/?promo_name=main&promo_position=body&promo_type=link"
-              >
+              <a class="text-white" href="https://hexlet.io/">
                 Hexlet ltd
               </a>
               , 2023
@@ -280,7 +277,7 @@
             <p>
               <%= link("Current version: #{app_short_version()}",
                 to: github_commit_link(),
-                class: "btn btn-link p-0 text-white"
+                class: "btn-link p-0 text-white"
               ) %>
             </p>
             <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>

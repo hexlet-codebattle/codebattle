@@ -11,11 +11,10 @@ import { kickFromTournament } from '../../middlewares/Tournament';
 import { currentUserIsAdminSelector } from '../../selectors';
 
 import JoinButton from './JoinButton';
-import Players from './Participants';
+import Players from './PlayersPanel';
 
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {
-      console.log(match);
       const [gameResultPlayer1, gameResultPlayer2] = match.playerResults.map(
         p => p.result,
       );
@@ -36,7 +35,6 @@ const getLinkParams = (match, currentUserId) => {
   const isWinner = match.winnerId === currentUserId;
   const isParticipant = match.playerIds.some(id => id === currentUserId);
 
-  console.log(match);
   switch (true) {
     case match.state === 'waiting' && isParticipant:
       return ['Wait', 'bg-warning'];
@@ -90,7 +88,6 @@ function TeamMatches({
         <div className="row px-3 pt-2">
           {[teams[0], teams[1]].map(team => (
             <div key={`team-players-${team.id}`} className="col">
-              {console.log(team)}
               <div className="d-flex align-items-center ml-2">
                 <JoinButton
                   isShow={state === TournamentStates.waitingParticipants}
@@ -100,7 +97,6 @@ function TeamMatches({
                 />
               </div>
               <Players
-                state={state}
                 players={omitBy(players, p => p.teamId !== team.id)}
                 canBan={
                   isAdmin && state === TournamentStates.waitingParticipants
@@ -112,7 +108,7 @@ function TeamMatches({
         </div>
       </div>
       {rounds.map(round => (
-        <div className="col-12 mt-3 py-2 bg-white shadow-sm rounded">
+        <div key={`round-${round}`} className="col-12 mt-3 py-2 bg-white shadow-sm border rounded-lg">
           <div className="row mb-3">
             <div className="col-5">
               <h3 className="font-weight-light mb-0">{`Round ${round}`}</h3>
@@ -134,7 +130,8 @@ function TeamMatches({
 
             return (
               <div
-                className={`d-flex row justify-content-between align-items-center overflow-auto py-2 ${bgClass}`}
+                key={`match-${match.id}-round-${round}`}
+                className={`d-flex row justify-content-between align-items-center overflow-auto border-top py-2 ${bgClass}`}
               >
                 <div className="ml-2">
                   <UserInfo user={players[firstPlayerId]} hideOnlineIndicator />

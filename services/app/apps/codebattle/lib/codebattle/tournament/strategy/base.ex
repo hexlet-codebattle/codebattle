@@ -30,6 +30,7 @@ defmodule Codebattle.Tournament.Base do
         update_in(tournament.players, fn players ->
           Map.put(players, to_id(player.id), Tournament.Player.new!(player))
         end)
+        |> Map.put(:players_count, players_count(tournament))
       end
 
       def add_players(tournament, %{users: users}) do
@@ -95,9 +96,12 @@ defmodule Codebattle.Tournament.Base do
             players: %{},
             meta: default_meta(),
             matches: %{},
+            break_state: "off",
             players_count: 0,
             current_round: 0,
+            last_round_ended_at: nil,
             last_round_started_at: nil,
+            winner_ids: [],
             starts_at: DateTime.utc_now(:second) |> DateTime.add(5 * 60, :second),
             state: "waiting_participants"
           })
