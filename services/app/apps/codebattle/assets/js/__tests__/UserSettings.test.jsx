@@ -14,6 +14,8 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
 }));
 
+jest.mock('calcite-react/Slider', () => 'input');
+
 jest.mock('axios');
 
 const reducer = combineReducers(reducers);

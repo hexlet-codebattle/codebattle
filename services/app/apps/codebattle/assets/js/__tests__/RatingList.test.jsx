@@ -35,8 +35,8 @@ test('test rendering RatingList', async () => {
     preloadedState: {},
   });
 
-  const { getByText } = render(<Provider store={store}><RatingList /></Provider>);
+  const { findByText } = render(<Provider store={store}><RatingList /></Provider>);
 
-  expect(getByText(/Users rating/)).toBeInTheDocument();
-  expect(getByText(/Total entries: 0/)).toBeInTheDocument();
+  expect(await findByText(/Users rating/)).toBeInTheDocument();
+  expect(await findByText(/Total entries: 0/)).toBeInTheDocument();
 });
