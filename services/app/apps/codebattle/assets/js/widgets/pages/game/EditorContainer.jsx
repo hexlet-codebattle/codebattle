@@ -47,6 +47,7 @@ function EditorContainer({
   const dispatch = useDispatch();
   const players = useSelector(selectors.gamePlayersSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
+  const { tournamentId } = useSelector(selectors.gameStatusSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
@@ -61,6 +62,8 @@ function EditorContainer({
   const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
+
+  const isTournamentGame = !!tournamentId;
 
   const context = { userId: id, type };
 
@@ -146,6 +149,7 @@ function EditorContainer({
     checkResult,
     currentEditorLangSlug,
     ...userSettings,
+    showGiveUpBtn: !isTournamentGame && !inTestingRoom,
     giveUpBtnStatus: isActiveGame
       ? userSettings.giveUpBtnStatus
       : EditorBtnStatuses.disabled,

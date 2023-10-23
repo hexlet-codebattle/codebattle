@@ -14,7 +14,8 @@ import useMachineStateSelector from '../../utils/useMachineStateSelector';
 function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-success btn-check btn-sm rounded-right',
+    type: 'button',
+    className: 'btn btn-outline-success btn-check rounded-lg',
     title: 'Check solution&#013;Ctrl + Enter',
     onClick,
     'data-toggle': 'tooltip',
@@ -51,7 +52,8 @@ function CheckResultButton({ onClick, status }) {
 function GiveUpButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-danger btn-sm rounded-left',
+    type: 'button',
+    className: 'btn btn-outline-danger rounded-lg',
     title: 'Give Up',
     onClick,
     'data-toggle': 'tooltip',
@@ -82,7 +84,8 @@ function GiveUpButton({ onClick, status }) {
 function ResetButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-secondary btn-sm mx-1',
+    type: 'button',
+    className: 'btn btn-outline-secondary rounded-lg mx-1',
     title: 'Reset editor',
     onClick,
     'data-toggle': 'tooltip',
@@ -116,6 +119,7 @@ function GameActionButtons({
   checkBtnStatus,
   resetBtnStatus,
   giveUpBtnStatus,
+  showGiveUpBtn,
 }) {
   const dispatch = useDispatch();
 
@@ -158,8 +162,8 @@ function GameActionButtons({
   );
 
   return (
-    <div className="py-2 mr-2" role="toolbar">
-      <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
+    <div className="btn-group btn-group-sm py-2 mr-2" role="group" aria-label="Game actions">
+      {showGiveUpBtn && <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />}
       <ResetButton onClick={handleReset} status={resetBtnStatus} />
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
       {renderModal()}
