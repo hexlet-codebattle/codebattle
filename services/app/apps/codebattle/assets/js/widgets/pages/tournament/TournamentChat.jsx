@@ -38,7 +38,7 @@ function TournamentChat() {
 
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
-      <div className="my-2 mt-lg-0 sticky-top bg-white rounded-lg">
+      <div className="my-2 mt-lg-0 sticky-top bg-white rounded-lg position-relative">
         <div className="rounded-top shadow-sm" style={{ height: '350px' }}>
           <div
             className="overflow-auto h-100 text-break"

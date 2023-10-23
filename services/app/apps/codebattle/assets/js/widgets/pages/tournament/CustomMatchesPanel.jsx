@@ -27,16 +27,18 @@ const navTabsClassName = cn(
   'cb-overflow-x-auto cb-overflow-y-hidden',
 );
 
-const tabLinkClassName = active => cn(
-    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
-    { active },
+const tabLinkClassName = (active, isCurrent) => cn(
+    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
+      active,
+      'text-primary': isCurrent,
+    },
   );
 
 const tabContentClassName = active => cn('tab-pane fade', {
     'd-flex flex-column show active': active,
   });
 
-function PlayersFilterPanel({ option, setOption }) {
+const PlayersFilterPanel = memo(({ option, setOption }) => {
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const allPlayers = useSelector(tournamentSelector).players;
 
@@ -85,7 +87,7 @@ function PlayersFilterPanel({ option, setOption }) {
       />
     </div>
   );
-}
+});
 
 const mapStagesToTitle = {
   0: 'one',
@@ -163,6 +165,7 @@ const PlayersList = memo(
 
 function CustomMatchesPanel({
   roundsLimit = 1,
+  currentRound = 0,
   matches,
   players,
   currentUserId,
@@ -172,7 +175,7 @@ function CustomMatchesPanel({
 }) {
   const dispatch = useDispatch();
   const [searchedUser, setSearchedUser] = useState();
-  const [openedStage, setOpenedStage] = useState(0);
+  const [openedStage, setOpenedStage] = useState(currentRound);
 
   const playersList = useMemo(
     () => Object.values(players)
@@ -237,7 +240,7 @@ function CustomMatchesPanel({
           <div className={navTabsClassName} id="nav-matches-tab" role="tablist">
             {stages.map(stage => (
               <a
-                className={tabLinkClassName(openedStage === stage)}
+                className={tabLinkClassName(openedStage === stage, stage === currentRound)}
                 id={`stage-${mapStagesToTitle[stage]}`}
                 key={`stage-tab-${mapStagesToTitle[stage]}`}
                 data-toggle="tab"

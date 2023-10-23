@@ -288,7 +288,6 @@ export const activeEditorReady = machine => {
 
   const handleStartsCheck = data => {
     const { userId } = camelizeKeys(data);
-    console.log(userId, data);
     machine.send('check_solution', { userId });
   };
 

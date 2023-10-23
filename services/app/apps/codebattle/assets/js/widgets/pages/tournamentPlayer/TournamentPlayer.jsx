@@ -62,7 +62,7 @@ function TournamentPlayer({
   const spectatorStatus = getSpectatorStatus(tournament.state, task, gameId);
   // TODO: if there is not active_match set html, LOADING
 
-  const context = { user_id: playerId, type: EditorUserTypes.player };
+  const context = { userId: playerId, type: EditorUserTypes.player };
   const spectatorService = useInterpret(spectatorMachine, {
     context,
     devTools: true,

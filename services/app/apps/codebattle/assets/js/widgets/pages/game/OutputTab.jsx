@@ -25,7 +25,7 @@ const OutputTab = ({ sideOutput, large = false }) => {
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
   const message = getMessage(status);
-  const percent = (100 * successCount) / assertsCount;
+  const percent = Math.ceil((100 * successCount) / assertsCount);
 
   const assertsStatusMessage = i18n.t(
     'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',

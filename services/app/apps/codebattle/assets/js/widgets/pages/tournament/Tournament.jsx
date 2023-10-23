@@ -59,6 +59,7 @@ function Matches({
           tournamentId={tournament.id}
           currentUserId={currentUserId}
           roundsLimit={tournament.meta?.roundsLimit}
+          currentRound={tournament.currentRound}
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
         />
