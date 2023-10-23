@@ -200,7 +200,7 @@ function GameRoomWidget({
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
   const useChat = useSelector(gameUseChatSelector);
-  const mute = useSelector(state => state.userSettings.mute);
+  const mute = useSelector(state => state.user.settings.mute);
   const machines = useGameRoomMachine({
     setTaskModalShowing,
     setResultModalShowing,

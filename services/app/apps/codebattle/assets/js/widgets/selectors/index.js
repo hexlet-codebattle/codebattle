@@ -337,7 +337,7 @@ export const gameTypeSelector = state => state.game.gameStatus.type;
 
 export const gameModeSelector = state => state.game.gameStatus.mode;
 
-export const userSettingsSelector = state => state.userSettings;
+export const userSettingsSelector = state => state.user.settings;
 
 export const gameUseChatSelector = state => state.game.useChat;
 

@@ -411,7 +411,7 @@ const mapStateToProps = state => {
   return {
     gameId,
     gameMode,
-    mute: state.userSettings.mute,
+    mute: state.user.settings.mute,
   };
 };
 

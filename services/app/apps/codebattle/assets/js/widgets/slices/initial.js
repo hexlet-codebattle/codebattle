@@ -326,6 +326,10 @@ const initial = {
       dateFrom: null,
       withBots: false,
     },
+    settings: {
+      ...currentUserParams,
+      mute: JSON.parse(localStorage.getItem('ui_mute_sound')),
+    },
   },
 };
 

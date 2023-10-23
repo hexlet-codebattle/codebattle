@@ -19,27 +19,24 @@ const TextInput = ({ label, ...props }) => {
 
   return (
     <div className="form-group mb-3">
-      <div>
-        <label className="h6" htmlFor={name}>
-          {label}
-        </label>
-        <input {...field} {...props} className="form-control" />
-      </div>
-      {meta.touched && meta.error ? (
-        <span className="error text-danger">{meta.error}</span>
-      ) : (
-        <span className="error text-danger" />
+      <label className="h6" htmlFor={name}>{label}</label>
+      <input {...field} {...props} className="form-control" />
+      {meta.touched && meta.error && (
+        <div className="invalid-feedback">{meta.error}</div>
       )}
     </div>
   );
 };
 
 const UserSettingsForm = ({ onSubmit, settings }) => {
-  const renderLanguages = langs => langs.map(([slug, lang]) => (
-    <option key={slug} value={slug}>
-      {capitalize(lang)}
-    </option>
-  ));
+  const initialValues = {
+    name: settings.name,
+    sound_settings: {
+      type: settings.sound_settings.type,
+      level: settings.sound_settings.level,
+    },
+    lang: settings.lang || '',
+  };
 
   const player = createPlayer();
 
@@ -58,143 +55,141 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
   });
 
   return (
-    <>
-      {settings && (
-        <Formik
-          initialValues={{
-            name: settings.name,
-            sound_settings: {
-              type: settings.sound_settings.type,
-              level: settings.sound_settings.level,
-            },
-            lang: settings.lang || '',
-          }}
-          enableReinitialize
-          validationSchema={validationSchema}
-          onSubmit={onSubmit}
-        >
-          {({
-            handleChange, dirty, isSubmitting, values,
-          }) => (
-            <Form>
-              <div className="container">
-                <div className="row form-group mb-3">
-                  <div className="col-lg-3">
-                    <TextInput
-                      className="col-5"
-                      data-testid="nameInput"
-                      label="Your name"
-                      id="name"
-                      name="name"
-                      type="text"
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                  <div className="col-lg-3">
-                    <div className="h6">Your weapon</div>
-                    <Field
-                      as="select"
-                      data-testid="langSelect"
-                      aria-label="Programming language select"
-                      name="lang"
-                      className="custom-select"
-                    >
-                      {renderLanguages(playingLanguages)}
-                    </Field>
-                  </div>
-                </div>
-              </div>
-
-              <div id="my-radio-group" className="h6 ml-2">
-                Select sound type
-              </div>
-              <div
-                role="group"
-                aria-labelledby="my-radio-group"
-                className="ml-3 mb-3"
-              >
-                <div>
-                  <Field
-                    type="radio"
-                    name="sound_settings.type"
-                    value="dendy"
-                    className="mr-2"
-                    onClick={() => playSound('dendy', values.sound_settings.level * 0.1)}
-                  />
-                  Dendy
-                </div>
-                <div>
-                  <Field
-                    type="radio"
-                    name="sound_settings.type"
-                    value="cs"
-                    className="mr-2"
-                    onClick={() => playSound('cs', values.sound_settings.level * 0.1)}
-                  />
-                  CS
-                </div>
-                <div>
-                  <Field
-                    type="radio"
-                    name="sound_settings.type"
-                    value="standart"
-                    className="mr-2"
-                    onClick={() => playSound('standart', values.sound_settings.level * 0.1)}
-                  />
-                  Standart
-                </div>
-                <div>
-                  <Field
-                    type="radio"
-                    name="sound_settings.type"
-                    value="silent"
-                    className="mr-2"
-                  />
-                  Silent
-                </div>
-              </div>
-
-              <div className="h6 ml-2">Select sound level</div>
-              <div className="ml-2 mb-3 d-flex align-items-center">
-                <Icon.VolumeX />
-                <Field
-                  component={Slider}
-                  type="range"
-                  min={0}
-                  max={10}
-                  name="sound_settings.level"
-                  disabled={values.sound_settings.type === 'silent'}
-                  onInput={e => {
-                    handleChange(e);
-                    playSound(values.sound_settings.type, e.target.value * 0.1);
-                  }}
-                  className="ml-3 mr-3 form-control"
+    <Formik
+      initialValues={initialValues}
+      initialTouched={{ name: true }}
+      enableReinitialize
+      validationSchema={validationSchema}
+      onSubmit={onSubmit}
+    >
+      {({
+        handleChange, dirty, isValid, isSubmitting, values,
+      }) => (
+        <Form>
+          <div className="container">
+            <div className="row form-group mb-3">
+              <div className="col-lg-3">
+                <TextInput
+                  className="col-5"
+                  data-testid="nameInput"
+                  label="Your name"
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your name"
                 />
-                <Icon.Volume2 />
               </div>
-
-              <div className="d-flex justify-content-center">
-                <button
-                  disabled={!dirty}
-                  aria-label="SubmitForm"
-                  style={{ width: '120px' }}
-                  type="submit"
-                  className="btn py-1 btn-primary rounded-lg"
+              <div className="col-lg-3">
+                <div className="h6">Your weapon</div>
+                <Field
+                  as="select"
+                  data-testid="langSelect"
+                  aria-label="Programming language select"
+                  name="lang"
+                  className="custom-select"
                 >
-                  {!isSubmitting ? (
-                    'Save'
-                  ) : (
-                    <div className="spinner-border spinner-border-sm" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  )}
-                </button>
+                  {playingLanguages.map(([slug, lang]) => (
+                    <option key={slug} value={slug}>
+                      {capitalize(lang)}
+                    </option>
+                  ))}
+                </Field>
               </div>
-            </Form>
-          )}
-        </Formik>
+            </div>
+          </div>
+
+          <div id="my-radio-group" className="h6 ml-2">
+            Select sound type
+          </div>
+          <div
+            role="group"
+            aria-labelledby="my-radio-group"
+            className="ml-3 mb-3"
+          >
+            <div className="form-check">
+              <Field
+                id="radioDendy"
+                type="radio"
+                name="sound_settings.type"
+                value="dendy"
+                className="form-check-input"
+                onClick={() => playSound('dendy', values.sound_settings.level * 0.1)}
+              />
+              <label className="form-check-label" htmlFor="radioDendy">Dendy</label>
+            </div>
+            <div className="form-check">
+              <Field
+                id="radioCS"
+                type="radio"
+                name="sound_settings.type"
+                value="cs"
+                className="form-check-input"
+                onClick={() => playSound('cs', values.sound_settings.level * 0.1)}
+              />
+              <label className="form-check-label" htmlFor="radioCS">CS</label>
+            </div>
+            <div className="form-check">
+              <Field
+                id="radioStandart"
+                type="radio"
+                name="sound_settings.type"
+                value="standart"
+                className="form-check-input"
+                onClick={() => playSound('standart', values.sound_settings.level * 0.1)}
+              />
+              <label className="form-check-label" htmlFor="radioStandart">Standart</label>
+            </div>
+            <div className="form-check">
+              <Field
+                id="radioSilent"
+                type="radio"
+                name="sound_settings.type"
+                value="silent"
+                className="form-check-input"
+              />
+              <label className="form-check-label" htmlFor="radioSilent">Silent</label>
+            </div>
+          </div>
+
+          <div className="h6 ml-2">Select sound level</div>
+          <div className="ml-2 mb-3 d-flex align-items-center">
+            <Icon.VolumeX />
+            <Field
+              component={Slider}
+              type="range"
+              min={0}
+              max={10}
+              name="sound_settings.level"
+              disabled={values.sound_settings.type === 'silent'}
+              onInput={e => {
+                handleChange(e);
+                playSound(values.sound_settings.type, e.target.value * 0.1);
+              }}
+              className="ml-3 mr-3 form-control"
+            />
+            <Icon.Volume2 />
+          </div>
+
+          <div className="d-flex justify-content-center">
+            <button
+              disabled={!dirty || !isValid}
+              aria-label="SubmitForm"
+              style={{ width: '120px' }}
+              type="submit"
+              className="btn py-1 btn-primary rounded-lg"
+            >
+              {isSubmitting ? (
+                <div className="spinner-border spinner-border-sm" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+              ) : (
+                'Save'
+              )}
+            </button>
+          </div>
+        </Form>
       )}
-    </>
+    </Formik>
   );
 };
 

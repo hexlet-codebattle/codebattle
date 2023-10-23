@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
@@ -16,6 +16,10 @@ import game from '../widgets/machines/game';
 import task from '../widgets/machines/task';
 import RootContainer from '../widgets/pages/GameRoomWidget';
 import reducers from '../widgets/slices';
+
+jest.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: 'img',
+}));
 
 const createPlayer = params => ({
   is_admin: false,
@@ -39,6 +43,11 @@ jest.mock(
         createPlayer({ name: 'Tim Urban' }),
         createPlayer({ name: 'John Kramer' }),
       ],
+      game: {
+        state: '',
+        players: [],
+        langs: [],
+      },
     };
 
     return { getAsset: type => gonParams[type] };
@@ -47,9 +56,17 @@ jest.mock(
 );
 
 jest.mock('axios');
+
 jest.mock(
   '../widgets/pages/game/EditorContainer',
   () => function EditorContainer() {
+    return <></>;
+  },
+);
+
+jest.mock(
+  '../widgets/components/FeedbackWidget',
+  () => function FeedbackWidget() {
     return <></>;
   },
 );
@@ -61,24 +78,6 @@ jest.mock(
 );
 
 axios.get.mockResolvedValue({ data: {} });
-
-jest.mock('react-select', () => ({ options, value, onChange }) => {
-  function handleChange(event) {
-    const option = options.find(
-      opt => opt.value === event.currentTarget.value,
-    );
-    onChange(option);
-  }
-  return (
-    <select data-testid="select" value={value} onChange={handleChange}>
-      {options.map(({ label, val }) => (
-        <option key={val} value={val}>
-          {label}
-        </option>
-      ))}
-    </select>
-  );
-});
 
 jest.mock(
   'phoenix',
@@ -124,7 +123,11 @@ const players = {
 };
 
 const preloadedState = {
-  user: { currentUserId: 1, users: players },
+  user: {
+    currentUserId: 1,
+    users: players,
+    settings: { mute: null },
+  },
   game: {
     gameStatus: {
       state: GameStateCodes.playing,
@@ -180,13 +183,18 @@ const preloadedState = {
 game.states.room.initial = 'active';
 editor.initial = 'idle';
 
-test('test rendering preview game component', () => {
+const setup = jsx => ({
+  user: userEvent.setup(),
+  ...render(jsx),
+});
+
+test('test rendering preview game component', async () => {
   const store = configureStore({
     reducer,
     preloadedState,
   });
 
-  render(
+  const { findByText } = setup(
     <Provider store={store}>
       <RootContainer
         pageName="game"
@@ -197,17 +205,16 @@ test('test rendering preview game component', () => {
     </Provider>,
   );
 
-  expect(screen.getByText(/Examples:/)).toBeInTheDocument();
+  expect(await findByText(/Examples:/)).toBeInTheDocument();
 });
 
 test('test game guide', async () => {
-  const user = userEvent.setup();
   const store = configureStore({
     reducer,
     preloadedState,
   });
 
-  const { getByRole } = render(
+  const { findByRole, user } = setup(
     <Provider store={store}>
       <RootContainer
         pageName="game"
@@ -218,11 +225,11 @@ test('test game guide', async () => {
     </Provider>,
   );
 
-  const showGuideButton = getByRole('button', { name: 'Show guide' });
+  const showGuideButton = await findByRole('button', { name: 'Show guide' });
 
   await user.click(showGuideButton);
 
-  const closeGuideButton = getByRole('button', { name: 'Close' });
+  const closeGuideButton = await findByRole('button', { name: 'Close' });
   expect(closeGuideButton).toBeInTheDocument();
 
   await user.click(closeGuideButton);
@@ -231,13 +238,12 @@ test('test game guide', async () => {
 });
 
 test('test a bot invite button', async () => {
-  const user = userEvent.setup();
   const store = configureStore({
     reducer,
     preloadedState,
   });
 
-  const { getByLabelText, getByTitle } = render(
+  const { findByLabelText, findByTitle, user } = setup(
     <Provider store={store}>
       <RootContainer
         pageName="game"
@@ -248,8 +254,8 @@ test('test a bot invite button', async () => {
     </Provider>,
   );
 
-  const target = getByTitle('Message (Tim Urban)');
+  const target = await findByTitle('Message (Tim Urban)');
   await user.pointer({ keys: '[MouseLeft]', target });
 
-  expect(getByLabelText('Send an invite')).toHaveAttribute('aria-disabled', 'true');
+  expect(await findByLabelText('Send an invite')).toHaveAttribute('aria-disabled', 'true');
 });

@@ -37,6 +37,13 @@ const userSlice = createSlice({
         users, pageInfo, dateFrom, withBots: (withBots === 'true'),
       };
     },
+    updateUserSettings: (state, { payload }) => {
+      Object.assign(state.settings, payload);
+    },
+    toggleMuteSound: state => {
+      localStorage.setItem('ui_mute_sound', !state.settings.mute);
+      state.settings.mute = !state.settings.mute;
+    },
   },
 });
 

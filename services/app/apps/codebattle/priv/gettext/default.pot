@@ -381,3 +381,9 @@ msgstr "Oops, Your feedback was not delivered!"
 
 msgid "random task (%{total} available)"
 msgstr "random task (%{total} available)"
+
+msgid "Settings changed successfully"
+msgstr "Your settings has been changed"
+
+msgid "Something went wrong"
+msgstr "Oops, something has gone wrong"
