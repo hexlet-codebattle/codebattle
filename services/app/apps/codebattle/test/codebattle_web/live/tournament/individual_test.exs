@@ -13,7 +13,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
     conn2 = put_session(conn, :user_id, user2.id)
     conn3 = put_session(conn, :user_id, user3.id)
 
-    {:ok, view, _html} = live(conn1, Routes.tournament_path(conn1, :index))
+    {:ok, view, _html} = live(conn1, Routes.live_view_tournament_path(conn1, :index))
 
     {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
       render_submit(view, :create, %{
@@ -29,7 +29,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
 
     tournament = Codebattle.Tournament.Context.get!(tournament_id)
 
-    {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
+    {:ok, view1, _html} = live(conn1, Routes.live_view_tournament_path(conn, :show, tournament.id))
 
     render_click(view1, :join)
 
@@ -44,7 +44,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
 
     render_click(view1, :join)
 
-    {:ok, view2, _html} = live(conn2, Routes.tournament_path(conn, :show, tournament.id))
+    {:ok, view2, _html} = live(conn2, Routes.live_view_tournament_path(conn, :show, tournament.id))
 
     render_click(view2, :join)
     render_click(view2, :join)
@@ -64,7 +64,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
     assert Enum.count(tournament.players) == 2
     assert Enum.count(tournament.matches) == 1
 
-    {:ok, view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
+    {:ok, view3, _html} = live(conn3, Routes.live_view_tournament_path(conn, :show, tournament.id))
     render_click(view3, :join)
 
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
