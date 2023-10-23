@@ -100,7 +100,7 @@ function SubMenu({
   const { result = assert.value } = assert;
 
   return (
-    <div className="list-group-item">
+    <div className="list-group-item border-left-0 border-right-0">
       <div id={`heading${uniqIndex}`}>
         <div>
           <div>
@@ -114,7 +114,9 @@ function SubMenu({
               overlay={<Tooltip id={assert.id}>Execution Time</Tooltip>}
               placement="top"
             >
-              <div className="badge badge-secondary mr-3">{executionTime}</div>
+              {executionTime !== undefined && Number(executionTime) !== 0 ? (
+                <div className="badge badge-secondary mr-3">{executionTime}</div>
+              ) : (<></>)}
             </OverlayTrigger>
             {assert.output && (
               <button
@@ -134,9 +136,15 @@ function SubMenu({
           </div>
         </div>
         <pre className="my-1">
-          <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(result)}`}</span>
-          <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(assert.expected)}`}</span>
-          <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(assert.arguments)}`}</span>
+          <span className="d-block">
+            {`${i18n.t('Receive:')} ${result === undefined ? '???' : JSON.stringify(result)}`}
+          </span>
+          <span className="d-block">
+            {`${i18n.t('Expected:')} ${assert.expected === undefined ? '???' : JSON.stringify(assert.expected)}`}
+          </span>
+          <span className="d-block">
+            {`${i18n.t('Arguments:')} ${assert.arguments === undefined ? '???' : JSON.stringify(assert.arguments)}`}
+          </span>
         </pre>
         {hasOutput && (
           <>

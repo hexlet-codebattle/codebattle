@@ -16,15 +16,15 @@ const getDuration = (time, timeoutSeconds) => {
   return timeLeft;
 };
 
-function CountdownTimer({ time, timeoutSeconds }) {
+function CountdownTimer({ time, timeoutSeconds, colorized = false }) {
   const [duration, setDuration] = useState(() => getDuration(time, timeoutSeconds));
   const seconds = duration / 1000;
   const progress = getProgress(seconds, timeoutSeconds);
 
   const progressBgColor = cn('cb-timer-progress', {
-    'bg-secondary': seconds > 45,
-    'bg-warning': seconds <= 45 && seconds >= 15,
-    'bg-danger': seconds < 15,
+    'bg-secondary': colorized && seconds > 45,
+    'bg-warning': colorized && seconds <= 45 && seconds >= 15,
+    'bg-danger': colorized && seconds < 15,
   });
 
   const updateTimer = () => {

@@ -1,4 +1,5 @@
 import { networkMachineStates, replayerMachineStates, roomMachineStates } from './game';
+import { spectatorEditorMachineStates } from './spectator';
 import { taskMachineStates } from './task';
 
 const stateSelector = state => state;
@@ -8,6 +9,8 @@ export const roomStateSelector = stateSelector;
 export const taskStateSelector = stateSelector;
 
 export const editorStateSelector = stateSelector;
+
+export const spectatorStateSelector = stateSelector;
 
 export const inPreviewRoomSelector = state => state.matches({ room: roomMachineStates.preview });
 
@@ -22,6 +25,12 @@ export const inBuilderRoomSelector = state => state.matches({ room: roomMachineS
 export const inWaitingRoomSelector = state => state.matches({ room: roomMachineStates.waiting });
 
 export const openedReplayerSelector = state => state.matches({ replayer: replayerMachineStates.on });
+
+export const spectatorEditorIsIdle = state => state.matches({ editor: spectatorEditorMachineStates.idle });
+
+export const spectatorEditorIsLoading = state => state.matches({ editor: spectatorEditorMachineStates.loading });
+
+export const spectatorEditorIsChecking = state => state.matches({ editor: spectatorEditorMachineStates.checking });
 
 export const gameRoomKeySelector = () => ('game');
 

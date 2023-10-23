@@ -56,8 +56,11 @@ function Matches({
         <CustomMatchesPanel
           players={tournament.players}
           matches={tournament.matches}
+          tournamentId={tournament.id}
           currentUserId={currentUserId}
           roundsLimit={tournament.meta?.roundsLimit}
+          pageNumber={tournament.playersPageNumber}
+          pageSize={tournament.playersPageSize}
         />
       );
   }
@@ -204,7 +207,7 @@ function Tournament() {
           accessToken={tournament.accessToken}
           name={tournament.name}
           players={tournament.players}
-          playersCount={tournament.playersCount}
+          playersCount={playersCount}
           playersLimit={tournament.playersLimit}
           breakState={tournament.breakState}
           creatorId={tournament.creatorId}

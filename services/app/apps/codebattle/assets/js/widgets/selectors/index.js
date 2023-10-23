@@ -23,6 +23,8 @@ export const currentUserIsGuestSelector = state => state.user.users[state.user.c
 
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 
+export const gameIdSelector = state => state.game.gameStatus.gameId;
+
 export const gamePlayersSelector = state => state.game.players;
 
 export const firstPlayerSelector = state => find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
@@ -53,7 +55,7 @@ export const getSolution = playerId => state => {
   };
 };
 
-export const editorDataSelector = (romeCurrent, playerId) => state => {
+export const editorDataSelector = (playerId, roomCurrent) => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
   const editorTextsHistory = editorTextsHistorySelector(state);
@@ -61,11 +63,11 @@ export const editorDataSelector = (romeCurrent, playerId) => state => {
   if (!meta) {
     return null;
   }
-  const text = romeCurrent.matches({ replayer: replayerMachineStates.on })
+  const text = roomCurrent && roomCurrent.matches({ replayer: replayerMachineStates.on })
     ? editorTextsHistory[playerId]
     : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
 
-  const currentLangSlug = romeCurrent.matches({
+  const currentLangSlug = roomCurrent && roomCurrent.matches({
     replayer: replayerMachineStates.on,
   })
     ? meta.historyCurrentLangSlug
@@ -84,12 +86,12 @@ export const editorLangHistorySelector = (state, { userId }) => state.editor.lan
 
 export const firstEditorSelector = (state, roomCurrent) => {
   const playerId = firstPlayerSelector(state).id;
-  return editorDataSelector(roomCurrent, playerId)(state);
+  return editorDataSelector(playerId, roomCurrent)(state);
 };
 
 export const secondEditorSelector = (state, roomCurrent) => {
   const playerId = secondPlayerSelector(state).id;
-  return editorDataSelector(roomCurrent, playerId)(state);
+  return editorDataSelector(playerId, roomCurrent)(state);
 };
 
 export const leftEditorSelector = roomCurrent => createDraftSafeSelector(
@@ -245,23 +247,24 @@ export const editorLangsSelector = state => state.editor.langs;
 
 export const langInputSelector = state => state.editor.langInput;
 
-export const editorHeightSelector = (roomCurrent, userId) => state => {
-  const editorData = editorDataSelector(roomCurrent, userId)(state);
+export const editorHeightSelector = (roomCurrent, playerId) => state => {
+  const editorData = editorDataSelector(playerId, roomCurrent)(state);
   return get(editorData, 'editorHeight', defaultEditorHeight);
 };
 
-export const executionOutputSelector = (roomCurrent, userId) => state => (roomCurrent.matches({ replayer: replayerMachineStates.on })
-  ? state.executionOutput.historyResults[userId]
-  : state.executionOutput.results[userId]);
+export const executionOutputSelector = (playerId, roomCurrent) => state => (
+  roomCurrent && roomCurrent.matches({ replayer: replayerMachineStates.on })
+  ? state.executionOutput.historyResults[playerId]
+  : state.executionOutput.results[playerId]);
 
 export const firstExecutionOutputSelector = roomCurrent => state => {
   const playerId = firstPlayerSelector(state).id;
-  return executionOutputSelector(roomCurrent, playerId)(state);
+  return executionOutputSelector(playerId, roomCurrent)(state);
 };
 
 export const secondExecutionOutputSelector = roomCurrent => state => {
   const playerId = secondPlayerSelector(state).id;
-  return executionOutputSelector(roomCurrent, playerId)(state);
+  return executionOutputSelector(playerId, roomCurrent)(state);
 };
 
 export const leftExecutionOutputSelector = roomCurrent => state => {

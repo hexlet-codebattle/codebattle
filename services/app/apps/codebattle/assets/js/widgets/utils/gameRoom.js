@@ -1,6 +1,7 @@
 import userTypes from '../config/userTypes';
 
 export const getGameStatus = ({
+  id,
   state,
   startsAt,
   type,
@@ -11,6 +12,7 @@ export const getGameStatus = ({
   rematchInitiatorId,
   score,
 }) => ({
+  gameId: id,
   state,
   type,
   mode,

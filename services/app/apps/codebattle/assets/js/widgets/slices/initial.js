@@ -22,17 +22,31 @@ import {
   setPlayerToSliceState,
 } from '../utils/gameRoom';
 
+// ******************************
+//
+// Stage 1: get all assets from Gon
+//
+// ******************************
+
 const activeGamesData = Gon.getAsset('active_games');
 const completedGamesData = Gon.getAsset('completed_games');
 const currentUserParams = Gon.getAsset('current_user');
 const gameData = Gon.getAsset('game');
 const isRecord = Gon.getAsset('is_record') || false;
-const playerIdData = Gon.getAsset('player_id');
+const playerId = Gon.getAsset('player_id');
 const taskData = Gon.getAsset('task');
 const tournamentData = Gon.getAsset('tournament');
-const tournamentIdData = Gon.getAsset('tournament_id');
+const tournamentId = Gon.getAsset('tournament_id');
 const tournamentsData = Gon.getAsset('tournaments');
 const usersRatingData = Gon.getAsset('users_rating');
+const langsData = Gon.getAsset('langs');
+
+// ******************************
+//
+// Stage 2: Converting data from elixir naming to javascript
+// Example: { "game_params": { "game_id": 10 } } -> { gameParams: { gameId: 10 } }
+//
+// ******************************
 
 const gameParams = gameData ? camelizeKeys(gameData) : undefined;
 const taskParams = taskData ? camelizeKeys(taskData) : undefined;
@@ -45,7 +59,10 @@ const completedGamesParams = completedGamesData
 const activeGamesParams = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
 const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
+const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserId = currentUserParams ? currentUserParams.id : null;
+
+// TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
       [currentUserParams.id]: {
@@ -55,7 +72,13 @@ const initialUsers = currentUserParams
     }
   : {};
 
-const defaultGameStatusState = {
+// ******************************
+//
+// Stage 3: Initial data for redux slices
+//
+// ******************************
+
+export const defaultGameStatusState = {
   state: GameStateCodes.initial,
   msg: '',
   type: null,
@@ -84,7 +107,7 @@ const initialPlayers = gameParams
   ? getGamePlayers(gameParams.players).reduce(setPlayerToSliceState, {})
   : {};
 
-const initialLangs = gameParams ? gameParams.langs : [];
+const initialLangs = gameParams ? gameParams.langs : langsParams;
 
 const setPlayersMetaToSliseState = (state, { userId, langSlug }) => ({
   ...state,
@@ -246,13 +269,17 @@ const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
 const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
 
 const defaultTournamentPlayerParams = {
-  isLive: false,
-  tournamentId: tournamentIdData,
-  playerId: playerIdData,
-  activeGameId: null,
-  task: null,
-  testResults: null,
+  tournamentId,
+  playerId,
+  gameId: null,
+  channel: { online: false },
 };
+
+// ******************************
+//
+// Stage 4: Combine all slices data
+//
+// ******************************
 
 const initial = {
   game: {

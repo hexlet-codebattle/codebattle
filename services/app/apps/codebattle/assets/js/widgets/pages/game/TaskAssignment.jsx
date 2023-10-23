@@ -44,7 +44,13 @@ function ShowGuideButton() {
   );
 }
 
-function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
+function TaskAssignment({
+  task,
+  taskLanguage,
+  handleSetLanguage,
+  hideGuide = false,
+  hideContribution = false,
+}) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
     task,
     taskLanguage,
@@ -69,7 +75,8 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
               avaibleLanguages={avaibleLanguages}
               displayLanguage={displayLanguage}
             />
-            <ShowGuideButton />
+
+            {!hideGuide && <ShowGuideButton />}
           </div>
         </div>
         <div className="d-flex align-items-stretch flex-column user-select-none">
@@ -77,7 +84,7 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
             <TaskDescriptionMarkdown description={description} />
           </div>
         </div>
-        {task.origin === 'github' && (
+        {task.origin === 'github' && !hideContribution && (
           <>
             <ContributorsList name={task.name} />
             <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">

@@ -8,6 +8,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   def join("tournament_player:" <> tournament_player_ids, payload, socket) do
     current_user = socket.assigns.current_user
     [tournament_id, player_id] = String.split(tournament_player_ids, "_")
+    tournament_id = String.to_integer(tournament_id)
     player_id = String.to_integer(player_id)
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),

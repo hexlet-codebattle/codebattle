@@ -4,5 +4,8 @@ export const getCreateTrainingGameUrl = () => '/games/training';
 export const getLobbyUrl = params => (params ? `/?${params}` : '/#lobby');
 export const getUserProfileUrl = userId => `/users/${userId}`;
 export const getTournamentUrl = (tournamentId, params) => (
-  `tournament/${tournamentId}?${Object.keys(params).map(key => `${key}=${params[key]}`).join('&')}`
+  `/tournaments/${tournamentId}?${Object.keys(params).map(key => `${key}=${params[key]}`).join('&')}`
+);
+export const getTournamentSpectatorUrl = (tournamentId, playerId) => (
+  `/tournaments/${tournamentId}/player/${playerId}`
 );

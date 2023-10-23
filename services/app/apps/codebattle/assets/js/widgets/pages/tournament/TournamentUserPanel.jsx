@@ -6,10 +6,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import Collapse from 'react-bootstrap/Collapse';
 
+import { getTournamentSpectatorUrl } from '@/utils/urlBuilders';
+
 import UsersMatchList from './UsersMatchList';
 
 function TournamentUserPanel({
   matches,
+  tournamentId,
+  isLive = false,
   currentUserId,
   userId,
   name,
@@ -37,7 +41,7 @@ function TournamentUserPanel({
     'px-2 py-1',
   );
 
-  const handleClick = useCallback(event => {
+  const handleOpenMatches = useCallback(event => {
     if (disabled) {
       return;
     }
@@ -50,7 +54,7 @@ function TournamentUserPanel({
     <div className={panelClassName}>
       <div
         className={titleClassName}
-        onClick={handleClick}
+        onClick={handleOpenMatches}
         aria-hidden
         aria-expanded={open}
         aria-controls={`collapse-matches-${userId}`}
@@ -96,14 +100,26 @@ function TournamentUserPanel({
             </div>
           </div>
         </div>
-        <button
-          type="button"
-          className="btn"
-          onClick={handleClick}
-          disabled={disabled}
-        >
-          <FontAwesomeIcon className={disabled ? 'text-muted' : ''} icon={open ? 'chevron-up' : 'chevron-down'} />
-        </button>
+        <div className="d-flex">
+          {isLive && (
+            <a
+              title="Spectator"
+              className="btn btn-sm btn-secondary rounded-lg mr-2"
+              href={getTournamentSpectatorUrl(tournamentId, userId)}
+            >
+              <FontAwesomeIcon className="mr-2" icon="user-secret" />
+              Spectator
+            </a>
+          )}
+          <button
+            type="button"
+            className="btn"
+            onClick={handleOpenMatches}
+            disabled={disabled}
+          >
+            <FontAwesomeIcon className={disabled ? 'text-muted' : ''} icon={open ? 'chevron-up' : 'chevron-down'} />
+          </button>
+        </div>
       </div>
       <Collapse in={open}>
         <div id="collapse-matches-one" className="border-top">

@@ -49,8 +49,10 @@
     </script>
     <title>CodebattlePlayerLive</title>
   </head>
-  <body>
-    <div id="tournament-player-root"></div>
+  <body class="position-relative h-100">
+    <div class="d-flex flex-column min-vh-100">
+      <main id="tournament-player-root"></main>
+    </div>
     <script>
       window.csrf_token = "<%= csrf_token() %>"
     </script>

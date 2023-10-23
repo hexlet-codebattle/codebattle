@@ -217,13 +217,16 @@ function TournamentHeader({
                   accessType={accessType}
                   tournamentId={tournamentId}
                   canStart={
-                    state === TournamentStates.waitingParticipants
+                    isLive
+                    && state === TournamentStates.waitingParticipants
                     && playersCount > 0
                   }
                   canRestart={
-                    state === TournamentStates.active
-                    || state === TournamentStates.finished
-                    || state === TournamentStates.cancelled
+                    isLive && (
+                      state === TournamentStates.active
+                      || state === TournamentStates.finished
+                      || state === TournamentStates.cancelled
+                    )
                   }
                   disabled={!isOnline}
                 />

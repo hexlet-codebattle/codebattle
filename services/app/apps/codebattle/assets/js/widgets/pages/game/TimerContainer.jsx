@@ -58,7 +58,7 @@ function TimerContainer({
   }
 
   if (timeoutSeconds && time) {
-    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
+    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} colorized />;
   }
 
   if (!time) {

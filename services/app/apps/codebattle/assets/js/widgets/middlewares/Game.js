@@ -28,10 +28,14 @@ import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
-const game = Gon.getAsset('game');
 const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
-const channel = !isRecord && gameId ? socket.channel(channelName) : null;
+let channel = !isRecord && gameId ? socket.channel(channelName) : null;
+
+export const updateGameChannel = newGameId => {
+  const newChannelName = `game:${newGameId}`;
+  channel = !isRecord && newGameId ? socket.channel(newChannelName) : null;
+};
 
 const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
   dispatch(actionCreator(camelizeKeys(data)))
@@ -133,6 +137,8 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
     } = data;
 
     const gameStatus = getGameStatus(data);
+
+    machine.send('LOAD_GAME', { payload: gameStatus });
 
     updateStore(dispatch)({
       firstPlayer,
@@ -238,6 +244,12 @@ export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
 export const soundNotification = notification();
 
 export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
+  if (!id) {
+    return () => {};
+  }
+
+  const oldChannel = channel;
+
   const handleNewCursorPosition = debounce(data => {
     const { userId, offset } = camelizeKeys(data);
     if (id === userId) {
@@ -253,11 +265,9 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
   }, 200);
 
   const refs = [
-    channel.on('editor:cursor_position', handleNewCursorPosition),
-    channel.on('editor:cursor_selection', handleNewCursorSelection),
+    oldChannel.on('editor:cursor_position', handleNewCursorPosition),
+    oldChannel.on('editor:cursor_selection', handleNewCursorSelection),
   ];
-
-  const oldChannel = channel;
 
   const clearCursorListeners = () => {
     if (oldChannel) {
@@ -278,6 +288,7 @@ export const activeEditorReady = machine => {
 
   const handleStartsCheck = data => {
     const { userId } = camelizeKeys(data);
+    console.log(userId, data);
     machine.send('check_solution', { userId });
   };
 
@@ -294,6 +305,8 @@ export const activeEditorReady = machine => {
   const oldChannel = channel;
 
   const clearEditorListeners = () => {
+    machine.send('unload_editor');
+
     if (oldChannel) {
       oldChannel.off('user:start_check', refs[0]);
       oldChannel.off('user:check_complete', refs[1]);
@@ -346,6 +359,7 @@ export const activeGameReady = machine => dispatch => {
       players: [firstPlayer, secondPlayer],
       task,
     } = camelizeKeys(data);
+
     const players = [
       { ...firstPlayer, type: userTypes.firstPlayer },
       { ...secondPlayer, type: userTypes.secondPlayer },
@@ -795,12 +809,7 @@ export const connectToGame = machine => dispatch => {
     return fetchPlaybook(machine, initStoredGame)(dispatch);
   }
 
-  machine.send('JOIN', { payload: game });
-
-  setTimeout(() => {
-    const payload = { state: game.state };
-    machine.send('LOAD_GAME', { payload });
-  }, 2000);
+  machine.send('JOIN');
 
   return activeGameReady(machine)(dispatch);
 };

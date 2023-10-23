@@ -101,7 +101,6 @@ const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa f
 function Round({
  matches, players, playersCount, type, round, currentUserId,
 }) {
-  console.log(type, round);
   const showRound = playersCount > maxPlayersPerRoundType[type] / 2;
 
   const matchesPerRound = useMemo(

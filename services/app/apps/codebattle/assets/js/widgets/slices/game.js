@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 
 import { setPlayerToSliceState } from '../utils/gameRoom';
 
-import initial from './initial';
+import initial, { defaultGameStatusState } from './initial';
 
 const initialState = initial.game;
 
@@ -11,6 +11,9 @@ const game = createSlice({
   name: 'game',
   initialState,
   reducers: {
+    clearGameStatus: state => {
+      state.gameStatus = defaultGameStatusState;
+    },
     updateGameStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },

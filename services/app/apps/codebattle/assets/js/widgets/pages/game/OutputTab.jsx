@@ -1,5 +1,7 @@
 import React from 'react';
 
+import cn from 'classnames';
+
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
 
@@ -18,7 +20,7 @@ const getMessage = status => {
   }
 };
 
-const OutputTab = ({ sideOutput }) => {
+const OutputTab = ({ sideOutput, large = false }) => {
   const { successCount, assertsCount, status } = sideOutput;
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
@@ -29,12 +31,27 @@ const OutputTab = ({ sideOutput }) => {
     'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
     { successCount, assertsCount, percent },
   );
+
+  if (large) {
+    const panelClassName = cn({
+      'text-danger': status === 'error',
+      'text-primary': status === 'failure',
+      'text-success': status === 'ok',
+    });
+
+    return (
+      <div title="Asserts status" className={panelClassName}>
+        <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
+      </div>
+    );
+  }
+
   return (
     <>
       {isShowMessage && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
       <span className={`p-2 bg-${statusColor}`}>{message}</span>
     </>
-);
+  );
 };
 
 export default OutputTab;

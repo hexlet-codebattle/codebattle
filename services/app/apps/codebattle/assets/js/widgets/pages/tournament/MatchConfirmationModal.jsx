@@ -16,7 +16,7 @@ const getOpponent = (match, playerId) => (match.playerIds[0] === playerId ? matc
 const openNextMatch = nextMatch => {
   window.location.replace(makeGameUrl(nextMatch.gameId));
 };
-const begin = 105 * 1000;
+const begin = 15 * 1000;
 const getTimerProgress = remaining => {
   if (remaining <= 0) {
     return 0;

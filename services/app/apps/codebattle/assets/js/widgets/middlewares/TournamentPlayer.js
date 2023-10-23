@@ -1,9 +1,7 @@
-import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 
 import socket from '../../socket';
-import TournamentStates from '../config/tournament';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
@@ -13,16 +11,20 @@ const channel = socket.channel(channelName);
 
 const initTournamentPlayerChannel = dispatch => {
   const onJoinFailure = () => {
-    window.location.reload();
+    dispatch(actions.updateTournamentPlayerChannelState(false));
   };
 
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
 
-    dispatch(actions.setTournamentPlayerData({
-      ...data.tournament,
+    dispatch(actions.setTournamentData({
+      id: data.tournamentId,
+      state: data.tournamentState,
+      breakState: data.breakState,
       tournamentChannel: { online: true },
     }));
+
+    dispatch(actions.setActiveGameId(data));
   };
 
   channel
@@ -38,24 +40,35 @@ const initTournamentPlayerChannel = dispatch => {
 export const connectToTournamentPlayer = () => dispatch => {
   initTournamentPlayerChannel(dispatch);
 
-  const handleRoundFinished = response => {
-    const data = camelizeKeys(response);
+  const handleRoundFinished = () => {
+    // const data = camelizeKeys(response);
 
     // TODO (tournaments): Implement redirect to roune results, results will be in a payload
-    dispatch(actions.setNextRound(data.tournamentId));
+    // dispatch(actions.setNextRound(data.tournamentId));
   };
 
   const handleGameCreated = response => {
     const data = camelizeKeys(response);
 
-    // TODO (tournaments): Implement redirect to next game screen
-    dispatch(actions.setNextGame(data.tournamentId));
+    dispatch(actions.clearActiveGameId());
+    dispatch(actions.clearGameStatus());
+
+    setTimeout(params => {
+      dispatch(actions.setActiveGameId(params));
+    }, 1000, data);
   };
 
-  channel.on('tournament:round_finished', handleRoundFinished);
-  channel.on('game:created', handleGameCreated);
+  const refs = [
+    channel.on('tournament:round_finished', handleRoundFinished),
+    channel.on('game:created', handleGameCreated),
+  ];
 
-  return channel;
+  const clearTournamentPlayerChannel = () => {
+    channel.off('tournament:round_finished', refs[0]);
+    channel.off('game:created', refs[1]);
+  };
+
+  return clearTournamentPlayerChannel;
 };
 
 export default connectToTournamentPlayer;

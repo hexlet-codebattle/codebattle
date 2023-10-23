@@ -14,7 +14,7 @@ import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
 import { addCursorListeners } from '../middlewares/Game';
-import { gameModeSelector } from '../selectors/index';
+import { gameIdSelector, gameModeSelector } from '../selectors/index';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
 
@@ -22,6 +22,8 @@ import Loading from './Loading';
 
 class Editor extends PureComponent {
   static propTypes = {
+    gameId: PropTypes.number,
+    userId: PropTypes.number,
     value: PropTypes.string,
     editable: PropTypes.bool,
     syntax: PropTypes.string,
@@ -31,6 +33,8 @@ class Editor extends PureComponent {
   };
 
   static defaultProps = {
+    gameId: null,
+    userId: null,
     value: '',
     editable: false,
     onChange: null,
@@ -126,7 +130,28 @@ class Editor extends PureComponent {
       mode,
       editable,
       loading = false,
+      userId,
+      gameId,
+      gameMode,
     } = this.props;
+
+    const isBuilder = gameMode === GameRoomModes.builder;
+    const isHistory = gameMode === GameRoomModes.history;
+
+    if (!gameId || prevProps.gameId !== gameId) {
+      this.clearCursorListeners();
+      this.clearCursorListeners = () => {};
+    }
+
+    if (!isBuilder && !isHistory && gameId && prevProps.gameId !== gameId) {
+      const clearCursorListeners = addCursorListeners(
+        userId,
+        this.updateRemoteCursorPosition,
+        this.updateRemoteCursorSelection,
+      );
+
+      this.clearCursorListeners = clearCursorListeners;
+    }
 
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
@@ -282,7 +307,12 @@ class Editor extends PureComponent {
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, gameMode, userId } = this.props;
+    const {
+      editable,
+      gameMode,
+      userId,
+      gameId,
+    } = this.props;
     const isTournament = gameMode === GameRoomModes.tournament;
     const isBuilder = gameMode === GameRoomModes.builder;
     const isHistory = gameMode === GameRoomModes.history;
@@ -290,7 +320,7 @@ class Editor extends PureComponent {
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
     this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
 
-    if (!isBuilder && !isHistory) {
+    if (!isBuilder && !isHistory && gameId) {
       const clearCursorListeners = addCursorListeners(
         userId,
         this.updateRemoteCursorPosition,
@@ -376,8 +406,10 @@ class Editor extends PureComponent {
 }
 
 const mapStateToProps = state => {
+  const gameId = gameIdSelector(state);
   const gameMode = gameModeSelector(state);
   return {
+    gameId,
     gameMode,
     mute: state.userSettings.mute,
   };

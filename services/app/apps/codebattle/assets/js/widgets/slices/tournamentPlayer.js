@@ -8,13 +8,15 @@ const tournament = createSlice({
   name: 'tournamentPlayer',
   initialState,
   reducers: {
-    setTournamentPlayerData: (state, { payload }) => ({
-      ...payload,
-    }),
+    setActiveGameId: (state, { payload }) => {
+      state.gameId = payload.gameId;
+    },
+    clearActiveGameId: state => {
+      state.gameId = null;
+    },
     updateTournamentPlayerChannelState: (state, { payload }) => {
       state.channel.online = payload;
     },
-
   },
 });
 

@@ -14,7 +14,12 @@ import rollbar from '@/lib/rollbar';
 import machines from '@/machines';
 import reducers from '@/slices';
 
-const { game: mainMachine, editor: editorMachine, task: taskMachine } = machines;
+const {
+  game: mainMachine,
+  editor: editorMachine,
+  task: taskMachine,
+  spectator: spectatorMachine,
+} = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
 const gameUIPersistWhitelist = [
@@ -165,7 +170,9 @@ export const TournamentPlayerPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <TournamentPlayer />
+        <TournamentPlayer
+          spectatorMachine={spectatorMachine}
+        />
       </Suspense>
     </PersistGate>
   </Provider>

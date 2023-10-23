@@ -3,6 +3,7 @@ defmodule CodebattleWeb.Tournament.PlayerController do
 
   import PhoenixGon.Controller
   alias Codebattle.Tournament
+  alias Runner.Languages
 
   def show(conn, params) do
     tournament = Tournament.Context.get!(params["id"])
@@ -15,8 +16,9 @@ defmodule CodebattleWeb.Tournament.PlayerController do
       url: Routes.tournament_player_url(conn, :show, tournament.id, params["player_id"])
     })
     |> put_gon(
-      tournament_id: params["id"],
-      player_id: params["player_id"]
+      tournament_id: String.to_integer(params["id"]),
+      player_id: String.to_integer(params["player_id"]),
+      langs: Languages.get_langs()
     )
     |> render("player.html", layout: false)
   end

@@ -105,6 +105,7 @@ const SearchedUserPanel = memo(({
   matchList,
   mapPlayerIdToLocalRating,
   currentUserId,
+  tournamentId,
 }) => {
   if (!searchedUser) {
     return <></>;
@@ -116,6 +117,7 @@ const SearchedUserPanel = memo(({
     <TournamentUserPanel
       key={`search-user-panel-${searchedUser.id}`}
       matches={userMatches}
+      tournamentId={tournamentId}
       currentUserId={currentUserId}
       userId={searchedUser.id}
       name={searchedUser.name}
@@ -134,6 +136,7 @@ const PlayersList = memo(
     matchList,
     currentUserId,
     searchedUserId,
+    tournamentId,
   }) => players.map(player => {
       if (player.id === searchedUserId) {
         return <></>;
@@ -145,6 +148,7 @@ const PlayersList = memo(
         <TournamentUserPanel
           key={`user-panel-${player.id}`}
           matches={userMatches}
+          tournamentId={tournamentId}
           currentUserId={currentUserId}
           userId={player.id}
           name={player.name}
@@ -162,13 +166,13 @@ function CustomMatchesPanel({
   matches,
   players,
   currentUserId,
+  tournamentId,
+  pageNumber,
+  pageSize,
 }) {
   const dispatch = useDispatch();
   const [searchedUser, setSearchedUser] = useState();
   const [openedStage, setOpenedStage] = useState(0);
-
-  const pageNumber = useSelector(state => state.tournament.playersPageNumber);
-  const pageSize = useSelector(state => state.tournament.playersPageSize);
 
   const playersList = useMemo(
     () => Object.values(players)
@@ -185,6 +189,7 @@ function CustomMatchesPanel({
   );
   const mapPlayerIdToLocalRating = useMemo(
     () => playersList
+        .slice()
         .sort((a, b) => b.score - a.score)
         .reduce((acc, p, index) => ({ ...acc, [p.id]: index + 1 }), {}),
     [playersList],
@@ -216,6 +221,7 @@ function CustomMatchesPanel({
             matchList={matchList}
             mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
             currentUserId={currentUserId}
+            tournamentId={tournamentId}
           />
           <PlayersList
             players={playersList}
@@ -223,6 +229,7 @@ function CustomMatchesPanel({
             matchList={matchList}
             currentUserId={currentUserId}
             searchedUserId={searchedUser?.id}
+            tournamentId={tournamentId}
           />
         </>
       ) : (
@@ -270,6 +277,7 @@ function CustomMatchesPanel({
                     matchList={stageMatches}
                     mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
                     currentUserId={currentUserId}
+                    tournamentId={tournamentId}
                   />
                   <PlayersList
                     key={`stage-${stage}-user-list`}
@@ -278,6 +286,7 @@ function CustomMatchesPanel({
                     matchList={stageMatches}
                     currentUserId={currentUserId}
                     searchedUserId={searchedUser?.id}
+                    tournamentId={tournamentId}
                   />
                 </div>
               );

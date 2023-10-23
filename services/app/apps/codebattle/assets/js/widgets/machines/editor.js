@@ -82,6 +82,7 @@ const editor = {
           actions: ['soundStartChecking'],
           cond: 'isUserEvent',
         },
+        unload_editor: 'loading',
       },
     },
     checking: {
@@ -98,6 +99,7 @@ const editor = {
           actions: ['soundFinishedChecking', 'openCheckResultOutput'],
           cond: 'isUserEvent',
         },
+        unload_editor: 'loading',
       },
     },
     baned: {},
