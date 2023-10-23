@@ -3,7 +3,7 @@ import Gon from 'gon';
 import messageTypes from '../config/messageTypes';
 import rooms from '../config/rooms';
 
-const currentUserId = Gon.getAsset('current_user').id;
+const currentUserId = Gon.getAsset('current_user')?.id;
 
 export const isGeneralRoom = room => room.name === rooms.general.name;
 

@@ -18,7 +18,7 @@ defmodule Codebattle.Game.ContextTest do
         Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
       assert_received %Codebattle.PubSub.Message{
-        event: "game:updated",
+        event: "game:created",
         topic: "games",
         payload: _
       }
