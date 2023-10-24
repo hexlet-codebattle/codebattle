@@ -198,11 +198,14 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         <% end %>
         <%= submit("Update",
           phx_disable_with: "Updating...",
-          class: "btn btn-primary my-4"
+          class: "btn btn-primary rounded-lg my-4"
         ) %>
-        <button class="btn btn-warning ml-2">
-          <a href={Routes.tournament_path(@socket, :show, @tournament.id)}>Back to tournament</a>
-        </button>
+        <a
+          class="btn btn-info text-white rounded-lg ml-2"
+          href={Routes.tournament_path(@socket, :show, @tournament.id)}
+        >
+          Back to tournament
+        </a>
       </.form>
     </div>
     """

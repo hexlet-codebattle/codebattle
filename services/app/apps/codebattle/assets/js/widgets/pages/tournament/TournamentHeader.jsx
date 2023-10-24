@@ -158,7 +158,7 @@ function TournamentHeader({
 
   return (
     <>
-      <div className="col bg-white shadow-sm rounded-lg p-2 overflow-auto">
+      <div className="col bg-white shadow-sm rounded-lg p-2">
         <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between border-bottom">
           <div className="d-flex align-items-center pb-2">
             <h2
@@ -244,7 +244,7 @@ function TournamentHeader({
             </div>
           )}
         </div>
-        <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider">
+        <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
           <div title={type} className="d-flex align-items-center">
             Mode:
             <span className="ml-2">

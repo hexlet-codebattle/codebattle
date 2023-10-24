@@ -62,7 +62,7 @@ const TournamentMainControlButtons = ({
         <Dropdown.Item
           disabled={disabled}
           key="edit"
-          href={`/tournaments/${tournamentId}/edit`}
+          href={`/live_view_tournaments/${tournamentId}/edit`}
         >
           <FontAwesomeIcon className="mr-2" icon="edit" />
           Edit

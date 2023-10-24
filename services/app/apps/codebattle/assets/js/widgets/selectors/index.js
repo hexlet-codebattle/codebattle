@@ -289,6 +289,10 @@ export const rightExecutionOutputSelector = roomCurrent => state => {
 
 export const tournamentSelector = state => state.tournament;
 
+export const tournamentPlayersSelector = state => state.tournament.players;
+
+export const tournamentMatchesSelector = state => state.tournament.matches;
+
 export const usersInfoSelector = state => state.usersInfo;
 
 export const chatUsersSelector = state => state.chat.users;
