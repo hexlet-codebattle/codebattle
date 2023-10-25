@@ -32,6 +32,10 @@ defmodule CodebattleWeb.Router do
     plug(CodebattleWeb.Plugs.Locale)
   end
 
+  pipeline :empty_layout do
+    plug(:put_layout, {CodebattleWeb.LayoutView, :empty})
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:fetch_session)
@@ -113,6 +117,7 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     # Use the default browser stack
     pipe_through(:browser)
+
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
     get("/feedback/rss.xml", RootController, :feedback)
@@ -133,6 +138,11 @@ defmodule CodebattleWeb.Router do
     resources("/live_view_tournaments", LiveViewTournamentController,
       only: [:index, :show, :edit]
     )
+
+    scope "/tournaments" do
+      pipe_through(:empty_layout)
+      get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
+    end
 
     resources("/users", UserController, only: [:new])
 

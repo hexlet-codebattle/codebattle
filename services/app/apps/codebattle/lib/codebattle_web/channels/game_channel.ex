@@ -11,9 +11,17 @@ defmodule CodebattleWeb.GameChannel do
       score = Context.fetch_score_by_game_id(game_id)
 
       if game.tournament_id do
-        Codebattle.PubSub.subscribe(
-          "tournament_player:#{game.tournament_id}_#{socket.assigns.current_user.id}"
-        )
+        player_ids = Enum.map(game.players, & &1.id)
+        user_id = socket.assigns.current_user.id
+
+        follow_id =
+          if user_id in player_ids do
+            user_id
+          else
+            List.first(player_ids)
+          end
+
+        Codebattle.PubSub.subscribe("tournament_player:#{game.tournament_id}_#{follow_id}")
       end
 
       Codebattle.PubSub.subscribe("game:#{game.id}")

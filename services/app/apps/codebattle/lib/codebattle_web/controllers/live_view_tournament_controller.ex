@@ -61,4 +61,27 @@ defmodule CodebattleWeb.LiveViewTournamentController do
       |> render("404.html", %{msg: gettext("Tournament not found")})
     end
   end
+
+  def show_timer(conn, params) do
+    current_user = conn.assigns[:current_user]
+    tournament = Tournament.Context.get!(params["id"])
+
+    if Tournament.Helpers.can_access?(tournament, current_user, params) do
+      conn
+      |> put_meta_tags(%{
+        description:
+          "Tournament: #{String.slice(tournament.name, 0, 100)}, type: #{tournament.type}, starts_at: #{tournament.starts_at}",
+        url: Routes.tournament_timer_url(conn, :show_timer, tournament.id)
+      })
+      |> live_render(CodebattleWeb.Live.Tournament.TimerView,
+        session: %{"current_user" => current_user, "tournament" => tournament},
+        layout: {CodebattleWeb.LayoutView, "empty.html"}
+      )
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Tournament not found")})
+    end
+  end
 end
