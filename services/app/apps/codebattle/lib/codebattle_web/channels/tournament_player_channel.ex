@@ -49,12 +49,6 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
     matches =
       Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
 
-    IO.inspect(%{
-      state: payload.state,
-      break_state: payload.break_state,
-      matches: matches
-    })
-
     push(socket, "tournament:round_finished", %{
       state: payload.state,
       break_state: payload.break_state,
