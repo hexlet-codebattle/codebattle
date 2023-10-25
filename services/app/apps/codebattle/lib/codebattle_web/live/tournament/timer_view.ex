@@ -30,14 +30,14 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   def render(assigns) do
     ~H"""
     <div style="display:flex;justify-content:center;align-items:center;height:100vh;font-size:22vw;">
-    <div >
-      <%= render_remaining_time(
-        @tournament.last_round_started_at,
-        @tournament.match_timeout_seconds,
-        @user_timezone,
-        @now
-      ) %>
-    </div>
+      <div>
+        <%= render_remaining_time(
+          @tournament.last_round_started_at,
+          @tournament.match_timeout_seconds,
+          @user_timezone,
+          @now
+        ) %>
+      </div>
     </div>
     """
   end
