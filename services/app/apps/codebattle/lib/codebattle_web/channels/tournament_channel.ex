@@ -2,6 +2,8 @@ defmodule CodebattleWeb.TournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
+  require Logger
+
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
@@ -81,7 +83,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:restart", _, socket) do
     tournament_id = socket.assigns.tournament_id
-    tournament = Tournament.Server.get_tournament(tournament_id)
+    tournament = Tournament.Context.get!(tournament_id)
 
     Tournament.Context.restart(tournament)
 
@@ -128,6 +130,17 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:start_round", _, socket) do
+    tournament_id = socket.assigns.tournament_id
+    tournament = Tournament.Server.get_tournament(tournament_id)
+
+    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+      Tournament.Context.send_event(tournament_id, :stop_round_break, %{})
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
     tournament_id = socket.assigns.tournament_id
     matches = Tournament.Server.get_matches(tournament_id, [id])
@@ -152,6 +165,11 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament: payload.tournament
     })
 
+    {:noreply, socket}
+  end
+
+  def handle_info(message, socket) do
+    Logger.warning("Unexpected message: " <> inspect(message))
     {:noreply, socket}
   end
 

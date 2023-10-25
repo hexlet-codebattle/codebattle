@@ -10,7 +10,6 @@ defmodule Codebattle.Tournament.Base do
   @callback build_matches(Tournament.t()) :: Tournament.t()
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
-  @callback round_ends_by_time?(Tournament.t()) :: boolean()
   @callback finish_tournament?(Tournament.t()) :: boolean()
   @callback default_meta() :: map()
 
@@ -123,6 +122,7 @@ defmodule Codebattle.Tournament.Base do
             players_count: players_count(tournament),
             state: "active"
           })
+          |> broadcast_tournament_started()
           |> start_round()
         else
           tournament
@@ -253,7 +253,7 @@ defmodule Codebattle.Tournament.Base do
            when break_duration_seconds not in [nil, 0] do
         Process.send_after(
           self(),
-          :stop_round_break,
+          {:stop_round_break, tournament.current_round},
           :timer.seconds(tournament.break_duration_seconds)
         )
 
@@ -284,6 +284,14 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def create_game(tournament, ref, players) do
+        game_timeout =
+          if round_ends_by_time?(tournament) do
+            tournament.match_timeout_seconds -
+              NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
+          else
+            tournament.match_timeout_seconds
+          end
+
         {:ok, game} =
           Game.Context.create_game(%{
             state: "playing",
@@ -291,7 +299,7 @@ defmodule Codebattle.Tournament.Base do
             ref: ref,
             level: tournament.level,
             tournament_id: tournament.id,
-            timeout_seconds: tournament.match_timeout_seconds,
+            timeout_seconds: game_timeout,
             use_chat: tournament.use_chat,
             players: players
           })
@@ -373,7 +381,12 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp broadcast_round_finished(tournament) do
-        Codebattle.PubSub.broadcast("tournament:round_finished", %{tournament_id: tournament.id})
+        Codebattle.PubSub.broadcast("tournament:round_finished", %{tournament: tournament})
+        tournament
+      end
+
+      defp broadcast_tournament_started(tournament) do
+        Codebattle.PubSub.broadcast("tournament:started", %{tournament: tournament})
         tournament
       end
 
@@ -408,6 +421,9 @@ defmodule Codebattle.Tournament.Base do
 
         round(base_winner_score + game_level_score * duration_k * test_count_k)
       end
+
+      defp round_ends_by_time?(%{type: "swiss"}), do: true
+      defp round_ends_by_time?(_), do: false
     end
   end
 end

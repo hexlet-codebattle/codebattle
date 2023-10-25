@@ -212,25 +212,6 @@ function TournamentHeader({
                   />
                 </div>
               )}
-              {canModerate && (
-                <TournamentMainControlButtons
-                  accessType={accessType}
-                  tournamentId={tournamentId}
-                  canStart={
-                    isLive
-                    && state === TournamentStates.waitingParticipants
-                    && playersCount > 0
-                  }
-                  canRestart={
-                    isLive && (
-                      state === TournamentStates.active
-                      || state === TournamentStates.finished
-                      || state === TournamentStates.cancelled
-                    )
-                  }
-                  disabled={!isOnline}
-                />
-              )}
             </div>
           ) : (
             <div className="d-flex justify-items-center pb-2">
@@ -243,6 +224,31 @@ function TournamentHeader({
               </a>
             </div>
           )}
+          <div className="d-flex justify-items-center pb-2">
+            {canModerate && (
+              <TournamentMainControlButtons
+                accessType={accessType}
+                tournamentId={tournamentId}
+                canStart={
+                  isLive
+                  && state === TournamentStates.waitingParticipants
+                  && playersCount > 0
+                }
+                canStartRound={
+                  isLive
+                  && state === TournamentStates.active
+                  && breakState === 'on'
+                }
+                canRestart={
+                  state === TournamentStates.active
+                  || state === TournamentStates.finished
+                  || state === TournamentStates.cancelled
+                }
+                disabled={!isOnline}
+              />
+            )}
+          </div>
+
         </div>
         <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
           <div title={type} className="d-flex align-items-center">
@@ -257,6 +263,13 @@ function TournamentHeader({
             className="d-flex align-items-center"
           >
             {`Players limit: ${playersLimit}`}
+          </div>
+          <span className="mx-2">|</span>
+          <div
+            title={`Is live ${isLive}`}
+            className="d-flex align-items-center"
+          >
+            {`Is live: ${isLive}`}
           </div>
           {canModerate && accessType === 'token' && (
             <>

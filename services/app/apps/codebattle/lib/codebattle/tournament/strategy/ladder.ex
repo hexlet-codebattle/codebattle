@@ -14,9 +14,6 @@ defmodule Codebattle.Tournament.Ladder do
   def calculate_round_results(t), do: t
 
   @impl Tournament.Base
-  def round_ends_by_time?(_t), do: false
-
-  @impl Tournament.Base
   def build_matches(tournament = %{current_round: 0}) do
     new_matches =
       tournament

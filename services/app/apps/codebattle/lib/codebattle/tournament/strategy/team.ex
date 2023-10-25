@@ -5,9 +5,6 @@ defmodule Codebattle.Tournament.Team do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
-  def round_ends_by_time?(_t), do: false
-
-  @impl Tournament.Base
   def complete_players(tournament) do
     team_players_count =
       tournament

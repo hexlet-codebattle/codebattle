@@ -215,7 +215,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               class: "form-control",
               value: f.params["break_duration_seconds"] || "42",
               min: "0",
-              max: "357"
+              max: "1957"
             ) %>
           </div>
         </div>

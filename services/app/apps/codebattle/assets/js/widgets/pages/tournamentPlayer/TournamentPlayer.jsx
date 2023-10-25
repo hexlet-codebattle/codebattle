@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
+import groupBy from 'lodash/groupBy';
+import reverse from 'lodash/reverse';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CountdownTimer from '@/components/CountdownTimer';
@@ -94,7 +96,7 @@ function TournamentPlayer({
       };
     }
 
-    return () => {};
+    return () => { };
   }, [gameId, spectatorService, dispatch]);
 
   const spectatorDisplayClassName = cn('d-flex flex-column', {
@@ -106,49 +108,78 @@ function TournamentPlayer({
     'flex-row-reverse': switchedWidgetsStatus,
   });
 
+  const GamePanel = () => (
+    !spectatorStatus ? (
+      <>
+        <div>
+          <TaskAssignment
+            task={task}
+            taskLanguage={taskLanguage}
+            handleSetLanguage={handleSetLanguage}
+            hideGuide
+            hideContribution
+          />
+        </div>
+        <div
+          className="card border-0 shadow-sm h-50 mt-1"
+          style={{ minHeight: '490px' }}
+        >
+          <div className={spectatorGameStatusClassName}>
+            {GameStateCodes.playing !== gameState && (
+              <h3>Game is Over</h3>
+            )}
+            {startsAt && gameState === GameStateCodes.playing && (
+              <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
+            )}
+            <OutputTab sideOutput={output} large />
+          </div>
+          <div style={{ minHeight: '400px' }} className="position-relative overflow-auto w-100 h-100">
+            <div className="position-absolute w-100">
+              <Output sideOutput={output} />
+            </div>
+          </div>
+        </div>
+      </>
+    ) : (
+      <div className="card border-0 h-100 w-100">
+        <div className="d-flex justify-content-center align-items-center w-100 h-100">
+          {spectatorStatus}
+        </div>
+      </div>
+    )
+  );
+
+  const MatchesPannel = () => {
+    const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
+    const rounds = reverse(Object.keys(groupedMatches));
+    return (
+      <div>
+        {rounds.map(round => (
+          <div key={round}>
+            <h4>
+              {`Round ${Number(round) + 1}`}
+            </h4>
+            <div>
+              {groupedMatches[round].map(match => (
+                <div key={match.id}>
+                  <span>{match.state}</span>
+                  <span>{match.winnerId}</span>
+                  {match.playerResults}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="container-fluid d-flex flex-column min-vh-100">
         <div className={spectatorDisplayClassName} style={{ flex: '1 1 auto' }}>
           <div className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1">
-            {!spectatorStatus ? (
-              <>
-                <div>
-                  <TaskAssignment
-                    task={task}
-                    taskLanguage={taskLanguage}
-                    handleSetLanguage={handleSetLanguage}
-                    hideGuide
-                    hideContribution
-                  />
-                </div>
-                <div
-                  className="card border-0 shadow-sm h-50 mt-1"
-                  style={{ minHeight: '490px' }}
-                >
-                  <div className={spectatorGameStatusClassName}>
-                    {GameStateCodes.playing !== gameState && (
-                      <h3>Game is Over</h3>
-                    )}
-                    {startsAt && gameState === GameStateCodes.playing && (
-                      <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
-                    )}
-                    <OutputTab sideOutput={output} large />
-                  </div>
-                  <div style={{ minHeight: '400px' }} className="position-relative overflow-auto w-100 h-100">
-                    <div className="position-absolute w-100">
-                      <Output sideOutput={output} />
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="card border-0 h-100 w-100">
-                <div className="d-flex justify-content-center align-items-center w-100 h-100">
-                  {spectatorStatus}
-                </div>
-              </div>
-            )}
+            {(GameStateCodes.playing === gameState) ? <GamePanel /> : <MatchesPannel />}
           </div>
           <SpectatorEditor
             switchedWidgetsStatus={switchedWidgetsStatus}

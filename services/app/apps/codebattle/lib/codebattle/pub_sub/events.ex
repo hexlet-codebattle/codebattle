@@ -35,7 +35,11 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:round_created",
-        payload: %{state: params.tournament.state, player_games: player_games}
+        payload: %{
+          break_state: params.tournament.break_state,
+          player_games: player_games,
+          state: params.tournament.state
+        }
       }
     ]
   end
@@ -45,12 +49,42 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournaments",
         event: "tournament:round_finished",
-        payload: %{tournament_id: params.tournament_id}
+        payload: %{
+          id: params.tournament.id,
+          state: params.tournament.state,
+          break_state: params.tournament.break_state
+        }
       },
       %Message{
-        topic: "tournament:#{params.tournament_id}",
+        topic: "tournament:#{params.tournament.id}",
         event: "tournament:round_finished",
-        payload: %{}
+        payload: %{
+          state: params.tournament.state,
+          break_state: params.tournament.break_state,
+          matches: Tournament.Helpers.get_current_round_matches(params.tournament)
+        }
+      }
+    ]
+  end
+
+  def get_messages("tournament:started", params) do
+    [
+      %Message{
+        topic: "tournaments",
+        event: "tournament:started",
+        payload: %{
+          id: params.tournament.id,
+          state: params.tournament.state,
+          break_state: params.tournament.break_state
+        }
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:started",
+        payload: %{
+          state: params.tournament.state,
+          break_state: params.tournament.break_state
+        }
       }
     ]
   end
@@ -60,7 +94,7 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournaments",
         event: "tournament:finished",
-        payload: %{tournament_id: params.tournament_id}
+        payload: %{id: params.tournament_id}
       },
       %Message{
         topic: "tournament:#{params.tournament_id}",

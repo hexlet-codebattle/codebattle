@@ -21,6 +21,7 @@ const initTournamentPlayerChannel = dispatch => {
       id: data.tournamentId,
       state: data.tournamentState,
       breakState: data.breakState,
+      matches: data.matches,
       tournamentChannel: { online: true },
     }));
 
@@ -40,11 +41,16 @@ const initTournamentPlayerChannel = dispatch => {
 export const connectToTournamentPlayer = () => dispatch => {
   initTournamentPlayerChannel(dispatch);
 
-  const handleRoundFinished = () => {
-    // const data = camelizeKeys(response);
+  const handleRoundFinished = response => {
+    const data = camelizeKeys(response);
 
-    // TODO (tournaments): Implement redirect to roune results, results will be in a payload
-    // dispatch(actions.setNextRound(data.tournamentId));
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
+    dispatch(actions.updateTournamentMatches(data.matches));
+  };
+
+  const handleTournamentRoundCreated = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentData(data));
   };
 
   const handleGameCreated = response => {
@@ -59,13 +65,15 @@ export const connectToTournamentPlayer = () => dispatch => {
   };
 
   const refs = [
+    channel.on('tournament:round_created', handleTournamentRoundCreated),
     channel.on('tournament:round_finished', handleRoundFinished),
     channel.on('game:created', handleGameCreated),
   ];
 
   const clearTournamentPlayerChannel = () => {
-    channel.off('tournament:round_finished', refs[0]);
-    channel.off('game:created', refs[1]);
+    channel.off('tournament:round_created', refs[0]);
+    channel.off('tournament:round_finished', refs[1]);
+    channel.off('game:created', refs[2]);
   };
 
   return clearTournamentPlayerChannel;

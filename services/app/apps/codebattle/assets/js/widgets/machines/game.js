@@ -190,9 +190,9 @@ const machine = {
               target: 'game_over',
               actions: ['soundTimeIsOver'],
             },
-            'tournament:round_created': {
+            'tournament:game:created': {
               target: 'active',
-              actions: ['soundTournamentRoundCreated'],
+              actions: ['soundTournamentGameCreated'],
             },
             check_result: {
               target: 'active',
@@ -206,7 +206,7 @@ const machine = {
               target: 'game_over',
               actions: ['soundRematchUpdateStatus'],
             },
-            'tournament:round_created': {
+            'tournament:game:created': {
               target: 'game_over',
             },
           },

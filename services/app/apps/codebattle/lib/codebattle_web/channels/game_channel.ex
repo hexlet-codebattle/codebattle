@@ -11,8 +11,9 @@ defmodule CodebattleWeb.GameChannel do
       score = Context.fetch_score_by_game_id(game_id)
 
       if game.tournament_id do
-        # TODO: use subscription for tournament_player:tournament_id_player_id topic events
-        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
+        Codebattle.PubSub.subscribe(
+          "tournament_player:#{game.tournament_id}_#{socket.assigns.current_user.id}"
+        )
       end
 
       Codebattle.PubSub.subscribe("game:#{game.id}")
@@ -154,8 +155,8 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", payload)
+  def handle_info(%{event: "game:created", payload: payload}, socket) do
+    push(socket, "tournament:game:created", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

@@ -22,8 +22,9 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
        %{
          game_id: game_id,
          tournament_id: tournament_id,
-         tournament_state: tournament.state,
-         tournament_break_state: tournament.break_state
+         state: tournament.state,
+         break_state: tournament.break_state,
+         matches: Helpers.get_matches_by_players(tournament, [player_id])
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else
       _ ->
@@ -35,8 +36,30 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_created", %{
+      state: payload.state,
+      break_state: payload.break_state
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    push(socket, "tournament:round_finished", payload)
+    matches =
+      Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
+
+    IO.inspect(%{
+      state: payload.state,
+      break_state: payload.break_state,
+      matches: matches
+    })
+
+    push(socket, "tournament:round_finished", %{
+      state: payload.state,
+      break_state: payload.break_state,
+      matches: matches
+    })
 
     {:noreply, socket}
   end

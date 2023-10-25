@@ -23,9 +23,6 @@ defmodule Codebattle.Tournament.Stairway do
   def calculate_round_results(t), do: t
 
   @impl Tournament.Base
-  def round_ends_by_time?(_t), do: false
-
-  @impl Tournament.Base
   def build_matches(tournament) do
     {player_pairs, played_pair_ids} = build_round_pairs(tournament)
 

@@ -4,6 +4,8 @@ import { camelizeKeys, decamelizeKeys } from 'humps';
 import debounce from 'lodash/debounce';
 import find from 'lodash/find';
 
+import { makeGameUrl } from '@/utils/urlBuilders';
+
 import socket from '../../socket';
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
@@ -16,7 +18,7 @@ import {
 import * as selectors from '../selectors';
 import { actions, redirectToNewGame } from '../slices';
 import {
- taskTemplatesStates, labelTaskParamsWithIds, MAX_NAME_LENGTH, MIN_NAME_LENGTH,
+  taskTemplatesStates, labelTaskParamsWithIds, MAX_NAME_LENGTH, MIN_NAME_LENGTH,
 } from '../utils/builder';
 import {
   getGamePlayers,
@@ -245,7 +247,7 @@ export const soundNotification = notification();
 
 export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
   if (!id) {
-    return () => {};
+    return () => { };
   }
 
   const oldChannel = channel;
@@ -445,10 +447,11 @@ export const activeGameReady = machine => dispatch => {
     machine.send('game:timeout', { payload });
   };
 
-  const handleTournamentRoundCreated = data => {
+  const handleTournamentGameCreated = data => {
     const payload = camelizeKeys(data);
     dispatch(actions.setTournamentsInfo(data));
-    machine.send('tournament:round_created', { payload });
+    machine.send('tournament:game:created', { payload });
+    setTimeout(() => { window.location.replace(makeGameUrl(payload.gameId)); }, 500);
   };
 
   const refs = [
@@ -461,7 +464,7 @@ export const activeGameReady = machine => dispatch => {
     channel.on('rematch:accepted', handleRematchAccepted),
     channel.on('game:user_joined', handleUserJoined),
     channel.on('game:timeout', handleGameTimeout),
-    channel.on('tournament:round_created', handleTournamentRoundCreated),
+    channel.on('tournament:game:created', handleTournamentGameCreated),
   ];
 
   const oldChannel = channel;
@@ -477,7 +480,7 @@ export const activeGameReady = machine => dispatch => {
       oldChannel.off('rematch:accepted', refs[6]);
       oldChannel.off('game:user_joined', refs[7]);
       oldChannel.off('game:timeout', refs[8]);
-      oldChannel.off('tournament:round_created', refs[9]);
+      oldChannel.off('tournament:game:created', refs[9]);
     }
   };
 
@@ -755,7 +758,7 @@ const fetchPlaybook = (machine, init) => dispatch => {
       console.error(err);
     });
 
-  return () => {};
+  return () => { };
 };
 
 export const changePlaybookSolution = method => dispatch => {
@@ -786,7 +789,7 @@ export const changePlaybookSolution = method => dispatch => {
 export const storedEditorReady = machine => {
   machine.send('load_stored_editor');
 
-  return () => {};
+  return () => { };
 };
 
 export const downloadPlaybook = machine => dispatch => {
@@ -800,7 +803,7 @@ export const openPlaybook = machine => () => {
 export const connectToTask = (gameMachine, taskMachine) => dispatch => {
   dispatch(fetchOrCreateTask(gameMachine, taskMachine));
 
-  return () => {};
+  return () => { };
 };
 
 export const connectToGame = machine => dispatch => {

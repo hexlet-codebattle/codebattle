@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
+import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
@@ -22,22 +23,22 @@ function Matches({
   currentUserId, tournament, playersCount,
 }) {
   if (tournament.type === 'team') {
-      return (
-        <TeamMatches
-          state={tournament.state}
-          players={tournament.players}
-          teams={tournament.meta.teams}
-          matches={tournament.matches}
-          currentUserId={currentUserId}
-        />
-      );
+    return (
+      <TeamMatches
+        state={tournament.state}
+        players={tournament.players}
+        teams={tournament.meta.teams}
+        matches={tournament.matches}
+        currentUserId={currentUserId}
+      />
+    );
   }
 
   if (tournament.state === TournamentStates.waitingParticipants) {
     return (
-      <>
-        <span className="d-flex justify-content-center align-items-center h-100">Tournament is not started yet</span>
-      </>
+      <div className="d-flex justify-content-center align-items-center h-100">
+        <ReactMarkdown source={tournament.description} />
+      </div>
     );
   }
 
@@ -94,15 +95,11 @@ function Tournament() {
   }, []);
 
   useEffect(() => {
-    if (tournament.isLive) {
-      const clearTournament = connectToTournament()(dispatch);
+    const clearTournament = connectToTournament()(dispatch);
 
-      return () => {
-        clearTournament();
-      };
-    }
-
-    return () => { };
+    return () => {
+      clearTournament();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

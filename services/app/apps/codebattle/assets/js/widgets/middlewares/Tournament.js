@@ -154,6 +154,10 @@ export const restartTournament = () => {
   channel.push('tournament:restart', {}).receive('error', error => console.error(error));
 };
 
+export const startRoundTournament = () => {
+  channel.push('tournament:start_round', {}).receive('error', error => console.error(error));
+};
+
 export const openUpTournament = () => {
   channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
 };

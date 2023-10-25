@@ -7,6 +7,7 @@ import {
   cancelTournament as handleCancelTournament,
   startTournament as handleStartTournament,
   restartTournament as handleRestartTournament,
+  startRoundTournament as handleStartRoundTournament,
   openUpTournament as handleOpenUpTournament,
 } from '../../middlewares/Tournament';
 
@@ -26,10 +27,22 @@ const TournamentMainControlButtons = ({
   accessType,
   tournamentId,
   canStart,
+  canStartRound,
   canRestart,
   disabled = true,
 }) => (
   <>
+    {canStartRound ? (
+      <button
+        type="button"
+        className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
+        onClick={handleStartRoundTournament}
+        disabled={!canStartRound || disabled}
+      >
+        <FontAwesomeIcon className="ml-2" icon="arrow-right" />
+        Start Round
+      </button>
+    ) : null}
     {canRestart ? (
       <button
         type="button"

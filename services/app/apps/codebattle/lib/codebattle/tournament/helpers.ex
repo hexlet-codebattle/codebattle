@@ -30,6 +30,12 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.chunk_by(& &1.round)
   end
 
+  def get_current_round_matches(tournament) do
+    tournament
+    |> get_matches
+    |> Enum.filter(&(&1.round == tournament.current_round))
+  end
+
   def get_round_matches(tournament, round) do
     tournament |> get_matches |> Enum.filter(&(&1.round == round))
   end

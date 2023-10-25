@@ -9,10 +9,10 @@ defmodule Codebattle.Tournament.Swiss do
     if rem(players_count(tournament), 2) == 0 do
       tournament
     else
-      bots = Bot.Context.build_list(21)
-      add_players(tournament, %{users: bots})
-      # bot = Bot.Context.build()
-      # add_players(tournament, %{users: [bot]})
+      # bots = Bot.Context.build_list(21)
+      # add_players(tournament, %{users: bots})
+      bot = Bot.Context.build()
+      add_players(tournament, %{users: [bot]})
     end
   end
 
@@ -21,9 +21,6 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t
-
-  @impl Tournament.Base
-  def round_ends_by_time?(_t), do: true
 
   @impl Tournament.Base
   def build_matches(tournament) do

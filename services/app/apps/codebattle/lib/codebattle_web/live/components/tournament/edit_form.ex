@@ -150,7 +150,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               :break_duration_seconds,
               class: "form-control",
               min: "0",
-              max: "357"
+              max: "1957"
             ) %>
             <%= error_tag(f, :break_duration_seconds) %>
           </div>

@@ -110,18 +110,29 @@ defmodule Codebattle.Tournament.Server do
   def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
     %{module: module} = tournament
 
-    new_tournament = apply(module, event_type, [tournament, params])
+    new_tournament =
+      if map_size(params) == 0 do
+        apply(module, event_type, [tournament])
+      else
+        apply(module, event_type, [tournament, params])
+      end
 
     broadcast_tournament_update(new_tournament)
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def handle_info(:stop_round_break, %{tournament: tournament}) do
-    new_tournament = tournament.module.stop_round_break(tournament)
+  def handle_info({:stop_round_break, round}, %{tournament: tournament}) do
+    if tournament.current_round == round and
+         in_break?(tournament) and
+         not is_finished?(tournament) do
+      new_tournament = tournament.module.stop_round_break(tournament)
 
-    broadcast_tournament_update(new_tournament)
+      broadcast_tournament_update(new_tournament)
 
-    {:noreply, %{tournament: new_tournament}}
+      {:noreply, %{tournament: new_tournament}}
+    else
+      {:noreply, %{tournament: tournament}}
+    end
   end
 
   def handle_info({:finish_round_force, round}, %{tournament: tournament}) do
