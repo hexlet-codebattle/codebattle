@@ -179,48 +179,7 @@ function TournamentPlayer({
       <div className="container-fluid d-flex flex-column min-vh-100">
         <div className={spectatorDisplayClassName} style={{ flex: '1 1 auto' }}>
           <div className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1">
-<<<<<<< Updated upstream
             {(GameStateCodes.playing === gameState) ? <GamePanel /> : <MatchesPannel />}
-=======
-            {!spectatorStatus ? (
-              <>
-                <div>
-                  <TaskAssignment
-                    task={task}
-                    taskLanguage={taskLanguage}
-                    handleSetLanguage={handleSetLanguage}
-                    hideGuide
-                    hideContribution
-                  />
-                </div>
-                <div
-                  className="card border-0 shadow-sm h-50 mt-1"
-                  style={{ minHeight: '490px' }}
-                >
-                  <div className={spectatorGameStatusClassName}>
-                    {GameStateCodes.playing !== gameState && (
-                      <h3>Game over</h3>
-                    )}
-                    {startsAt && gameState === GameStateCodes.playing && (
-                      <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
-                    )}
-                    <OutputTab sideOutput={output} large />
-                  </div>
-                  <div style={{ minHeight: '400px' }} className="position-relative overflow-auto w-100 h-100">
-                    <div className="position-absolute w-100">
-                      <Output sideOutput={output} />
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="card border-0 h-100 w-100">
-                <div className="d-flex justify-content-center align-items-center w-100 h-100">
-                  {spectatorStatus}
-                </div>
-              </div>
-            )}
->>>>>>> Stashed changes
           </div>
           <SpectatorEditor
             switchedWidgetsStatus={switchedWidgetsStatus}

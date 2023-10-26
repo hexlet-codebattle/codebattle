@@ -212,28 +212,6 @@ function TournamentHeader({
                   />
                 </div>
               )}
-<<<<<<< Updated upstream
-=======
-              {canModerate && (
-                <TournamentMainControlButtons
-                  accessType={accessType}
-                  tournamentId={tournamentId}
-                  canStart={
-                    isLive
-                    && state === TournamentStates.waitingParticipants
-                    && playersCount > 0
-                  }
-                  canRestart={
-                    isLive && (
-                      state === TournamentStates.active
-                      || state === TournamentStates.finished
-                      || state === TournamentStates.cancelled
-                    )
-                  }
-                  disabled={!isOnline || !isLive}
-                />
-              )}
->>>>>>> Stashed changes
             </div>
           ) : (
             <div className="d-flex justify-items-center pb-2">

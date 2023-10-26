@@ -47,7 +47,11 @@ function BuilderActions({ validExamples, clearSuggests }) {
   const readyTesting = validExamples;
   const readySave = useSelector(selectors.isValidTask);
 
-  const disabledTestingBtn = !readyTesting || isInvalidTaskMachineState || isTestingPrepare;
+  const disabledTestingBtn = (
+    taskState === taskStateCodes.active
+      ? false
+      : !readyTesting || isInvalidTaskMachineState || isTestingPrepare
+  );
   const disabledSaveBtn = !readySave || isInvalidTaskMachineState || isSavingPrepare || isSavedTask;
 
   const buildAsserts = useCallback(
