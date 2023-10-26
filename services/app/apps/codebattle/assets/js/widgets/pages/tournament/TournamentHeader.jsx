@@ -208,10 +208,32 @@ function TournamentHeader({
                   <JoinButton
                     isShow={state !== TournamentStates.active}
                     isParticipant={!!players[currentUserId]}
-                    disabled={!isOnline}
+                    disabled={!isOnline || !isLive}
                   />
                 </div>
               )}
+<<<<<<< Updated upstream
+=======
+              {canModerate && (
+                <TournamentMainControlButtons
+                  accessType={accessType}
+                  tournamentId={tournamentId}
+                  canStart={
+                    isLive
+                    && state === TournamentStates.waitingParticipants
+                    && playersCount > 0
+                  }
+                  canRestart={
+                    isLive && (
+                      state === TournamentStates.active
+                      || state === TournamentStates.finished
+                      || state === TournamentStates.cancelled
+                    )
+                  }
+                  disabled={!isOnline || !isLive}
+                />
+              )}
+>>>>>>> Stashed changes
             </div>
           ) : (
             <div className="d-flex justify-items-center pb-2">
@@ -283,7 +305,7 @@ function TournamentHeader({
                 <CopyButton
                   className="btn btn-sm btn-secondary rounded-right"
                   value={accessToken}
-                  disabled={!isLive}
+                  disabled={!isLive || !isOnline}
                 />
               </div>
             </>

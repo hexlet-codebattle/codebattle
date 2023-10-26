@@ -41,6 +41,7 @@ const initTournamentPlayerChannel = dispatch => {
 export const connectToTournamentPlayer = () => dispatch => {
   initTournamentPlayerChannel(dispatch);
 
+<<<<<<< Updated upstream
   const handleRoundFinished = response => {
     const data = camelizeKeys(response);
 
@@ -49,6 +50,19 @@ export const connectToTournamentPlayer = () => dispatch => {
   };
 
   const handleTournamentRoundCreated = response => {
+=======
+  const handleRoundCreated = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentData(data));
+  };
+
+  const handleRoundStarted = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentData(data));
+  };
+
+  const handleRoundFinished = response => {
+>>>>>>> Stashed changes
     const data = camelizeKeys(response);
     dispatch(actions.updateTournamentData(data));
   };
@@ -65,15 +79,26 @@ export const connectToTournamentPlayer = () => dispatch => {
   };
 
   const refs = [
+<<<<<<< Updated upstream
     channel.on('tournament:round_created', handleTournamentRoundCreated),
+=======
+    channel.on('tournament:round_created', handleRoundCreated),
+    channel.on('tournament:round_started', handleRoundStarted),
+>>>>>>> Stashed changes
     channel.on('tournament:round_finished', handleRoundFinished),
     channel.on('game:created', handleGameCreated),
   ];
 
   const clearTournamentPlayerChannel = () => {
     channel.off('tournament:round_created', refs[0]);
+<<<<<<< Updated upstream
     channel.off('tournament:round_finished', refs[1]);
     channel.off('game:created', refs[2]);
+=======
+    channel.off('tournament:round_started', refs[1]),
+    channel.off('tournament:round_finished', refs[2]),
+    channel.off('game:created', refs[3]);
+>>>>>>> Stashed changes
   };
 
   return clearTournamentPlayerChannel;

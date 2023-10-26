@@ -4,11 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function TournamentType({ type }) {
   if (type === 'ladder') {
-    return 'First step';
+    return 'Ladder';
   }
 
   if (type === 'swiss') {
-    return 'Second step';
+    return 'Swiss';
   }
 
   if (type === 'individual') {

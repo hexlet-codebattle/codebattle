@@ -102,7 +102,7 @@ function SpectatorEditor({
             </div>
           </div>
           <div id="spectator" className="d-flex flex-column flex-grow-1 position-relative">
-            <Editor key={params.userId} {...solutionParams} />
+            <Editor {...solutionParams} />
           </div>
         </div>
       </div>
