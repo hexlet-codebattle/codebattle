@@ -18,6 +18,7 @@ defmodule CodebattleWeb.Tournament.PlayerController do
     |> put_gon(
       tournament_id: String.to_integer(params["id"]),
       player_id: String.to_integer(params["player_id"]),
+      cancel_redirect_to_new_game: true,
       langs: Languages.get_langs()
     )
     |> render("player.html", layout: false)
