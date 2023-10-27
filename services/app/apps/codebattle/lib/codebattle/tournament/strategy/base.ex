@@ -286,7 +286,7 @@ defmodule Codebattle.Tournament.Base do
       def create_game(tournament, ref, players) do
         game_timeout =
           if round_ends_by_time?(tournament) do
-             seconds_to_end_round(tournament)
+            seconds_to_end_round(tournament)
           else
             tournament.match_timeout_seconds
           end
@@ -425,7 +425,8 @@ defmodule Codebattle.Tournament.Base do
       defp round_ends_by_time?(_), do: false
 
       defp seconds_to_end_round(tournament) do
-         tournament.match_timeout_seconds - NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
+        tournament.match_timeout_seconds -
+          NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
       end
     end
   end
