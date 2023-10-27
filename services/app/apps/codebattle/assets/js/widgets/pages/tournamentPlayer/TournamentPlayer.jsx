@@ -5,6 +5,7 @@ import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
 import reverse from 'lodash/reverse';
+import sum from 'lodash/sum';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CountdownTimer from '@/components/CountdownTimer';
@@ -23,19 +24,83 @@ import TaskAssignment from '../game/TaskAssignment';
 
 import SpectatorEditor from './SpectatorEditor';
 
-const WinnerStatus = ({ playerId, matches }) => {
-  const playerWinMatches = matches.filter(match => match.state === MatchStatesCodes.gameOver && playerId === match.winnerId);
-  const opponentWinMatches = matches.filter(match => match.state === MatchStatesCodes.gameOver && playerId !== match.winnerId);
+const RoundStatus = ({ playerId, matches }) => {
+  const finishedMatches = matches.filter(match => match.playerResults[playerId]);
+  const matchesCount = finishedMatches.length;
 
-  if (playerWinMatches.length > opponentWinMatches.length) {
-    return <FontAwesomeIcon className="ml-2 text-winner" icon="trophy" />;
-  }
+  const opponentId = matches[0].playerIds.find(id => (id !== playerId));
+  const playerWinMatches = matches.filter(match => playerId === match.winnerId);
+  const opponentWinMatches = matches.filter(match => opponentId === match.winnerId);
 
-  if (playerWinMatches.length < opponentWinMatches.length) {
+  const playerScore = sum(finishedMatches.map(match => match.playerResults[playerId]?.score || 0));
+  const opponnentScore = sum(finishedMatches.map(match => match.playerResults[opponentId]?.score || 0));
+
+  const playerAvgTests = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[playerId]?.resultPercent || 0)) / matchesCount : 0;
+  const opponnentAvgTests = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[opponentId]?.resultPercent || 0)) / matchesCount : 0;
+
+  const playerAvgDuration = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[playerId]?.durationSec || 0)) / matchesCount : 0;
+  const opponnentAvgDuration = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[opponentId]?.durationSec || 0)) / matchesCount : 0;
+
+  const RoundStatistics = () => (
+    <div className="d-flex text-center align-items-center">
+      <div className="d-flex flex-column align-items-baseline">
+        <span className="ml-2 h4">
+          {'Wins: '}
+          {playerWinMatches.length}
+        </span>
+        <span className="ml-2 h4">
+          {'Score: '}
+          {playerScore}
+        </span>
+        <span className="ml-2 h4">
+          {`AVG Tests: ${playerAvgTests}%`}
+        </span>
+        <span className="ml-4 h4">
+          {'AVG Duration: '}
+          {playerAvgDuration}
+          {' sec'}
+        </span>
+      </div>
+    </div>
+  );
+  const RoundResultIcon = () => {
+    if ((playerWinMatches.length === opponentWinMatches.length)
+      && (playerScore === opponnentScore)
+      && (playerAvgTests === opponnentAvgTests)
+      && (playerAvgDuration === opponnentAvgDuration)
+    ) {
+      return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
+    }
+
+    if (
+      (playerWinMatches.length > opponentWinMatches.length)
+      || (
+        (playerWinMatches.length === opponentWinMatches.length)
+        && (playerScore > opponnentScore)
+      )
+      || (
+        (playerWinMatches.length === opponentWinMatches.length)
+        && (playerScore === opponnentScore)
+        && (playerAvgTests > opponnentAvgTests)
+      )
+      || ((playerWinMatches.length === opponentWinMatches.length)
+        && (playerScore === opponnentScore)
+        && (playerAvgTests === opponnentAvgTests)
+        && (playerAvgDuration > opponnentAvgDuration)
+      )
+    ) {
+      return <FontAwesomeIcon className="ml-2 text-warning" icon="trophy" />;
+    }
+
     return <FontAwesomeIcon className="ml-2 text-secondary" icon="trophy" />;
-  }
+  };
 
-  return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
+  return (
+    <div className="d-flex">
+      <RoundResultIcon />
+      <RoundStatistics />
+    </div>
+  );
 };
 
 const getMatchIcon = (playerId, match) => {
@@ -202,29 +267,31 @@ function TournamentPlayer({
       <div className="card border-0 rounded-lg shadow-sm h-100">
         <div className="p-2 d-flex flex-column justify-content-center align-items-center text-center h-100">
           <h1 className="mt-2">
-            <WinnerStatus
+            <RoundStatus
               playerId={playerId}
               matches={groupedMatches[lastRound]}
-              gameResults={tournament.gameResults}
             />
           </h1>
           <div>
             {groupedMatches[lastRound].map(match => (
               <div className="d-flex text-center align-items-center" key={match.id}>
                 <span className="h3">{getMatchIcon(playerId, match)}</span>
-                {match.state === MatchStatesCodes.gameOver && (
-                  <span>
-                    <span className="ml-4 h3">
-                      {tournament.gameResults[match.gameId][playerId].durationSec || '0'}
+                {match.playerResults[playerId] ? (
+                  <div className="d-flex flex-column align-items-baseline">
+                    <span className="ml-4 h4">
+                      {'Duration: '}
+                      {match.playerResults[playerId].durationSec}
                       {' sec'}
                     </span>
-                    {/* <span className="ml-2 h3"> */}
-                    {/*   {'Score: '} */}
-                    {/*   {tournament.gameResults[match.gameId][playerId].resultPercent} */}
-                    {/* </span> */}
-                  </span>
-                )}
-                {match.state === MatchStatesCodes.timeout && (
+                    <span className="ml-2 h4">
+                      {'Score: '}
+                      {match.playerResults[playerId].score}
+                    </span>
+                    <span className="ml-2 h4">
+                      {`Tests: ${match.playerResults[playerId].resultPercent}%`}
+                    </span>
+                  </div>
+                ) : (
                   <span className="ml-4 h3">¯\_(ツ)_/¯</span>
                 )}
               </div>

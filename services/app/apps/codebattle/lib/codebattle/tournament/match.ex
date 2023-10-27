@@ -14,7 +14,7 @@ defmodule Codebattle.Tournament.Match do
     field(:id, :integer)
     field(:game_id, :integer)
     field(:player_ids, {:array, :integer}, default: [])
-    field(:player_results, AtomizedMap, default: [])
+    field(:player_results, AtomizedMap, default: %{})
     field(:round, :integer)
     field(:state, :string)
     field(:winner_id, :integer)

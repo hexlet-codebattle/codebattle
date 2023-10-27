@@ -21,24 +21,13 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
 
       matches = Helpers.get_matches_by_players(tournament, [player_id])
 
-      # TODO: Fix player_matches (no return default value: [])
-      game_results =
-        matches
-        |> Enum.map(
-          &(Game.Context.get_game!(&1.game_id)
-            |> Game.Helpers.get_player_results()
-            |> create_game_results(&1.game_id))
-        )
-        |> merge_results()
-
       {:ok,
        %{
          game_id: game_id,
          tournament_id: tournament_id,
          state: tournament.state,
          break_state: tournament.break_state,
-         matches: matches,
-         game_results: game_results
+         matches: matches
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else
       _ ->
@@ -63,20 +52,10 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
     matches =
       Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
 
-    game_results =
-      matches
-      |> Enum.map(
-        &(Game.Context.get_game!(&1.game_id)
-          |> Game.Helpers.get_player_results()
-          |> create_game_results(&1.game_id))
-      )
-      |> merge_results()
-
     push(socket, "tournament:round_finished", %{
       state: payload.state,
       break_state: payload.break_state,
-      matches: matches,
-      game_results: game_results
+      matches: matches
     })
 
     {:noreply, socket}

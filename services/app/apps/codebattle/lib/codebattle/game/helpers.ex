@@ -1,6 +1,13 @@
 defmodule Codebattle.Game.Helpers do
   @moduledoc false
 
+  @game_level_score %{
+    "elementary" => 5,
+    "easy" => 8,
+    "medium" => 13,
+    "hard" => 21
+  }
+
   def get_state(game), do: game.state
   def get_game_id(game), do: game.id
   def get_tournament_id(game), do: game.tournament_id
@@ -53,7 +60,21 @@ defmodule Codebattle.Game.Helpers do
   def get_player_results(game) do
     game
     |> get_players
-    |> Enum.map(&{&1.id, Map.take(&1, [:id, :result, :duration_sec, :result_percent])})
+    |> Enum.map(fn player ->
+      duration_sec =
+        case {player.result, player.duration_sec} do
+          {"won", seconds} -> seconds
+          _ -> game.timeout_seconds
+        end
+
+      result =
+        player
+        |> Map.take([:id, :result, :duration_sec, :result_percent])
+        |> Map.put(:duration_sec, duration_sec)
+        |> Map.put(:score, get_player_score(player, game.level, game.timeout_seconds))
+
+      {player.id, result}
+    end)
     |> Enum.into(%{})
   end
 
@@ -114,5 +135,32 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
     |> Kernel.!()
     |> Kernel.!()
+  end
+
+  def get_player_score(player, game_level, timeout_seconds) do
+    # game_level_score is fibanachi based score for different task level
+    # %{"elementary" => 5, "easy" => 8, "medium" => 13, "hard" => 21}
+    game_level_score = @game_level_score[game_level]
+
+    # base_winner_score = game_level_score / 2 for winner and 0 if user haven't won the match
+    base_winner_score =
+      if player.result == "won", do: @game_level_score[game_level] / 2, else: 0
+
+    # test_count_k is a koefficient between [0, 1]
+    # which linearly grow as test results
+    test_count_k = player.result_percent / 100.0
+
+    # duration_k is a koefficient between [0.33, 1]
+    # duration_k = 0 if duration_sec is nil
+    # duration_k = 1 if task was solved before 1/3 of match_timeout
+    # duration_k linearly goes to 0.33 if task was solved after 1/3 of match time
+    duration_k =
+      cond do
+        is_nil(player.duration_sec) -> 1
+        player.duration_sec / timeout_seconds < 0.33 -> 1
+        true -> 1.32 - player.duration_sec / timeout_seconds
+      end
+
+    round(base_winner_score + game_level_score * duration_k * test_count_k)
   end
 end

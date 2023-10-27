@@ -88,6 +88,7 @@ defmodule Codebattle.Game.Fsm do
   def transition(:timeout, game = %{state: s, players: players}, _params)
       when s in ["waiting_opponent", "playing"] do
     new_players = Enum.map(players, fn player -> %{player | result: "timeout"} end)
+
     {:ok, %{game | state: "timeout", players: new_players}}
   end
 

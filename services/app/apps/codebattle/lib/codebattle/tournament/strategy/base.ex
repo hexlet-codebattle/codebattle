@@ -18,13 +18,6 @@ defmodule Codebattle.Tournament.Base do
       @behaviour Tournament.Base
       import Tournament.Helpers
 
-      @game_level_score %{
-        "elementary" => 5,
-        "easy" => 8,
-        "medium" => 13,
-        "hard" => 21
-      }
-
       def add_player(tournament, player) do
         update_in(tournament.players, fn players ->
           Map.put(players, to_id(player.id), Tournament.Player.new!(player))
@@ -144,7 +137,12 @@ defmodule Codebattle.Tournament.Base do
         tournament =
           update_in(
             tournament.matches[to_id(params.ref)],
-            &%{&1 | state: params.game_state, winner_id: winner_id}
+            &%{
+              &1
+              | state: params.game_state,
+                winner_id: winner_id,
+                player_results: params.player_results
+            }
           )
 
         params.player_results
@@ -157,13 +155,7 @@ defmodule Codebattle.Tournament.Base do
               tournament.players[to_id(player_result.id)],
               &%{
                 &1
-                | score:
-                    &1.score +
-                      get_score(
-                        player_result,
-                        params.game_level,
-                        tournament.match_timeout_seconds
-                      ),
+                | score: &1.score + player_result.score,
                   wins_count: &1.wins_count + if(player_result.result == "won", do: 1, else: 0)
               }
             )
@@ -392,33 +384,6 @@ defmodule Codebattle.Tournament.Base do
       defp broadcast_tournament_finished(tournament) do
         Codebattle.PubSub.broadcast("tournament:finished", %{tournament_id: tournament.id})
         tournament
-      end
-
-      def get_score(player_result, game_level, tournament_match_timeout_seconds) do
-        # game_level_score is fibanachi based score for different task level
-        # %{"elementary" => 5, "easy" => 8, "medium" => 13, "hard" => 21}
-        game_level_score = @game_level_score[game_level]
-
-        # base_winner_score = game_level_score / 2 for winner and 0 if user haven't won the match
-        base_winner_score =
-          if player_result.result == "won", do: @game_level_score[game_level] / 2, else: 0
-
-        # test_count_k is a koefficient between [0, 1]
-        # which linearly grow as test results
-        test_count_k = player_result.result_percent / 100.0
-
-        # duration_k is a koefficient between [0.33, 1]
-        # duration_k = 0 if duration_sec is nil
-        # duration_k = 1 if task was solved before 1/3 of match_timeout
-        # duration_k linearly goes to 0.33 if task was solved after 1/3 of match time
-        duration_k =
-          cond do
-            is_nil(player_result.duration_sec) -> 1
-            player_result.duration_sec / tournament_match_timeout_seconds < 0.33 -> 1
-            true -> 1.32 - player_result.duration_sec / tournament_match_timeout_seconds
-          end
-
-        round(base_winner_score + game_level_score * duration_k * test_count_k)
       end
 
       defp round_ends_by_time?(%{type: "swiss"}), do: true
