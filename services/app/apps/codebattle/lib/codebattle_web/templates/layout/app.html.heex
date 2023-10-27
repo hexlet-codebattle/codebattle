@@ -273,12 +273,15 @@
               , 2023
             </p>
           </div>
-          <div>
-            <p>
+          <div class="d-flex flex-column align-items-center">
+            <p class="m-0">
               <%= link("Current version: #{app_short_version()}",
                 to: github_commit_link(),
                 class: "btn-link p-0 text-white"
               ) %>
+            </p>
+            <p class="text-nowrap text-white m-0">
+              <span>deployedAt UTC:&nbsp;<%= deployed_at() %></span>
             </p>
             <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
               <a href="https://hits.seeyoufarm.com">

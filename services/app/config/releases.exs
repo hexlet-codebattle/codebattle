@@ -63,3 +63,6 @@ config :runner, RunnerWeb.Endpoint,
 config :codebattle, :executor,
   runner_url: "http://runner.default.svc",
   api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
+
+config :codebattle,
+  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")

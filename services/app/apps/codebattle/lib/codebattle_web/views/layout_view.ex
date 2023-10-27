@@ -15,17 +15,21 @@ defmodule CodebattleWeb.LayoutView do
     end
   end
 
-  def app_short_version() do
+  def app_short_version do
     case @app_version do
       "" -> "undefined"
       version -> String.slice(version, 0, 7)
     end
   end
 
-  def github_commit_link() do
+  def github_commit_link do
     case @app_version do
       "" -> "/"
       version -> "https://github.com/hexlet-codebattle/codebattle/commit/#{version}"
     end
+  end
+
+  def deployed_at do
+    Application.get_env(:codebattle, :deployed_at)
   end
 end

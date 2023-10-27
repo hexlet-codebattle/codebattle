@@ -2,8 +2,6 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   use CodebattleWeb, :live_view
   use Timex
 
-  import CodebattleWeb.TournamentView
-
   require Logger
 
   @timer_tick_frequency :timer.seconds(1)
@@ -11,7 +9,6 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   @impl true
   def mount(_params, session, socket) do
     tournament = session["tournament"]
-    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
 
     Codebattle.PubSub.subscribe(topic_name(tournament))
 
@@ -21,7 +18,6 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
      assign(socket,
        current_user: session["current_user"],
        now: NaiveDateTime.utc_now(:second),
-       user_timezone: user_timezone,
        tournament: tournament
      )}
   end
@@ -34,7 +30,6 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
         <%= render_remaining_time(
           @tournament.last_round_started_at,
           @tournament.match_timeout_seconds,
-          @user_timezone,
           @now
         ) %>
       </div>
@@ -58,14 +53,13 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
 
   defp topic_name(tournament), do: "tournament:#{tournament.id}"
 
-  defp render_remaining_time(nil, _match_timeout_seconds, _user_timezone, _now) do
+  defp render_remaining_time(nil, _match_timeout_seconds, _now) do
     "¯\_(ツ)_/¯"
   end
 
-  defp render_remaining_time(last_round_started_at, match_timeout_seconds, user_timezone, now) do
+  defp render_remaining_time(last_round_started_at, match_timeout_seconds, now) do
     datetime = NaiveDateTime.add(last_round_started_at, match_timeout_seconds)
     time_map = get_time_units_map(datetime, now)
-    time_str = format_datetime(datetime, user_timezone)
 
     cond do
       time_map.hours > 0 ->

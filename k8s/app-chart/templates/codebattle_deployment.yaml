@@ -63,4 +63,5 @@ spec:
             - name: CODEBATTLE_PORT
               value: "4000"
             - name: DEPLOYED_AT
-              value: "{{ now }}"
+              value: "{{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}"
+

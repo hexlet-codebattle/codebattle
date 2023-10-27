@@ -99,7 +99,10 @@ config :codebattle, use_non_test_workers: true
 config :codebattle, html_include_prod_scripts: false
 config :codebattle, html_debug_mode: true
 config :codebattle, fake_html_to_image: false
-config :codebattle, app_version: System.get_env("APP_VERSION", "")
+config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
+
+config :codebattle,
+  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
 config :runner, load_dot_env_file: true
 config :runner, use_prod_workers: false

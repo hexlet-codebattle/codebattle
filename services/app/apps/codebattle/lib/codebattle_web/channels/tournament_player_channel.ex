@@ -25,8 +25,8 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
       game_results =
         matches
         |> Enum.map(
-          &(Codebattle.Game.Context.get_game!(&1.game_id)
-            |> Codebattle.Game.Helpers.get_player_results()
+          &(Game.Context.get_game!(&1.game_id)
+            |> Game.Helpers.get_player_results()
             |> create_game_results(&1.game_id))
         )
         |> merge_results()
@@ -66,8 +66,8 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
     game_results =
       matches
       |> Enum.map(
-        &(Codebattle.Game.Context.get_game!(&1.game_id)
-          |> Codebattle.Game.Helpers.get_player_results()
+        &(Game.Context.get_game!(&1.game_id)
+          |> Game.Helpers.get_player_results()
           |> create_game_results(&1.game_id))
       )
       |> merge_results()
