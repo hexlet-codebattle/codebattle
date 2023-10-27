@@ -22,6 +22,7 @@ const initTournamentPlayerChannel = dispatch => {
       state: data.tournamentState,
       breakState: data.breakState,
       matches: data.matches,
+      gameResults: data.gameResults,
       tournamentChannel: { online: true },
     }));
 
@@ -46,6 +47,7 @@ export const connectToTournamentPlayer = () => dispatch => {
 
     dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
     dispatch(actions.updateTournamentMatches(data.matches));
+    dispatch(actions.updateTournamentGameResults(data.gameResults));
   };
 
   const handleTournamentRoundCreated = response => {

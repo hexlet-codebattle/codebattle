@@ -227,6 +227,7 @@ const defaultTournamentParams = {
   state: 'loading',
   name: '',
   matches: {},
+  gameResults: {},
   players: {},
   playersLimit: 128,
   playersCount: 0,

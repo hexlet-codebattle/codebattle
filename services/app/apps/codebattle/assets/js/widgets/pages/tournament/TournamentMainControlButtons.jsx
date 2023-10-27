@@ -39,7 +39,7 @@ const TournamentMainControlButtons = ({
         onClick={handleStartRoundTournament}
         disabled={!canStartRound || disabled}
       >
-        <FontAwesomeIcon className="ml-2" icon="arrow-right" />
+        <FontAwesomeIcon className="mr-2" icon="arrow-right" />
         Start Round
       </button>
     ) : null}

@@ -97,8 +97,8 @@ function BuilderEditorsWidget() {
   );
   const textSolution = useSelector(selectors.taskTextSolutionSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const theme = useSelector(selectors.editorsThemeSelector(currentUserId));
-  const editorsMode = useSelector(selectors.editorsModeSelector(currentUserId));
+  const theme = useSelector(selectors.editorsThemeSelector);
+  const editorsMode = useSelector(selectors.editorsModeSelector);
 
   const [isValidArgumentsGenerator, invalidGeneratorReason] = useSelector(
     state => state.builder.validationStatuses.argumentsGenerator,

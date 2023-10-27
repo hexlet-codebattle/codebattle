@@ -1,7 +1,6 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import find from 'lodash/find';
 import get from 'lodash/get';
-import hasIn from 'lodash/hasIn';
 import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 
@@ -85,12 +84,12 @@ export const editorTextHistorySelector = (state, { userId }) => state.editor.tex
 export const editorLangHistorySelector = (state, { userId }) => state.editor.langsHistory[userId];
 
 export const firstEditorSelector = (state, roomCurrent) => {
-  const playerId = firstPlayerSelector(state).id;
+  const playerId = firstPlayerSelector(state)?.id;
   return editorDataSelector(playerId, roomCurrent)(state);
 };
 
 export const secondEditorSelector = (state, roomCurrent) => {
-  const playerId = secondPlayerSelector(state).id;
+  const playerId = secondPlayerSelector(state)?.id;
   return editorDataSelector(playerId, roomCurrent)(state);
 };
 
@@ -258,12 +257,12 @@ export const executionOutputSelector = (playerId, roomCurrent) => state => (
   : state.executionOutput.results[playerId]);
 
 export const firstExecutionOutputSelector = roomCurrent => state => {
-  const playerId = firstPlayerSelector(state).id;
+  const playerId = firstPlayerSelector(state)?.id;
   return executionOutputSelector(playerId, roomCurrent)(state);
 };
 
 export const secondExecutionOutputSelector = roomCurrent => state => {
-  const playerId = secondPlayerSelector(state).id;
+  const playerId = secondPlayerSelector(state)?.id;
   return executionOutputSelector(playerId, roomCurrent)(state);
 };
 
@@ -309,19 +308,13 @@ export const currentChatUserSelector = state => {
   return find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const editorsModeSelector = currentUserId => state => {
-  if (hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.gameUI.editorMode;
-  }
-  return editorModes.default;
-};
+export const editorsModeSelector = state => (
+  state.gameUI.editorMode || editorModes.default
+);
 
-export const editorsThemeSelector = userId => state => {
-  if (hasIn(gamePlayersSelector(state), userId)) {
-    return state.gameUI.editorTheme;
-  }
-  return editorThemes.dark;
-};
+export const editorsThemeSelector = state => (
+  state.gameUI?.editorTheme || editorThemes.dark
+);
 
 export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
 

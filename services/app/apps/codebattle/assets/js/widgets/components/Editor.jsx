@@ -30,6 +30,7 @@ class Editor extends PureComponent {
     onChange: PropTypes.func,
     mode: PropTypes.string.isRequired,
     mute: PropTypes.bool,
+    fontSize: PropTypes.number,
   };
 
   static defaultProps = {
@@ -40,6 +41,7 @@ class Editor extends PureComponent {
     onChange: null,
     syntax: 'js',
     mute: false,
+    fontSize: 16,
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -59,7 +61,7 @@ class Editor extends PureComponent {
       tabSize: getLanguageTabSize(props.syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(props.syntax),
       lineNumbersMinChars: 3,
-      fontSize: 16,
+      fontSize: props.fontSize || 16,
       scrollBeyondLastLine: false,
       selectOnLineNumbers: true,
       minimap: {
@@ -133,6 +135,7 @@ class Editor extends PureComponent {
       userId,
       gameId,
       gameMode,
+      fontSize,
     } = this.props;
 
     const isBuilder = gameMode === GameRoomModes.builder;
@@ -159,6 +162,13 @@ class Editor extends PureComponent {
       }
       this.statusBarRef.current.innerHTML = '';
       this.currentMode = this.modes[mode]();
+    }
+    if (prevProps.fontSize !== fontSize) {
+      this.options = {
+        ...this.options,
+        fontSize: fontSize || 16,
+      };
+      this.editor.updateOptions(this.options);
     }
     if (prevProps.editable !== editable || prevProps.loading !== loading) {
       this.options = {

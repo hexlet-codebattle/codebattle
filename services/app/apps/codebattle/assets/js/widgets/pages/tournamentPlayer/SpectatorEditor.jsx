@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -28,11 +28,16 @@ function SpectatorEditor({
   const players = useSelector(selectors.gamePlayersSelector);
   const editorData = useSelector(selectors.editorDataSelector(playerId));
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const theme = useSelector(selectors.editorsThemeSelector(currentUserId));
-  const editorsMode = useSelector(selectors.editorsModeSelector(currentUserId));
+  const theme = useSelector(selectors.editorsThemeSelector);
+  const editorsMode = useSelector(selectors.editorsModeSelector);
 
   const spectatorEditorState = useMachineStateSelector(spectatorService, spectatorStateSelector).value.editor;
   const isChecking = useMachineStateSelector(spectatorService, spectatorEditorIsChecking);
+
+  const [fontSize, setFontSize] = useState(20);
+
+  const handleIncreaseFontSize = useCallback(() => setFontSize(size => size + 2), [setFontSize]);
+  const handleDecreaseFontSize = useCallback(() => setFontSize(size => size - 2), [setFontSize]);
 
   const params = {
     userId: spectatorEditorState === 'loading' ? undefined : playerId,
@@ -42,9 +47,10 @@ function SpectatorEditor({
     loading: spectatorEditorState === 'loading',
     theme,
     mute: true,
+    fontSize,
   };
 
-  const solutionParams = {
+  const editorParams = {
     ...params,
     value: editorData?.text || '',
     onChange: () => {},
@@ -58,7 +64,7 @@ function SpectatorEditor({
     <>
       <div className={pannelBackground} data-editor-state={spectatorEditorState}>
         <div className="card h-100 shadow-sm" style={gameRoomEditorStyles}>
-          <div className="rounded-top" data-player-type="current_user">
+          <div className="rounded-top border-bottom">
             <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
@@ -84,6 +90,18 @@ function SpectatorEditor({
                   <VimModeButton playerId={currentUserId} />
                   <DakModeButton playerId={currentUserId} />
                 </div>
+                <div
+                  className="btn-group align-items-center ml-2 mr-auto"
+                  role="group"
+                  aria-label="Editor size controls"
+                >
+                  <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleIncreaseFontSize}>
+                    -
+                  </button>
+                  <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleDecreaseFontSize}>
+                    +
+                  </button>
+                </div>
               </div>
               <div className="d-flex">
                 <button
@@ -102,7 +120,7 @@ function SpectatorEditor({
             </div>
           </div>
           <div id="spectator" className="d-flex flex-column flex-grow-1 position-relative">
-            <Editor {...solutionParams} />
+            <Editor {...editorParams} />
           </div>
         </div>
       </div>

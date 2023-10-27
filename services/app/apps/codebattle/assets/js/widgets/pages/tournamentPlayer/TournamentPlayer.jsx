@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
@@ -11,6 +12,7 @@ import { connectToEditor, connectToGame, updateGameChannel } from '@/middlewares
 
 import EditorUserTypes from '../../config/editorUserTypes';
 import GameStateCodes from '../../config/gameStateCodes';
+import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
 import { connectToTournamentPlayer } from '../../middlewares/TournamentPlayer';
 import * as selectors from '../../selectors';
@@ -20,6 +22,37 @@ import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
 
 import SpectatorEditor from './SpectatorEditor';
+
+const WinnerStatus = ({ playerId, matches }) => {
+  const playerWinMatches = matches.filter(match => match.state === MatchStatesCodes.gameOver && playerId === match.winnerId);
+  const opponentWinMatches = matches.filter(match => match.state === MatchStatesCodes.gameOver && playerId !== match.winnerId);
+
+  if (playerWinMatches.length > opponentWinMatches.length) {
+    return <FontAwesomeIcon className="ml-2 text-winner" icon="trophy" />;
+  }
+
+  if (playerWinMatches.length < opponentWinMatches.length) {
+    return <FontAwesomeIcon className="ml-2 text-secondary" icon="trophy" />;
+  }
+
+  return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
+};
+
+const getMatchIcon = (playerId, match) => {
+  if (match.state === MatchStatesCodes.timeout || match.state === MatchStatesCodes.canceled) {
+    return <FontAwesomeIcon className="text-dark" icon="stopwatch" />;
+  }
+
+  if (playerId === match.winnerId) {
+    return <FontAwesomeIcon className="text-warning" icon="trophy" />;
+  }
+
+  if (playerId !== match.winnerId) {
+    return <FontAwesomeIcon className="text-muted" icon="trophy" />;
+  }
+
+  return <FontAwesomeIcon className="text-danger" icon="times" />;
+};
 
 const getSpectatorStatus = (state, task, gameId) => {
   switch (state) {
@@ -152,24 +185,52 @@ function TournamentPlayer({
   const MatchesPannel = () => {
     const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
     const rounds = reverse(Object.keys(groupedMatches));
+
+    const lastRound = rounds[0];
+
+    if (!lastRound) {
+      return (
+        <div
+          className="card bg-white rounded-lg flex justify-content-center align-items-center w-100 h-100"
+        >
+          No statistics
+        </div>
+      );
+    }
+
     return (
-      <div>
-        {rounds.map(round => (
-          <div key={round}>
-            <h4>
-              {`Round ${Number(round) + 1}`}
-            </h4>
-            <div>
-              {groupedMatches[round].map(match => (
-                <div key={match.id}>
-                  <span>{match.state}</span>
-                  <span>{match.winnerId}</span>
-                  {match.playerResults}
-                </div>
-              ))}
-            </div>
+      <div className="card border-0 rounded-lg shadow-sm h-100">
+        <div className="p-2 d-flex flex-column justify-content-center align-items-center text-center h-100">
+          <h1 className="mt-2">
+            <WinnerStatus
+              playerId={playerId}
+              matches={groupedMatches[lastRound]}
+              gameResults={tournament.gameResults}
+            />
+          </h1>
+          <div>
+            {groupedMatches[lastRound].map(match => (
+              <div className="d-flex text-center align-items-center" key={match.id}>
+                <span className="h3">{getMatchIcon(playerId, match)}</span>
+                {match.state === MatchStatesCodes.gameOver && (
+                  <span>
+                    <span className="ml-4 h3">
+                      {tournament.gameResults[match.gameId][playerId].durationSec || '0'}
+                      {' sec'}
+                    </span>
+                    {/* <span className="ml-2 h3"> */}
+                    {/*   {'Score: '} */}
+                    {/*   {tournament.gameResults[match.gameId][playerId].resultPercent} */}
+                    {/* </span> */}
+                  </span>
+                )}
+                {match.state === MatchStatesCodes.timeout && (
+                  <span className="ml-4 h3">¯\_(ツ)_/¯</span>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     );
   };
@@ -179,7 +240,7 @@ function TournamentPlayer({
       <div className="container-fluid d-flex flex-column min-vh-100">
         <div className={spectatorDisplayClassName} style={{ flex: '1 1 auto' }}>
           <div className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1">
-            {(GameStateCodes.playing === gameState) ? <GamePanel /> : <MatchesPannel />}
+            {GameStateCodes.playing === gameState ? <GamePanel /> : <MatchesPannel />}
           </div>
           <SpectatorEditor
             switchedWidgetsStatus={switchedWidgetsStatus}

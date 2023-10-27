@@ -7,10 +7,10 @@ import editorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-function DakModeButton({ playerId }) {
+function DakModeButton() {
   const dispatch = useDispatch();
 
-  const currentTheme = useSelector(state => editorsThemeSelector(playerId)(state));
+  const currentTheme = useSelector(editorsThemeSelector);
 
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;

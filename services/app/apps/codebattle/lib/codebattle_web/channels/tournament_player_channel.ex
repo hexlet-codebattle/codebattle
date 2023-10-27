@@ -2,6 +2,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
+  alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
@@ -18,13 +19,26 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
 
       game_id = tournament |> Helpers.get_active_game_id(player_id)
 
+      matches = Helpers.get_matches_by_players(tournament, [player_id])
+
+      # TODO: Fix player_matches (no return default value: [])
+      game_results =
+        matches
+        |> Enum.map(
+          &(Codebattle.Game.Context.get_game!(&1.game_id)
+            |> Codebattle.Game.Helpers.get_player_results()
+            |> create_game_results(&1.game_id))
+        )
+        |> merge_results()
+
       {:ok,
        %{
          game_id: game_id,
          tournament_id: tournament_id,
          state: tournament.state,
          break_state: tournament.break_state,
-         matches: Helpers.get_matches_by_players(tournament, [player_id])
+         matches: matches,
+         game_results: game_results
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else
       _ ->
@@ -49,10 +63,20 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
     matches =
       Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
 
+    game_results =
+      matches
+      |> Enum.map(
+        &(Codebattle.Game.Context.get_game!(&1.game_id)
+          |> Codebattle.Game.Helpers.get_player_results()
+          |> create_game_results(&1.game_id))
+      )
+      |> merge_results()
+
     push(socket, "tournament:round_finished", %{
       state: payload.state,
       break_state: payload.break_state,
-      matches: matches
+      matches: matches,
+      game_results: game_results
     })
 
     {:noreply, socket}
@@ -65,4 +89,12 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   end
 
   def handle_info(_, state), do: {:noreply, state}
+
+  defp create_game_results(results, game_id) do
+    Map.new([{game_id, results}])
+  end
+
+  defp merge_results(results) do
+    Enum.reduce(results, fn result, acc -> Map.merge(acc, result) end)
+  end
 end

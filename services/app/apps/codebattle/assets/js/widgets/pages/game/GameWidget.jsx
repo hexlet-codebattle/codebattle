@@ -93,8 +93,8 @@ function GameWidget({ editorMachine }) {
   const leftEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, leftUserId));
   const rightEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, rightUserId));
   const rightOutput = useSelector(selectors.rightExecutionOutputSelector(roomCurrent));
-  const leftEditorsMode = useSelector(selectors.editorsModeSelector(leftUserId));
-  const theme = useSelector(selectors.editorsThemeSelector(leftUserId));
+  const leftEditorsMode = useSelector(selectors.editorsModeSelector);
+  const theme = useSelector(selectors.editorsThemeSelector);
 
   return (
     <>

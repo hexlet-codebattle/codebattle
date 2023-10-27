@@ -18,7 +18,7 @@ function TournamentUserPanel({
   userId,
   name,
   score,
-  place,
+  // place,
   localPlace,
   searchedUserId = 0,
 }) {
@@ -77,16 +77,16 @@ function TournamentUserPanel({
                 {': '}
                 {score}
               </span>
-              {place && (
-                <>
-                  <span className="mx-1">|</span>
-                  <span title="Place on tournament">
-                    <FontAwesomeIcon className="text-warning" icon="trophy" />
-                    {': '}
-                    {place}
-                  </span>
-                </>
-              )}
+              {/* {place && ( */}
+              {/*   <> */}
+              {/*     <span className="mx-1">|</span> */}
+              {/*     <span title="Place on tournament"> */}
+              {/*       <FontAwesomeIcon className="text-warning" icon="trophy" /> */}
+              {/*       {': '} */}
+              {/*       {place} */}
+              {/*     </span> */}
+              {/*   </> */}
+              {/* )} */}
               {localPlace && (
                 <>
                   <span className="mx-1">|</span>

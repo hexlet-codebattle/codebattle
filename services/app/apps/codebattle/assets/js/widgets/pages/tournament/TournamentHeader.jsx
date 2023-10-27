@@ -201,54 +201,55 @@ function TournamentHeader({
               </div>
             )}
           </div>
-          {!isOver ? (
+          <div className="d-flex">
+            {!isOver ? (
+              <div className="d-flex justify-items-center pb-2">
+                {type !== 'team' && (
+                  <div className="mr-2 mr-lg-0">
+                    <JoinButton
+                      isShow={state !== TournamentStates.active}
+                      isParticipant={!!players[currentUserId]}
+                      disabled={!isOnline || !isLive}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="d-flex justify-items-center pb-2">
+                <a
+                  className="btn btn-primary rounded-lg ml-lg-2 ml-md-2"
+                  href="/tournaments"
+                >
+                  <FontAwesomeIcon className="mr-2" icon="undo" />
+                  Return to tournaments
+                </a>
+              </div>
+            )}
             <div className="d-flex justify-items-center pb-2">
-              {type !== 'team' && (
-                <div className="mr-2 mr-lg-0">
-                  <JoinButton
-                    isShow={state !== TournamentStates.active}
-                    isParticipant={!!players[currentUserId]}
-                    disabled={!isOnline || !isLive}
-                  />
-                </div>
+              {canModerate && (
+                <TournamentMainControlButtons
+                  accessType={accessType}
+                  tournamentId={tournamentId}
+                  canStart={
+                    isLive
+                    && state === TournamentStates.waitingParticipants
+                    && playersCount > 0
+                  }
+                  canStartRound={
+                    isLive
+                    && state === TournamentStates.active
+                    && breakState === 'on'
+                  }
+                  canRestart={
+                    state === TournamentStates.active
+                    || state === TournamentStates.finished
+                    || state === TournamentStates.cancelled
+                  }
+                  disabled={!isOnline}
+                />
               )}
             </div>
-          ) : (
-            <div className="d-flex justify-items-center pb-2">
-              <a
-                className="btn btn-primary rounded-lg ml-lg-2 ml-md-2"
-                href="/tournaments"
-              >
-                <FontAwesomeIcon className="mr-2" icon="undo" />
-                Return to tournaments
-              </a>
-            </div>
-          )}
-          <div className="d-flex justify-items-center pb-2">
-            {canModerate && (
-              <TournamentMainControlButtons
-                accessType={accessType}
-                tournamentId={tournamentId}
-                canStart={
-                  isLive
-                  && state === TournamentStates.waitingParticipants
-                  && playersCount > 0
-                }
-                canStartRound={
-                  isLive
-                  && state === TournamentStates.active
-                  && breakState === 'on'
-                }
-                canRestart={
-                  state === TournamentStates.active
-                  || state === TournamentStates.finished
-                  || state === TournamentStates.cancelled
-                }
-                disabled={!isOnline}
-              />
-            )}
           </div>
-
         </div>
         <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
           <div title={type} className="d-flex align-items-center">

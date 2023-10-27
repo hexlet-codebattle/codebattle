@@ -29,6 +29,12 @@ const tournament = createSlice({
         ...newMatches,
       };
     },
+    updateTournamentGameResults: (state, { payload }) => {
+      state.gameResults = {
+        ...state.gameResults,
+        ...payload,
+      };
+    },
     updateTournamentPlayers: (state, { payload }) => {
       const newPlayers = payload.reduce((acc, params) => ({
         ...acc,
