@@ -13,6 +13,7 @@ import { actions } from '../../slices';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 import CompletedGames from '../lobby/CompletedGames';
 
+import Achievement from './Achievement';
 import Heatmap from './Heatmap';
 import UserStatCharts from './UserStatCharts';
 
@@ -38,50 +39,16 @@ function UserProfile() {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
-  const dateParse = date => new Date(date).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-
-  const renderAchivement = achievement => {
-    if (achievement.includes('win_games_with')) {
-      const langs = achievement.split('?').pop().split('_');
-
-      return (
-        <div className="cb-polyglot mr-1 mb-1" title={achievement}>
-          <div className="d-flex h-75 flex-wrap align-items-center justify-content-around cb-polyglot-icons">
-            {langs.map(lang => (
-              <img
-                src={`/assets/images/achievements/${lang}.png`}
-                alt={lang}
-                title={lang}
-                width="14"
-                height="14"
-                key={lang}
-              />
-            ))}
-          </div>
-        </div>
-      );
-    }
-    return (
-      <img
-        className="mr-1 mb-1"
-        src={`/assets/images/achievements/${achievement}.png`}
-        alt={achievement}
-        title={achievement}
-        width="65"
-        height="65"
-      />
-    );
-  };
-
   if (!userData) {
     return <Loading />;
   }
 
   const { stats, user } = userData;
+  const userInsertedAt = new Date(user.insertedAt).toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
   const gamesCount = sum(Object.values(stats.games));
 
   const renderCompletedGames = () => (
@@ -125,9 +92,9 @@ function UserProfile() {
             />
           </div>
           <div>
-            <h2 className="my-2 text-break cb-heading font-weight-bold">{user.name}</h2>
+            <h1 className="cb-heading text-break font-weight-bold">{user.name}</h1>
             <hr />
-            <h3 className="my-2 cb-heading">
+            <h3 className="cb-heading">
               <span>Lang:</span>
               <img
                 src={`/assets/images/achievements/${langIconNames[user.lang]}.png`}
@@ -138,12 +105,9 @@ function UserProfile() {
               />
             </h3>
             <hr />
-            <p className="small text-monospace text-muted mb-2">
-              {'joined at '}
-              {dateParse(user.insertedAt)}
-            </p>
-            <h1 className="my-2">
-              {user.githubName && (
+            <p className="mb-2 small text-monospace text-muted">{`joined at ${userInsertedAt}`}</p>
+            {user.githubName && (
+              <h3 className="h1">
                 <a
                   title="Github account"
                   className="text-muted"
@@ -151,23 +115,17 @@ function UserProfile() {
                 >
                   <span className="fab fa-github" />
                 </a>
-              )}
-            </h1>
-            <div className="my-2">
-              {user.achievements.length > 0 && (
-                <>
-                  <hr className="mt-2" />
-                  <h5 className="text-break cb-heading">Achievements</h5>
-                  <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
-                    {user.achievements.map(achievement => (
-                      <div key={achievement}>
-                        {renderAchivement(achievement)}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+              </h3>
+            )}
+            {user.achievements.length > 0 && (
+              <>
+                <hr className="mt-2" />
+                <h3 className="text-break cb-heading">Achievements</h3>
+                <div className="d-flex flex-wrap justify-content-start mt-3">
+                  {user.achievements.map(item => <Achievement key={item} achievement={item} />)}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
