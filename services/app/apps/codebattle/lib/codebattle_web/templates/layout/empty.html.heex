@@ -39,8 +39,9 @@
     <meta content="#ffffff" name="theme-color" />
     <%= render_tags_all(assigns[:meta_tags] || %{}) %>
     <meta name="csrf-token" content={csrf_token_value()} />
-    <title>timer</title>
+    <title>Codebattle</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
     <script
       defer
       phx-track-static

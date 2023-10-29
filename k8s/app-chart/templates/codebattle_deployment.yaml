@@ -58,6 +58,14 @@ spec:
             - secretRef:
                 name: codebattle-secrets
           env:
+            - name: CODEBATTLE_SHOW_EXTENSION_POPUP
+              value: 'true'
+            - name: CODEBATTLE_USE_EXTERNAL_JS
+              value: 'true'
+            - name: CODEBATTLE_CREATE_BOT_GAMES
+              value: 'true'
+            - name: CODEBATTLE_IMPORT_GITHUB_TASKS
+              value: 'true'
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
             - name: CODEBATTLE_PORT

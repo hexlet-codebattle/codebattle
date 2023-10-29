@@ -5,7 +5,7 @@ defmodule Codebattle.UsersRankUpdateServer do
 
   require Logger
 
-  @timeout :timer.minutes(15)
+  @timeout :timer.minutes(57)
 
   # API
   def start_link(_) do

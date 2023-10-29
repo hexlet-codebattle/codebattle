@@ -2,7 +2,6 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
@@ -68,12 +67,4 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   end
 
   def handle_info(_, state), do: {:noreply, state}
-
-  defp create_game_results(results, game_id) do
-    Map.new([{game_id, results}])
-  end
-
-  defp merge_results(results) do
-    Enum.reduce(results, fn result, acc -> Map.merge(acc, result) end)
-  end
 end

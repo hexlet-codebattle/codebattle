@@ -2,7 +2,11 @@ defmodule CodebattleWeb.SessionController do
   use CodebattleWeb, :controller
 
   def new(conn, _params) do
-    render(conn, "index.html")
+    if Application.get_env(:codebattle, :use_only_token_auth) do
+      render(conn, "token_only.html")
+    else
+      render(conn, "index.html")
+    end
   end
 
   def remind_password(conn, _params) do

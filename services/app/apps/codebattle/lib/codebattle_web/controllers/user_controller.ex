@@ -28,7 +28,11 @@ defmodule CodebattleWeb.UserController do
   end
 
   def new(conn, _params) do
-    render(conn, "new.html")
+    if Application.get_env(:codebattle, :use_only_token_auth) do
+      render(conn, "token_only.html")
+    else
+      render(conn, "new.html")
+    end
   end
 
   def show(conn, %{"id" => user_id}) do

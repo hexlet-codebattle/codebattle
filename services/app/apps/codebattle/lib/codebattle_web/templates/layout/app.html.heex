@@ -48,7 +48,7 @@
 
     <title>Codebattle</title>
     <!--Google Tag Manager-->
-    <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
+    <%= if Application.get_env(:codebattle, :use_external_js) do %>
       <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
       </script>
@@ -58,7 +58,7 @@
 
   <body class="position-relative dark-bg h-100">
     <!--Google Tag Manager (noscript)-->
-    <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
+    <%= if Application.get_env(:codebattle, :use_external_js) do %>
       <noscript>
         <iframe
           height="0"
@@ -257,7 +257,9 @@
           <% end %>
         </div>
       </div>
-      <div id="extension"></div>
+      <%= if Application.get_env(:codebattle, :show_extension_popup) do %>
+        <div id="extension"></div>
+      <% end %>
       <div class="content bg-light py-1"></div>
       <main class="bg-light">
         <%= @inner_content %>
@@ -283,7 +285,7 @@
             <p class="text-nowrap text-white m-0">
               <span>deployedAt UTC:&nbsp;<%= deployed_at() %></span>
             </p>
-            <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
+            <%= if Application.get_env(:codebattle, :use_external_js) do %>
               <a href="https://hits.seeyoufarm.com">
                 <img
                   class="mb-1"

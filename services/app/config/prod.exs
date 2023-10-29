@@ -15,21 +15,11 @@ config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 config :codebattle, ws_port: 8080
 
-config :codebattle,
-  admins: [
-    "vtm",
-    "ReDBrother",
-    "solar05",
-    "mokevnin",
-    "Melodyn",
-    "NatMusina"
-  ]
-
 config :codebattle, restore_tournaments: true
 config :codebattle, load_dot_env_file: false
-config :codebattle, use_prod_workers: true
+config :codebattle, import_github_tasks: true
 config :codebattle, html_env: :prod
-config :codebattle, html_include_prod_scripts: true
+config :codebattle, use_external_js: true
 config :codebattle, html_debug_mode: false
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
 
@@ -49,7 +39,7 @@ config :codebattle, checker_executor: checker_executor
 config :codebattle, asserts_executor: asserts_executor
 
 config :runner, load_dot_env_file: false
-config :runner, use_prod_workers: true
+config :runner, pull_docker_images: true
 
 config :runner, RunnerWeb.Endpoint,
   http: [port: System.get_env("4001")],

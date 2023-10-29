@@ -89,23 +89,25 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
-config :codebattle, admins: ["vtm", "ReDBrother", "solar05"]
-
+config :codebattle, admins: ["admin"]
 config :codebattle, restore_tournaments: false
 config :codebattle, freeze_time: false
 config :codebattle, load_dot_env_file: true
-config :codebattle, use_prod_workers: false
-config :codebattle, use_non_test_workers: true
-config :codebattle, html_include_prod_scripts: false
+config :codebattle, import_github_tasks: false
+config :codebattle, user_rank_server: true
+config :codebattle, create_bot_games: true
+config :codebattle, use_external_js: false
 config :codebattle, html_debug_mode: true
 config :codebattle, fake_html_to_image: false
+config :codebattle, use_only_token_auth: false
+config :codebattle, show_extension_popup: true
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
 config :runner, load_dot_env_file: true
-config :runner, use_prod_workers: false
+config :runner, pull_docker_images: false
 config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)
 config :runner, fake_docker_run: false
 

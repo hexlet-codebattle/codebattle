@@ -6,7 +6,9 @@ defmodule CodebattleWeb.AuthController do
   require Logger
 
   def token(conn, params) do
-    case Codebattle.Oauth.User.find_by_token(params["t"]) do
+    token = params |> Map.get("t", "") |> String.trim()
+
+    case Codebattle.Oauth.User.find_by_token(token) do
       {:ok, user} ->
         conn
         |> put_flash(:info, gettext("Successfully authenticated"))

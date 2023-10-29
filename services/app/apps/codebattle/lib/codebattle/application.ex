@@ -15,19 +15,23 @@ defmodule Codebattle.Application do
       Config.Reader.read!(config_path) |> Application.put_all_env()
     end
 
-    prod_workers =
-      if Application.get_env(:codebattle, :use_prod_workers) do
+    github_tasks =
+      if Application.get_env(:codebattle, :import_github_tasks) do
         [{Codebattle.TasksImporter, []}]
       else
         []
       end
 
-    non_test_workers =
-      if Application.get_env(:codebattle, :use_non_test_workers) do
-        [
-          {Codebattle.Bot.GameCreator, []},
-          {Codebattle.UsersRankUpdateServer, []}
-        ]
+    bot_games =
+      if Application.get_env(:codebattle, :create_bot_games) do
+        [{Codebattle.Bot.GameCreator, []}]
+      else
+        []
+      end
+
+    user_rank =
+      if Application.get_env(:codebattle, :user_rank_server) do
+        [{Codebattle.UsersRankUpdateServer, []}]
       else
         []
       end
@@ -57,7 +61,7 @@ defmodule Codebattle.Application do
           id: Codebattle.Chat.Lobby,
           start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: :timer.hours(8)}]}
         }
-      ] ++ prod_workers ++ non_test_workers
+      ] ++ github_tasks ++ bot_games ++ user_rank
 
     Supervisor.start_link(children,
       strategy: :one_for_one,

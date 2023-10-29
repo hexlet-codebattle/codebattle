@@ -12,7 +12,6 @@ defmodule Codebattle.User do
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()
 
-  @admins Application.compile_env(:codebattle, :admins)
   @guest_id 0
 
   defmodule SoundSettings do
@@ -113,7 +112,7 @@ defmodule Codebattle.User do
 
   @spec admin?(t()) :: boolean()
   def admin?(user) do
-    user.name in @admins
+    user.name in Application.get_env(:codebattle, :admins)
   end
 
   @spec bot?(integer() | t()) :: boolean()

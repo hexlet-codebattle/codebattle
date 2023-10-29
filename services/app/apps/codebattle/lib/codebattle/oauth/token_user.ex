@@ -1,17 +1,18 @@
 defmodule Codebattle.Oauth.User.TokenUser do
   @moduledoc """
-    Basic auth_token auth
+    Token auth
   """
   require Logger
 
-  alias Codebattle.{Repo, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
 
   def find(nil), do: {:error, "lol"}
   def find(""), do: {:error, "kek"}
 
   def find(token) do
     case Repo.get_by(User, auth_token: token) do
-      nil -> {:error, "lol_kek"}
+      nil -> {:error, "Wrong auth token"}
       user -> {:ok, user}
     end
   end
