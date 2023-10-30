@@ -156,6 +156,7 @@ defmodule Codebattle.Tournament.Base do
               &%{
                 &1
                 | score: &1.score + player_result.score,
+                  lang: player_result.lang,
                   wins_count: &1.wins_count + if(player_result.result == "won", do: 1, else: 0)
               }
             )
@@ -206,7 +207,7 @@ defmodule Codebattle.Tournament.Base do
               fn player_result, tournament ->
                 update_in(
                   tournament.players[to_id(player_result.id)],
-                  &%{&1 | score: &1.score + player_result.score}
+                  &%{&1 | score: &1.score + player_result.score, lang: player_result.lang}
                 )
               end
             )

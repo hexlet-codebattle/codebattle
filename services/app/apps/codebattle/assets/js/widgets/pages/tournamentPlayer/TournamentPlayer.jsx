@@ -48,14 +48,14 @@ const RoundStatus = ({ playerId, matches }) => {
         </span>
         <span className="ml-2 h4">
           {'Score: '}
-          {player.score}
+          {Math.ceil(player.score)}
         </span>
         <span className="ml-2 h4">
-          {`AVG Tests: ${player.avgTests}%`}
+          {`AVG Tests: ${Math.ceil(player.avgTests)}%`}
         </span>
         <span className="ml-4 h4">
           {'AVG Duration: '}
-          {player.avgDuration}
+          {Math.ceil(player.avgDuration)}
           {' sec'}
         </span>
       </div>

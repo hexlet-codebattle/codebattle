@@ -38,26 +38,26 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
   return (
     <div className="d-flex flex-column">
       {matches.length > 0 && (
-      <div className="d-flex py-2 border-bottom overflow-auto">
-        <span className="ml-2">
-          {'Wins: '}
-          {player.winMatches.length}
-        </span>
-        <span className="ml-1 pl-1 border-left">
-          {'Round Score: '}
-          {player.score}
-        </span>
-        <span className="ml-1 pl-1 border-left">
-          {'AVG Tests: '}
-          {player.avgTests}
-          %
-        </span>
-        <span className="ml-1 pl-1 border-left">
-          {'AVG Duration: '}
-          {player.avgDuration}
-          {' sec'}
-        </span>
-      </div>
+        <div className="d-flex py-2 border-bottom overflow-auto">
+          <span className="ml-2">
+            {'Wins: '}
+            {player.winMatches.length}
+          </span>
+          <span className="ml-1 pl-1 border-left">
+            {'Round Score: '}
+            {Math.ceil(player.score)}
+          </span>
+          <span className="ml-1 pl-1 border-left">
+            {'AVG Tests: '}
+            {Math.ceil(player.avgTests)}
+            %
+          </span>
+          <span className="ml-1 pl-1 border-left">
+            {'AVG Duration: '}
+            {Math.ceil(player.avgDuration)}
+            {' sec'}
+          </span>
+        </div>
       )}
       {matches.map((match, index) => {
         const matchClassName = cn(

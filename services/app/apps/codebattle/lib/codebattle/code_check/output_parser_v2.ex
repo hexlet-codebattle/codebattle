@@ -23,7 +23,10 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   defp parse_output(token = %{exit_code: 0}) do
-    %{token | solution_results: Jason.decode!(token.container_output)}
+    solution_results =
+      token.container_output |> String.replace(~r/WARNING:.+\n/, "") |> Jason.decode!()
+
+    %{token | solution_results: solution_results}
   rescue
     _e ->
       solution_results =

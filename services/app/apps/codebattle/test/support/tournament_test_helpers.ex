@@ -23,6 +23,7 @@ defmodule Codebattle.TournamentTestHelpers do
               result: "won",
               id: user_id,
               duration_sec: 10,
+              lang: "js",
               result_percent: 100.0,
               score: 8
             },
@@ -30,6 +31,7 @@ defmodule Codebattle.TournamentTestHelpers do
               result: "lost",
               id: opponent_id,
               duration_sec: 15,
+              lang: "js",
               result_percent: 50.0,
               score: 3
             }

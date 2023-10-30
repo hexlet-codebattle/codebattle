@@ -100,7 +100,7 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   defp render_break(assigns) do
     ~H"""
     <div>
-     <img alt={"¯\_(ツ)_/¯"} src={"/assets/images/timer.svg"} />
+      <img alt="¯\_(ツ)_/¯" src="/assets/images/timer.svg" />
     </div>
     """
   end

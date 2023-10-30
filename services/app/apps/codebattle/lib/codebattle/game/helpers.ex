@@ -71,6 +71,7 @@ defmodule Codebattle.Game.Helpers do
         player
         |> Map.take([:id, :result, :result_percent])
         |> Map.put(:duration_sec, duration_sec)
+        |> Map.put(:lang, player.editor_lang)
         |> Map.put(
           :score,
           get_player_score(player, duration_sec, game.level, game.timeout_seconds)
