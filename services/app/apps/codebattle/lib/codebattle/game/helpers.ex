@@ -164,6 +164,6 @@ defmodule Codebattle.Game.Helpers do
         true -> 1.32 - duration_sec / timeout_seconds
       end
 
-    round(base_winner_score + game_level_score * duration_k * test_count_k)
+    round(base_winner_score + game_level_score * duration_k * test_count_k * 10)
   end
 end

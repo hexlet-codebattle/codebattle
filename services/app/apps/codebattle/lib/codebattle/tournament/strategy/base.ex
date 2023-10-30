@@ -192,9 +192,23 @@ defmodule Codebattle.Tournament.Base do
 
             Game.Context.trigger_timeout(match_to_finish.game_id)
 
-            update_in(
-              acc.matches[to_id(match_to_finish.id)],
-              &%{&1 | player_results: player_results, state: "timeout"}
+            acc =
+              update_in(
+                acc.matches[to_id(match_to_finish.id)],
+                &%{&1 | player_results: player_results, state: "timeout"}
+              )
+
+            player_results
+            |> Map.values()
+            |> Enum.filter(fn player_result -> tournament.players[to_id(player_result.id)] end)
+            |> Enum.reduce(
+              acc,
+              fn player_result, tournament ->
+                update_in(
+                  tournament.players[to_id(player_result.id)],
+                  &%{&1 | score: &1.score + player_result.score}
+                )
+              end
             )
           end)
 
