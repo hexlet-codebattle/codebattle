@@ -23,7 +23,7 @@ function TournamentUserPanel({
   searchedUserId = 0,
 }) {
   const disabled = searchedUserId === userId || currentUserId === userId;
-  const [open, setOpen] = useState(disabled);
+  const [open, setOpen] = useState(true);
 
   const panelClassName = cn(
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
@@ -123,7 +123,7 @@ function TournamentUserPanel({
       </div>
       <Collapse in={open}>
         <div id="collapse-matches-one" className="border-top">
-          <UsersMatchList currentUserId={currentUserId} matches={matches} />
+          <UsersMatchList currentUserId={currentUserId} playerId={userId} matches={matches} />
         </div>
       </Collapse>
     </div>

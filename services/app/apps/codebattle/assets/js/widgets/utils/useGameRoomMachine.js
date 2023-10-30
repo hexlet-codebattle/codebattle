@@ -3,6 +3,14 @@ import { useDispatch } from 'react-redux';
 
 import { actions } from '../slices';
 
+/**
+ *
+ * @return {{
+ *  mainService: import('xstate').InterpreterFrom<import('xstate').StateMachine>,
+ *  taskService: import('xstate').InterpreterFrom<import('xstate').StateMachine>
+ * }}
+ *
+ */
 const useGameRoomMachine = ({
   setTaskModalShowing,
   setResultModalShowing,

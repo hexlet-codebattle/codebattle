@@ -2,6 +2,12 @@ import { useCallback, useState, useMemo } from 'react';
 
 import { useContextMenu } from 'react-contexify';
 
+/**
+ * @typedef {{ user: {name: string, isBot: boolean, userId: number, canInvite: boolean}}} MenuRequest
+ *
+ * @return {{menuId: number, menuRequest: MenuRequest, displayMenu: Function}}
+ *
+ */
 const useChatContextMenu = ({
   type,
   users,

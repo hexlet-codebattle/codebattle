@@ -27,19 +27,22 @@ function CheckResultButton({ onClick, status }) {
     case 'enabled':
       return (
         <button type="button" {...commonProps}>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
+          Run
         </button>
       );
     case 'checking':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon="spinner" pulse />
+          <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
+          Running...
         </button>
       );
     case 'disabled':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
+          Run
         </button>
       );
     default: {

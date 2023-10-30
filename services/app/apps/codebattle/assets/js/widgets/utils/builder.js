@@ -75,6 +75,11 @@ export const getTaskTemplates = task => ({
 
 export const haveNestedType = type => !!defaultSignatureByType[type].type.nested;
 
+/**
+ *
+ * @return {([boolean]|[boolean, string])}
+ *
+ */
 export const validateTaskName = name => {
   if (!name || name.length === 0) {
     return [false, 'Name is required'];
@@ -91,6 +96,11 @@ export const validateTaskName = name => {
   return [true];
 };
 
+/**
+ *
+ * @return {([boolean]|[boolean, string])}
+ *
+ */
 export const validateDescription = description => {
   if (!description || description.length === 0) {
     return [false, 'Description is required'];
@@ -107,6 +117,11 @@ export const validateDescription = description => {
   return [true];
 };
 
+/**
+ *
+ * @return {([boolean]|[boolean, string])}
+ *
+ */
 export const validateInputSignatures = inputSignature => {
   if (inputSignature.length === 0) {
     return [false, 'At least 1 argument must be described'];
@@ -115,6 +130,11 @@ export const validateInputSignatures = inputSignature => {
   return [true];
 };
 
+/**
+ *
+ * @return {([boolean]|[boolean, string])}
+ *
+ */
 export const validateExamples = examples => {
   if (examples.length < MIN_EXAMPLES_COUNT) {
     return [false, `Must be at least ${MIN_EXAMPLES_COUNT} examples`];

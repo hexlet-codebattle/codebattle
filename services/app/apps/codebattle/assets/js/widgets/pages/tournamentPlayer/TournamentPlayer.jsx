@@ -5,7 +5,6 @@ import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
 import reverse from 'lodash/reverse';
-import sum from 'lodash/sum';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CountdownTimer from '@/components/CountdownTimer';
@@ -18,6 +17,7 @@ import TournamentStates from '../../config/tournament';
 import { connectToTournamentPlayer } from '../../middlewares/TournamentPlayer';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
+import useRoundStatistics from '../../utils/useRoundStatistics';
 import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
@@ -25,68 +25,69 @@ import TaskAssignment from '../game/TaskAssignment';
 import SpectatorEditor from './SpectatorEditor';
 
 const RoundStatus = ({ playerId, matches }) => {
-  const finishedMatches = matches.filter(match => match.playerResults[playerId]);
-  const matchesCount = finishedMatches.length;
+  const [
+    // player = {
+    //   winMatches
+    //   score,
+    //   avgTests,
+    //   avgDuration,
+    // },
+    player,
+    opponent,
+  ] = useRoundStatistics(
+    playerId,
+    matches,
+  );
 
-  const opponentId = matches[0].playerIds.find(id => (id !== playerId));
-  const playerWinMatches = matches.filter(match => playerId === match.winnerId);
-  const opponentWinMatches = matches.filter(match => opponentId === match.winnerId);
-
-  const playerScore = sum(finishedMatches.map(match => match.playerResults[playerId]?.score || 0));
-  const opponnentScore = sum(finishedMatches.map(match => match.playerResults[opponentId]?.score || 0));
-
-  const playerAvgTests = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[playerId]?.resultPercent || 0)) / matchesCount : 0;
-  const opponnentAvgTests = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[opponentId]?.resultPercent || 0)) / matchesCount : 0;
-
-  const playerAvgDuration = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[playerId]?.durationSec || 0)) / matchesCount : 0;
-  const opponnentAvgDuration = matchesCount !== 0 ? sum(finishedMatches.map(match => match.playerResults[opponentId]?.durationSec || 0)) / matchesCount : 0;
+  console.log(player, opponent);
 
   const RoundStatistics = () => (
-    <div className="d-flex text-center align-items-center">
+    <div className="d-flex text-center align-items-center justify-content-center">
       <div className="d-flex flex-column align-items-baseline">
         <span className="ml-2 h4">
           {'Wins: '}
-          {playerWinMatches.length}
+          {player.winMatches.length}
         </span>
         <span className="ml-2 h4">
           {'Score: '}
-          {playerScore}
+          {player.score}
         </span>
         <span className="ml-2 h4">
-          {`AVG Tests: ${playerAvgTests}%`}
+          {`AVG Tests: ${player.avgTests}%`}
         </span>
         <span className="ml-4 h4">
           {'AVG Duration: '}
-          {playerAvgDuration}
+          {player.avgDuration}
           {' sec'}
         </span>
       </div>
     </div>
   );
+
   const RoundResultIcon = () => {
-    if ((playerWinMatches.length === opponentWinMatches.length)
-      && (playerScore === opponnentScore)
-      && (playerAvgTests === opponnentAvgTests)
-      && (playerAvgDuration === opponnentAvgDuration)
+    if ((player.winMatches.length === opponent.winMatches.length)
+      && (player.score === opponent.score)
+      && (player.avgTests === opponent.avgTests)
+      && (player.avgDuration === opponent.avgDuration)
     ) {
       return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
     }
 
     if (
-      (playerWinMatches.length > opponentWinMatches.length)
+        (player.score > opponent.score)
       || (
-        (playerWinMatches.length === opponentWinMatches.length)
-        && (playerScore > opponnentScore)
+        (player.score === opponent.score)
+        && (player.winMatches.length > opponent.winMatches.length)
       )
       || (
-        (playerWinMatches.length === opponentWinMatches.length)
-        && (playerScore === opponnentScore)
-        && (playerAvgTests > opponnentAvgTests)
+        (player.winMatches.length === opponent.winMatches.length)
+        && (player.score === opponent.score)
+        && (player.avgTests > opponent.avgTests)
       )
-      || ((playerWinMatches.length === opponentWinMatches.length)
-        && (playerScore === opponnentScore)
-        && (playerAvgTests === opponnentAvgTests)
-        && (playerAvgDuration > opponnentAvgDuration)
+      || ((player.winMatches.length === opponent.winMatches.length)
+        && (player.score === opponent.score)
+        && (player.avgTests === opponent.avgTests)
+        && (player.avgDuration > opponent.avgDuration)
       )
     ) {
       return <FontAwesomeIcon className="ml-2 text-warning" icon="trophy" />;
@@ -97,7 +98,9 @@ const RoundStatus = ({ playerId, matches }) => {
 
   return (
     <div className="d-flex">
-      <RoundResultIcon />
+      <div className="d-flex justify-content-center align-items-center h1">
+        <RoundResultIcon />
+      </div>
       <RoundStatistics />
     </div>
   );
@@ -251,9 +254,10 @@ function TournamentPlayer({
     const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
     const rounds = reverse(Object.keys(groupedMatches));
 
-    const lastRound = rounds[0];
+    const lastRound = rounds[2];
+    console.log(groupedMatches[lastRound]);
 
-    if (!lastRound) {
+    if (!lastRound || !groupedMatches[lastRound]) {
       return (
         <div
           className="card bg-white rounded-lg flex justify-content-center align-items-center w-100 h-100"
@@ -265,37 +269,42 @@ function TournamentPlayer({
 
     return (
       <div className="card border-0 rounded-lg shadow-sm h-100">
-        <div className="p-2 d-flex flex-column justify-content-center align-items-center text-center h-100">
-          <h1 className="mt-2">
-            <RoundStatus
-              playerId={playerId}
-              matches={groupedMatches[lastRound]}
-            />
-          </h1>
-          <div>
-            {groupedMatches[lastRound].map(match => (
-              <div className="d-flex text-center align-items-center" key={match.id}>
-                <span className="h3">{getMatchIcon(playerId, match)}</span>
-                {match.playerResults[playerId] ? (
-                  <div className="d-flex flex-column align-items-baseline">
-                    <span className="ml-4 h4">
-                      {'Duration: '}
-                      {match.playerResults[playerId].durationSec}
-                      {' sec'}
-                    </span>
-                    <span className="ml-2 h4">
-                      {'Score: '}
-                      {match.playerResults[playerId].score}
-                    </span>
-                    <span className="ml-2 h4">
-                      {`Tests: ${match.playerResults[playerId].resultPercent}%`}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="ml-4 h3">¯\_(ツ)_/¯</span>
-                )}
-              </div>
-            ))}
+        <div className="p-2 d-flex h-100 w-100">
+          <div className="d-flex flex-column w-100 overflow-auto">
+            <h2 className="mb-4">Round Statistics:</h2>
+            <div className="mt-2">
+              <RoundStatus
+                playerId={playerId}
+                matches={groupedMatches[lastRound]}
+              />
+            </div>
+
+            <h2 className="mb-4 mt-2 border-top">Matches:</h2>
+            <div>
+              {groupedMatches[lastRound].map(match => (
+                <div className="d-flex text-center align-items-center" key={match.id}>
+                  <span className="h3">{getMatchIcon(playerId, match)}</span>
+                  {match.playerResults[playerId] ? (
+                    <div className="d-flex flex-column align-items-baseline">
+                      <span className="ml-4 h4">
+                        {'Duration: '}
+                        {match.playerResults[playerId].durationSec}
+                        {' sec'}
+                      </span>
+                      <span className="ml-2 h4">
+                        {'Score: '}
+                        {match.playerResults[playerId].score}
+                      </span>
+                      <span className="ml-2 h4">
+                        {`Tests: ${match.playerResults[playerId].resultPercent}%`}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="ml-4 h3">¯\_(ツ)_/¯</span>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

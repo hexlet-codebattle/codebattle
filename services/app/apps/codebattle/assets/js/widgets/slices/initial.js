@@ -282,7 +282,108 @@ const defaultTournamentPlayerParams = {
 //
 // ******************************
 
-const initial = {
+/**
+ * @typedef {{
+ *  avatarUrl: string,
+ *  checkResult: Object,
+ *  creator: boolean,
+ *  durationSec: number,
+ *  editorLang: string,
+ *  editorText: string,
+ *  id: number,
+ *  isBot: boolean,
+ *  isGuest: boolean,
+ *  lang: string,
+ *  name: string,
+ *  rank: number,
+ *  rating: number,
+ *  ratingDiff: number,
+ *  result: string,
+ *  resultPercent: number,
+ * }} Player
+ * @typedef {{
+ *  state: string,
+ *  msg: string,
+ *  type: string,
+ *  mode: string,
+ *  startsAt: string,
+ *  score: Object,
+ *  timeoutSeconds: number,
+ *  rematchState: string,
+ *  rematchInitiatorId: number,
+ *  checking: Object,
+ *  solutionStatus: {?string},
+ * }} GameStatusState
+ * @typedef {{
+ *  id: number,
+ *  name: string,
+ *  level: string,
+ *  examples: string,
+ *  descriptionRu: {?string},
+ *  descriptionEn: {?string},
+ *  tags: string[],
+ *  state: string,
+ *  origin: string,
+ *  visibility: boolean,
+ *  creatorId: number,
+ *  inputSignature: Object[],
+ *  outputSignature: Object,
+ *  asserts: Object[],
+ *  assertsExamples: Object[],
+ *  solution: string,
+ *  argumentsGenerator: string,
+ *  generatorLang: string,
+ * }} TaskState
+ * @typedef {{
+ *   gameStatus: GameStatusState,
+ *   task: TaskState,
+ *   players: Object<number, Player>,
+ *   tournamentsInfo: {?Object},
+ *   useChat: boolean,
+ *   alerts: Object,
+ * }} GameState
+ * @typedef {{
+ *   accessToken: string,
+ *   accessType: string,
+ *   breakDurationSeconds: number,
+ *   breakState: string,
+ *   currentRound: number,
+ *   defaultLanguage: string,
+ *   description: string,
+ *   level: string,
+ *   matchTimeoutSeconds: number,
+ *   matches: Object<number, Match>,
+ *   lastRoundStartedAt: string,
+ *   lastRoundEndedAt: string,
+ *   meta: Object,
+ *   name: string,
+ *   playedPairIds: number[],
+ *   players: Object<number, Player>,
+ *   playersCount: number,
+ *   playersLimit: number,
+ *   startsAt: string,
+ *   state: string,
+ *   taskStrategy: string,
+ *   type: string,
+ *   useChat: boolean,
+ * }} TournamentState
+ *
+ * @const {{
+ *   game: GameState,
+ *   tournament: TournamentState,
+ *   tournamentPlayer: Object,
+ *   editor: Object,
+ *   executionOutput: Object,
+ *   builder: Object,
+ *   activeGames: Object,
+ *   completedGames: Object,
+ *   liveTournaments: Object,
+ *   completedTournaments: Object,
+ *   user: Object,
+ * }}
+ *
+ */
+export default {
   game: {
     gameStatus: initialGameStatus,
     task: initialGameTask,
@@ -333,5 +434,3 @@ const initial = {
     },
   },
 };
-
-export default initial;

@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
+import useRoundStatistics from '@/utils/useRoundStatistics';
+
 import Loading from '../../components/Loading';
 import UserInfo from '../../components/UserInfo';
 
@@ -20,7 +22,9 @@ function UserTournamentInfo({ userId }) {
   return <UserInfo user={user} hideOnlineIndicator />;
 }
 
-function UsersMatchList({ currentUserId, matches }) {
+function UsersMatchList({ currentUserId, playerId, matches }) {
+  const [player] = useRoundStatistics(playerId, matches);
+
   if (matches.length === 0) {
     return (
       <div
@@ -33,6 +37,26 @@ function UsersMatchList({ currentUserId, matches }) {
 
   return (
     <div className="d-flex flex-column">
+      <div className="d-flex py-2 border-bottom overflow-auto">
+        <span className="ml-2">
+          {'Wins: '}
+          {player.winMatches.length}
+        </span>
+        <span className="ml-1 pl-1 border-left">
+          {'Round Score: '}
+          {player.score}
+        </span>
+        <span className="ml-1 pl-1 border-left">
+          {'AVG Tests: '}
+          {player.avgTests}
+          %
+        </span>
+        <span className="ml-1 pl-1 border-left">
+          {'AVG Duration: '}
+          {player.avgDuration}
+          {' sec'}
+        </span>
+      </div>
       {matches.map((match, index) => {
         const matchClassName = cn(
           'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
