@@ -106,7 +106,8 @@ defmodule Codebattle.Tournament.StairwayTest do
          id: player_id,
          result: result,
          duration_sec: 100,
-         result_percent: 100
+         result_percent: 100,
+         score: 5
        }}
     end)
     |> Enum.into(%{})

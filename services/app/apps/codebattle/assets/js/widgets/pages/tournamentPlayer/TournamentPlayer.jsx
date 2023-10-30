@@ -39,8 +39,6 @@ const RoundStatus = ({ playerId, matches }) => {
     matches,
   );
 
-  console.log(player, opponent);
-
   const RoundStatistics = () => (
     <div className="d-flex text-center align-items-center justify-content-center">
       <div className="d-flex flex-column align-items-baseline">
@@ -148,7 +146,6 @@ function TournamentPlayer({
 
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
 
-  // const currentUserId = useSelector(selectors.currentUserIdSelector);
   const {
     startsAt,
     timeoutSeconds,
@@ -227,7 +224,7 @@ function TournamentPlayer({
         >
           <div className={spectatorGameStatusClassName}>
             {GameStateCodes.playing !== gameState && (
-              <h3>Game is Over</h3>
+              <h3>Game Over</h3>
             )}
             {startsAt && gameState === GameStateCodes.playing && (
               <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
@@ -254,8 +251,7 @@ function TournamentPlayer({
     const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
     const rounds = reverse(Object.keys(groupedMatches));
 
-    const lastRound = rounds[2];
-    console.log(groupedMatches[lastRound]);
+    const lastRound = rounds[0];
 
     if (!lastRound || !groupedMatches[lastRound]) {
       return (

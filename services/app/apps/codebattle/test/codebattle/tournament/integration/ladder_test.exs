@@ -51,7 +51,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 0
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(300)
+      :timer.sleep(150)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert %Player{score: 12, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -81,7 +81,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 1
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(300)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -106,7 +106,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 1
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 2
       assert tournament |> get_matches("timeout") |> Enum.count() == 148
@@ -114,7 +114,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 2
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament.state == "finished"
@@ -145,7 +145,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 0
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(300)
+      :timer.sleep(150)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -164,7 +164,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert %Player{score: 12, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -175,7 +175,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 1
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(300)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -200,7 +200,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 1
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 2
       assert tournament |> get_matches("timeout") |> Enum.count() == 9
@@ -208,7 +208,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.current_round == 2
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(300)
+      :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament.state == "finished"

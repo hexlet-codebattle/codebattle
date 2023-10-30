@@ -20,7 +20,13 @@ import {
 } from '../machines/selectors';
 import * as ChatActions from '../middlewares/Chat';
 import * as GameRoomActions from '../middlewares/Game';
-import { gameStatusSelector, gameUseChatSelector, isShowGuideSelector } from '../selectors';
+import * as TournamentPlayerActions from '../middlewares/TournamentPlayer';
+import {
+  firstPlayerSelector,
+  gameStatusSelector,
+  gameUseChatSelector,
+  isShowGuideSelector,
+} from '../selectors';
 import { actions } from '../slices';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
@@ -34,6 +40,7 @@ import CodebattlePlayer from './game/CodebattlePlayer';
 import GameWidget from './game/GameWidget';
 import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
+import TournamentStatisticsModal from './game/TournamentStatisticsModal';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
 const steps = [
@@ -197,7 +204,14 @@ function GameRoomWidget({
 
   const [taskModalShowing, setTaskModalShowing] = useState(false);
   const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
+  const [tournamentStatisticsModalShowing, setTournamentStatisticsModalShowing] = useState(false);
   const [resultModalShowing, setResultModalShowing] = useState(false);
+
+  const gameStatus = useSelector(gameStatusSelector);
+
+  const tournamentId = gameStatus?.tournamentId;
+  const firstPlayer = useSelector(firstPlayerSelector);
+  const tournamentPlayerId = firstPlayer.id;
 
   const useChat = useSelector(gameUseChatSelector);
   const mute = useSelector(state => state.user.settings.mute);
@@ -217,8 +231,6 @@ function GameRoomWidget({
   const inWaitingRoom = inWaitingRoomSelector(roomCurrent);
   const replayerIsOpen = openedReplayerSelector(roomCurrent);
   const gameRoomKey = gameRoomKeySelector(roomCurrent);
-
-  const gameStatus = useSelector(gameStatusSelector);
 
   useEffect(() => {
     // FIXME: maybe take from gon?
@@ -242,6 +254,23 @@ function GameRoomWidget({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    TournamentPlayerActions.updateTournamentPlayerChannel(
+      tournamentId,
+      tournamentPlayerId,
+    );
+
+    if (tournamentId && tournamentPlayerId) {
+      const clearTournament = TournamentPlayerActions.connectToTournamentPlayer()(dispatch);
+
+      return () => {
+        clearTournament();
+      };
+    }
+
+    return () => {};
+  }, [tournamentId, tournamentPlayerId, dispatch]);
 
   useEffect(() => {
     const muteSound = e => {
@@ -293,6 +322,10 @@ function GameRoomWidget({
                 <TaskConfigurationModal
                   modalShowing={taskConfigurationModalShowing}
                   setModalShowing={setTaskConfigurationModalShowing}
+                />
+                <TournamentStatisticsModal
+                  modalShowing={tournamentStatisticsModalShowing}
+                  setModalShowing={setTournamentStatisticsModalShowing}
                 />
                 <AnimationModal
                   setModalShowing={setResultModalShowing}

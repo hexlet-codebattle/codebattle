@@ -13,7 +13,7 @@ const emptyStats = {
  * @typedef {{result: string, score: number, resultPercent: number, durationSec: number}} PlayerResult
  * @typedef {Object.<number, PlayerResult>} PlayerResults
  * @typedef {{playerIds: array, winnerId: number, playerResults: [PlayerResults]}} Match
- * @typedef {{winMatches: Match[], score: number, avgTests: number, avgDuration: number}} PlayerStatistics
+ * @typedef {{playerId: number, winMatches: Match[], score: number, avgTests: number, avgDuration: number}} PlayerStatistics
  *
  * @param {number} playerId - player id
  * @param {Match[]} matches - list of matches per round
@@ -53,12 +53,14 @@ function useRoundStatistics(
     : 0;
 
   const player = {
+    playerId,
     winMatches: playerWinMatches,
     score: playerScore,
     avgTests: playerAvgTests,
     avgDuration: playerAvgDuration,
   };
   const opponent = {
+    playerId: opponentId,
     winMatches: opponentWinMatches,
     score: opponentScore,
     avgTests: opponentAvgTests,

@@ -23,6 +23,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
       {:ok,
        %{
          game_id: game_id,
+         type: tournament.type,
          tournament_id: tournament_id,
          state: tournament.state,
          break_state: tournament.break_state,

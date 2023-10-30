@@ -7,7 +7,15 @@ import { actions } from '../slices';
 const tournamentId = Gon.getAsset('tournament_id');
 const playerId = Gon.getAsset('player_id');
 const channelName = `tournament_player:${tournamentId}_${playerId}`;
-const channel = socket.channel(channelName);
+
+let channel = playerId ? socket.channel(channelName) : null;
+
+export const updateTournamentPlayerChannel = (newTournamentId, newPlayerId) => {
+  const newChannelName = `tournament_player:${newTournamentId}_${newPlayerId}`;
+  channel = newTournamentId && newPlayerId
+    ? socket.channel(newChannelName)
+    : null;
+};
 
 const initTournamentPlayerChannel = dispatch => {
   const onJoinFailure = () => {
@@ -19,10 +27,10 @@ const initTournamentPlayerChannel = dispatch => {
 
     dispatch(actions.setTournamentData({
       id: data.tournamentId,
-      state: data.tournamentState,
+      state: data.state,
+      type: data.type,
       breakState: data.breakState,
       matches: data.matches,
-      gameResults: data.gameResults,
       tournamentChannel: { online: true },
     }));
 
