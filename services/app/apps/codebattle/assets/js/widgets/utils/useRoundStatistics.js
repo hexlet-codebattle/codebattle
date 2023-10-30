@@ -1,6 +1,7 @@
 import sum from 'lodash/sum';
 
 const emptyStats = {
+  playerId: null,
   winMatches: [],
   score: 0,
   avgTests: 0,
@@ -13,7 +14,7 @@ const emptyStats = {
  * @typedef {{result: string, score: number, resultPercent: number, durationSec: number}} PlayerResult
  * @typedef {Object.<number, PlayerResult>} PlayerResults
  * @typedef {{playerIds: array, winnerId: number, playerResults: [PlayerResults]}} Match
- * @typedef {{playerId: number, winMatches: Match[], score: number, avgTests: number, avgDuration: number}} PlayerStatistics
+ * @typedef {{playerId: {?number}, winMatches: Match[], score: number, avgTests: number, avgDuration: number}} PlayerStatistics
  *
  * @param {number} playerId - player id
  * @param {Match[]} matches - list of matches per round

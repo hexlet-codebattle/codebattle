@@ -1,5 +1,9 @@
-import React, { useCallback, useEffect, memo } from 'react';
+import React, {
+ useCallback, useEffect, memo, useMemo, useState,
+} from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
@@ -17,10 +21,23 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
   const firstPlayer = useSelector(firstPlayerSelector);
   const secondPlayer = useSelector(secondPlayerSelector);
 
-  const [player, opponent] = useRoundStatistics(
-    firstPlayer.id,
-    Object.values(tournament?.matches || {}),
-  );
+  const [showFullStatistics, setShowFullStatistics] = useState(false);
+
+  const toggleStatisticsMode = useCallback(() => {
+    setShowFullStatistics(state => !state);
+  }, [setShowFullStatistics]);
+
+  const matches = useMemo(() => {
+    if (showFullStatistics) {
+      return Object.values(tournament?.matches || {});
+    }
+
+    return Object.values(tournament?.matches || {}).filter(
+      ({ round }) => round === tournament.currentRound,
+    );
+  }, [tournament.matches, tournament.currentRound, showFullStatistics]);
+
+  const [player, opponent] = useRoundStatistics(firstPlayer.id, matches);
 
   const showTournamentStatistics = tournament.type === 'swiss'
     && secondPlayer.id === opponent.playerId
@@ -32,7 +49,7 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
     if (!modalShowing && showTournamentStatistics) {
       setModalShowing(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showTournamentStatistics]);
 
   const handleClose = useCallback(() => {
@@ -40,57 +57,58 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
   }, [setModalShowing]);
 
   return (
-    <Modal size="xl" show={modalShowing} onHide={handleClose}>
+    <Modal centered show={modalShowing} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Tournament Round Statistics</Modal.Title>
+        <Modal.Title>Tournament Statistics</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-between">
-          <div className="d-flex flex-column p-2">
-            <span className="h4 mb-2">Player:</span>
-            <span className="h4 mb-2">Score:</span>
-            <span className="h4 mb-2">Wins:</span>
-            <span className="h4 mb-2">AVG Tests:</span>
-            <span className="h4 mb-2 text-nowrap">AVG Solving speed:</span>
-          </div>
           <div className="d-flex flex-column align-items-center p-2">
+            <span className="h4 mb-2">{firstPlayer?.name}</span>
+            <span className="h4 mb-2">{player.score}</span>
+            <span className="h4 mb-2">{player.winMatches.length}</span>
             <span className="h4 mb-2">
-              {firstPlayer?.name}
-            </span>
-            <span className="h4 mb-2">
-              {player.score}
-            </span>
-            <span className="h4 mb-2">
-              {player.winMatches.length}
-            </span>
-            <span className="h4 mb-2">
-              {player.avgTests}
+              {Math.ceil(player.avgTests)}
               %
             </span>
             <span className="h4 mb-2">
-              {player.avgDuration}
+              {Math.ceil(player.avgDuration)}
+              {' sec'}
             </span>
           </div>
           <div className="d-flex flex-column align-items-center p-2">
+            <span className="h4 mb-2">Player</span>
+            <span className="h4 mb-2">Score</span>
+            <span className="h4 mb-2">Wins</span>
+            <span className="h4 mb-2">AVG Tests</span>
+            <span className="h4 mb-2 text-nowrap">AVG Solving speed</span>
+          </div>
+          <div className="d-flex flex-column align-items-center p-2">
+            <span className="h4 mb-2">{secondPlayer?.name}</span>
+            <span className="h4 mb-2">{opponent.score}</span>
+            <span className="h4 mb-2">{opponent.winMatches.length}</span>
             <span className="h4 mb-2">
-              {secondPlayer?.name}
-            </span>
-            <span className="h4 mb-2">
-              {opponent.score}
-            </span>
-            <span className="h4 mb-2">
-              {opponent.winMatches.length}
-            </span>
-            <span className="h4 mb-2">
-              {opponent.avgTests}
+              {Math.ceil(opponent.avgTests)}
               %
             </span>
             <span className="h4 mb-2">
-              {opponent.avgDuration}
+              {Math.ceil(opponent.avgDuration)}
+              {' sec'}
             </span>
           </div>
         </div>
       </Modal.Body>
+      <Modal.Footer>
+        <div className="d-flex justify-content-end w-100">
+          <Button
+            onClick={toggleStatisticsMode}
+            className="btn btn-success text-white rounded-lg"
+          >
+            <FontAwesomeIcon icon={showFullStatistics ? 'toggle-on' : 'toggle-off'} className="mr-2" />
+            {showFullStatistics ? 'Open current round' : 'Open full statistics'}
+          </Button>
+        </div>
+      </Modal.Footer>
     </Modal>
   );
 }

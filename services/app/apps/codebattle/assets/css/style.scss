@@ -688,7 +688,7 @@ main {
 
 @media screen and (min-width: $md) {
   .modal-dialog {
-    max-width: 600px; /* New width for default modal */
+    min-width: 700px; /* New width for default modal */
   }
 }
 

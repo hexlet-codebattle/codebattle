@@ -30,6 +30,7 @@ const initTournamentPlayerChannel = dispatch => {
       state: data.state,
       type: data.type,
       breakState: data.breakState,
+      currentRound: data.currentRound,
       matches: data.matches,
       tournamentChannel: { online: true },
     }));
@@ -53,7 +54,7 @@ export const connectToTournamentPlayer = () => dispatch => {
   const handleRoundFinished = response => {
     const data = camelizeKeys(response);
 
-    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: 'on', currentRound: data.currentRound }));
     dispatch(actions.updateTournamentMatches(data.matches));
     dispatch(actions.updateTournamentGameResults(data.gameResults));
   };

@@ -27,6 +27,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
          tournament_id: tournament_id,
          state: tournament.state,
          break_state: tournament.break_state,
+         current_round: tournament.current_round,
          matches: matches
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else

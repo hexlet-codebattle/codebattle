@@ -233,6 +233,12 @@ function GameRoomWidget({
   const gameRoomKey = gameRoomKeySelector(roomCurrent);
 
   useEffect(() => {
+    if (tournamentStatisticsModalShowing) {
+      setResultModalShowing(false);
+    }
+  }, [tournamentStatisticsModalShowing, setResultModalShowing]);
+
+  useEffect(() => {
     // FIXME: maybe take from gon?
     if (pageName === 'builder') {
       const clearTask = GameRoomActions.connectToTask(
