@@ -19,7 +19,7 @@ function TournamentUserPanel({
   name,
   score,
   // place,
-  localPlace,
+  // localPlace,
   searchedUserId = 0,
 }) {
   const disabled = searchedUserId === userId || currentUserId === userId;
@@ -87,16 +87,16 @@ function TournamentUserPanel({
               {/*     </span> */}
               {/*   </> */}
               {/* )} */}
-              {localPlace && (
-                <>
-                  <span className="mx-1">|</span>
-                  <span title="Place on local group">
-                    <FontAwesomeIcon className="text-secondary" icon="trophy" />
-                    {': '}
-                    {localPlace}
-                  </span>
-                </>
-              )}
+              {/* {localPlace && ( */}
+              {/*   <> */}
+              {/*     <span className="mx-1">|</span> */}
+              {/*     <span title="Place on local group"> */}
+              {/*       <FontAwesomeIcon className="text-secondary" icon="trophy" /> */}
+              {/*       {': '} */}
+              {/*       {localPlace} */}
+              {/*     </span> */}
+              {/*   </> */}
+              {/* )} */}
             </div>
           </div>
         </div>
