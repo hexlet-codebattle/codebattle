@@ -63,7 +63,7 @@ module.exports = {
       //   type: 'asset/inline',
       // },
       {
-        test: /\.(png|jpg|gif|svg)$/,
+        test: /\.(png|jpg|gif|ttf|otf|svg|woff)$/,
         type: 'asset/resource',
         generator: {
           filename: '[name].[ext]',
