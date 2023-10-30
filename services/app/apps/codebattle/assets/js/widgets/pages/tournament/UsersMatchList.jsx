@@ -37,6 +37,7 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
 
   return (
     <div className="d-flex flex-column">
+      {matches.length > 0 && (
       <div className="d-flex py-2 border-bottom overflow-auto">
         <span className="ml-2">
           {'Wins: '}
@@ -57,6 +58,7 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
           {' sec'}
         </span>
       </div>
+      )}
       {matches.map((match, index) => {
         const matchClassName = cn(
           'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',

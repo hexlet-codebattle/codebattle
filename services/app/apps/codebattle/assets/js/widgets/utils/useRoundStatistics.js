@@ -1,5 +1,12 @@
 import sum from 'lodash/sum';
 
+const emptyStats = {
+  winMatches: [],
+  score: 0,
+  avgTests: 0,
+  avgDuration: 0,
+};
+
 /**
  * return tournament players statistics per round
  *
@@ -17,6 +24,10 @@ function useRoundStatistics(
   playerId,
   matches,
 ) {
+  if (matches.length === 0) {
+    return [emptyStats, emptyStats];
+  }
+
   const finishedMatches = matches.filter(match => match.playerResults[playerId]);
   const matchesCount = finishedMatches.length;
 
