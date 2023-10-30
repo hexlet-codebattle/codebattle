@@ -184,8 +184,18 @@ defmodule Codebattle.Tournament.Base do
 
         new_tournament =
           Enum.reduce(matches_to_finish, tournament, fn match_to_finish, acc ->
+            player_results =
+              case Game.Context.fetch_game(match_to_finish.game_id) do
+                {:ok, game} -> Game.Helpers.get_player_results(game)
+                {:error, _reason} -> %{}
+              end
+
             Game.Context.trigger_timeout(match_to_finish.game_id)
-            update_in(acc.matches[to_id(match_to_finish.id)], &%{&1 | state: "timeout"})
+
+            update_in(
+              acc.matches[to_id(match_to_finish.id)],
+              &%{&1 | player_results: player_results, state: "timeout"}
+            )
           end)
 
         do_finish_round_and_next_step(new_tournament)

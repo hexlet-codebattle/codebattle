@@ -173,8 +173,8 @@ defmodule Codebattle.Tournament.IndividualTest do
           game_state: "game_over",
           game_level: "elementary",
           player_results: %{
-            id1 => %{result: "won", id: id1, duration_sec: 10, result_percent: 100.0, score: 10},
-            id2 => %{result: "lost", id: id2, duration_sec: 15, result_percent: 50.0, score: 0}
+            id1 => %{result: "won", id: id1, duration_sec: 10, result_percent: 100.0, score: 2},
+            id2 => %{result: "lost", id: id2, duration_sec: 15, result_percent: 50.0, score: 5}
           }
         })
 
@@ -186,8 +186,8 @@ defmodule Codebattle.Tournament.IndividualTest do
           game_state: "timeout",
           game_level: "elementary",
           player_results: %{
-            id3 => %{result: "timeout", id: id3, duration_sec: nil, result_percent: 0.0, score: 0},
-            id4 => %{result: "timeout", id: id4, duration_sec: 15, result_percent: 10.0, score: 2}
+            id3 => %{result: "timeout", id: id3, duration_sec: 100, result_percent: 0.0, score: 2},
+            id4 => %{result: "timeout", id: id4, duration_sec: 15, result_percent: 10.0, score: 5}
           }
         })
 

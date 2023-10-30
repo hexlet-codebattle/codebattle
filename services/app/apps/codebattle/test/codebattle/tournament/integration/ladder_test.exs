@@ -66,8 +66,8 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 4, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 12, wins_count: 1} = tournament |> get_player(user_id1)
+      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
       :timer.sleep(50)
@@ -97,8 +97,8 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 4, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 24, wins_count: 2} = tournament |> get_player(user_id1)
+      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 16, wins_count: 2} = tournament |> get_player(user_id1)
 
       assert tournament |> get_matches("game_over") |> Enum.count() == 2
       assert tournament |> get_matches("timeout") |> Enum.count() == 99
@@ -160,8 +160,8 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 4, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 12, wins_count: 1} = tournament |> get_player(user_id1)
+      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
       :timer.sleep(50)
@@ -191,8 +191,8 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 4, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 24, wins_count: 2} = tournament |> get_player(user_id1)
+      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 16, wins_count: 2} = tournament |> get_player(user_id1)
 
       assert tournament |> get_matches("game_over") |> Enum.count() == 2
       assert tournament |> get_matches("timeout") |> Enum.count() == 6

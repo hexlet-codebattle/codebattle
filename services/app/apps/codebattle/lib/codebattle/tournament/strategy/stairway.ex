@@ -101,7 +101,7 @@ defmodule Codebattle.Tournament.Stairway do
         {player, [candidate | rest_players], _played_pair_ids} ->
           {
             [player, candidate],
-            [player.id, candidate.id] |> Enum.map(& &1.id) |> Enum.sort(),
+            Enum.sort([player.id, candidate.id]),
             rest_players
           }
       end

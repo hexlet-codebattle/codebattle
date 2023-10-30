@@ -19,12 +19,19 @@ defmodule Codebattle.TournamentTestHelpers do
       case results do
         nil ->
           %{
-            user_id => %{result: "won", id: user_id, duration_sec: 10, result_percent: 100.0},
+            user_id => %{
+              result: "won",
+              id: user_id,
+              duration_sec: 10,
+              result_percent: 100.0,
+              score: 8
+            },
             opponent_id => %{
               result: "lost",
               id: opponent_id,
               duration_sec: 15,
-              result_percent: 50.0
+              result_percent: 50.0,
+              score: 3
             }
           }
 

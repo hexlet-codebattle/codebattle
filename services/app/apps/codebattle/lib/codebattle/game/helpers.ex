@@ -69,9 +69,12 @@ defmodule Codebattle.Game.Helpers do
 
       result =
         player
-        |> Map.take([:id, :result, :duration_sec, :result_percent])
+        |> Map.take([:id, :result, :result_percent])
         |> Map.put(:duration_sec, duration_sec)
-        |> Map.put(:score, get_player_score(player, game.level, game.timeout_seconds))
+        |> Map.put(
+          :score,
+          get_player_score(player, duration_sec, game.level, game.timeout_seconds)
+        )
 
       {player.id, result}
     end)
@@ -137,7 +140,7 @@ defmodule Codebattle.Game.Helpers do
     |> Kernel.!()
   end
 
-  def get_player_score(player, game_level, timeout_seconds) do
+  def get_player_score(player, duration_sec, game_level, timeout_seconds) do
     # game_level_score is fibanachi based score for different task level
     # %{"elementary" => 5, "easy" => 8, "medium" => 13, "hard" => 21}
     game_level_score = @game_level_score[game_level]
@@ -151,14 +154,14 @@ defmodule Codebattle.Game.Helpers do
     test_count_k = player.result_percent / 100.0
 
     # duration_k is a koefficient between [0.33, 1]
-    # duration_k = 0 if duration_sec is nil
+    # duration_k = 1 if duration_sec is nil
     # duration_k = 1 if task was solved before 1/3 of match_timeout
     # duration_k linearly goes to 0.33 if task was solved after 1/3 of match time
     duration_k =
       cond do
-        is_nil(player.duration_sec) -> 1
-        player.duration_sec / timeout_seconds < 0.33 -> 1
-        true -> 1.32 - player.duration_sec / timeout_seconds
+        is_nil(duration_sec) -> 1
+        duration_sec / timeout_seconds < 0.33 -> 1
+        true -> 1.32 - duration_sec / timeout_seconds
       end
 
     round(base_winner_score + game_level_score * duration_k * test_count_k)
