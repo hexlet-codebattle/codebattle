@@ -67,6 +67,9 @@ class Editor extends PureComponent {
       minimap: {
         enabled: false,
       },
+      parameterHints: {
+        enabled: false,
+      },
       readOnly: !props.editable,
       contextmenu: props.editable,
     };
