@@ -29,12 +29,16 @@ class Checker:
                             value=solution(*arguments),
                             time=self.print_time(starts_at)
                         )
+                    sys.stdout.close()
+                    sys.stdout = StringIO()
                 except Exception as e:
                     self.to_output(
                         type='error',
                         value=str(e),
                         time=self.print_time(starts_at)
                     )
+                    sys.stdout.close()
+                    sys.stdout = StringIO()
         except Exception as e:
             self.execution_result.append({'type': 'error', 'value': str(e)})
         finally:

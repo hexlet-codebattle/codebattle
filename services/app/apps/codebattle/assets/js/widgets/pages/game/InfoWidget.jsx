@@ -102,6 +102,7 @@ function InfoWidget() {
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
                 hideContribution={!!tournamentId}
+                hideGuide={!!tournamentId}
               />
             </div>
             <div

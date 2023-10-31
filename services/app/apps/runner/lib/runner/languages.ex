@@ -321,11 +321,11 @@ defmodule Runner.Languages do
       slug: "python",
       checker_version: 2,
       generate_checker?: false,
-      version: "3.11.4",
+      version: "3.12.0",
       check_dir: "check",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
-      docker_image: "codebattle/python:3.11.4",
+      docker_image: "codebattle/python:3.12.0",
       solution_template:
         "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},

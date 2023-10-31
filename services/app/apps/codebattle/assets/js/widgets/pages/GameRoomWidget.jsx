@@ -155,15 +155,16 @@ const steps = [
   },
 ];
 
-function GameWidgetGuide() {
+function GameWidgetGuide({ tournamentId }) {
   const dispatch = useDispatch();
   const [isFirstTime, setIsFirstTime] = useState(
     window.localStorage.getItem('guideGamePassed') === null,
   );
+
   const isShowGuide = useSelector(state => isShowGuideSelector(state));
 
   return (
-    (isShowGuide || isFirstTime) && (
+    ((isShowGuide || isFirstTime) && !tournamentId) && (
       <ReactJoyride
         continuous
         run
@@ -275,7 +276,7 @@ function GameRoomWidget({
       };
     }
 
-    return () => {};
+    return () => { };
   }, [tournamentId, tournamentPlayerId, dispatch]);
 
   useEffect(() => {
@@ -316,7 +317,7 @@ function GameRoomWidget({
       >
         <RoomContext.Provider value={machines}>
           <div className="x-outline-none">
-            <GameWidgetGuide />
+            <GameWidgetGuide tournamentId={tournamentId} />
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div className="container-fluid">

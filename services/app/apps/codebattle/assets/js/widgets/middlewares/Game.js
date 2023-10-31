@@ -11,7 +11,6 @@ import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import { taskStateCodes } from '../config/task';
-import userTypes from '../config/userTypes';
 import {
   parse, getFinalState, getText, resolveDiffs,
 } from '../lib/player';
@@ -361,12 +360,8 @@ export const activeGameReady = machine => dispatch => {
       task,
     } = camelizeKeys(data);
 
-    const [firstPlayer, secondPlayer] = getGamePlayers(players);
-
-    const gamePlayers = [
-      { ...firstPlayer, type: userTypes.firstPlayer },
-      { ...secondPlayer, type: userTypes.secondPlayer },
-    ];
+    const gamePlayers = getGamePlayers(players);
+    const [firstPlayer, secondPlayer] = gamePlayers;
 
     soundNotification.start();
     dispatch(actions.updateGamePlayers({ players: gamePlayers }));

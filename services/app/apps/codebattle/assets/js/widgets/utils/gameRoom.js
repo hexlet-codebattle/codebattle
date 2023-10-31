@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy';
+
 import userTypes from '../config/userTypes';
 
 export const getGameStatus = ({
@@ -24,14 +26,15 @@ export const getGameStatus = ({
   tournamentId,
 });
 
-export const getGamePlayers = ([firstPlayer, secondPlayer]) => {
-  const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
+export const getGamePlayers = players => {
+  const [firstPlayer, secondPlayer] = sortBy(players, player => (player.id));
+  const typedPlayers = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {
-    players.push({ ...secondPlayer, type: userTypes.secondPlayer });
+    typedPlayers.push({ ...secondPlayer, type: userTypes.secondPlayer });
   }
 
-  return players;
+  return typedPlayers;
 };
 
 export const getPlayersText = player => ({
