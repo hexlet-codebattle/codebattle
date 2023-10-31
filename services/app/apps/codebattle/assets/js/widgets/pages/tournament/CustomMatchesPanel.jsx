@@ -201,6 +201,13 @@ function CustomMatchesPanel({
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 
   useEffect(() => {
+    if (currentRound !== openedStage) {
+      setOpenedStage(currentRound);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentRound]);
+
+  useEffect(() => {
     if (playersList.length !== 0) {
       dispatch(actions.updateUsers({ users: playersList }));
     }

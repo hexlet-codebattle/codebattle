@@ -357,17 +357,19 @@ export const activeGameReady = machine => dispatch => {
       startsAt,
       timeoutSeconds,
       langs,
-      players: [firstPlayer, secondPlayer],
+      players,
       task,
     } = camelizeKeys(data);
 
-    const players = [
+    const [firstPlayer, secondPlayer] = getGamePlayers(players);
+
+    const gamePlayers = [
       { ...firstPlayer, type: userTypes.firstPlayer },
       { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
     soundNotification.start();
-    dispatch(actions.updateGamePlayers({ players }));
+    dispatch(actions.updateGamePlayers({ players: gamePlayers }));
     dispatch(actions.setGameTask({ task }));
     dispatch(actions.setLangs({ langs }));
 

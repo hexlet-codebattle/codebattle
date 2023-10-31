@@ -54,7 +54,7 @@ export const connectToTournamentPlayer = () => dispatch => {
   const handleRoundFinished = response => {
     const data = camelizeKeys(response);
 
-    dispatch(actions.updateTournamentData({ state: data.state, breakState: 'on', currentRound: data.currentRound }));
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: 'on' }));
     dispatch(actions.updateTournamentMatches(data.matches));
     dispatch(actions.updateTournamentGameResults(data.gameResults));
   };

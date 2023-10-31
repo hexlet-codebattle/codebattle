@@ -34,6 +34,7 @@ function InfoWidget() {
     timeoutSeconds,
     state: gameStateName,
     mode: gameRoomMode,
+    tournamentId,
   } = useSelector(gameStatusSelector);
   const leftOutput = useSelector(leftExecutionOutputSelector(roomCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
@@ -100,6 +101,7 @@ function InfoWidget() {
                 task={task}
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
+                hideContribution={!!tournamentId}
               />
             </div>
             <div

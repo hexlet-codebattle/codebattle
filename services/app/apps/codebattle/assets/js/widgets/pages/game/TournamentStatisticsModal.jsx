@@ -11,12 +11,14 @@ import {
   tournamentSelector,
   firstPlayerSelector,
   secondPlayerSelector,
+  gameIdSelector,
 } from '@/selectors';
 import useRoundStatistics from '@/utils/useRoundStatistics';
 
 import TournamentStateCodes from '../../config/tournament';
 
 function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
+  const gameId = useSelector(gameIdSelector);
   const tournament = useSelector(tournamentSelector);
   const firstPlayer = useSelector(firstPlayerSelector);
   const secondPlayer = useSelector(secondPlayerSelector);
@@ -36,14 +38,16 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
       ({ round }) => round === tournament.currentRound,
     );
   }, [tournament.matches, tournament.currentRound, showFullStatistics]);
+  const gameRound = useMemo(() => (
+    Object.values(tournament?.matches || {}).find(match => match.gameId === gameId)?.round
+  ), [tournament.matches, gameId]);
 
   const [player, opponent] = useRoundStatistics(firstPlayer.id, matches);
 
   const showTournamentStatistics = tournament.type === 'swiss'
     && secondPlayer.id === opponent.playerId
-    && ((tournament.breakState === 'off'
-      && tournament.state === TournamentStateCodes.finished)
-      || tournament.breakState === 'on');
+    && (tournament.breakState === 'on' || tournament.state === TournamentStateCodes.finished)
+    && tournament.currentRound === gameRound;
 
   useEffect(() => {
     if (!modalShowing && showTournamentStatistics) {
@@ -56,10 +60,14 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
     setModalShowing(false);
   }, [setModalShowing]);
 
+  const title = showFullStatistics
+    ? 'Tournament statistics'
+    : 'Tournament round statistics';
+
   return (
     <Modal centered show={modalShowing} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Tournament Statistics</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-between">

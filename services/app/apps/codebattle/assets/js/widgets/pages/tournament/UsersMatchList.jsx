@@ -43,16 +43,16 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
             {'Wins: '}
             {player.winMatches.length}
           </span>
-          <span className="ml-1 pl-1 border-left">
+          <span className="ml-1 pl-1 border-left border-dark">
             {'Round Score: '}
             {Math.ceil(player.score)}
           </span>
-          <span className="ml-1 pl-1 border-left">
+          <span className="ml-1 pl-1 border-left border-dark">
             {'AVG Tests: '}
             {Math.ceil(player.avgTests)}
             %
           </span>
-          <span className="ml-1 pl-1 border-left">
+          <span className="ml-1 pl-1 border-left border-dark">
             {'AVG Duration: '}
             {Math.ceil(player.avgDuration)}
             {' sec'}
@@ -66,7 +66,7 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
         );
         const currentUserIsPlayer = currentUserId === match.playerIds[0]
           || currentUserId === match.playerIds[1];
-        const isWinner = currentUserIsPlayer && match.winnerId === currentUserId;
+        const isWinner = playerId === match.winnerId;
 
         return (
           <div
