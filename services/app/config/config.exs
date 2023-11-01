@@ -102,6 +102,7 @@ config :codebattle, fake_html_to_image: false
 config :codebattle, use_only_token_auth: false
 config :codebattle, show_extension_popup: true
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
+config :codebattle, tournament_rematch_timeout_ms: 5000
 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")

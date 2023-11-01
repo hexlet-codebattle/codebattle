@@ -238,7 +238,8 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.map(&Tournament.Player.new!/1)
 
           # TODO: add timeout without blocking server for rematches
-          :timer.sleep(5000)
+          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+          :timer.sleep(timeout_ms)
           game_id = create_game(tournament, match_id, players)
 
           match = %Tournament.Match{

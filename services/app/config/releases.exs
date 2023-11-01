@@ -57,12 +57,16 @@ use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
 use_only_token_auth = System.get_env("CODEBATTLE_USE_ONLY_TOKEN_AUTH") == "true"
 show_extension_popup = System.get_env("CODEBATTLE_SHOW_EXTENSION_POPUP") == "true"
 
+tournament_rematch_timeout_ms =
+  "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
+
 config :codebattle, admins: admins
 config :codebattle, import_github_tasks: import_github_tasks
 config :codebattle, create_bot_games: create_bot_games
 config :codebattle, use_external_js: use_external_js
 config :codebattle, use_only_token_auth: use_only_token_auth
 config :codebattle, show_extension_popup: show_extension_popup
+config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
