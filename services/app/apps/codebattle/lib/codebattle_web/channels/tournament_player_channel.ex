@@ -43,7 +43,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", %{
       state: payload.state,
-      break_state: payload.break_state
+      break_state: "off"
     })
 
     {:noreply, socket}
@@ -55,7 +55,7 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
 
     push(socket, "tournament:round_finished", %{
       state: payload.state,
-      break_state: payload.break_state,
+      break_state: "on",
       matches: matches
     })
 

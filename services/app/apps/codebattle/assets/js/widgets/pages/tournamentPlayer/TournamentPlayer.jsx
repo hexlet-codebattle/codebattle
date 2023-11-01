@@ -72,7 +72,7 @@ const RoundStatus = ({ playerId, matches }) => {
     }
 
     if (
-        (player.score > opponent.score)
+      (player.score > opponent.score)
       || (
         (player.score === opponent.score)
         && (player.winMatches.length > opponent.winMatches.length)
@@ -312,7 +312,7 @@ function TournamentPlayer({
       <div className="container-fluid d-flex flex-column min-vh-100">
         <div className={spectatorDisplayClassName} style={{ flex: '1 1 auto' }}>
           <div className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1">
-            {GameStateCodes.playing === gameState ? <GamePanel /> : <MatchesPannel />}
+            {(tournament.breakState === 'off' && tournament.state === TournamentStates.active) ? <GamePanel /> : <MatchesPannel />}
           </div>
           <SpectatorEditor
             switchedWidgetsStatus={switchedWidgetsStatus}

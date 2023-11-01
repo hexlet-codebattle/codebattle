@@ -25,7 +25,7 @@ function useRoundStatistics(
   playerId,
   matches,
 ) {
-  if (matches.length === 0) {
+  if (matches.length === 0 && playerId) {
     return [emptyStats, emptyStats];
   }
 
@@ -37,7 +37,7 @@ function useRoundStatistics(
   const opponentWinMatches = matches.filter(match => opponentId === match.winnerId);
 
   const playerScore = sum(finishedMatches.map(match => match.playerResults[playerId].score || 0));
-  const opponentScore = sum(finishedMatches.map(match => match.playerResults[opponentId].score || 0));
+  const opponentScore = sum(finishedMatches.map(match => match.playerResults[opponentId]?.score || 0));
 
   const playerAvgTests = matchesCount !== 0
     ? sum(finishedMatches.map(match => match.playerResults[playerId]?.resultPercent || 0)) / matchesCount

@@ -449,7 +449,7 @@ export const activeGameReady = machine => dispatch => {
     dispatch(actions.setTournamentsInfo(data));
     machine.send('tournament:game:created', { payload });
     if (!Gon.getAsset('cancel_redirect_to_new_game')) {
-      setTimeout(() => { window.location.replace(makeGameUrl(payload.gameId)); }, 500);
+      setTimeout(() => { window.location.replace(makeGameUrl(payload.gameId)); }, 10);
     }
   };
 

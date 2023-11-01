@@ -54,9 +54,8 @@ export const connectToTournamentPlayer = () => dispatch => {
   const handleRoundFinished = response => {
     const data = camelizeKeys(response);
 
-    dispatch(actions.updateTournamentData({ state: data.state, breakState: 'on' }));
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
     dispatch(actions.updateTournamentMatches(data.matches));
-    dispatch(actions.updateTournamentGameResults(data.gameResults));
   };
 
   const handleTournamentRoundCreated = response => {
@@ -72,7 +71,7 @@ export const connectToTournamentPlayer = () => dispatch => {
 
     setTimeout(params => {
       dispatch(actions.setActiveGameId(params));
-    }, 1000, data);
+    }, 10, data);
   };
 
   const refs = [

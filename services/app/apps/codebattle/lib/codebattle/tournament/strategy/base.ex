@@ -226,7 +226,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_start_rematch(tournament, params) do
-        if round_ends_by_time?(tournament) and seconds_to_end_round(tournament) > 10 do
+        if round_ends_by_time?(tournament) and seconds_to_end_round(tournament) > 15 do
           finished_match = get_match(tournament, params.ref)
 
           match_id = Enum.count(tournament.matches)
@@ -237,6 +237,8 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.map(&get_player(tournament, &1))
             |> Enum.map(&Tournament.Player.new!/1)
 
+          # TODO: add timeout without blocking server for rematches
+          :timer.sleep(5000)
           game_id = create_game(tournament, match_id, players)
 
           match = %Tournament.Match{
