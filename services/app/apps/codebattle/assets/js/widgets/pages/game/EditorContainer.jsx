@@ -17,6 +17,7 @@ import {
   editorSettingsByUserType,
 } from '../../config/editorSettingsByUserType';
 import editorUserTypes from '../../config/editorUserTypes';
+import GameModeCodes from '../../config/gameModes';
 import {
   editorStateSelector,
   inBuilderRoomSelector,
@@ -156,7 +157,7 @@ function EditorContainer({
   };
 
   const toolbarParams = {
-    mode: gameMode,
+    mode: tournamentId ? GameModeCodes.tournament : gameMode,
     player: players[id],
     editor: editorState,
     status: editorCurrent.value,
