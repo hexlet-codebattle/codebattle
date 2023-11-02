@@ -52,7 +52,7 @@ const ResultModal = ({ solutionStatus, isWinner }) => {
     <Modal centered show={showModal}>
       <Modal.Body className="bg-light rounded-lg">
         <div className="d-flex bg-light justify-content-center align-items-center">
-          <span className={`h3 ${isWinner ? 'text-success' : 'text-danger'}`}>
+          <span className={`h2 ${isWinner ? 'text-success' : 'text-danger'}`}>
             {isWinner ? 'Won battle' : 'Lost battle'}
           </span>
         </div>
