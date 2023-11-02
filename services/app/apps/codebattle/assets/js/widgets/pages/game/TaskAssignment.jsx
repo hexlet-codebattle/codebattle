@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
+import cn from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
@@ -47,21 +48,36 @@ function ShowGuideButton() {
 function TaskAssignment({
   task,
   taskLanguage,
+  taskSize = 0,
   handleSetLanguage,
+  changeTaskDescriptionSizes,
   hideGuide = false,
   hideContribution = false,
 }) {
-  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
-    task,
-    taskLanguage,
-  );
+  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
+
+  const handleTaskSizeIncrease = useCallback(() => {
+    changeTaskDescriptionSizes(taskSize + 1);
+  }, [taskSize, changeTaskDescriptionSizes]);
+
+  const handleTaskSizeDecrease = useCallback(() => {
+    changeTaskDescriptionSizes(taskSize - 1);
+  }, [taskSize, changeTaskDescriptionSizes]);
 
   if (isEmpty(task)) {
     return null;
   }
 
+  const cardClassName = cn('card h-100 border-0 shadow-sm', {
+    h5: taskSize === 1,
+    h4: taskSize === 2,
+    h3: taskSize === 3,
+    h2: taskSize === 4,
+    h1: taskSize > 4,
+  });
+
   return (
-    <div className="card h-100 border-0 shadow-sm">
+    <div className={cardClassName}>
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text d-flex align-items-center">
@@ -77,6 +93,20 @@ function TaskAssignment({
             />
 
             {!hideGuide && <ShowGuideButton />}
+            {changeTaskDescriptionSizes && (
+              <div
+                className="btn-group align-items-center ml-2 mr-auto"
+                role="group"
+                aria-label="Editor size controls"
+              >
+                <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleTaskSizeIncrease}>
+                  -
+                </button>
+                <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleTaskSizeDecrease}>
+                  +
+                </button>
+              </div>
+            )}
           </div>
         </div>
         <div className="d-flex align-items-stretch flex-column user-select-none">

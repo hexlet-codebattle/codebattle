@@ -5,10 +5,15 @@ import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
 import reverse from 'lodash/reverse';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CountdownTimer from '@/components/CountdownTimer';
-import { connectToEditor, connectToGame, updateGameChannel } from '@/middlewares/Game';
+import {
+  connectToEditor,
+  connectToGame,
+  updateGameChannel,
+} from '@/middlewares/Game';
 
 import EditorUserTypes from '../../config/editorUserTypes';
 import GameStateCodes from '../../config/gameStateCodes';
@@ -24,6 +29,38 @@ import TaskAssignment from '../game/TaskAssignment';
 
 import SpectatorEditor from './SpectatorEditor';
 
+const ResultModal = ({ solutionStatus, isWinner }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (solutionStatus) {
+      setTimeout(() => {
+        setShowModal(true);
+      }, 100);
+    }
+  }, [solutionStatus]);
+
+  useEffect(() => {
+    if (showModal) {
+      setTimeout(() => {
+        setShowModal(false);
+      }, 4000);
+    }
+  }, [showModal]);
+
+  return (
+    <Modal centered show={showModal}>
+      <Modal.Body className="bg-light rounded-lg">
+        <div className="d-flex bg-light justify-content-center align-items-center">
+          <span className={`h3 ${isWinner ? 'text-success' : 'text-danger'}`}>
+            {isWinner ? 'Won battle' : 'Lost battle'}
+          </span>
+        </div>
+      </Modal.Body>
+    </Modal>
+  );
+};
+
 const RoundStatus = ({ playerId, matches }) => {
   const [
     // player = {
@@ -34,10 +71,7 @@ const RoundStatus = ({ playerId, matches }) => {
     // },
     player,
     opponent,
-  ] = useRoundStatistics(
-    playerId,
-    matches,
-  );
+  ] = useRoundStatistics(playerId, matches);
 
   const RoundStatistics = () => (
     <div className="d-flex text-center align-items-center justify-content-center">
@@ -63,30 +97,26 @@ const RoundStatus = ({ playerId, matches }) => {
   );
 
   const RoundResultIcon = () => {
-    if ((player.winMatches.length === opponent.winMatches.length)
-      && (player.score === opponent.score)
-      && (player.avgTests === opponent.avgTests)
-      && (player.avgDuration === opponent.avgDuration)
+    if (
+      player.winMatches.length === opponent.winMatches.length
+      && player.score === opponent.score
+      && player.avgTests === opponent.avgTests
+      && player.avgDuration === opponent.avgDuration
     ) {
       return <FontAwesomeIcon className="ml-2 text-primary" icon="handshake" />;
     }
 
     if (
-      (player.score > opponent.score)
-      || (
-        (player.score === opponent.score)
-        && (player.winMatches.length > opponent.winMatches.length)
-      )
-      || (
-        (player.winMatches.length === opponent.winMatches.length)
-        && (player.score === opponent.score)
-        && (player.avgTests > opponent.avgTests)
-      )
-      || ((player.winMatches.length === opponent.winMatches.length)
-        && (player.score === opponent.score)
-        && (player.avgTests === opponent.avgTests)
-        && (player.avgDuration > opponent.avgDuration)
-      )
+      player.score > opponent.score
+      || (player.score === opponent.score
+        && player.winMatches.length > opponent.winMatches.length)
+      || (player.winMatches.length === opponent.winMatches.length
+        && player.score === opponent.score
+        && player.avgTests > opponent.avgTests)
+      || (player.winMatches.length === opponent.winMatches.length
+        && player.score === opponent.score
+        && player.avgTests === opponent.avgTests
+        && player.avgDuration > opponent.avgDuration)
     ) {
       return <FontAwesomeIcon className="ml-2 text-warning" icon="trophy" />;
     }
@@ -105,7 +135,10 @@ const RoundStatus = ({ playerId, matches }) => {
 };
 
 const getMatchIcon = (playerId, match) => {
-  if (match.state === MatchStatesCodes.timeout || match.state === MatchStatesCodes.canceled) {
+  if (
+    match.state === MatchStatesCodes.timeout
+    || match.state === MatchStatesCodes.canceled
+  ) {
     return <FontAwesomeIcon className="text-dark" icon="stopwatch" />;
   }
 
@@ -139,25 +172,35 @@ const getSpectatorStatus = (state, task, gameId) => {
   return '';
 };
 
-function TournamentPlayer({
-  spectatorMachine,
-}) {
+function TournamentPlayer({ spectatorMachine }) {
   const dispatch = useDispatch();
 
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
+  const [taskSize, setTaskSize] = useState(0);
+
+  const changeTaskDescriptionSizes = useCallback(
+    size => {
+      setTaskSize(size);
+    },
+    [setTaskSize],
+  );
 
   const {
     startsAt,
     timeoutSeconds,
     state: gameState,
+    solutionStatus,
   } = useSelector(selectors.gameStatusSelector);
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
-  const { playerId, gameId } = useSelector(
-    state => state.tournamentPlayer,
-  );
+  const { playerId, gameId } = useSelector(state => state.tournamentPlayer);
+
   const output = useSelector(selectors.executionOutputSelector(playerId));
+
+  const isGameWinner = useSelector(state => (
+    state.executionOutput.results[playerId]?.status === 'ok'
+  ));
 
   const spectatorStatus = getSpectatorStatus(tournament.state, task, gameId);
   // TODO: if there is not active_match set html, LOADING
@@ -169,7 +212,10 @@ function TournamentPlayer({
     actions: {},
   });
 
-  const handleSwitchWidgets = useCallback(() => setSwitchedWidgetsStatus(state => !state), [setSwitchedWidgetsStatus]);
+  const handleSwitchWidgets = useCallback(
+    () => setSwitchedWidgetsStatus(state => !state),
+    [setSwitchedWidgetsStatus],
+  );
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
@@ -194,7 +240,7 @@ function TournamentPlayer({
       };
     }
 
-    return () => { };
+    return () => {};
   }, [gameId, spectatorService, dispatch]);
 
   const spectatorDisplayClassName = cn('d-flex flex-column', {
@@ -202,50 +248,54 @@ function TournamentPlayer({
     'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
   });
 
-  const spectatorGameStatusClassName = cn('d-flex justify-content-around align-items-center w-100 p-2', {
-    'flex-row-reverse': switchedWidgetsStatus,
-  });
+  const spectatorGameStatusClassName = cn(
+    'd-flex justify-content-around align-items-center w-100 p-2',
+    {
+      'flex-row-reverse': switchedWidgetsStatus,
+    },
+  );
 
-  const GamePanel = () => (
-    !spectatorStatus ? (
-      <>
-        <div>
-          <TaskAssignment
-            task={task}
-            taskLanguage={taskLanguage}
-            handleSetLanguage={handleSetLanguage}
-            hideGuide
-            hideContribution
-          />
+  const GamePanel = () => (!spectatorStatus ? (
+    <>
+      <div>
+        <TaskAssignment
+          task={task}
+          taskSize={taskSize}
+          taskLanguage={taskLanguage}
+          handleSetLanguage={handleSetLanguage}
+          changeTaskDescriptionSizes={changeTaskDescriptionSizes}
+          hideGuide
+          hideContribution
+        />
+      </div>
+      <div
+        className="card border-0 shadow-sm h-50 mt-1"
+        style={{ minHeight: '490px' }}
+      >
+        <div className={spectatorGameStatusClassName}>
+          {GameStateCodes.playing !== gameState && <h3>Game Over</h3>}
+          {startsAt && gameState === GameStateCodes.playing && (
+          <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
+            )}
+          <OutputTab sideOutput={output} large />
         </div>
         <div
-          className="card border-0 shadow-sm h-50 mt-1"
-          style={{ minHeight: '490px' }}
+          style={{ minHeight: '400px' }}
+          className="position-relative overflow-auto w-100 h-100"
         >
-          <div className={spectatorGameStatusClassName}>
-            {GameStateCodes.playing !== gameState && (
-              <h3>Game Over</h3>
-            )}
-            {startsAt && gameState === GameStateCodes.playing && (
-              <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
-            )}
-            <OutputTab sideOutput={output} large />
-          </div>
-          <div style={{ minHeight: '400px' }} className="position-relative overflow-auto w-100 h-100">
-            <div className="position-absolute w-100">
-              <Output sideOutput={output} />
-            </div>
+          <div className="position-absolute w-100">
+            <Output sideOutput={output} />
           </div>
         </div>
-      </>
+      </div>
+    </>
     ) : (
       <div className="card border-0 h-100 w-100">
         <div className="d-flex justify-content-center align-items-center w-100 h-100">
           {spectatorStatus}
         </div>
       </div>
-    )
-  );
+    ));
 
   const MatchesPannel = () => {
     const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
@@ -255,9 +305,7 @@ function TournamentPlayer({
 
     if (!lastRound || !groupedMatches[lastRound]) {
       return (
-        <div
-          className="card bg-white rounded-lg flex justify-content-center align-items-center w-100 h-100"
-        >
+        <div className="card bg-white rounded-lg flex justify-content-center align-items-center w-100 h-100">
           No statistics
         </div>
       );
@@ -278,7 +326,10 @@ function TournamentPlayer({
             <h2 className="mb-4 mt-2 border-top">Matches:</h2>
             <div>
               {groupedMatches[lastRound].map(match => (
-                <div className="d-flex text-center align-items-center" key={match.id}>
+                <div
+                  className="d-flex text-center align-items-center"
+                  key={match.id}
+                >
                   <span className="h3">{getMatchIcon(playerId, match)}</span>
                   {match.playerResults[playerId] ? (
                     <div className="d-flex flex-column align-items-baseline">
@@ -310,9 +361,15 @@ function TournamentPlayer({
   return (
     <>
       <div className="container-fluid d-flex flex-column min-vh-100">
+        <ResultModal isWinner={isGameWinner} solutionStatus={solutionStatus} />
         <div className={spectatorDisplayClassName} style={{ flex: '1 1 auto' }}>
           <div className="d-flex flex-column col-12 col-xl-4 col-lg-6 p-1">
-            {(tournament.breakState === 'off' && tournament.state === TournamentStates.active) ? <GamePanel /> : <MatchesPannel />}
+            {tournament.breakState === 'off'
+            && tournament.state === TournamentStates.active ? (
+              <GamePanel />
+            ) : (
+              <MatchesPannel />
+            )}
           </div>
           <SpectatorEditor
             switchedWidgetsStatus={switchedWidgetsStatus}
