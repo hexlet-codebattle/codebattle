@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
 import i18n from '../../../i18n';
@@ -40,9 +41,15 @@ const OutputTab = ({ sideOutput, large = false }) => {
     });
 
     return (
-      <div title="Asserts status" className={panelClassName}>
-        <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
-      </div>
+      status === 'ok'
+        ? (
+          <FontAwesomeIcon className="h2 text-warning" icon="trophy" />
+        )
+        : (
+          <div title="Asserts status" className={panelClassName}>
+            <h2>{status === 'error' ? 'Error' : `${percent}%`}</h2>
+          </div>
+        )
     );
   }
 
