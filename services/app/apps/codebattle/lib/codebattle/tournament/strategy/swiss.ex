@@ -17,7 +17,7 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   @impl Tournament.Base
-  def default_meta(), do: %{rounds_limit: 3}
+  def default_meta(), do: %{rounds_limit: 7}
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t
