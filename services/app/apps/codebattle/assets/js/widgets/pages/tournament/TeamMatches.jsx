@@ -15,6 +15,10 @@ import Players from './PlayersPanel';
 
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {
+      if (!match.playerResults) {
+        return acc;
+      }
+
       const [gameResultPlayer1, gameResultPlayer2] = match.playerResults.map(
         p => p.result,
       );
