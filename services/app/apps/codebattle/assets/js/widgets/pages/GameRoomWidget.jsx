@@ -23,6 +23,7 @@ import * as GameRoomActions from '../middlewares/Game';
 import * as TournamentPlayerActions from '../middlewares/TournamentPlayer';
 import {
   firstPlayerSelector,
+  secondPlayerSelector,
   gameStatusSelector,
   gameUseChatSelector,
   isShowGuideSelector,
@@ -40,6 +41,7 @@ import CodebattlePlayer from './game/CodebattlePlayer';
 import GameWidget from './game/GameWidget';
 import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
+import TimeoutGameInfo from './game/TimeoutGameInfo';
 import TournamentStatisticsModal from './game/TournamentStatisticsModal';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
@@ -212,6 +214,7 @@ function GameRoomWidget({
 
   const tournamentId = gameStatus?.tournamentId;
   const firstPlayer = useSelector(firstPlayerSelector);
+  const secondPlayer = useSelector(secondPlayerSelector);
   const tournamentPlayerId = firstPlayer.id;
 
   const useChat = useSelector(gameUseChatSelector);
@@ -304,6 +307,10 @@ function GameRoomWidget({
   if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
+  }
+
+  if (gameStatus.state === GameStateCodes.timeout || !(firstPlayer && secondPlayer)) {
+    return <TimeoutGameInfo />;
   }
 
   return (

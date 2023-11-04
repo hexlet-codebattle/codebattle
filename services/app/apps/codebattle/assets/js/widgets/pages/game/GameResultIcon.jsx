@@ -11,10 +11,10 @@ import * as selectors from '../../selectors';
 function GameResultIcon({ editor: { userId } }) {
   const players = useSelector(selectors.gamePlayersSelector);
 
-  const { id: opponentId } = find(players, ({ id }) => id !== userId);
+  const opponent = find(players, ({ id }) => id !== userId);
 
   const resultUser1 = get(players, [userId, 'result']);
-  const resultUser2 = get(players, [opponentId, 'result']);
+  const resultUser2 = get(players, [opponent?.Id, 'result']);
 
   const tooltipId = `tooltip-${resultUser1}`;
 

@@ -9,7 +9,7 @@ import useMachineStateSelector from '../utils/useMachineStateSelector';
 import LanguagePickerView from './LanguagePickerView';
 import RoomContext from './RoomContext';
 
-function LanguagePicker({ status, editor: { currentLangSlug } }) {
+function LanguagePicker({ status, editor }) {
   const dispatch = useDispatch();
 
   const { mainService } = useContext(RoomContext);
@@ -26,7 +26,7 @@ function LanguagePicker({ status, editor: { currentLangSlug } }) {
   return (
     <LanguagePickerView
       isDisabled={isOpenedReplayer || status === 'disabled'}
-      currentLangSlug={currentLangSlug}
+      currentLangSlug={editor?.currentLangSlug || 'js'}
       changeLang={changeLang}
     />
   );

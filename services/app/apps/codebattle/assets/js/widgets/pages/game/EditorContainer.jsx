@@ -175,12 +175,12 @@ function EditorContainer({
   const editorParams = {
     userId: id,
     userType: type,
-    syntax: editorState.currentLangSlug || 'js',
+    syntax: editorState?.currentLangSlug || 'js',
     onChange,
     onChangeCursorSelection,
     onChangeCursorPosition,
     checkResult,
-    value: editorState.text,
+    value: editorState?.text,
     editorHeight,
     mode: editorMode || editorModes.default,
     theme,
@@ -189,7 +189,7 @@ function EditorContainer({
     loading: isPreview || editorCurrent.value === 'loading',
   };
 
-  const isWon = players[id].result === 'won';
+  const isWon = players[id]?.result === 'won';
 
   const pannelBackground = cn('col-12 col-lg-6 p-1', {
     'bg-warning': editorCurrent.matches('checking'),
