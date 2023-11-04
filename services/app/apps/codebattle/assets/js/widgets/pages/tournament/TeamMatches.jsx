@@ -15,12 +15,8 @@ import Players from './PlayersPanel';
 
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {
-      if (!match.playerResults) {
-        return acc;
-      }
-
-      const [gameResultPlayer1, gameResultPlayer2] = match.playerResults.map(
-        p => p.result,
+      const [gameResultPlayer1, gameResultPlayer2] = match.playerIds.map(
+        id => match.playerResults[id].result,
       );
 
       if (gameResultPlayer1 === 'won' || gameResultPlayer2 === 'gave_up') {
