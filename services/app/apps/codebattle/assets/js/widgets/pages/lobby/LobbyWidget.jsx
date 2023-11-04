@@ -386,7 +386,7 @@ const GameContainers = ({
       <nav>
         <div
           id="nav-tab"
-          className="nav nav-tabs flex-nowrap cb-overflow-x-auto bg-gray rounded-top border-dark border-bottom"
+          className="nav nav-tabs flex-nowrap cb-overflow-x-auto cb-overflow-y-hidden bg-gray rounded-top border-dark border-bottom"
           role="tablist"
         >
           <a

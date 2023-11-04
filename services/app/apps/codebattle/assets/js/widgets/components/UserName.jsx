@@ -55,7 +55,7 @@ const UserName = ({
             'x-username-truncated': truncate,
           })}
         >
-          <u>{renderUserName(user)}</u>
+          <u className="text-decoration-none">{renderUserName(user)}</u>
         </p>
       </a>
     </span>
