@@ -1,4 +1,4 @@
-const isSafari = () => {
+export const isSafari = () => {
   const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
   const haveSafariAgent = navigator.userAgent.indexOf('Safari') > -1;
 
@@ -9,6 +9,9 @@ const isSafari = () => {
   return haveSafariAgent;
 };
 
-export const isMacintosh = () => navigator.userAgent.indexOf('Macintosh; Intel Mac OS') > -1;
+export const isChrome = () => {
+  const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
+  return haveChromeAgent;
+};
 
-export default isSafari;
+export const isMacintosh = () => navigator.userAgent.indexOf('Macintosh; Intel Mac OS') > -1;

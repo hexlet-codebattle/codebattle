@@ -3,15 +3,9 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
-import i18n from '../../i18n';
-
 import LanguageIcon from './LanguageIcon';
 
-const renderUserName = ({ id, name, rank }) => {
-  if (id < 0) {
-    return i18n.t('%{name}(bot)', { name });
-  }
-
+const renderUserName = ({ name, rank }) => {
   const displayRank = rank ? `(${rank})` : '';
 
   return `${name}${displayRank}`;
@@ -39,27 +33,26 @@ const renderOnlineIndicator = (user, isOnline) => {
 const UserName = ({
   user, truncate, isOnline, hideOnlineIndicator,
 }) => (
-  <div className="d-flex align-items-baseline">
+  <div className="d-flex align-items-center">
     {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
-    <span className="d-flex align-items-center">
-      <LanguageIcon lang={user.lang || 'js'} />
-      <a
-        href={`/users/${user.id}`}
-        key={user.id}
-        className={cn('d-flex align-items-center', {
-          'text-danger': user.isAdmin,
+    <LanguageIcon lang={user.lang || 'js'} />
+    {user.id < 0 && <FontAwesomeIcon className="mx-1 mb-1" icon="robot" />}
+    <a
+      href={`/users/${user.id}`}
+      key={user.id}
+      className={cn('d-flex align-items-center', {
+        'text-danger': user.isAdmin,
+      })}
+    >
+      <p
+        className={cn('text-truncate m-0', {
+          'x-username-truncated': truncate,
         })}
       >
-        <p
-          className={cn('text-truncate m-0', {
-            'x-username-truncated': truncate,
-          })}
-        >
-          <u className="text-decoration-none">{renderUserName(user)}</u>
-        </p>
-      </a>
-    </span>
+        <u className="text-decoration-none">{renderUserName(user)}</u>
+      </p>
+    </a>
   </div>
-  );
+);
 
 export default UserName;

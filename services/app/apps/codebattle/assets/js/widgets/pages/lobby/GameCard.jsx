@@ -127,7 +127,7 @@ function GameCard({
               </div>
               <span className="text-center">VS</span>
               <div className="d-flex flex-column align-items-center position-relative">
-                <div className="d-flex">
+                <div className="d-flex align-items-center">
                   <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
                   <UserInfo user={game.players[1]} />
                 </div>

@@ -309,7 +309,7 @@ function GameRoomWidget({
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
-  if (gameStatus.state === GameStateCodes.timeout || !(firstPlayer && secondPlayer)) {
+  if (gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer)) {
     return <TimeoutGameInfo />;
   }
 

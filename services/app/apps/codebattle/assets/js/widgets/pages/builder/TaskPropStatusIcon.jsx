@@ -6,7 +6,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { validationStatuses } from '../../machines/task';
-import isSafari from '../../utils/browser';
+import { isSafari } from '../../utils/browser';
 
 const iconByValidStatus = {
   [validationStatuses.none]: 'circle',

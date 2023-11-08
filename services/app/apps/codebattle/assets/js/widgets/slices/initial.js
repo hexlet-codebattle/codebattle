@@ -253,9 +253,11 @@ const defaultTournamentParams = {
 
   playersPageNumber: 1,
   playersPageSize: 20,
-
-  channel: { online: false },
   useChat: false,
+
+  // client params
+  channel: { online: false },
+  currentPlayerId: null,
 };
 
 const initialTournament = tournamentParams

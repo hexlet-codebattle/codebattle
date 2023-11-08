@@ -1,5 +1,6 @@
 import React from 'react';
 
+import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
 import { pushCommand, pushCommandTypes } from '../middlewares/Chat';
@@ -14,8 +15,14 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
     pushCommand({ type: pushCommandTypes.cleanBanned });
   };
 
+  const headerClassName = cn(
+    'd-flex align-items-center', {
+      'border-bottom': showRooms || currentUserIsAdmin,
+    },
+  );
+
   return (
-    <div className="d-flex border-bottom align-items-center">
+    <div className={headerClassName}>
       {showRooms && <Rooms disabled={disabled} />}
       {currentUserIsAdmin && (
         <button

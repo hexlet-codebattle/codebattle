@@ -16,7 +16,7 @@ import {
 import initPresence from '../middlewares/Main';
 import * as selectors from '../selectors';
 import { selectors as invitesSelectors } from '../slices/invites';
-import isSafari from '../utils/browser';
+import { isSafari } from '../utils/browser';
 
 import GameLevelBadge from './GameLevelBadge';
 

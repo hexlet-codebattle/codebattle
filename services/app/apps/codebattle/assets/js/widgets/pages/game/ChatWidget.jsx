@@ -87,7 +87,7 @@ function ChatWidget() {
           )}
         </div>
         <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
-          <div className="d-flex flex-column justify-content-start overflow-auto h-100">
+          <div className="d-flex flex-column justify-content-startoverflow-auto h-100">
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />
             </div>
