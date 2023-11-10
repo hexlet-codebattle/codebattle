@@ -49,7 +49,7 @@
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "@xstate/test": "^1.0.0-alpha.1",
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "bootstrap": "^4.6.2",
     "calcite-react": "^0.56.2",
     "chart.js": "^4.0.1",
