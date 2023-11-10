@@ -20,7 +20,8 @@ defmodule Encoder do
         :performance,
         :rank,
         :rating,
-        :sound_settings
+        :sound_settings,
+        :email
       ])
       |> Jason.Encode.map(opts)
     end
