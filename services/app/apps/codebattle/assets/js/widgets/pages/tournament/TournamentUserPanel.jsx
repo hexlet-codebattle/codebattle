@@ -6,14 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import Collapse from 'react-bootstrap/Collapse';
 
-import { getTournamentSpectatorUrl } from '@/utils/urlBuilders';
-
 import UsersMatchList from './UsersMatchList';
 
 function TournamentUserPanel({
   matches,
-  tournamentId,
-  isLive = false,
   currentUserId,
   userId,
   name,
@@ -22,8 +18,9 @@ function TournamentUserPanel({
   // localPlace,
   searchedUserId = 0,
 }) {
-  const disabled = searchedUserId === userId || currentUserId === userId;
   const [open, setOpen] = useState(true);
+
+  const disabled = searchedUserId === userId || currentUserId === userId;
 
   const panelClassName = cn(
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
@@ -34,7 +31,7 @@ function TournamentUserPanel({
   );
 
   const titleClassName = cn(
-    'd-flex align-items-center justify-content-between',
+    'd-flex align-items-center justify-content-start',
     {
       btn: !disabled,
     },
@@ -101,16 +98,6 @@ function TournamentUserPanel({
           </div>
         </div>
         <div className="d-flex">
-          {isLive && (
-            <a
-              title="Spectator"
-              className="btn btn-sm btn-secondary rounded-lg mr-2"
-              href={getTournamentSpectatorUrl(tournamentId, userId)}
-            >
-              <FontAwesomeIcon className="mr-2" icon="user-secret" />
-              Spectator
-            </a>
-          )}
           <button
             type="button"
             className="btn"

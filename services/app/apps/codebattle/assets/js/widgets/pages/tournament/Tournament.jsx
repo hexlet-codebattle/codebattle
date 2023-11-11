@@ -11,7 +11,7 @@ import {
 } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
 
-import CustomMatchesPanel from './CustomMatchesPanel';
+import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
 import IndividualMatches from './IndividualMatches';
 import MatchConfirmationModal from './MatchConfirmationModal';
 import Players from './PlayersPanel';
@@ -19,22 +19,13 @@ import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 
-function Matches({
+function InfoPanel({
   currentUserId, tournament, playersCount,
 }) {
-  if (tournament.type === 'team') {
-    return (
-      <TeamMatches
-        state={tournament.state}
-        players={tournament.players}
-        teams={tournament.meta.teams}
-        matches={tournament.matches}
-        currentUserId={currentUserId}
-      />
-    );
-  }
-
-  if (tournament.state === TournamentStates.waitingParticipants) {
+  if (
+    tournament.state === TournamentStates.waitingParticipants
+    && tournament.type !== 'team'
+  ) {
     return (
       <div className="d-flex justify-content-center align-items-center h-100">
         <ReactMarkdown source={tournament.description} />
@@ -52,9 +43,19 @@ function Matches({
           currentUserId={currentUserId}
         />
       );
+    case 'team':
+      return (
+        <TeamMatches
+          state={tournament.state}
+          players={tournament.players}
+          teams={tournament.meta.teams}
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+        />
+      );
     default:
       return (
-        <CustomMatchesPanel
+        <CustomTournamentInfoPanel
           players={tournament.players}
           matches={tournament.matches}
           tournamentId={tournament.id}
@@ -216,11 +217,11 @@ function Tournament() {
           isOnline={tournament.channel.online}
         />
       </div>
-      <div className="container-fluid">
+      <div className="container-fluid mb-2">
         <div className="row flex-lg-row-reverse">
           <div className="col-12 col-lg-9 mb-2 mb-lg-0">
             <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
-              <Matches
+              <InfoPanel
                 tournament={tournament}
                 playersCount={playersCount}
                 currentUserId={currentUserId}

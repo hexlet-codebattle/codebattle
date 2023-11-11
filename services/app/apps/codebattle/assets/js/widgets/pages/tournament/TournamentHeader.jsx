@@ -217,11 +217,11 @@ function TournamentHeader({
             ) : (
               <div className="d-flex justify-items-center pb-2">
                 <a
-                  className="btn btn-primary rounded-lg ml-lg-2 ml-md-2"
+                  className="btn btn-primary rounded-lg ml-lg-2 ml-md-2 mr-2"
                   href="/tournaments"
                 >
                   <FontAwesomeIcon className="mr-2" icon="undo" />
-                  Return to tournaments
+                  Tournaments
                 </a>
               </div>
             )}

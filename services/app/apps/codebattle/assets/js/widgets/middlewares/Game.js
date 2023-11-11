@@ -751,10 +751,9 @@ const fetchPlaybook = (machine, init) => dispatch => {
       machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
     .catch(err => {
+      console.error(err);
       dispatch(actions.setError(err));
       machine.send('REJECT_LOADING_PLAYBOOK', { payload: err });
-
-      console.error(err);
     });
 
   return () => { };

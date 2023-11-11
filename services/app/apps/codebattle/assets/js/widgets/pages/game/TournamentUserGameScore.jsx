@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
 import { tournamentSelector } from '@/selectors';
-import useRoundStatistics from '@/utils/useRoundStatistics';
+import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 function TournamentUserGameScore({ userId }) {
   const { type, matches, currentRound } = useSelector(tournamentSelector);
@@ -12,7 +12,7 @@ function TournamentUserGameScore({ userId }) {
     Object.values(matches || {}).filter(match => match.round === currentRound)
   ), [matches, currentRound]);
 
-  const [player, opponent] = useRoundStatistics(userId, roundMatches);
+  const [player, opponent] = useMatchesStatistics(userId, roundMatches);
 
   if (type !== 'swiss' || roundMatches.length === 0) {
     return null;

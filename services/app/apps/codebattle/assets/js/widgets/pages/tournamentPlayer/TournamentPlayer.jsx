@@ -22,7 +22,7 @@ import TournamentStates from '../../config/tournament';
 import { connectToTournamentPlayer } from '../../middlewares/TournamentPlayer';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import useRoundStatistics from '../../utils/useRoundStatistics';
+import useMatchesStatistics from '../../utils/useMatchesStatistics';
 import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
@@ -63,15 +63,9 @@ const ResultModal = ({ solutionStatus, isWinner }) => {
 
 const RoundStatus = ({ playerId, matches }) => {
   const [
-    // player = {
-    //   winMatches
-    //   score,
-    //   avgTests,
-    //   avgDuration,
-    // },
     player,
     opponent,
-  ] = useRoundStatistics(playerId, matches);
+  ] = useMatchesStatistics(playerId, matches);
 
   const RoundStatistics = () => (
     <div className="d-flex text-center align-items-center justify-content-center">

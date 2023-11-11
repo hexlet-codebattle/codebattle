@@ -76,7 +76,6 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
             checked={task.visibility === taskVisibilityCodes.public}
             onChange={onChangeVisibility}
           />
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */}
           <label className="custom-control-label" htmlFor="visibility">
             Available task for all users
           </label>

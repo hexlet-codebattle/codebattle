@@ -286,6 +286,8 @@ export const rightExecutionOutputSelector = roomCurrent => state => {
   return outputSelector(roomCurrent)(state);
 };
 
+export const tournamentIdSelector = state => state.tournament.id;
+
 export const tournamentSelector = state => state.tournament;
 
 export const tournamentPlayersSelector = state => state.tournament.players;

@@ -26,7 +26,7 @@ export const getText = (text, { delta: d }) => {
   const textDelta = new Delta().insert(text);
   const delta = new Delta(d);
   const finalDelta = textDelta.compose(delta);
-  return finalDelta.ops[0].insert;
+  return finalDelta.ops[0]?.insert || '';
 };
 
 export const getDiff = (prevText, nextText) => {
