@@ -13,6 +13,8 @@ import useClickAway from '../utils/useClickAway';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
 
+const MAX_MESSAGE_LENGTH = 1024;
+
 const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
 const getColons = message => message.slice(message.lastIndexOf(':') + 1);
@@ -26,11 +28,18 @@ const getTooltipVisibility = async msg => {
 
 export default function ChatInput({ inputRef, disabled = false }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
+  const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const handleChange = async ({ target: { value } }) => {
+    if (value.length > MAX_MESSAGE_LENGTH) {
+      setMaxLengthExceeded(true);
+    } else {
+      setMaxLengthExceeded(false);
+    }
+
     setText(value);
     setTooltipVisibility(await getTooltipVisibility(value));
   };
@@ -96,13 +105,24 @@ export default function ChatInput({ inputRef, disabled = false }) {
       onSubmit={handleSubmit}
     >
       <input
-        className="form-control h-auto border-gray border-right-0 rounded-left"
+        className={`form-control h-auto border-gray border-right-0 rounded-left ${
+          isMaxLengthExceeded ? 'is-invalid' : ''
+        }`}
         placeholder="Be nice in chat!"
         value={text}
         onChange={handleChange}
         ref={inputRef}
         disabled={disabled}
       />
+      {isMaxLengthExceeded && (
+        <div className="invalid-feedback">
+          Message length cannot exceed
+          {' '}
+          {MAX_MESSAGE_LENGTH}
+          {' '}
+          characters.
+        </div>
+      )}
       {isTooltipVisible && (
         <EmojiToolTip
           colons={getColons(text)}
@@ -129,7 +149,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
-          disabled={disabled}
+          disabled={disabled || isMaxLengthExceeded}
         >
           Send
         </button>

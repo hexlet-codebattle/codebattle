@@ -58,7 +58,6 @@ function SocialButtons({ settings }) {
             data-method="delete"
             data-csrf={window.csrf_token}
             data-to={`/auth/${provider}`}
-            disabled
           >
             {`Unlink ${formatedProviderName}`}
           </button>
