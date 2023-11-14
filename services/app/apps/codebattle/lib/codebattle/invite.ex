@@ -5,6 +5,7 @@ defmodule Codebattle.Invite do
 
   alias Codebattle.Repo
   alias Codebattle.Game.Context
+  alias Codebattle.Task
   alias __MODULE__
 
   @type t :: %__MODULE__{}
@@ -33,6 +34,7 @@ defmodule Codebattle.Invite do
 
   schema "invites" do
     field(:state, :string, default: "pending")
+    belongs_to(:task, Codebattle.Task)
     embeds_one(:game_params, GameParams, on_replace: :update)
     belongs_to(:creator, Codebattle.User)
     belongs_to(:recipient, Codebattle.User)
@@ -42,7 +44,7 @@ defmodule Codebattle.Invite do
 
   def changeset(invite, attrs) do
     invite
-    |> cast(attrs, [:state, :creator_id, :recipient_id, :game_id])
+    |> cast(attrs, [:state, :task_id, :creator_id, :recipient_id, :game_id])
     |> cast_embed(:game_params)
     |> validate_required([:state])
   end
@@ -139,12 +141,15 @@ defmodule Codebattle.Invite do
 
     users = [invite.creator, invite.recipient]
 
+    task = Task.get!(invite.task_id)
+
     game_params = %{
       players: users,
       state: "playing",
       level: invite.game_params.level,
       type: "duo",
       mode: "standard",
+      task: task,
       visibility_type: invite.game_params.type,
       timeout_seconds: invite.game_params.timeout_seconds
     }

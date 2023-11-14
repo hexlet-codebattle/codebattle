@@ -141,8 +141,8 @@ function PlayerStatsPanel({
                 stage={currentRound}
                 stagesLimit={roundsLimit}
                 players={players}
-                lastGameId={matches[matchId].gameId}
-                lastMatchState={matches[matchId].state}
+                lastGameId={matches[matchId]?.gameId}
+                lastMatchState={matches[matchId]?.state}
                 matchList={groupedMatchListByRound[currentRound]}
               />
               <StatisticsCard

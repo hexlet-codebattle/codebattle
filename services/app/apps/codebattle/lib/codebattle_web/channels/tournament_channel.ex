@@ -11,15 +11,26 @@ defmodule CodebattleWeb.TournamentChannel do
     current_user = socket.assigns.current_user
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
-         true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
+         true <- Helpers.can_access?(tournament, current_user, payload) do
       active_match = Helpers.get_active_match(tournament, current_user)
       tournament |> topic_name |> Codebattle.PubSub.subscribe()
+
+      if (Helpers.is_player?(tournament, current_user.id)) do
+        Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{current_user.id}")
+      end
+
+      if (current_user |> Codebattle.User.admin?) do
+        Codebattle.PubSub.subscribe("tournament_admin:#{tournament_id}_#{current_user.id}")
+      end
+
+      matches = Helpers.get_matches_by_players(tournament, [current_user.id])
 
       {:ok,
        %{
          active_match: active_match,
-         tournament: tournament
-       }, assign(socket, :tournament_id, tournament_id)}
+         tournament: tournament,
+         matches: matches
+       }, assign(socket, tournament_id: tournament_id, player_id: current_user.id)}
     else
       _ ->
         {:error, %{reason: "not_found"}}
@@ -160,10 +171,38 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{}}, socket}
   end
 
-  def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
     push(socket, "tournament:update", %{
       tournament: payload.tournament
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_created", %{
+      state: payload.state,
+      break_state: "off"
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    matches =
+      Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
+
+    push(socket, "tournament:round_finished", %{
+      state: payload.state,
+      break_state: "on",
+      matches: matches
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:created", payload: payload}, socket) do
+    push(socket, "game:created", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

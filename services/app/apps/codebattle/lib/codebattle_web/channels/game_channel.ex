@@ -3,12 +3,17 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game.Context
+  alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
     try do
+      current_user = socket.assigns.current_user
       game = Context.get_game!(game_id)
       score = Context.fetch_score_by_game_id(game_id)
+
+      Codebattle.PubSub.subscribe("game:#{game.id}")
 
       if game.tournament_id do
         player_ids = Enum.map(game.players, & &1.id)
@@ -21,12 +26,30 @@ defmodule CodebattleWeb.GameChannel do
             List.first(player_ids)
           end
 
+        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
         Codebattle.PubSub.subscribe("tournament_player:#{game.tournament_id}_#{follow_id}")
+
+        tournament = Tournament.Context.get(game.tournament_id)
+        active_game_id = tournament |> Helpers.get_active_game_id(current_user.id)
+        matches = Helpers.get_matches_by_players(tournament, [current_user.id])
+
+        {:ok, %{
+          game: GameView.render_game(game, score),
+          tournament: %{
+            tournament_id: game.tournament_id,
+            state: tournament.state,
+            type: tournament.type,
+            break_state: tournament.break_state,
+            current_round: tournament.current_round,
+            matches: matches
+          },
+          active_game_id: active_game_id
+        }, assign(socket, game_id: game_id, player_id: follow_id)}
+      else
+        {:ok, %{
+          game: GameView.render_game(game, score)
+        }, assign(socket, :game_id, game_id)}
       end
-
-      Codebattle.PubSub.subscribe("game:#{game.id}")
-
-      {:ok, GameView.render_game(game, score), assign(socket, :game_id, game_id)}
     rescue
       _ ->
         {:ok, %{error: "Game not found"}, socket}
@@ -173,6 +196,28 @@ defmodule CodebattleWeb.GameChannel do
     if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_created", %{
+      state: payload.state,
+      break_state: "off"
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    matches =
+      Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
+
+    push(socket, "tournament:round_finished", %{
+      state: payload.state,
+      break_state: "on",
+      matches: matches
+    })
 
     {:noreply, socket}
   end

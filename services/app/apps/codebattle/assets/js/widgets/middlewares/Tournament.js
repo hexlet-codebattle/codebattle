@@ -8,7 +8,12 @@ import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
 const channelName = `tournament:${tournamentId}`;
-const channel = socket.channel(channelName);
+let channel = socket.channel(channelName);
+
+export const updateTournamentChannel = newTournamentId => {
+  const newChannelName = `tournament:${newTournamentId}`;
+  channel = socket.channel(newChannelName);
+};
 
 const initTournamentChannel = dispatch => {
   const onJoinFailure = () => {
@@ -47,12 +52,6 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(data.tournament));
   };
 
-  const handleRoundCreated = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.setNextRound(data.tournament));
-  };
-
   const handleMatchesUpdate = response => {
     const data = camelizeKeys(response);
 
@@ -65,6 +64,18 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentPlayers(data.players));
   };
 
+  const handleTournamentRoundCreated = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentData(data));
+  };
+
+  const handleRoundFinished = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
+    dispatch(actions.updateTournamentMatches(data.matches));
+  };
+
   const refs = [
     channel.on('tournament:update', handleUpdate),
 
@@ -72,19 +83,23 @@ export const connectToTournament = () => dispatch => {
     // round:update_match(round, newMatch)
     // round:update_participants(players)
     // round:update_statistics(statistics)
-    channel.on('tournament:round_created', handleRoundCreated),
+    // channel.on('tournament:round_created', handleRoundCreated),
     // TODO (tournaments): send updates
     channel.on('tournament:matches:update', handleMatchesUpdate),
     channel.on('tournament:players:update', handlePlayersUpdate),
+    channel.on('tournament:round_created', handleTournamentRoundCreated),
+    channel.on('tournament:round_finished', handleRoundFinished),
   ];
 
   const oldChannel = channel;
 
   const clearTournamentChannel = () => {
     oldChannel.off('tournament:update', refs[0]);
-    oldChannel.off('tournament:round_created', refs[1]);
-    oldChannel.off('tournament:matches:update', refs[2]);
-    oldChannel.off('tournament:players:update', refs[3]);
+    // oldChannel.off('tournament:round_created', refs[1]);
+    oldChannel.off('tournament:matches:update', refs[1]);
+    oldChannel.off('tournament:players:update', refs[2]);
+    oldChannel.off('tournament:round_created', refs[3]);
+    oldChannel.off('tournament:round_finished', refs[4]);
   };
 
   return clearTournamentChannel;

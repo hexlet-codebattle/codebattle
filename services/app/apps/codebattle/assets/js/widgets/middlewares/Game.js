@@ -131,13 +131,20 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
 
+    if (data.error) {
+      console.error(data.error);
+      return;
+    }
+
     const {
-      players: [firstPlayer, secondPlayer],
-      task,
-      langs,
+      game: {
+        players: [firstPlayer, secondPlayer],
+        task,
+        langs,
+      },
     } = data;
 
-    const gameStatus = getGameStatus(data);
+    const gameStatus = getGameStatus(data.game);
 
     machine.send('LOAD_GAME', { payload: gameStatus });
 
@@ -150,6 +157,7 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
       playbookStatusCode: PlaybookStatusCodes.active,
     });
   };
+
   currentChannel
     .join()
     .receive('ok', onJoinSuccess)
@@ -316,8 +324,9 @@ export const activeEditorReady = machine => {
   return clearEditorListeners;
 };
 
-export const activeGameReady = machine => dispatch => {
-  initGameChannel(dispatch, machine, channel);
+export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch => {
+  const currentGameChannel = channel;
+  initGameChannel(dispatch, machine, currentGameChannel);
 
   const handleNewEditorData = data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
@@ -446,40 +455,58 @@ export const activeGameReady = machine => dispatch => {
 
   const handleTournamentGameCreated = data => {
     const payload = camelizeKeys(data);
+
     dispatch(actions.setTournamentsInfo(data));
     machine.send('tournament:game:created', { payload });
-    if (!Gon.getAsset('cancel_redirect_to_new_game')) {
-      setTimeout(() => { window.location.replace(makeGameUrl(payload.gameId)); }, 10);
+    if (!cancelRedirect) {
+      setTimeout(
+        () => { window.location.replace(makeGameUrl(payload.gameId)); },
+        10,
+      );
     }
   };
 
+  const handleTournamentRoundCreated = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentData(data));
+  };
+
+  const handleTournamentRoundFinished = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
+    dispatch(actions.updateTournamentMatches(data.matches));
+  };
+
   const refs = [
-    channel.on('editor:data', handleNewEditorData),
-    channel.on('user:start_check', handleStartsCheck),
-    channel.on('user:check_complete', handleNewCheckResult),
-    channel.on('user:won', handleUserWon),
-    channel.on('user:give_up', handleUserGiveUp),
-    channel.on('rematch:status_updated', handleRematchStatusUpdate),
-    channel.on('rematch:accepted', handleRematchAccepted),
-    channel.on('game:user_joined', handleUserJoined),
-    channel.on('game:timeout', handleGameTimeout),
-    channel.on('tournament:game:created', handleTournamentGameCreated),
+    currentGameChannel.on('editor:data', handleNewEditorData),
+    currentGameChannel.on('user:start_check', handleStartsCheck),
+    currentGameChannel.on('user:check_complete', handleNewCheckResult),
+    currentGameChannel.on('user:won', handleUserWon),
+    currentGameChannel.on('user:give_up', handleUserGiveUp),
+    currentGameChannel.on('rematch:status_updated', handleRematchStatusUpdate),
+    currentGameChannel.on('rematch:accepted', handleRematchAccepted),
+    currentGameChannel.on('game:user_joined', handleUserJoined),
+    currentGameChannel.on('game:timeout', handleGameTimeout),
+    currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
+    currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
+    currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
   ];
 
-  const oldChannel = channel;
-
   const clearGameListeners = () => {
-    if (oldChannel) {
-      oldChannel.off('editor:data', refs[0]);
-      oldChannel.off('user:start_check', refs[1]);
-      oldChannel.off('user:check_complete', refs[2]);
-      oldChannel.off('user:won', refs[3]);
-      oldChannel.off('user:give_up', refs[4]);
-      oldChannel.off('rematch:status_updated', refs[5]);
-      oldChannel.off('rematch:accepted', refs[6]);
-      oldChannel.off('game:user_joined', refs[7]);
-      oldChannel.off('game:timeout', refs[8]);
-      oldChannel.off('tournament:game:created', refs[9]);
+    if (currentGameChannel) {
+      currentGameChannel.off('editor:data', refs[0]);
+      currentGameChannel.off('user:start_check', refs[1]);
+      currentGameChannel.off('user:check_complete', refs[2]);
+      currentGameChannel.off('user:won', refs[3]);
+      currentGameChannel.off('user:give_up', refs[4]);
+      currentGameChannel.off('rematch:status_updated', refs[5]);
+      currentGameChannel.off('rematch:accepted', refs[6]);
+      currentGameChannel.off('game:user_joined', refs[7]);
+      currentGameChannel.off('game:timeout', refs[8]);
+      currentGameChannel.off('tournament:game:created', refs[9]);
+      currentGameChannel.off('tournament:round_created', refs[10]);
+      currentGameChannel.off('tournament:round_finished', refs[11]);
     }
   };
 
@@ -804,14 +831,14 @@ export const connectToTask = (gameMachine, taskMachine) => dispatch => {
   return () => { };
 };
 
-export const connectToGame = machine => dispatch => {
+export const connectToGame = (machine, options) => dispatch => {
   if (isRecord) {
     return fetchPlaybook(machine, initStoredGame)(dispatch);
   }
 
   machine.send('JOIN');
 
-  return activeGameReady(machine)(dispatch);
+  return activeGameReady(machine, options)(dispatch);
 };
 
 export const connectToEditor = machine => () => (

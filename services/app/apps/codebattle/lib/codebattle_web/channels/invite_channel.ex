@@ -46,6 +46,7 @@ defmodule CodebattleWeb.InviteChannel do
     level = payload["level"] || "elementary"
     type = "public"
     timeout_seconds = payload["timeout_seconds"] || 3600
+    task_id = payload["task_id"] || nil;
 
     game_params = %{
       level: level,
@@ -53,7 +54,12 @@ defmodule CodebattleWeb.InviteChannel do
       timeout_seconds: timeout_seconds
     }
 
-    params = %{creator_id: creator_id, recipient_id: recipient_id, game_params: game_params}
+    params = %{
+      creator_id: creator_id,
+      recipient_id: recipient_id,
+      game_params: game_params,
+      task_id: task_id,
+    } |> IO.inspect
 
     case Invite.create_invite(params) do
       {:ok, invite} ->

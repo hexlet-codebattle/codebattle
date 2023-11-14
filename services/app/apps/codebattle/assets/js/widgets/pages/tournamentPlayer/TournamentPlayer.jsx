@@ -14,12 +14,12 @@ import {
   connectToGame,
   updateGameChannel,
 } from '@/middlewares/Game';
+import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 
 import EditorUserTypes from '../../config/editorUserTypes';
 import GameStateCodes from '../../config/gameStateCodes';
 import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
-import { connectToTournamentPlayer } from '../../middlewares/TournamentPlayer';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useMatchesStatistics from '../../utils/useMatchesStatistics';
@@ -28,6 +28,7 @@ import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
 
 import SpectatorEditor from './SpectatorEditor';
+import { connectToSpectator, updateSpectatorChannel } from '@/middlewares/Spectator';
 
 const ResultModal = ({ solutionStatus, isWinner }) => {
   const [showModal, setShowModal] = useState(false);
@@ -213,24 +214,45 @@ function TournamentPlayer({ spectatorMachine }) {
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
-    const clearConnection = connectToTournamentPlayer()(dispatch);
+    updateSpectatorChannel(playerId);
 
-    return () => {
-      clearConnection();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (playerId) {
+      const clearSpectatorChannel = connectToSpectator()(dispatch);
+
+      return () => {
+        clearSpectatorChannel();
+      };
+    }
+
+    return () => {};
+  }, [playerId, dispatch]);
+
+  useEffect(() => {
+    updateTournamentChannel(tournament.id);
+
+    if (tournament.id) {
+      const clearTournamentConnection = connectToTournament()(dispatch);
+
+      return () => {
+        clearTournamentConnection();
+      };
+    }
+
+    return () => {};
+  }, [tournament.id, dispatch]);
 
   useEffect(() => {
     updateGameChannel(gameId);
 
     if (gameId) {
-      const clearConnection = connectToGame(spectatorService)(dispatch);
-      const clearEditor = connectToEditor(spectatorService)(dispatch);
+      const options = { cancelRedirect: true };
+
+      const clearGameConnection = connectToGame(spectatorService, options)(dispatch);
+      const clearEditorConnection = connectToEditor(spectatorService)(dispatch);
 
       return () => {
-        clearConnection();
-        clearEditor();
+        clearGameConnection();
+        clearEditorConnection();
       };
     }
 
