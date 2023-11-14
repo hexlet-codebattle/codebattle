@@ -33,22 +33,24 @@ defmodule CodebattleWeb.GameChannel do
         active_game_id = tournament |> Helpers.get_active_game_id(current_user.id)
         matches = Helpers.get_matches_by_players(tournament, [current_user.id])
 
-        {:ok, %{
-          game: GameView.render_game(game, score),
-          tournament: %{
-            tournament_id: game.tournament_id,
-            state: tournament.state,
-            type: tournament.type,
-            break_state: tournament.break_state,
-            current_round: tournament.current_round,
-            matches: matches
-          },
-          active_game_id: active_game_id
-        }, assign(socket, game_id: game_id, player_id: follow_id)}
+        {:ok,
+         %{
+           game: GameView.render_game(game, score),
+           tournament: %{
+             tournament_id: game.tournament_id,
+             state: tournament.state,
+             type: tournament.type,
+             break_state: tournament.break_state,
+             current_round: tournament.current_round,
+             matches: matches
+           },
+           active_game_id: active_game_id
+         }, assign(socket, game_id: game_id, player_id: follow_id)}
       else
-        {:ok, %{
-          game: GameView.render_game(game, score)
-        }, assign(socket, :game_id, game_id)}
+        {:ok,
+         %{
+           game: GameView.render_game(game, score)
+         }, assign(socket, :game_id, game_id)}
       end
     rescue
       _ ->

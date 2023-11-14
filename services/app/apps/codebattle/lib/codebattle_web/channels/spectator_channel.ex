@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.TournamentPlayerChannel do
+defmodule CodebattleWeb.SpectatorChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
@@ -6,15 +6,12 @@ defmodule CodebattleWeb.TournamentPlayerChannel do
 
   def join("spectator:" <> player_id, payload, socket) do
     current_user = socket.assigns.current_user
-    IO.inspect(payload);
     player_id = String.to_integer(player_id)
-    tournament_id = String.to_integer(payload.tournament_id)
+    tournament_id = payload["tournament_id"]
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
-
       game_id = tournament |> Tournament.Helpers.get_active_game_id(player_id)
-
       matches = Tournament.Helpers.get_matches_by_players(tournament, [player_id])
 
       {:ok,

@@ -46,7 +46,7 @@ defmodule CodebattleWeb.InviteChannel do
     level = payload["level"] || "elementary"
     type = "public"
     timeout_seconds = payload["timeout_seconds"] || 3600
-    task_id = payload["task_id"] || nil;
+    task_id = payload["task_id"] || nil
 
     game_params = %{
       level: level,
@@ -54,43 +54,15 @@ defmodule CodebattleWeb.InviteChannel do
       timeout_seconds: timeout_seconds
     }
 
-    params = %{
-      creator_id: creator_id,
-      recipient_id: recipient_id,
-      game_params: game_params,
-      task_id: task_id,
-    } |> IO.inspect
+    reply =
+      create_invite(%{
+        creator_id: creator_id,
+        recipient_id: recipient_id,
+        game_params: game_params,
+        task_id: task_id
+      })
 
-    case Invite.create_invite(params) do
-      {:ok, invite} ->
-        data = %{
-          state: invite.state,
-          id: invite.id,
-          game_params: game_params,
-          creator_id: invite.creator_id,
-          recipient_id: invite.recipient_id,
-          executor_id: creator_id,
-          creator: invite.creator,
-          recipient: invite.recipient
-        }
-
-        broadcast_invite(
-          "invites:#{invite.creator_id}",
-          "invites:created",
-          %{invite: data}
-        )
-
-        broadcast_invite(
-          "invites:#{invite.recipient_id}",
-          "invites:created",
-          %{invite: data}
-        )
-
-        {:reply, {:ok, %{invite: data}}, socket}
-
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
-    end
+    {:reply, reply, socket}
   end
 
   def handle_in("invites:cancel", payload, socket) do
@@ -186,6 +158,39 @@ defmodule CodebattleWeb.InviteChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  defp create_invite(params) do
+    case Invite.create_invite(params) do
+      {:ok, invite} ->
+        data = %{
+          state: invite.state,
+          id: invite.id,
+          game_params: params.game_params,
+          creator_id: invite.creator_id,
+          recipient_id: invite.recipient_id,
+          executor_id: invite.creator_id,
+          creator: invite.creator,
+          recipient: invite.recipient
+        }
+
+        broadcast_invite(
+          "invites:#{invite.creator_id}",
+          "invites:created",
+          %{invite: data}
+        )
+
+        broadcast_invite(
+          "invites:#{invite.recipient_id}",
+          "invites:created",
+          %{invite: data}
+        )
+
+        {:ok, %{invite: invite}}
+
+      {:error, reason} ->
+        {:error, %{reason: reason}}
     end
   end
 

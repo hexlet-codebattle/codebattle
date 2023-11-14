@@ -6,7 +6,7 @@ defmodule CodebattleWeb.UserSocket do
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("tournament:*", CodebattleWeb.TournamentChannel)
-  channel("tournament_player:*", CodebattleWeb.TournamentPlayerChannel)
+  channel("spectator:*", CodebattleWeb.SpectatorChannel)
   channel("game:*", CodebattleWeb.GameChannel)
   channel("chat:*", CodebattleWeb.ChatChannel)
   channel("main", CodebattleWeb.MainChannel)

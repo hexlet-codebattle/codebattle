@@ -22,12 +22,18 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
 
+    dispatch(actions.setActiveGameId(data));
+
     dispatch(actions.setTournamentData({
-      ...data.tournament,
-      channel: { online: true },
-      playersPageNumber: 1,
-      playersPageSize: 20,
+      id: data.tournamentId,
+      type: data.type,
+      state: data.state,
+      breakState: data.breakState,
+      currentRound: data.currentRound,
+      matches: data.matches,
     }));
+
+    dispatch(actions.updateTournamentPlayerChannelState(true));
   };
 
   spectatorChannel

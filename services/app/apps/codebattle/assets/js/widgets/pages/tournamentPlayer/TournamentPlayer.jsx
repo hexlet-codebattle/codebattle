@@ -14,6 +14,7 @@ import {
   connectToGame,
   updateGameChannel,
 } from '@/middlewares/Game';
+import { connectToSpectator } from '@/middlewares/Spectator';
 import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 
 import EditorUserTypes from '../../config/editorUserTypes';
@@ -28,7 +29,6 @@ import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
 
 import SpectatorEditor from './SpectatorEditor';
-import { connectToSpectator, updateSpectatorChannel } from '@/middlewares/Spectator';
 
 const ResultModal = ({ solutionStatus, isWinner }) => {
   const [showModal, setShowModal] = useState(false);
@@ -214,7 +214,7 @@ function TournamentPlayer({ spectatorMachine }) {
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
-    updateSpectatorChannel(playerId);
+    // updateSpectatorChannel(playerId);
 
     if (playerId) {
       const clearSpectatorChannel = connectToSpectator()(dispatch);

@@ -15,11 +15,11 @@ defmodule CodebattleWeb.TournamentChannel do
       active_match = Helpers.get_active_match(tournament, current_user)
       tournament |> topic_name |> Codebattle.PubSub.subscribe()
 
-      if (Helpers.is_player?(tournament, current_user.id)) do
+      if Helpers.is_player?(tournament, current_user.id) do
         Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{current_user.id}")
       end
 
-      if (current_user |> Codebattle.User.admin?) do
+      if current_user |> Codebattle.User.admin?() do
         Codebattle.PubSub.subscribe("tournament_admin:#{tournament_id}_#{current_user.id}")
       end
 
