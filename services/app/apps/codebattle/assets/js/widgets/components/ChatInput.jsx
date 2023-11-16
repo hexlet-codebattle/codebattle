@@ -115,7 +115,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
         disabled={disabled}
       />
       {isMaxLengthExceeded && (
-        <div className="invalid-feedback">
+        <div className="invalid-tooltip">
           Message length cannot exceed
           {' '}
           {MAX_MESSAGE_LENGTH}
