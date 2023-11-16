@@ -39,9 +39,8 @@ export default function ChatInput({ inputRef, disabled = false }) {
     } else {
       setMaxLengthExceeded(false);
     }
-
-    setText(value);
-    setTooltipVisibility(await getTooltipVisibility(value));
+      setText(value);
+      setTooltipVisibility(await getTooltipVisibility(value));
   };
 
   const handleSubmit = e => {
@@ -54,6 +53,9 @@ export default function ChatInput({ inputRef, disabled = false }) {
       },
     };
     if (isTooltipVisible) {
+      return;
+    }
+    if (isMaxLengthExceeded) {
       return;
     }
     if (text) {
