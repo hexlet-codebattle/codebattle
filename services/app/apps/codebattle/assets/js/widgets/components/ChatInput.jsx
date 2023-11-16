@@ -52,10 +52,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
         targetUserId: activeRoom.targetUserId,
       },
     };
-    if (isTooltipVisible) {
-      return;
-    }
-    if (isMaxLengthExceeded) {
+    if (isTooltipVisible || isMaxLengthExceeded) {
       return;
     }
     if (text) {
