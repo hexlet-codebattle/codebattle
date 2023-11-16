@@ -34,9 +34,9 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       users = insert_list(399, :user)
       [user1 = %{id: user_id1} | _] = users
 
-      Tournament.Server.send_event(tournament.id, :join, %{user: user})
-      Tournament.Server.send_event(tournament.id, :join, %{users: users})
-      Tournament.Server.send_event(tournament.id, :start, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -128,9 +128,9 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       users = insert_list(12, :user)
       [user1 = %{id: user_id1} | _] = users
 
-      Tournament.Server.send_event(tournament.id, :join, %{user: user})
-      Tournament.Server.send_event(tournament.id, :join, %{users: users})
-      Tournament.Server.send_event(tournament.id, :start, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 

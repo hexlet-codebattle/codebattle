@@ -170,6 +170,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       tournament =
         @module.finish_match(tournament, %{
           ref: match1.id,
+          game_id: match1.game_id,
           game_state: "game_over",
           game_level: "elementary",
           player_results: %{
@@ -197,6 +198,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       tournament =
         @module.finish_match(tournament, %{
           ref: match2.id,
+          game_id: match2.game_id,
           game_state: "timeout",
           game_level: "elementary",
           player_results: %{

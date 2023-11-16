@@ -7,7 +7,7 @@ defmodule Codebattle.Tournament.Base do
   @moduledoc """
   Defines interface for tournament type
   """
-  @callback build_matches(Tournament.t()) :: Tournament.t()
+  @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
@@ -19,9 +19,7 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.Helpers
 
       def add_player(tournament, player) do
-        update_in(tournament.players, fn players ->
-          Map.put(players, to_id(player.id), Tournament.Player.new!(player))
-        end)
+        put_in(tournament.players[to_id(player.id)], Tournament.Player.new!(player))
         |> Map.put(:players_count, players_count(tournament))
       end
 
@@ -94,6 +92,7 @@ defmodule Codebattle.Tournament.Base do
             last_round_ended_at: nil,
             last_round_started_at: nil,
             winner_ids: [],
+            top_player_ids: [],
             starts_at: DateTime.utc_now(:second) |> DateTime.add(5 * 60, :second),
             state: "waiting_participants"
           })
@@ -167,7 +166,7 @@ defmodule Codebattle.Tournament.Base do
       def finish_match(tournament, params) do
         tournament
         |> handle_game_result(params)
-        |> maybe_start_rematch(params)
+        |> maybe_start_rematch_async(params)
         |> maybe_finish_round()
       end
 
@@ -225,35 +224,38 @@ defmodule Codebattle.Tournament.Base do
         |> start_round_or_break_or_finish()
       end
 
-      defp maybe_start_rematch(tournament, params) do
-        if round_ends_by_time?(tournament) and seconds_to_end_round(tournament) > 15 do
-          finished_match = get_match(tournament, params.ref)
+      defp maybe_start_rematch_async(tournament, params) do
+        timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
 
-          match_id = Enum.count(tournament.matches)
-          player_ids = finished_match.player_ids
+        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 
-          players =
-            player_ids
-            |> Enum.map(&get_player(tournament, &1))
-            |> Enum.map(&Tournament.Player.new!/1)
+        if round_ends_by_time?(tournament) do
+          wait_type = if seconds_to_end_round(tournament) > min_seconds_to_rematch do
+            Process.send_after(
+              self(),
+              {:start_rematch, params.ref, tournament.current_round},
+              timeout_ms
+            )
+           "rematch"
+          else
+            "round"
+          end
+            Codebattle.PubSub.broadcast("tournament:game:wait", %{
+              game_id: params.game_id,
+              type: wait_type
+            })
 
-          # TODO: add timeout without blocking server for rematches
-          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-          :timer.sleep(timeout_ms)
-          game_id = create_game(tournament, match_id, players)
-
-          match = %Tournament.Match{
-            id: match_id,
-            game_id: game_id,
-            state: "playing",
-            player_ids: player_ids,
-            round: tournament.current_round
-          }
-
-          put_in(tournament.matches[to_id(match_id)], match)
-        else
-          tournament
         end
+
+        tournament
+      end
+
+      def start_rematch(tournament, match_ref) do
+        finished_match = get_match(tournament, match_ref)
+        new_match_id = Enum.count(tournament.matches)
+        player_ids = finished_match.player_ids
+
+        build_and_run_match(tournament, {get_players(tournament, player_ids), new_match_id})
       end
 
       defp pick_game_winner_id(player_ids, player_results) do
@@ -262,6 +264,10 @@ defmodule Codebattle.Tournament.Base do
 
       defp start_round_or_break_or_finish(tournament = %{state: "finished"}) do
         tournament
+      end
+
+      defp start_round_or_break_or_finish(tournament = %{use_infinite_break: true}) do
+        update_struct(tournament, %{break_state: "on"})
       end
 
       defp start_round_or_break_or_finish(
@@ -298,12 +304,80 @@ defmodule Codebattle.Tournament.Base do
         })
         |> start_round_timer()
         |> maybe_set_task_for_round()
-        |> build_matches()
+        |> build_round_matches()
         |> db_save!()
         |> broadcast_round_created()
       end
 
-      def create_game(tournament, ref, players) do
+      defp build_round_matches(tournament) do
+        tournament
+        |> build_round_pairs()
+        |> build_and_run_matches()
+      end
+
+      defp build_and_run_matches({tournament, player_pairs}) do
+        player_pairs
+        |> Enum.with_index(Enum.count(tournament.matches))
+        |> Enum.reduce(
+          tournament,
+          fn
+            {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id}, tournament ->
+              put_in(
+                tournament.matches[to_id(match_id)],
+                %Tournament.Match{
+                  id: match_id,
+                  state: "canceled",
+                  round: tournament.current_round,
+                  player_ids: Enum.sort([p1.id, p2.id])
+                }
+              )
+
+            {[p1, p2], match_id}, tournament ->
+              build_and_run_match(tournament, {[p1, p2], match_id})
+          end
+        )
+      end
+
+      defp build_and_run_match(tournament, {[p1, p2], match_id}) do
+        {game_id, task_id} = create_game(tournament, match_id, [p1, p2])
+
+        put_in(
+          tournament.matches[to_id(match_id)],
+          %Tournament.Match{
+            id: match_id,
+            game_id: game_id,
+            state: "playing",
+            player_ids: Enum.sort([p1.id, p2.id]),
+            round: tournament.current_round
+          }
+        )
+        |> then(fn tournament ->
+          update_in(
+            tournament.players[to_id(p1.id)],
+            fn player ->
+              %{
+                player
+                | match_ids: [match_id | player.match_ids],
+                  task_ids: [task_id | player.task_ids]
+              }
+            end
+          )
+        end)
+        |> then(fn tournament ->
+          update_in(
+            tournament.players[to_id(p2.id)],
+            fn player ->
+              %{
+                player
+                | match_ids: [match_id | player.match_ids],
+                  task_ids: [task_id | player.task_ids]
+              }
+            end
+          )
+        end)
+      end
+
+      defp create_game(tournament, ref, players) do
         game_timeout =
           if round_ends_by_time?(tournament) do
             seconds_to_end_round(tournament)
@@ -323,11 +397,11 @@ defmodule Codebattle.Tournament.Base do
             players: players
           })
 
-        game.id
+        {game.id, game.task_id}
       end
 
       def update_struct(tournament, params) do
-        tournament |> Ecto.Changeset.change(params) |> Ecto.Changeset.apply_action!(:update)
+        Map.merge(tournament, params)
       end
 
       def db_save!(tournament), do: Tournament.Context.upsert!(tournament)

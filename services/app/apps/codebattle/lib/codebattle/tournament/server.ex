@@ -60,14 +60,14 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def send_event(tournament_id, event_type, params) do
-    try do
+  def handle_event(tournament_id, event_type, params) do
+    # try do
       GenServer.call(server_name(tournament_id), {event_type, params})
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    # catch
+    #   :exit, reason ->
+    #     Logger.error("Error to send tournament update: #{inspect(reason)}")
+    #     {:error, :not_found}
+    # end
   end
 
   # SERVER
@@ -117,7 +117,8 @@ defmodule Codebattle.Tournament.Server do
         apply(module, event_type, [tournament, params])
       end
 
-    broadcast_tournament_update(new_tournament)
+    broadcast_tournament_event_by_type(event_type, params, new_tournament)
+
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
@@ -126,8 +127,6 @@ defmodule Codebattle.Tournament.Server do
          in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.stop_round_break(tournament)
-
-      broadcast_tournament_update(new_tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else
@@ -140,6 +139,20 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
+
+      broadcast_tournament_update(new_tournament)
+
+      {:noreply, %{tournament: new_tournament}}
+    else
+      {:noreply, %{tournament: tournament}}
+    end
+  end
+
+  def handle_info({:start_rematch, match_ref, round}, %{tournament: tournament}) do
+    if tournament.current_round == round and
+         not in_break?(tournament) and
+         not is_finished?(tournament) do
+      new_tournament = tournament.module.start_rematch(tournament, match_ref)
 
       broadcast_tournament_update(new_tournament)
 
@@ -162,7 +175,8 @@ defmodule Codebattle.Tournament.Server do
     if tournament.current_round == match.round and
          not in_break?(tournament) and
          not is_finished?(tournament) do
-      new_tournament = tournament.module.finish_match(tournament, payload)
+      new_tournament = tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+      # TODO: add match_finished_event pls, instead of full tournament update
       broadcast_tournament_update(new_tournament)
       {:noreply, %{tournament: new_tournament}}
     else
@@ -178,6 +192,38 @@ defmodule Codebattle.Tournament.Server do
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
+  end
+
+  def broadcast_tournament_event_by_type(:join, %{users: users}, tournament) do
+        Enum.each(users, &broadcast_tournament_event_by_type(:join, %{user: &1}, tournament))
+  end
+
+  def broadcast_tournament_event_by_type(:join, params, tournament) do
+    player = Tournament.Helpers.get_player(tournament, params.user.id)
+
+    Codebattle.PubSub.broadcast("tournament:player:joined", %{
+      tournament_id: tournament.id,
+      player: player
+    })
+  end
+
+  def broadcast_tournament_event_by_type(:leave, params, tournament) do
+    Codebattle.PubSub.broadcast("tournament:player:leaved", %{
+      tournament_id: tournament.id,
+      player_id: params.user_id
+    })
+  end
+
+  def broadcast_tournament_event_by_type(:start, _params, tournament) do
+    Codebattle.PubSub.broadcast("tournament:start", %{tournament_id: tournament.id})
+  end
+
+  def broadcast_tournament_event_by_type(:stop_round_break, _params, _tournament) do
+    :noop
+  end
+
+  def broadcast_tournament_event_by_type(_default_event, _params, _tournament) do
+    # TODO: updated
   end
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}

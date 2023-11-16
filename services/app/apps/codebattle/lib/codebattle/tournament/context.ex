@@ -120,13 +120,13 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec send_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
-  def send_event(%Tournament{id: id}, event_type, params) do
-    send_event(id, event_type, params)
+  @spec handle_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
+  def handle_event(%Tournament{id: id}, event_type, params) do
+    handle_event(id, event_type, params)
   end
 
-  def send_event(tournament_id, event_type, params) do
-    Tournament.Server.send_event(tournament_id, event_type, params)
+  def handle_event(tournament_id, event_type, params) do
+    Tournament.Server.handle_event(tournament_id, event_type, params)
   end
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}

@@ -1,6 +1,5 @@
 defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.User
-  alias Codebattle.Tournament
 
   def get_player(tournament, id), do: Map.get(tournament.players, to_id(id))
   def get_players(tournament), do: tournament.players |> Map.values()
@@ -52,14 +51,6 @@ defmodule Codebattle.Tournament.Helpers do
   def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
 
   def get_player_ids(tournament), do: tournament |> get_players |> Enum.map(& &1.id)
-
-  def get_match_players(_tournament, nil), do: []
-
-  def get_match_players(tournament, match) do
-    match.player_ids
-    |> Enum.map(&Map.get(tournament.players, to_id(&1)))
-    |> Enum.map(&Tournament.Player.new!(&1))
-  end
 
   def players_count(tournament) do
     tournament |> get_players() |> Enum.count()

@@ -13,14 +13,15 @@ defmodule CodebattleWeb.TournamentChannel do
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Helpers.can_access?(tournament, current_user, payload) do
       active_match = Helpers.get_active_match(tournament, current_user)
-      tournament |> topic_name |> Codebattle.PubSub.subscribe()
+
+
 
       if Helpers.is_player?(tournament, current_user.id) do
-        Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{current_user.id}")
+        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
       end
 
-      if current_user |> Codebattle.User.admin?() do
-        Codebattle.PubSub.subscribe("tournament_admin:#{tournament_id}_#{current_user.id}")
+      if Codebattle.User.admin?(current_user) do
+        Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
       end
 
       matches = Helpers.get_matches_by_players(tournament, [current_user.id])
@@ -40,7 +41,9 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:join", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
 
-    Tournament.Context.send_event(tournament_id, :join, %{
+    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}")
+
+    Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user,
       team_id: to_string(team_id)
     })
@@ -51,7 +54,8 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:join", _, socket) do
     tournament_id = socket.assigns.tournament_id
 
-    Tournament.Context.send_event(tournament_id, :join, %{
+    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}")
+    Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user
     })
 
@@ -61,7 +65,9 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:leave", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
 
-    Tournament.Context.send_event(tournament_id, :leave, %{
+    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}")
+
+    Tournament.Context.handle_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id,
       team_id: to_string(team_id)
     })
@@ -72,7 +78,9 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:leave", _, socket) do
     tournament_id = socket.assigns.tournament_id
 
-    Tournament.Context.send_event(tournament_id, :leave, %{
+    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}")
+
+    Tournament.Context.handle_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id
     })
 
@@ -84,7 +92,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament = Tournament.Server.get_tournament(tournament_id)
 
     if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(tournament_id, :leave, %{
+      Tournament.Context.handle_event(tournament_id, :leave, %{
         user_id: String.to_integer(user_id)
       })
     end
@@ -98,7 +106,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     Tournament.Context.restart(tournament)
 
-    Tournament.Context.send_event(tournament_id, :restart, %{
+    Tournament.Context.handle_event(tournament_id, :restart, %{
       user: socket.assigns.current_user
     })
 
@@ -108,7 +116,7 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:open_up", _, socket) do
     tournament_id = socket.assigns.tournament_id
 
-    Tournament.Context.send_event(tournament_id, :open_up, %{
+    Tournament.Context.handle_event(tournament_id, :open_up, %{
       user: socket.assigns.current_user
     })
 
@@ -120,7 +128,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament = Tournament.Server.get_tournament(tournament_id)
 
     if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(tournament_id, :cancel, %{
+      Tournament.Context.handle_event(tournament_id, :cancel, %{
         user: socket.assigns.current_user
       })
     end
@@ -133,7 +141,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament = Tournament.Server.get_tournament(tournament_id)
 
     if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(tournament_id, :start, %{
+      Tournament.Context.handle_event(tournament_id, :start, %{
         user: socket.assigns.current_user
       })
     end
@@ -146,7 +154,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament = Tournament.Server.get_tournament(tournament_id)
 
     if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(tournament_id, :stop_round_break, %{})
+      Tournament.Context.handle_event(tournament_id, :stop_round_break, %{})
     end
 
     {:noreply, socket}
@@ -212,5 +220,4 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  defp topic_name(tournament), do: "tournament:#{tournament.id}"
 end

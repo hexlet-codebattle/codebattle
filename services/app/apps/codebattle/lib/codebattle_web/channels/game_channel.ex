@@ -26,8 +26,7 @@ defmodule CodebattleWeb.GameChannel do
             List.first(player_ids)
           end
 
-        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
-        Codebattle.PubSub.subscribe("tournament_player:#{game.tournament_id}_#{follow_id}")
+        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{follow_id}")
 
         tournament = Tournament.Context.get(game.tournament_id)
         active_game_id = tournament |> Helpers.get_active_game_id(current_user.id)
@@ -188,8 +187,14 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "game:created", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:game:created", payload: payload}, socket) do
     push(socket, "tournament:game:created", %{game_id: payload.game_id})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:game:wait", payload: payload}, socket) do
+    push(socket, "tournament:game:wait", %{type: payload.type})
 
     {:noreply, socket}
   end
@@ -198,28 +203,6 @@ defmodule CodebattleWeb.GameChannel do
     if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", %{
-      state: payload.state,
-      break_state: "off"
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    matches =
-      Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
-
-    push(socket, "tournament:round_finished", %{
-      state: payload.state,
-      break_state: "on",
-      matches: matches
-    })
 
     {:noreply, socket}
   end

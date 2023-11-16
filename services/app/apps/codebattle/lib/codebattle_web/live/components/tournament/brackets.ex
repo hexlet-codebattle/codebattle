@@ -77,7 +77,7 @@ defmodule CodebattleWeb.Live.Tournament.BracketsComponent do
           <div class="match">
             <div class="match__content">
               <MatchComponent.render
-                players={get_match_players(@tournament, match)}
+                players={(match && get_players(@tournament, match.player_ids)) || []}
                 match={match}
                 current_user_id={@current_user_id}
               />
