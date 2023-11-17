@@ -15,6 +15,7 @@ defmodule CodebattleWeb.TournamentChannel do
       active_match = Helpers.get_active_match(tournament, current_user)
 
       if Helpers.is_player?(tournament, current_user.id) do
+        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
       end
 
@@ -39,6 +40,8 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:join", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
 
+    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
+
     Codebattle.PubSub.subscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
     )
@@ -54,6 +57,8 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:join", _, socket) do
     tournament_id = socket.assigns.tournament_id
 
+    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
+
     Codebattle.PubSub.subscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
     )
@@ -67,6 +72,8 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:leave", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
+
+    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
 
     Codebattle.PubSub.unsubscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
@@ -82,6 +89,8 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:leave", _, socket) do
     tournament_id = socket.assigns.tournament_id
+
+    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
 
     Codebattle.PubSub.unsubscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"

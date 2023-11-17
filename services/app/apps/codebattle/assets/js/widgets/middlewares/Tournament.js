@@ -86,7 +86,7 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.addTournamentPlayer(data));
   };
 
-  const handlePlayerLeaved = response => {
+  const handlePlayerLeft = response => {
     const data = camelizeKeys(response);
 
     dispatch(actions.removeTournamentPlayer(data));
@@ -107,7 +107,7 @@ export const connectToTournament = () => dispatch => {
     channel.on('tournament:round_finished', handleRoundFinished),
     channel.on('tournament:start', handleTournamentStart),
     channel.on('tournament:player:joined', handlePlayerJoined),
-    channel.on('tournament:player:left', handlePlayerLeaved),
+    channel.on('tournament:player:left', handlePlayerLeft),
   ];
 
   const oldChannel = channel;

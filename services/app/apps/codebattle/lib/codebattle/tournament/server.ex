@@ -210,7 +210,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def broadcast_tournament_event_by_type(:leave, params, tournament) do
-    Codebattle.PubSub.broadcast("tournament:player:leaved", %{
+    Codebattle.PubSub.broadcast("tournament:player:left", %{
       tournament_id: tournament.id,
       player_id: params.user_id
     })
