@@ -70,6 +70,7 @@ const steps = [
     target: 'body',
   },
   {
+    disableBeacon: true,
     disableOverlayClose: true,
     target: '[data-guide-id="Task"]',
     title: 'Task',
@@ -79,6 +80,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     disableOverlayClose: true,
     spotlightClicks: true,
     target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
@@ -90,6 +92,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     disableOverlayClose: true,
     target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
     title: 'Editor',
@@ -99,6 +102,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     spotlightClicks: true,
     disableOverlayClose: true,
     styles: {
@@ -115,6 +119,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     spotlightClicks: true,
     disableOverlayClose: true,
     styles: {
@@ -130,6 +135,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     spotlightClicks: true,
     disableOverlayClose: true,
     styles: {
@@ -146,6 +152,7 @@ const steps = [
     },
   },
   {
+    disableBeacon: true,
     disableOverlayClose: true,
     target: '#leftOutput-tab',
     title: 'Result output',
@@ -172,11 +179,13 @@ function GameWidgetGuide({ tournamentId }) {
         run
         scrollToFirstStep
         showProgress
+        disableBeacon
         showSkipButton
         steps={steps}
         spotlightPadding={6}
-        callback={({ status }) => {
-          if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+        callback={data => {
+          const { status, action } = data;
+          if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === 'close') {
             window.localStorage.setItem('guideGamePassed', 'true');
             setIsFirstTime(false);
             dispatch(actions.updateGameUI({ isShowGuide: false }));
