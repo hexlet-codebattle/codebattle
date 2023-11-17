@@ -10,10 +10,11 @@ defmodule CodebattleWeb.TournamentChannel do
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
 
-    with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
-         true <- Helpers.can_access?(tournament, current_user, payload) do
-      active_match = Helpers.get_active_match(tournament, current_user)
+    user = %{id: current_user.id, name: current_user.name}
 
+    with tournament when not is_nil(tournament) <-
+           Tournament.Context.get_tournament_info(tournament_id, user),
+         true <- Helpers.can_access?(tournament, current_user, payload) do
       if Helpers.is_player?(tournament, current_user.id) do
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
@@ -27,7 +28,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
       {:ok,
        %{
-         active_match: active_match,
          tournament: tournament,
          matches: matches
        }, assign(socket, tournament_id: tournament_id, player_id: current_user.id)}
@@ -73,16 +73,16 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:leave", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
 
+    Tournament.Context.handle_event(tournament_id, :leave, %{
+      user_id: socket.assigns.current_user.id,
+      team_id: to_string(team_id)
+    })
+
     Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
 
     Codebattle.PubSub.unsubscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
     )
-
-    Tournament.Context.handle_event(tournament_id, :leave, %{
-      user_id: socket.assigns.current_user.id,
-      team_id: to_string(team_id)
-    })
 
     {:noreply, socket}
   end
@@ -90,15 +90,15 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:leave", _, socket) do
     tournament_id = socket.assigns.tournament_id
 
+    Tournament.Context.handle_event(tournament_id, :leave, %{
+      user_id: socket.assigns.current_user.id
+    })
+
     Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
 
     Codebattle.PubSub.unsubscribe(
       "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
     )
-
-    Tournament.Context.handle_event(tournament_id, :leave, %{
-      user_id: socket.assigns.current_user.id
-    })
 
     {:noreply, socket}
   end

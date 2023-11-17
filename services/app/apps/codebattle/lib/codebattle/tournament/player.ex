@@ -13,7 +13,7 @@ defmodule Codebattle.Tournament.Player do
     :id,
     :is_bot,
     :lang,
-    :match_ids,
+    :matches_ids,
     :name,
     :rank,
     :rating,
@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Player do
     field(:id, :integer)
     field(:is_bot, :boolean)
     field(:lang, :string)
-    field(:match_ids, {:array, :integer}, default: [])
+    field(:matches_ids, {:array, :integer}, default: [])
     field(:name, :string)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer)

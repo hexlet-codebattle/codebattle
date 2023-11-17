@@ -359,7 +359,7 @@ defmodule Codebattle.Tournament.Base do
             fn player ->
               %{
                 player
-                | match_ids: [match_id | player.match_ids],
+                | matches_ids: [match_id | player.matches_ids],
                   task_ids: [task_id | player.task_ids]
               }
             end
@@ -371,7 +371,7 @@ defmodule Codebattle.Tournament.Base do
             fn player ->
               %{
                 player
-                | match_ids: [match_id | player.match_ids],
+                | matches_ids: [match_id | player.matches_ids],
                   task_ids: [task_id | player.task_ids]
               }
             end

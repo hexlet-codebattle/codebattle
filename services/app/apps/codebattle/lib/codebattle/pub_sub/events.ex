@@ -26,7 +26,7 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:round_created", params) do
     [
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_created",
         payload: %{
           state: params.tournament.state,
@@ -45,13 +45,17 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_finished", params) do
+    top_players =
+      Tournament.Helpers.get_players(params.tournament, params.tournament.top_player_ids)
+
     [
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
           state: params.tournament.state,
-          break_state: params.tournament.break_state
+          break_state: params.tournament.break_state,
+          top_players: top_players
         }
       },
       %Message{
@@ -60,7 +64,8 @@ defmodule Codebattle.PubSub.Events do
         payload: %{
           state: params.tournament.state,
           break_state: params.tournament.break_state,
-          matches: Tournament.Helpers.get_current_round_matches(params.tournament)
+          matches: Tournament.Helpers.get_current_round_matches(params.tournament),
+          top_players: top_players
         }
       }
     ]
@@ -78,7 +83,7 @@ defmodule Codebattle.PubSub.Events do
         }
       },
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:started",
         payload: %{
           state: params.tournament.state,
@@ -121,7 +126,7 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournament:#{params.tournament_id}:common",
         event: "tournament:player:joined",
-        payload: %{player_id: params.player_id}
+        payload: %{player: params.player}
       },
       %Message{
         topic: "tournament:#{params.tournament_id}",

@@ -12,14 +12,19 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
+  def get_matches_by_ids(tournament, matches_ids) do
+    Enum.map(matches_ids, &get_match(tournament, &1))
+  end
+
   def get_matches_by_players(tournament, player_ids) do
-    tournament
-    |> get_matches()
-    |> Enum.filter(fn match ->
-      player_ids
-      |> Enum.map(&is_match_player?(match, &1))
-      |> Enum.any?()
-    end)
+    matches_ids =
+      tournament
+      |> get_players(player_ids)
+      |> Enum.filter(& &1)
+      |> Enum.flat_map(& &1.matches_ids)
+      |> Enum.uniq()
+
+    get_matches_by_ids(tournament, matches_ids)
   end
 
   def get_round_matches(tournament) do
