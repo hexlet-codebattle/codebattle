@@ -230,21 +230,23 @@ defmodule Codebattle.Tournament.Base do
         min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 
         if round_ends_by_time?(tournament) do
-          wait_type = if seconds_to_end_round(tournament) > min_seconds_to_rematch do
-            Process.send_after(
-              self(),
-              {:start_rematch, params.ref, tournament.current_round},
-              timeout_ms
-            )
-           "rematch"
-          else
-            "round"
-          end
-            Codebattle.PubSub.broadcast("tournament:game:wait", %{
-              game_id: params.game_id,
-              type: wait_type
-            })
+          wait_type =
+            if seconds_to_end_round(tournament) > min_seconds_to_rematch do
+              Process.send_after(
+                self(),
+                {:start_rematch, params.ref, tournament.current_round},
+                timeout_ms
+              )
 
+              "rematch"
+            else
+              "round"
+            end
+
+          Codebattle.PubSub.broadcast("tournament:game:wait", %{
+            game_id: params.game_id,
+            type: wait_type
+          })
         end
 
         tournament

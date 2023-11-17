@@ -62,7 +62,7 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_event(tournament_id, event_type, params) do
     # try do
-      GenServer.call(server_name(tournament_id), {event_type, params})
+    GenServer.call(server_name(tournament_id), {event_type, params})
     # catch
     #   :exit, reason ->
     #     Logger.error("Error to send tournament update: #{inspect(reason)}")
@@ -175,7 +175,9 @@ defmodule Codebattle.Tournament.Server do
     if tournament.current_round == match.round and
          not in_break?(tournament) and
          not is_finished?(tournament) do
-      new_tournament = tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+      new_tournament =
+        tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+
       # TODO: add match_finished_event pls, instead of full tournament update
       broadcast_tournament_update(new_tournament)
       {:noreply, %{tournament: new_tournament}}
@@ -195,7 +197,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def broadcast_tournament_event_by_type(:join, %{users: users}, tournament) do
-        Enum.each(users, &broadcast_tournament_event_by_type(:join, %{user: &1}, tournament))
+    Enum.each(users, &broadcast_tournament_event_by_type(:join, %{user: &1}, tournament))
   end
 
   def broadcast_tournament_event_by_type(:join, params, tournament) do
@@ -215,7 +217,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def broadcast_tournament_event_by_type(:start, _params, tournament) do
-    Codebattle.PubSub.broadcast("tournament:start", %{tournament_id: tournament.id})
+    Codebattle.PubSub.broadcast("tournament:started", %{tournament: tournament})
   end
 
   def broadcast_tournament_event_by_type(:stop_round_break, _params, _tournament) do

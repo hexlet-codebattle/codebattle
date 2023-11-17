@@ -28,7 +28,7 @@ defmodule Codebattle.Tournament.Swiss do
       |> Enum.take(30)
       |> Enum.map(& &1.id)
 
-      update_struct(tournament, %{top_player_ids: top_player_ids})
+    update_struct(tournament, %{top_player_ids: top_player_ids})
   end
 
   @impl Tournament.Base

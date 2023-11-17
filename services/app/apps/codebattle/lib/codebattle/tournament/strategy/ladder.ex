@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Ladder do
   use Codebattle.Tournament.Base
 
+  alias Codebattle.Bot
   alias Codebattle.Tournament
 
   @impl Tournament.Base
@@ -14,13 +15,7 @@ defmodule Codebattle.Tournament.Ladder do
 
   @impl Tournament.Base
   def build_round_pairs(tournament = %{current_round: 0}) do
-    player_pairs =
-      tournament
-      |> get_players
-      |> Enum.shuffle()
-      |> Enum.chunk_every(2)
-
-    {tournament, player_pairs}
+    tournament |> get_players |> Enum.shuffle() |> build_player_pairs(tournament)
   end
 
   @impl Tournament.Base
@@ -32,16 +27,26 @@ defmodule Codebattle.Tournament.Ladder do
 
     winner_ids = Enum.map(last_round_matches, &pick_winner_id(&1))
 
-    player_pairs =
-      tournament
-      |> get_players(winner_ids)
-      |> Enum.chunk_every(2)
-
-    {tournament, player_pairs}
+    tournament |> get_players(winner_ids) |> build_player_pairs(tournament)
   end
 
   @impl Tournament.Base
   def finish_tournament?(tournament) do
     tournament.meta.rounds_limit - 1 == tournament.current_round
+  end
+
+  defp build_player_pairs(players, tournament) do
+    if rem(Enum.count(players), 2) == 1 do
+      bot = build_bot()
+      players = Enum.concat(players, [bot])
+
+      {put_in(tournament.players[to_id(bot.id)], bot), Enum.chunk_every(players, 2)}
+    else
+      {tournament, Enum.chunk_every(players, 2)}
+    end
+  end
+
+  defp build_bot() do
+    Tournament.Player.new!(Bot.Context.build())
   end
 end

@@ -3,9 +3,8 @@ defmodule Codebattle.Invite do
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
-  alias Codebattle.Repo
   alias Codebattle.Game.Context
-  alias Codebattle.Task
+  alias Codebattle.Repo
   alias __MODULE__
 
   @type t :: %__MODULE__{}
@@ -141,18 +140,24 @@ defmodule Codebattle.Invite do
 
     users = [invite.creator, invite.recipient]
 
-    task = Task.get!(invite.task_id)
-
     game_params = %{
       players: users,
       state: "playing",
       level: invite.game_params.level,
       type: "duo",
       mode: "standard",
-      task: task,
       visibility_type: invite.game_params.type,
       timeout_seconds: invite.game_params.timeout_seconds
     }
+
+    task = invite.task_id && Codebattle.Task.get(invite.task_id)
+
+    game_params =
+      if task do
+        Map.put(game_params, :task, task)
+      else
+        game_params
+      end
 
     case Context.create_game(game_params) do
       {:ok, game} ->
