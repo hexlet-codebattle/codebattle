@@ -107,7 +107,7 @@ export const connectToTournament = () => dispatch => {
     channel.on('tournament:round_finished', handleRoundFinished),
     channel.on('tournament:start', handleTournamentStart),
     channel.on('tournament:player:joined', handlePlayerJoined),
-    channel.on('tournament:player:leaved', handlePlayerLeaved),
+    channel.on('tournament:player:left', handlePlayerLeaved),
   ];
 
   const oldChannel = channel;
@@ -120,7 +120,7 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:round_finished', refs[4]);
     oldChannel.on('tournament:start', refs[5]);
     oldChannel.on('tournament:player:joined', refs[6]);
-    oldChannel.on('tournament:player:leaved', refs[7]);
+    oldChannel.on('tournament:player:left', refs[7]);
   };
 
   return clearTournamentChannel;

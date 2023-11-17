@@ -216,6 +216,18 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
+    push(socket, "tournament:player:joined", payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:player:left", payload: payload}, socket) do
+    push(socket, "tournament:player:left", payload)
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "game:created", payload: payload}, socket) do
     push(socket, "game:created", %{game_id: payload.game_id})
 
