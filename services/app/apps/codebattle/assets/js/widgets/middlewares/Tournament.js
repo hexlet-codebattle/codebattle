@@ -29,6 +29,8 @@ const initTournamentChannel = dispatch => {
       playersPageNumber: 1,
       playersPageSize: 20,
     }));
+
+    dispatch(actions.updateTournamentMatches(data.matches));
   };
 
   channel
@@ -76,6 +78,20 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentMatches(data.matches));
   };
 
+  const handleTournamentStart = () => {};
+
+  const handlePlayerJoined = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.addTournamentPlayer(data));
+  };
+
+  const handlePlayerLeaved = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.removeTournamentPlayer(data));
+  };
+
   const refs = [
     channel.on('tournament:update', handleUpdate),
 
@@ -89,17 +105,22 @@ export const connectToTournament = () => dispatch => {
     channel.on('tournament:players:update', handlePlayersUpdate),
     channel.on('tournament:round_created', handleTournamentRoundCreated),
     channel.on('tournament:round_finished', handleRoundFinished),
+    channel.on('tournament:start', handleTournamentStart),
+    channel.on('tournament:player:joined', handlePlayerJoined),
+    channel.on('tournament:player:leaved', handlePlayerLeaved),
   ];
 
   const oldChannel = channel;
 
   const clearTournamentChannel = () => {
     oldChannel.off('tournament:update', refs[0]);
-    // oldChannel.off('tournament:round_created', refs[1]);
     oldChannel.off('tournament:matches:update', refs[1]);
     oldChannel.off('tournament:players:update', refs[2]);
     oldChannel.off('tournament:round_created', refs[3]);
     oldChannel.off('tournament:round_finished', refs[4]);
+    oldChannel.on('tournament:start', refs[5]);
+    oldChannel.on('tournament:player:joined', refs[6]);
+    oldChannel.on('tournament:player:leaved', refs[7]);
   };
 
   return clearTournamentChannel;

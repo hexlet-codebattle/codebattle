@@ -48,55 +48,52 @@ function ControlPanel({
 
   return (
     <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-      <div className="input-group flex-nowrap mb-2">
-        <div className="input-group-prepend">
-          <span className="input-group-text" id="search-icon">
-            <FontAwesomeIcon icon="search" />
-          </span>
-        </div>
-        <AsyncSelect
-          value={
-            searchOption && {
-              label: <UserLabel user={searchOption} />,
-              value: searchOption,
+      {panelMode !== PanelModeCodes.playerMode ? (
+        <div className="input-group flex-nowrap mb-2">
+          <div className="input-group-prepend">
+            <span className="input-group-text" id="search-icon">
+              <FontAwesomeIcon icon="search" />
+            </span>
+          </div>
+          <AsyncSelect
+            value={
+              searchOption && {
+                label: <UserLabel user={searchOption} />,
+                value: searchOption,
+              }
             }
-          }
-          defaultOptions
-          classNamePrefix="rounded-0 "
-          onChange={onChangeSearchedPlayer}
-          loadOptions={loadOptions}
-          isDisabled={panelMode === PanelModeCodes.playerMode}
-        />
-      </div>
+            defaultOptions
+            classNamePrefix="rounded-0 "
+            onChange={onChangeSearchedPlayer}
+            loadOptions={loadOptions}
+          />
+        </div>
+      ) : <div />}
       <div
-        className={cn('d-flex custom-control custom-switch mb-2', {
+        className={cn('d-flex mb-2 text-nowrap', {
           'text-muted': disabledPanelModeControl,
+          'justify-content-end': panelMode === PanelModeCodes.playerMode,
         })}
       >
-        <input
-          type="checkbox"
-          className="custom-control-input"
-          id="customMatchesPanelMode"
-          checked={panelMode === PanelModeCodes.ratingMode}
-          onChange={togglePanelMode}
+        <button
+          type="button"
+          className="btn btn-sm btn-outline-light border-0 text-dark rounded-lg p-2"
+          onClick={togglePanelMode}
           disabled={disabledPanelModeControl}
-        />
-        <label
-          className="custom-control-label text-nowrap"
-          htmlFor="customMatchesPanelMode"
         >
-          <span
-            className={panelMode === PanelModeCodes.playerMode ? 'text-primary' : ''}
-          >
-            Player Panel
-          </span>
-          {' / '}
-          <span
-            className={panelMode === PanelModeCodes.ratingMode ? 'text-primary' : ''}
-          >
-            Rating Panel
-          </span>
-        </label>
+          {panelMode === PanelModeCodes.playerMode && (
+            <>
+              Rating Panel
+              <FontAwesomeIcon icon="caret-square-right" className="ml-2" />
+            </>
+          )}
+          {panelMode === PanelModeCodes.ratingMode && (
+            <>
+              <FontAwesomeIcon icon="caret-square-left" className="mr-2" />
+              Player Panel
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
