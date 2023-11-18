@@ -388,6 +388,10 @@ a {
   width: min(100%, 180px);
 }
 
+.cb-tournament-profile-avatar {
+  width: min(100%, 110px);
+}
+
 .cb-user-avatar {
   width: 25px;
 }
@@ -553,30 +557,47 @@ a {
   }
 }
 
+.tournament-info-ratingMode-enter,
 .game-room-preview-enter,
 .game-room-builder-enter,
 .game-room-builder-exit-active {
   opacity: 0;
+  transform: translateX(100%);
+}
+
+.tournament-info-playerMode-exit-active,
+.tournament-info-playerMode-enter {
+  opacity: 0;
   transform: translateX(-100%);
 }
 
+
+.tournament-info-ratingMode-enter-active,
+.tournament-info-playerMode-enter-active,
 .game-room-preview-enter-active,
 .game-room-builder-enter-active {
   opacity: 1;
   transform: translateX(0%);
 }
 
+.tournament-info-ratingMode-exit,
+.tournament-info-playerMode-exit,
 .game-room-preview-exit,
 .game-room-builder-exit {
   opacity: 1;
   transform: translateX(0%);
 }
 
+.tournament-info-ratingMode-exit-active,
 .game-room-preview-exit-active {
   opacity: 0;
   transform: translateX(100%);
 }
 
+.tournament-info-ratingMode-enter-active,
+.tournament-info-ratingMode-exit-active,
+.tournament-info-playerMode-enter-active,
+.tournament-info-playerMode-exit-active,
 .game-room-preview-enter-active,
 .game-room-preview-exit-active,
 .game-room-builder-enter-active,

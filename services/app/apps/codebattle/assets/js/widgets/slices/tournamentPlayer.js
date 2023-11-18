@@ -9,7 +9,7 @@ const tournament = createSlice({
   initialState,
   reducers: {
     setActiveGameId: (state, { payload }) => {
-      state.gameId = payload.gameId;
+      state.gameId = payload.activeGameId;
     },
     clearActiveGameId: state => {
       state.gameId = null;

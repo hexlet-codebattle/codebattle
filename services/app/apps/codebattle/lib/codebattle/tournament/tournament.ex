@@ -28,7 +28,6 @@ defmodule Codebattle.Tournament do
              :matches,
              :meta,
              :name,
-             :played_pair_ids,
              :players,
              :players_limit,
              :players_count,
@@ -39,7 +38,8 @@ defmodule Codebattle.Tournament do
              :task_provider,
              :task_strategy,
              :type,
-             :use_chat
+             :use_chat,
+             :use_infinite_break
            ]}
 
   @access_types ~w(public token)
@@ -80,12 +80,14 @@ defmodule Codebattle.Tournament do
     field(:task_strategy, :string, default: "game")
     field(:type, :string, default: "individual")
     field(:use_chat, :boolean, default: true)
+    field(:use_infinite_break, :boolean, default: false)
     field(:winner_ids, {:array, :integer})
 
     field(:is_live, :boolean, virtual: true, default: false)
     field(:module, :any, virtual: true, default: Individual)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
+    field(:top_player_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
     field(:task_pack_name, :string, virtual: true)
 
@@ -117,7 +119,8 @@ defmodule Codebattle.Tournament do
       :state,
       :task_strategy,
       :type,
-      :use_chat
+      :use_chat,
+      :use_infinite_break
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)

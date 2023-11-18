@@ -14,15 +14,16 @@ import {
   connectToGame,
   updateGameChannel,
 } from '@/middlewares/Game';
+import { connectToSpectator } from '@/middlewares/Spectator';
+import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 
 import EditorUserTypes from '../../config/editorUserTypes';
 import GameStateCodes from '../../config/gameStateCodes';
 import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
-import { connectToTournamentPlayer } from '../../middlewares/TournamentPlayer';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import useRoundStatistics from '../../utils/useRoundStatistics';
+import useMatchesStatistics from '../../utils/useMatchesStatistics';
 import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
@@ -63,15 +64,9 @@ const ResultModal = ({ solutionStatus, isWinner }) => {
 
 const RoundStatus = ({ playerId, matches }) => {
   const [
-    // player = {
-    //   winMatches
-    //   score,
-    //   avgTests,
-    //   avgDuration,
-    // },
     player,
     opponent,
-  ] = useRoundStatistics(playerId, matches);
+  ] = useMatchesStatistics(playerId, matches);
 
   const RoundStatistics = () => (
     <div className="d-flex text-center align-items-center justify-content-center">
@@ -219,24 +214,45 @@ function TournamentPlayer({ spectatorMachine }) {
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
-    const clearConnection = connectToTournamentPlayer()(dispatch);
+    // updateSpectatorChannel(playerId);
 
-    return () => {
-      clearConnection();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (playerId) {
+      const clearSpectatorChannel = connectToSpectator()(dispatch);
+
+      return () => {
+        clearSpectatorChannel();
+      };
+    }
+
+    return () => {};
+  }, [playerId, dispatch]);
+
+  useEffect(() => {
+    updateTournamentChannel(tournament.id);
+
+    if (tournament.id) {
+      const clearTournamentConnection = connectToTournament()(dispatch);
+
+      return () => {
+        clearTournamentConnection();
+      };
+    }
+
+    return () => {};
+  }, [tournament.id, dispatch]);
 
   useEffect(() => {
     updateGameChannel(gameId);
 
     if (gameId) {
-      const clearConnection = connectToGame(spectatorService)(dispatch);
-      const clearEditor = connectToEditor(spectatorService)(dispatch);
+      const options = { cancelRedirect: true };
+
+      const clearGameConnection = connectToGame(spectatorService, options)(dispatch);
+      const clearEditorConnection = connectToEditor(spectatorService)(dispatch);
 
       return () => {
-        clearConnection();
-        clearEditor();
+        clearGameConnection();
+        clearEditorConnection();
       };
     }
 

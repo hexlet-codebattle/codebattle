@@ -13,7 +13,7 @@ import {
   secondPlayerSelector,
   gameIdSelector,
 } from '@/selectors';
-import useRoundStatistics from '@/utils/useRoundStatistics';
+import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import TournamentStateCodes from '../../config/tournament';
 
@@ -42,7 +42,7 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
     Object.values(tournament?.matches || {}).find(match => match.gameId === gameId)?.round
   ), [tournament.matches, gameId]);
 
-  const [player, opponent] = useRoundStatistics(firstPlayer.id, matches);
+  const [player, opponent] = useMatchesStatistics(firstPlayer.id, matches);
 
   const showTournamentStatistics = tournament.type === 'swiss'
     && secondPlayer.id === opponent.playerId

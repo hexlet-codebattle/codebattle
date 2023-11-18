@@ -1,33 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ReactJoyride, { STATUS } from 'react-joyride';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 import FeedbackWidget from '../components/FeedbackWidget';
+import GameWidgetGuide from '../components/GameWidgetGuide';
 import RoomContext from '../components/RoomContext';
 import GameStateCodes from '../config/gameStateCodes';
 import sound from '../lib/sound';
-import {
-  inPreviewRoomSelector,
-  inBuilderRoomSelector,
-  inWaitingRoomSelector,
-  openedReplayerSelector,
-  gameRoomKeySelector,
-  roomStateSelector,
-} from '../machines/selectors';
+import * as machineSelectors from '../machines/selectors';
 import * as ChatActions from '../middlewares/Chat';
 import * as GameRoomActions from '../middlewares/Game';
-import * as TournamentPlayerActions from '../middlewares/TournamentPlayer';
-import {
-  firstPlayerSelector,
-  secondPlayerSelector,
-  gameStatusSelector,
-  gameUseChatSelector,
-  isShowGuideSelector,
-} from '../selectors';
+import * as selectors from '../selectors';
 import { actions } from '../slices';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
@@ -45,171 +31,11 @@ import TimeoutGameInfo from './game/TimeoutGameInfo';
 import TournamentStatisticsModal from './game/TournamentStatisticsModal';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
-const steps = [
-  {
-    disableBeacon: true,
-    disableOverlayClose: true,
-    title: 'Game page',
-    content: (
-      <>
-        <div className="text-justify">
-          This is a
-          <b> game page</b>
-          . You need to solve the task
-          <b> first </b>
-          and pass all tests
-          <b> successfully</b>
-          .
-        </div>
-      </>
-    ),
-    locale: {
-      skip: 'Skip guide',
-    },
-    placement: 'center',
-    target: 'body',
-  },
-  {
-    disableBeacon: true,
-    disableOverlayClose: true,
-    target: '[data-guide-id="Task"]',
-    title: 'Task',
-    content: 'Read the task carefully, pay attention to examples',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    disableOverlayClose: true,
-    spotlightClicks: true,
-    target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
-    placement: 'top',
-    title: 'Language',
-    content: 'Choose the programming language that you like best',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    disableOverlayClose: true,
-    target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
-    title: 'Editor',
-    content: 'Write the solution of task in the editor',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
-    target: '[data-guide-id="LeftEditor"] [data-guide-id="GiveUpButton"]',
-    title: 'Give up button',
-    content:
-      'Click this button to give up. You will lose the game and can try it again next time, or ask your opponent to an immediate rematch',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
-    target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
-    title: 'Reset button',
-    content: 'Click this button to reset the code to the original template',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    spotlightClicks: true,
-    disableOverlayClose: true,
-    styles: {
-      options: {
-        zIndex: 10000,
-      },
-    },
-    target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
-    title: 'Check button',
-    content:
-      'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-  {
-    disableBeacon: true,
-    disableOverlayClose: true,
-    target: '#leftOutput-tab',
-    title: 'Result output',
-    content:
-      'Here you will see the results of the tests or compilation errors after check',
-    locale: {
-      skip: 'Skip guide',
-    },
-  },
-];
-
-function GameWidgetGuide({ tournamentId }) {
-  const dispatch = useDispatch();
-  const [isFirstTime, setIsFirstTime] = useState(
-    window.localStorage.getItem('guideGamePassed') === null,
-  );
-
-  const isShowGuide = useSelector(state => isShowGuideSelector(state));
-
-  return (
-    ((isShowGuide || isFirstTime) && !tournamentId) && (
-      <ReactJoyride
-        continuous
-        run
-        scrollToFirstStep
-        showProgress
-        showSkipButton
-        steps={steps}
-        spotlightPadding={6}
-        callback={data => {
-          const { status, action } = data;
-          if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status) || action === 'close') {
-            window.localStorage.setItem('guideGamePassed', 'true');
-            setIsFirstTime(false);
-            dispatch(actions.updateGameUI({ isShowGuide: false }));
-          }
-        }}
-        styles={{
-          options: {
-            primaryColor: '#0275d8',
-            zIndex: 1000,
-          },
-          buttonNext: {
-            borderRadius: 'unset',
-          },
-        }}
-      />
-    )
-  );
-}
-
 function GameRoomWidget({
   pageName,
   mainMachine,
   taskMachine,
   editorMachine,
-  toggleMuteSound,
 }) {
   const dispatch = useDispatch();
 
@@ -218,14 +44,13 @@ function GameRoomWidget({
   const [tournamentStatisticsModalShowing, setTournamentStatisticsModalShowing] = useState(false);
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
-  const gameStatus = useSelector(gameStatusSelector);
+  const gameStatus = useSelector(selectors.gameStatusSelector);
 
   const tournamentId = gameStatus?.tournamentId;
-  const firstPlayer = useSelector(firstPlayerSelector);
-  const secondPlayer = useSelector(secondPlayerSelector);
-  const tournamentPlayerId = firstPlayer.id;
+  const firstPlayer = useSelector(selectors.firstPlayerSelector);
+  const secondPlayer = useSelector(selectors.secondPlayerSelector);
 
-  const useChat = useSelector(gameUseChatSelector);
+  const useChat = useSelector(selectors.gameUseChatSelector);
   const mute = useSelector(state => state.user.settings.mute);
   const machines = useGameRoomMachine({
     setTaskModalShowing,
@@ -236,13 +61,13 @@ function GameRoomWidget({
 
   const roomCurrent = useMachineStateSelector(
     machines.mainService,
-    roomStateSelector,
+    machineSelectors.roomStateSelector,
   );
-  const inBuilderRoom = inBuilderRoomSelector(roomCurrent);
-  const inPreviewRoom = inPreviewRoomSelector(roomCurrent);
-  const inWaitingRoom = inWaitingRoomSelector(roomCurrent);
-  const replayerIsOpen = openedReplayerSelector(roomCurrent);
-  const gameRoomKey = gameRoomKeySelector(roomCurrent);
+  const inBuilderRoom = machineSelectors.inBuilderRoomSelector(roomCurrent);
+  const inPreviewRoom = machineSelectors.inPreviewRoomSelector(roomCurrent);
+  const inWaitingRoom = machineSelectors.inWaitingRoomSelector(roomCurrent);
+  const replayerIsOpen = machineSelectors.openedReplayerSelector(roomCurrent);
+  const gameRoomKey = machineSelectors.gameRoomKeySelector(roomCurrent);
 
   useEffect(() => {
     if (tournamentStatisticsModalShowing) {
@@ -261,7 +86,9 @@ function GameRoomWidget({
       return clearTask;
     }
 
-    const clearGame = GameRoomActions.connectToGame(machines.mainService)(
+    const options = { cancelRedirect: false };
+
+    const clearGame = GameRoomActions.connectToGame(machines.mainService, options)(
       dispatch,
     );
     const clearChat = ChatActions.connectToChat(useChat)(dispatch);
@@ -274,23 +101,6 @@ function GameRoomWidget({
   }, []);
 
   useEffect(() => {
-    TournamentPlayerActions.updateTournamentPlayerChannel(
-      tournamentId,
-      tournamentPlayerId,
-    );
-
-    if (tournamentId && tournamentPlayerId) {
-      const clearTournament = TournamentPlayerActions.connectToTournamentPlayer()(dispatch);
-
-      return () => {
-        clearTournament();
-      };
-    }
-
-    return () => { };
-  }, [tournamentId, tournamentPlayerId, dispatch]);
-
-  useEffect(() => {
     const muteSound = e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
@@ -301,7 +111,7 @@ function GameRoomWidget({
           sound.toggle(0);
         }
 
-        toggleMuteSound();
+        actions.toggleMuteSound();
       }
     };
 
@@ -310,7 +120,7 @@ function GameRoomWidget({
     return () => {
       window.removeEventListener('keydown', muteSound);
     };
-  }, [mute, toggleMuteSound]);
+  }, [mute]);
 
   if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
     const gameUrl = window.location.href;
@@ -388,8 +198,4 @@ function GameRoomWidget({
   );
 }
 
-const mapDispatchToProps = {
-  toggleMuteSound: actions.toggleMuteSound,
-};
-
-export default connect(null, mapDispatchToProps)(GameRoomWidget);
+export default GameRoomWidget;

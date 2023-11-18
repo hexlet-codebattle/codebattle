@@ -6,14 +6,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import Collapse from 'react-bootstrap/Collapse';
 
-import { getTournamentSpectatorUrl } from '@/utils/urlBuilders';
-
 import UsersMatchList from './UsersMatchList';
 
 function TournamentUserPanel({
   matches,
-  tournamentId,
-  isLive = false,
   currentUserId,
   userId,
   name,
@@ -22,8 +18,7 @@ function TournamentUserPanel({
   // localPlace,
   searchedUserId = 0,
 }) {
-  const disabled = searchedUserId === userId || currentUserId === userId;
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const panelClassName = cn(
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
@@ -34,21 +29,13 @@ function TournamentUserPanel({
   );
 
   const titleClassName = cn(
-    'd-flex align-items-center justify-content-between',
-    {
-      btn: !disabled,
-    },
-    'px-2 py-1',
+    'd-flex align-items-center justify-content-start px-2 py-1',
   );
 
   const handleOpenMatches = useCallback(event => {
-    if (disabled) {
-      return;
-    }
-
     event.preventDefault();
     setOpen(!open);
-  }, [open, setOpen, disabled]);
+  }, [open, setOpen]);
 
   return (
     <div className={panelClassName}>
@@ -100,24 +87,13 @@ function TournamentUserPanel({
             </div>
           </div>
         </div>
-        <div className="d-flex">
-          {isLive && (
-            <a
-              title="Spectator"
-              className="btn btn-sm btn-secondary rounded-lg mr-2"
-              href={getTournamentSpectatorUrl(tournamentId, userId)}
-            >
-              <FontAwesomeIcon className="mr-2" icon="user-secret" />
-              Spectator
-            </a>
-          )}
+        <div className="d-flex ml-1">
           <button
             type="button"
             className="btn"
             onClick={handleOpenMatches}
-            disabled={disabled}
           >
-            <FontAwesomeIcon className={disabled ? 'text-muted' : ''} icon={open ? 'chevron-up' : 'chevron-down'} />
+            <FontAwesomeIcon icon={open ? 'chevron-up' : 'chevron-down'} />
           </button>
         </div>
       </div>

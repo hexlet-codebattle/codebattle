@@ -34,9 +34,9 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       users = insert_list(399, :user)
       [user1 = %{id: user_id1} | _] = users
 
-      Tournament.Server.send_event(tournament.id, :join, %{user: user})
-      Tournament.Server.send_event(tournament.id, :join, %{users: users})
-      Tournament.Server.send_event(tournament.id, :start, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -128,9 +128,9 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       users = insert_list(12, :user)
       [user1 = %{id: user_id1} | _] = users
 
-      Tournament.Server.send_event(tournament.id, :join, %{user: user})
-      Tournament.Server.send_event(tournament.id, :join, %{users: users})
-      Tournament.Server.send_event(tournament.id, :start, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -138,7 +138,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.module == @module
       assert tournament.state == "active"
       assert tournament.level == "easy"
-      assert Enum.count(tournament.players) == 13
+      assert Enum.count(tournament.players) == 14
 
       assert tournament |> get_matches("playing") |> Enum.count() == 7
 
@@ -171,7 +171,6 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament |> get_matches("game_over") |> Enum.count() == 1
       assert tournament |> get_matches("timeout") |> Enum.count() == 6
       assert tournament |> get_matches("playing") |> Enum.count() == 4
-      assert Enum.count(tournament.players) == 13
       assert tournament.current_round == 1
 
       send_user_win_match(tournament, user1)

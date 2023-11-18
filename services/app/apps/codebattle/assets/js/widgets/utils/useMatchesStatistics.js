@@ -5,25 +5,28 @@ import sum from 'lodash/sum';
 const emptyStats = {
   playerId: null,
   winMatches: [],
+  lostMatches: [],
   score: 0,
   avgTests: 0,
   avgDuration: 0,
 };
 
 /**
- * return tournament players statistics per round
+ * return tournament matches statistics for player
  *
  * @typedef {{result: string, score: number, resultPercent: number, durationSec: number}} PlayerResult
  * @typedef {Object.<number, PlayerResult>} PlayerResults
  * @typedef {{playerIds: array, winnerId: number, playerResults: [PlayerResults]}} Match
- * @typedef {{playerId: {?number}, winMatches: Match[], score: number, avgTests: number, avgDuration: number}} PlayerStatistics
+ * @typedef {{
+ *  playerId: {?number}, winMatches: Match[], lostMatches: Match[], score: number, avgTests: number, avgDuration: number
+ * }} PlayerStatistics
  *
  * @param {number} playerId - player id
  * @param {Match[]} matches - list of matches per round
  * @return {[PlayerStatistics, PlayerStatistics]}
  *
  */
-function useRoundStatistics(playerId, matches) {
+function useMatchesStatistics(playerId, matches) {
   return useMemo(() => {
     if (matches.length === 0 && playerId) {
       return [emptyStats, emptyStats];
@@ -84,6 +87,7 @@ function useRoundStatistics(playerId, matches) {
     const player = {
       playerId,
       winMatches: playerWinMatches,
+      lostMatches: opponentWinMatches,
       score: playerScore,
       avgTests: playerAvgTests,
       avgDuration: playerAvgDuration,
@@ -91,6 +95,7 @@ function useRoundStatistics(playerId, matches) {
     const opponent = {
       playerId: opponentId,
       winMatches: opponentWinMatches,
+      lostMatches: playerWinMatches,
       score: opponentScore,
       avgTests: opponentAvgTests,
       avgDuration: opponentAvgDuration,
@@ -100,4 +105,4 @@ function useRoundStatistics(playerId, matches) {
   }, [playerId, matches]);
 }
 
-export default useRoundStatistics;
+export default useMatchesStatistics;

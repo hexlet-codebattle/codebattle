@@ -34,9 +34,9 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
          %{user: user, users: users, tournament: tournament} do
       [user1 = %{id: user_id1} | _] = users
 
-      Tournament.Server.send_event(tournament.id, :join, %{user: user})
-      Tournament.Server.send_event(tournament.id, :join, %{users: users})
-      Tournament.Server.send_event(tournament.id, :start, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 

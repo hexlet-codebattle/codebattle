@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
-import useRoundStatistics from '@/utils/useRoundStatistics';
+import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import Loading from '../../components/Loading';
 import UserInfo from '../../components/UserInfo';
@@ -13,7 +13,7 @@ import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
 
 function UserTournamentInfo({ userId }) {
-  const user = useSelector(state => state.user.users[userId]);
+  const user = useSelector(state => state.tournament.players[userId]);
 
   if (!user) {
     return <Loading adaptive />;
@@ -22,8 +22,13 @@ function UserTournamentInfo({ userId }) {
   return <UserInfo user={user} hideOnlineIndicator />;
 }
 
-function UsersMatchList({ currentUserId, playerId, matches }) {
-  const [player] = useRoundStatistics(playerId, matches);
+function UsersMatchList({
+  currentUserId,
+  playerId,
+  matches,
+  hideStats = false,
+}) {
+  const [player] = useMatchesStatistics(playerId, matches);
 
   if (matches.length === 0) {
     return (
@@ -37,7 +42,7 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
 
   return (
     <div className="d-flex flex-column">
-      {matches.length > 0 && (
+      {!hideStats && matches.length > 0 && (
         <div className="d-flex py-2 border-bottom overflow-auto">
           <span className="ml-2">
             {'Wins: '}
@@ -59,7 +64,7 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
           </span>
         </div>
       )}
-      {matches.map((match, index) => {
+      {matches.map(match => {
         const matchClassName = cn(
           'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
           'justify-content-between border-bottom p-2',
@@ -75,7 +80,6 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
           >
             <div className="d-flex align-items-center justify-content-between">
               <span className="d-flex align-items-center">
-                <span className="pr-2">{index}</span>
                 <TournamentMatchBadge
                   matchState={match.state}
                   isWinner={isWinner}
@@ -85,20 +89,20 @@ function UsersMatchList({ currentUserId, playerId, matches }) {
               <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
                 <div className="d-flex align-items-center">
                   {match.winnerId === match.playerIds[0] && (
-                    <FontAwesomeIcon className="text-warning mx-2" icon="trophy" />
+                    <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
                   )}
                   <UserTournamentInfo userId={match.playerIds[0]} />
                 </div>
                 <span className="px-2 pl-5 pl-xl-2 pl-lg-2 pl-md-2 pl-sm-2">VS</span>
                 <div className="d-flex align-items-center">
                   {match.winnerId === match.playerIds[1] && (
-                    <FontAwesomeIcon className="text-warning mx-2" icon="trophy" />
+                    <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
                   )}
                   <UserTournamentInfo userId={match.playerIds[1]} />
                 </div>
               </div>
             </div>
-            <div className="d-flex justify-content-end ml-lg-2 ml-xl-2">
+            <div className="d-flex justify-content-center ml-lg-2 ml-xl-2">
               <MatchAction
                 match={match}
                 currentUserIsPlayer={currentUserIsPlayer}

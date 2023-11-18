@@ -23,31 +23,13 @@ defmodule Codebattle.Tournament.Stairway do
   def calculate_round_results(t), do: t
 
   @impl Tournament.Base
-  def build_matches(tournament) do
-    {player_pairs, played_pair_ids} = build_round_pairs(tournament)
+  def build_round_pairs(tournament) do
+    {player_pairs, new_played_pair_ids} = build_player_pairs(tournament)
 
-    new_matches =
+    {
+      update_struct(tournament, %{played_pair_ids: new_played_pair_ids}),
       player_pairs
-      |> Enum.with_index(tournament.current_round * players_count(tournament))
-      |> Enum.map(fn {[p1, p2], index} ->
-        game_id =
-          create_game(tournament, index, [Tournament.Player.new!(p1), Tournament.Player.new!(p2)])
-
-        %Tournament.Match{
-          id: index,
-          game_id: game_id,
-          state: "playing",
-          player_ids: Enum.sort([p1.id, p2.id]),
-          round: tournament.current_round
-        }
-      end)
-
-    matches =
-      Enum.reduce(new_matches, tournament.matches, fn match, acc ->
-        Map.put(acc, to_id(match.id), match)
-      end)
-
-    update_struct(tournament, %{matches: matches, played_pair_ids: played_pair_ids})
+    }
   end
 
   @impl Tournament.Base
@@ -55,7 +37,7 @@ defmodule Codebattle.Tournament.Stairway do
     tournament.meta.rounds_limit - 1 == tournament.current_round
   end
 
-  defp build_round_pairs(tournament) do
+  defp build_player_pairs(tournament) do
     played_pair_ids = MapSet.new(tournament.played_pair_ids)
 
     sorted_players =

@@ -7,9 +7,21 @@ defmodule Codebattle.Tournament.Context do
   import Ecto.Changeset
 
   @type tournament_id :: pos_integer() | String.t()
+  @type user :: %{id: pos_integer() | String.t(), name: String.t()}
 
   @states_from_restore ["waiting_participants"]
   @max_alive_tournaments 7
+
+  @spec get_tournament_info(tournament_id(), user()) :: Tournament.t() | map()
+  def get_tournament_info(tournament_id, user) do
+    case Tournament.Server.get_tournament_info(tournament_id, user) do
+      nil ->
+        get_from_db!(tournament_id)
+
+      tournament_info ->
+        tournament_info
+    end
+  end
 
   @spec get!(tournament_id()) :: Tournament.t() | no_return()
   def get!(id) do
@@ -120,13 +132,13 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec send_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
-  def send_event(%Tournament{id: id}, event_type, params) do
-    send_event(id, event_type, params)
+  @spec handle_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
+  def handle_event(%Tournament{id: id}, event_type, params) do
+    handle_event(id, event_type, params)
   end
 
-  def send_event(tournament_id, event_type, params) do
-    Tournament.Server.send_event(tournament_id, event_type, params)
+  def handle_event(tournament_id, event_type, params) do
+    Tournament.Server.handle_event(tournament_id, event_type, params)
   end
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}

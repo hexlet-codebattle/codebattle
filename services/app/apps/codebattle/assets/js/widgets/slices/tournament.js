@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import omit from 'lodash/omit';
 
 import initial from './initial';
 
@@ -28,6 +29,12 @@ const tournament = createSlice({
         ...state.matches,
         ...newMatches,
       };
+    },
+    addTournamentPlayer: (state, { payload }) => {
+      state.players = { ...state.players, [payload.player.id]: payload.player };
+    },
+    removeTournamentPlayer: (state, { payload }) => {
+      state.players = omit(state.player, [payload.playerId]);
     },
     updateTournamentGameResults: (state, { payload }) => {
       state.gameResults = {

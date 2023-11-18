@@ -5,20 +5,39 @@ defmodule Codebattle.Tournament.Player do
   @type t :: %__MODULE__{}
 
   @primary_key false
+
   @derive Jason.Encoder
 
-  @fields [:avatar_url, :id, :is_bot, :lang, :name, :rank, :rating, :team_id]
+  @fields [
+    :avatar_url,
+    :id,
+    :is_bot,
+    :lang,
+    :matches_ids,
+    :name,
+    :rank,
+    :rating,
+    :score,
+    :place,
+    :team_id,
+    :was_online,
+    :wins_count
+  ]
 
   embedded_schema do
     field(:avatar_url, :string)
     field(:id, :integer)
     field(:is_bot, :boolean)
     field(:lang, :string)
+    field(:matches_ids, {:array, :integer}, default: [])
     field(:name, :string)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer)
-    field(:team_id, :integer)
+    field(:place, :integer, default: 0)
     field(:score, :integer, default: 0)
+    field(:task_ids, {:array, :integer}, default: [])
+    field(:team_id, :integer)
+    field(:was_online, :boolean, default: false)
     field(:wins_count, :integer, default: 0)
   end
 

@@ -24,20 +24,20 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_created", params) do
-    player_games =
-      params.tournament
-      |> Tournament.Helpers.get_current_round_playing_matches()
-      |> Enum.reduce([], fn match, acc ->
-        Enum.reduce(match.player_ids, acc, &[%{id: &1, game_id: match.game_id} | &2])
-      end)
-
     [
+      %Message{
+        topic: "tournament:#{params.tournament.id}:common",
+        event: "tournament:round_created",
+        payload: %{
+          state: params.tournament.state,
+          break_state: params.tournament.break_state
+        }
+      },
       %Message{
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:round_created",
         payload: %{
           break_state: params.tournament.break_state,
-          player_games: player_games,
           state: params.tournament.state
         }
       }
@@ -45,14 +45,17 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_finished", params) do
+    top_players =
+      Tournament.Helpers.get_players(params.tournament, params.tournament.top_player_ids)
+
     [
       %Message{
-        topic: "tournaments",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
-          id: params.tournament.id,
           state: params.tournament.state,
-          break_state: params.tournament.break_state
+          break_state: params.tournament.break_state,
+          top_players: top_players
         }
       },
       %Message{
@@ -61,7 +64,8 @@ defmodule Codebattle.PubSub.Events do
         payload: %{
           state: params.tournament.state,
           break_state: params.tournament.break_state,
-          matches: Tournament.Helpers.get_current_round_matches(params.tournament)
+          matches: Tournament.Helpers.get_current_round_matches(params.tournament),
+          top_players: top_players
         }
       }
     ]
@@ -74,6 +78,14 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:started",
         payload: %{
           id: params.tournament.id,
+          state: params.tournament.state,
+          break_state: params.tournament.break_state
+        }
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:common",
+        event: "tournament:started",
+        payload: %{
           state: params.tournament.state,
           break_state: params.tournament.break_state
         }
@@ -97,9 +109,54 @@ defmodule Codebattle.PubSub.Events do
         payload: %{id: params.tournament_id}
       },
       %Message{
+        topic: "tournament:#{params.tournament_id}:common",
+        event: "tournament:finished",
+        payload: %{}
+      },
+      %Message{
         topic: "tournament:#{params.tournament_id}",
         event: "tournament:finished",
         payload: %{}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:joined", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament_id}:common",
+        event: "tournament:player:joined",
+        payload: %{player: params.player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament_id}",
+        event: "tournament:player:joined",
+        payload: %{player: params.player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:left", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament_id}:common",
+        event: "tournament:player:left",
+        payload: %{player_id: params.player_id}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament_id}",
+        event: "tournament:player:left",
+        payload: %{player_id: params.player_id}
+      }
+    ]
+  end
+
+  def get_messages("tournament:game:wait", params) do
+    [
+      %Message{
+        topic: "game:#{params.game_id}",
+        event: "tournament:game:wait",
+        payload: %{type: params.type}
       }
     ]
   end
@@ -152,8 +209,8 @@ defmodule Codebattle.PubSub.Events do
       if game.tournament_id do
         Enum.map(game.players, fn player ->
           %Message{
-            topic: "tournament_player:#{game.tournament_id}_#{player.id}",
-            event: "game:created",
+            topic: "tournament:#{game.tournament_id}:player:#{player.id}",
+            event: "tournament:game:created",
             payload: %{game_id: game.id, player_id: player.id}
           }
         end)

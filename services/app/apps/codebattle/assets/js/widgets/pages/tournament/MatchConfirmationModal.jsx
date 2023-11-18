@@ -10,9 +10,9 @@ import React, {
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-const getOpponent = (match, playerId) => (match.playerIds[0] === playerId ? match.playerIds[1] : match.playerIds[0]);
 const openNextMatch = nextMatch => {
   window.location.replace(makeGameUrl(nextMatch.gameId));
 };
@@ -39,7 +39,7 @@ function MatchConfirmationModal({ players, matches, currentUserId }) {
     [matches, currentUserId],
   );
   const opponentId = useMemo(
-    () => (nextMatch ? getOpponent(nextMatch, currentUserId) : null),
+    () => (nextMatch ? getOpponentId(nextMatch, currentUserId) : null),
     [nextMatch, currentUserId],
   );
   const timerProgress = getTimerProgress(remainingTime);

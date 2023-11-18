@@ -9,3 +9,4 @@ export const getTournamentUrl = (tournamentId, params) => (
 export const getTournamentSpectatorUrl = (tournamentId, playerId) => (
   `/tournaments/${tournamentId}/player/${playerId}`
 );
+export const tournamentEmptyOpponentUrl = '/assets/images/question-mark-50.png';

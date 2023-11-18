@@ -13,7 +13,7 @@ function MatchAction({ currentUserIsPlayer, match }) {
         <a
           href={href}
           title="Show match"
-          className="btn btn-primary btn-sm rounded-lg"
+          className="btn btn-primary btn-sm rounded-lg px-3"
           disabled
         >
           <FontAwesomeIcon className="mr-2" icon="eye" />
@@ -26,7 +26,7 @@ function MatchAction({ currentUserIsPlayer, match }) {
           <a
             href={href}
             title="Continue match"
-            className="btn btn-success btn-sm text-white rounded-lg"
+            className="btn btn-success btn-sm text-white rounded-lg px-3"
           >
             <FontAwesomeIcon className="mr-2" icon="laptop-code" />
             Continue
@@ -38,7 +38,7 @@ function MatchAction({ currentUserIsPlayer, match }) {
         <a
           href={href}
           title="Show match"
-          className="btn btn-primary btn-sm rounded-lg"
+          className="btn btn-primary btn-sm rounded-lg px-3"
         >
           <FontAwesomeIcon className="mr-2" icon="eye" />
           Show
@@ -52,7 +52,7 @@ function MatchAction({ currentUserIsPlayer, match }) {
         <a
           href={href}
           title="Show game history"
-          className="btn btn-primary btn-sm rounded-lg"
+          className="btn btn-primary btn-sm rounded-lg px-3"
         >
           <FontAwesomeIcon className="mr-2" icon="eye" />
           Show

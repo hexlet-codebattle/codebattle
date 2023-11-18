@@ -187,7 +187,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("join", %{"team_id" => team_id}, socket) do
-    Tournament.Context.send_event(socket.assigns.tournament.id, :join, %{
+    Tournament.Context.handle_event(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user,
       team_id: String.to_integer(team_id)
     })
@@ -196,7 +196,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("join", _params, socket) do
-    Tournament.Context.send_event(socket.assigns.tournament.id, :join, %{
+    Tournament.Context.handle_event(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user
     })
 
@@ -204,7 +204,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("leave", _params, socket) do
-    Tournament.Context.send_event(socket.assigns.tournament.id, :leave, %{
+    Tournament.Context.handle_event(socket.assigns.tournament.id, :leave, %{
       user: socket.assigns.current_user
     })
 
@@ -213,7 +213,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("kick", %{"user_id" => user_id}, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(socket.assigns.tournament.id, :leave, %{
+      Tournament.Context.handle_event(socket.assigns.tournament.id, :leave, %{
         user_id: String.to_integer(user_id)
       })
     end
@@ -224,7 +224,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_event("restart", _params, socket) do
     Tournament.Context.restart(socket.assigns.tournament)
 
-    Tournament.Context.send_event(socket.assigns.tournament.id, :restart, %{
+    Tournament.Context.handle_event(socket.assigns.tournament.id, :restart, %{
       user: socket.assigns.current_user
     })
 
@@ -232,7 +232,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("open_up", _params, socket) do
-    Tournament.Context.send_event(socket.assigns.tournament.id, :open_up, %{
+    Tournament.Context.handle_event(socket.assigns.tournament.id, :open_up, %{
       user: socket.assigns.current_user
     })
 
@@ -241,7 +241,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("cancel", _params, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(socket.assigns.tournament.id, :cancel, %{
+      Tournament.Context.handle_event(socket.assigns.tournament.id, :cancel, %{
         user: socket.assigns.current_user
       })
     end
@@ -251,7 +251,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("start", _params, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Context.send_event(socket.assigns.tournament.id, :start, %{
+      Tournament.Context.handle_event(socket.assigns.tournament.id, :start, %{
         user: socket.assigns.current_user
       })
     end

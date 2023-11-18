@@ -3,8 +3,8 @@ defmodule Codebattle.Invite do
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
-  alias Codebattle.Repo
   alias Codebattle.Game.Context
+  alias Codebattle.Repo
   alias __MODULE__
 
   @type t :: %__MODULE__{}
@@ -33,6 +33,7 @@ defmodule Codebattle.Invite do
 
   schema "invites" do
     field(:state, :string, default: "pending")
+    belongs_to(:task, Codebattle.Task)
     embeds_one(:game_params, GameParams, on_replace: :update)
     belongs_to(:creator, Codebattle.User)
     belongs_to(:recipient, Codebattle.User)
@@ -42,7 +43,7 @@ defmodule Codebattle.Invite do
 
   def changeset(invite, attrs) do
     invite
-    |> cast(attrs, [:state, :creator_id, :recipient_id, :game_id])
+    |> cast(attrs, [:state, :task_id, :creator_id, :recipient_id, :game_id])
     |> cast_embed(:game_params)
     |> validate_required([:state])
   end
@@ -148,6 +149,15 @@ defmodule Codebattle.Invite do
       visibility_type: invite.game_params.type,
       timeout_seconds: invite.game_params.timeout_seconds
     }
+
+    task = invite.task_id && Codebattle.Task.get(invite.task_id)
+
+    game_params =
+      if task do
+        Map.put(game_params, :task, task)
+      else
+        game_params
+      end
 
     case Context.create_game(game_params) do
       {:ok, game} ->
