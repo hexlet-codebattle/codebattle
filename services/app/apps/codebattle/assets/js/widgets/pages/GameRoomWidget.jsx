@@ -179,7 +179,6 @@ function GameWidgetGuide({ tournamentId }) {
         run
         scrollToFirstStep
         showProgress
-        disableBeacon
         showSkipButton
         steps={steps}
         spotlightPadding={6}
