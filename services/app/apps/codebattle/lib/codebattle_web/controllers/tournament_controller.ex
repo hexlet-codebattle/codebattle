@@ -35,11 +35,7 @@ defmodule CodebattleWeb.TournamentController do
         image: Routes.tournament_image_url(conn, :show, tournament.id),
         url: Routes.tournament_url(conn, :show, tournament.id)
       })
-      |> put_gon(
-        tournament_id: params["id"],
-        # TODO: maybe we don't need whole tournament in gon?
-        tournament: tournament
-      )
+      |> put_gon(tournament_id: params["id"])
       |> render("show.html")
     else
       conn

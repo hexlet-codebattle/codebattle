@@ -29,8 +29,6 @@ const initTournamentChannel = dispatch => {
       playersPageNumber: 1,
       playersPageSize: 20,
     }));
-
-    dispatch(actions.updateTournamentMatches(data.matches));
   };
 
   channel
@@ -75,10 +73,20 @@ export const connectToTournament = () => dispatch => {
     const data = camelizeKeys(response);
 
     dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
-    dispatch(actions.updateTournamentMatches(data.matches));
+    dispatch(actions.updateTournamentPlayers(data.players));
   };
 
-  const handleTournamentStart = () => {};
+  const handleTournamentStart = () => { };
+  const handleTournamentRestarted = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.setTournamentData({
+      ...data.tournament,
+      channel: { online: true },
+      playersPageNumber: 1,
+      playersPageSize: 20,
+    }));
+  };
 
   const handlePlayerJoined = response => {
     const data = camelizeKeys(response);
@@ -91,6 +99,13 @@ export const connectToTournament = () => dispatch => {
 
     dispatch(actions.removeTournamentPlayer(data));
   };
+
+  const handleMatchCreated = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.updateTournamentMatches([data.match]));
+  };
+
 
   const refs = [
     channel.on('tournament:update', handleUpdate),
@@ -108,6 +123,8 @@ export const connectToTournament = () => dispatch => {
     channel.on('tournament:start', handleTournamentStart),
     channel.on('tournament:player:joined', handlePlayerJoined),
     channel.on('tournament:player:left', handlePlayerLeft),
+    channel.on('tournament:match:created', handleMatchCreated),
+    channel.on('tournament:restarted', handleTournamentRestarted),
   ];
 
   const oldChannel = channel;
@@ -118,9 +135,11 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:players:update', refs[2]);
     oldChannel.off('tournament:round_created', refs[3]);
     oldChannel.off('tournament:round_finished', refs[4]);
-    oldChannel.on('tournament:start', refs[5]);
-    oldChannel.on('tournament:player:joined', refs[6]);
-    oldChannel.on('tournament:player:left', refs[7]);
+    oldChannel.off('tournament:start', refs[5]);
+    oldChannel.off('tournament:player:joined', refs[6]);
+    oldChannel.off('tournament:player:left', refs[7]);
+    oldChannel.off('tournament:match:created', refs[8]);
+    oldChannel.off('tournament:restarted', refs[9]);
   };
 
   return clearTournamentChannel;

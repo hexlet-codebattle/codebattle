@@ -11,8 +11,6 @@ defmodule Codebattle.Tournament.Swiss do
     else
       bot = Tournament.Player.new!(Bot.Context.build())
       # TODO: FIXME
-      IO.inspect(11_111_111_111)
-      IO.inspect(bot)
 
       Codebattle.PubSub.broadcast("tournament:player:joined", %{
         tournament_id: tournament.id,
@@ -35,21 +33,22 @@ defmodule Codebattle.Tournament.Swiss do
       tournament
       |> get_players()
       |> Enum.sort_by(& &1.score, :desc)
-      |> Enum.with_index()
 
     players =
       sorted_players_with_index
+      |> Enum.with_index()
       |> Enum.map(fn {player, index} ->
         {to_id(player.id), %{player | place: index}}
       end)
       |> Enum.into(%{})
 
-    top_player_ids =
-      sorted_players_with_index
-      |> Enum.take(30)
-      |> Enum.map(fn {player, index} -> %{player | place: index} end)
+    # top_player_ids =
+    #   sorted_players_with_index
+    #   |> Enum.take(30)
+    #   |> Enum.map(& &1.id)
 
-    update_struct(%{tournament | players: players}, %{top_player_ids: top_player_ids})
+    # update_struct(%{tournament | players: players}, %{top_player_ids: top_player_ids})
+    %{tournament | players: players}
   end
 
   @impl Tournament.Base

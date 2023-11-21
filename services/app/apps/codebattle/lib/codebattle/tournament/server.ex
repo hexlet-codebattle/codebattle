@@ -12,9 +12,9 @@ defmodule Codebattle.Tournament.Server do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
-  def get_tournament_info(id, user) do
+  def get_tournament_for_user(id, user) do
     try do
-      GenServer.call(server_name(id), {:get_tournament_info, user})
+      GenServer.call(server_name(id), {:get_tournament_for_user, user})
     catch
       :exit, {:noproc, _} ->
         nil
@@ -114,7 +114,7 @@ defmodule Codebattle.Tournament.Server do
     {:reply, state.tournament, state}
   end
 
-  def handle_call({:get_tournament_info, user}, _from, state) do
+  def handle_call({:get_tournament_for_user, user}, _from, state) do
     if can_moderate?(state.tournament, user) do
       {:reply, state.tournament, state}
     else
@@ -122,7 +122,15 @@ defmodule Codebattle.Tournament.Server do
 
       {:reply,
        state.tournament
-       |> Map.drop([:matches, :stats, :played_pair_ids, :round_tasks])
+       |> Map.drop([
+         :__struct__,
+         :__meta__,
+         :creator,
+         :matches,
+         :stats,
+         :played_pair_ids,
+         :round_tasks
+       ])
        |> Map.put(:matches, matches), state}
     end
   end

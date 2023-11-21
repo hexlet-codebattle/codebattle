@@ -30,23 +30,22 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:round_created",
         payload: %{
           state: params.tournament.state,
-          break_state: params.tournament.break_state
+          break_state: "off"
         }
       },
       %Message{
         topic: "tournament:#{params.tournament.id}",
-        event: "tournament:round_created",
-        payload: %{
-          break_state: params.tournament.break_state,
-          state: params.tournament.state
-        }
+        event: "tournament:updated",
+        payload: %{tournament: params.tournament}
       }
     ]
   end
 
   def get_messages("tournament:round_finished", params) do
-    top_players =
-      Tournament.Helpers.get_players(params.tournament, params.tournament.top_player_ids)
+    players =
+      params.tournament
+      |> Tournament.Helpers.get_players()
+      |> Enum.map(&Map.take(&1, [:id, :place, :score]))
 
     [
       %Message{
@@ -54,19 +53,14 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:round_finished",
         payload: %{
           state: params.tournament.state,
-          break_state: params.tournament.break_state,
-          top_players: top_players
+          break_state: "on",
+          players: players
         }
       },
       %Message{
         topic: "tournament:#{params.tournament.id}",
-        event: "tournament:round_finished",
-        payload: %{
-          state: params.tournament.state,
-          break_state: params.tournament.break_state,
-          matches: Tournament.Helpers.get_current_round_matches(params.tournament),
-          top_players: top_players
-        }
+        event: "tournament:updated",
+        payload: %{tournament: params.tournament}
       }
     ]
   end
@@ -78,22 +72,6 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:started",
         payload: %{
           id: params.tournament.id,
-          state: params.tournament.state,
-          break_state: params.tournament.break_state
-        }
-      },
-      %Message{
-        topic: "tournament:#{params.tournament.id}:common",
-        event: "tournament:started",
-        payload: %{
-          state: params.tournament.state,
-          break_state: params.tournament.break_state
-        }
-      },
-      %Message{
-        topic: "tournament:#{params.tournament.id}",
-        event: "tournament:started",
-        payload: %{
           state: params.tournament.state,
           break_state: params.tournament.break_state
         }
@@ -151,6 +129,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:match:created", params) do
+    Enum.map(params.match.player_ids, fn player_id ->
+      %Message{
+        topic: "tournament:#{params.tournament_id}:player:#{player_id}",
+        event: "tournament:match:created",
+        payload: %{match: params.match}
+      }
+    end)
+  end
+
   def get_messages("tournament:game:wait", params) do
     [
       %Message{
@@ -182,43 +170,29 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("game:created", %{game: game}) do
-    payload = %{
-      game: %{
-        id: Game.Helpers.get_game_id(game),
-        inserted_at: Game.Helpers.get_inserted_at(game),
-        is_bot: Game.Helpers.bot_game?(game),
-        level: Game.Helpers.get_level(game),
-        players: Game.Helpers.get_players(game),
-        state: Game.Helpers.get_state(game),
-        timeout_seconds: Game.Helpers.get_timeout_seconds(game),
-        type: Game.Helpers.get_type(game),
-        visibility_type: Game.Helpers.get_visibility_type(game)
-      }
-    }
-
-    game_events =
+    if game.tournament_id do
+      []
+    else
       [
         %Message{
           topic: "games",
           event: "game:created",
-          payload: payload
+          payload: %{
+            game: %{
+              id: Game.Helpers.get_game_id(game),
+              inserted_at: Game.Helpers.get_inserted_at(game),
+              is_bot: Game.Helpers.bot_game?(game),
+              level: Game.Helpers.get_level(game),
+              players: Game.Helpers.get_players(game),
+              state: Game.Helpers.get_state(game),
+              timeout_seconds: Game.Helpers.get_timeout_seconds(game),
+              type: Game.Helpers.get_type(game),
+              visibility_type: Game.Helpers.get_visibility_type(game)
+            }
+          }
         }
       ]
-
-    tournament_player_events =
-      if game.tournament_id do
-        Enum.map(game.players, fn player ->
-          %Message{
-            topic: "tournament:#{game.tournament_id}:player:#{player.id}",
-            event: "tournament:game:created",
-            payload: %{game_id: game.id, player_id: player.id}
-          }
-        end)
-      else
-        []
-      end
-
-    game_events ++ tournament_player_events
+    end
   end
 
   def get_messages("game:updated", %{game: game}) do

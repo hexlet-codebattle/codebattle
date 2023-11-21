@@ -18,7 +18,6 @@ defmodule Codebattle.Tournament do
              :break_duration_seconds,
              :match_timeout_seconds,
              :break_state,
-             :creator,
              :creator_id,
              :current_round,
              :description,

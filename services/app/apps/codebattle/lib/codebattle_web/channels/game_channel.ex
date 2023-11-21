@@ -4,8 +4,9 @@ defmodule CodebattleWeb.GameChannel do
 
   alias Codebattle.Game.Context
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Helpers
   alias CodebattleWeb.Api.GameView
+
+  require Logger
 
   def join("game:" <> game_id, _payload, socket) do
     try do
@@ -28,9 +29,16 @@ defmodule CodebattleWeb.GameChannel do
 
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{follow_id}")
 
-        tournament = Tournament.Context.get(game.tournament_id)
-        active_game_id = tournament |> Helpers.get_active_game_id(current_user.id)
-        matches = Helpers.get_matches_by_players(tournament, [current_user.id])
+        tournament = Tournament.Context.get_tournament_for_user(game.tournament_id, current_user)
+
+        active_game_id =
+          tournament.matches
+          |> Map.values()
+          |> Enum.find(&(&1.state == "playing"))
+          |> case do
+            nil -> nil
+            match -> match.game_id
+          end
 
         {:ok,
          %{
@@ -40,8 +48,7 @@ defmodule CodebattleWeb.GameChannel do
              state: tournament.state,
              type: tournament.type,
              break_state: tournament.break_state,
-             current_round: tournament.current_round,
-             matches: matches
+             current_round: tournament.current_round
            },
            active_game_id: active_game_id
          }, assign(socket, game_id: game_id, player_id: follow_id)}
@@ -187,8 +194,8 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:game:created", payload: payload}, socket) do
-    push(socket, "tournament:game:created", %{game_id: payload.game_id})
+  def handle_info(%{event: "tournament:match:created", payload: payload}, socket) do
+    push(socket, "tournament:game:created", %{game_id: payload.match.game_id})
 
     {:noreply, socket}
   end
@@ -207,7 +214,10 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(_, state), do: {:noreply, state}
+  def handle_info(message, socket) do
+    Logger.warning("GameChannel Unexpected message: " <> inspect(message))
+    {:noreply, socket}
+  end
 
   defp handle_rematch_result(result, socket) do
     case result do

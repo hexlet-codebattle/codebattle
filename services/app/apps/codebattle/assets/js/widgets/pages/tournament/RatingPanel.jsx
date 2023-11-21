@@ -57,7 +57,7 @@ const PlayersList = memo(
           userId={player.id}
           name={player.name}
           score={player.score}
-          place={player.rank}
+          place={player.place}
           searchedUserId={searchedUserId}
         />
       );

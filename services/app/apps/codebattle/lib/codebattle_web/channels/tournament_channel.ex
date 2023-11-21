@@ -13,23 +13,18 @@ defmodule CodebattleWeb.TournamentChannel do
     user = %{id: current_user.id, name: current_user.name}
 
     with tournament when not is_nil(tournament) <-
-           Tournament.Context.get_tournament_info(tournament_id, user),
+           Tournament.Context.get_tournament_for_user(tournament_id, user),
          true <- Helpers.can_access?(tournament, current_user, payload) do
-      if Helpers.is_player?(tournament, current_user.id) do
+      if Codebattle.User.admin?(current_user) do
+        Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
+      else
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
       end
 
-      if Codebattle.User.admin?(current_user) do
-        Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
-      end
-
-      matches = Helpers.get_matches_by_players(tournament, [current_user.id])
-
       {:ok,
        %{
-         tournament: tournament,
-         matches: matches
+         tournament: tournament
        }, assign(socket, tournament_id: tournament_id, player_id: current_user.id)}
     else
       _ ->
@@ -39,12 +34,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:join", %{"team_id" => team_id}, socket) do
     tournament_id = socket.assigns.tournament_id
-
-    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
-
-    Codebattle.PubSub.subscribe(
-      "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
-    )
 
     Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user,
@@ -56,12 +45,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:join", _, socket) do
     tournament_id = socket.assigns.tournament_id
-
-    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
-
-    Codebattle.PubSub.subscribe(
-      "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
-    )
 
     Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user
@@ -78,12 +61,6 @@ defmodule CodebattleWeb.TournamentChannel do
       team_id: to_string(team_id)
     })
 
-    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
-
-    Codebattle.PubSub.unsubscribe(
-      "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
-    )
-
     {:noreply, socket}
   end
 
@@ -93,12 +70,6 @@ defmodule CodebattleWeb.TournamentChannel do
     Tournament.Context.handle_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id
     })
-
-    Codebattle.PubSub.unsubscribe("tournament:#{tournament_id}:common")
-
-    Codebattle.PubSub.unsubscribe(
-      "tournament:#{tournament_id}:player:#{socket.assigns.current_user.id}"
-    )
 
     {:noreply, socket}
   end
@@ -120,11 +91,18 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = socket.assigns.tournament_id
     tournament = Tournament.Context.get!(tournament_id)
 
-    Tournament.Context.restart(tournament)
+    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+      Tournament.Context.restart(tournament)
 
-    Tournament.Context.handle_event(tournament_id, :restart, %{
-      user: socket.assigns.current_user
-    })
+      Tournament.Context.handle_event(tournament_id, :restart, %{
+        user: socket.assigns.current_user
+      })
+
+      tournament = Tournament.Context.get!(tournament_id)
+      broadcast!(socket, "tournament:restarted", %{tournament: tournament})
+    end
+
+    {:noreply, socket}
 
     {:noreply, socket}
   end
@@ -183,22 +161,24 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{matches: matches}}, socket}
   end
 
-  def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
-    tournament_id = socket.assigns.tournament_id
+  # def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
+  #   tournament_id = socket.assigns.tournament_id
 
-    Enum.each(player_ids, fn player_id ->
-      Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
-    end)
+  #   Enum.each(player_ids, fn player_id ->
+  #     Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
+  #   end)
 
-    # TODO: add Game created
-
-    {:reply, {:ok, %{}}, socket}
-  end
+  #   {:reply, {:ok, %{}}, socket}
+  # end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
-    push(socket, "tournament:update", %{
-      tournament: payload.tournament
-    })
+    push(socket, "tournament:update", %{tournament: payload.tournament})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:match:created", payload: payload}, socket) do
+    push(socket, "tournament:match:created", %{match: payload.match})
 
     {:noreply, socket}
   end
@@ -206,20 +186,18 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", %{
       state: payload.state,
-      break_state: "off"
+      break_state: payload.break_state
     })
 
     {:noreply, socket}
   end
 
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    matches =
-      Enum.filter(payload.matches, &Helpers.is_match_player?(&1, socket.assigns.player_id))
-
     push(socket, "tournament:round_finished", %{
       state: payload.state,
-      break_state: "on",
-      matches: matches
+      break_state: payload.break_state,
+      players: payload.players
+      # top_players: top_players
     })
 
     {:noreply, socket}
@@ -237,8 +215,8 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "game:created", payload: payload}, socket) do
-    push(socket, "game:created", %{game_id: payload.game_id})
+  def handle_info(%{event: "tournament:game:created", payload: payload}, socket) do
+    push(socket, "tournament:game:created", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

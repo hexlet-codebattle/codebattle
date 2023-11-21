@@ -17,11 +17,11 @@ const tournament = createSlice({
       ...payload,
     }),
     updateTournamentMatches: (state, { payload }) => {
-      const newMatches = payload.reduce((acc, params) => ({
+      const newMatches = payload.reduce((acc, match) => ({
         ...acc,
-        [params.id]: {
-          ...(state.matches[params.id] || {}),
-          ...params,
+        [match.id]: {
+          ...(state.matches[match.id] || {}),
+          ...match,
         },
       }), {});
 
@@ -34,7 +34,7 @@ const tournament = createSlice({
       state.players = { ...state.players, [payload.player.id]: payload.player };
     },
     removeTournamentPlayer: (state, { payload }) => {
-      state.players = omit(state.player, [payload.playerId]);
+      state.players = omit(state.players, [payload.playerId]);
     },
     updateTournamentGameResults: (state, { payload }) => {
       state.gameResults = {
@@ -43,11 +43,11 @@ const tournament = createSlice({
       };
     },
     updateTournamentPlayers: (state, { payload }) => {
-      const newPlayers = payload.reduce((acc, params) => ({
+      const newPlayers = payload.reduce((acc, player) => ({
         ...acc,
-        [params.id]: {
-          ...(state.players[params.id] || {}),
-          ...params,
+        [player.id]: {
+          ...(state.players[player.id] || {}),
+          ...player,
         },
       }), {});
 

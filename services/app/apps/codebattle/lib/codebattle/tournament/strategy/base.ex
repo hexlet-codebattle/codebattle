@@ -343,15 +343,22 @@ defmodule Codebattle.Tournament.Base do
       defp build_and_run_match(tournament, {[p1, p2], match_id}) do
         {game_id, task_id} = create_game(tournament, match_id, [p1, p2])
 
+        match = %Tournament.Match{
+          id: match_id,
+          game_id: game_id,
+          state: "playing",
+          player_ids: Enum.sort([p1.id, p2.id]),
+          round: tournament.current_round
+        }
+
+        Codebattle.PubSub.broadcast("tournament:match:created", %{
+          tournament_id: tournament.id,
+          match: match
+        })
+
         put_in(
           tournament.matches[to_id(match_id)],
-          %Tournament.Match{
-            id: match_id,
-            game_id: game_id,
-            state: "playing",
-            player_ids: Enum.sort([p1.id, p2.id]),
-            round: tournament.current_round
-          }
+          match
         )
         |> then(fn tournament ->
           update_in(
