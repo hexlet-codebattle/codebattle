@@ -106,7 +106,6 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentMatches([data.match]));
   };
 
-
   const refs = [
     channel.on('tournament:update', handleUpdate),
 
