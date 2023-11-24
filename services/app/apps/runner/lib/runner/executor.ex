@@ -75,8 +75,14 @@ defmodule Runner.Executor do
     if @fake_docker_run do
       {"oi", 0}
     else
+      hostname =  System.get_env("HOSTNAME", "unknown")
       Logger.info("Start docker execution: #{inspect(cmd_opts)}")
-      System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+      {execution_time, result} = :timer.tc(fn -> System.cmd(cmd, cmd_opts, stderr_to_stdout: true) end)
+
+      Logger.error(
+        "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
+      )
+      result
     end
   end
 
