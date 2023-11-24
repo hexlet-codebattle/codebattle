@@ -32,7 +32,7 @@ defmodule Runner.Executor do
     {output, exit_code} =
       lang_meta
       |> get_docker_command(tmp_dir_path)
-      |> run_command()
+      |> run_command(lang_meta)
 
     Task.start(File, :rm_rf, [tmp_dir_path])
 
@@ -71,7 +71,7 @@ defmodule Runner.Executor do
     |> String.split()
   end
 
-  defp run_command([cmd | cmd_opts]) do
+  defp run_command([cmd | cmd_opts], lang_meta) do
     if @fake_docker_run do
       {"oi", 0}
     else
