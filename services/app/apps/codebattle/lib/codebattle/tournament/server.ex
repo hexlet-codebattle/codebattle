@@ -75,7 +75,7 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_event(tournament_id, event_type, params) do
     try do
-    GenServer.call(server_name(tournament_id), {event_type, params})
+      GenServer.call(server_name(tournament_id), {event_type, params})
     catch
       :exit, reason ->
         Logger.error("Error to send tournament update: #{inspect(reason)}")
