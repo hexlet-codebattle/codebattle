@@ -25,7 +25,8 @@ defmodule CodebattleWeb.GameChannelTest do
       {:ok, game} =
         Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
 
-      {:ok, %{game: created}, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic(game))
+      {:ok, %{game: created}, _socket1} =
+        subscribe_and_join(socket1, GameChannel, game_topic(game))
 
       assert created.task.level == "easy"
       assert created.mode == "standard"

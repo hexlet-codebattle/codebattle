@@ -81,7 +81,7 @@ defmodule Codebattle.Tournament.Team do
       |> Map.values()
       |> shift_pairs(tournament.current_round)
       |> Enum.zip()
-      |> Enum.map(fn {p1, p2} -> [p1,p2] end)
+      |> Enum.map(fn {p1, p2} -> [p1, p2] end)
 
     {tournament, player_pairs}
   end

@@ -125,7 +125,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row">
             <div class="d-flex flex-column justify-content-between w-auto">
               <%= label(f, :players_limit) %>
-              <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384],
+              <%= select(
+                f,
+                :players_limit,
+                [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384],
                 class: "custom-select"
               ) %>
               <%= error_tag(f, :players_limit) %>
