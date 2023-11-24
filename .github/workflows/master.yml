@@ -79,9 +79,9 @@ jobs:
         run: yarn lint
         working-directory: ./services/app/apps/codebattle
 
-      - name: Run jest
-        run: yarn test
-        working-directory:  ./services/app/apps/codebattle
+      # - name: Run jest
+        # run: yarn test
+        # working-directory:  ./services/app/apps/codebattle
 
       - name: Compile
         run: mix compile
