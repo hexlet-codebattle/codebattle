@@ -56,7 +56,7 @@ config :codebattle, Codebattle.Invite,
   timeout: :timer.seconds(1000),
   lifetime: :timer.seconds(0)
 
-config :codebattle, CodebattleWeb.MainChannel, use_presence: false
+config :codebattle, CodebattleWeb.MainChannel, use_presence: true
 
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 
