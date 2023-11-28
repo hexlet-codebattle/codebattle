@@ -44,7 +44,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament.module == @module
       assert tournament.state == "active"
       assert tournament.level == "easy"
-      assert Enum.count(tournament.players) == 200
+      assert Tournament.Players.count(tournament) == 200
 
       assert tournament |> get_matches("playing") |> Enum.count() == 100
 
@@ -52,7 +52,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert MapSet.size(tournament.played_pair_ids) == 100
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(100)
+      :timer.sleep(200)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 

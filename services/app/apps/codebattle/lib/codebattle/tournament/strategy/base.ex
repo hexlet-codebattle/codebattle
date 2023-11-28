@@ -19,8 +19,8 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.Helpers
 
       def add_player(tournament, player) do
-        put_in(tournament.players[to_id(player.id)], Tournament.Player.new!(player))
-        |> Map.put(:players_count, players_count(tournament))
+        Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
+        Map.put(tournament, :players_count, players_count(tournament))
       end
 
       def add_players(tournament, %{users: users}) do
@@ -133,34 +133,29 @@ defmodule Codebattle.Tournament.Base do
         match = get_match(tournament, params.ref)
         winner_id = pick_game_winner_id(match.player_ids, params.player_results)
 
-        tournament =
-          update_in(
-            tournament.matches[to_id(params.ref)],
-            &%{
-              &1
-              | state: params.game_state,
-                winner_id: winner_id,
-                player_results: params.player_results
-            }
-          )
+        Tournament.Matches.put_match(tournament, %{
+          match
+          | state: params.game_state,
+            winner_id: winner_id,
+            player_results: params.player_results
+        })
 
         params.player_results
-        |> Map.values()
-        |> Enum.filter(fn player_result -> tournament.players[to_id(player_result.id)] end)
-        |> Enum.reduce(
-          tournament,
-          fn player_result, tournament ->
-            update_in(
-              tournament.players[to_id(player_result.id)],
-              &%{
-                &1
-                | score: &1.score + player_result.score,
-                  lang: player_result.lang,
-                  wins_count: &1.wins_count + if(player_result.result == "won", do: 1, else: 0)
-              }
-            )
-          end
-        )
+        |> Map.keys()
+        |> Enum.each(fn player_id ->
+          player = Tournament.Players.get_player(tournament, player_id)
+
+          Tournament.Players.put_player(tournament, %{
+            player
+            | score: player.score + params.player_results[player_id].score,
+              lang: params.player_results[player_id].lang,
+              wins_count:
+                player.wins_count +
+                  if(params.player_results[player_id].result == "won", do: 1, else: 0)
+          })
+        end)
+
+        tournament
       end
 
       def finish_match(tournament, params) do
@@ -182,37 +177,38 @@ defmodule Codebattle.Tournament.Base do
       def finish_round(tournament) do
         matches_to_finish = get_matches(tournament, "playing")
 
-        new_tournament =
-          Enum.reduce(matches_to_finish, tournament, fn match_to_finish, acc ->
+        Enum.each(
+          matches_to_finish,
+          fn match ->
             player_results =
-              case Game.Context.fetch_game(match_to_finish.game_id) do
+              case Game.Context.fetch_game(match.game_id) do
                 {:ok, game} -> Game.Helpers.get_player_results(game)
                 {:error, _reason} -> %{}
               end
 
-            Game.Context.trigger_timeout(match_to_finish.game_id)
+            Game.Context.trigger_timeout(match.game_id)
 
-            acc =
-              update_in(
-                acc.matches[to_id(match_to_finish.id)],
-                &%{&1 | player_results: player_results, state: "timeout"}
-              )
+            Tournament.Matches.put_match(tournament, %{
+              match
+              | state: "timeout",
+                player_results: player_results
+            })
 
             player_results
-            |> Map.values()
-            |> Enum.filter(fn player_result -> tournament.players[to_id(player_result.id)] end)
-            |> Enum.reduce(
-              acc,
-              fn player_result, tournament ->
-                update_in(
-                  tournament.players[to_id(player_result.id)],
-                  &%{&1 | score: &1.score + player_result.score, lang: player_result.lang}
-                )
-              end
-            )
-          end)
+            |> Map.keys()
+            |> Enum.each(fn player_id ->
+              player = Tournament.Players.get_player(tournament, player_id)
 
-        do_finish_round_and_next_step(new_tournament)
+              Tournament.Players.put_player(tournament, %{
+                player
+                | score: player.score + player_results[player_id].score,
+                  lang: player_results[player_id].lang
+              })
+            end)
+          end
+        )
+
+        do_finish_round_and_next_step(tournament)
       end
 
       def do_finish_round_and_next_step(tournament) do
@@ -254,7 +250,7 @@ defmodule Codebattle.Tournament.Base do
 
       def start_rematch(tournament, match_ref) do
         finished_match = get_match(tournament, match_ref)
-        new_match_id = Enum.count(tournament.matches)
+        new_match_id = matches_count(tournament)
         player_ids = finished_match.player_ids
 
         build_and_run_match(tournament, {get_players(tournament, player_ids), new_match_id})
@@ -319,25 +315,21 @@ defmodule Codebattle.Tournament.Base do
 
       defp build_and_run_matches({tournament, player_pairs}) do
         player_pairs
-        |> Enum.with_index(Enum.count(tournament.matches))
-        |> Enum.reduce(
-          tournament,
-          fn
-            {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id}, tournament ->
-              put_in(
-                tournament.matches[to_id(match_id)],
-                %Tournament.Match{
-                  id: match_id,
-                  state: "canceled",
-                  round: tournament.current_round,
-                  player_ids: Enum.sort([p1.id, p2.id])
-                }
-              )
+        |> Enum.with_index(matches_count(tournament))
+        |> Enum.each(fn
+          {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
+            Tournament.Matches.put_match(tournament, %Tournament.Match{
+              id: match_id,
+              state: "canceled",
+              round: tournament.current_round,
+              player_ids: Enum.sort([p1.id, p2.id])
+            })
 
-            {[p1, p2], match_id}, tournament ->
-              build_and_run_match(tournament, {[p1, p2], match_id})
-          end
-        )
+          {[p1, p2], match_id} ->
+            build_and_run_match(tournament, {[p1, p2], match_id})
+        end)
+
+        tournament
       end
 
       defp build_and_run_match(tournament, {[p1, p2], match_id}) do
@@ -351,39 +343,26 @@ defmodule Codebattle.Tournament.Base do
           round: tournament.current_round
         }
 
-        Codebattle.PubSub.broadcast("tournament:match:created", %{
+        Tournament.Matches.put_match(tournament, match)
+
+        Tournament.Players.put_player(tournament, %{
+          p1
+          | matches_ids: [match_id | p1.matches_ids],
+            task_ids: [task_id | p1.task_ids]
+        })
+
+        Tournament.Players.put_player(tournament, %{
+          p2
+          | matches_ids: [match_id | p2.matches_ids],
+            task_ids: [task_id | p2.task_ids]
+        })
+
+        Codebattle.PubSub.broadcast("tournament:match:upserted", %{
           tournament_id: tournament.id,
           match: match
         })
 
-        put_in(
-          tournament.matches[to_id(match_id)],
-          match
-        )
-        |> then(fn tournament ->
-          update_in(
-            tournament.players[to_id(p1.id)],
-            fn player ->
-              %{
-                player
-                | matches_ids: [match_id | player.matches_ids],
-                  task_ids: [task_id | player.task_ids]
-              }
-            end
-          )
-        end)
-        |> then(fn tournament ->
-          update_in(
-            tournament.players[to_id(p2.id)],
-            fn player ->
-              %{
-                player
-                | matches_ids: [match_id | player.matches_ids],
-                  task_ids: [task_id | player.task_ids]
-              }
-            end
-          )
-        end)
+        tournament
       end
 
       defp create_game(tournament, ref, players) do
@@ -507,3 +486,19 @@ defmodule Codebattle.Tournament.Base do
     end
   end
 end
+
+# Create an ETS table with a set
+:ets.new(:my_table, [:set, :named_table])
+
+# Insert some data into the table
+:ets.insert(:my_table, {:john, 25})
+:ets.insert(:my_table, {:jane, 30})
+:ets.insert(:my_table, {:bob, 22})
+:ets.insert(:my_table, {:alice, 28})
+
+# Count the number of elements in the table where age is greater than 25
+count = :ets.select_count(:my_table, [{:_, [], [:_, :_]}])
+
+:ets.select_count(:my_table, [{:_, [], [true]}])
+
+IO.puts("Number of elements with age greater than 25: #{count}")

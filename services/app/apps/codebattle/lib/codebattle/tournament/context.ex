@@ -7,19 +7,15 @@ defmodule Codebattle.Tournament.Context do
   import Ecto.Changeset
 
   @type tournament_id :: pos_integer() | String.t()
-  @type user :: %{id: pos_integer() | String.t(), name: String.t()}
 
   @states_from_restore ["waiting_participants"]
   @max_alive_tournaments 7
 
-  @spec get_tournament_for_user(tournament_id(), user()) :: Tournament.t() | map()
-  def get_tournament_for_user(tournament_id, user) do
-    case Tournament.Server.get_tournament_for_user(tournament_id, user) do
-      nil ->
-        get_from_db!(tournament_id)
-
-      tournament_info ->
-        tournament_info
+  @spec get_tournament_info(tournament_id()) :: Tournament.t() | map()
+  def get_tournament_info(tournament_id) do
+    case Tournament.Server.get_tournament_info(tournament_id) do
+      nil -> get_from_db!(tournament_id)
+      tournament_info -> tournament_info
     end
   end
 

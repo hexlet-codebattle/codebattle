@@ -44,7 +44,7 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:round_finished", params) do
     players =
       params.tournament
-      |> Tournament.Helpers.get_players()
+      |> Tournament.Helpers.get_top_players()
       |> Enum.map(&Map.take(&1, [:id, :place, :score]))
 
     [
@@ -129,11 +129,11 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("tournament:match:created", params) do
+  def get_messages("tournament:match:upserted", params) do
     Enum.map(params.match.player_ids, fn player_id ->
       %Message{
         topic: "tournament:#{params.tournament_id}:player:#{player_id}",
-        event: "tournament:match:created",
+        event: "tournament:match:upserted",
         payload: %{match: params.match}
       }
     end)

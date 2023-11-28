@@ -1,6 +1,7 @@
 import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+import compact from 'lodash/compact';
 
 import socket from '../../socket';
 import TournamentStates from '../config/tournament';
@@ -25,10 +26,15 @@ const initTournamentChannel = dispatch => {
 
     dispatch(actions.setTournamentData({
       ...data.tournament,
+      matches: {},
+      players: {},
       channel: { online: true },
       playersPageNumber: 1,
       playersPageSize: 20,
     }));
+
+    dispatch(actions.updateTournamentPlayers(compact(data.players)));
+    dispatch(actions.updateTournamentMatches(data.matches));
   };
 
   channel
@@ -100,7 +106,7 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.removeTournamentPlayer(data));
   };
 
-  const handleMatchCreated = response => {
+  const handleMatchUpserted = response => {
     const data = camelizeKeys(response);
 
     dispatch(actions.updateTournamentMatches([data.match]));
@@ -122,7 +128,7 @@ export const connectToTournament = () => dispatch => {
     channel.on('tournament:start', handleTournamentStart),
     channel.on('tournament:player:joined', handlePlayerJoined),
     channel.on('tournament:player:left', handlePlayerLeft),
-    channel.on('tournament:match:created', handleMatchCreated),
+    channel.on('tournament:match:upserted', handleMatchUpserted),
     channel.on('tournament:restarted', handleTournamentRestarted),
   ];
 
@@ -137,7 +143,7 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:start', refs[5]);
     oldChannel.off('tournament:player:joined', refs[6]);
     oldChannel.off('tournament:player:left', refs[7]);
-    oldChannel.off('tournament:match:created', refs[8]);
+    oldChannel.off('tournament:match:upserted', refs[8]);
     oldChannel.off('tournament:restarted', refs[9]);
   };
 

@@ -10,7 +10,6 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     try do
-      current_user = socket.assigns.current_user
       game = Context.get_game!(game_id)
       score = Context.fetch_score_by_game_id(game_id)
 
@@ -29,11 +28,11 @@ defmodule CodebattleWeb.GameChannel do
 
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{follow_id}")
 
-        tournament = Tournament.Context.get_tournament_for_user(game.tournament_id, current_user)
+        tournament = Tournament.Context.get_tournament_info(game.tournament_id)
 
         active_game_id =
-          tournament.matches
-          |> Map.values()
+          tournament
+          |> Tournament.Helpers.get_matches_by_players([follow_id])
           |> Enum.find(&(&1.state == "playing"))
           |> case do
             nil -> nil
@@ -194,7 +193,7 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:match:created", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
     push(socket, "tournament:game:created", %{game_id: payload.match.game_id})
 
     {:noreply, socket}

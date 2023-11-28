@@ -9,11 +9,11 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 
 # Print only warnings and errors during test
-if is_nil(System.get_env("DEBUG")) do
-  config :logger, level: :critical
-else
-  config :logger, :console, level: :debug
-end
+# if is_nil(System.get_env("DEBUG")) do
+#   config :logger, level: :critical
+# else
+config :logger, :console, level: :error
+# end
 
 # Configure your database
 config :codebattle, Codebattle.Repo,
@@ -70,7 +70,7 @@ config :codebattle, ws_port: 4001
 config :codebattle, admins: ["admin"]
 
 config :codebattle, freeze_time: true
-config :codebattle, tournament_rematch_timeout_ms: 5
+config :codebattle, tournament_rematch_timeout_ms: 1
 
 config :codebattle, user_rank_server: false
 config :codebattle, create_bot_games: false

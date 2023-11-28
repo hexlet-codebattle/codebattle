@@ -10,22 +10,39 @@ defmodule CodebattleWeb.TournamentChannel do
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
 
-    user = %{id: current_user.id, name: current_user.name}
-
     with tournament when not is_nil(tournament) <-
-           Tournament.Context.get_tournament_for_user(tournament_id, user),
+           Tournament.Context.get_tournament_info(tournament_id),
          true <- Helpers.can_access?(tournament, current_user, payload) do
       if Codebattle.User.admin?(current_user) do
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
+        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
       else
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
         Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
       end
 
-      {:ok,
-       %{
-         tournament: tournament
-       }, assign(socket, tournament_id: tournament_id, player_id: current_user.id)}
+      matches = Helpers.get_matches_by_players(tournament, [current_user.id])
+
+      players =
+        if Codebattle.User.admin?(current_user) do
+          [Helpers.get_player(tournament, current_user.id)] ++
+            Helpers.get_paginated_players(tournament, 0, 30)
+        else
+          [Helpers.get_player(tournament, current_user.id)] ++
+            Helpers.get_top_players(tournament)
+        end
+
+      {
+        :ok,
+        %{
+          tournament: Map.drop(tournament, [:players_table, :matches_table]),
+          matches: matches,
+          players: players
+        },
+        assign(socket,
+          tournament_info: Map.take(tournament, [:id, :players_table, :matches_table])
+        )
+      }
     else
       _ ->
         {:error, %{reason: "not_found"}}
@@ -33,7 +50,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:join", %{"team_id" => team_id}, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user,
@@ -44,7 +61,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:join", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :join, %{
       user: socket.assigns.current_user
@@ -54,7 +71,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:leave", %{"team_id" => team_id}, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id,
@@ -65,7 +82,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:leave", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id
@@ -75,10 +92,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:kick", %{"user_id" => user_id}, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :leave, %{
         user_id: String.to_integer(user_id)
       })
@@ -88,10 +105,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:restart", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Context.get!(tournament_id)
 
-    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.restart(tournament)
 
       Tournament.Context.handle_event(tournament_id, :restart, %{
@@ -108,7 +125,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:open_up", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :open_up, %{
       user: socket.assigns.current_user
@@ -118,10 +135,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:cancel", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :cancel, %{
         user: socket.assigns.current_user
       })
@@ -131,10 +148,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:start", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :start, %{
         user: socket.assigns.current_user
       })
@@ -144,10 +161,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:start_round", _, socket) do
-    tournament_id = socket.assigns.tournament_id
+    tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if Tournament.Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :stop_round_break, %{})
     end
 
@@ -155,14 +172,24 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
-    tournament_id = socket.assigns.tournament_id
-    matches = Tournament.Server.get_matches(tournament_id, [id])
+    tournament_info = socket.assigns.tournament_info
+    matches = Helpers.get_matches_by_players(tournament_info, [id])
 
     {:reply, {:ok, %{matches: matches}}, socket}
   end
 
+  def handle_in(
+        "tournament:players:paginated",
+        %{"page_num" => id, "page_size" => page_size},
+        socket
+      ) do
+    tournament_info = socket.assigns.tournament_info
+    players = Helpers.get_paginated_players(tournament_info, min(id, 1000), min(page_size, 30))
+    {:reply, {:ok, %{players: players}}, socket}
+  end
+
   # def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
-  #   tournament_id = socket.assigns.tournament_id
+  #   tournament_id = socket.assigns.tournament_info.id
 
   #   Enum.each(player_ids, fn player_id ->
   #     Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
@@ -177,8 +204,8 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:match:created", payload: payload}, socket) do
-    push(socket, "tournament:match:created", %{match: payload.match})
+  def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
+    push(socket, "tournament:match:upserted", %{match: payload.match})
 
     {:noreply, socket}
   end
@@ -211,12 +238,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:player:left", payload: payload}, socket) do
     push(socket, "tournament:player:left", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:game:created", payload: payload}, socket) do
-    push(socket, "tournament:game:created", %{game_id: payload.game_id})
 
     {:noreply, socket}
   end

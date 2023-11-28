@@ -83,6 +83,8 @@ defmodule Codebattle.Tournament do
     field(:winner_ids, {:array, :integer})
 
     field(:is_live, :boolean, virtual: true, default: false)
+    field(:players_table, :string, virtual: true)
+    field(:matches_table, :string, virtual: true)
     field(:module, :any, virtual: true, default: Individual)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)

@@ -12,9 +12,9 @@ defmodule Codebattle.Tournament.Server do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
-  def get_tournament_for_user(id, user) do
+  def get_tournament_info(id) do
     try do
-      GenServer.call(server_name(id), {:get_tournament_for_user, user})
+      GenServer.call(server_name(id), :get_tournament_info)
     catch
       :exit, {:noproc, _} ->
         nil
@@ -28,19 +28,6 @@ defmodule Codebattle.Tournament.Server do
   def get_tournament(id) do
     try do
       GenServer.call(server_name(id), :get_tournament)
-    catch
-      :exit, {:noproc, _} ->
-        nil
-
-      :exit, reason ->
-        Logger.error("Error to get tournament: #{inspect(reason)}")
-        nil
-    end
-  end
-
-  def get_matches(id, player_ids) do
-    try do
-      GenServer.call(server_name(id), {:get_matches, player_ids})
     catch
       :exit, {:noproc, _} ->
         nil
@@ -85,12 +72,17 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
+    players_table = :ets.new(:players_lookup, [:set, :public])
+    matches_table = :ets.new(:matches_lookup, [:set, :public])
+
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 
     tournament =
       tournament_id
       |> Tournament.Context.get_from_db!()
       |> Tournament.Context.mark_as_live()
+      |> Map.put(:players_table, players_table)
+      |> Map.put(:matches_table, matches_table)
 
     {:ok, %{tournament: tournament}}
   end
@@ -114,31 +106,19 @@ defmodule Codebattle.Tournament.Server do
     {:reply, state.tournament, state}
   end
 
-  def handle_call({:get_tournament_for_user, user}, _from, state) do
-    if can_moderate?(state.tournament, user) do
-      {:reply, state.tournament, state}
-    else
-      matches = get_matches_by_players(state.tournament, [user.id])
-
-      {:reply,
-       state.tournament
-       |> Map.drop([
-         :__struct__,
-         :__meta__,
-         :creator,
-         :matches,
-         :stats,
-         :played_pair_ids,
-         :round_tasks
-       ])
-       |> Map.put(:matches, matches), state}
-    end
-  end
-
-  def handle_call({:get_matches, player_ids}, _from, state) do
-    matches = get_matches_by_players(state.tournament, player_ids)
-
-    {:reply, matches, state}
+  def handle_call(:get_tournament_info, _from, state) do
+    {:reply,
+     state.tournament
+     |> Map.drop([
+       :__struct__,
+       :__meta__,
+       :creator,
+       :matches,
+       :players,
+       :stats,
+       :played_pair_ids,
+       :round_tasks
+     ]), state}
   end
 
   def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
@@ -212,8 +192,8 @@ defmodule Codebattle.Tournament.Server do
       new_tournament =
         tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
 
-      # TODO: add match_finished_event pls, instead of full tournament update
-      broadcast_tournament_update(new_tournament)
+      match = get_match(tournament, match.id)
+      broadcast_match_update(new_tournament, match)
       {:noreply, %{tournament: new_tournament}}
     else
       {:noreply, %{tournament: tournament}}
@@ -228,6 +208,13 @@ defmodule Codebattle.Tournament.Server do
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
+  end
+
+  defp broadcast_match_update(tournament, match) do
+    Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+      tournament_id: tournament.id,
+      match: match
+    })
   end
 
   def broadcast_tournament_event_by_type(:join, %{users: users}, tournament) do

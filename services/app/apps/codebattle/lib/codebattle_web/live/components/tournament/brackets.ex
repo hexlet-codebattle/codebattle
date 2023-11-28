@@ -106,27 +106,27 @@ defmodule CodebattleWeb.Live.Tournament.BracketsComponent do
   defp get_matches_by_round(_t, :final, players_count) when players_count < 2, do: []
 
   defp get_matches_by_round(tournament, :r1, players_count) do
-    get_matches(tournament, (players_count - 128)..(players_count - 65))
+    get_matches(tournament, Enum.to_list((players_count - 128)..(players_count - 65)))
   end
 
   defp get_matches_by_round(tournament, :r2, players_count) do
-    get_matches(tournament, (players_count - 64)..(players_count - 33))
+    get_matches(tournament, Enum.to_list((players_count - 64)..(players_count - 33)))
   end
 
   defp get_matches_by_round(tournament, :r3, players_count) do
-    get_matches(tournament, (players_count - 32)..(players_count - 17))
+    get_matches(tournament, Enum.to_list((players_count - 32)..(players_count - 17)))
   end
 
   defp get_matches_by_round(tournament, :r4, players_count) do
-    get_matches(tournament, (players_count - 16)..(players_count - 9))
+    get_matches(tournament, Enum.to_list((players_count - 16)..(players_count - 9)))
   end
 
   defp get_matches_by_round(tournament, :quater, players_count) do
-    get_matches(tournament, (players_count - 8)..(players_count - 5))
+    get_matches(tournament, Enum.to_list((players_count - 8)..(players_count - 5)))
   end
 
   defp get_matches_by_round(tournament, :semi, players_count) do
-    get_matches(tournament, (players_count - 4)..(players_count - 3))
+    get_matches(tournament, Enum.to_list((players_count - 4)..(players_count - 3)))
   end
 
   defp get_matches_by_round(tournament, :final, players_count) do

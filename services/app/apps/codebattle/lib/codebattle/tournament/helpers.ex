@@ -1,20 +1,85 @@
 defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.User
+  alias Codebattle.Tournament
 
-  def get_player(tournament, id), do: Map.get(tournament.players, to_id(id))
-  def get_players(tournament), do: tournament.players |> Map.values()
-  def get_players(tournament, ids), do: Enum.map(ids, &get_player(tournament, &1))
-  def get_match(tournament, id), do: Map.get(tournament.matches, to_id(id))
-  def get_matches(tournament), do: tournament.matches |> Map.values()
-  def get_matches(tournament, range = %Range{}), do: Enum.map(range, &get_match(tournament, &1))
+  def get_player(tournament = %{players_table: nil}, id),
+    do: Map.get(tournament.players, id)
 
-  def get_matches(tournament, state) when is_binary(state) do
+  def get_player(tournament, id), do: Tournament.Players.get_player(tournament, id)
+
+  def get_players(tournament = %{players_table: nil}), do: tournament.players |> Map.values()
+  def get_players(tournament), do: Tournament.Players.get_players(tournament)
+
+  def get_players(tournament = %{players_table: nil}, ids),
+    do: Enum.map(ids, &get_player(tournament, &1))
+
+  def get_players(tournament, ids), do: Tournament.Players.get_players(tournament, ids)
+
+  def players_count(tournament = %{players_table: nil}) do
+    tournament |> get_players() |> Enum.count()
+  end
+
+  def players_count(tournament) do
+    Tournament.Players.count(tournament)
+  end
+
+  def get_paginated_players(tournament = %{players_table: nil}, _page_num, _page_size) do
+    # return all players, cause we don't want to paginate if tournament finished
+    get_players(tournament)
+  end
+
+  def get_paginated_players(tournament, page_num, page_size) do
+    start_index = (page_num - 1) * page_size
+    end_index = start_index + page_size - 1
+
+    tournament
+    |> get_players()
+    |> Enum.sort_by(& &1.place)
+    |> Enum.slice(start_index..end_index)
+  end
+
+  def get_top_players(tournament = %{players_table: nil}, _page_num, _page_size) do
+    # return all players, cause we don't want to paginate if tournament finished
+    get_players(tournament)
+  end
+
+  # only for waiting_participants, cause all players have score = 0
+  # we don't care about ordering
+  def get_top_players(tournament = %{type: type, top_player_ids: []})
+      when type in ["swiss", "ladder", "stairway"] do
+    tournament |> get_players() |> Enum.take(30)
+  end
+
+  # we don't want to cut plaeyrs for team/individual tournaments for players
+  def get_top_players(tournament = %{top_player_ids: []}) do
+    get_players(tournament)
+  end
+
+  def get_top_players(tournament = %{top_player_ids: ids}) do
+    get_players(tournament, ids)
+  end
+
+  def players_count(tournament, team_id) do
+    tournament |> get_team_players(team_id) |> Enum.count()
+  end
+
+  def get_match(tournament = %{matches_table: nil}, id),
+    do: Map.get(tournament.matches, id)
+
+  def get_match(tournament, id), do: Tournament.Matches.get_match(tournament, id)
+
+  def get_matches(tournament = %{matches_table: nil}), do: tournament.matches |> Map.values()
+  def get_matches(tournament), do: Tournament.Matches.get_matches(tournament)
+
+  def get_matches(tournament = %{matches_table: nil}, ids) when is_list(ids),
+    do: Enum.map(ids, &get_match(tournament, &1))
+
+  def get_matches(tournament = %{matches_table: nil}, state) when is_binary(state) do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
-  def get_matches_by_ids(tournament, matches_ids) do
-    Enum.map(matches_ids, &get_match(tournament, &1))
-  end
+  def get_matches(tournament, ids_or_state),
+    do: Tournament.Matches.get_matches(tournament, ids_or_state)
 
   def get_matches_by_players(tournament, player_ids) do
     matches_ids =
@@ -24,7 +89,7 @@ defmodule Codebattle.Tournament.Helpers do
       |> Enum.flat_map(& &1.matches_ids)
       |> Enum.uniq()
 
-    get_matches_by_ids(tournament, matches_ids)
+    get_matches(tournament, matches_ids)
   end
 
   def get_round_matches(tournament) do
@@ -34,9 +99,11 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.chunk_by(& &1.round)
   end
 
+  def matches_count(t), do: Tournament.Matches.count(t)
+
   def get_current_round_matches(tournament) do
     tournament
-    |> get_matches
+    |> get_matches()
     |> Enum.filter(&(&1.round == tournament.current_round))
   end
 
@@ -46,28 +113,13 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_current_round_playing_matches(tournament) do
     tournament
-    |> get_matches
+    |> get_matches()
     |> Enum.filter(&(&1.round == tournament.current_round and &1.state == "playing"))
   end
-
-  def get_first_match(tournament),
-    do: tournament.matches |> Map.get(to_id(0))
 
   def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
 
   def get_player_ids(tournament), do: tournament |> get_players |> Enum.map(& &1.id)
-
-  def players_count(tournament) do
-    tournament |> get_players() |> Enum.count()
-  end
-
-  def players_count(tournament, team_id) do
-    tournament |> get_team_players(team_id) |> Enum.count()
-  end
-
-  def matches_count(tournament) do
-    tournament |> get_matches() |> Enum.count()
-  end
 
   def can_be_started?(tournament = %{state: "waiting_participants"}) do
     players_count(tournament) > 0
@@ -100,15 +152,15 @@ defmodule Codebattle.Tournament.Helpers do
   def in_break?(tournament), do: tournament.break_state == "on"
 
   def is_player?(tournament, player_id) do
-    tournament.players
-    |> Map.get(to_id(player_id))
+    tournament
+    |> get_player(player_id)
     |> Kernel.!()
     |> Kernel.!()
   end
 
   def is_player?(tournament, player_id, team_id) do
-    tournament.players
-    |> Map.get(to_id(player_id))
+    tournament
+    |> get_player(player_id)
     |> case do
       %{team_id: ^team_id} -> true
       _ -> false
