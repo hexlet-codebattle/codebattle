@@ -12,8 +12,8 @@ const getCsrfToken = () => document
 const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
 
 const getInputClassName = isInvalid => cn('form-control', {
-    'is-invalid': isInvalid,
-  });
+  'is-invalid': isInvalid,
+});
 
 const Container = ({ children }) => (
   <div className="container-fluid">
@@ -43,7 +43,7 @@ const Form = ({ onSubmit, id, children }) => (
 );
 
 const Input = ({
- id, type, title, formik,
+  id, type, title, formik,
 }) => {
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
@@ -156,7 +156,8 @@ function SignIn() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email) { formik.setFieldError('email', errors.email); }
+            if (errors.email === 'EMAIL_NOT_FOUND') { formik.errors.email = 'Invalid email'; }
+            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') { formik.setFieldError('email', errors.email); }
             if (errors.base) { formik.setFieldError('base', errors.base); }
           }
         });
