@@ -130,11 +130,13 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:match:upserted", params) do
+    players = Tournament.Helpers.get_plaeyrs(params.tournament, player_ids)
+
     Enum.map(params.match.player_ids, fn player_id ->
       %Message{
-        topic: "tournament:#{params.tournament_id}:player:#{player_id}",
+        topic: "tournament:#{params.tournament.id}:player:#{player_id}",
         event: "tournament:match:upserted",
-        payload: %{match: params.match}
+        payload: %{match: params.match, players: players}
       }
     end)
   end

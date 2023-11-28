@@ -212,7 +212,7 @@ defmodule Codebattle.Tournament.Server do
 
   defp broadcast_match_update(tournament, match) do
     Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-      tournament_id: tournament.id,
+      tournament: tournament,
       match: match
     })
   end

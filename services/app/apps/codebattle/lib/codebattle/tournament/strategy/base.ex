@@ -358,7 +358,7 @@ defmodule Codebattle.Tournament.Base do
         })
 
         Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-          tournament_id: tournament.id,
+          tournament: tournament,
           match: match
         })
 

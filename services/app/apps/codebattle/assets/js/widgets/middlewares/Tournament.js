@@ -110,6 +110,7 @@ export const connectToTournament = () => dispatch => {
     const data = camelizeKeys(response);
 
     dispatch(actions.updateTournamentMatches([data.match]));
+    dispatch(actions.updateTournamentPlayers(data.players));
   };
 
   const refs = [
