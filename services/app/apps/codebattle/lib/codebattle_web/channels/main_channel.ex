@@ -4,13 +4,18 @@ defmodule CodebattleWeb.MainChannel do
 
   alias CodebattleWeb.Presence
 
+  @use_presence Application.compile_env(:codebattle, CodebattleWeb.MainChannel)[:use_presence]
+
   def join("main", %{"state" => state}, socket) do
     current_user = socket.assigns.current_user
 
     if !current_user.is_guest do
       topic = "main:#{current_user.id}"
       Codebattle.PubSub.subscribe(topic)
-      send(self(), {:after_join, state})
+
+      if @use_presence do
+        send(self(), {:after_join, state})
+      end
     end
 
     {:ok, %{}, socket}
