@@ -29,6 +29,8 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_created",
         payload: %{
+          last_round_ended_at: params.tournament.last_round_ended_at,
+          last_round_started_at: params.tournament.last_round_started_at,
           state: params.tournament.state,
           break_state: "off"
         }
@@ -53,6 +55,8 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:round_finished",
         payload: %{
           state: params.tournament.state,
+          last_round_ended_at: params.tournament.last_round_ended_at,
+          last_round_started_at: params.tournament.last_round_started_at,
           break_state: "on",
           players: players
         }

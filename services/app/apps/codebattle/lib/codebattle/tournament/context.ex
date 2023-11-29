@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Context do
+  alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
@@ -164,6 +165,12 @@ defmodule Codebattle.Tournament.Context do
 
   @spec restart(Tournament.t()) :: :ok
   def restart(tournament) do
+    tournament
+    |> Tournament.Helpers.get_matches("playing")
+    |> Enum.each(&Game.Context.terminate_game(&1.game_id))
+
+    :timer.sleep(59)
+
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
     Tournament.GlobalSupervisor.start_tournament(tournament)
     :ok

@@ -144,14 +144,16 @@ defmodule Codebattle.Tournament.Base do
         |> Enum.each(fn player_id ->
           player = Tournament.Players.get_player(tournament, player_id)
 
-          Tournament.Players.put_player(tournament, %{
-            player
-            | score: player.score + params.player_results[player_id].score,
-              lang: params.player_results[player_id].lang,
-              wins_count:
-                player.wins_count +
-                  if(params.player_results[player_id].result == "won", do: 1, else: 0)
-          })
+          if player do
+            Tournament.Players.put_player(tournament, %{
+              player
+              | score: player.score + params.player_results[player_id].score,
+                lang: params.player_results[player_id].lang,
+                wins_count:
+                  player.wins_count +
+                    if(params.player_results[player_id].result == "won", do: 1, else: 0)
+            })
+          end
         end)
 
         tournament
@@ -232,6 +234,8 @@ defmodule Codebattle.Tournament.Base do
                 {:start_rematch, params.ref, tournament.current_round},
                 timeout_ms
               )
+
+              dbg(timeout_ms)
 
               "rematch"
             else

@@ -241,7 +241,8 @@ function TournamentHeader({
                     && breakState === 'on'
                   }
                   canRestart={
-                    state === TournamentStates.active
+                    !isLive
+                    || state === TournamentStates.active
                     || state === TournamentStates.finished
                     || state === TournamentStates.cancelled
                   }

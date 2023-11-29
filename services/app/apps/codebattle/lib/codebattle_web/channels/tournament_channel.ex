@@ -199,13 +199,16 @@ defmodule CodebattleWeb.TournamentChannel do
   # end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
-    push(socket, "tournament:update", %{tournament: payload.tournament})
+    push(socket, "tournament:update", %{
+      tournament:
+        Map.drop(payload.tournament, [:players, :matches, :players_table, :matches_table])
+    })
 
     {:noreply, socket}
   end
 
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
-    push(socket, "tournament:match:upserted", %{match: payload.match})
+    push(socket, "tournament:match:upserted", %{match: payload.match, players: payload.players})
 
     {:noreply, socket}
   end
@@ -213,7 +216,9 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", %{
       state: payload.state,
-      break_state: payload.break_state
+      break_state: payload.break_state,
+      last_round_ended_at: payload.last_round_ended_at,
+      last_round_started_at: payload.last_round_started_at
     })
 
     {:noreply, socket}
@@ -223,7 +228,9 @@ defmodule CodebattleWeb.TournamentChannel do
     push(socket, "tournament:round_finished", %{
       state: payload.state,
       break_state: payload.break_state,
-      players: payload.players
+      players: payload.players,
+      last_round_ended_at: payload.last_round_ended_at,
+      last_round_started_at: payload.last_round_started_at
       # top_players: top_players
     })
 

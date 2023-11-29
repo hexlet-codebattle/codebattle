@@ -2,6 +2,7 @@ import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
+import omit from 'lodash/omit';
 
 import socket from '../../socket';
 import TournamentStates from '../config/tournament';
@@ -78,7 +79,10 @@ export const connectToTournament = () => dispatch => {
   const handleRoundFinished = response => {
     const data = camelizeKeys(response);
 
-    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
+    dispatch(actions.updateTournamentData(
+      omit(data, ['players']),
+    ));
+
     dispatch(actions.updateTournamentPlayers(data.players));
   };
 
