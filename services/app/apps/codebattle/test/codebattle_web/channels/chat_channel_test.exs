@@ -59,7 +59,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     push(socket1, "chat:add_msg", %{text: message})
 
-    :timer.sleep(50)
+    :timer.sleep(100)
 
     assert_receive %Phoenix.Socket.Message{
       topic: ^chat_topic,

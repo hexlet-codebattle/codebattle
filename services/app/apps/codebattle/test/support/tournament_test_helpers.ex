@@ -8,8 +8,8 @@ defmodule Codebattle.TournamentTestHelpers do
 
     [last_user_match] =
       tournament
-      |> get_matches()
-      |> Enum.filter(&(&1.state == "playing" && user_id in &1.player_ids))
+      |> get_matches("playing")
+      |> Enum.filter(&(user_id in &1.player_ids))
 
     %{game_id: game_id, id: ref, player_ids: player_ids} = last_user_match
 

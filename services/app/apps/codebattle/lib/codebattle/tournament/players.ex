@@ -3,6 +3,10 @@ defmodule Codebattle.Tournament.Players do
     :ets.new(:t_players, [:set, :public, {:write_concurrency, true}, {:read_concurrency, true}])
   end
 
+  def drop_player(tournament, player_id) do
+    :ets.delete(tournament.players_table, player_id)
+  end
+
   def count(tournament) do
     :ets.select_count(tournament.players_table, [{:_, [], [true]}])
   end

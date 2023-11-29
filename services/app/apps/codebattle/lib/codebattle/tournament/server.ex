@@ -72,8 +72,8 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
-    players_table = :ets.new(:players_lookup, [:set, :public])
-    matches_table = :ets.new(:matches_lookup, [:set, :public])
+    players_table = Tournament.Players.create_table()
+    matches_table = Tournament.Matches.create_table()
 
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 

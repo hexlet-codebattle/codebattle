@@ -57,6 +57,6 @@ defmodule Codebattle.Tournament.Individual do
   def finish_tournament?(tournament), do: final_round?(tournament)
 
   defp final_round?(tournament) do
-    Enum.count(tournament.players) == :math.pow(2, tournament.current_round + 1)
+    players_count(tournament) == :math.pow(2, tournament.current_round + 1)
   end
 end

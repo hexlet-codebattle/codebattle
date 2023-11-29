@@ -2,8 +2,9 @@ defmodule Codebattle.Tournament.IndividualTest do
   use Codebattle.IntegrationCase, async: false
 
   import Codebattle.Tournament.Helpers
+  import Codebattle.TournamentTestHelpers
 
-  @module Codebattle.Tournament.Individual
+  alias Codebattle.Tournament
 
   setup do
     insert(:task, level: "elementary", name: "2")
@@ -15,15 +16,22 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "scales to 2 when 1 player" do
       user = insert(:user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 100
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants"
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 2
     end
@@ -32,16 +40,23 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
       users = insert_list(2, :user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 100
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants"
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 4
     end
@@ -50,16 +65,23 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
       users = insert_list(4, :user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 100
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants"
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 8
     end
@@ -68,16 +90,23 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
       users = insert_list(8, :user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 100
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants"
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 16
     end
@@ -86,30 +115,49 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
       users = insert_list(17, :user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 100
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants"
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 32
     end
 
-    test "scales to 64 when 33 players" do
+    test "limits players" do
       user = insert(:user)
       users = insert_list(9, :user)
 
-      tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 7)
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants",
+          "players_limit" => 7
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 8
     end
@@ -118,32 +166,26 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
       users = insert_list(64, :user)
 
-      tournament =
-        insert(:tournament,
-          state: "waiting_participants",
-          creator_id: user.id,
-          players_limit: 299
-        )
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
 
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user})
+      Tournament.Server.handle_event(tournament.id, :join, %{users: users})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 128
-    end
-
-    test "respects players limit" do
-      user = insert(:user)
-      users = insert_list(10, :user)
-
-      tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 7)
-
-      tournament = @module.join(tournament, %{user: user})
-      tournament = @module.join(tournament, %{users: users})
-      tournament = @module.start(tournament, %{user: user})
-
-      assert players_count(tournament) == 8
     end
   end
 
@@ -154,74 +196,53 @@ defmodule Codebattle.Tournament.IndividualTest do
       user3 = insert(:user)
       user4 = insert(:user)
 
-      tournament = insert(:tournament, state: "waiting_participants", creator_id: user1.id)
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2022-02-24T06:00",
+          "name" => "Test Swiss",
+          "user_timezone" => "Etc/UTC",
+          "level" => "elementary",
+          "creator" => user1,
+          "break_duration_seconds" => 0,
+          "type" => "individual",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
 
-      tournament = @module.join(tournament, %{user: user1})
-      tournament = @module.join(tournament, %{user: user2})
-      tournament = @module.join(tournament, %{user: user3})
-      tournament = @module.join(tournament, %{user: user4})
-      tournament = @module.start(tournament, %{user: user1})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user1})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user2})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user3})
+      Tournament.Server.handle_event(tournament.id, :join, %{user: user4})
+      Tournament.Server.handle_event(tournament.id, :start, %{user: user1})
+
+      tournament = Tournament.Context.get(tournament.id)
 
       [match1, match2] = get_matches(tournament)
 
-      [id1, id2] = match1.player_ids
-      [id3, id4] = match2.player_ids
+      [id1, _id2] = match1.player_ids
+      [id3, _id4] = match2.player_ids
 
-      tournament =
-        @module.finish_match(tournament, %{
-          ref: match1.id,
-          game_id: match1.game_id,
-          game_state: "game_over",
-          game_level: "elementary",
-          player_results: %{
-            id1 => %{
-              result: "won",
-              id: id1,
-              lang: "js",
-              duration_sec: 10,
-              result_percent: 100.0,
-              score: 2
-            },
-            id2 => %{
-              result: "lost",
-              id: id2,
-              lang: "js",
-              duration_sec: 15,
-              result_percent: 50.0,
-              score: 5
-            }
-          }
-        })
+      player1 = Tournament.Players.get_player(tournament, id1)
+
+      send_user_win_match(tournament, player1)
+      tournament = Tournament.Context.get(tournament.id)
 
       assert tournament.current_round == 0
+      assert matches_count(tournament) == 2
 
-      tournament =
-        @module.finish_match(tournament, %{
-          ref: match2.id,
-          game_id: match2.game_id,
-          game_state: "timeout",
-          game_level: "elementary",
-          player_results: %{
-            id3 => %{
-              result: "timeout",
-              id: id3,
-              lang: "js",
-              duration_sec: 100,
-              result_percent: 0.0,
-              score: 2
-            },
-            id4 => %{
-              result: "timeout",
-              id: id4,
-              lang: "js",
-              duration_sec: 15,
-              result_percent: 10.0,
-              score: 5
-            }
-          }
-        })
+      player3 = Tournament.Players.get_player(tournament, id3)
+      send_user_win_match(tournament, player3)
+      tournament = Tournament.Context.get(tournament.id)
 
       assert tournament.current_round == 1
+
+      assert matches_count(tournament) == 3
+
+      send_user_win_match(tournament, player1)
+
+      tournament = Tournament.Context.get(tournament.id)
+
+      assert tournament.state == "finished"
     end
   end
 end

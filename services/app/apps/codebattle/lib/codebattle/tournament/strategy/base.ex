@@ -52,9 +52,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def leave(tournament, %{user_id: user_id}) do
-        new_players = Map.drop(tournament.players, [to_id(user_id)])
-
-        update_struct(tournament, %{players: new_players})
+        Tournament.Players.drop_player(tournament, user_id)
+        tournament
       end
 
       def leave(tournament, _user_id), do: tournament

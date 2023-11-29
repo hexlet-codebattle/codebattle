@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.Context do
   @type tournament_id :: pos_integer() | String.t()
 
   @states_from_restore ["waiting_participants"]
-  @max_alive_tournaments 7
+  @max_alive_tournaments Application.compile_env(:codebattle, :max_alive_tournaments)
 
   @spec get_tournament_info(tournament_id()) :: Tournament.t() | map()
   def get_tournament_info(tournament_id) do

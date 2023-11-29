@@ -130,7 +130,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:match:upserted", params) do
-    players = Tournament.Helpers.get_plaeyrs(params.tournament, player_ids)
+    players = Tournament.Helpers.get_players(params.tournament, params.match.player_ids)
 
     Enum.map(params.match.player_ids, fn player_id ->
       %Message{

@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.LiveViewTournamentControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase
 
   alias Codebattle.Tournament
 
@@ -19,14 +19,22 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
     admin = insert(:admin)
     user = insert(:user)
 
-    tournament =
-      insert(:token_tournament,
-        creator_id: creator.id,
-        players: %{
-          Tournament.Helpers.to_id(user.id) =>
-            struct(Codebattle.Tournament.Player, Map.from_struct(user))
-        }
-      )
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Test Swiss 2",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "access_type" => "token",
+        "access_token" => "access_token",
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    Tournament.Server.handle_event(tournament.id, :join, %{user: user})
 
     new_conn =
       conn

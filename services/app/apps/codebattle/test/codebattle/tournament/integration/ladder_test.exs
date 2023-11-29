@@ -44,7 +44,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.module == @module
       assert tournament.state == "active"
       assert tournament.level == "easy"
-      assert Enum.count(tournament.players) == 200
+      assert players_count(tournament) == 200
 
       assert tournament |> get_matches("playing") |> Enum.count() == 100
 
@@ -77,7 +77,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament |> get_matches("game_over") |> Enum.count() == 1
       assert tournament |> get_matches("timeout") |> Enum.count() == 99
       assert tournament |> get_matches("playing") |> Enum.count() == 50
-      assert Enum.count(tournament.players) == 200
+      assert players_count(tournament) == 200
       assert tournament.current_round == 1
 
       send_user_win_match(tournament, user1)
@@ -138,7 +138,7 @@ defmodule Codebattle.Tournament.Integration.LadderTest do
       assert tournament.module == @module
       assert tournament.state == "active"
       assert tournament.level == "easy"
-      assert Enum.count(tournament.players) == 14
+      assert players_count(tournament) == 14
 
       assert tournament |> get_matches("playing") |> Enum.count() == 7
 
