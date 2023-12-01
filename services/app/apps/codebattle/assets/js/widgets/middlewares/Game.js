@@ -478,6 +478,10 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     dispatch(actions.updateTournamentMatches(data.matches));
   };
 
+  const handleTournamentGameWait = () => {
+    dispatch(actions.setHaveTournamentNextGame(true));
+  };
+
   const refs = [
     currentGameChannel.on('editor:data', handleNewEditorData),
     currentGameChannel.on('user:start_check', handleStartsCheck),
@@ -491,6 +495,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
+    currentGameChannel.off('tournament:game:wait', handleTournamentGameWait),
   ];
 
   const clearGameListeners = () => {
@@ -507,6 +512,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
       currentGameChannel.off('tournament:game:created', refs[9]);
       currentGameChannel.off('tournament:round_created', refs[10]);
       currentGameChannel.off('tournament:round_finished', refs[11]);
+      currentGameChannel.off('tournament:game:wait', refs[12]);
     }
   };
 

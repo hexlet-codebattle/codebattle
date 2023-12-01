@@ -147,8 +147,9 @@ function PlayerStatsPanel({
               />
               <StatisticsCard
                 playerId={currentUserId}
-                place={currentPlayer.place}
-                matchList={matchList}
+                // place={currentPlayer.place}
+                // matchList={matchList}
+                matchList={groupedMatchListByRound[currentRound]}
               />
             </div>
           </div>

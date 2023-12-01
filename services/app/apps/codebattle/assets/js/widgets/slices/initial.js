@@ -341,6 +341,7 @@ const defaultTournamentPlayerParams = {
  *   task: TaskState,
  *   players: Object<number, Player>,
  *   tournamentsInfo: {?Object},
+ *   haveNextGame: boolean,
  *   useChat: boolean,
  *   alerts: Object,
  * }} GameState
@@ -391,6 +392,7 @@ export default {
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
+    haveNextGame: false,
     useChat: initialUseChat,
     alerts: {},
   },
