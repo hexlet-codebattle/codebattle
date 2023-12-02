@@ -464,7 +464,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
   };
 
   const handleTournamentRoundFinished = response => {
-    dispatch(actions.updateTournamentData({ state: response.state, breakState: response.breakState }));
+    dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentMatches(response.matches));
   };
 
