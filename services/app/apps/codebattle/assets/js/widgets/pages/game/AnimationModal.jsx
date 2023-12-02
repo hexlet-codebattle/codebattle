@@ -13,11 +13,12 @@ function TournamentInfoPanel() {
   const waitType = useSelector(state => state.game.waitType);
 
   switch (waitType) {
-    case 'round': return 'Round is over';
+    case 'tournament': return 'Tournament is over';
+    case 'round': return 'Round is over, wait for the next round';
     case 'rematch': return (
       <div className="d-flex flex-row">
         <Loading adaptive />
-        <span className="pl-2">Wait next game</span>
+        <span className="pl-2">Loading next game</span>
       </div>
     );
     default: return <></>;
@@ -28,17 +29,13 @@ function AnimationModal({ setModalShowing, modalShowing }) {
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
   const tournamentId = useSelector(state => state.game.gameStatus.tournamentId);
-  // TODO: Сделать анимацию для спектаторов указать кто победил а кто проиграл
-  // Можно сделать в виде MortalCombat
-  // assigned to karen9999
-  // можно сделать random из нескольких чтобы добавить веселье
   if (!players[currentUserId]) {
     return null;
   }
   const { result } = players[currentUserId];
   const titleModal = result === 'won'
-      ? "Woohoo, you're Champion!!!!!"
-      : "If you read this you've lost the game";
+    ? "Woohoo, you're Champion!!!!!"
+    : "If you read this you've lost the game";
   const buttonText = result === 'won' ? 'Thanks' : "I'll be back";
   const handleCloseModal = () => {
     setModalShowing(false);
@@ -60,7 +57,7 @@ function AnimationModal({ setModalShowing, modalShowing }) {
           </div>
           {tournamentId && (
             <div className="d-flex text-center justify-content-center">
-              <span className="py-2">
+              <span className="py-2 h4">
                 <TournamentInfoPanel />
               </span>
             </div>

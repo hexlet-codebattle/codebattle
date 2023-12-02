@@ -47,6 +47,7 @@ defmodule CodebattleWeb.GameChannel do
              tournament_id: game.tournament_id,
              state: tournament.state,
              type: tournament.type,
+             meta: tournament.meta,
              break_state: tournament.break_state,
              current_round: tournament.current_round
            },

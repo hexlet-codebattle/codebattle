@@ -49,5 +49,4 @@ const Players = ({
   </div>
 );
 
-
 export default memo(Players);

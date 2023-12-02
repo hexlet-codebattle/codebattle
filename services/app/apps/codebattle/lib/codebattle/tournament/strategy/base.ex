@@ -167,25 +167,17 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_start_rematch_async(tournament, params) do
-        timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-
-        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
-
         if round_ends_by_time?(tournament) do
-          wait_type =
-            if seconds_to_end_round(tournament) > min_seconds_to_rematch do
-              Process.send_after(
-                self(),
-                {:start_rematch, params.ref, tournament.current_round},
-                timeout_ms
-              )
+          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+          wait_type = get_wait_type(tournament, timeout_ms)
 
-              dbg(timeout_ms)
-
-              "rematch"
-            else
-              "round"
-            end
+          if wait_type == "rematch" do
+            Process.send_after(
+              self(),
+              {:start_rematch, params.ref, tournament.current_round},
+              timeout_ms
+            )
+          end
 
           Codebattle.PubSub.broadcast("tournament:game:wait", %{
             game_id: params.game_id,
@@ -194,6 +186,20 @@ defmodule Codebattle.Tournament.Base do
         end
 
         tournament
+      end
+
+      defp get_wait_type(tournament, timeout_ms) do
+        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
+
+        if seconds_to_end_round(tournament) > min_seconds_to_rematch do
+          "rematch"
+        else
+          if finish_tournament?(tournament) do
+            "tournament"
+          else
+            "round"
+          end
+        end
       end
 
       def maybe_finish_round(tournament) do

@@ -1,9 +1,9 @@
 import React, {
- useCallback, useEffect, memo, useMemo, useState,
+  useCallback, useEffect, memo, useMemo, useState,
 } from 'react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from 'react-bootstrap/Button';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
@@ -25,12 +25,12 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
 
   const [showFullStatistics, setShowFullStatistics] = useState(false);
 
-  const toggleStatisticsMode = useCallback(() => {
-    setShowFullStatistics(state => !state);
-  }, [setShowFullStatistics]);
+  // const toggleStatisticsMode = useCallback(() => {
+  //   setShowFullStatistics(state => !state);
+  // }, [setShowFullStatistics]);
 
   const matches = useMemo(() => {
-    if (showFullStatistics) {
+    if (showFullStatistics && setShowFullStatistics) {
       return Object.values(tournament?.matches || {});
     }
 
@@ -106,7 +106,7 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <div className="d-flex justify-content-end w-100">
           <Button
             onClick={toggleStatisticsMode}
@@ -117,6 +117,7 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
           </Button>
         </div>
       </Modal.Footer>
+      */}
     </Modal>
   );
 }

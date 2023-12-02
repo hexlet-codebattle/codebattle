@@ -78,7 +78,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament |> get_matches("game_over") |> Enum.count() == 1
       assert tournament |> get_matches("timeout") |> Enum.count() == 100
       assert tournament |> get_matches("playing") |> Enum.count() == 100
-      assert Enum.count(tournament.players) == 200
+      assert players_count(tournament) == 200
       assert MapSet.size(tournament.played_pair_ids) == 200
       assert tournament.current_round == 1
 

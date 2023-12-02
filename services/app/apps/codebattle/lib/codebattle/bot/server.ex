@@ -43,7 +43,10 @@ defmodule Codebattle.Bot.Server do
     send_init_chat_message(state)
     prepare_to_commenting_code()
     send_start_chat_message(state)
-    do_playbook_step(state)
+
+    if not is_nil(state.playbook_params) do
+      do_playbook_step(state)
+    end
 
     # TODO: only for loadTests on prod
     # TODO: add gracefully terminate if there is no playbook
@@ -205,8 +208,10 @@ defmodule Codebattle.Bot.Server do
     send_chat_message(state, :greet_opponent)
   end
 
+  defp send_start_chat_message(%{playbook_params: nil}), do: :noop
+
   defp send_start_chat_message(state) do
-    total_time_min = div(state.playbook_params.bot_time_ms, 60_000)
+    total_time_min = div(state.playbook_params.bot_time_ms || 60_000, 60_000)
     send_chat_message(state, :start_code, %{total_time_min: total_time_min})
   end
 
