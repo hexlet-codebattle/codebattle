@@ -2,7 +2,7 @@ defmodule Codebattle.Bot.Context do
   @moduledoc "Interaction with bots"
   import Ecto.Query
 
-  alias Codebattle.Bot
+  alias Codebattle.Bot.Server
   alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.User
@@ -22,7 +22,7 @@ defmodule Codebattle.Bot.Context do
           id: "bot_server_#{game.id}:#{bot.id}",
           restart: :transient,
           type: :worker,
-          start: {Bot.Server, :start_link, [%{game: game, bot_id: bot.id}]}
+          start: {Server, :start_link, [%{game: game, bot_id: bot.id}]}
         }
       )
     end)

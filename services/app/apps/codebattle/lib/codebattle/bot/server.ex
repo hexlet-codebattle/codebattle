@@ -42,7 +42,10 @@ defmodule Codebattle.Bot.Server do
 
     send_init_chat_message(state)
     prepare_to_commenting_code()
+    send_start_chat_message(state)
+    do_playbook_step(state)
 
+    # TODO: only for loadTests on prod
     # TODO: add gracefully terminate if there is no playbook
     case state.playbook_params do
       nil ->
@@ -62,11 +65,12 @@ defmodule Codebattle.Bot.Server do
   @impl GenServer
   def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
-  @impl GenServer
-  def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
-    send_start_chat_message(state)
-    do_playbook_step(state)
-  end
+  # TODO: only for loadTests on prod
+  # @impl GenServer
+  # def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
+  #   send_start_chat_message(state)
+  #   do_playbook_step(state)
+  # end
 
   @impl GenServer
   def handle_info(%{event: "editor:data"}, state), do: {:noreply, state}
@@ -97,7 +101,9 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def handle_info(%{event: "user:check_complete"}, state) do
-    send_chat_message(state, :advice_on_check_complete_failure)
+    if rem(:rand.uniform(7), 7) == 0 do
+      send_chat_message(state, :advice_on_check_complete_failure)
+    end
 
     {:noreply, state}
   end

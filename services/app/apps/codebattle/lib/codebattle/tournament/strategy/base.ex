@@ -128,6 +128,13 @@ defmodule Codebattle.Tournament.Base do
         |> start_round()
       end
 
+      def finish_match(tournament, params) do
+        tournament
+        |> handle_game_result(params)
+        |> maybe_start_rematch_async(params)
+        |> maybe_finish_round()
+      end
+
       def handle_game_result(tournament, params) do
         match = get_match(tournament, params.ref)
         winner_id = pick_game_winner_id(match.player_ids, params.player_results)
@@ -159,11 +166,34 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      def finish_match(tournament, params) do
+      defp maybe_start_rematch_async(tournament, params) do
+        timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+
+        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
+
+        if round_ends_by_time?(tournament) do
+          wait_type =
+            if seconds_to_end_round(tournament) > min_seconds_to_rematch do
+              Process.send_after(
+                self(),
+                {:start_rematch, params.ref, tournament.current_round},
+                timeout_ms
+              )
+
+              dbg(timeout_ms)
+
+              "rematch"
+            else
+              "round"
+            end
+
+          Codebattle.PubSub.broadcast("tournament:game:wait", %{
+            game_id: params.game_id,
+            type: wait_type
+          })
+        end
+
         tournament
-        |> handle_game_result(params)
-        |> maybe_start_rematch_async(params)
-        |> maybe_finish_round()
       end
 
       def maybe_finish_round(tournament) do
@@ -226,36 +256,6 @@ defmodule Codebattle.Tournament.Base do
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> start_round_or_break_or_finish()
-      end
-
-      defp maybe_start_rematch_async(tournament, params) do
-        timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-
-        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
-
-        if round_ends_by_time?(tournament) do
-          wait_type =
-            if seconds_to_end_round(tournament) > min_seconds_to_rematch do
-              Process.send_after(
-                self(),
-                {:start_rematch, params.ref, tournament.current_round},
-                timeout_ms
-              )
-
-              dbg(timeout_ms)
-
-              "rematch"
-            else
-              "round"
-            end
-
-          Codebattle.PubSub.broadcast("tournament:game:wait", %{
-            game_id: params.game_id,
-            type: wait_type
-          })
-        end
-
-        tournament
       end
 
       def start_rematch(tournament, match_ref) do
@@ -327,13 +327,14 @@ defmodule Codebattle.Tournament.Base do
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.each(fn
-          {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
-            Tournament.Matches.put_match(tournament, %Tournament.Match{
-              id: match_id,
-              state: "canceled",
-              round: tournament.current_round,
-              player_ids: Enum.sort([p1.id, p2.id])
-            })
+          # TODO: only for load tests we want that bots play real games
+          # {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
+          #   Tournament.Matches.put_match(tournament, %Tournament.Match{
+          #     id: match_id,
+          #     state: "canceled",
+          #     round: tournament.current_round,
+          #     player_ids: Enum.sort([p1.id, p2.id])
+          #   })
 
           {[p1, p2], match_id} ->
             build_and_run_match(tournament, {[p1, p2], match_id})
