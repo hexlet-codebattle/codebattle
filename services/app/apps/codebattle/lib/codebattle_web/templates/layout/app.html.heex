@@ -87,12 +87,15 @@
                   <span class="header-txt">by Hexlet’s community</span>
                 </div>
               <% end %>
-              <img
-                alt="collab icon"
-                class="my-auto pt-2 ml-2"
-                style="height:40px"
-                src="/assets/images/collaboration.png"
-              />
+              <%= if collab_logo() do %>
+                <%# "/assets/images/collaboration.png" %>
+                <img
+                  alt="collab icon"
+                  class="my-auto pt-2 ml-2"
+                  style="height:40px"
+                  src={collab_logo()}
+                />
+              <% end %>
             </a>
             <%= unless @current_user.is_guest do %>
               <button

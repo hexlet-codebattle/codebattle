@@ -225,14 +225,14 @@ defmodule Codebattle.Tournament.Server do
     player = Tournament.Helpers.get_player(tournament, params.user.id)
 
     Codebattle.PubSub.broadcast("tournament:player:joined", %{
-      tournament_id: tournament.id,
+      tournament: tournament,
       player: player
     })
   end
 
   def broadcast_tournament_event_by_type(:leave, params, tournament) do
     Codebattle.PubSub.broadcast("tournament:player:left", %{
-      tournament_id: tournament.id,
+      tournament: tournament,
       player_id: params.user_id
     })
   end

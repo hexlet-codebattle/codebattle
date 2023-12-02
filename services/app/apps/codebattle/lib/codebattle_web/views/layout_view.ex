@@ -32,4 +32,8 @@ defmodule CodebattleWeb.LayoutView do
   def deployed_at do
     Application.get_env(:codebattle, :deployed_at)
   end
+
+  def collab_logo do
+    Application.get_env(:codebattle, :collab_logo)
+  end
 end

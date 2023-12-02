@@ -15,7 +15,7 @@ defmodule CodebattleWeb.GameChannel do
 
       Codebattle.PubSub.subscribe("game:#{game.id}")
 
-      if game.tournament_id do
+      if game.tournament_id && !socket.assigns.current_user.is_bot do
         player_ids = Enum.map(game.players, & &1.id)
         user_id = socket.assigns.current_user.id
 
@@ -217,7 +217,10 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    matches = Tournament.Helpers.get_matches_by_players([socket.assigns.player_id])
+    matches =
+      Tournament.Helpers.get_matches_by_players(payload.tournament_table, [
+        socket.assigns.player_id
+      ])
 
     push(socket, "tournament:round_finished", %{
       tournament: payload.tournament,

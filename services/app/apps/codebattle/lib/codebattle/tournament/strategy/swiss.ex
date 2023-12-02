@@ -13,7 +13,7 @@ defmodule Codebattle.Tournament.Swiss do
       # TODO: FIXME
 
       Codebattle.PubSub.broadcast("tournament:player:joined", %{
-        tournament_id: tournament.id,
+        tournament: tournament,
         player: bot
       })
 
@@ -34,21 +34,18 @@ defmodule Codebattle.Tournament.Swiss do
       |> get_players()
       |> Enum.sort_by(& &1.score, :desc)
 
-    players =
+    sorted_players_with_index
+    |> Enum.with_index()
+    |> Enum.each(fn {player, index} ->
+      Tournament.Players.put_player(tournament, %{player | place: index})
+    end)
+
+    top_player_ids =
       sorted_players_with_index
-      |> Enum.with_index()
-      |> Enum.map(fn {player, index} ->
-        {to_id(player.id), %{player | place: index}}
-      end)
-      |> Enum.into(%{})
+      |> Enum.take(30)
+      |> Enum.map(& &1.id)
 
-    # top_player_ids =
-    #   sorted_players_with_index
-    #   |> Enum.take(30)
-    #   |> Enum.map(& &1.id)
-
-    # update_struct(%{tournament | players: players}, %{top_player_ids: top_player_ids})
-    %{tournament | players: players}
+    %{tournament | top_player_ids: top_player_ids}
   end
 
   @impl Tournament.Base

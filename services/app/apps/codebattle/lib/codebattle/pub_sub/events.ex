@@ -29,11 +29,13 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_created",
         payload: %{
-          last_round_ended_at: params.tournament.last_round_ended_at,
-          last_round_started_at: params.tournament.last_round_started_at,
-          state: params.tournament.state,
-          break_state: "off",
-          current_round: params.tournament.current_round
+          tournament: %{
+            last_round_ended_at: params.tournament.last_round_ended_at,
+            last_round_started_at: params.tournament.last_round_started_at,
+            state: params.tournament.state,
+            break_state: "off",
+            current_round: params.tournament.current_round
+          }
         }
       },
       %Message{
@@ -55,12 +57,15 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
-          type: params.tournament.type,
-          state: params.tournament.state,
-          last_round_ended_at: params.tournament.last_round_ended_at,
-          last_round_started_at: params.tournament.last_round_started_at,
-          current_round: params.current_round,
-          break_state: "on",
+          tournament_table: Map.take(params.tournament, [:matches_table]),
+          tournament: %{
+            type: params.tournament.type,
+            state: params.tournament.state,
+            last_round_ended_at: params.tournament.last_round_ended_at,
+            last_round_started_at: params.tournament.last_round_started_at,
+            current_round: params.tournament.current_round,
+            break_state: "on"
+          },
           players: players
         }
       },
@@ -109,14 +114,20 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:player:joined", params) do
     [
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:player:joined",
-        payload: %{player: params.player}
+        payload: %{
+          player: params.player,
+          tournament: %{players_count: params.tournament.players_count}
+        }
       },
       %Message{
-        topic: "tournament:#{params.tournament_id}",
+        topic: "tournament:#{params.tournament.id}",
         event: "tournament:player:joined",
-        payload: %{player: params.player}
+        payload: %{
+          player: params.player,
+          tournament: %{players_count: params.tournament.players_count}
+        }
       }
     ]
   end
@@ -124,14 +135,20 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:player:left", params) do
     [
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:player:left",
-        payload: %{player_id: params.player_id}
+        payload: %{
+          player_id: params.player_id,
+          tournament: %{players_count: params.tournament.players_count}
+        }
       },
       %Message{
-        topic: "tournament:#{params.tournament_id}",
+        topic: "tournament:#{params.tournament.id}",
         event: "tournament:player:left",
-        payload: %{player_id: params.player_id}
+        payload: %{
+          player_id: params.player_id,
+          tournament: %{players_count: params.tournament.players_count}
+        }
       }
     ]
   end

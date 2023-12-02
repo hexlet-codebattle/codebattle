@@ -13,6 +13,8 @@ defmodule CodebattleWeb.TournamentChannel do
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get_tournament_info(tournament_id),
          true <- Helpers.can_access?(tournament, current_user, payload) do
+      mark_player_as_online(tournament, current_user)
+
       payload =
         tournament
         |> subscribe_on_tournament_events(socket)
@@ -202,27 +204,14 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", %{
-      tournament: %{
-        state: payload.state,
-        break_state: payload.break_state,
-        current_round: payload.current_round,
-        last_round_ended_at: payload.last_round_ended_at,
-        last_round_started_at: payload.last_round_started_at
-      }
-    })
+    push(socket, "tournament:round_created", %{tournament: payload.tournament})
 
     {:noreply, socket}
   end
 
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
     push(socket, "tournament:round_finished", %{
-      tournament: %{
-        state: payload.state,
-        break_state: payload.break_state,
-        last_round_ended_at: payload.last_round_ended_at,
-        last_round_started_at: payload.last_round_started_at
-      },
+      tournament: payload.tournament,
       players: payload.players
     })
 
@@ -270,7 +259,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament
   end
 
-  defp get_join_tournament_payload(%{type: type} = tournament, socket)
+  defp get_tournament_join_payload(%{type: type} = tournament, socket)
        when type in ["swiss", "ladder", "stairway"] do
     current_user = socket.assigns.current_user
     matches = Helpers.get_matches_by_players(tournament, [current_user.id])
@@ -297,5 +286,15 @@ defmodule CodebattleWeb.TournamentChannel do
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament)
     }
+  end
+
+  defp mark_player_as_online(tournament, current_user) do
+    case Tournament.Players.get_player(tournament, current_user.id) do
+      %{was_online: false} = player ->
+        Tournament.Players.put_player(tournament, %{player | was_online: true})
+
+      _ ->
+        :noop
+    end
   end
 end

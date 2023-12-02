@@ -32,20 +32,3 @@ defmodule Codebattle.Tournament.Matches do
     :ets.select_count(tournament.matches_table, [{:_, [], [true]}])
   end
 end
-
-alias Codebattle.Tournament.Matches, as: M
-table = M.create_table()
-t = %{matches_table: table}
-
-M.put_match(t, %{id: 1, game_id: 1, state: "canceled", player_ids: [1, 2]})
-M.put_match(t, %{id: 2, game_id: 2, state: "canceled", player_ids: [3, 4]})
-M.put_match(t, %{id: 3, game_id: 3, state: "game_over", player_ids: [1, 2]})
-M.put_match(t, %{id: 4, game_id: 4, state: "timeout", player_ids: [3, 4]})
-M.put_match(t, %{id: 5, game_id: 5, state: "playing", player_ids: [1, 2]})
-M.put_match(t, %{id: 6, game_id: 6, state: "playing", player_ids: [3, 4]})
-
-M.get_match(t, 1)
-M.get_matches(t)
-M.get_matches(t, [2, 3])
-M.get_matches(t, "playing")
-M.get_matches(t, "canceled")

@@ -38,9 +38,10 @@ defmodule Codebattle.Tournament.Ladder do
   defp build_player_pairs(players, tournament) do
     if rem(Enum.count(players), 2) == 1 do
       bot = build_bot()
+      Tournament.Players.put_player(tournament, bot)
       players = Enum.concat(players, [bot])
 
-      {put_in(tournament.players[to_id(bot.id)], bot), Enum.chunk_every(players, 2)}
+      {tournament, Enum.chunk_every(players, 2)}
     else
       {tournament, Enum.chunk_every(players, 2)}
     end

@@ -93,10 +93,16 @@ export const connectToTournament = () => dispatch => {
 
   const handlePlayerJoined = response => {
     dispatch(actions.addTournamentPlayer(response));
+    dispatch(actions.updateTournamentData(
+      response.tournament,
+    ));
   };
 
   const handlePlayerLeft = response => {
     dispatch(actions.removeTournamentPlayer(response));
+    dispatch(actions.updateTournamentData(
+      response.tournament,
+    ));
   };
 
   const handleMatchUpserted = response => {

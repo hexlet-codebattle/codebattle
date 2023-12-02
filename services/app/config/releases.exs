@@ -67,6 +67,7 @@ config :codebattle, use_external_js: use_external_js
 config :codebattle, use_only_token_auth: use_only_token_auth
 config :codebattle, show_extension_popup: show_extension_popup
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
+config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 

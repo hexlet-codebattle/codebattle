@@ -15,7 +15,7 @@ function StageTitle({ stage, stagesLimit, hideDescription = false }) {
 
   return hideDescription
     ? capitalize(mapStagesToTitle[stage])
-    : `Stage ${mapStagesToTitle[stage]}`;
+    : `Stage ${mapStagesToTitle[stage] || (stage + 1)}`;
 }
 
 export default memo(StageTitle);
