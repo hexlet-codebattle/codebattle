@@ -13,36 +13,15 @@ defmodule CodebattleWeb.TournamentChannel do
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get_tournament_info(tournament_id),
          true <- Helpers.can_access?(tournament, current_user, payload) do
-      if Codebattle.User.admin?(current_user) do
-        Codebattle.PubSub.subscribe("tournament:#{tournament_id}")
-        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
-      else
-        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:common")
-        Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{current_user.id}")
-      end
+      payload =
+        tournament
+        |> subscribe_on_tournament_events(socket)
+        |> get_tournament_join_payload(socket)
 
-      matches = Helpers.get_matches_by_players(tournament, [current_user.id])
-
-      players =
-        if Codebattle.User.admin?(current_user) do
-          [Helpers.get_player(tournament, current_user.id)] ++
-            Helpers.get_paginated_players(tournament, 0, 30)
-        else
-          [Helpers.get_player(tournament, current_user.id)] ++
-            Helpers.get_top_players(tournament)
-        end
-
-      {
-        :ok,
-        %{
-          tournament: Map.drop(tournament, [:players_table, :matches_table]),
-          matches: matches,
-          players: players
-        },
-        assign(socket,
-          tournament_info: Map.take(tournament, [:id, :players_table, :matches_table])
-        )
-      }
+      {:ok, payload,
+       assign(socket,
+         tournament_info: Map.take(tournament, [:id, :players_table, :matches_table])
+       )}
     else
       _ ->
         {:error, %{reason: "not_found"}}
@@ -199,9 +178,18 @@ defmodule CodebattleWeb.TournamentChannel do
   # end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
+    matches =
+      if payload.tournament.type in ["swiss", "ladder"] do
+        []
+      else
+        Helpers.get_matches(payload.tournament)
+      end
+
     push(socket, "tournament:update", %{
       tournament:
-        Map.drop(payload.tournament, [:players, :matches, :players_table, :matches_table])
+        Map.drop(payload.tournament, [:players, :matches, :players_table, :matches_table]),
+      players: Helpers.get_players(payload.tournament),
+      matches: matches
     })
 
     {:noreply, socket}
@@ -215,10 +203,13 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", %{
-      state: payload.state,
-      break_state: payload.break_state,
-      last_round_ended_at: payload.last_round_ended_at,
-      last_round_started_at: payload.last_round_started_at
+      tournament: %{
+        state: payload.state,
+        break_state: payload.break_state,
+        current_round: payload.current_round,
+        last_round_ended_at: payload.last_round_ended_at,
+        last_round_started_at: payload.last_round_started_at
+      }
     })
 
     {:noreply, socket}
@@ -226,12 +217,23 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
     push(socket, "tournament:round_finished", %{
-      state: payload.state,
-      break_state: payload.break_state,
-      players: payload.players,
-      last_round_ended_at: payload.last_round_ended_at,
-      last_round_started_at: payload.last_round_started_at
-      # top_players: top_players
+      tournament: %{
+        state: payload.state,
+        break_state: payload.break_state,
+        last_round_ended_at: payload.last_round_ended_at,
+        last_round_started_at: payload.last_round_started_at
+      },
+      players: payload.players
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:finished"}, socket) do
+    push(socket, "tournament:finished", %{
+      tournament: %{
+        state: "finished"
+      }
     })
 
     {:noreply, socket}
@@ -252,5 +254,48 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_info(message, socket) do
     Logger.warning("Unexpected message: " <> inspect(message))
     {:noreply, socket}
+  end
+
+  defp subscribe_on_tournament_events(tournament, socket) do
+    current_user = socket.assigns.current_user
+
+    Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
+
+    if Codebattle.User.admin?(current_user) do
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
+    else
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
+    end
+
+    tournament
+  end
+
+  defp get_join_tournament_payload(%{type: type} = tournament, socket)
+       when type in ["swiss", "ladder", "stairway"] do
+    current_user = socket.assigns.current_user
+    matches = Helpers.get_matches_by_players(tournament, [current_user.id])
+
+    players =
+      if Codebattle.User.admin?(current_user) do
+        [Helpers.get_player(tournament, current_user.id)] ++
+          Helpers.get_paginated_players(tournament, 0, 30)
+      else
+        [Helpers.get_player(tournament, current_user.id)] ++
+          Helpers.get_top_players(tournament)
+      end
+
+    %{
+      tournament: Map.drop(tournament, [:players_table, :matches_table]),
+      matches: matches,
+      players: players
+    }
+  end
+
+  defp get_tournament_join_payload(tournament, _socket) do
+    %{
+      tournament: Map.drop(tournament, [:players_table, :matches_table]),
+      matches: Helpers.get_matches(tournament),
+      players: Helpers.get_players(tournament)
+    }
   end
 end

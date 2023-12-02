@@ -258,6 +258,7 @@ const defaultTournamentParams = {
   // client params
   channel: { online: false },
   currentPlayerId: null,
+  topPlayerIds: [],
 };
 
 const initialTournament = tournamentParams
@@ -341,7 +342,7 @@ const defaultTournamentPlayerParams = {
  *   task: TaskState,
  *   players: Object<number, Player>,
  *   tournamentsInfo: {?Object},
- *   haveNextGame: boolean,
+ *   waitType: {?string},
  *   useChat: boolean,
  *   alerts: Object,
  * }} GameState
@@ -392,7 +393,7 @@ export default {
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
-    haveNextGame: false,
+    waitType: null,
     useChat: initialUseChat,
     alerts: {},
   },

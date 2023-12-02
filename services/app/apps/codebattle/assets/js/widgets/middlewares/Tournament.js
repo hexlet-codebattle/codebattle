@@ -2,7 +2,6 @@ import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
-import omit from 'lodash/omit';
 
 import socket from '../../socket';
 import TournamentStates from '../config/tournament';
@@ -23,10 +22,8 @@ const initTournamentChannel = dispatch => {
   };
 
   const onJoinSuccess = response => {
-    const data = camelizeKeys(response);
-
     dispatch(actions.setTournamentData({
-      ...data.tournament,
+      ...response.tournament,
       matches: {},
       players: {},
       channel: { online: true },
@@ -34,9 +31,11 @@ const initTournamentChannel = dispatch => {
       playersPageSize: 20,
     }));
 
-    dispatch(actions.updateTournamentPlayers(compact(data.players)));
-    dispatch(actions.updateTournamentMatches(data.matches));
+    dispatch(actions.updateTournamentPlayers(compact(response.players)));
+    dispatch(actions.updateTournamentMatches(response.matches));
   };
+
+  channel.onMessage = (_event, payload) => camelizeKeys(payload);
 
   channel
     .join()
@@ -53,45 +52,39 @@ const initTournamentChannel = dispatch => {
 export const connectToTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  const handleUpdate = response => {
-    const data = camelizeKeys(response);
+  const oldChannel = channel;
 
-    dispatch(actions.updateTournamentData(data.tournament));
+  const handleUpdate = response => {
+    dispatch(actions.updateTournamentData(response.tournament));
+    dispatch(actions.updateTournamentPlayers(response.players || []));
+    dispatch(actions.updateTournamentMatches(response.matches || []));
   };
 
   const handleMatchesUpdate = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.updateTournamentMatches(data.matches));
+    dispatch(actions.updateTournamentMatches(response.matches));
   };
 
   const handlePlayersUpdate = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.updateTournamentPlayers(data.players));
+    dispatch(actions.updateTournamentPlayers(response.players));
   };
 
   const handleTournamentRoundCreated = response => {
-    const data = camelizeKeys(response);
-    dispatch(actions.updateTournamentData(data));
+    dispatch(actions.updateTournamentData(response.tournament));
   };
 
   const handleRoundFinished = response => {
-    const data = camelizeKeys(response);
-
     dispatch(actions.updateTournamentData(
-      omit(data, ['players']),
+      response.tournament,
     ));
 
-    dispatch(actions.updateTournamentPlayers(data.players));
+    dispatch(actions.updateTournamentPlayers(response.players));
+    dispatch(actions.updateTopPlayers(response.players));
   };
 
   const handleTournamentStart = () => { };
   const handleTournamentRestarted = response => {
-    const data = camelizeKeys(response);
-
     dispatch(actions.setTournamentData({
-      ...data.tournament,
+      ...response.tournament,
       channel: { online: true },
       playersPageNumber: 1,
       playersPageSize: 20,
@@ -99,26 +92,24 @@ export const connectToTournament = () => dispatch => {
   };
 
   const handlePlayerJoined = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.addTournamentPlayer(data));
+    dispatch(actions.addTournamentPlayer(response));
   };
 
   const handlePlayerLeft = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.removeTournamentPlayer(data));
+    dispatch(actions.removeTournamentPlayer(response));
   };
 
   const handleMatchUpserted = response => {
-    const data = camelizeKeys(response);
+    dispatch(actions.updateTournamentMatches([response.match]));
+    dispatch(actions.updateTournamentPlayers(response.players));
+  };
 
-    dispatch(actions.updateTournamentMatches([data.match]));
-    dispatch(actions.updateTournamentPlayers(data.players));
+  const handleTournamentFinished = response => {
+    dispatch(actions.updateTournamentData(response));
   };
 
   const refs = [
-    channel.on('tournament:update', handleUpdate),
+    oldChannel.on('tournament:update', handleUpdate),
 
     // TODO: (client/server) break update event on pieces
     // round:update_match(round, newMatch)
@@ -126,18 +117,17 @@ export const connectToTournament = () => dispatch => {
     // round:update_statistics(statistics)
     // channel.on('tournament:round_created', handleRoundCreated),
     // TODO (tournaments): send updates
-    channel.on('tournament:matches:update', handleMatchesUpdate),
-    channel.on('tournament:players:update', handlePlayersUpdate),
-    channel.on('tournament:round_created', handleTournamentRoundCreated),
-    channel.on('tournament:round_finished', handleRoundFinished),
-    channel.on('tournament:start', handleTournamentStart),
-    channel.on('tournament:player:joined', handlePlayerJoined),
-    channel.on('tournament:player:left', handlePlayerLeft),
-    channel.on('tournament:match:upserted', handleMatchUpserted),
-    channel.on('tournament:restarted', handleTournamentRestarted),
+    oldChannel.on('tournament:matches:update', handleMatchesUpdate),
+    oldChannel.on('tournament:players:update', handlePlayersUpdate),
+    oldChannel.on('tournament:round_created', handleTournamentRoundCreated),
+    oldChannel.on('tournament:round_finished', handleRoundFinished),
+    oldChannel.on('tournament:start', handleTournamentStart),
+    oldChannel.on('tournament:player:joined', handlePlayerJoined),
+    oldChannel.on('tournament:player:left', handlePlayerLeft),
+    oldChannel.on('tournament:match:upserted', handleMatchUpserted),
+    oldChannel.on('tournament:restarted', handleTournamentRestarted),
+    oldChannel.on('tournament:finished', handleTournamentFinished),
   ];
-
-  const oldChannel = channel;
 
   const clearTournamentChannel = () => {
     oldChannel.off('tournament:update', refs[0]);
@@ -150,6 +140,7 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:player:left', refs[7]);
     oldChannel.off('tournament:match:upserted', refs[8]);
     oldChannel.off('tournament:restarted', refs[9]);
+    oldChannel.off('tournament:finished', refs[10]);
   };
 
   return clearTournamentChannel;
@@ -164,9 +155,7 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   if (isLive && tournamentState === TournamentStates.active) {
     channel.push('tournament:matches:request', { player_id: playerId })
       .receive('ok', response => {
-        const data = camelizeKeys(response);
-
-        dispatch(actions.updateTournamentMatches(data.matches));
+        dispatch(actions.updateTournamentMatches(response.matches));
       })
       .receive('error', error => console.error(error));
   } else {
@@ -178,9 +167,7 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
         },
       })
       .then(response => {
-        const data = camelizeKeys(response.data);
-
-        dispatch(actions.updateTournamentMatches(data.matches));
+        dispatch(actions.updateTournamentMatches(response.matches));
       })
       .catch(error => console.error(error));
   }

@@ -194,7 +194,9 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
-    push(socket, "tournament:game:created", %{game_id: payload.match.game_id})
+    if payload.match.state == "playing" do
+      push(socket, "tournament:game:created", %{game_id: payload.match.game_id})
+    end
 
     {:noreply, socket}
   end

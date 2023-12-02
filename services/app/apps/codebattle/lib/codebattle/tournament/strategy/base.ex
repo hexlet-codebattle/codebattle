@@ -195,6 +195,13 @@ defmodule Codebattle.Tournament.Base do
                 player_results: player_results
             })
 
+            match = Tournament.Matches.get_match(tournament, match.id)
+
+            Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+              tournament: tournament,
+              match: match
+            })
+
             player_results
             |> Map.keys()
             |> Enum.each(fn player_id ->

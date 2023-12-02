@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 
+import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -53,7 +54,9 @@ function InfoPanel({
           currentUserId={currentUserId}
         />
       );
-    default:
+    default: {
+      if (isEmpty(tournament.players)) return <></>;
+
       return (
         <CustomTournamentInfoPanel
           players={tournament.players}
@@ -66,6 +69,7 @@ function InfoPanel({
           pageSize={tournament.playersPageSize}
         />
       );
+    }
   }
 }
 

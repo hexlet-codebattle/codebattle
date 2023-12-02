@@ -10,22 +10,18 @@ import gifs from '../../config/gifs';
 import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
 
 function TournamentInfoPanel() {
-  const haveNextGame = useSelector(state => state.game.haveNextGame);
+  const waitType = useSelector(state => state.game.waitType);
 
-  return (
-    <div className="d-flex text-center justify-content-center">
-      <span className="py-2">
-        {haveNextGame ? (
-          <div className="d-flex flex-row">
-            <Loading adaptive />
-            <span className="pl-2">Wait next game</span>
-          </div>
-        ) : (
-          'Round is over'
-        )}
-      </span>
-    </div>
-  );
+  switch (waitType) {
+    case 'round': return 'Round is over';
+    case 'rematch': return (
+      <div className="d-flex flex-row">
+        <Loading adaptive />
+        <span className="pl-2">Wait next game</span>
+      </div>
+    );
+    default: return <></>;
+  }
 }
 
 function AnimationModal({ setModalShowing, modalShowing }) {
@@ -62,7 +58,13 @@ function AnimationModal({ setModalShowing, modalShowing }) {
               alt="animation"
             />
           </div>
-          {!tournamentsInfo && (<TournamentInfoPanel />)}
+          {!tournamentsInfo && (
+            <div className="d-flex text-center justify-content-center">
+              <span className="py-2">
+                <TournamentInfoPanel />
+              </span>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           {tournamentsInfo && (

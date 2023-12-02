@@ -38,10 +38,6 @@ export const updateGameChannel = newGameId => {
   channel = !isRecord && newGameId ? socket.channel(newChannelName) : null;
 };
 
-const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
-  dispatch(actionCreator(camelizeKeys(data)))
-);
-
 const initEditors = dispatch => (playbookStatusCode, players) => {
   const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
   const updateEditorTextAction = isHistory
@@ -128,11 +124,11 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
     machine.send('FAILURE');
   });
 
-  const onJoinSuccess = response => {
-    const data = camelizeKeys(response);
+  currentChannel.onMessage = (_event, payload) => camelizeKeys(payload);
 
-    if (data.error) {
-      console.error(data.error);
+  const onJoinSuccess = response => {
+    if (response.error) {
+      console.error(response.error);
       return;
     }
 
@@ -142,9 +138,9 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
         task,
         langs,
       },
-    } = data;
+    } = response;
 
-    const gameStatus = getGameStatus(data.game);
+    const gameStatus = getGameStatus(response.game);
 
     machine.send('LOAD_GAME', { payload: gameStatus });
 
@@ -260,14 +256,14 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
   const oldChannel = channel;
 
   const handleNewCursorPosition = debounce(data => {
-    const { userId, offset } = camelizeKeys(data);
+    const { userId, offset } = data;
     if (id === userId) {
       onChangePosition(offset);
     }
   }, 80);
 
   const handleNewCursorSelection = debounce(data => {
-    const { userId, startOffset, endOffset } = camelizeKeys(data);
+    const { userId, startOffset, endOffset } = data;
     if (id === userId) {
       onChangeSelection(startOffset, endOffset);
     }
@@ -291,17 +287,17 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
 export const activeEditorReady = machine => {
   machine.send('load_active_editor');
   // channel.on('editor:data', data => {
-  //   const { userId } = camelizeKeys(data);
+  //   const { userId } = data;
   //   machine.send('typing', { userId });
   // });
 
   const handleStartsCheck = data => {
-    const { userId } = camelizeKeys(data);
+    const { userId } = data;
     machine.send('check_solution', { userId });
   };
 
   const handleNewCheckResult = data => {
-    const { userId } = camelizeKeys(data);
+    const { userId } = data;
     machine.send('receive_check_result', { userId });
   };
 
@@ -329,7 +325,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
   initGameChannel(dispatch, machine, currentGameChannel);
 
   const handleNewEditorData = data => {
-    dispatch(actions.updateEditorText(camelizeKeys(data)));
+    dispatch(actions.updateEditorText(data));
   };
 
   const handleStartsCheck = ({ user_id: userId }) => {
@@ -339,10 +335,10 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
   const handleNewCheckResult = responseData => {
     const {
       state, solutionStatus, checkResult, players, userId,
-    } = camelizeKeys(responseData);
+    } = responseData;
     if (solutionStatus) {
       channel.push('game:score', {})
-        .receive('ok', camelizeKeysAndDispatch(dispatch, actions.setGameScore));
+        .receive('ok', data => dispatch(actions.setGameScore(data)));
     }
     dispatch(actions.updateGamePlayers({ players }));
 
@@ -367,7 +363,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
       langs,
       players,
       task,
-    } = camelizeKeys(data);
+    } = data;
 
     const gamePlayers = getGamePlayers(players);
     const [firstPlayer, secondPlayer] = gamePlayers;
@@ -416,29 +412,28 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
         timeoutSeconds,
       }),
     );
-    machine.send('game:user_joined', { payload: camelizeKeys(data) });
+    machine.send('game:user_joined', { payload: data });
   };
 
   const handleUserWon = data => {
-    const { players, state, msg } = camelizeKeys(data);
+    const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
-    machine.send('user:won', { payload: camelizeKeys(data) });
+    machine.send('user:won', { payload: data });
   };
 
   const handleUserGiveUp = data => {
-    const { players, state, msg } = camelizeKeys(data);
+    const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
     channel.push('game:score', {})
-      .receive('ok', camelizeKeysAndDispatch(dispatch, actions.setGameScore));
-    machine.send('user:give_up', { payload: camelizeKeys(data) });
+      .receive('ok', response => dispatch(actions.setGameScore(response)));
+    machine.send('user:give_up', { payload: data });
   };
 
   const handleRematchStatusUpdate = data => {
-    const payload = camelizeKeys(data);
-    dispatch(actions.updateRematchStatus(payload));
-    machine.send('rematch:status_updated', { payload });
+    dispatch(actions.updateRematchStatus(data));
+    machine.send('rematch:status_updated', { payload: data });
   };
 
   const handleRematchAccepted = ({ game_id: newGameId }) => {
@@ -447,39 +442,34 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
   };
 
   const handleGameTimeout = data => {
-    const { gameState } = camelizeKeys(data);
+    const { gameState } = data;
     const payload = { state: gameState };
     dispatch(actions.updateGameStatus(payload));
     machine.send('game:timeout', { payload });
   };
 
   const handleTournamentGameCreated = data => {
-    const payload = camelizeKeys(data);
-
     dispatch(actions.setTournamentsInfo(data));
-    machine.send('tournament:game:created', { payload });
+    machine.send('tournament:game:created', { payload: data });
     if (!cancelRedirect) {
       setTimeout(
-        () => { window.location.replace(makeGameUrl(payload.gameId)); },
+        () => { window.location.replace(makeGameUrl(data.gameId)); },
         10,
       );
     }
   };
 
   const handleTournamentRoundCreated = response => {
-    const data = camelizeKeys(response);
-    dispatch(actions.updateTournamentData(data));
+    dispatch(actions.updateTournamentData(response));
   };
 
   const handleTournamentRoundFinished = response => {
-    const data = camelizeKeys(response);
-
-    dispatch(actions.updateTournamentData({ state: data.state, breakState: data.breakState }));
-    dispatch(actions.updateTournamentMatches(data.matches));
+    dispatch(actions.updateTournamentData({ state: response.state, breakState: response.breakState }));
+    dispatch(actions.updateTournamentMatches(response.matches));
   };
 
-  const handleTournamentGameWait = () => {
-    dispatch(actions.setHaveTournamentNextGame(true));
+  const handleTournamentGameWait = response => {
+    dispatch(actions.setTournamentWaitType(response.type));
   };
 
   const refs = [
@@ -495,7 +485,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
-    currentGameChannel.off('tournament:game:wait', handleTournamentGameWait),
+    currentGameChannel.on('tournament:game:wait', handleTournamentGameWait),
   ];
 
   const clearGameListeners = () => {

@@ -33,8 +33,8 @@ const game = createSlice({
     updateCheckStatus: (state, { payload }) => {
       Object.assign(state.gameStatus.checking, payload);
     },
-    setHaveTournamentNextGame: (state, { payload }) => {
-      state.haveNextGame = payload;
+    setTournamentWaitType: (state, { payload }) => {
+      state.waitType = payload;
     },
     setTournamentsInfo: (state, { payload }) => {
       state.tournamentsInfo = payload;

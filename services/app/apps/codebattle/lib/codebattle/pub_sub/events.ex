@@ -32,7 +32,8 @@ defmodule Codebattle.PubSub.Events do
           last_round_ended_at: params.tournament.last_round_ended_at,
           last_round_started_at: params.tournament.last_round_started_at,
           state: params.tournament.state,
-          break_state: "off"
+          break_state: "off",
+          current_round: params.tournament.current_round
         }
       },
       %Message{
