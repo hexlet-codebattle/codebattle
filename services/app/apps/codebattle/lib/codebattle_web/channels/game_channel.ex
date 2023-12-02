@@ -26,6 +26,7 @@ defmodule CodebattleWeb.GameChannel do
             List.first(player_ids)
           end
 
+        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{follow_id}")
 
         tournament = Tournament.Context.get_tournament_info(game.tournament_id)
@@ -211,6 +212,17 @@ defmodule CodebattleWeb.GameChannel do
     if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    matches = Tournament.Helpers.get_matches_by_players([socket.assigns.player_id])
+
+    push(socket, "tournament:round_finished", %{
+      tournament: payload.tournament,
+      matches: matches
+    })
 
     {:noreply, socket}
   end

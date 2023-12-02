@@ -27,7 +27,7 @@ function TournamentInfoPanel() {
 function AnimationModal({ setModalShowing, modalShowing }) {
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
-  const tournamentsInfo = useSelector(state => state.game.tournamentInfo);
+  const tournamentsId = useSelector(state => state.game.tournamentId);
   // TODO: Сделать анимацию для спектаторов указать кто победил а кто проиграл
   // Можно сделать в виде MortalCombat
   // assigned to karen9999
@@ -58,7 +58,7 @@ function AnimationModal({ setModalShowing, modalShowing }) {
               alt="animation"
             />
           </div>
-          {!tournamentsInfo && (
+          {tournamentsId && (
             <div className="d-flex text-center justify-content-center">
               <span className="py-2">
                 <TournamentInfoPanel />
@@ -67,8 +67,8 @@ function AnimationModal({ setModalShowing, modalShowing }) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          {tournamentsInfo && (
-            <a href={`/tournaments/${tournamentsInfo}`} className="btn-link pr-2 rounded-lg">
+          {tournamentsId && (
+            <a href={`/tournaments/${tournamentsId}`} className="btn-link pr-2 rounded-lg">
               Back to tournament
             </a>
           )}

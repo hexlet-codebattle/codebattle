@@ -55,9 +55,11 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
+          type: params.tournament.type,
           state: params.tournament.state,
           last_round_ended_at: params.tournament.last_round_ended_at,
           last_round_started_at: params.tournament.last_round_started_at,
+          current_round: params.current_round,
           break_state: "on",
           players: players
         }

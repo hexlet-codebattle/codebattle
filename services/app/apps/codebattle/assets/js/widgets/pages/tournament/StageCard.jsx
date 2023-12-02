@@ -41,7 +41,7 @@ function StageStatus({
     return <span className="text-success">You win</span>;
   }
 
-  return <span className="text-success">You lose</span>;
+  return <span className="text-danger">You lose</span>;
 }
 
 function StageCard({
