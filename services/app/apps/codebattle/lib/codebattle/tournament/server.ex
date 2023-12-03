@@ -72,6 +72,8 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
+    send(self(), :after_init)
+
     players_table = Tournament.Players.create_table()
     matches_table = Tournament.Matches.create_table()
     tasks_table = Tournament.Tasks.create_table()
@@ -82,9 +84,9 @@ defmodule Codebattle.Tournament.Server do
       tournament_id
       |> Tournament.Context.get_from_db!()
       |> Tournament.Context.mark_as_live()
+      |> Map.put(:matches_table, matches_table)
       |> Map.put(:players_table, players_table)
       |> Map.put(:tasks_table, tasks_table)
-      |> Map.put(:matches_table, matches_table)
 
     {:ok, %{tournament: tournament}}
   end
