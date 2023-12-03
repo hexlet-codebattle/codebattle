@@ -90,9 +90,11 @@ defmodule Codebattle.Game.Engine do
     Game
     |> Repo.insert_all(to_insert, returning: true)
     |> then(fn {_count, games} -> games end)
-    |> Enum.map(fn game ->
+    |> Enum.zip(games_params)
+    |> Enum.map(fn {game, params} ->
       game = fill_virtual_fields(game)
       game = mark_as_live(game)
+      game = Map.put(game, :task, params.task)
       {:ok, _} = Game.GlobalSupervisor.start_game(game)
       :ok = maybe_fire_playing_game_side_effects(game)
       game
