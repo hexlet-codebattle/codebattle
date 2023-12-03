@@ -211,7 +211,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 :match_timeout_seconds,
                 class: "form-control",
                 value: f.params["match_timeout_seconds"] || "177",
-                min: "15",
+                min: "7",
                 max: "1000"
               ) %>
             </div>
