@@ -27,7 +27,7 @@ const Players = ({
       {playersCount === 0 ? (
         <p className="test-nowrap">NO_PARTICIPANTS_YET</p>
       ) : (
-        Object.values(players).map(player => (
+        Object.values(players).slice(0, 30).map(player => (
           <div key={player.id} className="my-3 d-flex">
             <div className="ml-1">
               <UserInfo user={player} hideOnlineIndicator />

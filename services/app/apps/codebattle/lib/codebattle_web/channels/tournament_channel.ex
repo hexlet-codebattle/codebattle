@@ -275,15 +275,17 @@ defmodule CodebattleWeb.TournamentChannel do
        when type in ["swiss", "ladder", "stairway"] do
     current_user = socket.assigns.current_user
 
-    {matches, players} =
+    players =
+      Enum.uniq(
+        [Helpers.get_player(tournament, current_user.id)] ++
+          Helpers.get_top_players(tournament, 0, 30)
+      )
+
+    matches =
       if Helpers.can_moderate?(tournament, current_user) do
-        {Helpers.get_matches(tournament),
-         [Helpers.get_player(tournament, current_user.id)] ++
-           Helpers.get_paginated_players(tournament, 0, 30)}
+        Helpers.get_matches(tournament, Enum.map(players, & &1.id))
       else
-        {Helpers.get_matches_by_players(tournament, [current_user.id]),
-         [Helpers.get_player(tournament, current_user.id)] ++
-           Helpers.get_top_players(tournament)}
+        Helpers.get_matches_by_players(tournament, [current_user.id])
       end
 
     %{
