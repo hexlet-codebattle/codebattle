@@ -278,7 +278,7 @@ defmodule CodebattleWeb.TournamentChannel do
     players =
       Enum.uniq(
         [Helpers.get_player(tournament, current_user.id)] ++
-          Helpers.get_top_players(tournament, 0, 30)
+          Helpers.get_top_players(tournament)
       )
 
     matches =

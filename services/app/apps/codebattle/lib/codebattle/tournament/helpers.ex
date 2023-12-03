@@ -38,7 +38,7 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.slice(start_index..end_index)
   end
 
-  def get_top_players(tournament = %{players_table: nil}, _page_num, _page_size) do
+  def get_top_players(tournament = %{players_table: nil}) do
     # return all players, cause we don't want to paginate if tournament finished
     get_players(tournament)
   end
