@@ -5,7 +5,7 @@ config :codebattle, CodebattleWeb.Endpoint,
     port: System.get_env("CODEBATTLE_PORT", "4000"),
     transport_options: [
       max_connections: 30000,
-      num_acceptors: 500
+      num_acceptors: 5000
     ]
   ],
   url: [

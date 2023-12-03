@@ -74,6 +74,7 @@ defmodule Codebattle.Tournament.Server do
   def init(tournament_id) do
     players_table = Tournament.Players.create_table()
     matches_table = Tournament.Matches.create_table()
+    tasks_table = Tournament.Tasks.create_table()
 
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 
