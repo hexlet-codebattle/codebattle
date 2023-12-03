@@ -1,8 +1,18 @@
 import Config
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: System.get_env("CODEBATTLE_PORT", "4000")],
-  url: [scheme: "https", host: "codebattle.hexlet.io", port: 443],
+  http: [
+    port: System.get_env("CODEBATTLE_PORT", "4000"),
+    transport_options: [
+      max_connections: 30000,
+      num_acceptors: 500
+    ]
+  ],
+  url: [
+    scheme: "https",
+    host: System.get_env("CODEBATTLE_HOST", "codebattle.hexlet.io"),
+    port: 443
+  ],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",

@@ -189,8 +189,18 @@ defmodule CodebattleWeb.TournamentChannel do
 
     push(socket, "tournament:update", %{
       tournament:
-        Map.drop(payload.tournament, [:players, :matches, :players_table, :matches_table]),
-      players: Helpers.get_players(payload.tournament),
+        Map.drop(payload.tournament, [
+       :__struct__,
+       :__meta__,
+       :creator,
+        :players,
+        :matches,
+        :players_table,
+        :matches_table,
+        :round_tasks,
+        :played_pair_ids
+        ]),
+      players: Helpers.get_top_players(payload.tournament),
       matches: matches
     })
 
@@ -250,7 +260,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
-    if Codebattle.User.admin?(current_user) do
+    if Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
     else
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
@@ -262,15 +272,16 @@ defmodule CodebattleWeb.TournamentChannel do
   defp get_tournament_join_payload(%{type: type} = tournament, socket)
        when type in ["swiss", "ladder", "stairway"] do
     current_user = socket.assigns.current_user
-    matches = Helpers.get_matches_by_players(tournament, [current_user.id])
 
-    players =
-      if Codebattle.User.admin?(current_user) do
-        [Helpers.get_player(tournament, current_user.id)] ++
-          Helpers.get_paginated_players(tournament, 0, 30)
+    {matches, players} =
+      if Helpers.can_moderate?(tournament, current_user) do
+        {Helpers.get_matches(tournament),
+         [Helpers.get_player(tournament, current_user.id)] ++
+           Helpers.get_paginated_players(tournament, 0, 30)}
       else
-        [Helpers.get_player(tournament, current_user.id)] ++
-          Helpers.get_top_players(tournament)
+        {Helpers.get_matches_by_players(tournament, [current_user.id]),
+         [Helpers.get_player(tournament, current_user.id)] ++
+           Helpers.get_top_players(tournament)}
       end
 
     %{

@@ -71,6 +71,7 @@ defmodule Codebattle.MixProject do
       {:exfake, "~> 1.0.0"},
       {:fun_with_flags, "~> 1.10.1"},
       {:fun_with_flags_ui, "~> 0.8"},
+      {:recon, "~> 2.5"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

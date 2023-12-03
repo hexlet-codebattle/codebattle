@@ -20,7 +20,6 @@ defmodule Codebattle.UsersRankUpdateServer do
   def init(_) do
     Process.send_after(self(), :work, @timeout)
 
-    Codebattle.PubSub.subscribe("main")
     Codebattle.PubSub.subscribe("games")
     Logger.debug("Start UsersRankServer")
     {:ok, true}
@@ -37,7 +36,7 @@ defmodule Codebattle.UsersRankUpdateServer do
     {:noreply, state}
   end
 
-  def handle_info(%{event: "game:finished"}, state) do
+  def handle_info(%{event: "game:finished", payload: %{tournament_id: nil}}, state) do
     do_work()
     {:noreply, state}
   end

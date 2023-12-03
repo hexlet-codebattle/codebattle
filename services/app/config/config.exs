@@ -9,6 +9,13 @@ config :codebattle, ecto_repos: [Codebattle.Repo]
 
 # Configures the endpoint
 config :codebattle, CodebattleWeb.Endpoint,
+  http: [
+    port: System.get_env("CODEBATTLE_PORT", "4000"),
+    transport_options: [
+      max_connections: 30000,
+      num_acceptors: 500
+    ]
+  ],
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
   render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json), layout: false],

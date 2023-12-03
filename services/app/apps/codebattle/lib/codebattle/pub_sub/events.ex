@@ -262,6 +262,7 @@ defmodule Codebattle.PubSub.Events do
         event: "game:finished",
         payload: %{
           game_id: game.id,
+          tournament_id: game.tournament_id,
           game_state: game.state,
           game: %{
             id: Game.Helpers.get_game_id(game),

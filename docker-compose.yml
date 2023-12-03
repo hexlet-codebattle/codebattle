@@ -39,6 +39,7 @@ services:
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
       POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
+    command: postgres -c 'max_connections=1000'
     volumes:
       - pg_data:/var/lib/postgresql/data
 
