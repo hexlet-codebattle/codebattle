@@ -22,7 +22,8 @@ defmodule CodebattleWeb.TournamentChannel do
 
       {:ok, payload,
        assign(socket,
-         tournament_info: Map.take(tournament, [:id, :players_table, :matches_table])
+         tournament_info:
+           Map.take(tournament, [:id, :players_table, :matches_table, :tasks_table])
        )}
     else
       _ ->
@@ -190,15 +191,16 @@ defmodule CodebattleWeb.TournamentChannel do
     push(socket, "tournament:update", %{
       tournament:
         Map.drop(payload.tournament, [
-       :__struct__,
-       :__meta__,
-       :creator,
-        :players,
-        :matches,
-        :players_table,
-        :matches_table,
-        :round_tasks,
-        :played_pair_ids
+          :__struct__,
+          :__meta__,
+          :creator,
+          :players,
+          :matches,
+          :players_table,
+          :matches_table,
+          :tasks_table,
+          :round_tasks,
+          :played_pair_ids
         ]),
       players: Helpers.get_top_players(payload.tournament),
       matches: matches
@@ -285,7 +287,7 @@ defmodule CodebattleWeb.TournamentChannel do
       end
 
     %{
-      tournament: Map.drop(tournament, [:players_table, :matches_table]),
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       matches: matches,
       players: players
     }
@@ -293,7 +295,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp get_tournament_join_payload(tournament, _socket) do
     %{
-      tournament: Map.drop(tournament, [:players_table, :matches_table]),
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament)
     }

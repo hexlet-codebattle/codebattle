@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.Live.Tournament.StairwayRoundsComponent do
   use CodebattleWeb, :component
 
-  import Codebattle.Tournament.Helpers
-
   alias CodebattleWeb.Live.Tournament.StairwayRoundComponent
 
   def render(assigns) do
@@ -34,7 +32,6 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundsComponent do
           >
             <StairwayRoundComponent.render
               tournament={@tournament}
-              round_task={get_round_task(@tournament, round)}
               current_user_id={@current_user_id}
               current_round={@tournament.current_round}
               round={round}

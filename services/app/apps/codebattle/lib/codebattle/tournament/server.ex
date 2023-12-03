@@ -82,6 +82,7 @@ defmodule Codebattle.Tournament.Server do
       |> Tournament.Context.get_from_db!()
       |> Tournament.Context.mark_as_live()
       |> Map.put(:players_table, players_table)
+      |> Map.put(:tasks_table, tasks_table)
       |> Map.put(:matches_table, matches_table)
 
     {:ok, %{tournament: tournament}}
@@ -134,6 +135,11 @@ defmodule Codebattle.Tournament.Server do
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
+  end
+
+  def handle_info(:after_init, state) do
+    Tournament.Context.preload_tasks_to_ets(state.tournament)
+    {:noreply, state}
   end
 
   def handle_info({:stop_round_break, round}, %{tournament: tournament}) do

@@ -29,21 +29,14 @@ defmodule Codebattle.Game.Engine do
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     [creator | _] = params.players
     tournament_id = params[:tournament_id]
-
-    players =
-      Enum.map(params.players, fn player ->
-        Game.Player.build(player, %{
-          creator: player.id == creator.id,
-          task: task,
-          playbook_id: maybe_get_playbook_id_for_bot(player, task)
-        })
-      end)
+    players = build_players(params.players, task, creator)
 
     with :ok <- check_auth(players, mode, tournament_id),
          {:ok, game} <-
            insert_game(%{
              state: state,
              level: task.level,
+             use_chat: use_chat,
              ref: params[:ref],
              mode: mode,
              type: type,
@@ -55,7 +48,6 @@ defmodule Codebattle.Game.Engine do
              starts_at: TimeHelper.utc_now()
            }),
          game = fill_virtual_fields(game),
-         game = Map.put(game, :use_chat, use_chat),
          game = mark_as_live(game),
          {:ok, _} <- Game.GlobalSupervisor.start_game(game),
          :ok <- maybe_fire_playing_game_side_effects(game),
@@ -65,6 +57,46 @@ defmodule Codebattle.Game.Engine do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  # for tournaments games to decrease db queries
+  def bulk_create_games(games_params) do
+    now = NaiveDateTime.utc_now(:second)
+
+    to_insert =
+      Enum.map(games_params, fn params ->
+        type = params[:type] || "duo"
+        mode = params[:mode] || "standard"
+        visibility_type = params[:visibility_type] || "public"
+
+        %{
+          level: params.task.level,
+          mode: mode,
+          players: build_players(params.players, params.task),
+          ref: params[:ref],
+          starts_at: now,
+          state: params.state,
+          task_id: params.task.id,
+          timeout_seconds: min(params.timeout_seconds, @max_timeout),
+          tournament_id: params.tournament_id,
+          type: type,
+          use_chat: params.use_chat,
+          visibility_type: visibility_type,
+          inserted_at: now,
+          updated_at: now
+        }
+      end)
+
+    Game
+    |> Repo.insert_all(to_insert, returning: true)
+    |> then(fn {_count, games} -> games end)
+    |> Enum.map(fn game ->
+      game = fill_virtual_fields(game)
+      game = mark_as_live(game)
+      {:ok, _} = Game.GlobalSupervisor.start_game(game)
+      :ok = maybe_fire_playing_game_side_effects(game)
+      game
+    end)
   end
 
   def join_game(game, user) do
@@ -183,7 +215,13 @@ defmodule Codebattle.Game.Engine do
       true ->
         store_playbook_async(game)
         Game.GlobalSupervisor.terminate_game(game.id)
-        Codebattle.PubSub.broadcast("game:terminated", %{game: game})
+
+        if game.tournament_id do
+          :noop
+        else
+          Codebattle.PubSub.broadcast("game:terminated", %{game: game})
+        end
+
         :ok
 
       _ ->
@@ -317,9 +355,14 @@ defmodule Codebattle.Game.Engine do
     case {old_game_state, new_game.state} do
       {old_state, "timeout"}
       when old_state in ["waiting_opponent", "playing"] ->
-        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-        update_game!(new_game, %{state: "timeout"})
-        terminate_game_after(game, 15)
+        if game.tournament_id do
+          terminate_game_after(game, 1)
+        else
+          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+          update_game!(new_game, %{state: "timeout"})
+          terminate_game_after(game, 15)
+        end
+
         :ok
 
       _ ->
@@ -328,15 +371,15 @@ defmodule Codebattle.Game.Engine do
   end
 
   defp maybe_fire_playing_game_side_effects(game = %{state: "playing"}) do
-    maybe_init_playbook(game)
-    maybe_run_bots(game)
-    maybe_start_timeout_timer(game)
+    init_playbook(game)
+    run_bots(game)
+    start_timeout_timer(game)
     :ok
   end
 
   defp maybe_fire_playing_game_side_effects(_game), do: :ok
 
-  defp maybe_init_playbook(game) do
+  defp init_playbook(game) do
     Game.Server.init_playbook(game.id)
   end
 
@@ -348,9 +391,9 @@ defmodule Codebattle.Game.Engine do
 
   defp maybe_get_playbook_id_for_bot(_player, _task), do: nil
 
-  defp maybe_run_bots(game), do: Bot.Context.start_bots(game)
+  defp run_bots(game), do: Bot.Context.start_bots(game)
 
-  defp maybe_start_timeout_timer(game) do
+  defp start_timeout_timer(game) do
     Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
@@ -400,5 +443,15 @@ defmodule Codebattle.Game.Engine do
 
   defp fire_transition(game_id, transition, params) do
     Game.Server.fire_transition(game_id, transition, params)
+  end
+
+  defp build_players(players, task, creator \\ nil) do
+    Enum.map(players, fn player ->
+      Game.Player.build(player, %{
+        creator: creator && player.id == creator.id,
+        task: task,
+        playbook_id: maybe_get_playbook_id_for_bot(player, task)
+      })
+    end)
   end
 end

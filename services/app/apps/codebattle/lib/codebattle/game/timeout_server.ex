@@ -27,14 +27,17 @@ defmodule Codebattle.Game.TimeoutServer do
     {:ok, %{game_id: game_id}}
   end
 
-  def handle_cast({:start, timeout_seconds}, %{game_id: game_id}) do
-    Process.send_after(self(), :trigger_timeout, :timer.seconds(timeout_seconds))
-    {:noreply, %{game_id: game_id}}
+  def handle_cast({:start, timeout_seconds}, state) do
+    if timeout_seconds >= 0 do
+      Process.send_after(self(), :trigger_timeout, :timer.seconds(timeout_seconds))
+    end
+
+    {:noreply, state}
   end
 
-  def handle_cast({:terminate, timeout_minutes}, %{game_id: game_id}) do
+  def handle_cast({:terminate, timeout_minutes}, state) do
     Process.send_after(self(), :trigger_terminate, :timer.minutes(timeout_minutes))
-    {:noreply, %{game_id: game_id}}
+    {:noreply, state}
   end
 
   def handle_info(:trigger_timeout, %{game_id: game_id}) do

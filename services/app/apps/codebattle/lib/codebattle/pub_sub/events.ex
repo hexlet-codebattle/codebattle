@@ -57,7 +57,8 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
-          tournament_table: Map.take(params.tournament, [:matches_table, :players_table]),
+          tournament_table:
+            Map.take(params.tournament, [:matches_table, :players_table, :tasks_table]),
           tournament: %{
             type: params.tournament.type,
             state: params.tournament.state,

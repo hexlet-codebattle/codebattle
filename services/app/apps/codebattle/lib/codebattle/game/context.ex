@@ -19,9 +19,9 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Tournament
   alias Codebattle.User
 
-  @type raw_game_id :: String.t() | non_neg_integer
-  @type game_id :: non_neg_integer
-  @type tournament_id :: non_neg_integer
+  @type raw_game_id :: String.t() | non_neg_integer()
+  @type game_id :: non_neg_integer()
+  @type tournament_id :: non_neg_integer()
 
   @type game_params :: %{
           :players => nonempty_list(User.t()) | nonempty_list(Tournament.Player.t()),
@@ -34,7 +34,6 @@ defmodule Codebattle.Game.Context do
           optional(:mode) => String.t(),
           optional(:visibility_type) => String.t(),
           optional(:use_chat) => boolean(),
-          # fix nil task in stairway tournament
           optional(:task) => Codebattle.Task.t() | nil
         }
 
@@ -139,6 +138,11 @@ defmodule Codebattle.Game.Context do
         Logger.warning("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
         {:error, reason}
     end
+  end
+
+  @spec bulk_create_games(list(game_params)) :: list(Game.t())
+  def bulk_create_games(games_params) do
+    Engine.bulk_create_games(games_params)
   end
 
   @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}

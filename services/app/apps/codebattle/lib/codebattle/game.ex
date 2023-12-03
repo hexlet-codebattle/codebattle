@@ -47,10 +47,10 @@ defmodule Codebattle.Game do
     field(:rematch_state, :string, default: "none")
     field(:rematch_initiator_id, :integer)
     field(:ref, :integer)
+    field(:use_chat, :boolean, default: true)
     field(:is_live, :boolean, default: false, virtual: true)
     field(:is_bot, :boolean, default: false, virtual: true)
     field(:is_tournament, :boolean, default: false, virtual: true)
-    field(:use_chat, :boolean, default: true, virtual: true)
 
     timestamps()
 
@@ -78,6 +78,7 @@ defmodule Codebattle.Game do
       :timeout_seconds,
       :tournament_id,
       :type,
+      :use_chat,
       :visibility_type
     ])
     |> validate_required([:state, :level, :type, :mode])

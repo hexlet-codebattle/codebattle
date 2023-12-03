@@ -250,6 +250,13 @@ defmodule Codebattle.Task do
     |> Enum.shuffle()
   end
 
+  @spec get_tasks_by_level(String.t()) :: list(t())
+  def get_tasks_by_level(level) do
+    from(task in Codebattle.Task, where: task.level == ^level)
+    |> visible()
+    |> Repo.all()
+  end
+
   @spec get_played_count(integer()) :: integer()
   def get_played_count(task_id) do
     from(game in Codebattle.Game, where: game.task_id == ^task_id)
