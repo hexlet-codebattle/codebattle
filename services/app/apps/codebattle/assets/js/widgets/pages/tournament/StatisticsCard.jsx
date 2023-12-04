@@ -21,7 +21,7 @@ function StatisticsCard({ playerId, matchList = [], place }) {
           title="Your place in tournament"
           className="p-1"
         >
-          {`Your place: ${place}`}
+          {`Your place: ${place + 1}`}
         </h6>
       )}
       <h6

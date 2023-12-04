@@ -157,16 +157,27 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_info = socket.assigns.tournament_info
     matches = Helpers.get_matches_by_players(tournament_info, [id])
 
-    {:reply, {:ok, %{matches: matches}}, socket}
+    opponent_ids =
+      matches
+      |> Enum.flat_map(& &1.player_ids)
+      |> Enum.reject(&(is_nil(&1) || id === &1))
+      |> Enum.uniq()
+
+    opponents = Helpers.get_players(tournament_info, opponent_ids)
+
+    {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
   def handle_in(
         "tournament:players:paginated",
-        %{"page_num" => id, "page_size" => page_size},
+        %{"page_num" => page_num, "page_size" => page_size},
         socket
       ) do
     tournament_info = socket.assigns.tournament_info
-    players = Helpers.get_paginated_players(tournament_info, min(id, 1000), min(page_size, 30))
+
+    players =
+      Helpers.get_paginated_players(tournament_info, min(page_num, 1000), min(page_size, 30))
+
     {:reply, {:ok, %{players: players}}, socket}
   end
 
@@ -275,23 +286,33 @@ defmodule CodebattleWeb.TournamentChannel do
        when type in ["swiss", "ladder", "stairway"] do
     current_user = socket.assigns.current_user
 
+    current_player = Helpers.get_player(tournament, current_user.id)
+    top_players = Helpers.get_top_players(tournament)
+
+    player_ids =
+      ([current_player] ++ top_players)
+      |> Enum.reject(fn player -> is_nil(player) end)
+      |> Enum.map(fn %{id: id} -> id end)
+      |> Enum.uniq()
+
+    opponents = Helpers.get_opponents(tournament, player_ids)
+
     players =
-      Enum.uniq(
-        [Helpers.get_player(tournament, current_user.id)] ++
-          Helpers.get_top_players(tournament)
-      )
+      ([current_player] ++ top_players ++ opponents)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.uniq_by(& &1.id)
 
     matches =
       if Helpers.can_moderate?(tournament, current_user) do
-        Helpers.get_matches(tournament, Enum.map(players, & &1.id))
+        Helpers.get_matches_by_players(tournament, player_ids)
       else
         Helpers.get_matches_by_players(tournament, [current_user.id])
       end
 
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
-      matches: matches,
-      players: players
+      players: players,
+      matches: matches
     }
   end
 

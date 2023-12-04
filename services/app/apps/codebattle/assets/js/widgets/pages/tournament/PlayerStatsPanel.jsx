@@ -94,7 +94,7 @@ function PlayerStatsPanel({
           </span>
           <span title="Your place in tournament">
             <FontAwesomeIcon className="text-warning" icon="trophy" />
-            {`: ${currentPlayer.place}`}
+            {`: ${currentPlayer.place + 1}`}
           </span>
         </div>
       </div>
@@ -147,9 +147,8 @@ function PlayerStatsPanel({
               />
               <StatisticsCard
                 playerId={currentUserId}
-                // place={currentPlayer.place}
-                // matchList={matchList}
-                matchList={groupedMatchListByRound[currentRound]}
+                place={currentPlayer.place}
+                matchList={matchList}
               />
             </div>
           </div>

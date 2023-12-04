@@ -10,6 +10,7 @@ import SignUpButton from './SignUpButton';
 import StartTrainingButton from './StartTrainingButton';
 
 function ActionsAfterGame() {
+  const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
@@ -24,7 +25,7 @@ function ActionsAfterGame() {
     );
   }
 
-  if (gameMode === GameRoomModes.tournament) {
+  if (gameMode === GameRoomModes.tournament || tournamentId) {
     return <></>;
   }
 

@@ -105,6 +105,7 @@ function RatingPanel({
   const playersList = useMemo(
     () => Object.values(players)
         .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
+        .sort((a, b) => a.place - b.place)
         .reduce((acc, player) => {
           if (player.id === currentUserId) {
             return [player, ...acc];

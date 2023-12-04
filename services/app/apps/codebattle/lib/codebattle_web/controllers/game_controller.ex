@@ -17,6 +17,7 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
+    Context.get_game!(id)
 
     case Context.get_game!(id) do
       %Game{is_live: true} = game ->

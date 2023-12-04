@@ -5,6 +5,9 @@ import React, {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import Collapse from 'react-bootstrap/Collapse';
+import { useDispatch } from 'react-redux';
+
+import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
 
 import UsersMatchList from './UsersMatchList';
 
@@ -14,10 +17,11 @@ function TournamentUserPanel({
   userId,
   name,
   score,
-  // place,
+  place,
   // localPlace,
   searchedUserId = 0,
 }) {
+  const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
   const panelClassName = cn(
@@ -34,8 +38,11 @@ function TournamentUserPanel({
 
   const handleOpenMatches = useCallback(event => {
     event.preventDefault();
+    if (!open && userId !== currentUserId) {
+      dispatch(requestMatchesByPlayerId(userId));
+    }
     setOpen(!open);
-  }, [open, setOpen]);
+  }, [open, setOpen, dispatch, userId, currentUserId]);
 
   return (
     <div className={panelClassName}>
@@ -64,16 +71,16 @@ function TournamentUserPanel({
                 {': '}
                 {score}
               </span>
-              {/* {place && ( */}
-              {/*   <> */}
-              {/*     <span className="mx-1">|</span> */}
-              {/*     <span title="Place on tournament"> */}
-              {/*       <FontAwesomeIcon className="text-warning" icon="trophy" /> */}
-              {/*       {': '} */}
-              {/*       {place} */}
-              {/*     </span> */}
-              {/*   </> */}
-              {/* )} */}
+              {place !== undefined && (
+                <>
+                  <span className="mx-1">|</span>
+                  <span title="Place on tournament">
+                    <FontAwesomeIcon className="text-warning" icon="trophy" />
+                    {': '}
+                    {place + 1}
+                  </span>
+                </>
+              )}
               {/* {localPlace && ( */}
               {/*   <> */}
               {/*     <span className="mx-1">|</span> */}

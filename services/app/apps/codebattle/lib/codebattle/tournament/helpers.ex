@@ -71,10 +71,10 @@ defmodule Codebattle.Tournament.Helpers do
   def get_matches(tournament = %{matches_table: nil}), do: tournament.matches |> Map.values()
   def get_matches(tournament), do: Tournament.Matches.get_matches(tournament)
 
-  def get_matches(tournament = %{matches_table: nil}, ids) when is_list(ids),
+  def get_matches(tournament, ids) when is_list(ids),
     do: Enum.map(ids, &get_match(tournament, &1))
 
-  def get_matches(tournament = %{matches_table: nil}, state) when is_binary(state) do
+  def get_matches(tournament, state) when is_binary(state) do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
@@ -99,6 +99,18 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.chunk_by(& &1.round)
   end
 
+  def get_opponents(_tournament = %{players_table: nil}, _player_id), do: []
+
+  def get_opponents(tournament, player_id) do
+    opponent_ids =
+      tournament
+      |> get_matches(player_id)
+      |> Enum.map(&get_opponent_id(&1, player_id))
+      |> Enum.reject(&is_nil/1)
+
+    opponent_ids |> Enum.map(&get_player(tournament, &1))
+  end
+
   def matches_count(t), do: Tournament.Matches.count(t)
 
   def get_current_round_matches(tournament) do
@@ -120,6 +132,10 @@ defmodule Codebattle.Tournament.Helpers do
   def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
 
   def get_player_ids(tournament), do: tournament |> get_players |> Enum.map(& &1.id)
+
+  def get_opponent_id(_match = %{player_ids: [p1_id, p2_id]}, p1_id), do: p2_id
+  def get_opponent_id(_match = %{player_ids: [p2_id, p1_id]}, p1_id), do: p2_id
+  def get_opponent_id(_match, _p_id), do: nil
 
   def can_be_started?(tournament = %{state: "waiting_participants"}) do
     players_count(tournament) > 0
