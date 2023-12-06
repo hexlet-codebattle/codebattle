@@ -76,7 +76,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert MapSet.size(tournament.played_pair_ids) == 4
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -95,7 +95,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -108,7 +108,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert Tournament.Tasks.count(tournament) == 5
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -129,13 +129,13 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -150,7 +150,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert Tournament.Tasks.count(tournament) == 5
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(30)
+      :timer.sleep(100)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
       assert tournament |> get_matches("timeout") |> Enum.count() == 8
@@ -161,7 +161,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert tournament.show_results == true
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament.state == "finished"
@@ -200,43 +200,43 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 1
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
       assert [%{state: "game_over", winner_id: ^user_id1}] = get_matches(tournament, "game_over")
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 2
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       assert Enum.count(get_matches(tournament, "game_over")) == 2
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 3
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       assert Enum.count(get_matches(tournament, "game_over")) == 3
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 4
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       assert Enum.count(get_matches(tournament, "game_over")) == 4
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 5
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       assert Enum.count(get_matches(tournament, "game_over")) == 5
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 6
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(30)
+      :timer.sleep(100)
 
       assert Enum.count(get_matches(tournament, "game_over")) == 6
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 6
       # TODO: add assert_receive message with wait_type round
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(30)
+      :timer.sleep(100)
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 1
     end
   end
