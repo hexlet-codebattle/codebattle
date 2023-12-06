@@ -3,7 +3,7 @@ defmodule Codebattle.AssertsService.Executor.Remote do
 
   require Logger
 
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
   alias Codebattle.AssertsService.Executor.Token
 
   @spec call(Token.t()) :: Token.t()

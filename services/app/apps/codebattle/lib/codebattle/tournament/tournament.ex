@@ -4,7 +4,7 @@ defmodule Codebattle.Tournament do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
   alias Codebattle.Tournament.Individual
 
   @type t :: %__MODULE__{}
@@ -124,7 +124,7 @@ defmodule Codebattle.Tournament do
       :type,
       :use_chat,
       :use_infinite_break,
-      :show_results,
+      :show_results
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
@@ -136,7 +136,6 @@ defmodule Codebattle.Tournament do
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
     |> add_creator(params["creator"] || params[:creator])
-    |> add_meta(params)
   end
 
   defp add_creator(changeset, nil), do: changeset
@@ -145,33 +144,9 @@ defmodule Codebattle.Tournament do
     change(changeset, %{creator: creator})
   end
 
-  defp add_meta(changeset, params) do
-    params |> IO.inspect
-    rounds_limit = params["rounds_limit"] || params[:rounds_limit] || "3"
-    rounds_config_type = params["rounds_config_type"] || params[:rounds_config_type] || "all"
-
-    config = get_rounds_config(params["rounds_config_json"] || params[:rounds_config_json] || "[]")
-
-    meta = %{
-      rounds_limit: String.to_integer(rounds_limit),
-      rounds_config_type: rounds_config_type,
-      rounds_config: config,
-    }
-
-    change(changeset, %{meta: meta})
-  end
-
   def types, do: @types
   def access_types, do: @access_types
   def levels, do: @levels
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
-
-  defp get_rounds_config(string) do
-    try do
-      Jason.decode!(string) |> IO.inspect
-    rescue
-      _ -> []
-    end
-  end
 end

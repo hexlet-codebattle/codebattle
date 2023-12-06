@@ -3,6 +3,11 @@ defmodule Codebattle.Tournament.Tasks do
     :ets.new(:t_tasks, [:set, :public, {:write_concurrency, true}, {:read_concurrency, true}])
   end
 
+  def replace_tasks(tournament, tasks) do
+    :ets.delete_all_objects(tournament.tasks_table)
+    put_tasks(tournament, tasks)
+  end
+
   def put_tasks(tournament, tasks) do
     Enum.each(tasks, &put_task(tournament, &1))
   end
@@ -11,14 +16,14 @@ defmodule Codebattle.Tournament.Tasks do
     :ets.insert(tournament.tasks_table, {task.id, task})
   end
 
-  def get_random_task(tournament) do
-    # TODO: FIXME
-    # :ets.lookup_element(tournament.tasks_table, task_id, 3)
-    tournament |> get_tasks() |> List.first()
+  def get_task_ids(tournament) do
+    :ets.select(tournament.tasks_table, [{{:"$1", :"$2"}, [], [:"$1"]}])
   end
 
+  def get_task(_tournament, nil), do: nil
+
   def get_task(tournament, task_id) do
-    :ets.lookup_element(tournament.tasks_table, task_id, 3)
+    :ets.lookup_element(tournament.tasks_table, task_id, 2)
   rescue
     _e ->
       nil

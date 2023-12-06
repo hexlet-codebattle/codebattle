@@ -69,14 +69,18 @@ defmodule Codebattle.Game.Engine do
         mode = params[:mode] || "standard"
         visibility_type = params[:visibility_type] || "public"
 
+        task =
+          params[:task] ||
+            Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
+
         %{
-          level: params.task.level,
+          level: task.level,
           mode: mode,
-          players: build_players(params.players, params.task),
+          players: build_players(params.players, task),
           ref: params[:ref],
           starts_at: now,
           state: params.state,
-          task_id: params.task.id,
+          task_id: task.id,
           timeout_seconds: min(params.timeout_seconds, @max_timeout),
           tournament_id: params.tournament_id,
           type: type,

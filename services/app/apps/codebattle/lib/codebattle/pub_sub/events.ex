@@ -62,6 +62,7 @@ defmodule Codebattle.PubSub.Events do
           tournament: %{
             type: params.tournament.type,
             state: params.tournament.state,
+            show_results: params.tournament.show_results,
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
             current_round: params.tournament.current_round,
@@ -73,7 +74,7 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:updated",
-        payload: %{tournament: params.tournament}
+        payload: %{tournament: %{params.tournament | break_state: "on"}}
       }
     ]
   end
@@ -97,17 +98,22 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournaments",
         event: "tournament:finished",
-        payload: %{id: params.tournament_id}
+        payload: %{id: params.tournament.id}
       },
       %Message{
-        topic: "tournament:#{params.tournament_id}:common",
+        topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:finished",
-        payload: %{}
-      },
-      %Message{
-        topic: "tournament:#{params.tournament_id}",
-        event: "tournament:finished",
-        payload: %{}
+        payload: %{
+          tournament: %{
+            type: params.tournament.type,
+            state: params.tournament.state,
+            show_results: params.tournament.show_results,
+            last_round_ended_at: params.tournament.last_round_ended_at,
+            last_round_started_at: params.tournament.last_round_started_at,
+            current_round: params.tournament.current_round,
+            break_state: "off"
+          }
+        }
       }
     ]
   end

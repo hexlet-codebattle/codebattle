@@ -6,7 +6,9 @@ import cn from 'classnames';
 
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
-function StatisticsCard({ playerId, matchList = [], place, showResults = true }) {
+function StatisticsCard({
+ playerId, matchList = [], place, showResults = true,
+}) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
 
   const cardClassName = cn(

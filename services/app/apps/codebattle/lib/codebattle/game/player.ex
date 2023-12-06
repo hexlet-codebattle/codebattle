@@ -4,7 +4,7 @@ defmodule Codebattle.Game.Player do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
   alias Codebattle.CodeCheck
   alias Codebattle.Game.Player
   alias Codebattle.Tournament

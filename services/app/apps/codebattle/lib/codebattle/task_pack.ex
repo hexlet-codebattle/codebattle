@@ -63,6 +63,16 @@ defmodule Codebattle.TaskPack do
     task_pack.creator_id == user.id || Codebattle.User.admin?(user)
   end
 
+  @spec get_tasks_by_pack_id(pos_integer()) :: [Codebattle.Task.t()]
+  def get_tasks_by_pack_id(task_pack_id) do
+    task_pack_id
+    |> get()
+    |> case do
+      nil -> []
+      task_pack -> Codebattle.Task.get_by_ids(task_pack.task_ids)
+    end
+  end
+
   def list_visible(user) do
     __MODULE__
     |> filter_visibility(user)

@@ -13,7 +13,7 @@ import { useDispatch } from 'react-redux';
 import mapStagesToTitle from '../../config/mapStagesToTitle';
 import { uploadPlayersMatches } from '../../middlewares/Tournament';
 import { actions } from '../../slices';
-import useSubscribeTournamentPlayers from '../../utils/useSubscribeTournamentPlayers';
+// import useSubscribeTournamentPlayers from '../../utils/useSubscribeTournamentPlayers';
 
 import StageTitle from './StageTitle';
 import TournamentPlayersPagination from './TournamentPlayersPagination';
@@ -133,7 +133,7 @@ function RatingPanel({
     [topPlayersIds, players, currentUserId, pageSize, pageNumber],
   );
 
-  const playersShowList = topPlayersIds.length === 0 ? playersList : topPlayersList;
+  const playersShowList = (topPlayersIds || []).length === 0 ? playersList : topPlayersList;
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 

@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Context do
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
+  alias Runner.AtomizedMap
 
   import Ecto.Query
   import Ecto.Changeset
@@ -216,24 +217,21 @@ defmodule Codebattle.Tournament.Context do
           }
         }
 
-      "stairway" ->
+      type when type in ["stairway", "swiss", "ladder"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds_limit}
+        rounds_config_type = Map.get(params, "rounds_config_type", "all")
 
-      "swiss" ->
-        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-
-        task_pack_ids =
+        rounds_config =
           params
-          |> Map.get("task_pack_ids", "")
-          |> String.split(",", trim: true)
-          |> Enum.map(&String.to_integer/1)
+          |> Map.get("rounds_config_json", "[]")
+          |> Jason.decode!()
+          |> AtomizedMap.atomize()
 
-        %{rounds_limit: rounds_limit, task_pack_ids: task_pack_ids}
-
-      "ladder" ->
-        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds_limit}
+        %{
+          rounds_config_type: rounds_config_type,
+          rounds_limit: rounds_limit,
+          rounds_config: rounds_config
+        }
 
       _ ->
         %{}

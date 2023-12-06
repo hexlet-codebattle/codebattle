@@ -142,6 +142,10 @@ function Tournament() {
     );
   }
 
+  const matchTimeoutSeconds = tournament.meta?.roundsConfigType === 'per_round'
+      ? tournament.meta?.roundsConfig[tournament.currentRound]?.roundTimeoutSeconds
+      : tournament.matchTimeoutSeconds;
+
   return (
     <>
       <MatchConfirmationModal
@@ -152,27 +156,27 @@ function Tournament() {
       <div className="container-fluid mb-2">
         <TournamentHeader
           id={tournament.id}
-          state={tournament.state}
+          accessToken={tournament.accessToken}
+          accessType={tournament.accessType}
           breakDurationSeconds={tournament.breakDurationSeconds}
-          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+          breakState={tournament.breakState}
+          creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
+          isLive={tournament.isLive}
+          isOnline={tournament.channel.online}
+          isOver={isOver}
           lastRoundEndedAt={tournament.lastRoundEndedAt}
           lastRoundStartedAt={tournament.lastRoundStartedAt}
-          startsAt={tournament.startsAt}
-          type={tournament.type}
-          accessType={tournament.accessType}
-          accessToken={tournament.accessToken}
+          level={tournament.level}
+          matchTimeoutSeconds={matchTimeoutSeconds}
           name={tournament.name}
           players={tournament.players}
           playersCount={playersCount}
           playersLimit={tournament.playersLimit}
-          breakState={tournament.breakState}
-          creatorId={tournament.creatorId}
-          currentUserId={currentUserId}
-          level={tournament.level}
           showResults={tournament.showResults}
-          isOver={isOver}
-          isLive={tournament.isLive}
-          isOnline={tournament.channel.online}
+          startsAt={tournament.startsAt}
+          state={tournament.state}
+          type={tournament.type}
         />
       </div>
       <div className="container-fluid mb-2">

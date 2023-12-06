@@ -111,7 +111,7 @@ export const connectToTournament = () => dispatch => {
   };
 
   const handleTournamentFinished = response => {
-    dispatch(actions.updateTournamentData(response));
+    dispatch(actions.updateTournamentData(response.tournament));
   };
 
   const refs = [
@@ -205,6 +205,10 @@ export const restartTournament = () => {
 
 export const startRoundTournament = () => {
   channel.push('tournament:start_round', {}).receive('error', error => console.error(error));
+};
+
+export const finishRoundTournament = () => {
+  channel.push('tournament:finish_round', {}).receive('error', error => console.error(error));
 };
 
 export const openUpTournament = () => {

@@ -4,7 +4,7 @@ defmodule Codebattle.Playbook do
   import Ecto.Changeset
 
   alias Codebattle.Repo
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
 
   @solution_types ~w(complete incomplete waiting_moderator baned)
 

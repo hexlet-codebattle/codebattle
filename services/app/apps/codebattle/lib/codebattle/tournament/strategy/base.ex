@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Base do
 
   alias Codebattle.Game
   alias Codebattle.Tournament
+  alias Codebattle.TaskPack
 
   @moduledoc """
   Defines interface for tournament type
@@ -268,19 +269,34 @@ defmodule Codebattle.Tournament.Base do
 
       def do_finish_round_and_next_step(tournament) do
         tournament
-        |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
+        |> update_struct(%{
+          last_round_ended_at: NaiveDateTime.utc_now(:second),
+          show_results: !finish_tournament?(tournament)
+        })
         |> calculate_round_results()
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> start_round_or_break_or_finish()
+        |> then(fn tournament ->
+          broadcast_tournament_update(tournament)
+          tournament
+        end)
       end
 
       def start_rematch(tournament, match_ref) do
         finished_match = get_match(tournament, match_ref)
         new_match_id = matches_count(tournament)
         players = get_players(tournament, finished_match.player_ids)
-        game = create_game(tournament, players, new_match_id)
-        build_and_run_match(tournament, players, game)
+
+        case create_rematch_game(tournament, players, new_match_id) do
+          nil ->
+            # TODO: send message that there is no tasks in task_pack
+            nil
+
+          game ->
+            build_and_run_match(tournament, players, game)
+        end
+
         tournament
       end
 
@@ -328,6 +344,7 @@ defmodule Codebattle.Tournament.Base do
           break_state: "off",
           last_round_started_at: NaiveDateTime.utc_now(:second)
         })
+        |> maybe_preload_tasks()
         |> start_round_timer()
         |> build_round_matches()
         |> db_save!()
@@ -341,15 +358,17 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp bulk_insert_round_games({tournament, player_pairs}) do
+        task_ids = get_round_task_ids(tournament)
+
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(20)
-        |> Enum.each(&bulk_create_games_and_matches(&1, tournament))
+        |> Enum.each(&bulk_create_games_and_matches(&1, tournament, task_ids))
 
         tournament
       end
 
-      defp bulk_create_games_and_matches(batch, tournament) do
+      defp bulk_create_games_and_matches(batch, tournament, task_ids) do
         game_timeout = get_game_timeout(tournament)
 
         batch
@@ -366,7 +385,7 @@ defmodule Codebattle.Tournament.Base do
           {players = [p1, p2], match_id} ->
             %{
               state: "playing",
-              task: get_task(tournament, players),
+              task: Tournament.Tasks.get_task(tournament, Enum.random(task_ids)),
               ref: match_id,
               timeout_seconds: game_timeout,
               tournament_id: tournament.id,
@@ -381,20 +400,26 @@ defmodule Codebattle.Tournament.Base do
         end)
       end
 
-      defp create_game(tournament, players, ref) do
-        {:ok, game} =
-          Game.Context.create_game(%{
-            state: "playing",
-            task: get_task(tournament, players),
-            ref: ref,
-            level: tournament.level,
-            tournament_id: tournament.id,
-            timeout_seconds: get_game_timeout(tournament),
-            use_chat: tournament.use_chat,
-            players: players
-          })
+      defp create_rematch_game(tournament, players, ref) do
+        case get_rematch_task(tournament, players) do
+          nil ->
+            nil
 
-        game
+          task ->
+            {:ok, game} =
+              Game.Context.create_game(%{
+                state: "playing",
+                task: task,
+                ref: ref,
+                level: tournament.level,
+                tournament_id: tournament.id,
+                timeout_seconds: get_game_timeout(tournament),
+                use_chat: tournament.use_chat,
+                players: players
+              })
+
+            game
+        end
       end
 
       defp build_and_run_match(tournament, [p1, p2], game) do
@@ -460,15 +485,26 @@ defmodule Codebattle.Tournament.Base do
         Process.send_after(
           self(),
           {:finish_round_force, tournament.current_round},
-          :timer.seconds(tournament.match_timeout_seconds)
+          :timer.seconds(get_round_timeout_seconds(tournament))
         )
 
         tournament
       end
 
-      # TODO: implement get_task by strategy
-      defp get_task(tournament, _players) do
-        Tournament.Tasks.get_random_task(tournament)
+      defp get_rematch_task(tournament, players) do
+        completed_task_ids = Enum.flat_map(players, & &1.task_ids)
+
+        round_task_ids = Tournament.Tasks.get_task_ids(tournament)
+
+        (round_task_ids -- completed_task_ids)
+        |> case do
+          [] -> nil
+          ids -> Enum.random(ids)
+        end
+        |> case do
+          nil -> nil
+          task_id -> Tournament.Tasks.get_task(tournament, task_id)
+        end
       end
 
       defp broadcast_round_created(tournament) do
@@ -487,7 +523,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp broadcast_tournament_finished(tournament) do
-        Codebattle.PubSub.broadcast("tournament:finished", %{tournament_id: tournament.id})
+        Codebattle.PubSub.broadcast("tournament:finished", %{tournament: tournament})
         tournament
       end
 
@@ -495,16 +531,88 @@ defmodule Codebattle.Tournament.Base do
         if round_ends_by_time?(tournament) do
           seconds_to_end_round(tournament)
         else
-          tournament.match_timeout_seconds
+          get_round_timeout_seconds(tournament)
         end
       end
 
       defp round_ends_by_time?(%{type: "swiss"}), do: true
+      defp round_ends_by_time?(%{type: "ladder"}), do: true
       defp round_ends_by_time?(_), do: false
 
       defp seconds_to_end_round(tournament) do
-        tournament.match_timeout_seconds -
-          NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
+        max(
+          get_round_timeout_seconds(tournament) -
+            NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at),
+          0
+        )
+      end
+
+      defp get_round_timeout_seconds(
+             tournament = %{
+               meta: %{rounds_config_type: "per_round", rounds_config: rounds_config}
+             }
+           )
+           when is_list(rounds_config) do
+        rounds_config
+        |> Enum.at(tournament.current_round, %{})
+        |> Map.get(:round_timeout_seconds, 180)
+      end
+
+      defp get_round_timeout_seconds(tournament) do
+        tournament.match_timeout_seconds
+      end
+
+      defp broadcast_tournament_update(tournament) do
+        Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
+      end
+
+      defp maybe_preload_tasks(
+             tournament = %{
+               meta: %{rounds_config_type: "per_round", rounds_config: rounds_config}
+             }
+           )
+           when is_list(rounds_config) do
+        round_tasks =
+          rounds_config
+          |> Enum.at(tournament.current_round, %{})
+          |> Map.get(:task_pack_id)
+          |> case do
+            nil -> []
+            id -> TaskPack.get_tasks_by_pack_id(id)
+          end
+          |> Enum.shuffle()
+
+        Tournament.Tasks.replace_tasks(tournament, round_tasks)
+
+        tournament
+      end
+
+      defp maybe_preload_tasks(
+             tournament = %{current_round: 0, meta: %{rounds_config_type: "all"}}
+           ) do
+        tasks = Codebattle.Task.get_tasks_by_level(tournament.level) |> Enum.shuffle()
+
+        Tournament.Tasks.put_tasks(tournament, tasks)
+
+        tournament
+      end
+
+      defp maybe_preload_tasks(tournament), do: tournament
+
+      defp get_round_task_ids(tournament = %{meta: %{rounds_config_type: "per_round"}}) do
+        Tournament.Tasks.get_task_ids(tournament)
+      end
+
+      defp get_round_task_ids(tournament) do
+        Tournament.Tasks.get_task_ids(tournament)
+        # TODO: implement reshuffle after all tasks used
+        # completed_task_ids =
+        #   Tournament.Players.get_players()
+        #   |> Enum.flat_map(& &1.task_ids)
+
+        # round_task_ids = Tournament.Tasks.get_task_ids(tournament)
+
+        # round_task_ids -- completed_task_ids
       end
     end
   end

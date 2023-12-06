@@ -5,7 +5,7 @@ defmodule Codebattle.AssertsService.OutputParser do
 
   alias Codebattle.AssertsService.AssertResult
   alias Codebattle.AssertsService.Result
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
 
   def call(checker_token) do
     %{container_output: container_output, exit_code: exit_code} = checker_token

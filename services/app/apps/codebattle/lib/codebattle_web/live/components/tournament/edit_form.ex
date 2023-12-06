@@ -9,13 +9,18 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
 
   @impl true
   def render(assigns) do
-    default_rounds_config_json = String.trim("""
-      [
-        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
-        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
-        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
-      ]
-    """)
+    assigns =
+      assign(
+        assigns,
+        :default_rounds_config_json,
+        """
+          [
+            {"task_pack_id": 1, "round_timeout_seconds": 30},
+            {"task_pack_id": 2, "round_timeout_seconds": 40},
+            {"task_pack_id": 3, "round_timeout_seconds": 50}
+          ]
+        """
+      )
 
     ~H"""
     <div class="container-xl bg-white shadow-sm rounded py-4">
@@ -206,21 +211,17 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
             <div class="form-check">
               <%= label(f, :rounds_config_type) %>
-              <%= select(f, :rounds_config_type, ["all", "per_round"],
-                class: "custom-select"
-              ) %>
+              <%= select(f, :rounds_config_type, ["all", "per_round"], class: "custom-select") %>
               <%= error_tag(f, :rounds_config_type) %>
             </div>
           </div>
         <% end %>
         <%= if (f.params["rounds_config_type"] in ["per_round"]) do %>
-          <div
-            class="d-flex mt-3 overflow-x"
-          >
+          <div class="d-flex mt-3 overflow-x">
             <%= label(f, :rounds_config_json) %>
             <%= textarea(f, :rounds_config_json,
               class: "form-control",
-              value: f.params["rounds_config_json"] || default_rounds_config_json,
+              value: f.params["rounds_config_json"] || @default_rounds_config_json,
               maxlength: "1350",
               rows: "5"
             ) %>

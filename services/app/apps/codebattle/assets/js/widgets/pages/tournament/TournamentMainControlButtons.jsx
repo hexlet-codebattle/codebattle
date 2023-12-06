@@ -8,6 +8,7 @@ import {
   startTournament as handleStartTournament,
   restartTournament as handleRestartTournament,
   startRoundTournament as handleStartRoundTournament,
+  finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
   showTournamentResults as handleShowResults,
 } from '../../middlewares/Tournament';
@@ -29,6 +30,7 @@ const TournamentMainControlButtons = ({
   tournamentId,
   canStart,
   canStartRound,
+  canFinishRound,
   canRestart,
   disabled = true,
   showResults,
@@ -43,6 +45,17 @@ const TournamentMainControlButtons = ({
       >
         <FontAwesomeIcon className="mr-2" icon="arrow-right" />
         Start Round
+      </button>
+    ) : null}
+    {canFinishRound ? (
+      <button
+        type="button"
+        className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
+        onClick={handleFinishRoundTournament}
+        disabled={!canFinishRound || disabled}
+      >
+        <FontAwesomeIcon className="mr-2" icon="arrow-right" />
+        Finish Round
       </button>
     ) : null}
     {canRestart ? (

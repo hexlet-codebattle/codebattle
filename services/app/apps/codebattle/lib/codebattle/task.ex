@@ -5,7 +5,9 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.{Repo, AtomizedMap, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
+  alias Runner.AtomizedMap
 
   @type t :: %__MODULE__{}
 
@@ -163,6 +165,13 @@ defmodule Codebattle.Task do
         or_where: [creator_id: ^user.id]
       )
     end
+  end
+
+  @spec get_by_ids(list(pos_integer())) :: list(t())
+  def get_by_ids(task_ids) do
+    __MODULE__
+    |> where([t], t.id in ^task_ids)
+    |> Repo.all()
   end
 
   @spec get_task_by_id_for_user(User.t(), term()) :: t() | nil

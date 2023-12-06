@@ -72,8 +72,6 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
-    send(self(), :after_init)
-
     players_table = Tournament.Players.create_table()
     matches_table = Tournament.Matches.create_table()
     tasks_table = Tournament.Tasks.create_table()
@@ -140,11 +138,6 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def handle_info(:after_init, state) do
-    Tournament.Context.preload_tasks_to_ets(state.tournament)
-    {:noreply, state}
-  end
-
   def handle_info({:stop_round_break, round}, %{tournament: tournament}) do
     if tournament.current_round == round and
          in_break?(tournament) and
@@ -162,8 +155,6 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
-
-      broadcast_tournament_update(new_tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else

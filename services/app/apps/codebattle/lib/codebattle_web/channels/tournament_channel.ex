@@ -123,9 +123,11 @@ defmodule CodebattleWeb.TournamentChannel do
 
     tournament = Tournament.Context.get!(tournament_id)
 
-    broadcast!(socket, "tournament:update", %{tournament: %{
-      show_results: Map.get(tournament, :show_results, false),
-    }})
+    broadcast!(socket, "tournament:update", %{
+      tournament: %{
+        show_results: Map.get(tournament, :show_results, false)
+      }
+    })
 
     {:noreply, socket}
   end
@@ -166,6 +168,17 @@ defmodule CodebattleWeb.TournamentChannel do
 
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :stop_round_break, %{})
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_in("tournament:finish_round", _, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+    tournament = Tournament.Server.get_tournament(tournament_id)
+
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+      Tournament.Context.handle_event(tournament_id, :finish_round, %{})
     end
 
     {:noreply, socket}
@@ -260,11 +273,9 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:finished"}, socket) do
+  def handle_info(%{event: "tournament:finished", payload: payload}, socket) do
     push(socket, "tournament:finished", %{
-      tournament: %{
-        state: "finished"
-      }
+      tournament: payload.tournament
     })
 
     {:noreply, socket}

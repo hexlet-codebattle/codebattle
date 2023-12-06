@@ -88,7 +88,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @impl true
   def handle_event("validate", %{"tournament" => params}, socket) do
     creator = socket.assigns.current_user
-    params |> IO.inspect
 
     changeset = Tournament.Context.validate(Map.merge(params, %{"creator" => creator}))
 

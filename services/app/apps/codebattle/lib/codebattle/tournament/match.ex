@@ -3,7 +3,7 @@ defmodule Codebattle.Tournament.Match do
 
   import Ecto.Changeset
 
-  alias Codebattle.AtomizedMap
+  alias Runner.AtomizedMap
 
   @derive Jason.Encoder
   @primary_key false
