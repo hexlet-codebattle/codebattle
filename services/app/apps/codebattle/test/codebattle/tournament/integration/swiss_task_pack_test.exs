@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Integration.SwissTest do
+defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
   use Codebattle.IntegrationCase, async: false
 
   import Codebattle.Tournament.Helpers
@@ -76,7 +76,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert MapSet.size(tournament.played_pair_ids) == 4
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(200)
+      :timer.sleep(30)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -95,7 +95,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(100)
+      :timer.sleep(30)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -108,7 +108,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert Tournament.Tasks.count(tournament) == 5
 
       send_user_win_match(tournament, user1)
-      :timer.sleep(100)
+      :timer.sleep(30)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -129,13 +129,13 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(100)
+      :timer.sleep(30)
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(100)
+      :timer.sleep(30)
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
-      :timer.sleep(100)
+      :timer.sleep(30)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
@@ -150,7 +150,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert Tournament.Tasks.count(tournament) == 5
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(100)
+      :timer.sleep(30)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
       assert tournament |> get_matches("timeout") |> Enum.count() == 8
@@ -161,7 +161,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament.show_results == true
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
-      :timer.sleep(100)
+      :timer.sleep(30)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament.state == "finished"
@@ -234,6 +234,10 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert Enum.count(get_matches(tournament, "game_over")) == 6
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 6
       # TODO: add assert_receive message with wait_type round
+
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      :timer.sleep(30)
+      assert Enum.count(get_player(tournament, user_id1).task_ids) == 1
     end
   end
 end

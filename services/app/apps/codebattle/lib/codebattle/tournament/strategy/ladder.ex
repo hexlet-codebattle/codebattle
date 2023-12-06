@@ -15,7 +15,11 @@ defmodule Codebattle.Tournament.Ladder do
 
   @impl Tournament.Base
   def build_round_pairs(tournament = %{current_round: 0}) do
-    tournament |> get_players |> Enum.shuffle() |> build_player_pairs(tournament)
+    tournament
+    |> get_players
+    |> Enum.filter(&(!&1.is_bot))
+    |> Enum.shuffle()
+    |> build_player_pairs(tournament)
   end
 
   @impl Tournament.Base

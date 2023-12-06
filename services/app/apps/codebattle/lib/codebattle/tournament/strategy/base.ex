@@ -294,7 +294,7 @@ defmodule Codebattle.Tournament.Base do
             nil
 
           game ->
-            build_and_run_match(tournament, players, game)
+            build_and_run_match(tournament, players, game, false)
         end
 
         tournament
@@ -385,7 +385,7 @@ defmodule Codebattle.Tournament.Base do
           {players = [p1, p2], match_id} ->
             %{
               state: "playing",
-              task: Tournament.Tasks.get_task(tournament, Enum.random(task_ids)),
+              task: Tournament.Tasks.get_task(tournament, safe_random(task_ids)),
               ref: match_id,
               timeout_seconds: game_timeout,
               tournament_id: tournament.id,
@@ -396,7 +396,7 @@ defmodule Codebattle.Tournament.Base do
         |> Game.Context.bulk_create_games()
         |> Enum.zip(batch)
         |> Enum.each(fn {game, {players, _match_id}} ->
-          build_and_run_match(tournament, players, game)
+          build_and_run_match(tournament, players, game, true)
         end)
       end
 
@@ -422,7 +422,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp build_and_run_match(tournament, [p1, p2], game) do
+      defp build_and_run_match(tournament, [p1, p2], game, reset_task_ids) do
         match = %Tournament.Match{
           id: game.ref,
           game_id: game.id,
@@ -436,13 +436,13 @@ defmodule Codebattle.Tournament.Base do
         Tournament.Players.put_player(tournament, %{
           p1
           | matches_ids: [match.id | p1.matches_ids],
-            task_ids: [game.task_id | p1.task_ids]
+            task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | p2.task_ids])
         })
 
         Tournament.Players.put_player(tournament, %{
           p2
           | matches_ids: [match.id | p2.matches_ids],
-            task_ids: [game.task_id | p2.task_ids]
+            task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | p2.task_ids])
         })
 
         Codebattle.PubSub.broadcast("tournament:match:upserted", %{
@@ -497,10 +497,7 @@ defmodule Codebattle.Tournament.Base do
         round_task_ids = Tournament.Tasks.get_task_ids(tournament)
 
         (round_task_ids -- completed_task_ids)
-        |> case do
-          [] -> nil
-          ids -> Enum.random(ids)
-        end
+        |> safe_random()
         |> case do
           nil -> nil
           task_id -> Tournament.Tasks.get_task(tournament, task_id)
@@ -587,9 +584,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp maybe_preload_tasks(
-             tournament = %{current_round: 0, meta: %{rounds_config_type: "all"}}
-           ) do
+      defp maybe_preload_tasks(tournament = %{current_round: 0}) do
         tasks = Codebattle.Task.get_tasks_by_level(tournament.level) |> Enum.shuffle()
 
         Tournament.Tasks.put_tasks(tournament, tasks)
@@ -614,6 +609,9 @@ defmodule Codebattle.Tournament.Base do
 
         # round_task_ids -- completed_task_ids
       end
+
+      defp safe_random([]), do: nil
+      defp safe_random(list), do: Enum.random(list)
     end
   end
 end
