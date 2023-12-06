@@ -24,6 +24,7 @@ const initTournamentChannel = dispatch => {
   const onJoinSuccess = response => {
     dispatch(actions.setTournamentData({
       ...response.tournament,
+      topPlayersIds: response.topPlayersIds || [],
       matches: {},
       players: {},
       channel: { online: true },
@@ -81,7 +82,6 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTopPlayers(compact(response.players)));
   };
 
-  const handleTournamentStart = () => { };
   const handleTournamentRestarted = response => {
     dispatch(actions.setTournamentData({
       ...response.tournament,
@@ -116,18 +116,10 @@ export const connectToTournament = () => dispatch => {
 
   const refs = [
     oldChannel.on('tournament:update', handleUpdate),
-
-    // TODO: (client/server) break update event on pieces
-    // round:update_match(round, newMatch)
-    // round:update_participants(players)
-    // round:update_statistics(statistics)
-    // channel.on('tournament:round_created', handleRoundCreated),
-    // TODO (tournaments): send updates
     oldChannel.on('tournament:matches:update', handleMatchesUpdate),
     oldChannel.on('tournament:players:update', handlePlayersUpdate),
     oldChannel.on('tournament:round_created', handleTournamentRoundCreated),
     oldChannel.on('tournament:round_finished', handleRoundFinished),
-    oldChannel.on('tournament:start', handleTournamentStart),
     oldChannel.on('tournament:player:joined', handlePlayerJoined),
     oldChannel.on('tournament:player:left', handlePlayerLeft),
     oldChannel.on('tournament:match:upserted', handleMatchUpserted),
@@ -141,12 +133,11 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:players:update', refs[2]);
     oldChannel.off('tournament:round_created', refs[3]);
     oldChannel.off('tournament:round_finished', refs[4]);
-    oldChannel.off('tournament:start', refs[5]);
-    oldChannel.off('tournament:player:joined', refs[6]);
-    oldChannel.off('tournament:player:left', refs[7]);
-    oldChannel.off('tournament:match:upserted', refs[8]);
-    oldChannel.off('tournament:restarted', refs[9]);
-    oldChannel.off('tournament:finished', refs[10]);
+    oldChannel.off('tournament:player:joined', refs[5]);
+    oldChannel.off('tournament:player:left', refs[6]);
+    oldChannel.off('tournament:match:upserted', refs[7]);
+    oldChannel.off('tournament:restarted', refs[8]);
+    oldChannel.off('tournament:finished', refs[9]);
   };
 
   return clearTournamentChannel;
@@ -218,6 +209,10 @@ export const startRoundTournament = () => {
 
 export const openUpTournament = () => {
   channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
+};
+
+export const showTournamentResults = () => {
+  channel.push('tournament:toggle_show_results', {}).receive('error', error => console.error(error));
 };
 
 export const kickFromTournament = userId => {

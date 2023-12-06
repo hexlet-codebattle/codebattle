@@ -6,7 +6,7 @@ import cn from 'classnames';
 
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
-function StatisticsCard({ playerId, matchList = [], place }) {
+function StatisticsCard({ playerId, matchList = [], place, showResults = true }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
 
   const cardClassName = cn(
@@ -21,7 +21,7 @@ function StatisticsCard({ playerId, matchList = [], place }) {
           title="Your place in tournament"
           className="p-1"
         >
-          {`Your place: ${place + 1}`}
+          {`Your place: ${showResults ? place + 1 : '?'}`}
         </h6>
       )}
       <h6

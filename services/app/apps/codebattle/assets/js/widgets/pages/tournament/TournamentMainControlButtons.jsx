@@ -9,6 +9,7 @@ import {
   restartTournament as handleRestartTournament,
   startRoundTournament as handleStartRoundTournament,
   openUpTournament as handleOpenUpTournament,
+  showTournamentResults as handleShowResults,
 } from '../../middlewares/Tournament';
 
 const CustomToggle = React.forwardRef(({ onClick, variant, disabled }, ref) => (
@@ -30,6 +31,7 @@ const TournamentMainControlButtons = ({
   canStartRound,
   canRestart,
   disabled = true,
+  showResults,
 }) => (
   <>
     {canStartRound ? (
@@ -86,6 +88,14 @@ const TournamentMainControlButtons = ({
         >
           <FontAwesomeIcon className="mr-2" icon="trophy" />
           Tournaments
+        </Dropdown.Item>
+        <Dropdown.Item
+          disabled={disabled || showResults}
+          key="showResults"
+          onSelect={handleShowResults}
+        >
+          <FontAwesomeIcon className="mr-2" icon="eye" />
+          Show Results
         </Dropdown.Item>
         <Dropdown.Item
           disabled={disabled}

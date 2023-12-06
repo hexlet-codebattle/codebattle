@@ -102,8 +102,6 @@ defmodule CodebattleWeb.TournamentChannel do
     end
 
     {:noreply, socket}
-
-    {:noreply, socket}
   end
 
   def handle_in("tournament:open_up", _, socket) do
@@ -116,6 +114,22 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:toggle_show_results", _, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.handle_event(tournament_id, :toggle_show_results, %{
+      user: socket.assigns.current_user
+    })
+
+    tournament = Tournament.Context.get!(tournament_id)
+
+    broadcast!(socket, "tournament:update", %{tournament: %{
+      show_results: Map.get(tournament, :show_results, false),
+    }})
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:cancel", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
@@ -124,6 +138,10 @@ defmodule CodebattleWeb.TournamentChannel do
       Tournament.Context.handle_event(tournament_id, :cancel, %{
         user: socket.assigns.current_user
       })
+
+      tournament = Tournament.Context.get!(tournament_id)
+
+      broadcast!(socket, "tournament:update", %{tournament: tournament})
     end
 
     {:noreply, socket}
@@ -235,7 +253,8 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
     push(socket, "tournament:round_finished", %{
       tournament: payload.tournament,
-      players: payload.players
+      players: payload.players,
+      top_player_ids: Enum.map(payload.players || [], & &1.id)
     })
 
     {:noreply, socket}
@@ -312,7 +331,8 @@ defmodule CodebattleWeb.TournamentChannel do
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       players: players,
-      matches: matches
+      matches: matches,
+      top_player_ids: top_players |> Enum.map(& &1.id)
     }
   end
 

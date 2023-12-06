@@ -66,6 +66,17 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def toggle_show_results(tournament, %{user: user}) do
+        if can_moderate?(tournament, user) do
+          update_struct(
+            tournament,
+            %{show_results: !Map.get(tournament, :show_results, true)}
+          )
+        else
+          tournament
+        end
+      end
+
       def cancel(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
           new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()

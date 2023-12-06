@@ -3,8 +3,8 @@ defmodule Codebattle.Tournament.Swiss do
 
   alias Codebattle.Bot
   alias Codebattle.Tournament
-
   @impl Tournament.Base
+
   def complete_players(tournament) do
     if rem(players_count(tournament), 2) == 0 do
       tournament
@@ -22,7 +22,7 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   @impl Tournament.Base
-  def default_meta(), do: %{rounds_limit: 3}
+  def default_meta(), do: %{rounds_limit: 3, rounds_config_type: "all"}
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do

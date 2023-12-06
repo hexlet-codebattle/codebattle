@@ -258,7 +258,8 @@ const defaultTournamentParams = {
   // client params
   channel: { online: false },
   currentPlayerId: null,
-  topPlayerIds: [],
+  topPlayersIds: [],
+  showResults: false,
 };
 
 const initialTournament = tournamentParams

@@ -9,20 +9,13 @@ const tournament = createSlice({
   name: 'tournament',
   initialState,
   reducers: {
-    setTournamentData: (state, { payload }) => ({
+    setTournamentData: (_state, { payload }) => ({
       ...payload,
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,
       ...payload,
     }),
-    updateTopPlayers: (state, { payload }) => {
-      const sortedIds = payload
-        .sort((player1, player2) => player2.place - player1.place)
-        .map(player => player.id);
-
-      state.topPlayerIds = sortedIds;
-    },
     updateTournamentMatches: (state, { payload }) => {
       const newMatches = payload.reduce((acc, match) => ({
         ...acc,

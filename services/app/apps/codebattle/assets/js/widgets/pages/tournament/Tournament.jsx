@@ -60,6 +60,7 @@ function InfoPanel({
       return (
         <CustomTournamentInfoPanel
           players={tournament.players}
+          topPlayersIds={tournament.topPlayersIds}
           matches={tournament.matches}
           tournamentId={tournament.id}
           currentUserId={currentUserId}
@@ -67,6 +68,7 @@ function InfoPanel({
           currentRound={tournament.currentRound}
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
+          showResults={tournament.showResults}
         />
       );
     }
@@ -80,6 +82,7 @@ function Tournament() {
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
+  console.log(tournament);
 
   const playersCount = useMemo(
     () => Object.keys(tournament.players).length,
@@ -139,56 +142,6 @@ function Tournament() {
     );
   }
 
-  if (tournament.type === 'stairways') {
-    return (
-      <>
-        <TournamentHeader
-          id={tournament.id}
-          state={tournament.state}
-          breakDurationSeconds={tournament.breakDurationSeconds}
-          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-          lastRoundEndedAt={tournament.lastRoundEndedAt}
-          lastRoundStartedAt={tournament.lastRoundStartedAt}
-          startsAt={tournament.startsAt}
-          type={tournament.type}
-          accessType={tournament.accessType}
-          accessToken={tournament.accessToken}
-          isLive={tournament.isLive}
-          name={tournament.name}
-          players={tournament.players}
-          playersCount={playersCount}
-          playersLimit={tournament.playersLimit}
-          breakState={tournament.breakState}
-          creatorId={tournament.creatorId}
-          currentUserId={currentUserId}
-          level={tournament.level}
-          isOver={isOver}
-          isOnline={tournament.channel.online}
-        />
-        Tournament stairways
-        {/* Chat  */}
-        {/* <StairwayTournamentInfoPanel
-          state={tournament.state}
-          currentUserId={currentUserId}
-          rounds={tournament.rounds}
-          players={tournament.players}
-        /> */}
-        {/* StairwayInfoTable
-        tournament state: active, game_over
-
-        views: on approved list, participants list, action
-          stairway:
-            list round with progress (selected, begin, over, not started),
-            round list: buttons
-            stairway match panel: (default) players list with info about match progress (won, lost, give_up), task info
-            players list (table):
-              - player1 (current_user, opponent), state match, action (show)
-              - player2, state match, action (show)
-        */}
-      </>
-    );
-  }
-
   return (
     <>
       <MatchConfirmationModal
@@ -216,6 +169,7 @@ function Tournament() {
           creatorId={tournament.creatorId}
           currentUserId={currentUserId}
           level={tournament.level}
+          showResults={tournament.showResults}
           isOver={isOver}
           isLive={tournament.isLive}
           isOnline={tournament.channel.online}

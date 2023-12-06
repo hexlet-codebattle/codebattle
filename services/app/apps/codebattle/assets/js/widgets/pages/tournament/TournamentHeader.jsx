@@ -18,12 +18,14 @@ import TournamentMainControlButtons from './TournamentMainControlButtons';
 
 const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
 
-const getBadgeTitle = (state, breakState) => {
-  if (state === TournamentStates.active) {
-    return breakState === 'off' ? 'Active' : 'Round break';
+const getBadgeTitle = (state, breakState, showResults) => {
+  if (!showResults && state === TournamentStates.finished) {
+    return 'Waiting winner announcements';
   }
 
   switch (state) {
+    case TournamentStates.active:
+      return breakState === 'off' ? 'Active' : 'Round break';
     case TournamentStates.waitingParticipants:
       return 'Waiting Participants';
     case TournamentStates.cancelled:
@@ -135,6 +137,7 @@ function TournamentHeader({
   playersLimit,
   creatorId,
   currentUserId,
+  showResults,
   level,
   isOnline = false,
   isOver = false,
@@ -145,15 +148,16 @@ function TournamentHeader({
     [creatorId, currentUserId, isAdmin],
   );
   const stateBadgeTitle = useMemo(
-    () => getBadgeTitle(state, breakState),
-    [state, breakState],
+    () => getBadgeTitle(state, breakState, showResults),
+    [state, breakState, showResults],
   );
   const stateClassName = cn('badge mr-2', {
     'badge-warning': state === TournamentStates.waitingParticipants,
     'badge-success':
-      breakState === 'off' || state === TournamentStates.finished,
+      showResults && (breakState === 'off' || state === TournamentStates.finished),
     'badge-light': state === TournamentStates.cancelled,
     'badge-danger': breakState === 'on',
+    'badge-primary': !showResults && state === TournamentStates.finished,
   });
 
   return (
@@ -246,6 +250,7 @@ function TournamentHeader({
                     || state === TournamentStates.finished
                     || state === TournamentStates.cancelled
                   }
+                  showResults={showResults}
                   disabled={!isOnline}
                 />
               )}
@@ -304,6 +309,7 @@ function TournamentHeader({
               matchTimeoutSeconds={matchTimeoutSeconds}
               lastRoundStartedAt={lastRoundStartedAt}
               lastRoundEndedAt={lastRoundEndedAt}
+              showResults={showResults}
               isLive={isLive}
               isOver={isOver}
               isOnline={isOnline}

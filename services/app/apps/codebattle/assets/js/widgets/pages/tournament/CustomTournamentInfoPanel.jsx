@@ -13,9 +13,11 @@ function CustomTournamentInfoPanel({
   currentRound = 0,
   matches,
   players,
+  topPlayersIds,
   currentUserId,
   pageNumber,
   pageSize,
+  showResults = true,
 }) {
   const [searchedUser, setSearchedUser] = useState();
   const [panelMode, setPanelMode] = useState(
@@ -48,7 +50,7 @@ function CustomTournamentInfoPanel({
               panelMode={panelMode}
               setSearchOption={setSearchedUser}
               togglePanelMode={togglePanelMode}
-              disabledPanelModeControl={!players[currentUserId]}
+              disabledPanelModeControl={!players[currentUserId] || !showResults}
             />
             {panelMode === PanelModeCodes.playerMode && (
               <PlayerStatsPanel
@@ -57,6 +59,7 @@ function CustomTournamentInfoPanel({
                 matches={matches}
                 players={players}
                 currentUserId={currentUserId}
+                showResults={showResults}
               />
             )}
             {panelMode === PanelModeCodes.ratingMode && (
@@ -66,9 +69,11 @@ function CustomTournamentInfoPanel({
                 currentRound={currentRound}
                 matches={matches}
                 players={players}
+                topPlayersIds={topPlayersIds}
                 currentUserId={currentUserId}
                 pageNumber={pageNumber}
                 pageSize={pageSize}
+                showResults={showResults}
               />
             )}
           </div>

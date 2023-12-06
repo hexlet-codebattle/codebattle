@@ -9,6 +9,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
 
   @impl true
   def render(assigns) do
+    default_rounds_config_json = String.trim("""
+      [
+        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
+        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
+        {\"level\": \"elementary\", \"round_timeout_seconds\": 30},
+      ]
+    """)
+
     ~H"""
     <div class="container-xl bg-white shadow-sm rounded py-4">
       <h2 class="text-center">Create a new tournament</h2>
@@ -265,6 +273,27 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               ) %>
               <%= error_tag(f, :rounds_limit) %>
             </div>
+            <div class="form-check">
+              <%= label(f, :rounds_config_type) %>
+              <%= select(f, :rounds_config_type, ["all", "per_round"],
+                class: "custom-select"
+              ) %>
+              <%= error_tag(f, :rounds_config_type) %>
+            </div>
+          </div>
+        <% end %>
+        <%= if (f.params["rounds_config_type"] in ["per_round"]) do %>
+          <div
+            class="d-flex mt-3 overflow-x"
+          >
+            <%= label(f, :rounds_config_json) %>
+            <%= textarea(f, :rounds_config_json,
+              class: "form-control",
+              value: f.params["rounds_config_json"] || default_rounds_config_json,
+              maxlength: "1350",
+              rows: "5"
+            ) %>
+            <%= error_tag(f, :rounds_config_json) %>
           </div>
         <% end %>
         <%= submit("Create",

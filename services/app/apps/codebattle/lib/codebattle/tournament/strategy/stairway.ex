@@ -17,7 +17,7 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   @impl Tournament.Base
-  def default_meta(), do: %{rounds_limit: 5}
+  def default_meta(), do: %{rounds_limit: 5, rounds_config_type: "all"}
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t

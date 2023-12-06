@@ -47,6 +47,7 @@ function PlayerStatsPanel({
   matches,
   players,
   currentUserId,
+  showResults,
 }) {
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
@@ -94,7 +95,7 @@ function PlayerStatsPanel({
           </span>
           <span title="Your place in tournament">
             <FontAwesomeIcon className="text-warning" icon="trophy" />
-            {`: ${currentPlayer.place + 1}`}
+            {`: ${showResults ? currentPlayer.place + 1 : '?'}`}
           </span>
         </div>
       </div>
@@ -149,6 +150,7 @@ function PlayerStatsPanel({
                 playerId={currentUserId}
                 place={currentPlayer.place}
                 matchList={matchList}
+                showResults={showResults}
               />
             </div>
           </div>
@@ -181,6 +183,7 @@ function PlayerStatsPanel({
                   <StatisticsCard
                     playerId={currentUserId}
                     matchList={groupedMatchListByRound[stage]}
+                    showResults={showResults}
                   />
                 </div>
               );

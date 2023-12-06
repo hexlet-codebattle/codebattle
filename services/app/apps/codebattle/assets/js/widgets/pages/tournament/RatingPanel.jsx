@@ -95,6 +95,7 @@ function RatingPanel({
   currentRound,
   matches,
   players,
+  topPlayersIds,
   currentUserId,
   pageNumber,
   pageSize,
@@ -104,8 +105,8 @@ function RatingPanel({
 
   const playersList = useMemo(
     () => Object.values(players)
-        .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
         .sort((a, b) => a.place - b.place)
+        .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
         .reduce((acc, player) => {
           if (player.id === currentUserId) {
             return [player, ...acc];
@@ -116,6 +117,23 @@ function RatingPanel({
         }, []),
     [players, currentUserId, pageSize, pageNumber],
   );
+  const topPlayersList = useMemo(
+    () => (topPlayersIds || [])
+      .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
+      .map(id => players[id])
+      .sort((a, b) => a.place - b.place)
+      .reduce((acc, player) => {
+        if (player.id === currentUserId) {
+          return [player, ...acc];
+        }
+
+        acc.push(player);
+        return acc;
+      }, []),
+    [topPlayersIds, players, currentUserId, pageSize, pageNumber],
+  );
+
+  const playersShowList = topPlayersIds.length === 0 ? playersList : topPlayersList;
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 
@@ -133,12 +151,10 @@ function RatingPanel({
   }, [currentRound]);
 
   useEffect(() => {
-    if (playersList.length !== 0) {
-      dispatch(actions.updateUsers({ users: playersList }));
+    if (playersShowList.length !== 0) {
+      dispatch(actions.updateUsers({ users: playersShowList }));
     }
-  }, [playersList, dispatch]);
-
-  useSubscribeTournamentPlayers(playersList);
+  }, [playersShowList, dispatch]);
 
   return (
     <>
@@ -150,7 +166,7 @@ function RatingPanel({
             currentUserId={currentUserId}
           />
           <PlayersList
-            players={playersList}
+            players={playersShowList}
             matchList={matchList}
             currentUserId={currentUserId}
             searchedUserId={searchedUser?.id}
@@ -209,7 +225,7 @@ function RatingPanel({
                   />
                   <PlayersList
                     key={`stage-${stage}-user-list`}
-                    players={playersList}
+                    players={playersShowList}
                     matchList={stageMatches}
                     currentUserId={currentUserId}
                     searchedUserId={searchedUser?.id}
