@@ -58,6 +58,8 @@ const collectFinalRecord = (acc, strRecord) => {
       newPlayers = updatePlayers(players, {
         id: record.userId,
         checkResult: record.checkResult,
+        editorText: record.editorText,
+        editorLang: record.editorLang,
       });
 
       return { ...acc, players: newPlayers };
