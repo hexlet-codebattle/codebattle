@@ -436,7 +436,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     machine.send('rematch:status_updated', { payload: data });
   };
 
-  const handleRematchAccepted = ({ game_id: newGameId }) => {
+  const handleRematchAccepted = ({ gameId: newGameId }) => {
     machine.send('rematch:accepted', { newGameId });
     redirectToNewGame(newGameId);
   };
