@@ -44,7 +44,7 @@ spec:
           image: "{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 4000
             initialDelaySeconds: 5
             periodSeconds: 5
