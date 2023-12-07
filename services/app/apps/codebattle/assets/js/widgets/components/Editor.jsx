@@ -235,10 +235,9 @@ class Editor extends PureComponent {
   handleResize = () => this.editor.layout();
 
   handleChangeCursorSelection = e => {
-    const { editable, gameMode, onChangeCursorSelection } = this.props;
-    const isTournament = gameMode === GameRoomModes.tournament;
+    const { editable, isTournamentGame, onChangeCursorSelection } = this.props;
 
-    if (!editable || isTournament) {
+    if (!editable || isTournamentGame) {
       const { column, lineNumber } = this.editor.getPosition();
       this.editor.setPosition({ lineNumber, column });
     } else if (editable && onChangeCursorSelection) {
@@ -321,12 +320,12 @@ class Editor extends PureComponent {
     this.editor = editor;
     this.monaco = monaco;
     const {
+      isTournamentGame,
       editable,
       gameMode,
       userId,
       gameId,
     } = this.props;
-    const isTournament = gameMode === GameRoomModes.tournament;
     const isBuilder = gameMode === GameRoomModes.builder;
     const isHistory = gameMode === GameRoomModes.history;
 
@@ -343,13 +342,14 @@ class Editor extends PureComponent {
       this.clearCursorListeners = clearCursorListeners;
     }
 
-    if (editable && !isTournament && !isBuilder) {
+    if (editable && !isTournamentGame && !isBuilder) {
       this.editor.focus();
-    } else if (editable && isTournament) {
+    } else if (editable && isTournamentGame) {
       this.editor.addCommand(
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
         () => null,
       );
+
       this.editor.focus();
     } else {
       // disable copying for spectator

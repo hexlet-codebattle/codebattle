@@ -21,6 +21,7 @@ function ControlPanel({
   searchOption,
   panelMode,
   disabledPanelModeControl = false,
+  disabledSearch = false,
   setSearchOption,
   togglePanelMode,
 }) {
@@ -48,7 +49,7 @@ function ControlPanel({
 
   return (
     <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-      {panelMode !== PanelModeCodes.playerMode ? (
+      {panelMode !== PanelModeCodes.playerMode && !disabledSearch ? (
         <div className="input-group flex-nowrap mb-2">
           <div className="input-group-prepend">
             <span className="input-group-text" id="search-icon">

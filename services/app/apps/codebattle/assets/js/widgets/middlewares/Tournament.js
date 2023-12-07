@@ -74,9 +74,10 @@ export const connectToTournament = () => dispatch => {
   };
 
   const handleRoundFinished = response => {
-    dispatch(actions.updateTournamentData(
-      response.tournament,
-    ));
+    dispatch(actions.updateTournamentData({
+      ...response.tournament,
+      topPlayersIds: response.topPlayersIds,
+    }));
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTopPlayers(compact(response.players)));

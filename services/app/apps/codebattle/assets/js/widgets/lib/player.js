@@ -131,9 +131,14 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'check_complete') {
-    const { checkResult } = record;
+    const { checkResult, editorText, editorLang } = record;
 
-    const newPlayers = updatePlayers(players, { id: record.id, checkResult });
+    const newPlayers = updatePlayers(players, {
+      id: record.id,
+      checkResult,
+      editorText,
+      editorLang,
+    });
     const userName = find(players, { id: record.id }).name;
     const data = {
       type,
@@ -141,6 +146,8 @@ const reduceOriginalRecords = (acc, record, index) => {
       checkResult,
       userName,
       recordId: record.recordId,
+      editorText,
+      editorLang,
     };
     const newRecord = createFinalRecord(index, data, {
       players: newPlayers,

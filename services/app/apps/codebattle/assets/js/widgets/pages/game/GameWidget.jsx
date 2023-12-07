@@ -31,7 +31,7 @@ function RightSide({ output, children }) {
     </EditorWrapper>
   ) : (
     <div className="d-flex flex-column flex-grow-1 overflow-auto" style={{ maxHeight: '375px' }}>
-      <div className="h-auto">
+      <div className="h-auto user-select-none">
         {isShowOutput && <Output sideOutput={output} />}
       </div>
     </div>

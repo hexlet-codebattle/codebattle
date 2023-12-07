@@ -99,6 +99,7 @@ function RatingPanel({
   currentUserId,
   pageNumber,
   pageSize,
+  showResults,
 }) {
   const dispatch = useDispatch();
   const [openedStage, setOpenedStage] = useState(currentRound);
@@ -155,6 +156,19 @@ function RatingPanel({
       dispatch(actions.updateUsers({ users: playersShowList }));
     }
   }, [playersShowList, dispatch]);
+
+  if (!showResults) {
+    return (
+      <div
+        className={cn(
+          'flex text-center border-top border-bottom-0',
+          'text-uppercase font-weight-bold pt-2',
+        )}
+      >
+        Wait reviling results
+      </div>
+    );
+  }
 
   return (
     <>

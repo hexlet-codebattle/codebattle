@@ -2,7 +2,6 @@ import React, {
  memo, useMemo, useState,
 } from 'react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
 import groupBy from 'lodash/groupBy';
@@ -15,6 +14,7 @@ import { getOpponentId } from '../../utils/matches';
 import StageCard from './StageCard';
 import StageTitle from './StageTitle';
 import StatisticsCard from './StatisticsCard';
+import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
 const navMatchesTabsClassName = cn(
@@ -47,7 +47,6 @@ function PlayerStatsPanel({
   matches,
   players,
   currentUserId,
-  showResults,
 }) {
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
@@ -94,8 +93,10 @@ function PlayerStatsPanel({
             <span className="badge badge-success text-white mx-2">you</span>
           </span>
           <span title="Your place in tournament">
-            <FontAwesomeIcon className="text-warning" icon="trophy" />
-            {`: ${showResults ? currentPlayer.place + 1 : '?'}`}
+            <TournamentPlace
+              place={currentPlayer.place + 1}
+              withIcon
+            />
           </span>
         </div>
       </div>
@@ -150,7 +151,6 @@ function PlayerStatsPanel({
                 playerId={currentUserId}
                 place={currentPlayer.place}
                 matchList={matchList}
-                showResults={showResults}
               />
             </div>
           </div>
@@ -183,7 +183,6 @@ function PlayerStatsPanel({
                   <StatisticsCard
                     playerId={currentUserId}
                     matchList={groupedMatchListByRound[stage]}
-                    showResults={showResults}
                   />
                 </div>
               );

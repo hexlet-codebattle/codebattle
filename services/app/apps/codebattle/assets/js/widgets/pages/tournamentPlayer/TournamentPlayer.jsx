@@ -299,7 +299,7 @@ function TournamentPlayer({ spectatorMachine }) {
           style={{ minHeight: '400px' }}
           className="position-relative overflow-auto w-100 h-100"
         >
-          <div className="position-absolute w-100">
+          <div className="position-absolute w-100 user-select-none">
             <Output sideOutput={output} />
           </div>
         </div>

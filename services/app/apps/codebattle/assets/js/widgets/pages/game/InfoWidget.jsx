@@ -106,7 +106,7 @@ function InfoWidget() {
               />
             </div>
             <div
-              className="tab-pane h-100"
+              className="tab-pane h-100 user-select-none"
               id={idOutput}
               role="tabpanel"
               aria-labelledby={`${idOutput}-tab`}

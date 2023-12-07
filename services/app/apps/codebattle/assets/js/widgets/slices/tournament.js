@@ -14,7 +14,7 @@ const tournament = createSlice({
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,
-      ...payload,
+      ...(['swiss', 'ladder', 'stairway'].includes(payload.type) ? omit(payload, ['matches', 'players']) : payload),
     }),
     updateTournamentMatches: (state, { payload }) => {
       const newMatches = payload.reduce((acc, match) => ({

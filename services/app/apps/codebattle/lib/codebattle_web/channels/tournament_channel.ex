@@ -97,7 +97,7 @@ defmodule CodebattleWeb.TournamentChannel do
         user: socket.assigns.current_user
       })
 
-      tournament = Tournament.Context.get!(tournament_id)
+      tournament = Tournament.Context.get_tournament_info(tournament_id)
       broadcast!(socket, "tournament:restarted", %{tournament: tournament})
     end
 
@@ -121,7 +121,7 @@ defmodule CodebattleWeb.TournamentChannel do
       user: socket.assigns.current_user
     })
 
-    tournament = Tournament.Context.get!(tournament_id)
+    tournament = Tournament.Context.get_tournament_info(tournament_id)
 
     broadcast!(socket, "tournament:update", %{
       tournament: %{
@@ -141,7 +141,7 @@ defmodule CodebattleWeb.TournamentChannel do
         user: socket.assigns.current_user
       })
 
-      tournament = Tournament.Context.get!(tournament_id)
+      tournament = Tournament.Context.get_tournament_info(tournament_id)
 
       broadcast!(socket, "tournament:update", %{tournament: tournament})
     end
@@ -209,7 +209,7 @@ defmodule CodebattleWeb.TournamentChannel do
     players =
       Helpers.get_paginated_players(tournament_info, min(page_num, 1000), min(page_size, 30))
 
-    {:reply, {:ok, %{players: players}}, socket}
+    {:reply, {:ok, %{players: players, top_players_ids: players}}, socket}
   end
 
   # def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
@@ -267,7 +267,7 @@ defmodule CodebattleWeb.TournamentChannel do
     push(socket, "tournament:round_finished", %{
       tournament: payload.tournament,
       players: payload.players,
-      top_player_ids: Enum.map(payload.players || [], & &1.id)
+      top_players_ids: Enum.map(payload.players || [], & &1.id)
     })
 
     {:noreply, socket}
@@ -321,16 +321,27 @@ defmodule CodebattleWeb.TournamentChannel do
 
     player_ids =
       ([current_player] ++ top_players)
-      |> Enum.reject(fn player -> is_nil(player) end)
+      |> Enum.reject(&is_nil/1)
       |> Enum.map(fn %{id: id} -> id end)
       |> Enum.uniq()
 
     opponents = Helpers.get_opponents(tournament, player_ids)
 
     players =
-      ([current_player] ++ top_players ++ opponents)
-      |> Enum.reject(&is_nil/1)
-      |> Enum.uniq_by(& &1.id)
+      if Helpers.can_moderate?(tournament, current_user) do
+        Helpers.get_players(tournament)
+      else
+        ([current_player] ++ top_players ++ opponents)
+        |> Enum.reject(&is_nil/1)
+        |> Enum.uniq_by(& &1.id)
+      end
+
+    top_player_ids =
+      if Helpers.can_moderate?(tournament, current_user) do
+        players |> Enum.map(& &1.id)
+      else
+        top_players |> Enum.map(& &1.id)
+      end
 
     matches =
       if Helpers.can_moderate?(tournament, current_user) do
@@ -343,7 +354,7 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       players: players,
       matches: matches,
-      top_player_ids: top_players |> Enum.map(& &1.id)
+      top_players_ids: top_player_ids
     }
   end
 

@@ -290,6 +290,12 @@ export const tournamentIdSelector = state => state.tournament.id;
 
 export const tournamentSelector = state => state.tournament;
 
+export const currentUserIsTournamentOwnerSelector = state => state.tournament.creatorId === state.user.currentUserId;
+
+export const tournamentShowResultsSelector = state => state.tournament.showResults;
+
+export const tournamentOwnerIdSelector = state => state.tournament.ownerId;
+
 export const tournamentPlayersSelector = state => state.tournament.players;
 
 export const tournamentMatchesSelector = state => state.tournament.matches;

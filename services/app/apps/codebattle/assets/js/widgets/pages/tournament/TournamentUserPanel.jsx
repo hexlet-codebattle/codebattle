@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 
 import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
 
+import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
 function TournamentUserPanel({
@@ -75,9 +76,7 @@ function TournamentUserPanel({
                 <>
                   <span className="mx-1">|</span>
                   <span title="Place on tournament">
-                    <FontAwesomeIcon className="text-warning" icon="trophy" />
-                    {': '}
-                    {place + 1}
+                    <TournamentPlace place={place + 1} withIcon />
                   </span>
                 </>
               )}

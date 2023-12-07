@@ -17,7 +17,9 @@ function CustomTournamentInfoPanel({
   currentUserId,
   pageNumber,
   pageSize,
-  showResults = true,
+  showResults = false,
+  isAdmin = false,
+  isOwner = false,
 }) {
   const [searchedUser, setSearchedUser] = useState();
   const [panelMode, setPanelMode] = useState(
@@ -50,7 +52,8 @@ function CustomTournamentInfoPanel({
               panelMode={panelMode}
               setSearchOption={setSearchedUser}
               togglePanelMode={togglePanelMode}
-              disabledPanelModeControl={!players[currentUserId] || !showResults}
+              disabledPanelModeControl={!players[currentUserId] || (!showResults && !isAdmin && !isOwner)}
+              disabledSearch={!isAdmin && !isOwner}
             />
             {panelMode === PanelModeCodes.playerMode && (
               <PlayerStatsPanel
@@ -59,7 +62,6 @@ function CustomTournamentInfoPanel({
                 matches={matches}
                 players={players}
                 currentUserId={currentUserId}
-                showResults={showResults}
               />
             )}
             {panelMode === PanelModeCodes.ratingMode && (
@@ -73,7 +75,7 @@ function CustomTournamentInfoPanel({
                 currentUserId={currentUserId}
                 pageNumber={pageNumber}
                 pageSize={pageSize}
-                showResults={showResults}
+                showResults={showResults || isAdmin || isOwner}
               />
             )}
           </div>

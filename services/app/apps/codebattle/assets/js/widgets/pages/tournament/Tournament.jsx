@@ -21,7 +21,7 @@ import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 
 function InfoPanel({
-  currentUserId, tournament, playersCount,
+  currentUserId, tournament, playersCount, isAdmin, isOwner,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -69,6 +69,8 @@ function InfoPanel({
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
           showResults={tournament.showResults}
+          isAdmin={isAdmin}
+          isOwner={isOwner}
         />
       );
     }
@@ -80,9 +82,9 @@ function Tournament() {
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
-  console.log(tournament);
 
   const playersCount = useMemo(
     () => Object.keys(tournament.players).length,
@@ -187,6 +189,8 @@ function Tournament() {
                 tournament={tournament}
                 playersCount={playersCount}
                 currentUserId={currentUserId}
+                isAdmin={isAdmin}
+                isOwner={isOwner}
               />
             </div>
           </div>

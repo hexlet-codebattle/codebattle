@@ -3,14 +3,29 @@ import React, { memo, useMemo, useCallback } from 'react';
 import Pagination from 'react-js-pagination';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { tournamentPlayersSelector } from '../../selectors';
+import {
+  currentUserIsAdminSelector,
+  currentUserIsTournamentOwnerSelector,
+  tournamentSelector,
+} from '../../selectors';
 import { actions } from '../../slices';
 
 function TournamentPlayersPagination({ pageNumber, pageSize }) {
   const dispatch = useDispatch();
 
-  const players = useSelector(tournamentPlayersSelector);
-  const totalEntries = useMemo(() => Object.keys(players).length, [players]);
+  const { players, topPlayersIds } = useSelector(tournamentSelector);
+  const isAdmin = useSelector(currentUserIsAdminSelector);
+  const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
+  const totalEntries = useMemo(
+    () => {
+      if (topPlayersIds.length === 0 || isAdmin || isOwner) {
+        return Object.keys(players).length;
+      }
+
+      return topPlayersIds.length;
+    },
+    [players, isAdmin, isOwner, topPlayersIds],
+  );
 
   const onChangePageNumber = useCallback(page => {
     dispatch(actions.changeTournamentPageNumber(page));

@@ -183,6 +183,7 @@ function EditorContainer({
     value: editorState?.text,
     editorHeight,
     mode: editorMode || editorModes.default,
+    isTournamentGame,
     theme,
     ...userSettings,
     editable: !openedReplayer && userSettings.editable,
