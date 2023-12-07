@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUserTest do
       |> put_session(:user_id, 1_000_000)
       |> get(Routes.root_path(conn, :index))
 
-    assert conn.status == 200
+    assert conn.status == 302
     assert get_session(conn, :user_id) == nil
   end
 end
