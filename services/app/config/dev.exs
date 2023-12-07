@@ -55,5 +55,3 @@ config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_A
 config :codebattle, Codebattle.Invite,
   timeout: :timer.minutes(15),
   lifetime: :timer.minutes(15)
-
-config :codebattle, CodebattleWeb.MainChannel, use_presence: true

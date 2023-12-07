@@ -25,6 +25,7 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_flash)
     plug(:fetch_live_flash)
     plug(CodebattleWeb.Plugs.AssignCurrentUser)
+    plug(CodebattleWeb.Plugs.ForceRedirect)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(PhoenixGon.Pipeline)
@@ -40,6 +41,7 @@ defmodule CodebattleWeb.Router do
     plug(:accepts, ["json"])
     plug(:fetch_session)
     plug(CodebattleWeb.Plugs.AssignCurrentUser)
+    plug(CodebattleWeb.Plugs.ForceRedirect)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
   end
@@ -78,10 +80,6 @@ defmodule CodebattleWeb.Router do
     scope "/v1", V1, as: :v1 do
       scope("/games") do
         get("/completed", GameController, :completed)
-      end
-
-      scope("/tournaments/:tournament_id") do
-        get("/matches", TournamentController, :get_matches)
       end
 
       get("/:user_id/activity", ActivityController, :show)
@@ -134,11 +132,6 @@ defmodule CodebattleWeb.Router do
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
     end
 
-    # only for dev-admin liveView experiments
-    resources("/live_view_tournaments", LiveViewTournamentController,
-      only: [:index, :show, :edit]
-    )
-
     scope "/tournaments" do
       pipe_through(:empty_layout)
       get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
@@ -180,6 +173,11 @@ defmodule CodebattleWeb.Router do
     scope "/games" do
       post("/:id/join", GameController, :join)
     end
+
+    # only for dev-admin liveView experiments
+    resources("/live_view_tournaments", LiveViewTournamentController,
+      only: [:index, :show, :edit]
+    )
   end
 
   scope "/feature-flags" do

@@ -48,6 +48,7 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
+      is_record_games: Application.get_env(:codebattle, :record_games),
       playbook_state: %{records: [], id: 0}
     }
 
@@ -59,11 +60,10 @@ defmodule Codebattle.Game.Server do
     %{game: game} = state
 
     {:noreply,
-     Map.put(
-       state,
-       :playbook_state,
-       Playbook.Context.init_records(game.players)
-     )}
+     %{
+       state
+       | playbook_state: Playbook.Context.init_records(game.players)
+     }}
   end
 
   @impl GenServer
@@ -71,11 +71,10 @@ defmodule Codebattle.Game.Server do
     %{playbook_state: playbook_state} = state
 
     {:noreply,
-     Map.put(
-       state,
-       :playbook_state,
-       Playbook.Context.add_record(playbook_state, type, params)
-     )}
+     %{
+       state
+       | playbook_state: Playbook.Context.add_record(playbook_state, type, params)
+     }}
   end
 
   @impl GenServer
@@ -90,19 +89,23 @@ defmodule Codebattle.Game.Server do
 
   @impl GenServer
   def handle_call({:transition, event, params}, _from, state) do
-    %{game: game, playbook_state: playbook_state} = state
+    %{game: game, playbook_state: playbook_state, is_record_games: is_record_games} = state
 
     case Game.Fsm.transition(event, game, params) do
       {:error, reason} ->
         {:reply, {:error, reason}, state}
 
       {:ok, new_game = %Game{}} ->
-        new_state = %{
-          game: new_game,
-          playbook_state: Playbook.Context.add_record(playbook_state, event, params)
-        }
-
-        {:reply, {:ok, {game.state, new_game}}, new_state}
+        if is_record_games do
+          {:reply, {:ok, {game.state, new_game}},
+           %{
+             state
+             | game: new_game,
+               playbook_state: Playbook.Context.add_record(playbook_state, event, params)
+           }}
+        else
+          {:reply, {:ok, {game.state, new_game}}, %{state | game: new_game}}
+        end
     end
   end
 

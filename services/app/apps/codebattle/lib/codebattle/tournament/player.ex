@@ -11,14 +11,15 @@ defmodule Codebattle.Tournament.Player do
   @fields [
     :avatar_url,
     :id,
+    :is_banned,
     :is_bot,
     :lang,
     :matches_ids,
     :name,
+    :place,
     :rank,
     :rating,
     :score,
-    :place,
     :team_id,
     :was_online,
     :wins_count
@@ -27,6 +28,7 @@ defmodule Codebattle.Tournament.Player do
   embedded_schema do
     field(:avatar_url, :string)
     field(:id, :integer)
+    field(:is_banned, :boolean, default: false)
     field(:is_bot, :boolean)
     field(:lang, :string)
     field(:matches_ids, {:array, :integer}, default: [])

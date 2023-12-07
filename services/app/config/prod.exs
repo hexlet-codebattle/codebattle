@@ -23,7 +23,6 @@ config :logger, level: :error
 
 config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
-config :codebattle, CodebattleWeb.MainChannel, use_presence: false
 config :codebattle, ws_port: 8080
 
 config :codebattle, restore_tournaments: true

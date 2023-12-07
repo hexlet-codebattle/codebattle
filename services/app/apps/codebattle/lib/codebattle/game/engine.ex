@@ -125,6 +125,7 @@ defmodule Codebattle.Game.Engine do
   def check_result(game, params) do
     %{user: user, editor_text: editor_text, editor_lang: editor_lang} = params
 
+    # TODO: maybe drop editor_text here
     Game.Server.update_playbook(game.id, :start_check, %{
       id: user.id,
       editor_text: editor_text,
@@ -138,6 +139,7 @@ defmodule Codebattle.Game.Engine do
 
     check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
 
+    # TODO: maybe drop editor_text here
     Codebattle.PubSub.broadcast("game:check_completed", %{
       game: game,
       user_id: user.id,

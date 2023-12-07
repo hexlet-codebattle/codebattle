@@ -1,7 +1,9 @@
 defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   import Plug.Conn
+  import Phoenix.Controller
 
   alias Codebattle.User
+  alias CodebattleWeb.Router.Helpers, as: Routes
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -12,14 +14,23 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
 
     case user_id do
       nil ->
-        conn |> assign(:current_user, User.create_guest())
+        if Application.get_env(:codebattle, :allow_guests) do
+          conn |> assign(:current_user, User.create_guest())
+        else
+          conn
+          |> put_flash(:danger, "You must be logged in to access that page")
+          |> redirect(to: Routes.session_path(conn, :new))
+          |> halt()
+        end
 
       id ->
         case Codebattle.Repo.get(User, id) do
           nil ->
             conn
             |> clear_session()
-            |> assign(:current_user, User.create_guest())
+            |> put_flash(:danger, "You must be logged in to access that page")
+            |> redirect(to: Routes.session_path(conn, :new))
+            |> halt()
 
           user ->
             assign(conn, :current_user, user)

@@ -25,6 +25,7 @@ defmodule Codebattle.Game.Player do
              :editor_lang,
              :editor_text,
              :id,
+             :is_banned,
              :is_bot,
              :is_guest,
              :lang,
@@ -48,6 +49,7 @@ defmodule Codebattle.Game.Player do
     field(:editor_lang, :string, default: "js")
     field(:editor_text, :string, default: @default_editor_text)
     field(:id, :integer)
+    field(:is_banned, :boolean, default: false)
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)
     field(:lang, :string, default: "js")
@@ -66,6 +68,7 @@ defmodule Codebattle.Game.Player do
       :id,
       :avatar_url,
       :name,
+      :is_banned,
       :is_bot,
       :is_guest,
       :lang,
@@ -115,6 +118,7 @@ defmodule Codebattle.Game.Player do
   def build(player = %Tournament.Player{}, params) do
     init_player = %__MODULE__{
       id: player.id,
+      is_banned: player.is_banned,
       is_bot: player.is_bot,
       is_guest: false,
       name: player.name,
@@ -137,6 +141,7 @@ defmodule Codebattle.Game.Player do
   def build(player = %Player{}, params) do
     init_player = %__MODULE__{
       id: player.id,
+      is_banned: player.is_banned,
       is_bot: player.is_bot,
       is_guest: player.is_guest,
       name: player.name,

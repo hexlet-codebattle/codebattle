@@ -66,6 +66,12 @@ spec:
               value: 'true'
             - name: CODEBATTLE_IMPORT_GITHUB_TASKS
               value: 'true'
+            - name: CODEBATTLE_ALLOW_GUESTS
+              value: 'true'
+            - name: CODEBATTLE_USE_PRESENCE
+              value: 'true'
+            - name: CODEBATTLE_RECORD_GAMES
+              value: 'true'
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
             - name: CODEBATTLE_PORT
