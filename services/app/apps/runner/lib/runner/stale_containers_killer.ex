@@ -3,7 +3,7 @@ defmodule Runner.StaleContainersKiller do
 
   use GenServer
 
-  @game_timeout 30
+  @game_timeout 15
 
   def start_link(_) do
     GenServer.start(__MODULE__, [], name: __MODULE__)
@@ -12,6 +12,10 @@ defmodule Runner.StaleContainersKiller do
   def init(state \\ []) do
     Process.send_after(self(), :check_game_containers, 1000)
     {:ok, state}
+  end
+
+  def kill() do
+    send(self(), :check_game_containers)
   end
 
   def handle_info(:check_game_containers, state) do
@@ -28,7 +32,7 @@ defmodule Runner.StaleContainersKiller do
       [game_id, uptime]
     end)
 
-    Process.send_after(self(), :check_game_containers, 7_000)
+    Process.send_after(self(), :check_game_containers, 3_000)
     {:noreply, state}
   end
 
@@ -45,6 +49,7 @@ defmodule Runner.StaleContainersKiller do
     {containers, _} =
       System.cmd("docker", [
         "ps",
+        "-a",
         "--filter",
         "label=codebattle_game",
         "--format",

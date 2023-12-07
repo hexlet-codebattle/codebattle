@@ -1,8 +1,6 @@
 defmodule RunnerWeb.Api.V1.ExecutorController do
   use RunnerWeb, :controller
 
-  require Logger
-
   plug(RunnerWeb.AuthPlug)
 
   def execute(conn, %{
@@ -13,12 +11,7 @@ defmodule RunnerWeb.Api.V1.ExecutorController do
     runner_task = Runner.Task.new!(task)
     lang_meta = Runner.Languages.meta(lang_slug)
 
-    {time, result} =
-      :timer.tc(fn ->
-        Runner.execute_solution(runner_task, lang_meta, solution_text)
-      end)
-
-    Logger.error("Runner.execute_solution lang: #{lang_slug} time_ms #{time / 1000} }")
+    result = Runner.execute_solution(runner_task, lang_meta, solution_text)
 
     json(conn, result)
   end
