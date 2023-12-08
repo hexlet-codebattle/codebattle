@@ -12,8 +12,11 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   def call(conn, _opts) do
     user_id = get_session(conn, :user_id)
 
-    case user_id do
-      nil ->
+    case {user_id, conn.request_path} do
+      {nil, path} when path in ["/auth/token/", "/auth/token"] ->
+        conn |> assign(:current_user, User.create_guest())
+
+      {nil, _path} ->
         if Application.get_env(:codebattle, :allow_guests) do
           conn |> assign(:current_user, User.create_guest())
         else
@@ -23,7 +26,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
           |> halt()
         end
 
-      id ->
+      {id, _path} ->
         case Codebattle.Repo.get(User, id) do
           nil ->
             conn

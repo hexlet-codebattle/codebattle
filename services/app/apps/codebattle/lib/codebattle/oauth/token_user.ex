@@ -11,7 +11,7 @@ defmodule Codebattle.Oauth.User.TokenUser do
   def find(""), do: {:error, "kek"}
 
   def find(token) do
-    case Repo.get_by(User, auth_token: token) do
+    case Repo.get_by(User, auth_token: String.strip(token)) do
       nil -> {:error, "Wrong auth token"}
       user -> {:ok, user}
     end
