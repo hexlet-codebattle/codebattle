@@ -87,6 +87,9 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:ban:player", %{"user_id" => user_id}, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+    tournament = Tournament.Server.get_tournament(tournament_id)
+
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :ban_player, %{
         user_id: String.to_integer(user_id)
