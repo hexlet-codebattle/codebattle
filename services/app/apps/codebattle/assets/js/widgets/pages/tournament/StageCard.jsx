@@ -4,7 +4,9 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+
+import { uploadPlayers } from '@/middlewares/Tournament';
 
 import MatchStateCodes from '../../config/matchStates';
 import { tournamentEmptyOpponentUrl } from '../../utils/urlBuilders';
@@ -53,8 +55,9 @@ function StageCard({
   lastGameId,
   lastMatchState,
   matchList,
+  isBanned,
 }) {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const opponent = players[opponentId];
 
   const cardInfoClassName = cn(
@@ -63,8 +66,8 @@ function StageCard({
   );
 
   useEffect(() => {
-    if (!opponent) {
-      // dispatch();
+    if (!opponent && opponentId) {
+      dispatch(uploadPlayers([opponentId]));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -98,13 +101,20 @@ function StageCard({
               )}
             </h6>
             <div className="d-flex">
-              <a
-                href={`/games/${lastGameId}`}
-                className="btn btn-primary rounded-lg m-1 px-4"
-              >
-                <FontAwesomeIcon className="mr-2" icon="eye" />
-                Open match
-              </a>
+              {isBanned ? (
+                <a href="_blank" className="btn btn-danger rounded-lg m-1 px-4 disabled">
+                  <FontAwesomeIcon className="mr-2" icon="ban" />
+                  You banned
+                </a>
+              ) : (
+                <a
+                  href={`/games/${lastGameId}`}
+                  className="btn btn-primary rounded-lg m-1 px-4"
+                >
+                  <FontAwesomeIcon className="mr-2" icon="eye" />
+                  Open match
+                </a>
+              )}
             </div>
           </div>
         </>

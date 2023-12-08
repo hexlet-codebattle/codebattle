@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -8,6 +8,7 @@ import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import Loading from '../../components/Loading';
 import UserInfo from '../../components/UserInfo';
+import { toggleBanUser } from '../../middlewares/Tournament';
 
 import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
@@ -25,10 +26,15 @@ function UserTournamentInfo({ userId }) {
 function UsersMatchList({
   currentUserId,
   playerId,
+  isBanned,
+  canBan,
   matches,
   hideStats = false,
 }) {
   const [player] = useMatchesStatistics(playerId, matches);
+  const handleToggleBanUser = useCallback(() => {
+    toggleBanUser(playerId);
+  }, [playerId]);
 
   if (matches.length === 0) {
     return (
@@ -43,7 +49,7 @@ function UsersMatchList({
   return (
     <div className="d-flex flex-column">
       {!hideStats && matches.length > 0 && (
-        <div className="d-flex py-2 border-bottom overflow-auto">
+        <div className="d-flex py-2 border-bottom align-items-center overflow-auto">
           <span className="ml-2">
             {'Wins: '}
             {player.winMatches.length}
@@ -62,6 +68,25 @@ function UsersMatchList({
             {Math.ceil(player.avgDuration)}
             {' sec'}
           </span>
+          {canBan && (
+            <button
+              type="button"
+              className="btn btn-sm btn-danger rounded-lg px-1 mx-1"
+              onClick={handleToggleBanUser}
+            >
+              {isBanned ? (
+                <>
+                  <FontAwesomeIcon className="mr-2" icon="ban" />
+                  Unban user
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon className="mr-2" icon="ban" />
+                  Ban User
+                </>
+              )}
+            </button>
+          )}
         </div>
       )}
       {matches.map(match => {

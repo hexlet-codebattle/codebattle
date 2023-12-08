@@ -86,6 +86,11 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:ban:player", %{"user_id" => _user_id}, socket) do
+    # TODO: handle ban tournament player
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:restart", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Context.get!(tournament_id)
@@ -182,6 +187,13 @@ defmodule CodebattleWeb.TournamentChannel do
     end
 
     {:noreply, socket}
+  end
+
+  def handle_in("tournament:players:request", %{"player_ids" => player_ids}, socket) do
+    tournament_info = socket.assigns.tournament_info
+    players = Helpers.get_players(tournament_info, player_ids)
+
+    {:reply, {:ok, %{players: players}}, socket}
   end
 
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do

@@ -111,7 +111,7 @@ function EditorContainer({
       return () => {};
     }
 
-    const clearEditor = GameActions.connectToEditor(editorService)(dispatch);
+    const clearEditor = GameActions.connectToEditor(editorService, players[id]?.isBanned)(dispatch);
 
     return clearEditor;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +186,7 @@ function EditorContainer({
     isTournamentGame,
     theme,
     ...userSettings,
-    editable: !openedReplayer && userSettings.editable,
+    editable: !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned',
     loading: isPreview || editorCurrent.value === 'loading',
   };
 

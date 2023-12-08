@@ -2,6 +2,7 @@ import React, {
  memo, useMemo, useState,
 } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
 import groupBy from 'lodash/groupBy';
@@ -90,6 +91,7 @@ function PlayerStatsPanel({
         <div>
           <span className="text-nowrap" title={currentPlayer.name}>
             {currentPlayer.name}
+            {currentPlayer.isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
             <span className="badge badge-success text-white mx-2">you</span>
           </span>
           <span title="Your place in tournament">
@@ -146,10 +148,12 @@ function PlayerStatsPanel({
                 lastGameId={matches[matchId]?.gameId}
                 lastMatchState={matches[matchId]?.state}
                 matchList={groupedMatchListByRound[currentRound]}
+                isBanned={currentPlayer.isBanned}
               />
               <StatisticsCard
                 playerId={currentUserId}
                 place={currentPlayer.place}
+                isBanned={currentPlayer.isBanned}
                 matchList={matchList}
               />
             </div>

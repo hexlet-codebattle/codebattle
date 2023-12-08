@@ -69,6 +69,12 @@ em-emoji-picker {
   -webkit-animation: checking_fade 1000ms infinite;
 }
 
+[data-editor-state='banned'] {
+  opacity: 0.6;
+  color: var(--red);
+  background: var(--red);
+}
+
 .dark-bg {
   background: $dark;
 }

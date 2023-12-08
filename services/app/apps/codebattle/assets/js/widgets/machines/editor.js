@@ -55,6 +55,7 @@ const initContextByState = state => assign(({ userId, type }) => ({
 
 const initActiveEditor = assign(() => ({ editorState: 'active' }));
 const initTestingEditor = assign(() => ({ editorState: 'testing' }));
+const initBannedEditor = assign(() => ({ editorState: 'banned' }));
 
 const editor = {
   initial: 'loading',
@@ -63,6 +64,7 @@ const editor = {
       on: {
         load_active_editor: { target: 'idle', actions: [initActiveEditor] },
         load_testing_editor: { target: 'idle', actions: [initTestingEditor] },
+        load_banned_editor: { target: 'banned', actions: [initBannedEditor] },
         load_stored_editor: 'history',
       },
     },
@@ -83,6 +85,7 @@ const editor = {
           cond: 'isUserEvent',
         },
         unload_editor: 'loading',
+        banned_user: 'banned',
       },
     },
     checking: {
@@ -100,9 +103,10 @@ const editor = {
           cond: 'isUserEvent',
         },
         unload_editor: 'loading',
+        banned_user: 'banned',
       },
     },
-    baned: {},
+    banned: {},
   },
 };
 

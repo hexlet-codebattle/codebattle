@@ -58,6 +58,7 @@ const PlayersList = memo(
           name={player.name}
           score={player.score}
           place={player.place}
+          isBanned={player.isBanned}
           searchedUserId={searchedUserId}
         />
       );
@@ -84,6 +85,7 @@ const SearchedUserPanel = memo(({
       name={searchedUser.name}
       score={searchedUser.score}
       place={searchedUser.rank}
+      isBanned={searchedUser.isBanned}
       searchedUserId={searchedUser.id}
     />
   );

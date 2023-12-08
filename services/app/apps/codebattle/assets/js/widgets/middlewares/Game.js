@@ -284,8 +284,13 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
   return clearCursorListeners;
 };
 
-export const activeEditorReady = machine => {
-  machine.send('load_active_editor');
+export const activeEditorReady = (machine, isBanned) => {
+  if (isBanned) {
+    machine.send('load_banned_editor');
+  } else {
+    machine.send('load_active_editor');
+  }
+
   // channel.on('editor:data', data => {
   //   const { userId } = data;
   //   machine.send('typing', { userId });
@@ -837,10 +842,10 @@ export const connectToGame = (machine, options) => dispatch => {
   return activeGameReady(machine, options)(dispatch);
 };
 
-export const connectToEditor = machine => () => (
+export const connectToEditor = (machine, isBanned) => () => (
   isRecord
     ? storedEditorReady(machine)
-    : activeEditorReady(machine)
+    : activeEditorReady(machine, isBanned)
 );
 
 export const checkGameSolution = () => (dispatch, getState) => {

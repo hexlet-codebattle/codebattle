@@ -4,7 +4,6 @@ import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
 import socket from '../../socket';
-import TournamentStates from '../config/tournament';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
@@ -145,12 +144,40 @@ export const connectToTournament = () => dispatch => {
 };
 
 // TODO (tournaments): request matches by searched player id
+export const uploadPlayers = playerIds => (dispatch, getState) => {
+  const state = getState();
+
+  const { isLive, id } = state.tournament;
+
+  if (isLive) {
+    channel.push('tournament:players:request', { player_ids: playerIds })
+      .receive('ok', response => {
+        dispatch(actions.updateTournamentPlayers(response.players));
+      })
+      .receive('error', error => console.error(error));
+  } else {
+    const playerIdsStr = playerIds.join(',');
+
+    axios
+      .get(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': window.csrf_token,
+        },
+      })
+      .then(response => {
+        dispatch(actions.updateTournamentPlayers(response.players));
+      })
+      .catch(error => console.error(error));
+  }
+};
+
 export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   const state = getState();
 
-  const { isLive, state: tournamentState, id } = state.tournament;
+  const { isLive, id } = state.tournament;
 
-  if (isLive && tournamentState === TournamentStates.active) {
+  if (isLive) {
     channel.push('tournament:matches:request', { player_id: playerId })
       .receive('ok', response => {
         dispatch(actions.updateTournamentMatches(response.matches));
@@ -222,6 +249,10 @@ export const showTournamentResults = () => {
 
 export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
+};
+
+export const toggleBanUser = userId => {
+  channel.push('tournament:ban:player', { user_id: userId }).receive('error', error => console.error(error));
 };
 
 export const requestMatchesByPlayerId = userId => dispatch => {
