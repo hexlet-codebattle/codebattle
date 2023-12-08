@@ -8,8 +8,11 @@ defmodule Runner do
           exit_code: non_neg_integer()
         }
 
-  @spec execute_solution(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: execution_result
-  defdelegate execute_solution(task, lang_meta, solution_text), to: Runner.Executor, as: :call
+  @spec execute_solution(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
+          execution_result
+  defdelegate execute_solution(task, lang_meta, solution_text, run_id),
+    to: Runner.Executor,
+    as: :call
 
   @spec generate_arguments(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           execution_result

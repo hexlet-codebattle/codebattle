@@ -8,7 +8,7 @@ defmodule Codebattle.CodeCheck.Executor.Local do
     runner_taks = Runner.Task.new!(token.task)
 
     %{container_output: container_output, exit_code: exit_code, seed: seed} =
-      Runner.Executor.call(runner_taks, token.lang_meta, token.solution_text)
+      Runner.Executor.call(runner_taks, token.lang_meta, token.solution_text, nil)
 
     %{token | container_output: container_output, exit_code: exit_code, seed: seed}
   end

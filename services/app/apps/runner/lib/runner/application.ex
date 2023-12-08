@@ -31,7 +31,8 @@ defmodule Runner.Application do
           id: Runner.PubSub,
           start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Runner.PubSub]]}
         },
-        {Runner.StaleContainersKiller, []}
+        {Runner.StaleContainersKiller, []},
+        {Runner.StateContainersRunLimiter, []}
       ] ++ prod_workers
 
     opts = [
