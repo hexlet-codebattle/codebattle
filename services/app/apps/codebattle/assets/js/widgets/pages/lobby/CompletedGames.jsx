@@ -111,6 +111,10 @@ function CompletedGames({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [object]);
 
+  if (games.length === 0) {
+    return <div className="my-auto py-5 text-center text-muted">No completed games</div>;
+  }
+
   return (
     <>
       <div

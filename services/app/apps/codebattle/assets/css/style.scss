@@ -129,6 +129,14 @@ em-emoji-picker {
   border: 2px solid #d9d9d9;
 }
 
+.min-h-100 {
+  min-height: 100%;
+}
+
+.basis-0 {
+  flex-basis: 0;
+}
+
 .btn {
   border-radius: unset;
 }

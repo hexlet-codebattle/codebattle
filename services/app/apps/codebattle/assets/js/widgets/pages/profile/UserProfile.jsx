@@ -51,35 +51,6 @@ function UserProfile() {
   });
   const gamesCount = sum(Object.values(stats.games));
 
-  const renderCompletedGames = () => (
-    <div className="row justify-content-center">
-      <div className="col-12">
-        <div className="text-left">
-          {completedGames && completedGames.length > 0 && (
-            <>
-              <CompletedGames
-                className="table-responsive scroll h-75"
-                games={completedGames}
-                loadNextPage={loadNextPage}
-                totalGames={totalGames}
-              />
-            </>
-          )}
-          {completedGames && completedGames.length === 0 && (
-            <>
-              <div
-                style={{ height: 498 }}
-                className="d-flex align-items-center justify-content-center border text-muted"
-              >
-                No completed games
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="row">
       <div className="col-12 col-md-3 my-4">
@@ -130,7 +101,7 @@ function UserProfile() {
         </div>
       </div>
       <div className="col-12 col-md-9 my-4">
-        <div className="pr-md-2">
+        <div className="pr-md-2 min-h-100 d-flex flex-column">
           <nav>
             <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
               <a
@@ -157,9 +128,9 @@ function UserProfile() {
               </a>
             </div>
           </nav>
-          <div className="tab-content" id="nav-tabContent">
+          <div className="tab-content border border-top-0 flex-grow-1 basis-0" id="nav-tabContent">
             <div
-              className="tab-pane fade border show active"
+              className="tab-pane fade show active"
               id="statistics"
               role="tabpanel"
               aria-labelledby="statistics-tab"
@@ -188,12 +159,19 @@ function UserProfile() {
               </div>
             </div>
             <div
-              className="tab-pane fade"
+              className="tab-pane fade min-h-100"
               id="completedGames"
               role="tabpanel"
               aria-labelledby="completedGames-tab"
             >
-              {renderCompletedGames()}
+              <div className="h-100 d-flex flex-column">
+                <CompletedGames
+                  className="table-responsive scroll h-75"
+                  games={completedGames}
+                  loadNextPage={loadNextPage}
+                  totalGames={totalGames}
+                />
+              </div>
             </div>
           </div>
         </div>
