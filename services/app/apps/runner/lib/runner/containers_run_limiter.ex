@@ -64,7 +64,8 @@ defmodule Runner.StateContainersRunLimiter do
     filtered_waiting_list = Enum.filter(state.waiting_list, &(run_id != &1))
 
     new_state =
-      if length(filtered_executed_list) < Application.get_env(:runner, :max_parallel_containers_run) &&
+      if length(filtered_executed_list) <
+           Application.get_env(:runner, :max_parallel_containers_run) &&
            length(filtered_waiting_list) > 0 do
         [first | rest_waiting_list] = filtered_waiting_list
 
