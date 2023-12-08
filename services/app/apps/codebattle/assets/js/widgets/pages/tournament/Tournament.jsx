@@ -100,7 +100,7 @@ function Tournament() {
   const handleKick = useCallback(event => {
     const { playerId } = event.currentTarget.dataset;
     if (playerId) {
-      kickFromTournament(playerId);
+      kickFromTournament(Number(playerId));
     }
   }, []);
 

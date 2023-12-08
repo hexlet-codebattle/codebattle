@@ -79,7 +79,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :leave, %{
-        user_id: String.to_integer(user_id)
+        user_id: user_id
       })
     end
 
@@ -92,7 +92,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :ban_player, %{
-        user_id: String.to_integer(user_id)
+        user_id: user_id
       })
     end
 
@@ -231,16 +231,6 @@ defmodule CodebattleWeb.TournamentChannel do
 
     {:reply, {:ok, %{players: players, top_players_ids: players}}, socket}
   end
-
-  # def handle_in("tournament:subscribe_players", %{"player_ids" => player_ids}, socket) do
-  #   tournament_id = socket.assigns.tournament_info.id
-
-  #   Enum.each(player_ids, fn player_id ->
-  #     Codebattle.PubSub.subscribe("tournament_player:#{tournament_id}_#{player_id}")
-  #   end)
-
-  #   {:reply, {:ok, %{}}, socket}
-  # end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
     matches =
