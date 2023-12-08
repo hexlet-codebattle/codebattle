@@ -10,8 +10,9 @@ defmodule RunnerWeb.Api.V1.ExecutorController do
       }) do
     runner_task = Runner.Task.new!(task)
     lang_meta = Runner.Languages.meta(lang_slug)
+    timeout_ms = Runner.Languages.get_timeout_ms(lang_meta)
 
-    {:ok, run_id} = Runner.StateContainersRunLimiter.registry_container(lang_slug)
+    {:ok, run_id} = Runner.StateContainersRunLimiter.registry_container({lang_slug, timeout_ms})
 
     try do
       result = Runner.execute_solution(runner_task, lang_meta, solution_text, run_id)

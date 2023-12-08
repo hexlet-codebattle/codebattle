@@ -4,9 +4,10 @@ defmodule Runner.Executor do
   require Logger
 
   alias Runner.CheckerGenerator
+  alias Runner.Languages
 
   @tmp_basedir "/tmp/codebattle-runner"
-  @docker_cmd_template "docker run --rm --init --memory 400m --cpus=0.7 --net none -l codebattle_game ~s ~s timeout -s KILL 15s make --silent test"
+  @docker_cmd_template "docker run --rm --init --memory 400m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
   @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
@@ -14,7 +15,7 @@ defmodule Runner.Executor do
   def call(task, lang_meta, solution_text, run_id) do
     seed = get_seed()
 
-    wait_permission_to_launch(run_id, 0)
+    wait_permission_to_launch(run_id, 0, Languages.get_timeout_ms(lang_meta) + 500)
 
     checker_text =
       if lang_meta.generate_checker? do
@@ -42,20 +43,21 @@ defmodule Runner.Executor do
     %{container_output: output, exit_code: exit_code, seed: seed}
   end
 
-  defp wait_permission_to_launch(nil, time) do
+  defp wait_permission_to_launch(nil, _waiting_time_ms, _max_timeout_ms) do
     :ok
   end
 
-  defp wait_permission_to_launch(run_id, time) when time >= 28_000 do
+  defp wait_permission_to_launch(run_id, waiting_time_ms, max_timeout_ms)
+       when waiting_time_ms >= max_timeout_ms do
     Runner.StateContainersRunLimiter.unregistry_container(run_id)
     throw(:error)
   end
 
-  defp wait_permission_to_launch(run_id, time) do
+  defp wait_permission_to_launch(run_id, waiting_time_ms, max_timeout_ms) do
     case Runner.StateContainersRunLimiter.check_run_status(run_id) do
-      {:ok, {:wait, timeout}} ->
-        :timer.sleep(timeout)
-        wait_permission_to_launch(run_id, time + timeout)
+      {:ok, {:wait, wait_timeout_ms}} ->
+        :timer.sleep(wait_timeout_ms)
+        wait_permission_to_launch(run_id, wait_timeout_ms + waiting_time_ms, max_timeout_ms)
 
       _ ->
         :ok
@@ -89,7 +91,7 @@ defmodule Runner.Executor do
     Logger.info("Docker volume: #{inspect(volume)}")
 
     @docker_cmd_template
-    |> :io_lib.format([volume, lang_meta.docker_image])
+    |> :io_lib.format([volume, lang_meta.docker_image, lang_meta.container_run_timeout])
     |> to_string
     |> String.split()
   end

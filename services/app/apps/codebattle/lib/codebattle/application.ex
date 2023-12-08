@@ -52,6 +52,7 @@ defmodule Codebattle.Application do
           start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}
         },
         {CodebattleWeb.Presence, []},
+        {Finch, name: CodebattleHTTP, pools: %{default: [size: 300, count: 5]}},
         {CodebattleWeb.Endpoint, []},
         {Codebattle.Game.TasksQueuesServer, []},
         {Codebattle.Game.GlobalSupervisor, []},

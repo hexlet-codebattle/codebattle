@@ -101,6 +101,10 @@ config :runner, RunnerWeb.Endpoint,
   secret_key_base: secret_key_base,
   server: true
 
+config :runner,
+  max_parallel_containers_run:
+    System.get_env("CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
+
 config :codebattle, :executor,
   runner_url: "http://runner.default.svc",
   api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")

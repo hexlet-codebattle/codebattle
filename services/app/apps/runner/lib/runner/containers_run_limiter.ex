@@ -21,36 +21,37 @@ defmodule Runner.StateContainersRunLimiter do
   end
 
   def init(_state \\ []) do
-    {:ok, %{count: 0, executed_list: [], waiting_list: []}}
+    {:ok, %{count: 0, executed_set: MapSet.new(), waiting_queue: :queue.new()}}
   end
 
-  def handle_call({:registry, spec}, _from, state) do
+  def handle_call({:registry, {lang_slug, timeout_ms}}, _from, state) do
     seed = to_string(:rand.uniform(10_000_000))
-    run_id = "#{seed}_#{spec}"
+    run_id = "#{seed}_#{lang_slug}"
+    Process.send_after(self(), {:unregistry, run_id}, timeout_ms + 100)
 
     new_state =
       if state.count >= Application.get_env(:runner, :max_parallel_containers_run) do
         %{
           count: state.count + 1,
-          executed_list: state.executed_list,
-          waiting_list: state.waiting_list ++ [run_id]
+          executed_set: state.executed_set,
+          waiting_queue: :queue.in(run_id, state.waiting_queue)
         }
       else
         %{
           count: state.count + 1,
-          executed_list: state.executed_list ++ [run_id],
-          waiting_list: state.waiting_list
+          executed_set: MapSet.put(state.executed_set, run_id),
+          waiting_queue: state.waiting_queue
         }
       end
 
-    Logger.error("registry container: #{run_id}")
+    Logger.info("registry container: #{inspect({run_id, lang_slug, timeout_ms})}")
 
     {:reply, {:ok, run_id}, new_state}
   end
 
   def handle_call({:check_run_status, run_id}, _from, state) do
-    if Enum.any?(state.executed_list, fn id -> id == run_id end) do
-      Logger.error("execute container run: #{run_id}, container counts: #{state.count}")
+    if MapSet.member?(state.executed_set, run_id) do
+      Logger.info("execute container run: #{run_id}, container counts: #{state.count}")
       {:reply, {:ok, :run}, state}
     else
       Logger.error("wait container run: #{run_id}, container counts: #{state.count}")
@@ -59,31 +60,36 @@ defmodule Runner.StateContainersRunLimiter do
   end
 
   def handle_cast({:unregistry, run_id}, state) do
-    count = state.count - 1
-    filtered_executed_list = Enum.filter(state.executed_list, &(run_id != &1))
-    filtered_waiting_list = Enum.filter(state.waiting_list, &(run_id != &1))
+    {:noreply, unregistry(state, run_id)}
+  end
 
-    new_state =
-      if length(filtered_executed_list) <
-           Application.get_env(:runner, :max_parallel_containers_run) &&
-           length(filtered_waiting_list) > 0 do
-        [first | rest_waiting_list] = filtered_waiting_list
+  def handle_info({:unregistry, run_id}, state) do
+    {:noreply, unregistry(state, run_id)}
+  end
 
-        %{
-          count: count,
-          executed_list: filtered_executed_list ++ [first],
-          waiting_list: rest_waiting_list
-        }
-      else
-        %{
-          count: count,
-          executed_list: filtered_executed_list,
-          waiting_list: filtered_waiting_list
-        }
-      end
+  defp unregistry(state, run_id) do
+    filtered_executed_set = MapSet.delete(state.executed_set, run_id)
+    filtered_waiting_queue = :queue.delete(run_id, state.waiting_queue)
+    count = MapSet.size(filtered_executed_set) + :queue.len(filtered_waiting_queue)
 
-    Logger.error("unregistry container: #{run_id}")
+    Logger.info("unregistry container: #{run_id}")
 
-    {:noreply, new_state}
+    if MapSet.size(filtered_executed_set) <
+         Application.get_env(:runner, :max_parallel_containers_run) &&
+         !:queue.is_empty(filtered_waiting_queue) do
+      {{:value, to_run_id}, rest_waiting_queue} = :queue.out(filtered_waiting_queue)
+
+      %{
+        count: count,
+        executed_set: MapSet.put(filtered_executed_set, to_run_id),
+        waiting_queue: rest_waiting_queue
+      }
+    else
+      %{
+        count: count,
+        executed_set: filtered_executed_set,
+        waiting_queue: filtered_waiting_queue
+      }
+    end
   end
 end

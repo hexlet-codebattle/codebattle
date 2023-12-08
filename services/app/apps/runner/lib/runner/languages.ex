@@ -19,6 +19,7 @@ defmodule Runner.Languages do
       checker_version: 2,
       generate_checker?: false,
       version: "3.2.2",
+      container_run_timeout: "10s",
       check_dir: "check",
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
@@ -46,6 +47,7 @@ defmodule Runner.Languages do
       slug: "js",
       version: "16.17.0",
       check_dir: "check",
+      container_run_timeout: "10s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:16.17.0",
@@ -80,6 +82,7 @@ defmodule Runner.Languages do
       slug: "ts",
       version: "4.7.4",
       check_dir: "check",
+      container_run_timeout: "10s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:16.17.0",
@@ -107,6 +110,7 @@ defmodule Runner.Languages do
       slug: "dart",
       version: "2.17.6",
       check_dir: "lib",
+      container_run_timeout: "15s",
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:2.17.6",
@@ -132,6 +136,7 @@ defmodule Runner.Languages do
       slug: "cpp",
       version: "20",
       check_dir: "check",
+      container_run_timeout: "17s",
       solution_file_name: "solution.cpp",
       checker_file_name: "checker.cpp",
       docker_image: "codebattle/cpp:20",
@@ -163,6 +168,7 @@ defmodule Runner.Languages do
       slug: "java",
       version: "20",
       check_dir: "check",
+      container_run_timeout: "17s",
       solution_file_name: "Solution.java",
       checker_file_name: "Checker.java",
       docker_image: "codebattle/java:20",
@@ -196,6 +202,7 @@ defmodule Runner.Languages do
       slug: "kotlin",
       version: "1.9.10",
       check_dir: "check",
+      container_run_timeout: "20s",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
       docker_image: "codebattle/kotlin:1.9.10",
@@ -229,6 +236,7 @@ defmodule Runner.Languages do
       slug: "csharp",
       version: "6.0.100",
       check_dir: "check",
+      container_run_timeout: "17s",
       solution_file_name: "solution.cs",
       checker_file_name: "checker.cs",
       docker_image: "codebattle/csharp:6.0.100",
@@ -267,6 +275,7 @@ defmodule Runner.Languages do
       name: "golang",
       slug: "golang",
       version: "1.19.0",
+      container_run_timeout: "15s",
       check_dir: "check",
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
@@ -295,6 +304,7 @@ defmodule Runner.Languages do
       checker_version: 2,
       version: "1.15.0",
       check_dir: "check",
+      container_run_timeout: "15s",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
       docker_image: "codebattle/elixir:1.15.0",
@@ -323,6 +333,7 @@ defmodule Runner.Languages do
       generate_checker?: false,
       version: "3.12.0",
       check_dir: "check",
+      container_run_timeout: "10s",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
       docker_image: "codebattle/python:3.12.0",
@@ -349,6 +360,7 @@ defmodule Runner.Languages do
       slug: "php",
       version: "8.1.8",
       check_dir: "check",
+      container_run_timeout: "10s",
       solution_file_name: "solution.php",
       checker_file_name: "checker.php",
       docker_image: "codebattle/php:8.1.8",
@@ -389,6 +401,7 @@ defmodule Runner.Languages do
       slug: "clojure",
       version: "1.11.2.1",
       check_dir: "check",
+      container_run_timeout: "10s",
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
       docker_image: "codebattle/clojure:1.11.2.1",
@@ -413,6 +426,7 @@ defmodule Runner.Languages do
       name: "haskell",
       slug: "haskell",
       version: "8.4.3",
+      container_run_timeout: "15s",
       solution_file_name: "Solution.hs",
       checker_file_name: "Checker.hs",
       check_dir: "Check",
@@ -447,6 +461,11 @@ defmodule Runner.Languages do
 
   def get_lang_slugs, do: Map.keys(@meta)
   def get_langs, do: Map.values(@meta)
+
+  def get_timeout_ms(lang_meta) do
+    [num, _] = String.split(lang_meta.container_run_timeout, "s")
+    String.to_integer(num) * 1000
+  end
 
   def meta, do: @meta
 

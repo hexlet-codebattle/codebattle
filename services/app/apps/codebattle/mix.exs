@@ -64,6 +64,7 @@ defmodule Codebattle.MixProject do
       {:sentry, "~> 8.0"},
       {:telemetry_metrics, "~> 0.6"},
       {:telemetry_poller, "~> 1.0"},
+      {:finch, "~> 0.16"},
       {:text_delta, "~> 1.4.0"},
       {:timex, "~> 3.6"},
       {:typed_struct, "~> 0.3"},

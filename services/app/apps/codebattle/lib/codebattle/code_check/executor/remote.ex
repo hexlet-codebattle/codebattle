@@ -3,8 +3,9 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
 
   require Logger
 
-  alias Runner.AtomizedMap
   alias Codebattle.CodeCheck.Checker.Token
+  alias Runner.AtomizedMap
+  alias Runner.Languages
 
   @spec call(Token.t()) :: Token.t()
   def call(token) do
@@ -13,7 +14,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
       solution_text: token.solution_text,
       task: Runner.Task.new!(token.task)
     }
-    |> execute()
+    |> execute(token.lang_meta)
     |> case do
       {:ok, result} ->
         %{
@@ -28,32 +29,38 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
     end
   end
 
-  defp execute(params) do
+  defp execute(params, lang_meta) do
     headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
     body = Jason.encode!(params)
     now = :os.system_time(:millisecond)
 
-    case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
-           timeout: 30_000,
-           recv_timeout: 30_000
-         ) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+    :post
+    |> Finch.build("#{executor_url()}/api/v1/execute", headers, body)
+    |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
+    |> case do
+      # case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
+      #        timeout: 30_000,
+      #        recv_timeout: 30_000
+      #      ) do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
         Logger.error(
-          "RemoteExecutor success lang: #{params.lang_slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
+          "RemoteExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
         )
 
         AtomizedMap.load(body)
 
-      {:ok, %HTTPoison.Response{body: body}} ->
+      {:ok, %Finch.Response{status: status, body: body}} ->
         Logger.error(
-          "RemoteExecutor failure lang: #{params.lang_slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
+          "RemoteExecutor failure status: #{status}, lang: #{lang_meta.slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
         )
 
         {:error, %{base: "RemoteExecutor failure: #{inspect(body)}"}}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, finch_exception} ->
+        reason = Exception.format(:error, finch_exception, [])
+
         Logger.error(
-          "RemoteExecutor error lang: #{params.lang_slug}, time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
+          "RemoteExecutor error lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}, error: #{inspect(reason)}"
         )
 
         {:error, "RemoteExecutor failure: #{inspect(reason)}"}
