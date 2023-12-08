@@ -62,7 +62,7 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_event(tournament_id, event_type, params) do
     try do
-      GenServer.call(server_name(tournament_id), {event_type, params})
+      GenServer.call(server_name(tournament_id), {:fire_event, event_type, params})
     catch
       :exit, reason ->
         Logger.error("Error to send tournament update: #{inspect(reason)}")
@@ -123,7 +123,7 @@ defmodule Codebattle.Tournament.Server do
      ]), state}
   end
 
-  def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
+  def handle_call({:fire_event, event_type, params}, _from, state = %{tournament: tournament}) do
     %{module: module} = tournament
 
     new_tournament =

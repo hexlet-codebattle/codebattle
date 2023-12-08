@@ -57,6 +57,21 @@ defmodule Codebattle.Tournament.Base do
         Map.put(tournament, :players_count, players_count(tournament))
       end
 
+      def ban_player(tournament, %{user_id: user_id}) do
+        player = Tournament.Players.get_player(tournament, user_id)
+
+        if player do
+          Tournament.Players.put_player(tournament, %{
+            player
+            | score: 0,
+              wins_count: 0,
+              is_banned: true
+          })
+        end
+
+        tournament
+      end
+
       def leave(tournament, _user_id), do: tournament
 
       def open_up(tournament, %{user: user}) do
