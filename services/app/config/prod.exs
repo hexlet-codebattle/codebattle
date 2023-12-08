@@ -50,6 +50,7 @@ config :codebattle, asserts_executor: asserts_executor
 
 config :runner, load_dot_env_file: false
 config :runner, pull_docker_images: true
+config :runner, max_parallel_containers_run: System.get_env("MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
 
 config :runner, RunnerWeb.Endpoint,
   http: [port: System.get_env("4001")],

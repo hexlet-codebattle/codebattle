@@ -4,8 +4,6 @@ defmodule Runner.StateContainersRunLimiter do
   use GenServer
   require Logger
 
-  @max_parallel_containers 0
-
   def start_link(_) do
     GenServer.start(__MODULE__, [], name: __MODULE__)
   end
@@ -31,7 +29,7 @@ defmodule Runner.StateContainersRunLimiter do
     run_id = "#{seed}_#{spec}"
 
     new_state =
-      if state.count >= @max_parallel_containers do
+      if state.count >= Application.get_env(:runner, :max_parallel_containers_run) do
         %{
           count: state.count + 1,
           executed_list: state.executed_list,
@@ -66,7 +64,7 @@ defmodule Runner.StateContainersRunLimiter do
     filtered_waiting_list = Enum.filter(state.waiting_list, &(run_id != &1))
 
     new_state =
-      if length(filtered_executed_list) < @max_parallel_containers &&
+      if length(filtered_executed_list) < Application.get_env(:runner, :max_parallel_containers_run) &&
            length(filtered_waiting_list) > 0 do
         [first | rest_waiting_list] = filtered_waiting_list
 
