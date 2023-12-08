@@ -5,15 +5,14 @@ defmodule RunnerWeb.AuthPlug do
   def init(options), do: options
 
   def call(conn, _) do
-    case get_req_header(conn, "x-auth-key") do
-      ["x-key"] ->
-        conn
-
-      _ ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "oiblz"})
-        |> halt
+    if Application.get_env(:codebattle, :executor)[:api_key] ==
+         List.first(get_req_header(conn, "x-auth-key")) do
+      conn
+    else
+      conn
+      |> put_status(:unauthorized)
+      |> json(%{error: "oiblz"})
+      |> halt
     end
   end
 end

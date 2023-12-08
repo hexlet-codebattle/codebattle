@@ -29,7 +29,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
     end
   end
 
-  defp execute(params, lang_meta) do
+  def execute(params, lang_meta) do
     headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
     body = Jason.encode!(params)
     now = :os.system_time(:millisecond)

@@ -46,10 +46,20 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :token_api do
+    plug(:accepts, ["json"])
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :mounted_apps do
     plug(:accepts, ["html"])
     plug(:fetch_session)
     plug(:put_secure_browser_headers)
+  end
+
+  scope "/token_api", CodebattleWeb.TokenApi do
+    pipe_through([:token_api])
+    post("/execute", ExecutorController, :execute)
   end
 
   scope "/", CodebattleWeb do
