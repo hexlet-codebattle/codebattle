@@ -105,7 +105,7 @@ config :runner,
   max_parallel_containers_run:
     System.get_env("CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
 
-config :codebattle, :executor,
+config :runner, :executor,
   runner_url: "http://runner.default.svc",
   api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
 

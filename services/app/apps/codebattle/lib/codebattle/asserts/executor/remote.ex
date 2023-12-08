@@ -50,6 +50,6 @@ defmodule Codebattle.AssertsService.Executor.Remote do
     end
   end
 
-  defp executor_url, do: Application.get_env(:codebattle, :executor)[:runner_url]
-  defp api_key, do: Application.get_env(:codebattle, :executor)[:api_key]
+  defp executor_url, do: Application.get_env(:runner, :executor)[:runner_url]
+  defp api_key, do: Application.get_env(:runner, :executor)[:api_key]
 end

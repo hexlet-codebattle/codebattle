@@ -84,7 +84,7 @@ config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 
-config :codebattle, :executor,
+config :runner, :executor,
   runner_url: "http://localhost:4001",
   api_key: "x-key"
 
