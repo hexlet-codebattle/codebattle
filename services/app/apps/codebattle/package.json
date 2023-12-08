@@ -27,7 +27,8 @@
       "^@/pages(.*)$": "<rootDir>/assets/js/widgets/pages$1",
       "^@/selectors(.*)$": "<rootDir>/assets/js/widgets/selectors$1",
       "^@/slices(.*)$": "<rootDir>/assets/js/widgets/slices$1",
-      "^@/utils(.*)$": "<rootDir>/assets/js/widgets/utils$1"
+      "^@/utils(.*)$": "<rootDir>/assets/js/widgets/utils$1",
+      "^axios$": "<rootDir>/node_modules/axios/dist/node/axios.cjs"
     },
     "testPathIgnorePatterns": [
       "/helpers/"
