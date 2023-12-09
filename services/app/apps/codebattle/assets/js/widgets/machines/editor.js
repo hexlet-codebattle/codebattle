@@ -19,6 +19,9 @@ import sound from '../lib/sound';
 
 const settingsByState = {
   idle: {},
+  charging: {
+    checkBtnStatus: editorBtnStatuses.charging,
+  },
   checking: {
     editable: false,
     checkBtnStatus: editorBtnStatuses.checking,
@@ -62,7 +65,7 @@ const editor = {
   states: {
     loading: {
       on: {
-        load_active_editor: { target: 'idle', actions: [initActiveEditor] },
+        load_active_editor: { target: 'charging', actions: [initActiveEditor] },
         load_testing_editor: { target: 'idle', actions: [initTestingEditor] },
         load_banned_editor: { target: 'banned', actions: [initBannedEditor] },
         load_stored_editor: 'history',
@@ -71,6 +74,23 @@ const editor = {
     history: {
       type: 'final',
       entry: initContextByState('history'),
+    },
+    charging: {
+      after: {
+        3000: {
+          target: 'idle',
+        },
+      },
+      entry: initContextByState('charging'),
+      on: {
+        check_solution: {
+          target: 'checking',
+          actions: ['soundStartChecking'],
+          cond: 'isUserEvent',
+        },
+        unload_editor: 'loading',
+        banned_user: 'banned',
+      },
     },
     idle: {
       entry: initContextByState('idle'),
@@ -92,13 +112,13 @@ const editor = {
       entry: initContextByState('checking'),
       after: {
         50000: {
-          target: 'idle',
+          target: 'charging',
           actions: ['soundFailureChecking', 'handleTimeoutFailureChecking', 'openCheckResultOutput'],
         },
       },
       on: {
         receive_check_result: {
-          target: 'idle',
+          target: 'charging',
           actions: ['soundFinishedChecking', 'openCheckResultOutput'],
           cond: 'isUserEvent',
         },

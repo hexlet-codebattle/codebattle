@@ -4,6 +4,7 @@ export const editorBtnStatuses = {
   enabled: 'enabled',
   disabled: 'disabled',
   checking: 'checking',
+  charging: 'charging',
 };
 
 const defaultSettings = {

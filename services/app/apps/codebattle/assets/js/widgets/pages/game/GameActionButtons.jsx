@@ -17,18 +17,29 @@ function CheckResultButton({ onClick, status }) {
     type: 'button',
     className: 'btn btn-outline-success btn-check rounded-lg',
     title: 'Check solution&#013;Ctrl + Enter',
-    onClick,
     'data-toggle': 'tooltip',
     'data-guide-id': 'CheckResultButton',
     'data-placement': 'top',
   };
 
+  const commonEnabledProps = {
+    ...commonProps,
+    onClick,
+  };
+
   switch (status) {
     case 'enabled':
       return (
-        <button type="button" {...commonProps}>
+        <button type="button" {...commonEnabledProps}>
           <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
           Run
+        </button>
+      );
+    case 'charging':
+      return (
+        <button type="button" {...commonProps} disabled>
+          <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
+          Charging...
         </button>
       );
     case 'checking':
