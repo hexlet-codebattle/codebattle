@@ -4,13 +4,11 @@ import axios from 'axios';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import sum from 'lodash/sum';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import Loading from '../../components/Loading';
 import langIconNames from '../../config/langIconNames';
-import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 import CompletedGames from '../lobby/CompletedGames';
 
 import Achievement from './Achievement';
@@ -19,7 +17,6 @@ import UserStatCharts from './UserStatCharts';
 
 function UserProfile() {
   const [userData, setUserData] = useState(null);
-  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -33,10 +30,6 @@ function UserProfile() {
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchCompletedGames());
   }, [dispatch]);
 
   if (!userData) {
@@ -164,13 +157,8 @@ function UserProfile() {
               role="tabpanel"
               aria-labelledby="completedGames-tab"
             >
-              <div className="h-100 d-flex flex-column">
-                <CompletedGames
-                  className="table-responsive scroll h-75"
-                  games={completedGames}
-                  loadNextPage={loadNextPage}
-                  totalGames={totalGames}
-                />
+              <div className="h-100 d-flex flex-column justify-content-center">
+                <CompletedGames className="h-100" />
               </div>
             </div>
           </div>

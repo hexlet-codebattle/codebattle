@@ -10,9 +10,13 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameLevelBadge from '../../components/GameLevelBadge';
+import Loading from '../../components/Loading';
 import ResultIcon from '../../components/ResultIcon';
 import HorizontalScrollControls from '../../components/SideScrollControls';
 import UserInfo from '../../components/UserInfo';
+import fetchionStatuses from '../../config/fetchionStatuses';
+import { completedGamesSelector } from '../../selectors';
+import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 
 import GameCard from './GameCard';
 
@@ -46,24 +50,24 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const commonTableClassName = 'table table-sm table-striped border-gray border-0 mb-0';
-const commonClassName = 'd-none d-sm-none d-md-block';
+const commonTableClassName = 'table table-striped mb-0';
+const commonClassName = 'table-responsive d-none d-md-block mvh-100 cb-overflow-y-scroll';
 
-function CompletedGames({
-  games,
-  loadNextPage = null,
-  totalGames,
-  className,
-  tableClassName = '',
-}) {
+function CompletedGames({ className, tableClassName = '' }) {
   const dispatch = useDispatch();
 
-  const { nextPage, totalPages } = useSelector(state => state.completedGames);
+  const {
+    completedGames, nextPage, totalPages, totalGames, status,
+  } = useSelector(completedGamesSelector);
   const object = useMemo(
     () => ({ loading: false }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nextPage],
   );
+
+  useEffect(() => {
+    dispatch(fetchCompletedGames());
+  }, [dispatch]);
 
   /** @type {import("react").RefObject<HTMLDivElement>} */
   const cardListRef = useRef(null);
@@ -111,8 +115,10 @@ function CompletedGames({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [object]);
 
-  if (games.length === 0) {
-    return <div className="my-auto py-5 text-center text-muted">No completed games</div>;
+  if (completedGames.length === 0) {
+    return status === fetchionStatuses.loading
+      ? <Loading />
+      : <div className="py-5 text-center text-muted">No completed games</div>;
   }
 
   return (
@@ -125,7 +131,7 @@ function CompletedGames({
         <table
           className={cn(commonTableClassName, tableClassName)}
         >
-          <thead>
+          <thead className="sticky-top bg-white">
             <tr>
               <th className="p-3 border-0">Level</th>
               <th className="px-1 py-3 border-0 text-center" colSpan={2}>
@@ -136,13 +142,13 @@ function CompletedGames({
             </tr>
           </thead>
           <tbody>
-            <CompletedGamesRows {...{ games }} />
+            <CompletedGamesRows games={completedGames} />
           </tbody>
         </table>
       </div>
       <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
         <HorizontalScrollControls>
-          {games.map(game => (
+          {completedGames.map(game => (
             <GameCard
               key={`card-${game.id}`}
               type="completed"
@@ -151,7 +157,7 @@ function CompletedGames({
           ))}
         </HorizontalScrollControls>
       </div>
-      <div className="bg-white py-2 px-5 font-weight-bold border-gray border rounded-bottom">
+      <div className="mt-auto border-top py-2 px-5 font-weight-bold bg-white">
         {`Total games: ${totalGames}`}
       </div>
     </>

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { camelizeKeys } from 'humps';
 import unionBy from 'lodash/unionBy';
 
+import fetchionStatuses from '../config/fetchionStatuses';
+
 import initial from './initial';
 import { actions as lobbyActions } from './lobby';
 
@@ -41,37 +43,37 @@ const completedGames = createSlice({
     nextPage: null,
     totalPages: null,
     totalGames: 0,
-    status: 'empty',
+    status: fetchionStatuses.idle,
     error: null,
   },
   reducers: {},
   extraReducers: {
     [fetchCompletedGames.pending]: state => {
-      state.status = 'loading';
+      state.status = fetchionStatuses.loading;
       state.error = null;
     },
     [fetchCompletedGames.fulfilled]: (state, { payload }) => {
-      state.status = 'loaded';
+      state.status = fetchionStatuses.loaded;
       state.completedGames = payload.games;
       state.totalPages = payload.pageInfo.totalPages;
       state.nextPage = payload.pageInfo.pageNumber + 1;
       state.totalGames = payload.pageInfo.totalEntries;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
-      state.status = 'rejected';
+      state.status = fetchionStatuses.rejected;
       state.error = action.error;
     },
     [loadNextPage.pending]: state => {
-      state.status = 'loading';
+      state.status = fetchionStatuses.loading;
       state.error = null;
     },
     [loadNextPage.fulfilled]: (state, { payload }) => {
-      state.status = 'loaded';
+      state.status = fetchionStatuses.loaded;
       state.nextPage += 1;
       state.completedGames = unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
-      state.status = 'rejected';
+      state.status = fetchionStatuses.rejected;
       state.error = action.error;
     },
     [lobbyActions.finishGame]: (state, { payload: { game } }) => {

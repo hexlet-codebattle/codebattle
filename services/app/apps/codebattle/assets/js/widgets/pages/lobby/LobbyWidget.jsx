@@ -28,7 +28,6 @@ import levelRatio from '../../config/levelRatio';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
 
 import Announcement from './Announcement';
@@ -366,10 +365,8 @@ const tabLinkHandler = hash => () => {
 
 const GameContainers = ({
   activeGames,
-  completedGames,
   liveTournaments,
   completedTournaments,
-  totalGames,
   currentUserId,
   isGuest = true,
   isOnline = false,
@@ -462,13 +459,7 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames
-            type="completed"
-            className="table-responsive scroll cb-lobby-widget-container"
-            games={completedGames}
-            loadNextPage={loadNextPage}
-            totalGames={totalGames}
-          />
+          <CompletedGames className="cb-lobby-widget-container" />
         </div>
       </div>
     </div>
@@ -507,7 +498,6 @@ const LobbyWidget = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const isModalShow = useSelector(selectors.isModalShow);
-  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
   const activeGame = useSelector(selectors.activeGameSelector);
   const {
     activeGames,
@@ -545,10 +535,6 @@ const LobbyWidget = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    dispatch(fetchCompletedGames());
-  }, [dispatch]);
-
   return (
     <div className="container-lg">
       {renderModal(isModalShow, handleCloseModal)}
@@ -565,10 +551,8 @@ const LobbyWidget = () => {
           </div>
           <GameContainers
             activeGames={activeGames}
-            completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
-            totalGames={totalGames}
             currentUserId={currentUserId}
             isGuest={isGuest}
             isOnline={online}
