@@ -10,7 +10,10 @@ import BuilderExampleForm from './BuilderExampleForm';
 import BuilderStatus from './BuilderStatus';
 import BuilderTaskAssignment from './BuilderTaskAssignment';
 
-function BuilderSettingsWidget({ setConfigurationModalShowing }) {
+function BuilderSettingsWidget({
+  openFullSizeTaskDescription,
+  setConfigurationModalShowing,
+}) {
   const dispatch = useDispatch();
 
   const task = useSelector(selectors.builderTaskSelector);
@@ -84,6 +87,7 @@ function BuilderSettingsWidget({ setConfigurationModalShowing }) {
                 task={task}
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
+                handleOpenFullSizeTaskDescriptio={openFullSizeTaskDescription}
                 openConfiguration={openTaskConfiguration}
               />
             </div>

@@ -74,7 +74,9 @@ function BuilderTaskAssignment({
   task,
   taskLanguage,
   handleSetLanguage,
+  handleOpenFullSizeTaskDescription,
   openConfiguration,
+  fullSize = true,
 }) {
   const dispatch = useDispatch();
 
@@ -171,6 +173,15 @@ function BuilderTaskAssignment({
           )}
           <div className="d-flex align-items-center mb-2">
             <ConfigurationButton onClick={openConfiguration} disabled={!editable} />
+            {!fullSize && (
+              <button
+                type="button"
+                className="btn btn-outline-secondary rounded-lg ml-2"
+                onClick={handleOpenFullSizeTaskDescription}
+              >
+                <FontAwesomeIcon icon="expand" />
+              </button>
+            )}
             <TaskLanguagesSelection
               handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +27,7 @@ import CodebattlePlayer from './game/CodebattlePlayer';
 import GameWidget from './game/GameWidget';
 import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
+import TaskDescriptionModal from './game/TaskDescriptionModal';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
 import TournamentStatisticsModal from './game/TournamentStatisticsModal';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
@@ -39,6 +40,7 @@ function GameRoomWidget({
 }) {
   const dispatch = useDispatch();
 
+  const [taskDescriptionModalShowing, setTaskDescriptionModalShowing] = useState(false);
   const [taskModalShowing, setTaskModalShowing] = useState(false);
   const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
   const [tournamentStatisticsModalShowing, setTournamentStatisticsModalShowing] = useState(false);
@@ -72,6 +74,7 @@ function GameRoomWidget({
   useEffect(() => {
     if (tournamentStatisticsModalShowing) {
       setResultModalShowing(false);
+      setTaskDescriptionModalShowing(false);
     }
   }, [tournamentStatisticsModalShowing, setResultModalShowing]);
 
@@ -122,6 +125,10 @@ function GameRoomWidget({
     };
   }, [mute]);
 
+  const openFullSizeTaskDescription = useCallback(() => {
+    setTaskDescriptionModalShowing(true);
+  }, [setTaskDescriptionModalShowing]);
+
   if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
@@ -147,6 +154,10 @@ function GameRoomWidget({
             <FeedbackAlertNotification />
             <div className="container-fluid">
               <div className="row no-gutter cb-game">
+                <TaskDescriptionModal
+                  modalShowing={taskDescriptionModalShowing}
+                  setModalShowing={setTaskDescriptionModalShowing}
+                />
                 <TaskConfirmationModal
                   modalShowing={taskModalShowing}
                   taskService={machines.taskService}
@@ -166,6 +177,7 @@ function GameRoomWidget({
                 {inBuilderRoom || (pageName === 'builder' && inPreviewRoom) ? (
                   <>
                     <BuilderSettingsWidget
+                      openFullSizeTaskDescription={openFullSizeTaskDescription}
                       setConfigurationModalShowing={
                         setTaskConfigurationModalShowing
                       }
@@ -174,7 +186,9 @@ function GameRoomWidget({
                   </>
                 ) : (
                   <>
-                    <InfoWidget />
+                    <InfoWidget
+                      openFullSizeTaskDescription={openFullSizeTaskDescription}
+                    />
                     <GameWidget editorMachine={editorMachine} />
                   </>
                 )}

@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
@@ -50,9 +51,11 @@ function TaskAssignment({
   taskLanguage,
   taskSize = 0,
   handleSetLanguage,
+  handleOpenFullSizeTaskDescription,
   changeTaskDescriptionSizes,
   hideGuide = false,
   hideContribution = false,
+  fullSize = false,
 }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
 
@@ -68,7 +71,8 @@ function TaskAssignment({
     return null;
   }
 
-  const cardClassName = cn('card h-100 border-0 shadow-sm', {
+  const cardClassName = cn({
+    'card h-100 border-0 shadow-sm': !fullSize,
     h5: taskSize === 1,
     h4: taskSize === 2,
     h3: taskSize === 3,
@@ -78,7 +82,7 @@ function TaskAssignment({
 
   return (
     <div className={cardClassName}>
-      <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
+      <div className="px-3 py-3 h-100 overflow-auto" data-guide-id={!fullSize && 'Task'}>
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text d-flex align-items-center">
             <GameLevelBadge level={task.level} />
@@ -92,6 +96,15 @@ function TaskAssignment({
               displayLanguage={displayLanguage}
             />
 
+            {!fullSize && (
+              <button
+                type="button"
+                className="btn btn-outline-secondary rounded-lg ml-2"
+                onClick={handleOpenFullSizeTaskDescription}
+              >
+                <FontAwesomeIcon icon="expand" />
+              </button>
+            )}
             {!hideGuide && <ShowGuideButton />}
             {changeTaskDescriptionSizes && (
               <div
