@@ -13,7 +13,7 @@ export const taskTemplatesStates = {
   none: 'none',
 };
 
-export const MAX_INPUT_ARGUMENTS_COUNT = 3;
+export const MAX_INPUT_ARGUMENTS_COUNT = 4;
 export const MIN_EXAMPLES_COUNT = 3;
 export const MAX_NESTED_TYPE_LEVEL = 3;
 export const MIN_NAME_LENGTH = 4;
