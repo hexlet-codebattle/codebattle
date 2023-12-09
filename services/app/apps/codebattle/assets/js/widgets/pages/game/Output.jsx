@@ -79,10 +79,22 @@ const Output = ({ sideOutput }) => {
 
   const uniqIndex = uniqueId('heading');
   const normalizedAsserts = version === 2
-      ? asserts
-      : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
+      ? asserts || []
+      : (asserts || []).map(elem => camelizeKeys(JSON.parse(elem)));
   const normalizedOutput = version === 2 ? outputError : output;
-  const isError = ['error', 'memory_leak', 'timeout'].includes(status);
+  const isError = ['error', 'memory_leak', 'timeout', 'service_failure'].includes(status);
+
+  if (['client_timeout', 'service_timeout'].includes(status)) {
+    return (
+      <div className="alert alert-secondary pb-2">
+        <pre>
+          <span className="font-weight-bold d-block">Output:</span>
+          <div>We are experiencing heavy loads on the network</div>
+          <div>Try send the solution later or wait until the response to the previous check is returned</div>
+        </pre>
+      </div>
+    );
+  }
 
   if ((!normalizedAsserts || normalizedAsserts.length === 0) && !isError) {
     return <EmptyOutput />;

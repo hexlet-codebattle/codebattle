@@ -83,7 +83,7 @@ function EditorContainer({
         handleTimeoutFailureChecking: ctx => {
           dispatch(actions.updateExecutionOutput({
             userId: ctx.userId,
-            status: 'timeout',
+            status: 'client_timeout',
             output: '',
             result: {},
             asserts: [],
