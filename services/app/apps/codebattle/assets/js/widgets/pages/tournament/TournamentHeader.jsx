@@ -13,7 +13,7 @@ import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
 import useTimer from '../../utils/useTimer';
 
-import JoinButton from './JoinButton';
+// import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 
 const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
@@ -132,7 +132,7 @@ function TournamentHeader({
   accessToken,
   isLive,
   name,
-  players,
+  // players,
   playersCount,
   playersLimit,
   creatorId,
@@ -206,7 +206,8 @@ function TournamentHeader({
             )}
           </div>
           <div className="d-flex">
-            {!isOver ? (
+            {
+              /* !isOver ? (
               <div className="d-flex justify-items-center pb-2">
                 {type !== 'team' && (
                   <div className="mr-2 mr-lg-0">
@@ -228,7 +229,8 @@ function TournamentHeader({
                   Tournaments
                 </a>
               </div>
-            )}
+            )
+              */}
             <div className="d-flex justify-items-center pb-2">
               {canModerate && (
                 <TournamentMainControlButtons

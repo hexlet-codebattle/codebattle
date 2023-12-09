@@ -60,7 +60,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               value:
                 f.params["description"] ||
                   "Markdown description. [stream_link](https://codebattle.hexlet.io)",
-              maxlength: "350",
+              maxlength: "1357",
               required: true
             ) %>
             <%= error_tag(f, :description) %>

@@ -64,7 +64,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= label(f, :description) %>
             <%= textarea(f, :description,
               class: "form-control",
-              maxlength: "350",
+              maxlength: "1357",
               required: true
             ) %>
             <%= error_tag(f, :description) %>
