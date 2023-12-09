@@ -28,7 +28,7 @@ function InfoPanel({
     && tournament.type !== 'team'
   ) {
     return (
-      <div className="d-flex justify-content-center align-items-center h-100">
+      <div className="h-100">
         <ReactMarkdown source={tournament.description} />
       </div>
     );
