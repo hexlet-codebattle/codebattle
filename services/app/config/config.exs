@@ -121,6 +121,7 @@ config :codebattle,
 
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false
+config :runner, runner_cpu_logger: false
 config :runner, max_parallel_containers_run: 16
 config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)
 config :runner, fake_docker_run: false

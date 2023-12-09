@@ -111,3 +111,5 @@ config :runner, :executor,
 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
+
+config :runner, runner_cpu_logger: System.get_env("CODEBATTLE_RUNNER_CPU_LOGGER", "") == "true"

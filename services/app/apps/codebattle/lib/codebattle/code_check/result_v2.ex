@@ -10,6 +10,8 @@ defmodule Codebattle.CodeCheck.Result.V2 do
   ok -> all tests were successful
   failure -> some tests fails
   error -> compile error, or out of memory
+  service_timeout -> remote execution timeout
+  service_failure ->  remote execution failure
   """
 
   @derive Jason.Encoder

@@ -16,11 +16,20 @@ defmodule Runner.Application do
       Config.Reader.read!(config_path) |> Application.put_all_env()
     end
 
+    prod_workers = []
+
     prod_workers =
       if Application.get_env(:runner, :pull_docker_images) do
-        [{Runner.DockerImagesPuller, []}]
+        [{Runner.DockerImagesPuller, []} | prod_workers]
       else
-        []
+        prod_workers
+      end
+
+    prod_workers =
+      if Application.get_env(:runner, :runner_cpu_logger) do
+        [{Runner.SystemMonitorLogger, []} | prod_workers]
+      else
+        prod_workers
       end
 
     children =

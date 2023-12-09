@@ -8,6 +8,17 @@ defmodule Codebattle.CodeCheck.OutputParser do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end
 
+  def call(%{execution_error: :timeout}) do
+    %Result{status: "service_timeout"}
+  end
+
+  def call(%{execution_error: error}) when not is_nil(error) do
+    %Result{
+      status: "service_failure",
+      output: inspect(error)
+    }
+  end
+
   def call(token) do
     %{container_output: container_output, seed: seed} = token
 

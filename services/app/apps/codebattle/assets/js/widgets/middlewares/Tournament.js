@@ -88,6 +88,8 @@ export const connectToTournament = () => dispatch => {
       channel: { online: true },
       playersPageNumber: 1,
       playersPageSize: 20,
+      matches: {},
+      players: {},
     }));
   };
 

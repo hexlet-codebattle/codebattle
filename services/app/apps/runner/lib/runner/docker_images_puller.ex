@@ -17,7 +17,7 @@ defmodule Runner.DockerImagesPuller do
   # SERVER
   def init(state) do
     Logger.info("Start Docker Puller")
-    Process.send_after(self(), :start_pulling, @timeout)
+    Process.send_after(self(), :start_pulling, :timer.seconds(100))
     {:ok, state}
   end
 

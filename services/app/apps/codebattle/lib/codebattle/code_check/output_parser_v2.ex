@@ -4,6 +4,17 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   alias Runner.AtomizedMap
   alias Codebattle.CodeCheck.Result
 
+  def call(%{execution_error: :timeout}) do
+    %Result{status: "service_timeout"}
+  end
+
+  def call(%{execution_error: error}) when not is_nil(error) do
+    %Result{
+      status: "service_failure",
+      output: inspect(error)
+    }
+  end
+
   def call(checker_token) do
     %{container_output: container_output, exit_code: exit_code, task: task} = checker_token
 

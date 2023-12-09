@@ -145,8 +145,8 @@ function Tournament() {
   }
 
   const matchTimeoutSeconds = tournament.meta?.roundsConfigType === 'per_round'
-      ? tournament.meta?.roundsConfig[tournament.currentRound]?.roundTimeoutSeconds
-      : tournament.matchTimeoutSeconds;
+    ? tournament.meta?.roundsConfig[tournament.currentRound]?.roundTimeoutSeconds
+    : tournament.matchTimeoutSeconds;
 
   return (
     <>

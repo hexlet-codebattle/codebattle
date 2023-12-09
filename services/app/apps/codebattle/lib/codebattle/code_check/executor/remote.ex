@@ -21,8 +21,12 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
           token
           | container_output: result.container_output,
             exit_code: result.exit_code,
-            seed: result.seed
+            seed: result.seed,
+            execution_error: nil
         }
+
+      {:error, :timeout} ->
+        %{token | execution_error: :timeout}
 
       {:error, reason} ->
         %{token | execution_error: reason}
@@ -54,7 +58,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
           "RemoteExecutor failure status: #{status}, lang: #{lang_meta.slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
         )
 
-        {:error, %{base: "RemoteExecutor failure: #{inspect(body)}"}}
+        {:error, "RemoteExecutor failure: #{inspect(body)}"}
 
       {:error, finch_exception} ->
         reason = Exception.format(:error, finch_exception, [])
@@ -63,7 +67,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
           "RemoteExecutor error lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}, error: #{inspect(reason)}"
         )
 
-        {:error, "RemoteExecutor failure: #{inspect(reason)}"}
+        {:error, :timeout}
     end
   end
 

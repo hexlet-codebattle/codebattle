@@ -111,7 +111,12 @@ defmodule CodebattleWeb.TournamentChannel do
       })
 
       tournament = Tournament.Context.get_tournament_info(tournament_id)
-      broadcast!(socket, "tournament:restarted", %{tournament: tournament})
+
+      if tournament do
+        broadcast!(socket, "tournament:restarted", %{
+          tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table])
+        })
+      end
     end
 
     {:noreply, socket}

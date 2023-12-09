@@ -1,13 +1,6 @@
 defmodule Codebattle.Game.Helpers do
   @moduledoc false
 
-  @game_level_score %{
-    "elementary" => 5,
-    "easy" => 8,
-    "medium" => 13,
-    "hard" => 21
-  }
-
   def get_state(game), do: game.state
   def get_game_id(game), do: game.id
   def get_tournament_id(game), do: game.tournament_id
@@ -74,7 +67,7 @@ defmodule Codebattle.Game.Helpers do
         |> Map.put(:lang, player.editor_lang)
         |> Map.put(
           :score,
-          get_player_score(player, duration_sec, game.level, game.timeout_seconds)
+          get_player_score(player, duration_sec, game.level)
         )
 
       {player.id, result}
@@ -141,30 +134,58 @@ defmodule Codebattle.Game.Helpers do
     |> Kernel.!()
   end
 
-  def get_player_score(player, duration_sec, game_level, timeout_seconds) do
-    # game_level_score is fibanachi based score for different task level
-    # %{"elementary" => 5, "easy" => 8, "medium" => 13, "hard" => 21}
+  @game_level_score %{
+    "elementary" => 8.0,
+    "easy" => 34.0,
+    "medium" => 233.0,
+    "hard" => 987.0
+  }
+
+  @game_level_avg_time_sec %{
+    "elementary" => 1 * 60.0,
+    "easy" => 2 * 60.0,
+    "medium" => 3 * 60.0,
+    "hard" => 5 * 60.0
+  }
+
+  @game_level_max_time_sec %{
+    "elementary" => 3 * 60.0,
+    "easy" => 5 * 60.0,
+    "medium" => 8 * 60.0,
+    "hard" => 13 * 60.0
+  }
+
+  def get_player_score(player, duration_sec, game_level) do
+    # game_level_score is a Fibonacci-based score for different task levels
     game_level_score = @game_level_score[game_level]
 
-    # base_winner_score = game_level_score / 2 for winner and 0 if user haven't won the match
-    base_winner_score =
-      if player.result == "won", do: @game_level_score[game_level] / 2, else: 0
-
-    # test_count_k is a koefficient between [0, 1]
-    # which linearly grow as test results
+    # test_count_k is a coefficient between [0, 1]
+    # It linearly grows as test results
     test_count_k = player.result_percent / 100.0
 
-    # duration_k is a koefficient between [0.33, 1]
-    # duration_k = 1 if duration_sec is nil
-    # duration_k = 1 if task was solved before 1/3 of match_timeout
-    # duration_k linearly goes to 0.33 if task was solved after 1/3 of match time
+    # duration_k is a coefficient between [0.32, 1]
+    # - duration_k = 1 if duration_sec is nil
+    # - duration_k = 1 if the task was solved before game_level_avg_time
+    # - duration_k = 0.33 if the task was solved after game_level_max_time
+    # - duration_k linearly goes from 1 to 0.33 if the task was solved in the (game_level_avg_time, game_level_max_time) range
     duration_k =
       cond do
-        is_nil(duration_sec) -> 1
-        duration_sec / timeout_seconds < 0.33 -> 1
-        true -> 1.32 - duration_sec / timeout_seconds
+        is_nil(duration_sec) ->
+          1
+
+        duration_sec < @game_level_avg_time_sec[game_level] ->
+          1
+
+        duration_sec > @game_level_max_time_sec[game_level] ->
+          0.32
+
+        true ->
+          1.0 -
+            (duration_sec - @game_level_avg_time_sec[game_level]) /
+              (@game_level_avg_time_sec[game_level] - @game_level_max_time_sec[game_level]) * 0.67
       end
 
-    round(base_winner_score + game_level_score * duration_k * test_count_k * 10)
+    # round number to return integer
+    round(game_level_score * test_count_k * duration_k)
   end
 end
