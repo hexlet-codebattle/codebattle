@@ -65,7 +65,7 @@ defmodule Codebattle.Tournament.Base do
             player
             | score: 0,
               wins_count: 0,
-              is_banned: true
+              is_banned: !player.is_banned
           })
         end
 

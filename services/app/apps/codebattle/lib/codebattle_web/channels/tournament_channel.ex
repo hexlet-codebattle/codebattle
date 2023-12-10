@@ -96,7 +96,7 @@ defmodule CodebattleWeb.TournamentChannel do
       })
     end
 
-    {:noreply, socket}
+    {:reply, {:ok, :banned}, socket}
   end
 
   def handle_in("tournament:restart", _, socket) do

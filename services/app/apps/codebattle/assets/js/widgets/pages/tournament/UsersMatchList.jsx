@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
@@ -31,10 +31,12 @@ function UsersMatchList({
   matches,
   hideStats = false,
 }) {
+  const dispatch = useDispatch();
+
   const [player] = useMatchesStatistics(playerId, matches);
   const handleToggleBanUser = useCallback(() => {
-    toggleBanUser(playerId);
-  }, [playerId]);
+    dispatch(toggleBanUser(playerId, !isBanned));
+  }, [playerId, isBanned, dispatch]);
 
   if (matches.length === 0) {
     return (

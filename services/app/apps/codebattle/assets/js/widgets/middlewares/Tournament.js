@@ -253,8 +253,10 @@ export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
 };
 
-export const toggleBanUser = userId => {
-  channel.push('tournament:ban:player', { user_id: userId }).receive('error', error => console.error(error));
+export const toggleBanUser = (userId, isBanned) => dispatch => {
+  channel.push('tournament:ban:player', { user_id: userId })
+    .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
+    .receive('error', error => console.error(error));
 };
 
 export const requestMatchesByPlayerId = userId => dispatch => {
