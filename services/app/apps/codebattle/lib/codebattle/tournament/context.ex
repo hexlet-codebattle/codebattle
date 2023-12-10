@@ -154,10 +154,29 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec upsert!(Tournament.t()) :: Tournament.t()
-  def upsert!(tournament) do
+  @spec upsert!(Tournament.t(), nil | :with_ets) :: Tournament.t()
+  def upsert!(tournament, type \\ nil)
+
+  def upsert!(tournament, nil) do
     tournament
     |> Map.put(:updated_at, TimeHelper.utc_now())
+    |> Repo.insert!(
+      conflict_target: :id,
+      on_conflict: {:replace_all_except, [:id, :inserted_at]}
+    )
+  end
+
+  def upsert!(tournament, :with_ets) do
+    players =
+      tournament |> Tournament.Players.get_players() |> Enum.map(&{&1.id, &1}) |> Enum.into(%{})
+
+    matches =
+      tournament |> Tournament.Matches.get_matches() |> Enum.map(&{&1.id, &1}) |> Enum.into(%{})
+
+    tournament
+    |> Map.put(:updated_at, TimeHelper.utc_now())
+    |> Map.put(:players, players)
+    |> Map.put(:matches, matches)
     |> Repo.insert!(
       conflict_target: :id,
       on_conflict: {:replace_all_except, [:id, :inserted_at]}

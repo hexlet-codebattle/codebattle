@@ -3,7 +3,7 @@ defmodule Runner.StaleContainersKiller do
 
   use GenServer
 
-  @game_timeout 15
+  @game_timeout 17
 
   def start_link(_) do
     GenServer.start(__MODULE__, [], name: __MODULE__)

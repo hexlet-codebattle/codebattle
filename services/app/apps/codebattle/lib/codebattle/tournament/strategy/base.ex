@@ -470,7 +470,7 @@ defmodule Codebattle.Tournament.Base do
         Map.merge(tournament, params)
       end
 
-      def db_save!(tournament), do: Tournament.Context.upsert!(tournament)
+      def db_save!(tournament, type \\ nil), do: Tournament.Context.upsert!(tournament, type)
 
       defp maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
@@ -479,6 +479,7 @@ defmodule Codebattle.Tournament.Base do
           |> set_stats()
           |> set_winner_ids()
           |> db_save!()
+          # |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
 
           # TODO: implement tournament termination in 15 mins
