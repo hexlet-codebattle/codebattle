@@ -147,7 +147,7 @@ const preloadedState = {
         players,
       },
     ],
-    nextPage: null,
+    currrentPage: null,
     totalPages: null,
   },
   user: {

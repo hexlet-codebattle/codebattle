@@ -24,15 +24,23 @@ export const fetchCompletedGames = createAsyncThunk(
 
 export const loadNextPage = createAsyncThunk(
   'completedGames/loadNextPage',
-  async page => {
+  async (_, { getState }) => {
     const userId = window.location.pathname.split('/').pop() || null;
+    const { completedGames: { currrentPage } } = getState();
+    const nextPage = currrentPage + 1;
     const route = userId
-      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
-      : `/api/v1/games/completed?page_size=20&page=${page}`;
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${nextPage}`
+      : `/api/v1/games/completed?page_size=20&page=${nextPage}`;
 
     const response = await axios.get(route);
 
     return camelizeKeys(response.data);
+  },
+  {
+    condition: (_, { getState }) => {
+      const { completedGames: { currrentPage, totalPages, status } } = getState();
+      return status !== fetchionStatuses.loading && currrentPage !== totalPages;
+    },
   },
 );
 
@@ -40,7 +48,7 @@ const completedGames = createSlice({
   name: 'completedGames',
   initialState: {
     completedGames: initial.completedGames,
-    nextPage: null,
+    currrentPage: null,
     totalPages: null,
     totalGames: 0,
     status: fetchionStatuses.idle,
@@ -56,7 +64,7 @@ const completedGames = createSlice({
       state.status = fetchionStatuses.loaded;
       state.completedGames = payload.games;
       state.totalPages = payload.pageInfo.totalPages;
-      state.nextPage = payload.pageInfo.pageNumber + 1;
+      state.currrentPage = payload.pageInfo.pageNumber;
       state.totalGames = payload.pageInfo.totalEntries;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
@@ -69,7 +77,7 @@ const completedGames = createSlice({
     },
     [loadNextPage.fulfilled]: (state, { payload }) => {
       state.status = fetchionStatuses.loaded;
-      state.nextPage += 1;
+      state.currrentPage = payload.pageInfo.pageNumber;
       state.completedGames = unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
