@@ -84,7 +84,7 @@ const SearchedUserPanel = memo(({
       userId={searchedUser.id}
       name={searchedUser.name}
       score={searchedUser.score}
-      place={searchedUser.rank}
+      place={searchedUser.place}
       isBanned={searchedUser.isBanned}
       searchedUserId={searchedUser.id}
     />
