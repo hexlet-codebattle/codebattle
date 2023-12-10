@@ -76,6 +76,8 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentData({
       ...response.tournament,
       topPlayersIds: response.topPlayersIds,
+      playersPageNumber: 1,
+      playersPageSize: 20,
     }));
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
