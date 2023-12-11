@@ -179,7 +179,7 @@ const CompletedTournaments = ({ tournaments }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mt-3">Completed tournaments</h2>
-      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+      <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped">
           <thead className="">
             <tr>
@@ -212,7 +212,7 @@ const CompletedTournaments = ({ tournaments }) => {
           </tbody>
         </table>
       </div>
-      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+      <div className="d-flex d-md-none m-2 overflow-auto position-relative">
         <HorizontalScrollControls>
           {sortedTournaments.map(
             tournament => (
@@ -277,7 +277,7 @@ const ActiveGames = ({
 
   return (
     <>
-      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+      <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped mb-0">
           <thead className="text-center">
             <tr>
@@ -320,7 +320,7 @@ const ActiveGames = ({
         </table>
       </div>
       <div
-        className="d-none d-sm-block d-md-none d-flex m-2 position-relative"
+        className="d-flex d-md-none m-2 position-relative"
       >
         <HorizontalScrollControls>
           {sortedGames.map(

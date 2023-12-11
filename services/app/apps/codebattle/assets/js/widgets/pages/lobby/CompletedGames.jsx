@@ -97,7 +97,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
           </tbody>
         </table>
       </div>
-      <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+      <div ref={cardListRef} className="d-flex d-md-none my-2 overflow-auto position-relative">
         <HorizontalScrollControls>
           {games.map(game => (
             <GameCard key={`card-${game.id}`} type="completed" game={game} />
