@@ -36,7 +36,7 @@ const UserName = ({
   <div className="d-flex align-items-center">
     {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
     <LanguageIcon lang={user.lang || 'js'} />
-    {user.id < 0 && <FontAwesomeIcon className="mx-1 mb-1" icon="robot" />}
+    {user.id < 0 && <FontAwesomeIcon className="mx-1" icon="robot" transform="up-1" />}
     <a
       href={`/users/${user.id}`}
       key={user.id}
