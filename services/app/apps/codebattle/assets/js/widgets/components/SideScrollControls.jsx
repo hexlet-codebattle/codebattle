@@ -19,7 +19,7 @@ function HorizontalScrollControls({ children }) {
   const [showLeftControl, setShowLeftControl] = useState(false);
   const [showRightControl, setShowRightControl] = useState(children.length > 1);
 
-  const className = 'position-absolute align-items-center h-100 p-2';
+  const className = 'position-absolute align-items-center h-100';
 
   useEffect(() => {
     if (!scrolledListRef.current || scrolledListRef.current.clientWidth === 0) {
@@ -72,7 +72,7 @@ function HorizontalScrollControls({ children }) {
         style={{ left: 0, zIndex: 1000 }}
         className={cn(
           className,
-          'cb-left-scroll-control',
+          'cb-left-scroll-control pr-2',
           {
             'd-flex': showLeftControl,
             'd-none': !showLeftControl,
@@ -81,7 +81,7 @@ function HorizontalScrollControls({ children }) {
       >
         <button
           type="button"
-          className="btn border-0 rounded-circle p-2"
+          className="btn border-0 p-2 h-100"
           onClick={handleScrollItemsLeft}
         >
           <FontAwesomeIcon icon="chevron-left" />
@@ -99,7 +99,7 @@ function HorizontalScrollControls({ children }) {
         style={{ right: 0, zIndex: 1000 }}
         className={cn(
           className,
-          'cb-right-scroll-control',
+          'cb-right-scroll-control pl-2',
           {
             'd-flex': showRightControl,
             'd-none': !showRightControl,
@@ -108,7 +108,7 @@ function HorizontalScrollControls({ children }) {
       >
         <button
           type="button"
-          className="btn border-0 rounded-circle p-2"
+          className="btn border-0 p-2 h-100"
           onClick={handleScrollItemsRight}
         >
           <FontAwesomeIcon

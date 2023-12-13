@@ -3,6 +3,8 @@ import axios from 'axios';
 import { camelizeKeys } from 'humps';
 import unionBy from 'lodash/unionBy';
 
+import fetchionStatuses from '../config/fetchionStatuses';
+
 import initial from './initial';
 import { actions as lobbyActions } from './lobby';
 
@@ -22,15 +24,23 @@ export const fetchCompletedGames = createAsyncThunk(
 
 export const loadNextPage = createAsyncThunk(
   'completedGames/loadNextPage',
-  async page => {
+  async (_, { getState }) => {
     const userId = window.location.pathname.split('/').pop() || null;
+    const { completedGames: { currrentPage } } = getState();
+    const nextPage = currrentPage + 1;
     const route = userId
-      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
-      : `/api/v1/games/completed?page_size=20&page=${page}`;
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${nextPage}`
+      : `/api/v1/games/completed?page_size=20&page=${nextPage}`;
 
     const response = await axios.get(route);
 
     return camelizeKeys(response.data);
+  },
+  {
+    condition: (_, { getState }) => {
+      const { completedGames: { currrentPage, totalPages, status } } = getState();
+      return status !== fetchionStatuses.loading && currrentPage !== totalPages;
+    },
   },
 );
 
@@ -38,40 +48,40 @@ const completedGames = createSlice({
   name: 'completedGames',
   initialState: {
     completedGames: initial.completedGames,
-    nextPage: null,
+    currrentPage: null,
     totalPages: null,
     totalGames: 0,
-    status: 'empty',
+    status: fetchionStatuses.idle,
     error: null,
   },
   reducers: {},
   extraReducers: {
     [fetchCompletedGames.pending]: state => {
-      state.status = 'loading';
+      state.status = fetchionStatuses.loading;
       state.error = null;
     },
     [fetchCompletedGames.fulfilled]: (state, { payload }) => {
-      state.status = 'loaded';
+      state.status = fetchionStatuses.loaded;
       state.completedGames = payload.games;
       state.totalPages = payload.pageInfo.totalPages;
-      state.nextPage = payload.pageInfo.pageNumber + 1;
+      state.currrentPage = payload.pageInfo.pageNumber;
       state.totalGames = payload.pageInfo.totalEntries;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
-      state.status = 'rejected';
+      state.status = fetchionStatuses.rejected;
       state.error = action.error;
     },
     [loadNextPage.pending]: state => {
-      state.status = 'loading';
+      state.status = fetchionStatuses.loading;
       state.error = null;
     },
     [loadNextPage.fulfilled]: (state, { payload }) => {
-      state.status = 'loaded';
-      state.nextPage += 1;
+      state.status = fetchionStatuses.loaded;
+      state.currrentPage = payload.pageInfo.pageNumber;
       state.completedGames = unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
-      state.status = 'rejected';
+      state.status = fetchionStatuses.rejected;
       state.error = action.error;
     },
     [lobbyActions.finishGame]: (state, { payload: { game } }) => {

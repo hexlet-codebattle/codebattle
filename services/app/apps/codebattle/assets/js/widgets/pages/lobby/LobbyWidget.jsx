@@ -28,7 +28,6 @@ import levelRatio from '../../config/levelRatio';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
 
 import Announcement from './Announcement';
@@ -180,7 +179,7 @@ const CompletedTournaments = ({ tournaments }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mt-3">Completed tournaments</h2>
-      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+      <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped">
           <thead className="">
             <tr>
@@ -213,7 +212,7 @@ const CompletedTournaments = ({ tournaments }) => {
           </tbody>
         </table>
       </div>
-      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+      <div className="d-flex d-md-none m-2 overflow-auto position-relative">
         <HorizontalScrollControls>
           {sortedTournaments.map(
             tournament => (
@@ -278,7 +277,7 @@ const ActiveGames = ({
 
   return (
     <>
-      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+      <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped mb-0">
           <thead className="text-center">
             <tr>
@@ -321,7 +320,7 @@ const ActiveGames = ({
         </table>
       </div>
       <div
-        className="d-none d-sm-block d-md-none d-flex m-2 position-relative"
+        className="d-flex d-md-none m-2 position-relative"
       >
         <HorizontalScrollControls>
           {sortedGames.map(
@@ -366,10 +365,8 @@ const tabLinkHandler = hash => () => {
 
 const GameContainers = ({
   activeGames,
-  completedGames,
   liveTournaments,
   completedTournaments,
-  totalGames,
   currentUserId,
   isGuest = true,
   isOnline = false,
@@ -462,13 +459,7 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames
-            type="completed"
-            className="table-responsive scroll cb-lobby-widget-container"
-            games={completedGames}
-            loadNextPage={loadNextPage}
-            totalGames={totalGames}
-          />
+          <CompletedGames className="cb-lobby-widget-container" />
         </div>
       </div>
     </div>
@@ -507,7 +498,6 @@ const LobbyWidget = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const isModalShow = useSelector(selectors.isModalShow);
-  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
   const activeGame = useSelector(selectors.activeGameSelector);
   const {
     activeGames,
@@ -545,10 +535,6 @@ const LobbyWidget = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    dispatch(fetchCompletedGames());
-  }, [dispatch]);
-
   return (
     <div className="container-lg">
       {renderModal(isModalShow, handleCloseModal)}
@@ -565,10 +551,8 @@ const LobbyWidget = () => {
           </div>
           <GameContainers
             activeGames={activeGames}
-            completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
-            totalGames={totalGames}
             currentUserId={currentUserId}
             isGuest={isGuest}
             isOnline={online}
