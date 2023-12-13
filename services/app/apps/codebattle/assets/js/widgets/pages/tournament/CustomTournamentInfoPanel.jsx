@@ -13,7 +13,7 @@ function CustomTournamentInfoPanel({
   currentRound = 0,
   matches,
   players,
-  topPlayersIds,
+  topPlayerIds,
   currentUserId,
   pageNumber,
   pageSize,
@@ -71,7 +71,7 @@ function CustomTournamentInfoPanel({
                 currentRound={currentRound}
                 matches={matches}
                 players={players}
-                topPlayersIds={topPlayersIds}
+                topPlayerIds={topPlayerIds}
                 currentUserId={currentUserId}
                 pageNumber={pageNumber}
                 pageSize={pageSize}

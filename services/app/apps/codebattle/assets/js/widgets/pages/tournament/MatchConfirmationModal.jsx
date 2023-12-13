@@ -25,15 +25,22 @@ const getTimerProgress = remaining => {
   return Math.ceil((remaining / begin) * 100);
 };
 
-function MatchConfirmationModal({ players, matches, currentUserId }) {
+function MatchConfirmationModal({
+  players,
+  matches,
+  currentUserId,
+  modalShowing,
+  setModalShowing,
+}) {
   const confirmBtnRef = useRef(null);
 
   const [remainingTime, setRemainingTime] = useState(null);
-  const [modalShowing, setModalShowing] = useState(false);
   const [openMatch, setOpenMatch] = useState(false);
 
   const nextMatch = useMemo(
-    () => Object.values(matches).find(
+    () => Object.values(matches)
+      .sort((a, b) => b.id - a.id)
+      .find(
         match => match.state === 'playing' && match.playerIds.includes(currentUserId),
       ),
     [matches, currentUserId],
@@ -53,6 +60,7 @@ function MatchConfirmationModal({ players, matches, currentUserId }) {
   const handleCancel = useCallback(() => {
     setModalShowing(false);
     setRemainingTime(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

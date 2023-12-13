@@ -97,7 +97,7 @@ function RatingPanel({
   currentRound,
   matches,
   players,
-  topPlayersIds,
+  topPlayerIds,
   currentUserId,
   pageNumber,
   pageSize,
@@ -121,7 +121,7 @@ function RatingPanel({
     [players, currentUserId, pageSize, pageNumber],
   );
   const topPlayersList = useMemo(
-    () => (topPlayersIds || [])
+    () => (topPlayerIds || [])
       .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
       .map(id => players[id])
       .sort((a, b) => a.place - b.place)
@@ -133,10 +133,10 @@ function RatingPanel({
         acc.push(player);
         return acc;
       }, []),
-    [topPlayersIds, players, currentUserId, pageSize, pageNumber],
+    [topPlayerIds, players, currentUserId, pageSize, pageNumber],
   );
 
-  const playersShowList = (topPlayersIds || []).length === 0 ? playersList : topPlayersList;
+  const playersShowList = (topPlayerIds || []).length === 0 ? playersList : topPlayersList;
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 

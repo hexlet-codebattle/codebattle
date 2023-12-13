@@ -13,7 +13,7 @@ import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
 import useTimer from '../../utils/useTimer';
 
-// import JoinButton from './JoinButton';
+import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 
 const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
@@ -132,7 +132,7 @@ function TournamentHeader({
   accessToken,
   isLive,
   name,
-  // players,
+  players,
   playersCount,
   playersLimit,
   creatorId,
@@ -141,6 +141,8 @@ function TournamentHeader({
   level,
   isOnline = false,
   isOver = false,
+  handleStartRound,
+  handleOpenDetails,
 }) {
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const canModerate = useMemo(
@@ -159,6 +161,21 @@ function TournamentHeader({
     'badge-danger': breakState === 'on',
     'badge-primary': !showResults && state === TournamentStates.finished,
   });
+
+  const canStart = isLive
+    && state === TournamentStates.waitingParticipants
+    && playersCount > 0;
+  const canStartRound = isLive
+    && state === TournamentStates.active
+    && breakState === 'on';
+  const canFinishRound = isLive
+    && state === TournamentStates.active
+    && !(['individual', 'team'].includes(type))
+    && breakState === 'off';
+  const canRestart = !isLive
+    || state === TournamentStates.active
+    || state === TournamentStates.finished
+    || state === TournamentStates.cancelled;
 
   return (
     <>
@@ -207,9 +224,9 @@ function TournamentHeader({
           </div>
           <div className="d-flex">
             {
-              /* !isOver ? (
-              <div className="d-flex justify-items-center pb-2">
-                {type !== 'team' && (
+              !isOver ? (
+                <div className="d-flex justify-items-center pb-2">
+                  {type !== 'team' && (
                   <div className="mr-2 mr-lg-0">
                     <JoinButton
                       isShow={state !== TournamentStates.active}
@@ -218,7 +235,7 @@ function TournamentHeader({
                     />
                   </div>
                 )}
-              </div>
+                </div>
             ) : (
               <div className="d-flex justify-items-center pb-2">
                 <a
@@ -230,35 +247,20 @@ function TournamentHeader({
                 </a>
               </div>
             )
-              */}
+              }
             <div className="d-flex justify-items-center pb-2">
               {canModerate && (
                 <TournamentMainControlButtons
                   accessType={accessType}
                   tournamentId={tournamentId}
-                  canStart={
-                    isLive
-                    && state === TournamentStates.waitingParticipants
-                    && playersCount > 0
-                  }
-                  canStartRound={
-                    isLive
-                    && state === TournamentStates.active
-                    && breakState === 'on'
-                  }
-                  canFinishRound={
-                    isLive
-                    && state === TournamentStates.active
-                    && breakState === 'off'
-                  }
-                  canRestart={
-                    !isLive
-                    || state === TournamentStates.active
-                    || state === TournamentStates.finished
-                    || state === TournamentStates.cancelled
-                  }
+                  canStart={canStart}
+                  canStartRound={canStartRound}
+                  canFinishRound={canFinishRound}
+                  canRestart={canRestart}
                   showResults={showResults}
                   disabled={!isOnline}
+                  handleStartRound={handleStartRound}
+                  handleOpenDetails={handleOpenDetails}
                 />
               )}
             </div>

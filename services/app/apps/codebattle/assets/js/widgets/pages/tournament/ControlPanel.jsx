@@ -28,7 +28,7 @@ function ControlPanel({
   const allPlayers = useSelector(tournamentPlayersSelector);
 
   const onChangeSearchedPlayer = useCallback(
-    ({ value }) => setSearchOption(value),
+    ({ value = '' }) => setSearchOption(value),
     [setSearchOption],
   );
   const loadOptions = useCallback(

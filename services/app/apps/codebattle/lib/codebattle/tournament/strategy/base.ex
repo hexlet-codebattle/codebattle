@@ -286,7 +286,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> update_struct(%{
           last_round_ended_at: NaiveDateTime.utc_now(:second),
-          show_results: !finish_tournament?(tournament)
+          show_results: need_show_results?(tournament)
         })
         |> calculate_round_results()
         |> broadcast_round_finished()
@@ -628,6 +628,9 @@ defmodule Codebattle.Tournament.Base do
 
       defp safe_random([]), do: nil
       defp safe_random(list), do: Enum.random(list)
+
+      defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
+      defp need_show_results?(tournament), do: true
     end
   end
 end

@@ -16,7 +16,7 @@ import Players from './PlayersPanel';
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {
       const [gameResultPlayer1, gameResultPlayer2] = match.playerIds.map(
-        id => match.playerResults[id].result,
+        id => match.playerResults[id]?.result || 0,
       );
 
       if (gameResultPlayer1 === 'won' || gameResultPlayer2 === 'gave_up') {
@@ -97,6 +97,7 @@ function TeamMatches({
                 />
               </div>
               <Players
+                playersCount={Object.keys(omitBy(players, p => p.teamId !== team.id)).length}
                 players={omitBy(players, p => p.teamId !== team.id)}
                 canBan={
                   isAdmin && state === TournamentStates.waitingParticipants

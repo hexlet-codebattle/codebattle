@@ -1,4 +1,9 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from 'react';
 
 import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
@@ -13,9 +18,11 @@ import {
 import * as selectors from '../../selectors';
 
 import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
+import DetailsModal from './DetailsModal';
 import IndividualMatches from './IndividualMatches';
 import MatchConfirmationModal from './MatchConfirmationModal';
 import Players from './PlayersPanel';
+import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
@@ -60,7 +67,7 @@ function InfoPanel({
       return (
         <CustomTournamentInfoPanel
           players={tournament.players}
-          topPlayersIds={tournament.topPlayersIds}
+          topPlayerIds={tournament.topPlayerIds}
           matches={tournament.matches}
           tournamentId={tournament.id}
           currentUserId={currentUserId}
@@ -86,6 +93,19 @@ function Tournament() {
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 
+  const [
+    detailsModalShowing,
+    setDetailsModalShowing,
+  ] = useState(false);
+  const [
+    startRoundConfirmationModalShowing,
+    setStartRoundConfirmationModalShowing,
+  ] = useState(false);
+  const [
+    matchConfirmationModalShowing,
+    setMatchConfirmationModalShowing,
+  ] = useState(false);
+
   const playersCount = useMemo(
     () => Object.keys(tournament.players).length,
     [tournament.players],
@@ -97,12 +117,19 @@ function Tournament() {
     [tournament.state],
   );
 
+  const handleOpenDetails = useCallback(() => {
+    setDetailsModalShowing(true);
+  }, [setDetailsModalShowing]);
+  const onCloseRoundConfirmationModal = useCallback(() => {
+    setStartRoundConfirmationModalShowing(false);
+  }, [setStartRoundConfirmationModalShowing]);
   const handleKick = useCallback(event => {
     const { playerId } = event.currentTarget.dataset;
     if (playerId) {
       kickFromTournament(Number(playerId));
     }
   }, []);
+  const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [setStartRoundConfirmationModalShowing]);
 
   useEffect(() => {
     const clearTournament = connectToTournament()(dispatch);
@@ -125,6 +152,20 @@ function Tournament() {
     return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(
+    () => {
+      if (matchConfirmationModalShowing) {
+        setDetailsModalShowing(false);
+        setStartRoundConfirmationModalShowing(false);
+      }
+    },
+    [
+      matchConfirmationModalShowing,
+      setStartRoundConfirmationModalShowing,
+      setDetailsModalShowing,
+    ],
+  );
 
   if (isGuest) {
     return (
@@ -150,10 +191,27 @@ function Tournament() {
 
   return (
     <>
+      <DetailsModal
+        tournament={tournament}
+        modalShowing={detailsModalShowing}
+        setModalShowing={setDetailsModalShowing}
+      />
+      <StartRoundConfirmationModal
+        meta={tournament.meta}
+        currentRound={tournament.currentRound}
+        level={tournament.level}
+        matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+        taskPackName={tournament.taskPackName}
+        taskProvider={tournament.taskProvider}
+        modalShowing={startRoundConfirmationModalShowing}
+        onClose={onCloseRoundConfirmationModal}
+      />
       <MatchConfirmationModal
         players={tournament.players}
         matches={tournament.matches}
         currentUserId={currentUserId}
+        modalShowing={matchConfirmationModalShowing}
+        setModalShowing={setMatchConfirmationModalShowing}
       />
       <div className="container-fluid mb-2">
         <TournamentHeader
@@ -179,6 +237,8 @@ function Tournament() {
           startsAt={tournament.startsAt}
           state={tournament.state}
           type={tournament.type}
+          handleStartRound={handleStartRound}
+          handleOpenDetails={handleOpenDetails}
         />
       </div>
       <div className="container-fluid mb-2">

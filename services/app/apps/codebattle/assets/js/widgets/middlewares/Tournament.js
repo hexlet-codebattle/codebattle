@@ -23,7 +23,7 @@ const initTournamentChannel = dispatch => {
   const onJoinSuccess = response => {
     dispatch(actions.setTournamentData({
       ...response.tournament,
-      topPlayersIds: response.topPlayersIds || [],
+      topPlayerIds: response.topPlayerIds || [],
       matches: {},
       players: {},
       channel: { online: true },
@@ -75,7 +75,7 @@ export const connectToTournament = () => dispatch => {
   const handleRoundFinished = response => {
     dispatch(actions.updateTournamentData({
       ...response.tournament,
-      topPlayersIds: response.topPlayersIds,
+      topPlayerIds: response.topPlayerIds,
       playersPageNumber: 1,
       playersPageSize: 20,
     }));

@@ -13,18 +13,18 @@ import { actions } from '../../slices';
 function TournamentPlayersPagination({ pageNumber, pageSize }) {
   const dispatch = useDispatch();
 
-  const { players, topPlayersIds } = useSelector(tournamentSelector);
+  const { players, topPlayerIds } = useSelector(tournamentSelector);
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
   const totalEntries = useMemo(
     () => {
-      if (topPlayersIds.length === 0 || isAdmin || isOwner) {
+      if (topPlayerIds.length === 0 || isAdmin || isOwner) {
         return Object.keys(players).length;
       }
 
-      return topPlayersIds.length;
+      return topPlayerIds.length;
     },
-    [players, isAdmin, isOwner, topPlayersIds],
+    [players, isAdmin, isOwner, topPlayerIds],
   );
 
   const onChangePageNumber = useCallback(page => {

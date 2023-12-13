@@ -234,7 +234,7 @@ defmodule CodebattleWeb.TournamentChannel do
     players =
       Helpers.get_paginated_players(tournament_info, min(page_num, 1000), min(page_size, 30))
 
-    {:reply, {:ok, %{players: players, top_players_ids: players}}, socket}
+    {:reply, {:ok, %{players: players, top_player_ids: players}}, socket}
   end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
@@ -282,7 +282,7 @@ defmodule CodebattleWeb.TournamentChannel do
     push(socket, "tournament:round_finished", %{
       tournament: payload.tournament,
       players: payload.players,
-      top_players_ids: Enum.map(payload.players || [], & &1.id)
+      top_player_ids: Enum.map(payload.players || [], & &1.id)
     })
 
     {:noreply, socket}
@@ -369,7 +369,7 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       players: players,
       matches: matches,
-      top_players_ids: top_player_ids
+      top_player_ids: top_player_ids
     }
   end
 

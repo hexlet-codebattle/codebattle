@@ -234,7 +234,16 @@ const defaultTournamentParams = {
   startsAt: null,
   insertedAt: null,
   meta: {
-    roundsLimit: 1,
+    roundsToWin: 3,
+    roundsLimit: 3,
+    roundsConfigType: 'all',
+    roundsConfig: [
+      {
+        roundTimeoutSeconds: 60,
+        taskPackId: null,
+        taskLevel: null,
+      },
+    ],
     teams: [],
   },
 
@@ -247,19 +256,21 @@ const defaultTournamentParams = {
   playedPairIds: [],
 
   breakState: 'off',
+  breakDurationSeconds: 60,
 
   taskStrategy: 'game',
   taskProvider: 'level',
+  taskPackName: null,
 
   playersPageNumber: 1,
   playersPageSize: 20,
   useChat: false,
+  showResults: false,
 
   // client params
   channel: { online: false },
   currentPlayerId: null,
-  topPlayersIds: [],
-  showResults: false,
+  topPlayerIds: [],
 };
 
 const initialTournament = tournamentParams

@@ -57,7 +57,7 @@ const tournament = createSlice({
       };
     },
     updateTopPlayers: (state, { payload }) => {
-      state.topPlayersIds = payload.map(item => (item.id));
+      state.topPlayerIds = payload.map(item => (item.id));
     },
     changeTournamentPageNumber: (state, { payload }) => {
       state.playersPageNumber = payload;
