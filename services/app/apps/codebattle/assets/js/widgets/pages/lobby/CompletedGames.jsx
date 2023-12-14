@@ -1,4 +1,6 @@
-import React, { memo, useEffect, useRef } from 'react';
+import React, {
+  memo, useEffect, useRef, useCallback,
+} from 'react';
 
 import cn from 'classnames';
 import moment from 'moment';
@@ -21,11 +23,9 @@ const commonClassName = 'table-responsive d-none d-md-block mvh-100 cb-overflow-
 const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
   const dispatch = useDispatch();
   const tableRef = useRef(null);
-  const cardListRef = useRef(null);
 
   useEffect(() => {
     const observableTable = tableRef.current;
-    const observableCards = cardListRef.current;
 
     const onTableScroll = () => {
       const height = tableRef.current.scrollHeight - tableRef.current.parentElement?.offsetHeight;
@@ -36,22 +36,20 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
       }
     };
 
-    const onCardsScroll = () => {
-      const width = cardListRef.current.scrollWidth - cardListRef.current.parentElement?.offsetWidth;
-      const delta = width - cardListRef.current.scrollLeft;
-
-      if (delta < 50) {
-        dispatch(loadNextPage());
-      }
-    };
-
     observableTable.addEventListener('scroll', onTableScroll);
-    observableCards.addEventListener('scroll', onCardsScroll);
 
     return () => {
       observableTable.removeEventListener('scroll', onTableScroll);
-      observableCards.removeEventListener('scroll', onCardsScroll);
     };
+  }, [dispatch]);
+
+  const onCardsScroll = useCallback(cardList => {
+    const width = cardList.scrollWidth - cardList.parentElement?.offsetWidth;
+    const delta = width - cardList.scrollLeft;
+
+    if (delta < 500) {
+      dispatch(loadNextPage());
+    }
   }, [dispatch]);
 
   return (
@@ -97,13 +95,11 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
           </tbody>
         </table>
       </div>
-      <div ref={cardListRef} className="d-flex d-md-none my-2 overflow-auto position-relative">
-        <HorizontalScrollControls>
-          {games.map(game => (
-            <GameCard key={`card-${game.id}`} type="completed" game={game} />
-          ))}
-        </HorizontalScrollControls>
-      </div>
+      <HorizontalScrollControls className="d-md-none my-2" onScroll={onCardsScroll}>
+        {games.map(game => (
+          <GameCard key={`card-${game.id}`} type="completed" game={game} />
+        ))}
+      </HorizontalScrollControls>
     </>
   );
 });

@@ -116,7 +116,7 @@ const LiveTournaments = ({ tournaments }) => {
   return (
     <div className="table-responsive">
       <h2 className="text-center mt-3">Live tournaments</h2>
-      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+      <div className="d-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped">
           <thead className="">
             <tr>
@@ -147,19 +147,15 @@ const LiveTournaments = ({ tournaments }) => {
           </tbody>
         </table>
       </div>
-      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
-        <HorizontalScrollControls>
-          {sortedTournaments.map(
-            tournament => (
-              <TournamentCard
-                key={`card-${tournament.id}`}
-                type="active"
-                tournament={tournament}
-              />
-            ),
-          )}
-        </HorizontalScrollControls>
-      </div>
+      <HorizontalScrollControls className="d-md-none m-2">
+        {sortedTournaments.map(tournament => (
+          <TournamentCard
+            key={`card-${tournament.id}`}
+            type="active"
+            tournament={tournament}
+          />
+        ))}
+      </HorizontalScrollControls>
       <div className="text-center mt-3">
         <a href="/tournaments">
           <u>Tournaments Info</u>
@@ -212,19 +208,15 @@ const CompletedTournaments = ({ tournaments }) => {
           </tbody>
         </table>
       </div>
-      <div className="d-flex d-md-none m-2 overflow-auto position-relative">
-        <HorizontalScrollControls>
-          {sortedTournaments.map(
-            tournament => (
-              <TournamentCard
-                key={`card-${tournament.id}`}
-                type="completed"
-                tournament={tournament}
-              />
-            ),
-          )}
-        </HorizontalScrollControls>
-      </div>
+      <HorizontalScrollControls className="d-md-none m-2">
+        {sortedTournaments.map(tournament => (
+          <TournamentCard
+            key={`card-${tournament.id}`}
+            type="completed"
+            tournament={tournament}
+          />
+        ))}
+      </HorizontalScrollControls>
     </div>
   );
 };
@@ -319,24 +311,18 @@ const ActiveGames = ({
           </tbody>
         </table>
       </div>
-      <div
-        className="d-flex d-md-none m-2 position-relative"
-      >
-        <HorizontalScrollControls>
-          {sortedGames.map(
-            game => isActiveGame(game) && (
-              <GameCard
-                key={`card-${game.id}`}
-                type="active"
-                game={game}
-                currentUserId={currentUserId}
-                isGuest={isGuest}
-                isOnline={isOnline}
-              />
-            ),
-          )}
-        </HorizontalScrollControls>
-      </div>
+      <HorizontalScrollControls className="d-md-none m-2">
+        {sortedGames.map(game => isActiveGame(game) && (
+          <GameCard
+            key={`card-${game.id}`}
+            type="active"
+            game={game}
+            currentUserId={currentUserId}
+            isGuest={isGuest}
+            isOnline={isOnline}
+          />
+        ))}
+      </HorizontalScrollControls>
     </>
   );
 };

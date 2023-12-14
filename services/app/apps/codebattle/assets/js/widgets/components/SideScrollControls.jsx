@@ -5,12 +5,16 @@ import React, {
   useCallback,
 } from 'react';
 
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import noop from 'lodash/noop';
 
 const delta = 10;
+const commonClassName = 'position-relative overflow-auto';
+const commonControllsClassName = 'position-absolute h-100 z-3';
 
-function HorizontalScrollControls({ children }) {
+function HorizontalScrollControls({ children, className, onScroll = noop }) {
   const leftButtonRef = useRef(null);
   const scrolledListRef = useRef(null);
   const rightButtonRef = useRef(null);
@@ -18,8 +22,6 @@ function HorizontalScrollControls({ children }) {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [showLeftControl, setShowLeftControl] = useState(false);
   const [showRightControl, setShowRightControl] = useState(children.length > 1);
-
-  const className = 'position-absolute align-items-center h-100';
 
   useEffect(() => {
     if (!scrolledListRef.current || scrolledListRef.current.clientWidth === 0) {
@@ -54,8 +56,9 @@ function HorizontalScrollControls({ children }) {
   }, []);
 
   const handleScroll = useCallback(event => {
+    onScroll(event.currentTarget);
     setScrollLeft(event.currentTarget.scrollLeft);
-  }, [setScrollLeft]);
+  }, [onScroll, setScrollLeft]);
 
   const handleScrollItemsRight = useCallback(() => {
     scrolledListRef.current.scrollBy({
@@ -65,58 +68,40 @@ function HorizontalScrollControls({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const leftControlClassName = cn(
+    commonControllsClassName,
+    'cb-left-scroll-control pr-2 start-0',
+    {
+      'd-block': showLeftControl,
+      'd-none': !showLeftControl,
+    },
+  );
+
+  const rightControlClassName = cn(
+    commonControllsClassName,
+    'cb-right-scroll-control pl-2 top-0 end-0',
+    {
+      'd-block': showRightControl,
+      'd-none': !showRightControl,
+    },
+  );
+
   return (
-    <>
-      <div
-        ref={leftButtonRef}
-        style={{ left: 0, zIndex: 1000 }}
-        className={cn(
-          className,
-          'cb-left-scroll-control pr-2',
-          {
-            'd-flex': showLeftControl,
-            'd-none': !showLeftControl,
-          },
-        )}
-      >
-        <button
-          type="button"
-          className="btn border-0 p-2 h-100"
-          onClick={handleScrollItemsLeft}
-        >
-          <FontAwesomeIcon icon="chevron-left" />
+    <div className={cn(commonClassName, className)}>
+      <div ref={leftButtonRef} className={leftControlClassName}>
+        <button type="button" className="btn border-0 p-2 h-100" onClick={handleScrollItemsLeft}>
+          <FontAwesomeIcon icon={faChevronLeft} />
         </button>
       </div>
-      <div
-        ref={scrolledListRef}
-        onScroll={handleScroll}
-        className="d-flex pb-2 overflow-auto"
-      >
+      <div ref={scrolledListRef} onScroll={handleScroll} className="d-flex pb-2 overflow-auto">
         {children}
       </div>
-      <div
-        ref={rightButtonRef}
-        style={{ right: 0, zIndex: 1000 }}
-        className={cn(
-          className,
-          'cb-right-scroll-control pl-2',
-          {
-            'd-flex': showRightControl,
-            'd-none': !showRightControl,
-          },
-        )}
-      >
-        <button
-          type="button"
-          className="btn border-0 p-2 h-100"
-          onClick={handleScrollItemsRight}
-        >
-          <FontAwesomeIcon
-            icon="chevron-right"
-          />
+      <div ref={rightButtonRef} className={rightControlClassName}>
+        <button type="button" className="btn border-0 p-2 h-100" onClick={handleScrollItemsRight}>
+          <FontAwesomeIcon icon={faChevronRight} />
         </button>
       </div>
-    </>
+    </div>
   );
 }
 
