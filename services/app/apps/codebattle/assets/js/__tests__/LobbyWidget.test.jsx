@@ -17,10 +17,6 @@ Object.defineProperty(window, 'scrollTo', {
   value: jest.fn(),
 });
 
-jest.mock('@fortawesome/react-fontawesome', () => ({
-  FontAwesomeIcon: 'img',
-}));
-
 jest.mock(
   '../widgets/components/UserInfo',
   () => function UserInfo() {
