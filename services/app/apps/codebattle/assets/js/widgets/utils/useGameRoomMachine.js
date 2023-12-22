@@ -1,6 +1,8 @@
 import { useInterpret } from '@xstate/react';
 import { useDispatch } from 'react-redux';
 
+import speedModes from '../config/speedModes';
+import SubscriptionTypeCodes from '../config/subscriptionTypes';
 import { actions } from '../slices';
 
 /**
@@ -14,6 +16,8 @@ import { actions } from '../slices';
 const useGameRoomMachine = ({
   setTaskModalShowing,
   setResultModalShowing,
+  setPremiumRestrictionModalShowing,
+  subscriptionType = SubscriptionTypeCodes.free,
   mainMachine,
   taskMachine,
 }) => {
@@ -21,9 +25,18 @@ const useGameRoomMachine = ({
 
   const mainService = useInterpret(mainMachine, {
     devTools: true,
+    context: {
+      errorMessage: null,
+      holding: 'none',
+      speedMode: speedModes.normal,
+      subscriptionType,
+    },
     actions: {
       showGameResultModal: () => {
         setResultModalShowing(true);
+      },
+      showPremiumSubscribeRequestModal: () => {
+        setPremiumRestrictionModalShowing(true);
       },
     },
   });

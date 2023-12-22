@@ -16,7 +16,11 @@ import Messages from '../../components/Messages';
 import RoomContext from '../../components/RoomContext';
 import UserInfo from '../../components/UserInfo';
 import GameRoomModes from '../../config/gameModes';
-import { inTestingRoomSelector, openedReplayerSelector } from '../../machines/selectors';
+import {
+  inTestingRoomSelector,
+  isRestrictedContentSelector,
+  openedReplayerSelector,
+} from '../../machines/selectors';
 import * as selectors from '../../selectors';
 import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
@@ -37,10 +41,16 @@ function ChatWidget() {
 
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
 
   const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = (gameMode === GameRoomModes.standard);
-  const showChatInput = !openedReplayer && !isTestingRoom && useChat;
+  const showChatInput = !openedReplayer && !isTestingRoom && useChat && !isRestricted;
+  const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
+
+  const disabledChatHeader = !isOnline || !useChat;
+  const disabledChatMessages = !useChat || isRestricted;
+  const disabledChatInput = !isOnline;
 
   const inputRef = useRef(null);
 
@@ -73,11 +83,21 @@ function ChatWidget() {
             'game-chat-container cb-messages-container',
           )}
         >
-          <ChatHeader showRooms={isStandardGame} disabled={!isOnline || !useChat} />
+          <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
           {openedReplayer
-            ? <Messages messages={historyMessages} disabled={!useChat} />
-            : <Messages displayMenu={displayMenu} messages={filteredMessages} disabled={!useChat} />}
-          {showChatInput && <ChatInput inputRef={inputRef} disabled={!isOnline} />}
+            ? (
+              <Messages
+                messages={historyMessages}
+                disabled={disabledChatMessages}
+              />
+            ) : (
+              <Messages
+                displayMenu={displayMenu}
+                messages={filteredMessages}
+                disabled={disabledChatMessages}
+              />
+          )}
+          {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
           {isTestingRoom && (
             <div
               className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-white"
@@ -91,7 +111,7 @@ function ChatWidget() {
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />
             </div>
-            {!isTestingRoom && useChat && (
+            {showChatParticipants && (
               <div className="px-3 py-3 w-100 border-top">
                 <p className="mb-1 text-nowrap">
                   {`Online players: ${listOfUsers.length}`}

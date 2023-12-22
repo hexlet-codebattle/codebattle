@@ -30,7 +30,7 @@ import {
 
 const activeGamesData = Gon.getAsset('active_games');
 const completedGamesData = Gon.getAsset('completed_games');
-const currentUserParams = Gon.getAsset('current_user');
+const currentUserData = Gon.getAsset('current_user');
 const gameData = Gon.getAsset('game');
 const isRecord = Gon.getAsset('is_record') || false;
 const playerId = Gon.getAsset('player_id');
@@ -60,6 +60,7 @@ const activeGamesParams = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
 const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
+const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
@@ -446,8 +447,9 @@ export default {
       withBots: false,
     },
     settings: {
-      ...currentUserParams,
-      mute: JSON.parse(localStorage.getItem('ui_mute_sound')),
+      ...(currentUserParams || {}),
+      mute: JSON.parse(localStorage.getItem('ui_mute_sound') || false),
+      alreadySendPremiumRequest: JSON.parse(localStorage.getItem('already_send_premium_request') || false),
     },
   },
 };

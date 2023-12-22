@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, User, User.Stats}
+  alias Codebattle.{Repo, PremiumRequest, User, User.Stats}
   alias CodebattleWeb.Api.UserView
 
   import Ecto.Query, warn: false
@@ -50,9 +50,31 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{stats: game_stats})
   end
 
+  def send_premium_request(conn, %{"id" => user_id, "status" => status}) do
+    PremiumRequest.upsert_premium_request!(String.to_integer(user_id), status)
+    json(conn, %{})
+  end
+
+  def premium_requests(conn, _params) do
+    requests = PremiumRequest.all()
+
+    json(conn, %{
+      requests: requests,
+      yes_count: get_requests_count_by_status(requests, "yes"),
+      no_count: get_requests_count_by_status(requests, "no")
+    })
+  end
+
   def current(conn, _) do
     current_user = conn.assigns.current_user
 
     json(conn, %{id: current_user.id})
+  end
+
+  def get_requests_count_by_status(requests, status) do
+    requests
+    |> Enum.filter(&(&1.status == status))
+    |> Enum.uniq_by(& &1.user_id)
+    |> Enum.count()
   end
 end

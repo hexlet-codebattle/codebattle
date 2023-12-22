@@ -22,6 +22,7 @@ import {
   editorStateSelector,
   inBuilderRoomSelector,
   inPreviewRoomSelector,
+  isRestrictedContentSelector,
   inTestingRoomSelector,
   isGameActiveSelector,
   isGameOverSelector,
@@ -33,6 +34,8 @@ import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 import EditorToolbar from './EditorToolbar';
+
+const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 
 function EditorContainer({
   id,
@@ -49,15 +52,17 @@ function EditorContainer({
   const players = useSelector(selectors.gamePlayersSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
+  const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
+  const currentEditorLangSlug = useSelector(selectors.userLangSelector(currentUserId));
 
   const updateEditorValue = useCallback(data => dispatch(GameActions.updateEditorText(data)), [dispatch]);
   const sendEditorValue = useCallback(data => dispatch(GameActions.sendEditorText(data)), [dispatch]);
 
   const { mainService } = useContext(RoomContext);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
+  const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
   const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
   const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
@@ -66,7 +71,7 @@ function EditorContainer({
 
   const isTournamentGame = !!tournamentId;
 
-  const context = { userId: id, type };
+  const context = { userId: id, type, subscriptionType };
 
   const editorService = useInterpret(
     editorMachine,
@@ -166,6 +171,7 @@ function EditorContainer({
   };
 
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
+  const editable = !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned';
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
   const onChange = canChange ? updateEditor : noop();
@@ -180,13 +186,13 @@ function EditorContainer({
     onChangeCursorSelection,
     onChangeCursorPosition,
     checkResult,
-    value: editorState?.text,
+    value: isRestricted ? restrictedText : editorState?.text,
     editorHeight,
     mode: editorMode || editorModes.default,
     isTournamentGame,
     theme,
     ...userSettings,
-    editable: !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned',
+    editable,
     loading: isPreview || editorCurrent.value === 'loading',
   };
 

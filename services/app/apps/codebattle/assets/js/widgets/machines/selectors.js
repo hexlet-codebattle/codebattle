@@ -14,6 +14,8 @@ export const spectatorStateSelector = stateSelector;
 
 export const inPreviewRoomSelector = state => state.matches({ room: roomMachineStates.preview });
 
+export const isRestrictedContentSelector = state => state.matches({ room: roomMachineStates.restricted });
+
 export const inTestingRoomSelector = state => state.matches({ room: roomMachineStates.testing });
 
 export const isGameActiveSelector = state => state.matches({ room: roomMachineStates.active });

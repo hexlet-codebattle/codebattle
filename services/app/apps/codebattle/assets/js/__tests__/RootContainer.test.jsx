@@ -22,7 +22,7 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 }));
 
 const createPlayer = params => ({
-  is_admin: false,
+  isAdmin: false,
   id: 0,
   name: '',
   githubId: 0,

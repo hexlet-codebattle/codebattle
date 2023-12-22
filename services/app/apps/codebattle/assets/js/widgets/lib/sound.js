@@ -32,7 +32,7 @@ const audio = (type = soundType, volume = defaultSoundLevel) => new Howl({
 
 const sound = {
   play: (type, soundLevel) => {
-    const isMute = JSON.parse(localStorage.getItem('ui_mute_sound')) || false;
+    const isMute = JSON.parse(localStorage.getItem('ui_mute_sound') || false);
     const soundEffect = audio();
     if (soundType === 'silent' || isMute) return;
     Howler.volume(isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);

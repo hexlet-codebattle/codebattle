@@ -148,7 +148,7 @@ const preloadedState = {
   },
   user: {
     currentUserId: 1,
-    users: { 1: { id: 1, is_admin: false } },
+    users: { 1: { id: 1, isAdmin: false } },
   },
   usersInfo: {
     1: {},

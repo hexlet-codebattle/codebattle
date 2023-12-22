@@ -2,6 +2,7 @@ import { assign, actions } from 'xstate';
 
 import GameStateCodes from '../config/gameStateCodes';
 import speedModes from '../config/speedModes';
+import subscriptionTypes from '../config/subscriptionTypes';
 import sound from '../lib/sound';
 
 const { send } = actions;
@@ -9,6 +10,8 @@ const { send } = actions;
 const states = {
   room: {
     preview: 'preview',
+
+    restricted: 'restricted',
 
     failure: 'failure',
 
@@ -23,6 +26,7 @@ const states = {
   },
   replayer: {
     empty: 'empty',
+    loading: 'loading',
 
     failure: 'failure',
 
@@ -112,6 +116,7 @@ const machine = {
     // context for replayer
     holding: 'none', // ['none', 'play', 'pause']
     speedMode: speedModes.normal,
+    subscriptionType: subscriptionTypes.free, // ['free', 'premium', 'admin'],
   },
   states: {
     network: {
@@ -120,7 +125,10 @@ const machine = {
         none: {
           on: {
             JOIN: { target: 'connected' },
-            FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE_JOIN: {
+              target: 'disconnected',
+              actions: ['handleFailureJoin'],
+            },
             FAILURE: { target: 'disconnected' },
           },
         },
@@ -132,13 +140,22 @@ const machine = {
             },
           ),
           on: {
-            JOIN: { target: 'connected', actions: ['handleReconnection'] },
-            SHOW_ERROR_MESSAGE: { target: 'disconnectedWithMessage', actions: ['handleDisconnection'] },
+            JOIN: {
+              target: 'connected',
+              actions: ['handleReconnection'],
+            },
+            SHOW_ERROR_MESSAGE: {
+              target: 'disconnectedWithMessage',
+              actions: ['handleDisconnection'],
+            },
           },
         },
         disconnectedWithMessage: {
           on: {
-            JOIN: { target: 'connected', actions: ['handleReconnection'] },
+            JOIN: {
+              target: 'connected',
+              actions: ['handleReconnection'],
+            },
           },
         },
         connected: {
@@ -166,9 +183,13 @@ const machine = {
               target: 'failure',
               actions: ['handleError', 'throwError'],
             },
-            LOAD_PLAYBOOK: 'stored',
+            START_LOADING_PLAYBOOK: [
+              { target: 'restricted', cond: 'haveOnlyFreeAccess' },
+              { target: 'stored' },
+            ],
           },
         },
+        restricted: { type: 'final' },
         waiting: {
           on: {
             'game:user_joined': 'active',
@@ -222,7 +243,14 @@ const machine = {
           states: {
             idle: {
               on: {
-                OPEN_TESTING: 'testing',
+                OPEN_TESTING: [
+                  {
+                    target: 'idle',
+                    cond: 'haveOnlyFreeAccess',
+                    actions: ['showPremiumSubscribeRequestModal'],
+                  },
+                  { target: 'testing' },
+                ],
               },
             },
             testing: {
@@ -239,7 +267,26 @@ const machine = {
       states: {
         empty: {
           on: {
-            LOAD_PLAYBOOK: 'on',
+            START_LOADING_PLAYBOOK: [
+              {
+                target: 'empty',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
+              },
+              { target: 'loading' },
+            ],
+          },
+        },
+        loading: {
+          on: {
+            LOAD_PLAYBOOK: [
+              {
+                target: 'empty',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
+              },
+              { target: 'on' },
+            ],
             REJECT_LOADING_PLAYBOOK: {
               target: 'failure',
               actions: ['handleError', 'throwError'],
@@ -250,14 +297,21 @@ const machine = {
           on: {
             CLOSE_REPLAYER: 'off',
             TOGGLE_SPEED_MODE: {
-              actions: 'toggleSpeedMode',
+              actions: ['toggleSpeedMode'],
             },
           },
           ...recordMachine,
         },
         off: {
           on: {
-            OPEN_REPLAYER: 'on',
+            OPEN_REPLAYER: [
+              {
+                target: 'off',
+                cond: 'haveOnlyFreeAccess',
+                actions: ['showPremiumSubscribeRequestModal'],
+              },
+              { target: 'on' },
+            ],
           },
         },
         failure: {
@@ -275,6 +329,7 @@ export const config = {
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
     isTaskBuilder: (_ctx, { payload }) => payload.state === GameStateCodes.builder,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
+    haveOnlyFreeAccess: ctx => ctx.subscriptionType === 'free',
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
   },
@@ -319,6 +374,7 @@ export const config = {
         }
       },
     }),
+    showPremiumSubscribeRequestModal: () => { },
   },
 };
 

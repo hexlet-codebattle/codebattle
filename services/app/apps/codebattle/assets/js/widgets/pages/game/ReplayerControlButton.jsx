@@ -18,17 +18,16 @@ function ReplayerControlButton() {
 
   const loadReplayer = useCallback(
     () => dispatch(downloadPlaybook(mainService)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mainService],
+    [mainService, dispatch],
   );
   const openLoadedReplayer = useCallback(
     () => dispatch(openPlaybook(mainService)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mainService],
+    [mainService, dispatch],
   );
 
   switch (true) {
     case roomCurrent.matches({ room: roomMachineStates.testing }):
+    case roomCurrent.matches({ room: roomMachineStates.restricted }):
     case roomCurrent.matches({ room: roomMachineStates.stored }): {
       return null;
     }

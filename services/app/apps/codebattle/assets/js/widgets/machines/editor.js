@@ -5,6 +5,7 @@ import {
   editorSettingsByUserType,
 } from '../config/editorSettingsByUserType';
 import editorUserTypes from '../config/editorUserTypes';
+import SubscriptionTypeCodes from '../config/subscriptionTypes';
 import sound from '../lib/sound';
 
 // settings
@@ -60,12 +61,32 @@ const initActiveEditor = assign(() => ({ editorState: 'active' }));
 const initTestingEditor = assign(() => ({ editorState: 'testing' }));
 const initBannedEditor = assign(() => ({ editorState: 'banned' }));
 
+const timeoutCheckingActions = [
+  'soundFailureChecking',
+  'handleTimeoutFailureChecking',
+  'openCheckResultOutput',
+];
+const successCheckingActions = [
+  'soundFinishedChecking',
+  'openCheckResultOutput',
+];
+
 const editor = {
   initial: 'loading',
   states: {
     loading: {
       on: {
-        load_active_editor: { target: 'charging', actions: [initActiveEditor] },
+        load_active_editor: [
+          {
+            target: 'idle',
+            cond: 'canSkipCharging',
+            actions: [initActiveEditor],
+          },
+          {
+            target: 'charging',
+            actions: [initActiveEditor],
+          },
+        ],
         load_testing_editor: { target: 'idle', actions: [initTestingEditor] },
         load_banned_editor: { target: 'banned', actions: [initBannedEditor] },
         load_stored_editor: 'history',
@@ -83,7 +104,7 @@ const editor = {
       },
       entry: initContextByState('charging'),
       on: {
-        check_solution: {
+        check_solution_received: {
           target: 'checking',
           actions: ['soundStartChecking'],
           cond: 'isUserEvent',
@@ -99,7 +120,7 @@ const editor = {
           target: 'checking',
           actions: ['soundStartChecking', 'userSendSolution'],
         },
-        check_solution: {
+        check_solution_received: {
           target: 'checking',
           actions: ['soundStartChecking'],
           cond: 'isUserEvent',
@@ -111,17 +132,31 @@ const editor = {
     checking: {
       entry: initContextByState('checking'),
       after: {
-        50000: {
-          target: 'charging',
-          actions: ['soundFailureChecking', 'handleTimeoutFailureChecking', 'openCheckResultOutput'],
-        },
+        50000: [
+          {
+            target: 'idle',
+            cond: 'canSkipCharging',
+            actions: timeoutCheckingActions,
+          },
+          {
+            target: 'charging',
+            actions: timeoutCheckingActions,
+          },
+        ],
       },
       on: {
-        receive_check_result: {
-          target: 'charging',
-          actions: ['soundFinishedChecking', 'openCheckResultOutput'],
-          cond: 'isUserEvent',
-        },
+        receive_check_result: [
+          {
+            target: 'idle',
+            actions: successCheckingActions,
+            cond: 'isUserEventWhoCanSkipCharging',
+          },
+          {
+            target: 'charging',
+            actions: successCheckingActions,
+            cond: 'isUserEvent',
+          },
+        ],
         unload_editor: 'loading',
         banned_user: 'banned',
       },
@@ -129,6 +164,8 @@ const editor = {
     banned: {},
   },
 };
+
+const canSkipCharging = type => type !== SubscriptionTypeCodes.free;
 
 export const config = {
   actions: {
@@ -152,6 +189,11 @@ export const config = {
   },
   guards: {
     isUserEvent: (ctx, { userId }) => ctx.userId === userId,
+    isUserEventWhoCanSkipCharging: (ctx, { userId }) => (
+      ctx.userId === userId
+      && canSkipCharging(ctx.subscriptionType)
+    ),
+    canSkipCharging: ctx => canSkipCharging(ctx.subscriptionType),
   },
 };
 

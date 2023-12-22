@@ -55,6 +55,7 @@ function TaskAssignment({
   changeTaskDescriptionSizes,
   hideGuide = false,
   hideContribution = false,
+  hideContent = false,
   fullSize = false,
 }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
@@ -79,6 +80,16 @@ function TaskAssignment({
     h2: taskSize === 4,
     h1: taskSize > 4,
   });
+
+  if (hideContent) {
+    return (
+      <div className={cardClassName}>
+        <div className="d-flex justify-content-center align-items-center h-100">
+          <span>Only for Premium subscribers</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cardClassName}>

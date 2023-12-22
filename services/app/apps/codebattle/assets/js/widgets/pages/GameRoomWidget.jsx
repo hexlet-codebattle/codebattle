@@ -27,6 +27,7 @@ import CodebattlePlayer from './game/CodebattlePlayer';
 import GameWidget from './game/GameWidget';
 import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
+import PremiumRestrictionModal from './game/PremiumRestrictionModal';
 import TaskDescriptionModal from './game/TaskDescriptionModal';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
 import TournamentStatisticsModal from './game/TournamentStatisticsModal';
@@ -40,6 +41,7 @@ function GameRoomWidget({
 }) {
   const dispatch = useDispatch();
 
+  const [premiumRestrictionModalShowing, setPremiumRestrictionModalShowing] = useState(false);
   const [taskDescriptionModalShowing, setTaskDescriptionModalShowing] = useState(false);
   const [taskModalShowing, setTaskModalShowing] = useState(false);
   const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
@@ -47,6 +49,7 @@ function GameRoomWidget({
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
   const gameStatus = useSelector(selectors.gameStatusSelector);
+  const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const tournamentId = gameStatus?.tournamentId;
   const firstPlayer = useSelector(selectors.firstPlayerSelector);
@@ -57,6 +60,8 @@ function GameRoomWidget({
   const machines = useGameRoomMachine({
     setTaskModalShowing,
     setResultModalShowing,
+    setPremiumRestrictionModalShowing,
+    subscriptionType,
     mainMachine,
     taskMachine,
   });
@@ -75,6 +80,7 @@ function GameRoomWidget({
     if (tournamentStatisticsModalShowing) {
       setResultModalShowing(false);
       setTaskDescriptionModalShowing(false);
+      setPremiumRestrictionModalShowing(false);
     }
   }, [tournamentStatisticsModalShowing, setResultModalShowing]);
 
@@ -154,6 +160,10 @@ function GameRoomWidget({
             <FeedbackAlertNotification />
             <div className="container-fluid">
               <div className="row no-gutter cb-game">
+                <PremiumRestrictionModal
+                  modalShowing={premiumRestrictionModalShowing}
+                  setModalShowing={setPremiumRestrictionModalShowing}
+                />
                 <TaskDescriptionModal
                   modalShowing={taskDescriptionModalShowing}
                   setModalShowing={setTaskDescriptionModalShowing}

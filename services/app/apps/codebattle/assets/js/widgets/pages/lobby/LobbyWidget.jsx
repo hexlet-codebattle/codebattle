@@ -329,19 +329,21 @@ const ActiveGames = ({
 
 const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
+
   return cn(
     'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0',
-    { active: hash.includes(url.hash) },
+    { active: hash.includes(url.hash || '#lobby') },
   );
 };
 
-const tabContentClassName = hash => {
+const tabContentClassName = (...hash) => {
   const url = new URL(window.location);
+
   return cn({
     'tab-pane': true,
     fade: true,
-    active: hash.includes(url.hash),
-    show: hash.includes(url.hash),
+    active: hash.includes(url.hash || '#lobby'),
+    show: hash.includes(url.hash || '#lobby'),
   });
 };
 

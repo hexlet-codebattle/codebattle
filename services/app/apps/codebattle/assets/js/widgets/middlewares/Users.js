@@ -32,6 +32,24 @@ export const loadSimpleUserStats = (onSuccess, onFailure) => user => {
     .catch(onFailure);
 };
 
+export const sendPremiumRequest = (requestStatus, userId) => async dispatch => {
+  try {
+    await axios.post(
+      `/api/v1/user/${userId}/send_premium_request`,
+      { status: requestStatus },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': window.csrf_token,
+        },
+      },
+    );
+    dispatch(actions.togglePremiumRequestStatus());
+  } catch (error) {
+    dispatch(actions.setError(error));
+  }
+};
+
 const periodToTimeUnit = {
   weekly: 'week',
   monthly: 'month',

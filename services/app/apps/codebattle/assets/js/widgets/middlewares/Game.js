@@ -163,14 +163,14 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
 export const updateEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
+  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
 };
 
 export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
+  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
 
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
 
@@ -298,7 +298,7 @@ export const activeEditorReady = (machine, isBanned) => {
 
   const handleStartsCheck = data => {
     const { userId } = data;
-    machine.send('check_solution', { userId });
+    machine.send('check_solution_received', { userId });
   };
 
   const handleNewCheckResult = data => {
@@ -765,6 +765,8 @@ export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
 };
 
 const fetchPlaybook = (machine, init) => dispatch => {
+  machine.send('START_LOADING_PLAYBOOK');
+
   axios
     .get(`/api/v1/playbook/${gameId}`)
     .then(response => {

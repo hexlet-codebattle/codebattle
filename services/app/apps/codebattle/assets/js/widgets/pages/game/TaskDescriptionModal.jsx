@@ -48,7 +48,7 @@ function TaskDescriptionModal({ modalShowing, setModalShowing }) {
             onClick={handleClose}
             className="btn btn-secondary text-white rounded-lg"
           >
-            <FontAwesomeIcon icon="close" className="mr-2" />
+            <FontAwesomeIcon icon="times" className="mr-2" />
             Close
           </Button>
         </div>

@@ -3,7 +3,12 @@ import React, { useContext, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
-import { inPreviewRoomSelector, inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
+import {
+  inPreviewRoomSelector,
+  inTestingRoomSelector,
+  isRestrictedContentSelector,
+  roomStateSelector,
+} from '../../machines/selectors';
 import {
   gameTaskSelector,
   gameStatusSelector,
@@ -26,6 +31,7 @@ function InfoWidget({ openFullSizeTaskDescription }) {
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
   const isTestingRoom = inTestingRoomSelector(roomCurrent);
   const isPreviewRoom = inPreviewRoomSelector(roomCurrent);
+  const isRestricted = isRestrictedContentSelector(roomCurrent);
 
   const taskLanguage = useSelector(taskDescriptionLanguageselector);
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
@@ -104,6 +110,7 @@ function InfoWidget({ openFullSizeTaskDescription }) {
                 handleOpenFullSizeTaskDescription={openFullSizeTaskDescription}
                 hideContribution={!!tournamentId}
                 hideGuide={!!tournamentId}
+                hideContent={isRestricted}
               />
             </div>
             <div

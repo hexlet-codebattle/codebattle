@@ -9,6 +9,7 @@ import editorModes from '../config/editorModes';
 import defaultEditorHeight from '../config/editorSettings';
 import editorThemes from '../config/editorThemes';
 import GameStateCodes from '../config/gameStateCodes';
+import SubscriptionTypeCodes from '../config/subscriptionTypes';
 import { taskStateCodes } from '../config/task';
 import userTypes from '../config/userTypes';
 import { replayerMachineStates } from '../machines/game';
@@ -16,9 +17,15 @@ import { makeEditorTextKey } from '../utils/gameRoom';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
-export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].is_admin;
+export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].isAdmin;
 
-export const currentUserIsGuestSelector = state => state.user.users[state.user.currentUserId].is_guest;
+export const currentUserIsGuestSelector = state => state.user.users[state.user.currentUserId].isGuest;
+
+export const subscriptionTypeSelector = state => (
+  currentUserIsAdminSelector(state)
+    ? SubscriptionTypeCodes.admin
+    : SubscriptionTypeCodes.free
+);
 
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 
@@ -131,7 +138,7 @@ export const currentPlayerTextByLangSelector = lang => state => {
   return editorTexts[makeEditorTextKey(userId, lang)];
 };
 
-export const userLangSelector = state => userId => get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
+export const userLangSelector = userId => state => get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
 export const userGameScoreSelector = createDraftSafeSelector(
   state => state.game.gameStatus.score,
   score => ({
