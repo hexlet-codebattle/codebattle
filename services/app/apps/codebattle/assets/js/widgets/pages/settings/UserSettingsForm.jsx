@@ -31,9 +31,9 @@ const TextInput = ({ label, ...props }) => {
 const UserSettingsForm = ({ onSubmit, settings }) => {
   const initialValues = {
     name: settings.name,
-    sound_settings: {
-      type: settings.sound_settings.type,
-      level: settings.sound_settings.level,
+    soundSettings: {
+      type: settings.soundSettings.type,
+      level: settings.soundSettings.level,
     },
     lang: settings.lang || '',
   };
@@ -113,7 +113,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                 name="sound_settings.type"
                 value="dendy"
                 className="form-check-input"
-                onClick={() => playSound('dendy', values.sound_settings.level * 0.1)}
+                onClick={() => playSound('dendy', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioDendy">Dendy</label>
             </div>
@@ -124,7 +124,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                 name="sound_settings.type"
                 value="cs"
                 className="form-check-input"
-                onClick={() => playSound('cs', values.sound_settings.level * 0.1)}
+                onClick={() => playSound('cs', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioCS">CS</label>
             </div>
@@ -135,7 +135,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                 name="sound_settings.type"
                 value="standart"
                 className="form-check-input"
-                onClick={() => playSound('standart', values.sound_settings.level * 0.1)}
+                onClick={() => playSound('standart', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioStandart">Standart</label>
             </div>
@@ -160,10 +160,10 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               min={0}
               max={10}
               name="sound_settings.level"
-              disabled={values.sound_settings.type === 'silent'}
+              disabled={values.soundSettings.type === 'silent'}
               onInput={e => {
                 handleChange(e);
-                playSound(values.sound_settings.type, e.target.value * 0.1);
+                playSound(values.soundSettings.type, e.target.value * 0.1);
               }}
               className="ml-3 mr-3 form-control"
             />

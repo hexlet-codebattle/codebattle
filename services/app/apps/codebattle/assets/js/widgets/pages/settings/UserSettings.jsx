@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import cn from 'classnames';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 import noop from 'lodash/noop';
 import Alert from 'react-bootstrap/Alert';
@@ -78,14 +79,14 @@ function UserSettings() {
 
   const handleUpdateUserSettings = useCallback(async (values, { setErrors }) => {
     try {
-      const { data } = await axios.patch('/api/v1/settings', values, {
+      const { data } = await axios.patch('/api/v1/settings', decamelizeKeys(values), {
         headers: {
           'Content-Type': 'application/json',
           'x-csrf-token': csrfToken,
         },
       });
 
-      dispatch(actions.updateUserSettings(data));
+      dispatch(actions.updateUserSettings(camelizeKeys(data)));
       setNotification(notifications.success);
     } catch (error) {
       if (!error.response) {
