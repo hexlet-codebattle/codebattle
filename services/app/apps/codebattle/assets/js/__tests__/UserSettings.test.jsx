@@ -23,16 +23,16 @@ const reducer = combineReducers(reducers);
 const preloadedState = {
   user: {
     settings: {
-      sound_settings: {
+      soundSettings: {
         type: 'standart',
         level: 6,
       },
       id: 11,
       name: 'Diman',
       lang: 'ts',
-      avatar_url: '/assets/images/logo.svg',
-      discord_name: null,
-      discord_id: null,
+      avatarUrl: '/assets/images/logo.svg',
+      discordName: null,
+      discordId: null,
       error: '',
     },
   },

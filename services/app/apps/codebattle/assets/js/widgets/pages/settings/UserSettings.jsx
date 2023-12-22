@@ -42,7 +42,7 @@ function Notification({ notification, onClose }) {
 
 function SocialButtons({ settings }) {
   return PROVIDERS.map(provider => {
-    const providerName = settings[`${provider}_name`];
+    const providerName = settings[`${provider}Name`];
     const isSocialLinked = !!providerName?.length;
     const formatedProviderName = capitalize(provider);
 
