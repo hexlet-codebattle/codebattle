@@ -1,58 +1,34 @@
 import React from 'react';
 
+import { faCircle, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
 import LanguageIcon from './LanguageIcon';
 
-const renderUserName = ({ name, rank }) => {
-  const displayRank = rank ? `(${rank})` : '';
-
-  return `${name}${displayRank}`;
-};
-const renderOnlineIndicator = (user, isOnline) => {
-  if (user.id <= 0) {
-    return null;
-  }
-
-  const onlineIndicatorClassName = cn('mr-2', {
+const UserName = ({
+  className = '', user, truncate, isOnline, hideOnlineIndicator,
+}) => {
+  const commonClassName = 'd-flex align-items-center';
+  const onlineIndicatorClassName = cn('mr-1', {
     'cb-user-online': isOnline,
     'cb-user-offline': !isOnline,
   });
+  const userLinkClassName = cn('text-truncate', {
+    'text-danger': user.isAdmin,
+    'x-username-truncated': truncate,
+  });
+
+  const userName = user.rank ? `${user.name}(${user.rank})` : user.name;
 
   return (
-    <span>
-      <FontAwesomeIcon
-        icon={['fa', 'circle']}
-        className={onlineIndicatorClassName}
-      />
-    </span>
+    <div className={cn(commonClassName, className)}>
+      {(!hideOnlineIndicator && !user.isBot) && <FontAwesomeIcon icon={faCircle} className={onlineIndicatorClassName} />}
+      <LanguageIcon className="mr-1" lang={user.lang} />
+      {user.isBot && <FontAwesomeIcon className="mr-1" icon={faRobot} transform="up-1" />}
+      <a href={`/users/${user.id}`} className={userLinkClassName}>{userName}</a>
+    </div>
   );
 };
-
-const UserName = ({
-  user, truncate, isOnline, hideOnlineIndicator,
-}) => (
-  <div className="d-flex align-items-center">
-    {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
-    <LanguageIcon lang={user.lang || 'js'} />
-    {user.id < 0 && <FontAwesomeIcon className="mx-1" icon="robot" transform="up-1" />}
-    <a
-      href={`/users/${user.id}`}
-      key={user.id}
-      className={cn('d-flex align-items-center', {
-        'text-danger': user.isAdmin,
-      })}
-    >
-      <p
-        className={cn('text-truncate m-0', {
-          'x-username-truncated': truncate,
-        })}
-      >
-        <u className="text-decoration-none">{renderUserName(user)}</u>
-      </p>
-    </a>
-  </div>
-);
 
 export default UserName;

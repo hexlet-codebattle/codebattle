@@ -68,14 +68,13 @@ function UserInfo({
 
   if (hideInfo) {
     return (
-      <div className={userClassName}>
-        <UserName
-          user={user}
-          truncate={truncate}
-          isOnline={isOnline}
-          hideOnlineIndicator={hideOnlineIndicator}
-        />
-      </div>
+      <UserName
+        className={userClassName}
+        user={user}
+        truncate={truncate}
+        isOnline={isOnline}
+        hideOnlineIndicator={hideOnlineIndicator}
+      />
     );
   }
 
@@ -85,8 +84,9 @@ function UserInfo({
       placement={placement}
       component={content}
     >
-      <div className={userClassName}>
+      <div>
         <UserName
+          className={userClassName}
           user={user}
           truncate={truncate}
           isOnline={isOnline}
