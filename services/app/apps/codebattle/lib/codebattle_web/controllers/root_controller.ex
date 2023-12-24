@@ -32,7 +32,7 @@ defmodule CodebattleWeb.RootController do
           UserView.render_rating(%{
             "page_size" => "7",
             "page" => "1",
-            "s" => "rank+desc",
+            "s" => "rating+desc",
             "date_from" => start_of_the_week,
             "with_bots" => false
           })
