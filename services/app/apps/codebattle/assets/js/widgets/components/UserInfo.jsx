@@ -43,6 +43,7 @@ function UserPopoverContent({ user }) {
 }
 
 function UserInfo({
+  className,
   user,
   hideInfo = false,
   truncate = false,
@@ -62,7 +63,7 @@ function UserInfo({
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
-  const userClassName = cn({
+  const userClassName = cn(className, {
     'cb-opacity-50': loading,
   });
 
