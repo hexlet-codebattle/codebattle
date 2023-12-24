@@ -4,6 +4,8 @@ import moment from 'moment';
 
 import periodTypes from '../config/periodTypes';
 
+import initial from './initial';
+
 const periodMapping = {
   [periodTypes.ALL]: 'all',
   [periodTypes.MONTHLY]: 'month',
@@ -43,14 +45,16 @@ const fetchUsers = createAsyncThunk(
   },
 );
 
+const initialState = {
+  loading: 'initial',
+  users: initial.leaderboardUsers,
+  period: periodTypes.WEEKLY,
+  error: null,
+};
+
 const leaderboardSlice = createSlice({
   name: 'leaderboard',
-  initialState: {
-    loading: 'idle',
-    users: null,
-    period: periodTypes.WEEKLY,
-    error: null,
-  },
+  initialState,
   reducers: {
     changePeriod(state, action) {
       state.period = action.payload;
@@ -60,6 +64,9 @@ const leaderboardSlice = createSlice({
     [fetchUsers.pending]: state => {
       if (state.loading === 'idle') {
         state.loading = 'pending';
+      }
+      if (state.loading === 'initial') {
+        state.loading = 'idle';
       }
     },
     [fetchUsers.fulfilled]: (state, action) => {
