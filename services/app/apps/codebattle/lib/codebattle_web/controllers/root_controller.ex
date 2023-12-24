@@ -6,6 +6,7 @@ defmodule CodebattleWeb.RootController do
   alias Codebattle.Repo
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
+  alias CodebattleWeb.Api.UserView
   alias CodebattleWeb.LayoutView
 
   def index(conn, params) do
@@ -22,13 +23,28 @@ defmodule CodebattleWeb.RootController do
           completed_games: completed_games
         } = LobbyView.render_lobby_params(current_user)
 
+        start_of_the_week =
+          DateTime.utc_now()
+          |> Date.beginning_of_week(:saturday)
+          |> Date.to_iso8601()
+
+        %{users: leaderboard_users} =
+          UserView.render_rating(%{
+            "page_size" => "7",
+            "page" => "1",
+            "s" => "rank+desc",
+            "date_from" => start_of_the_week,
+            "with_bots" => false
+          })
+
         conn
         |> maybe_put_opponent(params)
         |> put_gon(
           task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
           active_games: active_games,
           tournaments: tournaments,
-          completed_games: completed_games
+          completed_games: completed_games,
+          leaderboard_users: leaderboard_users
         )
         |> render("index.html", current_user: current_user)
     end
