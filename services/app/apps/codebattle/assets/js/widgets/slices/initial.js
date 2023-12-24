@@ -40,6 +40,7 @@ const tournamentId = Gon.getAsset('tournament_id');
 const tournamentsData = Gon.getAsset('tournaments');
 const usersRatingData = Gon.getAsset('users_rating');
 const langsData = Gon.getAsset('langs');
+const leaderboardUsersData = Gon.getAsset('leaderboard_users');
 
 // ******************************
 //
@@ -61,6 +62,7 @@ const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
 const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserId = currentUserParams ? currentUserParams.id : null;
+const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
@@ -450,4 +452,5 @@ export default {
       mute: JSON.parse(localStorage.getItem('ui_mute_sound')),
     },
   },
+  leaderboardUsers: initialLeaderboardUsers,
 };
