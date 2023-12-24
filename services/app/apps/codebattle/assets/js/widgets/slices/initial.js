@@ -3,6 +3,8 @@ import { camelizeKeys } from 'humps';
 
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
+import leaderboardTypes from '../config/leaderboardTypes';
+import periodTypes from '../config/periodTypes';
 import { taskStateCodes, taskVisibilityCodes } from '../config/task';
 import userTypes from '../config/userTypes';
 import {
@@ -452,5 +454,10 @@ export default {
       mute: JSON.parse(localStorage.getItem('ui_mute_sound')),
     },
   },
-  leaderboardUsers: initialLeaderboardUsers,
+  leaderboard: {
+    loading: leaderboardTypes.INITIAL,
+    period: periodTypes.WEEKLY,
+    users: initialLeaderboardUsers,
+    error: null,
+  },
 };
