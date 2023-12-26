@@ -3,6 +3,8 @@ import { camelizeKeys } from 'humps';
 
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
+import leaderboardTypes from '../config/leaderboardTypes';
+import periodTypes from '../config/periodTypes';
 import { taskStateCodes, taskVisibilityCodes } from '../config/task';
 import userTypes from '../config/userTypes';
 import {
@@ -40,6 +42,7 @@ const tournamentId = Gon.getAsset('tournament_id');
 const tournamentsData = Gon.getAsset('tournaments');
 const usersRatingData = Gon.getAsset('users_rating');
 const langsData = Gon.getAsset('langs');
+const leaderboardUsersData = Gon.getAsset('leaderboard_users');
 
 // ******************************
 //
@@ -62,6 +65,7 @@ const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
+const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
@@ -451,5 +455,11 @@ export default {
       mute: JSON.parse(localStorage.getItem('ui_mute_sound') || false),
       alreadySendPremiumRequest: JSON.parse(localStorage.getItem('already_send_premium_request') || false),
     },
+  },
+  leaderboard: {
+    loading: leaderboardTypes.INITIAL,
+    period: periodTypes.WEEKLY,
+    users: initialLeaderboardUsers,
+    error: null,
   },
 };

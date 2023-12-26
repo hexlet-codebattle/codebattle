@@ -2,7 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import moment from 'moment';
 
+import leaderboardTypes from '../config/leaderboardTypes';
 import periodTypes from '../config/periodTypes';
+
+import initial from './initial';
 
 const periodMapping = {
   [periodTypes.ALL]: 'all',
@@ -16,7 +19,7 @@ const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
   async ({ periodType }, { getState }) => {
     const { loading } = getState().leaderboard;
-    if (loading !== 'pending') {
+    if (loading !== leaderboardTypes.PENDING) {
       return;
     }
 
@@ -45,12 +48,7 @@ const fetchUsers = createAsyncThunk(
 
 const leaderboardSlice = createSlice({
   name: 'leaderboard',
-  initialState: {
-    loading: 'idle',
-    users: null,
-    period: periodTypes.WEEKLY,
-    error: null,
-  },
+  initialState: initial.leaderboard,
   reducers: {
     changePeriod(state, action) {
       state.period = action.payload;
@@ -58,19 +56,22 @@ const leaderboardSlice = createSlice({
   },
   extraReducers: {
     [fetchUsers.pending]: state => {
-      if (state.loading === 'idle') {
-        state.loading = 'pending';
+      if (state.loading === leaderboardTypes.IDLE) {
+        state.loading = leaderboardTypes.PENDING;
+      }
+      if (state.loading === leaderboardTypes.INITIAL) {
+        state.loading = leaderboardTypes.IDLE;
       }
     },
     [fetchUsers.fulfilled]: (state, action) => {
-      if (state.loading === 'pending') {
-        state.loading = 'idle';
+      if (state.loading === leaderboardTypes.PENDING) {
+        state.loading = leaderboardTypes.IDLE;
         state.users = action.payload.users;
       }
     },
     [fetchUsers.rejected]: (state, action) => {
-      if (state.loading === 'pending') {
-        state.loading = 'idle';
+      if (state.loading === leaderboardTypes.PENDING) {
+        state.loading = leaderboardTypes.IDLE;
         state.error = action.error;
       }
     },
