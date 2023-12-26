@@ -1,3 +1,8 @@
+/**
+ * Task states for builder.
+ * @readonly
+ * @enum {string}
+ */
 export const taskStateCodes = {
   none: 'none',
   blank: 'blank',
@@ -7,6 +12,11 @@ export const taskStateCodes = {
   disabled: 'disabled',
 };
 
+/**
+ * Task visibility states for builder.
+ * @readonly
+ * @enum {string}
+ */
 export const taskVisibilityCodes = {
   public: 'public',
   hidden: 'hidden',

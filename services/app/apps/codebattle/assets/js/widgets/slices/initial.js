@@ -3,7 +3,7 @@ import { camelizeKeys } from 'humps';
 
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
-import leaderboardTypes from '../config/leaderboardTypes';
+import loadingStatuses from '../config/loadingStatuses';
 import periodTypes from '../config/periodTypes';
 import { taskStateCodes, taskVisibilityCodes } from '../config/task';
 import userTypes from '../config/userTypes';
@@ -322,10 +322,10 @@ const defaultTournamentPlayerParams = {
  *  resultPercent: number,
  * }} Player
  * @typedef {{
- *  state: string,
+ *  state: @type {import("../config/gameStateCodes.js").default},
  *  msg: string,
  *  type: string,
- *  mode: string,
+ *  mode: @type {import("../config/gameModes.js").default},
  *  startsAt: string,
  *  score: Object,
  *  timeoutSeconds: number,
@@ -337,14 +337,14 @@ const defaultTournamentPlayerParams = {
  * @typedef {{
  *  id: number,
  *  name: string,
- *  level: string,
+ *  level: @type {import("../config/levels.js").default},
  *  examples: string,
  *  descriptionRu: {?string},
  *  descriptionEn: {?string},
  *  tags: string[],
- *  state: string,
+ *  state: @type {import("../config/task.js").taskStateCodes},
  *  origin: string,
- *  visibility: boolean,
+ *  visibility: @type {import("../config/task.js").taskVisibilityCodes},
  *  creatorId: number,
  *  inputSignature: Object[],
  *  outputSignature: Object,
@@ -383,11 +383,18 @@ const defaultTournamentPlayerParams = {
  *   playersCount: number,
  *   playersLimit: number,
  *   startsAt: string,
- *   state: string,
+ *   state: @type {import("../config/tournament.js").default},
  *   taskStrategy: string,
  *   type: string,
  *   useChat: boolean,
  * }} TournamentState
+ *
+ * @typedef {{
+    loading: @type {import("../config/loadingStatuses.js").default},
+    period: @type {import("../config/periodTypes.js").default},
+    users: Object[],
+    error: {?Object},
+ * }} LeaderboardState
  *
  * @const {{
  *   game: GameState,
@@ -401,6 +408,7 @@ const defaultTournamentPlayerParams = {
  *   liveTournaments: Object,
  *   completedTournaments: Object,
  *   user: Object,
+ *   leaderboard: LeaderboardState,
  * }}
  *
  */
@@ -457,7 +465,7 @@ export default {
     },
   },
   leaderboard: {
-    loading: leaderboardTypes.INITIAL,
+    loading: loadingStatuses.INITIAL,
     period: periodTypes.WEEKLY,
     users: initialLeaderboardUsers,
     error: null,
