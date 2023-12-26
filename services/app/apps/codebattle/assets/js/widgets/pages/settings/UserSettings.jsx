@@ -57,7 +57,7 @@ function SocialButtons({ settings }) {
             type="button"
             className="bind-social"
             data-method="delete"
-            data-csrf={window.csrf_token}
+            data-csrf={csrfToken}
             data-to={`/auth/${provider}`}
           >
             {`Unlink ${formatedProviderName}`}
