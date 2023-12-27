@@ -8,6 +8,7 @@
   ],
   "plugins": [
     "lodash",
-    "babel-plugin-transform-import-meta"
+    "babel-plugin-transform-import-meta",
+    "babel-plugin-react-inline-svg-unique-id"
   ]
 }
