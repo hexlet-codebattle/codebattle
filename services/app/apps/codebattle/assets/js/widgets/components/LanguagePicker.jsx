@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
-import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Game';
+import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Room';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 import LanguagePickerView from './LanguagePickerView';

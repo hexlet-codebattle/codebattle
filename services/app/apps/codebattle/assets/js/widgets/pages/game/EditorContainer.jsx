@@ -28,7 +28,7 @@ import {
   isGameOverSelector,
   openedReplayerSelector,
 } from '../../machines/selectors';
-import * as GameActions from '../../middlewares/Game';
+import * as GameActions from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';

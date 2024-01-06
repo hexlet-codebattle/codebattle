@@ -1,7 +1,6 @@
-import React, {
-  useCallback, memo,
-} from 'react';
+import React, { memo } from 'react';
 
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -11,24 +10,23 @@ import {
   gameTaskSelector, taskDescriptionLanguageselector,
 } from '@/selectors';
 
+import ModalCodes from '../../config/modalCodes';
 import { actions } from '../../slices';
 
 import TaskAssignment from './TaskAssignment';
 
-function TaskDescriptionModal({ modalShowing, setModalShowing }) {
+const TaskDescriptionModal = NiceModal.create(() => {
   const dispatch = useDispatch();
+
+  const modal = useModal(ModalCodes.taskDescriptionModal);
 
   const task = useSelector(gameTaskSelector);
   const taskLanguage = useSelector(taskDescriptionLanguageselector);
 
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
-  const handleClose = useCallback(() => {
-    setModalShowing(false);
-  }, [setModalShowing]);
-
   return (
-    <Modal centered show={modalShowing} onHide={handleClose}>
+    <Modal centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>Task Description</Modal.Title>
       </Modal.Header>
@@ -45,7 +43,7 @@ function TaskDescriptionModal({ modalShowing, setModalShowing }) {
       <Modal.Footer>
         <div className="d-flex justify-content-end w-100">
           <Button
-            onClick={handleClose}
+            onClick={modal.hide}
             className="btn btn-secondary text-white rounded-lg"
           >
             <FontAwesomeIcon icon="times" className="mr-2" />
@@ -55,6 +53,6 @@ function TaskDescriptionModal({ modalShowing, setModalShowing }) {
       </Modal.Footer>
     </Modal>
   );
-}
+});
 
 export default memo(TaskDescriptionModal);

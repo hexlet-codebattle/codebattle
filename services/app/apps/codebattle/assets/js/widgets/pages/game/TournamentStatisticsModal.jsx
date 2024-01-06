@@ -1,9 +1,8 @@
 import React, {
-  useCallback, useEffect, memo, useMemo, useState,
+  useEffect, memo, useMemo, useState,
 } from 'react';
 
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import Button from 'react-bootstrap/Button';
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
@@ -15,19 +14,18 @@ import {
 } from '@/selectors';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
+import ModalCodes from '../../config/modalCodes';
 import TournamentStateCodes from '../../config/tournament';
 
-function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
+const TournamentStatisticsModal = NiceModal.create(() => {
+  const modal = useModal(ModalCodes.tournamentStatisticsModal);
+
   const gameId = useSelector(gameIdSelector);
   const tournament = useSelector(tournamentSelector);
   const firstPlayer = useSelector(firstPlayerSelector);
   const secondPlayer = useSelector(secondPlayerSelector);
 
   const [showFullStatistics, setShowFullStatistics] = useState(false);
-
-  // const toggleStatisticsMode = useCallback(() => {
-  //   setShowFullStatistics(state => !state);
-  // }, [setShowFullStatistics]);
 
   const matches = useMemo(() => {
     if (showFullStatistics && setShowFullStatistics) {
@@ -50,22 +48,25 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
     && tournament.currentRound === gameRound;
 
   useEffect(() => {
-    if (!modalShowing && showTournamentStatistics) {
-      setModalShowing(true);
+    if (modal.visible) {
+      NiceModal.hide(ModalCodes.gameResultModal);
+      NiceModal.hide(ModalCodes.premiumRestrictionModal);
+      NiceModal.hide(ModalCodes.taskDescriptionModal);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTournamentStatistics]);
+  }, [modal.visible]);
 
-  const handleClose = useCallback(() => {
-    setModalShowing(false);
-  }, [setModalShowing]);
+  useEffect(() => {
+    if (showTournamentStatistics && !modal.visible) {
+      NiceModal.show(ModalCodes.tournamentStatisticsModal);
+    }
+  }, [modal.visible, showTournamentStatistics]);
 
   const title = showFullStatistics
     ? 'Tournament statistics'
     : 'Tournament round statistics';
 
   return (
-    <Modal centered show={modalShowing} onHide={handleClose}>
+    <Modal centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -120,6 +121,6 @@ function TournamentStatisticsModal({ modalShowing, setModalShowing }) {
       */}
     </Modal>
   );
-}
+});
 
 export default memo(TournamentStatisticsModal);

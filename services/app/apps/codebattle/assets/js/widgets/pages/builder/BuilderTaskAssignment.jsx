@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
@@ -10,8 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
+import ModalCodes from '../../config/modalCodes';
+import PageNames from '../../config/pageNames';
 import { taskStateCodes } from '../../config/task';
-import { validateTaskName } from '../../middlewares/Game';
+import { validateTaskName } from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
@@ -74,7 +77,6 @@ function BuilderTaskAssignment({
   task,
   taskLanguage,
   handleSetLanguage,
-  handleOpenFullSizeTaskDescription,
   openConfiguration,
   fullSize = true,
 }) {
@@ -125,6 +127,9 @@ function BuilderTaskAssignment({
     },
     [validateName, dispatch],
   );
+  const handleOpenFullSizeTaskDescription = useCallback(() => {
+    NiceModal.show(ModalCodes.taskDescriptionModal, { pageName: PageNames.builder });
+  }, []);
 
   if (isEmpty(task)) {
     return null;

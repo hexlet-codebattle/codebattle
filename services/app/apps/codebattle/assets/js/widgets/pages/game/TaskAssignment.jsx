@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import isEmpty from 'lodash/isEmpty';
@@ -8,6 +9,8 @@ import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
+import ModalCodes from '../../config/modalCodes';
+import PageNames from '../../config/pageNames';
 import { actions } from '../../slices';
 import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 
@@ -51,7 +54,6 @@ function TaskAssignment({
   taskLanguage,
   taskSize = 0,
   handleSetLanguage,
-  handleOpenFullSizeTaskDescription,
   changeTaskDescriptionSizes,
   hideGuide = false,
   hideContribution = false,
@@ -67,6 +69,9 @@ function TaskAssignment({
   const handleTaskSizeDecrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize - 1);
   }, [taskSize, changeTaskDescriptionSizes]);
+  const handleOpenFullSizeTaskDescription = useCallback(() => {
+    NiceModal.show(ModalCodes.taskDescriptionModal, { pageName: PageNames.game });
+  }, []);
 
   if (isEmpty(task)) {
     return null;

@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import RoomContext from '../../components/RoomContext';
 import speedModes from '../../config/speedModes';
 import { replayerMachineStates } from '../../machines/game';
-import * as GameActions from '../../middlewares/Game';
+import * as GameActions from '../../middlewares/Room';
 import { playbookRecordsSelector } from '../../selectors';
 import { actions } from '../../slices';
 

@@ -65,8 +65,8 @@ defmodule CodebattleWeb.Api.V1.TaskController do
     end
   end
 
-  def create(conn, %{"task" => task_params}) do
-    case Codebattle.TaskForm.create(task_params, conn.assigns.current_user) do
+  def create(conn, %{"task" => task_params, "options" => options}) do
+    case Codebattle.TaskForm.create(task_params, conn.assigns.current_user, options) do
       {:ok, task} ->
         json(conn, %{task: task})
 

@@ -2,6 +2,7 @@ import React, {
   useState, useCallback, memo,
 } from 'react';
 
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -10,10 +11,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { sendPremiumRequest } from '@/middlewares/Users';
 import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
 
-function PremiumRestrictionModal({ modalShowing, setModalShowing }) {
+import ModalCodes from '../../config/modalCodes';
+
+const PremiumRestrictionModal = NiceModal.create(() => {
   const dispatch = useDispatch();
 
   const [sended, setSended] = useState(false);
+  const modal = useModal(ModalCodes.premiumRestrictionModal);
 
   const currentUserId = useSelector(currentUserIdSelector);
   const { alreadySendPremiumRequest } = useSelector(userSettingsSelector);
@@ -26,12 +30,9 @@ function PremiumRestrictionModal({ modalShowing, setModalShowing }) {
 
     dispatch(sendPremiumRequest(premiumRequest, userId));
   }, [dispatch, setSended]);
-  const handleClose = useCallback(() => {
-    setModalShowing(false);
-  }, [setModalShowing]);
 
   return (
-    <Modal size="xl" centered show={modalShowing} onHide={handleClose}>
+    <Modal size="xl" centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>Restricted Content</Modal.Title>
       </Modal.Header>
@@ -91,7 +92,7 @@ function PremiumRestrictionModal({ modalShowing, setModalShowing }) {
       <Modal.Footer>
         <div className="d-flex justify-content-end w-100">
           <Button
-            onClick={handleClose}
+            onClick={modal.hide}
             className="btn btn-secondary text-white rounded-lg"
           >
             <FontAwesomeIcon icon="times" className="mr-2" />
@@ -101,6 +102,6 @@ function PremiumRestrictionModal({ modalShowing, setModalShowing }) {
       </Modal.Footer>
     </Modal>
   );
-}
+});
 
 export default memo(PremiumRestrictionModal);

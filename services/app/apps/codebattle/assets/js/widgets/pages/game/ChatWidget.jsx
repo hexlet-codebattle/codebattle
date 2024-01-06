@@ -48,9 +48,9 @@ function ChatWidget() {
   const showChatInput = !openedReplayer && !isTestingRoom && useChat && !isRestricted;
   const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
 
-  const disabledChatHeader = !isOnline || !useChat;
-  const disabledChatMessages = !useChat || isRestricted;
-  const disabledChatInput = !isOnline;
+  const disabledChatHeader = isTestingRoom || !isOnline || !useChat;
+  const disabledChatMessages = isTestingRoom || !useChat || isRestricted;
+  const disabledChatInput = isTestingRoom || !isOnline;
 
   const inputRef = useRef(null);
 
@@ -98,13 +98,6 @@ function ChatWidget() {
               />
           )}
           {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
-          {isTestingRoom && (
-            <div
-              className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-white"
-            >
-              <span className="align-self-center">Chat is Disabled</span>
-            </div>
-          )}
         </div>
         <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">

@@ -6,7 +6,7 @@ import i18n from '../../../i18n';
 import RoomContext from '../../components/RoomContext';
 import { replayerMachineStates, roomMachineStates } from '../../machines/game';
 import { inPreviewRoomSelector, roomStateSelector } from '../../machines/selectors';
-import { downloadPlaybook, openPlaybook } from '../../middlewares/Game';
+import { downloadPlaybook, openPlaybook } from '../../middlewares/Room';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 

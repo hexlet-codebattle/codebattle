@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../../selectors';
@@ -10,10 +11,7 @@ import BuilderExampleForm from './BuilderExampleForm';
 import BuilderStatus from './BuilderStatus';
 import BuilderTaskAssignment from './BuilderTaskAssignment';
 
-function BuilderSettingsWidget({
-  openFullSizeTaskDescription,
-  setConfigurationModalShowing,
-}) {
+function BuilderSettingsWidget() {
   const dispatch = useDispatch();
 
   const task = useSelector(selectors.builderTaskSelector);
@@ -26,8 +24,8 @@ function BuilderSettingsWidget({
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
 
   const openTaskConfiguration = useCallback(() => {
-    setConfigurationModalShowing(true);
-  }, [setConfigurationModalShowing]);
+    NiceModal.show('task_configuration_modal');
+  }, []);
 
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
@@ -87,7 +85,6 @@ function BuilderSettingsWidget({
                 task={task}
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
-                handleOpenFullSizeTaskDescriptio={openFullSizeTaskDescription}
                 openConfiguration={openTaskConfiguration}
               />
             </div>

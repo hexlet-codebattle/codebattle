@@ -10,7 +10,7 @@ import {
   sendOfferToRematch,
   sendRejectToRematch,
   sendAcceptToRematch,
-} from '../../middlewares/Game';
+} from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 
 const getPlayerStatus = (rematchInitiatorId, currentUserId) => {

@@ -25,7 +25,7 @@ import OutputTab from './OutputTab';
 import TaskAssignment from './TaskAssignment';
 import TimerContainer from './TimerContainer';
 
-function InfoWidget({ openFullSizeTaskDescription }) {
+function InfoWidget() {
   const dispatch = useDispatch();
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
@@ -107,7 +107,6 @@ function InfoWidget({ openFullSizeTaskDescription }) {
                 task={task}
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
-                handleOpenFullSizeTaskDescription={openFullSizeTaskDescription}
                 hideContribution={!!tournamentId}
                 hideGuide={!!tournamentId}
                 hideContent={isRestricted}

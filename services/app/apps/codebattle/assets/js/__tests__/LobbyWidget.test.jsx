@@ -185,7 +185,7 @@ test('test rendering GameList', async () => {
   expect(getByText(/Lobby/)).toBeInTheDocument();
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
-  expect(getByText(/Completed Games/)).toBeInTheDocument();
+  expect(getByText(/History/)).toBeInTheDocument();
   expect(createGameButton).toBeInTheDocument();
 });
 
@@ -206,7 +206,7 @@ test('test rendering create game dialog', async () => {
   expect(getByRole('button', { name: 'Create battle' })).toBeInTheDocument();
 });
 
-test('test lobby completed games infinite scroll', async () => {
+test('test lobby history infinite scroll', async () => {
   const user = userEvent.setup();
   const {
     findByText,
@@ -223,7 +223,7 @@ test('test lobby completed games infinite scroll', async () => {
 
   const axiosSpy = jest.spyOn(axios, 'get');
 
-  await user.click(await findByRole('tab', { name: 'Completed Games' }));
+  await user.click(await findByRole('tab', { name: 'History' }));
 
   expect(await findByText(`Total games: ${pageInfo1.totalEntries}`)).toBeInTheDocument();
   expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20');

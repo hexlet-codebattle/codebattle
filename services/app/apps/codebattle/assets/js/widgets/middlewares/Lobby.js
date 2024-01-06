@@ -5,8 +5,7 @@ import some from 'lodash/some';
 import socket from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
-
-import { calculateExpireDate } from './Room';
+import { calculateExpireDate } from '../utils/chatRoom';
 
 const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');

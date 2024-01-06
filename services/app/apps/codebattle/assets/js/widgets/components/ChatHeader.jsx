@@ -17,14 +17,14 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
 
   const headerClassName = cn(
     'd-flex align-items-center', {
-      'border-bottom': showRooms || currentUserIsAdmin,
+      'border-bottom': (showRooms || (currentUserIsAdmin && !disabled)),
     },
   );
 
   return (
     <div className={headerClassName}>
       {showRooms && <Rooms disabled={disabled} />}
-      {currentUserIsAdmin && (
+      {currentUserIsAdmin && !disabled && (
         <button
           type="button"
           className="btn btn-sm btn-link text-danger rounded-lg"

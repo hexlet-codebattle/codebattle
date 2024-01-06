@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
 import { inTestingRoomSelector } from '../../machines/selectors';
-import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Game';
+import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Room';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 

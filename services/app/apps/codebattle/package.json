@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.21.0",
+    "@ebay/nice-modal-react": "^1.2.13",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@fortawesome/fontawesome-free": "^5.15.1",

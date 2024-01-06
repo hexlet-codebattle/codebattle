@@ -14,7 +14,7 @@ import userTypes from '../widgets/config/userTypes';
 import editor from '../widgets/machines/editor';
 import game from '../widgets/machines/game';
 import task from '../widgets/machines/task';
-import RootContainer from '../widgets/pages/GameRoomWidget';
+import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({

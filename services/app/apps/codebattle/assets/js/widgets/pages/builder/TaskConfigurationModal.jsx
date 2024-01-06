@@ -2,61 +2,68 @@ import React, {
  useState, useCallback, useRef, useEffect, memo,
 } from 'react';
 
+import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { taskStateCodes, taskVisibilityCodes } from '../../config/task';
-import { updateTaskVisibility } from '../../middlewares/Game';
+import LoadingStatusCodes from '../../config/loadingStatuses';
+import ModalCodes from '../../config/modalCodes';
+import {
+  taskStateCodes,
+  taskVisibilityCodes as TaskVisibilityCodes,
+} from '../../config/task';
+import { updateTaskVisibility } from '../../middlewares/Room';
 import { actions } from '../../slices';
 
-function TaskConfigurationModal({ modalShowing, setModalShowing }) {
+const TaskConfigurationModal = NiceModal.create(() => {
   const dispatch = useDispatch();
+
   const visibilityInputRef = useRef(null);
 
-  const [configState, setConfigState] = useState('init');
+  const [configState, setConfigState] = useState(LoadingStatusCodes.IDLE);
 
   const task = useSelector(state => state.builder.task);
 
+  const onError = useCallback(() => {
+    setConfigState(LoadingStatusCodes.IDLE);
+  }, [setConfigState]);
+
   const onChangeVisibility = useCallback(
     event => {
-      if (configState === 'loading') {
+      if (configState === LoadingStatusCodes.LOADING) {
         return;
       }
 
       const nextVisibilityState = event.target.checked
-        ? taskVisibilityCodes.public
-        : taskVisibilityCodes.hidden;
+        ? TaskVisibilityCodes.public
+        : TaskVisibilityCodes.hidden;
 
       if (task.state === taskStateCodes.blank) {
         dispatch(actions.setTaskVisibility(nextVisibilityState));
       } else {
-        const onError = () => setConfigState('init');
-
-        setConfigState('loading');
+        setConfigState(LoadingStatusCodes.LOADING);
         dispatch(updateTaskVisibility(task.id, nextVisibilityState, onError));
       }
     },
-    [dispatch, task, setConfigState, configState],
+    [dispatch, task, setConfigState, configState, onError],
   );
 
-  const handleClose = useCallback(() => {
-    setModalShowing(false);
-  }, [setModalShowing]);
+  const modal = useModal(ModalCodes.taskConfigurationModal);
 
   useEffect(() => {
-    if (modalShowing) {
+    if (modal.visible) {
       visibilityInputRef.current.focus();
-      setConfigState('init');
+      setConfigState(LoadingStatusCodes.IDLE);
     }
-  }, [modalShowing]);
+  }, [modal.visible]);
 
   useEffect(() => {
-    setConfigState('init');
+    setConfigState(LoadingStatusCodes.IDLE);
   }, [task.visibility]);
 
   return (
-    <Modal show={modalShowing} onHide={handleClose}>
+    <Modal show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>Details</Modal.Title>
       </Modal.Header>
@@ -64,7 +71,7 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
         <div
           className={
             cn('d-flex custom-control custom-switch', {
-              'text-muted': configState === 'loading',
+              'text-muted': configState === LoadingStatusCodes.LOADING,
             })
           }
         >
@@ -73,7 +80,7 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
             type="checkbox"
             className="custom-control-input"
             id="visibility"
-            checked={task.visibility === taskVisibilityCodes.public}
+            checked={task.visibility === TaskVisibilityCodes.public}
             onChange={onChangeVisibility}
           />
           <label className="custom-control-label" htmlFor="visibility">
@@ -83,6 +90,6 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
       </Modal.Body>
     </Modal>
   );
-}
+});
 
 export default memo(TaskConfigurationModal);

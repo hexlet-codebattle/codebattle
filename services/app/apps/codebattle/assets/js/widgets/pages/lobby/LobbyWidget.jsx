@@ -331,7 +331,7 @@ const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
 
   return cn(
-    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0',
+    'nav-item nav-link text-uppercase text-center text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
     { active: hash.includes(url.hash || '#lobby') },
   );
 };
@@ -350,6 +350,11 @@ const tabContentClassName = (...hash) => {
 const tabLinkHandler = hash => () => {
   window.location.hash = hash;
 };
+
+const navTabsClassName = cn(
+  'nav nav-tabs flex-nowrap cb-overflow-x-auto cb-overflow-y-hidden',
+  'bg-gray rounded-top border-dark border-bottom',
+);
 
 const GameContainers = ({
   activeGames,
@@ -371,7 +376,7 @@ const GameContainers = ({
       <nav>
         <div
           id="nav-tab"
-          className="nav nav-tabs flex-nowrap cb-overflow-x-auto cb-overflow-y-hidden bg-gray rounded-top border-dark border-bottom"
+          className={navTabsClassName}
           role="tablist"
         >
           <a
@@ -411,7 +416,7 @@ const GameContainers = ({
             aria-selected="false"
             onClick={tabLinkHandler(hashLinkNames.completedGames)}
           >
-            Completed Games
+            History
           </a>
         </div>
       </nav>

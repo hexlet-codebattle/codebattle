@@ -13,7 +13,7 @@ import editorUserTypes from '../config/editorUserTypes';
 import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
-import { addCursorListeners } from '../middlewares/Game';
+import { addCursorListeners } from '../middlewares/Room';
 import { gameIdSelector, gameModeSelector } from '../selectors/index';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';

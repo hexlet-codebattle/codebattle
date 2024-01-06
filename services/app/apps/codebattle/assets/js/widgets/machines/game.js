@@ -174,8 +174,14 @@ const machine = {
               { target: 'waiting', cond: 'isWaitingGame' },
               { target: 'builder', cond: 'isTaskBuilder' },
               { target: 'active', cond: 'isActiveGame' },
-              { target: 'game_over', cond: 'isGameOver' },
-              { target: 'game_over', cond: 'isTimeout' },
+              {
+                target: 'game_over',
+                cond: 'isGameOver',
+              },
+              {
+                target: 'game_over',
+                cond: 'isTimeout',
+              },
               { target: 'failure', action: 'throwError' },
             ],
 
@@ -214,6 +220,9 @@ const machine = {
             'tournament:game:created': {
               target: 'active',
               actions: ['soundTournamentGameCreated'],
+            },
+            'tournament:round_finished': {
+              target: 'game_over',
             },
             check_result: {
               target: 'active',

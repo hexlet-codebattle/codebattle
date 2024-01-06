@@ -8,18 +8,24 @@ defmodule Codebattle.TaskForm do
   alias Codebattle.AssertsService
   alias Codebattle.AssertsService.Result
 
-  def create(params, user) do
+  def create(params, user, %{"next_state" => next_state}) do
     new_params =
       params
       |> Map.merge(%{
         "origin" => "user",
-        "state" => "draft",
+        "state" => next_state,
         "creator_id" => user.id
       })
 
-    %Task{}
-    |> changeset(new_params)
-    |> Repo.insert()
+    changeset =
+      %Task{}
+      |> changeset(new_params)
+
+    if next_state == "draft" do
+      changeset |> Repo.insert()
+    else
+      {:ok, changeset.changes}
+    end
   end
 
   def build(%{

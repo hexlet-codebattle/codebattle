@@ -1,9 +1,11 @@
 import React, { useCallback, useContext } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
+import ModalCodes from '../../config/modalCodes';
 import { taskStateCodes } from '../../config/task';
 import {
   isIdleStateTaskSelector,
@@ -18,11 +20,56 @@ import {
   deleteTask,
   publishTask,
   updateTaskState,
-} from '../../middlewares/Game';
+} from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-function BuilderActions({ validExamples, clearSuggests }) {
+import { modalModes, modalActions } from './TaskParamsModal';
+
+function ModerationActions({
+  canPublish,
+  canUnpublish,
+  handlePublishTask,
+  handleUnpublishTask,
+}) {
+  return (
+    <>
+      <button
+        type="button"
+        className="btn btn-md btn-outline-danger text-nowrap rounded-top"
+        disabled
+      >
+        On moderation
+      </button>
+      {canUnpublish && (
+        <button
+          title="Cancel moderation"
+          type="button"
+          className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
+          onClick={handleUnpublishTask}
+        >
+          <FontAwesomeIcon className="mr-2" icon="share" />
+          Cancel
+        </button>
+      )}
+      {canPublish && (
+        <button
+          type="button"
+          className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
+          onClick={handlePublishTask}
+        >
+          <FontAwesomeIcon className="mr-2" icon="share" />
+          Publish
+        </button>
+      )}
+    </>
+  );
+}
+
+function BuilderActions({
+  validExamples,
+  clearSuggests,
+}) {
   const dispatch = useDispatch();
 
   const { taskService } = useContext(RoomContext);
@@ -38,17 +85,17 @@ function BuilderActions({ validExamples, clearSuggests }) {
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.isTaskOwner);
 
-  const { id: taskId, state: taskState } = useSelector(
+  const task = useSelector(
     state => state.builder.task,
   );
 
-  const notPublished = taskState === taskStateCodes.draft
-    && taskState === taskStateCodes.moderation;
+  const notPublished = task.state === taskStateCodes.draft
+    && task.state === taskStateCodes.moderation;
   const readyTesting = validExamples;
   const readySave = useSelector(selectors.isValidTask);
 
   const disabledTestingBtn = (
-    taskState === taskStateCodes.active
+    task.state === taskStateCodes.active
       ? false
       : !readyTesting || isInvalidTaskMachineState || isTestingPrepare
   );
@@ -81,21 +128,28 @@ function BuilderActions({ validExamples, clearSuggests }) {
   const handleDeleteTask = useCallback(() => {
     // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete this task?')) {
-      dispatch(deleteTask(taskId));
+      dispatch(deleteTask(task.id));
     }
-  }, [taskId, dispatch]);
+  }, [task.id, dispatch]);
   const handlePublishTask = useCallback(() => {
-    dispatch(publishTask(taskId));
-  }, [taskId, dispatch]);
+    dispatch(publishTask(task.id));
+  }, [task.id, dispatch]);
   const handleUnpublishTask = useCallback(() => {
-    dispatch(updateTaskState(taskId, taskStateCodes.draft));
-  }, [taskId, dispatch]);
+    dispatch(updateTaskState(task.id, taskStateCodes.draft));
+  }, [task.id, dispatch]);
   const handleActivateTask = useCallback(() => {
-    dispatch(updateTaskState(taskId, taskStateCodes.active));
-  }, [taskId, dispatch]);
+    dispatch(updateTaskState(task.id, taskStateCodes.active));
+  }, [task.id, dispatch]);
   const handleDisableTask = useCallback(() => {
-    dispatch(updateTaskState(taskId, taskStateCodes.disabled));
-  }, [taskId, dispatch]);
+    dispatch(updateTaskState(task.id, taskStateCodes.disabled));
+  }, [task.id, dispatch]);
+
+  const openUploadTaskModal = useCallback(() => {
+    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.editJSON, action: modalActions.upload });
+  }, []);
+  const openCopyTaskModal = useCallback(() => {
+    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.showJSON, action: modalActions.copy });
+  }, []);
 
   if (!(isAdmin || isOwner)) {
     return null;
@@ -103,6 +157,26 @@ function BuilderActions({ validExamples, clearSuggests }) {
 
   return (
     <>
+      {task.state === taskStateCodes.blank && (
+        <button
+          type="button"
+          className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
+          onClick={openUploadTaskModal}
+        >
+          <FontAwesomeIcon className="mr-2" icon="upload" />
+          Upload
+        </button>
+      )}
+      {task.state !== taskStateCodes.blank && (
+        <button
+          type="button"
+          className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
+          onClick={openCopyTaskModal}
+        >
+          <FontAwesomeIcon className="mr-2" icon="copy" />
+          Copy
+        </button>
+      )}
       <button
         type="button"
         className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
@@ -147,7 +221,7 @@ function BuilderActions({ validExamples, clearSuggests }) {
           Delete
         </button>
       )}
-      {taskState === taskStateCodes.draft && (
+      {task.state === taskStateCodes.draft && (
         <button
           type="button"
           className="btn btn-md btn-primary text-nowrap rounded-lg mb-2"
@@ -157,40 +231,15 @@ function BuilderActions({ validExamples, clearSuggests }) {
           Publish
         </button>
       )}
-      {taskState === taskStateCodes.moderation && (
-        <>
-          <button
-            type="button"
-            className="btn btn-md btn-outline-danger text-nowrap rounded-top"
-            disabled
-          >
-            On moderation
-          </button>
-          {(isOwner || !isAdmin) && (
-            <button
-              title="Cancel moderation"
-              type="button"
-              className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
-              onClick={handleUnpublishTask}
-              disabled={!isOwner}
-            >
-              <FontAwesomeIcon className="mr-2" icon="share" />
-              Cancel
-            </button>
-          )}
-          {isAdmin && (
-            <button
-              type="button"
-              className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
-              onClick={handlePublishTask}
-            >
-              <FontAwesomeIcon className="mr-2" icon="share" />
-              Publish
-            </button>
-          )}
-        </>
+      {task.state === taskStateCodes.moderation && (
+        <ModerationActions
+          canPublish={isAdmin}
+          canUnpublish={isOwner || isAdmin}
+          handlePublishTask={handlePublishTask}
+          handleUnpublishTask={handleUnpublishTask}
+        />
       )}
-      {taskState === taskStateCodes.active && (
+      {task.state === taskStateCodes.active && (
         <button
           type="button"
           className="btn btn-md btn-danger text-nowrap rounded-lg mb-2"
@@ -200,7 +249,7 @@ function BuilderActions({ validExamples, clearSuggests }) {
           Disable
         </button>
       )}
-      {taskState === taskStateCodes.disabled && (
+      {task.state === taskStateCodes.disabled && (
         <button
           type="button"
           className="btn btn-md btn-primary text-nowrap rounded-lg mb-2"

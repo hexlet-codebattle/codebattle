@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import {
   configureStore,
   combineReducers,
@@ -13,6 +14,8 @@ import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from '@/lib/rollbar';
 import machines from '@/machines';
 import reducers from '@/slices';
+
+import PageNames from './config/pageNames';
 
 const {
   game: mainMachine,
@@ -51,7 +54,7 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
-const GameRoomWidget = React.lazy(() => import('./pages/GameRoomWidget'));
+const GameRoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
 const RatingList = React.lazy(() => import('./pages/rating'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
@@ -70,12 +73,14 @@ export const Game = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <GameRoomWidget
-          pageName="game"
-          mainMachine={mainMachine}
-          taskMachine={taskMachine}
-          editorMachine={editorMachine}
-        />
+        <NiceModal.Provider>
+          <GameRoomWidget
+            pageName={PageNames.game}
+            mainMachine={mainMachine}
+            taskMachine={taskMachine}
+            editorMachine={editorMachine}
+          />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>
@@ -85,12 +90,14 @@ export const Builder = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <GameRoomWidget
-          pageName="builder"
-          mainMachine={mainMachine}
-          taskMachine={taskMachine}
-          editorMachine={editorMachine}
-        />
+        <NiceModal.Provider>
+          <GameRoomWidget
+            pageName={PageNames.builder}
+            mainMachine={mainMachine}
+            taskMachine={taskMachine}
+            editorMachine={editorMachine}
+          />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>

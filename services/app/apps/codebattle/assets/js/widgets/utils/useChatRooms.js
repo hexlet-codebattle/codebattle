@@ -2,16 +2,16 @@ import { useEffect, useMemo } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
+import * as selectors from '../selectors';
+import { actions } from '../slices';
+
 import {
   getPrivateRooms,
   filterPrivateRooms,
   getStorageKey,
   clearExpiredPrivateRooms,
   updatePrivateRooms,
-} from '../middlewares/Room';
-import * as selectors from '../selectors';
-import { actions } from '../slices';
-
+} from './chatRoom';
 import getChatName from './names';
 
 const useChatRooms = key => {

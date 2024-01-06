@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,28 +9,24 @@ import FeedbackWidget from '../components/FeedbackWidget';
 import GameWidgetGuide from '../components/GameWidgetGuide';
 import RoomContext from '../components/RoomContext';
 import GameStateCodes from '../config/gameStateCodes';
+import PageNames from '../config/pageNames';
 import sound from '../lib/sound';
 import * as machineSelectors from '../machines/selectors';
 import * as ChatActions from '../middlewares/Chat';
-import * as GameRoomActions from '../middlewares/Game';
+import * as GameRoomActions from '../middlewares/Room';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
+import useGameRoomModals from '../utils/useGameRoomModals';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
 import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
-import TaskConfigurationModal from './builder/TaskConfigurationModal';
-import TaskConfirmationModal from './builder/TaskConfirmationModal';
-import AnimationModal from './game/AnimationModal';
 import CodebattlePlayer from './game/CodebattlePlayer';
 import GameWidget from './game/GameWidget';
 import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
-import PremiumRestrictionModal from './game/PremiumRestrictionModal';
-import TaskDescriptionModal from './game/TaskDescriptionModal';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
-import TournamentStatisticsModal from './game/TournamentStatisticsModal';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
 function GameRoomWidget({
@@ -41,15 +37,7 @@ function GameRoomWidget({
 }) {
   const dispatch = useDispatch();
 
-  const [premiumRestrictionModalShowing, setPremiumRestrictionModalShowing] = useState(false);
-  const [taskDescriptionModalShowing, setTaskDescriptionModalShowing] = useState(false);
-  const [taskModalShowing, setTaskModalShowing] = useState(false);
-  const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
-  const [tournamentStatisticsModalShowing, setTournamentStatisticsModalShowing] = useState(false);
-  const [resultModalShowing, setResultModalShowing] = useState(false);
-
   const gameStatus = useSelector(selectors.gameStatusSelector);
-  const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const tournamentId = gameStatus?.tournamentId;
   const firstPlayer = useSelector(selectors.firstPlayerSelector);
@@ -58,10 +46,6 @@ function GameRoomWidget({
   const useChat = useSelector(selectors.gameUseChatSelector);
   const mute = useSelector(state => state.user.settings.mute);
   const machines = useGameRoomMachine({
-    setTaskModalShowing,
-    setResultModalShowing,
-    setPremiumRestrictionModalShowing,
-    subscriptionType,
     mainMachine,
     taskMachine,
   });
@@ -76,17 +60,10 @@ function GameRoomWidget({
   const replayerIsOpen = machineSelectors.openedReplayerSelector(roomCurrent);
   const gameRoomKey = machineSelectors.gameRoomKeySelector(roomCurrent);
 
-  useEffect(() => {
-    if (tournamentStatisticsModalShowing) {
-      setResultModalShowing(false);
-      setTaskDescriptionModalShowing(false);
-      setPremiumRestrictionModalShowing(false);
-    }
-  }, [tournamentStatisticsModalShowing, setResultModalShowing]);
+  useGameRoomModals(machines);
 
   useEffect(() => {
-    // FIXME: maybe take from gon?
-    if (pageName === 'builder') {
+    if (pageName === PageNames.builder) {
       const clearTask = GameRoomActions.connectToTask(
         machines.mainService,
         machines.taskService,
@@ -131,10 +108,6 @@ function GameRoomWidget({
     };
   }, [mute]);
 
-  const openFullSizeTaskDescription = useCallback(() => {
-    setTaskDescriptionModalShowing(true);
-  }, [setTaskDescriptionModalShowing]);
-
   if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
@@ -160,45 +133,14 @@ function GameRoomWidget({
             <FeedbackAlertNotification />
             <div className="container-fluid">
               <div className="row no-gutter cb-game">
-                <PremiumRestrictionModal
-                  modalShowing={premiumRestrictionModalShowing}
-                  setModalShowing={setPremiumRestrictionModalShowing}
-                />
-                <TaskDescriptionModal
-                  modalShowing={taskDescriptionModalShowing}
-                  setModalShowing={setTaskDescriptionModalShowing}
-                />
-                <TaskConfirmationModal
-                  modalShowing={taskModalShowing}
-                  taskService={machines.taskService}
-                />
-                <TaskConfigurationModal
-                  modalShowing={taskConfigurationModalShowing}
-                  setModalShowing={setTaskConfigurationModalShowing}
-                />
-                <TournamentStatisticsModal
-                  modalShowing={tournamentStatisticsModalShowing}
-                  setModalShowing={setTournamentStatisticsModalShowing}
-                />
-                <AnimationModal
-                  setModalShowing={setResultModalShowing}
-                  modalShowing={resultModalShowing}
-                />
                 {inBuilderRoom || (pageName === 'builder' && inPreviewRoom) ? (
                   <>
-                    <BuilderSettingsWidget
-                      openFullSizeTaskDescription={openFullSizeTaskDescription}
-                      setConfigurationModalShowing={
-                        setTaskConfigurationModalShowing
-                      }
-                    />
+                    <BuilderSettingsWidget />
                     <BuilderEditorsWidget />
                   </>
                 ) : (
                   <>
-                    <InfoWidget
-                      openFullSizeTaskDescription={openFullSizeTaskDescription}
-                    />
+                    <InfoWidget />
                     <GameWidget editorMachine={editorMachine} />
                   </>
                 )}

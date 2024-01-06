@@ -24,7 +24,7 @@ import {
   getGeneratorStatus,
   validationStatuses,
 } from '../../machines/task';
-import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Game';
+import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import { taskTemplatesStates } from '../../utils/builder';

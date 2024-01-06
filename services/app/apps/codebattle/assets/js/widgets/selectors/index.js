@@ -237,6 +237,8 @@ export const taskParamsSelector = (params = { normalize: true }) => createDraftS
   }),
 );
 
+export const taskParamsTemplatesStateSelector = state => state.builder.templates.state;
+
 export const taskSolutionSelector = (state, lang) => state.builder.textSolution[lang];
 
 export const taskArgumentsGeneratorSelector = (state, lang) => state.builder.textArgumentsGenerator[lang];

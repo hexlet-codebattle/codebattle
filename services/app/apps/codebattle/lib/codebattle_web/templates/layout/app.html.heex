@@ -157,7 +157,7 @@
                         src={@current_user.avatar_url}
                         style="width:46px; height:46px"
                       />
-                      <div class="dropdown-menu dropdown-menu-right">
+                      <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
                         <a
                           class="dropdown-item"
                           href={Routes.user_path(@conn, :show, @current_user.id)}

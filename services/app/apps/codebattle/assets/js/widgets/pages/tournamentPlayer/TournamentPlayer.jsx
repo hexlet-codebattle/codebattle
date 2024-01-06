@@ -13,7 +13,7 @@ import {
   connectToEditor,
   connectToGame,
   updateGameChannel,
-} from '@/middlewares/Game';
+} from '@/middlewares/Room';
 import { connectToSpectator } from '@/middlewares/Spectator';
 import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 

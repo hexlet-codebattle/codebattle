@@ -1,8 +1,11 @@
+import NiceModal from '@ebay/nice-modal-react';
 import { useInterpret } from '@xstate/react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import ModalCodes from '../config/modalCodes';
 import speedModes from '../config/speedModes';
-import SubscriptionTypeCodes from '../config/subscriptionTypes';
+import { modalModes, modalActions } from '../pages/builder/TaskParamsModal';
+import * as selectors from '../selectors';
 import { actions } from '../slices';
 
 /**
@@ -14,14 +17,12 @@ import { actions } from '../slices';
  *
  */
 const useGameRoomMachine = ({
-  setTaskModalShowing,
-  setResultModalShowing,
-  setPremiumRestrictionModalShowing,
-  subscriptionType = SubscriptionTypeCodes.free,
   mainMachine,
   taskMachine,
 }) => {
   const dispatch = useDispatch();
+
+  const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const mainService = useInterpret(mainMachine, {
     devTools: true,
@@ -33,10 +34,10 @@ const useGameRoomMachine = ({
     },
     actions: {
       showGameResultModal: () => {
-        setResultModalShowing(true);
+        NiceModal.show(ModalCodes.gameResultModal);
       },
       showPremiumSubscribeRequestModal: () => {
-        setPremiumRestrictionModalShowing(true);
+        NiceModal.show(ModalCodes.premiumRestrictionModal);
       },
     },
   });
@@ -48,10 +49,10 @@ const useGameRoomMachine = ({
         mainService.send('OPEN_TESTING');
       },
       showTaskSaveConfirmation: () => {
-        setTaskModalShowing(true);
+        NiceModal.show(ModalCodes.taskParamsModal, { action: modalActions.save, mode: modalModes.preview });
       },
       closeTaskSaveConfirmation: () => {
-        setTaskModalShowing(false);
+        NiceModal.hide(ModalCodes.taskParamsModal);
       },
       onSuccess: () => {
         dispatch(actions.setValidationStatuses({
