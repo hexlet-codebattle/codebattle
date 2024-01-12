@@ -220,7 +220,7 @@ function Tournament() {
           accessType={tournament.accessType}
           breakDurationSeconds={tournament.breakDurationSeconds}
           breakState={tournament.breakState}
-          creatorId={tournament.creatorId}
+          creatorId={tournament.creator.id}
           currentUserId={currentUserId}
           isLive={tournament.isLive}
           isOnline={tournament.channel.online}

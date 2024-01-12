@@ -114,7 +114,6 @@ defmodule Codebattle.Tournament.Server do
      |> Map.drop([
        :__struct__,
        :__meta__,
-       :creator,
        :matches,
        :players,
        :stats,
