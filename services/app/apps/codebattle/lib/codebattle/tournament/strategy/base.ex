@@ -1,9 +1,7 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 
-  alias Codebattle.Game
-  alias Codebattle.Tournament
-  alias Codebattle.TaskPack
+  alias Codebattle.{Game, Tournament, TaskPack}
 
   @moduledoc """
   Defines interface for tournament type
@@ -107,6 +105,8 @@ defmodule Codebattle.Tournament.Base do
 
       def restart(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
+          Tournament.Round.disable_all_rounds(tournament.id)
+
           tournament
           |> update_struct(%{
             players: %{},
@@ -114,7 +114,9 @@ defmodule Codebattle.Tournament.Base do
             matches: %{},
             break_state: "off",
             players_count: 0,
-            current_round: 0,
+            current_round_position: 0,
+            current_round: nil,
+            current_round_id: nil,
             last_round_ended_at: nil,
             last_round_started_at: nil,
             winner_ids: [],
@@ -201,7 +203,7 @@ defmodule Codebattle.Tournament.Base do
           if wait_type == "rematch" do
             Process.send_after(
               self(),
-              {:start_rematch, params.ref, tournament.current_round},
+              {:start_rematch, params.ref, tournament.current_round_position},
               timeout_ms
             )
           end
@@ -336,7 +338,7 @@ defmodule Codebattle.Tournament.Base do
            when break_duration_seconds not in [nil, 0] do
         Process.send_after(
           self(),
-          {:stop_round_break, tournament.current_round},
+          {:stop_round_break, tournament.current_round_position},
           :timer.seconds(tournament.break_duration_seconds)
         )
 
@@ -350,7 +352,9 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp increment_current_round(tournament) do
-        update_struct(tournament, %{current_round: tournament.current_round + 1})
+        update_struct(tournament, %{
+          current_round_position: tournament.current_round_position + 1
+        })
       end
 
       defp start_round(tournament) do
@@ -359,6 +363,7 @@ defmodule Codebattle.Tournament.Base do
           break_state: "off",
           last_round_started_at: NaiveDateTime.utc_now(:second)
         })
+        |> build_and_save_round!()
         |> maybe_preload_tasks()
         |> start_round_timer()
         |> build_round_matches()
@@ -393,7 +398,7 @@ defmodule Codebattle.Tournament.Base do
           #   Tournament.Matches.put_match(tournament, %Tournament.Match{
           #     id: match_id,
           #     state: "canceled",
-          #     round: tournament.current_round,
+          #     round: tournament.current_round_position,
           #     player_ids: Enum.sort([p1.id, p2.id])
           #   })
 
@@ -404,6 +409,7 @@ defmodule Codebattle.Tournament.Base do
               ref: match_id,
               timeout_seconds: game_timeout,
               tournament_id: tournament.id,
+              round_id: tournament.current_round_id,
               use_chat: tournament.use_chat,
               players: players
             }
@@ -443,7 +449,7 @@ defmodule Codebattle.Tournament.Base do
           game_id: game.id,
           state: "playing",
           player_ids: Enum.sort([p1.id, p2.id]),
-          round: tournament.current_round
+          round_position: tournament.current_round_position
         }
 
         Tournament.Matches.put_match(tournament, match)
@@ -472,14 +478,25 @@ defmodule Codebattle.Tournament.Base do
 
       def db_save!(tournament, type \\ nil), do: Tournament.Context.upsert!(tournament, type)
 
+      def build_and_save_round!(tournament) do
+        round =
+          tournament
+          |> Tournament.Round.Context.build()
+          |> Tournament.Round.Context.upsert!()
+
+        update_struct(tournament, %{
+          current_round_id: round.id
+        })
+      end
+
       defp maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
           tournament
           |> update_struct(%{state: "finished", finished_at: TimeHelper.utc_now()})
           |> set_stats()
           |> set_winner_ids()
-          |> db_save!()
-          # |> db_save!(:with_ets)
+          # |> db_save!()
+          |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
 
           # TODO: implement tournament termination in 15 mins
@@ -500,7 +517,7 @@ defmodule Codebattle.Tournament.Base do
       defp start_round_timer(tournament) do
         Process.send_after(
           self(),
-          {:finish_round_force, tournament.current_round},
+          {:finish_round_force, tournament.current_round_position},
           :timer.seconds(get_round_timeout_seconds(tournament))
         )
 
@@ -567,7 +584,7 @@ defmodule Codebattle.Tournament.Base do
            )
            when is_list(rounds_config) do
         rounds_config
-        |> Enum.at(tournament.current_round, %{})
+        |> Enum.at(tournament.current_round_position, %{})
         |> Map.get(:round_timeout_seconds, 180)
       end
 
@@ -587,7 +604,7 @@ defmodule Codebattle.Tournament.Base do
            when is_list(rounds_config) do
         round_tasks =
           rounds_config
-          |> Enum.at(tournament.current_round, %{})
+          |> Enum.at(tournament.current_round_position, %{})
           |> Map.get(:task_pack_id)
           |> case do
             nil -> []
@@ -600,7 +617,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp maybe_preload_tasks(tournament = %{current_round: 0}) do
+      defp maybe_preload_tasks(tournament = %{current_round_position: 0}) do
         tasks = Codebattle.Task.get_tasks_by_level(tournament.level) |> Enum.shuffle()
 
         Tournament.Tasks.put_tasks(tournament, tasks)

@@ -49,7 +49,7 @@ defmodule CodebattleWeb.GameChannel do
              type: tournament.type,
              meta: tournament.meta,
              break_state: tournament.break_state,
-             current_round: tournament.current_round
+             current_round_position: tournament.current_round_position
            },
            active_game_id: active_game_id
          }, assign(socket, game_id: game_id, player_id: follow_id)}

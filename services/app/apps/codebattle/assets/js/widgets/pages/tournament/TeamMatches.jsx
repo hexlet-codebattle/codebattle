@@ -52,14 +52,14 @@ const getLinkParams = (match, currentUserId) => {
 function TeamMatches({
  state, matches, teams, players, currentUserId,
 }) {
-  const mapRoundToMatches = useMemo(
-    () => groupBy(Object.values(matches), match => match.round),
+  const mapRoundPositionToMatches = useMemo(
+    () => groupBy(Object.values(matches), match => match.roundPosition),
     [matches],
   );
 
   const rounds = useMemo(
-    () => reverse(Object.keys(mapRoundToMatches).sort()),
-    [mapRoundToMatches],
+    () => reverse(Object.keys(mapRoundPositionToMatches).sort()),
+    [mapRoundPositionToMatches],
   );
 
   const isAdmin = useSelector(currentUserIsAdminSelector);
@@ -108,30 +108,30 @@ function TeamMatches({
           ))}
         </div>
       </div>
-      {rounds.map(round => (
-        <div key={`round-${round}`} className="col-12 mt-3 py-2 bg-white shadow-sm border rounded-lg">
+      {rounds.map(roundPosition => (
+        <div key={`round-${roundPosition}`} className="col-12 mt-3 py-2 bg-white shadow-sm border rounded-lg">
           <div className="row mb-3">
             <div className="col-5">
-              <h3 className="font-weight-light mb-0">{`Round ${round}`}</h3>
+              <h3 className="font-weight-light mb-0">{`Round ${roundPosition}`}</h3>
             </div>
             <div className="col-1 text-center">
               <span className="h3 font-weight-light mb-0">
-                {calcRoundResult(mapRoundToMatches[round]).first}
+                {calcRoundResult(mapRoundPositionToMatches[roundPosition]).first}
               </span>
             </div>
             <div className="col-1 text-center">
               <span className="h3 font-weight-light mb-0">
-                {calcRoundResult(mapRoundToMatches[round]).second}
+                {calcRoundResult(mapRoundPositionToMatches[roundPosition]).second}
               </span>
             </div>
           </div>
-          {mapRoundToMatches[round].map(match => {
+          {mapRoundPositionToMatches[roundPosition].map(match => {
             const [firstPlayerId, secondPlayerId] = match.playerIds;
             const [linkName, bgClass] = getLinkParams(match, currentUserId);
 
             return (
               <div
-                key={`match-${match.id}-round-${round}`}
+                key={`match-${match.id}-round-${roundPosition}`}
                 className={`d-flex row justify-content-between align-items-center overflow-auto border-top py-2 ${bgClass}`}
               >
                 <div className="ml-2">

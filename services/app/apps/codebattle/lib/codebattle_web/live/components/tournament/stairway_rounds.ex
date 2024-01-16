@@ -8,34 +8,34 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundsComponent do
     <div class="col-12 mt-3">
       <nav>
         <div class="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
-          <%= for round <- 0..(@tournament.meta.rounds_limit - 1) do %>
+          <%= for round_position <- 0..(@tournament.meta.rounds_limit - 1) do %>
             <a
-              id={"round-tab-#{round}"}
-              class={"flex-grow-1 nav-item nav-link rounded-0 text-black font-weight-bold cursor-pointer  text-center " <> default_tab_class(@tournament.current_round, round)}
+              id={"round-tab-#{round_position}"}
+              class={"flex-grow-1 nav-item nav-link rounded-0 text-black font-weight-bold cursor-pointer  text-center " <> default_tab_class(@tournament.current_round_position, round_position)}
               role="tab"
               phx-click={
-                set_active_tab("#round-tab-#{round}")
-                |> show_active_content("#content-round-tab-#{round}")
+                set_active_tab("#round-tab-#{round_position}")
+                |> show_active_content("#content-round-tab-#{round_position}")
               }
             >
-              Round <%= round %>
+              Round <%= round_position %>
             </a>
           <% end %>
         </div>
       </nav>
 
       <div id="content" class="tab-body">
-        <%= for round <- 0..(@tournament.meta.rounds_limit - 1) do %>
+        <%= for round_position <- 0..(@tournament.meta.rounds_limit - 1) do %>
           <div
-            id={"content-round-tab-#{round}"}
-            class={"tab-content font-weight-light " <> default_content_class(@tournament.current_round, round)}
+            id={"content-round-tab-#{round_position}"}
+            class={"tab-content font-weight-light " <> default_content_class(@tournament.current_round_position, round_position)}
           >
             <StairwayRoundComponent.render
               tournament={@tournament}
               current_user_id={@current_user_id}
-              current_round={@tournament.current_round}
-              round={round}
-              matches={Enum.at(@round_matches, round, [])}
+              current_round_position={@tournament.current_round_position}
+              round_position={round_position}
+              matches={Enum.at(@round_matches, round_position, [])}
             />
           </div>
         <% end %>
@@ -44,12 +44,12 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundsComponent do
     """
   end
 
-  def default_tab_class(current_round, round) do
-    if current_round == round, do: "active", else: ""
+  def default_tab_class(current_round_position, round_position) do
+    if current_round_position == round_position, do: "active", else: ""
   end
 
-  def default_content_class(current_round, round) do
-    if current_round == round, do: "", else: "hidden"
+  def default_content_class(current_round_position, round_position) do
+    if current_round_position == round_position, do: "", else: "hidden"
   end
 
   defp show_active_content(js, to) do

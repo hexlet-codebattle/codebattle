@@ -29,7 +29,7 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
       type: data.type,
       state: data.state,
       breakState: data.breakState,
-      currentRound: data.currentRound,
+      currentRoundPosition: data.currentRoundPosition,
       matches: data.matches,
     }));
 

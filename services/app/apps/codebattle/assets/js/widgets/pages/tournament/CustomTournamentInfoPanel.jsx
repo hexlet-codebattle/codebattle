@@ -10,14 +10,14 @@ import RatingPanel from './RatingPanel';
 
 function CustomTournamentInfoPanel({
   roundsLimit = 1,
-  currentRound = 0,
+  currentRoundPosition = 0,
   matches,
   players,
   topPlayerIds,
   currentUserId,
   pageNumber,
   pageSize,
-  showResults = false,
+  hideResults = false,
   isAdmin = false,
   isOwner = false,
 }) {
@@ -52,12 +52,12 @@ function CustomTournamentInfoPanel({
               panelMode={panelMode}
               setSearchOption={setSearchedUser}
               togglePanelMode={togglePanelMode}
-              disabledPanelModeControl={!players[currentUserId] || (!showResults && !isAdmin && !isOwner)}
+              disabledPanelModeControl={!players[currentUserId] || (hideResults && !isAdmin && !isOwner)}
               disabledSearch={!isAdmin && !isOwner}
             />
             {panelMode === PanelModeCodes.playerMode && (
               <PlayerStatsPanel
-                currentRound={currentRound}
+                currentRoundPosition={currentRoundPosition}
                 roundsLimit={roundsLimit}
                 matches={matches}
                 players={players}
@@ -68,14 +68,14 @@ function CustomTournamentInfoPanel({
               <RatingPanel
                 searchedUser={searchedUser}
                 roundsLimit={roundsLimit}
-                currentRound={currentRound}
+                currentRoundPosition={currentRoundPosition}
                 matches={matches}
                 players={players}
                 topPlayerIds={topPlayerIds}
                 currentUserId={currentUserId}
                 pageNumber={pageNumber}
                 pageSize={pageSize}
-                showResults={showResults || isAdmin || isOwner}
+                hideResults={hideResults && !isAdmin && !isOwner}
               />
             )}
           </div>

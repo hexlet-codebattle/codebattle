@@ -50,9 +50,12 @@ defmodule Codebattle.Tournament.Server do
 
   @spec finish_round_after(tournament_id, non_neg_integer(), pos_integer()) ::
           :ok | {:error, :not_found}
-  def finish_round_after(tournament_id, round, timeout_in_seconds) do
+  def finish_round_after(tournament_id, round_position, timeout_in_seconds) do
     try do
-      GenServer.call(server_name(tournament_id), {:finish_round_after, round, timeout_in_seconds})
+      GenServer.call(
+        server_name(tournament_id),
+        {:finish_round_after, round_position, timeout_in_seconds}
+      )
     catch
       :exit, reason ->
         Logger.error("Error to send tournament update: #{inspect(reason)}")
@@ -94,10 +97,10 @@ defmodule Codebattle.Tournament.Server do
     {:reply, :ok, %{state | tournament: new_tournament}}
   end
 
-  def handle_call({:finish_round_after, round, timeout_in_seconds}, _from, state) do
+  def handle_call({:finish_round_after, round_position, timeout_in_seconds}, _from, state) do
     Process.send_after(
       self(),
-      {:finish_round_force, round},
+      {:finish_round_force, round_position},
       :timer.seconds(timeout_in_seconds)
     )
 
@@ -138,8 +141,8 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def handle_info({:stop_round_break, round}, %{tournament: tournament}) do
-    if tournament.current_round == round and
+  def handle_info({:stop_round_break, round_position}, %{tournament: tournament}) do
+    if tournament.current_round_position == round_position and
          in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.stop_round_break(tournament)
@@ -150,8 +153,8 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_info({:finish_round_force, round}, %{tournament: tournament}) do
-    if tournament.current_round == round and
+  def handle_info({:finish_round_force, round_position}, %{tournament: tournament}) do
+    if tournament.current_round_position == round_position and
          not in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
@@ -162,8 +165,8 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_info({:start_rematch, match_ref, round}, %{tournament: tournament}) do
-    if tournament.current_round == round and
+  def handle_info({:start_rematch, match_ref, round_position}, %{tournament: tournament}) do
+    if tournament.current_round_position == round_position and
          not in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament = tournament.module.start_rematch(tournament, match_ref)
@@ -186,7 +189,7 @@ defmodule Codebattle.Tournament.Server do
       ) do
     match = get_match(tournament, payload.ref)
 
-    if tournament.current_round == match.round and
+    if tournament.current_round_position == match.round_position and
          not in_break?(tournament) and
          not is_finished?(tournament) do
       new_tournament =

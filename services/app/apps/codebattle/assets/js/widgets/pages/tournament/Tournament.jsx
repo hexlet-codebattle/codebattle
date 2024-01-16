@@ -28,7 +28,7 @@ import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 
 function InfoPanel({
-  currentUserId, tournament, playersCount, isAdmin, isOwner,
+  currentUserId, tournament, playersCount, hideResults, isAdmin, isOwner,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -72,10 +72,10 @@ function InfoPanel({
           tournamentId={tournament.id}
           currentUserId={currentUserId}
           roundsLimit={tournament.meta?.roundsLimit}
-          currentRound={tournament.currentRound}
+          currentRoundPosition={tournament.currentRoundPosition}
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
-          showResults={tournament.showResults}
+          hideResults={hideResults}
           isAdmin={isAdmin}
           isOwner={isOwner}
         />
@@ -92,6 +92,10 @@ function Tournament() {
   const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
+
+  const hideResults = tournament.showResults === undefined
+    ? false
+    : !tournament.showResults;
 
   const [
     detailsModalShowing,
@@ -115,6 +119,10 @@ function Tournament() {
       tournament.state,
     ),
     [tournament.state],
+  );
+  const canModerate = useMemo(
+    () => tournament.creatorId === currentUserId || isAdmin,
+    [tournament.creatorId, currentUserId, isAdmin],
   );
 
   const handleOpenDetails = useCallback(() => {
@@ -186,7 +194,7 @@ function Tournament() {
   }
 
   const matchTimeoutSeconds = tournament.meta?.roundsConfigType === 'per_round'
-    ? tournament.meta?.roundsConfig[tournament.currentRound]?.roundTimeoutSeconds
+    ? tournament.meta?.roundsConfig[tournament.currentRoundPosition]?.roundTimeoutSeconds
     : tournament.matchTimeoutSeconds;
 
   return (
@@ -198,7 +206,7 @@ function Tournament() {
       />
       <StartRoundConfirmationModal
         meta={tournament.meta}
-        currentRound={tournament.currentRound}
+        currentRoundPosition={tournament.currentRoundPosition}
         level={tournament.level}
         matchTimeoutSeconds={tournament.matchTimeoutSeconds}
         taskPackName={tournament.taskPackName}
@@ -220,11 +228,11 @@ function Tournament() {
           accessType={tournament.accessType}
           breakDurationSeconds={tournament.breakDurationSeconds}
           breakState={tournament.breakState}
-          creatorId={tournament.creatorId}
           currentUserId={currentUserId}
           isLive={tournament.isLive}
           isOnline={tournament.channel.online}
           isOver={isOver}
+          canModerate={canModerate}
           lastRoundEndedAt={tournament.lastRoundEndedAt}
           lastRoundStartedAt={tournament.lastRoundStartedAt}
           level={tournament.level}
@@ -233,7 +241,7 @@ function Tournament() {
           players={tournament.players}
           playersCount={playersCount}
           playersLimit={tournament.playersLimit}
-          showResults={tournament.showResults}
+          hideResults={hideResults}
           startsAt={tournament.startsAt}
           state={tournament.state}
           type={tournament.type}
@@ -249,6 +257,7 @@ function Tournament() {
                 tournament={tournament}
                 playersCount={playersCount}
                 currentUserId={currentUserId}
+                hideResults={hideResults}
                 isAdmin={isAdmin}
                 isOwner={isOwner}
               />

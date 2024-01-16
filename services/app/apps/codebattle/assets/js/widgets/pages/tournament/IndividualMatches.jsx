@@ -92,8 +92,8 @@ const getLinkParams = (match, currentUserId) => {
   }
 };
 
-const getMatchesByRound = (matches, round) => (
-  Object.values(matches).filter(match => match.round === round)
+const getMatchesByRoundPosition = (matches, round) => (
+  Object.values(matches).filter(match => match.roundPosition === round)
 );
 
 const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy text-warning' : '');
@@ -104,7 +104,7 @@ function Round({
   const showRound = playersCount > maxPlayersPerRoundType[type] / 2;
 
   const matchesPerRound = useMemo(
-    () => (showRound ? getMatchesByRound(matches, round) : []),
+    () => (showRound ? getMatchesByRoundPosition(matches, round) : []),
     [matches, round, showRound],
   );
 

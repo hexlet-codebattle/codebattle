@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       assert tournament |> get_matches("playing") |> Enum.count() == 4
 
-      assert tournament.current_round == 0
+      assert tournament.current_round_position == 0
       assert MapSet.size(tournament.played_pair_ids) == 4
 
       send_user_win_match(tournament, user1)
@@ -94,7 +94,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -104,7 +104,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert tournament |> get_matches("playing") |> Enum.count() == 4
       assert players_count(tournament) == 8
       assert MapSet.size(tournament.played_pair_ids) == 8
-      assert tournament.current_round == 1
+      assert tournament.current_round_position == 1
       assert Tournament.Tasks.count(tournament) == 5
 
       send_user_win_match(tournament, user1)
@@ -146,21 +146,21 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert tournament |> get_matches("timeout") |> Enum.count() == 4
       assert tournament |> get_matches("playing") |> Enum.count() == 4
       assert MapSet.size(tournament.played_pair_ids) == 8
-      assert tournament.current_round == 1
+      assert tournament.current_round_position == 1
       assert Tournament.Tasks.count(tournament) == 5
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
       assert tournament |> get_matches("timeout") |> Enum.count() == 8
       assert tournament |> get_matches("playing") |> Enum.count() == 4
       assert MapSet.size(tournament.played_pair_ids) == 12
-      assert tournament.current_round == 2
+      assert tournament.current_round_position == 2
       assert Tournament.Tasks.count(tournament) == 3
       assert tournament.show_results == true
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -171,7 +171,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert tournament.show_results == false
       assert MapSet.size(tournament.played_pair_ids) == 12
       assert Tournament.Tasks.count(tournament) == 3
-      assert tournament.current_round == 2
+      assert tournament.current_round_position == 2
     end
   end
 
@@ -194,7 +194,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       assert tournament |> get_matches("playing") |> Enum.count() == 4
 
-      assert tournament.current_round == 0
+      assert tournament.current_round_position == 0
       assert MapSet.size(tournament.played_pair_ids) == 4
 
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 1
@@ -235,7 +235,7 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 6
       # TODO: add assert_receive message with wait_type round
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
       assert Enum.count(get_player(tournament, user_id1).task_ids) == 1
     end

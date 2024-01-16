@@ -33,9 +33,9 @@ const TournamentStatisticsModal = NiceModal.create(() => {
     }
 
     return Object.values(tournament?.matches || {}).filter(
-      ({ round }) => round === tournament.currentRound,
+      ({ roundPosition }) => roundPosition === tournament.currentRoundPosition,
     );
-  }, [tournament.matches, tournament.currentRound, showFullStatistics]);
+  }, [tournament.matches, tournament.currentRoundPosition, showFullStatistics]);
   const gameRound = useMemo(() => (
     Object.values(tournament?.matches || {}).find(match => match.gameId === gameId)?.round
   ), [tournament.matches, gameId]);
@@ -45,7 +45,7 @@ const TournamentStatisticsModal = NiceModal.create(() => {
   const showTournamentStatistics = tournament.type === 'swiss'
     && secondPlayer.id === opponent.playerId
     && (tournament.breakState === 'on' || tournament.state === TournamentStateCodes.finished)
-    && tournament.currentRound === gameRound;
+    && tournament.currentRoundPosition === gameRound;
 
   useEffect(() => {
     if (modal.visible) {

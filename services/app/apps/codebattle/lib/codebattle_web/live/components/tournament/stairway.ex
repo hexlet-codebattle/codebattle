@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayComponent do
               <div class="row">
                 <div class="col-3">
                   <ScorePlayersComponent.render
-                    max_score={@tournament.current_round(+1 * 10)}
+                    max_score={@tournament.current_round_position(+1 * 10)}
                     players_count={@tournament.players_count}
                     current_user={@current_user}
                     players={players_ordered_by_score(@tournament)}

@@ -42,11 +42,11 @@ defmodule Codebattle.Tournament.Team do
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do
-    current_round = tournament.current_round
+    current_round_position = tournament.current_round_position
 
     round_result =
       tournament
-      |> get_round_matches(current_round)
+      |> get_round_matches(current_round_position)
       |> Enum.map(fn
         %{state: "game_over", player_ids: player_ids, winner_id: winner_id}
         when not is_nil(winner_id) ->
@@ -66,7 +66,10 @@ defmodule Codebattle.Tournament.Team do
     [team_0_score, team_1_score] = round_result
 
     new_tournament =
-      update_in(tournament.meta.round_results, &Map.put(&1, to_id(current_round), round_result))
+      update_in(
+        tournament.meta.round_results,
+        &Map.put(&1, to_id(current_round_position), round_result)
+      )
 
     new_tournament = update_in(new_tournament.meta.teams[to_id(0)].score, &(&1 + team_0_score))
     update_in(new_tournament.meta.teams[to_id(1)].score, &(&1 + team_1_score))
@@ -79,7 +82,7 @@ defmodule Codebattle.Tournament.Team do
       |> get_players()
       |> Enum.group_by(&Map.get(&1, :team_id))
       |> Map.values()
-      |> shift_pairs(tournament.current_round)
+      |> shift_pairs(tournament.current_round_position)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} -> [p1, p2] end)
 

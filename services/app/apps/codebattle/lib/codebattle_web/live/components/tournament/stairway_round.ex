@@ -15,9 +15,9 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
 
   def render(assigns) do
     ~H"""
-    <%= if @round <= @current_round do %>
+    <%= if @round_position <= @current_round_position do %>
       <div class="col-12 mt-3">
-        <h3 class="text-center">Round <%= @round %></h3>
+        <h3 class="text-center">Round <%= @round_position %></h3>
         <%= if @round_task do %>
           <h4 class="text-center">Task: <%= @round_task.name %></h4>
           <p>Description: <%= @round_task.description_en %></p>
@@ -32,7 +32,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
               >
                 <PlayerComponent.render
                   render_score={true}
-                  max_score={(@tournament.current_round + 1) * 10}
+                  max_score={(@tournament.current_round_position + 1) * 10}
                   player={get_player(@tournament, Enum.at(match.player_ids, 0)) || build_bot_player()}
                 />
                 <span class={get_result_class(match, Enum.at(match.player_ids, 0))}></span>
@@ -43,7 +43,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
               >
                 <PlayerComponent.render
                   render_score={true}
-                  max_score={(@tournament.current_round + 1) * 10}
+                  max_score={(@tournament.current_round_position + 1) * 10}
                   player={get_player(@tournament, Enum.at(match.player_ids, 1)) || build_bot_player()}
                 />
                 <span class={get_result_class(match, Enum.at(match.player_ids, 1))}></span>

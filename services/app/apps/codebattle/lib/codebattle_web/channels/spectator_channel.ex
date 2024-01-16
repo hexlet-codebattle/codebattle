@@ -21,7 +21,7 @@ defmodule CodebattleWeb.SpectatorChannel do
          tournament_id: tournament_id,
          state: tournament.state,
          break_state: tournament.break_state,
-         current_round: tournament.current_round,
+         current_round_position: tournament.current_round_position,
          matches: matches
        }, assign(socket, tournament_id: tournament_id, player_id: player_id)}
     else

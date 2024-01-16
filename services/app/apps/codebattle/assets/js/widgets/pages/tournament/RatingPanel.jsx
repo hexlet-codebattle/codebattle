@@ -94,17 +94,17 @@ const SearchedUserPanel = memo(({
 function RatingPanel({
   searchedUser,
   roundsLimit,
-  currentRound,
+  currentRoundPosition,
   matches,
   players,
   topPlayerIds,
   currentUserId,
   pageNumber,
   pageSize,
-  showResults,
+  hideResults,
 }) {
   const dispatch = useDispatch();
-  const [openedStage, setOpenedStage] = useState(currentRound);
+  const [openedStage, setOpenedStage] = useState(currentRoundPosition);
 
   const playersList = useMemo(
     () => Object.values(players)
@@ -147,11 +147,11 @@ function RatingPanel({
   }, [dispatch, searchedUser]);
 
   useEffect(() => {
-    if (currentRound !== openedStage) {
-      setOpenedStage(currentRound);
+    if (currentRoundPosition !== openedStage) {
+      setOpenedStage(currentRoundPosition);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentRound]);
+  }, [currentRoundPosition]);
 
   useEffect(() => {
     if (playersShowList.length !== 0) {
@@ -159,7 +159,7 @@ function RatingPanel({
     }
   }, [playersShowList, dispatch]);
 
-  if (!showResults) {
+  if (hideResults) {
     return (
       <div
         className={cn(
@@ -195,7 +195,7 @@ function RatingPanel({
               <a
                 className={tabLinkClassName(
                   openedStage === stage,
-                  stage === currentRound,
+                  stage === currentRoundPosition,
                 )}
                 id={`stage-${mapStagesToTitle[stage]}`}
                 key={`stage-tab-${mapStagesToTitle[stage]}`}
@@ -222,7 +222,7 @@ function RatingPanel({
           >
             {stages.map(stage => {
               const stageMatches = matchList.filter(
-                match => match.round === stage,
+                match => match.roundPosition === stage,
               );
 
               return (

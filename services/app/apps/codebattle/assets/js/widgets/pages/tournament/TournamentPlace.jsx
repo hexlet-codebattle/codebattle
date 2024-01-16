@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import {
   currentUserIsAdminSelector,
   currentUserIsTournamentOwnerSelector,
-  tournamentShowResultsSelector,
+  tournamentHideResultsSelector,
 } from '@/selectors';
 
 function TourrnamentPlace({
@@ -17,13 +17,13 @@ function TourrnamentPlace({
   title = '',
   withIcon = false,
 }) {
-  const showResults = useSelector(tournamentShowResultsSelector);
+  const hideResults = useSelector(tournamentHideResultsSelector);
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
 
-  const text = showResults || (isAdmin || isOwner) ? place : '?';
+  const text = !hideResults || (isAdmin || isOwner) ? place : '?';
   const prefix = title.length > 0 || withIcon ? ': ' : '';
-  const muteResults = (isAdmin || isOwner) && !showResults;
+  const muteResults = (isAdmin || isOwner) && hideResults;
 
   const className = cn({ 'p-1 bg-light rounded-lg': muteResults });
   const iconClassName = 'text-warning';

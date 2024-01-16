@@ -227,14 +227,14 @@ defmodule Codebattle.Tournament.IndividualTest do
       send_user_win_match(tournament, player1)
       tournament = Tournament.Context.get(tournament.id)
 
-      assert tournament.current_round == 0
+      assert tournament.current_round_position == 0
       assert matches_count(tournament) == 2
 
       player3 = Tournament.Players.get_player(tournament, id3)
       send_user_win_match(tournament, player3)
       tournament = Tournament.Context.get(tournament.id)
 
-      assert tournament.current_round == 1
+      assert tournament.current_round_position == 1
 
       assert matches_count(tournament) == 3
 

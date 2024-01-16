@@ -7,10 +7,10 @@ import { tournamentSelector } from '@/selectors';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 function TournamentUserGameScore({ userId }) {
-  const { type, matches, currentRound } = useSelector(tournamentSelector);
+  const { type, matches, currentRoundPosition } = useSelector(tournamentSelector);
   const roundMatches = useMemo(() => (
-    Object.values(matches || {}).filter(match => match.round === currentRound)
-  ), [matches, currentRound]);
+    Object.values(matches || {}).filter(match => match.roundPosition === currentRoundPosition)
+  ), [matches, currentRoundPosition]);
 
   const [player, opponent] = useMatchesStatistics(userId, roundMatches);
 

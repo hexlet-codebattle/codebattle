@@ -314,7 +314,7 @@ function TournamentPlayer({ spectatorMachine }) {
     ));
 
   const MatchesPannel = () => {
-    const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
+    const groupedMatches = groupBy(Object.values(tournament.matches), 'roundPosition');
     const rounds = reverse(Object.keys(groupedMatches));
 
     const lastRound = rounds[0];

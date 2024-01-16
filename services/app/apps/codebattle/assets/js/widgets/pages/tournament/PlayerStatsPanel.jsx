@@ -43,7 +43,7 @@ const PlayerPanelCodes = {
 const playerPanels = Object.values(PlayerPanelCodes);
 
 function PlayerStatsPanel({
-  currentRound,
+  currentRoundPosition,
   roundsLimit,
   matches,
   players,
@@ -75,7 +75,7 @@ function PlayerStatsPanel({
 
     return [];
   }, [matchList, currentUserId]);
-  const groupedMatchListByRound = useMemo(() => groupBy(matchList, 'round'), [matchList]);
+  const groupedMatchListByRound = useMemo(() => groupBy(matchList, 'roundPosition'), [matchList]);
   const stages = useMemo(
     () => reverse(Object.keys(groupedMatchListByRound)).map(Number),
     [groupedMatchListByRound],
@@ -142,12 +142,12 @@ function PlayerStatsPanel({
               <StageCard
                 playerId={currentUserId}
                 opponentId={opponentId}
-                stage={currentRound}
+                stage={currentRoundPosition}
                 stagesLimit={roundsLimit}
                 players={players}
                 lastGameId={matches[matchId]?.gameId}
                 lastMatchState={matches[matchId]?.state}
-                matchList={groupedMatchListByRound[currentRound]}
+                matchList={groupedMatchListByRound[currentRoundPosition]}
                 isBanned={currentPlayer.isBanned}
               />
               <StatisticsCard
@@ -201,6 +201,7 @@ function PlayerStatsPanel({
           >
             {stages.map(stage => (
               <React.Fragment key={`stage-${stage}-matches`}>
+
                 <div className="d-flex justify-content-center p-2">
                   <StageTitle
                     stage={stage}

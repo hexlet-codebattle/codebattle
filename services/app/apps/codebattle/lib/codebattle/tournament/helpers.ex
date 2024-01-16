@@ -3,7 +3,7 @@ defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.Tournament
 
   def get_player(tournament = %{players_table: nil}, id),
-    do: Map.get(tournament.players, id)
+    do: Map.get(tournament.players, to_id(id))
 
   def get_player(tournament, id), do: Tournament.Players.get_player(tournament, id)
 
@@ -64,7 +64,7 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def get_match(tournament = %{matches_table: nil}, id),
-    do: Map.get(tournament.matches, id)
+    do: Map.get(tournament.matches, to_id(id))
 
   def get_match(tournament, id), do: Tournament.Matches.get_match(tournament, id)
 
@@ -95,18 +95,20 @@ defmodule Codebattle.Tournament.Helpers do
   def get_round_matches(tournament) do
     tournament
     |> get_matches()
-    |> Enum.sort_by(& &1.round)
-    |> Enum.chunk_by(& &1.round)
+    |> Enum.sort_by(& &1.round_position)
+    |> Enum.chunk_by(& &1.round_position)
   end
 
-  def get_opponents(_tournament = %{players_table: nil}, _player_id), do: []
-
-  def get_opponents(tournament, player_id) do
+  def get_opponents(tournament, player_ids) do
     opponent_ids =
-      tournament
-      |> get_matches(player_id)
-      |> Enum.map(&get_opponent_id(&1, player_id))
+      player_ids
+      |> Enum.flat_map(fn player_id ->
+        tournament
+        |> get_matches_by_players([player_id])
+        |> Enum.map(&get_opponent_id(&1, player_id))
+      end)
       |> Enum.reject(&is_nil/1)
+      |> Enum.uniq()
 
     opponent_ids |> Enum.map(&get_player(tournament, &1))
   end
@@ -116,17 +118,19 @@ defmodule Codebattle.Tournament.Helpers do
   def get_current_round_matches(tournament) do
     tournament
     |> get_matches()
-    |> Enum.filter(&(&1.round == tournament.current_round))
+    |> Enum.filter(&(&1.round_position == tournament.current_round_position))
   end
 
-  def get_round_matches(tournament, round) do
-    tournament |> get_matches |> Enum.filter(&(&1.round == round))
+  def get_round_matches(tournament, round_position) do
+    tournament |> get_matches |> Enum.filter(&(&1.round_position == round_position))
   end
 
   def get_current_round_playing_matches(tournament) do
     tournament
     |> get_matches()
-    |> Enum.filter(&(&1.round == tournament.current_round and &1.state == "playing"))
+    |> Enum.filter(
+      &(&1.round_position == tournament.current_round_position and &1.state == "playing")
+    )
   end
 
   def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
@@ -187,8 +191,8 @@ defmodule Codebattle.Tournament.Helpers do
     tournament.creator_id == user.id
   end
 
-  def calc_round_result(round) do
-    round
+  def calc_round_result(round_position) do
+    round_position
     |> Enum.map(&calc_match_result/1)
     |> Enum.reduce([0, 0], fn [x1, x2], [a1, a2] -> [x1 + a1, x2 + a2] end)
   end

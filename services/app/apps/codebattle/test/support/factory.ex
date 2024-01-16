@@ -165,7 +165,7 @@ defmodule CodebattleWeb.Factory do
       type: "individual",
       break_duration_seconds: 0,
       name: "name",
-      current_round: 0,
+      current_round_position: 0,
       players_limit: 16,
       players_count: 16,
       starts_at:
@@ -183,7 +183,7 @@ defmodule CodebattleWeb.Factory do
       type: "team",
       break_duration_seconds: 0,
       name: "name",
-      current_round: 0,
+      current_round_position: 0,
       players_limit: 16,
       players_count: 16,
       starts_at:
@@ -202,7 +202,7 @@ defmodule CodebattleWeb.Factory do
       type: "stairway",
       break_duration_seconds: 0,
       name: "Stairway tournament",
-      current_round: 0,
+      current_round_position: 0,
       players_limit: 16,
       starts_at:
         DateTime.utc_now()
@@ -222,7 +222,7 @@ defmodule CodebattleWeb.Factory do
       access_type: "token",
       access_token: "asdfasdfasdf",
       name: "name",
-      current_round: 0,
+      current_round_position: 0,
       players_limit: 16,
       starts_at:
         DateTime.utc_now()

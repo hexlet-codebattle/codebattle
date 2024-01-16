@@ -31,7 +31,7 @@ const TournamentMainControlButtons = ({
   canFinishRound,
   canRestart,
   disabled = true,
-  showResults,
+  hideResults,
   handleStartRound,
   handleOpenDetails,
 }) => {
@@ -108,7 +108,7 @@ const TournamentMainControlButtons = ({
             Tournaments
           </Dropdown.Item>
           <Dropdown.Item
-            disabled={disabled || showResults}
+            disabled={disabled || !hideResults}
             key="showResults"
             onSelect={handleShowResults}
           >

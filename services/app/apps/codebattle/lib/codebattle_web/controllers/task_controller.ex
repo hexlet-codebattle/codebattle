@@ -67,7 +67,9 @@ defmodule CodebattleWeb.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-    case Codebattle.TaskForm.create(task_params, conn.assigns.current_user) do
+    case Codebattle.TaskForm.create(task_params, conn.assigns.current_user, %{
+           "next_state" => "draft"
+         }) do
       {:ok, task} ->
         conn
         |> put_flash(:info, "Task created successfully.")

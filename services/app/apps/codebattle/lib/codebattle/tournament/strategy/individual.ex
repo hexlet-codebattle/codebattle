@@ -26,7 +26,7 @@ defmodule Codebattle.Tournament.Individual do
   def calculate_round_results(t), do: t
 
   @impl Tournament.Base
-  def build_round_pairs(tournament = %{current_round: 0}) do
+  def build_round_pairs(tournament = %{current_round_position: 0}) do
     player_pairs =
       tournament
       |> get_players
@@ -40,7 +40,7 @@ defmodule Codebattle.Tournament.Individual do
   def build_round_pairs(tournament) do
     last_round_matches =
       tournament
-      |> get_round_matches(tournament.current_round - 1)
+      |> get_round_matches(tournament.current_round_position - 1)
       |> Enum.sort_by(& &1.id)
 
     winner_ids = Enum.map(last_round_matches, &pick_winner_id(&1))
@@ -57,6 +57,6 @@ defmodule Codebattle.Tournament.Individual do
   def finish_tournament?(tournament), do: final_round?(tournament)
 
   defp final_round?(tournament) do
-    players_count(tournament) == :math.pow(2, tournament.current_round + 1)
+    players_count(tournament) == :math.pow(2, tournament.current_round_position + 1)
   end
 end

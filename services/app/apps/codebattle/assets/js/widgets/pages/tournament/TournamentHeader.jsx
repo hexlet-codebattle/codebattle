@@ -3,14 +3,12 @@ import React, { memo, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
 
 import CopyButton from '../../components/CopyButton';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
 import TournamentStates from '../../config/tournament';
-import * as selectors from '../../selectors';
 import useTimer from '../../utils/useTimer';
 
 import JoinButton from './JoinButton';
@@ -18,8 +16,8 @@ import TournamentMainControlButtons from './TournamentMainControlButtons';
 
 const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
 
-const getBadgeTitle = (state, breakState, showResults) => {
-  if (!showResults && state === TournamentStates.finished) {
+const getBadgeTitle = (state, breakState, hideResults) => {
+  if (hideResults && state === TournamentStates.finished) {
     return 'Waiting winner announcements';
   }
 
@@ -135,31 +133,26 @@ function TournamentHeader({
   players,
   playersCount,
   playersLimit,
-  creatorId,
   currentUserId,
-  showResults,
+  hideResults = true,
   level,
-  isOnline = false,
-  isOver = false,
+  isOnline,
+  isOver,
+  canModerate,
   handleStartRound,
   handleOpenDetails,
 }) {
-  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-  const canModerate = useMemo(
-    () => creatorId === currentUserId || isAdmin,
-    [creatorId, currentUserId, isAdmin],
-  );
   const stateBadgeTitle = useMemo(
-    () => getBadgeTitle(state, breakState, showResults),
-    [state, breakState, showResults],
+    () => getBadgeTitle(state, breakState, hideResults),
+    [state, breakState, hideResults],
   );
   const stateClassName = cn('badge mr-2', {
     'badge-warning': state === TournamentStates.waitingParticipants,
     'badge-success':
-      showResults && (breakState === 'off' || state === TournamentStates.finished),
+      !hideResults && (breakState === 'off' || state === TournamentStates.finished),
     'badge-light': state === TournamentStates.cancelled,
     'badge-danger': breakState === 'on',
-    'badge-primary': !showResults && state === TournamentStates.finished,
+    'badge-primary': hideResults && state === TournamentStates.finished,
   });
 
   const canStart = isLive
@@ -257,7 +250,7 @@ function TournamentHeader({
                   canStartRound={canStartRound}
                   canFinishRound={canFinishRound}
                   canRestart={canRestart}
-                  showResults={showResults}
+                  hideResults={hideResults}
                   disabled={!isOnline}
                   handleStartRound={handleStartRound}
                   handleOpenDetails={handleOpenDetails}
@@ -318,7 +311,6 @@ function TournamentHeader({
               matchTimeoutSeconds={matchTimeoutSeconds}
               lastRoundStartedAt={lastRoundStartedAt}
               lastRoundEndedAt={lastRoundEndedAt}
-              showResults={showResults}
               isLive={isLive}
               isOver={isOver}
               isOnline={isOnline}

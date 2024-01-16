@@ -19,7 +19,8 @@ defmodule Codebattle.Tournament do
              :match_timeout_seconds,
              :break_state,
              :creator_id,
-             :current_round,
+             :current_round_id,
+             :current_round_position,
              :description,
              :id,
              :is_live,
@@ -58,7 +59,8 @@ defmodule Codebattle.Tournament do
     field(:access_type, :string, default: "public")
     field(:break_duration_seconds, :integer, default: 42)
     field(:break_state, :string, default: "off")
-    field(:current_round, :integer, default: 0)
+    field(:current_round_id, :integer)
+    field(:current_round_position, :integer, default: 0)
     field(:default_language, :string, default: "js")
     field(:description, :string)
     field(:finished_at, :naive_datetime)
@@ -104,7 +106,8 @@ defmodule Codebattle.Tournament do
       :access_type,
       :break_duration_seconds,
       :break_state,
-      :current_round,
+      :current_round_id,
+      :current_round_position,
       :default_language,
       :description,
       :last_round_ended_at,

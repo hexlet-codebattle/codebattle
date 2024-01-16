@@ -48,7 +48,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
 
       assert tournament |> get_matches("playing") |> Enum.count() == 100
 
-      assert tournament.current_round == 0
+      assert tournament.current_round_position == 0
       assert MapSet.size(tournament.played_pair_ids) == 100
 
       send_user_win_match(tournament, user1)
@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -80,7 +80,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament |> get_matches("playing") |> Enum.count() == 100
       assert players_count(tournament) == 200
       assert MapSet.size(tournament.played_pair_ids) == 200
-      assert tournament.current_round == 1
+      assert tournament.current_round_position == 1
 
       send_user_win_match(tournament, user1)
       :timer.sleep(100)
@@ -121,18 +121,18 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament |> get_matches("timeout") |> Enum.count() == 100
       assert tournament |> get_matches("playing") |> Enum.count() == 100
       assert MapSet.size(tournament.played_pair_ids) == 200
-      assert tournament.current_round == 1
+      assert tournament.current_round_position == 1
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
       assert tournament |> get_matches("timeout") |> Enum.count() == 200
       assert tournament |> get_matches("playing") |> Enum.count() == 100
       assert MapSet.size(tournament.played_pair_ids) == 300
-      assert tournament.current_round == 2
+      assert tournament.current_round_position == 2
 
-      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -141,7 +141,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert tournament |> get_matches("timeout") |> Enum.count() == 300
       assert tournament |> get_matches("playing") |> Enum.count() == 0
       assert MapSet.size(tournament.played_pair_ids) == 300
-      assert tournament.current_round == 2
+      assert tournament.current_round_position == 2
     end
   end
 end

@@ -301,7 +301,7 @@ export const tournamentSelector = state => state.tournament;
 
 export const currentUserIsTournamentOwnerSelector = state => state.tournament.creatorId === state.user.currentUserId;
 
-export const tournamentShowResultsSelector = state => state.tournament.showResults;
+export const tournamentHideResultsSelector = state => !state.tournament.showResults;
 
 export const tournamentOwnerIdSelector = state => state.tournament.ownerId;
 

@@ -56,6 +56,7 @@ defmodule Codebattle.Game do
 
     belongs_to(:task, Codebattle.Task)
     belongs_to(:tournament, Codebattle.Tournament)
+    belongs_to(:round, Codebattle.Tournament.Round)
     has_many(:user_games, Codebattle.UserGame)
     has_many(:users, through: [:user_games, :user])
     has_one(:playbook, Codebattle.Playbook)
@@ -77,6 +78,7 @@ defmodule Codebattle.Game do
       :task_id,
       :timeout_seconds,
       :tournament_id,
+      :round_id,
       :type,
       :use_chat,
       :visibility_type

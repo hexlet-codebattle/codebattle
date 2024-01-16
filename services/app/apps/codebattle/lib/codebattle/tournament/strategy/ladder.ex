@@ -14,7 +14,7 @@ defmodule Codebattle.Tournament.Ladder do
   def calculate_round_results(t), do: t
 
   @impl Tournament.Base
-  def build_round_pairs(tournament = %{current_round: 0}) do
+  def build_round_pairs(tournament = %{current_round_position: 0}) do
     tournament
     |> get_players
     |> Enum.filter(&(!&1.is_bot))
@@ -26,7 +26,7 @@ defmodule Codebattle.Tournament.Ladder do
   def build_round_pairs(tournament) do
     last_round_matches =
       tournament
-      |> get_round_matches(tournament.current_round - 1)
+      |> get_round_matches(tournament.current_round_position - 1)
       |> Enum.sort_by(& &1.id)
 
     winner_ids = Enum.map(last_round_matches, &pick_winner_id(&1))
@@ -36,7 +36,7 @@ defmodule Codebattle.Tournament.Ladder do
 
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    tournament.meta.rounds_limit - 1 == tournament.current_round
+    tournament.meta.rounds_limit - 1 == tournament.current_round_position
   end
 
   defp build_player_pairs(players, tournament) do

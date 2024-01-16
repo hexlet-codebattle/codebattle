@@ -23,7 +23,7 @@ function DetailsModal({
           'insertedAt',
           'updatedAt',
           'module',
-          'currentRound',
+          'currentRoundPosition',
           'description',
           'channel',
           'currentPlayerId',

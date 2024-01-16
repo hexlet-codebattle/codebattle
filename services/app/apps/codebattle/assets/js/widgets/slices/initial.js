@@ -254,7 +254,7 @@ const defaultTournamentParams = {
 
   accessType: 'token',
   accessToken: null,
-  currentRound: null,
+  currentRoundPosition: null,
   defaultLanguage: 'js',
   lastRoundStartedAt: null,
   matchTimeoutSeconds: 0,
@@ -270,7 +270,7 @@ const defaultTournamentParams = {
   playersPageNumber: 1,
   playersPageSize: 20,
   useChat: false,
-  showResults: false,
+  showResults: true,
 
   // client params
   channel: { online: false },
@@ -368,7 +368,7 @@ const defaultTournamentPlayerParams = {
  *   accessType: string,
  *   breakDurationSeconds: number,
  *   breakState: string,
- *   currentRound: number,
+ *   currentRoundPosition: number,
  *   defaultLanguage: string,
  *   description: string,
  *   level: string,

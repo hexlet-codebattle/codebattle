@@ -34,7 +34,7 @@ defmodule Codebattle.PubSub.Events do
             last_round_started_at: params.tournament.last_round_started_at,
             state: params.tournament.state,
             break_state: "off",
-            current_round: params.tournament.current_round
+            current_round_position: params.tournament.current_round_position
           }
         }
       },
@@ -65,7 +65,7 @@ defmodule Codebattle.PubSub.Events do
             show_results: params.tournament.show_results,
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
-            current_round: params.tournament.current_round,
+            current_round_position: params.tournament.current_round_position,
             break_state: "on"
           },
           players: players
@@ -110,7 +110,7 @@ defmodule Codebattle.PubSub.Events do
             show_results: params.tournament.show_results,
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
-            current_round: params.tournament.current_round,
+            current_round_position: params.tournament.current_round_position,
             break_state: "off"
           }
         }

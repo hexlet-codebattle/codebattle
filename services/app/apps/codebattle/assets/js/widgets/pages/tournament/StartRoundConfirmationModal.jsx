@@ -31,17 +31,17 @@ const getModalText = type => {
   }
 };
 
-const getSelectedRound = (type, currentRound) => {
+const getSelectedRound = (type, currentRoundPosition) => {
   switch (type) {
-    case 'firstRound': return currentRound;
-    case 'nextRound': return currentRound + 1;
+    case 'firstRound': return currentRoundPosition;
+    case 'nextRound': return currentRoundPosition + 1;
     default: return '';
   }
 };
 
 function StartRoundConfirmationModal({
   meta,
-  currentRound,
+  currentRoundPosition,
   matchTimeoutSeconds,
   level,
   taskPackName,
@@ -71,7 +71,7 @@ function StartRoundConfirmationModal({
 
   const title = getModalTittle(modalShowing);
   const text = getModalText(modalShowing);
-  const selectedRound = getSelectedRound(modalShowing, currentRound);
+  const selectedRound = getSelectedRound(modalShowing, currentRoundPosition);
 
   return (
     <Modal show={!!modalShowing} onHide={onClose}>

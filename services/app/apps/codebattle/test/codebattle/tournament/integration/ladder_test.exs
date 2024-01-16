@@ -49,7 +49,7 @@
 
 #       assert tournament |> get_matches("playing") |> Enum.count() == 100
 
-#       assert tournament.current_round == 0
+#       assert tournament.current_round_position == 0
 
 #       send_user_win_match(tournament, user1)
 #       :timer.sleep(150)
@@ -70,7 +70,7 @@
 #       assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
 #       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 
 #       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -80,7 +80,7 @@
 #       assert tournament |> get_matches("playing") |> Enum.count() == 51
 
 #       assert players_count(tournament) == 201
-#       assert tournament.current_round == 1
+#       assert tournament.current_round_position == 1
 
 #       send_user_win_match(tournament, user1)
 #       :timer.sleep(100)
@@ -105,17 +105,17 @@
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 100
 #       assert tournament |> get_matches("playing") |> Enum.count() == 51
-#       assert tournament.current_round == 1
+#       assert tournament.current_round_position == 1
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 #       tournament = Tournament.Server.get_tournament(tournament.id)
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 148
 #       assert tournament |> get_matches("playing") |> Enum.count() == 25
-#       assert tournament.current_round == 2
+#       assert tournament.current_round_position == 2
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 
 #       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -123,7 +123,7 @@
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 173
 #       assert tournament |> get_matches("playing") |> Enum.count() == 0
-#       assert tournament.current_round == 2
+#       assert tournament.current_round_position == 2
 #     end
 
 #     test "works with with an odd number of users", %{user: user, tournament: tournament} do
@@ -144,7 +144,7 @@
 
 #       assert tournament |> get_matches("playing") |> Enum.count() == 7
 
-#       assert tournament.current_round == 0
+#       assert tournament.current_round_position == 0
 
 #       send_user_win_match(tournament, user1)
 #       :timer.sleep(150)
@@ -165,7 +165,7 @@
 #       assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
 #       assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 
 #       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -173,7 +173,7 @@
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 1
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 6
 #       assert tournament |> get_matches("playing") |> Enum.count() == 4
-#       assert tournament.current_round == 1
+#       assert tournament.current_round_position == 1
 
 #       send_user_win_match(tournament, user1)
 #       :timer.sleep(100)
@@ -198,17 +198,17 @@
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 6
 #       assert tournament |> get_matches("playing") |> Enum.count() == 3
-#       assert tournament.current_round == 1
+#       assert tournament.current_round_position == 1
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 #       tournament = Tournament.Server.get_tournament(tournament.id)
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 9
 #       assert tournament |> get_matches("playing") |> Enum.count() == 2
-#       assert tournament.current_round == 2
+#       assert tournament.current_round_position == 2
 
-#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
+#       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
 #       :timer.sleep(50)
 
 #       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -216,7 +216,7 @@
 #       assert tournament |> get_matches("game_over") |> Enum.count() == 2
 #       assert tournament |> get_matches("timeout") |> Enum.count() == 11
 #       assert tournament |> get_matches("playing") |> Enum.count() == 0
-#       assert tournament.current_round == 2
+#       assert tournament.current_round_position == 2
 #     end
 #   end
 # end

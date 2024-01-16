@@ -64,10 +64,6 @@ export const connectToStairwayTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(data));
   });
 
-  // TODO: (client/server) break update event on pieces
-  // round:update_match(round, newMatch)
-  // round:update_participants(players)
-  // round:update_statistics(statistics)
   tournamentChannel.on('round:created', response => {
     const { tournament } = camelizeKeys(response);
 
