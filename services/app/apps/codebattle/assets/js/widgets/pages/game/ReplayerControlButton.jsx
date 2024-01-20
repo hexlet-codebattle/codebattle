@@ -13,8 +13,8 @@ import useMachineStateSelector from '../../utils/useMachineStateSelector';
 function ReplayerControlButton() {
   const dispatch = useDispatch();
   const { mainService } = useContext(RoomContext);
-  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
-  const isPreviewRoom = inPreviewRoomSelector(roomCurrent);
+  const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
+  const isPreviewRoom = inPreviewRoomSelector(roomMachineState);
 
   const loadReplayer = useCallback(
     () => dispatch(downloadPlaybook(mainService)),
@@ -26,12 +26,12 @@ function ReplayerControlButton() {
   );
 
   switch (true) {
-    case roomCurrent.matches({ room: roomMachineStates.testing }):
-    case roomCurrent.matches({ room: roomMachineStates.restricted }):
-    case roomCurrent.matches({ room: roomMachineStates.stored }): {
+    case roomMachineState.matches({ room: roomMachineStates.testing }):
+    case roomMachineState.matches({ room: roomMachineStates.restricted }):
+    case roomMachineState.matches({ room: roomMachineStates.stored }): {
       return null;
     }
-    case roomCurrent.matches({ replayer: replayerMachineStates.empty }): {
+    case roomMachineState.matches({ replayer: replayerMachineStates.empty }): {
       return (
         <button
           type="button"
@@ -44,7 +44,7 @@ function ReplayerControlButton() {
         </button>
       );
     }
-    case roomCurrent.matches({ replayer: replayerMachineStates.off }): {
+    case roomMachineState.matches({ replayer: replayerMachineStates.off }): {
       return (
         <button
           type="button"
@@ -57,7 +57,7 @@ function ReplayerControlButton() {
         </button>
       );
     }
-    case roomCurrent.matches({ replayer: replayerMachineStates.on }): {
+    case roomMachineState.matches({ replayer: replayerMachineStates.on }): {
       return (
         <button
           type="button"

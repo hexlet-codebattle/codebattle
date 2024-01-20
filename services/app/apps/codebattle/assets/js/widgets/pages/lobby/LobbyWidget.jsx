@@ -122,7 +122,6 @@ const LiveTournaments = ({ tournaments }) => {
             <tr>
               <th className="p-3 border-0">Title</th>
               <th className="p-3 border-0">Starts_at</th>
-              <th className="p-3 border-0">Creator</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
           </thead>
@@ -135,9 +134,6 @@ const LiveTournaments = ({ tournaments }) => {
                     .utc(tournament.startsAt)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className="p-3 align-middle text-nowrap">
-                  <UserInfo user={tournament.creator} />
                 </td>
                 <td className="p-3 align-middle">
                   <ShowButton url={`/tournaments/${tournament.id}/`} />
@@ -182,7 +178,6 @@ const CompletedTournaments = ({ tournaments }) => {
               <th className="p-3 border-0">Title</th>
               <th className="p-3 border-0">Type</th>
               <th className="p-3 border-0">Starts_at</th>
-              <th className="p-3 border-0">Creator</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
           </thead>
@@ -196,9 +191,6 @@ const CompletedTournaments = ({ tournaments }) => {
                     .utc(tournament.startsAt)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className="p-3 align-middle text-nowrap">
-                  <UserInfo user={tournament.creator} />
                 </td>
                 <td className="p-3 align-middle">
                   <ShowButton url={`/tournaments/${tournament.id}/`} />

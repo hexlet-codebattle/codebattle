@@ -13,7 +13,7 @@ import { actions } from '../../slices';
 const gameId = Gon.getAsset('game_id');
 
 function ControlPanel({
-  roomCurrent,
+  roomMachineState,
   onPauseClick,
   onPlayClick,
   onChangeSpeed,
@@ -22,8 +22,8 @@ function ControlPanel({
 }) {
   const dispatch = useDispatch();
 
-  const { speedMode } = roomCurrent.context;
-  const isPaused = !roomCurrent.matches({ replayer: replayerMachineStates.playing });
+  const { speedMode } = roomMachineState.context;
+  const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
 
   const speedControlClassNames = cn('btn btn-sm rounded ml-2 border rounded-lg', {
     'btn-light': speedMode === speedModes.normal,
@@ -32,11 +32,11 @@ function ControlPanel({
 
   const onControlButtonClick = () => {
     switch (true) {
-      case roomCurrent.matches({ replayer: replayerMachineStates.ended }):
-      case roomCurrent.matches({ replayer: replayerMachineStates.paused }):
+      case roomMachineState.matches({ replayer: replayerMachineStates.ended }):
+      case roomMachineState.matches({ replayer: replayerMachineStates.paused }):
         onPlayClick();
         break;
-      case roomCurrent.matches({ replayer: replayerMachineStates.playing }):
+      case roomMachineState.matches({ replayer: replayerMachineStates.playing }):
         onPauseClick();
         break;
       default:

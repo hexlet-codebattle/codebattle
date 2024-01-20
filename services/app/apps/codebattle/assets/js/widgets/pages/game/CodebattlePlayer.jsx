@@ -46,17 +46,17 @@ class CodebattlePlayer extends Component {
   // ControlPanel API
 
   onPlayClick = () => {
-    const { roomCurrent } = this.props;
+    const { roomMachineState } = this.props;
     const { handlerPosition } = this.state;
     const { mainService } = this.context;
 
-    if (roomCurrent.matches({ replayer: replayerMachineStates.ended })) {
+    if (roomMachineState.matches({ replayer: replayerMachineStates.ended })) {
       this.setGameState(0.0);
       mainService.send('PLAY');
       this.play(0.0);
     }
 
-    if (roomCurrent.matches({ replayer: replayerMachineStates.paused })) {
+    if (roomMachineState.matches({ replayer: replayerMachineStates.paused })) {
       mainService.send('PLAY');
       this.play(handlerPosition);
     }
@@ -77,10 +77,10 @@ class CodebattlePlayer extends Component {
   onSliderHandleChange = value => {
     this.setState({ handlerPosition: value });
 
-    const { roomCurrent } = this.props;
+    const { roomMachineState } = this.props;
     const { setGameStateDelay } = this.state;
 
-    if (roomCurrent.matches({ replayer: replayerMachineStates.holded })) {
+    if (roomMachineState.matches({ replayer: replayerMachineStates.holded })) {
       setTimeout(this.runSetGameState, setGameStateDelay, value);
     }
   }
@@ -91,9 +91,9 @@ class CodebattlePlayer extends Component {
   }
 
   onSliderHandleChangeEnd = handlerPosition => {
-    const { setError, roomCurrent } = this.props;
+    const { setError, roomMachineState } = this.props;
     const { mainService } = this.context;
-    const { holding } = roomCurrent.context;
+    const { holding } = roomMachineState.context;
 
     switch (holding) {
       case 'play':
@@ -151,16 +151,16 @@ class CodebattlePlayer extends Component {
   }
 
   play = handlerPosition => {
-    const { roomCurrent } = this.props;
+    const { roomMachineState } = this.props;
 
-    const { speedMode } = roomCurrent.context;
+    const { speedMode } = roomMachineState.context;
     const playDelay = playDelays[speedMode];
 
     setTimeout(this.runPlay, playDelay, handlerPosition);
   }
 
   runPlay = handlerPosition => {
-    const { stepCoefficient, roomCurrent } = this.props;
+    const { stepCoefficient, roomMachineState } = this.props;
     const { handlerPosition: currentHandlerPosition } = this.state;
 
     /*
@@ -169,7 +169,7 @@ class CodebattlePlayer extends Component {
      */
     const isSync = isEqual(currentHandlerPosition, handlerPosition);
 
-    if (roomCurrent.matches({ replayer: replayerMachineStates.playing }) && isSync) {
+    if (roomMachineState.matches({ replayer: replayerMachineStates.playing }) && isSync) {
       const offset = handlerPosition + stepCoefficient;
       const newPosition = offset > 1 ? 1 : offset;
 
@@ -194,13 +194,13 @@ class CodebattlePlayer extends Component {
   };
 
   render() {
-    const { recordsCount, mainEvents, roomCurrent } = this.props;
+    const { recordsCount, mainEvents, roomMachineState } = this.props;
 
     const {
       isEnabled, direction, handlerPosition, lastIntent, nextRecordId,
     } = this.state;
 
-    if (!roomCurrent.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
+    if (!roomMachineState.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
     }
 
@@ -213,7 +213,7 @@ class CodebattlePlayer extends Component {
               <div className="d-flex align-items-center justify-content-center">
                 <ControlPanel
                   nextRecordId={nextRecordId}
-                  roomCurrent={roomCurrent}
+                  roomMachineState={roomMachineState}
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
                   onChangeSpeed={this.onChangeSpeed}
@@ -231,7 +231,7 @@ class CodebattlePlayer extends Component {
                   >
                     <CodebattleSliderBar
                       mainEvents={mainEvents}
-                      roomCurrent={roomCurrent}
+                      roomMachineState={roomMachineState}
                       handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
                       recordsCount={recordsCount}

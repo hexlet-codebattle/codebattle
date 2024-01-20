@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { uploadPlayers } from '@/middlewares/Tournament';
 
 import MatchStateCodes from '../../config/matchStates';
-import { tournamentEmptyOpponentUrl } from '../../utils/urlBuilders';
+import { tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
 import useMatchesStatistics from '../../utils/useMatchesStatistics';
 
 import StageTitle from './StageTitle';
@@ -122,7 +122,7 @@ function StageCard({
         <>
           <img
             alt="Waiting opponent avatar"
-            src={tournamentEmptyOpponentUrl}
+            src={tournamentEmptyPlayerUrl}
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray rounded p-3"
           />
           <div className="d-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3">

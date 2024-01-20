@@ -8,7 +8,6 @@ import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 import FeedbackWidget from '../components/FeedbackWidget';
 import GameWidgetGuide from '../components/GameWidgetGuide';
 import RoomContext from '../components/RoomContext';
-import GameStateCodes from '../config/gameStateCodes';
 import PageNames from '../config/pageNames';
 import sound from '../lib/sound';
 import * as machineSelectors from '../machines/selectors';
@@ -19,6 +18,7 @@ import { actions } from '../slices';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
 import useGameRoomModals from '../utils/useGameRoomModals';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
+import useRoomSettings from '../utils/useRoomSettings';
 
 import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
 import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
@@ -29,19 +29,13 @@ import NetworkAlert from './game/NetworkAlert';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
-function GameRoomWidget({
+function RoomWidget({
   pageName,
   mainMachine,
   taskMachine,
   editorMachine,
 }) {
   const dispatch = useDispatch();
-
-  const gameStatus = useSelector(selectors.gameStatusSelector);
-
-  const tournamentId = gameStatus?.tournamentId;
-  const firstPlayer = useSelector(selectors.firstPlayerSelector);
-  const secondPlayer = useSelector(selectors.secondPlayerSelector);
 
   const useChat = useSelector(selectors.gameUseChatSelector);
   const mute = useSelector(state => state.user.settings.mute);
@@ -50,16 +44,21 @@ function GameRoomWidget({
     taskMachine,
   });
 
-  const roomCurrent = useMachineStateSelector(
+  const roomMachineState = useMachineStateSelector(
     machines.mainService,
     machineSelectors.roomStateSelector,
   );
-  const inBuilderRoom = machineSelectors.inBuilderRoomSelector(roomCurrent);
-  const inPreviewRoom = machineSelectors.inPreviewRoomSelector(roomCurrent);
-  const inWaitingRoom = machineSelectors.inWaitingRoomSelector(roomCurrent);
-  const replayerIsOpen = machineSelectors.openedReplayerSelector(roomCurrent);
-  const gameRoomKey = machineSelectors.gameRoomKeySelector(roomCurrent);
+  const gameRoomKey = machineSelectors.gameRoomKeySelector(roomMachineState);
 
+  const {
+    tournamentId,
+    viewMode,
+    showWaitingRoom,
+    showBattleRoom,
+    showTaskBuilder,
+    showTimeoutMessage,
+    showReplayer,
+  } = useRoomSettings(pageName, roomMachineState);
   useGameRoomModals(machines);
 
   useEffect(() => {
@@ -108,12 +107,12 @@ function GameRoomWidget({
     };
   }, [mute]);
 
-  if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
+  if (showWaitingRoom) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
-  if (gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer)) {
+  if (showTimeoutMessage) {
     return <TimeoutGameInfo />;
   }
 
@@ -133,15 +132,16 @@ function GameRoomWidget({
             <FeedbackAlertNotification />
             <div className="container-fluid">
               <div className="row no-gutter cb-game">
-                {inBuilderRoom || (pageName === 'builder' && inPreviewRoom) ? (
+                {showTaskBuilder && (
                   <>
                     <BuilderSettingsWidget />
                     <BuilderEditorsWidget />
                   </>
-                ) : (
+                )}
+                {showBattleRoom && (
                   <>
-                    <InfoWidget />
-                    <GameWidget editorMachine={editorMachine} />
+                    <InfoWidget viewMode={viewMode} />
+                    <GameWidget viewMode={viewMode} editorMachine={editorMachine} />
                   </>
                 )}
                 {mute && (
@@ -153,10 +153,10 @@ function GameRoomWidget({
                     />
                   </div>
                 )}
-                {!replayerIsOpen && <FeedbackWidget />}
+                {!showReplayer && <FeedbackWidget />}
               </div>
             </div>
-            {replayerIsOpen && <CodebattlePlayer roomCurrent={roomCurrent} />}
+            {showReplayer && <CodebattlePlayer roomMachineState={roomMachineState} />}
           </div>
         </RoomContext.Provider>
       </CSSTransition>
@@ -164,4 +164,4 @@ function GameRoomWidget({
   );
 }
 
-export default GameRoomWidget;
+export default RoomWidget;

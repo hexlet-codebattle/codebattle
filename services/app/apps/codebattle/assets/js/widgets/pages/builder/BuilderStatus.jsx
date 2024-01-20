@@ -16,7 +16,7 @@ import TaskPropStatusIcon from './TaskPropStatusIcon';
 function BuilderStatus() {
   const { taskService } = useContext(RoomContext);
 
-  const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
+  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
 
   const [isValidName, invalidNameReason] = useSelector(
     state => state.builder.validationStatuses.name,
@@ -70,7 +70,7 @@ function BuilderStatus() {
           status={
             !isValidInputSignature
               ? validationStatuses.invalid
-              : mapStateToValidationStatus[taskCurrent.value]
+              : mapStateToValidationStatus[taskMachineState.value]
           }
           reason={invalidInputReason}
         />
@@ -82,7 +82,7 @@ function BuilderStatus() {
           status={
             !isValidExamples
               ? validationStatuses.invalid
-              : mapStateToValidationStatus[taskCurrent.value]
+              : mapStateToValidationStatus[taskMachineState.value]
           }
           reason={invalidExamplesReason}
         />
@@ -94,7 +94,7 @@ function BuilderStatus() {
           status={
             !isValidArgumentsGenerator
               ? validationStatuses.invalid
-              : getGeneratorStatus(templateState, taskCurrent)
+              : getGeneratorStatus(templateState, taskMachineState)
           }
           reason={invalidArgumentsGeneratorReason}
         />
@@ -106,7 +106,7 @@ function BuilderStatus() {
           status={
             !isValidSolution
               ? validationStatuses.invalid
-              : getGeneratorStatus(templateState, taskCurrent)
+              : getGeneratorStatus(templateState, taskMachineState)
           }
           reason={invalidSolutionReason}
         />

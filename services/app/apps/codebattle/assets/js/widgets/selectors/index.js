@@ -5,9 +5,11 @@ import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 
 import i18n from '../../i18n';
+import BattleRoomViewModes from '../config/battleRoomViewModes';
 import editorModes from '../config/editorModes';
 import defaultEditorHeight from '../config/editorSettings';
 import editorThemes from '../config/editorThemes';
+import editorUserTypes from '../config/editorUserTypes';
 import GameStateCodes from '../config/gameStateCodes';
 import SubscriptionTypeCodes from '../config/subscriptionTypes';
 import { taskStateCodes } from '../config/task';
@@ -32,6 +34,19 @@ export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 export const gameIdSelector = state => state.game.gameStatus.gameId;
 
 export const gamePlayersSelector = state => state.game.players;
+
+export const singleBattlePlayerSelector = state => {
+  const players = gamePlayersSelector(state) || [];
+  const playersWithoutBot = Object.values(players).filter(player => !player.isBot);
+
+  if (playersWithoutBot.length !== 1) {
+    return null;
+  }
+
+  return playersWithoutBot[0];
+};
+
+export const gamePlayerSelector = id => state => state.game.players[id];
 
 export const firstPlayerSelector = state => find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
@@ -61,7 +76,15 @@ export const getSolution = playerId => state => {
   };
 };
 
-export const editorDataSelector = (playerId, roomCurrent) => state => {
+export const editorsModeSelector = state => (
+  state.gameUI.editorMode || editorModes.default
+);
+
+export const editorsThemeSelector = state => (
+  state.gameUI?.editorTheme || editorThemes.dark
+);
+
+export const editorDataSelector = (playerId, roomMachineState) => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
   const editorTextsHistory = editorTextsHistorySelector(state);
@@ -69,11 +92,11 @@ export const editorDataSelector = (playerId, roomCurrent) => state => {
   if (!meta) {
     return null;
   }
-  const text = roomCurrent && roomCurrent.matches({ replayer: replayerMachineStates.on })
+  const text = roomMachineState && roomMachineState.matches({ replayer: replayerMachineStates.on })
     ? editorTextsHistory[playerId]
     : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
 
-  const currentLangSlug = roomCurrent && roomCurrent.matches({
+  const currentLangSlug = roomMachineState && roomMachineState.matches({
     replayer: replayerMachineStates.on,
   })
     ? meta.historyCurrentLangSlug
@@ -86,21 +109,26 @@ export const editorDataSelector = (playerId, roomCurrent) => state => {
   };
 };
 
+export const editorHeightSelector = (roomMachineState, playerId) => state => {
+  const editorData = editorDataSelector(playerId, roomMachineState)(state);
+  return get(editorData, 'editorHeight', defaultEditorHeight);
+};
+
 export const editorTextHistorySelector = (state, { userId }) => state.editor.textHistory[userId];
 
 export const editorLangHistorySelector = (state, { userId }) => state.editor.langsHistory[userId];
 
-export const firstEditorSelector = (state, roomCurrent) => {
+export const firstEditorSelector = (state, roomMachineState) => {
   const playerId = firstPlayerSelector(state)?.id;
-  return editorDataSelector(playerId, roomCurrent)(state);
+  return editorDataSelector(playerId, roomMachineState)(state);
 };
 
-export const secondEditorSelector = (state, roomCurrent) => {
+export const secondEditorSelector = (state, roomMachineState) => {
   const playerId = secondPlayerSelector(state)?.id;
-  return editorDataSelector(playerId, roomCurrent)(state);
+  return editorDataSelector(playerId, roomMachineState)(state);
 };
 
-export const leftEditorSelector = roomCurrent => createDraftSafeSelector(
+export const leftEditorSelector = roomMachineState => createDraftSafeSelector(
   state => state,
   state => {
     const currentUserId = currentUserIdSelector(state);
@@ -108,11 +136,11 @@ export const leftEditorSelector = roomCurrent => createDraftSafeSelector(
     const editorSelector = !!player && player.type === userTypes.secondPlayer
       ? secondEditorSelector
       : firstEditorSelector;
-    return editorSelector(state, roomCurrent);
+    return editorSelector(state, roomMachineState);
   },
 );
 
-export const rightEditorSelector = roomCurrent => createDraftSafeSelector(
+export const rightEditorSelector = roomMachineState => createDraftSafeSelector(
   state => state,
   state => {
     const currentUserId = currentUserIdSelector(state);
@@ -120,17 +148,9 @@ export const rightEditorSelector = roomCurrent => createDraftSafeSelector(
     const editorSelector = !!player && player.type === userTypes.secondPlayer
       ? firstEditorSelector
       : secondEditorSelector;
-    return editorSelector(state, roomCurrent);
+    return editorSelector(state, roomMachineState);
   },
 );
-
-export const editorSideSelector = (side, roomCurrent) => state => {
-  const editors = {
-    left: leftEditorSelector,
-    right: rightEditorSelector,
-  };
-  return editors[side](roomCurrent)(state);
-};
 
 export const currentPlayerTextByLangSelector = lang => state => {
   const userId = currentUserIdSelector(state);
@@ -255,44 +275,126 @@ export const editorLangsSelector = state => state.editor.langs;
 
 export const langInputSelector = state => state.editor.langInput;
 
-export const editorHeightSelector = (roomCurrent, playerId) => state => {
-  const editorData = editorDataSelector(playerId, roomCurrent)(state);
-  return get(editorData, 'editorHeight', defaultEditorHeight);
-};
+export const executionOutputSelector = (playerId, roomMachineState) => state => (
+  roomMachineState && roomMachineState.matches({ replayer: replayerMachineStates.on })
+    ? state.executionOutput.historyResults[playerId]
+    : state.executionOutput.results[playerId]);
 
-export const executionOutputSelector = (playerId, roomCurrent) => state => (
-  roomCurrent && roomCurrent.matches({ replayer: replayerMachineStates.on })
-  ? state.executionOutput.historyResults[playerId]
-  : state.executionOutput.results[playerId]);
-
-export const firstExecutionOutputSelector = roomCurrent => state => {
+export const firstExecutionOutputSelector = roomMachineState => state => {
   const playerId = firstPlayerSelector(state)?.id;
-  return executionOutputSelector(playerId, roomCurrent)(state);
+  return executionOutputSelector(playerId, roomMachineState)(state);
 };
 
-export const secondExecutionOutputSelector = roomCurrent => state => {
+export const secondExecutionOutputSelector = roomMachineState => state => {
   const playerId = secondPlayerSelector(state)?.id;
-  return executionOutputSelector(playerId, roomCurrent)(state);
+  return executionOutputSelector(playerId, roomMachineState)(state);
 };
 
-export const leftExecutionOutputSelector = roomCurrent => state => {
+export const leftExecutionOutputSelector = roomMachineState => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = player.type === userTypes.secondPlayer
     ? secondExecutionOutputSelector
     : firstExecutionOutputSelector;
-  return outputSelector(roomCurrent)(state);
+  return outputSelector(roomMachineState)(state);
 };
 
-export const rightExecutionOutputSelector = roomCurrent => state => {
+export const rightExecutionOutputSelector = roomMachineState => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = !!player && player.type === userTypes.secondPlayer
     ? firstExecutionOutputSelector
     : secondExecutionOutputSelector;
-  return outputSelector(roomCurrent)(state);
+  return outputSelector(roomMachineState)(state);
+};
+
+export const singlePlayerExecutionOutputSelector = roomMachineState => state => {
+  const player = singleBattlePlayerSelector(state);
+
+  return player ? executionOutputSelector(player.id, roomMachineState)(state) : {};
+};
+
+export const infoPanelExecutionOutputSelector = (viewMode, roomMachineState) => state => {
+  if (viewMode === BattleRoomViewModes.duel) {
+    return leftExecutionOutputSelector(roomMachineState)(state);
+  }
+
+  if (viewMode === BattleRoomViewModes.single) {
+    return singlePlayerExecutionOutputSelector(roomMachineState)(state);
+  }
+
+  throw new Error('Invalid view mode for battle room');
+};
+
+export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => state => {
+  const currentUserId = currentUserIdSelector(state);
+  const editorsMode = editorsModeSelector(state);
+  const theme = editorsThemeSelector(state);
+
+  if (viewMode === BattleRoomViewModes.duel) {
+    const leftEditor = leftEditorSelector(roomMachineState)(state);
+    const rightEditor = rightEditorSelector(roomMachineState)(state);
+    const leftUserId = leftEditor?.userId;
+    const rightUserId = rightEditor?.userId;
+
+    const leftUserType = currentUserId === leftUserId
+      ? editorUserTypes.currentUser
+      : editorUserTypes.player;
+    const rightUserType = leftUserType === editorUserTypes.currentUser
+      ? editorUserTypes.opponent
+      : editorUserTypes.player;
+    const leftEditorHeight = editorHeightSelector(roomMachineState, leftUserId)(state);
+    const rightEditorHeight = editorHeightSelector(roomMachineState, rightUserId)(state);
+    const rightOutput = rightExecutionOutputSelector(roomMachineState)(state);
+
+    const leftEditorParams = {
+      id: leftUserId,
+      type: leftUserType,
+      editorState: leftEditor,
+      editorHeight: leftEditorHeight,
+      theme,
+      editorMode: editorsMode,
+    };
+    const rightEditorParams = {
+      id: rightUserId,
+      type: rightUserType,
+      editorState: rightEditor,
+      editorHeight: rightEditorHeight,
+      theme,
+      editorMode: editorModes.default,
+      output: rightOutput,
+    };
+
+    return [leftEditorParams, rightEditorParams];
+  }
+
+  if (viewMode === BattleRoomViewModes.single) {
+    const player = singleBattlePlayerSelector(state);
+
+    if (!player) return [];
+
+    const { id: userId } = player;
+    const userType = currentUserId === userId
+      ? editorUserTypes.currentUser
+      : editorUserTypes.player;
+    const editorState = editorDataSelector(userId, roomMachineState)(state);
+    const editorHeight = editorHeightSelector(roomMachineState, userId)(state);
+
+    const editorParams = {
+      id: userId,
+      type: userType,
+      editorState,
+      editorHeight,
+      theme,
+      editorMode: editorsMode,
+    };
+
+    return [editorParams];
+  }
+
+  throw new Error('Invalid view mode for battle room');
 };
 
 export const tournamentIdSelector = state => state.tournament.id;
@@ -324,14 +426,6 @@ export const currentChatUserSelector = state => {
 
   return find(chatUsersSelector(state), { id: currentUserId });
 };
-
-export const editorsModeSelector = state => (
-  state.gameUI.editorMode || editorModes.default
-);
-
-export const editorsThemeSelector = state => (
-  state.gameUI?.editorTheme || editorThemes.dark
-);
 
 export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
 

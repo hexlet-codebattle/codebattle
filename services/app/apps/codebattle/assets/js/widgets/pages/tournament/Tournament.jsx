@@ -10,6 +10,7 @@ import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
+import tournamentTypes from '../../config/tournamentTypes';
 import { connectToChat } from '../../middlewares/Chat';
 import {
   connectToTournament,
@@ -76,6 +77,7 @@ function InfoPanel({
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
           hideResults={hideResults}
+          hideCustomGameConsole={tournament.type !== tournamentTypes.show || tournament.state === TournamentStates.finished}
           isAdmin={isAdmin}
           isOwner={isOwner}
         />

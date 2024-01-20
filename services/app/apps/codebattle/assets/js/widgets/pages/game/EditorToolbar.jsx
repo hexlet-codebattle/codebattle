@@ -24,6 +24,7 @@ const ModeButtons = ({ player }) => (
 );
 
 const EditorToolbar = ({
+  toolbarRef,
   type,
   mode,
   player,
@@ -37,7 +38,7 @@ const EditorToolbar = ({
   isHistory = false,
 }) => (
   <>
-    <div className="rounded-top" data-player-type={type}>
+    <div ref={toolbarRef} className="rounded-top" data-player-type={type}>
       <div className={toolbarClassNames} role="toolbar">
         <div className="d-flex justify-content-between">
           <div

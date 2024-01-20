@@ -9,8 +9,8 @@ import ModalCodes from '../../config/modalCodes';
 import { taskStateCodes } from '../../config/task';
 import {
   isIdleStateTaskSelector,
-  isInvalidStateTaskSelector,
-  isSavedStateTaskSelector,
+  isInvalidTaskSelector,
+  isSavedTaskSelector,
   isTaskPrepareSavingSelector,
   isTaskPrepareTestingSelector,
   taskStateSelector,
@@ -74,13 +74,13 @@ function BuilderActions({
 
   const { taskService } = useContext(RoomContext);
 
-  const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
-  const isIdleTaskState = isIdleStateTaskSelector(taskCurrent);
-  const isSavedTask = isSavedStateTaskSelector(taskCurrent);
-  const isInvalidTaskMachineState = isInvalidStateTaskSelector(taskCurrent);
+  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
+  const isIdleTaskState = isIdleStateTaskSelector(taskMachineState);
+  const isSavedTask = isSavedTaskSelector(taskMachineState);
+  const isInvalidTaskMachineState = isInvalidTaskSelector(taskMachineState);
 
-  const isSavingPrepare = isTaskPrepareSavingSelector(taskCurrent);
-  const isTestingPrepare = isTaskPrepareTestingSelector(taskCurrent);
+  const isSavingPrepare = isTaskPrepareSavingSelector(taskMachineState);
+  const isTestingPrepare = isTaskPrepareTestingSelector(taskMachineState);
 
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.isTaskOwner);

@@ -1,15 +1,13 @@
 import React, { useState, useContext, memo } from 'react';
 
 import cn from 'classnames';
-import get from 'lodash/get';
 import { useSelector } from 'react-redux';
 
 import Editor from '../../components/Editor';
 import RoomContext from '../../components/RoomContext';
-import editorModes from '../../config/editorModes';
-import editorUserTypes from '../../config/editorUserTypes';
+import BattleRoomViewModes from '../../config/battleRoomViewModes';
 import { roomStateSelector } from '../../machines/selectors';
-import * as selectors from '../../selectors';
+import { editorsPanelOptionsSelector } from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 import EditorContainer from './EditorContainer';
@@ -74,62 +72,60 @@ function RightSide({ output, children }) {
   );
 }
 
-function GameWidget({ editorMachine }) {
-  const currentUserId = useSelector(selectors.currentUserIdSelector);
+function GameWidget({ viewMode, editorMachine }) {
   const { mainService } = useContext(RoomContext);
-  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
+  const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
 
-  const leftEditor = useSelector(selectors.leftEditorSelector(roomCurrent));
-  const rightEditor = useSelector(selectors.rightEditorSelector(roomCurrent));
-  const leftUserId = get(leftEditor, ['userId'], null);
-  const rightUserId = get(rightEditor, ['userId'], null);
-  const leftUserType = currentUserId === leftUserId
-    ? editorUserTypes.currentUser
-    : editorUserTypes.player;
-  const rightUserType = leftUserType === editorUserTypes.currentUser
-    ? editorUserTypes.opponent
-    : editorUserTypes.player;
-
-  const leftEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, leftUserId));
-  const rightEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, rightUserId));
-  const rightOutput = useSelector(selectors.rightExecutionOutputSelector(roomCurrent));
-  const leftEditorsMode = useSelector(selectors.editorsModeSelector);
-  const theme = useSelector(selectors.editorsThemeSelector);
+  const editors = useSelector(editorsPanelOptionsSelector(viewMode, roomMachineState));
 
   return (
     <>
-      <EditorContainer
-        id={leftUserId}
-        editorMachine={editorMachine}
-        type={leftUserType}
-        orientation="left"
-        editorState={leftEditor}
-        cardClassName="card h-100 shadow-sm position-relative"
-        theme={theme}
-        editorHeight={leftEditorHeight}
-        editorMode={leftEditorsMode}
-      >
-        {params => (
-          <Editor {...params} />
-        )}
-      </EditorContainer>
-      <EditorContainer
-        id={rightUserId}
-        editorMachine={editorMachine}
-        type={rightUserType}
-        orientation="right"
-        editorState={rightEditor}
-        cardClassName="card h-100 shadow-sm"
-        theme={theme}
-        editorHeight={rightEditorHeight}
-        editorMode={editorModes.default}
-      >
-        {params => (
-          <RightSide output={rightOutput}>
-            <Editor {...params} />
-          </RightSide>
-        )}
-      </EditorContainer>
+      {viewMode === BattleRoomViewModes.duel && (
+        <>
+          <EditorContainer
+            orientation="left"
+            cardClassName="card h-100 shadow-sm position-relative"
+            editorContainerClassName="col-12 col-lg-6 p-1"
+            editorMachine={editorMachine}
+            {...editors[0]}
+          >
+            {params => (
+              <Editor {...params} />
+            )}
+          </EditorContainer>
+          <EditorContainer
+            orientation="right"
+            cardClassName="card h-100 shadow-sm"
+            editorContainerClassName="col-12 col-lg-6 p-1"
+            editorMachine={editorMachine}
+            {...editors[1]}
+          >
+            {params => (
+              <RightSide output={editors[1].output}>
+                <Editor {...params} />
+              </RightSide>
+            )}
+          </EditorContainer>
+        </>
+      )}
+      {viewMode === BattleRoomViewModes.single && (
+        <div
+          className="d-flex flex-column col-12 col-xl-8 col-lg-6 px-1"
+          style={{ height: 'calc(100vh - 92px)' }}
+        >
+          <EditorContainer
+            orientation="side"
+            cardClassName="card h-100 shadow-sm"
+            editorContainerClassName="col-12 p-1"
+            editorMachine={editorMachine}
+            {...editors[0]}
+          >
+            {params => (
+              <Editor {...params} />
+            )}
+          </EditorContainer>
+        </div>
+      )}
     </>
   );
 }

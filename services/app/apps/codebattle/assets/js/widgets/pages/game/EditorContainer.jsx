@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useContext,
   useCallback,
+  useRef,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -41,7 +42,9 @@ function EditorContainer({
   id,
   editorMachine,
   type,
+  orientation,
   cardClassName,
+  editorContainerClassName,
   theme,
   editorState,
   editorHeight,
@@ -49,7 +52,10 @@ function EditorContainer({
   children,
 }) {
   const dispatch = useDispatch();
-  const players = useSelector(selectors.gamePlayersSelector);
+
+  const toolbarRef = useRef();
+
+  const player = useSelector(selectors.gamePlayerSelector(id));
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
@@ -116,7 +122,7 @@ function EditorContainer({
       return () => {};
     }
 
-    const clearEditor = GameActions.connectToEditor(editorService, players[id]?.isBanned)(dispatch);
+    const clearEditor = GameActions.connectToEditor(editorService, player?.isBanned)(dispatch);
 
     return clearEditor;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -162,8 +168,9 @@ function EditorContainer({
   };
 
   const toolbarParams = {
+    toolbarRef,
     mode: tournamentId ? GameModeCodes.tournament : gameMode,
-    player: players[id],
+    player,
     editor: editorState,
     status: editorCurrent.value,
     actionBtnsProps,
@@ -196,19 +203,21 @@ function EditorContainer({
     loading: isPreview || editorCurrent.value === 'loading',
   };
 
-  const isWon = players[id]?.result === 'won';
+  const isWon = player?.result === 'won';
 
-  const pannelBackground = cn('col-12 col-lg-6 p-1', {
+  const pannelBackground = cn(editorContainerClassName, {
     'bg-warning': editorCurrent.matches('checking'),
     'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
+
+  const gameRoomEditorStylesVersion2 = { minHeight: `calc(vh-100 - 92 - ${toolbarRef.current?.height || 0})` };
 
   return (
     <div data-editor-state={editorCurrent.value} className={pannelBackground}>
       <div
         className={cardClassName}
-        style={gameRoomEditorStyles}
-        data-guide-id="LeftEditor"
+        style={orientation === 'side' ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
+        data-guide-id={orientation === 'left' ? 'LeftEditor' : ''}
       >
         <EditorToolbar
           {...toolbarParams}

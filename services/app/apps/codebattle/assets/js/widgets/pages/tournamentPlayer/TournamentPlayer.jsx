@@ -291,8 +291,8 @@ function TournamentPlayer({ spectatorMachine }) {
         <div className={spectatorGameStatusClassName}>
           {GameStateCodes.playing !== gameState && <h3>Game Over</h3>}
           {startsAt && gameState === GameStateCodes.playing && (
-          <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
-            )}
+            <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
+          )}
           <OutputTab sideOutput={output} large />
         </div>
         <div
@@ -314,7 +314,7 @@ function TournamentPlayer({ spectatorMachine }) {
     ));
 
   const MatchesPannel = () => {
-    const groupedMatches = groupBy(Object.values(tournament.matches), 'roundPosition');
+    const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
     const rounds = reverse(Object.keys(groupedMatches));
 
     const lastRound = rounds[0];

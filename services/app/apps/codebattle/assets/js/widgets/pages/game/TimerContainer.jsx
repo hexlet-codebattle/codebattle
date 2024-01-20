@@ -4,9 +4,18 @@ import CountdownTimer from '../../components/CountdownTimer';
 import RoomContext from '../../components/RoomContext';
 import Timer from '../../components/Timer';
 import GameRoomModes from '../../config/gameModes';
-import { roomMachineStates } from '../../machines/game';
-import { roomStateSelector, taskStateSelector } from '../../machines/selectors';
-import { taskMachineStates } from '../../machines/task';
+import {
+  roomStateSelector,
+  taskStateSelector,
+  inBuilderRoomSelector,
+  inPreviewRoomSelector,
+  inTestingRoomSelector,
+  isGameOverSelector,
+  isStoredGameSelector,
+  isSavedTaskSelector,
+  isReadyTaskSelector,
+  isInvalidTaskSelector,
+} from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 const gameStatuses = {
@@ -15,46 +24,11 @@ const gameStatuses = {
   timeout: 'game_over',
 };
 
-function TimerContainer({
- time, mode, timeoutSeconds, gameStateName,
-}) {
-  const { mainService, taskService } = useContext(RoomContext);
-  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
-  const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
+const loadingTitle = 'Loading...';
 
-  if (mode === GameRoomModes.history) {
-    return 'History';
-  }
-
-  if (roomCurrent.matches({ room: roomMachineStates.builder })) {
-    if (taskCurrent.matches(taskMachineStates.saved)) {
-      return 'Task Saved';
-    }
-
-    if (taskCurrent.matches(taskMachineStates.ready)) {
-      return 'Task Is Ready';
-    }
-
-    if (taskCurrent.matches(taskMachineStates.failure)) {
-      return 'Task Is Invalid';
-    }
-
-    return 'Task Builder';
-  }
-
-  if (roomCurrent.matches({ room: roomMachineStates.testing })) {
-    return 'Task Testing';
-  }
-
+const GameRoomTimer = ({ timeoutSeconds, time }) => {
   if (timeoutSeconds === null) {
-    return 'Loading...';
-  }
-
-  if (
-    roomCurrent.matches({ room: roomMachineStates.gameOver })
-    || roomCurrent.matches({ room: roomMachineStates.stored })
-  ) {
-    return gameStatuses[gameStateName];
+    return loadingTitle;
   }
 
   if (timeoutSeconds && time) {
@@ -66,6 +40,58 @@ function TimerContainer({
   }
 
   return <Timer time={time} />;
+};
+
+function TimerContainer({
+ time, mode, timeoutSeconds, gameStateName,
+}) {
+  const { mainService, taskService } = useContext(RoomContext);
+  const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
+  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
+
+  const isPreviewRoom = inPreviewRoomSelector(roomMachineState);
+  const isBuilderRoom = inBuilderRoomSelector(roomMachineState);
+  const isTestingRoom = inTestingRoomSelector(roomMachineState);
+  const isGameOver = isGameOverSelector(roomMachineState);
+  const isGameStored = isStoredGameSelector(roomMachineState);
+
+  const isTaskSaved = isSavedTaskSelector(taskMachineState);
+  const isTaskReady = isReadyTaskSelector(taskMachineState);
+  const isInvalidTask = isInvalidTaskSelector(taskMachineState);
+
+  if (isPreviewRoom) {
+    return loadingTitle;
+  }
+
+  if (mode === GameRoomModes.history) {
+    return 'History';
+  }
+
+  if (isBuilderRoom) {
+    if (isTaskSaved) {
+      return 'Task Saved';
+    }
+
+    if (isTaskReady) {
+      return 'Task Is Ready';
+    }
+
+    if (isInvalidTask) {
+      return 'Task Is Invalid';
+    }
+
+    return 'Task Builder';
+  }
+
+  if (isTestingRoom) {
+    return 'Task Testing';
+  }
+
+  if (isGameOver || isGameStored) {
+    return gameStatuses[gameStateName];
+  }
+
+  return <GameRoomTimer timeoutSeconds={timeoutSeconds} time={time} />;
 }
 
 export default TimerContainer;

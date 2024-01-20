@@ -20,7 +20,7 @@ import ReplayerControlButton from './ReplayerControlButton';
 
 function Notifications() {
   const { mainService } = useContext(RoomContext);
-  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
+  const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
 
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -34,16 +34,16 @@ function Notifications() {
 
   return (
     <>
-      {roomCurrent.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
+      {roomMachineState.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
       <ReplayerControlButton />
-      {(isCurrentUserPlayer && roomCurrent.matches({ room: roomMachineStates.gameOver }))
+      {(isCurrentUserPlayer && roomMachineState.matches({ room: roomMachineStates.gameOver }))
         && (
           <>
             <GameResult />
             <ActionsAfterGame />
           </>
         )}
-      {(isAdmin && !roomCurrent.matches({ replayer: replayerMachineStates.off })) && (
+      {(isAdmin && !roomMachineState.matches({ replayer: replayerMachineStates.off })) && (
         <>
           <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
         </>
@@ -51,7 +51,7 @@ function Notifications() {
       {isTournamentGame && isActiveTournament
         && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} />}
       {isTournamentGame && <BackToTournamentButton />}
-      {!isTournamentGame && !roomCurrent.matches({ room: roomMachineStates.testing })
+      {!isTournamentGame && !roomMachineState.matches({ room: roomMachineStates.testing })
         && <BackToHomeButton />}
     </>
   );

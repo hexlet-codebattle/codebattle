@@ -22,6 +22,8 @@ export const isGameActiveSelector = state => state.matches({ room: roomMachineSt
 
 export const isGameOverSelector = state => state.matches({ room: roomMachineStates.gameOver });
 
+export const isStoredGameSelector = state => state.matches({ room: roomMachineStates.stored });
+
 export const inBuilderRoomSelector = state => state.matches({ room: roomMachineStates.builder });
 
 export const inWaitingRoomSelector = state => state.matches({ room: roomMachineStates.waiting });
@@ -36,11 +38,13 @@ export const spectatorEditorIsChecking = state => state.matches({ editor: specta
 
 export const gameRoomKeySelector = () => ('game');
 
-export const isInvalidStateTaskSelector = state => state.matches(taskMachineStates.invalid);
+export const isInvalidTaskSelector = state => state.matches(taskMachineStates.invalid);
 
 export const isIdleStateTaskSelector = state => state.matches(taskMachineStates.idle);
 
-export const isSavedStateTaskSelector = state => state.matches(taskMachineStates.saved);
+export const isSavedTaskSelector = state => state.matches(taskMachineStates.saved);
+
+export const isReadyTaskSelector = state => state.matches(taskMachineStates.ready);
 
 export const isTaskAssertsReadySelector = state => [taskMachineStates.ready, taskMachineStates.saved].some(state.matches);
 

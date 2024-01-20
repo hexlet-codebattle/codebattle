@@ -3,7 +3,7 @@ import React from 'react';
 import moment from 'moment';
 
 import TournamentType from '../../components/TournamentType';
-import UserInfo from '../../components/UserInfo';
+// import UserInfo from '../../components/UserInfo';
 
 import ShowButton from './ShowButton';
 
@@ -29,10 +29,10 @@ function TournamentCard({
               .format('YYYY-MM-DD HH:mm')
           }`}
         </span>
-        <span className="d-flex p-1 text-nowrap">
-          <span className="mr-2">Creator:</span>
-          <UserInfo user={tournament.creator} />
-        </span>
+        {/* <span className="d-flex p-1 text-nowrap"> */}
+        {/*   <span className="mr-2">Creator:</span> */}
+        {/*   <UserInfo user={tournament.creator} /> */}
+        {/* </span> */}
         <div className="d-flex flex-column cb-vw-75">
           <ShowButton url={`/tournaments/${tournament.id}/`} />
         </div>

@@ -172,8 +172,9 @@ export const config = {
     userSendSolution: () => { },
     handleTimeoutFailureChecking: () => {},
     openCheckResultOutput: ctx => {
-      if (ctx.type === editorUserTypes.currentUser) {
-        document.getElementById('leftOutput-tab').click();
+      const leftOutputNode = document.getElementById('leftOutput-tab');
+      if (ctx.type === editorUserTypes.currentUser && leftOutputNode) {
+        leftOutputNode.click();
       }
     },
     soundStartChecking: () => {

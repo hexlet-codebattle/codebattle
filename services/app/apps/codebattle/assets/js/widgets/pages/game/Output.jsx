@@ -72,10 +72,14 @@ const EmptyOutput = memo(({
   </>
 ));
 
-const Output = ({ sideOutput }) => {
+const Output = ({ sideOutput, hideContent }) => {
+  if (hideContent) {
+    return <></>;
+  }
+
   const {
- status, output, outputError, asserts, version = 0,
-} = sideOutput;
+    status, output, outputError, asserts, version = 0,
+  } = sideOutput;
 
   const uniqIndex = uniqueId('heading');
   const normalizedAsserts = version === 2

@@ -54,7 +54,7 @@ const store = configureStore({
 const persistor = persistStore(store);
 
 const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
-const GameRoomWidget = React.lazy(() => import('./pages/RoomWidget'));
+const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
 const RatingList = React.lazy(() => import('./pages/rating'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
@@ -74,7 +74,7 @@ export const Game = () => (
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
         <NiceModal.Provider>
-          <GameRoomWidget
+          <RoomWidget
             pageName={PageNames.game}
             mainMachine={mainMachine}
             taskMachine={taskMachine}
@@ -91,7 +91,7 @@ export const Builder = () => (
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
         <NiceModal.Provider>
-          <GameRoomWidget
+          <RoomWidget
             pageName={PageNames.builder}
             mainMachine={mainMachine}
             taskMachine={taskMachine}

@@ -82,9 +82,9 @@ function BuilderEditorsWidget() {
 
   const [assertsPanelShowing, setAssertsPanelShowing] = useState(false);
 
-  const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
-  const isAssertsReady = isTaskAssertsReadySelector(taskCurrent);
-  const isAssertsForming = isTaskAssertsFormingSelector(taskCurrent);
+  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
+  const isAssertsReady = isTaskAssertsReadySelector(taskMachineState);
+  const isAssertsForming = isTaskAssertsFormingSelector(taskMachineState);
 
   const editable = useSelector(selectors.canEditTaskGenerator);
   const templatesState = useSelector(selectors.taskTemplatesStateSelector);
@@ -189,7 +189,7 @@ function BuilderEditorsWidget() {
                       status={
                         !isValidArgumentsGenerator
                           ? validationStatuses.invalid
-                          : getGeneratorStatus(templatesState, taskCurrent)
+                          : getGeneratorStatus(templatesState, taskMachineState)
                       }
                       reason={invalidSolutionReason}
                     />
@@ -251,7 +251,7 @@ function BuilderEditorsWidget() {
                     status={
                       !isValidSolution
                         ? validationStatuses.invalid
-                        : getGeneratorStatus(templatesState, taskCurrent)
+                        : getGeneratorStatus(templatesState, taskMachineState)
                     }
                     reason={invalidGeneratorReason}
                   />
