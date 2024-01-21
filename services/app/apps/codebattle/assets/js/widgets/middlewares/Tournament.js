@@ -202,14 +202,8 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   }
 };
 
-export const subscribePlayers = players => {
-  if (players.length < 1) {
-    return;
-  }
-
-  const ids = players.map(p => p.id);
-  // TODO (tournaments): Implement unsubscribe
-  channel.push('tournament:subscribe_players', { player_ids: ids });
+export const createCustomGame = params => {
+  channel.push('tournament:create_match', params).receive('error', error => console.error(error));
 };
 
 export const joinTournament = teamId => {

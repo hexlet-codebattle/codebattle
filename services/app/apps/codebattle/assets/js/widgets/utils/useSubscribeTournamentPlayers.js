@@ -3,7 +3,7 @@ import {
 } from 'react';
 
 import TournamentStateCodes from '../config/tournament';
-import { subscribePlayers } from '../middlewares/Tournament';
+// import { subscribePlayers } from '../middlewares/Tournament';
 
 export default (players, tournamentState) => {
   const uniqKey = useMemo(
@@ -13,7 +13,7 @@ export default (players, tournamentState) => {
 
   useEffect(() => {
     if (tournamentState === TournamentStateCodes.active) {
-      subscribePlayers(players);
+      // subscribePlayers(players);
     }
 
     return () => {};
