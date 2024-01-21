@@ -48,7 +48,7 @@ defmodule Codebattle.Tournament do
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack tags)
   @task_strategies ~w(game round)
-  @types ~w(individual team stairway swiss ladder)
+  @types ~w(individual team stairway swiss ladder show)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

@@ -191,6 +191,20 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:create_match", %{"user_id" => user_id, "level" => level}, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+    tournament = Tournament.Server.get_tournament(tournament_id)
+
+    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+      Tournament.Context.handle_event(tournament_id, :create_match, %{
+        user_id: user_id,
+        level: level
+      })
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:finish_round", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
