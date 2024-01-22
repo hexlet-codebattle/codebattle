@@ -74,12 +74,14 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
+    field(:show_results, :boolean, default: true)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
     field(:stats, AtomizedMap, default: %{})
     field(:task_provider, :string, default: "level")
     field(:task_strategy, :string, default: "game")
     field(:type, :string, default: "individual")
+    field(:task_pack_name, :string)
     field(:use_chat, :boolean, default: true)
     field(:use_infinite_break, :boolean, default: false)
     field(:winner_ids, {:array, :integer})
@@ -93,8 +95,6 @@ defmodule Codebattle.Tournament do
     field(:players_count, :integer, virtual: true, default: 0)
     field(:top_player_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
-    field(:task_pack_name, :string, virtual: true)
-    field(:show_results, :boolean, virtual: true, default: true)
 
     timestamps()
   end
@@ -123,6 +123,8 @@ defmodule Codebattle.Tournament do
       :players_limit,
       :starts_at,
       :state,
+      :task_pack_name,
+      :task_provider,
       :task_strategy,
       :type,
       :use_chat,

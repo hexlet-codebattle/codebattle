@@ -117,9 +117,12 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
           <% end %>
           <%= if (f.params["task_provider"] == "task_pack") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :task_pack_id) %>
-              <%= number_input(f, :task_pack_id, class: "form-control") %>
-              <%= error_tag(f, :task_pack_id) %>
+              <%= label(f, :task_pack_name) %>
+              <%= select(f, :task_pack_name, @task_pack_names,
+                class: "custom-select",
+                value: f.params["task_pack_name"] || f.data.task_pack_name
+              ) %>
+              <%= error_tag(f, :task_pack_name) %>
             </div>
           <% end %>
           <%= if (f.params["task_provider"] == "tags") do %>

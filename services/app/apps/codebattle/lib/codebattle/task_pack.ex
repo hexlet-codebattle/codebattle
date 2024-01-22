@@ -73,6 +73,16 @@ defmodule Codebattle.TaskPack do
     end
   end
 
+  @spec get_tasks_by_pack_name(String.t()) :: [Codebattle.Task.t()]
+  def get_tasks_by_pack_name(name) do
+    Codebattle.TaskPack
+    |> Repo.get_by(name: name)
+    |> case do
+      nil -> []
+      task_pack -> Codebattle.Task.get_by_ids(task_pack.task_ids)
+    end
+  end
+
   def list_visible(user) do
     __MODULE__
     |> filter_visibility(user)
