@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament.Show do
   def finish_tournament?(tournament), do: final_round?(tournament)
 
   def create_match(tournament, params) do
-    IO.inspect(params)
+    :noop
   end
 
   defp final_round?(tournament) do
