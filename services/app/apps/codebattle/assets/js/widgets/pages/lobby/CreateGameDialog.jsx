@@ -20,7 +20,7 @@ import TaskChoice from './TaskChoice';
 const TIMEOUT = 480;
 const gameLevels = Object.keys(levelRatio);
 const gameTypeNames = {
-  other_user: i18n.t('With other users'),
+  other_user: i18n.t('With other user'),
   invite: i18n.t('With a friend'),
   bot: i18n.t('With a bot'),
 };
