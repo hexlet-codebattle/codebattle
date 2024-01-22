@@ -387,6 +387,16 @@ defmodule CodebattleWeb.TournamentChannel do
     }
   end
 
+  defp get_tournament_join_payload(%{type: "show"} = tournament, _socket) do
+    %{
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
+      matches: Helpers.get_matches(tournament),
+      players: Helpers.get_players(tournament),
+      tasks_info:
+        tournament |> Helpers.get_tasks() |> Enum.map(&Map.take(&1, [:id, :level, :name]))
+    }
+  end
+
   defp get_tournament_join_payload(tournament, _socket) do
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),

@@ -5,7 +5,8 @@ defmodule Codebattle.Tournament.Show do
 
   @impl Tournament.Base
   def complete_players(tournament) do
-    tournament
+    bot = Bot.Context.build()
+    add_player(tournament, bot)
   end
 
   @impl Tournament.Base
@@ -22,11 +23,7 @@ defmodule Codebattle.Tournament.Show do
   @impl Tournament.Base
   def finish_tournament?(tournament), do: final_round?(tournament)
 
-  def create_match(tournament, params) do
-    IO.inspect(params)
-  end
-
-  defp final_round?(tournament) do
-    tournament
+  defp final_round?(_tournament) do
+    false
   end
 end

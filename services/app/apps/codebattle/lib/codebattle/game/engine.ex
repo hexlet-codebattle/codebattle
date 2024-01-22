@@ -25,6 +25,8 @@ defmodule Codebattle.Game.Engine do
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
     mode = params[:mode] || "standard"
+    # TODO: show it only after game finished
+    # award_text = params[:award_text]
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     [creator | _] = params.players
@@ -399,6 +401,7 @@ defmodule Codebattle.Game.Engine do
 
   defp maybe_get_playbook_id_for_bot(_player, _task), do: nil
 
+  defp run_bots(%{type: "solo"}), do: :noop
   defp run_bots(game), do: Bot.Context.start_bots(game)
 
   defp start_timeout_timer(game) do

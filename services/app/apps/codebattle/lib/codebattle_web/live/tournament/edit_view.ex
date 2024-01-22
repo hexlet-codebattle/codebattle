@@ -38,6 +38,7 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
         user_timezone={@user_timezone}
         changeset={@changeset}
         langs={Runner.Languages.get_lang_slugs()}
+        task_pack_names={@current_user |> Codebattle.TaskPack.list_visible() |> Enum.map(& &1.name)}
       />
     </div>
     """

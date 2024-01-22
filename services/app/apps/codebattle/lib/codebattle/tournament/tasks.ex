@@ -20,6 +20,14 @@ defmodule Codebattle.Tournament.Tasks do
     :ets.select(tournament.tasks_table, [{{:"$1", :"$2"}, [], [:"$1"]}])
   end
 
+  def get_task_ids_by_level(tournament, level) do
+    # TODO: make filter inside ets
+    tournament
+    |> get_tasks()
+    |> Enum.filter(&(&1.level == level))
+    |> Enum.map(& &1.id)
+  end
+
   def get_task(_tournament, nil), do: nil
 
   def get_task(tournament, task_id) do

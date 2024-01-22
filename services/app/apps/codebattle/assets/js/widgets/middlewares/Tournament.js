@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Gon from 'gon';
-import { camelizeKeys } from 'humps';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
 import socket from '../../socket';
@@ -203,7 +203,7 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
 };
 
 export const createCustomGame = params => {
-  channel.push('tournament:create_match', params).receive('error', error => console.error(error));
+  channel.push('tournament:create_match', decamelizeKeys(params)).receive('error', error => console.error(error));
 };
 
 export const joinTournament = teamId => {
@@ -258,8 +258,8 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
 export const requestMatchesByPlayerId = userId => dispatch => {
   channel.push('tournament:matches:request', { player_id: userId })
     .receive('ok', data => {
-       dispatch(actions.updateTournamentMatches(data.matches));
-       dispatch(actions.updateTournamentPlayers(data.players));
+      dispatch(actions.updateTournamentMatches(data.matches));
+      dispatch(actions.updateTournamentPlayers(data.players));
     })
     .receive('error', error => console.error(error));
 };

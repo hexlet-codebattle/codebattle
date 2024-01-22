@@ -169,7 +169,14 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:match:upserted",
         payload: %{match: params.match, players: players}
       }
-    end)
+    end) ++
+      [
+        %Message{
+          topic: "tournament:#{params.tournament.id}",
+          event: "tournament:match:upserted",
+          payload: %{match: params.match, players: players}
+        }
+      ]
   end
 
   def get_messages("tournament:game:wait", params) do

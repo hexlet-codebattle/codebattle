@@ -17,6 +17,8 @@ defmodule Codebattle.Tournament.Base do
       @behaviour Tournament.Base
       import Tournament.Helpers
 
+      alias Codebattle.Bot
+
       def add_player(tournament, player) do
         Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
         Map.put(tournament, :players_count, players_count(tournament))
@@ -305,7 +307,24 @@ defmodule Codebattle.Tournament.Base do
         new_match_id = matches_count(tournament)
         players = get_players(tournament, finished_match.player_ids)
 
-        case create_rematch_game(tournament, players, new_match_id) do
+        case create_game(tournament, players, new_match_id) do
+          nil ->
+            # TODO: send message that there is no tasks in task_pack
+            nil
+
+          game ->
+            build_and_run_match(tournament, players, game, false)
+        end
+
+        tournament
+      end
+
+      def create_match(tournament, params) do
+        %{user_id: user_id, level: level} = params
+        new_match_id = matches_count(tournament)
+        players = get_players(tournament, [user_id])
+
+        case create_game(tournament, players, new_match_id, %{type: "solo", level: level}) do
           nil ->
             # TODO: send message that there is no tasks in task_pack
             nil
@@ -371,6 +390,10 @@ defmodule Codebattle.Tournament.Base do
         |> broadcast_round_created()
       end
 
+      defp build_round_matches(tournament = %{type: "show"}) do
+        tournament
+      end
+
       defp build_round_matches(tournament) do
         tournament
         |> build_round_pairs()
@@ -393,12 +416,13 @@ defmodule Codebattle.Tournament.Base do
 
         batch
         |> Enum.map(fn
-          # TODO: only for load tests we want that bots play real games
+          # TODO: skip bots game
           # {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
           #   Tournament.Matches.put_match(tournament, %Tournament.Match{
           #     id: match_id,
           #     state: "canceled",
-          #     round: tournament.current_round_position,
+          #     round_id: tournament.current_round_id,
+          #     round_position: tournament.current_round_position,
           #     player_ids: Enum.sort([p1.id, p2.id])
           #   })
 
@@ -421,50 +445,58 @@ defmodule Codebattle.Tournament.Base do
         end)
       end
 
-      defp create_rematch_game(tournament, players, ref) do
-        case get_rematch_task(tournament, players) do
+      defp create_game(tournament, players, ref, game_params \\ %{})
+
+      defp create_game(tournament, [player], ref, game_params) do
+        bot = Tournament.Players.get_players(tournament) |> Enum.find(& &1.is_bot)
+        create_game(tournament, [player, bot], ref, game_params)
+      end
+
+      defp create_game(tournament, players, ref, game_params) do
+        case get_new_task_for_players(tournament, players, game_params) do
           nil ->
             nil
 
           task ->
             {:ok, game} =
-              Game.Context.create_game(%{
+              game_params
+              |> Map.merge(%{
                 state: "playing",
                 task: task,
                 ref: ref,
                 level: tournament.level,
                 tournament_id: tournament.id,
+                round_id: tournament.current_round_id,
                 timeout_seconds: get_game_timeout(tournament),
                 use_chat: tournament.use_chat,
                 players: players
               })
+              |> Game.Context.create_game()
 
             game
         end
       end
 
-      defp build_and_run_match(tournament, [p1, p2], game, reset_task_ids) do
+      defp build_and_run_match(tournament, players, game, reset_task_ids) do
         match = %Tournament.Match{
           id: game.ref,
           game_id: game.id,
           state: "playing",
-          player_ids: Enum.sort([p1.id, p2.id]),
+          player_ids: players |> Enum.map(& &1.id) |> Enum.sort(),
+          round_id: tournament.current_round_id,
           round_position: tournament.current_round_position
         }
 
         Tournament.Matches.put_match(tournament, match)
 
-        Tournament.Players.put_player(tournament, %{
-          p1
-          | matches_ids: [match.id | p1.matches_ids],
-            task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | p2.task_ids])
-        })
-
-        Tournament.Players.put_player(tournament, %{
-          p2
-          | matches_ids: [match.id | p2.matches_ids],
-            task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | p2.task_ids])
-        })
+        Enum.each(players, fn player ->
+          Tournament.Players.put_player(tournament, %{
+            player
+            | matches_ids: [match.id | player.matches_ids],
+              task_ids:
+                if(reset_task_ids, do: [game.task_id], else: [game.task_id | player.task_ids])
+          })
+        end)
 
         Codebattle.PubSub.broadcast("tournament:match:upserted", %{
           tournament: tournament,
@@ -524,10 +556,14 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp get_rematch_task(tournament, players) do
+      defp get_new_task_for_players(tournament, players, game_params) do
         completed_task_ids = Enum.flat_map(players, & &1.task_ids)
 
-        round_task_ids = Tournament.Tasks.get_task_ids(tournament)
+        round_task_ids =
+          case game_params do
+            %{level: level} -> Tournament.Tasks.get_task_ids_by_level(tournament, level)
+            _ -> Tournament.Tasks.get_task_ids(tournament)
+          end
 
         (round_task_ids -- completed_task_ids)
         |> safe_random()
@@ -613,6 +649,21 @@ defmodule Codebattle.Tournament.Base do
           |> Enum.shuffle()
 
         Tournament.Tasks.replace_tasks(tournament, round_tasks)
+
+        tournament
+      end
+
+      defp maybe_preload_tasks(
+             tournament = %{
+               task_provider: "task_pack",
+               task_pack_name: task_pack_name,
+               current_round_position: 0
+             }
+           )
+           when not is_nil(task_pack_name) do
+        tasks = task_pack_name |> Codebattle.TaskPack.get_tasks_by_pack_name() |> Enum.shuffle()
+
+        Tournament.Tasks.put_tasks(tournament, tasks)
 
         tournament
       end
