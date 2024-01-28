@@ -4,6 +4,7 @@ defmodule Codebattle.Repo.Migrations.RenameMatchesRound do
   def change do
     alter table(:tournaments) do
       add(:show_results, :boolean, default: true, null: false)
+      add(:task_pack_name, :string)
     end
 
     tournaments =
