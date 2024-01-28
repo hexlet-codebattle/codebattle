@@ -104,6 +104,10 @@ const initialGameStatus = gameParams
     }
   : defaultGameStatusState;
 
+const initialGameAward = gameParams ? gameParams.award : null;
+
+const initialGameLocked = gameParams ? gameParams.locked : false;
+
 const initialGameTask = gameParams ? gameParams.task : null;
 
 const initialUseChat = gameParams ? gameParams.useChat : false;
@@ -427,9 +431,9 @@ const defaultTournamentPlayerParams = {
 export default {
   game: {
     gameStatus: initialGameStatus,
-    award: null,
+    award: initialGameAward,
     awardStatus: 'idle',
-    locked: false,
+    locked: initialGameLocked,
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
