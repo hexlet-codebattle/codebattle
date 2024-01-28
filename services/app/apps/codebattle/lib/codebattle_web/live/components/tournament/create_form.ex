@@ -10,17 +10,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
   @impl true
   def render(assigns) do
     assigns =
-      assign(
-        assigns,
+      assigns
+      |> assign(
         :default_rounds_config_json,
         """
-          [
-            {"task_pack_id": 1, "round_timeout_seconds": 30},
-            {"task_pack_id": 2, "round_timeout_seconds": 40},
-            {"task_pack_id": 3, "round_timeout_seconds": 50}
-          ]
+          [{"award": "red"}, {"award": "red"}, {"award": "blue"}]
         """
       )
+      |> assign(:default_game_passwords_json, ~S(["12341234", "33322233", "11112222"]))
 
     ~H"""
     <div class="container-xl bg-white shadow-sm rounded py-4">
@@ -60,7 +57,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               value:
                 f.params["description"] ||
                   "Markdown description. [stream_link](https://codebattle.hexlet.io)",
-              maxlength: "1357",
+              maxlength: "13570",
               required: true
             ) %>
             <%= error_tag(f, :description) %>
@@ -138,52 +135,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           <% end %>
         </div>
         <div class="justify-content-between mt-3">
-          <%= if (f.params["task_provider"] == "task_pack") do %>
-            <div class="">
-              <%= label(f, :elementary) %>
-              <%= number_input(
-                f,
-                :timeout_elementary_seconds,
-                class: "form-control",
-                value: f.params["timeout_elementary_seconds"] || "150",
-                min: "1",
-                max: "1000"
-              ) %>
-            </div>
-            <div class="">
-              <%= label(f, :easy) %>
-              <%= number_input(
-                f,
-                :timeout_easy_seconds,
-                class: "form-control",
-                value: f.params["timeout_easy_seconds"] || "250",
-                min: "1",
-                max: "1000"
-              ) %>
-            </div>
-            <div class="">
-              <%= label(f, :medium) %>
-              <%= number_input(
-                f,
-                :timeout_medium_seconds,
-                class: "form-control",
-                value: f.params["timeout_medium_seconds"] || "350",
-                min: "1",
-                max: "1000"
-              ) %>
-            </div>
-            <div class="">
-              <%= label(f, :hard) %>
-              <%= number_input(
-                f,
-                :timeout_hard_seconds,
-                class: "form-control",
-                value: f.params["timeout_hard_seconds"] || "450",
-                min: "1",
-                max: "1000"
-              ) %>
-            </div>
-          <% end %>
           <%= if (f.params["task_provider"] == "tags") do %>
             <div class="">
               <%= label(f, :tags) %>
@@ -285,7 +236,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if (f.params["rounds_config_type"] in ["per_round"]) do %>
+        <%= if (f.params["rounds_config_type"] in ["per_round"] or f.params["type"] == "show") do %>
           <div class="d-flex mt-3 overflow-x">
             <%= label(f, :rounds_config_json) %>
             <%= textarea(f, :rounds_config_json,
@@ -295,6 +246,18 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               rows: "5"
             ) %>
             <%= error_tag(f, :rounds_config_json) %>
+          </div>
+        <% end %>
+        <%= if (f.params["type"] == "show") do %>
+          <div class="d-flex mt-3 overflow-x">
+            <%= label(f, :game_passwords_json) %>
+            <%= textarea(f, :game_passwords_json,
+              class: "form-control",
+              value: f.params["game_passwords_json"] || @default_game_passwords_json,
+              maxlength: "9350",
+              rows: "10"
+            ) %>
+            <%= error_tag(f, :game_passwords_json) %>
           </div>
         <% end %>
         <%= submit("Create",

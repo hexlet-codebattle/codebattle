@@ -5,6 +5,9 @@ defmodule Codebattle.Tournament.Individual do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
+  def game_type, do: "duo"
+
+  @impl Tournament.Base
   def complete_players(tournament) do
     bots_count =
       if players_count(tournament) > 1 do

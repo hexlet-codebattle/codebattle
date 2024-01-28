@@ -5,6 +5,9 @@ defmodule Codebattle.Tournament.Stairway do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
+  def game_type, do: "duo"
+
+  @impl Tournament.Base
   def complete_players(tournament) do
     if rem(players_count(tournament), 2) == 0 do
       tournament

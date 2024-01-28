@@ -11,6 +11,7 @@ defmodule Codebattle.Tournament.Base do
   @callback complete_players(Tournament.t()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
   @callback default_meta() :: map()
+  @callback game_type() :: String.t()
 
   defmacro __using__(_opts) do
     quote location: :keep do
@@ -112,7 +113,6 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> update_struct(%{
             players: %{},
-            meta: default_meta(),
             matches: %{},
             break_state: "off",
             players_count: 0,
@@ -194,6 +194,22 @@ defmodule Codebattle.Tournament.Base do
           end
         end)
 
+        tournament
+      end
+
+      def remove_pass_code(tournament = %{meta: %{game_passwords: passwords}}, %{
+            pass_code: pass_code
+          }) do
+        if pass_code in passwords do
+          update_in(tournament.meta.game_passwords, fn codes ->
+            List.delete(codes, pass_code)
+          end)
+        else
+          tournament
+        end
+      end
+
+      def remove_pass_code(tournament, _params) do
         tournament
       end
 
@@ -324,7 +340,7 @@ defmodule Codebattle.Tournament.Base do
         new_match_id = matches_count(tournament)
         players = get_players(tournament, [user_id])
 
-        case create_game(tournament, players, new_match_id, %{type: "solo", level: level}) do
+        case create_game(tournament, players, new_match_id, %{level: level}) do
           nil ->
             # TODO: send message that there is no tasks in task_pack
             nil
@@ -390,10 +406,6 @@ defmodule Codebattle.Tournament.Base do
         |> broadcast_round_created()
       end
 
-      defp build_round_matches(tournament = %{type: "show"}) do
-        tournament
-      end
-
       defp build_round_matches(tournament) do
         tournament
         |> build_round_pairs()
@@ -434,9 +446,12 @@ defmodule Codebattle.Tournament.Base do
               timeout_seconds: game_timeout,
               tournament_id: tournament.id,
               round_id: tournament.current_round_id,
+              type: game_type(),
               use_chat: tournament.use_chat,
               players: players
             }
+            |> maybe_add_award(tournament)
+            |> maybe_add_locked(tournament)
         end)
         |> Game.Context.bulk_create_games()
         |> Enum.zip(batch)
@@ -471,6 +486,8 @@ defmodule Codebattle.Tournament.Base do
                 use_chat: tournament.use_chat,
                 players: players
               })
+              |> maybe_add_award(tournament)
+              |> maybe_add_locked(tournament)
               |> Game.Context.create_game()
 
             game
@@ -662,11 +679,12 @@ defmodule Codebattle.Tournament.Base do
              }
            )
            when not is_nil(task_pack_name) do
-        tasks = task_pack_name |> Codebattle.TaskPack.get_tasks_by_pack_name() |> Enum.shuffle()
+        tasks = task_pack_name |> Codebattle.TaskPack.get_tasks_by_pack_name()
 
         Tournament.Tasks.put_tasks(tournament, tasks)
 
-        tournament
+        new_meta = Map.put(tournament.meta, :task_ids, Enum.map(tasks, & &1.id))
+        Map.put(tournament, :meta, new_meta)
       end
 
       defp maybe_preload_tasks(tournament = %{current_round_position: 0}) do
@@ -679,8 +697,41 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_preload_tasks(tournament), do: tournament
 
+      defp maybe_add_award(game_params, tournament) do
+        tournament.meta
+        |> Map.get(:rounds_config)
+        |> case do
+          nil ->
+            Map.put(game_params, :award, nil)
+
+          config ->
+            config
+            |> Enum.at(tournament.current_round_position)
+            |> case do
+              %{award: award} -> Map.put(game_params, :award, award)
+              nil -> Map.put(game_params, :award, nil)
+            end
+        end
+      end
+
+      defp maybe_add_locked(game_params, tournament) do
+        tournament.meta
+        |> Map.get(:game_passwords)
+        |> case do
+          nil -> Map.put(game_params, :locked, false)
+          passwords -> Map.put(game_params, :locked, true)
+        end
+      end
+
       defp get_round_task_ids(tournament = %{meta: %{rounds_config_type: "per_round"}}) do
         Tournament.Tasks.get_task_ids(tournament)
+      end
+
+      defp get_round_task_ids(
+             tournament = %{task_provider: "task_pack", meta: %{task_ids: task_ids}}
+           )
+           when is_list(task_ids) do
+        [Enum.at(task_ids, tournament.current_round_position)]
       end
 
       defp get_round_task_ids(tournament) do
@@ -695,6 +746,7 @@ defmodule Codebattle.Tournament.Base do
         # round_task_ids -- completed_task_ids
       end
 
+      defp safe_random(nil), do: nil
       defp safe_random([]), do: nil
       defp safe_random(list), do: Enum.random(list)
 

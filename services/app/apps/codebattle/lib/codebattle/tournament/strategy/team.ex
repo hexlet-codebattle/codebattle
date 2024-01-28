@@ -5,6 +5,9 @@ defmodule Codebattle.Tournament.Team do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
+  def game_type, do: "duo"
+
+  @impl Tournament.Base
   def complete_players(tournament) do
     team_players_count =
       tournament

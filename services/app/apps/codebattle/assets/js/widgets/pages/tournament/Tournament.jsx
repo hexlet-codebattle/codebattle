@@ -80,9 +80,10 @@ function InfoPanel({
           pageSize={tournament.playersPageSize}
           hideResults={hideResults}
           hideCustomGameConsole={
-            tournament.type !== tournamentTypes.show
-              || tournament.state === TournamentStates.finished
-              || tournament.breakState === 'on'
+            true
+            // tournament.type !== tournamentTypes.show
+            //   || tournament.state === TournamentStates.finished
+            //   || tournament.breakState === 'on'
           }
           isAdmin={isAdmin}
           isOwner={isOwner}

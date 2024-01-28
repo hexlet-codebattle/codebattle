@@ -190,6 +190,21 @@ defmodule CodebattleWeb.GameChannel do
     |> handle_rematch_result(socket)
   end
 
+  def handle_in("enter_pass_code", %{"pass_code" => pass_code}, socket) do
+    game_id = socket.assigns.game_id
+
+    game_id
+    |> Context.unlock_game(pass_code)
+    |> case do
+      :ok -> {:reply, {:ok, %{result: true}}, socket}
+      {:error, reason} -> {:reply, {:error, %{result: false, reason: reason}}, socket}
+    end
+  end
+
+  def handle_in(type, params) do
+    Logger.warning("Unexpected message: #{inspect(type)}, params: #{inspect(params)}")
+  end
+
   def handle_info(%{event: "game:terminated", payload: payload}, socket) do
     push(socket, "game:timeout", payload)
     {:noreply, socket}

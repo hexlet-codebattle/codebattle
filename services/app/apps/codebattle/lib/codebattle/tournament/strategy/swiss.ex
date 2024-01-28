@@ -3,8 +3,11 @@ defmodule Codebattle.Tournament.Swiss do
 
   alias Codebattle.Bot
   alias Codebattle.Tournament
-  @impl Tournament.Base
 
+  @impl Tournament.Base
+  def game_type, do: "duo"
+
+  @impl Tournament.Base
   def complete_players(tournament) do
     if rem(players_count(tournament), 2) == 0 do
       tournament
