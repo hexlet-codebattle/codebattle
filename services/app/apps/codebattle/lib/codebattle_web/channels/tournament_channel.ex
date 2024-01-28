@@ -261,7 +261,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     tasks_info =
       if payload.tournament.type == "show" do
-        Helpers.get_tasks(payload.tournament)
+        payload.tournament |> Helpers.get_tasks() |> Enum.map(&Map.take(&1, [:id, :level, :name]))
       else
         []
       end
@@ -296,8 +296,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", %{
-      tournament: payload.tournament,
-      tasks_info: payload.tasks_info
+      tournament: payload.tournament
     })
 
     {:noreply, socket}

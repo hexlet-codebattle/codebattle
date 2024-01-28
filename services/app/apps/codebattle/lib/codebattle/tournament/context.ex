@@ -45,6 +45,19 @@ defmodule Codebattle.Tournament.Context do
     |> add_module()
   end
 
+  @spec check_pass_code(tournament_id(), String.t()) :: boolean()
+  def check_pass_code(id, pass_code) do
+    case get(id) do
+      %{meta: %{game_passwords: passwords}} -> pass_code in passwords
+      _ -> false
+    end
+  end
+
+  @spec remove_pass_code(tournament_id(), String.t()) :: :ok | {:error, term()}
+  def remove_pass_code(id, pass_code) do
+    Tournament.Server.handle_event(id, :remove_pass_code, %{pass_code: pass_code})
+  end
+
   @spec get_from_db(tournament_id()) :: Tournament.t() | nil
   def get_from_db(id) do
     get_from_db!(id)
@@ -236,6 +249,22 @@ defmodule Codebattle.Tournament.Context do
           }
         }
 
+      "show" ->
+        rounds_config =
+          params
+          |> Map.get("rounds_config_json")
+          |> cast_json_value()
+
+        game_passwords =
+          params
+          |> Map.get("game_passwords_json")
+          |> cast_json_value()
+
+        %{
+          game_passwords: game_passwords,
+          rounds_config: rounds_config
+        }
+
       type when type in ["stairway", "swiss", "ladder"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
         rounds_config_type = Map.get(params, "rounds_config_type", "all")
@@ -257,7 +286,7 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  def get_tournament_for_restore() do
+  def get_tournament_for_restore do
     @states_from_restore
     |> get_db_tournaments()
     |> Enum.map(fn tournament ->
@@ -288,5 +317,13 @@ defmodule Codebattle.Tournament.Context do
 
   defp generate_access_token() do
     :crypto.strong_rand_bytes(17) |> Base.url_encode64() |> binary_part(0, 17)
+  end
+
+  defp cast_json_value(value) do
+    case value do
+      nil -> nil
+      "" -> nil
+      value -> value |> Jason.decode!() |> AtomizedMap.atomize()
+    end
   end
 end

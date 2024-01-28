@@ -23,7 +23,7 @@ function GameRoomLockPanel() {
     const value = (inputRef.current.value || '').replaceAll(' ', '');
     const onError = err => setError(err);
 
-    if (passCodeLength === value.length) {
+    if (passCodeLength !== value.length) {
       onError({
         message: `Only ${passCodeLength} character pass code (now ${value.length})`,
       });

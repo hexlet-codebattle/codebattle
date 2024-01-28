@@ -40,7 +40,7 @@ const useRoomSettings = (pageName, roomMachineState) => {
     showTaskBuilder,
     showTimeoutMessage,
     showReplayer: replayerIsOpen,
-    locked,
+    roomLocked: locked,
   };
 };
 

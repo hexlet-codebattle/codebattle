@@ -212,6 +212,23 @@ defmodule Codebattle.Game.Context do
     end
   end
 
+  @spec unlock_game(game_id, String.t()) :: :ok | {:error, term()}
+  def unlock_game(game_id, pass_code) do
+    case get_game!(game_id) do
+      game = %{tournament_id: t_id} when not is_nil(t_id) ->
+        if Tournament.Context.check_pass_code(t_id, pass_code) do
+          Tournament.Context.remove_pass_code(t_id, pass_code)
+          Engine.unlock_game(game)
+          :ok
+        else
+          {:error, :invalid_password}
+        end
+
+      _ ->
+        {:error, :no_tournament}
+    end
+  end
+
   @spec trigger_timeout(game_id) :: :ok
   def trigger_timeout(game_id) do
     game_id |> get_game!() |> Engine.trigger_timeout()

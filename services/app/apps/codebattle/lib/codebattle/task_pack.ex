@@ -20,6 +20,7 @@ defmodule Codebattle.TaskPack do
              :task_ids,
              :creator_id
            ]}
+
   schema "task_packs" do
     field(:name, :string)
     field(:state, :string)
@@ -68,8 +69,14 @@ defmodule Codebattle.TaskPack do
     task_pack_id
     |> get()
     |> case do
-      nil -> []
-      task_pack -> Codebattle.Task.get_by_ids(task_pack.task_ids)
+      nil ->
+        []
+
+      task_pack ->
+        tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
+
+        task_pack.task_ids
+        |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
     end
   end
 
@@ -78,8 +85,14 @@ defmodule Codebattle.TaskPack do
     Codebattle.TaskPack
     |> Repo.get_by(name: name)
     |> case do
-      nil -> []
-      task_pack -> Codebattle.Task.get_by_ids(task_pack.task_ids)
+      nil ->
+        []
+
+      task_pack ->
+        tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
+
+        task_pack.task_ids
+        |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
     end
   end
 

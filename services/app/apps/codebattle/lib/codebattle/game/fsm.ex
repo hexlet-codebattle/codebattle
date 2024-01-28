@@ -104,6 +104,10 @@ defmodule Codebattle.Game.Fsm do
     {:ok, Map.merge(game, new_rematch_data)}
   end
 
+  def transition(:unlock_game, game, _params) do
+    {:ok, Map.put(game, :locked, false)}
+  end
+
   def transition(transition, game, params) do
     Logger.error(
       "Unknown transition: #{transition}, game_state: #{game.state}, params: #{inspect(params)}"

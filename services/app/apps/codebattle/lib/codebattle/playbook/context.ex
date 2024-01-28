@@ -84,7 +84,7 @@ defmodule Codebattle.Playbook.Context do
   def add_record(playbook_state, :join, _params), do: playbook_state
 
   def add_record(playbook_state, type, params) do
-    Logger.error("Unknown playbook record type: #{type}, params: #{inspect(params)}")
+    Logger.warning("Unknown playbook record type: #{type}, params: #{inspect(params)}")
     playbook_state
   end
 

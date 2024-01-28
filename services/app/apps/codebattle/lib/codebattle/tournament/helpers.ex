@@ -15,7 +15,7 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_players(tournament, ids), do: Tournament.Players.get_players(tournament, ids)
 
-  def get_tasks(tournament = %{tasks_table: nil}), do: []
+  def get_tasks(_tournament = %{tasks_table: nil}), do: []
   def get_tasks(tournament), do: Tournament.Tasks.get_tasks(tournament)
 
   def players_count(tournament = %{players_table: nil}) do

@@ -11,10 +11,12 @@ defmodule Codebattle.Game do
 
   @derive {Jason.Encoder,
            only: [
+             :award,
              :finishes_at,
              :id,
              :is_bot,
              :is_live,
+             :locked,
              :is_tournament,
              :level,
              :mode,
@@ -48,9 +50,11 @@ defmodule Codebattle.Game do
     field(:rematch_initiator_id, :integer)
     field(:ref, :integer)
     field(:use_chat, :boolean, default: true)
-    field(:is_live, :boolean, default: false, virtual: true)
+    field(:award, :string, virtual: true)
     field(:is_bot, :boolean, default: false, virtual: true)
+    field(:is_live, :boolean, default: false, virtual: true)
     field(:is_tournament, :boolean, default: false, virtual: true)
+    field(:locked, :boolean, default: false, virtual: true)
 
     timestamps()
 
@@ -67,18 +71,20 @@ defmodule Codebattle.Game do
   def changeset(game = %Game{}, attrs) do
     game
     |> cast(attrs, [
+      :award,
       :finishes_at,
       :level,
+      :locked,
       :mode,
       :ref,
       :rematch_initiator_id,
       :rematch_state,
+      :round_id,
       :starts_at,
       :state,
       :task_id,
       :timeout_seconds,
       :tournament_id,
-      :round_id,
       :type,
       :use_chat,
       :visibility_type

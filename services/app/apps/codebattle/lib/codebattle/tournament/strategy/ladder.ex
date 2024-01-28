@@ -5,6 +5,9 @@ defmodule Codebattle.Tournament.Ladder do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
+  def game_type, do: "duo"
+
+  @impl Tournament.Base
   def complete_players(t), do: t
 
   @impl Tournament.Base

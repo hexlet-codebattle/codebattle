@@ -21,6 +21,8 @@ defmodule Codebattle.Game.Engine do
       params[:task] ||
         Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
 
+    locked = Map.get(params, :locked, false)
+    award = Map.get(params, :award, nil)
     use_chat = Map.get(params, :use_chat, true)
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
@@ -38,6 +40,8 @@ defmodule Codebattle.Game.Engine do
            insert_game(%{
              state: state,
              level: task.level,
+             locked: locked,
+             award: award,
              use_chat: use_chat,
              ref: params[:ref],
              mode: mode,
@@ -101,6 +105,8 @@ defmodule Codebattle.Game.Engine do
       game = fill_virtual_fields(game)
       game = mark_as_live(game)
       game = Map.put(game, :task, params.task)
+      game = Map.put(game, :locked, params.locked)
+      game = Map.put(game, :award, params.award)
       {:ok, _} = Game.GlobalSupervisor.start_game(game)
       :ok = maybe_fire_playing_game_side_effects(game)
       game
@@ -267,6 +273,10 @@ defmodule Codebattle.Game.Engine do
       {:ok, {_old_game_state, new_game}} -> {:rematch_status_updated, new_game}
       {:error, reason} -> {:error, reason}
     end
+  end
+
+  def unlock_game(game) do
+    fire_transition(game.id, :unlock_game)
   end
 
   def update_editor_data(game, params) do
