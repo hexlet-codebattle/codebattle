@@ -194,11 +194,13 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
   });
 };
 
-export const sendPassCode = (passCode, onError) => () => {
+export const sendPassCode = (passCode, onError) => dispatch => {
   channel.push('enter_pass_code', { pass_code: passCode })
-    .receive('ok', () => {})
-    .receive('error', message => {
-      onError({ message });
+    .receive('ok', () => {
+      dispatch(actions.setLocked(false));
+    })
+    .receive('error', error => {
+      onError({ message: error.reason });
     });
 };
 
