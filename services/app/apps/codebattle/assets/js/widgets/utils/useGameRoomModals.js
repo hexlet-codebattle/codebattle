@@ -7,6 +7,7 @@ import TaskParamsModal from '@/pages/builder/TaskParamsModal';
 import AnimationModal from '@/pages/game/AnimationModal';
 import PremiumRestrictionModal from '@/pages/game/PremiumRestrictionModal';
 import TaskDescriptionModal from '@/pages/game/TaskDescriptionModal';
+import TournamentAwardModal from '@/pages/game/TournamentAwardModal';
 import TournamentStatisticsModal from '@/pages/game/TournamentStatisticsModal';
 
 import ModalCodes from '../config/modalCodes';
@@ -23,6 +24,7 @@ const useGameRoomModals = machines => {
     NiceModal.register(ModalCodes.taskConfigurationModal, TaskConfigurationModal);
     NiceModal.register(ModalCodes.taskDescriptionModal, TaskDescriptionModal);
     NiceModal.register(ModalCodes.tournamentStatisticsModal, TournamentStatisticsModal);
+    NiceModal.register(ModalCodes.awardModal, TournamentAwardModal);
 
     const unregisterModals = () => {
       unregister(ModalCodes.gameResultModal);
@@ -31,6 +33,7 @@ const useGameRoomModals = machines => {
       unregister(ModalCodes.taskConfigurationModal);
       unregister(ModalCodes.taskDescriptionModal);
       unregister(ModalCodes.tournamentStatisticsModal);
+      unregister(ModalCodes.awardModal);
     };
 
     return unregisterModals;

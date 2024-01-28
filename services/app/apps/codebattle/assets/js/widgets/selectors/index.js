@@ -63,6 +63,10 @@ export const editorTextsHistorySelector = state => state.editor.textHistory;
 
 export const gameStatusSelector = state => state.game.gameStatus;
 
+export const gameLockedSelector = state => state.game.locked;
+
+export const gameAwardSelector = state => state.game.award;
+
 export const getSolution = playerId => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);

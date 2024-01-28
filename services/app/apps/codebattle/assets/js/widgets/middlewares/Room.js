@@ -100,6 +100,9 @@ const initStoredGame = dispatch => data => {
     secondPlayer: data.players[1],
     task: data.task,
     gameStatus,
+    locked: data.locked,
+    award: data.award,
+    awardStatus: 'idle',
     playbookStatusCode: PlaybookStatusCodes.stored,
   });
 

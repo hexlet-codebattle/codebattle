@@ -5,6 +5,7 @@ const modalCodes = {
   taskDescriptionModal: 'task_description_modal',
   tournamentStatisticsModal: 'tournament_statistics_modal',
   premiumRestrictionModal: 'premium_restriction_modal',
+  awardModal: 'award_modal',
 };
 
 export default modalCodes;

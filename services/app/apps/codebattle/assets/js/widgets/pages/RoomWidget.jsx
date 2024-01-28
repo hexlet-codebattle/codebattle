@@ -53,7 +53,7 @@ function RoomWidget({
     showTimeoutMessage,
     showReplayer,
     roomLocked = false,
-    disabled = false,
+    visible = true,
   } = useRoomSettings(pageName, roomMachineState);
   useGameRoomModals(machines);
   useGameRoomSocketChannel(pageName, machines);
@@ -84,7 +84,8 @@ function RoomWidget({
             <div
               className={cn(
                 'container-fluid', {
-                  'd-none': roomLocked || disabled,
+                  'd-none': roomLocked,
+                  invisible: !visible,
                 },
               )}
             >

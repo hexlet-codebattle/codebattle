@@ -17,6 +17,7 @@ const useRoomSettings = (pageName, roomMachineState) => {
 
   const firstPlayer = useSelector(selectors.firstPlayerSelector);
   const secondPlayer = useSelector(selectors.secondPlayerSelector);
+  const locked = useSelector(selectors.gameLockedSelector);
 
   const inWaitingRoom = machineSelectors.inWaitingRoomSelector(roomMachineState);
   const inBuilderRoom = machineSelectors.inBuilderRoomSelector(roomMachineState);
@@ -39,6 +40,7 @@ const useRoomSettings = (pageName, roomMachineState) => {
     showTaskBuilder,
     showTimeoutMessage,
     showReplayer: replayerIsOpen,
+    locked,
   };
 };
 

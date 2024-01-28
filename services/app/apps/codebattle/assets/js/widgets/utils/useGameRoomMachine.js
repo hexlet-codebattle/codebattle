@@ -22,6 +22,7 @@ const useGameRoomMachine = ({
 }) => {
   const dispatch = useDispatch();
 
+  const award = useSelector(selectors.gameAwardSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const mainService = useInterpret(mainMachine, {
@@ -31,6 +32,7 @@ const useGameRoomMachine = ({
       holding: 'none',
       speedMode: speedModes.normal,
       subscriptionType,
+      withAward: !!award,
     },
     actions: {
       showGameResultModal: () => {
