@@ -108,14 +108,14 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             ) %>
             <%= error_tag(f, :task_provider) %>
           </div>
-          <%= if (f.params["task_provider"] == "level" || is_nil(f.params["task_provider"])) do %>
+          <%= if (f.params["task_provider"] == "level" || f.data.task_provider == "level") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :level) %>
               <%= select(f, :level, Codebattle.Tournament.levels(), class: "custom-select") %>
               <%= error_tag(f, :level) %>
             </div>
           <% end %>
-          <%= if (f.params["task_provider"] == "task_pack") do %>
+          <%= if (f.params["task_provider"] == "task_pack" || f.data.task_provider == "task_pack") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :task_pack_name) %>
               <%= select(f, :task_pack_name, @task_pack_names,
@@ -125,7 +125,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               <%= error_tag(f, :task_pack_name) %>
             </div>
           <% end %>
-          <%= if (f.params["task_provider"] == "tags") do %>
+          <%= if (f.params["task_provider"] == "tags" || f.data.task_provider == "tags") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :tags) %>
               <%= text_input(f, :tags,

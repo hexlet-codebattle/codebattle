@@ -29,6 +29,6 @@ defmodule CodebattleWeb.Api.LobbyView do
   end
 
   def can_user_see_game?(game, user) do
-    game.visibility_type == "public" || Game.Helpers.is_player?(game, user)
+    game.visibility_type == "public" || Game.Helpers.player?(game, user)
   end
 end

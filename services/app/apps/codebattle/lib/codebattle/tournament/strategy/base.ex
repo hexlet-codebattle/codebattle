@@ -575,6 +575,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp broadcast_round_created(tournament) do
         Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
+
         tournament
       end
 

@@ -144,7 +144,7 @@ defmodule Codebattle.Tournament.Server do
   def handle_info({:stop_round_break, round_position}, %{tournament: tournament}) do
     if tournament.current_round_position == round_position and
          in_break?(tournament) and
-         not is_finished?(tournament) do
+         not finished?(tournament) do
       new_tournament = tournament.module.stop_round_break(tournament)
 
       {:noreply, %{tournament: new_tournament}}
@@ -156,7 +156,7 @@ defmodule Codebattle.Tournament.Server do
   def handle_info({:finish_round_force, round_position}, %{tournament: tournament}) do
     if tournament.current_round_position == round_position and
          not in_break?(tournament) and
-         not is_finished?(tournament) do
+         not finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
 
       {:noreply, %{tournament: new_tournament}}
@@ -168,7 +168,7 @@ defmodule Codebattle.Tournament.Server do
   def handle_info({:start_rematch, match_ref, round_position}, %{tournament: tournament}) do
     if tournament.current_round_position == round_position and
          not in_break?(tournament) and
-         not is_finished?(tournament) do
+         not finished?(tournament) do
       new_tournament = tournament.module.start_rematch(tournament, match_ref)
 
       broadcast_tournament_update(new_tournament)
@@ -191,7 +191,7 @@ defmodule Codebattle.Tournament.Server do
 
     if tournament.current_round_position == match.round_position and
          not in_break?(tournament) and
-         not is_finished?(tournament) do
+         not finished?(tournament) do
       new_tournament =
         tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
 

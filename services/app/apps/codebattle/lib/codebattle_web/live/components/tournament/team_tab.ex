@@ -22,8 +22,8 @@ defmodule CodebattleWeb.Live.Tournament.TeamTabComponent do
         <%= for team <- @teams do %>
           <div class="col">
             <div class="d-flex align-items-center">
-              <%= if is_waiting_participants?(@tournament) do %>
-                <%= if is_player?(@tournament, @current_user.id, team.id) do %>
+              <%= if waiting_participants?(@tournament) do %>
+                <%= if player?(@tournament, @current_user.id, team.id) do %>
                   <button class="btn btn-outline-danger" phx-click="leave">Leave</button>
                 <% else %>
                   <button class="btn btn-outline-info" phx-click="join" phx-value-team_id={team.id}>

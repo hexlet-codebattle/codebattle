@@ -17,7 +17,7 @@ defmodule Codebattle.Game.Auth do
     is_player =
       Game.Context.get_active_games()
       |> Enum.any?(fn game ->
-        Game.Helpers.is_player?(game, player.id)
+        Game.Helpers.player?(game, player.id)
       end)
 
     case is_player do
@@ -27,7 +27,7 @@ defmodule Codebattle.Game.Auth do
   end
 
   def player_can_cancel_game?(game, player) do
-    case {Game.Helpers.is_player?(game, player.id), game.state} do
+    case {Game.Helpers.player?(game, player.id), game.state} do
       {true, "waiting_opponent"} -> :ok
       {false, _} -> {:error, :not_authorized}
       {_, _} -> {:error, :only_waiting_opponent}
@@ -35,7 +35,7 @@ defmodule Codebattle.Game.Auth do
   end
 
   def player_can_rematch?(game, player_id) do
-    case Game.Helpers.is_player?(game, player_id) do
+    case Game.Helpers.player?(game, player_id) do
       true -> :ok
       false -> {:error, :not_authorized}
     end

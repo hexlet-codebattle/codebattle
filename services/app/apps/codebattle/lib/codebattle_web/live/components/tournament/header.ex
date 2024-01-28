@@ -12,10 +12,10 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
           <img alt={@tournament.level} src={"/assets/images/levels/#{@tournament.level}.svg"} />
         </div>
 
-        <%= if is_waiting_participants?(@tournament) do %>
+        <%= if waiting_participants?(@tournament) do %>
           <div class="ml-auto">
-            <%= if is_individual?(@tournament) do %>
-              <%= if is_player?(@tournament, @current_user.id) do %>
+            <%= if individual?(@tournament) do %>
+              <%= if player?(@tournament, @current_user.id) do %>
                 <button class="btn btn-outline-danger" phx-click="leave">
                   Leave
                 </button>
@@ -24,8 +24,8 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
               <% end %>
             <% end %>
 
-            <%= if is_stairway?(@tournament) do %>
-              <%= if is_player?(@tournament, @current_user.id) do %>
+            <%= if stairway?(@tournament) do %>
+              <%= if player?(@tournament, @current_user.id) do %>
                 <button class="btn btn-outline-danger" phx-click="leave">Leave</button>
               <% else %>
                 <button class="btn btn-outline-secondary" phx-click="join">Join</button>
@@ -44,29 +44,29 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
               </button>
               <button class="btn btn-info ml-2" phx-click="restart">Restart</button>
               <button class="btn btn-danger ml-2" phx-click="cancel">Cancel</button>
-              <%= if !is_public?(@tournament) do %>
+              <%= if !public?(@tournament) do %>
                 <button class="btn btn-danger ml-2" phx-click="open_up">Open Up</button>
               <% end %>
             <% end %>
           </div>
         <% end %>
 
-        <%= if is_active?(@tournament) do %>
+        <%= if active?(@tournament) do %>
           <div class="ml-auto">
             <%= if can_moderate?(@tournament, @current_user) do %>
               <button class="btn btn-info ml-2" phx-click="restart">Restart</button>
               <button class="btn btn-danger ml-2" phx-click="cancel">Cancel</button>
-              <%= if !is_public?(@tournament) do %>
+              <%= if !public?(@tournament) do %>
                 <button class="btn btn-danger ml-2" phx-click="open_up">Open Up</button>
               <% end %>
             <% end %>
           </div>
         <% end %>
-        <%= if is_finished?(@tournament) do %>
+        <%= if finished?(@tournament) do %>
           <div class="ml-auto">
             <%= if can_moderate?(@tournament, @current_user) do %>
               <button class="btn btn-info ml-2" phx-click="restart">Restart</button>
-              <%= if !is_public?(@tournament) do %>
+              <%= if !public?(@tournament) do %>
                 <button class="btn btn-danger ml-2" phx-click="open_up">Open Up</button>
               <% end %>
             <% end %>
@@ -81,7 +81,7 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
             <span class="ml-3">Access: <%= @tournament.access_type %></span>
           <% end %>
           <span class="ml-3">PlayersLimit: <%= @tournament.players_limit %></span>
-          <%= if is_visible_by_token?(@tournament) && can_moderate?(@tournament, @current_user) do %>
+          <%= if visible_by_token?(@tournament) && can_moderate?(@tournament, @current_user) do %>
             <span class="ml-3">
               Private url: <%= Routes.tournament_url(@socket, :show, @tournament.id,
                 access_token: @tournament.access_token

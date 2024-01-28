@@ -38,7 +38,7 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find(fn player -> player.id == id end)
   end
 
-  def is_player?(game, player_id) do
+  def player?(game, player_id) do
     game
     |> get_players
     |> Enum.any?(&(&1.id == player_id))
@@ -75,10 +75,10 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.into(%{})
   end
 
-  def winner?(game, player_id), do: is_player_result?(game, player_id, "won")
+  def winner?(game, player_id), do: player_result?(game, player_id, "won")
 
-  def lost?(game, player_id), do: is_player_result?(game, player_id, "lost")
-  def gave_up?(game, player_id), do: is_player_result?(game, player_id, "gave_up")
+  def lost?(game, player_id), do: player_result?(game, player_id, "lost")
+  def gave_up?(game, player_id), do: player_result?(game, player_id, "gave_up")
 
   def update_player(game, player_id, params) do
     new_players =
@@ -126,7 +126,7 @@ defmodule Codebattle.Game.Helpers do
     }
   end
 
-  defp is_player_result?(game, player_id, result) do
+  defp player_result?(game, player_id, result) do
     game
     |> get_players
     |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)

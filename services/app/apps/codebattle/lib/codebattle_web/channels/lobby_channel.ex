@@ -102,7 +102,7 @@ defmodule CodebattleWeb.LobbyChannel do
   def handle_info(_, socket), do: {:noreply, socket}
 
   defp can_user_see_game?(game, user) do
-    game.visibility_type == "public" || Game.Helpers.is_player?(game, user)
+    game.visibility_type == "public" || Game.Helpers.player?(game, user)
   end
 
   defp add_players(acc, %{"opponent_type" => "bot"}, user),

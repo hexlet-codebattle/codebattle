@@ -34,11 +34,11 @@ defmodule CodebattleWeb.Live.Tournament.IndividualComponent do
 
         <div class="col-10">
           <div class="bg-white shadow-sm p-4">
-            <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
+            <%= if active?(@tournament) || finished?(@tournament) do %>
               <BracketsComponent.render tournament={@tournament} current_user_id={@current_user.id} />
             <% end %>
-            <%= if is_waiting_participants?(@tournament) do %>
-              <%= if is_player?(@tournament, @current_user.id) do %>
+            <%= if waiting_participants?(@tournament) do %>
+              <%= if player?(@tournament, @current_user.id) do %>
                 <button class="btn btn-outline-danger" phx-click="leave">
                   Leave
                 </button>

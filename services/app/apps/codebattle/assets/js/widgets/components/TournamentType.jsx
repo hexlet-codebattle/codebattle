@@ -2,20 +2,22 @@ import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import TournamentTypeCodes from '../config/tournamentTypes';
+
 function TournamentType({ type }) {
-  if (type === 'ladder') {
+  if (type === TournamentTypeCodes.ladder) {
     return 'Ladder';
   }
 
-  if (type === 'swiss') {
+  if (type === TournamentTypeCodes.swiss) {
     return 'Swiss';
   }
 
-  if (type === 'individual') {
+  if (type === TournamentTypeCodes.individual) {
     return (<FontAwesomeIcon icon="users" />);
   }
 
-  if (type === 'team') {
+  if (type === TournamentTypeCodes.team) {
     return (
       <>
         <FontAwesomeIcon icon="users" />
@@ -25,12 +27,18 @@ function TournamentType({ type }) {
     );
   }
 
-  if (type === 'stairway') {
+  if (type === TournamentTypeCodes.stairway) {
     return (
       <>
         <FontAwesomeIcon icon="user" />
         <FontAwesomeIcon icon="sort-amount-up" />
       </>
+    );
+  }
+
+  if (type === TournamentTypeCodes.show) {
+    return (
+      <FontAwesomeIcon icon="wine-bottle" />
     );
   }
 

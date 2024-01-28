@@ -30,10 +30,9 @@ const useRoomSettings = (pageName, roomMachineState) => {
   const showBattleRoom = !showTaskBuilder;
   const showTimeoutMessage = gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer);
 
-  console.log(gameStatus);
-
   return {
     tournamentId,
+    // viewMode: BattleRoomViewModesCodes.single,
     viewMode: mapGameTypeOnViewMode[gameStatus.type] || BattleRoomViewModesCodes.duel,
     showWaitingRoom,
     showBattleRoom,

@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Live.Tournament.LadderComponent do
             current_user={@current_user}
             messages={@messages}
           />
-          <%= if is_waiting_participants?(@tournament) do %>
+          <%= if waiting_participants?(@tournament) do %>
             <PlayersComponent.render
               tournament={@tournament}
               current_user={@current_user}
@@ -36,7 +36,7 @@ defmodule CodebattleWeb.Live.Tournament.LadderComponent do
         </div>
         <div class="col-10">
           <div class="bg-white shadow-sm p-4">
-            <%= if !is_waiting_participants?(@tournament) do %>
+            <%= if !waiting_participants?(@tournament) do %>
               <div class="row">
                 <div class="col-3">
                   <ScorePlayersComponent.render
@@ -55,8 +55,8 @@ defmodule CodebattleWeb.Live.Tournament.LadderComponent do
                 </div>
               </div>
             <% end %>
-            <%= if is_waiting_participants?(@tournament) do %>
-              <%= if is_player?(@tournament, @current_user.id) do %>
+            <%= if waiting_participants?(@tournament) do %>
+              <%= if player?(@tournament, @current_user.id) do %>
                 <button class="btn btn-outline-danger" phx-click="leave">
                   Leave
                 </button>

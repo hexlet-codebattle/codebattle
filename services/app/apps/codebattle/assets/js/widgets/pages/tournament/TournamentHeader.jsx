@@ -9,6 +9,7 @@ import GameLevelBadge from '../../components/GameLevelBadge';
 import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
 import TournamentStates from '../../config/tournament';
+import TournamentTypes from '../../config/tournamentTypes';
 import useTimer from '../../utils/useTimer';
 
 import JoinButton from './JoinButton';
@@ -134,11 +135,13 @@ function TournamentHeader({
   playersCount,
   playersLimit,
   currentUserId,
+  showBots = true,
   hideResults = true,
   level,
   isOnline,
   isOver,
   canModerate,
+  toggleShowBots,
   handleStartRound,
   handleOpenDetails,
 }) {
@@ -169,6 +172,7 @@ function TournamentHeader({
     || state === TournamentStates.active
     || state === TournamentStates.finished
     || state === TournamentStates.cancelled;
+  const canToggleShowBots = type === TournamentTypes.show;
 
   return (
     <>
@@ -250,10 +254,13 @@ function TournamentHeader({
                   canStartRound={canStartRound}
                   canFinishRound={canFinishRound}
                   canRestart={canRestart}
+                  canToggleShowBots={canToggleShowBots}
+                  showBots={showBots}
                   hideResults={hideResults}
                   disabled={!isOnline}
                   handleStartRound={handleStartRound}
                   handleOpenDetails={handleOpenDetails}
+                  toggleShowBots={toggleShowBots}
                 />
               )}
             </div>

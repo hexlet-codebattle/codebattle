@@ -126,6 +126,7 @@ defmodule Codebattle.Tournament do
       :task_pack_name,
       :task_provider,
       :task_strategy,
+      :task_pack_name,
       :type,
       :use_chat,
       :use_infinite_break,

@@ -4,6 +4,7 @@ import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
 import socket from '../../socket';
+import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
@@ -26,6 +27,7 @@ const initTournamentChannel = dispatch => {
       topPlayerIds: response.topPlayerIds || [],
       matches: {},
       players: {},
+      showBots: response.tournament.type !== TournamentTypes.show,
       channel: { online: true },
       playersPageNumber: 1,
       playersPageSize: 20,
@@ -33,6 +35,7 @@ const initTournamentChannel = dispatch => {
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
+    dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
   };
 
   channel.onMessage = (_event, payload) => camelizeKeys(payload);
@@ -58,6 +61,7 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
     dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
+    dispatch(actions.setTournamentTaskList(compact(response.tasksInfo || [])));
   };
 
   const handleMatchesUpdate = response => {

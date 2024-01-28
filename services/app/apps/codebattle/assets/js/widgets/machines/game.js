@@ -207,7 +207,7 @@ const machine = {
               target: 'game_over',
               cond: (_ctx, { payload }) => payload.state === 'game_over',
               // TODO: figureOut why soundWin doesn't work
-              actions: ['soundWin', 'handleGameAward', 'showGameResultModal'],
+              actions: ['soundWin', 'showGameResultModal'],
             },
             'user:give_up': {
               target: 'game_over',
@@ -356,7 +356,6 @@ export const config = {
     handleReconnection: () => { },
 
     // game actions
-    handleGameAward: () => { },
     soundWin: () => {
       sound.play('win');
     },

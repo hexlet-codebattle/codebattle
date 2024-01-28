@@ -253,10 +253,17 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
     matches =
-      if payload.tournament.type in ["swiss", "ladder"] do
+      if payload.tournament.type in ["swiss", "ladder", "show"] do
         []
       else
         Helpers.get_matches(payload.tournament)
+      end
+
+    tasks_info =
+      if payload.tournament.type == "show" do
+        Helpers.get_tasks(payload.tournament)
+      else
+        []
       end
 
     push(socket, "tournament:update", %{
@@ -274,7 +281,8 @@ defmodule CodebattleWeb.TournamentChannel do
           :played_pair_ids
         ]),
       players: Helpers.get_top_players(payload.tournament),
-      matches: matches
+      matches: matches,
+      tasks_info: tasks_info
     })
 
     {:noreply, socket}
@@ -287,7 +295,10 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", %{tournament: payload.tournament})
+    push(socket, "tournament:round_created", %{
+      tournament: payload.tournament,
+      tasks_info: payload.tasks_info
+    })
 
     {:noreply, socket}
   end
@@ -341,7 +352,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament
   end
 
-  defp get_tournament_join_payload(%{type: type} = tournament, socket)
+  defp get_tournament_join_payload(tournament = %{type: type}, socket)
        when type in ["swiss", "ladder", "stairway"] do
     current_user = socket.assigns.current_user
 
@@ -387,7 +398,7 @@ defmodule CodebattleWeb.TournamentChannel do
     }
   end
 
-  defp get_tournament_join_payload(%{type: "show"} = tournament, _socket) do
+  defp get_tournament_join_payload(tournament = %{type: "show"}, _socket) do
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       matches: Helpers.get_matches(tournament),

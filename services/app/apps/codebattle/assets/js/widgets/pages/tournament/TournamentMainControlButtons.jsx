@@ -29,9 +29,12 @@ const TournamentMainControlButtons = ({
   canStart,
   canStartRound,
   canFinishRound,
+  canToggleShowBots,
   canRestart,
-  disabled = true,
+  showBots,
   hideResults,
+  disabled = true,
+  toggleShowBots,
   handleStartRound,
   handleOpenDetails,
 }) => {
@@ -114,6 +117,14 @@ const TournamentMainControlButtons = ({
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             Show Results
+          </Dropdown.Item>
+          <Dropdown.Item
+            disabled={disabled || !canToggleShowBots}
+            key="showResults"
+            onSelect={toggleShowBots}
+          >
+            <FontAwesomeIcon className="mr-2" icon="eye" />
+            {showBots ? 'Hide bots' : 'Show bots'}
           </Dropdown.Item>
           <Dropdown.Item
             key="tournamentDetails"

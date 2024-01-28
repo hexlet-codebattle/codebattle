@@ -191,6 +191,14 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
   });
 };
 
+export const sendPassCode = (passCode, onError) => () => {
+  channel.push('enter_pass_code', { pass_code: passCode })
+    .receive('ok', () => {})
+    .receive('error', message => {
+      onError({ message });
+    });
+};
+
 export const sendGiveUp = () => {
   channel.push('give_up', {});
 };

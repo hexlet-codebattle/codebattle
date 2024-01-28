@@ -33,7 +33,7 @@ defmodule CodebattleWeb.GameController do
             players: present_users_for_gon(Helpers.get_players(game))
           )
 
-        is_player = Helpers.is_player?(game, user.id)
+        is_player = Helpers.player?(game, user.id)
 
         case {game.state, is_player} do
           {"waiting_opponent", false} ->

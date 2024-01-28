@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Live.Tournament.PlayersComponent do
               <div class="ml-4">
                 <PlayerComponent.render player={player} />
               </div>
-              <%= if can_moderate?(@tournament, @current_user)  and is_waiting_participants?(@tournament) do %>
+              <%= if can_moderate?(@tournament, @current_user)  and waiting_participants?(@tournament) do %>
                 <button
                   class="btn btn-link btn-sm text-danger"
                   phx-click="kick"

@@ -39,7 +39,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamRoundComponent do
   end
 
   def get_game_link_name(match, player_id) do
-    case {match.state, is_match_player?(match, player_id)} do
+    case {match.state, match_player?(match, player_id)} do
       {"pending", true} -> "Pending"
       {"playing", true} -> "Join"
       _ -> "Show"
@@ -47,7 +47,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamRoundComponent do
   end
 
   def get_match_bg_class(match, player_id) do
-    if is_match_player?(match, player_id) do
+    if match_player?(match, player_id) do
       "row align-items-center py-2 bg-light"
     else
       "row align-items-center py-2"

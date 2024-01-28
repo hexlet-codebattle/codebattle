@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import omit from 'lodash/omit';
 
+import TournamentTypes from '../config/tournamentTypes';
+
 import initial from './initial';
 
 const initialState = initial.tournament;
@@ -14,7 +16,12 @@ const tournament = createSlice({
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,
-      ...(['swiss', 'ladder', 'stairway'].includes(payload.type) ? omit(payload, ['matches', 'players']) : payload),
+      ...(
+        [TournamentTypes.swiss, TournamentTypes.ladder, TournamentTypes.stairway, TournamentTypes.show]
+          .includes(payload.type)
+          ? omit(payload, ['matches', 'players'])
+          : payload
+      ),
     }),
     updateTournamentMatches: (state, { payload }) => {
       const newMatches = payload.reduce((acc, match) => ({
@@ -29,6 +36,9 @@ const tournament = createSlice({
         ...state.matches,
         ...newMatches,
       };
+    },
+    setTournamentTaskList: (state, { payload }) => {
+      state.taskList = payload;
     },
     addTournamentPlayer: (state, { payload }) => {
       state.players = { ...state.players, [payload.player.id]: payload.player };
@@ -73,6 +83,11 @@ const tournament = createSlice({
     },
     setTournamentPlayersPageNumber: (state, { payload }) => {
       state.playersPageNumber = payload;
+    },
+    toggleShowBots: state => {
+      if (state.type === TournamentTypes.show) {
+        state.showBots = !state.showBots;
+      }
     },
   },
 });

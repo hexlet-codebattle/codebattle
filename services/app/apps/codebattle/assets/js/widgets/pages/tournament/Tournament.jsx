@@ -17,6 +17,7 @@ import {
   kickFromTournament,
 } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 
 import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
 import DetailsModal from './DetailsModal';
@@ -68,6 +69,7 @@ function InfoPanel({
       return (
         <CustomTournamentInfoPanel
           players={tournament.players}
+          taskList={tournament.taskList}
           topPlayerIds={tournament.topPlayerIds}
           matches={tournament.matches}
           tournamentId={tournament.id}
@@ -77,7 +79,11 @@ function InfoPanel({
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
           hideResults={hideResults}
-          hideCustomGameConsole={tournament.type !== tournamentTypes.show || tournament.state === TournamentStates.finished}
+          hideCustomGameConsole={
+            tournament.type !== tournamentTypes.show
+              || tournament.state === TournamentStates.finished
+              || tournament.breakState === 'on'
+          }
           isAdmin={isAdmin}
           isOwner={isOwner}
         />
@@ -113,8 +119,10 @@ function Tournament() {
   ] = useState(false);
 
   const playersCount = useMemo(
-    () => Object.keys(tournament.players).length,
-    [tournament.players],
+    () => Object.values(tournament.players)
+      .filter(player => (tournament.showBots ? true : !player.isBot))
+      .length,
+    [tournament.players, tournament.showBots],
   );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
@@ -133,6 +141,9 @@ function Tournament() {
   const onCloseRoundConfirmationModal = useCallback(() => {
     setStartRoundConfirmationModalShowing(false);
   }, [setStartRoundConfirmationModalShowing]);
+  const toggleShowBots = useCallback(() => {
+    dispatch(actions.toggleShowBots());
+  }, [dispatch]);
   const handleKick = useCallback(event => {
     const { playerId } = event.currentTarget.dataset;
     if (playerId) {
@@ -243,12 +254,14 @@ function Tournament() {
           players={tournament.players}
           playersCount={playersCount}
           playersLimit={tournament.playersLimit}
+          showBots={tournament.showBots}
           hideResults={hideResults}
           startsAt={tournament.startsAt}
           state={tournament.state}
           type={tournament.type}
           handleStartRound={handleStartRound}
           handleOpenDetails={handleOpenDetails}
+          toggleShowBots={toggleShowBots}
         />
       </div>
       <div className="container-fluid mb-2">
@@ -267,12 +280,13 @@ function Tournament() {
           </div>
           <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
             <Players
-              playersCount={tournament.playersCount}
+              playersCount={playersCount}
               players={tournament.players}
               canBan={
                 isAdmin
                 && tournament.state === TournamentStates.waitingParticipants
               }
+              showBots={tournament.showBots}
               handleKick={handleKick}
             />
             {tournament.useChat && (<TournamentChat />)}

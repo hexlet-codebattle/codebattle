@@ -15,6 +15,7 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_players(tournament, ids), do: Tournament.Players.get_players(tournament, ids)
 
+  def get_tasks(tournament = %{tasks_table: nil}), do: []
   def get_tasks(tournament), do: Tournament.Tasks.get_tasks(tournament)
 
   def players_count(tournament = %{players_table: nil}) do
@@ -135,7 +136,7 @@ defmodule Codebattle.Tournament.Helpers do
     )
   end
 
-  def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
+  def match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
 
   def get_player_ids(tournament), do: tournament |> get_players |> Enum.map(& &1.id)
 
@@ -150,37 +151,37 @@ defmodule Codebattle.Tournament.Helpers do
   def can_be_started?(_t), do: false
 
   def can_moderate?(tournament, user) do
-    is_creator?(tournament, user) || User.admin?(user)
+    creator?(tournament, user) || User.admin?(user)
   end
 
   def can_access?(tournament = %{access_type: "token"}, user, params) do
     can_moderate?(tournament, user) ||
-      is_player?(tournament, user.id) ||
+      player?(tournament, user.id) ||
       params["access_token"] == tournament.access_token
   end
 
   # default public or null for old tournaments
   def can_access?(_tournament, _user, _params), do: true
 
-  def is_active?(tournament), do: tournament.state == "active"
-  def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
-  def is_canceled?(tournament), do: tournament.state == "canceled"
-  def is_finished?(tournament), do: tournament.state == "finished"
-  def is_individual?(tournament), do: tournament.type == "individual"
-  def is_stairway?(tournament), do: tournament.type == "stairway"
-  def is_team?(tournament), do: tournament.type == "team"
-  def is_public?(tournament), do: tournament.access_type == "public"
-  def is_visible_by_token?(tournament), do: tournament.access_type == "token"
+  def active?(tournament), do: tournament.state == "active"
+  def waiting_participants?(tournament), do: tournament.state == "waiting_participants"
+  def canceled?(tournament), do: tournament.state == "canceled"
+  def finished?(tournament), do: tournament.state == "finished"
+  def individual?(tournament), do: tournament.type == "individual"
+  def stairway?(tournament), do: tournament.type == "stairway"
+  def team?(tournament), do: tournament.type == "team"
+  def public?(tournament), do: tournament.access_type == "public"
+  def visible_by_token?(tournament), do: tournament.access_type == "token"
   def in_break?(tournament), do: tournament.break_state == "on"
 
-  def is_player?(tournament, player_id) do
+  def player?(tournament, player_id) do
     tournament
     |> get_player(player_id)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def is_player?(tournament, player_id, team_id) do
+  def player?(tournament, player_id, team_id) do
     tournament
     |> get_player(player_id)
     |> case do
@@ -189,7 +190,7 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def is_creator?(tournament, user) do
+  def creator?(tournament, user) do
     tournament.creator_id == user.id
   end
 

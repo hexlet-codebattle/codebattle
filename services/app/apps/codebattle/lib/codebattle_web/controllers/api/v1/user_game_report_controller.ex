@@ -13,8 +13,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportController do
     reporter = conn.assigns.current_user
     game = Game.Context.get_game!(game_id)
 
-    is_reporter_player = Game.Helpers.is_player?(game, reporter.id)
-    is_reported_user_player = Game.Helpers.is_player?(game, reported_user_id)
+    is_reporter_player = Game.Helpers.player?(game, reporter.id)
+    is_reported_user_player = Game.Helpers.player?(game, reported_user_id)
     is_reported_himself = reporter.id == reported_user_id
 
     case {is_reporter_player, is_reported_himself, is_reported_user_player} do

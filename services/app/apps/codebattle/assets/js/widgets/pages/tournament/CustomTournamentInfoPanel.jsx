@@ -14,6 +14,7 @@ function CustomTournamentInfoPanel({
   currentRoundPosition = 0,
   matches,
   players,
+  taskList,
   topPlayerIds,
   currentUserId,
   pageNumber,
@@ -57,10 +58,11 @@ function CustomTournamentInfoPanel({
               }
               disabledSearch={!isAdmin && !isOwner}
             />
-            {!hideCustomGameConsole && (
+            {!hideCustomGameConsole && (isOwner || isAdmin) && (
               <TournamentGameCreatePanel
                 players={players}
                 matches={matches}
+                taskList={taskList}
                 currentRoundPosition={currentRoundPosition}
               />
             )}

@@ -271,6 +271,7 @@ const defaultTournamentParams = {
   playersPageSize: 20,
   useChat: false,
   showResults: true,
+  showBots: true,
 
   // client params
   channel: { online: false },
@@ -356,6 +357,8 @@ const defaultTournamentPlayerParams = {
  * }} TaskState
  * @typedef {{
  *   gameStatus: GameStatusState,
+ *   award: {?Object},
+ *   awardStatus: string,
  *   task: TaskState,
  *   players: Object<number, Player>,
  *   tournamentsInfo: {?Object},
@@ -364,6 +367,11 @@ const defaultTournamentPlayerParams = {
  *   alerts: Object,
  * }} GameState
  * @typedef {{
+ *   id: number,
+ *   level: @type {import("../config/levels.js").default},
+ *   name: string,
+ * }} TaskInfo
+ * @typedef {{
  *   accessToken: string,
  *   accessType: string,
  *   breakDurationSeconds: number,
@@ -371,7 +379,7 @@ const defaultTournamentPlayerParams = {
  *   currentRoundPosition: number,
  *   defaultLanguage: string,
  *   description: string,
- *   level: string,
+ *   level: @type {import("../config/levels.js").default},
  *   matchTimeoutSeconds: number,
  *   matches: Object<number, Match>,
  *   lastRoundStartedAt: string,
@@ -380,6 +388,7 @@ const defaultTournamentPlayerParams = {
  *   name: string,
  *   playedPairIds: number[],
  *   players: Object<number, Player>,
+ *   taskList: TaskInfo[],
  *   playersCount: number,
  *   playersLimit: number,
  *   startsAt: string,
@@ -387,6 +396,8 @@ const defaultTournamentPlayerParams = {
  *   taskStrategy: string,
  *   type: string,
  *   useChat: boolean,
+ *   showBots: boolean,
+ *   showResults: boolean,
  * }} TournamentState
  *
  * @typedef {{
@@ -415,6 +426,8 @@ const defaultTournamentPlayerParams = {
 export default {
   game: {
     gameStatus: initialGameStatus,
+    award: null,
+    awardStatus: 'idle',
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
