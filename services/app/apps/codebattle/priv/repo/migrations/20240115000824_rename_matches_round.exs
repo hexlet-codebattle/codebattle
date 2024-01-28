@@ -2,6 +2,10 @@ defmodule Codebattle.Repo.Migrations.RenameMatchesRound do
   use Ecto.Migration
 
   def change do
+    alter table(:tournaments) do
+      add(:show_results, :boolean, default: true, null: false)
+    end
+
     tournaments =
       Codebattle.Repo.all(Codebattle.Tournament)
       |> Codebattle.Repo.preload([:creator])
