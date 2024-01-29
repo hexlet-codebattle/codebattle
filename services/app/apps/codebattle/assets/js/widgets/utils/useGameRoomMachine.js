@@ -41,6 +41,10 @@ const useGameRoomMachine = ({
       showPremiumSubscribeRequestModal: () => {
         NiceModal.show(ModalCodes.premiumRestrictionModal);
       },
+      blockGameRoomAfterCheck: () => {
+        dispatch(actions.setVisible(false));
+        NiceModal.show(ModalCodes.awardModal);
+      },
     },
   });
 

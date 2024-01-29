@@ -65,6 +65,8 @@ export const gameStatusSelector = state => state.game.gameStatus;
 
 export const gameLockedSelector = state => state.game.locked;
 
+export const gameVisibleSelector = state => state.game.visible;
+
 export const gameAwardSelector = state => state.game.award;
 
 export const getSolution = playerId => state => {

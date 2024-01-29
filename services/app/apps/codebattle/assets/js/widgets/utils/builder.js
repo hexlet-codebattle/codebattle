@@ -56,7 +56,7 @@ export const getExamplesFromAsserts = asserts => (
 
 export const labelTaskParamsWithIds = task => ({
   ...task,
-  assertsExamples: task.assertsExamples.map((item, index) => ({ ...item, id: index })),
+  assertsExamples: (task.assertsExamples || []).map((item, index) => ({ ...item, id: index })),
   inputSignature: task.inputSignature.map((item, index) => ({ ...item, id: index })),
   outputSignature: { ...task.outputSignature, id: Date.now() },
 });
@@ -135,7 +135,11 @@ export const validateInputSignatures = inputSignature => {
  * @return {([boolean]|[boolean, string])}
  *
  */
-export const validateExamples = examples => {
+export const validateExamples = (examples, examplesStr) => {
+  if (examplesStr && examplesStr.length > 0) {
+    return [true];
+  }
+
   if (examples.length < MIN_EXAMPLES_COUNT) {
     return [false, `Must be at least ${MIN_EXAMPLES_COUNT} examples`];
   }

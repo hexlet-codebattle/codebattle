@@ -51,6 +51,9 @@ const game = createSlice({
     setLocked: (state, { payload }) => {
       state.locked = payload;
     },
+    setVisible: (state, { payload }) => {
+      state.visible = payload;
+    },
   },
 });
 

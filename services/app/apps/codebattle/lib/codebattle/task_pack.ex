@@ -73,10 +73,7 @@ defmodule Codebattle.TaskPack do
         []
 
       task_pack ->
-        tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
-
-        task_pack.task_ids
-        |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
+        retrieve_tasks_from_task_pack(task_pack)
     end
   end
 
@@ -89,11 +86,15 @@ defmodule Codebattle.TaskPack do
         []
 
       task_pack ->
-        tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
-
-        task_pack.task_ids
-        |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
+        retrieve_tasks_from_task_pack(task_pack)
     end
+  end
+
+  defp retrieve_tasks_from_task_pack(task_pack) do
+    tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
+
+    task_pack.task_ids
+    |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
   end
 
   def list_visible(user) do

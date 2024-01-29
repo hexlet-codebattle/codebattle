@@ -37,7 +37,7 @@ const builder = createSlice({
       state.validationStatuses.name = validateTaskName(task.name);
       state.validationStatuses.description = validateTaskName(task.descriptionEn);
       state.validationStatuses.inputSignature = validateInputSignatures(task.inputSignature);
-      state.validationStatuses.assertsExamples = validateExamples(task.assertsExamples);
+      state.validationStatuses.assertsExamples = validateExamples(task.assertsExamples, task.examples);
     },
     setTaskName: (state, { payload: { name } }) => {
       state.task.name = name;
@@ -77,7 +77,7 @@ const builder = createSlice({
       if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     rejectGeneratorAndSolution: state => {
@@ -86,7 +86,7 @@ const builder = createSlice({
       if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     setTaskTemplatesState: (state, { payload }) => {
@@ -104,7 +104,7 @@ const builder = createSlice({
       state.task.inputSignature = [...state.task.inputSignature, newType];
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
 
       state.validationStatuses.inputSignature = validateInputSignatures(state.task.inputSignature);
@@ -115,7 +115,7 @@ const builder = createSlice({
       ));
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     removeTaskInputType: (state, { payload: { typeId } }) => {
@@ -124,7 +124,7 @@ const builder = createSlice({
       ));
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
 
       state.validationStatuses.inputSignature = validateInputSignatures(state.task.inputSignature);
@@ -137,19 +137,19 @@ const builder = createSlice({
     },
     addTaskExample: (state, { payload: { newExample } }) => {
       state.task.assertsExamples = [...state.task.assertsExamples, newExample];
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
     },
     updateTaskExample: (state, { payload: { newExample } }) => {
       state.task.assertsExamples = state.task.assertsExamples.map(example => (
         example.id === newExample.id ? newExample : example
       ));
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
     },
     removeTaskExample: (state, { payload: { exampleId } }) => {
       remove(state.task.assertsExamples, item => (
         item.id === exampleId
       ));
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
     },
     setGeneratorsLang: (state, { payload: { lang } }) => {
       state.generatorLang = lang;
@@ -157,7 +157,7 @@ const builder = createSlice({
       if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     setTaskSolution: (state, { payload: { value } }) => {
@@ -166,7 +166,7 @@ const builder = createSlice({
       if (!state.validationStatuses.solution[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     setTaskArgumentsGenerator: (state, { payload: { value } }) => {
@@ -175,7 +175,7 @@ const builder = createSlice({
       if (!state.validationStatuses.argumentsGenerator[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
     setTaskVisibility: (state, { payload }) => {

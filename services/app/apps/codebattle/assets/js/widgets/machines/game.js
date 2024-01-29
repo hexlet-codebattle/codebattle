@@ -117,6 +117,7 @@ const machine = {
     holding: 'none', // ['none', 'play', 'pause']
     speedMode: speedModes.normal,
     subscriptionType: subscriptionTypes.free, // ['free', 'premium', 'admin'],
+    withAward: false,
   },
   states: {
     network: {
@@ -203,12 +204,20 @@ const machine = {
         },
         active: {
           on: {
-            'user:check_complete': {
-              target: 'game_over',
-              cond: (_ctx, { payload }) => payload.state === 'game_over',
-              // TODO: figureOut why soundWin doesn't work
-              actions: ['soundWin', 'showGameResultModal'],
-            },
+            'user:check_complete': [
+              {
+                target: 'game_over',
+                cond: (_ctx, { payload }) => payload.state === 'game_over',
+                // TODO: figureOut why soundWin doesn't work
+                actions: ['soundWin', 'showGameResultModal'],
+              },
+              {
+                target: 'active',
+                cond: 'withAwardGame',
+                // TODO: figureOut why soundWin doesn't work
+                actions: ['blockGameRoomAfterCheck'],
+              },
+            ],
             'user:give_up': {
               target: 'game_over',
               actions: ['soundGiveUp', 'showGameResultModal'],
@@ -341,6 +350,7 @@ export const config = {
     haveOnlyFreeAccess: ctx => ctx.subscriptionType === 'free',
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
+    withAwardGame: ctx => ctx.withAward,
   },
   actions: {
     // common actions
