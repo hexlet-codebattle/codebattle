@@ -43,6 +43,7 @@ function UserPopoverContent({ user }) {
 }
 
 function UserInfo({
+  className,
   user,
   hideInfo = false,
   truncate = false,
@@ -62,20 +63,19 @@ function UserInfo({
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
-  const userClassName = cn({
+  const userClassName = cn(className, {
     'cb-opacity-50': loading,
   });
 
   if (hideInfo) {
     return (
-      <div className={userClassName}>
-        <UserName
-          user={user}
-          truncate={truncate}
-          isOnline={isOnline}
-          hideOnlineIndicator={hideOnlineIndicator}
-        />
-      </div>
+      <UserName
+        className={userClassName}
+        user={user}
+        truncate={truncate}
+        isOnline={isOnline}
+        hideOnlineIndicator={hideOnlineIndicator}
+      />
     );
   }
 
@@ -85,8 +85,9 @@ function UserInfo({
       placement={placement}
       component={content}
     >
-      <div className={userClassName}>
+      <div>
         <UserName
+          className={userClassName}
           user={user}
           truncate={truncate}
           isOnline={isOnline}

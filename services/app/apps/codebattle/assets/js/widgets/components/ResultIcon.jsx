@@ -1,41 +1,28 @@
 import React from 'react';
 
+import { faFlag } from '@fortawesome/free-regular-svg-icons';
+import { faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-const ResultIcon = ({ gameId, player1, player2 }) => {
-  const tooltipId = `tooltip-${gameId}-${player1.id}`;
+const iconRenderers = {
+  gaveUp: () => <FontAwesomeIcon icon={faFlag} className="mr-2" transform="grow-1.25" />,
+  won: () => <FontAwesomeIcon icon={faTrophy} className="mr-2 text-warning" transform="grow-1.25" />,
+};
 
-  if (player1.result === 'gave_up') {
-    return (
-      <OverlayTrigger
-        overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
-        placement="left"
-      >
-        <span className="align-middle mr-1">
-          <i className="far fa-flag" aria-hidden="true" />
-        </span>
-      </OverlayTrigger>
-    );
-  }
+const ResultIcon = ({ icon = null }) => {
+  if (icon === null) return null;
 
-  if (player1.result === 'won' && player2.result !== 'gave_up') {
-    return (
-      <OverlayTrigger
-        overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
-        placement="left"
-      >
-        <span className="align-middle mr-1">
-          <i className="fa fa-trophy text-warning" aria-hidden="true" />
-        </span>
-      </OverlayTrigger>
-    );
-  }
+  const renderIcon = iconRenderers[icon.name];
 
   return (
-    <span className="align-middle mr-1">
-      <i className="fa x-opacity-0">&nbsp;</i>
-    </span>
+    <OverlayTrigger
+      overlay={<Tooltip id={icon.tooltip.id}>{icon.tooltip.text}</Tooltip>}
+      placement="left"
+    >
+      {renderIcon()}
+    </OverlayTrigger>
   );
 };
 

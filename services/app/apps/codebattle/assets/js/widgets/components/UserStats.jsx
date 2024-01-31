@@ -22,9 +22,7 @@ const UserStats = ({ data, user: userInfo }) => {
             <div className="d-flex flex-column ml-2">
               <div className="d-flex align-items-center">
                 <span>{name}</span>
-                <div className="ml-1">
-                  <LanguageIcon lang={lang} />
-                </div>
+                <LanguageIcon className="ml-1" lang={lang} />
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">

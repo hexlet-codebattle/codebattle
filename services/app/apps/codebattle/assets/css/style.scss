@@ -17,7 +17,6 @@ $gold: #daa520;
 $fa-font-path: '/fonts';
 
 @import 'fonts';
-@import '~font-mfizz/dist/font-mfizz.css';
 @import 'tournaments';
 @import 'taskComponent';
 
@@ -565,9 +564,6 @@ a {
 
 .x-username-truncated {
   max-width: 180px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .bind-social {

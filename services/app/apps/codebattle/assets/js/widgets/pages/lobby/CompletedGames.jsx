@@ -14,6 +14,7 @@ import UserInfo from '../../components/UserInfo';
 import fetchionStatuses from '../../config/fetchionStatuses';
 import { completedGamesSelector } from '../../selectors';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
+import getGamePlayersData from '../../utils/gamePlayers';
 
 import GameCard from './GameCard';
 
@@ -65,33 +66,37 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
             </tr>
           </thead>
           <tbody>
-            {games.map(game => (
-              <tr key={game.id}>
-                <td className="p-3 align-middle text-nowrap">
-                  <GameLevelBadge level={game.level} />
-                </td>
-                <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
-                  <div className="d-flex align-items-center">
-                    <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
-                    <UserInfo user={game.players[0]} truncate="true" />
-                  </div>
-                </td>
-                <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
-                  <div className="d-flex align-items-center">
-                    <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
-                    <UserInfo user={game.players[1]} truncate="true" />
-                  </div>
-                </td>
-                <td className="px-1 py-3 align-middle text-nowrap">
-                  {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
-                </td>
-                <td className="px-1 py-3 align-middle">
-                  <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
-                    Show
-                  </a>
-                </td>
-              </tr>
-            ))}
+            {games.map(game => {
+              const { player1, player2 } = getGamePlayersData(game);
+
+              return (
+                <tr key={game.id}>
+                  <td className="p-3 align-middle text-nowrap">
+                    <GameLevelBadge level={game.level} />
+                  </td>
+                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
+                    <div className="d-flex align-items-center">
+                      <ResultIcon icon={player1.icon} />
+                      <UserInfo className={cn({ 'pl-4': !player1.icon })} user={player1.data} truncate="true" />
+                    </div>
+                  </td>
+                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
+                    <div className="d-flex align-items-center">
+                      <ResultIcon icon={player2.icon} />
+                      <UserInfo className={cn({ 'pl-4': !player2.icon })} user={player2.data} truncate="true" />
+                    </div>
+                  </td>
+                  <td className="px-1 py-3 align-middle text-nowrap">
+                    {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
+                  </td>
+                  <td className="px-1 py-3 align-middle">
+                    <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
+                      Show
+                    </a>
+                  </td>
+                </tr>
+            );
+          })}
           </tbody>
         </table>
       </div>

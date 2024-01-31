@@ -4,6 +4,7 @@ import GameLevelBadge from '../../components/GameLevelBadge';
 import ResultIcon from '../../components/ResultIcon';
 import UserInfo from '../../components/UserInfo';
 import { loadSimpleUserStats } from '../../middlewares/Users';
+import getGamePlayersData from '../../utils/gamePlayers';
 
 import GameActionButton from './GameActionButton';
 import GameProgressBar from './GameProgressBar';
@@ -91,6 +92,8 @@ function GameCard({
   isGuest = true,
   isOnline = false,
 }) {
+  const { player1, player2 } = getGamePlayersData(game);
+
   return (
     <div
       key={`card-${game.id}`}
@@ -107,34 +110,28 @@ function GameCard({
           {game.players.length === 1 ? (
             <>
               <div className="d-flex flex-column align-items-center">
-                <UserInfo user={game.players[0]} />
-                {currentUserId !== game.players[0] && (
-                  <UserSimpleStats user={game.players[0]} />
+                <UserInfo user={player1.data} />
+                {currentUserId !== player1.data.id && (
+                  <UserSimpleStats user={player1.data} />
                 )}
               </div>
             </>
           ) : (
             <>
               <div className="d-flex flex-column align-items-center position-relative">
-                <div className="d-flex">
-                  <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
-                  <UserInfo user={game.players[0]} />
+                <div className="d-flex align-items-center">
+                  <ResultIcon icon={player1.icon} />
+                  <UserInfo user={player1.data} />
                 </div>
-                {
-                    type === 'active'
-                      && <GameProgressBar player={game.players[0]} position="left" />
-                }
+                {type === 'active' && <GameProgressBar player={player1.data} position="left" />}
               </div>
               <span className="text-center">VS</span>
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex align-items-center">
-                  <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
-                  <UserInfo user={game.players[1]} />
+                  <ResultIcon icon={player2.icon} />
+                  <UserInfo user={player2.data} />
                 </div>
-                {
-                    type === 'active'
-                      && <GameProgressBar player={game.players[1]} position="left" />
-                }
+                {type === 'active' && <GameProgressBar player={player2.data} position="left" />}
               </div>
             </>
           )}
