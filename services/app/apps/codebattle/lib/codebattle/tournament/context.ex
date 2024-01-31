@@ -113,7 +113,9 @@ defmodule Codebattle.Tournament.Context do
 
   @spec create(map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
-    changeset = %Tournament{} |> Tournament.changeset(prepare_tournament_params(params))
+    changeset =
+      %Tournament{} |> Tournament.changeset(prepare_tournament_params(params))
+
     alive_count = get_live_tournaments_count()
 
     if alive_count < @max_alive_tournaments do
@@ -225,11 +227,14 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
+    show_results = params["show_results"] || true
+
     Map.merge(params, %{
       "access_token" => access_token,
       "match_timeout_seconds" => match_timeout_seconds,
       "starts_at" => starts_at,
-      "meta" => meta
+      "meta" => meta,
+      "show_results" => show_results
     })
   end
 

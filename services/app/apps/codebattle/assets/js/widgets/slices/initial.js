@@ -219,9 +219,14 @@ const initialTask = taskParams
   ? labelTaskParamsWithIds(taskParams)
   : defaultTaskParams;
 const initialTemplates = taskParams
-  ? getTaskTemplates(taskData)
+  ? getTaskTemplates(taskParams)
   : defaultTaskTemplates;
-const initialAssertsStatus = taskParams ? taskData : defaultTaskAssertsStatus;
+const initialAssertsStatus = taskParams
+  ? {
+    status: taskParams.asserts.length > 0 ? 'ok' : 'none',
+    output: '',
+  }
+  : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
   : defaultValidationStatuses;

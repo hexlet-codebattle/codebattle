@@ -720,11 +720,13 @@ export const saveTask = (
           'x-csrf-token': window.csrf_token,
         },
       })
-      .then(data => {
+      .then(response => {
+        const data = camelizeKeys(response.data);
         const labledTask = labelTaskParamsWithIds(data.task);
 
         dispatch(actions.setTask({ task: labledTask }));
         taskMachine.send('CONFIRM');
+        onSuccess();
       })
       .catch(err => {
         onError(err);

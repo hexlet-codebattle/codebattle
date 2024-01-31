@@ -33,7 +33,7 @@ defmodule Codebattle.Tournament.Show do
   def finish_tournament?(tournament), do: final_round?(tournament)
 
   defp final_round?(
-         tournament = %{
+         _tournament = %{
            task_provider: "task_pack",
            meta: %{task_ids: task_ids},
            current_round_position: position

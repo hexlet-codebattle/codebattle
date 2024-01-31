@@ -55,6 +55,7 @@ const machine = {
       on: {
         START_SAVING: 'prepare_saving',
         START_TESTING: 'prepare_testing',
+        CONFIRM: 'ready',
       },
     },
     saved: {
