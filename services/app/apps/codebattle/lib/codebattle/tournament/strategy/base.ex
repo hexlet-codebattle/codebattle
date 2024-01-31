@@ -10,7 +10,7 @@ defmodule Codebattle.Tournament.Base do
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
-  @callback default_meta() :: map()
+  @callback reset_meta(map()) :: map()
   @callback game_type() :: String.t()
 
   defmacro __using__(_opts) do
@@ -113,6 +113,7 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> update_struct(%{
             players: %{},
+            meta: reset_meta(tournament.meta),
             matches: %{},
             break_state: "off",
             players_count: 0,
@@ -709,7 +710,7 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.at(tournament.current_round_position)
             |> case do
               %{award: award} -> Map.put(game_params, :award, award)
-              nil -> Map.put(game_params, :award, nil)
+              _ -> Map.put(game_params, :award, nil)
             end
         end
       end

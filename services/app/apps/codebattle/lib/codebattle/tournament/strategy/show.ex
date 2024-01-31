@@ -10,7 +10,7 @@ defmodule Codebattle.Tournament.Show do
   end
 
   @impl Tournament.Base
-  def default_meta, do: %{}
+  def reset_meta(meta), do: meta
 
   @impl Tournament.Base
   def game_type, do: "solo"

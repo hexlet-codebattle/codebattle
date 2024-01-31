@@ -33,15 +33,10 @@ defmodule Codebattle.Tournament.Team do
   end
 
   @impl Tournament.Base
-  def default_meta(),
-    do: %{
-      rounds_to_win: 3,
-      round_results: %{},
-      teams: %{
-        Tournament.Helpers.to_id(0) => %{id: 0, title: "Backend", score: 0.0},
-        Tournament.Helpers.to_id(1) => %{id: 1, title: "Frontend", score: 0.0}
-      }
-    }
+  def reset_meta(meta) do
+    new_teams = Enum.map(meta.teams, fn {id, team} -> {id, Map.merge(team, score: 0.0)} end)
+    Map.merge(meta, %{round_results: %{}, teams: new_teams})
+  end
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do

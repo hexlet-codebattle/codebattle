@@ -11,7 +11,7 @@ defmodule Codebattle.Tournament.Ladder do
   def complete_players(t), do: t
 
   @impl Tournament.Base
-  def default_meta(), do: %{rounds_limit: 3, rounds_config_type: "all"}
+  def reset_meta(meta), do: meta
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t

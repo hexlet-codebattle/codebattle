@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament.Individual do
   end
 
   @impl Tournament.Base
-  def default_meta(), do: %{}
+  def reset_meta(meta), do: meta
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t
