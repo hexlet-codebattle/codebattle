@@ -372,6 +372,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("game:toggle_visible", params) do
+    [
+      %Message{
+        topic: "game:#{params.game_id}",
+        event: "game:toggle_visible",
+        payload: %{}
+      }
+    ]
+  end
+
   defp chat_topic(:lobby), do: "chat:lobby"
   defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
   defp chat_topic({:game, id}), do: "chat:game:#{id}"

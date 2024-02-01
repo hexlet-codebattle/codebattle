@@ -466,6 +466,10 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     machine.send('game:timeout', { payload });
   };
 
+  const handleGameToggleVisible = () => {
+    dispatch(actions.toggleVisible());
+  };
+
   const handleTournamentGameCreated = data => {
     dispatch(actions.setTournamentsInfo(data));
     machine.send('tournament:game:created', { payload: data });
@@ -501,6 +505,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     currentGameChannel.on('rematch:accepted', handleRematchAccepted),
     currentGameChannel.on('game:user_joined', handleUserJoined),
     currentGameChannel.on('game:timeout', handleGameTimeout),
+    currentGameChannel.on('game:toggle_visible', handleGameToggleVisible),
     currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),

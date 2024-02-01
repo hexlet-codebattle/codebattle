@@ -14,7 +14,11 @@ import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
 import { addCursorListeners } from '../middlewares/Room';
-import { gameIdSelector, gameModeSelector } from '../selectors/index';
+import {
+  gameIdSelector,
+  gameModeSelector,
+  gameLockedSelector,
+} from '../selectors/index';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
 
@@ -24,6 +28,7 @@ class Editor extends PureComponent {
   static propTypes = {
     gameId: PropTypes.number,
     userId: PropTypes.number,
+    locked: PropTypes.bool,
     value: PropTypes.string,
     editable: PropTypes.bool,
     syntax: PropTypes.string,
@@ -36,6 +41,7 @@ class Editor extends PureComponent {
   static defaultProps = {
     gameId: null,
     userId: null,
+    locked: true,
     value: '',
     editable: false,
     onChange: null,
@@ -138,6 +144,7 @@ class Editor extends PureComponent {
       userId,
       gameId,
       gameMode,
+      locked,
       fontSize,
     } = this.props;
 
@@ -210,6 +217,10 @@ class Editor extends PureComponent {
 
     // fix flickering in editor
     model.forceTokenization(model.getLineCount());
+
+    if (prevProps.locked !== locked) {
+      this.handleResize();
+    }
   }
 
   componentWillUnmount() {
@@ -421,9 +432,11 @@ class Editor extends PureComponent {
 const mapStateToProps = state => {
   const gameId = gameIdSelector(state);
   const gameMode = gameModeSelector(state);
+  const locked = gameLockedSelector(state);
   return {
     gameId,
     gameMode,
+    locked,
     mute: state.user.settings.mute,
   };
 };

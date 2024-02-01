@@ -54,6 +54,9 @@ const game = createSlice({
     setVisible: (state, { payload }) => {
       state.visible = payload;
     },
+    toggleVisible: state => {
+      state.visible = !state.visible;
+    },
   },
 });
 

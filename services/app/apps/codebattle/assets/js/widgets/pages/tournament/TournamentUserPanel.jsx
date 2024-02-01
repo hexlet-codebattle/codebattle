@@ -29,7 +29,7 @@ function TournamentUserPanel({
 
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
-  const canBan = (isAdmin || isOwner) && userId !== currentUserId;
+  const canModerate = (isAdmin || isOwner);
 
   const panelClassName = cn(
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
@@ -118,7 +118,8 @@ function TournamentUserPanel({
             playerId={userId}
             matches={matches}
             isBanned={isBanned}
-            canBan={canBan}
+            canBan={canModerate && userId !== currentUserId}
+            canModerate={canModerate}
           />
         </div>
       </Collapse>

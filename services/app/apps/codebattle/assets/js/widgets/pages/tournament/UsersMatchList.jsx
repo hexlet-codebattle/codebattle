@@ -28,6 +28,7 @@ function UsersMatchList({
   playerId,
   isBanned,
   canBan,
+  canModerate,
   matches,
   hideStats = false,
 }) {
@@ -132,6 +133,7 @@ function UsersMatchList({
             <div className="d-flex justify-content-center ml-lg-2 ml-xl-2">
               <MatchAction
                 match={match}
+                canModerate={canModerate}
                 currentUserIsPlayer={currentUserIsPlayer}
               />
             </div>

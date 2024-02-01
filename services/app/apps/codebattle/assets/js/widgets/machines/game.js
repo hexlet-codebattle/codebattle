@@ -209,12 +209,10 @@ const machine = {
                 target: 'game_over',
                 cond: (_ctx, { payload }) => payload.state === 'game_over',
                 // TODO: figureOut why soundWin doesn't work
-                actions: ['soundWin', 'showGameResultModal'],
+                actions: ['soundWin', 'blockGameRoomAfterCheck', 'showGameResultModal'],
               },
               {
                 target: 'active',
-                cond: 'withAwardGame',
-                // TODO: figureOut why soundWin doesn't work
                 actions: ['blockGameRoomAfterCheck'],
               },
             ],
@@ -235,7 +233,7 @@ const machine = {
             },
             check_result: {
               target: 'active',
-              actions: ['soundStartChecking'],
+              actions: ['soundStartChecking', 'blockGameRoomAfterCheck'],
             },
           },
         },
@@ -379,6 +377,7 @@ export const config = {
       sound.play('round_created');
     },
     soundRematchUpdateStatus: () => { },
+    blockGameRoomAfterCheck: () => { },
 
     // replayer actions
     toggleSpeedMode: assign({

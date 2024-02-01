@@ -241,6 +241,10 @@ export const finishRoundTournament = () => {
   channel.push('tournament:finish_round', {}).receive('error', error => console.error(error));
 };
 
+export const toggleVisibleGameResult = gameId => {
+  channel.push('tournament:toggle_match_visible', { game_id: gameId }).receive('error', error => console.error(error));
+};
+
 export const openUpTournament = () => {
   channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
 };

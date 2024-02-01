@@ -132,6 +132,12 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:toggle_match_visible", %{"game_id" => game_id}, socket) do
+    Codebattle.PubSub.broadcast("game:toggle_visible", %{game_id: game_id})
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:toggle_show_results", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
 

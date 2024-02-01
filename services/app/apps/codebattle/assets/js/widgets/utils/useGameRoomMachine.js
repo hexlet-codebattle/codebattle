@@ -35,15 +35,19 @@ const useGameRoomMachine = ({
       withAward: !!award,
     },
     actions: {
-      showGameResultModal: () => {
-        NiceModal.show(ModalCodes.gameResultModal);
+      showGameResultModal: ctx => {
+        if (!ctx.withAward) {
+          NiceModal.show(ModalCodes.gameResultModal);
+        }
       },
       showPremiumSubscribeRequestModal: () => {
         NiceModal.show(ModalCodes.premiumRestrictionModal);
       },
-      blockGameRoomAfterCheck: () => {
-        dispatch(actions.setVisible(false));
-        NiceModal.show(ModalCodes.awardModal);
+      blockGameRoomAfterCheck: ctx => {
+        if (ctx.withAward) {
+          NiceModal.show(ModalCodes.awardModal);
+          dispatch(actions.setVisible(false));
+        }
       },
     },
   });

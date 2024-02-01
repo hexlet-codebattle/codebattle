@@ -73,6 +73,7 @@ function CustomTournamentInfoPanel({
                 matches={matches}
                 players={players}
                 currentUserId={currentUserId}
+                canModerate={isOwner || isAdmin}
               />
             )}
             {panelMode === PanelModeCodes.ratingMode && (

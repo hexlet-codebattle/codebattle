@@ -48,6 +48,7 @@ function PlayerStatsPanel({
   matches,
   players,
   currentUserId,
+  canModerate,
 }) {
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
@@ -213,6 +214,7 @@ function PlayerStatsPanel({
                     currentUserId={currentUserId}
                     playerId={currentUserId}
                     matches={groupedMatchListByRound[stage]}
+                    canModerate={canModerate}
                     hideStats
                   />
                 </div>

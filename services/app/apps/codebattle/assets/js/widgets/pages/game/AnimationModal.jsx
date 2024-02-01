@@ -9,7 +9,7 @@ import Loading from '@/components/Loading';
 
 import gifs from '../../config/gifs';
 import ModalCodes from '../../config/modalCodes';
-import { gamePlayersSelector, currentUserIdSelector, gameAwardSelector } from '../../selectors';
+import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
 
 function TournamentInfoPanel() {
   const waitType = useSelector(state => state.game.waitType);
@@ -30,7 +30,6 @@ function TournamentInfoPanel() {
 const AnimationModal = NiceModal.create(() => {
   const modal = useModal(ModalCodes.gameResultModal);
 
-  const award = useSelector(gameAwardSelector);
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
   const tournamentId = useSelector(state => state.game.gameStatus.tournamentId);
@@ -62,16 +61,12 @@ const AnimationModal = NiceModal.create(() => {
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-center">
-          {award ? (
-            <>{award}</>
-          ) : (
-            <img
-              className="w-100 rounded-lg"
-              style={{ maxWidth: '400px', height: '300px' }}
-              src={gifs[result]}
-              alt="animation"
-            />
-          )}
+          <img
+            className="w-100 rounded-lg"
+            style={{ maxWidth: '400px', height: '300px' }}
+            src={gifs[result]}
+            alt="animation"
+          />
         </div>
         {tournamentId && (
           <div className="d-flex text-center justify-content-center">
