@@ -5,8 +5,6 @@ import { useDispatch } from 'react-redux';
 
 import { sendPassCode } from '../../middlewares/Room';
 
-const passCodeLength = 8;
-
 function GameRoomLockPanel() {
   const dispatch = useDispatch();
 
@@ -22,13 +20,6 @@ function GameRoomLockPanel() {
   const onSubmitCode = useCallback(() => {
     const value = (inputRef.current.value || '').replaceAll(' ', '');
     const onError = err => setError(err);
-
-    if (passCodeLength !== value.length) {
-      onError({
-        message: `Only ${passCodeLength} character pass code (now ${value.length})`,
-      });
-      return;
-    }
 
     dispatch(sendPassCode(value, onError));
   }, [inputRef, setError, dispatch]);
