@@ -89,7 +89,7 @@ config :runner, :executor,
   api_key: "x-key"
 
 config :codebattle, tournament_match_timeout: 3 * 60
-config :codebattle, max_alive_tournaments: 7
+config :codebattle, max_alive_tournaments: 15
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 
 config :codebattle, :firebase,
