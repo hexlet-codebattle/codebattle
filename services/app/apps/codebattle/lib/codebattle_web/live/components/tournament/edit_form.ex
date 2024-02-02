@@ -9,19 +9,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
 
   @impl true
   def render(assigns) do
-    assigns =
-      assign(
-        assigns,
-        :default_rounds_config_json,
-        """
-          [
-            {"task_pack_id": 1, "round_timeout_seconds": 30},
-            {"task_pack_id": 2, "round_timeout_seconds": 40},
-            {"task_pack_id": 3, "round_timeout_seconds": 50}
-          ]
-        """
-      )
-
     ~H"""
     <div class="container-xl bg-white shadow-sm rounded py-4">
       <h2 class="text-center">Edit tournament</h2>
@@ -86,11 +73,16 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= error_tag(f, :access_type) %>
           </div>
         </div>
-        <div class="mt-3">
+        <div class="d-flex mt-3">
           <div class="form-check">
             <%= checkbox(f, :use_chat, class: "form-check-input") %>
             <%= label(f, :use_chat, class: "form-check-label") %>
             <%= error_tag(f, :use_chat) %>
+          </div>
+          <div class="form-check ml-3">
+            <%= checkbox(f, :use_timer, class: "form-check-input") %>
+            <%= label(f, :use_timer, class: "form-check-label") %>
+            <%= error_tag(f, :use_timer) %>
           </div>
         </div>
         <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
@@ -180,57 +172,18 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         </div>
-        <%= if f.params["type"] == "team" do %>
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
-            <div class="d-flex flex-column justify-content-between w-auto">
-              <%= label(f, :team_1_name) %>
-              <%= text_input(f, :team_1_name,
-                maxlength: "17",
-                class: "form-control"
-              ) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :team_2_name) %>
-              <%= text_input(f, :team_2_name,
-                maxlength: "17",
-                class: "form-control"
-              ) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :rounds_to_win) %>
-              <%= select(f, :rounds_to_win, [1, 2, 3, 4, 5], class: "custom-select") %>
-              <%= error_tag(f, :rounds_to_win) %>
-            </div>
-          </div>
-        <% end %>
-        <%= if f.params["type"] in  ["stairway", "swiss"] do %>
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
-            <div class="d-flex flex-column justify-content-between w-auto">
-              <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
-                class: "custom-select"
-              ) %>
-              <%= error_tag(f, :rounds_limit) %>
-            </div>
-            <div class="form-check">
-              <%= label(f, :rounds_config_type) %>
-              <%= select(f, :rounds_config_type, ["all", "per_round"], class: "custom-select") %>
-              <%= error_tag(f, :rounds_config_type) %>
-            </div>
-          </div>
-        <% end %>
-        <%= if (f.params["rounds_config_type"] in ["per_round"]) do %>
-          <div class="d-flex mt-3 overflow-x">
-            <%= label(f, :rounds_config_json) %>
-            <%= textarea(f, :rounds_config_json,
+
+        <div class="mt-3">
+          <div class="d-flex flex-column justify-content-between w-auto">
+            <%= label(f, :meta_json) %>
+            <%= textarea(f, :meta_json,
               class: "form-control",
-              value: f.params["rounds_config_json"] || @default_rounds_config_json,
-              maxlength: "1350",
-              rows: "5"
+              value: (f.params["meta"] && Jason.encode!(f.params["meta"])) || "{}"
             ) %>
-            <%= error_tag(f, :rounds_config_json) %>
+            <%= error_tag(f, :meta_json) %>
           </div>
-        <% end %>
+        </div>
+
         <%= submit("Update",
           phx_disable_with: "Updating...",
           class: "btn btn-primary rounded-lg my-4"

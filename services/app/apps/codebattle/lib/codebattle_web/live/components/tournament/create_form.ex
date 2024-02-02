@@ -93,6 +93,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             <%= label(f, :use_chat, class: "form-check-label") %>
             <%= error_tag(f, :use_chat) %>
           </div>
+          <div class="form-check ml-3">
+            <%= checkbox(f, :use_timer, class: "form-check-input") %>
+            <%= label(f, :use_timer, class: "form-check-label") %>
+            <%= error_tag(f, :use_timer) %>
+          </div>
         </div>
         <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
           <div class="d-flex flex-column justify-content-between w-auto">

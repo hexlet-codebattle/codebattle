@@ -27,6 +27,7 @@ defmodule CodebattleWeb.Api.GameView do
       tournament_id: Map.get(game, :tournament_id),
       type: game.type,
       use_chat: game.use_chat,
+      use_timer: game.use_timer,
       visibility_type: game.visibility_type
     }
   end

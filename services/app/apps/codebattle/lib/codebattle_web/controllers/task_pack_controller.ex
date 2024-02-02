@@ -38,6 +38,7 @@ defmodule CodebattleWeb.TaskPackController do
       })
       |> render("show.html", %{
         task_pack: task_pack,
+        tasks: TaskPack.get_tasks(task_pack),
         current_user: conn.assigns.current_user
       })
     else

@@ -24,6 +24,7 @@ defmodule Codebattle.Game.Engine do
     locked = Map.get(params, :locked, false)
     award = Map.get(params, :award, nil)
     use_chat = Map.get(params, :use_chat, true)
+    use_timer = Map.get(params, :use_timer, true)
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
     mode = params[:mode] || "standard"
@@ -43,6 +44,7 @@ defmodule Codebattle.Game.Engine do
              locked: locked,
              award: award,
              use_chat: use_chat,
+             use_timer: use_timer,
              ref: params[:ref],
              mode: mode,
              type: type,
@@ -91,6 +93,7 @@ defmodule Codebattle.Game.Engine do
           tournament_id: params.tournament_id,
           type: type,
           use_chat: params.use_chat,
+          use_timer: params.use_timer,
           visibility_type: visibility_type,
           inserted_at: now,
           updated_at: now

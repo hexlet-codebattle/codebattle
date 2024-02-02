@@ -219,8 +219,6 @@ defmodule Codebattle.Tournament.Context do
 
     match_timeout_seconds = params["match_timeout_seconds"] || "180"
 
-    meta = get_meta_from_params(params)
-
     access_token =
       case params["access_type"] do
         "token" -> generate_access_token()
@@ -233,9 +231,15 @@ defmodule Codebattle.Tournament.Context do
       "access_token" => access_token,
       "match_timeout_seconds" => match_timeout_seconds,
       "starts_at" => starts_at,
-      "meta" => meta,
+      "meta" => get_meta_from_params(params),
       "show_results" => show_results
     })
+  end
+
+  defp get_meta_from_params(%{"meta_json" => meta_json}) do
+    meta_json
+    |> Jason.decode!()
+    |> AtomizedMap.atomize()
   end
 
   defp get_meta_from_params(params) do

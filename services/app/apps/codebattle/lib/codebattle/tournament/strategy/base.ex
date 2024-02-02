@@ -449,6 +449,7 @@ defmodule Codebattle.Tournament.Base do
               round_id: tournament.current_round_id,
               type: game_type(),
               use_chat: tournament.use_chat,
+              use_timer: tournament.use_timer,
               players: players
             }
             |> maybe_add_award(tournament)
@@ -485,6 +486,7 @@ defmodule Codebattle.Tournament.Base do
                 round_id: tournament.current_round_id,
                 timeout_seconds: get_game_timeout(tournament),
                 use_chat: tournament.use_chat,
+                use_timer: tournament.use_timer,
                 players: players
               })
               |> maybe_add_award(tournament)
