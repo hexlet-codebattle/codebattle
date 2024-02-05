@@ -105,6 +105,7 @@ config :codebattle, import_github_tasks: false
 config :codebattle, user_rank_server: true
 config :codebattle, create_bot_games: true
 config :codebattle, use_external_js: false
+config :codebattle, hide_header: false
 config :codebattle, html_debug_mode: true
 config :codebattle, fake_html_to_image: false
 config :codebattle, use_only_token_auth: false

@@ -54,6 +54,7 @@ admins =
 import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
 create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
 use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
+hide_header = System.get_env("CODEBATTLE_HIDE_HEADER") == "true"
 use_only_token_auth = System.get_env("CODEBATTLE_USE_ONLY_TOKEN_AUTH") == "true"
 show_extension_popup = System.get_env("CODEBATTLE_SHOW_EXTENSION_POPUP") == "true"
 allow_guests = System.get_env("CODEBATTLE_ALLOW_GUESTS") == "true"
@@ -67,6 +68,7 @@ config :codebattle, admins: admins
 config :codebattle, import_github_tasks: import_github_tasks
 config :codebattle, create_bot_games: create_bot_games
 config :codebattle, use_external_js: use_external_js
+config :codebattle, hide_header: hide_header
 config :codebattle, use_only_token_auth: use_only_token_auth
 config :codebattle, show_extension_popup: show_extension_popup
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
