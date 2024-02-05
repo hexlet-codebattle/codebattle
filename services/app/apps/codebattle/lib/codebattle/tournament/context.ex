@@ -80,7 +80,7 @@ defmodule Codebattle.Tournament.Context do
       t in Tournament,
       order_by: [desc: t.id],
       where: t.state in ^states,
-      limit: 7,
+      limit: 10,
       preload: [:creator]
     )
     |> Repo.all()
