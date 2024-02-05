@@ -181,7 +181,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 class: "form-control",
                 value: f.params["match_timeout_seconds"] || "177",
                 min: "7",
-                max: "1000"
+                max: "10000"
               ) %>
             </div>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">

@@ -155,7 +155,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
                 :match_timeout_seconds,
                 class: "form-control",
                 min: "7",
-                max: "1000"
+                max: "10000"
               ) %>
               <%= error_tag(f, :break_duration_seconds) %>
             </div>

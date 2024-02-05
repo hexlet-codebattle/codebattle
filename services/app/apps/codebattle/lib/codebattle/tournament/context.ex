@@ -72,6 +72,8 @@ defmodule Codebattle.Tournament.Context do
     |> Enum.filter(fn tournament ->
       Tournament.Helpers.can_access?(tournament, user, %{})
     end)
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.sort_by(& &1.id)
   end
 
   @spec get_db_tournaments(nonempty_list(String.t())) :: list(Tournament.t())
@@ -80,7 +82,7 @@ defmodule Codebattle.Tournament.Context do
       t in Tournament,
       order_by: [desc: t.id],
       where: t.state in ^states,
-      limit: 10,
+      limit: 15,
       preload: [:creator]
     )
     |> Repo.all()
