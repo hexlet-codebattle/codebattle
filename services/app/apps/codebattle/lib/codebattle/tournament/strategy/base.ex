@@ -175,7 +175,8 @@ defmodule Codebattle.Tournament.Base do
           match
           | state: params.game_state,
             winner_id: winner_id,
-            player_results: params.player_results
+            player_results: params.player_results,
+            finished_at: TimeHelper.utc_now()
         })
 
         params.player_results
@@ -276,7 +277,8 @@ defmodule Codebattle.Tournament.Base do
             Tournament.Matches.put_match(tournament, %{
               match
               | state: "timeout",
-                player_results: player_results
+                player_results: player_results,
+                finished_at: TimeHelper.utc_now()
             })
 
             match = Tournament.Matches.get_match(tournament, match.id)
@@ -502,6 +504,7 @@ defmodule Codebattle.Tournament.Base do
           id: game.ref,
           game_id: game.id,
           state: "playing",
+          started_at: TimeHelper.utc_now(),
           player_ids: players |> Enum.map(& &1.id) |> Enum.sort(),
           round_id: tournament.current_round_id,
           round_position: tournament.current_round_position

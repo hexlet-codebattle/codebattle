@@ -2,6 +2,7 @@ import React, { memo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
@@ -12,6 +13,8 @@ import { toggleBanUser } from '../../middlewares/Tournament';
 
 import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
+
+export const toLocalTime = time => moment.utc(time).local().format('HH:mm:ss');
 
 const matchClassName = cn(
   'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
@@ -173,13 +176,34 @@ function UsersMatchList({
                     <FontAwesomeIcon className="text-success mr-2" icon="tasks" />
                     {matchResult.resultPercent}
                   </span>
-                  <span
-                    title="Match duration seconds"
-                    className="text-nowrap mx-2"
-                  >
-                    <FontAwesomeIcon className="text-primary mr-2" icon="stopwatch" />
-                    {matchResult.durationSec}
-                  </span>
+                  {matchResult.result === 'won' && (
+                    <span
+                      title="Match duration seconds"
+                      className="text-nowrap mx-2"
+                    >
+                      <FontAwesomeIcon className="text-primary mr-2" icon="stopwatch" />
+                      {matchResult.durationSec}
+                    </span>
+                  )}
+
+                  {match.startedAt && (
+                    <span
+                      title="Match finished at"
+                      className="text-nowrap ml-2"
+                    >
+                      <FontAwesomeIcon className="text-primary mr-2" icon="flag-checkered" />
+                      {toLocalTime(match.startedAt)}
+                    </span>
+                  )}
+                  {match.finishedAt && (
+                    <span
+                      title="Match finished at"
+                      className="text-nowrap mr-2"
+                    >
+                      <span className="mx-2">-</span>
+                      {toLocalTime(match.finishedAt)}
+                    </span>
+                  )}
                 </div>
               )}
             </div>

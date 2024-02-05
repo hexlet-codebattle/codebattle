@@ -139,6 +139,7 @@ defmodule Codebattle.Game.Fsm do
     |> maybe_set_best_results(
       params.id,
       %{
+        finishes_at: TimeHelper.utc_now(),
         duration_sec: NaiveDateTime.diff(TimeHelper.utc_now(), game.starts_at),
         result_percent:
           Float.round(
