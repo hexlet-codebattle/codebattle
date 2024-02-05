@@ -147,7 +147,8 @@ defmodule CodebattleWeb.GameChannel do
           user_id: user.id,
           state: game.state,
           players: game.players,
-          check_result: check_result
+          check_result: check_result,
+          award: game.award
         })
 
         {:noreply, socket}
@@ -196,8 +197,12 @@ defmodule CodebattleWeb.GameChannel do
     game_id
     |> Context.unlock_game(pass_code)
     |> case do
-      :ok -> {:reply, {:ok, %{result: true}}, socket}
-      {:error, reason} -> {:reply, {:error, %{result: false, reason: reason}}, socket}
+      :ok ->
+        broadcast_from!(socket, "game:unlocked", %{})
+        {:reply, {:ok, %{result: true}}, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{result: false, reason: reason}}, socket}
     end
   end
 
@@ -212,6 +217,11 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_info(%{event: "game:toggle_visible", payload: payload}, socket) do
     push(socket, "game:toggle_visible", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:unlocked"}, socket) do
+    push(socket, "game:unlocked", %{})
     {:noreply, socket}
   end
 

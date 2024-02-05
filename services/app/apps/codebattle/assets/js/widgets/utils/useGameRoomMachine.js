@@ -22,7 +22,6 @@ const useGameRoomMachine = ({
 }) => {
   const dispatch = useDispatch();
 
-  const award = useSelector(selectors.gameAwardSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const mainService = useInterpret(mainMachine, {
@@ -32,19 +31,18 @@ const useGameRoomMachine = ({
       holding: 'none',
       speedMode: speedModes.normal,
       subscriptionType,
-      withAward: !!award,
     },
     actions: {
-      showGameResultModal: ctx => {
-        if (!ctx.withAward) {
+      showGameResultModal: (_ctx, { payload }) => {
+        if (!payload.award) {
           NiceModal.show(ModalCodes.gameResultModal);
         }
       },
       showPremiumSubscribeRequestModal: () => {
         NiceModal.show(ModalCodes.premiumRestrictionModal);
       },
-      blockGameRoomAfterCheck: ctx => {
-        if (ctx.withAward) {
+      blockGameRoomAfterCheck: (_ctx, { payload }) => {
+        if (payload.award) {
           NiceModal.show(ModalCodes.awardModal);
           dispatch(actions.setVisible(false));
         }

@@ -48,6 +48,9 @@ const game = createSlice({
     addAlert: (state, { payload }) => {
       state.alerts = { ...state.alerts, ...payload };
     },
+    setAward: (state, { payload }) => {
+      state.award = payload;
+    },
     setLocked: (state, { payload }) => {
       state.locked = payload;
     },

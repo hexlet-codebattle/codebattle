@@ -93,7 +93,6 @@ function TeamMatches({
                   isShow={state === TournamentStates.waitingParticipants}
                   isParticipant={players[currentUserId]?.teamId === team.id}
                   teamId={team.id}
-                  disabled={false}
                 />
               </div>
               <Players

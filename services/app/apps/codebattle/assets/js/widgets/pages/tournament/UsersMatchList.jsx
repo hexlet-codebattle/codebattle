@@ -13,6 +13,16 @@ import { toggleBanUser } from '../../middlewares/Tournament';
 import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
 
+const matchClassName = cn(
+  'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
+  'justify-content-between border-bottom p-2',
+);
+const matchInfoClassName = cn(
+  'd-flex',
+  'flex-column flex-xl-row flex-lg-row flex-md-row',
+  'align-items-center justify-content-between',
+);
+
 function UserTournamentInfo({ userId }) {
   const user = useSelector(state => state.tournament.players[userId]);
 
@@ -31,6 +41,7 @@ function UsersMatchList({
   canModerate,
   matches,
   hideStats = false,
+  hideBots = false,
 }) {
   const dispatch = useDispatch();
 
@@ -93,44 +104,86 @@ function UsersMatchList({
         </div>
       )}
       {matches.map(match => {
-        const matchClassName = cn(
-          'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
-          'justify-content-between border-bottom p-2',
-        );
         const currentUserIsPlayer = currentUserId === match.playerIds[0]
           || currentUserId === match.playerIds[1];
         const isWinner = playerId === match.winnerId;
+        const matchPlayerIds = hideBots
+          ? match.playerIds.filter(id => id >= 0)
+          : match.playerIds;
+        const matchResult = match.playerResults[playerId];
 
         return (
           <div
             key={match.id}
             className={matchClassName}
           >
-            <div className="d-flex align-items-center justify-content-between">
-              <span className="d-flex align-items-center">
-                <TournamentMatchBadge
-                  matchState={match.state}
-                  isWinner={isWinner}
-                  currentUserIsPlayer={currentUserIsPlayer}
-                />
-              </span>
-              <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
-                <div className="d-flex align-items-center">
-                  {match.winnerId === match.playerIds[0] && (
-                    <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
+            <div className={matchInfoClassName}>
+              <div
+                className="d-flex align-items-center justify-content-center w-100 p-0 px-2 p-sm-1"
+              >
+                <span className="d-flex align-items-center">
+                  <TournamentMatchBadge
+                    matchState={match.state}
+                    isWinner={isWinner}
+                    currentUserIsPlayer={currentUserIsPlayer}
+                  />
+                </span>
+                <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
+                  {matchPlayerIds.length === 1 ? (
+                    <div className="d-flex align-items-center">
+                      {match.winnerId === matchPlayerIds[0] && (
+                        <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
+                      )}
+                      <UserTournamentInfo userId={matchPlayerIds[0]} />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="d-flex align-items-center">
+                        {match.winnerId === matchPlayerIds[0] && (
+                          <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
+                        )}
+                        <UserTournamentInfo userId={matchPlayerIds[0]} />
+                      </div>
+                      <span className="px-2 pl-5 pl-xl-2 pl-lg-2 pl-md-2 pl-sm-2">VS</span>
+                      <div className="d-flex align-items-center">
+                        {match.winnerId === matchPlayerIds[1] && (
+                          <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
+                        )}
+                        <UserTournamentInfo userId={matchPlayerIds[1]} />
+                      </div>
+                    </>
                   )}
-                  <UserTournamentInfo userId={match.playerIds[0]} />
-                </div>
-                <span className="px-2 pl-5 pl-xl-2 pl-lg-2 pl-md-2 pl-sm-2">VS</span>
-                <div className="d-flex align-items-center">
-                  {match.winnerId === match.playerIds[1] && (
-                    <FontAwesomeIcon className="text-warning mx-1" icon="trophy" />
-                  )}
-                  <UserTournamentInfo userId={match.playerIds[1]} />
                 </div>
               </div>
+              {matchResult && matchResult.result !== 'undefined' && (
+                <div
+                  className="d-flex align-items-center justify-content-center w-100 p-0 p-sm-1"
+                >
+                  <span
+                    title="Match score"
+                    className="text-nowrap mx-2"
+                  >
+                    <FontAwesomeIcon className="text-secondary mr-2" icon="trophy" />
+                    {matchResult.score}
+                  </span>
+                  <span
+                    title="Match success tests percent"
+                    className="text-nowrap mx-2"
+                  >
+                    <FontAwesomeIcon className="text-success mr-2" icon="tasks" />
+                    {matchResult.resultPercent}
+                  </span>
+                  <span
+                    title="Match duration seconds"
+                    className="text-nowrap mx-2"
+                  >
+                    <FontAwesomeIcon className="text-primary mr-2" icon="stopwatch" />
+                    {matchResult.durationSec}
+                  </span>
+                </div>
+              )}
             </div>
-            <div className="d-flex justify-content-center ml-lg-2 ml-xl-2">
+            <div className="d-flex justify-content-center ml-lg-2 ml-xl-2 p-0 px-2 p-sm-1">
               <MatchAction
                 match={match}
                 canModerate={canModerate}

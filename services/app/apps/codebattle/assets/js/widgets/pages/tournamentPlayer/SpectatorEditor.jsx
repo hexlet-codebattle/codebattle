@@ -1,4 +1,9 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, {
+  memo,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -13,18 +18,27 @@ import useMachineStateSelector from '@/utils/useMachineStateSelector';
 import Editor from '../../components/Editor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import UserInfo from '../../components/UserInfo';
-import { gameRoomEditorStyles } from '../../config/editorSettings';
 import Placements from '../../config/placements';
 import * as selectors from '../../selectors';
 import DakModeButton from '../game/DarkModeButton';
 import VimModeButton from '../game/VimModeButton';
+
+const fontSizeDefault = Number(
+  window.localStorage.getItem('CodebattleSpectatorEditorFontSize') || '20',
+);
+const setFontSizeDefault = size => (
+  window.localStorage.setItem('CodebattleSpectatorEditorFontSize', size)
+);
 
 function SpectatorEditor({
   switchedWidgetsStatus,
   handleSwitchWidgets,
   playerId,
   spectatorService,
+  panelClassName,
 }) {
+  const toolbarRef = useRef();
+
   const players = useSelector(selectors.gamePlayersSelector);
   const editorData = useSelector(selectors.editorDataSelector(playerId));
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -34,10 +48,20 @@ function SpectatorEditor({
   const spectatorEditorState = useMachineStateSelector(spectatorService, spectatorStateSelector).value.editor;
   const isChecking = useMachineStateSelector(spectatorService, spectatorEditorIsChecking);
 
-  const [fontSize, setFontSize] = useState(20);
+  const [fontSize, setFontSize] = useState(fontSizeDefault);
+  const handleChangeSize = useCallback(size => {
+    setFontSize(size);
+    setFontSizeDefault(size);
+  }, [setFontSize]);
 
-  const handleIncreaseFontSize = useCallback(() => setFontSize(size => size + 2), [setFontSize]);
-  const handleDecreaseFontSize = useCallback(() => setFontSize(size => size - 2), [setFontSize]);
+  const handleIncreaseFontSize = useCallback(
+    () => handleChangeSize(fontSize + 2),
+    [handleChangeSize, fontSize],
+  );
+  const handleDecreaseFontSize = useCallback(
+    () => handleChangeSize(fontSize - 2),
+    [handleChangeSize, fontSize],
+  );
 
   const params = {
     userId: spectatorEditorState === 'loading' ? undefined : playerId,
@@ -56,15 +80,15 @@ function SpectatorEditor({
     onChange: () => {},
   };
 
-  const pannelBackground = cn('col-12 col-lg-6 col-xl-8 p-1', {
+  const pannelBackground = cn(panelClassName, {
     'bg-warning': isChecking,
   });
 
   return (
     <>
       <div className={pannelBackground} data-editor-state={spectatorEditorState}>
-        <div className="card h-100 shadow-sm" style={gameRoomEditorStyles}>
-          <div className="rounded-top border-bottom">
+        <div className="card shadow-sm h-100">
+          <div ref={toolbarRef} className="rounded-top border-bottom">
             <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
@@ -95,23 +119,25 @@ function SpectatorEditor({
                   role="group"
                   aria-label="Editor size controls"
                 >
-                  <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleIncreaseFontSize}>
+                  <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleDecreaseFontSize}>
                     -
                   </button>
-                  <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleDecreaseFontSize}>
+                  <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleIncreaseFontSize}>
                     +
                   </button>
                 </div>
               </div>
-              <div className="d-flex">
-                <button
-                  title="Swap game widgets"
-                  type="button"
-                  className={`btn btn-sm mr-1 rounded-lg ${switchedWidgetsStatus ? 'btn-primary' : 'btn-light'}`}
-                  onClick={handleSwitchWidgets}
-                >
-                  <FontAwesomeIcon icon="exchange-alt" />
-                </button>
+              <div className="d-flex align-items-center justify-content-center">
+                <div>
+                  <button
+                    title="Swap game widgets"
+                    type="button"
+                    className={`btn btn-sm mr-1 rounded-lg ${switchedWidgetsStatus ? 'btn-primary' : 'btn-light'}`}
+                    onClick={handleSwitchWidgets}
+                  >
+                    <FontAwesomeIcon icon="exchange-alt" />
+                  </button>
+                </div>
                 <LanguagePickerView
                   currentLangSlug={params.syntax}
                   isDisabled
@@ -119,9 +145,7 @@ function SpectatorEditor({
               </div>
             </div>
           </div>
-          <div id="spectator" className="d-flex flex-column flex-grow-1 position-relative">
-            <Editor {...editorParams} />
-          </div>
+          <Editor {...editorParams} />
         </div>
       </div>
     </>

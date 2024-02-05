@@ -19,10 +19,10 @@ function CustomTournamentInfoPanel({
   currentUserId,
   pageNumber,
   pageSize,
+  hideBots = false,
   hideResults = false,
   hideCustomGameConsole = false,
-  isAdmin = false,
-  isOwner = false,
+  canModerate = false,
 }) {
   const [searchedUser, setSearchedUser] = useState();
   const [panelMode, setPanelMode] = useState(
@@ -54,11 +54,11 @@ function CustomTournamentInfoPanel({
               setSearchOption={setSearchedUser}
               togglePanelMode={togglePanelMode}
               disabledPanelModeControl={
-                !players[currentUserId] || (hideResults && !isAdmin && !isOwner)
+                !players[currentUserId] || (hideResults && !canModerate)
               }
-              disabledSearch={!isAdmin && !isOwner}
+              disabledSearch={!canModerate}
             />
-            {!hideCustomGameConsole && (isOwner || isAdmin) && (
+            {!hideCustomGameConsole && canModerate && (
               <TournamentGameCreatePanel
                 players={players}
                 matches={matches}
@@ -73,7 +73,8 @@ function CustomTournamentInfoPanel({
                 matches={matches}
                 players={players}
                 currentUserId={currentUserId}
-                canModerate={isOwner || isAdmin}
+                hideBots={hideBots}
+                canModerate={canModerate}
               />
             )}
             {panelMode === PanelModeCodes.ratingMode && (
@@ -87,7 +88,8 @@ function CustomTournamentInfoPanel({
                 currentUserId={currentUserId}
                 pageNumber={pageNumber}
                 pageSize={pageSize}
-                hideResults={hideResults && !isAdmin && !isOwner}
+                hideBots={hideBots}
+                hideResults={hideResults && !canModerate}
               />
             )}
           </div>

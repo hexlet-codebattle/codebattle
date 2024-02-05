@@ -117,7 +117,6 @@ const machine = {
     holding: 'none', // ['none', 'play', 'pause']
     speedMode: speedModes.normal,
     subscriptionType: subscriptionTypes.free, // ['free', 'premium', 'admin'],
-    withAward: false,
   },
   states: {
     network: {
@@ -233,7 +232,7 @@ const machine = {
             },
             check_result: {
               target: 'active',
-              actions: ['soundStartChecking', 'blockGameRoomAfterCheck'],
+              actions: ['soundStartChecking'],
             },
           },
         },
@@ -348,7 +347,6 @@ export const config = {
     haveOnlyFreeAccess: ctx => ctx.subscriptionType === 'free',
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
-    withAwardGame: ctx => ctx.withAward,
   },
   actions: {
     // common actions

@@ -23,6 +23,7 @@ function TournamentUserPanel({
   isBanned = false,
   // localPlace,
   searchedUserId = 0,
+  hideBots,
 }) {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -120,6 +121,7 @@ function TournamentUserPanel({
             isBanned={isBanned}
             canBan={canModerate && userId !== currentUserId}
             canModerate={canModerate}
+            hideBots={hideBots}
           />
         </div>
       </Collapse>

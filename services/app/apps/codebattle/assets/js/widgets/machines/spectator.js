@@ -109,12 +109,17 @@ const machine = {
         },
         active: {
           on: {
-            'user:check_complete': {
-              target: 'game_over',
-              cond: (_ctx, { payload }) => payload.state === 'game_over',
-              // TODO: figureOut why soundWin doesn't work
-              actions: ['soundWin'],
-            },
+            'user:check_complete': [
+              {
+                target: 'game_over',
+                cond: (_ctx, { payload }) => payload.state === 'game_over',
+                actions: ['soundWin', 'blockGameRoomAfterCheck'],
+              },
+              {
+                target: 'active',
+                actions: ['blockGameRoomAfterCheck'],
+              },
+            ],
             'user:give_up': {
               target: 'game_over',
               actions: ['soundGiveUp'],
@@ -188,6 +193,7 @@ export const config = {
       sound.play('round_created');
     },
     soundRematchUpdateStatus: () => { },
+    blockGameRoomAfterCheck: () => { },
 
     ...editorConfig.actions,
   },

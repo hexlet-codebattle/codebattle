@@ -12,6 +12,7 @@ const EmptyOutput = memo(({
   assert = {},
   hasOutput = false,
   uniqIndex = uniqueId('heading'),
+  fontSize,
 }) => (
   <>
     <AccordeonBox.SubMenu
@@ -20,6 +21,7 @@ const EmptyOutput = memo(({
       assert={assert}
       hasOutput={hasOutput}
       uniqIndex={uniqIndex}
+      fontSize={fontSize}
     >
       <div className="alert alert-secondary mb-0 pb-0">
         <pre>{assert.output}</pre>
@@ -31,6 +33,7 @@ const EmptyOutput = memo(({
       assert={assert}
       hasOutput={hasOutput}
       uniqIndex={uniqIndex}
+      fontSize={fontSize}
     >
       <div className="alert alert-secondary mb-0 pb-0">
         <pre>{assert.output}</pre>
@@ -42,6 +45,7 @@ const EmptyOutput = memo(({
       assert={assert}
       hasOutput={hasOutput}
       uniqIndex={uniqIndex}
+      fontSize={fontSize}
     >
       <div className="alert alert-secondary mb-0 pb-0">
         <pre>{assert.output}</pre>
@@ -53,6 +57,7 @@ const EmptyOutput = memo(({
       assert={assert}
       hasOutput={hasOutput}
       uniqIndex={uniqIndex}
+      fontSize={fontSize}
     >
       <div className="alert alert-secondary mb-0 pb-0">
         <pre>{assert.output}</pre>
@@ -64,6 +69,7 @@ const EmptyOutput = memo(({
       assert={assert}
       hasOutput={hasOutput}
       uniqIndex={uniqIndex}
+      fontSize={fontSize}
     >
       <div className="alert alert-secondary mb-0 pb-0">
         <pre>{assert.output}</pre>
@@ -72,7 +78,7 @@ const EmptyOutput = memo(({
   </>
 ));
 
-const Output = ({ sideOutput, hideContent }) => {
+const Output = ({ fontSize, sideOutput, hideContent }) => {
   if (hideContent) {
     return <></>;
   }
@@ -101,18 +107,22 @@ const Output = ({ sideOutput, hideContent }) => {
   }
 
   if ((!normalizedAsserts || normalizedAsserts.length === 0) && !isError) {
-    return <EmptyOutput />;
+    return <EmptyOutput fontSize={fontSize} />;
   }
 
   return (
     <>
       {isError ? (
-        <AccordeonBox.Item output={normalizedOutput} />
+        <AccordeonBox.Item
+          fontSize={fontSize}
+          output={normalizedOutput}
+        />
       ) : (
         normalizedAsserts
         && normalizedAsserts.map((assert, index) => (
           <AccordeonBox.SubMenu
             key={index.toString()}
+            fontSize={fontSize}
             statusColor={color[assert.status]}
             executionTime={assert.executionTime}
             assert={assert}

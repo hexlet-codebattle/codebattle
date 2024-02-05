@@ -42,6 +42,7 @@ const PlayersList = memo(
     matchList,
     currentUserId,
     searchedUserId,
+    hideBots,
   }) => players.map(player => {
       if (player.id === searchedUserId) {
         return <></>;
@@ -60,6 +61,7 @@ const PlayersList = memo(
           place={player.place}
           isBanned={player.isBanned}
           searchedUserId={searchedUserId}
+          hideBots={hideBots}
         />
       );
     }),
@@ -101,6 +103,7 @@ function RatingPanel({
   currentUserId,
   pageNumber,
   pageSize,
+  hideBots,
   hideResults,
 }) {
   const dispatch = useDispatch();
@@ -111,6 +114,10 @@ function RatingPanel({
         .sort((a, b) => a.place - b.place)
         .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
         .reduce((acc, player) => {
+          if (player.isBot && hideBots) {
+            return acc;
+          }
+
           if (player.id === currentUserId) {
             return [player, ...acc];
           }
@@ -118,7 +125,7 @@ function RatingPanel({
           acc.push(player);
           return acc;
         }, []),
-    [players, currentUserId, pageSize, pageNumber],
+    [players, currentUserId, pageSize, pageNumber, hideBots],
   );
   const topPlayersList = useMemo(
     () => (topPlayerIds || [])
@@ -126,6 +133,10 @@ function RatingPanel({
       .map(id => players[id])
       .sort((a, b) => a.place - b.place)
       .reduce((acc, player) => {
+        if (player.isBot && hideBots) {
+          return acc;
+        }
+
         if (player.id === currentUserId) {
           return [player, ...acc];
         }
@@ -133,7 +144,7 @@ function RatingPanel({
         acc.push(player);
         return acc;
       }, []),
-    [topPlayerIds, players, currentUserId, pageSize, pageNumber],
+    [topPlayerIds, players, currentUserId, pageSize, pageNumber, hideBots],
   );
 
   const playersShowList = (topPlayerIds || []).length === 0 ? playersList : topPlayersList;
@@ -186,6 +197,7 @@ function RatingPanel({
             matchList={matchList}
             currentUserId={currentUserId}
             searchedUserId={searchedUser?.id}
+            hideBots={hideBots}
           />
         </>
       ) : (
@@ -245,6 +257,7 @@ function RatingPanel({
                     matchList={stageMatches}
                     currentUserId={currentUserId}
                     searchedUserId={searchedUser?.id}
+                    hideBots={hideBots}
                   />
                 </div>
               );

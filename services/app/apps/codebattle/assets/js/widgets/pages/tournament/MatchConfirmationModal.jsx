@@ -29,8 +29,10 @@ function MatchConfirmationModal({
   players,
   matches,
   currentUserId,
+  currentRoundPosition,
   modalShowing,
   setModalShowing,
+  redirectImmediatly = false,
 }) {
   const confirmBtnRef = useRef(null);
 
@@ -41,9 +43,11 @@ function MatchConfirmationModal({
     () => Object.values(matches)
       .sort((a, b) => b.id - a.id)
       .find(
-        match => match.state === 'playing' && match.playerIds.includes(currentUserId),
+        match => match.state === 'playing'
+          && match.playerIds.includes(currentUserId)
+          && currentRoundPosition === match.roundPosition,
       ),
-    [matches, currentUserId],
+    [matches, currentUserId, currentRoundPosition],
   );
   const opponentId = useMemo(
     () => (nextMatch ? getOpponentId(nextMatch, currentUserId) : null),
@@ -52,10 +56,12 @@ function MatchConfirmationModal({
   const timerProgress = getTimerProgress(remainingTime);
 
   const handleConfirmation = useCallback(() => {
-    if (nextMatch?.gameId) {
+    if (nextMatch?.gameId && redirectImmediatly) {
+      openNextMatch(nextMatch);
+    } else if (nextMatch?.gameId) {
       setOpenMatch(true);
     }
-  }, [nextMatch]);
+  }, [nextMatch, redirectImmediatly]);
 
   const handleCancel = useCallback(() => {
     setModalShowing(false);

@@ -5,6 +5,7 @@ import React, {
   useMemo,
 } from 'react';
 
+import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,10 +18,12 @@ import {
 } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
+import useSearchParams from '../../utils/useSearchParams';
 
 import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
 import DetailsModal from './DetailsModal';
 import IndividualMatches from './IndividualMatches';
+import JoinButton from './JoinButton';
 import MatchConfirmationModal from './MatchConfirmationModal';
 import Players from './PlayersPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
@@ -28,8 +31,17 @@ import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 
+const getTournamentPresentationStatus = state => {
+  switch (state) {
+    case TournamentStates.finished:
+      return 'Tournament finished';
+    default:
+      return 'Waiting';
+  }
+};
+
 function InfoPanel({
-  currentUserId, tournament, playersCount, hideResults, isAdmin, isOwner,
+  currentUserId, tournament, playersCount, hideResults, canModerate,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -77,10 +89,10 @@ function InfoPanel({
           currentRoundPosition={tournament.currentRoundPosition}
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
+          hideBots={!tournament.showBots}
           hideResults={hideResults}
           hideCustomGameConsole
-          isAdmin={isAdmin}
-          isOwner={isOwner}
+          canModerate={canModerate}
         />
       );
     }
@@ -89,6 +101,10 @@ function InfoPanel({
 
 function Tournament() {
   const dispatch = useDispatch();
+
+  const searchParams = useSearchParams();
+
+  const activePresentationMode = searchParams.has('presentation');
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
@@ -126,8 +142,8 @@ function Tournament() {
     [tournament.state],
   );
   const canModerate = useMemo(
-    () => tournament.creatorId === currentUserId || isAdmin,
-    [tournament.creatorId, currentUserId, isAdmin],
+    () => isOwner || isAdmin,
+    [isOwner, isAdmin],
   );
 
   const handleOpenDetails = useCallback(() => {
@@ -183,6 +199,31 @@ function Tournament() {
     ],
   );
 
+  if (activePresentationMode) {
+    return (
+      <div
+        className="d-flex flex-column justify-content-center align-items-center p-3"
+      >
+        {has(tournament.players, currentUserId) || tournament.state !== TournamentStates.waitingParticipants
+          ? (
+            <span className="h3">
+              {getTournamentPresentationStatus(tournament.state)}
+            </span>
+          ) : (
+            <>
+              <span className="h3">{tournament.name}</span>
+              <div className="d-flex">
+                <JoinButton
+                  isShow
+                  isParticipant={false}
+                />
+              </div>
+            </>
+          )}
+      </div>
+    );
+  }
+
   if (isGuest) {
     return (
       <>
@@ -228,6 +269,7 @@ function Tournament() {
         currentUserId={currentUserId}
         modalShowing={matchConfirmationModalShowing}
         setModalShowing={setMatchConfirmationModalShowing}
+        redirectImmediatly={activePresentationMode}
       />
       <div className="container-fluid mb-2">
         <TournamentHeader
@@ -268,8 +310,7 @@ function Tournament() {
                 playersCount={playersCount}
                 currentUserId={currentUserId}
                 hideResults={hideResults}
-                isAdmin={isAdmin}
-                isOwner={isOwner}
+                canModerate={canModerate}
               />
             </div>
           </div>

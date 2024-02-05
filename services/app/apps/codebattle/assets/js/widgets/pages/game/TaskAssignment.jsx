@@ -128,10 +128,10 @@ function TaskAssignment({
                 role="group"
                 aria-label="Editor size controls"
               >
-                <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleTaskSizeIncrease}>
+                <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleTaskSizeDecrease}>
                   -
                 </button>
-                <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleTaskSizeDecrease}>
+                <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleTaskSizeIncrease}>
                   +
                 </button>
               </div>

@@ -48,6 +48,7 @@ function PlayerStatsPanel({
   matches,
   players,
   currentUserId,
+  hideBots,
   canModerate,
 }) {
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
@@ -216,6 +217,7 @@ function PlayerStatsPanel({
                     matches={groupedMatchListByRound[stage]}
                     canModerate={canModerate}
                     hideStats
+                    hideBots={hideBots}
                   />
                 </div>
               </React.Fragment>

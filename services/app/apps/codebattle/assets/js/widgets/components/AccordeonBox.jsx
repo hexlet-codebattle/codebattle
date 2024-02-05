@@ -90,7 +90,13 @@ function Menu({
 }
 
 function SubMenu({
- children, statusColor, assert, hasOutput, uniqIndex, executionTime,
+  children,
+  statusColor,
+  assert,
+  hasOutput,
+  uniqIndex,
+  executionTime,
+  fontSize,
 }) {
   const [isShowLog, setIsShowLog] = useState(true);
   const classCollapse = cn('collapse', {
@@ -99,23 +105,38 @@ function SubMenu({
 
   const { result = assert.value } = assert;
 
+  const fontClassName = cn({
+    h5: fontSize === 1,
+    h4: fontSize === 2,
+    h3: fontSize === 3,
+    h2: fontSize === 4,
+    h1: fontSize > 4,
+  });
+  const assertClassName = cn('d-block', fontClassName);
+
   return (
-    <div className="list-group-item border-left-0 border-right-0">
+    <div className="list-group-item border-left-0 gorder-right-0">
       <div id={`heading${uniqIndex}`}>
         <div>
-          <div>
+          <div className="d-flex">
             {statusColor === 'success' ? (
-              <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="check-circle" />
+              <FontAwesomeIcon
+                className={`text-${statusColor} mr-2 ${fontClassName}`}
+                icon="check-circle"
+              />
             ) : (
-              <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="exclamation-circle" />
+              <FontAwesomeIcon
+                className={`text-${statusColor} mr-2 ${fontClassName}`}
+                icon="exclamation-circle"
+              />
             )}
-            <div className={`badge badge-${statusColor} mr-3`}>{assert.status}</div>
+            <span className={`badge badge-${statusColor} mr-3 ${fontClassName}`}>{assert.status}</span>
             <OverlayTrigger
               overlay={<Tooltip id={assert.id}>Execution Time</Tooltip>}
               placement="top"
             >
               {executionTime !== undefined && Number(executionTime) !== 0 ? (
-                <div className="badge badge-secondary mr-3">{executionTime}</div>
+                <span className={`badge badge-secondary mr-3 ${fontClassName}`}>{executionTime}</span>
               ) : (<></>)}
             </OverlayTrigger>
             {assert.output && (
@@ -127,7 +148,7 @@ function SubMenu({
                 aria-expanded="true"
                 aria-controls={`collapse${uniqIndex}`}
               >
-                <span>
+                <span className={fontClassName}>
                   {isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
                   {' Log'}
                 </span>
@@ -136,13 +157,13 @@ function SubMenu({
           </div>
         </div>
         <pre className="my-1">
-          <span className="d-block">
+          <span className={assertClassName}>
             {`${i18n.t('Receive:')} ${result === undefined ? '???' : JSON.stringify(result)}`}
           </span>
-          <span className="d-block">
+          <span className={assertClassName}>
             {`${i18n.t('Expected:')} ${assert.expected === undefined ? '???' : JSON.stringify(assert.expected)}`}
           </span>
-          <span className="d-block">
+          <span className={assertClassName}>
             {`${i18n.t('Arguments:')} ${assert.arguments === undefined ? '???' : JSON.stringify(assert.arguments)}`}
           </span>
         </pre>
@@ -158,13 +179,21 @@ function SubMenu({
   );
 }
 
-const Item = ({ output }) => {
+const Item = ({ output, fontSize }) => {
   if (output === '') {
     return null;
   }
 
+  const fontClassName = cn({
+    h5: fontSize === 1,
+    h4: fontSize === 2,
+    h3: fontSize === 3,
+    h2: fontSize === 4,
+    h1: fontSize > 4,
+  });
+
   return (
-    <div className="alert alert-secondary mb-0">
+    <div className={`alert alert-secondary mb-0 ${fontClassName}`}>
       <pre>
         <span className="font-weight-bold d-block">Output:</span>
         {output}

@@ -68,8 +68,15 @@ const updateStore = dispatch => ({
   langs,
   gameStatus,
   playbookStatusCode,
+  award,
+  visible,
+  locked,
 }) => {
   const players = getGamePlayers([firstPlayer, secondPlayer]);
+
+  dispatch(actions.setAward(award));
+  dispatch(actions.setVisible(visible));
+  dispatch(actions.setLocked(locked));
 
   dispatch(actions.setLangs({ langs }));
   dispatch(actions.updateGamePlayers({ players }));
@@ -101,6 +108,7 @@ const initStoredGame = dispatch => data => {
     task: data.task,
     gameStatus,
     locked: data.locked,
+    visible: true,
     award: data.award,
     awardStatus: 'idle',
     playbookStatusCode: PlaybookStatusCodes.stored,
@@ -140,6 +148,8 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
         players: [firstPlayer, secondPlayer],
         task,
         langs,
+        locked,
+        award,
       },
     } = response;
 
@@ -153,6 +163,9 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
       task,
       langs,
       gameStatus,
+      award,
+      visible: true,
+      locked,
       playbookStatusCode: PlaybookStatusCodes.active,
     });
   };
@@ -352,7 +365,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
 
   const handleNewCheckResult = responseData => {
     const {
-      state, solutionStatus, checkResult, players, userId,
+      state, solutionStatus, checkResult, players, userId, award,
     } = responseData;
     if (solutionStatus) {
       channel.push('game:score', {})
@@ -369,7 +382,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     dispatch(actions.updateGameStatus({ state, solutionStatus }));
     dispatch(actions.updateCheckStatus({ [userId]: false }));
 
-    const payload = { state };
+    const payload = { state, award };
     machine.send('user:check_complete', { payload });
   };
 
@@ -470,6 +483,10 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     dispatch(actions.toggleVisible());
   };
 
+  const handleGameUnlocked = () => {
+    dispatch(actions.setLocked(false));
+  };
+
   const handleTournamentGameCreated = data => {
     dispatch(actions.setTournamentsInfo(data));
     machine.send('tournament:game:created', { payload: data });
@@ -506,6 +523,7 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     currentGameChannel.on('game:user_joined', handleUserJoined),
     currentGameChannel.on('game:timeout', handleGameTimeout),
     currentGameChannel.on('game:toggle_visible', handleGameToggleVisible),
+    currentGameChannel.on('game:unlocked', handleGameUnlocked),
     currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),

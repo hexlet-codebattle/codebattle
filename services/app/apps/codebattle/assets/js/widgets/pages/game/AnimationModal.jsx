@@ -77,14 +77,14 @@ const AnimationModal = NiceModal.create(() => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        {tournamentId && (
-          <a
-            href={`/tournaments/${tournamentId}`}
-            className="btn-link pr-2 rounded-lg"
-          >
-            Back to tournament
-          </a>
-        )}
+        {/* {tournamentId && ( */}
+        {/*   <a */}
+        {/*     href={`/tournaments/${tournamentId}`} */}
+        {/*     className="btn-link pr-2 rounded-lg" */}
+        {/*   > */}
+        {/*     Back to tournament */}
+        {/*   </a> */}
+        {/* )} */}
         <Button onClick={modal.hide} className="btn btn-secondary rounded-lg">
           {buttonText}
         </Button>

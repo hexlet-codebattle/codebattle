@@ -57,7 +57,13 @@ const getAwardMessage = award => {
   }
 };
 
+const randNumb = Math.random();
+
 const getOppositeAward = award => {
+  if (randNumb < 0.5) {
+    return award;
+  }
+
   switch (award) {
     case 'blue': return 'red';
     case 'red': return 'blue';

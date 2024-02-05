@@ -210,7 +210,7 @@ function EditorContainer({
     'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
 
-  const gameRoomEditorStylesVersion2 = { minHeight: `calc(vh-100 - 92 - ${toolbarRef.current?.height || 0})` };
+  const gameRoomEditorStylesVersion2 = { minHeight: `calc(100vh - 92px - ${toolbarRef.current?.clientHeight || 0}px)` };
 
   return (
     <div data-editor-state={editorCurrent.value} className={pannelBackground}>

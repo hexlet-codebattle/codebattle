@@ -106,7 +106,7 @@ const InfoPanel = ({
 );
 
 const SideInfoPanel = ({
-  timerProps,
+  // timerProps,
   taskPanelProps,
   outputData,
 }) => (
@@ -123,7 +123,7 @@ const SideInfoPanel = ({
       <div
         className="d-flex justify-content-around align-items-center w-100 p-2"
       >
-        <TimerContainer {...timerProps} />
+        {/* <TimerContainer {...timerProps} /> */}
         <OutputTab sideOutput={outputData} large />
       </div>
       <div
