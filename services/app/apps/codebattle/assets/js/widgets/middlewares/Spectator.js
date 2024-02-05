@@ -58,13 +58,14 @@ export const connectToSpectator = () => dispatch => {
     dispatch(actions.clearActiveGameId());
     dispatch(actions.clearGameStatus());
 
+    console.log(payload, data);
     setTimeout(params => {
       dispatch(actions.setActiveGameId(params));
     }, 10, data);
   };
 
   const refs = [
-    currentSpectatorChannel.on('game:create', handleGameCreate),
+    currentSpectatorChannel.on('game:created', handleGameCreate),
   ];
 
   const clearSpectatorChannel = () => {

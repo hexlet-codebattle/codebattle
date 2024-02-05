@@ -56,12 +56,10 @@ function MatchConfirmationModal({
   const timerProgress = getTimerProgress(remainingTime);
 
   const handleConfirmation = useCallback(() => {
-    if (nextMatch?.gameId && redirectImmediatly) {
-      openNextMatch(nextMatch);
-    } else if (nextMatch?.gameId) {
+    if (nextMatch?.gameId) {
       setOpenMatch(true);
     }
-  }, [nextMatch, redirectImmediatly]);
+  }, [nextMatch]);
 
   const handleCancel = useCallback(() => {
     setModalShowing(false);
@@ -76,6 +74,11 @@ function MatchConfirmationModal({
   }, [modalShowing]);
 
   useEffect(() => {
+    if (nextMatch?.gameId && !modalShowing && redirectImmediatly) {
+      openNextMatch(nextMatch);
+      return () => {};
+    }
+
     if (nextMatch?.gameId && !modalShowing) {
       setModalShowing(true);
     }
@@ -84,7 +87,7 @@ function MatchConfirmationModal({
       setModalShowing(false);
     }
 
-    if (nextMatch?.gameId) {
+    if (nextMatch?.gameId && !redirectImmediatly) {
       const timerId = window.setInterval(() => {
         setRemainingTime(time => {
           if (time === null) {
@@ -124,7 +127,7 @@ function MatchConfirmationModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openMatch]);
 
-  const title = 'Next match will be oppened. Show now?';
+  const title = 'Next match will be opened. Show now?';
 
   return (
     <Modal show={modalShowing} onHide={handleCancel}>

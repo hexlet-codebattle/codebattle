@@ -201,26 +201,37 @@ function Tournament() {
 
   if (activePresentationMode) {
     return (
-      <div
-        className="d-flex flex-column justify-content-center align-items-center p-3"
-      >
-        {has(tournament.players, currentUserId) || tournament.state !== TournamentStates.waitingParticipants
-          ? (
-            <span className="h3">
-              {getTournamentPresentationStatus(tournament.state)}
-            </span>
-          ) : (
-            <>
-              <span className="h3">{tournament.name}</span>
-              <div className="d-flex">
-                <JoinButton
-                  isShow
-                  isParticipant={false}
-                />
-              </div>
-            </>
-          )}
-      </div>
+      <>
+        <MatchConfirmationModal
+          players={tournament.players}
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+          modalShowing={matchConfirmationModalShowing}
+          setModalShowing={setMatchConfirmationModalShowing}
+          currentRoundPosition={tournament.currentRoundPosition}
+          redirectImmediatly={activePresentationMode}
+        />
+        <div
+          className="d-flex flex-column justify-content-center align-items-center p-3"
+        >
+          {has(tournament.players, currentUserId) || tournament.state !== TournamentStates.waitingParticipants
+            ? (
+              <span className="h3">
+                {getTournamentPresentationStatus(tournament.state)}
+              </span>
+            ) : (
+              <>
+                <span className="h3">{tournament.name}</span>
+                <div className="d-flex">
+                  <JoinButton
+                    isShow
+                    isParticipant={false}
+                  />
+                </div>
+              </>
+            )}
+        </div>
+      </>
     );
   }
 
@@ -269,6 +280,7 @@ function Tournament() {
         currentUserId={currentUserId}
         modalShowing={matchConfirmationModalShowing}
         setModalShowing={setMatchConfirmationModalShowing}
+        currentRoundPosition={tournament.currentRoundPosition}
         redirectImmediatly={activePresentationMode}
       />
       <div className="container-fluid mb-2">

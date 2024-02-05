@@ -9,6 +9,8 @@ defmodule CodebattleWeb.SpectatorChannel do
     player_id = String.to_integer(player_id)
     tournament_id = payload["tournament_id"]
 
+    Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{player_id}")
+
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
       game_id = tournament |> Tournament.Helpers.get_active_game_id(player_id)
@@ -34,8 +36,10 @@ defmodule CodebattleWeb.SpectatorChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "game:created", payload: payload}, socket) do
-    push(socket, "game:created", %{active_game_id: payload.game_id})
+  def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
+    if payload.match.state == "playing" do
+      push(socket, "game:created", %{active_game_id: payload.match.game_id})
+    end
 
     {:noreply, socket}
   end
