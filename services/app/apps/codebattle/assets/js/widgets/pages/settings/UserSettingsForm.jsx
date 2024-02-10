@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Slider from 'calcite-react/Slider';
+import cn from 'classnames';
 import {
  Formik, Form, Field, useField,
 } from 'formik';
@@ -13,14 +14,34 @@ import { createPlayer } from '../../lib/sound';
 
 const playingLanguages = Object.entries(languages);
 
-const TextInput = ({ label, ...props }) => {
+const getPlaceholder = ({ disabled, placeholder }) => {
+  if (!disabled) {
+    return placeholder;
+  }
+
+  return 'No access yet';
+};
+
+const TextInput = ({
+  label,
+  ...props
+}) => {
   const [field, meta] = useField(props);
-  const { name } = props;
+  const { name, disabled } = props;
+
+  const labelClassName = cn('h6', {
+    'text-muted': disabled,
+  });
 
   return (
     <div className="form-group mb-3">
-      <label className="h6" htmlFor={name}>{label}</label>
-      <input {...field} {...props} className="form-control" />
+      <label className={labelClassName} htmlFor={name}>{label}</label>
+      <input
+        {...field}
+        {...props}
+        placeholder={getPlaceholder(props)}
+        className="form-control"
+      />
       {meta.touched && meta.error && (
         <div className="invalid-feedback">{meta.error}</div>
       )}
@@ -35,6 +56,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
       type: settings.soundSettings.type,
       level: settings.soundSettings.level,
     },
+    clan: settings.clan || '',
     lang: settings.lang || '',
   };
 
@@ -52,6 +74,8 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
             .min(3, 'Should be at least 3 characters')
             .max(16, 'Should be 16 character(s) or less')
             .trim(),
+    clan: Yup.string()
+            .strict(),
   });
 
   return (
@@ -95,6 +119,18 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                   ))}
                 </Field>
               </div>
+              <div className="col-lg-3">
+                <TextInput
+                  className="col-5"
+                  data-testid="clanInput"
+                  label="Your clan"
+                  id="clan"
+                  name="clan"
+                  type="text"
+                  placeholder="Enter your clan name"
+                  disabled
+                />
+              </div>
             </div>
           </div>
 
@@ -130,14 +166,14 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
             </div>
             <div className="form-check">
               <Field
-                id="radioStandart"
+                id="radioStandard"
                 type="radio"
                 name="sound_settings.type"
-                value="standart"
+                value="standard"
                 className="form-check-input"
                 onClick={() => playSound('standart', values.soundSettings.level * 0.1)}
               />
-              <label className="form-check-label" htmlFor="radioStandart">Standart</label>
+              <label className="form-check-label" htmlFor="radioStandard">Standard</label>
             </div>
             <div className="form-check">
               <Field

@@ -96,13 +96,12 @@ const TaskParamsModal = NiceModal.create(({
   const taskParams = useSelector(taskParamsSelector);
   const templateState = useSelector(selectors.taskParamsTemplatesStateSelector);
 
-  const taskParamsJSON = useMemo(() => (
-    JSON.stringify(
-      omit(taskParams, ['creatorId', 'id', 'state']),
-      null,
-      2,
-    )
-  ), [taskParams]);
+  const taskParamsJSON = JSON.stringify(
+    omit(taskParams, ['creatorId', 'id', 'state']),
+    null,
+    2,
+  );
+
   const title = useMemo(() => (
     getTitle(action, taskParams.state)
   ), [action, taskParams.state]);
@@ -208,6 +207,10 @@ const TaskParamsModal = NiceModal.create(({
     if (modal.visible && action === modalActions.upload) {
       // taskParamsRef.current.focus();
       taskParamsRef.current.select();
+    }
+
+    if (!modal.visible) {
+      setValue('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modal.visible]);

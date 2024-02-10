@@ -116,6 +116,7 @@ config :codebattle, force_redirect_url: ""
 config :codebattle, allow_guests: true
 config :codebattle, record_games: true
 config :codebattle, use_presence: true
+config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", "chat_bot")
 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")

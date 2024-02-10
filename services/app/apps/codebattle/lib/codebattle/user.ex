@@ -56,6 +56,7 @@ defmodule Codebattle.User do
     field(:performance, :integer, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
     field(:avatar_url, :string)
+    field(:clan, :string, default: "")
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -85,7 +86,8 @@ defmodule Codebattle.User do
       :github_name,
       :lang,
       :name,
-      :rating
+      :rating,
+      :clan
     ])
     |> validate_required([:name])
   end

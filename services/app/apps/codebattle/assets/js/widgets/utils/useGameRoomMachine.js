@@ -10,6 +10,7 @@ import { actions } from '../slices';
 
 /**
  *
+ * @function
  * @return {{
  *  mainService: import('xstate').InterpreterFrom<import('xstate').StateMachine>,
  *  taskService: import('xstate').InterpreterFrom<import('xstate').StateMachine>

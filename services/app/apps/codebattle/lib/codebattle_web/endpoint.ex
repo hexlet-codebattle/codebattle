@@ -15,8 +15,9 @@ defmodule CodebattleWeb.Endpoint do
     check_origin: false
   )
 
-  socket("/discord", CodebattleWeb.DiscordSocket,
-    websocket: [timeout: :infinity, check_origin: false],
+  socket("/chat_bot", CodebattleWeb.ChatBotSocket,
+    websocket: false,
+    longpool: true,
     check_origin: false
   )
 

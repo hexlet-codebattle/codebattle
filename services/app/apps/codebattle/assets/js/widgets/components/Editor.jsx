@@ -246,7 +246,11 @@ class Editor extends PureComponent {
   handleResize = () => this.editor.layout();
 
   handleChangeCursorSelection = e => {
-    const { editable, isTournamentGame, onChangeCursorSelection } = this.props;
+    const {
+      editable,
+      isTournamentGame,
+      onChangeCursorSelection,
+    } = this.props;
 
     if (!editable || isTournamentGame) {
       const { column, lineNumber } = this.editor.getPosition();
@@ -259,7 +263,10 @@ class Editor extends PureComponent {
   };
 
   handleChangeCursorPosition = e => {
-    const { editable, onChangeCursorPosition } = this.props;
+    const {
+      editable,
+      onChangeCursorPosition,
+    } = this.props;
 
     if (editable && onChangeCursorPosition) {
       const offset = this.editor.getModel().getOffsetAt(e.position);
