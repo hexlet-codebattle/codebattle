@@ -17,10 +17,6 @@ spec:
       labels:
         app: "codebattle"
     spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
       containers:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
@@ -54,6 +50,7 @@ spec:
             - start
           ports:
             - containerPort: 4000
+            - containerPort: 5000
           envFrom:
             - secretRef:
                 name: codebattle-secrets

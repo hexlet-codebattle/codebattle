@@ -54,6 +54,7 @@ defmodule Codebattle.Application do
         {CodebattleWeb.Presence, []},
         {Finch, name: CodebattleHTTP, pools: %{default: [size: 300, count: 5]}},
         {CodebattleWeb.Endpoint, []},
+        {CodebattleWeb.BotEndpoint, []},
         {Codebattle.Game.TasksQueuesServer, []},
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},

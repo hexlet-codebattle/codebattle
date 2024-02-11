@@ -1,0 +1,43 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "chatbot-deployment"
+spec:
+  replicas: {{ .Values.chatbot.replicaCount }}
+  selector:
+    matchLabels:
+      app: "chatbot"
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "chatbot"
+    spec:
+      containers:
+        - name: chatbot
+          securityContext:
+            privileged: true
+          imagePullPolicy: "{{ .Values.chatbot.image.imagePullPolicy }}"
+          image: "{{ .Values.chatbot.image.repository }}:{{ .Values.chatbot.image.tag }}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          command:
+            - make
+            - start
+          envFrom:
+            - secretRef:
+                name: codebattle-secrets
+          env:
+            - name: BOT_CODEBATTLE_SOCKET_URL
+              value: ws://codebattle:4002/chat_bot
+            - name: DEPLOYED_AT
+              value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}

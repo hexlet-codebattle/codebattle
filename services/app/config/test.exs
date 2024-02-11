@@ -6,6 +6,10 @@ config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4001],
   server: true
 
+config :codebattle, CodebattleWeb.BotEndpoint,
+  http: [port: 4002],
+  server: true
+
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 
 # Print only warnings and errors during test

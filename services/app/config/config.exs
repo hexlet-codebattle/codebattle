@@ -22,6 +22,18 @@ config :codebattle, CodebattleWeb.Endpoint,
   pubsub_server: CodebattleWeb.PubSub,
   live_view: [signing_salt: "asdfasdf"]
 
+config :codebattle, CodebattleWeb.BotEndpoint,
+  http: [
+    port: "4002",
+    transport_options: [
+      max_connections: 30000,
+      num_acceptors: 500
+    ]
+  ],
+  url: [host: "localhost"],
+  secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
+  pubsub_server: CodebattleWeb.PubSub
+
 # Configures the runner endpoint
 config :runner, RunnerWeb.Endpoint,
   url: [host: "localhost"],

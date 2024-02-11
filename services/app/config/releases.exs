@@ -13,6 +13,12 @@ config :codebattle, CodebattleWeb.Endpoint,
   live_view: [signing_salt: live_view_salt],
   server: true
 
+config :codebattle, CodebattleWeb.BotEndpoint,
+  http: [:inet6, port: "4002"],
+  url: [host: host, scheme: "https", port: 443],
+  secret_key_base: secret_key_base,
+  server: true
+
 config :codebattle, host: host
 
 config :codebattle, Codebattle.Repo,

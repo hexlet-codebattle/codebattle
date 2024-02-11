@@ -15,12 +15,6 @@ defmodule CodebattleWeb.Endpoint do
     check_origin: false
   )
 
-  socket("/chat_bot", CodebattleWeb.ChatBotSocket,
-    websocket: false,
-    longpool: true,
-    check_origin: false
-  )
-
   socket("/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [

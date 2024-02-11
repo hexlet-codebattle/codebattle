@@ -13,6 +13,13 @@ runner:
     repository: codebattle/runner
     imagePullPolicy: Always
 
+chatbot:
+  replicaCount: 1
+  image:
+    repository: codebattle/chat_bot
+    imagePullPolicy: Always
+    tag: "0.0.1"
+
 nginx:
   image:
     repository: codebattle/nginx

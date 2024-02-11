@@ -17,6 +17,13 @@ config :codebattle, CodebattleWeb.Endpoint,
   cache_static_lookup: false,
   watchers: [yarn: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")]]
 
+config :codebattle, CodebattleWeb.BotEndpoint,
+  http: [port: "4002"],
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false,
+  cache_static_lookup: false
+
 config :runner, RunnerWeb.Endpoint,
   http: [port: System.get_env("CODEBATTLE_RUNNER_PORT", "4001")],
   debug_errors: true,
