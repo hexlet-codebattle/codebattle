@@ -35,21 +35,6 @@ config :codebattle, :oauth,
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
-admins =
-  case System.get_env("CODEBATTLE_ADMINS") do
-    nil ->
-      [
-        "vtm",
-        "ReDBrother",
-        "solar05",
-        "mokevnin",
-        "Melodyn",
-        "NatMusina"
-      ]
-
-    admin_string ->
-      String.split(admin_string, ",", trim: true)
-  end
 
 import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
 create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
@@ -64,7 +49,6 @@ record_games = System.get_env("CODEBATTLE_RECORD_GAMES") == "true"
 tournament_rematch_timeout_ms =
   "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
 
-config :codebattle, admins: admins
 config :codebattle, import_github_tasks: import_github_tasks
 config :codebattle, create_bot_games: create_bot_games
 config :codebattle, use_external_js: use_external_js

@@ -12,41 +12,19 @@ defmodule CodebattleWeb.RootController do
   def index(conn, params) do
     current_user = conn.assigns.current_user
 
-    case current_user.is_guest do
-      true ->
-        render(conn, "landing.html", layout: {LayoutView, "landing.html"})
-
-      _ ->
-        %{
-          active_games: active_games,
-          tournaments: tournaments,
-          completed_games: completed_games
-        } = LobbyView.render_lobby_params(current_user)
-
-        start_of_the_week =
-          DateTime.utc_now()
-          |> Date.beginning_of_week(:saturday)
-          |> Date.to_iso8601()
-
-        %{users: leaderboard_users} =
-          UserView.render_rating(%{
-            "page_size" => "7",
-            "page" => "1",
-            "s" => "rating+desc",
-            "date_from" => start_of_the_week,
-            "with_bots" => false
-          })
-
-        conn
-        |> maybe_put_opponent(params)
-        |> put_gon(
-          task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
-          active_games: active_games,
-          tournaments: tournaments,
-          completed_games: completed_games,
-          leaderboard_users: leaderboard_users
-        )
-        |> render("index.html", current_user: current_user)
+    if current_user.is_guest do
+      render(conn, "landing.html", layout: {LayoutView, "landing.html"})
+    else
+      conn
+      |> maybe_put_opponent(params)
+      |> put_gon(
+        task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
+        active_games: LobbyView.render_active_games(current_user),
+        tournaments: [],
+        completed_games: [],
+        leaderboard_users: []
+      )
+      |> render("index.html", current_user: current_user)
     end
   end
 
@@ -63,7 +41,7 @@ defmodule CodebattleWeb.RootController do
   end
 
   defp maybe_put_opponent(conn, %{"opponent_id" => id}) do
-    case Repo.get(User, id) do
+    case User.get(id) do
       nil -> conn
       user -> put_gon(conn, opponent: Map.take(user, [:id, :name, :rating, :rank]))
     end

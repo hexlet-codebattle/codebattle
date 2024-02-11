@@ -160,8 +160,8 @@ defmodule CodebattleWeb.GameController do
 
   defp get_users(game) do
     case Enum.count(game.users) do
-      0 -> [User.create_guest(), User.create_guest()]
-      1 -> game.users ++ [User.create_guest()]
+      0 -> [User.build_guest(), User.build_guest()]
+      1 -> game.users ++ [User.build_guest()]
       _ -> game.users
     end
   end

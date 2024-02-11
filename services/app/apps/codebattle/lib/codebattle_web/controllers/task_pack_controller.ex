@@ -2,6 +2,7 @@ defmodule CodebattleWeb.TaskPackController do
   use CodebattleWeb, :controller
 
   alias Codebattle.TaskPack
+  alias Codebattle.User
 
   def index(conn, _params) do
     task_packs = TaskPack.list_visible(conn.assigns.current_user)
@@ -116,7 +117,7 @@ defmodule CodebattleWeb.TaskPackController do
   def activate(conn, %{"task_pack_id" => id}) do
     task_pack = TaskPack.get!(id)
 
-    if Codebattle.User.admin?(conn.assigns.current_user) do
+    if User.admin?(conn.assigns.current_user) do
       Codebattle.TaskPack.change_state(task_pack, "active")
 
       conn
@@ -133,7 +134,7 @@ defmodule CodebattleWeb.TaskPackController do
   def disable(conn, %{"task_pack_id" => id}) do
     task_pack = TaskPack.get!(id)
 
-    if Codebattle.User.admin?(conn.assigns.current_user) do
+    if User.admin?(conn.assigns.current_user) do
       Codebattle.TaskPack.change_state(task_pack, "disabled")
 
       conn

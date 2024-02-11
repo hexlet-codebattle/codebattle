@@ -1,0 +1,61 @@
+# App artifacts
+_build
+deps
+db
+.idea
+*.ez
+*.retry
+*.log
+tmp
+*.elixir_ls/
+*deployment.retry
+*~
+*.swp
+*.swo
+.vscode
+**/__pycache__
+# Generated on crash by the VM
+erl_crash.dump
+
+# Static artifacts
+node_modules
+
+# Since we are building assets from web/static,
+# we ignore priv/static. You may want to comment
+# this depending on your deployment strategy.
+/priv/static
+
+# The config/prod.secret.exs file by default contains sensitive
+# data and you should not commit it into version control.
+#
+# Alternatively, you may comment the line below and commit the
+# secrets file as long as you replace its contents by environment
+# variables.
+services/app/config/prod.secret.exs
+tags
+.vagrant
+*.DS_Store
+.env
+.deliver/config
+
+# Generated reports
+cover
+.deliver/releases/
+.tern-port
+*.backup
+.terraform
+secrets.auto.tfvars
+.cache-loader
+*.tfstate
+*.secret.yml
+.elixir_ls
+google.key.json
+.iml
+
+.kube/
+kubeconfig.yml
+
+stats.json
+*.hcl
+services/app/priv/plts/*.plt
+services/app/priv/plts/*.plt.hash

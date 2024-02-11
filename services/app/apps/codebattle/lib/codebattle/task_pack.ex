@@ -7,6 +7,7 @@ defmodule Codebattle.TaskPack do
 
   alias Codebattle.Repo
   alias Codebattle.Task
+  alias Codebattle.User
 
   @states ~w(draft on_moderation active disabled)
   @visibility_types ~w(hidden public)
@@ -61,7 +62,7 @@ defmodule Codebattle.TaskPack do
   def can_see_task_pack?(task_pack, user), do: can_access_task_pack?(task_pack, user)
 
   def can_access_task_pack?(task_pack, user) do
-    task_pack.creator_id == user.id || Codebattle.User.admin?(user)
+    task_pack.creator_id == user.id || User.admin?(user)
   end
 
   @spec get_tasks_by_pack_id(pos_integer()) :: [Codebattle.Task.t()]
@@ -105,8 +106,8 @@ defmodule Codebattle.TaskPack do
   end
 
   def filter_visibility(query, user) do
-    if Codebattle.User.admin?(user) do
-      Function.identity(query)
+    if User.admin?(user) do
+      query
     else
       from(t in query,
         where: [visibility: "public", state: "active"],

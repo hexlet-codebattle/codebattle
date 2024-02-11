@@ -2,7 +2,7 @@ alias Codebattle.Repo
 alias Codebattle.{Game, User, UserGame}
 
 levels = ["elementary", "easy", "medium", "hard"]
-creator = Repo.get!(Codebattle.User, -15)
+creator = User.get!(-15)
 
 1..3
 |> Enum.each(fn x ->

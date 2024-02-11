@@ -8,60 +8,68 @@ defmodule Codebattle.User do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias User.SoundSettings
 
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()
 
   @guest_id 0
 
-  defmodule SoundSettings do
-    use Ecto.Schema
+  @subscription_types ~w(banned free premium admin)a
 
-    import Ecto.Changeset
-    @primary_key false
-
-    @derive {Jason.Encoder, only: [:level, :type]}
-
-    embedded_schema do
-      field(:level, :integer, default: 7)
-      field(:type, :string, default: "dendy")
-    end
-
-    def changeset(struct, params) do
-      cast(struct, params, [:level, :type])
-    end
-  end
+  @derive {Jason.Encoder,
+           only: [
+             :achievements,
+             :avatar_url,
+             :clan,
+             :editor_mode,
+             :editor_theme,
+             :games_played,
+             :github_id,
+             :github_name,
+             :id,
+             :inserted_at,
+             :is_bot,
+             :is_guest,
+             :lang,
+             :name,
+             :performance,
+             :rank,
+             :rating,
+             :sound_settings,
+             :subscription_type
+           ]}
 
   schema "users" do
-    field(:name, :string)
-    field(:github_name, :string)
-    field(:email, :string)
-    field(:github_id, :integer)
-    field(:rating, :integer, default: 1200)
-    field(:lang, :string, default: "js")
+    has_many(:user_games, Codebattle.UserGame)
+    has_many(:games, through: [:user_games, :game])
+
+    field(:achievements, {:array, :string}, default: [])
+    field(:avatar_url, :string)
+    field(:auth_token, :string)
+    field(:discord_avatar, :string)
+    field(:discord_id, :integer)
+    field(:discord_name, :string)
     field(:editor_mode, :string)
     field(:editor_theme, :string)
-    field(:public_id, :binary_id)
-    field(:is_bot, :boolean, default: false)
-    field(:rank, :integer, default: 5432)
-    field(:achievements, {:array, :string}, default: [])
-    field(:discord_name, :string)
-    field(:discord_id, :integer)
-    field(:discord_avatar, :string)
+    field(:email, :string)
     field(:firebase_uid, :string)
-    field(:auth_token, :string)
-    # level range: 0..10, types: ["standard", "silent"]
+    field(:github_id, :integer)
+    field(:github_name, :string)
+    field(:is_bot, :boolean, default: false)
+    field(:lang, :string, default: "js")
+    field(:clan, :string)
+    field(:name, :string)
+    field(:public_id, :binary_id)
+    field(:rank, :integer, default: 5432)
+    field(:rating, :integer, default: 1200)
+    field(:subscription_type, Ecto.Enum, values: @subscription_types)
 
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
-    field(:avatar_url, :string)
-    field(:clan, :string, default: "")
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
-
-    has_many(:user_games, Codebattle.UserGame)
-    has_many(:games, through: [:user_games, :game])
 
     timestamps()
   end
@@ -75,6 +83,7 @@ defmodule Codebattle.User do
       :achievements,
       :auth_token,
       :avatar_url,
+      :clan,
       :discord_avatar,
       :discord_id,
       :discord_name,
@@ -87,25 +96,27 @@ defmodule Codebattle.User do
       :lang,
       :name,
       :rating,
-      :clan
+      :subscription_type
     ])
     |> validate_required([:name])
   end
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name, :lang])
+    |> cast(params, [:name, :lang, :clan])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
-    |> validate_length(:name, min: 3, max: 16)
+    |> validate_length(:name, min: 2, max: 39)
+    |> validate_length(:clan, min: 3, max: 31)
   end
 
-  @spec create_guest :: t()
-  def create_guest() do
+  @spec build_guest() :: t()
+  def build_guest() do
     %__MODULE__{
       is_guest: true,
       id: @guest_id,
       name: "John Dou",
+      subscription_type: "free",
       rating: 0,
       rank: 0,
       sound_settings: %SoundSettings{}
@@ -113,20 +124,25 @@ defmodule Codebattle.User do
   end
 
   @spec admin?(t()) :: boolean()
-  def admin?(user) do
-    user.name in Application.get_env(:codebattle, :admins)
-  end
+  def admin?(%__MODULE__{subscription_type: "admin"}), do: true
+  def admin?(_user), do: false
 
-  @spec bot?(integer() | t()) :: boolean()
+  @spec bot?(integer()) :: boolean()
   def bot?(user_id) when is_integer(user_id), do: user_id < 0
-  def bot?(user = %__MODULE__{}), do: user.is_bot
 
   @spec guest_id() :: integer()
   def guest_id(), do: @guest_id
 
-  @spec get_user!(raw_id()) :: t() | no_return
-  def get_user!(user_id) do
-    __MODULE__ |> Codebattle.Repo.get!(user_id)
+  @spec get!(raw_id()) :: t() | no_return()
+  def get!(user_id) do
+    Repo.get!(__MODULE__, user_id)
+  end
+
+  @spec get(raw_id()) :: t() | nil
+  def get(user_id) do
+    get!(user_id)
+  rescue
+    _e -> nil
   end
 
   @spec get_users_by_ids(list(raw_id())) :: list(t())

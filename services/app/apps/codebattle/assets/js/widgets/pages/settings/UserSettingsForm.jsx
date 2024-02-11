@@ -128,7 +128,6 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                   name="clan"
                   type="text"
                   placeholder="Enter your clan name"
-                  disabled
                 />
               </div>
             </div>

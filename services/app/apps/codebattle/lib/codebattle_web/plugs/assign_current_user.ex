@@ -14,11 +14,11 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
 
     case {user_id, conn.request_path} do
       {nil, path} when path in ["/auth/token/", "/auth/token"] ->
-        conn |> assign(:current_user, User.create_guest())
+        conn |> assign(:current_user, User.build_guest())
 
       {nil, _path} ->
         if Application.get_env(:codebattle, :allow_guests) do
-          conn |> assign(:current_user, User.create_guest())
+          conn |> assign(:current_user, User.build_guest())
         else
           conn
           |> put_flash(:danger, "You must be logged in to access that page")
@@ -27,7 +27,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
         end
 
       {id, _path} ->
-        case Codebattle.Repo.get(User, id) do
+        case User.get(id) do
           nil ->
             conn
             |> clear_session()

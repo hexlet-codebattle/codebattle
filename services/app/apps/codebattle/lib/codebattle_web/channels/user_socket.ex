@@ -17,10 +17,10 @@ defmodule CodebattleWeb.UserSocket do
 
     case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000) do
       {:ok, ^guest_id} ->
-        {:ok, assign(socket, current_user: User.create_guest())}
+        {:ok, assign(socket, current_user: User.build_guest())}
 
       {:ok, user_id} ->
-        {:ok, assign(socket, :current_user, User.get_user!(user_id))}
+        {:ok, assign(socket, :current_user, User.get!(user_id))}
 
       {:error, _reason} ->
         :error

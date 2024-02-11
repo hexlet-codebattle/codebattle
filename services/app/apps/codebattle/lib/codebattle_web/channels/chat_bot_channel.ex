@@ -5,7 +5,7 @@ defmodule CodebattleWeb.ChatBotChannel do
 
   require Logger
 
-  def join("chat_bot:" <> chat_type, _payload, socket) do
+  def join("chat_bot:" <> _chat_type, _payload, socket) do
     {:ok, %{}, socket}
   end
 

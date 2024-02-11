@@ -9,7 +9,7 @@ defmodule CodebattleWeb.ExtensionSocket do
 
   def connect(_params, socket) do
     # TODO: add auth for extension by token, now it works only like anonymous user
-    {:ok, assign(socket, :current_user, Codebattle.User.create_guest())}
+    {:ok, assign(socket, :current_user, Codebattle.User.build_guest())}
   end
 
   def id(_socket), do: nil

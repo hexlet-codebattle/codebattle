@@ -165,10 +165,8 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     pipe_through([:browser, :require_auth])
 
-    get("/settings", UserController, :edit, as: :user_setting)
-    put("/settings", UserController, :update, as: :user_setting)
-
     resources("/users", UserController, only: [:index, :show])
+    get("/settings", UserController, :edit, as: :user_setting)
 
     resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)

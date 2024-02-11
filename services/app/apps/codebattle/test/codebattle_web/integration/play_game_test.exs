@@ -123,8 +123,8 @@ defmodule Codebattle.PlayGameTest do
     :timer.sleep(100)
 
     game = Repo.get(Game, game_id)
-    user1 = Repo.get(User, user1.id)
-    user2 = Repo.get(User, user2.id)
+    user1 = User.get(user1.id)
+    user2 = User.get(user2.id)
     user_game1 = Repo.get_by(UserGame, user_id: user1.id)
     user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 
@@ -232,8 +232,8 @@ defmodule Codebattle.PlayGameTest do
     :timer.sleep(100)
 
     game = Repo.get(Game, game_id)
-    user1 = Repo.get(User, user1.id)
-    user2 = Repo.get(User, user2.id)
+    user1 = User.get(user1.id)
+    user2 = User.get(user2.id)
     user_game1 = Repo.get_by(UserGame, user_id: user1.id)
     user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 

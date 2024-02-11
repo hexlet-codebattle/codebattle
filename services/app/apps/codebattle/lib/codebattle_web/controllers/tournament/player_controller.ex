@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Tournament.PlayerController do
   alias Runner.Languages
 
   def show(conn, params) do
-    user = User.get_user!(params["player_id"])
+    user = User.get!(params["player_id"])
 
     tournament = Tournament.Context.get!(params["id"])
 

@@ -33,7 +33,7 @@ defmodule Codebattle.Oauth.User.GithubUser do
 
   @spec bind(User.t(), map()) :: {:ok, User.t()} | {:error, :term}
   def bind(user, profile) do
-    github_user = User |> Repo.get_by(github_id: profile.id)
+    github_user = Repo.get_by(User, github_id: profile.id)
 
     if github_user != nil && github_user.id != user.id do
       {:error, "github_id has been taken"}

@@ -66,8 +66,6 @@ config :codebattle, :firebase,
 
 config :codebattle, ws_port: 4001
 
-config :codebattle, admins: ["admin"]
-
 config :codebattle, freeze_time: true
 config :codebattle, tournament_rematch_timeout_ms: 1
 

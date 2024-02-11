@@ -31,7 +31,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     {:ok, response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
     assert Jason.encode(response) ==
-             Jason.encode(%{users: [Codebattle.User.get_user!(user1.id)], messages: []})
+             Jason.encode(%{users: [Codebattle.User.get!(user1.id)], messages: []})
   end
 
   test "broadcasts chat:user_joined with state after user join", %{user2: user2, socket2: socket2} do
@@ -46,7 +46,7 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Jason.encode(response) == Jason.encode(%{users: [Codebattle.User.get_user!(user2.id)]})
+    assert Jason.encode(response) == Jason.encode(%{users: [Codebattle.User.get!(user2.id)]})
   end
 
   test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do

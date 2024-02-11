@@ -13,7 +13,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user = Repo.get(User, id)
+    user = User.get!(id)
 
     json(conn, %{user: user})
   end
@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
-    user = Repo.get(User, id)
+    user = User.get!(id)
 
     json(conn, %{stats: game_stats, user: user})
   end

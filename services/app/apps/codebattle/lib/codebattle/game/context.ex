@@ -105,7 +105,7 @@ defmodule Codebattle.Game.Context do
   def create_empty_game(user_id, task) do
     current_player =
       user_id
-      |> User.get_user!()
+      |> User.get!()
       |> Player.build()
 
     opponent_bot =

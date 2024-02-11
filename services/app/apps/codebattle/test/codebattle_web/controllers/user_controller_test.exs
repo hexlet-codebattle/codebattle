@@ -77,7 +77,7 @@ defmodule CodebattleWeb.UserControllerTest do
       |> put(Routes.user_setting_path(conn, :update), user: %{name: "new_name"})
 
     assert conn.status == 302
-    assert Repo.get(User, user.id).name == "new_name"
+    assert User.get(user.id).name == "new_name"
   end
 
   @tag :skip
@@ -92,7 +92,7 @@ defmodule CodebattleWeb.UserControllerTest do
       |> put(Routes.user_path(conn, :update, user.id), user: %{name: "new_name"})
 
     assert conn.status == 302
-    assert Repo.get(User, user.id).name == "new_name"
+    assert User.get(user.id).name == "new_name"
 
     conn2 = Phoenix.ConnTest.build_conn()
 
@@ -101,6 +101,6 @@ defmodule CodebattleWeb.UserControllerTest do
     |> put(Routes.user_path(conn2, :update, user2.id), user: %{name: "new_name"})
 
     assert conn.status == 422
-    assert Repo.get(User, user.id).name != "new_name"
+    assert User.get(user.id).name != "new_name"
   end
 end
