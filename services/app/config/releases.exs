@@ -41,7 +41,6 @@ config :codebattle, :oauth,
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
-
 import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
 create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
 use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
