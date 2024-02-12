@@ -1,7 +1,9 @@
 defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, PremiumRequest, User, User.Stats}
+  alias Codebattle.PremiumRequest
+  alias Codebattle.User
+  alias Codebattle.User.Stats
   alias CodebattleWeb.Api.UserView
 
   import Ecto.Query, warn: false

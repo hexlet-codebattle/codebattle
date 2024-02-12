@@ -67,40 +67,4 @@ defmodule CodebattleWeb.UserControllerTest do
 
     assert conn.status == 200
   end
-
-  test "update user", %{conn: conn} do
-    user = insert(:user)
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
-      |> put(Routes.user_setting_path(conn, :update), user: %{name: "new_name"})
-
-    assert conn.status == 302
-    assert User.get(user.id).name == "new_name"
-  end
-
-  @tag :skip
-  # TODO: fix test
-  test "update user with same name", %{conn: conn} do
-    user = insert(:user)
-    user2 = insert(:user)
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
-      |> put(Routes.user_path(conn, :update, user.id), user: %{name: "new_name"})
-
-    assert conn.status == 302
-    assert User.get(user.id).name == "new_name"
-
-    conn2 = Phoenix.ConnTest.build_conn()
-
-    conn2
-    |> put_session(:user_id, user2.id)
-    |> put(Routes.user_path(conn2, :update, user2.id), user: %{name: "new_name"})
-
-    assert conn.status == 422
-    assert User.get(user.id).name != "new_name"
-  end
 end

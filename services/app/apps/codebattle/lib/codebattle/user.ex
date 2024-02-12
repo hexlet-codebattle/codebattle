@@ -8,7 +8,7 @@ defmodule Codebattle.User do
   import Ecto.Query
 
   alias Codebattle.Repo
-  alias User.SoundSettings
+  alias Codebattle.User.SoundSettings
 
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()
@@ -124,7 +124,7 @@ defmodule Codebattle.User do
   end
 
   @spec admin?(t()) :: boolean()
-  def admin?(%__MODULE__{subscription_type: "admin"}), do: true
+  def admin?(%__MODULE__{subscription_type: :admin}), do: true
   def admin?(_user), do: false
 
   @spec bot?(integer()) :: boolean()

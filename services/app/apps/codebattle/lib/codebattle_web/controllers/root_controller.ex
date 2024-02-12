@@ -3,10 +3,8 @@ defmodule CodebattleWeb.RootController do
 
   import PhoenixGon.Controller
 
-  alias Codebattle.Repo
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
-  alias CodebattleWeb.Api.UserView
   alias CodebattleWeb.LayoutView
 
   def index(conn, params) do

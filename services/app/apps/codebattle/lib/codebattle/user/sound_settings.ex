@@ -1,4 +1,4 @@
-defmodule User.SoundSettings do
+defmodule Codebattle.User.SoundSettings do
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -16,7 +16,7 @@ defmodule User.SoundSettings do
   def changeset(struct, params) do
     struct
     |> cast(params, [:level, :type])
-    |> validate_length(:level, greater_than_or_equal_to: 0, less_than_or_equal_to: 10)
+    |> validate_number(:level, greater_than_or_equal_to: 0, less_than_or_equal_to: 10)
     |> validate_inclusion(:type, @types)
   end
 end

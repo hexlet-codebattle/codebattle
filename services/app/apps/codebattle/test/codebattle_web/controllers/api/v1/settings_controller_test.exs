@@ -43,7 +43,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       conn =
         conn
         |> put_session(:user_id, user.id)
-        |> patch(Routes.api_v1_settings_path(conn, :show, new_settings))
+        |> patch(Routes.api_v1_settings_path(conn, :update, new_settings))
 
       assert json_response(conn, 200) == new_settings
 

@@ -1,9 +1,13 @@
 defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
-  alias Codebattle.{User, Game, Task, TaskPack, UserGame}
   alias Codebattle.Feedback
+  alias Codebattle.Game
   alias Codebattle.Playbook
+  alias Codebattle.Task
+  alias Codebattle.TaskPack
+  alias Codebattle.User
+  alias Codebattle.UserGame
 
   def user_factory do
     %User{
@@ -24,6 +28,7 @@ defmodule CodebattleWeb.Factory do
     %User{
       id: 1_984_198_419,
       name: "admin",
+      subscription_type: "admin",
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,
       github_id: :rand.uniform(9_999_999),
