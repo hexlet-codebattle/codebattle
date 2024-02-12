@@ -91,6 +91,7 @@ describe('UserSettings test cases', () => {
 
     await waitFor(() => {
       expect(settingUpdaterSpy).toHaveBeenCalledWith(expect.anything(), {
+        clan: '',
         name: 'Dmitry',
         lang: 'js',
         sound_settings: {
