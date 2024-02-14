@@ -11,6 +11,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           email: "test1@test.test",
           github_id: 1,
           github_name: "g_name",
+          clan: "abc",
           rating: 2400,
           lang: "dart"
         })
@@ -23,6 +24,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert json_response(conn, 200) == %{
                "name" => "first",
                "lang" => "dart",
+               "clan" => "abc",
                "sound_settings" => %{"level" => 7, "type" => "dendy"},
                "github_id" => 1,
                "github_name" => "g_name"
@@ -34,6 +36,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     test "updates current user settings", %{conn: conn} do
       new_settings = %{
         "name" => "evgen",
+        "clan" => "bca",
         "sound_settings" => %{"level" => 3, "type" => "cs"},
         "lang" => "ruby"
       }
@@ -51,6 +54,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
       assert updated.sound_settings.level == 3
       assert updated.sound_settings.type == "cs"
+      assert updated.clan == "bca"
       assert updated.name == "evgen"
       assert updated.lang == "ruby"
     end
