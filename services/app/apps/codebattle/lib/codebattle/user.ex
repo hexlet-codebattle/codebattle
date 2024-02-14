@@ -33,7 +33,6 @@ defmodule Codebattle.User do
              :is_guest,
              :lang,
              :name,
-             :performance,
              :rank,
              :rating,
              :sound_settings,
@@ -66,7 +65,6 @@ defmodule Codebattle.User do
     field(:subscription_type, Ecto.Enum, values: @subscription_types)
 
     field(:games_played, :integer, virtual: true)
-    field(:performance, :integer, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)

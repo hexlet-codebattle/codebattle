@@ -1,118 +1,94 @@
 defmodule Codebattle.User.Scope do
   @moduledoc """
-    module with scopes for user repo
+    Module with scopes for the User scheme
   """
 
-  alias Codebattle.{User, UserGame, Game}
-  import Ecto.Query, warn: false
+  alias Codebattle.User
 
-  @sort_order ~w(asc desc)
-  @sortable_attributes ~w(id rank games_played rating inserted_at)
-
-  def list_users(params) do
-    params
-    |> initial_scope()
-    |> search_by_name(params)
-    |> without_bots(params)
-    |> sort(params)
-  end
+  import Ecto.Query
 
   def by_email_or_name(query, %{name: name, email: email}) do
     from(u in query, where: u.name == ^name or u.email == ^email)
   end
 
-  defp initial_scope(%{"date_from" => date_from}) when date_from !== "" do
+  def list_users(params) do
+    base_query()
+    |> filter_by_date(params)
+    |> search_by_name(params)
+    |> without_bots(params)
+    |> sort(params)
+  end
+
+  defp base_query() do
+    User
+    |> from(as: :u)
+    |> join(:left, [u: u], ug in assoc(u, :user_games), as: :ug)
+    |> group_by([u: u], u.id)
+    |> select([u: u, ug: ug], %{
+      games_played: count(ug.user_id),
+      github_id: u.github_id,
+      id: u.id,
+      inserted_at: u.inserted_at,
+      lang: u.lang,
+      name: u.name,
+      rank: u.rank,
+      rating: u.rating
+    })
+  end
+
+  defp filter_by_date(query, %{"date_from" => date_from}) when date_from !== "" do
     starts_at = Timex.parse!(date_from, "{YYYY}-{0M}-{D}")
 
-    from(u in User,
-      order_by: {:desc, :rating},
-      left_join: ug in UserGame,
-      on: u.id == ug.user_id,
-      left_join: g in Game,
-      on: g.id == ug.game_id,
-      where: g.starts_at >= type(^starts_at, :naive_datetime),
-      group_by: u.id,
-      select: %User{
-        id: u.id,
-        is_bot: u.is_bot,
-        name: u.name,
-        rating: sum(ug.rating_diff),
-        github_id: u.github_id,
-        lang: u.lang,
-        games_played: count(ug.user_id),
-        rank: u.rank,
-        inserted_at: u.inserted_at
-      }
-    )
+    query
+    |> where([ug: ug], ug.inserted_at >= type(^starts_at, :naive_datetime))
+    |> select_merge([ug: ug], %{rating: sum(ug.rating_diff)})
   end
 
-  defp initial_scope(_params) do
-    from(u in User,
-      order_by: {:desc, :rating},
-      left_join: ug in UserGame,
-      on: u.id == ug.user_id,
-      group_by: u.id,
-      select: %User{
-        id: u.id,
-        is_bot: u.is_bot,
-        name: u.name,
-        rating: u.rating,
-        github_id: u.github_id,
-        lang: u.lang,
-        games_played: count(ug.user_id),
-        rank: u.rank,
-        inserted_at: u.inserted_at
-      }
-    )
+  defp filter_by_date(query, _params), do: query
+
+  defp search_by_name(query, %{"q" => %{"name_ilike" => ""}}), do: query
+
+  defp search_by_name(query, %{"q" => %{"name_ilike" => term}})
+       when is_binary(term) do
+    where(query, [u: u], ilike(u.name, ^"%#{term}%"))
   end
+
+  defp search_by_name(query, _params), do: query
 
   defp without_bots(query, %{"with_bots" => "true"}), do: query
 
   defp without_bots(query, _params) do
-    from(u in subquery(query), where: u.is_bot == false)
+    where(query, [u: u], u.is_bot == false)
   end
-
-  defp search_by_name(query, %{"q" => %{"name_ilike" => term}})
-       when is_binary(term) do
-    from(u in subquery(query),
-      where: ilike(u.name, ^"%#{term}%")
-    )
-  end
-
-  defp search_by_name(query, _), do: query
 
   defp sort(query, %{"s" => value}) do
-    direction = sort_direction(value)
-    attribute = sort_attribute(value)
+    [field, direction] = String.split(value, "+")
 
-    query
-    |> sort(attribute, direction)
+    apply_sort(query, field, String.to_existing_atom(direction))
+  rescue
+    _e ->
+      order_by(query, {:desc, :rating})
   end
 
   defp sort(query, _), do: query
 
-  defp sort(query, attribute, direction)
-       when is_binary(direction) and is_binary(attribute) do
-    direction = direction |> String.to_existing_atom()
-    attribute = attribute |> String.to_existing_atom()
-
-    from(
-      u in subquery(query),
-      order_by: {^direction, ^attribute}
-    )
+  defp apply_sort(query, "id", direction) do
+    order_by(query, {^direction, :id})
   end
 
-  defp sort(query, _, _), do: query
-
-  defp sort_direction(value) do
-    value
-    |> String.split(~r/\+/)
-    |> Enum.find(&Enum.member?(@sort_order, &1))
+  defp apply_sort(query, "rank", direction) do
+    order_by(query, {^direction, :rank})
   end
 
-  defp sort_attribute(value) do
-    value
-    |> String.split(~r/\+/)
-    |> Enum.find(&Enum.member?(@sortable_attributes, &1))
+  defp apply_sort(query, "rating", direction) do
+    order_by(query, {^direction, :rating})
+  end
+
+  defp apply_sort(query, "games_played", direction) do
+    order_by(query, [ug: ug], {^direction, count(ug.user_id)})
+  end
+
+  defp apply_sort(query, _field, _direction) do
+    order_by(query, {:desc, :rating})
   end
 end

@@ -3,7 +3,7 @@ import React from 'react';
 import Slider from 'calcite-react/Slider';
 import cn from 'classnames';
 import {
- Formik, Form, Field, useField,
+  Formik, Form, Field, useField,
 } from 'formik';
 import capitalize from 'lodash/capitalize';
 import * as Icon from 'react-feather';
@@ -69,13 +69,13 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
 
   const validationSchema = Yup.object({
     name: Yup.string()
-            .strict()
-            .required("Field can't be empty")
-            .min(3, 'Should be at least 3 characters')
-            .max(16, 'Should be 16 character(s) or less')
-            .trim(),
+      .strict()
+      .required("Field can't be empty")
+      .min(3, 'Should be at least 3 characters')
+      .max(16, 'Should be 16 character(s) or less')
+      .trim(),
     clan: Yup.string()
-            .strict(),
+      .strict(),
   });
 
   return (
@@ -127,7 +127,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                   id="clan"
                   name="clan"
                   type="text"
-                  placeholder="Enter your clan name"
+                  placeholder="Enter your clan"
                 />
               </div>
             </div>

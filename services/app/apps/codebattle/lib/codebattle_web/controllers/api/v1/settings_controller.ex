@@ -9,6 +9,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
     json(conn, %{
       name: current_user.name,
+      clan: current_user.clan,
       github_id: current_user.github_id,
       github_name: current_user.github_name,
       sound_settings: current_user.sound_settings,
@@ -26,6 +27,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
       {:ok, user} ->
         json(conn, %{
           name: user.name,
+          clan: user.clan,
           sound_settings: user.sound_settings,
           lang: user.lang
         })

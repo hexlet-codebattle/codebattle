@@ -17,28 +17,15 @@ defmodule CodebattleWeb.Api.UserView do
       |> Map.get("page_size", "50")
       |> String.to_integer()
 
-    query = Scope.list_users(params)
-    page = Repo.paginate(query, %{page: page_number, page_size: page_size, total: true})
+    result =
+      params
+      |> Scope.list_users()
+      |> Repo.paginate(%{page: page_number, page_size: page_size, total: true})
 
-    page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
-
-    users =
-      Enum.map(
-        page.entries,
-        fn user ->
-          performance =
-            if is_nil(user.rating) do
-              nil
-            else
-              Kernel.round((user.rating - 1200) * 100 / (user.games_played + 1))
-            end
-
-          Map.put(user, :performance, performance)
-        end
-      )
+    page_info = Map.take(result, [:page_number, :page_size, :total_entries, :total_pages])
 
     %{
-      users: users,
+      users: result.entries,
       page_info: page_info,
       date_from: Map.get(params, "date_from"),
       with_bots: Map.get(params, "with_bots")

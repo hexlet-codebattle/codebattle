@@ -7,16 +7,19 @@ defmodule Codebattle.Repo do
 
   @default_pagination %{page: 1, page_size: 50, total: false}
 
-  def count(q), do: Codebattle.Repo.aggregate(q, :count, :id)
+  def count(q), do: Codebattle.Repo.aggregate(q, :count)
 
   def paginate(query, params) do
     params = Map.merge(@default_pagination, params)
 
     total_entries =
       if params.total do
-        query
-        |> exclude(:order_by)
-        |> exclude(:select)
+        query =
+          query
+          |> exclude(:order_by)
+          |> exclude(:select)
+
+        from(u in subquery(query))
         |> Repo.count()
       else
         0

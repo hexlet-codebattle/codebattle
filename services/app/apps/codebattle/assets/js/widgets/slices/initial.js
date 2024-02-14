@@ -70,11 +70,11 @@ const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardU
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
-      [currentUserParams.id]: {
-        ...currentUserParams,
-        type: userTypes.spectator,
-      },
-    }
+    [currentUserParams.id]: {
+      ...currentUserParams,
+      type: userTypes.spectator,
+    },
+  }
   : {};
 
 // ******************************
@@ -99,9 +99,9 @@ export const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-      ...defaultGameStatusState,
-      ...getGameStatus(gameParams),
-    }
+    ...defaultGameStatusState,
+    ...getGameStatus(gameParams),
+  }
   : defaultGameStatusState;
 
 const initialGameAward = gameParams ? gameParams.award : null;
@@ -142,21 +142,21 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersMetaToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersTextToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersTextToSliseState, {})
   : {};
 
 const initialLangsHistory = gameParams && isRecord
-    ? gameParams.players
-        .map(getPlayersText)
-        .reduce(setPlayersLangToSliseState, {})
-    : {};
+  ? gameParams.players
+    .map(getPlayersText)
+    .reduce(setPlayersLangToSliseState, {})
+  : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -165,8 +165,8 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-      .map(getPlayersExecutionData)
-      .reduce(setPlayersResultsToSliceState, {})
+    .map(getPlayersExecutionData)
+    .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = {
@@ -290,10 +290,10 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-      ...defaultTournamentParams,
-      ...tournamentParams,
-      channel: { online: !tournamentParams.isLive },
-    }
+    ...defaultTournamentParams,
+    ...tournamentParams,
+    channel: { online: !tournamentParams.isLive },
+  }
   : defaultTournamentParams;
 
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
@@ -489,7 +489,7 @@ export default {
     },
   },
   leaderboard: {
-    loading: loadingStatuses.INITIAL,
+    loading: loadingStatuses.PENDING,
     period: periodTypes.WEEKLY,
     users: initialLeaderboardUsers,
     error: null,

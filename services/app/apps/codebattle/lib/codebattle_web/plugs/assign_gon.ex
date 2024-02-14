@@ -22,24 +22,25 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   defp prepare_user(user) do
     user
     |> Map.take([
-      :id,
-      :name,
-      :rating,
-      :is_bot,
-      :is_guest,
-      :github_id,
-      :github_name,
-      :discord_name,
-      :discord_id,
+      :achievements,
+      :clan,
       :discord_avatar,
-      :lang,
+      :discord_id,
+      :discord_name,
       :editor_mode,
       :editor_theme,
-      :achievements,
-      :rank,
       :games_played,
-      :performance,
+      :github_id,
+      :github_name,
+      :id,
       :inserted_at,
+      :is_bot,
+      :is_guest,
+      :lang,
+      :name,
+      :performance,
+      :rank,
+      :rating,
       :sound_settings
     ])
     |> Map.put(:is_admin, Codebattle.User.admin?(user))
