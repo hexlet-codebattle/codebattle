@@ -149,8 +149,8 @@ defmodule CodebattleWeb.Router do
       get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
     end
 
+    # get("/clans/:slug", ClanController, :show)
     resources("/users", UserController, only: [:new])
-
     resources("/feedback", FeedbackController, only: [:index])
 
     resources("/games", GameController, only: [:show]) do

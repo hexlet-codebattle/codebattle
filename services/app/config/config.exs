@@ -48,8 +48,6 @@ config :fun_with_flags, :persistence,
 
 config :fun_with_flags, :cache_bust_notifications, enabled: false
 
-config :porcelain, goon_warn_if_missing: false
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

@@ -1,5 +1,5 @@
 test-runtime:
-	go build -o checker ./check/checker.go ./check/solution.go && ./checker
+	go run  ./check/checker.go ./check/solution.go
 
 format:
 	gofmt -w -e ./check/solution.go

@@ -51,6 +51,12 @@ RUN mix phx.digest
 RUN mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
+FROM nginx:alpine AS nginx-image
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ /assets
+
 FROM elixir:1.16 AS runtime-image
 
 RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl vim \

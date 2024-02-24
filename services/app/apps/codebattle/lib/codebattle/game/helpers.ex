@@ -156,6 +156,7 @@ defmodule Codebattle.Game.Helpers do
   }
 
   def get_player_score(player, duration_sec, game_level) do
+    # TODO: pull this code into separate module and cover all cases with tests
     # game_level_score is a Fibonacci-based score for different task levels
     game_level_score = @game_level_score[game_level]
 

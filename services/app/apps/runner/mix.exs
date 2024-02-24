@@ -43,8 +43,8 @@ defmodule Runner.MixProject do
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:plug_cowboy, "~> 2.5"},
-      {:sentry, "~> 8.0"},
+      {:plug_cowboy, "~> 2.7"},
+      {:sentry, "~> 10.0"},
       {:temp, "~> 0.4"},
       {:typed_struct, "~> 0.3"}
     ]

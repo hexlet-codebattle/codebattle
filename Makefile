@@ -37,6 +37,23 @@ ansible-vault-edit-production:
 release:
 	make -C services/app release
 
+docker-build-cb-local:
+	docker build --target assets-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:assets-image services/app
+	docker build --target compile-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:compile-image services/app
+	docker build --target nginx-image \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/nginx:latest services/app
+	docker build --target runtime-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:latest services/app \
+
 docker-build-codebattle:
 	docker pull codebattle/codebattle:assets-image  || true
 	docker pull codebattle/codebattle:compile-image || true
@@ -52,6 +69,9 @@ docker-build-codebattle:
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:compile-image services/app
+	docker build --target nginx-image \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/nginx:latest services/app
 	docker build --target runtime-image \
 				--cache-from=codebattle/codebattle:assets-image \
 				--cache-from=codebattle/codebattle:compile-image \
@@ -64,6 +84,7 @@ docker-push-codebattle:
 	docker push codebattle/codebattle:assets-image
 	docker push codebattle/codebattle:compile-image
 	docker push codebattle/codebattle:latest
+	docker push codebattle/nginx:latest
 
 docker-build-runner:
 	docker pull codebattle/runner:compile-image || true
@@ -81,9 +102,3 @@ docker-build-runner:
 docker-push-runner:
 	docker push codebattle/runner:compile-image
 	docker push codebattle/runner:latest
-
-docker-build-nginx:
-	docker build --file services/nginx/Dockerfile --tag codebattle/nginx services/nginx
-
-docker-push-nginx:
-	docker push codebattle/nginx:latest
