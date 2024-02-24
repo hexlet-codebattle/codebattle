@@ -36,7 +36,7 @@ defmodule Codebattle.Oauth.User.GithubUser do
     github_user = Repo.get_by(User, github_id: profile.id)
 
     if github_user != nil && github_user.id != user.id do
-      {:error, "github_id has been taken"}
+      {:error, "User with #{github_user.id} already registered."}
     else
       github_name = profile.login
 
