@@ -37,7 +37,8 @@ config :codebattle, Codebattle.Bot,
 checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "local" -> Codebattle.CodeCheck.Executor.Local
-    "remote" -> Codebattle.CodeCheck.Executor.Remote
+    "remote" -> Codebattle.CodeCheck.Executor.RemoteDockerRun
+    "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
