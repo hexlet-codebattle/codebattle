@@ -3,7 +3,7 @@ defmodule Runner.CheckerGenerator do
 
   alias Runner.TypesGenerator
 
-  @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: String.t()
+  @spec call(Runner.Task.t() | map(), Runner.LanguageMeta.t(), String.t()) :: String.t()
   def call(task, lang_meta = %{checker_version: 2}, _seed) do
     Runner.CheckerGenerator.V2.call(task, lang_meta)
   end

@@ -37,7 +37,7 @@ ansible-vault-edit-production:
 release:
 	make -C services/app release
 
-docker-build-cb-local:
+docker-build-local:
 	docker build --target assets-image \
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
@@ -52,7 +52,13 @@ docker-build-cb-local:
 	docker build --target runtime-image \
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:latest services/app \
+				--tag codebattle/codebattle:latest services/app
+	docker build --target compile-image \
+				--file services/app/Dockerfile.runner \
+				--tag codebattle/runner:compile-image services/app
+	docker build --target runtime-image \
+				--file services/app/Dockerfile.runner \
+				--tag codebattle/runner:latest services/app
 
 docker-build-codebattle:
 	docker pull codebattle/codebattle:assets-image  || true

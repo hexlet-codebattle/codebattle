@@ -91,12 +91,9 @@ config :phoenix_meta_tags,
 
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteDockerRun
+# config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
-
-config :runner, :executor,
-  runner_url: "http://localhost:4001",
-  api_key: "x-key"
 
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, max_alive_tournaments: 15
@@ -130,9 +127,13 @@ config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
+config :runner, :runner_url, "http://localhost:4001"
+config :runner, :runner_rust_url, "http://localhost:4002"
+config :runner, :api_key, "x-key"
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false
 config :runner, runner_cpu_logger: false
+config :runner, runner_container_killer: false
 config :runner, max_parallel_containers_run: 16
 config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)
 config :runner, fake_docker_run: false

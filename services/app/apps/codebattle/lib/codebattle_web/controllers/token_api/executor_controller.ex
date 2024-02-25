@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.TokenApi.ExecutorController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.CodeCheck.Executor.Remote
+  alias Codebattle.CodeCheck.Executor.RemoteRust
   alias Runner.Languages
 
   import Plug.Conn
@@ -21,7 +21,7 @@ defmodule CodebattleWeb.TokenApi.ExecutorController do
           solution_text: solution_text,
           task: task
         }
-        |> Remote.execute(Languages.meta(lang_slug))
+        |> RemoteRust.execute(Languages.meta(lang_slug))
       end)
 
     Logger.error("Proxy execution lang: #{lang_slug}, time: #{div(execution_time, 1_000)} msecs")

@@ -74,17 +74,27 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
+checker_executor =
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
+    _ -> Codebattle.CodeCheck.Executor.RemoteDockerRun
+  end
+
+config :codebattle, checker_executor: checker_executor
+config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
+
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
   environment_name: :prod,
   enable_source_code_context: true,
-  root_source_code_path: File.cwd!(),
-  tags: %{env: "prod"},
-  included_environments: [:prod]
+  root_source_code_paths: [File.cwd!()]
 
 port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
 host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
+
+config :codebattle,
+  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
 config :runner, RunnerWeb.Endpoint,
   http: [:inet6, port: port],
@@ -96,11 +106,9 @@ config :runner,
   max_parallel_containers_run:
     System.get_env("CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
 
-config :runner, :executor,
-  runner_url: "http://runner.default.svc",
-  api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
-
-config :codebattle,
-  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
-
-config :runner, runner_cpu_logger: System.get_env("CODEBATTLE_RUNNER_CPU_LOGGER", "") == "true"
+config :runner, :runner_url, "http://runner.default.svc"
+config :runner, :runner_rust_url, "http://runner-rs.default.svc"
+config :runner, :api_key, System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
+config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
+config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
+config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"

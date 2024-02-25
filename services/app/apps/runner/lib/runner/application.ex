@@ -26,8 +26,15 @@ defmodule Runner.Application do
       end
 
     prod_workers =
-      if Application.get_env(:runner, :runner_cpu_logger) do
+      if Application.get_env(:runner, :cpu_logger) do
         [{Runner.SystemMonitorLogger, []} | prod_workers]
+      else
+        prod_workers
+      end
+
+    prod_workers =
+      if Application.get_env(:runner, :container_killer) do
+        [{Runner.StaleContainersKiller, []} | prod_workers]
       else
         prod_workers
       end
@@ -40,7 +47,6 @@ defmodule Runner.Application do
           id: Runner.PubSub,
           start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Runner.PubSub]]}
         },
-        {Runner.StaleContainersKiller, []},
         {Runner.StateContainersRunLimiter, []}
       ] ++ prod_workers
 

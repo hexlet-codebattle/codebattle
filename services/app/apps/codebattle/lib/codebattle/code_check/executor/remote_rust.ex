@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Executor.Remote do
+defmodule Codebattle.CodeCheck.Executor.RemoteRust do
   @moduledoc false
 
   require Logger
@@ -6,13 +6,25 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
   alias Codebattle.CodeCheck.Checker.Token
   alias Runner.AtomizedMap
   alias Runner.Languages
+  alias Runner.CheckerGenerator
 
   @spec call(Token.t()) :: Token.t()
   def call(token) do
+    seed = get_seed()
+
+    checker_text =
+      if token.lang_meta.generate_checker? do
+        CheckerGenerator.call(token.task, token.lang_meta, seed)
+      else
+        nil
+      end
+
     %{
+      checker_text: checker_text,
       lang_slug: token.lang_meta.slug,
+      timeout: token.lang_meta.container_run_timeout,
       solution_text: token.solution_text,
-      task: Runner.Task.new!(token.task)
+      asserts: Jason.encode!(token.task.asserts)
     }
     |> execute(token.lang_meta)
     |> case do
@@ -21,7 +33,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
           token
           | container_output: result.container_output,
             exit_code: result.exit_code,
-            seed: result.seed,
+            seed: seed,
             execution_error: nil
         }
 
@@ -34,43 +46,43 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
   end
 
   def execute(params, lang_meta) do
-    headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
+    headers = [{"content-type", "application/json"}]
     body = Jason.encode!(params)
     now = :os.system_time(:millisecond)
 
     :post
-    |> Finch.build("#{executor_url()}/api/v1/execute", headers, body)
+    |> Finch.build("#{runner_url()}", headers, body)
     |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
     |> case do
-      # case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
-      #        timeout: 30_000,
-      #        recv_timeout: 30_000
-      #      ) do
       {:ok, %Finch.Response{status: 200, body: body}} ->
         Logger.error(
-          "RemoteExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
+          "RemoteRustExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
         )
 
         AtomizedMap.load(body)
 
       {:ok, %Finch.Response{status: status, body: body}} ->
         Logger.error(
-          "RemoteExecutor failure status: #{status}, lang: #{lang_meta.slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
+          "RemoteRustExecutor failure status: #{status}, lang: #{lang_meta.slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
         )
 
-        {:error, "RemoteExecutor failure: #{inspect(body)}"}
+        {:error, "RemoteRustExecutor failure: #{inspect(body)}"}
 
       {:error, finch_exception} ->
         reason = Exception.format(:error, finch_exception, [])
 
         Logger.error(
-          "RemoteExecutor error lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}, error: #{inspect(reason)}"
+          "RemoteRustExecutor error lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}, error: #{inspect(reason)}"
         )
 
         {:error, :timeout}
     end
   end
 
-  defp executor_url, do: Application.get_env(:runner, :executor)[:runner_url]
-  defp api_key, do: Application.get_env(:runner, :executor)[:api_key]
+  defp get_seed do
+    to_string(:rand.uniform(10_000_000))
+  end
+
+  defp runner_url, do: Application.get_env(:runner, :runner_rust_url)
+  # defp runner_url, do: "http://192.168.178.36:8080/run"
 end

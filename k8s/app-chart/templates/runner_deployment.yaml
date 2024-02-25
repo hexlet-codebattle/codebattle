@@ -55,5 +55,9 @@ spec:
               value: {{ .Values.version }}
             - name: CODEBATTLE_RUNNER_PORT
               value: "4001"
+            - name: RUNNER_PULL_DOCKER_IMAGES
+              value: "true"
+            - name: RUNNER_CONTAINER_KILLER
+              value: "true"
             - name: DEPLOYED_AT
-              value: "{{ now }}"
+              value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
