@@ -241,6 +241,10 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Invite{}
   end
 
+  def clan_factory do
+    %Codebattle.Clan{}
+  end
+
   def feedback_factory do
     %Feedback{author_name: "name", status: "proposal", text: "text", title_link: "title_link"}
   end

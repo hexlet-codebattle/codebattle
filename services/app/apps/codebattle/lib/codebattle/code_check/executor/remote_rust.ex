@@ -19,19 +19,25 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
         nil
       end
 
+    asserts =
+      token.task.asserts
+      |> Enum.map(& &1.arguments)
+      |> then(fn x -> %{arguments: x} end)
+      |> Jason.encode!()
+
     %{
       checker_text: checker_text,
       lang_slug: token.lang_meta.slug,
       timeout: token.lang_meta.container_run_timeout,
       solution_text: token.solution_text,
-      asserts: Jason.encode!(token.task.asserts)
+      asserts: asserts
     }
     |> execute(token.lang_meta)
     |> case do
       {:ok, result} ->
         %{
           token
-          | container_output: result.container_output,
+          | container_output: result.stdout,
             exit_code: result.exit_code,
             seed: seed,
             execution_error: nil
@@ -46,12 +52,17 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
   end
 
   def execute(params, lang_meta) do
-    headers = [{"content-type", "application/json"}]
-    body = Jason.encode!(params)
+    headers = [
+      {"content-type", "application/json"},
+      {"content-encoding", "deflate"}
+    ]
+
+    body = params |> Jason.encode!() |> :zlib.compress()
+
     now = :os.system_time(:millisecond)
 
     :post
-    |> Finch.build("#{runner_url()}", headers, body)
+    |> Finch.build(runner_url(), headers, body)
     |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
     |> case do
       {:ok, %Finch.Response{status: 200, body: body}} ->
@@ -83,6 +94,6 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     to_string(:rand.uniform(10_000_000))
   end
 
-  defp runner_url, do: Application.get_env(:runner, :runner_rust_url)
-  # defp runner_url, do: "http://192.168.178.36:8080/run"
+  # defp runner_url, do: Application.get_env(:runner, :runner_rust_url)
+  defp runner_url, do: "http://192.168.178.36:8080/run"
 end

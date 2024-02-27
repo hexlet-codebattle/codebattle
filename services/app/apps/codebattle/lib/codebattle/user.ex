@@ -8,6 +8,7 @@ defmodule Codebattle.User do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.Clan
   alias Codebattle.User.SoundSettings
 
   @type t :: %__MODULE__{}
@@ -22,6 +23,7 @@ defmodule Codebattle.User do
              :achievements,
              :avatar_url,
              :clan,
+             :clan_id,
              :editor_mode,
              :editor_theme,
              :games_played,
@@ -58,6 +60,7 @@ defmodule Codebattle.User do
     field(:is_bot, :boolean, default: false)
     field(:lang, :string, default: "js")
     field(:clan, :string)
+    field(:clan_id, :integer)
     field(:name, :string)
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
@@ -81,7 +84,6 @@ defmodule Codebattle.User do
       :achievements,
       :auth_token,
       :avatar_url,
-      :clan,
       :discord_avatar,
       :discord_id,
       :discord_name,
@@ -99,17 +101,17 @@ defmodule Codebattle.User do
     |> validate_required([:name])
   end
 
-  def settings_changeset(model, params \\ %{}) do
-    model
-    |> cast(params, [:name, :lang, :clan])
+  def settings_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)
-    |> validate_length(:clan, min: 3, max: 31)
+    |> assign_clan(params, user.id)
   end
 
   @spec build_guest() :: t()
-  def build_guest() do
+  def build_guest do
     %__MODULE__{
       is_guest: true,
       id: @guest_id,
@@ -150,4 +152,17 @@ defmodule Codebattle.User do
     |> order_by([u], {:desc, :rating})
     |> Repo.all()
   end
+
+  defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil] do
+    changeset
+  end
+
+  defp assign_clan(changeset, %{"clan" => clan_name}, user_id) do
+    case Clan.find_or_create_by_clan(clan_name, user_id) do
+      {:ok, clan} -> change(changeset, %{clan: String.trim(clan_name), clan_id: clan.id})
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp assign_clan(changeset, _params, _user_id), do: changeset
 end

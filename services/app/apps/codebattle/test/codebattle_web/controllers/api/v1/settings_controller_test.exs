@@ -34,9 +34,11 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
   describe "#update" do
     test "updates current user settings", %{conn: conn} do
+      clan = insert(:clan, name: "bca")
+
       new_settings = %{
         "name" => "evgen",
-        "clan" => "bca",
+        "clan" => "  Bca  ",
         "sound_settings" => %{"level" => 3, "type" => "cs"},
         "lang" => "ruby"
       }
@@ -48,13 +50,14 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         |> put_session(:user_id, user.id)
         |> patch(Routes.api_v1_settings_path(conn, :update, new_settings))
 
-      assert json_response(conn, 200) == new_settings
+      assert json_response(conn, 200) == Map.put(new_settings, "clan", "Bca")
 
       updated = Repo.get!(Codebattle.User, user.id)
 
       assert updated.sound_settings.level == 3
       assert updated.sound_settings.type == "cs"
-      assert updated.clan == "bca"
+      assert updated.clan == "Bca"
+      assert updated.clan_id == clan.id
       assert updated.name == "evgen"
       assert updated.lang == "ruby"
     end

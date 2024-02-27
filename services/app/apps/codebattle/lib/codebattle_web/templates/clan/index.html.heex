@@ -1,0 +1,21 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Clans</h1>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>creator_id</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for clan <- @clans do %>
+          <tr>
+            <td class="align-middle text"><%= clan.name %></td>
+            <td class="align-middle text"><%= clan.creator_id %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
