@@ -238,11 +238,19 @@
                       </button>
                     </a>
                   </li>
-                  <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
-                    <li class="nav-item">
-                      <%= button("Dev sign_in",
-                        to: "/auth/dev_login?locale=en",
-                        class: "btn btn-outline-danger rounded-lg ml-2"
+                  <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
+                    <li class="nav-item mx-1">
+                      <%= button("Dev",
+                        to: "/auth/dev_login?locale=en&subscription_type=free",
+                        class: "btn btn-outline-danger rounded-lg"
+                      ) %>
+                      <%= button("Premium",
+                        to: "/auth/dev_login?locale=en&subscription_type=premium",
+                        class: "btn btn-outline-danger rounded-lg"
+                      ) %>
+                      <%= button("Admin",
+                        to: "/auth/dev_login?locale=en&subscription_type=admin",
+                        class: "btn btn-outline-danger rounded-lg"
                       ) %>
                     </li>
                   <% end %>

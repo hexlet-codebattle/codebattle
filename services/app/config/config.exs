@@ -113,6 +113,7 @@ config :codebattle, create_bot_games: true
 config :codebattle, use_external_js: false
 config :codebattle, hide_header: false
 config :codebattle, html_debug_mode: true
+config :codebattle, dev_sign_in: true
 config :codebattle, fake_html_to_image: false
 config :codebattle, use_only_token_auth: false
 config :codebattle, show_extension_popup: true

@@ -31,6 +31,7 @@ config :codebattle, import_github_tasks: true
 config :codebattle, html_env: :prod
 config :codebattle, use_external_js: true
 config :codebattle, html_debug_mode: false
+config :codebattle, dev_sign_in: false
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
 
 config :runner, load_dot_env_file: false

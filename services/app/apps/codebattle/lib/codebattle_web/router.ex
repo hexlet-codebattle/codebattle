@@ -151,6 +151,10 @@ defmodule CodebattleWeb.Router do
 
     get("/clans/", ClanController, :index)
     get("/clans/:id", ClanController, :show)
+
+    resources("/events", EventController)
+    get("/e/:slug", PublicEventController, :show)
+
     resources("/users", UserController, only: [:new])
     resources("/feedback", FeedbackController, only: [:index])
 

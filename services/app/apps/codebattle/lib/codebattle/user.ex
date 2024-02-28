@@ -66,6 +66,7 @@ defmodule Codebattle.User do
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
     field(:subscription_type, Ecto.Enum, values: @subscription_types)
+    field(:timezone, :string, default: "Etc/UTC")
 
     field(:games_played, :integer, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)

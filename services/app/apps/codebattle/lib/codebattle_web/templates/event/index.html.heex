@@ -1,0 +1,41 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Events</h1>
+  <%= link("Create new event",
+    to: Routes.event_path(@conn, :new),
+    class: "btn btn-success text-white mt-2 rounded-lg"
+  ) %>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>slug</th>
+          <th>type</th>
+          <th>title</th>
+          <th>starts_at</th>
+          <th>description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for event <- @events do %>
+          <tr>
+            <td class="align-middle text"><%= event.slug %></td>
+            <td class="align-middle text"><%= event.type %></td>
+            <td class="align-middle text"><%= event.title %></td>
+            <td class="align-middle text"><%= format_datetime(event.starts_at) %></td>
+            <td class="align-middle text">
+              <%= event.description && String.slice(event.description, 1..10) %>
+            </td>
+            <td class="align-middle text-nowrap">
+              <div class="d-flex">
+                <%= link("Show",
+                  to: Routes.event_path(@conn, :show, event.id),
+                  class: "btn btn-sm btn-info rounded-lg"
+                ) %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

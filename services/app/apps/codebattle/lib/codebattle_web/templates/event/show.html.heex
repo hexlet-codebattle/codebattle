@@ -1,0 +1,14 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">
+    <span><%= @event.title %></span>
+  </h1>
+  <h3 class="text-center mt-4">Params</h3>
+  <div class="d-flex flex-wrap align-items-center justify-content-around text-muted">
+    <span>Type: <%= @event.type %></span>
+    <span>Title: <%= @event.title %></span>
+    <span>Description: <%= @event.description %></span>
+    <span>Creator_id: <%= @event.creator_id %></span>
+  </div>
+
+  <%= link("Back", to: Routes.event_path(@conn, :index), class: "ml-auto") %>
+</div>

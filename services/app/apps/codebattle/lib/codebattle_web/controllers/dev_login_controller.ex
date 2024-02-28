@@ -1,12 +1,15 @@
 defmodule CodebattleWeb.DevLoginController do
   use CodebattleWeb, :controller
 
-  def create(conn, _params) do
-    # TODO: add new flag for dev-sign-in
-    if Application.get_env(:codebattle, :html_debug_mode) do
+  def create(conn, params) do
+    if Application.get_env(:codebattle, :dev_sign_in) do
+      subscription_type = Map.get(params, "subscription_type", "free")
+      prefix = subscription_type |> String.first() |> String.upcase()
+
       params = %{
-        name: "Dev-#{:rand.uniform(100_0000)}",
-        email: "Dev@#{:rand.uniform(100_0000)}.cb",
+        subscription_type: subscription_type,
+        name: "#{prefix}-#{:rand.uniform(100_0000)}",
+        email: "#{prefix}@#{:rand.uniform(100_0000)}.cb",
         avatar_url: "/assets/images/logo.svg"
       }
 
