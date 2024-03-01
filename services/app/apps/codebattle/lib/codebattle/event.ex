@@ -72,7 +72,7 @@ defmodule Codebattle.Event do
     clan
     |> cast(attrs, [:slug, :type, :title, :description, :creator_id, :starts_at])
     |> validate_length(:slug, min: 2, max: 57)
-    |> validate_length(:description, min: 3, max: 10000)
+    |> validate_length(:description, min: 3, max: 10_000)
     |> validate_length(:title, min: 3, max: 250)
     |> validate_inclusion(:type, @types)
     |> unique_constraint(:slug)
