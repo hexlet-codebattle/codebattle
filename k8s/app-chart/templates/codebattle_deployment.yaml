@@ -75,4 +75,25 @@ spec:
               value: "4000"
             - name: DEPLOYED_AT
               value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
+            # - name: CODEBATTLE_USE_ONLY_TOKEN_AUTH
+            #   value: 'true'
+            # - name: CODEBATTLE_ALLOW_GUESTS
+            #   value: 'false'
+            # - name: CODEBATTLE_USE_PRESENCE
+              # value: 'false'
+            # - name: CODEBATTLE_HIDE_HEADER
+              # value: 'true'
+            # - name: CODEBATTLE_FORCE_REDIRECT_URL
+              # value: '/tournaments/1'
+            # - name: CODEBATTLE_POOL_SIZE
+              # value: "30"
+
+
+
+
+
+
+
+
+
 

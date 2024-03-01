@@ -1,6 +1,9 @@
 ---
 version: latest
 
+ingress:
+  host: ya-codebattle.xyz
+
 codebattle:
   replicaCount: 1
   image:

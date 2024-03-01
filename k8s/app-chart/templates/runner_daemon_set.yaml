@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: "runner-daemonset"
+spec:
+  selector:
+    matchLabels:
+      app: "runner"
+  template:
+    metadata:
+      labels:
+        app: "runner"
+    spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: type
+      #               operator: In
+      #               values:
+      #                 - runner
+      volumes:
+        - name: users-code-path
+          hostPath:
+            path: /tmp/codebattle-runner
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+    # {{- with .Values.imagePullSecrets }}
+    #   imagePullSecrets:
+    #     {{- toYaml . | nindent 8 }}
+    # {{- end }}
+      containers:
+        - name: runner
+          securityContext:
+            privileged: true
+          imagePullPolicy: "{{ .Values.runner.image.imagePullPolicy }}"
+          image: "{{ .Values.runner.image.repository }}:{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          command:
+            - bin/runner
+            - start
+          ports:
+            - containerPort: 4001
+          volumeMounts:
+            - mountPath: /tmp/codebattle-runner
+              name: users-code-path
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+          envFrom:
+            - secretRef:
+                name: codebattle-secrets
+          env:
+            - name: CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN
+              value: "50"
+            - name: CODEBATTLE_VERSION
+              value: {{ .Values.version }}
+            - name: CODEBATTLE_RUNNER_PORT
+              value: "4001"
+            - name: CODEBATTLE_RUNNER_CPU_LOGGER
+              value: "true"
+            - name: RUNNER_CONTAINER_KILLER
+              value: "true"
+            - name: DEPLOYED_AT
+              value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
