@@ -51,7 +51,7 @@ RUN mix phx.digest
 RUN mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM nginx:alpine AS nginx-image
+FROM nginx:alpine AS nginx-assets
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
