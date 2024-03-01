@@ -95,5 +95,5 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
   end
 
   # defp runner_url, do: Application.get_env(:runner, :runner_rust_url)
-  defp runner_url, do: "http://192.168.178.36:8080/run"
+  defp runner_url, do: "http://localhost:8000/run"
 end
