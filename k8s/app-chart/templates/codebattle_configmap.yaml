@@ -1,0 +1,10 @@
+{{- if .Values.codebattle.env -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: codebattle-env
+data:
+  {{- range $key, $value := .Values.codebattle.env }}
+  {{ $key }}: "{{ $value }}"
+  {{- end }}
+{{- end }}
