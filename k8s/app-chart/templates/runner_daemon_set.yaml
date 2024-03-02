@@ -1,4 +1,4 @@
----
+{{- if eq "DaemonSet" .Values.runner.type -}}
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -71,3 +71,4 @@ spec:
               value: "true"
             - name: DEPLOYED_AT
               value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
+{{- end }}

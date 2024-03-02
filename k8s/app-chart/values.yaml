@@ -33,11 +33,14 @@ codebattle:
 
 runner:
   replicaCount: 2
+  # Deployment or DaemonSet
+  type: Deployment
   image:
     repository: codebattle/runner
     imagePullPolicy: Always
 
 chatbot:
+  enabled: false
   replicaCount: 1
   image:
     repository: codebattle/chat_bot

@@ -1,4 +1,4 @@
----
+{{- if eq "Deployment" .Values.runner.type -}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -61,3 +61,4 @@ spec:
               value: "true"
             - name: DEPLOYED_AT
               value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
+{{- end }}
