@@ -1,4 +1,3 @@
----
 kind: Service
 apiVersion: v1
 metadata:
@@ -7,8 +6,10 @@ spec:
   selector:
     app: "codebattle"
   ports:
-    - name: http
+    - name: codebattle
+      protocol: TCP
+      port: {{ .Values.codebattle.service.port }}
+    - name: assets
       protocol: TCP
       port: 80
-      targetPort: 8080
-  type: LoadBalancer
+  type: {{ .Values.codebattle.service.type }}

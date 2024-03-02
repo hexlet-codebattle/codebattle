@@ -24,12 +24,10 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 80
             initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 1
-          ports:
-            - containerPort: 8080
           env:
             - name: NGINX_SERVER_ADDRESS
               value: 127.0.0.1
@@ -41,59 +39,16 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: 4000
+              port: {{ .Values.codebattle.service.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 1
           command:
             - make
             - start
-          ports:
-            - containerPort: 4000
-            - containerPort: 5000
           envFrom:
             - secretRef:
                 name: codebattle-secrets
-          env:
-            - name: CODEBATTLE_SHOW_EXTENSION_POPUP
-              value: 'true'
-            - name: CODEBATTLE_USE_EXTERNAL_JS
-              value: 'true'
-            - name: CODEBATTLE_CREATE_BOT_GAMES
-              value: 'true'
-            - name: CODEBATTLE_IMPORT_GITHUB_TASKS
-              value: 'true'
-            - name: CODEBATTLE_ALLOW_GUESTS
-              value: 'true'
-            - name: CODEBATTLE_USE_PRESENCE
-              value: 'true'
-            - name: CODEBATTLE_RECORD_GAMES
-              value: 'true'
-            - name: CODEBATTLE_VERSION
-              value: {{ .Values.version }}
-            - name: CODEBATTLE_PORT
-              value: "4000"
-            - name: DEPLOYED_AT
-              value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
-            # - name: CODEBATTLE_USE_ONLY_TOKEN_AUTH
-            #   value: 'true'
-            # - name: CODEBATTLE_ALLOW_GUESTS
-            #   value: 'false'
-            # - name: CODEBATTLE_USE_PRESENCE
-              # value: 'false'
-            # - name: CODEBATTLE_HIDE_HEADER
-              # value: 'true'
-            # - name: CODEBATTLE_FORCE_REDIRECT_URL
-              # value: '/tournaments/1'
-            # - name: CODEBATTLE_POOL_SIZE
-              # value: "30"
-
-
-
-
-
-
-
-
-
-
+            - configMapRef:
+                name: codebattle-env
+                optional: true

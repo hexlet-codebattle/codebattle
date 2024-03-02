@@ -2,13 +2,34 @@
 version: latest
 
 ingress:
-  host: ya-codebattle.xyz
+  enabled: false
+  className: ""
+  annotations: {}
+  host: codebattle.example.com
+  tls: []
+  #  - secretName: codebattle-tls
+  #    hosts:
+  #      - codebattle.example.com
 
 codebattle:
   replicaCount: 1
   image:
     repository: codebattle/codebattle
     imagePullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 4000
+  env:
+    CODEBATTLE_SHOW_EXTENSION_POPUP: "true"
+    CODEBATTLE_USE_EXTERNAL_JS: "true"
+    CODEBATTLE_CREATE_BOT_GAMES: "true"
+    CODEBATTLE_IMPORT_GITHUB_TASKS: "true"
+    CODEBATTLE_ALLOW_GUESTS: "true"
+    CODEBATTLE_USE_PRESENCE: "true"
+    CODEBATTLE_RECORD_GAMES: "true"
+    CODEBATTLE_VERSION: "{{ .Values.version }}"
+    CODEBATTLE_PORT: "{{ .Values.codebattle.service.port }}"
+    #DEPLOYED_AT: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
 
 runner:
   replicaCount: 2
@@ -25,7 +46,7 @@ chatbot:
 
 nginx:
   image:
-    repository: codebattle/nginx
+    repository: codebattle/nginx-assets
     imagePullPolicy: Always
 
 resources: {}
