@@ -73,6 +73,7 @@ defmodule Codebattle.MixProject do
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
       {:recon, "~> 2.5"},
+      {:bandit, "~> 1.0"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
