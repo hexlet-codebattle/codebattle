@@ -10,11 +10,7 @@ config :codebattle, ecto_repos: [Codebattle.Repo]
 # Configures the endpoint
 config :codebattle, CodebattleWeb.Endpoint,
   http: [
-    port: System.get_env("CODEBATTLE_PORT", "4000"),
-    transport_options: [
-      max_connections: 30000,
-      num_acceptors: 500
-    ]
+    port: System.get_env("CODEBATTLE_PORT", "4000")
   ],
   adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
