@@ -2,11 +2,7 @@ import Config
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [
-    port: System.get_env("CODEBATTLE_PORT", "4000"),
-    transport_options: [
-      max_connections: 30000,
-      num_acceptors: 5000
-    ]
+    port: System.get_env("CODEBATTLE_PORT", "4000")
   ],
   url: [
     scheme: "https",
