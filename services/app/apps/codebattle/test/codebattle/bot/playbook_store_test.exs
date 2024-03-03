@@ -27,7 +27,7 @@ defmodule Codebattle.PlaybookStoreTest do
      }}
   end
 
-  test "stores player playbook if he is winner", %{
+  test "stores player playbook for the winner", %{
     conn2: conn2,
     user1: user1,
     user2: user2,
@@ -157,7 +157,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    type: "init"
                  },
                  %{
-                   diff: %{delta: [%{delete: 4}, %{retain: 1}, %{delete: 125}]},
+                   diff: %{delta: [%{delete: 130}, %{insert: "t"}]},
                    id: ^user1_id,
                    record_id: 2,
                    type: "update_editor_data"

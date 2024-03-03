@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Endpoint do
     signing_salt: "7k9BuL99"
   ]
 
-  socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity])
+  socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity, compress: true])
 
   socket("/extension", CodebattleWeb.ExtensionSocket,
     websocket: [timeout: :infinity, check_origin: false],

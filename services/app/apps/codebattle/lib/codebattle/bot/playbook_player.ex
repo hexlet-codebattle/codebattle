@@ -8,6 +8,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   alias Codebattle.Bot
   alias Codebattle.Game
   alias Codebattle.Playbook
+  alias Delta.Op
 
   defmodule Params do
     @moduledoc false
@@ -85,13 +86,11 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   def next_step(params = %Params{editor_state: nil}) do
     %{actions: [%{editor_text: editor_text, editor_lang: editor_lang} | rest_actions]} = params
 
-    document = TextDelta.new() |> TextDelta.insert(editor_text)
-
     %{
       params
       | actions: rest_actions,
         step_command: :update_editor,
-        editor_state: {document, editor_lang},
+        editor_state: {[Op.insert(editor_text)], editor_lang},
         step_timeout_ms: :timer.seconds(1)
     }
   end
@@ -101,27 +100,28 @@ defmodule Codebattle.Bot.PlaybookPlayer do
           actions: [action = %{type: "update_editor_data", diff: diff} | rest_actions]
         }
       ) do
-    {document, lang} = params.editor_state
-    document = TextDelta.apply!(document, TextDelta.new(diff.delta))
+    {operations, lang} = params.editor_state
+
+    operations = Delta.compose(operations, stringify_keys(diff.delta))
     lang = Map.get(diff, :next_lang, lang)
 
     %{
       params
       | actions: rest_actions,
         step_command: :update_editor,
-        editor_state: {document, lang},
+        editor_state: {operations, lang},
         step_timeout_ms: get_bot_step_timeout(action, params.step_coefficient)
     }
   end
 
   def next_step(params = %Params{actions: [action = %{type: "game_over"} | _rest]}) do
-    {document, lang} = params.editor_state
+    {operations, lang} = params.editor_state
 
     %{
       params
       | actions: [],
         step_command: :check_result,
-        editor_state: {document, lang},
+        editor_state: {operations, lang},
         step_timeout_ms: get_bot_step_timeout(action, params.step_coefficient)
     }
   end
@@ -130,8 +130,12 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     %{params | state: :finished}
   end
 
-  def get_editor_text(%{ops: []}), do: nil
-  def get_editor_text(document), do: document.ops |> hd |> Map.get(:insert)
+  def get_editor_text(%{insert: text}), do: text
+  def get_editor_text(%{"insert" => text}), do: text
+  def get_editor_text([%{insert: text}]), do: text
+  def get_editor_text([%{"insert" => text}]), do: text
+  # def get_editor_text(a), do: dbg(a)
+  # def get_editor_text(document), do: document.ops |> hd |> Map.get(:insert)
 
   defp prepare_user_playbook(records, user_id) do
     Enum.filter(
@@ -171,5 +175,13 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     b = (x1 * y1 - x2 * y2) / (y2 - y1)
 
     round(k / (player_rating + b))
+  end
+
+  def stringify_keys(list) when is_list(list) do
+    Enum.map(list, &stringify_keys/1)
+  end
+
+  def stringify_keys(map) do
+    Map.new(map, fn {k, v} -> {to_string(k), v} end)
   end
 end

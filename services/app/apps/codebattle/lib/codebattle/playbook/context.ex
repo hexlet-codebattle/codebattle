@@ -2,9 +2,10 @@ defmodule Codebattle.Playbook.Context do
   import Ecto.Query
   require Logger
 
+  alias Codebattle.Game
   alias Codebattle.Playbook
   alias Codebattle.Repo
-  alias Codebattle.Game
+  alias Delta.Op
 
   @record_types [
     :join_chat,
@@ -145,8 +146,8 @@ defmodule Codebattle.Playbook.Context do
   defp add_record_to_playbook_data(record, data), do: update_history(data, record)
 
   defp create_diff(player_state, %{time: time, editor_text: text, editor_lang: editor_lang}) do
-    player_state_delta = create_delta(player_state.editor_text)
-    new_delta = create_delta(text)
+    player_state_delta = [create_delta(player_state.editor_text)]
+    new_delta = [create_delta(text)]
 
     lang_delta =
       if player_state.editor_lang == editor_lang do
@@ -156,7 +157,7 @@ defmodule Codebattle.Playbook.Context do
       end
 
     %{
-      delta: TextDelta.diff!(player_state_delta, new_delta).ops,
+      delta: Delta.diff(player_state_delta, new_delta),
       time: time - player_state.time
     }
     |> Map.merge(lang_delta)
@@ -187,7 +188,8 @@ defmodule Codebattle.Playbook.Context do
   defp update_history(data, record),
     do: Map.update!(data, :records, &[record | &1]) |> increase_count
 
-  defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
+  defp create_delta(nil), do: Op.insert("")
+  defp create_delta(text), do: Op.insert(text)
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
