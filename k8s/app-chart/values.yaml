@@ -28,7 +28,7 @@ codebattle:
     CODEBATTLE_USE_PRESENCE: "true"
     CODEBATTLE_RECORD_GAMES: "true"
     CODEBATTLE_VERSION: "{{ .Values.version }}"
-    CODEBATTLE_PORT: "{{ .Values.codebattle.service.port }}"
+    CODEBATTLE_PORT: 4000
     #DEPLOYED_AT: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
 
 runner:

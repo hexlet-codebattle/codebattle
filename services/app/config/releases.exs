@@ -6,7 +6,7 @@ secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [:inet6, port: port],
+  http: [port: port],
   url: [host: host, scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: secret_key_base,

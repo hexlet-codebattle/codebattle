@@ -39,7 +39,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /health
-              port: {{ .Values.codebattle.service.port }}
+              port: 4000
             initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 1
