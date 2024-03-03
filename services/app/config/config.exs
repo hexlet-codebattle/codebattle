@@ -19,11 +19,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 
 config :codebattle, CodebattleWeb.BotEndpoint,
   http: [
-    port: "4002",
-    transport_options: [
-      max_connections: 30000,
-      num_acceptors: 500
-    ]
+    port: "4002"
   ],
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
