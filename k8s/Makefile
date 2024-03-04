@@ -35,3 +35,6 @@ kb-app-console:
 
 kb-k9s:
 	k9s
+
+helm-install-ingress:
+	helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx

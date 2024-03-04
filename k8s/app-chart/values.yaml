@@ -2,10 +2,9 @@
 version: latest
 
 ingress:
-  enabled: false
-  className: ""
+  className: "nginx"
   annotations: {}
-  host: codebattle.example.com
+  host: codebattle.hexlet.io
   tls: []
   #  - secretName: codebattle-tls
   #    hosts:
@@ -40,7 +39,7 @@ runner:
     imagePullPolicy: Always
 
 chatbot:
-  enabled: false
+  enabled: true
   replicaCount: 1
   image:
     repository: codebattle/chat_bot
