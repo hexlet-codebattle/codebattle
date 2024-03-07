@@ -2,7 +2,7 @@ FROM codebattle/runner-rs:latest AS runner
 
 FROM ruby:3.3.0-alpine
 
-RUN apk add --update make
+RUN apk add --update --no-cache make
 
 WORKDIR /usr/src/app
 

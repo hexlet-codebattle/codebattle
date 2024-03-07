@@ -1,6 +1,8 @@
-FROM babashka/babashka:1.3.181-SNAPSHOT
+FROM codebattle/runner-rs:latest AS runner
 
-RUN apt update && apt install make
+FROM babashka/babashka:1.3.190-SNAPSHOT-alpine
+
+RUN apk add --update --no-cache make
 
 WORKDIR /usr/src/app
 
@@ -8,3 +10,7 @@ ADD check check
 ADD runner.clj .
 ADD bb.edn .
 ADD Makefile .
+
+EXPOSE 8000
+
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

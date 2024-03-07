@@ -1,5 +1,5 @@
 defmodule Solution do
-  def solution(numerator, denominator) do
+  def solution(numerator, denominator, _string, _float, _bool, _hash, _list_str, _list_list_str) do
     res = numerator / denominator
 
     IO.puts("output-test")

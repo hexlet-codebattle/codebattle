@@ -57,6 +57,8 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
       {"content-encoding", "deflate"}
     ]
 
+    Logger.debug("RemoteRustExecutor request params: #{Jason.encode!(params)}")
+
     body = params |> Jason.encode!() |> :zlib.compress()
 
     now = :os.system_time(:millisecond)

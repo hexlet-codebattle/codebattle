@@ -1,6 +1,8 @@
-FROM elixir:1.15.0-alpine
+FROM codebattle/runner-rs:latest AS runner
 
-RUN apk add --update make
+FROM elixir:1.16.1-alpine
+
+RUN apk add --update --no-cache make
 
 RUN mix local.hex --force
 RUN mix local.rebar --force
@@ -9,11 +11,12 @@ ENV MIX_ENV test
 
 WORKDIR /usr/src/app
 
-ADD mix.exs .
-
-RUN mix deps.get
-RUN mix deps.compile
-
-ADD runner.exs .
 ADD check check
+ADD checker.exs .
 ADD Makefile .
+
+RUN elixir checker.exs
+
+EXPOSE 8000
+
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

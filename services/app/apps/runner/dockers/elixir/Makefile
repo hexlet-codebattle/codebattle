@@ -1,4 +1,4 @@
 test:
-	mix run ./check/checker.exs
+	elixir ./checker.exs
 
 .PHONY: test

@@ -1,4 +1,6 @@
-defmodule Runner do
+defmodule Checker do
+  Mix.install([{:jason, "~> 1.0"}])
+
   try do
     Code.eval_file("./check/solution.exs")
   rescue
@@ -9,8 +11,10 @@ defmodule Runner do
 
   import ExUnit.CaptureIO
 
-  def call(arguments) do
-    arguments
+  def call() do
+    arguments = Jason.decode!(File.read!(Path.join(__DIR__, ~c"./check/asserts.json")))
+
+    arguments["arguments"]
     |> Enum.reduce([], fn args, acc ->
       {time, {result, output}} =
         :timer.tc(fn ->
@@ -44,3 +48,5 @@ defmodule Runner do
     |> Enum.each(&(&1 |> Jason.encode!() |> IO.puts()))
   end
 end
+
+Checker.call()
