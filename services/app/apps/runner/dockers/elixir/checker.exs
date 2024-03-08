@@ -32,7 +32,7 @@ defmodule Checker do
               e ->
                 %{
                   type: "error",
-                  value: e.message
+                  value: inspect(e)
                 }
             end
           end)

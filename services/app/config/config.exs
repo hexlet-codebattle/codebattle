@@ -83,7 +83,7 @@ config :phoenix_meta_tags,
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
 config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteDockerRun
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
+# config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 
 config :codebattle, tournament_match_timeout: 3 * 60
