@@ -4,7 +4,7 @@ defmodule Runner.CheckerGenerator.V2 do
   require Logger
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t()) :: String.t()
-  def call(_task, _lang_meta = %{name: "ruby"}) do
+  def call(_task, _lang_meta = %{generate_checker?: false}) do
     :runner
   end
 

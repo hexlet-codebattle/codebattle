@@ -5,7 +5,11 @@ defmodule Checker do
     Code.eval_file("./check/solution.exs")
   rescue
     e ->
-      IO.puts(Jason.encode!(%{type: "error", value: e.description, time: 0}))
+      IO.puts(Jason.encode!([%{
+      type: "error",
+      time: 0,
+      value: inspect(e)
+      }]))
       System.halt(0)
   end
 
@@ -45,7 +49,8 @@ defmodule Checker do
       ]
     end)
     |> Enum.reverse()
-    |> Enum.each(&(&1 |> Jason.encode!() |> IO.puts()))
+    |> Jason.encode!()
+    |> IO.puts()
   end
 end
 

@@ -5,6 +5,7 @@ defmodule Codebattle.AssertsService.Executor.Token do
 
   typedstruct enforce: true do
     field(:container_output, String.t())
+    field(:container_stderr, String.t())
     field(:execution_error, String.t() | nil)
     field(:execution_time_msec, non_neg_integer() | nil)
     field(:executor, AssertsService.executor())

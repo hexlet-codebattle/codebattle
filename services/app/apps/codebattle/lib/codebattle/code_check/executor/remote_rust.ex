@@ -28,7 +28,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     %{
       checker_text: checker_text,
       lang_slug: token.lang_meta.slug,
-      timeout: token.lang_meta.container_run_timeout,
+      timeout: to_string(Languages.get_timeout_ms(token.lang_meta)),
       solution_text: token.solution_text,
       asserts: asserts
     }
@@ -38,6 +38,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
         %{
           token
           | container_output: result.stdout,
+            container_stderr: result.stderr,
             exit_code: result.exit_code,
             seed: seed,
             execution_error: nil
@@ -68,6 +69,8 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
     |> case do
       {:ok, %Finch.Response{status: 200, body: body}} ->
+        Logger.debug("RemoteRustExecutor Response #{inspect(body)}")
+
         Logger.error(
           "RemoteRustExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
         )

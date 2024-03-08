@@ -16,14 +16,13 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   def call(checker_token) do
-    %{container_output: container_output, exit_code: exit_code, task: task} = checker_token
-
     result_token = %{
       check_result: nil,
       solution_results: [],
-      container_output: container_output,
-      exit_code: exit_code,
-      task: task
+      container_output: checker_token.container_output,
+      container_stderr: checker_token.container_stderr,
+      exit_code: checker_token.exit_code,
+      task: checker_token.task
     }
 
     result_token
@@ -35,7 +34,9 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
   defp parse_output(token = %{exit_code: 0}) do
     solution_results =
-      token.container_output |> String.replace(~r/WARNING:.+\n/, "") |> Jason.decode!()
+      token.container_output
+      |> String.replace(~r/WARNING:.+\n/, "")
+      |> Jason.decode!()
 
     %{token | solution_results: solution_results}
   rescue
@@ -57,18 +58,31 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   defp parse_output(token) do
-    %{container_output: container_output, exit_code: exit_code} = token
+    %{
+      container_output: container_output,
+      container_stderr: container_stderr,
+      exit_code: exit_code
+    } = token
 
     output_error =
       cond do
-        exit_code == 2 and String.contains?(container_output, "Killed") ->
+        exit_code == 2 and
+            (String.contains?(container_output, "Killed") or
+               String.contains?(container_stderr, "Killed")) ->
           "Your solution ran out of memory, please, rewrite it"
 
-        exit_code == 143 and String.contains?(container_output, "SIGTERM") ->
+        exit_code == 143 and
+            (String.contains?(container_output, "SIGTERM") or
+               String.contains?(container_stderr, "SIGTERM")) ->
           "Your solution was executed for longer than 15 seconds, try to write more optimally"
 
         true ->
-          "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: #{container_output}}"
+          """
+          Something went wrong!\n
+          STDOUT: #{container_output}\n
+          STDERR: #{container_stderr}\n
+          Please, write to dev team in our Telegram
+          """
       end
 
     %{
@@ -83,12 +97,20 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
   defp compare_results_with_asserts(token = %{check_result: %{status: "error"}}), do: token
 
-  defp compare_results_with_asserts(token = %{solution_results: [item = %{"type" => "error"}]}) do
+  defp compare_results_with_asserts(
+         token = %{
+           solution_results: [item = %{"type" => "error"}],
+           container_stderr: container_stderr
+         }
+       ) do
     # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}
     check_result = %Result.V2{
-      output_error: item["value"],
       exit_code: token.exit_code,
-      status: "error"
+      status: "error",
+      output_error: """
+      STDOUT:\n #{item["value"]}\n
+      STDERR:\n #{container_stderr}
+      """
     }
 
     %{token | check_result: check_result}
