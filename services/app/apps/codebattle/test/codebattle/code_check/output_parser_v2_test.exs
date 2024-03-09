@@ -110,7 +110,13 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         asserts: [%{arguments: [1, 1], expected: 1}, %{arguments: [2, 1], expected: 2}]
       )
 
-    result = OutputParser.V2.call(%{task: task, container_output: @success_output, exit_code: 0})
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "",
+        container_output: @success_output,
+        exit_code: 0
+      })
 
     assert result == @success_expected
   end
@@ -122,7 +128,12 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
       )
 
     result =
-      OutputParser.V2.call(%{task: task, container_output: @success_json_output, exit_code: 0})
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "",
+        container_output: @success_json_output,
+        exit_code: 0
+      })
 
     assert result == @success_expected
   end
@@ -131,7 +142,12 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
 
     result =
-      OutputParser.V2.call(%{task: task, container_output: @success_with_warning, exit_code: 0})
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "",
+        container_output: @success_with_warning,
+        exit_code: 0
+      })
 
     assert result == @success_with_warning_expected
   end
@@ -146,7 +162,13 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         ]
       )
 
-    result = OutputParser.V2.call(%{task: task, container_output: @failure_output, exit_code: 0})
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "",
+        container_output: @failure_output,
+        exit_code: 0
+      })
 
     assert result == @failure_expected
   end
@@ -157,6 +179,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     result =
       OutputParser.V2.call(%{
         task: task,
+        container_stderr: "",
         container_output: "make *** failed: Killed\n",
         exit_code: 2
       })
@@ -177,6 +200,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     result =
       OutputParser.V2.call(%{
         task: task,
+        container_stderr: "",
         container_output: "SIGTERM\n",
         exit_code: 143
       })
@@ -195,14 +219,20 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   test "parses unexpected termination" do
     task = insert(:task)
 
-    result = OutputParser.V2.call(%{task: task, container_output: "asdf", exit_code: 37})
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        container_stderr: "lolkek",
+        container_output: "asdf",
+        exit_code: 37
+      })
 
     assert result == %Codebattle.CodeCheck.Result.V2{
              asserts: [],
              exit_code: 37,
              asserts_count: 1,
              output_error:
-               "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: asdf}",
+               "Something went wrong!\n\nSTDOUT: asdf\n\nSTDERR: lolkek\n\nPlease, write to dev team in our Telegram\n",
              status: "error",
              success_count: 0
            }

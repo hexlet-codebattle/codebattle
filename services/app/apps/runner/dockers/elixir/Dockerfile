@@ -2,6 +2,8 @@ FROM codebattle/runner-rs:latest AS runner
 
 FROM elixir:1.16.1-alpine
 
+ENV ERL_MAX_PORTS 1024
+
 RUN apk add --update --no-cache make
 
 RUN mix local.hex --force
@@ -11,11 +13,15 @@ ENV MIX_ENV test
 
 WORKDIR /usr/src/app
 
-ADD check check
-ADD checker.exs .
-ADD Makefile .
+ADD mix.exs .
+ADD mix.lock .
+RUN mix deps.get
 
-RUN elixir checker.exs
+ADD check check
+ADD checker.ex checker.ex
+RUN mix escript.build
+
+ADD Makefile .
 
 EXPOSE 8000
 

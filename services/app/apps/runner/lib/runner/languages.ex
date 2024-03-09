@@ -134,7 +134,7 @@ defmodule Runner.Languages do
     "cpp" => %LanguageMeta{
       name: "C++",
       slug: "cpp",
-      version: "20",
+      version: "g++std=c++20",
       check_dir: "check",
       container_run_timeout: "17s",
       solution_file_name: "solution.cpp",
@@ -274,12 +274,12 @@ defmodule Runner.Languages do
     "golang" => %LanguageMeta{
       name: "golang",
       slug: "golang",
-      version: "1.19.0",
+      version: "1.22.1",
       container_run_timeout: "15s",
       check_dir: "check",
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
-      docker_image: "codebattle/golang:1.19.0",
+      docker_image: "codebattle/golang:1.22.1",
       solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",

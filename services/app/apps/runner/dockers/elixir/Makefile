@@ -1,4 +1,4 @@
 test:
-	elixir ./checker.exs
+	./checker
 
 .PHONY: test

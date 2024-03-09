@@ -1,22 +1,25 @@
 defmodule Checker do
-  Mix.install([{:jason, "~> 1.0"}])
-
-  try do
-    Code.eval_file("./check/solution.exs")
-  rescue
-    e ->
-      IO.puts(Jason.encode!([%{
-      type: "error",
-      time: 0,
-      value: inspect(e)
-      }]))
-      System.halt(0)
-  end
-
   import ExUnit.CaptureIO
 
-  def call() do
+  def main(_args) do
     arguments = Jason.decode!(File.read!(Path.join(__DIR__, ~c"./check/asserts.json")))
+
+    try do
+      Code.eval_file("./check/solution.exs")
+    rescue
+      e ->
+        IO.puts(
+          Jason.encode!([
+            %{
+              type: "error",
+              time: 0,
+              value: inspect(e)
+            }
+          ])
+        )
+
+        System.halt(0)
+    end
 
     arguments["arguments"]
     |> Enum.reduce([], fn args, acc ->
@@ -53,5 +56,3 @@ defmodule Checker do
     |> IO.puts()
   end
 end
-
-Checker.call()

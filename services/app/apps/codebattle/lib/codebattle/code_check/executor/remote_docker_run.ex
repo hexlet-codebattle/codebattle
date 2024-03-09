@@ -19,7 +19,8 @@ defmodule Codebattle.CodeCheck.Executor.RemoteDockerRun do
       {:ok, result} ->
         %{
           token
-          | container_output: result.container_output,
+          | container_stderr: result.container_stderr,
+            container_output: result.container_output,
             exit_code: result.exit_code,
             seed: result.seed,
             execution_error: nil

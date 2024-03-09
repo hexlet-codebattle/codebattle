@@ -3,6 +3,8 @@ defmodule RunnerWeb.Api.V1.ExecutorController do
 
   plug(RunnerWeb.AuthPlug)
 
+  require Logger
+
   def execute(conn, %{
         "task" => task,
         "solution_text" => solution_text,
@@ -20,7 +22,8 @@ defmodule RunnerWeb.Api.V1.ExecutorController do
 
       json(conn, result)
     rescue
-      _e ->
+      e ->
+        Logger.error(e)
         Runner.StateContainersRunLimiter.unregistry_container(run_id)
 
         conn

@@ -4,6 +4,7 @@ defmodule Runner do
 
   @type execution_result :: %{
           container_output: String.t(),
+          container_stderr: String.t(),
           seed: String.t(),
           exit_code: non_neg_integer()
         }

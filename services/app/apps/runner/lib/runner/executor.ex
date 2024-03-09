@@ -7,7 +7,7 @@ defmodule Runner.Executor do
   alias Runner.Languages
 
   @tmp_basedir "/tmp/codebattle-runner"
-  @docker_cmd_template "docker run --rm --init --memory 2400m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+  @docker_cmd_template "docker run --rm --init --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
   @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
@@ -33,14 +33,19 @@ defmodule Runner.Executor do
 
     tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, checker_text, asserts_text)
 
-    {output, exit_code} =
+    {out, err, status} =
       lang_meta
       |> get_docker_command(tmp_dir_path)
       |> run_command(lang_meta)
 
     Task.start(File, :rm_rf, [tmp_dir_path])
 
-    %{container_output: output, exit_code: exit_code, seed: seed}
+    %{
+      container_output: out,
+      container_stderr: err,
+      exit_code: status,
+      seed: seed
+    }
   end
 
   defp wait_permission_to_launch(nil, _waiting_time_ms, _max_timeout_ms) do
@@ -98,19 +103,25 @@ defmodule Runner.Executor do
 
   defp run_command([cmd | cmd_opts], lang_meta) do
     if @fake_docker_run do
-      {"oi", 0}
+      {"oi", "blz", 0}
     else
       hostname = System.get_env("HOSTNAME", "unknown")
       Logger.info("Start docker execution: #{inspect(cmd_opts)}")
 
       {execution_time, result} =
-        :timer.tc(fn -> System.cmd(cmd, cmd_opts, stderr_to_stdout: true) end)
+        :timer.tc(fn -> Rambo.run(cmd, cmd_opts, log: false) |> dbg() end)
 
       Logger.error(
         "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
       )
 
-      result
+      case result do
+        {_ok_or_error, %Rambo{status: status, out: out, err: err}} ->
+          {out, err, status}
+
+        error ->
+          {"", inspect(error), 2}
+      end
     end
   end
 

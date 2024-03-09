@@ -1,8 +1,8 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM golang:1.22-alpine
+FROM golang:1.22.1-alpine
 
-RUN apk add --update make
+RUN apk add --update --no-cache make
 
 WORKDIR /usr/src/app
 
@@ -11,4 +11,4 @@ ADD Makefile .
 
 EXPOSE 8000
 
-COPY --from=runner /app/codebattle_runner ./check/codebattle_runner
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
