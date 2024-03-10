@@ -10,13 +10,14 @@ const R = require('rambda');
 const { transpile } = pkg;
 const limitLength = 100;
 const limitCode = ' ...';
+const execution_result = [];
 
-exports.run = function run(args = []) {
+const run = function run(args = []) {
   let output = '';
   const fakeStream = new Writable();
   const myConsole = new Console(fakeStream);
 
-  fakeStream.write = function (chank) {
+  fakeStream.write = function(chank) {
     if (typeof chank == 'string') output += chank;
 
     if (output.length > limitLength + limitCode.length)
@@ -24,14 +25,13 @@ exports.run = function run(args = []) {
   };
 
   const toOut = ({ type = '', value = '', time = 0 }) => {
-    console.log(
-      JSON.stringify({
+    execution_result.push(
+      {
         type,
         time,
         value,
         output,
       })
-    );
     output = '';
   };
 
@@ -94,3 +94,7 @@ exports.run = function run(args = []) {
     throw e;
   }
 };
+const asserts = readFileSync('./check/asserts.json', 'utf-8');
+args = JSON.parse(asserts).arguments
+run(args)
+console.log(JSON.stringify(execution_result));

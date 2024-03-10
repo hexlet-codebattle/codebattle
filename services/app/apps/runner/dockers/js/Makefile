@@ -1,5 +1,5 @@
 test:
-	node ./check/checker.js
+	node ./checker.js
 
 generate_asserts:
 	node ./asserts/generator.js

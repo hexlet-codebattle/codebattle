@@ -3,7 +3,6 @@ const R = require('rambda')
 
 module.exports = (a, b) => {
   const res = a / b
-
   console.log('Аля-улю')
 
   if (res == Infinity) {

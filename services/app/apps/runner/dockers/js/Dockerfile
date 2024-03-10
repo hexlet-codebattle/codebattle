@@ -1,6 +1,8 @@
-FROM node:16.17.0-alpine3.16
+FROM codebattle/runner-rs:latest AS runner
 
-RUN apk add --update make
+FROM node:20.11.1-alpine
+
+RUN apk add --update --no-cache make
 
 ADD package.json .
 ADD package-lock.json .
@@ -11,6 +13,10 @@ ENV NODE_PATH /usr/local/lib/node_modules/
 
 WORKDIR /usr/src/app
 
-ADD runner.js .
+ADD checker.js .
 ADD assertsRunner.js .
 ADD Makefile .
+
+EXPOSE 8000
+
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

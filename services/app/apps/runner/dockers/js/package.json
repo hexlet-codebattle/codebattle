@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "dependencies": {
     "@types/lodash": "^4.14.183",
-    "@types/node": "^16.0.0",
+    "@types/node": "^20.11.25",
     "@faker-js/faker": "^8.0.2",
     "lodash": "^4.17.21",
-    "rambda": "^7.2.1",
-    "typescript": "^4.7.4"
+    "rambda": "^9.1.0",
+    "typescript": "^5.4.2"
   }
 }
