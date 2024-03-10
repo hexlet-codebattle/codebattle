@@ -7,6 +7,7 @@ defmodule Runner.Languages do
     boolean_true: "true",
     boolean_false: "false",
     array: "[<%= entries %>]",
+    array_of_array: "[<%= entries %>]",
     hash_empty: "{}",
     hash_value: "{<%= entries %>}",
     hash_inners: "\"<%= key %>\": <%= value %>"
@@ -236,12 +237,12 @@ defmodule Runner.Languages do
     "csharp" => %LanguageMeta{
       name: "C#",
       slug: "csharp",
-      version: "6.0.100",
+      version: "8.0.201",
       check_dir: "check",
       container_run_timeout: "17s",
       solution_file_name: "solution.cs",
       checker_file_name: "checker.cs",
-      docker_image: "codebattle/csharp:6.0.100",
+      docker_image: "codebattle/csharp:8.0.201",
       solution_template:
         "using System;using System.Collections.Generic;\n\nnamespace app\n{\n    public class Solution\n    {\n        public<%= expected %> solution(<%= arguments %>)\n        {\n\n        }\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
@@ -259,16 +260,11 @@ defmodule Runner.Languages do
         type_templates: %{
           @type_templates
           | array: "{<%= entries %>}",
+            array_of_array: "{new List<<%= type %>> {<%= entries %>}}",
             hash_empty: "{}",
             hash_value: "{<%= entries %>}",
             hash_inners: "{\"<%= key %>\", <%= value %>}"
         },
-        # TODO: FIX nested lists for CSHARP
-        # now it generates:
-        # List<List<string>> nested_variable = new List<List<string>>(){{"Jack", "Alice"}};
-        # should generate:
-        # List<List<string>> nested_variable = new List<List<string>>(){new List<string>(){"Jack", "Alice"}};
-        # perhaps we should add new type key and improve generator for nested key support
         defining_variable_template: "<%= type %> <%= name %>",
         nested_value_expression_template: "new <%= type_name %>()<%= value %>"
       }
