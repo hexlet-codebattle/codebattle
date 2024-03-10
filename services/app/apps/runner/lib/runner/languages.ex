@@ -361,12 +361,14 @@ defmodule Runner.Languages do
     "php" => %LanguageMeta{
       name: "php",
       slug: "php",
-      version: "8.1.8",
+      version: "8.3.3",
+      checker_version: 2,
+      generate_checker?: false,
       check_dir: "check",
       container_run_timeout: "10s",
       solution_file_name: "solution.php",
       checker_file_name: "checker.php",
-      docker_image: "codebattle/php:8.1.8",
+      docker_image: "codebattle/php:8.3.3",
       solution_template:
         "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
       return_template: "\n    return <%= default_value %>;",

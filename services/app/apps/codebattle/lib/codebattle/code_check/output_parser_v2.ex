@@ -53,6 +53,18 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
           end
         end)
         |> Enum.filter(&Function.identity/1)
+        |> case do
+          [] ->
+            [
+              %{
+                "type" => "output",
+                "value" => inspect(token.container_output) <> inspect(token.container_stderr)
+              }
+            ]
+
+          values ->
+            values
+        end
 
       %{token | solution_results: solution_results}
   end
@@ -81,7 +93,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
           Something went wrong!\n
           STDOUT: #{container_output}\n
           STDERR: #{container_stderr}\n
-          Please, write to dev team in our Telegram
+          Please check your code or write to dev team in our Telegram
           """
       end
 

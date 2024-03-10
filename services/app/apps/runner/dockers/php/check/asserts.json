@@ -1,0 +1,57 @@
+{
+  "arguments": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      1,
+      0
+    ]
+  ],
+  "input_signature": [
+    {
+      "name": "integer"
+    },
+    {
+      "name": "integer"
+    },
+    {
+      "name": "string"
+    },
+    {
+      "name": "float"
+    },
+    {
+      "name": "boolean"
+    },
+    {
+      "name": "hash",
+      "nested": {
+        "name": "string"
+      }
+    },
+    {
+      "name": "array",
+      "nested": {
+        "name": "string"
+      }
+    },
+    {
+      "name": "array",
+      "nested": {
+        "name": "array",
+        "nested": {
+          "name": "string"
+        }
+      }
+    }
+  ],
+  "output_signature": {
+    "name": "integer"
+  }
+}
