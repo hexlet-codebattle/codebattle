@@ -168,12 +168,12 @@ defmodule Runner.Languages do
     "java" => %LanguageMeta{
       name: "Java",
       slug: "java",
-      version: "20",
+      version: "21",
       check_dir: "check",
       container_run_timeout: "17s",
       solution_file_name: "Solution.java",
       checker_file_name: "Checker.java",
-      docker_image: "codebattle/java:20",
+      docker_image: "codebattle/java:21",
       solution_template:
         "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n    public <%= expected %>solution(<%= arguments %>) {\n\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
