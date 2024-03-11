@@ -7,8 +7,7 @@ RUN apk add --update --no-cache make
 WORKDIR /usr/src/app
 
 ADD check check
-ADD runner.clj .
-ADD bb.edn .
+ADD checker.clj .
 ADD Makefile .
 
 EXPOSE 8000

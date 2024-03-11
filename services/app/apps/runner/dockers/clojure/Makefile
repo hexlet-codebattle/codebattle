@@ -1,4 +1,4 @@
 test:
-	bb check-solution
+	bb checker.clj
 
 .PHONY: test
