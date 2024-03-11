@@ -127,7 +127,7 @@ defmodule Runner.CheckerGenerator do
   defp get_value({%{name: "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
 
-# Special case for CSharp list of lists
+  # Special case for CSharp list of lists
   defp get_value(
          {%{name: "array", nested: %{name: "array", nested: nested}}, [value]},
          lang_meta = %{slug: "csharp", checker_meta: checker_meta}
@@ -136,7 +136,7 @@ defmodule Runner.CheckerGenerator do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, lang_meta))
 
     EEx.eval_string(checker_meta.type_templates.array_of_array,
-      type:  inner_type,
+      type: inner_type,
       entries: array_values,
       inner_type: inner_type
     )
