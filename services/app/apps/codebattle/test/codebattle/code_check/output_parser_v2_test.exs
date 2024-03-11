@@ -232,7 +232,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
              exit_code: 37,
              asserts_count: 1,
              output_error:
-               "Something went wrong!\n\nSTDOUT: asdf\n\nSTDERR: lolkek\n\nPlease check your code or write to dev team in our Telegram \n",
+               "Something went wrong!\n\nSTDOUT: asdf\n\nSTDERR: lolkek\n\nPlease check your code or write to dev team in our Telegram\n",
              status: "error",
              success_count: 0
            }
