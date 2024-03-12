@@ -25,5 +25,5 @@
       (let [solution-fn (resolve 'solution)]
         (println (json/generate-string (run-tests solution-fn args)))))
     (catch Exception ex
-      (println (json/generate-string {:type "error" :time 0 :value (.getMessage ex)}))
+      (println (json/generate-string [{:type "error" :time 0 :value (.getMessage ex)}]))
       (System/exit 0)))

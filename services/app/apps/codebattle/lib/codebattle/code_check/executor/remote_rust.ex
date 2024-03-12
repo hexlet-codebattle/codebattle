@@ -28,7 +28,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     %{
       checker_text: checker_text,
       lang_slug: token.lang_meta.slug,
-      timeout: to_string(Languages.get_timeout_ms(token.lang_meta)),
+      timeout: token.lang_meta.container_run_timeout,
       solution_text: token.solution_text,
       asserts: asserts
     }
