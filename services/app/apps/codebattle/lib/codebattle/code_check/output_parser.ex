@@ -20,11 +20,11 @@ defmodule Codebattle.CodeCheck.OutputParser do
   end
 
   def call(token) do
-    %{container_output: container_output, seed: seed} = token
+    %{container_output: container_output, container_stderr: container_stderr, seed: seed} = token
 
     case Regex.scan(~r/{\"status\":.+}/, container_output) do
       [] ->
-        handle_output_without_status(token, container_output)
+        handle_output_without_status(token, container_output, container_stderr)
 
       json_result ->
         [last_message] = List.last(json_result)
@@ -42,7 +42,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
     end
   end
 
-  defp handle_output_without_status(token, container_output) do
+  defp handle_output_without_status(token, container_output, container_stderr) do
     error_msg =
       cond do
         token.exit_code == 2 and String.contains?(container_output, "Killed") ->
@@ -52,7 +52,10 @@ defmodule Codebattle.CodeCheck.OutputParser do
           "Your solution was executed for longer than 15 seconds, try to write more optimally"
 
         token.exit_code == 2 ->
-          container_output
+          """
+          STDERR:\n#{container_stderr}\n
+          STDOUT:#{container_output}
+          """
 
         true ->
           "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: #{container_output}}"

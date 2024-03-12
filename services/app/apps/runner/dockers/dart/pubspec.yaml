@@ -1,11 +1,11 @@
 name: check
 description: Codebattle checker for testing player's solution
-version: 0.0.1
+version: 0.0.2
 author: rdb
 
 environment:
-  sdk: '>=2.10.0 <3.0.0'
+  sdk: '>=3.3.1 <4.0.0'
 
 dependencies:
-  dart_json: ^2.0.0
   test: ^1.6.0
+

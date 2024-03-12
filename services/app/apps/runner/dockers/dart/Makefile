@@ -1,4 +1,4 @@
 test:
-	dart --packages=.packages package:check/checker.dart
+	dart run lib/checker.dart
 
 .PHONY: test

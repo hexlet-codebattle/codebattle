@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:dart_json/dart_json.dart';
+import 'dart:convert';
 import 'dart:async';
 
 import 'package:check/solution.dart';
@@ -75,5 +75,5 @@ bool assert_solution(result, expected, arguments, output, asserts, executionTime
 }
 
 void print_message(obj) {
-  print(Json.serialize(obj));
+  print(json.encode(obj));
 }

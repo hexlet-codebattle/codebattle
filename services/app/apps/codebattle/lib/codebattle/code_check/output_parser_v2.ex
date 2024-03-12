@@ -120,8 +120,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
       exit_code: token.exit_code,
       status: "error",
       output_error: """
-      STDOUT:\n #{item["value"]}\n
-      STDERR:\n #{container_stderr}
+      STDERR:\n#{container_stderr}\n
+      STDOUT:\n#{item["value"]}
       """
     }
 
