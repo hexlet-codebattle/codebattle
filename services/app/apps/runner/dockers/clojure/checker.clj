@@ -1,11 +1,14 @@
 (require '[cheshire.core :as json])
 
+(defn now []
+  (System/currentTimeMillis))
+
 (defn execution-time [start-time]
-  (- (System/currentTimeMillis) start-time))
+  (- (now) start-time))
 
 (defn run-tests [solution args]
   (reduce (fn [acc arg]
-    (let [start-time (System/currentTimeMillis)
+    (let [start-time (now)
           new-acc (atom {})
           output
       (with-out-str
