@@ -1,6 +1,9 @@
-FROM amazoncorretto:21-alpine3.18-full
+FROM codebattle/runner-rs:latest AS runner
 
-ENV KOTLIN_VERSION=1.9.10 \
+FROM amazoncorretto:21-alpine3.19-full
+
+
+ENV KOTLIN_VERSION=1.9.23 \
   KOTLIN_HOME=/usr/share/kotlin
 
 RUN apk add --update bash && \
@@ -23,3 +26,6 @@ RUN apk add --update make curl \
 COPY check check
 COPY Makefile .
 
+EXPOSE 8000
+
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
