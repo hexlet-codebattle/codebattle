@@ -4,7 +4,7 @@ defmodule Codebattle.CodeCheck.OutputParserTest do
   alias Codebattle.CodeCheck.OutputParser
   alias Codebattle.CodeCheck.Result
 
-  @token %{lang_meta: Runner.Languages.meta("haskell"), seed: "123", container_output: ""}
+  @token %{lang_meta: Runner.Languages.meta("haskell"), seed: "123", container_output: "", container_stderr: ""}
 
   test "parses output with errors" do
     assert OutputParser.call(%{
