@@ -4,6 +4,18 @@ import cn from 'classnames';
 import moment from 'moment';
 
 import MessageTag from './MessageTag';
+import MessageTimestamp from './MessageTimestamp';
+
+const MessageHeader = ({ name, time }) => (
+  <>
+    <span className="font-weight-bold">
+      <span className="d-inline-block text-truncate align-top text-nowrap cb-username-max-length mr-1">
+        {name}
+      </span>
+    </span>
+    <MessageTimestamp time={time} />
+  </>
+);
 
 const Message = ({
   text = '',
@@ -63,30 +75,31 @@ const Message = ({
     return part;
   };
 
+  const textPartsClassNames = cn('text-break', {
+    'cb-private-text': meta?.type === 'private',
+  });
+
   return (
-    <div className="d-flex align-items-baseline flex-wrap">
-      <span
-        role="button"
-        tabIndex={0}
-        title={`Message (${name})`}
-        data-user-id={userId}
-        data-user-name={name}
-        onContextMenu={displayMenu}
-        onClick={displayMenu}
-        onKeyPress={displayMenu}
-      >
-        <MessageTag messageType={meta?.type} />
-        <span className="font-weight-bold">
-          {`${name}: `}
+    <div className="d-flex align-items-baseline flex-wrap mb-1">
+      <span className="d-flex flex-column">
+        <span
+          role="button"
+          tabIndex={0}
+          title={`Message (${name})`}
+          data-user-id={userId}
+          data-user-name={name}
+          onContextMenu={displayMenu}
+          onClick={displayMenu}
+          onKeyPress={displayMenu}
+        >
+          <MessageHeader name={name} time={time} />
         </span>
-      </span>
-      <span className={cn(
-        'ml-1 text-break', {
-        'cb-private-text': meta?.type === 'private',
-      },
-      )}
-      >
-        {parts.map((part, i) => renderMessagePart(part, i))}
+        <span>
+          <MessageTag messageType={meta?.type} />
+          <span className={textPartsClassNames}>
+            {parts.map((part, i) => renderMessagePart(part, i))}
+          </span>
+        </span>
       </span>
     </div>
   );
