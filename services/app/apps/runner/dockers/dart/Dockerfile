@@ -19,3 +19,5 @@ RUN dart pub get --offline
 EXPOSE 8000
 
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+
+ENTRYPOINT ["/runner/codebattle_runner"]

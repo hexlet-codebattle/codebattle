@@ -1,12 +1,12 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NegativeLiterals #-}
-module Check.Checker where
+module Checker where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Control.Exception
-import Check.Solution
+import Solution
 import System.Exit
 
 output = BS.putStrLn . A.encode . A.object

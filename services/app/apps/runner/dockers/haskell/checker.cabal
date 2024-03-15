@@ -1,0 +1,55 @@
+cabal-version:       3.0
+name:                checker
+version:             0.1.0.0
+
+license:             MIT
+license-file:        LICENSE
+
+category:            Game
+build-type:          Simple
+
+author:              kjubybot
+maintainer:          kjubybot@proton.me
+
+--executable Magic
+  --main-is:             magic.hs
+  --build-depends:       base >= 4.11
+                       --, typed-process
+                       --, bytestring
+  --default-language:    Haskell2010
+
+executable Checker
+  main-is:             Main.hs
+
+  other-modules:       Solution
+  other-modules:       Checker
+
+  other-extensions:    TemplateHaskell
+
+  build-depends:       base >=4.17, containers >=0.5, template-haskell >=2.13
+                       , aeson
+                       , bytestring
+                       , text
+                       , unordered-containers
+                       , vector
+                       , scientific
+                       , split
+                       , case-insensitive
+                       , deepseq
+                       , fgl
+                       , integer-logarithms
+                       , megaparsec
+                       , mtl
+                       , parser-combinators
+                       , pretty
+                       , random
+                       , regex-base
+                       , regex-compat
+                       , regex-posix
+                       , time
+                       , transformers
+                       , vector-algorithms
+
+  hs-source-dirs:      check
+
+  default-language:    Haskell2010
