@@ -4,7 +4,7 @@ import moment from 'moment';
 
 const MessageTimestamp = ({ time }) => (
   <span className="text-muted">
-    {moment.utc(time).local().format('hh:mm A')}
+    {moment.utc(moment.unix(time)).local().format('hh:mm A')}
   </span>
 );
 
