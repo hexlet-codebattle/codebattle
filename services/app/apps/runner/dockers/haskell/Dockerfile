@@ -1,15 +1,19 @@
+FROM codebattle/runner-rs:latest AS runner
+
 FROM alpine:latest
 
-RUN apk add --update cabal ghc gmp-dev make wget musl-dev libc6-compat
+RUN apk add --no-cache cabal make libc-dev git
 
 WORKDIR /usr/src/app
 
-ADD HOwl.cabal .
-ADD magic.hs .
-ADD Makefile .
-ADD test_haskell.hs .
-ADD Check Check
+RUN cabal update
 
-RUN ln -s check Check
-RUN cabal new-update
-RUN cabal new-build
+ADD checker.cabal .
+RUN cabal build --only-dependencies
+
+ADD Makefile .
+ADD check/Main.hs check/Main.hs
+
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+
+ENTRYPOINT ["/runner/codebattle_runner"]

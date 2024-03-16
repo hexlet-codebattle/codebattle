@@ -435,7 +435,7 @@ defmodule Runner.Languages do
       check_dir: "Check",
       docker_image: "codebattle/haskell:8.4.3",
       solution_template:
-        "module Check.Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+        "module Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
       arguments_template: %{argument: "<%= type %>", delimiter: " -> "},
       expected_template: " -> <%= type %>",
       types: %{
@@ -454,7 +454,7 @@ defmodule Runner.Languages do
           | boolean_true: "True",
             boolean_false: "False",
             hash_empty: "empty",
-            hash_value: "fromList([<%= entries %>])",
+            hash_value: "(fromList [<%= entries %>])",
             hash_inners: "(\"<%= key %>\" :: String, <%= value %>)"
             # fromList [(1 :: Int, 'a'), (2, 'b'), (3, 'c')]
         }

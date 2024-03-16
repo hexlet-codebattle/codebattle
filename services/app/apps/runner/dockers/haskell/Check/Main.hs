@@ -1,7 +1,7 @@
 #!/usr/local/bin/runghc
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
-import Check.Checker
+import Checker
 import System.Exit
 
 main :: IO ()
