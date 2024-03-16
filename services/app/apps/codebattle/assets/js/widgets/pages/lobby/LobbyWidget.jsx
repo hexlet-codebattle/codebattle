@@ -104,7 +104,7 @@ const LiveTournaments = ({ tournaments }) => {
     return (
       <div className="text-center">
         <h3 className="mb-0 mt-3">There are no active tournaments right now</h3>
-        <a href="/tournaments/#create">
+        <a className="text-primary" href="/tournaments/#create">
           <u>You may want to create one</u>
         </a>
       </div>
