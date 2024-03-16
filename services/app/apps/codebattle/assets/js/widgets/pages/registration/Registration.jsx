@@ -224,7 +224,7 @@ function SignUp() {
         .min(3, 'Should be from 3 to 16 characters')
         .max(16, 'Should be from 3 to 16 characters')
         .matches(
-          /^[a-z]+[a-z0-9_-\s{1}][a-z0-9_]+$/i,
+          /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
           'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
         )
         .required('Nickname required'),
@@ -240,8 +240,8 @@ function SignUp() {
               : true
           ),
         )
-        .matches(/^[a-z0-9]{1}[^;]*[a-z0-9]{1}@[^;]*$/i, 'Should begin and end with a Latin letter or number')
-        .matches(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i, 'Can\'t contain special symbols')
+        .matches(/^[a-zA-Z0-9]{1}[^;]*[a-zA-Z0-9]{1}@[^;]*$/i, 'Should begin and end with a Latin letter or number')
+        .matches(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/i, 'Can\'t contain special symbols')
         .required('Email required'),
       password: Yup
         .string()
