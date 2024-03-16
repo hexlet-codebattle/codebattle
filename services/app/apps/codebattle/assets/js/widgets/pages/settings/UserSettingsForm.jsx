@@ -72,7 +72,14 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
       .strict()
       .required("Field can't be empty")
       .min(3, 'Should be at least 3 characters')
-      .max(16, 'Should be 16 character(s) or less')
+      // .max(5, 'Should be 16 character(s) or less')
+      .test(
+        'max',
+        'Should be 16 character(s) or less',
+        name => (
+          settings.name === name || name.length <= 16
+        ),
+      )
       .trim(),
     clan: Yup.string()
       .strict(),
@@ -83,6 +90,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
       initialValues={initialValues}
       initialTouched={{ name: true }}
       enableReinitialize
+      validateOnChange
       validationSchema={validationSchema}
       onSubmit={onSubmit}
     >
