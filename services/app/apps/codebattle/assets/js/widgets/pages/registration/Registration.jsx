@@ -223,7 +223,10 @@ function SignUp() {
         )
         .min(3, 'Should be from 3 to 16 characters')
         .max(16, 'Should be from 3 to 16 characters')
-        .matches(/^[a-z]+[a-z0-9_-\s{1}][a-z0-9_]+$/i, 'Should contain Latin letters only, also can contain numbers and underscores')
+        .matches(
+          /^[a-z]+[a-z0-9_-\s{1}][a-z0-9_]+$/i,
+          'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
+        )
         .required('Nickname required'),
       email: Yup
         .string()
