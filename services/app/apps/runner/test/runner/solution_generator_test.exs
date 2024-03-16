@@ -50,7 +50,7 @@ defmodule Runner.SolutionGeneratorTest do
                    """)
 
   @haskell_expected String.trim("""
-                    module Check.Solution where
+                    module Solution where
 
                     import qualified Data.HashMap.Lazy as HM
 
