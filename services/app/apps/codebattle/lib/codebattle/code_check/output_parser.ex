@@ -4,7 +4,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
   require Logger
   alias Codebattle.CodeCheck.Result
 
-  def call(token = %{lang_meta: %{checker_version: 2}}) do
+  def call(token = %{lang_meta: %{output_version: 2}}) do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end
 
@@ -21,8 +21,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
 
   def call(token) do
     %{container_output: container_output, container_stderr: container_stderr, seed: seed} = token
-
-    case Regex.scan(~r/{\"status\":.+}/, container_output) do
+    case Regex.scan(~r/{\"status\":.+}|{\"arguments\":.+}|{\"result\":.+}/, container_output) do
       [] ->
         handle_output_without_status(token, container_output, container_stderr)
 
@@ -37,7 +36,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
             output: reset_statuses(container_output, List.flatten(json_result))
           }
         else
-          get_error_status(last_message, container_output)
+          get_error_status(last_message, container_output, container_stderr)
         end
     end
   end
@@ -66,7 +65,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
     %Result{status: "error", result: result, output: error_msg}
   end
 
-  defp get_error_status(error_message, container_output) do
+  defp get_error_status(error_message, container_output, container_stderr) do
     case Regex.scan(~r/{"status":.{0,3}"error".+}/, container_output) do
       [] ->
         failure_list = Regex.scan(~r/{"status":.{0,3}"failure".+}/, container_output)
@@ -92,7 +91,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
         }
 
       [_] ->
-        %Result{status: "error", result: error_message, output: container_output}
+        %Result{status: "error", result: container_stderr, output: container_stderr}
     end
   end
 

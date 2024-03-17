@@ -4,10 +4,12 @@ defmodule Runner.LanguageMeta do
 
   typedstruct do
     field(:arguments_template, %{argument: String.t(), delimiter: String.t()})
+    field(:typespec_template, %{argument: String.t(), delimiter: String.t()})
     field(:check_dir, String.t())
     field(:checker_file_name, String.t())
     field(:checker_meta, map())
     field(:checker_version, pos_integer(), default: 1)
+    field(:output_version, pos_integer(), default: 1)
     field(:container_run_timeout, String.t(), defatul: "10s")
     field(:default_values, map())
     field(:docker_image, String.t())

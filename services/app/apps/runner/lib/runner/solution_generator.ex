@@ -6,8 +6,9 @@ defmodule Runner.SolutionGenerator do
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t()) :: String.t()
   def call(task, lang_meta) do
     binding =
-      %{arguments: [], expected_type: "", return_statement: ""}
+      %{arguments: [], expected_type: "", return_statement: "", typespec: "lal"}
       |> add_arguments(lang_meta, task.input_signature)
+      |> add_typespec(lang_meta, task.input_signature)
       |> add_expected(lang_meta, task.output_signature)
       |> add_return_statement(lang_meta, task.output_signature)
       |> Map.to_list()
@@ -29,6 +30,26 @@ defmodule Runner.SolutionGenerator do
       )
 
     Map.put(binding, :arguments, arguments)
+  end
+
+  defp add_typespec(binding, %{typespec_template: nil}, _input_signature) do
+    binding
+  end
+
+  defp add_typespec(binding, meta, input_signature) do
+    %{argument: argument, delimiter: delimiter} = meta.typespec_template
+
+    typespec =
+      Enum.map_join(
+        input_signature,
+        delimiter,
+        &EEx.eval_string(argument,
+          name: &1.argument_name,
+          type: TypesGenerator.call(&1.type, meta)
+        )
+      )
+
+    Map.put(binding, :typespec, typespec)
   end
 
   defp add_expected(
