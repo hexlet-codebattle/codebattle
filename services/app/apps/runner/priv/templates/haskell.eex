@@ -9,29 +9,24 @@ import Data.HashMap.Lazy
 import Control.Exception
 import Solution
 import System.Exit
+import System.CPUTime (getCPUTime)
+import Text.Printf (printf)
 
 output = BS.putStrLn . A.encode . A.object
-handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= check_code %> :: String)]
-handleSuccess res exp args = output ["status" A..= ("success" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
-handleFailure res exp args = output ["status" A..= ("failure" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
+handleSuccess res time = output ["type" A..= ("result" :: String), "value" A..= res, "time" A..= time]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
 test :: IO ()
 test = do
 
-    <%= for %{arguments: arguments, expected: expected, index: i, args_string: args_string} <- checks do %>
-    let expected<%= i %> = <%= expected %>
+    <%= for %{arguments: arguments, index: i, args_string: args_string} <- checks do %>
+    start <- getCPUTime
     let res<%= i %> = solution <%= arguments %>
-    let resAssert<%= i %> = res<%= i %> == expected<%= i %>
+    end <- getCPUTime
+    let time<%= i %> = fromIntegral (end - start) / (10^9) :: Double
+    let timeStr<%= i %>  :: String
+        timeStr<%= i %>= printf "%f" time<%= i %>
 
-    (if resAssert<%= i %>
-    then handleSuccess res<%= i %> expected<%= i %> (<%= args_string %> :: String)
-      else handleFailure res<%= i %> expected<%= i %> (<%= args_string %> :: String))
+    handleSuccess res<%= i %> timeStr<%= i %>
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
     <% end %>
-
-    let final_res = [True<%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
-
-    if and final_res
-      then handleOk
-      else output []

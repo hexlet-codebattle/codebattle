@@ -85,6 +85,10 @@ defmodule Runner.Executor do
       File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)
     end
 
+    if lang_meta.main_text do
+      File.write!(Path.join(tmp_dir_path, lang_meta.main_file_name), lang_meta.main_text)
+    end
+
     File.write!(Path.join(tmp_dir_path, "asserts.json"), asserts_text)
 
     tmp_dir_path
@@ -109,7 +113,7 @@ defmodule Runner.Executor do
       Logger.info("Start docker execution: #{inspect(cmd_opts)}")
 
       {execution_time, result} =
-        :timer.tc(fn -> Rambo.run(cmd, cmd_opts, log: false) |> dbg() end)
+        :timer.tc(fn -> Rambo.run(cmd, cmd_opts, log: false) end)
 
       Logger.error(
         "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
