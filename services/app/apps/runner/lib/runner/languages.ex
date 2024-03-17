@@ -428,16 +428,19 @@ defmodule Runner.Languages do
     "haskell" => %LanguageMeta{
       name: "haskell",
       slug: "haskell",
-      version: "8.4.3",
+      version: "9.4.7",
       container_run_timeout: "15s",
       solution_file_name: "Solution.hs",
       checker_file_name: "Checker.hs",
-      check_dir: "Check",
-      docker_image: "codebattle/haskell:8.4.3",
+      check_dir: "check",
+      docker_image: "codebattle/haskell:9.4.7",
       solution_template:
         "module Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
       arguments_template: %{argument: "<%= type %>", delimiter: " -> "},
       expected_template: " -> <%= type %>",
+      main_file_name: "Main.hs",
+      main_text:
+        "#!/usr/local/bin/runghc\n{-# LANGUAGE ScopedTypeVariables #-}\n {-# LANGUAGE OverloadedStrings #-}\nimport Checker\nimport System.Exit\n\nmain :: IO ()\nmain = do\n  test",
       types: %{
         "integer" => "Int",
         "float" => "Double",

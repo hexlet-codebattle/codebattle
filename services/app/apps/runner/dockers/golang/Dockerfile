@@ -12,5 +12,3 @@ ADD Makefile .
 EXPOSE 8000
 
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
-
-ENTRYPOINT ["/runner/codebattle_runner"]
