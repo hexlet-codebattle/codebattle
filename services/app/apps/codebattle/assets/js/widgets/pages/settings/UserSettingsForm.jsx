@@ -76,7 +76,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
       .test(
         'max',
         'Should be 16 character(s) or less',
-        name => (
+        (name = '') => (
           settings.name === name || name.length <= 16
         ),
       )
