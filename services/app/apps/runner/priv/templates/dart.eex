@@ -1,13 +1,10 @@
-import 'package:test/test.dart';
 import 'dart:convert';
 import 'dart:async';
 
 import 'package:check/solution.dart';
 
 void main() {
-  test("Run Asserts", () {
-    bool success_ = true;
-    var asserts_ = [];
+    var asserts = [];
     var output_ = "";
 
     var startTime_;
@@ -16,11 +13,16 @@ void main() {
 
     try {
       runZoned(() {
-      <%= for %{arguments: arguments, expected: expected} <- checks do %>
+      <%= for %{arguments: arguments} <- checks do %>
         startTime_ = new DateTime.now().millisecondsSinceEpoch;
         result_ = solution(<%= arguments %>);
         executionTime_ = new DateTime.now().millisecondsSinceEpoch - startTime_;
-        success_ = assert_solution(result_, <%= expected %>, [<%= arguments %>], output_, asserts_, executionTime_, success_);
+        asserts.add({
+          'type': 'result',
+          'value': result_,
+          'output': output_,
+          'time': executionTime_
+        });
         output_ = "";
       <% end %>
       }, zoneSpecification: new ZoneSpecification(
@@ -29,49 +31,18 @@ void main() {
         }
       ));
 
-    asserts_.forEach(
+    asserts.forEach(
       (message) => print_message(message)
     );
-
-    if (success_) {
-      print_message({'status': 'ok', 'result': <%= check_code %>});
-    }
 
     } catch (e) {
       print(output_);
       print(e);
       print_message({
-        'status': 'error',
-        'result': e
+        'type': 'error',
+        'value': e
       });
     }
-  });
-}
-
-bool assert_solution(result, expected, arguments, output, asserts, executionTime, success) {
-  try {
-    expect(expected, equals(result));
-    asserts.add({
-      'status': 'success',
-      'result': result,
-      'output': output,
-      'expected': expected,
-      'arguments': arguments,
-      'execution_time': executionTime
-    });
-  } catch (e) {
-    asserts.add({
-      'status': 'failure',
-      'result': result,
-      'output': output,
-      'expected': expected,
-      'arguments': arguments,
-      'execution_time': executionTime
-    });
-    return false;
-  }
-
-  return success;
 }
 
 void print_message(obj) {

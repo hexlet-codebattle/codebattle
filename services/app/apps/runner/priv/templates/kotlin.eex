@@ -1,66 +1,42 @@
 package solution
 
 import kotlin.collections.*
-
-import java.io.PrintStream
-import java.io.ByteArrayOutputStream
-import java.util.LinkedHashMap
-import org.json.simple.JSONValue
+import java.io.*
+import java.util.*
+import com.google.gson.Gson;
 
 fun main(args: Array<String>) {
   var oldOut_: PrintStream = System.out
-  var executionResults_: ArrayList<LinkedHashMap<String, Any>> = ArrayList<LinkedHashMap<String, Any>>()
+  var executionResults_: ArrayList<AssertResult> = ArrayList<AssertResult>()
 
   try {
     var baos_: ByteArrayOutputStream = ByteArrayOutputStream()
     var newOut_: PrintStream = PrintStream(baos_)
     System.setOut(newOut_)
 
-    var success_: Boolean = true
-
     var start_: Long
-    var executionTime_: Long
+    var executionTime_: Double
     var output_: String
+    var time_: String
 
-    <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+    <%= for %{arguments: arguments, index: i} <- checks do %>
       <%= for %{defining: defining, value: value} <- arguments.info do %>
     var <%= defining %> = <%= value %>;
       <% end %>
-    start_ = System.currentTimeMillis()
+    start_ = System.nanoTime()
     var result<%= i %>_: Any = solution(<%= arguments.expression %>)
-    executionTime_ = System.currentTimeMillis() - start_
-    var <%= expected.defining %> = <%= expected.value %>;
+    executionTime_ = (System.nanoTime() - start_) / 1_000_000_000.0
+    time_ = String.format("%.7f", executionTime_)
     output_ = getOutputAndResetIO(baos_)
-    var args<%= i %>_ = mutableListOf(<%= arguments.expression %>)
-    success_ = assertSolution(result<%= i %>_, expected<%= i %>, output_, args<%= i %>_, executionTime_, executionResults_, success_)
+    executionResults_.add(getResultMessage(result<%= i %>_, output_, time_))
     <% end %>
-
-    if (success_) {
-      var okMessage: LinkedHashMap<String, Any> = getOkMessage(<%= check_code %>)
-      executionResults_.add(okMessage)
-    }
-
+    System.setOut(oldOut_)
+    printResults(executionResults_)
   } catch (e: Exception) {
-    e.printStackTrace()
-    var errMessage: LinkedHashMap<String, Any> = getErrorMessage(e.toString())
-    executionResults_.add(errMessage)
+    System.setOut(oldOut_)
+    var errMessage: ErrorMessage = getErrorMessage(e.toString())
+    println(errMessage);
   }
-
-  System.setOut(oldOut_)
-  executionResults_.forEach { message -> println(JSONValue.toJSONString(message)) }
-}
-
-fun assertSolution(result: Any, expected: Any, output: String, args: List<Any>, executionTime: Long, executionResults: ArrayList<LinkedHashMap<String, Any>>, success: Boolean): Boolean {
-  var status: Boolean = expected.equals(result)
-  if (status) {
-    var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("success", result, expected, output, args, executionTime)
-    executionResults.add(assertMessage)
-    return success
-  }
-
-  var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("failure", result, expected, output, args, executionTime)
-  executionResults.add(assertMessage)
-  return false
 }
 
 fun getOutputAndResetIO(baos: ByteArrayOutputStream): String {
@@ -70,33 +46,24 @@ fun getOutputAndResetIO(baos: ByteArrayOutputStream): String {
   return output
 }
 
-fun getAssertMessage(status: String, result: Any, expected: Any, output: String, args: List<Any>, executionTime: Long): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
-
-  message.put("status", status)
-  message.put("result", result.toString())
-  message.put("expected", expected.toString())
-  message.put("output", output)
-  message.put("arguments", args.toString())
-  message.put("executionTime", executionTime)
-
-  return message
+fun getResultMessage(result: Any, output: String, executionTime: String): AssertResult {
+ return AssertResult(result, output, executionTime)
 }
 
-fun getErrorMessage(result: String): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
-
-  message.put("status", "error")
-  message.put("result", result)
-
-  return message
+fun getErrorMessage(message: String): ErrorMessage {
+  return ErrorMessage(message)
 }
 
-fun getOkMessage(code: String): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
+private fun printResults(executionResults: List<AssertResult>) {
+    executionResults.forEach { message -> println(message) }
+}
 
-  message.put("status", "ok")
-  message.put("result", code)
+data class AssertResult(val value: Any?, val output: String, val time: String) {
+    private val type = "result"
+    override fun toString(): String = Gson().toJson(this)
+}
 
-  return message
+data class ErrorMessage(val value: String) {
+    private val type = "error"
+    override fun toString(): String = Gson().toJson(this)
 }

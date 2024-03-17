@@ -5,12 +5,10 @@ FROM amazoncorretto:21-alpine3.19-full
 WORKDIR /usr/src/app
 
 RUN apk add --update --no-cache make curl
-# && curl -L https://repo1.maven.org/maven2/javax/json/javax.json-api/1.1.4/javax.json-api-1.1.4.jar > /usr/src/app/javax_json_api.jar \
-# && curl -L https://repo1.maven.org/maven2/org/glassfish/javax.json/1.1.4/javax.json-1.1.4.jar > /usr/src/app/javax_json.jar
+
+RUN curl -o gson.jar https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar
 
 COPY check check
-COPY javax_json.jar .
-COPY javax_json_api.jar .
 COPY Makefile .
 
 EXPOSE 8000

@@ -90,9 +90,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
         true ->
           """
-          Something went wrong!\n
-          STDOUT: #{container_output}\n
           STDERR: #{container_stderr}\n
+          STDOUT: #{container_output}\n
           Please check your code or write to dev team in our Telegram
           """
       end
@@ -108,6 +107,25 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   defp compare_results_with_asserts(token = %{check_result: %{status: "error"}}), do: token
+
+  defp compare_results_with_asserts(
+         token = %{
+           solution_results: item = %{"type" => "error"},
+           container_stderr: container_stderr
+         }
+       ) do
+    # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}
+    check_result = %Result.V2{
+      exit_code: token.exit_code,
+      status: "error",
+      output_error: """
+      STDERR:\n#{container_stderr}\n
+      STDOUT:\n#{item["value"]}
+      """
+    }
+
+    %{token | check_result: check_result}
+  end
 
   defp compare_results_with_asserts(
          token = %{

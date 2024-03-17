@@ -6,7 +6,7 @@ FROM amazoncorretto:21-alpine3.19-full
 ENV KOTLIN_VERSION=1.9.23 \
   KOTLIN_HOME=/usr/share/kotlin
 
-RUN apk add --update bash && \
+RUN apk add --update --no-cache bash make curl && \
   apk add --virtual=build-dependencies wget ca-certificates && \
   cd /tmp && \
   wget "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" && \
@@ -20,8 +20,7 @@ RUN apk add --update bash && \
 
 WORKDIR /usr/src/app
 
-RUN apk add --update make curl \
-  && curl -L https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/json-simple/json_simple-1.1.jar > /usr/src/app/json_simple.jar
+RUN curl -o gson.jar https://repo1.maven.org/maven2/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar
 
 COPY check check
 COPY Makefile .

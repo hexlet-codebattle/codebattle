@@ -1,5 +1,5 @@
 test:
-	javac ./check/Checker.java ./check/Solution.java -cp ./javax_json_api.jar -d solution.jar
-	java -cp javax_json.jar:javax_json_api.jar:solution.jar solution.Checker
+	javac ./check/Checker.java ./check/Solution.java -cp gson.jar -d solution.jar
+	java -cp gson.jar:solution.jar solution.Checker
 
 .PHONY: test

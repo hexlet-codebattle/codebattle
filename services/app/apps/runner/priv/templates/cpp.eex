@@ -16,44 +16,29 @@ template<class K, class V, class dummy_compare, class A>
 using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
 using json = nlohmann::basic_json<fifo_map>;
 
-template <typename T1, typename T2>
-json BuildAssertMessage(string status, T1 result, T2 expected, string output, string args, double executionTime) {
+template <typename T1>
+json BuildResultMessage(string status, T1 result, string output, double executionTime) {
   json j;
-  j["status"] = status;
-  j["result"] = result;
-  j["expected"] = expected;
+  j["type"] = status;
+  j["value"] = result;
   j["output"] = output;
-  j["arguments"] = args;
-  j["execution_time"] = executionTime;
+  j["time"] = executionTime;
 
   return j;
 }
 
-template <typename T1, typename T2>
-bool AssertSolution(T1 result, T2 expected, string output, string args, double executionTime, vector<json> &finalResults, bool success) {
-  bool status = result == expected;
-  if (status == false) {
-    json message = BuildAssertMessage("failure", result, expected, output, args, executionTime);
-    finalResults.push_back(message);
-    return false;
-  }
-
-  json message = BuildAssertMessage("success", result, expected, output, args, executionTime);
-  finalResults.push_back(message);
-  return success;
-}
-
-template <typename T>
-json BuildMessage(string status, T result) {
-  json j;
-  j["status"] = status;
-  j["result"] = result;
-
-  return j;
-}
 
 void SendMessage(json j) {
   cout << j << "\n";
+}
+
+template <typename T>
+json BuildErrorMessage(string status, T result) {
+  json j;
+  j["type"] = status;
+  j["value"] = result;
+
+  return j;
 }
 
 int main() {
@@ -64,26 +49,21 @@ int main() {
   vector<json> finalResults_ = {};
 
   try {
-    <%= for %{arguments: arguments, expected: expected, index: i, args_string: args_string } <- checks do %>
+    <%= for %{arguments: arguments, index: i} <- checks do %>
       <%= for %{defining: defining, value: value} <- arguments.info do %>
         <%= defining %> = <%= value %>;
       <% end %>
-      <%= expected.defining %> = <%= expected.value %>;
 
       auto start<%= i %>_ = std::chrono::system_clock::now();
       auto result<%= i %>_ = solution(<%= arguments.expression %>);
       auto executionTime<%= i %>_ = (std::chrono::system_clock::now() - start<%= i %>_).count();
       output_ = buffer_.str();
       buffer_.str("");
-      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, <%= args_string %>, executionTime<%= i %>_, finalResults_, success_);
+      finalResults_.push_back(BuildResultMessage("result", result<%= i %>_, output_, executionTime<%= i %>_));
     <% end %>
 
-    if (success_) {
-      json message = BuildMessage("ok", <%= check_code %>);
-      finalResults_.push_back(message);
-    }
   } catch (const std::exception& e) {
-    json message = BuildMessage("error", e.what());
+    json message = BuildErrorMessage("error", e.what());
     finalResults_.push_back(message);
   }
 

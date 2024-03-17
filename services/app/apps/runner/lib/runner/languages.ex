@@ -114,13 +114,14 @@ defmodule Runner.Languages do
     "dart" => %LanguageMeta{
       name: "Dart",
       slug: "dart",
+      output_version: 2,
       version: "3.3.1",
       check_dir: "lib",
       container_run_timeout: "15s",
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:3.3.1",
-      solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
+      solution_template: "<%= expected %>solution(<%= arguments %>) {\n  // print(\"use print for debug\");\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -140,6 +141,7 @@ defmodule Runner.Languages do
     "cpp" => %LanguageMeta{
       name: "C++",
       slug: "cpp",
+      output_version: 2,
       version: "g++std=c++20",
       check_dir: "check",
       container_run_timeout: "17s",
@@ -147,7 +149,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.cpp",
       docker_image: "codebattle/cpp:20",
       solution_template:
-        "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
+        "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n// std::cout << \"use print for debug\" << std::endl;\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %>",
       types: %{
@@ -172,6 +174,7 @@ defmodule Runner.Languages do
     "java" => %LanguageMeta{
       name: "Java",
       slug: "java",
+      output_version: 2,
       version: "21",
       check_dir: "check",
       container_run_timeout: "17s",
@@ -179,7 +182,7 @@ defmodule Runner.Languages do
       checker_file_name: "Checker.java",
       docker_image: "codebattle/java:21",
       solution_template:
-        "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n    public <%= expected %>solution(<%= arguments %>) {\n\n    }\n}",
+        "package solution;\n\nimport java.util.*;\nimport java.util.stream.*;\n\npublic class Solution {\n    public <%= expected %>solution(<%= arguments %>) {\n      // System.out.println(\"use print for debug\");\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -207,13 +210,14 @@ defmodule Runner.Languages do
       name: "Kotlin",
       slug: "kotlin",
       version: "1.9.23",
+      output_version: 2,
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
       docker_image: "codebattle/kotlin:1.9.23",
       solution_template:
-        "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
+        "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n  // println(\"use print for debug\")\n}",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -240,6 +244,7 @@ defmodule Runner.Languages do
     "csharp" => %LanguageMeta{
       name: "C#",
       slug: "csharp",
+      output_version: 2,
       version: "8.0.201",
       check_dir: "check",
       container_run_timeout: "17s",
@@ -247,7 +252,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.cs",
       docker_image: "codebattle/csharp:8.0.201",
       solution_template:
-        "using System;using System.Collections.Generic;\n\nnamespace app\n{\n    public class Solution\n    {\n        public<%= expected %> solution(<%= arguments %>)\n        {\n\n        }\n    }\n}",
+        "using System;\nusing System.Collections.Generic;\n\nnamespace app\n{\n    public class Solution\n    {\n        public<%= expected %> solution(<%= arguments %>)\n        {\n\n        // Console.WriteLine(\"use print for debug\");\n       }\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -275,6 +280,7 @@ defmodule Runner.Languages do
     "golang" => %LanguageMeta{
       name: "golang",
       slug: "golang",
+      output_version: 2,
       version: "1.22.1",
       container_run_timeout: "15s",
       check_dir: "check",

@@ -4,70 +4,48 @@ import kotlin.collections.*
 
 import java.io.*
 import java.util.*
-import org.json.simple.*
 
+import com.google.gson.Gson;
 
 fun main(args: Array<String>) {
   var oldOut: PrintStream = System.out
-  var executionResults: ArrayList<LinkedHashMap<String, Any>> = ArrayList<LinkedHashMap<String, Any>>()
+  var executionResults: ArrayList<AssertResult> = ArrayList<AssertResult>()
 
   try {
     var baos: ByteArrayOutputStream = ByteArrayOutputStream()
     var newOut: PrintStream = PrintStream(baos)
     System.setOut(newOut)
 
-    var success: Boolean = true
-
     var start: Long
-    var executionTime: Long
+    var executionTime: Double
     var output: String
 
-    var a1: Int = 1
-    var b1: Int = 2
-    start = System.currentTimeMillis()
-    var result1: Int = solution(a1, b1)
-    executionTime = System.currentTimeMillis() - start
-    var expected1: Int = 3
-    output = getOutputAndResetIO(baos)
-    var args1 = mutableListOf(a1, b1)
-    success = assertSolution(result1, expected1, output, args1, executionTime, executionResults, success)
+    var a1 = 1
+    var b1 = 1
+    var c1 = "a"
+    var d1 = 1.3
+    var e1 = true
+    var f1 = mapOf("key1" to "val1", "key2" to "val2")
+    var g1 = listOf("asdf", "fdsa")
+    var h1 = listOf(listOf("Jack", "Alice"))
 
-    var a2: Int = 4
-    var b2: Int = 6
-    start = System.currentTimeMillis()
-    var result2: Int = solution(a2, b2)
-    executionTime = System.currentTimeMillis() - start
-    var expected2: Int = 10
+    start = System.nanoTime();
+    var result1: Int = solution(a1, b1, c1, d1,e1, f1, g1, h1)
+    executionTime = (System.nanoTime() - start) / 1_000_000_000.0
+    var  time = String.format("%.7f", executionTime)
     output = getOutputAndResetIO(baos)
-    var args2 = mutableListOf(a2, b2)
-    success = assertSolution(result2, expected2, output, args2, executionTime, executionResults, success)
 
-    if (success) {
-      var okMessage: LinkedHashMap<String, Any> = getOkMessage("__code-0__")
-      executionResults.add(okMessage)
-    }
+    var message: AssertResult = getResultMessage(result1, output, time)
+    executionResults.add(message)
+
+   System.setOut(oldOut)
+   printResults(executionResults)
 
   } catch (e: Exception) {
-    e.printStackTrace()
-    var errMessage: LinkedHashMap<String, Any> = getErrorMessage(e.toString())
-    executionResults.add(errMessage)
+    System.setOut(oldOut)
+    var errMessage: ErrorMessage = getErrorMessage(e.toString())
+    println(errMessage);
   }
-
-  System.setOut(oldOut)
-  executionResults.forEach { message -> println(JSONValue.toJSONString(message)) }
-}
-
-fun assertSolution(result: Any, expected: Any, output: String, args: List<Any>, executionTime: Long, executionResults: ArrayList<LinkedHashMap<String, Any>>, success: Boolean): Boolean {
-  var status: Boolean = expected.equals(result)
-  if (status) {
-    var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("success", result, expected, output, args, executionTime)
-    executionResults.add(assertMessage)
-    return success
-  }
-
-  var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("failure", result, expected, output, args, executionTime)
-  executionResults.add(assertMessage)
-  return false
 }
 
 fun getOutputAndResetIO(baos: ByteArrayOutputStream): String {
@@ -77,33 +55,24 @@ fun getOutputAndResetIO(baos: ByteArrayOutputStream): String {
   return output
 }
 
-fun getAssertMessage(status: String, result: Any, expected: Any, output: String, args: List<Any>, executionTime: Long): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
-
-  message.put("status", status)
-  message.put("result", result.toString())
-  message.put("expected", expected.toString())
-  message.put("output", output)
-  message.put("arguments", args.toString())
-  message.put("executionTime", executionTime)
-
-  return message
+fun getResultMessage(result: Any, output: String, executionTime: String): AssertResult {
+ return AssertResult(result, output, executionTime)
 }
 
-fun getErrorMessage(result: String): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
-
-  message.put("status", "error")
-  message.put("result", result)
-
-  return message
+fun getErrorMessage(message: String): ErrorMessage {
+  return ErrorMessage(message)
 }
 
-fun getOkMessage(code: String): LinkedHashMap<String, Any> {
-  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
+private fun printResults(executionResults: List<AssertResult>) {
+    executionResults.forEach { message -> println(message) }
+}
 
-  message.put("status", "ok")
-  message.put("result", code)
+data class AssertResult(val value: Any?, val output: String, val time: String) {
+    private val type = "result"
+    override fun toString(): String = Gson().toJson(this)
+}
 
-  return message
+data class ErrorMessage(val value: String) {
+    private val type = "error"
+    override fun toString(): String = Gson().toJson(this)
 }

@@ -4,12 +4,12 @@ import java.io.*;
 import java.util.*;
 import static java.util.Map.entry;
 
-import javax.json.*;
+import com.google.gson.Gson;
 
 public class Checker {
     public static void main(String... _args) {
         PrintStream _oldOut = System.out;
-        List<JsonObject> executionResults_ = new ArrayList<JsonObject>();
+        List<AssertResult> executionResults_ = new ArrayList<AssertResult>();
 
         try {
             Solution instance_ = new Solution();
@@ -18,39 +18,33 @@ public class Checker {
             PrintStream newOut_ = new PrintStream(baos_);
             System.setOut(newOut_);
 
-            boolean success_ = true;
-
+            String time_ = "";
             long start_ = 0;
-            long executionTime_ = 0;
+            double executionTime_ = 0;
             String output_ = "";
 
-            <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+            <%= for %{arguments: arguments, index: i} <- checks do %>
               <%= for %{defining: defining, value: value} <- arguments.info do %>
             <%= defining %> = <%= value %>;
               <% end %>
-            start_ = System.currentTimeMillis();
+            start_ = System.nanoTime();
             Object result<%= i %>_ = instance_.solution(<%= arguments.expression %>);
-            executionTime_ = System.currentTimeMillis() - start_;
-            <%= expected.defining %> = <%= expected.value %>;
+            executionTime_ = (System.nanoTime() - start_) / 1_000_000_000.0;
+            time_ = String.format("%.7f", executionTime_);
+
             output_ = getOutputAndResetIO(baos_);
-            Object[] args_<%= i %>_ = {<%= arguments.expression %>};
-            List<Object> arguments<%= i %>_ = Arrays.asList(args_<%= i %>_);
-            success_ = assertSolution(result<%= i %>_, expected<%= i %>, output_, arguments<%= i %>_, executionTime_, executionResults_, success_);
+            executionResults_.add(new AssertResult(result<%= i %>_, output_, time_));
+
             <% end %>
 
-            if (success_) {
-                JsonObject okMessage = getOkMessage(<%= check_code %>);
-                executionResults_.add(okMessage);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            String errMessage = e.getMessage();
-            JsonObject errorMessage = getErrorMessage(errMessage);
-            executionResults_.add(errorMessage);
-        }
-
         System.setOut(_oldOut);
-        print(executionResults_);
+        printResults(executionResults_);
+        } catch (Exception e) {
+            System.setOut(_oldOut);
+            String errMessage = e.getMessage();
+            var errorMessage = new ErrorMessage(errMessage);
+            System.out.println(errorMessage);
+        }
     }
 
     private static String getOutputAndResetIO(ByteArrayOutputStream baos) {
@@ -60,46 +54,42 @@ public class Checker {
         return output;
     }
 
-    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults, boolean success) {
-        boolean assertResult = expected.equals(result);
-
-        if (assertResult) {
-            JsonObject assertMessage = getAssertMessage("success", result, expected, output, args, executionTime);
-            executionResults.add(assertMessage);
-            return success;
-        }
-
-        JsonObject assertMessage = getAssertMessage("failure", result, expected, output, args, executionTime);
-        executionResults.add(assertMessage);
-        return false;
-    }
-
-    private static JsonObject getAssertMessage(String status, Object result, Object expected, String output, List args, long executionTime) {
-        return Json.createObjectBuilder()
-            .add("status", status)
-            .add("result", result.toString())
-            .add("expected", expected.toString())
-            .add("output", output)
-            .add("arguments", args.toString())
-            .add("executionTime", executionTime)
-            .build();
-    }
-
-    private static JsonObject getOkMessage(String result) {
-        return Json.createObjectBuilder()
-            .add("status", "ok")
-            .add("result", result)
-            .build();
-    }
-
-    private static JsonObject getErrorMessage(String message) {
-        return Json.createObjectBuilder()
-            .add("status", "error")
-            .add("result", message)
-            .build();
-    }
-
-    private static void print(List<JsonObject> executionResults) {
-        executionResults.forEach((JsonObject message) -> System.out.println(message));
-    }
+  private static void printResults(List<AssertResult> executionResults) {
+    executionResults.forEach((AssertResult message) -> System.out.println(message));
+  }
 }
+
+class AssertResult {
+  private String type;
+  private Object value;
+  private String output;
+  private String time;
+
+  public AssertResult(Object value, String output, String time) {
+    this.type = "result";
+    this.value = value;
+    this.output = output;
+    this.time = time;
+  }
+
+  @Override
+  public String toString() {
+    return new Gson().toJson(this);
+  }
+}
+
+class ErrorMessage {
+  private String type;
+  private String value;
+
+  public ErrorMessage(String value) {
+    this.type = "error";
+    this.value = value;
+  }
+
+  @Override
+  public String toString() {
+    return new Gson().toJson(this);
+  }
+}
+

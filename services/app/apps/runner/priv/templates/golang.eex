@@ -1,15 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+  "encoding/json"
+  "fmt"
   "os"
-	"reflect"
   "time"
 )
 
 func main() {
-  success_ := true
   message_ := ""
   executionResults_ := []string{}
 
@@ -17,47 +15,28 @@ func main() {
   var result_ interface{}
   var executionTime_ interface{}
 
-  <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+  <%= for %{arguments: arguments, index: i} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
       var <%= defining %> = <%= value %>
     <% end %>
-    var <%= expected.defining %> = <%= expected.value %>
 
     start_ = time.Now()
     result_ = solution(<%= arguments.expression %>)
     executionTime_ = time.Now().Sub(start_)
-    success_, message_ = assertSolution(result_, expected<%= i %>, executionTime_, []interface{}{<%= arguments.expression %>}, success_)
+    message_ = buildResultMessage(result_, executionTime_)
+
     executionResults_ = append(executionResults_, message_)
   <% end %>
 
-  if success_ {
-    successMessage := buildMessage("ok", <%= check_code %>)
-    sendMessage(successMessage)
-  } else {
-    for _, m_ := range executionResults_ {
-      sendMessage(m_)
-    }
+  for _, m_ := range executionResults_ {
+    sendMessage(m_)
   }
 }
 
-func assertSolution(result, expected, executionTime, args interface{}, success bool) (bool, string) {
-	status := reflect.DeepEqual(result, expected)
-	if !status {
-		message := buildAssertMessage("failure", result, expected, executionTime, args)
-		return false, message
-	}
-
-	message := buildAssertMessage("success", result, expected, executionTime, args)
-	return success, message
+func buildResultMessage(result, executionTime interface{}) string {
+    return fmt.Sprintf(`{"type": "result", "value": %s, "execution_time": %s}`, toJSON(result), toJSON(executionTime))
 }
 
-func buildMessage(status string, result interface{}) string {
-	return fmt.Sprintf(`{"status": "%s", "result": %s}`, status, toJSON(result))
-}
-
-func buildAssertMessage(status string, result, expected, executionTime, arguments interface{}) string {
-  return fmt.Sprintf(`{"status": "%s", "result": %s, "expected": %s, "arguments": %s, "execution_time": %s}`, status, toJSON(result), toJSON(expected), toJSON(arguments), toJSON(executionTime))
-}
 
 func toJSON(data interface{}) []byte {
 	result, err := json.Marshal(data)
