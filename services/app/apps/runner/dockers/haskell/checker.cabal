@@ -19,10 +19,9 @@ maintainer:          kjubybot@proton.me
   --default-language:    Haskell2010
 
 executable Checker
-  main-is:             Main.hs
+  main-is:             Checker.hs
 
   other-modules:       Solution
-  other-modules:       Checker
 
   other-extensions:    TemplateHaskell
 

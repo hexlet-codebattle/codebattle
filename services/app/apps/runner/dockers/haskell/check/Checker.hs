@@ -1,8 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NegativeLiterals #-}
-module Checker where
-
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Control.Exception
@@ -15,8 +13,8 @@ handleSuccess res = output ["status" A..= ("success" :: String), "result" A..= r
 handleFailure res args = output ["status" A..= ("failure" :: String), "result" A..= res, "arguments" A..= args]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
-test :: IO ()
-test = do
+main :: IO ()
+main = do
     let expected1 = 2
     let res1 = expected1 == solution 1 1
 
