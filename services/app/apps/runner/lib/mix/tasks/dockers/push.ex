@@ -6,24 +6,18 @@ defmodule Mix.Tasks.Dockers.Push do
   @shortdoc "Push dockers to docker hub"
 
   def run([slug]) do
-    langs = Runner.Languages.meta()
-    lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
-    push([lang])
+    slug |> Runner.Languages.meta() |> push()
   end
 
   def run(_) do
-    langs = Runner.Languages.meta() |> Map.values()
-    push(langs)
+    Runner.Languages.meta() |> Map.values() |> Enum.each(&push/1)
   end
 
-  defp push(langs) do
-    for lang <- langs do
-      IO.puts("Start pushing image for #{lang.slug}")
+  defp push(%{slug: "ts"}), do: :noop
 
-      {output, _status} =
-        System.cmd("docker", ["push", lang.docker_image], stderr_to_stdout: true)
-
-      IO.puts("End pushing image for #{lang.slug}: #{output}")
-    end
+  defp push(meta) do
+    IO.puts("Start pushing image for #{meta.slug}")
+    Rambo.run("docker", ["push", meta.docker_image], log: :stdout)
+    IO.puts("End pushing image for #{meta.slug}")
   end
 end

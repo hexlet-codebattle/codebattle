@@ -7,24 +7,18 @@ defmodule Mix.Tasks.Dockers.Pull do
   @shortdoc "Pull dockers from docker hub"
 
   def run([slug]) do
-    langs = Runner.Languages.meta()
-    lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
-    pull([lang])
+    slug |> Runner.Languages.meta() |> dbg |> pull()
   end
 
   def run(_) do
-    langs = Runner.Languages.meta() |> Map.values()
-    pull(langs)
+    Runner.Languages.meta() |> Map.values() |> Enum.each(&pull/1)
   end
 
-  defp pull(langs) do
-    for lang <- langs do
-      Logger.debug("Start pulling image for #{lang.slug}")
+  defp pull(%{slug: "ts"}), do: :noop
 
-      {output, _status} =
-        System.cmd("docker", ["pull", lang.docker_image], stderr_to_stdout: true)
-
-      Logger.debug("End pulling image for #{lang.slug}: #{output}")
-    end
+  defp pull(meta) do
+    IO.puts("Start pulling image for #{meta.slug}")
+    Rambo.run("docker", ["pull", meta.docker_image], log: :stdout)
+    IO.puts("End pulling image for #{meta.slug}")
   end
 end

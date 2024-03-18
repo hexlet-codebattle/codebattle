@@ -11,13 +11,6 @@ build-type:          Simple
 author:              kjubybot
 maintainer:          kjubybot@proton.me
 
---executable Magic
-  --main-is:             magic.hs
-  --build-depends:       base >= 4.11
-                       --, typed-process
-                       --, bytestring
-  --default-language:    Haskell2010
-
 executable Checker
   main-is:             Checker.hs
 

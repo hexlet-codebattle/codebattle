@@ -6,26 +6,23 @@ defmodule Mix.Tasks.Dockers.Build do
   @shortdoc "Build docker runner image"
 
   def run([slug]) do
-    langs = Runner.Languages.meta()
-    lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
-    build([lang])
+    slug |> Runner.Languages.meta() |> build()
   end
 
   def run(_) do
-    langs = Runner.Languages.meta() |> Map.values()
-    build(langs)
+    Runner.Languages.meta() |> Map.values() |> Enum.each(&build/1)
   end
 
-  defp build(langs) do
-    for lang <- langs do
-      command =
-        "docker build -t #{lang.docker_image} --file #{root()}/apps/runner/dockers/#{lang.slug}/Dockerfile #{root()}/apps/runner/dockers/#{lang.slug}/"
+  defp build(%{slug: "ts"}), do: :noop
 
-      [cmd | opts] = command |> String.split()
-      IO.puts("Start building image for #{lang.slug}")
-      {output, _status} = System.cmd(cmd, opts, stderr_to_stdout: true)
-      IO.puts("End building image for #{lang.slug}: #{output}")
-    end
+  defp build(meta) do
+    command =
+      "docker build -t #{meta.docker_image} --file #{root()}/apps/runner/dockers/#{meta.slug}/Dockerfile #{root()}/apps/runner/dockers/#{meta.slug}/"
+
+    [cmd | opts] = command |> String.split()
+    IO.puts("Start building image for #{meta.slug}")
+    Rambo.run(cmd, opts, log: :stdout)
+    IO.puts("End building image for #{meta.slug}")
   end
 
   defp root do

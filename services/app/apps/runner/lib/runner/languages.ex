@@ -121,7 +121,8 @@ defmodule Runner.Languages do
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:3.3.1",
-      solution_template: "<%= expected %>solution(<%= arguments %>) {\n  // print(\"use print for debug\");\n}",
+      solution_template:
+        "<%= expected %>solution(<%= arguments %>) {\n  // print(\"use print for debug\");\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -453,9 +454,6 @@ defmodule Runner.Languages do
       typespec_template: %{argument: "<%= type %>", delimiter: " -> "},
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       expected_template: " -> <%= type %>",
-      main_file_name: "Main.hs",
-      main_text:
-        "#!/usr/local/bin/runghc\n{-# LANGUAGE ScopedTypeVariables #-}\n {-# LANGUAGE OverloadedStrings #-}\nimport Checker\nimport System.Exit\n\nmain :: IO ()\nmain = do\n  test",
       types: %{
         "integer" => "Int",
         "float" => "Double",

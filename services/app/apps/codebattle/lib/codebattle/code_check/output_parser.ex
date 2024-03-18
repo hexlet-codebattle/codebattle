@@ -21,6 +21,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
 
   def call(token) do
     %{container_output: container_output, container_stderr: container_stderr, seed: seed} = token
+
     case Regex.scan(~r/{\"status\":.+}|{\"arguments\":.+}|{\"result\":.+}/, container_output) do
       [] ->
         handle_output_without_status(token, container_output, container_stderr)
@@ -65,7 +66,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
     %Result{status: "error", result: result, output: error_msg}
   end
 
-  defp get_error_status(error_message, container_output, container_stderr) do
+  defp get_error_status(_error_message, container_output, container_stderr) do
     case Regex.scan(~r/{"status":.{0,3}"error".+}/, container_output) do
       [] ->
         failure_list = Regex.scan(~r/{"status":.{0,3}"failure".+}/, container_output)

@@ -23,8 +23,6 @@ defmodule Runner.LanguageMeta do
     field(:solution_template, String.t())
     field(:types, map())
     field(:version, String.t())
-    field(:main_text, String.t())
-    field(:main_file_name, String.t())
 
     # asserts generator params
     field(:generator_dir, String.t())
