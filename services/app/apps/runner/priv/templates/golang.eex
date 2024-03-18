@@ -15,7 +15,7 @@ func main() {
   var result_ interface{}
   var executionTime_ interface{}
 
-  <%= for %{arguments: arguments, index: i} <- checks do %>
+  <%= for %{arguments: arguments} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
       var <%= defining %> = <%= value %>
     <% end %>

@@ -17,7 +17,7 @@ handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= 
 main :: IO ()
 main = do
 
-    <%= for %{arguments: arguments, index: i, args_string: args_string} <- checks do %>
+    <%= for %{arguments: arguments, index: i} <- checks do %>
     start <- getCPUTime
     let res<%= i %> = solution <%= arguments %>
     end <- getCPUTime

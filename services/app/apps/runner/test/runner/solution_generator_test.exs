@@ -4,7 +4,7 @@ defmodule Runner.SolutionGeneratorTest do
   alias Runner.SolutionGenerator
   alias Runner.Languages
 
-  @clojure_expected "(defn solution [a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings] [\"value\"])"
+  @clojure_expected "(defn solution [a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings]\n  ;; (println \"use print for debug\")\n  [\"value\"])"
   @cpp_expected String.trim("""
                 #include <iostream>
                 #include <map>
@@ -13,12 +13,13 @@ defmodule Runner.SolutionGeneratorTest do
                 using namespace std;
 
                 vector<string> solution(int a, string text, double b, bool c, map<string,string> nested_hash_of_string, vector<string> nested_array_of_string, vector<vector<string>> nested_array_of_array_of_strings) {
-
+                // std::cout << \"use print for debug\" << std::endl;
                 }
                 """)
 
   @csharp_expected String.trim("""
-                   using System;using System.Collections.Generic;
+                   using System;
+                   using System.Collections.Generic;
 
                    namespace app
                    {
@@ -27,15 +28,17 @@ defmodule Runner.SolutionGeneratorTest do
                            public List<string> solution(int a, string text, double b, bool c, Dictionary<string, string> nested_hash_of_string, List<string> nested_array_of_string, List<List<string>> nested_array_of_array_of_strings)
                            {
 
-                           }
+                           // Console.WriteLine(\"use print for debug\");
+                          }
                        }
                    }
                    """)
 
-  @dart_expected "List<String> solution(int a, String text, double b, bool c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {\n\n}"
+  @dart_expected "List<String> solution(int a, String text, double b, bool c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {\n  // print(\"use print for debug\");\n}"
   @elixir_expected String.trim("""
                    defmodule Solution do
                      def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) do
+                       # IO.puts(\"use print for debug\")
                        [\"value\"]
                      end
                    end
@@ -55,7 +58,7 @@ defmodule Runner.SolutionGeneratorTest do
                     import qualified Data.HashMap.Lazy as HM
 
                     solution :: Int -> String -> Double -> Bool -> HM.HashMap String String -> [String] -> [[String]] -> [String]
-                    solution =
+                    solution a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings =
 
                     {- Included packages:
                     aeson
@@ -87,11 +90,12 @@ defmodule Runner.SolutionGeneratorTest do
   @java_expected String.trim("""
                  package solution;
 
-                 import java.util.*;import java.util.stream.*;
+                 import java.util.*;
+                 import java.util.stream.*;
 
                  public class Solution {
                      public List<String> solution(Integer a, String text, Double b, Boolean c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
-
+                       // System.out.println(\"use print for debug\");
                      }
                  }
                  """)
@@ -101,6 +105,7 @@ defmodule Runner.SolutionGeneratorTest do
                const R = require(\"rambda\");
 
                const solution = (a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) => {
+                 // console.log(\"use print for debug\")
                  return [\"value\"];
                };
 
@@ -113,7 +118,7 @@ defmodule Runner.SolutionGeneratorTest do
                    import kotlin.collections.*
 
                    fun solution(a: Int, text: String, b: Double, c: Boolean, nested_hash_of_string: Map<String, String>, nested_array_of_string: List<String>, nested_array_of_array_of_strings: List<List<String>>): List<String> {
-
+                     // println(\"use print for debug\")
                    }
                    """)
 
@@ -122,6 +127,7 @@ defmodule Runner.SolutionGeneratorTest do
 
                 function solution(int $a, string $text, float $b, bool $c, array $nested_hash_of_string, array $nested_array_of_string, array $nested_array_of_array_of_strings)
                 {
+                    // echo(\"use print for debug\");
                     return [\"value\"];
                 }
                 """)
@@ -130,15 +136,16 @@ defmodule Runner.SolutionGeneratorTest do
                    from typing import List, Dict
 
                    def solution(a: int, text: str, b: float, c: bool, nested_hash_of_string: Dict[str, str], nested_array_of_string: List[str], nested_array_of_array_of_strings: List[List[str]]) -> List[str]:
+                   #  print(\"use print for debug\")
                    """)
 
-  @ruby_expected "def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)\n  [\"value\"]\nend"
+  @ruby_expected "def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)\n  # puts(\"use print for debug\")\n  [\"value\"]\nend"
   @ts_expected String.trim("""
                import * as _ from \"lodash\";
                import * as R from \"rambda\";
 
                function solution(a: number, text: string, b: number, c: boolean, nested_hash_of_string: any, nested_array_of_string: Array<string>, nested_array_of_array_of_strings: Array<Array<string>>): Array<string> {
-
+                 // console.log(\"use print for debug\")
                };
 
                export default solution;
@@ -194,20 +201,20 @@ defmodule Runner.SolutionGeneratorTest do
   end
 
   test "check solutions for task", %{task: task} do
-    assert get_solution("clojure", task) == @clojure_expected
-    assert get_solution("cpp", task) == @cpp_expected
-    assert get_solution("csharp", task) == @csharp_expected
-    assert get_solution("dart", task) == @dart_expected
-    assert get_solution("elixir", task) == @elixir_expected
-    assert get_solution("golang", task) == @golang_expected
-    assert get_solution("haskell", task) == @haskell_expected
-    assert get_solution("java", task) == @java_expected
-    assert get_solution("js", task) == @js_expected
-    assert get_solution("kotlin", task) == @kotlin_expected
-    assert get_solution("php", task) == @php_expected
-    assert get_solution("python", task) == @python_expected
-    assert get_solution("ruby", task) == @ruby_expected
-    assert get_solution("ts", task) == @ts_expected
+    assert @clojure_expected == get_solution("clojure", task)
+    assert @cpp_expected == get_solution("cpp", task)
+    assert @csharp_expected == get_solution("csharp", task)
+    assert @dart_expected == get_solution("dart", task)
+    assert @elixir_expected == get_solution("elixir", task)
+    assert @golang_expected == get_solution("golang", task)
+    assert @haskell_expected == get_solution("haskell", task)
+    assert @java_expected == get_solution("java", task)
+    assert @js_expected == get_solution("js", task)
+    assert @kotlin_expected == get_solution("kotlin", task)
+    assert @php_expected == get_solution("php", task)
+    assert @python_expected == get_solution("python", task)
+    assert @ruby_expected == get_solution("ruby", task)
+    assert @ts_expected == get_solution("ts", task)
   end
 
   def get_solution(lang, task) do

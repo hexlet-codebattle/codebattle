@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Dockers.Pull do
   @shortdoc "Pull dockers from docker hub"
 
   def run([slug]) do
-    slug |> Runner.Languages.meta() |> dbg |> pull()
+    slug |> Runner.Languages.meta() |> pull()
   end
 
   def run(_) do

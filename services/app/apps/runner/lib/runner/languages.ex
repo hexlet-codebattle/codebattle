@@ -26,7 +26,8 @@ defmodule Runner.Languages do
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
       docker_image: "codebattle/ruby:3.3.0",
-      solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
+      solution_template:
+        "def solution(<%= arguments %>)\n  # puts(\"use print for debug\")\n<%= return_statement %>\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "  <%= default_value %>",
       default_values: %{
@@ -56,7 +57,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:20.11.1",
       solution_template:
-        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
+        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n  // console.log(\"use print for debug\")\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "  return <%= default_value %>;",
       default_values: %{
@@ -93,7 +94,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:20.11.1",
       solution_template:
-        "import * as _ from \"lodash\";\nimport * as R from \"rambda\";\n\nfunction solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
+        "import * as _ from \"lodash\";\nimport * as R from \"rambda\";\n\nfunction solution(<%= arguments %>)<%= expected %>{\n  // console.log(\"use print for debug\")\n};\n\nexport default solution;",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: ": <%= type %> ",
       types: %{
@@ -319,7 +320,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.exs",
       docker_image: "codebattle/elixir:1.16.1",
       solution_template:
-        "defmodule Solution do\n  def solution(<%= arguments %>) do\n<%= return_statement %>\n  end\nend",
+        "defmodule Solution do\n  def solution(<%= arguments %>) do\n    # IO.puts(\"use print for debug\")\n<%= return_statement %>\n  end\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "    <%= default_value %>",
       default_values: %{
@@ -349,7 +350,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.py",
       docker_image: "codebattle/python:3.12.2",
       solution_template:
-        "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
+        "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:\n#  print(\"use print for debug\")",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
       types: %{
@@ -379,8 +380,8 @@ defmodule Runner.Languages do
       checker_file_name: "checker.php",
       docker_image: "codebattle/php:8.3.3",
       solution_template:
-        "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
-      return_template: "\n    return <%= default_value %>;",
+        "<?php\n\nfunction solution(<%= arguments %>)\n{\n    // echo(\"use print for debug\");\n    <%= return_statement %>\n}",
+      return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
       default_values: %{
         "integer" => "0",
@@ -422,7 +423,8 @@ defmodule Runner.Languages do
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
       docker_image: "codebattle/clojure:1.11.2.3",
-      solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
+      solution_template:
+        "(defn solution [<%= arguments %>]\n  ;; (println \"use print for debug\")\n  <%= return_statement %>)",
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
       default_values: %{

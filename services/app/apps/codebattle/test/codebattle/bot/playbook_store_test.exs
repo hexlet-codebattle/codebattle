@@ -128,7 +128,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
@@ -140,7 +140,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
                    id: ^user1_id,
                    name: "first",
                    record_id: 0,
@@ -150,14 +150,14 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
                    type: "init"
                  },
                  %{
-                   diff: %{delta: [%{delete: 130}, %{insert: "t"}]},
+                   diff: %{delta: [%{delete: 170}, %{insert: "t"}]},
                    id: ^user1_id,
                    record_id: 2,
                    type: "update_editor_data"
@@ -198,7 +198,7 @@ defmodule Codebattle.PlaybookStoreTest do
                      asserts: [
                        %{
                          arguments: [1, 1],
-                         execution_time: 6.2e-6,
+                         execution_time: 0.001,
                          expected: 2,
                          output: "",
                          result: 2,
@@ -206,7 +206,7 @@ defmodule Codebattle.PlaybookStoreTest do
                        },
                        %{
                          arguments: [2, 1],
-                         execution_time: "8.5e-06",
+                         execution_time: "0.002",
                          expected: 3,
                          output: "lol",
                          result: 3,
@@ -214,7 +214,7 @@ defmodule Codebattle.PlaybookStoreTest do
                        },
                        %{
                          arguments: [3, 2],
-                         execution_time: 2.8e-6,
+                         execution_time: 0.003,
                          expected: 5,
                          output: "kek",
                          result: 5,

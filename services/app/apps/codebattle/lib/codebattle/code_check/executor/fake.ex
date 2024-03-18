@@ -4,9 +4,9 @@ defmodule Codebattle.CodeCheck.Executor.Fake do
   alias Codebattle.CodeCheck.Checker.Token
 
   @fake_output_v2 """
-    {"type":"result","time":6.2e-06,"value":2,"output":""}
-    {"type":"result","time":"8.5e-06","value":3,"output":"lol"}
-    {"type":"result","time":2.8e-06,"value":5,"output":"kek"}
+    {"type":"result","time":0.001,"value":2,"output":""}
+    {"type":"result","time":"0.002","value":3,"output":"lol"}
+    {"type":"result","time":0.003,"value":5,"output":"kek"}
   """
   @fake_output """
     {"status": "success", "result": 2, "output": "", "expected": 2, "arguments": "[1, 1]", "execution_time": 2.37}
@@ -15,8 +15,8 @@ defmodule Codebattle.CodeCheck.Executor.Fake do
   """
 
   @spec call(Token.t()) :: Token.t()
-  def call(token = %{lang_meta: %{checker_version: 2}}) do
-    %{token | container_output: @fake_output_v2, exit_code: 0}
+  def call(token = %{lang_meta: %{output_version: 2}}) do
+    %{token | container_stderr: "", container_output: @fake_output_v2, exit_code: 0}
   end
 
   def call(token) do

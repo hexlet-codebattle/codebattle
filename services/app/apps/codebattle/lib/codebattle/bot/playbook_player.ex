@@ -134,8 +134,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   def get_editor_text(%{"insert" => text}), do: text
   def get_editor_text([%{insert: text}]), do: text
   def get_editor_text([%{"insert" => text}]), do: text
-  # def get_editor_text(a), do: dbg(a)
-  # def get_editor_text(document), do: document.ops |> hd |> Map.get(:insert)
 
   defp prepare_user_playbook(records, user_id) do
     Enum.filter(

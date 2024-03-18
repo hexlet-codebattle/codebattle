@@ -42,12 +42,12 @@ defmodule Codebattle.GameCases.RematchTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
     editor_text_init =
-      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;"
 
     game = Game.Context.get_game!(game_id)
     assert game.state == "playing"
-    assert Helpers.get_first_player(game).editor_text == editor_text_init
-    assert Helpers.get_second_player(game).editor_text == editor_text_init
+    assert editor_text_init == Helpers.get_first_player(game).editor_text
+    assert editor_text_init == Helpers.get_second_player(game).editor_text
 
     editor_text1 = "Hello world1!"
     editor_text2 = "Hello world2!"
