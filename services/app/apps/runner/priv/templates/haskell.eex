@@ -1,8 +1,6 @@
 #!/usr/local/bin/runghc
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Checker where
-
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as BS
 import Data.HashMap.Lazy
@@ -16,8 +14,8 @@ output = BS.putStrLn . A.encode . A.object
 handleSuccess res time = output ["type" A..= ("result" :: String), "value" A..= res, "time" A..= time]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
-test :: IO ()
-test = do
+main :: IO ()
+main = do
 
     <%= for %{arguments: arguments, index: i, args_string: args_string} <- checks do %>
     start <- getCPUTime
