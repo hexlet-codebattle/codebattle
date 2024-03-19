@@ -3,50 +3,58 @@ package main
 import (
   "encoding/json"
   "fmt"
+  "io"
   "os"
   "time"
 )
 
-func main() {
-  message_ := ""
-  executionResults_ := []string{}
+type result struct {
+  Type          string        `json:"type"`
+  Value         any           `json:"value"`
+  ExecutionTime time.Duration `json:"execution_time"`
+  Output        string        `json:"output,omitempty"`
+}
 
-  var start_ time.Time
-  var result_ interface{}
-  var executionTime_ interface{}
+func main() {
+  var (
+    start_  time.Time
+    result_ result
+    reader_ *os.File
+    writer_ *os.File
+    err_    error
+
+    stdout_ = os.Stdout
+    encoder_ = json.NewEncoder(os.Stdout)
+  )
+
+  result_.Type = "result"
 
   <%= for %{arguments: arguments} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
       var <%= defining %> = <%= value %>
     <% end %>
 
+    reader_, writer_, err_ = os.Pipe()
+    if err_ != nil {
+      fmt.Fprintf(os.Stderr, "Error creating pipe: %v", err_)
+    } else {
+      os.Stdout = writer_
+    }
     start_ = time.Now()
-    result_ = solution(<%= arguments.expression %>)
-    executionTime_ = time.Now().Sub(start_)
-    message_ = buildResultMessage(result_, executionTime_)
-
-    executionResults_ = append(executionResults_, message_)
+    result_.Value = solution(<%= arguments.expression %>)
+    result_.ExecutionTime = time.Now().Sub(start_)
+    if writer_ != nil {
+      writer_.Close()
+    }
+    if reader_ != nil {
+      outBytes_, err_ := io.ReadAll(reader_)
+      if err_ == nil {
+        result_.Output = string(outBytes_)
+      }
+      reader_.Close()
+    }
+    if err_ = encoder_.Encode(result_); err_ != nil {
+      fmt.Fprintln(stdout_, "Marshaler error")
+    }
   <% end %>
-
-  for _, m_ := range executionResults_ {
-    sendMessage(m_)
-  }
-}
-
-func buildResultMessage(result, executionTime interface{}) string {
-    return fmt.Sprintf(`{"type": "result", "value": %s, "execution_time": %s}`, toJSON(result), toJSON(executionTime))
-}
-
-
-func toJSON(data interface{}) []byte {
-	result, err := json.Marshal(data)
-	if err != nil {
-		fmt.Println("Marshaler error")
-		os.Exit(0)
-	}
-	return result
-}
-
-func sendMessage(message string) {
-  fmt.Println(message);
 }
