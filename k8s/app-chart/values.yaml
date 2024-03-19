@@ -5,6 +5,7 @@ ingress:
   className: "nginx"
   annotations: {}
   host: codebattle.hexlet.io
+  enabled: true
   tls: []
   #  - secretName: codebattle-tls
   #    hosts:
@@ -28,7 +29,6 @@ codebattle:
     CODEBATTLE_RECORD_GAMES: "true"
     CODEBATTLE_VERSION: "{{ .Values.version }}"
     CODEBATTLE_PORT: 4000
-    #DEPLOYED_AT: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
 
 runner:
   replicaCount: 2

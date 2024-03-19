@@ -52,3 +52,6 @@ spec:
             - configMapRef:
                 name: codebattle-env
                 optional: true
+          env:
+            - name: DEPLOYED_AT
+              value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
