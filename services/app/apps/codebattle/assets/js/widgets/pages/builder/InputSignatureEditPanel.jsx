@@ -52,6 +52,10 @@ function InputSignatureEditPanel({
       return [true, ''];
     }
 
+    if (suggest?.argumentName === undefined) {
+      return [false, ''];
+    }
+
     if (suggest.argumentName.length === 0) {
       return [false, ''];
     }
