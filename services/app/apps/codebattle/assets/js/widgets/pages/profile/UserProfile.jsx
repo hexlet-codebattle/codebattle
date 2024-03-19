@@ -96,9 +96,13 @@ function UserProfile() {
       <div className="col-12 col-md-9 my-4">
         <div className="pr-md-2 min-h-100 d-flex flex-column">
           <nav>
-            <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+            <div
+              id="nav-tab"
+              role="tablist"
+              className="nav nav-tabs justify-content-around border-bottom"
+            >
               <a
-                className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
+                className="nav-item nav-link active text-uppercase border-0 text-center font-weight-bold rounded-0 w-50 p-3"
                 id="statistics-tab"
                 data-toggle="tab"
                 href="#statistics"
@@ -109,7 +113,7 @@ function UserProfile() {
                 Statistics
               </a>
               <a
-                className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
+                className="nav-item nav-link text-uppercase border-0 text-center font-weight-bold rounded-0 w-50 p-3"
                 id="completedGames-tab"
                 data-toggle="tab"
                 href="#completedGames"
@@ -121,7 +125,7 @@ function UserProfile() {
               </a>
             </div>
           </nav>
-          <div className="tab-content border border-top-0 flex-grow-1 basis-0" id="nav-tabContent">
+          <div className="tab-content border border-top-0 rounded-bottom flex-grow-1 basis-0" id="nav-tabContent">
             <div
               className="tab-pane fade show active"
               id="statistics"

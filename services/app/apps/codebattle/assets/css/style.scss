@@ -889,3 +889,6 @@ a:hover {
 .cb-username-max-length {
   max-width: 180px;
 }
+.nav > .nav-link.nav-item.active {
+  color: var(--blue);
+}

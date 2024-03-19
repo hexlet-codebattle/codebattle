@@ -12,18 +12,18 @@ defmodule Codebattle.User.Scope do
   end
 
   def list_users(params) do
-    base_query()
+    base_query(params)
     |> filter_by_date(params)
     |> search_by_name(params)
     |> without_bots(params)
-    |> sort(params)
   end
 
-  defp base_query() do
+  defp base_query(params) do
     User
     |> from(as: :u)
     |> join(:left, [u: u], ug in assoc(u, :user_games), as: :ug)
     |> group_by([u: u], u.id)
+    |> sort(params)
     |> select([u: u, ug: ug], %{
       games_played: count(ug.user_id),
       github_id: u.github_id,

@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 
-import classnames from 'classnames';
 import Table from 'react-bootstrap/Table';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -19,8 +18,8 @@ function Leaderboard() {
   const anchorAllRef = useRef(null);
 
   const handlePeriodClick = e => {
-    const { target: { textContent } } = e;
-    const periodValue = textContent && textContent.trim();
+    const { currentTarget: { dataset } } = e;
+    const periodValue = dataset.period || periodTypes.ALL;
     e.preventDefault();
 
     switch (periodValue) {
@@ -52,66 +51,67 @@ function Leaderboard() {
   }, [period]);
 
   return (
-    <Table striped borderless className="border border-dark m-0">
+    <Table striped className="border rounded shadow-sm m-0">
       <thead>
-        <tr className="bg-gray">
+        <tr>
           <th scope="col" className="text-uppercase p-1" colSpan="2">
-            <div className="d-flex align-items-center flex-nowrap">
-              <img
-                alt="rating"
-                src="/assets/images/topPlayers.svg"
-                className="m-2"
-              />
-              <p className="d-inline-flex align-items-baseline flex-nowrap m-0 p-0">
+            <div className="d-flex flex-column align-items-center flex-nowrap">
+              <div className="d-flex align-items-center">
+                <img
+                  alt="rating"
+                  src="/assets/images/topPlayers.svg"
+                  className="m-2"
+                />
                 <span className="d-flex">Leaderboard</span>
-                <span className="ml-2 small d-flex">
-                  <u>
-                    <a
-                      href="#!"
-                      ref={anchorWeekRef}
-                      onClick={handlePeriodClick}
-                      className={classnames({
-                        'text-orange': period === periodTypes.WEEKLY,
-                      })}
-                    >
-                      {periodTypes.WEEKLY}
-                    </a>
-                  </u>
-                  /
-                  <u>
-                    <a
-                      href="#!"
-                      ref={anchorMonthRef}
-                      onClick={handlePeriodClick}
-                      className={classnames({
-                        'text-orange': period === periodTypes.MONTHLY,
-                      })}
-                    >
-                      {periodTypes.MONTHLY}
-                    </a>
-                  </u>
-                  /
-                  <u>
-                    <a
-                      href="#!"
-                      ref={anchorAllRef}
-                      onClick={handlePeriodClick}
-                      className={classnames({
-                        'text-orange': period === periodTypes.ALL,
-                      })}
-                    >
-                      {periodTypes.ALL}
-                    </a>
-                  </u>
-                </span>
-              </p>
+              </div>
+              <nav className="w-100">
+                <div
+                  id="nav-tab"
+                  role="tablist"
+                  className="nav nav-tabs border-0 d-flex flex-nowrap justify-content-around"
+                >
+                  <a
+                    href="#!"
+                    role="tab"
+                    data-toggle="tab"
+                    data-period={periodTypes.WEEKLY}
+                    ref={anchorWeekRef}
+                    className="nav-item nav-link border-0 text-center w-100 active"
+                    onClick={handlePeriodClick}
+                  >
+                    {periodTypes.WEEKLY}
+                  </a>
+                  <a
+                    href="#!"
+                    role="tab"
+                    data-toggle="tab"
+                    data-period={periodTypes.MONTHLY}
+                    ref={anchorMonthRef}
+                    className="nav-item nav-link border-0 text-center w-100"
+                    onClick={handlePeriodClick}
+                  >
+                    {periodTypes.MONTHLY}
+                  </a>
+                  <a
+                    href="#!"
+                    role="tab"
+                    data-toggle="tab"
+                    data-period={periodTypes.ALL}
+                    ref={anchorAllRef}
+                    className="nav-item nav-link border-0 text-center w-100"
+                    onClick={handlePeriodClick}
+                  >
+                    {periodTypes.ALL}
+                  </a>
+                </div>
+              </nav>
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        {rating
-          && rating.map(item => (
+        {rating && rating.length > 0 ? (
+          rating.map(item => (
             <tr key={item.name}>
               <td className="pr-0">
                 <div className="d-flex">
@@ -120,16 +120,18 @@ function Leaderboard() {
               </td>
               <td className="text-right pl-0">{item.rating}</td>
             </tr>
-          ))}
-        <tr>
-          <td className="pr-0">
-            <div className="mt-2">
-              <u>
-                <a href="/users">TOP list</a>
-              </u>
-            </div>
+          ))
+        ) : (
+          <tr className="text-center">
+            <td>No rating</td>
+          </tr>
+        )}
+        <tr className="bg-light text-center">
+          <td>
+            <a className="btn-link text-primary" href="/users">
+              Top list
+            </a>
           </td>
-          <td className="text-right pl-0" />
         </tr>
       </tbody>
     </Table>

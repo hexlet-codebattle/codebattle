@@ -102,8 +102,10 @@ const Players = memo(({ players, isBot, gameId }) => {
 const LiveTournaments = ({ tournaments }) => {
   if (isEmpty(tournaments)) {
     return (
-      <div className="text-center">
-        <h3 className="mb-0 mt-3">There are no active tournaments right now</h3>
+      <div className="d-flex flex-column text-center">
+        <span className="mb-0 mt-3 p-3 text-muted">
+          There are no active tournaments right now
+        </span>
         <a className="text-primary" href="/tournaments/#create">
           <u>You may want to create one</u>
         </a>
@@ -321,10 +323,13 @@ const ActiveGames = ({
 
 const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
+  const isActive = hash.includes(url.hash || '#lobby');
 
   return cn(
     'nav-item nav-link text-uppercase text-center text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
-    { active: hash.includes(url.hash || '#lobby') },
+    {
+      active: isActive,
+    },
   );
 };
 
@@ -345,10 +350,10 @@ const tabLinkHandler = hash => () => {
 
 const navTabsClassName = cn(
   'nav nav-tabs flex-nowrap cb-overflow-x-auto cb-overflow-y-hidden',
-  'bg-gray rounded-top border-dark border-bottom',
+  'rounded-top border-bottom',
 );
 
-const GameContainers = ({
+const LobbyContainer = ({
   activeGames,
   liveTournaments,
   completedTournaments,
@@ -356,6 +361,11 @@ const GameContainers = ({
   isGuest = true,
   isOnline = false,
 }) => {
+  const handleClick = useCallback(e => {
+    const { currentTarget: { dataset } } = e;
+    tabLinkHandler(dataset.hash)();
+  }, []);
+
   useEffect(() => {
     if (!window.location.hash) {
       tabLinkHandler(hashLinkNames.default)();
@@ -378,35 +388,42 @@ const GameContainers = ({
             )}
             id="lobby-tab"
             data-toggle="tab"
+            data-hash={hashLinkNames.lobby}
             href="#lobby"
             role="tab"
             aria-controls="lobby"
             aria-selected="true"
-            onClick={tabLinkHandler(hashLinkNames.lobby)}
+            onClick={handleClick}
           >
             Lobby
           </a>
           <a
-            className={tabLinkClassName(hashLinkNames.tournaments)}
+            className={tabLinkClassName(
+              hashLinkNames.tournaments,
+            )}
             id="tournaments-tab"
             data-toggle="tab"
+            data-hash={hashLinkNames.tournaments}
             href="#tournaments"
             role="tab"
             aria-controls="tournaments"
             aria-selected="false"
-            onClick={tabLinkHandler(hashLinkNames.tournaments)}
+            onClick={handleClick}
           >
             Tournaments
           </a>
           <a
-            className={tabLinkClassName(hashLinkNames.completedGames)}
+            className={tabLinkClassName(
+              hashLinkNames.completedGames,
+            )}
             id="completedGames-tab"
             data-toggle="tab"
+            data-hash={hashLinkNames.completedGames}
             href="#completedGames"
             role="tab"
             aria-controls="completedGames"
             aria-selected="false"
-            onClick={tabLinkHandler(hashLinkNames.completedGames)}
+            onClick={handleClick}
           >
             History
           </a>
@@ -534,7 +551,7 @@ const LobbyWidget = () => {
           <div className="d-none d-sm-block d-md-none d-flex flex-column mb-2">
             <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
           </div>
-          <GameContainers
+          <LobbyContainer
             activeGames={activeGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
