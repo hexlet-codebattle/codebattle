@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import Table from 'react-bootstrap/Table';
 import { useSelector, useDispatch } from 'react-redux';
@@ -11,7 +11,9 @@ import { leaderboardSelector } from '../../slices/leaderboard';
 function Leaderboard() {
   const dispatch = useDispatch();
 
-  const { users: rating, period } = useSelector(leaderboardSelector);
+  const { users, period } = useSelector(leaderboardSelector);
+
+  const rating = useMemo(() => [...users].sort((a, b) => b.rating - a.rating), [users]);
 
   const anchorWeekRef = useRef(null);
   const anchorMonthRef = useRef(null);
@@ -111,16 +113,17 @@ function Leaderboard() {
       </thead>
       <tbody>
         {rating && rating.length > 0 ? (
-          rating.map(item => (
-            <tr key={item.name}>
-              <td className="pr-0">
-                <div className="d-flex">
-                  <UserInfo user={item} truncate />
-                </div>
-              </td>
-              <td className="text-right pl-0">{item.rating}</td>
-            </tr>
-          ))
+          rating
+            .map(item => (
+              <tr key={item.name}>
+                <td className="pr-0">
+                  <div className="d-flex">
+                    <UserInfo user={item} truncate />
+                  </div>
+                </td>
+                <td className="text-right pl-0">{item.rating}</td>
+              </tr>
+            ))
         ) : (
           <tr className="text-center">
             <td>No rating</td>
