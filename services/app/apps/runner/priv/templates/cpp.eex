@@ -17,7 +17,7 @@ using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
 using json = nlohmann::basic_json<fifo_map>;
 
 template <typename T1>
-json BuildResultMessage(string status, T1 result, string output, double executionTime) {
+json BuildResultMessage(string status, T1 result, string output, string executionTime) {
   json j;
   j["type"] = status;
   j["value"] = result;
@@ -54,12 +54,15 @@ int main() {
         <%= defining %> = <%= value %>;
       <% end %>
 
-      auto start<%= i %>_ = std::chrono::system_clock::now();
+      auto start<%= i %>_ = std::chrono::high_resolution_clock::now();
       auto result<%= i %>_ = solution(<%= arguments.expression %>);
-      auto executionTime<%= i %>_ = (std::chrono::system_clock::now() - start<%= i %>_).count();
+      std::chrono::duration<double> executionTime<%= i %>_ = std::chrono::high_resolution_clock::now() - start<%= i %>_;
+      char buffer<%= i %>_[20];
+      std::sprintf(buffer<%= i %>_, "%.7f", executionTime<%= i %>_.count());
+      auto time<%= i %>_ = std::string(buffer<%= i %>_);
       output_ = buffer_.str();
       buffer_.str("");
-      finalResults_.push_back(BuildResultMessage("result", result<%= i %>_, output_, executionTime<%= i %>_));
+      finalResults_.push_back(BuildResultMessage("result", result<%= i %>_, output_,  time<%= i %>_));
     <% end %>
 
   } catch (const std::exception& e) {
