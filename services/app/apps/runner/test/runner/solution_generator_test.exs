@@ -46,9 +46,10 @@ defmodule Runner.SolutionGeneratorTest do
 
   @golang_expected String.trim("""
                    package main;
+                   // import "fmt"
 
                    func solution(a int64, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
-
+                   // fmt.Print(\"use print for debug\")
                    }
                    """)
 

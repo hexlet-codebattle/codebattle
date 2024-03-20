@@ -11,7 +11,7 @@ import (
 type result struct {
   Type          string        `json:"type"`
   Value         any           `json:"value"`
-  ExecutionTime time.Duration `json:"execution_time"`
+  Time          string        `json:"time"`
   Output        string        `json:"output,omitempty"`
 }
 
@@ -42,7 +42,8 @@ func main() {
     }
     start_ = time.Now()
     result_.Value = solution(<%= arguments.expression %>)
-    result_.ExecutionTime = time.Now().Sub(start_)
+    result_.Time = fmt.Sprintf("%.7f", float64(time.Since(start_).Nanoseconds()) / float64(time.Second))
+
     if writer_ != nil {
       writer_.Close()
     }
