@@ -25,6 +25,7 @@ func main() {
 
     stdout_ = os.Stdout
     encoder_ = json.NewEncoder(os.Stdout)
+    results_ = make([]result, 0, <%= length(checks) %>)
   )
 
   result_.Type = "result"
@@ -54,8 +55,9 @@ func main() {
       }
       reader_.Close()
     }
-    if err_ = encoder_.Encode(result_); err_ != nil {
-      fmt.Fprintln(stdout_, "Marshaler error")
-    }
+    results_ = append(results_, result_)
   <% end %>
+  if err_ = encoder_.Encode(results_); err_ != nil {
+    fmt.Fprintln(stdout_, "Marshaler error")
+  }
 }

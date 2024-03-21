@@ -7,7 +7,7 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{self, Read},
-    os::fd::{AsRawFd, FromRawFd, OwnedFd},
+    os::fd::{AsRawFd, FromRawFd},
     process::exit,
     time::{self, Duration},
 };
@@ -26,19 +26,22 @@ struct Result<T> {
     output: String,
 }
 
-fn pipe() -> std::io::Result<(OwnedFd, OwnedFd)> {
+fn pipe() -> std::io::Result<(File, File)> {
     let mut fds: [c_int; 2] = [0; 2];
     let res = unsafe { libc::pipe(fds.as_mut_ptr()) };
     if res != 0 {
         return Err(io::Error::new(io::ErrorKind::Other, "create pipe"));
     }
-    let read = unsafe { OwnedFd::from_raw_fd(fds[0]) };
-    let write = unsafe { OwnedFd::from_raw_fd(fds[1]) };
+    let read = unsafe { File::from_raw_fd(fds[0]) };
+    let write = unsafe { File::from_raw_fd(fds[1]) };
     Ok((read, write))
 }
 
 fn main() {
+    let mut stdout_ = unsafe { File::from_raw_fd(libc::dup(io::stdout().as_raw_fd())) };
+    let mut results_ = Vec::with_capacity(<%= length(checks) %>);
     <%= for %{arguments: arguments} <- checks do %>
+    {
       <%= for %{defining: defining, value: value} <- arguments.info do %>
         let <%= defining %> = <%= value %>;
       <% end %>
@@ -47,14 +50,10 @@ fn main() {
           Ok((r, w)) => (Some(r), Some(w)),
           Err(_) => (None, None),
       };
-      let stdout_ = unsafe { libc::dup(io::stdout().as_raw_fd()) };
 
       if let Some(w) = writer_ {
           unsafe {
-              let res = libc::dup2(w.as_raw_fd(), io::stdout().as_raw_fd());
-              if res < 0 {
-                  println!("hueta");
-              }
+              libc::dup2(w.as_raw_fd(), io::stdout().as_raw_fd());
           }
       };
 
@@ -66,16 +65,18 @@ fn main() {
           output: String::new(),
       };
 
-      if let Some(r) = reader_ {
+      if let Some(mut r) = reader_ {
           unsafe {
-              libc::close(io::stdout().as_raw_fd());
-              let _ = File::from_raw_fd(r.as_raw_fd()).read_to_string(&mut result_.output);
+              libc::dup2(stdout_.as_raw_fd(), io::stdout().as_raw_fd());
+              let _ = r.read_to_string(&mut result_.output);
           }
       };
+      results_.push(result_);
+    };
 
-      if let Err(_) = serde_json::to_writer(unsafe { File::from_raw_fd(stdout_) }, &result_) {
-          println!("Encoding error");
-          exit(0);
-      }
     <% end %>
+    if let Err(_) = serde_json::to_writer(&mut stdout_, &results_) {
+        eprintln!("Encoding error");
+        exit(0);
+    }
 }
