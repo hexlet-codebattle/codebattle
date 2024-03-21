@@ -21,7 +21,7 @@ struct Result<T> {
     typ: String,
     value: T,
     #[serde_as(as = "DurationNanoSeconds")]
-    execution_time: Duration,
+    time: Duration,
     #[serde(skip_serializing_if = "String::is_empty")]
     output: String,
 }
@@ -61,7 +61,7 @@ fn main() {
       let mut result_ = Result {
           typ: String::from("result"),
           value: solution::solution(<%= arguments.expression %>),
-          execution_time: start_.elapsed(),
+          time: start_.elapsed(),
           output: String::new(),
       };
 

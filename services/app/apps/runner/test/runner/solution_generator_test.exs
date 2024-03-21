@@ -141,6 +141,7 @@ defmodule Runner.SolutionGeneratorTest do
                    """)
 
   @ruby_expected "def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)\n  # puts(\"use print for debug\")\n  [\"value\"]\nend"
+  @rust_expected "use std::collections::HashMap;\n\npub fn solution(a: i64, text: String, b: f64, c: bool, nested_hash_of_string: HashMap<String, String>, nested_array_of_string: Vec<String>, nested_array_of_array_of_strings: Vec<Vec<String>>) -> Vec<String> {\n  // println!(\"use print for debug\");\n  \n}"
   @ts_expected String.trim("""
                import * as _ from \"lodash\";
                import * as R from \"rambda\";
@@ -215,6 +216,7 @@ defmodule Runner.SolutionGeneratorTest do
     assert @php_expected == get_solution("php", task)
     assert @python_expected == get_solution("python", task)
     assert @ruby_expected == get_solution("ruby", task)
+    assert @rust_expected == get_solution("rust", task)
     assert @ts_expected == get_solution("ts", task)
   end
 
