@@ -289,7 +289,8 @@ defmodule Runner.Languages do
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
       docker_image: "codebattle/golang:1.22.1",
-      solution_template: "package main;\n// import \"fmt\"\n\nfunc solution(<%= arguments %>)<%= expected %> {\n// fmt.Print(\"use print for debug\")\n}",
+      solution_template:
+        "package main;\n// import \"fmt\"\n\nfunc solution(<%= arguments %>)<%= expected %> {\n// fmt.Print(\"use print for debug\")\n}",
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -498,7 +499,7 @@ defmodule Runner.Languages do
         "string" => "String",
         "array" => "Vec<<%= inner_type %>>",
         "boolean" => "bool",
-        "hash" => "HashMap<String, <%= inner_type %>>",
+        "hash" => "HashMap<String, <%= inner_type %>>"
       },
       checker_meta: %{
         version: :static,
@@ -507,11 +508,11 @@ defmodule Runner.Languages do
           | array: "vec![<%= entries %>]",
             hash_empty: "HashMap::new()",
             hash_value: "HashMap::from([<%= entries %>])",
-            hash_inners: "(String::from(\"<%= key %>\"), <%= value %>)",
+            hash_inners: "(String::from(\"<%= key %>\"), <%= value %>)"
         },
         defining_variable_template: "<%= name %>: <%= type %>",
-        nested_value_expression_template: "<%= value %>",
-      },
+        nested_value_expression_template: "<%= value %>"
+      }
     }
   }
 
