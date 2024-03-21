@@ -477,6 +477,40 @@ defmodule Runner.Languages do
             # fromList [(1 :: Int, 'a'), (2, 'b'), (3, 'c')]
         }
       }
+    },
+    "rust" => %LanguageMeta{
+      name: "rust",
+      slug: "rust",
+      output_version: 2,
+      version: "1.76.0",
+      container_run_timeout: "15s",
+      solution_file_name: "solution.rs",
+      checker_file_name: "checker.rs",
+      check_dir: "check",
+      solution_template:
+        "use std::collections::HashMap;\n\npub fn solution(<%= arguments %>) -> <%= expected %> {\n\n}",
+      arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
+      expected_template: "<%= type %>",
+      types: %{
+        "integer" => "i64",
+        "float" => "f64",
+        "string" => "String",
+        "array" => "Vec<<%= inner_type %>>",
+        "boolean" => "bool",
+        "hash" => "HashMap<String, <%= inner_type %>>",
+      },
+      checker_meta: %{
+        version: :static,
+        type_templates: %{
+          @type_templates
+          | array: "vec![<%= entries %>]",
+            hash_empty: "HashMap::new()",
+            hash_value: "HashMap::from([<%= entries %>])",
+            hash_inners: "(String::from(\"<%= key %>\"), <%= value %>)",
+        },
+        defining_variable_template: "<%= name %>: <%= type %>",
+        nested_value_expression_template: "<%= value %>",
+      },
     }
   }
 
