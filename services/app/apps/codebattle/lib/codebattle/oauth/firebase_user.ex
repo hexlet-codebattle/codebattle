@@ -43,11 +43,37 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
       [] ->
         :ok
 
-      [%User{name: ^name} | _] ->
-        {:error, %{name: "Nickname is already taken"}}
+      users ->
+        case Enum.find_value(users, &check_user_attributes(&1, name, email)) do
+          nil -> :ok
+          error_reason -> {:error, error_reason}
+        end
+    end
+  end
 
-      [%User{email: ^email} | _] ->
-        {:error, %{email: "Email is already taken"}}
+  defp check_user_attributes(user, name, email) do
+    cond do
+      user.name == name ->
+        %{name: "Nickname is already taken"}
+
+      user.email == email ->
+        check_connected_email(user)
+
+      true ->
+        nil
+    end
+  end
+
+  defp check_connected_email(user) do
+    cond do
+      user.discord_id != nil ->
+        %{email: "Email is already used. Please sign in with Discord"}
+
+      user.github_id != nil ->
+        %{email: "Email is already used. Please sign in with Github"}
+
+      true ->
+        %{email: "Email is already taken"}
     end
   end
 
