@@ -487,6 +487,7 @@ defmodule Runner.Languages do
       solution_file_name: "solution.rs",
       checker_file_name: "checker.rs",
       check_dir: "check",
+      docker_image: "codebattle/rust:1.76.0",
       solution_template:
         "use std::collections::HashMap;\n\npub fn solution(<%= arguments %>) -> <%= expected %> {\n\n}",
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},

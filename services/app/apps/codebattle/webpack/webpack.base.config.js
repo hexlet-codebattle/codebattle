@@ -104,6 +104,7 @@ module.exports = {
     }),
     new MonacoWebpackPlugin({
       languages: [
+        'rust',
         'ruby',
         'javascript',
         'typescript',

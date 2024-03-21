@@ -37,6 +37,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
       token.container_output
       |> String.replace(~r/WARNING:.+\n/, "")
       |> Jason.decode!()
+      |> List.wrap()
 
     %{token | solution_results: solution_results}
   rescue
@@ -63,7 +64,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
             ]
 
           values ->
-            values
+            List.wrap(values)
         end
 
       %{token | solution_results: solution_results}

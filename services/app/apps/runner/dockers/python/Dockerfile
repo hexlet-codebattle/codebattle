@@ -2,7 +2,7 @@ FROM codebattle/runner-rs:latest AS runner
 
 FROM python:3.12.2-alpine
 
-RUN apk add --update make
+RUN apk add --update --no-cache make
 
 WORKDIR /usr/src/app
 

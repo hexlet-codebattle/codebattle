@@ -1,18 +1,19 @@
 export default {
-  js: 'javascript',
-  ts: 'typescript',
-  dart: 'dart',
-  golang: 'go',
+  clojure: 'clojure',
   cpp: 'cpp',
   csharp: 'csharp',
-  java: 'java',
-  kotlin: 'kotlin',
-  haskell: 'haskell',
-  ruby: 'ruby',
+  dart: 'dart',
   elixir: 'elixir',
+  golang: 'go',
+  haskell: 'haskell',
+  java: 'java',
+  js: 'javascript',
+  kotlin: 'kotlin',
   php: 'php',
   python: 'python',
-  clojure: 'clojure',
+  ruby: 'ruby',
+  rust: 'rust',
+  ts: 'typescript',
 };
 
 export const constructorLangauges = ['ruby'];

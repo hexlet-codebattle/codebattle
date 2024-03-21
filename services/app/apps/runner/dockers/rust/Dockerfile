@@ -1,4 +1,4 @@
-FROM localhost/runner-rs:latest AS runner
+FROM codebattle/runner-rs:latest AS runner
 
 FROM rust:1.76.0-alpine3.18
 
@@ -8,8 +8,8 @@ WORKDIR /usr/src/app
 
 ADD Cargo.toml .
 RUN mkdir check && \
-      echo "fn main() {}" > check/checker.rs && \
-      cargo build
+  echo "fn main() {}" > check/checker.rs && \
+  cargo build
 
 ADD Makefile .
 
