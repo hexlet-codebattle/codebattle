@@ -121,6 +121,9 @@ defmodule Runner.CheckerGenerator do
     get_value({type, value}, lang_meta)
   end
 
+  defp get_value({%{name: "string"}, value}, %{name: "rust"}),
+    do: "String::from(\"#{double_backslashes(value, {})}\")"
+
   defp get_value({%{name: "string"}, value}, lang_meta),
     do: ~s("#{double_backslashes(value, lang_meta)}")
 
