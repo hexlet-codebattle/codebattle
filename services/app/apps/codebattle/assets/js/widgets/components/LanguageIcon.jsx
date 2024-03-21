@@ -4,17 +4,18 @@ import ClojureOriginalIcon from 'react-devicons/clojure/original';
 import CppOriginalIcon from 'react-devicons/cplusplus/original';
 import CsharpOriginalIcon from 'react-devicons/csharp/original';
 import DartOriginalIcon from 'react-devicons/dart/original';
-import ElixirOriginalIcon from './icons/ElixirOriginalIcon';
 import GolangOriginalIcon from 'react-devicons/go/original';
 import HaskellOriginalIcon from 'react-devicons/haskell/original';
 import JavaOriginalIcon from 'react-devicons/java/original';
-import KotlinOriginalIcon from './icons/KotlinOriginalIcon';
 import NodejsPlainIcon from 'react-devicons/nodejs/plain';
+import TypescriptOriginalIcon from 'react-devicons/typescript/original';
+
+import ElixirOriginalIcon from './icons/ElixirOriginalIcon';
+import KotlinOriginalIcon from './icons/KotlinOriginalIcon';
 import PhpOriginalIcon from './icons/PhpOriginalIcon';
 import PythonOriginalIcon from './icons/PythonOriginalIcon';
 import RubyOriginalIcon from './icons/RubyOriginalIcon';
 import RustOriginalIcon from './icons/RustOriginalIcon';
-import TypescriptOriginalIcon from 'react-devicons/typescript/original';
 
 const iconRenderers = {
   clojure: className => <ClojureOriginalIcon className={className} size="1.125em" />,
