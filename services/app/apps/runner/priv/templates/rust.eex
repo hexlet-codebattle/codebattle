@@ -2,11 +2,11 @@
 
 use libc::c_int;
 use serde::Serialize;
-use serde_with::{DurationNanoSeconds, serde_as};
+use serde_with::{DurationSecondsWithFrac, serde_as};
 use std::{
     collections::HashMap,
     fs::File,
-    io::{self, Read},
+    io::{self, Read, Write},
     os::fd::{AsRawFd, FromRawFd},
     process::exit,
     time::{self, Duration},
@@ -20,7 +20,7 @@ struct Result<T> {
     #[serde(rename = "type")]
     typ: String,
     value: T,
-    #[serde_as(as = "DurationNanoSeconds")]
+    #[serde_as(as = "DurationSecondsWithFrac<String>")]
     time: Duration,
     #[serde(skip_serializing_if = "String::is_empty")]
     output: String,
@@ -66,6 +66,7 @@ fn main() {
       };
 
       if let Some(mut r) = reader_ {
+          let _ = io::stdout().flush();
           unsafe {
               libc::dup2(stdout_.as_raw_fd(), io::stdout().as_raw_fd());
               let _ = r.read_to_string(&mut result_.output);
