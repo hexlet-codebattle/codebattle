@@ -86,6 +86,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :task_strategy) %>
           </div>
+          <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
+            <%= label(f, :score_strategy) %>
+            <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
+              class: "custom-select",
+              value: f.params["score_strategy"] || f.data.score_strategy
+            ) %>
+            <%= error_tag(f, :score_strategy) %>
+          </div>
         </div>
         <div class="d-flex mt-3">
           <div class="form-check">

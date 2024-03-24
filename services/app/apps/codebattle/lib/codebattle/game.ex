@@ -39,27 +39,6 @@ defmodule Codebattle.Game do
   @visibility_types ~w(hidden public)
 
   schema "games" do
-    field(:state, :string)
-    field(:level, :string)
-    field(:type, :string, default: "duo")
-    field(:mode, :string, default: "standard")
-    field(:visibility_type, :string, default: "public")
-    field(:timeout_seconds, :integer, default: @default_timeout_seconds)
-    field(:starts_at, :naive_datetime)
-    field(:finishes_at, :naive_datetime)
-    field(:rematch_state, :string, default: "none")
-    field(:rematch_initiator_id, :integer)
-    field(:ref, :integer)
-    field(:use_chat, :boolean, default: true)
-    field(:use_timer, :boolean, default: true)
-    field(:award, :string, virtual: true)
-    field(:is_bot, :boolean, default: false, virtual: true)
-    field(:is_live, :boolean, default: false, virtual: true)
-    field(:is_tournament, :boolean, default: false, virtual: true)
-    field(:locked, :boolean, default: false, virtual: true)
-
-    timestamps()
-
     belongs_to(:task, Codebattle.Task)
     belongs_to(:tournament, Codebattle.Tournament)
     belongs_to(:round, Codebattle.Tournament.Round)
@@ -67,6 +46,28 @@ defmodule Codebattle.Game do
     has_many(:users, through: [:user_games, :user])
     has_one(:playbook, Codebattle.Playbook)
     embeds_many(:players, Player, on_replace: :delete)
+
+    field(:award, :string, virtual: true)
+    field(:duration_sec, :integer)
+    field(:finishes_at, :naive_datetime)
+    field(:is_bot, :boolean, default: false, virtual: true)
+    field(:is_live, :boolean, default: false, virtual: true)
+    field(:is_tournament, :boolean, default: false, virtual: true)
+    field(:level, :string)
+    field(:locked, :boolean, default: false, virtual: true)
+    field(:mode, :string, default: "standard")
+    field(:ref, :integer)
+    field(:rematch_initiator_id, :integer)
+    field(:rematch_state, :string, default: "none")
+    field(:starts_at, :naive_datetime)
+    field(:state, :string)
+    field(:timeout_seconds, :integer, default: @default_timeout_seconds)
+    field(:type, :string, default: "duo")
+    field(:use_chat, :boolean, default: true)
+    field(:use_timer, :boolean, default: true)
+    field(:visibility_type, :string, default: "public")
+
+    timestamps()
   end
 
   @doc false
@@ -74,6 +75,7 @@ defmodule Codebattle.Game do
     game
     |> cast(attrs, [
       :award,
+      :duration_sec,
       :finishes_at,
       :level,
       :locked,

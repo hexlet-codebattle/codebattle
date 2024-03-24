@@ -11,9 +11,11 @@ defmodule Codebattle.Tournament.Match do
   @states ~w(pending playing canceled game_over timeout)
 
   embedded_schema do
-    field(:id, :integer)
+    field(:duration_sec, :integer)
     field(:finished_at, :naive_datetime)
     field(:game_id, :integer)
+    field(:id, :integer)
+    field(:level, :string)
     field(:player_ids, {:array, :integer}, default: [])
     field(:player_results, AtomizedMap, default: %{})
     field(:round_id, :integer)
@@ -26,15 +28,18 @@ defmodule Codebattle.Tournament.Match do
   def changeset(struct, params) do
     struct
     |> cast(params, [
-      :id,
+      :duration_sec,
       :finished_at,
       :game_id,
+      :id,
+      :integer,
+      :level,
+      :player_ids,
       :round_id,
       :round_position,
       :started_at,
       :state,
-      :winner_id,
-      :player_ids
+      :winner_id
     ])
     |> validate_inclusion(:state, @states)
   end

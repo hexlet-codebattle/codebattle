@@ -39,6 +39,8 @@ defmodule Codebattle.Game.Fsm do
   end
 
   def transition(:check_success, game = %{state: "playing"}, params) do
+    finishes_at = TimeHelper.utc_now()
+
     game =
       game
       |> update_check_result(params)
@@ -46,6 +48,8 @@ defmodule Codebattle.Game.Fsm do
       |> update_other_players(params.id, %{result: "lost"})
       |> Game.RatingCalculator.call()
       |> Map.put(:state, "game_over")
+      |> Map.put(:finishes_at, finishes_at)
+      |> Map.put(:duration_sec, NaiveDateTime.diff(finishes_at, game.starts_at))
 
     {:ok, game}
   end
@@ -127,26 +131,15 @@ defmodule Codebattle.Game.Fsm do
   defp handle_rematch_offer(_game, _params), do: %{}
 
   defp update_check_result(game, params) do
-    game
-    |> update_player(
-      params.id,
-      %{
-        check_result: params.check_result,
-        editor_text: params.editor_text,
-        editor_lang: params.editor_lang
-      }
-    )
-    |> maybe_set_best_results(
-      params.id,
-      %{
-        finishes_at: TimeHelper.utc_now(),
-        duration_sec: NaiveDateTime.diff(TimeHelper.utc_now(), game.starts_at),
-        result_percent:
-          Float.round(
-            100 * params.check_result.success_count / params.check_result.asserts_count,
-            2
-          )
-      }
-    )
+    update_player(game, params.id, %{
+      check_result: params.check_result,
+      editor_text: params.editor_text,
+      editor_lang: params.editor_lang,
+      result_percent:
+        Float.round(
+          100.0 * params.check_result.success_count / params.check_result.asserts_count,
+          2
+        )
+    })
   end
 end
