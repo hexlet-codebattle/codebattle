@@ -72,6 +72,20 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "custom-select") %>
             <%= error_tag(f, :access_type) %>
           </div>
+          <div class="d-flex flex-column justify-content-between w-auto">
+            <%= label(f, :task_strategy) %>
+            <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(),
+              class: "custom-select"
+            ) %>
+            <%= error_tag(f, :task_strategy) %>
+          </div>
+          <div class="d-flex flex-column justify-content-between w-auto">
+            <%= label(f, :score_strategy) %>
+            <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
+              class: "custom-select"
+            ) %>
+            <%= error_tag(f, :score_strategy) %>
+          </div>
         </div>
         <div class="d-flex mt-3">
           <div class="form-check">
@@ -86,13 +100,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
           </div>
         </div>
         <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <%= label(f, :task_strategy) %>
-            <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(),
-              class: "custom-select"
-            ) %>
-            <%= error_tag(f, :task_strategy) %>
-          </div>
           <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
             <%= label(f, :task_provider) %>
             <%= select(f, :task_provider, Codebattle.Tournament.task_providers(),

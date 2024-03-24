@@ -317,8 +317,8 @@ defmodule Codebattle.Game.Engine do
       update_game!(game, %{
         state: get_state(game),
         players: get_players(game),
-        starts_at: get_starts_at(game),
-        finishes_at: TimeHelper.utc_now()
+        duration_sec: game.duration_sec,
+        finishes_at: game.finishes_at
       })
     end)
   end

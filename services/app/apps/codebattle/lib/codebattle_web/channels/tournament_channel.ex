@@ -259,7 +259,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
     matches =
-      if payload.tournament.type in ["swiss", "ladder", "show"] do
+      if payload.tournament.type in ["swiss", "arena", "show"] do
         []
       else
         Helpers.get_matches(payload.tournament)
@@ -358,7 +358,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament = %{type: type}, socket)
-       when type in ["swiss", "ladder", "stairway"] do
+       when type in ["swiss", "arena", "stairway"] do
     current_user = socket.assigns.current_user
 
     current_player = Helpers.get_player(tournament, current_user.id)

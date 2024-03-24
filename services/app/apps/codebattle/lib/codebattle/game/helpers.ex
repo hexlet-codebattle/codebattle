@@ -52,23 +52,12 @@ defmodule Codebattle.Game.Helpers do
 
   def get_player_results(game) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.map(fn player ->
-      duration_sec =
-        case {player.result, player.duration_sec} do
-          {"won", seconds} -> seconds
-          _ -> game.timeout_seconds
-        end
-
       result =
         player
-        |> Map.take([:id, :result, :result_percent])
-        |> Map.put(:duration_sec, duration_sec)
+        |> Map.take([:id, :result_percent])
         |> Map.put(:lang, player.editor_lang)
-        |> Map.put(
-          :score,
-          get_player_score(player, duration_sec, game.level)
-        )
 
       {player.id, result}
     end)
@@ -104,18 +93,6 @@ defmodule Codebattle.Game.Helpers do
     %{game | players: new_players}
   end
 
-  def maybe_set_best_results(game, player_id, params) do
-    new_players =
-      Enum.map(game.players, fn player ->
-        case player.id == player_id and player.result_percent < params.result_percent do
-          true -> Map.merge(player, params)
-          _ -> player
-        end
-      end)
-
-    %{game | players: new_players}
-  end
-
   def mark_as_live(game), do: Map.put(game, :is_live, true)
 
   def fill_virtual_fields(game) do
@@ -132,61 +109,5 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
     |> Kernel.!()
     |> Kernel.!()
-  end
-
-  @game_level_score %{
-    "elementary" => 8.0,
-    "easy" => 34.0,
-    "medium" => 233.0,
-    "hard" => 987.0
-  }
-
-  @game_level_avg_time_sec %{
-    "elementary" => 1 * 60.0,
-    "easy" => 2 * 60.0,
-    "medium" => 3 * 60.0,
-    "hard" => 5 * 60.0
-  }
-
-  @game_level_max_time_sec %{
-    "elementary" => 3 * 60.0,
-    "easy" => 5 * 60.0,
-    "medium" => 8 * 60.0,
-    "hard" => 13 * 60.0
-  }
-
-  def get_player_score(player, duration_sec, game_level) do
-    # TODO: pull this code into separate module and cover all cases with tests
-    # game_level_score is a Fibonacci-based score for different task levels
-    game_level_score = @game_level_score[game_level]
-
-    # test_count_k is a coefficient between [0, 1]
-    # It linearly grows as test results
-    test_count_k = player.result_percent / 100.0
-
-    # duration_k is a coefficient between [0.32, 1]
-    # - duration_k = 1 if duration_sec is nil
-    # - duration_k = 1 if the task was solved before game_level_avg_time
-    # - duration_k = 0.33 if the task was solved after game_level_max_time
-    # - duration_k linearly goes from 1 to 0.33 if the task was solved in the (game_level_avg_time, game_level_max_time) range
-    duration_k =
-      cond do
-        is_nil(duration_sec) ->
-          1
-
-        duration_sec < @game_level_avg_time_sec[game_level] ->
-          1
-
-        duration_sec > @game_level_max_time_sec[game_level] ->
-          0.32
-
-        true ->
-          1.0 -
-            (duration_sec - @game_level_avg_time_sec[game_level]) /
-              (@game_level_avg_time_sec[game_level] - @game_level_max_time_sec[game_level]) * 0.67
-      end
-
-    # round number to return integer
-    round(game_level_score * test_count_k * duration_k)
   end
 end

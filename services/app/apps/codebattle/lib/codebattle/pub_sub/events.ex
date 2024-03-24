@@ -304,6 +304,7 @@ defmodule Codebattle.PubSub.Events do
               ref: game.ref,
               game_state: game.state,
               game_level: game.level,
+              duration_sec: game.duration_sec || game.timeout_seconds,
               player_results: Game.Helpers.get_player_results(game)
             }
           }

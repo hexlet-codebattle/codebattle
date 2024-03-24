@@ -21,7 +21,6 @@ defmodule Codebattle.Game.Player do
              :avatar_url,
              :check_result,
              :creator,
-             :duration_sec,
              :editor_lang,
              :editor_text,
              :id,
@@ -45,7 +44,6 @@ defmodule Codebattle.Game.Player do
     # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
     field(:check_result, AtomizedMap, default: %CodeCheck.Result{})
     field(:creator, :boolean, default: false)
-    field(:duration_sec, :integer)
     field(:editor_lang, :string, default: "js")
     field(:editor_text, :string, default: @default_editor_text)
     field(:id, :integer)

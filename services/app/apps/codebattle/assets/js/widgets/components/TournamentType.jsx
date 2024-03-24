@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TournamentTypeCodes from '../config/tournamentTypes';
 
 function TournamentType({ type }) {
-  if (type === TournamentTypeCodes.ladder) {
-    return 'Ladder';
+  if (type === TournamentTypeCodes.arena) {
+    return 'Arena';
   }
 
   if (type === TournamentTypeCodes.swiss) {

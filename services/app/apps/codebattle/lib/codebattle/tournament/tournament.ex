@@ -31,6 +31,7 @@ defmodule Codebattle.Tournament do
              :players,
              :players_limit,
              :players_count,
+             :score_strategy,
              :starts_at,
              :state,
              :stats,
@@ -46,10 +47,11 @@ defmodule Codebattle.Tournament do
   @access_types ~w(public token)
   @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
+  @score_strategies ~w(time_and_tests win_loss)
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack tags)
   @task_strategies ~w(game round)
-  @types ~w(individual team stairway swiss ladder show)
+  @types ~w(individual team stairway swiss arena)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -75,6 +77,7 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
+    field(:score_strategy, :string, default: "time_and_tests")
     field(:show_results, :boolean, default: true)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
@@ -123,6 +126,7 @@ defmodule Codebattle.Tournament do
       :players,
       :players_count,
       :players_limit,
+      :score_strategy,
       :starts_at,
       :state,
       :task_pack_name,
@@ -138,6 +142,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
     |> validate_inclusion(:level, @levels)
+    |> validate_inclusion(:score_strategy, @score_strategies)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
@@ -153,9 +158,10 @@ defmodule Codebattle.Tournament do
     change(changeset, %{creator: creator})
   end
 
-  def types, do: @types
   def access_types, do: @access_types
   def levels, do: @levels
+  def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
+  def types, do: @types
 end

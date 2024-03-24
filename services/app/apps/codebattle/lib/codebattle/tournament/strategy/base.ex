@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 
+  alias Timex.NaiveDateTime
   alias Codebattle.{Game, Tournament, TaskPack}
 
   @moduledoc """
@@ -19,6 +20,7 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.Helpers
 
       alias Codebattle.Bot
+      alias Codebattle.Tournament.Score
 
       def add_player(tournament, player) do
         Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
@@ -175,6 +177,7 @@ defmodule Codebattle.Tournament.Base do
           match
           | state: params.game_state,
             winner_id: winner_id,
+            duration_sec: params.duration_sec,
             player_results: params.player_results,
             finished_at: TimeHelper.utc_now()
         })
@@ -187,7 +190,14 @@ defmodule Codebattle.Tournament.Base do
           if player do
             Tournament.Players.put_player(tournament, %{
               player
-              | score: player.score + params.player_results[player_id].score,
+              | score:
+                  player.score +
+                    get_score(
+                      tournament.score_strategy,
+                      match.level,
+                      params.duration_sec,
+                      params.player_results[player_id].result_percent
+                    ),
                 lang: params.player_results[player_id].lang,
                 wins_count:
                   player.wins_count +
@@ -268,17 +278,19 @@ defmodule Codebattle.Tournament.Base do
           fn match ->
             player_results =
               case Game.Context.fetch_game(match.game_id) do
-                {:ok, game} -> Game.Helpers.get_player_results(game)
+                {:ok, game = %{is_live: true}} -> Game.Helpers.get_player_results(game)
                 {:error, _reason} -> %{}
               end
 
             Game.Context.trigger_timeout(match.game_id)
+            finished_at = TimeHelper.utc_now()
 
             Tournament.Matches.put_match(tournament, %{
               match
               | state: "timeout",
                 player_results: player_results,
-                finished_at: TimeHelper.utc_now()
+                duration_sec: NaiveDateTime.diff(match.started_at, finished_at),
+                finished_at: finished_at
             })
 
             match = Tournament.Matches.get_match(tournament, match.id)
@@ -295,7 +307,14 @@ defmodule Codebattle.Tournament.Base do
 
               Tournament.Players.put_player(tournament, %{
                 player
-                | score: player.score + player_results[player_id].score,
+                | score:
+                    player.score +
+                      get_score(
+                        tournament.score_strategy,
+                        match.level,
+                        match.duration_sec,
+                        player_results[player_id].result_percent
+                      ),
                   lang: player_results[player_id].lang
               })
             end)
@@ -432,14 +451,14 @@ defmodule Codebattle.Tournament.Base do
         batch
         |> Enum.map(fn
           # TODO: skip bots game
-          # {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
-          #   Tournament.Matches.put_match(tournament, %Tournament.Match{
-          #     id: match_id,
-          #     state: "canceled",
-          #     round_id: tournament.current_round_id,
-          #     round_position: tournament.current_round_position,
-          #     player_ids: Enum.sort([p1.id, p2.id])
-          #   })
+          {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
+            Tournament.Matches.put_match(tournament, %Tournament.Match{
+              id: match_id,
+              state: "canceled",
+              round_id: tournament.current_round_id,
+              round_position: tournament.current_round_position,
+              player_ids: Enum.sort([p1.id, p2.id])
+            })
 
           {players = [p1, p2], match_id} ->
             %{
@@ -501,13 +520,14 @@ defmodule Codebattle.Tournament.Base do
 
       defp build_and_run_match(tournament, players, game, reset_task_ids) do
         match = %Tournament.Match{
-          id: game.ref,
           game_id: game.id,
-          state: "playing",
-          started_at: TimeHelper.utc_now(),
+          id: game.ref,
+          level: game.level,
           player_ids: players |> Enum.map(& &1.id) |> Enum.sort(),
           round_id: tournament.current_round_id,
-          round_position: tournament.current_round_position
+          round_position: tournament.current_round_position,
+          started_at: TimeHelper.utc_now(),
+          state: "playing"
         }
 
         Tournament.Matches.put_match(tournament, match)
@@ -626,7 +646,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp round_ends_by_time?(%{type: "swiss"}), do: true
-      defp round_ends_by_time?(%{type: "ladder"}), do: true
+      defp round_ends_by_time?(%{type: "arena"}), do: true
       defp round_ends_by_time?(_), do: false
 
       defp seconds_to_end_round(tournament) do
@@ -758,6 +778,14 @@ defmodule Codebattle.Tournament.Base do
 
       defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
       defp need_show_results?(tournament), do: true
+
+      defp get_score("time_and_tests", level, duration_sec, result_percent) do
+        Score.TimeAndTests.get_score(level, duration_sec, result_percent)
+      end
+
+      defp get_score("win_loss", level, _duration_sec, player_result) do
+        Score.WinLoss.get_score(level, player_result)
+      end
     end
   end
 end
