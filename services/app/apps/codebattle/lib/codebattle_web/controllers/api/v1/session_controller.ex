@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Api.V1.SessionController do
       password: params["password"]
     }
 
-    case Codebattle.Oauth.User.find_by_firebase(user_attrs) do
+    case Codebattle.Auth.User.find_by_firebase(user_attrs) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)

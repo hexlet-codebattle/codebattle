@@ -1,8 +1,9 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 
-  alias Timex.NaiveDateTime
-  alias Codebattle.{Game, Tournament, TaskPack}
+  alias Codebattle.Game
+  alias Codebattle.TaskPack
+  alias Codebattle.Tournament
 
   @moduledoc """
   Defines interface for tournament type
@@ -195,8 +196,8 @@ defmodule Codebattle.Tournament.Base do
                     get_score(
                       tournament.score_strategy,
                       match.level,
-                      params.duration_sec,
-                      params.player_results[player_id].result_percent
+                      params.player_results[player_id].result_percent,
+                      params.duration_sec
                     ),
                 lang: params.player_results[player_id].lang,
                 wins_count:
@@ -312,8 +313,8 @@ defmodule Codebattle.Tournament.Base do
                       get_score(
                         tournament.score_strategy,
                         match.level,
-                        match.duration_sec,
-                        player_results[player_id].result_percent
+                        player_results[player_id].result_percent,
+                        match.duration_sec
                       ),
                   lang: player_results[player_id].lang
               })
@@ -451,14 +452,14 @@ defmodule Codebattle.Tournament.Base do
         batch
         |> Enum.map(fn
           # TODO: skip bots game
-          {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
-            Tournament.Matches.put_match(tournament, %Tournament.Match{
-              id: match_id,
-              state: "canceled",
-              round_id: tournament.current_round_id,
-              round_position: tournament.current_round_position,
-              player_ids: Enum.sort([p1.id, p2.id])
-            })
+          # {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
+          #   Tournament.Matches.put_match(tournament, %Tournament.Match{
+          #     id: match_id,
+          #     state: "canceled",
+          #     round_id: tournament.current_round_id,
+          #     round_position: tournament.current_round_position,
+          #     player_ids: Enum.sort([p1.id, p2.id])
+          #   })
 
           {players = [p1, p2], match_id} ->
             %{
@@ -779,11 +780,11 @@ defmodule Codebattle.Tournament.Base do
       defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
       defp need_show_results?(tournament), do: true
 
-      defp get_score("time_and_tests", level, duration_sec, result_percent) do
-        Score.TimeAndTests.get_score(level, duration_sec, result_percent)
+      defp get_score("time_and_tests", level, result_percent, duration_sec) do
+        Score.TimeAndTests.get_score(level, result_percent, duration_sec)
       end
 
-      defp get_score("win_loss", level, _duration_sec, player_result) do
+      defp get_score("win_loss", level, player_result, _duration_sec) do
         Score.WinLoss.get_score(level, player_result)
       end
     end

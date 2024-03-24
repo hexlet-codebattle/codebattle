@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.GithubMock do
+defmodule Codebattle.Auth.GithubMock do
   @moduledoc """
     This is a set up to mock (stub) our API requests to the GitHub API
     so that we can test all of our code in Codebattle.

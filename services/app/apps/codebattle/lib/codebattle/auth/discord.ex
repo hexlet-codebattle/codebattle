@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.Discord do
+defmodule Codebattle.Auth.Discord do
   @moduledoc """
   Module that handles Discord OAuth
   Origin from here: https://discord.com/developers/docs/topics/oauth2

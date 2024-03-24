@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.DiscordMock do
+defmodule Codebattle.Auth.DiscordMock do
   @moduledoc """
     This is a set up to mock (stub) our API requests to the discord API
     so that we can test all of our code in Codebattle.

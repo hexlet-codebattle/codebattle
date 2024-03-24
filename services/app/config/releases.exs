@@ -82,6 +82,7 @@ checker_executor =
 
 config :codebattle, checker_executor: checker_executor
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
+config :codebattle, :api_key, System.get_env("CODEBATTLE_EXECUTOR_API_KEY")
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
@@ -108,7 +109,6 @@ config :runner,
 
 config :runner, :runner_url, "http://runner.default.svc"
 config :runner, :runner_rust_url, "http://runner-rs.default.svc"
-config :runner, :api_key, System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"

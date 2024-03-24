@@ -46,7 +46,7 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  pipeline :token_api do
+  pipeline :ext_api do
     plug(:accepts, ["json"])
     plug(:put_secure_browser_headers)
   end
@@ -57,9 +57,10 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
-  scope "/token_api", CodebattleWeb.TokenApi do
-    pipe_through([:token_api])
+  scope "/ext_api", CodebattleWeb.ExtApi, as: :ext_api do
+    pipe_through([:ext_api])
     post("/execute", ExecutorController, :execute)
+    post("/users", UserController, :create)
   end
 
   scope "/", CodebattleWeb do

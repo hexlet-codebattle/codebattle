@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.User.TokenUser do
+defmodule Codebattle.Auth.User.TokenUser do
   @moduledoc """
     Token auth
   """

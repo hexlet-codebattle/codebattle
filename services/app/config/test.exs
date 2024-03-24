@@ -55,8 +55,8 @@ config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, max_alive_tournaments: 700
 
-config :codebattle, github_oauth_client: Codebattle.Oauth.GithubMock
-config :codebattle, discord_oauth_client: Codebattle.Oauth.DiscordMock
+config :codebattle, github_oauth_client: Codebattle.Auth.GithubMock
+config :codebattle, discord_oauth_client: Codebattle.Auth.DiscordMock
 
 config :codebattle, Codebattle.Invite,
   timeout: :timer.seconds(1000),

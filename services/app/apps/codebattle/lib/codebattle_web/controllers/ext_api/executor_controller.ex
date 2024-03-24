@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.TokenApi.ExecutorController do
+defmodule CodebattleWeb.ExtApi.ExecutorController do
   use CodebattleWeb, :controller
 
   alias Codebattle.CodeCheck.Executor.RemoteRust
@@ -7,7 +7,7 @@ defmodule CodebattleWeb.TokenApi.ExecutorController do
   import Plug.Conn
   require Logger
 
-  plug(RunnerWeb.AuthPlug)
+  plug(CodebattleWeb.Plugs.TokenAuth)
 
   def execute(conn, %{
         "task" => task,

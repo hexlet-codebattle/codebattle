@@ -6,7 +6,7 @@ defmodule CodebattleWeb.Api.V1.ResetPasswordController do
       email: params["email"]
     }
 
-    case Codebattle.Oauth.User.reset_in_firebase(user_attrs) do
+    case Codebattle.Auth.User.reset_in_firebase(user_attrs) do
       :ok ->
         json(conn, %{status: :created})
 

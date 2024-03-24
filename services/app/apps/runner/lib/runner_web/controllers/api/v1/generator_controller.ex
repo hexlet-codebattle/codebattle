@@ -1,8 +1,6 @@
 defmodule RunnerWeb.Api.V1.GeneratorController do
   use RunnerWeb, :controller
 
-  plug(RunnerWeb.AuthPlug)
-
   def generate(conn, %{
         "task" => task,
         "lang_slug" => lang_slug,

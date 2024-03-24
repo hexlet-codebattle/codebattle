@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.User.GithubUser do
+defmodule Codebattle.Auth.User.GithubUser do
   @moduledoc """
     Retrieve user information from github oauth request
   """

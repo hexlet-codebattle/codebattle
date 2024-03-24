@@ -91,8 +91,8 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 8, wins_count: 1} = tournament |> get_player(user_id1)
+      assert %Player{score: 15, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 29, wins_count: 1} = tournament |> get_player(user_id1)
 
       Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
       :timer.sleep(100)
@@ -124,8 +124,8 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       opponent_id = get_opponent(player_ids, user_id1)
 
-      assert %Player{score: 3, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 16, wins_count: 2} = tournament |> get_player(user_id1)
+      assert %Player{score: 50, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 129, wins_count: 2} = tournament |> get_player(user_id1)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
       send_user_win_match(tournament, user1)
@@ -139,8 +139,8 @@ defmodule Codebattle.Tournament.Integration.SwissTaskPackTest do
 
       tournament = Tournament.Server.get_tournament(tournament.id)
 
-      assert %Player{score: 12, wins_count: 0} = tournament |> get_player(opponent_id)
-      assert %Player{score: 40, wins_count: 5} = tournament |> get_player(user_id1)
+      assert %Player{score: 200, wins_count: 0} = tournament |> get_player(opponent_id)
+      assert %Player{score: 429, wins_count: 5} = tournament |> get_player(user_id1)
 
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
       assert tournament |> get_matches("timeout") |> Enum.count() == 4

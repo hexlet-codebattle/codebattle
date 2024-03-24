@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.User.DiscordUser do
+defmodule Codebattle.Auth.User.DiscordUser do
   @moduledoc """
     Retrieve user information from discord oauth request
   """

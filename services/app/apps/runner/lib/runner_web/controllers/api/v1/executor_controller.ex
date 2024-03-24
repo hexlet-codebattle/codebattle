@@ -1,8 +1,6 @@
 defmodule RunnerWeb.Api.V1.ExecutorController do
   use RunnerWeb, :controller
 
-  plug(RunnerWeb.AuthPlug)
-
   require Logger
 
   def execute(conn, %{

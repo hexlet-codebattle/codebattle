@@ -99,13 +99,23 @@ defmodule Codebattle.User do
       :rating,
       :subscription_type
     ])
+    |> unique_constraint(:name)
     |> validate_required([:name])
+    |> validate_length(:name, min: 2, max: 39)
   end
 
   def settings_changeset(user, params \\ %{}) do
     user
     |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
+    |> unique_constraint(:name)
+    |> validate_length(:name, min: 2, max: 39)
+    |> assign_clan(params, user.id)
+  end
+
+  def token_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:auth_token, :name, :clan])
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)
     |> assign_clan(params, user.id)
@@ -154,8 +164,24 @@ defmodule Codebattle.User do
     |> Repo.all()
   end
 
+  defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil] do
+    changeset
+  end
+
   defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil] do
     changeset
+  end
+
+  defp assign_clan(changeset, params, nil) do
+    # nil for new token users, clan will be managed by admin
+    assign_clan(changeset, params, 1)
+  end
+
+  defp assign_clan(changeset, %{clan: clan_name}, user_id) do
+    case Clan.find_or_create_by_clan(clan_name, user_id) do
+      {:ok, clan} -> change(changeset, %{clan: String.trim(clan_name), clan_id: clan.id})
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   defp assign_clan(changeset, %{"clan" => clan_name}, user_id) do

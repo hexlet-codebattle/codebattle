@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.Github do
+defmodule Codebattle.Auth.Github do
   @moduledoc """
   Module that handles GitHub OAuth
   Origin from here: https://github.com/dwyl/elixir-auth-github

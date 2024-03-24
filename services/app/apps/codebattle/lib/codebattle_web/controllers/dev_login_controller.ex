@@ -13,7 +13,7 @@ defmodule CodebattleWeb.DevLoginController do
         avatar_url: "/assets/images/logo.svg"
       }
 
-      case Codebattle.Oauth.User.create_dev_user(params) do
+      case Codebattle.Auth.User.create_dev_user(params) do
         {:ok, user} ->
           conn
           |> put_flash(:info, gettext("Successfully authenticated."))

@@ -1,12 +1,13 @@
-defmodule RunnerWeb.AuthPlug do
+defmodule CodebattleWeb.Plugs.TokenAuth do
   import Plug.Conn
   import Phoenix.Controller
 
   def init(options), do: options
 
   def call(conn, _) do
-    if Application.get_env(:runner, :api_key) ==
-         List.first(get_req_header(conn, "x-auth-key")) do
+    key = Application.get_env(:codebattle, :api_key)
+
+    if key && key == List.first(get_req_header(conn, "x-auth-key")) do
       conn
     else
       conn

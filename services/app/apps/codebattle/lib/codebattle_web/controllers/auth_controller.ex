@@ -8,7 +8,7 @@ defmodule CodebattleWeb.AuthController do
   def token(conn, params) do
     token = params |> Map.get("t", "") |> String.trim()
 
-    case Codebattle.Oauth.User.find_by_token(token) do
+    case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
         url =
           :codebattle
@@ -37,13 +37,13 @@ defmodule CodebattleWeb.AuthController do
 
     case provider_name do
       "github" ->
-        oauth_github_url = Codebattle.Oauth.Github.login_url(%{redirect_uri: redirect_uri})
+        oauth_github_url = Codebattle.Auth.Github.login_url(%{redirect_uri: redirect_uri})
 
         conn
         |> redirect(external: oauth_github_url)
 
       "discord" ->
-        oauth_discord_url = Codebattle.Oauth.Discord.login_url(%{redirect_uri: redirect_uri})
+        oauth_discord_url = Codebattle.Auth.Discord.login_url(%{redirect_uri: redirect_uri})
 
         conn
         |> redirect(external: oauth_discord_url)
@@ -68,14 +68,14 @@ defmodule CodebattleWeb.AuthController do
     case provider_name do
       "github" ->
         # TODO: user with
-        {:ok, profile} = Codebattle.Oauth.Github.github_auth(code)
-        Codebattle.Oauth.User.GithubUser.find_or_create(profile)
+        {:ok, profile} = Codebattle.Auth.Github.github_auth(code)
+        Codebattle.Auth.User.GithubUser.find_or_create(profile)
 
       "discord" ->
         # TODO: user with
         redirect_uri = Routes.auth_url(conn, :callback, provider_name)
-        {:ok, profile} = Codebattle.Oauth.Discord.discord_auth(code, redirect_uri)
-        Codebattle.Oauth.User.DiscordUser.find_or_create(profile)
+        {:ok, profile} = Codebattle.Auth.Discord.discord_auth(code, redirect_uri)
+        Codebattle.Auth.User.DiscordUser.find_or_create(profile)
     end
     |> case do
       {:ok, user} ->

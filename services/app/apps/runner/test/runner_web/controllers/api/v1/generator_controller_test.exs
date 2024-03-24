@@ -2,15 +2,8 @@ defmodule RunnerWeb.Api.V1.GeneratorControllerTest do
   use RunnerWeb.ConnCase, async: true
 
   describe ".generate" do
-    test "without api_key", %{conn: conn} do
-      conn
-      |> post(Routes.api_v1_generator_path(conn, :generate, %{}))
-      |> json_response(401)
-    end
-
     test "invalid params 422", %{conn: conn} do
       conn
-      |> put_req_header("x-auth-key", "x-key")
       |> post(Routes.api_v1_generator_path(conn, :generate, %{}))
       |> json_response(422)
     end
@@ -41,7 +34,6 @@ defmodule RunnerWeb.Api.V1.GeneratorControllerTest do
 
       resp =
         conn
-        |> put_req_header("x-auth-key", "x-key")
         |> post(Routes.api_v1_generator_path(conn, :generate), params)
         |> json_response(200)
 

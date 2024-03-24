@@ -95,6 +95,7 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
+config :codebattle, :api_key, "x-key"
 config :codebattle, restore_tournaments: false
 config :codebattle, freeze_time: false
 config :codebattle, load_dot_env_file: true
@@ -121,7 +122,6 @@ config :codebattle,
 
 config :runner, :runner_url, "http://localhost:4001"
 config :runner, :runner_rust_url, "http://localhost:4002"
-config :runner, :api_key, "x-key"
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false
 config :runner, runner_cpu_logger: false

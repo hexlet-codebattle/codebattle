@@ -1,4 +1,4 @@
-defmodule Codebattle.Oauth.User.FirebaseUser do
+defmodule Codebattle.Auth.User.FirebaseUser do
   @moduledoc """
     Basic user/password registration
   """

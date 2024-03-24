@@ -11,14 +11,14 @@ defmodule CodebattleWeb.AuthBindController do
 
     case provider_name do
       "github" ->
-        oauth_github_url = Codebattle.Oauth.Github.login_url(%{redirect_uri: redirect_uri})
+        oauth_github_url = Codebattle.Auth.Github.login_url(%{redirect_uri: redirect_uri})
 
         conn
         |> redirect(external: oauth_github_url)
         |> halt()
 
       "discord" ->
-        oauth_discord_url = Codebattle.Oauth.Discord.login_url(%{redirect_uri: redirect_uri})
+        oauth_discord_url = Codebattle.Auth.Discord.login_url(%{redirect_uri: redirect_uri})
 
         conn
         |> redirect(external: oauth_discord_url)
@@ -36,13 +36,13 @@ defmodule CodebattleWeb.AuthBindController do
 
     case params["provider"] do
       "github" ->
-        {:ok, profile} = Codebattle.Oauth.Github.github_auth(code)
-        Codebattle.Oauth.User.GithubUser.bind(current_user, profile)
+        {:ok, profile} = Codebattle.Auth.Github.github_auth(code)
+        Codebattle.Auth.User.GithubUser.bind(current_user, profile)
 
       "discord" ->
         redirect_uri = Routes.auth_bind_url(conn, :callback, "discord")
-        {:ok, profile} = Codebattle.Oauth.Discord.discord_auth(code, redirect_uri)
-        Codebattle.Oauth.User.DiscordUser.bind(current_user, profile)
+        {:ok, profile} = Codebattle.Auth.Discord.discord_auth(code, redirect_uri)
+        Codebattle.Auth.User.DiscordUser.bind(current_user, profile)
     end
     |> case do
       {:ok, _user} ->
@@ -62,10 +62,10 @@ defmodule CodebattleWeb.AuthBindController do
 
     case params["provider"] do
       "github" ->
-        Codebattle.Oauth.User.GithubUser.unbind(current_user)
+        Codebattle.Auth.User.GithubUser.unbind(current_user)
 
       "discord" ->
-        Codebattle.Oauth.User.DiscordUser.unbind(current_user)
+        Codebattle.Auth.User.DiscordUser.unbind(current_user)
     end
     |> case do
       {:ok, _user} ->

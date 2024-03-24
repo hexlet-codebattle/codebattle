@@ -27,7 +27,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
       password: params["password"]
     }
 
-    case Codebattle.Oauth.User.create_in_firebase(user_attrs) do
+    case Codebattle.Auth.User.create_in_firebase(user_attrs) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)

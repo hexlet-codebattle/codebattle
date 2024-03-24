@@ -23,15 +23,13 @@ defmodule Codebattle.TournamentTestHelpers do
               result: "won",
               id: user_id,
               lang: "js",
-              result_percent: 100.0,
-              score: 8
+              result_percent: 100.0
             },
             opponent_id => %{
               result: "lost",
               id: opponent_id,
               lang: "js",
-              result_percent: 50.0,
-              score: 3
+              result_percent: 50.0
             }
           }
 
@@ -46,6 +44,7 @@ defmodule Codebattle.TournamentTestHelpers do
         payload: %{
           game_id: game_id,
           ref: ref,
+          duration_sec: 15,
           game_state: "game_over",
           game_level: "easy",
           player_results: player_results
