@@ -157,10 +157,10 @@ defmodule Codebattle.Tournament.Base do
 
       def start(tournament, _params), do: tournament
 
-      def stop_round_break(tournament) do
+      def start_round_force(tournament, new_round_params \\ %{}) do
         tournament
         |> increment_current_round()
-        |> start_round()
+        |> start_round(new_round_params)
       end
 
       def finish_match(tournament, params) do
@@ -404,9 +404,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp start_round_or_break_or_finish(tournament) do
-        tournament
-        |> increment_current_round()
-        |> start_round()
+        start_round_force(tournament)
       end
 
       defp increment_current_round(tournament) do
@@ -415,7 +413,7 @@ defmodule Codebattle.Tournament.Base do
         })
       end
 
-      defp start_round(tournament) do
+      defp start_round(tournament, round_params \\ %{}) do
         tournament
         |> update_struct(%{
           break_state: "off",
@@ -424,19 +422,19 @@ defmodule Codebattle.Tournament.Base do
         |> build_and_save_round!()
         |> maybe_preload_tasks()
         |> start_round_timer()
-        |> build_round_matches()
+        |> build_round_matches(round_params)
         |> db_save!()
         |> broadcast_round_created()
       end
 
-      defp build_round_matches(tournament) do
+      defp build_round_matches(tournament, round_params) do
         tournament
         |> build_round_pairs()
-        |> bulk_insert_round_games()
+        |> bulk_insert_round_games(round_params)
       end
 
-      defp bulk_insert_round_games({tournament, player_pairs}) do
-        task_ids = get_round_task_ids(tournament)
+      defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
+        task_ids = get_round_task_ids(tournament, round_params)
 
         player_pairs
         |> Enum.with_index(matches_count(tournament))
@@ -714,8 +712,16 @@ defmodule Codebattle.Tournament.Base do
         Map.put(tournament, :meta, new_meta)
       end
 
-      defp maybe_preload_tasks(tournament = %{current_round_position: 0}) do
+      defp maybe_preload_tasks(tournament = %{task_provider: "level", current_round_position: 0}) do
         tasks = Codebattle.Task.get_tasks_by_level(tournament.level) |> Enum.shuffle()
+
+        Tournament.Tasks.put_tasks(tournament, tasks)
+
+        tournament
+      end
+
+      defp maybe_preload_tasks(tournament = %{task_provider: "all", current_round_position: 0}) do
+        tasks = Codebattle.Task.get_all_visible() |> Enum.shuffle()
 
         Tournament.Tasks.put_tasks(tournament, tasks)
 
@@ -750,18 +756,30 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp get_round_task_ids(tournament = %{meta: %{rounds_config_type: "per_round"}}) do
+      defp get_round_task_ids(tournament, %{task_id: task_id}) do
+        [task_id]
+      end
+
+      defp get_round_task_ids(tournament, %{task_level: task_level}) do
+        Tournament.Tasks.get_task_ids_by_level(tournament, task_level)
+      end
+
+      defp get_round_task_ids(
+             tournament = %{meta: %{rounds_config_type: "per_round"}},
+             _task_params
+           ) do
         Tournament.Tasks.get_task_ids(tournament)
       end
 
       defp get_round_task_ids(
-             tournament = %{task_provider: "task_pack", meta: %{task_ids: task_ids}}
+             tournament = %{task_provider: "task_pack", meta: %{task_ids: task_ids}},
+             _task_params
            )
            when is_list(task_ids) do
         [Enum.at(task_ids, tournament.current_round_position)]
       end
 
-      defp get_round_task_ids(tournament) do
+      defp get_round_task_ids(tournament, _task_params) do
         Tournament.Tasks.get_task_ids(tournament)
         # TODO: implement reshuffle after all tasks used
         # completed_task_ids =

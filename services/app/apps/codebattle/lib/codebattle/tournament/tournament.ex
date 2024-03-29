@@ -49,9 +49,9 @@ defmodule Codebattle.Tournament do
   @levels ~w(elementary easy medium hard)
   @score_strategies ~w(time_and_tests win_loss)
   @states ~w(waiting_participants canceled active finished)
-  @task_providers ~w(level task_pack tags)
+  @task_providers ~w(level task_pack tags all)
   @task_strategies ~w(game round)
-  @types ~w(individual team stairway swiss arena)
+  @types ~w(individual team stairway swiss arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

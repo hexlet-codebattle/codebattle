@@ -186,12 +186,13 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_in("tournament:start_round", _, socket) do
+  def handle_in("tournament:start_round", params, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
+    new_round_params = cast_start_round_params(params)
 
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.handle_event(tournament_id, :stop_round_break, %{})
+      Tournament.Context.handle_event(tournament_id, :start_round_force, new_round_params)
     end
 
     {:noreply, socket}
@@ -430,4 +431,8 @@ defmodule CodebattleWeb.TournamentChannel do
         :noop
     end
   end
+
+  defp cast_start_round_params(%{"task_level" => level}), do: %{task_level: level}
+  defp cast_start_round_params(%{"task_id" => level}), do: %{task_id: level}
+  defp cast_start_round_params(_params), do: %{}
 end

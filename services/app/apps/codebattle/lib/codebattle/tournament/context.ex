@@ -321,6 +321,7 @@ defmodule Codebattle.Tournament.Context do
   defp get_module(%{type: "show"}), do: Tournament.Show
   defp get_module(%{type: "stairway"}), do: Tournament.Stairway
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
+  defp get_module(%{type: "versus"}), do: Tournament.Versus
   defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(_), do: Tournament.Individual
 

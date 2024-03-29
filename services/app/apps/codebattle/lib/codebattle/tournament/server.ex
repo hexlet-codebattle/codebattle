@@ -145,7 +145,7 @@ defmodule Codebattle.Tournament.Server do
     if tournament.current_round_position == round_position and
          in_break?(tournament) and
          not finished?(tournament) do
-      new_tournament = tournament.module.stop_round_break(tournament)
+      new_tournament = tournament.module.start_round_force(tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else
@@ -244,7 +244,7 @@ defmodule Codebattle.Tournament.Server do
     Codebattle.PubSub.broadcast("tournament:started", %{tournament: tournament})
   end
 
-  def broadcast_tournament_event_by_type(:stop_round_break, _params, _tournament) do
+  def broadcast_tournament_event_by_type(:start_round_force, _params, _tournament) do
     :noop
   end
 

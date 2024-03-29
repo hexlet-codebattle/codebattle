@@ -266,6 +266,13 @@ defmodule Codebattle.Task do
     |> Repo.all()
   end
 
+  @spec get_all_visible() :: list(t())
+  def get_all_visible() do
+    from(task in Codebattle.Task)
+    |> visible()
+    |> Repo.all()
+  end
+
   @spec get_played_count(integer()) :: integer()
   def get_played_count(task_id) do
     from(game in Codebattle.Game, where: game.task_id == ^task_id)
