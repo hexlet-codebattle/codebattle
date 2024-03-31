@@ -418,7 +418,7 @@ Enum.each(1..100, fn id ->
 end)
 
 tokens =
-  Enum.map(1..7000, fn id ->
+  Enum.map(1..70, fn id ->
     t = Timex.now()
 
     clan_id =
