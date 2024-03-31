@@ -79,5 +79,4 @@
 #     {Enum.reverse(player_pairs), played_pair_ids}
 #   end
 
-
 # end
