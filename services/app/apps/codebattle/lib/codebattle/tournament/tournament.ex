@@ -49,9 +49,9 @@ defmodule Codebattle.Tournament do
   @levels ~w(elementary easy medium hard)
   @score_strategies ~w(time_and_tests win_loss)
   @states ~w(waiting_participants canceled active finished)
-  @task_providers ~w(level task_pack tags all)
-  @task_strategies ~w(game round)
-  @types ~w(individual team stairway swiss arena versus)
+  @task_providers ~w(level task_pack task_pack_per_round all)
+  @task_strategies ~w(random_per_game random_per_round sequential)
+  @types ~w(individual team arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament do
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
-    field(:level, :string, default: "elementary")
+    field(:level, :string, default: "easy")
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:matches, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
@@ -83,7 +83,7 @@ defmodule Codebattle.Tournament do
     field(:state, :string, default: "waiting_participants")
     field(:stats, AtomizedMap, default: %{})
     field(:task_provider, :string, default: "level")
-    field(:task_strategy, :string, default: "game")
+    field(:task_strategy, :string, default: "random_per_game")
     field(:type, :string, default: "individual")
     field(:task_pack_name, :string)
     field(:use_chat, :boolean, default: true)
@@ -97,9 +97,11 @@ defmodule Codebattle.Tournament do
     field(:tasks_table, :string, virtual: true)
     field(:module, :any, virtual: true, default: Individual)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
+    field(:round_task_ids, {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
     field(:top_player_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
+    field(:waiting_room_name, :string, virtual: true)
 
     timestamps()
   end
@@ -137,7 +139,8 @@ defmodule Codebattle.Tournament do
       :use_chat,
       :use_timer,
       :use_infinite_break,
-      :show_results
+      :show_results,
+      :waiting_room_name
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)

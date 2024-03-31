@@ -102,6 +102,7 @@ defmodule Codebattle.User do
     |> unique_constraint(:name)
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
+    |> assign_clan(params, 1)
   end
 
   def settings_changeset(user, params \\ %{}) do

@@ -28,6 +28,7 @@ defmodule Codebattle.Game.GlobalSupervisor do
   def terminate_game(game_id) do
     try do
       Supervisor.terminate_child(__MODULE__, to_string(game_id))
+      Supervisor.delete_child(__MODULE__, to_string(game_id))
     rescue
       _ -> Logger.error("cannot  terminate game #{game_id}")
     end

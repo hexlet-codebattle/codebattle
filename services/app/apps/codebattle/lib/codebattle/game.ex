@@ -16,9 +16,9 @@ defmodule Codebattle.Game do
              :id,
              :is_bot,
              :is_live,
-             :locked,
              :is_tournament,
              :level,
+             :locked,
              :mode,
              :players,
              :ref,
@@ -27,7 +27,8 @@ defmodule Codebattle.Game do
              :type,
              :use_chat,
              :use_timer,
-             :visibility_type
+             :visibility_type,
+             :waiting_room_name
            ]}
 
   @default_timeout_seconds div(:timer.minutes(30), 1000)
@@ -66,6 +67,7 @@ defmodule Codebattle.Game do
     field(:use_chat, :boolean, default: true)
     field(:use_timer, :boolean, default: true)
     field(:visibility_type, :string, default: "public")
+    field(:waiting_room_name, :string)
 
     timestamps()
   end
@@ -89,6 +91,7 @@ defmodule Codebattle.Game do
       :task_id,
       :timeout_seconds,
       :tournament_id,
+      :waiting_room_name,
       :type,
       :use_chat,
       :use_timer,

@@ -121,7 +121,6 @@ config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
 config :runner, :runner_url, "http://localhost:4001"
-config :runner, :runner_rust_url, "http://localhost:4002"
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false
 config :runner, runner_cpu_logger: false

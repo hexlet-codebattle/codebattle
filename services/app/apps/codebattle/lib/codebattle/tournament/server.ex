@@ -75,9 +75,9 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
-    players_table = Tournament.Players.create_table()
-    matches_table = Tournament.Matches.create_table()
-    tasks_table = Tournament.Tasks.create_table()
+    players_table = Tournament.Players.create_table(tournament_id)
+    matches_table = Tournament.Matches.create_table(tournament_id)
+    tasks_table = Tournament.Tasks.create_table(tournament_id)
 
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 
@@ -85,11 +85,19 @@ defmodule Codebattle.Tournament.Server do
       tournament_id
       |> Tournament.Context.get_from_db!()
       |> Tournament.Context.mark_as_live()
+      |> maybe_set_waiting_room()
       |> Map.put(:matches_table, matches_table)
       |> Map.put(:players_table, players_table)
       |> Map.put(:tasks_table, tasks_table)
 
     {:ok, %{tournament: tournament}}
+  end
+
+  def maybe_set_waiting_room(tournament) do
+    case Tournament.Context.get_waiting_room_name(tournament) do
+      nil -> tournament
+      wrn -> Map.put(tournament, :waiting_room_name, wrn)
+    end
   end
 
   def handle_call({:update, new_tournament}, _from, state) do
@@ -158,20 +166,6 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
-
-      {:noreply, %{tournament: new_tournament}}
-    else
-      {:noreply, %{tournament: tournament}}
-    end
-  end
-
-  def handle_info({:start_rematch, match_ref, round_position}, %{tournament: tournament}) do
-    if tournament.current_round_position == round_position and
-         not in_break?(tournament) and
-         not finished?(tournament) do
-      new_tournament = tournament.module.start_rematch(tournament, match_ref)
-
-      broadcast_tournament_update(new_tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else

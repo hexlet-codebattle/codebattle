@@ -127,8 +127,8 @@ defmodule Codebattle.Tournament.Context do
         {:ok, tournament} ->
           {:ok, _pid} =
             tournament
-            |> add_module
-            |> mark_as_live
+            |> add_module()
+            |> mark_as_live()
             |> Tournament.GlobalSupervisor.start_tournament()
 
           Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
@@ -276,7 +276,7 @@ defmodule Codebattle.Tournament.Context do
           rounds_config: rounds_config
         }
 
-      type when type in ["stairway", "swiss", "ladder"] ->
+      type when type in ["arena"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
         rounds_config_type = Map.get(params, "rounds_config_type", "all")
 
@@ -302,8 +302,8 @@ defmodule Codebattle.Tournament.Context do
     |> get_db_tournaments()
     |> Enum.map(fn tournament ->
       tournament
-      |> add_module
-      |> mark_as_live
+      |> add_module()
+      |> mark_as_live()
     end)
   end
 
@@ -317,12 +317,13 @@ defmodule Codebattle.Tournament.Context do
 
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
-  defp get_module(%{type: "ladder"}), do: Tournament.Ladder
+  def get_waiting_room_name(%{id: id, type: "arena"}), do: "t_#{id}"
+  def get_waiting_room_name(_tournament), do: nil
+
+  defp get_module(%{type: "arena"}), do: Tournament.Arena
   defp get_module(%{type: "show"}), do: Tournament.Show
-  defp get_module(%{type: "stairway"}), do: Tournament.Stairway
-  defp get_module(%{type: "swiss"}), do: Tournament.Swiss
-  defp get_module(%{type: "versus"}), do: Tournament.Versus
   defp get_module(%{type: "team"}), do: Tournament.Team
+  defp get_module(%{type: "versus"}), do: Tournament.Versus
   defp get_module(_), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))

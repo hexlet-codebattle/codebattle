@@ -38,12 +38,10 @@ compose-install-yarn:
 
 compose-install: compose-install-mix compose-install-yarn
 
-compose-setup: compose-down compose-build compose-install compose-db-init
+compose-setup: compose-down compose-build compose-install compose-db-setup
 
-compose-db-init:
-	docker compose run --rm --name codebattle_app app mix ecto.create
-	docker compose run --rm --name codebattle_app app mix ecto.migrate
-	docker compose run --rm --name codebattle_app app mix run priv/repo/seeds.exs
+compose-db-setup:
+	docker compose run --rm --name codebattle_app app mix ecto.setup
 
 compose-db-migrate:
 	docker compose run --rm --name codebattle_app app mix ecto.migrate

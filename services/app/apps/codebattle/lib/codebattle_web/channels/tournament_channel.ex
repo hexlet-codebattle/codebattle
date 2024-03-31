@@ -198,19 +198,19 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_in("tournament:create_match", %{"user_id" => user_id, "level" => level}, socket) do
-    tournament_id = socket.assigns.tournament_info.id
-    tournament = Tournament.Server.get_tournament(tournament_id)
+  # def handle_in("tournament:create_match", %{"user_id" => user_id, "level" => level}, socket) do
+  #   tournament_id = socket.assigns.tournament_info.id
+  #   tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-      Tournament.Context.handle_event(tournament_id, :create_match, %{
-        user_id: user_id,
-        level: level
-      })
-    end
+  #   if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
+  #     Tournament.Context.handle_event(tournament_id, :create_match, %{
+  #       user_id: user_id,
+  #       level: level
+  #     })
+  #   end
 
-    {:noreply, socket}
-  end
+  #   {:noreply, socket}
+  # end
 
   def handle_in("tournament:finish_round", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
@@ -348,6 +348,7 @@ defmodule CodebattleWeb.TournamentChannel do
     current_user = socket.assigns.current_user
 
     Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
+    Codebattle.PubSub.subscribe("waiting_room:t_#{tournament.id}")
 
     if Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
@@ -359,7 +360,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament = %{type: type}, socket)
-       when type in ["swiss", "arena", "stairway"] do
+       when type in ["arena"] do
     current_user = socket.assigns.current_user
 
     current_player = Helpers.get_player(tournament, current_user.id)

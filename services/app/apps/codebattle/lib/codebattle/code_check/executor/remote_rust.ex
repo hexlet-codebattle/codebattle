@@ -65,7 +65,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     now = :os.system_time(:millisecond)
 
     :post
-    |> Finch.build(runner_url(), headers, body)
+    |> Finch.build(runner_url(lang_meta.slug), headers, body)
     |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
     |> case do
       {:ok, %Finch.Response{status: 200, body: body}} ->
@@ -99,6 +99,6 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     to_string(:rand.uniform(10_000_000))
   end
 
-  # defp runner_url, do: Application.get_env(:runner, :runner_rust_url)
-  defp runner_url, do: "http://localhost:8000/run"
+  # defp runner_url(_lang), do: "http://localhost:4002/run"
+  defp runner_url(lang), do: "http://runner-#{lang}.default.svc/run"
 end

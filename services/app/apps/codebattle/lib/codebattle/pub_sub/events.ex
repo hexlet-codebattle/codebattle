@@ -393,6 +393,10 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("waiting_room:started", _params) do
+    []
+  end
+
   defp chat_topic(:lobby), do: "chat:lobby"
   defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
   defp chat_topic({:game, id}), do: "chat:game:#{id}"

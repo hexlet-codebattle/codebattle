@@ -11,6 +11,7 @@ defmodule Codebattle.Tournament.Player do
   @fields [
     :avatar_url,
     :clan,
+    :clan_id,
     :id,
     :is_banned,
     :is_bot,
@@ -30,6 +31,7 @@ defmodule Codebattle.Tournament.Player do
     field(:avatar_url, :string)
     field(:id, :integer)
     field(:clan, :string)
+    field(:clan_id, :integer)
     field(:is_banned, :boolean, default: false)
     field(:is_bot, :boolean)
     field(:lang, :string)

@@ -45,4 +45,51 @@ defmodule Codebattle.Tournament.Show do
   defp final_round?(_tournament) do
     false
   end
+
+  # Code from base module, only for show tournament
+  # next time use it here instead of base
+  # |> maybe_add_award(tournament)
+  # |> maybe_add_locked(tournament)
+
+  # defp maybe_add_award(game_params, tournament) do
+  #   tournament.meta
+  #   |> Map.get(:rounds_config)
+  #   |> case do
+  #     nil ->
+  #       Map.put(game_params, :award, nil)
+
+  #     config ->
+  #       config
+  #       |> Enum.at(tournament.current_round_position)
+  #       |> case do
+  #         %{award: award} -> Map.put(game_params, :award, award)
+  #         _ -> Map.put(game_params, :award, nil)
+  #       end
+  #   end
+  # end
+
+  # defp maybe_add_locked(game_params, tournament) do
+  #   tournament.meta
+  #   |> Map.get(:game_passwords)
+  #   |> case do
+  #     nil -> Map.put(game_params, :locked, false)
+  #     passwords -> Map.put(game_params, :locked, true)
+  #   end
+  # end
+  # def create_match(tournament, params) do
+  #   %{user_id: user_id, level: level} = params
+  #   new_match_id = matches_count(tournament)
+  #   players = get_players(tournament, [user_id])
+
+  #   case create_game(tournament, players, new_match_id, %{level: level}) do
+  #     nil ->
+  #       # TODO: send message that there is no tasks in task_pack
+  #       nil
+
+  #     game ->
+  #       build_and_run_match(tournament, players, game, false)
+  #   end
+
+  #   tournament
+  # end
 end

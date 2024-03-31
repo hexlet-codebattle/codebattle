@@ -22,14 +22,14 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
     {:ok, tournament} =
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
-        "name" => "Test Swiss 2",
+        "name" => "Test Arena 2",
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
         "creator" => creator,
         "access_type" => "token",
         "access_token" => "access_token",
         "break_duration_seconds" => 0,
-        "type" => "swiss",
+        "type" => "arena",
         "state" => "waiting_participants",
         "players_limit" => 200
       })

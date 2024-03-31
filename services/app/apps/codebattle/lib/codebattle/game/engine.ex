@@ -108,8 +108,8 @@ defmodule Codebattle.Game.Engine do
       game = fill_virtual_fields(game)
       game = mark_as_live(game)
       game = Map.put(game, :task, params.task)
-      game = Map.put(game, :locked, params.locked)
-      game = Map.put(game, :award, params.award)
+      game = Map.put(game, :locked, params[:locked])
+      game = Map.put(game, :award, params[:award])
       {:ok, _} = Game.GlobalSupervisor.start_game(game)
       :ok = maybe_fire_playing_game_side_effects(game)
       game

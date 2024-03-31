@@ -15,6 +15,10 @@ defmodule CodebattleWeb.GameChannel do
 
       Codebattle.PubSub.subscribe("game:#{game.id}")
 
+      if game.waiting_room_name && !socket.assigns.current_user.is_bot do
+        Codebattle.PubSub.subscribe("waiting_room:#{game.waiting_room_name}")
+      end
+
       if game.tournament_id && !socket.assigns.current_user.is_bot do
         player_ids = Enum.map(game.players, & &1.id)
         user_id = socket.assigns.current_user.id

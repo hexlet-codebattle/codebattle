@@ -1,6 +1,14 @@
 defmodule Codebattle.Tournament.Players do
-  def create_table do
-    :ets.new(:t_players, [:set, :public, {:write_concurrency, true}, {:read_concurrency, true}])
+  def create_table(id) do
+    :ets.new(
+      :"t_#{id}_players",
+      [
+        :set,
+        :public,
+        {:write_concurrency, true},
+        {:read_concurrency, true}
+      ]
+    )
   end
 
   def drop_player(tournament, player_id) do

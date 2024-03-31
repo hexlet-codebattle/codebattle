@@ -233,19 +233,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if f.params["type"] in ["stairway", "swiss"] do %>
+        <%= if f.params["type"] in ["arena", "versus"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
             <div class="d-flex flex-column justify-content-between w-auto">
               <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
+              <%= select(f, :rounds_limit, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 137],
                 class: "custom-select"
               ) %>
               <%= error_tag(f, :rounds_limit) %>
-            </div>
-            <div class="form-check">
-              <%= label(f, :rounds_config_type) %>
-              <%= select(f, :rounds_config_type, ["all", "per_round"], class: "custom-select") %>
-              <%= error_tag(f, :rounds_config_type) %>
             </div>
           </div>
         <% end %>

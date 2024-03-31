@@ -49,7 +49,7 @@ defmodule Codebattle.Tournament.Helpers do
   # only for waiting_participants, cause all players have score = 0
   # we don't care about ordering
   def get_top_players(tournament = %{type: type, top_player_ids: []})
-      when type in ["swiss", "ladder", "stairway"] do
+      when type in ["arena"] do
     tournament |> get_players() |> Enum.take(30)
   end
 

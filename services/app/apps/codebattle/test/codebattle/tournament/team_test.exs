@@ -1,7 +1,5 @@
 defmodule Codebattle.Tournament.TeamTest do
-  alias CodebattleWeb.Live.Tournament
-  alias CodebattleWeb.Live.Tournament
-  use Codebattle.IntegrationCase, async: false
+  use Codebattle.DataCase, async: false
 
   alias Codebattle.Tournament
 

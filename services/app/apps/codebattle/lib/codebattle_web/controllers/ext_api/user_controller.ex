@@ -86,7 +86,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
   end
 
   defp build_random_name do
-    "#{Enum.random(@adjectives)}+#{Enum.random(@names)}"
+    "#{Enum.random(@adjectives)}#{Enum.random(@names)}"
   end
 
   defp build_auth_token do

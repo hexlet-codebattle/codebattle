@@ -202,24 +202,6 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def stairway_tournament_factory do
-    %Codebattle.Tournament{
-      type: "stairway",
-      break_duration_seconds: 0,
-      name: "Stairway tournament",
-      current_round_position: 0,
-      players_limit: 16,
-      starts_at:
-        DateTime.utc_now()
-        |> Timex.shift(minutes: 30)
-        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
-      creator_id: 1,
-      players: %{},
-      matches: %{},
-      meta: %{rounds_limit: 3}
-    }
-  end
-
   def token_tournament_factory do
     %Codebattle.Tournament{
       type: "individual",

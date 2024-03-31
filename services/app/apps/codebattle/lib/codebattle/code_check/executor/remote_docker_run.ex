@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteDockerRun do
   end
 
   def execute(params, lang_meta) do
-    headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
+    headers = [{"content-type", "application/json"}]
     body = Jason.encode!(params)
     now = :os.system_time(:millisecond)
 
@@ -69,5 +69,4 @@ defmodule Codebattle.CodeCheck.Executor.RemoteDockerRun do
   end
 
   defp runner_url, do: Application.get_env(:runner, :runner_url)
-  defp api_key, do: Application.get_env(:runner, :api_key)
 end

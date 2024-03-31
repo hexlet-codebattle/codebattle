@@ -1,6 +1,14 @@
 defmodule Codebattle.Tournament.Matches do
-  def create_table do
-    :ets.new(:t_matches, [:set, :public, {:write_concurrency, true}, {:read_concurrency, true}])
+  def create_table(id) do
+    :ets.new(
+      :"t_#{id}_matches",
+      [
+        :set,
+        :public,
+        {:write_concurrency, true},
+        {:read_concurrency, true}
+      ]
+    )
   end
 
   def put_match(tournament, match) do

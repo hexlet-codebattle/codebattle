@@ -1,6 +1,6 @@
 export default {
-  swiss: 'swiss',
-  ladder: 'ladder',
+  arena: 'arena',
+  versus: 'versus',
   individual: 'individual',
   team: 'team',
   show: 'show',

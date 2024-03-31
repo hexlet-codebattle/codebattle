@@ -1,10 +1,14 @@
+alias Codebattle.Clan
+alias Codebattle.Game
 alias Codebattle.Repo
-alias Codebattle.{Game, User, UserGame}
+alias Codebattle.User
+alias Codebattle.UserGame
+alias Codebattle.TaskPack
 
 levels = ["elementary", "easy", "medium", "hard"]
 creator = User.get!(-15)
 
-1..3
+1..30
 |> Enum.each(fn x ->
   for level <- levels do
     task_params = %{
@@ -387,26 +391,62 @@ six_hours_ago = Timex.shift(now, hours: -6)
     |> Repo.insert()
 end)
 
-task_ids =
-  Codebattle.Task
-  |> Repo.all()
-  |> Enum.map(& &1.id)
-  |> Enum.take(4)
+for level <- levels do
+  task_ids =
+    Codebattle.Task
+    |> Repo.all()
+    |> Enum.filter(&(&1.level == level))
+    |> Enum.map(& &1.id)
 
-%Codebattle.TaskPack{
-  name: "First four",
-  visibility: "public",
-  state: "active",
-  task_ids: task_ids
-}
-|> Repo.insert!()
+  name = "All #{level}"
 
-# data = File.cwd!() |> Path.join("priv/repo/test_playbook.json") |> File.read!() |> Jason.decode!()
+  Repo.get_by(TaskPack, name: name) ||
+    %TaskPack{
+      creator_id: 1,
+      name: name,
+      visibility: "public",
+      state: "active",
+      task_ids: task_ids
+    }
+    |> TaskPack.changeset()
+    |> Repo.insert!()
+end
 
-# Codebattle.Playbook
-# |> Repo.all()
-# |> Enum.map(fn playbook ->
-#   playbook
-#   |> Codebattle.Playbook.changeset(%{data: data, winner_id: 1})
-#   |> Repo.update!()
-# end)
+# Build users for load tests with clans
+Enum.each(1..100, fn id ->
+  Clan.find_or_create_by_clan("clan_#{id}", 1)
+end)
+
+tokens =
+  Enum.map(1..7000, fn id ->
+    t = Timex.now()
+
+    clan_id =
+      50
+      |> Statistics.Distributions.Normal.rand(7)
+      |> round()
+      |> min(100)
+      |> max(1)
+      |> to_string()
+
+    params = %{
+      name: "neBot_#{id}_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+      clan: "clan_#{clan_id}",
+      clan_id: clan_id,
+      is_bot: false,
+      rating: 1200,
+      email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user#{id}",
+      lang: "rust",
+      inserted_at: TimeHelper.utc_now(),
+      updated_at: TimeHelper.utc_now()
+    }
+
+    {:ok, user} =
+      %User{}
+      |> User.changeset(params)
+      |> Repo.insert()
+
+    Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
+  end)
+
+File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))

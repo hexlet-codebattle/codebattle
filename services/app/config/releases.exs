@@ -108,7 +108,6 @@ config :runner,
     System.get_env("CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
 
 config :runner, :runner_url, "http://runner.default.svc"
-config :runner, :runner_rust_url, "http://runner-rs.default.svc"
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
