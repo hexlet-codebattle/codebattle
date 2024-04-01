@@ -51,7 +51,9 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= label(f, :description) %>
             <%= textarea(f, :description,
               class: "form-control",
-              maxlength: "1357",
+              maxlength: "7531",
+              rows: 20,
+              cols: 50,
               required: true
             ) %>
             <%= error_tag(f, :description) %>
@@ -62,7 +64,11 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
-              value: DateTime.shift_zone!(f.data.starts_at, @user_timezone),
+              value:
+                DateTime.from_naive!(
+                  Timex.parse!(f.params["starts_at"], "{ISO:Extended}"),
+                  @user_timezone
+                ),
               required: true
             ) %>
             <%= error_tag(f, :starts_at) %>
@@ -107,14 +113,14 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             ) %>
             <%= error_tag(f, :task_provider) %>
           </div>
-          <%= if (f.params["task_provider"] == "level" || f.data.task_provider == "level") do %>
+          <%= if (f.params["task_provider"] == "level") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :level) %>
               <%= select(f, :level, Codebattle.Tournament.levels(), class: "custom-select") %>
               <%= error_tag(f, :level) %>
             </div>
           <% end %>
-          <%= if (f.params["task_provider"] == "task_pack" || f.data.task_provider == "task_pack") do %>
+          <%= if (f.params["task_provider"] == "task_pack") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :task_pack_name) %>
               <%= select(f, :task_pack_name, @task_pack_names,
@@ -124,14 +130,14 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               <%= error_tag(f, :task_pack_name) %>
             </div>
           <% end %>
-          <%= if (f.params["task_provider"] == "tags" || f.data.task_provider == "tags") do %>
+          <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :tags) %>
-              <%= text_input(f, :tags,
+              <%= label(f, :task_pack_names) %>
+              <%= text_input(f, :task_pack_names,
                 class: "form-control",
                 placeholder: "strings,math"
               ) %>
-              <%= error_tag(f, :tags) %>
+              <%= error_tag(f, :task_pack_names) %>
             </div>
           <% end %>
         </div>
@@ -185,7 +191,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= label(f, :meta_json) %>
             <%= textarea(f, :meta_json,
               class: "form-control",
-              value: (f.params["meta"] && Jason.encode!(f.params["meta"])) || "{}"
+              value: f.params["meta_json"] || "{}"
             ) %>
             <%= error_tag(f, :meta_json) %>
           </div>

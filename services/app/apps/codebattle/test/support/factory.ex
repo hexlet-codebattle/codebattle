@@ -11,7 +11,7 @@ defmodule CodebattleWeb.Factory do
 
   def user_factory do
     %User{
-      id: :rand.uniform(9_999_999),
+      id: sequence(:user_id, &(&1 + 256)),
       name: sequence(:username, &"User #{&1}"),
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,

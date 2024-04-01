@@ -1,63 +1,27 @@
-# defmodule Codebattle.Tournament.PairBuilder.ByScore do
-#   @type player_pair :: [pos_integer(), pos_integer()]
-#   @type played_pair_ids :: MapSet.t(player_pair())
+defmodule Codebattle.Tournament.PairBuilder.ByScore do
+  @opaque player_id :: pos_integer()
+  @opaque score :: pos_integer()
+  @opaque player :: {player_id(), score()}
+  @opaque pair :: list(player_id())
 
-#   alias Codebattle.Tournament.Player
+  @spec call(nonempty_list(player)) ::
+          {pairs :: list(pair()), unmatched_player_ids :: list(player_id())}
+  def call(players) do
+    players
+    |> Enum.sort_by(&elem(&1, 1), :desc)
+    |> Enum.map(&elem(&1, 0))
+    |> match_players([])
+  end
 
-#   @spec call(nonempty_list(Player.t()), played_pair_ids()) :: {[], played_pair_ids()}
-#   def call(players, played_pair_ids \\ []) do
-#     sorted_players = Enum.sort_by(players, & &1.score, :desc)
-#     {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
-#     {Enum.reverse(player_pairs), played_pair_ids}
-#   end
+  defp match_players([], pairs) do
+    {pairs, []}
+  end
 
-#   defp build_new_pairs([p1, p2], player_pairs, played_pair_ids) do
-#     pair_ids = Enum.sort([p1.id, p2.id])
+  defp match_players([player_id], pairs) do
+    {pairs, [player_id]}
+  end
 
-#     {[[p1, p2] | player_pairs], MapSet.put(played_pair_ids, pair_ids)}
-#   end
-
-#   defp build_new_pairs([player | remain_players], player_pairs, played_pair_ids) do
-#     {player_pair, pair_ids, remain_players} =
-#       Enum.reduce_while(
-#         remain_players,
-#         {player, remain_players, played_pair_ids},
-#         fn candidate, _acc ->
-#           pair_ids = Enum.sort([player.id, candidate.id])
-
-#           if MapSet.member?(played_pair_ids, pair_ids) do
-#             {:cont, {player, remain_players, played_pair_ids}}
-#           else
-#             {:halt,
-#              {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
-#           end
-#         end
-#       )
-#       |> case do
-#         # if it found a new player with whom player hasn't played yet
-#         # then build new pair
-#         {:new, player_pair, pair_ids, remain_players} ->
-#           {player_pair, pair_ids, remain_players}
-
-#         # if it didn't find a new player with whom player have not played yet
-#         # then pick next opponent
-#         {player, [opponent | rest_players], _played_pair_ids} ->
-#           {
-#             [player, opponent],
-#             Enum.sort([player.id, opponent.id]),
-#             rest_players
-#           }
-#       end
-
-#     build_new_pairs(
-#       remain_players,
-#       [player_pair | player_pairs],
-#       MapSet.put(played_pair_ids, pair_ids)
-#     )
-#   end
-
-#   defp drop_player(players, player_id) do
-#     index_to_delete = Enum.find_index(players, &(&1.id == player_id))
-#     List.delete_at(players, index_to_delete)
-#   end
-# end
+  defp match_players([p1_id, p2_id | rest_ids], pairs) do
+    match_players(rest_ids, [[p1_id, p2_id] | pairs])
+  end
+end

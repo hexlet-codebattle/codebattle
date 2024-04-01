@@ -1,63 +1,71 @@
-# defmodule Codebattle.Tournament.PairBuilder.ByClan do
-#   @type player_pair :: [pos_integer(), pos_integer()]
-#   @type played_pair_ids :: MapSet.t(player_pair())
+defmodule Codebattle.Tournament.PairBuilder.ByClan do
+  @opaque player_id :: pos_integer()
+  @opaque clan_id :: pos_integer()
+  @opaque player :: {player_id(), clan_id()}
+  @opaque pair :: list(player_id())
 
-#   alias Codebattle.Tournament.Player
+  @spec call(nonempty_list(player)) ::
+          {pairs :: list(pair()), unmatched_player_ids :: list(player_id())}
+  def call(players) do
+    grouped_players =
+      players
+      |> Enum.group_by(&elem(&1, 1), &elem(&1, 0))
+      |> Enum.map(fn {clan_id, player_ids} ->
+        {clan_id, {length(player_ids), clan_id, player_ids}}
+      end)
+      |> Map.new()
 
-#   @spec call(nonempty_list(Player.t()), played_pair_ids()) :: {[], played_pair_ids()}
-#   def call(players, played_pair_ids \\ []) do
-#     sorted_players = Enum.sort_by(players, & &1.score, :desc)
-#     {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
-#     {Enum.reverse(player_pairs), played_pair_ids}
-#   end
+    match_players(grouped_players, [])
+  end
 
-#   defp build_new_pairs([p1, p2], player_pairs, played_pair_ids) do
-#     pair_ids = Enum.sort([p1.id, p2.id])
+  defp match_players(players_map, pairs) when map_size(players_map) == 0 do
+    {pairs, []}
+  end
 
-#     {[[p1, p2] | player_pairs], MapSet.put(played_pair_ids, pair_ids)}
-#   end
+  defp match_players(players_map, pairs) when map_size(players_map) == 1 do
+    [{_count, _clan_id, unmatched_player_ids}] = Map.values(players_map)
 
-#   defp build_new_pairs([player | remain_players], player_pairs, played_pair_ids) do
-#     {player_pair, pair_ids, remain_players} =
-#       Enum.reduce_while(
-#         remain_players,
-#         {player, remain_players, played_pair_ids},
-#         fn candidate, _acc ->
-#           pair_ids = Enum.sort([player.id, candidate.id])
+    {pairs, unmatched_player_ids}
+  end
 
-#           if MapSet.member?(played_pair_ids, pair_ids) do
-#             {:cont, {player, remain_players, played_pair_ids}}
-#           else
-#             {:halt,
-#              {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
-#           end
-#         end
-#       )
-#       |> case do
-#         # if it found a new player with whom player hasn't played yet
-#         # then build new pair
-#         {:new, player_pair, pair_ids, remain_players} ->
-#           {player_pair, pair_ids, remain_players}
+  defp match_players(players_map, pairs) do
+    {{clan1_count, clan1_id, [player1_id | rest_players_clan1]},
+     {clan2_count, clan2_id, [player2_id | rest_players_clan2]}} =
+      players_map
+      |> Map.values()
+      |> Enum.min_max_by(&elem(&1, 0))
+      |> case do
+        {elem, elem} ->
+          players_map
+          |> Map.values()
+          |> Enum.sort_by(&elem(&1, 0))
+          |> Enum.take(2)
+          |> List.to_tuple()
 
-#         # if it didn't find a new player with whom player have not played yet
-#         # then pick next score opponent
-#         {player, [opponent | rest_players], _played_pair_ids} ->
-#           {
-#             [player, opponent],
-#             [player.id, opponent.id] |> Enum.map(& &1.id) |> Enum.sort(),
-#             rest_players
-#           }
-#       end
+        value ->
+          value
+      end
 
-#     build_new_pairs(
-#       remain_players,
-#       [player_pair | player_pairs],
-#       MapSet.put(played_pair_ids, pair_ids)
-#     )
-#   end
+    new_palyers_map =
+      players_map
+      |> then(fn pm ->
+        if clan1_count == 1 do
+          Map.delete(pm, clan1_id)
+        else
+          Map.put(pm, clan1_id, {clan1_count - 1, clan1_id, rest_players_clan1})
+        end
+      end)
 
-#   defp drop_player(players, player_id) do
-#     index_to_delete = Enum.find_index(players, &(&1.id == player_id))
-#     List.delete_at(players, index_to_delete)
-#   end
-# end
+    new_palyers_map =
+      new_palyers_map
+      |> then(fn pm ->
+        if clan2_count == 1 do
+          Map.delete(pm, clan2_id)
+        else
+          Map.put(pm, clan2_id, {clan2_count - 1, clan2_id, rest_players_clan2})
+        end
+      end)
+
+    match_players(new_palyers_map, [[player1_id, player2_id] | pairs])
+  end
+end

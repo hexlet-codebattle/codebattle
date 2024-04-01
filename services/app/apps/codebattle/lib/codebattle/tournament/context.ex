@@ -281,19 +281,9 @@ defmodule Codebattle.Tournament.Context do
 
       type when type in ["arena"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        rounds_config_type = Map.get(params, "rounds_config_type", "all")
+        use_clan = Map.get(params, "use_clan", "false") == "true"
 
-        rounds_config =
-          params
-          |> Map.get("rounds_config_json", "[]")
-          |> Jason.decode!()
-          |> AtomizedMap.atomize()
-
-        %{
-          rounds_config_type: rounds_config_type,
-          rounds_limit: rounds_limit,
-          rounds_config: rounds_config
-        }
+        %{use_clan: use_clan, rounds_limit: rounds_limit}
 
       _ ->
         %{}

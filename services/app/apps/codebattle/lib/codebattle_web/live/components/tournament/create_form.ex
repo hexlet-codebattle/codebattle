@@ -57,7 +57,9 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               value:
                 f.params["description"] ||
                   "Markdown description. [stream_link](https://codebattle.hexlet.io)",
-              maxlength: "13570",
+              maxlength: "7531",
+              rows: 20,
+              cols: 50,
               required: true
             ) %>
             <%= error_tag(f, :description) %>
@@ -244,16 +246,13 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if (f.params["rounds_config_type"] in ["per_round"] or f.params["type"] == "show") do %>
-          <div class="d-flex mt-3 overflow-x">
-            <%= label(f, :rounds_config_json) %>
-            <%= textarea(f, :rounds_config_json,
-              class: "form-control",
-              value: f.params["rounds_config_json"] || @default_rounds_config_json,
-              maxlength: "1350",
-              rows: "5"
-            ) %>
-            <%= error_tag(f, :rounds_config_json) %>
+        <%= if f.params["type"] in ["arena"] do %>
+          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
+            <div class="form-check">
+              <%= checkbox(f, :use_clan, class: "form-check-input") %>
+              <%= label(f, :use_clan, class: "form-check-label") %>
+              <%= error_tag(f, :use_clan) %>
+            </div>
           </div>
         <% end %>
         <%= if (f.params["type"] == "show") do %>

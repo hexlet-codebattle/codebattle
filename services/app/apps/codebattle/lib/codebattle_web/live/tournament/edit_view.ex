@@ -22,7 +22,9 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
        changeset:
          Codebattle.Tournament.changeset(tournament, %{
            type: tournament.type,
-           meta: tournament.meta
+           task_provider: tournament.task_provider,
+           starts_at: tournament.starts_at |> DateTime.shift_zone!(user_timezone) |> to_string(),
+           meta_json: Jason.encode!(tournament.meta)
          })
      )}
   end

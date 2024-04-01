@@ -25,6 +25,7 @@ defmodule Codebattle.Tournament.ArenaTest do
           "break_duration_seconds" => 0,
           "type" => "arena",
           "state" => "waiting_participants",
+          "use_clan" => "true",
           "players_limit" => 200
         })
 
@@ -52,6 +53,7 @@ defmodule Codebattle.Tournament.ArenaTest do
           "creator" => creator,
           "break_duration_seconds" => 0,
           "type" => "arena",
+          "use_clan" => "true",
           "state" => "waiting_participants",
           "players_limit" => 200
         })
