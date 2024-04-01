@@ -661,10 +661,12 @@ a {
 
   .nav-item:not(.active) {
     color: var(--gray);
+    opacity: 0.6;
   }
 
   .nav-item:not(.active):hover {
     color: var(--black);
+    opacity: 1;
     background: var(--light);
   }
 }
