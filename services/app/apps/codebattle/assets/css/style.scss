@@ -659,8 +659,12 @@ a {
     border-left: 1px solid black;
   }
 
-  .nav-item:not(.active):hover {
+  .nav-item:not(.active) {
     color: var(--gray);
+  }
+
+  .nav-item:not(.active):hover {
+    color: var(--black);
     background: var(--light);
   }
 }
@@ -888,7 +892,4 @@ a:hover {
 
 .cb-username-max-length {
   max-width: 180px;
-}
-.nav > .nav-link.nav-item.active {
-  color: var(--blue);
 }

@@ -39,6 +39,14 @@ function CustomTournamentInfoPanel({
 
   return (
     <>
+      {!hideCustomGameConsole && canModerate && (
+        <TournamentGameCreatePanel
+          players={players}
+          matches={matches}
+          taskList={taskList}
+          currentRoundPosition={currentRoundPosition}
+        />
+      )}
       <SwitchTransition mode="out-in">
         <CSSTransition
           key={panelMode}
@@ -58,14 +66,6 @@ function CustomTournamentInfoPanel({
               }
               disabledSearch={!canModerate}
             />
-            {!hideCustomGameConsole && canModerate && (
-              <TournamentGameCreatePanel
-                players={players}
-                matches={matches}
-                taskList={taskList}
-                currentRoundPosition={currentRoundPosition}
-              />
-            )}
             {panelMode === PanelModeCodes.playerMode && (
               <PlayerStatsPanel
                 currentRoundPosition={currentRoundPosition}

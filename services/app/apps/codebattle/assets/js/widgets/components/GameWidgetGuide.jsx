@@ -120,6 +120,7 @@ const steps = [
 
 function GameWidgetGuide({ tournamentId }) {
   const dispatch = useDispatch();
+
   const [isFirstTime, setIsFirstTime] = useState(
     window.localStorage.getItem('guideGamePassed') === null,
   );

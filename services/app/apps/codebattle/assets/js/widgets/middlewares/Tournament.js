@@ -61,7 +61,9 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
     dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
-    dispatch(actions.setTournamentTaskList(compact(response.tasksInfo || [])));
+    if (response.tasksInfo) {
+      dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
+    }
   };
 
   const handleMatchesUpdate = response => {
@@ -206,8 +208,8 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   }
 };
 
-export const createCustomGame = params => {
-  channel.push('tournament:create_match', decamelizeKeys(params)).receive('error', error => console.error(error));
+export const createCustomRound = params => {
+  channel.push('tournament:start_round', decamelizeKeys(params)).receive('error', error => console.error(error));
 };
 
 export const joinTournament = teamId => {

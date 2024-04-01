@@ -276,6 +276,9 @@ defmodule Codebattle.Tournament.Context do
           rounds_config: rounds_config
         }
 
+      "versus" ->
+        %{rounds_limit: 1000}
+
       type when type in ["arena"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
         rounds_config_type = Map.get(params, "rounds_config_type", "all")

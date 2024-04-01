@@ -200,7 +200,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 class: "form-control",
                 value: f.params["break_duration_seconds"] || "42",
                 min: "0",
-                max: "1957"
+                max: "100000"
               ) %>
             </div>
           </div>
@@ -233,7 +233,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if f.params["type"] in ["arena", "versus"] do %>
+        <%= if f.params["type"] in ["arena"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
             <div class="d-flex flex-column justify-content-between w-auto">
               <%= label(f, :rounds_limit) %>

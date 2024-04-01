@@ -267,7 +267,7 @@ defmodule CodebattleWeb.TournamentChannel do
       end
 
     tasks_info =
-      if payload.tournament.type == "show" do
+      if payload.tournament.type == "versus" do
         payload.tournament |> Helpers.get_tasks() |> Enum.map(&Map.take(&1, [:id, :level, :name]))
       else
         []
@@ -405,7 +405,7 @@ defmodule CodebattleWeb.TournamentChannel do
     }
   end
 
-  defp get_tournament_join_payload(tournament = %{type: "show"}, _socket) do
+  defp get_tournament_join_payload(tournament = %{type: "versus"}, _socket) do
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
       matches: Helpers.get_matches(tournament),

@@ -91,7 +91,7 @@ function InfoPanel({
           pageSize={tournament.playersPageSize}
           hideBots={!tournament.showBots}
           hideResults={hideResults}
-          hideCustomGameConsole
+          hideCustomGameConsole={tournament.type !== 'versus' || tournament.state !== TournamentStates.active}
           canModerate={canModerate}
         />
       );

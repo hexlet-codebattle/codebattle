@@ -15,7 +15,7 @@ import Output from './Output';
 import OutputTab from './OutputTab';
 
 const EditorWrapper = ({ children, id, className }) => (
-  <div id={id} className={className}>
+  <div id={id} translate="no" className={className}>
     {children}
   </div>
 );
@@ -90,7 +90,9 @@ function GameWidget({ viewMode, editorMachine }) {
             {...editors[0]}
           >
             {params => (
-              <Editor {...params} />
+              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
+                <Editor {...params} />
+              </EditorWrapper>
             )}
           </EditorContainer>
           <EditorContainer
@@ -121,7 +123,9 @@ function GameWidget({ viewMode, editorMachine }) {
             {...editors[0]}
           >
             {params => (
-              <Editor {...params} />
+              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
+                <Editor {...params} />
+              </EditorWrapper>
             )}
           </EditorContainer>
         </div>

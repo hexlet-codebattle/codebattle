@@ -5,6 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TournamentTypeCodes from '../config/tournamentTypes';
 
 function TournamentType({ type }) {
+  if (type === TournamentTypeCodes.versus) {
+    return 'Versus';
+  }
+
   if (type === TournamentTypeCodes.arena) {
     return 'Arena';
   }

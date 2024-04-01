@@ -5,7 +5,7 @@ import React, {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MatchStates from '../../config/matchStates';
-import { createCustomGame } from '../../middlewares/Tournament';
+import { createCustomRound } from '../../middlewares/Tournament';
 import { tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
 
 const emptyPlayer = {};
@@ -17,6 +17,7 @@ function TournamentGameCreatePanel({
   currentRoundPosition,
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState(emptyPlayer);
+  const [opponentPlayer, setOpponentPlayer] = useState(emptyPlayer);
   const [selectedTaskLevel, setSelectedTaskLevel] = useState();
   const activeMatch = useMemo(() => {
     if (!selectedPlayer) return null;
@@ -53,8 +54,9 @@ function TournamentGameCreatePanel({
 
   const clearSelectedPlayer = useCallback(() => {
     setSelectedPlayer();
+    setOpponentPlayer();
     setSelectedTaskLevel();
-  }, [setSelectedPlayer, setSelectedTaskLevel]);
+  }, [setSelectedPlayer, setOpponentPlayer, setSelectedTaskLevel]);
   const clearSelectedTaskLevel = useCallback(() => {
     setSelectedTaskLevel();
   }, [setSelectedTaskLevel]);
@@ -66,6 +68,9 @@ function TournamentGameCreatePanel({
 
       if (playersListWithoutBots.length === 1) {
         setSelectedPlayer(playersListWithoutBots[0]);
+      } else if (playersListWithoutBots.length === 2) {
+        setSelectedPlayer(playersListWithoutBots[0]);
+        setOpponentPlayer(playersListWithoutBots[1]);
       }
     }
   }, [players, selectedPlayer]);
@@ -102,8 +107,14 @@ function TournamentGameCreatePanel({
         <>
           <div className="d-flex flex-column align-items-baseline flex-nowrap">
             <span className="h5">
-              {'Choose task level for player '}
+              {'Choose task level for '}
               <span className="text-nowrap">{selectedPlayer.name}</span>
+              {opponentPlayer?.name && (
+                <>
+                  <span className="mx-2">vs</span>
+                  <span className="text-nowrap">{opponentPlayer.name}</span>
+                </>
+              )}
               :
             </span>
             <div className="d-flex justify-content-begin flex-column flex-sm-row w-auto w-sm-50 button-group">
@@ -152,7 +163,7 @@ function TournamentGameCreatePanel({
             </div>
           </div>
           <div>
-            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer}>
+            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer} disabled>
               <FontAwesomeIcon icon="times" />
             </button>
           </div>
@@ -161,14 +172,31 @@ function TournamentGameCreatePanel({
       {selectedPlayer && selectedTaskLevel && (
         <>
           <div className="d-flex w-100">
-            <img
-              alt={`${selectedPlayer.name} avatar`}
-              src={selectedPlayer.avatarUrl}
-              className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
-            />
+            <div className="d-flex flex-column align-items-center pr-1">
+              <img
+                alt={`${selectedPlayer.name} avatar`}
+                src={selectedPlayer.avatarUrl}
+                className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+              />
+              {
+                opponentPlayer && (
+                  <>
+                    vs
+                    <img
+                      alt={`${opponentPlayer.name} avatar`}
+                      src={opponentPlayer?.avatarUrl}
+                      className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+                    />
+                  </>
+                )
+              }
+            </div>
             <div className="d-flex flex-column justify-content-center">
               <span className="h6 p-1 text-nowrap">{`Player: ${selectedPlayer.name}`}</span>
-              <div className="d-flex align-items-baseline p-1">
+              {opponentPlayer.name && (
+                <span className="h6 p-1 text-nowrap">{`Opponent: ${opponentPlayer.name}`}</span>
+              )}
+              <div className="d-flex align-items-baseline px-1">
                 <span className="h6 text-nowrap">
                   {`Level: ${selectedTaskLevel} (${availableTasks[selectedTaskLevel].length} available)`}
                 </span>
@@ -186,28 +214,27 @@ function TournamentGameCreatePanel({
                   className="btn btn-sm btn-secondary rounded-lg p-1 px-2"
                   disabled
                 >
-                  Match already started
+                  Round already started
                 </button>
               ) : (
                 <button
                   type="button"
                   className="btn btn-sm btn-secondary rounded-lg p-1"
                   onClick={() => {
-                    createCustomGame({
-                      userId: selectedPlayer.id,
-                      level: selectedTaskLevel,
+                    createCustomRound({
+                      task_level: selectedTaskLevel,
                     });
                   }}
                   disabled={availableTasks[selectedTaskLevel].length < 1}
                 >
                   <FontAwesomeIcon className="mr-2" icon="play" />
-                  Start match
+                  Start round
                 </button>
               )}
             </div>
           </div>
           <div>
-            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer}>
+            <button className="btn btn-sm" type="button" onClick={clearSelectedPlayer} disabled>
               <FontAwesomeIcon icon="times" />
             </button>
           </div>

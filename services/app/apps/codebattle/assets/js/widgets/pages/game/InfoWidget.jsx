@@ -37,7 +37,7 @@ const InfoPanel = ({
       <div className="d-flex shadow-sm flex-column h-100">
         <nav>
           <div
-            className="nav nav-tabs bg-gray text-uppercase font-weight-bold text-center"
+            className="nav nav-tabs text-uppercase font-weight-bold text-center"
             id="nav-tab"
             role="tablist"
           >

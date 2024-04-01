@@ -17,7 +17,7 @@ const TaskLanguagesSelection = ({
       active={language === displayLanguage}
       onClick={handleSetLanguage(language)}
     >
-      {`${language.toUpperCase()}`}
+      <span translate="no">{`${language.toUpperCase()}`}</span>
     </Dropdown.Item>
   );
 
