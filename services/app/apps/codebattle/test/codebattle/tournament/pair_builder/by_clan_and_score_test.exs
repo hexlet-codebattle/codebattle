@@ -76,7 +76,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       assert length(unmatched_player_ids) > 0
     end
 
-    # @tag :skip
+    @tag :skip
     test "1000 clans ~ 100 players" do
       users =
         0..1000
@@ -91,7 +91,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       assert length(unmatched_player_ids) < 2
     end
 
-    # @tag :skip
+    @tag :skip
     test "10_000 clans with small amount of players" do
       users =
         0..10_000

@@ -35,6 +35,23 @@ defmodule Codebattle.Tournament.ArenaTest do
       tournament = Tournament.Context.get(tournament.id)
 
       assert players_count(tournament) == 2
+
+      assert [
+               %{
+                 duration_sec: nil,
+                 finished_at: nil,
+                 game_id: _,
+                 id: 0,
+                 level: "easy",
+                 player_ids: [_, _],
+                 player_results: %{},
+                 round_id: _,
+                 round_position: 0,
+                 started_at: ~N[2019-01-05 19:11:45],
+                 state: "playing",
+                 winner_id: nil
+               }
+             ] = get_matches(tournament)
     end
 
     test "distributes uniformly into pairs with clans" do
