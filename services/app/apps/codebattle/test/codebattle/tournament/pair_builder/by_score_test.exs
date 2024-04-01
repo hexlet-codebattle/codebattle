@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByScoreTest do
 
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
-      assert length(pairs) == 0
+      assert Enum.empty?(pairs)
       assert length(unmatched_player_ids) == 1
     end
 
@@ -19,7 +19,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert length(pairs) == 1
-      assert length(unmatched_player_ids) == 0
+      assert Enum.empty?(unmatched_player_ids)
     end
 
     test "simple case with unmatched players" do
@@ -37,7 +37,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert length(pairs) == 7
-      assert length(unmatched_player_ids) == 0
+      assert Enum.empty?(unmatched_player_ids)
     end
 
     test "simple case with same score" do
@@ -46,11 +46,11 @@ defmodule Codebattle.Tournament.PairBuilder.ByScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert pairs == [[4, 1], [2, 6], [3, 5]]
-      assert length(unmatched_player_ids) == 0
+      assert Enum.empty?(unmatched_player_ids)
     end
 
     test "10_000 palyers" do
-      users = build_users(10001)
+      users = build_users(10_001)
 
       {pairs, unmatched_player_ids} = @matcher.call(users)
 

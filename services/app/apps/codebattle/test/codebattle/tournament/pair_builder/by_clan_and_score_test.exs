@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
 
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
-      assert length(pairs) == 0
+      assert Enum.empty?(pairs)
       assert length(unmatched_player_ids) == 1
     end
 
@@ -19,7 +19,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert length(pairs) == 1
-      assert length(unmatched_player_ids) == 0
+      assert Enum.empty?(unmatched_player_ids)
     end
 
     test "simple case with 6,4,4 players linear score" do
@@ -55,7 +55,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       assert [[263, 257], [258, 267], [268, 264], [265, 259], [260, 269], [261, 266], [262, 270]] ==
                pairs
 
-      assert length(unmatched_player_ids) == 0
+      assert Enum.empty?(unmatched_player_ids)
     end
 
     test "simple case with unmatched players" do
@@ -94,7 +94,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
     # @tag :skip
     test "10_000 clans with small amount of players" do
       users =
-        0..10000
+        0..10_000
         |> Enum.map(fn _id -> Enum.random(2..3) end)
         |> build_users()
 
