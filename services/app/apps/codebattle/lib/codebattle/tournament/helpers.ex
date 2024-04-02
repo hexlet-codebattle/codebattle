@@ -168,7 +168,6 @@ defmodule Codebattle.Tournament.Helpers do
   def canceled?(tournament), do: tournament.state == "canceled"
   def finished?(tournament), do: tournament.state == "finished"
   def individual?(tournament), do: tournament.type == "individual"
-  def stairway?(tournament), do: tournament.type == "stairway"
   def team?(tournament), do: tournament.type == "team"
   def public?(tournament), do: tournament.access_type == "public"
   def visible_by_token?(tournament), do: tournament.access_type == "token"

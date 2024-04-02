@@ -29,28 +29,28 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScore do
     {pairs, [p1_id, p2_id | unmatched_player_ids]}
   end
 
-  defp match_players([{p1_id, c1_id, _s1} | remain_players], pairs, unmatched_player_ids) do
+  defp match_players([{p1_id, c1_id, _s1} | remained_players], pairs, unmatched_player_ids) do
     Enum.reduce_while(
-      remain_players,
+      remained_players,
       nil,
       fn {p2_id, c2_id, _s}, _acc ->
         if c1_id == c2_id do
           {:cont, :no_match}
         else
-          {:halt, {:match, [p1_id, p2_id], drop_player(remain_players, p2_id)}}
+          {:halt, {:match, [p1_id, p2_id], drop_player(remained_players, p2_id)}}
         end
       end
     )
     |> case do
       # if it found a new player from another clan
       # then build a new pair
-      {:match, new_pair, remain_players} ->
-        match_players(remain_players, [new_pair | pairs], unmatched_player_ids)
+      {:match, new_pair, remained_players} ->
+        match_players(remained_players, [new_pair | pairs], unmatched_player_ids)
 
       # if it didn't find a new player from another clan
       # then put into unmatched_player_ids
       :no_match ->
-        match_players(remain_players, pairs, [p1_id | unmatched_player_ids])
+        match_players(remained_players, pairs, [p1_id | unmatched_player_ids])
     end
   end
 

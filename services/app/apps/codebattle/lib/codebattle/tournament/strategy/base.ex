@@ -162,6 +162,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_init_waiting_room(tournament) do
         WaitingRoom.start_link(%{name: tournament.waiting_room_name})
+        Codebattle.PubSub.subscribe("waiting_room:#{tournament.waiting_room_name}")
         tournament
       end
 
@@ -418,8 +419,12 @@ defmodule Codebattle.Tournament.Base do
         |> broadcast_round_created()
       end
 
+      defp maybe_start_waiting_room(tournament = %{waiting_room_name: nil}) do
+        tournament
+      end
+
       defp maybe_start_waiting_room(tournament) do
-        WaitingRoom.start(tournament.waiting_room_name)
+        WaitingRoom.start(tournament.waiting_room_name, tournament.played_pair_ids)
         tournament
       end
 

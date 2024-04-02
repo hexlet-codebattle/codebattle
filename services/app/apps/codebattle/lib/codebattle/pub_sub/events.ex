@@ -3,6 +3,8 @@ defmodule Codebattle.PubSub.Events do
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
 
+  require Logger
+
   def get_messages("tournament:created", params) do
     [
       %Message{
@@ -393,8 +395,40 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("waiting_room:started", _params) do
-    []
+  def get_messages("waiting_room:started", params) do
+    Logger.error("WR started, name: " <> inspect(params))
+
+    [
+      %Message{
+        topic: "waiting_room:#{params.name}",
+        event: "waiting_room:started",
+        payload: %{name: params.name}
+      }
+    ]
+  end
+
+  def get_messages("waiting_room:matchmaking_started", params) do
+    Logger.error("WR MM started, player_ids: " <> inspect(params.player_ids))
+
+    [
+      %Message{
+        topic: "waiting_room:#{params.name}",
+        event: "waiting_room:matchmaking_started",
+        payload: %{player_ids: params.player_ids}
+      }
+    ]
+  end
+
+  def get_messages("waiting_room:matched", params) do
+    Logger.error("WR MM matched, pairs: " <> inspect(params.pairs))
+
+    [
+      %Message{
+        topic: "waiting_room:#{params.name}",
+        event: "waiting_room:matched",
+        payload: %{pairs: params.pairs}
+      }
+    ]
   end
 
   defp chat_topic(:lobby), do: "chat:lobby"

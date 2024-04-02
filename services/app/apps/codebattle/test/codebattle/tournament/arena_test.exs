@@ -4,6 +4,7 @@ defmodule Codebattle.Tournament.ArenaTest do
   alias Codebattle.Tournament
 
   import Codebattle.Tournament.Helpers
+  import Codebattle.TournamentTestHelpers
 
   setup do
     insert(:task, level: "easy", name: "2")
@@ -85,6 +86,17 @@ defmodule Codebattle.Tournament.ArenaTest do
       # matches = get_matches(tournament) |> Enum.count()
 
       assert players_count(tournament) == 100
+
+      player1 = Tournament.Players.get_player(tournament, List.first(users1).id)
+      player2 = Tournament.Players.get_player(tournament, List.first(users2).id)
+      player3 = Tournament.Players.get_player(tournament, List.first(users3).id)
+      player4 = Tournament.Players.get_player(tournament, List.first(users4).id)
+
+      send_user_win_match(tournament, player1)
+      send_user_win_match(tournament, player2)
+      send_user_win_match(tournament, player3)
+      send_user_win_match(tournament, player4)
+      :timer.sleep(2000)
     end
   end
 end

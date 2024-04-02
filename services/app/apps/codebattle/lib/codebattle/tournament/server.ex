@@ -197,6 +197,22 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def handle_info(
+        %{
+          topic: "waiting_room:" <> _wr_name,
+          event: "waiting_room:matched",
+          payload: payload
+        },
+        %{tournament: tournament}
+      ) do
+    payload.pairs
+    |> Enum.map(&get_players(tournament, &1))
+
+    # TODO: create bulk rematches
+
+    {:noreply, %{tournament: tournament}}
+  end
+
   def handle_info(_message, state) do
     {:noreply, state}
   end
