@@ -446,13 +446,16 @@ defmodule Codebattle.Tournament.Base do
         |> bulk_insert_round_games(round_params)
       end
 
-      defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
-        task_id = get_common_round_task_id(tournament, round_params)
+      defp bulk_insert_rematch_games(tournament, player_pairs) do
+        player_pairs
+        |> Enum.with_index(matches_count(tournament))
+      end
 
+      defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(50)
-        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task_id))
+        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, nil))
 
         tournament
       end
