@@ -33,7 +33,9 @@ defmodule CodebattleWeb.LayoutView do
     Application.get_env(:codebattle, :deployed_at)
   end
 
-  def collab_logo do
+  def collab_logo(%{collab_logo: logo}) when not is_nil(logo), do: logo
+
+  def collab_logo(_user) do
     Application.get_env(:codebattle, :collab_logo)
   end
 end

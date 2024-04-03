@@ -76,7 +76,15 @@
           <div class="container-lg">
             <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
               <a class="navbar-brand d-flex align-items-end" href="/">
-                <img alt="Logo" class="my-auto" src="/assets/images/logo.svg" />
+                <%= if collab_logo(@current_user) do %>
+                  <img
+                    alt="collab icon"
+                    class="my-auto mx-2"
+                    style="height:40px"
+                    src={collab_logo(@current_user)}
+                  />
+                <% end %>
+                <img alt="Logo" class="my-auto pt-1" src="/assets/images/logo.svg" />
                 <%= if @current_user.is_guest do %>
                   <div class="d-none d-sm-flex flex-column text-gray ml-1 pb-1">
                     <span class="font-weight-bold header-txt">Codebattle</span>
@@ -87,14 +95,6 @@
                     <span class="font-weight-bold header-txt">Codebattle</span>
                     <span class="header-txt">by Hexlet’s community</span>
                   </div>
-                <% end %>
-                <%= if collab_logo() do %>
-                  <img
-                    alt="collab icon"
-                    class="my-auto pt-2 ml-2"
-                    style="height:40px"
-                    src={collab_logo()}
-                  />
                 <% end %>
               </a>
               <%= unless @current_user.is_guest do %>
