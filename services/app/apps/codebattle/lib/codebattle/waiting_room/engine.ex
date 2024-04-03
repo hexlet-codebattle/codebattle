@@ -78,9 +78,6 @@ defmodule Codebattle.WaitingRoom.Engine do
           MapSet.member?(state.played_pair_ids, Enum.sort([p1.id, p2.id])) ->
             {:cont, :no_match}
 
-          state.use_clan? and p1.clan_id != p2.clan_id ->
-            {:halt, {:match, [p1.id, p2.id], drop_player(remained_players, p2.id)}}
-
           state.use_clan? and p1.clan_id == p2.clan_id ->
             {:cont, :no_match}
 

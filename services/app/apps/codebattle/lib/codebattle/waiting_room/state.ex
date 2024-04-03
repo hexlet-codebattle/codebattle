@@ -10,7 +10,7 @@ defmodule Codebattle.WaitingRoom.State do
     field(:use_same_tasks?, boolean(), default: true)
     field(:time_step_ms, integer(), default: 100)
     field(:min_time_sec, integer(), default: 0)
-    field(:min_time_new_opponent_ms, integer(), default: 50_000)
-    field(:max_wait_bot_time_ms, integer(), default: 60_000)
+    field(:min_time_new_opponent_ms, integer(), default: 15_000)
+    field(:max_wait_bot_time_ms, integer(), default: 20_000)
   end
 end
