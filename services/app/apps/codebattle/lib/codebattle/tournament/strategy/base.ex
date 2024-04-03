@@ -183,12 +183,27 @@ defmodule Codebattle.Tournament.Base do
         match = get_match(tournament, params.ref)
         winner_id = pick_game_winner_id(match.player_ids, params.player_results)
 
+        player_results =
+          Map.new(params.player_results, fn {player_id, result} ->
+            {player_id,
+             Map.put(
+               result,
+               :score,
+               get_score(
+                 tournament.score_strategy,
+                 match.level,
+                 result.result_percent,
+                 params.duration_sec
+               )
+             )}
+          end)
+
         Tournament.Matches.put_match(tournament, %{
           match
           | state: params.game_state,
             winner_id: winner_id,
             duration_sec: params.duration_sec,
-            player_results: params.player_results,
+            player_results: player_results,
             finished_at: TimeHelper.utc_now()
         })
 
@@ -200,18 +215,11 @@ defmodule Codebattle.Tournament.Base do
           if player do
             Tournament.Players.put_player(tournament, %{
               player
-              | score:
-                  player.score +
-                    get_score(
-                      tournament.score_strategy,
-                      match.level,
-                      params.player_results[player_id].result_percent,
-                      params.duration_sec
-                    ),
+              | score: player.score + player_results[player_id].score,
                 lang: params.player_results[player_id].lang,
                 wins_count:
                   player.wins_count +
-                    if(params.player_results[player_id].result == "won", do: 1, else: 0)
+                    if(player_results[player_id].result == "won", do: 1, else: 0)
             })
           end
         end)
@@ -252,6 +260,24 @@ defmodule Codebattle.Tournament.Base do
           end
         end
 
+        if tournament.type == "swiss" do
+          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+          wait_type = get_wait_type(tournament, timeout_ms)
+
+          if wait_type == "rematch" do
+            Process.send_after(
+              self(),
+              {:start_rematch, params.ref, tournament.current_round_position},
+              timeout_ms
+            )
+          end
+
+          Codebattle.PubSub.broadcast("tournament:game:wait", %{
+            game_id: params.game_id,
+            type: wait_type
+          })
+        end
+
         tournament
       end
 
@@ -271,6 +297,7 @@ defmodule Codebattle.Tournament.Base do
 
       def maybe_finish_round(tournament) do
         if use_waiting_room?(tournament) or
+             tournament.type == "swiss" or
              Enum.any?(get_matches(tournament), &(&1.state == "playing")) do
           tournament
         else
@@ -284,20 +311,39 @@ defmodule Codebattle.Tournament.Base do
         Enum.each(
           matches_to_finish,
           fn match ->
+            finished_at = TimeHelper.utc_now()
+            duration_sec = NaiveDateTime.diff(match.started_at, finished_at)
+
             player_results =
               case Game.Context.fetch_game(match.game_id) do
-                {:ok, game = %{is_live: true}} -> Game.Helpers.get_player_results(game)
-                {:error, _reason} -> %{}
+                {:ok, game = %{is_live: true}} ->
+                  game
+                  |> Game.Helpers.get_player_results()
+                  |> Map.new(fn {player_id, result} ->
+                    {player_id,
+                     Map.put(
+                       result,
+                       :score,
+                       get_score(
+                         tournament.score_strategy,
+                         match.level,
+                         result.result_percent,
+                         duration_sec
+                       )
+                     )}
+                  end)
+
+                {:error, _reason} ->
+                  %{}
               end
 
             Game.Context.trigger_timeout(match.game_id)
-            finished_at = TimeHelper.utc_now()
 
             Tournament.Matches.put_match(tournament, %{
               match
               | state: "timeout",
                 player_results: player_results,
-                duration_sec: NaiveDateTime.diff(match.started_at, finished_at),
+                duration_sec: duration_sec,
                 finished_at: finished_at
             })
 
@@ -315,14 +361,7 @@ defmodule Codebattle.Tournament.Base do
 
               Tournament.Players.put_player(tournament, %{
                 player
-                | score:
-                    player.score +
-                      get_score(
-                        tournament.score_strategy,
-                        match.level,
-                        player_results[player_id].result_percent,
-                        match.duration_sec
-                      ),
+                | score: player.score + player_results[player_id].score,
                   lang: player_results[player_id].lang
               })
             end)
@@ -348,22 +387,22 @@ defmodule Codebattle.Tournament.Base do
         end)
       end
 
-      # def start_rematch(tournament, match_ref) do
-      #   finished_match = get_match(tournament, match_ref)
-      #   new_match_id = matches_count(tournament)
-      #   players = get_players(tournament, finished_match.player_ids)
+      def start_rematch(tournament, match_ref) do
+        finished_match = get_match(tournament, match_ref)
+        new_match_id = matches_count(tournament)
+        players = get_players(tournament, finished_match.player_ids)
 
-      #   case create_rematch_game(tournament, players, new_match_id) do
-      #     nil ->
-      #       # TODO: send message that there is no tasks in task_pack
-      #       nil
+        case create_rematch_game(tournament, players, new_match_id) do
+          nil ->
+            # TODO: send message that there is no tasks in task_pack
+            nil
 
-      #     game ->
-      #       build_and_run_match(tournament, players, game, false)
-      #   end
+          game ->
+            build_and_run_match(tournament, players, game, false)
+        end
 
-      #   tournament
-      # end
+        tournament
+      end
 
       defp pick_game_winner_id(player_ids, player_results) do
         Enum.find(player_ids, &(player_results[&1] && player_results[&1].result == "won"))
@@ -628,7 +667,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp get_game_timeout(tournament) do
-        if use_waiting_room?(tournament) do
+        if use_waiting_room?(tournament) or tournament.type == "swiss" do
           seconds_to_end_round(tournament)
         else
           get_round_timeout_seconds(tournament)
@@ -673,7 +712,8 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_preload_tasks(tournament), do: tournament
 
-      defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
+      # defp need_show_results?(tournament = %{type: "arena"}), do: !finish_tournament?(tournament)
+      # defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
       defp need_show_results?(tournament), do: true
 
       defp get_score("time_and_tests", level, result_percent, duration_sec) do

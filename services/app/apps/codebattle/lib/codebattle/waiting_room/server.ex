@@ -86,15 +86,15 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   defp do_match_players(state = %{players: []}) do
-    Logger.error("WR idle")
+    Logger.debug("WR idle")
     state
   end
 
   defp do_match_players(state) do
     {pairs, unmatched} = Engine.call(state)
 
-    Logger.error("WR match pairs: " <> inspect(pairs))
-    Logger.error("WR match unmatched: " <> inspect(unmatched))
+    Logger.debug("WR match pairs: " <> inspect(pairs))
+    Logger.debug("WR match unmatched: " <> inspect(unmatched))
     PubSub.broadcast("waiting_room:matched", %{name: state.name, pairs: pairs})
 
     %{

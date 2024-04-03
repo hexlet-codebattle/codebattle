@@ -197,6 +197,20 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def handle_info({:start_rematch, match_ref, round_position}, %{tournament: tournament}) do
+    if tournament.current_round_position == round_position and
+         not in_break?(tournament) and
+         not finished?(tournament) do
+      new_tournament = tournament.module.start_rematch(tournament, match_ref)
+
+      broadcast_tournament_update(new_tournament)
+
+      {:noreply, %{tournament: new_tournament}}
+    else
+      {:noreply, %{tournament: tournament}}
+    end
+  end
+
   def handle_info(
         %{
           topic: "waiting_room:" <> _wr_name,

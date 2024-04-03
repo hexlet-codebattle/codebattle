@@ -56,7 +56,7 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.map(fn player ->
       result =
         player
-        |> Map.take([:id, :result_percent])
+        |> Map.take([:id, :result, :result_percent])
         |> Map.put(:lang, player.editor_lang)
 
       {player.id, result}

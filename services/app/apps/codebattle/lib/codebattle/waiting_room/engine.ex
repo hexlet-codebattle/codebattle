@@ -7,7 +7,7 @@ defmodule Codebattle.WaitingRoom.Engine do
   def call(%State{players: []}), do: {[], []}
 
   def call(state = %State{}) do
-    Logger.error("WREngine match players " <> inspect(state.players))
+    Logger.debug("WREngine match players " <> inspect(state.players))
 
     state
     |> Map.get(:players)
