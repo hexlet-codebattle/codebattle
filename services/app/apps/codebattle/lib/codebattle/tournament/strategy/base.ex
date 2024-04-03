@@ -314,29 +314,7 @@ defmodule Codebattle.Tournament.Base do
             finished_at = TimeHelper.utc_now()
             duration_sec = NaiveDateTime.diff(match.started_at, finished_at)
 
-            player_results =
-              case Game.Context.fetch_game(match.game_id) do
-                {:ok, game = %{is_live: true}} ->
-                  game
-                  |> Game.Helpers.get_player_results()
-                  |> Map.new(fn {player_id, result} ->
-                    {player_id,
-                     Map.put(
-                       result,
-                       :score,
-                       get_score(
-                         tournament.score_strategy,
-                         match.level,
-                         result.result_percent,
-                         duration_sec
-                       )
-                     )}
-                  end)
-
-                {:error, _reason} ->
-                  %{}
-              end
-
+            player_results = improve_player_results(tournament, match, duration_sec)
             Game.Context.trigger_timeout(match.game_id)
 
             Tournament.Matches.put_match(tournament, %{
@@ -369,6 +347,30 @@ defmodule Codebattle.Tournament.Base do
         )
 
         do_finish_round_and_next_step(tournament)
+      end
+
+      defp improve_player_results(tournament, match, duration_sec) do
+        case Game.Context.fetch_game(match.game_id) do
+          {:ok, game = %{is_live: true}} ->
+            game
+            |> Game.Helpers.get_player_results()
+            |> Map.new(fn {player_id, result} ->
+              {player_id,
+               Map.put(
+                 result,
+                 :score,
+                 get_score(
+                   tournament.score_strategy,
+                   match.level,
+                   result.result_percent,
+                   duration_sec
+                 )
+               )}
+            end)
+
+          {:error, _reason} ->
+            %{}
+        end
       end
 
       def do_finish_round_and_next_step(tournament) do
