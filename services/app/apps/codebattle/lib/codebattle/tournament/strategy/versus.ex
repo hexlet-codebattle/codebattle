@@ -44,4 +44,7 @@ defmodule Codebattle.Tournament.Versus do
   def finish_tournament?(tournament) do
     tournament.meta.rounds_limit - 1 == tournament.current_round_position
   end
+
+  @impl Tournament.Base
+  def maybe_create_rematch(tournament, _params), do: tournament
 end

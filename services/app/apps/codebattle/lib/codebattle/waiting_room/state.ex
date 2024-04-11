@@ -2,15 +2,22 @@ defmodule Codebattle.WaitingRoom.State do
   use TypedStruct
 
   typedstruct do
+    field(:groups, {:array, :map}, default: [])
+    field(:matched_with_bot, {:array, :map}, default: [])
+    field(:min_time_sec, integer(), default: 1)
+    field(:min_time_with_bot_sec, integer(), default: 20)
+    field(:min_time_with_played_sec, integer(), default: 15)
     field(:name, String.t())
+    field(:now, :integer)
+    field(:pairs, {:array, :map}, default: [])
     field(:played_pair_ids, MapSet.t())
-    field(:players, map(), default: [])
-    field(:use_score?, boolean(), default: true)
+    field(:players, {:array, :map}, default: [])
+    field(:time_step_ms, integer(), default: 900)
+    field(:unmatched, {:array, :map}, default: [])
     field(:use_clan?, boolean(), default: true)
+    field(:use_match_with_bots?, boolean(), default: true)
+    field(:use_played_pairs?, boolean(), default: true)
     field(:use_same_tasks?, boolean(), default: true)
-    field(:time_step_ms, integer(), default: 100)
-    field(:min_time_sec, integer(), default: 0)
-    field(:min_time_new_opponent_ms, integer(), default: 15_000)
-    field(:max_wait_bot_time_ms, integer(), default: 20_000)
+    field(:use_score?, boolean(), default: true)
   end
 end

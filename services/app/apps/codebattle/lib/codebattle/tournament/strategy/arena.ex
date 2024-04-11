@@ -66,6 +66,14 @@ defmodule Codebattle.Tournament.Arena do
     tournament.meta.rounds_limit - 1 == tournament.current_round_position
   end
 
+  @impl Tournament.Base
+  def maybe_create_rematch(tournament, game_params) do
+    players = get_players(tournament, Map.keys(game_params.player_results))
+
+    WaitingRoom.put_players(tournament.waiting_room_name, players)
+    tournament
+  end
+
   defp build_player_pairs(tournament = %{meta: %{use_clan: true}, current_round_position: 0}) do
     tournament
     |> get_players()

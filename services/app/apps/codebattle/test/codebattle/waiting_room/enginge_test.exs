@@ -5,7 +5,10 @@ defmodule Codebattle.WaitingRoom.EngineTest do
   alias Codebattle.WaitingRoom.State
 
   test "matches players" do
-    joined = :os.system_time(:seconds) - 5
+    now = :os.system_time(:seconds)
+    joined = now - 5
+    pair_with_same_opponent = now - 16
+    pair_with_bot = now - 21
 
     players =
       [
@@ -19,7 +22,12 @@ defmodule Codebattle.WaitingRoom.EngineTest do
         %{id: 8, tasks: 3, score: 9, joined: joined, clan_id: 5},
         %{id: 9, tasks: 3, score: 9, joined: joined, clan_id: 6},
         %{id: 10, tasks: 4, score: 9, joined: joined, clan_id: 7},
-        %{id: 19, tasks: 5, score: 9, joined: :os.system_time(:seconds), clan_id: 4}
+        %{id: 11, tasks: 5, score: 9, joined: now, clan_id: 4},
+        %{id: 12, tasks: 6, score: 9, joined: pair_with_same_opponent, clan_id: 5},
+        %{id: 13, tasks: 6, score: 9, joined: pair_with_same_opponent, clan_id: 5},
+        %{id: 14, tasks: 7, score: 9, joined: pair_with_same_opponent, clan_id: 5},
+        %{id: 15, tasks: 7, score: 9, joined: pair_with_same_opponent, clan_id: 6},
+        %{id: 16, tasks: 8, score: 9, joined: pair_with_bot, clan_id: 6}
       ]
       |> Enum.shuffle()
 
@@ -28,10 +36,30 @@ defmodule Codebattle.WaitingRoom.EngineTest do
       time_step_ms: 100_000,
       min_time_sec: 3,
       players: players,
-      played_pair_ids: MapSet.new([[2, 4], [8, 9]])
+      played_pair_ids: MapSet.new([[2, 4], [8, 9], [14, 15]])
     }
 
-    Engine.call(state)
+    %{
+      pairs: pairs,
+      players: players,
+      played_pair_ids: played_pair_ids,
+      matched_with_bot: matched_with_bot
+    } = Engine.call(state)
+
+    assert [[1, 4], [2, 3], [6, 7], [14, 15]] == Enum.sort(pairs)
+    assert [16] == Enum.sort(matched_with_bot)
+
+    assert [
+             %{id: 5, tasks: 2, score: 6, joined: joined, clan_id: 3},
+             %{id: 8, tasks: 3, score: 9, joined: joined, clan_id: 5},
+             %{id: 9, tasks: 3, score: 9, joined: joined, clan_id: 6},
+             %{id: 10, tasks: 4, score: 9, joined: joined, clan_id: 7},
+             %{id: 11, tasks: 5, score: 9, joined: now, clan_id: 4},
+             %{id: 12, tasks: 6, score: 9, joined: pair_with_same_opponent, clan_id: 5},
+             %{id: 13, tasks: 6, score: 9, joined: pair_with_same_opponent, clan_id: 5}
+           ] == Enum.sort_by(players, & &1.id)
+
+    assert MapSet.new([[1, 4], [2, 3], [2, 4], [6, 7], [8, 9], [14, 15]]) == played_pair_ids
   end
 
   test "10_000 players" do

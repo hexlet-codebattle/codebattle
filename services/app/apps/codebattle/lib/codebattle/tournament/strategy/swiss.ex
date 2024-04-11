@@ -72,6 +72,39 @@ defmodule Codebattle.Tournament.Swiss do
     tournament.meta.rounds_limit - 1 == tournament.current_round_position
   end
 
+  @impl Tournament.Base
+  def maybe_create_rematch(tournament, game_params) do
+    timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+    wait_type = get_wait_type(tournament, timeout_ms)
+
+    if wait_type == "rematch" do
+      Process.send_after(
+        self(),
+        {:start_rematch, game_params.ref, tournament.current_round_position},
+        timeout_ms
+      )
+    end
+
+    Codebattle.PubSub.broadcast("tournament:game:wait", %{
+      game_id: game_params.game_id,
+      type: wait_type
+    })
+  end
+
+  defp get_wait_type(tournament, timeout_ms) do
+    min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
+
+    if seconds_to_end_round(tournament) > min_seconds_to_rematch do
+      "rematch"
+    else
+      if finish_tournament?(tournament) do
+        "tournament"
+      else
+        "round"
+      end
+    end
+  end
+
   defp build_player_pairs(tournament) do
     played_pair_ids = MapSet.new(tournament.played_pair_ids)
 

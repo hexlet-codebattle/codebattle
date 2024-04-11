@@ -91,17 +91,13 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   defp do_match_players(state) do
-    {pairs, unmatched} = Engine.call(state)
+    new_state = Engine.call(state)
 
-    Logger.debug("WR match pairs: " <> inspect(pairs))
-    Logger.debug("WR match unmatched: " <> inspect(unmatched))
-    PubSub.broadcast("waiting_room:matched", %{name: state.name, pairs: pairs})
+    Logger.debug("WR match pairs: " <> inspect(new_state.pairs))
+    Logger.debug("WR match unmatched: " <> inspect(new_state.players))
+    PubSub.broadcast("waiting_room:matched", %{name: state.name, pairs: new_state.pairs})
 
-    %{
-      state
-      | players: unmatched,
-        played_pair_ids: MapSet.union(state.played_pair_ids, MapSet.new([pairs]))
-    }
+    %{new_state | pairs: []}
   end
 
   defp schedule_matching(state) do

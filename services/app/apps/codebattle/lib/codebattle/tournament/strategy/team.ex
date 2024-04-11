@@ -94,6 +94,9 @@ defmodule Codebattle.Tournament.Team do
     Enum.max(scores) >= Map.get(tournament.meta, :rounds_to_win, 3)
   end
 
+  @impl Tournament.Base
+  def maybe_create_rematch(tournament, _params), do: tournament
+
   defp shift_pairs(teams, current_round) do
     teams
     |> Enum.with_index()

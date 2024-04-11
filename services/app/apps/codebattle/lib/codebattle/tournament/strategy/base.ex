@@ -10,6 +10,7 @@ defmodule Codebattle.Tournament.Base do
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
+  @callback maybe_create_rematch(Tournament.t(), map()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
   @callback reset_meta(map()) :: map()
   @callback game_type() :: String.t()
@@ -175,7 +176,7 @@ defmodule Codebattle.Tournament.Base do
       def finish_match(tournament, params) do
         tournament
         |> handle_game_result(params)
-        |> maybe_put_players_to_waiting_room(params)
+        |> maybe_create_rematch(params)
         |> maybe_finish_round()
       end
 
@@ -241,58 +242,6 @@ defmodule Codebattle.Tournament.Base do
 
       def remove_pass_code(tournament, _params) do
         tournament
-      end
-
-      defp maybe_put_players_to_waiting_room(tournament, params) do
-        if use_waiting_room?(tournament) do
-          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-          wait_type = get_wait_type(tournament, timeout_ms)
-
-          if wait_type == "rematch" do
-            players = get_players(tournament, Map.keys(params.player_results))
-
-            WaitingRoom.put_players(tournament.waiting_room_name, players)
-          else
-            Codebattle.PubSub.broadcast("tournament:game:wait", %{
-              game_id: params.game_id,
-              type: wait_type
-            })
-          end
-        end
-
-        if tournament.type == "swiss" do
-          timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-          wait_type = get_wait_type(tournament, timeout_ms)
-
-          if wait_type == "rematch" do
-            Process.send_after(
-              self(),
-              {:start_rematch, params.ref, tournament.current_round_position},
-              timeout_ms
-            )
-          end
-
-          Codebattle.PubSub.broadcast("tournament:game:wait", %{
-            game_id: params.game_id,
-            type: wait_type
-          })
-        end
-
-        tournament
-      end
-
-      defp get_wait_type(tournament, timeout_ms) do
-        min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
-
-        if seconds_to_end_round(tournament) > min_seconds_to_rematch do
-          "rematch"
-        else
-          if finish_tournament?(tournament) do
-            "tournament"
-          else
-            "round"
-          end
-        end
       end
 
       def maybe_finish_round(tournament) do

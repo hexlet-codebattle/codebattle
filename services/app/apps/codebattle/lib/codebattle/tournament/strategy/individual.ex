@@ -59,6 +59,9 @@ defmodule Codebattle.Tournament.Individual do
   @impl Tournament.Base
   def finish_tournament?(tournament), do: final_round?(tournament)
 
+  @impl Tournament.Base
+  def maybe_create_rematch(tournament, _params), do: tournament
+
   defp final_round?(tournament) do
     players_count(tournament) == :math.pow(2, tournament.current_round_position + 1)
   end

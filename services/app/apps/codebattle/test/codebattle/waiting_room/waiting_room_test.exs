@@ -23,7 +23,9 @@ defmodule Codebattle.WaitingRoomTest do
     WaitingRoom.Server.match_players("wr")
 
     assert_receive %Codebattle.PubSub.Message{
-      payload: %{pairs: [[5, 5], [3, 1], [4, 2]]}
+      payload: %{pairs: pairs}
     }
+
+    assert pairs == [[5, 5], [1, 3], [2, 4]]
   end
 end
