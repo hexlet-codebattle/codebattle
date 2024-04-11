@@ -80,6 +80,7 @@ function InfoPanel({
       return (
         <CustomTournamentInfoPanel
           players={tournament.players}
+          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
           taskList={tournament.taskList}
           topPlayerIds={tournament.topPlayerIds}
           matches={tournament.matches}

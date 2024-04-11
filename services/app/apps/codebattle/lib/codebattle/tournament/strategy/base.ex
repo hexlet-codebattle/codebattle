@@ -448,7 +448,9 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> update_struct(%{
           break_state: "off",
-          last_round_started_at: NaiveDateTime.utc_now(:second)
+          last_round_started_at: NaiveDateTime.utc_now(:second),
+          match_timeout_seconds:
+            Map.get(round_params, :timeout_seconds, get_round_timeout_seconds(tournament))
         })
         |> build_and_save_round!()
         |> maybe_preload_tasks()
@@ -493,10 +495,12 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
+        task_id = get_task_id_by_params(round_params)
+
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(50)
-        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, nil))
+        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task_id))
 
         tournament
       end
@@ -725,6 +729,9 @@ defmodule Codebattle.Tournament.Base do
       defp get_score("win_loss", level, player_result, _duration_sec) do
         Score.WinLoss.get_score(level, player_result)
       end
+
+      defp get_task_id_by_params(%{task_id: task_id}), do: task_id
+      defp get_task_id_by_params(_round_params), do: nil
     end
   end
 end

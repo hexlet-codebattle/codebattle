@@ -15,10 +15,13 @@ function TournamentGameCreatePanel({
   matches,
   taskList = [],
   currentRoundPosition,
+  defaultMatchTimeoutSeconds,
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState(emptyPlayer);
   const [opponentPlayer, setOpponentPlayer] = useState(emptyPlayer);
   const [selectedTaskLevel, setSelectedTaskLevel] = useState();
+  const [selectedTimeoutSeconds, setSelectedTimeoutSeconds] = useState();
+
   const activeMatch = useMemo(() => {
     if (!selectedPlayer) return null;
 
@@ -208,6 +211,33 @@ function TournamentGameCreatePanel({
                   <FontAwesomeIcon icon="pen" />
                 </button>
               </div>
+              <div className="d-flex align-items-baseline px-1">
+                <input
+                  id="round-seconds"
+                  name="round-seconds"
+                  type="number"
+                  min="180"
+                  max="7200"
+                  step="60"
+                  placeholder={defaultMatchTimeoutSeconds}
+                  value={selectedTimeoutSeconds}
+                  onChange={event => {
+                    const newTimeout = Number(event.target.value);
+
+                    if (newTimeout >= 180 && newTimeout <= 7200) {
+                      setSelectedTimeoutSeconds(Number(event.target.value));
+                    } else if (newTimeout <= 180) {
+                      setSelectedTimeoutSeconds(180);
+                    } else if (newTimeout >= 7200) {
+                      setSelectedTimeoutSeconds(7200);
+                    }
+                  }}
+                  className="my-1 mr-1"
+                />
+                <label htmlFor="round-seconds">
+                  Match seconds
+                </label>
+              </div>
               {activeMatch ? (
                 <button
                   type="button"
@@ -222,7 +252,8 @@ function TournamentGameCreatePanel({
                   className="btn btn-sm btn-secondary rounded-lg p-1"
                   onClick={() => {
                     createCustomRound({
-                      task_level: selectedTaskLevel,
+                      task_id: availableTasks[selectedTaskLevel][0]?.id,
+                      timeout_seconds: selectedTimeoutSeconds,
                     });
                   }}
                   disabled={availableTasks[selectedTaskLevel].length < 1}

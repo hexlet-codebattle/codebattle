@@ -433,7 +433,14 @@ defmodule CodebattleWeb.TournamentChannel do
     end
   end
 
+  defp cast_start_round_params(%{"task_level" => level, "timeout_seconds" => seconds}),
+    do: %{task_level: level, timeout_seconds: seconds}
+
   defp cast_start_round_params(%{"task_level" => level}), do: %{task_level: level}
-  defp cast_start_round_params(%{"task_id" => level}), do: %{task_id: level}
+
+  defp cast_start_round_params(%{"task_id" => id, "timeout_seconds" => seconds}),
+    do: %{task_id: id, timeout_seconds: seconds}
+
+  defp cast_start_round_params(%{"task_id" => id}), do: %{task_id: id}
   defp cast_start_round_params(_params), do: %{}
 end

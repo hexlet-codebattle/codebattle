@@ -12,6 +12,7 @@ import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 function CustomTournamentInfoPanel({
   roundsLimit = 1,
   currentRoundPosition = 0,
+  matchTimeoutSeconds,
   matches,
   players,
   taskList,
@@ -45,6 +46,7 @@ function CustomTournamentInfoPanel({
           matches={matches}
           taskList={taskList}
           currentRoundPosition={currentRoundPosition}
+          defaultMatchTimeoutSeconds={matchTimeoutSeconds}
         />
       )}
       <SwitchTransition mode="out-in">
