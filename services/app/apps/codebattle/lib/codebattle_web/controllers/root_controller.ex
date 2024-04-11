@@ -9,20 +9,27 @@ defmodule CodebattleWeb.RootController do
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
+    special_event = true
 
-    if current_user.is_guest do
-      render(conn, "landing.html", layout: {LayoutView, "landing.html"})
-    else
+    if special_event == true do
       conn
-      |> maybe_put_opponent(params)
-      |> put_gon(
-        task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
-        active_games: LobbyView.render_active_games(current_user),
-        tournaments: [],
-        completed_games: [],
-        leaderboard_users: []
-      )
-      |> render("index.html", current_user: current_user)
+      |> put_view(CodebattleWeb.PublicEventView)
+      |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", "asdf"))
+    else
+      if current_user.is_guest do
+        render(conn, "landing.html", layout: {LayoutView, "landing.html"})
+      else
+        conn
+        |> maybe_put_opponent(params)
+        |> put_gon(
+          task_tags: ["strings", "math", "hash-maps", "collections", "rest"],
+          active_games: LobbyView.render_active_games(current_user),
+          tournaments: [],
+          completed_games: [],
+          leaderboard_users: []
+        )
+        |> render("index.html")
+      end
     end
   end
 

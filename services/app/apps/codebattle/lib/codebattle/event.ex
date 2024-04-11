@@ -10,7 +10,14 @@ defmodule Codebattle.Event do
 
   @type t :: %__MODULE__{}
 
-  @derive Jason.Encoder
+  @derive {Jason.Encoder,
+           only: [
+             :slug,
+             :type,
+             :title,
+             :description,
+             :starts_at
+           ]}
 
   @types ~w(public private)
 

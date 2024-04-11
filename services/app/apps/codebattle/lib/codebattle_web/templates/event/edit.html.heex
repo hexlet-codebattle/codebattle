@@ -1,0 +1,4 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Edit Event</h1>
+  <%= render("_form.html", Map.put(assigns, :action, Routes.event_path(@conn, :create))) %>
+</div>

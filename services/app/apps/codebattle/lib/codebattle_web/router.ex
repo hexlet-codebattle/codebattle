@@ -111,6 +111,7 @@ defmodule CodebattleWeb.Router do
       resources("/users", UserController, only: [:index, :show, :create])
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
+      get("/events/:id/leaderboard", Event.LeaderboardController, :show)
     end
 
     scope "/v1", V1, as: :v1 do

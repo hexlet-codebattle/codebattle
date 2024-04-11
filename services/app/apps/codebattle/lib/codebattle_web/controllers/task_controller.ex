@@ -1,11 +1,11 @@
 defmodule CodebattleWeb.TaskController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   alias Codebattle.Task
   alias Codebattle.Game
   alias CodebattleWeb.Api.GameView
+
+  import PhoenixGon.Controller
 
   def index(conn, _params) do
     tasks = Task.list_visible(conn.assigns.current_user)

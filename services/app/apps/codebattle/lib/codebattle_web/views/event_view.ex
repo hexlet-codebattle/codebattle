@@ -10,7 +10,7 @@ defmodule CodebattleWeb.EventView do
     |> format_datetime(timezone)
   end
 
-  def format_datetime(datetime = %DateTime{}, timezone) do
+  def format_datetime(datetime = %DateTime{}, timezone \\ "UTC") do
     datetime
     |> DateTime.shift_zone!(timezone)
     |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
