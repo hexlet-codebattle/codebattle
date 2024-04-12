@@ -19,13 +19,9 @@ defmodule Codebattle.WaitingRoom.Server do
     GenServer.call(wr_name(name), {:start, played_pair_ids})
   end
 
-  def get_state(name) do
-    GenServer.call(wr_name(name), :get_state)
-  end
-
-  def match_players(name) do
-    GenServer.call(wr_name(name), :match_players)
-  end
+  def get_state(name), do: GenServer.call(wr_name(name), :get_state)
+  def match_players(name), do: GenServer.call(wr_name(name), :match_players)
+  def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
 
   def put_players(name, players) do
     GenServer.cast(
@@ -73,6 +69,12 @@ defmodule Codebattle.WaitingRoom.Server do
   @impl GenServer
   def handle_call(:match_players, _from, state) do
     new_state = do_match_players(state)
+    {:reply, new_state, new_state}
+  end
+
+  @impl GenServer
+  def handle_call({:update_state, params}, _from, state) do
+    new_state = Map.merge(state, params)
     {:reply, new_state, new_state}
   end
 

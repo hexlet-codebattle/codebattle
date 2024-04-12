@@ -214,17 +214,15 @@ defmodule Codebattle.Tournament.Server do
   def handle_info(
         %{
           topic: "waiting_room:" <> _wr_name,
-          event: "waiting_room:matched"
-          # payload: payload
+          event: "waiting_room:matched",
+          payload: payload
         },
         %{tournament: tournament}
       ) do
-    # player_pairs = Enum.map(payload.pairs, &get_players(tournament, &1))
+    new_tournament =
+      tournament.module.create_games_for_waiting_room_pairs(tournament, payload.pairs)
 
-    # new_tournament = tournam
-    # tournament.module.bulk_insert_rematch_games(tournament, player_pairs)
-
-    {:noreply, %{tournament: tournament}}
+    {:noreply, %{tournament: new_tournament}}
   end
 
   def handle_info(_message, state) do

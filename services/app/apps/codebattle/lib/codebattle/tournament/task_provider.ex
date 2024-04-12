@@ -70,6 +70,15 @@ defmodule Codebattle.Tournament.TaskProvider do
     end
   end
 
+  def get_task(tournament = %{task_strategy: "sequential"}, nil) do
+    tournament.round_task_ids
+    |> List.first()
+    |> case do
+      nil -> nil
+      task_id -> Tasks.get_task(tournament, task_id)
+    end
+  end
+
   def get_task(tournament, nil) do
     tournament.round_task_ids
     |> safe_random()

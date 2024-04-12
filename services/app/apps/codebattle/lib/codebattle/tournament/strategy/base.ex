@@ -140,7 +140,7 @@ defmodule Codebattle.Tournament.Base do
 
       def restart(tournament, _user), do: tournament
 
-      def start(tournament = %{state: "waiting_participants"}, %{user: user}) do
+      def start(tournament = %{state: "waiting_participants"}, params = %{user: user}) do
         if can_moderate?(tournament, user) do
           tournament = complete_players(tournament)
 
@@ -149,7 +149,7 @@ defmodule Codebattle.Tournament.Base do
             players_count: players_count(tournament),
             state: "active"
           })
-          |> maybe_init_waiting_room()
+          |> maybe_init_waiting_room(params)
           |> broadcast_tournament_started()
           |> start_round()
         else
@@ -159,10 +159,10 @@ defmodule Codebattle.Tournament.Base do
 
       def start(tournament, _params), do: tournament
 
-      defp maybe_init_waiting_room(t = %{waiting_room_name: nil}), do: t
+      defp maybe_init_waiting_room(t = %{waiting_room_name: nil}, _params), do: t
 
-      defp maybe_init_waiting_room(tournament) do
-        WaitingRoom.start_link(%{name: tournament.waiting_room_name})
+      defp maybe_init_waiting_room(tournament, params) do
+        WaitingRoom.start_link(Map.put(params, :name, tournament.waiting_room_name))
         Codebattle.PubSub.subscribe("waiting_room:#{tournament.waiting_room_name}")
         tournament
       end
@@ -438,11 +438,6 @@ defmodule Codebattle.Tournament.Base do
         |> bulk_insert_round_games(round_params)
       end
 
-      defp bulk_insert_rematch_games(tournament, player_pairs) do
-        player_pairs
-        |> Enum.with_index(matches_count(tournament))
-      end
-
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         task_id = get_task_id_by_params(round_params)
 
@@ -455,7 +450,6 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp bulk_create_round_games_and_matches(batch, tournament, task_id) do
-        game_timeout = get_game_timeout(tournament)
         reset_task_ids = tournament.task_provider == "task_pack_per_round"
 
         batch
@@ -477,7 +471,7 @@ defmodule Codebattle.Tournament.Base do
               round_id: tournament.current_round_id,
               state: "playing",
               task: get_task(tournament, task_id),
-              timeout_seconds: game_timeout,
+              timeout_seconds: get_game_timeout(tournament),
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
@@ -563,6 +557,57 @@ defmodule Codebattle.Tournament.Base do
         update_struct(tournament, %{
           current_round_id: round.id
         })
+      end
+
+      def create_games_for_waiting_room_pairs(tournament, pairs) do
+        pairs
+        |> Enum.chunk_every(50)
+        |> Enum.each(&create_games_for_waiting_room_batch(tournament, &1))
+
+        tournament
+      end
+
+      def create_games_for_waiting_room_batch(tournament, pairs) do
+        pairs
+        |> Enum.map(fn
+          [id1, id2] = ids ->
+            players = get_players(tournament, ids)
+            completed_task_ids = Enum.flat_map(players, & &1.task_ids)
+
+            {players, get_rematch_task(tournament, completed_task_ids)}
+
+          [id] ->
+            player = get_player(tournament, id)
+            opponent_bot = Bot.Context.build() |> Tournament.Player.new!()
+            {[player, opponent_bot], get_rematch_task(tournament, player.task_ids)}
+        end)
+        |> Enum.split_with(fn {player, task_id} -> is_nil(task_id) end)
+        |> then(fn {finished_round_players, players_to_play} ->
+          # TODO: send palyers that no games in this round finished_round_players
+          players_to_play
+          |> Enum.with_index(matches_count(tournament))
+          |> Enum.map(fn {{players, task}, match_id} ->
+            %{
+              players: players,
+              ref: match_id,
+              round_id: tournament.current_round_id,
+              state: "playing",
+              task: task,
+              timeout_seconds: get_game_timeout(tournament),
+              tournament_id: tournament.id,
+              type: game_type(),
+              use_chat: tournament.use_chat,
+              use_timer: tournament.use_timer
+            }
+          end)
+          |> Game.Context.bulk_create_games()
+          |> Enum.zip(players_to_play)
+          |> Enum.each(fn {game, {players, _task}} ->
+            build_and_run_match(tournament, players, game, false)
+          end)
+        end)
+
+        tournament
       end
 
       defp maybe_finish_tournament(tournament) do
