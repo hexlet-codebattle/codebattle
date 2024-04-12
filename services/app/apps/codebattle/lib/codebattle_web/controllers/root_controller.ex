@@ -9,12 +9,11 @@ defmodule CodebattleWeb.RootController do
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
-    special_event = true
 
-    if special_event == true do
+    if slug = Application.get_env(:codebattle, :lobby_event_slug) do
       conn
       |> put_view(CodebattleWeb.PublicEventView)
-      |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", "asdf"))
+      |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", slug))
     else
       if current_user.is_guest do
         render(conn, "landing.html", layout: {LayoutView, "landing.html"})
