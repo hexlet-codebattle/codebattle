@@ -114,7 +114,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
       if tournament do
         broadcast!(socket, "tournament:restarted", %{
-          tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table])
+          tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table, :event])
         })
       end
     end
@@ -279,6 +279,7 @@ defmodule CodebattleWeb.TournamentChannel do
           :__struct__,
           :__meta__,
           :creator,
+          :event,
           :players,
           :matches,
           :players_table,
@@ -398,7 +399,7 @@ defmodule CodebattleWeb.TournamentChannel do
       end
 
     %{
-      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table, :event]),
       players: players,
       matches: matches,
       top_player_ids: top_player_ids
@@ -407,7 +408,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp get_tournament_join_payload(tournament = %{type: "versus"}, _socket) do
     %{
-      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table, :event]),
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament),
       tasks_info:
@@ -417,7 +418,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp get_tournament_join_payload(tournament, _socket) do
     %{
-      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table]),
+      tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table, :event]),
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament)
     }

@@ -300,14 +300,6 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
-  def preload_tasks_to_ets(tournament) do
-    tasks = Codebattle.Task.get_tasks_by_level(tournament.level)
-
-    Tournament.Tasks.put_tasks(tournament, tasks)
-
-    :ok
-  end
-
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
   def get_waiting_room_name(%{id: id, type: "arena"}), do: "t_#{id}"

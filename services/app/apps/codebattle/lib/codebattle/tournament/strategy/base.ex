@@ -26,6 +26,8 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.Helpers
       import Tournament.TaskProvider
 
+      require Logger
+
       def add_player(tournament, player) do
         Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
         Map.put(tournament, :players_count, players_count(tournament))
@@ -559,8 +561,10 @@ defmodule Codebattle.Tournament.Base do
         })
       end
 
-      def create_games_for_waiting_room_pairs(tournament, pairs) do
-        pairs
+      def create_games_for_waiting_room_pairs(tournament, pairs, matched_with_bot) do
+        matched_with_bot
+        |> Enum.map(&List.wrap/1)
+        |> Enum.concat(pairs)
         |> Enum.chunk_every(50)
         |> Enum.each(&create_games_for_waiting_room_batch(tournament, &1))
 
@@ -582,8 +586,9 @@ defmodule Codebattle.Tournament.Base do
             {[player, opponent_bot], get_rematch_task(tournament, player.task_ids)}
         end)
         |> Enum.split_with(fn {player, task_id} -> is_nil(task_id) end)
-        |> then(fn {finished_round_players, players_to_play} ->
-          # TODO: send palyers that no games in this round finished_round_players
+        |> then(fn {_finished_round_players, players_to_play} ->
+          # TODO: We filtered players that solved all round tasks before WR,
+          # but if they appear here, we just ignore them.
           players_to_play
           |> Enum.with_index(matches_count(tournament))
           |> Enum.map(fn {{players, task}, match_id} ->

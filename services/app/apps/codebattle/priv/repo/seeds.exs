@@ -23,159 +23,21 @@ creator = User.get!(-15)
       description_ru: "проверка суммирования",
       examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       asserts: [
-        %{
-          arguments: [
-            1,
-            1,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 2
-        },
-        %{
-          arguments: [
-            2,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 4
-        },
-        %{
-          arguments: [
-            1,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 3
-        },
-        %{
-          arguments: [
-            3,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 5
-        },
-        %{
-          arguments: [
-            5,
-            1,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 6
-        },
-        %{
-          arguments: [
-            1,
-            1,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 2
-        },
-        %{
-          arguments: [
-            2,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 4
-        },
-        %{
-          arguments: [
-            1,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 3
-        },
-        %{
-          arguments: [
-            3,
-            2,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 5
-        },
-        %{
-          arguments: [
-            5,
-            1,
-            "a",
-            1.3,
-            true,
-            %{key1: "val1", key2: "val2"},
-            ["asdf", "fdsa"],
-            [["Jack", "Alice"]]
-          ],
-          expected: 6
-        }
+        %{arguments: [1, 1], expected: 2},
+        %{arguments: [2, 2], expected: 4},
+        %{arguments: [1, 2], expected: 3},
+        %{arguments: [3, 2], expected: 5},
+        %{arguments: [5, 1], expected: 6},
+        %{arguments: [10, 0], expected: 10},
+        %{arguments: [20, 2], expected: 22},
+        %{arguments: [10, 2], expected: 12},
+        %{arguments: [30, 2], expected: 32},
+        %{arguments: [50, 1], expected: 51}
       ],
       disabled: false,
       input_signature: [
         %{argument_name: "a", type: %{name: "integer"}},
-        %{argument_name: "b", type: %{name: "integer"}},
-        %{argument_name: "c", type: %{name: "string"}},
-        %{argument_name: "d", type: %{name: "float"}},
-        %{argument_name: "e", type: %{name: "boolean"}},
-        %{
-          argument_name: "f",
-          type: %{name: "hash", nested: %{name: "string"}}
-        },
-        %{
-          argument_name: "g",
-          type: %{name: "array", nested: %{name: "string"}}
-        },
-        %{
-          argument_name: "h",
-          type: %{
-            name: "array",
-            nested: %{name: "array", nested: %{name: "string"}}
-          }
-        }
+        %{argument_name: "b", type: %{name: "integer"}}
       ],
       output_signature: %{type: %{name: "integer"}}
     }
@@ -398,7 +260,7 @@ for level <- levels do
     |> Enum.filter(&(&1.level == level))
     |> Enum.map(& &1.id)
 
-  name = "All #{level}"
+  name = "all_#{level}"
 
   Repo.get_by(TaskPack, name: name) ||
     %TaskPack{
@@ -407,6 +269,32 @@ for level <- levels do
       visibility: "public",
       state: "active",
       task_ids: task_ids
+    }
+    |> TaskPack.changeset()
+    |> Repo.insert!()
+
+  name = "3_#{level}"
+
+  Repo.get_by(TaskPack, name: name) ||
+    %TaskPack{
+      creator_id: 1,
+      name: name,
+      visibility: "public",
+      state: "active",
+      task_ids: Enum.take(task_ids, 3)
+    }
+    |> TaskPack.changeset()
+    |> Repo.insert!()
+
+  name = "10_#{level}"
+
+  Repo.get_by(TaskPack, name: name) ||
+    %TaskPack{
+      creator_id: 1,
+      name: name,
+      visibility: "public",
+      state: "active",
+      task_ids: Enum.take(task_ids, 10)
     }
     |> TaskPack.changeset()
     |> Repo.insert!()

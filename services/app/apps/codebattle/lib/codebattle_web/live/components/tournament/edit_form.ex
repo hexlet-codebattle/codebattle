@@ -132,10 +132,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
           <% end %>
           <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :task_pack_names) %>
-              <%= text_input(f, :task_pack_names,
+              <%= label(f, :task_pack_name) %>
+              <%= text_input(f, :task_pack_name,
                 class: "form-control",
-                placeholder: "strings,math"
+                placeholder: "all_easy,all_medium"
               ) %>
               <%= error_tag(f, :task_pack_names) %>
             </div>

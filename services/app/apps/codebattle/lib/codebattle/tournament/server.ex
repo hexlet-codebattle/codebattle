@@ -221,7 +221,11 @@ defmodule Codebattle.Tournament.Server do
         %{tournament: tournament}
       ) do
     new_tournament =
-      tournament.module.create_games_for_waiting_room_pairs(tournament, payload.pairs)
+      tournament.module.create_games_for_waiting_room_pairs(
+        tournament,
+        payload.pairs,
+        payload.matched_with_bot
+      )
 
     {:noreply, %{tournament: new_tournament}}
   end

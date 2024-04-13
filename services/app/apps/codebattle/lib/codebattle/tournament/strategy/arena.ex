@@ -68,9 +68,22 @@ defmodule Codebattle.Tournament.Arena do
 
   @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
-    players = get_players(tournament, Map.keys(game_params.player_results))
+    players =
+      tournament |> get_players(Map.keys(game_params.player_results)) |> Enum.reject(& &1.is_bot)
 
-    WaitingRoom.put_players(tournament.waiting_room_name, players)
+    if players_finished_all_tasks?(tournament, List.first(players)) do
+      Enum.each(
+        players,
+        &Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
+          tournament: tournament,
+          player_id: &1.id
+        })
+      )
+    else
+      Logger.debug(" arena #{tournament.id}  put_players: #{inspect(players)}")
+      WaitingRoom.put_players(tournament.waiting_room_name, players)
+    end
+
     tournament
   end
 
@@ -93,5 +106,9 @@ defmodule Codebattle.Tournament.Arena do
     |> get_players()
     |> Enum.map(&{&1.id, &1.score})
     |> Tournament.PairBuilder.ByScore.call()
+  end
+
+  defp players_finished_all_tasks?(tournament, player) do
+    Enum.count(player.task_ids) == Enum.count(tournament.round_task_ids)
   end
 end

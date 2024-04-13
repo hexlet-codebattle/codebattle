@@ -88,22 +88,34 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   defp do_match_players(state = %{players: []}) do
-    Logger.debug("WR idle")
+    Logger.debug("WR #{state.name} idle")
     state
   end
 
   defp do_match_players(state) do
     new_state = Engine.call(state)
 
+    Logger.debug("WR matched with bot: " <> inspect(new_state.matched_with_bot))
     Logger.debug("WR match pairs: " <> inspect(new_state.pairs))
     Logger.debug("WR match unmatched: " <> inspect(new_state.players))
-    PubSub.broadcast("waiting_room:matched", %{name: state.name, pairs: new_state.pairs})
+
+    maybe_broadcast_pairs(new_state)
 
     %{new_state | pairs: []}
   end
 
   defp schedule_matching(state) do
     Process.send_after(self(), :match_players, state.time_step_ms)
+  end
+
+  defp maybe_broadcast_pairs(%{pairs: [], matched_with_bot: []}), do: :noop
+
+  defp maybe_broadcast_pairs(state) do
+    PubSub.broadcast("waiting_room:matched", %{
+      name: state.name,
+      pairs: state.pairs,
+      matched_with_bot: state.matched_with_bot
+    })
   end
 
   defp wr_name(name), do: {:via, Registry, {Codebattle.Registry, "wr:#{name}"}}

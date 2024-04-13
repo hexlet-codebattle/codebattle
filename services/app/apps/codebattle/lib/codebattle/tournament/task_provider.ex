@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.TaskProvider do
+  alias Codebattle.TaskPack
   alias Codebattle.Tournament.Tasks
 
   def get_all_tasks(%{task_provider: "all"}) do
@@ -10,14 +11,15 @@ defmodule Codebattle.Tournament.TaskProvider do
   end
 
   def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name}) do
-    Codebattle.TaskPack.get_tasks_by_pack_name(tp_name)
+    TaskPack.get_tasks_by_pack_name(tp_name)
   end
 
   def get_all_tasks(%{task_provider: "task_pack_per_round", task_pack_name: tp_name}) do
     tp_name
     |> String.trim()
     |> String.split(",", trim: true)
-    |> Enum.map(&Codebattle.Task.get_tasks_by_level/1)
+    |> Enum.map(&String.trim/1)
+    |> Enum.map(&TaskPack.get_tasks_by_pack_name/1)
     |> Enum.with_index(&{&2, &1})
     |> Map.new()
   end

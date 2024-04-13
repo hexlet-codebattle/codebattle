@@ -162,6 +162,19 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:player:finished_round", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player_id}",
+        event: "tournament:player:finished_round",
+        payload: %{
+          player_id: params.player_id,
+          round_position: params.tournament.current_round_position
+        }
+      }
+    ]
+  end
+
   def get_messages("tournament:match:upserted", params) do
     players = Tournament.Helpers.get_players(params.tournament, params.match.player_ids)
 
@@ -426,7 +439,7 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "waiting_room:#{params.name}",
         event: "waiting_room:matched",
-        payload: %{pairs: params.pairs}
+        payload: %{pairs: params.pairs, matched_with_bot: params.matched_with_bot}
       }
     ]
   end
