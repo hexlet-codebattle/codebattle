@@ -17,6 +17,7 @@ defmodule Codebattle.Tournament do
              :last_round_started_at,
              :break_duration_seconds,
              :match_timeout_seconds,
+             :round_timeout_seconds,
              :break_state,
              :creator_id,
              :event_id,
@@ -74,6 +75,7 @@ defmodule Codebattle.Tournament do
     field(:last_round_started_at, :naive_datetime)
     field(:level, :string, default: "easy")
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
+    field(:round_timeout_seconds, :integer)
     field(:matches, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
     field(:name, :string)
@@ -130,6 +132,7 @@ defmodule Codebattle.Tournament do
       :players,
       :players_count,
       :players_limit,
+      :round_timeout_seconds,
       :score_strategy,
       :starts_at,
       :state,

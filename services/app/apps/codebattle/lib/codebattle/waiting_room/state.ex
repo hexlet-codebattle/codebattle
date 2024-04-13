@@ -2,6 +2,8 @@ defmodule Codebattle.WaitingRoom.State do
   use TypedStruct
 
   typedstruct do
+    # active or paused
+    field(:state, :string, default: "paused")
     field(:groups, {:array, :map}, default: [])
     field(:matched_with_bot, {:array, :map}, default: [])
     field(:min_time_sec, integer(), default: 1)

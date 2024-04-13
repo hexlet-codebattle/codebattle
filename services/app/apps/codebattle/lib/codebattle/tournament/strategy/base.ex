@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Base do
 
   alias Codebattle.Game
   alias Codebattle.Tournament
+  alias Codebattle.WaitingRoom
 
   @moduledoc """
   Defines interface for tournament type
@@ -257,6 +258,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def finish_round(tournament) do
+        WaitingRoom.pause(tournament.waiting_room_name)
         matches_to_finish = get_matches(tournament, "playing")
 
         Enum.each(
@@ -401,12 +403,12 @@ defmodule Codebattle.Tournament.Base do
           break_state: "off",
           last_round_started_at: NaiveDateTime.utc_now(:second),
           match_timeout_seconds:
-            Map.get(round_params, :timeout_seconds, get_round_timeout_seconds(tournament))
+            Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds)
         })
         |> build_and_save_round!()
         |> maybe_preload_tasks()
         |> maybe_set_round_task_ids()
-        |> start_round_timer()
+        |> maybe_start_round_timer()
         |> build_round_matches(round_params)
         |> db_save!()
         |> maybe_start_waiting_room()
@@ -640,11 +642,13 @@ defmodule Codebattle.Tournament.Base do
         update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
       end
 
-      defp start_round_timer(tournament) do
+      defp maybe_start_round_timer(tournament = %{round_timeout_seconds: nil}), do: tournament
+
+      defp maybe_start_round_timer(tournament) do
         Process.send_after(
           self(),
           {:finish_round_force, tournament.current_round_position},
-          :timer.seconds(get_round_timeout_seconds(tournament))
+          :timer.seconds(tournament.round_timeout_seconds)
         )
 
         tournament
@@ -673,14 +677,11 @@ defmodule Codebattle.Tournament.Base do
 
       defp get_game_timeout(tournament) do
         if use_waiting_room?(tournament) or tournament.type == "swiss" do
-          seconds_to_end_round(tournament)
+          min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
         else
           get_round_timeout_seconds(tournament)
         end
       end
-
-      defp use_waiting_room?(%{waiting_room_name: wrn}) when not is_nil(wrn), do: true
-      defp use_waiting_room?(_), do: false
 
       defp seconds_to_end_round(tournament) do
         max(
@@ -690,20 +691,12 @@ defmodule Codebattle.Tournament.Base do
         )
       end
 
-      defp get_round_timeout_seconds(
-             tournament = %{
-               meta: %{rounds_config_type: "per_round", rounds_config: rounds_config}
-             }
-           )
-           when is_list(rounds_config) do
-        rounds_config
-        |> Enum.at(tournament.current_round_position, %{})
-        |> Map.get(:round_timeout_seconds, 180)
+      defp get_round_timeout_seconds(tournament) do
+        tournament.round_timeout_seconds || tournament.match_timeout_seconds
       end
 
-      defp get_round_timeout_seconds(tournament) do
-        tournament.match_timeout_seconds
-      end
+      defp use_waiting_room?(%{waiting_room_name: wrn}) when not is_nil(wrn), do: true
+      defp use_waiting_room?(_), do: false
 
       defp broadcast_tournament_update(tournament) do
         Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})

@@ -21,6 +21,7 @@ defmodule Codebattle.WaitingRoom.Server do
 
   def get_state(name), do: GenServer.call(wr_name(name), :get_state)
   def match_players(name), do: GenServer.call(wr_name(name), :match_players)
+  def pause(name), do: GenServer.call(wr_name(name), :pause)
   def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
 
   def put_players(name, players) do
@@ -63,12 +64,28 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   def handle_call({:start, played_pair_ids}, _from, state) do
-    {:reply, :ok, %{state | played_pair_ids: played_pair_ids}}
+    {:reply, :ok, %{state | played_pair_ids: played_pair_ids, state: "active"}}
   end
 
   @impl GenServer
   def handle_call(:match_players, _from, state) do
     new_state = do_match_players(state)
+    {:reply, new_state, new_state}
+  end
+
+  @impl GenServer
+  def handle_call(:pause, _from, state) do
+    new_state = %{
+      state
+      | unmatched: [],
+        state: "paused",
+        players: [],
+        played_pair_ids: MapSet.new(),
+        pairs: [],
+        groups: [],
+        matched_with_bot: []
+    }
+
     {:reply, new_state, new_state}
   end
 
@@ -87,6 +104,11 @@ defmodule Codebattle.WaitingRoom.Server do
     {:noreply, new_state}
   end
 
+  defp do_match_players(state = %{state: "paused"}) do
+    Logger.debug("WR #{state.name} paused")
+    state
+  end
+
   defp do_match_players(state = %{players: []}) do
     Logger.debug("WR #{state.name} idle")
     state
@@ -95,9 +117,14 @@ defmodule Codebattle.WaitingRoom.Server do
   defp do_match_players(state) do
     new_state = Engine.call(state)
 
-    Logger.debug("WR matched with bot: " <> inspect(new_state.matched_with_bot))
-    Logger.debug("WR match pairs: " <> inspect(new_state.pairs))
-    Logger.debug("WR match unmatched: " <> inspect(new_state.players))
+    Logger.debug("
+    WR match_result:
+    pairs:  #{Enum.count(new_state.pairs)}
+    players:  #{Enum.count(new_state.players)}
+    unmatched: #{Enum.count(new_state.unmatched)}
+    played_pair_ids: #{MapSet.size(new_state.played_pair_ids)}
+    matched_with_bot: #{Enum.count(new_state.matched_with_bot)}
+    ")
 
     maybe_broadcast_pairs(new_state)
 

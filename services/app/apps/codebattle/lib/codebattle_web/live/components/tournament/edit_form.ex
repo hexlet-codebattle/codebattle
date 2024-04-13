@@ -172,6 +172,16 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               ) %>
               <%= error_tag(f, :break_duration_seconds) %>
             </div>
+            <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
+              <%= label(f, :round_timeout_seconds) %>
+              <%= number_input(
+                f,
+                :round_timeout_seconds,
+                class: "form-control",
+                max: "10000"
+              ) %>
+              <%= error_tag(f, :break_duration_seconds) %>
+            </div>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :break_duration_seconds) %>
               <%= number_input(

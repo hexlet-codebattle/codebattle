@@ -59,7 +59,7 @@ defmodule Codebattle.Tournament.ArenaTest do
              ] = get_matches(tournament)
     end
 
-    test "distributes uniformly into pairs with clans" do
+    test "works with several players" do
       creator = insert(:user)
       user1 = insert(:user, %{clan_id: 1, clan: "1"})
       user2 = insert(:user, %{clan_id: 2, clan: "2"})
@@ -102,8 +102,9 @@ defmodule Codebattle.Tournament.ArenaTest do
       assert players_count(tournament) == 8
       assert Enum.count(matches) == 4
 
-      player1 = Tournament.Players.get_player(tournament, user1.id)
+      %{id: player1_id} = player1 = Tournament.Players.get_player(tournament, user1.id)
       player3 = Tournament.Players.get_player(tournament, user3.id)
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{player1_id}")
 
       send_user_win_match(tournament, player1)
       send_user_win_match(tournament, player3)
@@ -133,10 +134,29 @@ defmodule Codebattle.Tournament.ArenaTest do
       %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
       assert Enum.empty?(players)
       :timer.sleep(200)
+      send_user_win_match(tournament, player1)
+      :timer.sleep(200)
 
       matches = get_matches(tournament)
 
       assert Enum.count(matches) == 7
+
+      assert_received %Codebattle.PubSub.Message{
+        event: "tournament:player:finished_round",
+        payload: %{player_id: ^player1_id, round_position: 0}
+      }
+
+      assert tournament.current_round_position == 0
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+
+      :timer.sleep(200)
+
+      tournament = Tournament.Context.get(tournament.id)
+
+      assert tournament.current_round_position == 1
+      matches = get_matches(tournament)
+
+      assert Enum.count(matches) == 11
     end
   end
 end

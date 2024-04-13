@@ -409,7 +409,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("waiting_room:started", params) do
-    Logger.error("WR started, name: " <> inspect(params))
+    Logger.debug("WR started, name: " <> inspect(params))
 
     [
       %Message{
@@ -421,7 +421,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("waiting_room:matchmaking_started", params) do
-    Logger.error("WR MM started, player_ids: " <> inspect(params.player_ids))
+    Logger.debug("WR MM started, player_ids: " <> inspect(params.player_ids))
 
     [
       %Message{
@@ -433,7 +433,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("waiting_room:matched", params) do
-    Logger.error("WR MM matched, pairs: " <> inspect(params.pairs))
+    Logger.debug("WR MM matched, pairs: " <> inspect(params.pairs))
 
     [
       %Message{

@@ -254,9 +254,10 @@ function Tournament() {
     );
   }
 
-  const matchTimeoutSeconds = tournament.meta?.roundsConfigType === 'per_round'
-    ? tournament.meta?.roundsConfig[tournament.currentRoundPosition]?.roundTimeoutSeconds
-    : tournament.matchTimeoutSeconds;
+  // Temporary not support different timeouts for rounds
+  // const matchTimeoutSeconds = tournament.meta?.roundsConfigType === 'per_round'
+  //   ? tournament.meta?.roundsConfig[tournament.currentRoundPosition]?.roundTimeoutSeconds
+  //   : tournament.matchTimeoutSeconds;
 
   return (
     <>
@@ -299,7 +300,8 @@ function Tournament() {
           lastRoundEndedAt={tournament.lastRoundEndedAt}
           lastRoundStartedAt={tournament.lastRoundStartedAt}
           level={tournament.level}
-          matchTimeoutSeconds={matchTimeoutSeconds}
+          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+          roundTimeoutSeconds={tournament.roundTimeoutSeconds}
           name={tournament.name}
           players={tournament.players}
           playersCount={playersCount}

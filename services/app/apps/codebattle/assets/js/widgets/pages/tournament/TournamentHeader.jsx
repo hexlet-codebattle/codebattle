@@ -80,6 +80,7 @@ function TournamentStateDescription({
   breakState,
   breakDurationSeconds,
   matchTimeoutSeconds,
+  roundTimeoutSeconds,
   lastRoundStartedAt,
   lastRoundEndedAt,
   isOnline,
@@ -95,7 +96,7 @@ function TournamentStateDescription({
         <TournamentRemainingTimer
           key={lastRoundStartedAt}
           startsAt={lastRoundStartedAt}
-          duration={matchTimeoutSeconds}
+          duration={roundTimeoutSeconds || matchTimeoutSeconds}
         />
       </span>
     );
@@ -123,6 +124,7 @@ function TournamentHeader({
   breakState,
   breakDurationSeconds,
   matchTimeoutSeconds,
+  roundTimeoutSeconds,
   lastRoundStartedAt,
   lastRoundEndedAt,
   startsAt,
@@ -224,27 +226,27 @@ function TournamentHeader({
               !isOver ? (
                 <div className="d-flex justify-items-center pb-2">
                   {type !== 'team' && (
-                  <div className="mr-2 mr-lg-0">
-                    <JoinButton
-                      isShow={state !== TournamentStates.active}
-                      isParticipant={!!players[currentUserId]}
-                      disabled={!isOnline || !isLive}
-                    />
-                  </div>
-                )}
+                    <div className="mr-2 mr-lg-0">
+                      <JoinButton
+                        isShow={state !== TournamentStates.active}
+                        isParticipant={!!players[currentUserId]}
+                        disabled={!isOnline || !isLive}
+                      />
+                    </div>
+                  )}
                 </div>
-            ) : (
-              <div className="d-flex justify-items-center pb-2">
-                <a
-                  className="btn btn-primary rounded-lg ml-lg-2 ml-md-2 mr-2"
-                  href="/tournaments"
-                >
-                  <FontAwesomeIcon className="mr-2" icon="undo" />
-                  Tournaments
-                </a>
-              </div>
-            )
-              }
+              ) : (
+                <div className="d-flex justify-items-center pb-2">
+                  <a
+                    className="btn btn-primary rounded-lg ml-lg-2 ml-md-2 mr-2"
+                    href="/tournaments"
+                  >
+                    <FontAwesomeIcon className="mr-2" icon="undo" />
+                    Tournaments
+                  </a>
+                </div>
+              )
+            }
             <div className="d-flex justify-items-center pb-2">
               {canModerate && (
                 <TournamentMainControlButtons
@@ -316,6 +318,7 @@ function TournamentHeader({
               breakState={breakState}
               breakDurationSeconds={breakDurationSeconds}
               matchTimeoutSeconds={matchTimeoutSeconds}
+              roundTimeoutSeconds={roundTimeoutSeconds}
               lastRoundStartedAt={lastRoundStartedAt}
               lastRoundEndedAt={lastRoundEndedAt}
               isLive={isLive}

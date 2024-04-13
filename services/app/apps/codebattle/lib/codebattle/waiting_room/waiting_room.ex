@@ -6,5 +6,6 @@ defmodule Codebattle.WaitingRoom do
   defdelegate put_players(name, players), to: Server
   defdelegate get_state(name), to: Server
   defdelegate match_players(name), to: Server
+  defdelegate pause(name), to: Server
   defdelegate update_state(name, params), to: Server
 end

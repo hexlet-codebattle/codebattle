@@ -259,6 +259,22 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         <% end %>
         <%= if f.params["type"] in ["arena"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
+            <div class="d-flex flex-column justify-content-between w-auto">
+              <%= label(f, :round_timeout_seconds) %>
+              <%= number_input(
+                f,
+                :round_timeout_seconds,
+                class: "form-control",
+                value: f.params["round_timeout_seconds"] || "177",
+                min: "100",
+                max: "10000"
+              ) %>
+              <%= error_tag(f, :round_timeout_seconds) %>
+            </div>
+          </div>
+        <% end %>
+        <%= if f.params["type"] in ["arena"] do %>
+          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
             <div class="form-check">
               <%= checkbox(f, :use_clan, class: "form-check-input") %>
               <%= label(f, :use_clan, class: "form-check-label") %>

@@ -73,7 +73,7 @@ defmodule Codebattle.Tournament.Context do
       Tournament.Helpers.can_access?(tournament, user, %{})
     end)
     |> Enum.uniq_by(& &1.id)
-    |> Enum.sort_by(& &1.id)
+    |> Enum.sort_by(& &1.id, :desc)
   end
 
   @spec get_db_tournaments(nonempty_list(String.t())) :: list(Tournament.t())

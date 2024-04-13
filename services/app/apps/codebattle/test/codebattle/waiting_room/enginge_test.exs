@@ -33,8 +33,11 @@ defmodule Codebattle.WaitingRoom.EngineTest do
 
     state = %State{
       name: "wr",
+      state: "active",
       time_step_ms: 100_000,
       min_time_sec: 3,
+      min_time_with_bot_sec: 20,
+      min_time_with_played_sec: 15,
       players: players,
       played_pair_ids: MapSet.new([[2, 4], [8, 9], [14, 15]])
     }
