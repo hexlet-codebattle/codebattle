@@ -58,7 +58,6 @@ export const connectToSpectator = () => dispatch => {
     dispatch(actions.clearActiveGameId());
     dispatch(actions.clearGameStatus());
 
-    console.log(payload, data);
     setTimeout(params => {
       dispatch(actions.setActiveGameId(params));
     }, 10, data);

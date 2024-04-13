@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament do
              :match_timeout_seconds,
              :break_state,
              :creator_id,
+             :event_id,
              :current_round_id,
              :current_round_position,
              :description,
@@ -154,12 +155,19 @@ defmodule Codebattle.Tournament do
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
     |> add_creator(params["creator"] || params[:creator])
+    |> add_event(params["event"] || params[:event])
   end
 
   defp add_creator(changeset, nil), do: changeset
 
   defp add_creator(changeset, creator) do
     change(changeset, %{creator: creator})
+  end
+
+  defp add_event(changeset, nil), do: changeset
+
+  defp add_event(changeset, event) do
+    change(changeset, %{event: event})
   end
 
   def access_types, do: @access_types

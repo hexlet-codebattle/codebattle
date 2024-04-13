@@ -126,6 +126,7 @@ defmodule Codebattle.Tournament.Server do
        :__struct__,
        :__meta__,
        :creator,
+       :event,
        :matches,
        :players,
        :stats,
