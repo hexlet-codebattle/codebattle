@@ -117,13 +117,15 @@ defmodule Codebattle.Game.Engine do
   end
 
   def join_game(game, user) do
+    now = TimeHelper.utc_now()
+
     with :ok <- check_auth(user, game.mode, game.tournament_id),
          {:ok, {_old_game_state, game}} <-
            fire_transition(game.id, :join, %{
              players: game.players ++ [Game.Player.build(user, %{task: game.task})],
-             starts_at: TimeHelper.utc_now()
+             starts_at: now
            }),
-         update_game!(game, %{state: "playing"}),
+         update_game!(game, %{state: "playing", starts_at: now, task_id: game.task.id}),
          :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_game_updated(game) do
       {:ok, game}
