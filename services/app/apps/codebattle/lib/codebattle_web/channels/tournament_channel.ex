@@ -189,7 +189,7 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:start_round", params, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Server.get_tournament(tournament_id)
-    new_round_params = cast_start_round_params(params)
+    new_round_params = cast_game_params(params)
 
     if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :start_round_force, new_round_params)
@@ -198,15 +198,12 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  # def handle_in("tournament:create_match", %{"user_id" => user_id, "level" => level}, socket) do
+  # def handle_in("tournament:create_match", params, socket) do
   #   tournament_id = socket.assigns.tournament_info.id
   #   tournament = Tournament.Server.get_tournament(tournament_id)
 
   #   if Helpers.can_moderate?(tournament, socket.assigns.current_user) do
-  #     Tournament.Context.handle_event(tournament_id, :create_match, %{
-  #       user_id: user_id,
-  #       level: level
-  #     })
+  #     Tournament.Context.handle_event(tournament_id, :create_match, cast_game_params(params))
   #   end
 
   #   {:noreply, socket}
@@ -434,14 +431,14 @@ defmodule CodebattleWeb.TournamentChannel do
     end
   end
 
-  defp cast_start_round_params(%{"task_level" => level, "timeout_seconds" => seconds}),
+  defp cast_game_params(%{"task_level" => level, "timeout_seconds" => seconds}),
     do: %{task_level: level, timeout_seconds: seconds}
 
-  defp cast_start_round_params(%{"task_level" => level}), do: %{task_level: level}
+  defp cast_game_params(%{"task_level" => level}), do: %{task_level: level}
 
-  defp cast_start_round_params(%{"task_id" => id, "timeout_seconds" => seconds}),
+  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}),
     do: %{task_id: id, timeout_seconds: seconds}
 
-  defp cast_start_round_params(%{"task_id" => id}), do: %{task_id: id}
-  defp cast_start_round_params(_params), do: %{}
+  defp cast_game_params(%{"task_id" => id}), do: %{task_id: id}
+  defp cast_game_params(_params), do: %{}
 end

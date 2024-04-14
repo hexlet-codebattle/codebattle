@@ -13,6 +13,9 @@ defmodule Codebattle.Tournament.Arena do
   def reset_meta(meta), do: meta
 
   @impl Tournament.Base
+  def finish_round?(_tournament), do: false
+
+  @impl Tournament.Base
   def calculate_round_results(tournament) do
     # TODO: improve  index with same score should be the same
     # now we just use random

@@ -35,6 +35,9 @@ defmodule Codebattle.Tournament.Show do
   @impl Tournament.Base
   def maybe_create_rematch(tournament, _params), do: tournament
 
+  @impl Tournament.Base
+  def finish_round?(_tournament), do: false
+
   defp final_round?(
          _tournament = %{
            task_provider: "task_pack",

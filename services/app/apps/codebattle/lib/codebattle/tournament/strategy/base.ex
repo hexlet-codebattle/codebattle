@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament.Base do
   @callback complete_players(Tournament.t()) :: Tournament.t()
   @callback maybe_create_rematch(Tournament.t(), map()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
+  @callback finish_round?(Tournament.t()) :: boolean()
   @callback reset_meta(map()) :: map()
   @callback game_type() :: String.t()
 
@@ -248,12 +249,10 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def maybe_finish_round(tournament) do
-        if use_waiting_room?(tournament) or
-             tournament.type == "swiss" or
-             Enum.any?(get_matches(tournament), &(&1.state == "playing")) do
-          tournament
-        else
+        if finish_round?(tournament) do
           do_finish_round_and_next_step(tournament)
+        else
+          tournament
         end
       end
 
