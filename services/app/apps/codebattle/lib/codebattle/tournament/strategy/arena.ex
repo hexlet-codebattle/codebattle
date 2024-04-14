@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.Arena do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.TournamentResult
 
   @impl Tournament.Base
   def game_type, do: "duo"
@@ -17,22 +18,21 @@ defmodule Codebattle.Tournament.Arena do
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do
-    # TODO: improve  index with same score should be the same
-    # now we just use random
+    TournamentResult.upsert_results(tournament)
+    get_player_results = TournamentResult.get_player_results(tournament)
 
-    sorted_players_with_index =
-      tournament
-      |> get_players()
-      |> Enum.sort_by(& &1.score, :desc)
-
-    sorted_players_with_index
-    |> Enum.with_index()
-    |> Enum.each(fn {player, index} ->
-      Tournament.Players.put_player(tournament, %{player | place: index})
+    get_player_results
+    |> Enum.each(fn %{score: score, place: place, player_id: player_id} ->
+      Tournament.Players.put_player(tournament, %{
+        Tournament.Players.get_player(tournament, player_id)
+        | place: place,
+          score: score
+      })
     end)
 
     top_player_ids =
-      sorted_players_with_index
+      Tournament.Players.get_players()
+      |> Enum.sort_by(& &1.score)
       |> Enum.take(30)
       |> Enum.map(& &1.id)
 

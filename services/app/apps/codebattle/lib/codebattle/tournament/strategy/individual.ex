@@ -40,11 +40,6 @@ defmodule Codebattle.Tournament.Individual do
   end
 
   @impl Tournament.Base
-  def finish_round?(tournament) do
-    Enum.any?(get_matches(tournament), &(&1.state == "playing"))
-  end
-
-  @impl Tournament.Base
   def build_round_pairs(tournament) do
     last_round_matches =
       tournament
@@ -63,6 +58,11 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Base
   def finish_tournament?(tournament), do: final_round?(tournament)
+
+  @impl Tournament.Base
+  def finish_round?(tournament) do
+    Enum.any?(get_matches(tournament), &(&1.state == "playing"))
+  end
 
   @impl Tournament.Base
   def maybe_create_rematch(tournament, _params), do: tournament
