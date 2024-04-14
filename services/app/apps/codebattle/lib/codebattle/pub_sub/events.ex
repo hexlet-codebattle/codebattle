@@ -232,103 +232,75 @@ defmodule Codebattle.PubSub.Events do
         %Message{
           topic: "games",
           event: "game:created",
-          payload: %{
-            game: %{
-              id: Game.Helpers.get_game_id(game),
-              inserted_at: Game.Helpers.get_inserted_at(game),
-              is_bot: Game.Helpers.bot_game?(game),
-              level: Game.Helpers.get_level(game),
-              players: Game.Helpers.get_players(game),
-              state: Game.Helpers.get_state(game),
-              timeout_seconds: Game.Helpers.get_timeout_seconds(game),
-              type: Game.Helpers.get_type(game),
-              visibility_type: Game.Helpers.get_visibility_type(game)
-            }
-          }
+          payload: %{game: game_main_data(game)}
         }
       ]
     end
   end
 
   def get_messages("game:updated", %{game: game}) do
-    payload = %{
-      game: %{
-        id: Game.Helpers.get_game_id(game),
-        inserted_at: Game.Helpers.get_inserted_at(game),
-        is_bot: Game.Helpers.bot_game?(game),
-        level: Game.Helpers.get_level(game),
-        players: Game.Helpers.get_players(game),
-        state: Game.Helpers.get_state(game),
-        timeout_seconds: Game.Helpers.get_timeout_seconds(game),
-        type: Game.Helpers.get_type(game),
-        visibility_type: Game.Helpers.get_visibility_type(game)
-      }
-    }
-
-    [
-      %Message{
-        topic: "game:#{game.id}",
-        event: "game:updated",
-        payload: payload
-      },
-      %Message{
-        topic: "games",
-        event: "game:updated",
-        payload: payload
-      }
-    ]
-  end
-
-  def get_messages("game:finished", %{game: game}) do
     game_events = [
       %Message{
         topic: "game:#{game.id}",
-        event: "game:finished",
-        payload: %{game_id: game.id, game_state: game.state}
-      },
-      %Message{
-        topic: "games",
-        event: "game:finished",
-        payload: %{
-          game_id: game.id,
-          tournament_id: game.tournament_id,
-          game_state: game.state,
-          game: %{
-            id: Game.Helpers.get_game_id(game),
-            inserted_at: Game.Helpers.get_inserted_at(game),
-            is_bot: Game.Helpers.bot_game?(game),
-            level: Game.Helpers.get_level(game),
-            players: Game.Helpers.get_players(game),
-            state: Game.Helpers.get_state(game),
-            timeout_seconds: Game.Helpers.get_timeout_seconds(game),
-            type: Game.Helpers.get_type(game),
-            visibility_type: Game.Helpers.get_visibility_type(game)
-          }
-        }
+        event: "game:updated",
+        payload: %{game: game_main_data(game)}
       }
     ]
 
-    tournament_events =
-      if game.tournament_id do
-        [
-          %Message{
-            topic: "game:tournament:#{game.tournament_id}",
-            event: "game:tournament:finished",
-            payload: %{
-              game_id: game.id,
-              ref: game.ref,
-              game_state: game.state,
-              game_level: game.level,
-              duration_sec: game.duration_sec || game.timeout_seconds,
-              player_results: Game.Helpers.get_player_results(game)
-            }
-          }
-        ]
-      else
-        []
-      end
+    if game.tournament_id do
+      game_events
+    else
+      [
+        %Message{
+          topic: "games",
+          event: "game:updated",
+          payload: %{game: game_main_data(game)}
+        }
+        | game_events
+      ]
+    end
+  end
 
-    game_events ++ tournament_events
+  def get_messages("game:finished", %{game: game}) do
+    if game.tournament_id do
+      [
+        %Message{
+          topic: "game:#{game.id}",
+          event: "game:finished",
+          payload: %{game_id: game.id, game_state: game.state}
+        },
+        %Message{
+          topic: "game:tournament:#{game.tournament_id}",
+          event: "game:tournament:finished",
+          payload: %{
+            game_id: game.id,
+            ref: game.ref,
+            game_state: game.state,
+            game_level: game.level,
+            duration_sec: game.duration_sec || game.timeout_seconds,
+            player_results: Game.Helpers.get_player_results(game)
+          }
+        }
+      ]
+    else
+      [
+        %Message{
+          topic: "game:#{game.id}",
+          event: "game:finished",
+          payload: %{game_id: game.id, game_state: game.state}
+        },
+        %Message{
+          topic: "games",
+          event: "game:finished",
+          payload: %{
+            game_id: game.id,
+            tournament_id: game.tournament_id,
+            game_state: game.state,
+            game: game_main_data(game)
+          }
+        }
+      ]
+    end
   end
 
   def get_messages("game:terminated", params) do
@@ -447,4 +419,19 @@ defmodule Codebattle.PubSub.Events do
   defp chat_topic(:lobby), do: "chat:lobby"
   defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
   defp chat_topic({:game, id}), do: "chat:game:#{id}"
+
+  defp game_main_data(game) do
+    %{
+      id: Game.Helpers.get_game_id(game),
+      tournament_id: game.tournament_id,
+      inserted_at: Game.Helpers.get_inserted_at(game),
+      is_bot: Game.Helpers.bot_game?(game),
+      level: Game.Helpers.get_level(game),
+      players: Game.Helpers.get_players(game),
+      state: Game.Helpers.get_state(game),
+      timeout_seconds: Game.Helpers.get_timeout_seconds(game),
+      type: Game.Helpers.get_type(game),
+      visibility_type: Game.Helpers.get_visibility_type(game)
+    }
+  end
 end

@@ -40,6 +40,12 @@ defmodule CodebattleWeb.Api.V1.UserController do
     end
   end
 
+  def stats(conn, %{"id" => "0"}) do
+    user = User.build_guest()
+
+    json(conn, %{stats: %{games: %{"won" => 0, "lost" => 0, "gave_up" => 0}, all: []}, user: user})
+  end
+
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
     user = User.get!(id)
