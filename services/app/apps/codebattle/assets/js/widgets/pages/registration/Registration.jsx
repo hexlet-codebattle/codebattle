@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import axios from 'axios';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-const getCsrfToken = () => document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute('content'); // validation token
+const getCsrfToken = () =>
+  document.querySelector("meta[name='csrf-token']").getAttribute('content'); // validation token
 
-const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
+const isShowInvalidMessage = (formik, typeValue) =>
+  formik.submitCount !== 0 && !!formik.errors[typeValue];
 
-const getInputClassName = isInvalid => cn('form-control', {
-  'is-invalid': isInvalid,
-});
+const getInputClassName = (isInvalid) =>
+  cn('form-control', {
+    'is-invalid': isInvalid,
+  });
 
 const Container = ({ children }) => (
   <div className="container-fluid">
@@ -42,9 +43,7 @@ const Form = ({ onSubmit, id, children }) => (
   </form>
 );
 
-const Input = ({
-  id, type, title, formik,
-}) => {
+const Input = ({ id, type, title, formik }) => {
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
 
@@ -74,8 +73,10 @@ const Footer = ({ children }) => (
 );
 
 const searchParams = new URLSearchParams(window.location.search);
-const getNextLocation = () => (searchParams.has('next') ? searchParams.get('next') : '/');
-const getLinkWithNext = link => (searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link);
+const getNextLocation = () =>
+  searchParams.has('next') ? searchParams.get('next') : '/';
+const getLinkWithNext = (link) =>
+  searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link;
 
 const SocialLinks = () => (
   <>
@@ -151,14 +152,20 @@ function SignIn() {
         .then(() => {
           window.location.href = getNextLocation();
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: add log for auth error
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email === 'EMAIL_NOT_FOUND') { formik.errors.email = 'Invalid email'; }
-            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.email === 'EMAIL_NOT_FOUND') {
+              formik.errors.email = 'Invalid email';
+            }
+            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },
@@ -205,56 +212,53 @@ function SignUp() {
       passwordConfirmation: '',
     },
     validationSchema: Yup.object().shape({
-      name: Yup
-        .string()
+      name: Yup.string()
         .test(
           'start-or-end-with-empty-symbols',
-          'Can\'t start or end with empty symbols',
-          value => {
+          "Can't start or end with empty symbols",
+          (value) => {
             if (!value) {
               return true;
             }
-            const invalidSymbolIndex = invalidSymbols.findIndex(invalidSymbol => (
-              value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
-            ));
+            const invalidSymbolIndex = invalidSymbols.findIndex(
+              (invalidSymbol) =>
+                value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
+            );
 
             return invalidSymbolIndex === -1;
-          },
+          }
         )
         .min(3, 'Should be from 3 to 16 characters')
         .max(16, 'Should be from 3 to 16 characters')
         .matches(
           /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
-          'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
+          'Should contain Latin letters, numbers and underscores. Only begin with latin letter'
         )
         .required('Nickname required'),
-      email: Yup
-        .string()
+      email: Yup.string()
         .email('Invalid email')
-        .test(
-          'exclude-braille-pattern-blank',
-          'Invalid email',
-          value => (
-            value
-              ? !value.includes(braillePatternBlank)
-              : true
-          ),
+        .test('exclude-braille-pattern-blank', 'Invalid email', (value) =>
+          value ? !value.includes(braillePatternBlank) : true
         )
-        .matches(/^[a-zA-Z0-9]{1}[^;]*[a-zA-Z0-9]{1}@[^;]*$/i, 'Should begin and end with a Latin letter or number')
-        .matches(/^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/i, 'Can\'t contain special symbols')
+        .matches(
+          /^[a-zA-Z0-9]{1}[^;]*@[^;]*$/i,
+          'Should begin and end with a Latin letter or number'
+        )
+        .matches(
+          /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$/i,
+          "Can't contain special symbols"
+        )
         .required('Email required'),
-      password: Yup
-        .string()
-        .matches(/^\S*$/, 'Can\'t contain empty symbols')
+      password: Yup.string()
+        .matches(/^\S*$/, "Can't contain empty symbols")
         .min(6, 'Should be from 6 to 16 characters')
         .max(16, 'Should be from 6 to 16 characters')
         .required('Password required'),
-      passwordConfirmation: Yup
-        .string()
+      passwordConfirmation: Yup.string()
         .required('Confirmation required')
         .oneOf([Yup.ref('password')], 'Passwords must match'),
     }),
-    onSubmit: formData => {
+    onSubmit: (formData) => {
       axios
         .post('/api/v1/users', formData, {
           headers: {
@@ -265,13 +269,19 @@ function SignUp() {
         .then(() => {
           window.location.href = getNextLocation();
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.name) { formik.setFieldError('name', errors.name); }
-            if (errors.email) { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.name) {
+              formik.setFieldError('name', errors.name);
+            }
+            if (errors.email) {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },
@@ -319,22 +329,30 @@ function ResetPassword() {
     }),
     onSubmit: ({ email }) => {
       axios
-        .post('/api/v1/reset_password', { email }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': getCsrfToken(),
-          },
-        })
+        .post(
+          '/api/v1/reset_password',
+          { email },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-csrf-token': getCsrfToken(),
+            },
+          }
+        )
         .then(() => {
           setIsSend(true);
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: add log for auth error
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email) { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.email) {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },
