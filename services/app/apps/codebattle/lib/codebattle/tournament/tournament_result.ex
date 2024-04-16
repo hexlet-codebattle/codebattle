@@ -28,25 +28,48 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def get_player_results(tournament) do
-    """
-      with scores as(
-      SELECT
-      sum(score) as score,
-      user_id,
-      FROM
-      tournament_results
-      where tournament_id = #{tournament.id}
-      )
-      select
-      user_id as player_id,
-      score,
-      DENSE_RANK() OVER (ORDER BY score DESC) as place
-      from scores
-    """
+    score_query =
+      __MODULE__
+      |> where([tr], tr.tournament_id == ^tournament.id)
+      |> group_by([tr], tr.user_id)
+      |> select([tr], %{player_id: tr.user_id, score: sum(tr.score)})
+
+    from(subquery(score_query))
+    |> select(
+      [s],
+      %{
+        player_id: s.player_id,
+        score: s.score,
+        place: fragment("dense_rank() OVER (ORDER BY ? DESC)", s.score)
+      }
+    )
+    |> Repo.all()
   end
 
+  @doc """
+    Here we calculate the score for each player based on the tasks that all players solved.
+    1. Obtain the 95th percentile for each task based on the winners game time.
+    2. Calculate the `time_coefficient` for each player based on their game time:
+      - `time_coefficient` equals 100% if their time is less than the 95th percentile.
+      - `time_coefficient` equals 30% for the slowest time among all winners.
+      - `time_coefficient` linearly decreases from 100% to 30% based on the line
+         from the 95th percentile time to the slowest time.
+    3. Each task level has a `base_score`:
+      - Elementary: 30
+      - Easy: 100
+      - Medium: 300
+      - Hard: 1000
+    4. Each player has a `test_result_percent` ranging from 100% to 0%, where the winner always has 100%.
+    5. The final score is calculated as `base_score` * `time_coefficient` * `test_result_percent`.
+
+    Example:
+    Task level is hard, so the base score = 1000
+    95th Percentile = 104.0 seconds
+
+  """
+
   def upsert_results(tournament) do
-    """
+    Repo.query!("""
       with duration_percentile_for_tasks
       as (
       SELECT
@@ -69,10 +92,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       task_id, level),
       stats as (
       select
-      (p.player_info->>'result_percent')::numeric AS result_percent,
-      (p.player_info->>'name') AS user_name,
-      (p.player_info->>'clan_id')::integer AS clan_id,
-      (p.player_info->>'id')::integer AS user_id,
+      (p.player_info->'result_percent')::numeric AS result_percent,
+      (p.player_info->'id')::integer AS user_id,
+      (p.player_info->'name') AS user_name,
+      (p.player_info->'clan_id')::integer AS clan_id,
       g.duration_sec,
       g.tournament_id,
       g.id as game_id,
@@ -80,7 +103,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       dt.base_score,
       CASE
       WHEN g.duration_sec <= dt.percentile_95 THEN base_score
-      ELSE base_score * (100 - (100 - 1) * ((g.duration_sec - dt.percentile_95) / dt.max_duration)) / 100.0
+      WHEN g.duration_sec >= dt.max_duration THEN base_score * 0.3
+      ELSE base_score * (0.3 + 0.7 * (g.duration_sec - dt.max_duration) / (dt.percentile_95 - dt.max_duration))
       END AS score,
       g.level,
       g.task_id,
@@ -93,6 +117,18 @@ defmodule Codebattle.Tournament.TournamentResult do
       where g.tournament_id = #{tournament.id}
       )
       insert into tournament_results
+      (
+      tournament_id,
+      game_id,
+      user_id,
+      user_name,
+      clan_id,
+      task_id,
+      score,
+      level,
+      duration_sec,
+      result_percent
+      )
       select
       tournament_id,
       game_id,
@@ -100,11 +136,11 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
-      COALESCE(GREATEST(result_percent,1.0) * score / 100.0, 1) as score,
+      COALESCE(result_percent * score / 100.0, 0) as score,
       level,
       duration_sec,
       result_percent
       from stats
-    """
+    """)
   end
 end

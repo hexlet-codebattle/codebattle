@@ -59,7 +59,7 @@ defmodule Codebattle.Tournament.ArenaTest do
              ] = get_matches(tournament)
     end
 
-    test "works with several players" do
+    test "works with several players and single round" do
       creator = insert(:user)
       user1 = insert(:user, %{clan_id: 1, clan: "1"})
       user2 = insert(:user, %{clan_id: 2, clan: "2"})
@@ -83,6 +83,7 @@ defmodule Codebattle.Tournament.ArenaTest do
           "type" => "arena",
           "state" => "waiting_participants",
           "use_clan" => "true",
+          "rounds_limit" => "1",
           "players_limit" => 200
         })
 
@@ -153,10 +154,10 @@ defmodule Codebattle.Tournament.ArenaTest do
 
       tournament = Tournament.Context.get(tournament.id)
 
-      assert tournament.current_round_position == 1
+      assert tournament.current_round_position == 0
       matches = get_matches(tournament)
 
-      assert Enum.count(matches) == 11
+      assert Enum.count(matches) == 7
     end
   end
 end

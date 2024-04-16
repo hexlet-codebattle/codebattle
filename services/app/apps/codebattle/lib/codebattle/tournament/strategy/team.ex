@@ -99,7 +99,7 @@ defmodule Codebattle.Tournament.Team do
 
   @impl Tournament.Base
   def finish_round?(tournament) do
-    Enum.any?(get_matches(tournament), &(&1.state == "playing"))
+    !Enum.any?(get_matches(tournament), &(&1.state == "playing"))
   end
 
   defp shift_pairs(teams, current_round) do

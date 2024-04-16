@@ -12,6 +12,9 @@ defmodule Codebattle.TournamentTestHelpers do
       |> Enum.filter(&(user_id in &1.player_ids))
 
     %{game_id: game_id, id: ref, player_ids: player_ids} = last_user_match
+    # TODO: finish actual game
+    # params = %{user: %{id: user_id}, editor_text: "", editor_lang: "js"}
+    # Codebattle.Game.Context.check_result(game_id, params)
 
     opponent_id = get_opponent(player_ids, user_id)
 

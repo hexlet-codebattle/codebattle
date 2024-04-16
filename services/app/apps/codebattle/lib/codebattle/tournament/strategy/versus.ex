@@ -50,6 +50,6 @@ defmodule Codebattle.Tournament.Versus do
 
   @impl Tournament.Base
   def finish_round?(tournament) do
-    Enum.any?(get_matches(tournament), &(&1.state == "playing"))
+    !Enum.any?(get_matches(tournament), &(&1.state == "playing"))
   end
 end

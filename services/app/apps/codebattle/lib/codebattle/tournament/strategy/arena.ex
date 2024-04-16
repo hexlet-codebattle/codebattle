@@ -31,7 +31,8 @@ defmodule Codebattle.Tournament.Arena do
     end)
 
     top_player_ids =
-      Tournament.Players.get_players()
+      tournament
+      |> Tournament.Players.get_players()
       |> Enum.sort_by(& &1.score)
       |> Enum.take(30)
       |> Enum.map(& &1.id)
