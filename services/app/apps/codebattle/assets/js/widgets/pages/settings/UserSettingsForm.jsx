@@ -153,7 +153,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               <Field
                 id="radioDendy"
                 type="radio"
-                name="sound_settings.type"
+                name="soundSettings.type"
                 value="dendy"
                 className="form-check-input"
                 onClick={() => playSound('dendy', values.soundSettings.level * 0.1)}
@@ -164,7 +164,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               <Field
                 id="radioCS"
                 type="radio"
-                name="sound_settings.type"
+                name="soundSettings.type"
                 value="cs"
                 className="form-check-input"
                 onClick={() => playSound('cs', values.soundSettings.level * 0.1)}
@@ -175,8 +175,8 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               <Field
                 id="radioStandard"
                 type="radio"
-                name="sound_settings.type"
-                value="standard"
+                name="soundSettings.type"
+                value="standart"
                 className="form-check-input"
                 onClick={() => playSound('standart', values.soundSettings.level * 0.1)}
               />
@@ -186,7 +186,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               <Field
                 id="radioSilent"
                 type="radio"
-                name="sound_settings.type"
+                name="soundSettings.type"
                 value="silent"
                 className="form-check-input"
               />
@@ -202,7 +202,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               type="range"
               min={0}
               max={10}
-              name="sound_settings.level"
+              name="soundSettings.level"
               disabled={values.soundSettings.type === 'silent'}
               onInput={e => {
                 handleChange(e);
