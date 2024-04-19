@@ -12,37 +12,38 @@
   </div>
 
   <h3 class="text-center mt-4">Tasks</h3>
-  <table class="table table-sm">
-    <thead>
-      <tr>
-        <th>id</th>
-        <th>name</th>
-        <th>level</th>
-        <th>tags</th>
-        <th>origin</th>
-        <th>state</th>
-        <th>visibility</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= for task_id <- @task_pack.task_ids do %>
-        <%= if task = Enum.find(@tasks, fn task -> task.id == task_id end) do %>
-          <tr>
-            <td class="align-middle text"><%= task.id %></td>
-            <td class="align-middle text"><%= task.name %></td>
-            <td class="align-middle text"><%= task.level %></td>
-            <td class="align-middle text"><%= Enum.join(task.tags, ", ") %></td>
-            <td class="align-middle text"><%= task.origin %></td>
-            <td class="align-middle text"><%= task.state %></td>
-            <td class="align-middle text"><%= task.visibility %></td>
-          </tr>
-        <% else %>
-          <span>Task not found for id = <%= task_id %></span>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>name</th>
+          <th>level</th>
+          <th>tags</th>
+          <th>origin</th>
+          <th>state</th>
+          <th>visibility</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for task_id <- @task_pack.task_ids do %>
+          <%= if task = Enum.find(@tasks, fn task -> task.id == task_id end) do %>
+            <tr>
+              <td class="align-middle text"><%= task.id %></td>
+              <td class="align-middle text"><%= task.name %></td>
+              <td class="align-middle text"><%= task.level %></td>
+              <td class="align-middle text"><%= Enum.join(task.tags, ", ") %></td>
+              <td class="align-middle text"><%= task.origin %></td>
+              <td class="align-middle text"><%= task.state %></td>
+              <td class="align-middle text"><%= task.visibility %></td>
+            </tr>
+          <% else %>
+            <span>Task not found for id = <%= task_id %></span>
+          <% end %>
         <% end %>
-      <% end %>
-    </tbody>
-  </table>
-
+      </tbody>
+    </table>
+  </div>
   <div class="d-flex">
     <%= if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do %>
       <%= link("Edit",
