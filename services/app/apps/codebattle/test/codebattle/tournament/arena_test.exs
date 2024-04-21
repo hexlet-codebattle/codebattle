@@ -143,8 +143,8 @@ defmodule Codebattle.Tournament.ArenaTest do
       assert Enum.count(matches) == 7
 
       assert_received %Codebattle.PubSub.Message{
-        event: "tournament:player:finished_round",
-        payload: %{player_id: ^player1_id, round_position: 0}
+        event: "tournament:player:updated",
+        payload: %{player: %{id: ^player1_id, state: "in_waiting_room_active"}}
       }
 
       assert tournament.current_round_position == 0

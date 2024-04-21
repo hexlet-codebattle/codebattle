@@ -116,7 +116,7 @@ defmodule Codebattle.Game.Player do
   def build(player = %Tournament.Player{}, params) do
     init_player = %__MODULE__{
       id: player.id,
-      is_banned: player.is_banned,
+      is_banned: player.state == "banned",
       is_bot: player.is_bot,
       is_guest: false,
       name: player.name,

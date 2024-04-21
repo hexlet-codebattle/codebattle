@@ -13,7 +13,6 @@ defmodule Codebattle.Tournament.Player do
     :clan,
     :clan_id,
     :id,
-    :is_banned,
     :is_bot,
     :lang,
     :matches_ids,
@@ -23,16 +22,24 @@ defmodule Codebattle.Tournament.Player do
     :rating,
     :score,
     :team_id,
-    :was_online,
     :wins_count
   ]
+
+  @states ~w(
+  base
+  banned
+  finished
+  finished_round
+  in_waiting_room_active
+  in_waiting_room_paused
+  )
 
   embedded_schema do
     field(:avatar_url, :string)
     field(:id, :integer)
     field(:clan, :string)
+    field(:state, :string, default: "base")
     field(:clan_id, :integer)
-    field(:is_banned, :boolean, default: false)
     field(:is_bot, :boolean)
     field(:lang, :string)
     field(:matches_ids, {:array, :integer}, default: [])
@@ -43,7 +50,6 @@ defmodule Codebattle.Tournament.Player do
     field(:score, :integer, default: 0)
     field(:task_ids, {:array, :integer}, default: [])
     field(:team_id, :integer)
-    field(:was_online, :boolean, default: false)
     field(:wins_count, :integer, default: 0)
   end
 
@@ -54,6 +60,7 @@ defmodule Codebattle.Tournament.Player do
     %__MODULE__{}
     |> cast(params, @fields)
     |> validate_required([:id, :name])
+    |> validate_inclusion(:state, @states)
     |> apply_action!(:validate)
   end
 end

@@ -76,6 +76,7 @@ defmodule Codebattle.MixProject do
       {:recon, "~> 2.5"},
       {:bandit, "~> 1.0"},
       {:statistics, "~> 0.6"},
+      {:nimble_csv, "~> 1.1"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
