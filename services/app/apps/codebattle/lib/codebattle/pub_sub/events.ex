@@ -162,15 +162,19 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("tournament:player:finished_round", params) do
+  def get_messages("tournament:player:updated", params) do
+    player = get_player_changed_fields(params.player)
+
     [
       %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player_id}",
-        event: "tournament:player:finished_round",
-        payload: %{
-          player_id: params.player_id,
-          round_position: params.tournament.current_round_position
-        }
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
       }
     ]
   end
@@ -433,5 +437,9 @@ defmodule Codebattle.PubSub.Events do
       type: Game.Helpers.get_type(game),
       visibility_type: Game.Helpers.get_visibility_type(game)
     }
+  end
+
+  defp get_player_changed_fields(player) do
+    Map.take(player, [:id, :state, :task_ids, :score, :place, :wins_count])
   end
 end

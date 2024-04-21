@@ -47,12 +47,14 @@ defmodule CodebattleWeb.GameChannel do
         {:ok,
          %{
            game: GameView.render_game(game, score),
+           current_player: Tournament.Helpers.get_player(tournament, user_id),
            tournament: %{
              tournament_id: game.tournament_id,
              state: tournament.state,
              type: tournament.type,
              meta: tournament.meta,
              break_state: tournament.break_state,
+             round_task_ids: tournament.round_task_ids,
              current_round_position: tournament.current_round_position
            },
            active_game_id: active_game_id

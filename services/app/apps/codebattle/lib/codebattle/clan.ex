@@ -2,18 +2,21 @@ defmodule Codebattle.Clan do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
+  import Ecto.Query
 
   alias Codebattle.Repo
 
   @type t :: %__MODULE__{}
 
-  @derive {Jason.Encoder, only: [:id, :name]}
+  @derive {Jason.Encoder, only: [:id, :name, :long_name]}
 
   schema "clans" do
     belongs_to(:creator, Codebattle.User)
 
     field(:name, :string)
+    field(:long_name, :string)
 
     timestamps()
   end
@@ -40,7 +43,10 @@ defmodule Codebattle.Clan do
     |> String.downcase()
     |> String.replace(~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
     |> then(fn name ->
-      Repo.get_by(__MODULE__, name: name)
+      __MODULE__
+      |> where([c], c.name == ^name or c.long_name == ^name)
+      |> limit(1)
+      |> Repo.one()
     end)
     |> case do
       nil ->

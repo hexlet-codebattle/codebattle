@@ -68,15 +68,30 @@ defmodule Codebattle.Tournament.Base do
         Map.put(tournament, :players_count, players_count(tournament))
       end
 
+      def pause_player(tournament, %{user_id: user_id}) do
+        player = Tournament.Players.get_player(tournament, user_id)
+
+        if player.state == "in_waiting_room_active" do
+          Tournament.Players.put_player(tournament, %{player | state: "in_waiting_room_paused"})
+          # WaitingRoom.pause_player(tournament.waiting_room_name, player)
+        end
+
+        Map.put(tournament, :players_count, players_count(tournament))
+      end
+
       def ban_player(tournament, %{user_id: user_id}) do
         player = Tournament.Players.get_player(tournament, user_id)
 
         if player do
+          WaitingRoom.ban_player(tournament.waiting_room_name, user_id)
+
           Tournament.Players.put_player(tournament, %{
             player
-            | score: 0,
-              wins_count: 0,
-              is_banned: !player.is_banned
+            | score: -1,
+              rating: -1,
+              place: -1,
+              wins_count: -1,
+              state: "banned"
           })
         end
 
@@ -563,6 +578,12 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def create_games_for_waiting_room_pairs(tournament, pairs, matched_with_bot) do
+        pairs
+        |> List.flatten()
+        |> Kernel.++(matched_with_bot)
+        |> then(&Tournament.Players.get_players(tournament, &1))
+        |> Enum.each(&Tournament.Players.put_player(tournament, %{&1 | state: "base"}))
+
         matched_with_bot
         |> Enum.map(&List.wrap/1)
         |> Enum.concat(pairs)

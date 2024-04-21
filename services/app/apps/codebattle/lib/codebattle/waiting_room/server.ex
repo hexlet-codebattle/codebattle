@@ -23,6 +23,7 @@ defmodule Codebattle.WaitingRoom.Server do
   def match_players(name), do: GenServer.call(wr_name(name), :match_players)
   def pause(name), do: GenServer.call(wr_name(name), :pause)
   def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
+  def ban_player(name, player_id), do: GenServer.call(wr_name(name), {:ban_player, player_id})
 
   def put_players(name, players) do
     GenServer.cast(
@@ -30,13 +31,12 @@ defmodule Codebattle.WaitingRoom.Server do
       {:put_players,
        players
        |> Enum.filter(&(!&1.is_bot))
-       |> Enum.map(fn player ->
-         player
-         |> Map.take([:id, :clan_id, :score])
-         |> Map.put(:tasks, Enum.count(player.task_ids))
-         |> Map.put(:joined, :os.system_time(:second))
-       end)}
+       |> Enum.map(&prepare_player/1)}
     )
+  end
+
+  def put_player(name, player) do
+    GenServer.cast(wr_name(name), {:put_player, prepare_player(player)})
   end
 
   # SERVER
@@ -56,6 +56,16 @@ defmodule Codebattle.WaitingRoom.Server do
     })
 
     {:noreply, %{state | players: Enum.concat(players, state.players)}}
+  end
+
+  @impl GenServer
+  def handle_cast({:put_player, player}, state) do
+    PubSub.broadcast("waiting_room:matchmaking_started", %{
+      name: state.name,
+      player_ids: [player.id]
+    })
+
+    {:noreply, %{state | players: [player | state.players]}}
   end
 
   @impl GenServer
@@ -92,6 +102,12 @@ defmodule Codebattle.WaitingRoom.Server do
   @impl GenServer
   def handle_call({:update_state, params}, _from, state) do
     new_state = Map.merge(state, params)
+    {:reply, new_state, new_state}
+  end
+
+  @impl GenServer
+  def handle_call({:ban_player, player_id}, _from, state) do
+    new_state = %{state | players: Enum.reject(state.players, &(&1.id == player_id))}
     {:reply, new_state, new_state}
   end
 
@@ -146,4 +162,11 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   defp wr_name(name), do: {:via, Registry, {Codebattle.Registry, "wr:#{name}"}}
+
+  defp prepare_player(player) do
+    player
+    |> Map.take([:id, :clan_id, :score])
+    |> Map.put(:tasks, Enum.count(player.task_ids))
+    |> Map.put(:joined, :os.system_time(:second))
+  end
 end

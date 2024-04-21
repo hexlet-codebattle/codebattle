@@ -13,8 +13,6 @@ defmodule CodebattleWeb.TournamentChannel do
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get_tournament_info(tournament_id),
          true <- Helpers.can_access?(tournament, current_user, payload) do
-      mark_player_as_online(tournament, current_user)
-
       payload =
         tournament
         |> subscribe_on_tournament_events(socket)
@@ -67,6 +65,16 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = socket.assigns.tournament_info.id
 
     Tournament.Context.handle_event(tournament_id, :leave, %{
+      user_id: socket.assigns.current_user.id
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("tournament:player_pause", _, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.handle_event(tournament_id, :player_pause, %{
       user_id: socket.assigns.current_user.id
     })
 
@@ -419,16 +427,6 @@ defmodule CodebattleWeb.TournamentChannel do
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament)
     }
-  end
-
-  defp mark_player_as_online(tournament, current_user) do
-    case Tournament.Players.get_player(tournament, current_user.id) do
-      %{was_online: false} = player ->
-        Tournament.Players.put_player(tournament, %{player | was_online: true})
-
-      _ ->
-        :noop
-    end
   end
 
   defp cast_game_params(%{"task_level" => level, "timeout_seconds" => seconds}),

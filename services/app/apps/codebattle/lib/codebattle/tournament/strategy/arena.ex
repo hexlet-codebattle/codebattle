@@ -73,20 +73,26 @@ defmodule Codebattle.Tournament.Arena do
   @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
     players =
-      tournament |> get_players(Map.keys(game_params.player_results)) |> Enum.reject(& &1.is_bot)
+      tournament
+      |> get_players(Map.keys(game_params.player_results))
+      |> Enum.reject(&(&1.is_bot || &1.state == "banned"))
 
-    if players_finished_all_tasks?(tournament, List.first(players)) do
-      Enum.each(
-        players,
-        &Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
-          tournament: tournament,
-          player_id: &1.id
-        })
-      )
-    else
-      Logger.debug(" arena #{tournament.id}  put_players: #{inspect(players)}")
-      WaitingRoom.put_players(tournament.waiting_room_name, players)
-    end
+    Enum.each(
+      players,
+      fn player ->
+        new_player =
+          if player_finished_round?(tournament, player) do
+            %{player | state: "finished_round"}
+          else
+            new_player = %{player | state: "in_waiting_room_active"}
+            WaitingRoom.put_player(tournament.waiting_room_name, new_player)
+            new_player
+          end
+
+        Tournament.Players.put_player(tournament, new_player)
+        broadcast_player_updated(tournament, new_player)
+      end
+    )
 
     tournament
   end
@@ -112,7 +118,14 @@ defmodule Codebattle.Tournament.Arena do
     |> Tournament.PairBuilder.ByScore.call()
   end
 
-  defp players_finished_all_tasks?(tournament, player) do
+  defp player_finished_round?(tournament, player) do
     Enum.count(player.task_ids) == Enum.count(tournament.round_task_ids)
+  end
+
+  defp broadcast_player_updated(tournament, player) do
+    Codebattle.PubSub.broadcast("tournament:player:updated", %{
+      tournament: tournament,
+      player: player
+    })
   end
 end
