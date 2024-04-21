@@ -60,5 +60,35 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       assert [clan.id, clan.id] == Enum.map(users, & &1.clan_id)
       assert ["kek", "kek"] == Enum.map(users, & &1.clan)
     end
+
+    test "creates user with existing clan by name", %{conn: conn} do
+      clan = insert(:clan, name: "kek", long_name: "lol_kek")
+
+      conn
+      |> put_req_header("x-auth-key", "x-key")
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "kek", auth_token: "asdf"})
+      )
+      |> json_response(200)
+
+      users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+      assert [clan.id] == Enum.map(users, & &1.clan_id)
+      assert ["kek"] == Enum.map(users, & &1.clan)
+    end
+
+    test "creates user with existing clan by long_name", %{conn: conn} do
+      clan = insert(:clan, name: "kek", long_name: "lol_kek")
+
+      conn
+      |> put_req_header("x-auth-key", "x-key")
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "kek", auth_token: "asdf"})
+      )
+      |> json_response(200)
+
+      users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+      assert [clan.id] == Enum.map(users, & &1.clan_id)
+      assert ["kek"] == Enum.map(users, & &1.clan)
+    end
   end
 end
