@@ -6,7 +6,7 @@ alias Codebattle.UserGame
 alias Codebattle.TaskPack
 
 levels = ["elementary", "easy", "medium", "hard"]
-creator = User.get!(-15)
+creator = User.get!(1)
 
 1..30
 |> Enum.each(fn x ->
@@ -334,7 +334,8 @@ tokens =
       |> User.changeset(params)
       |> Repo.insert()
 
-    Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
+    token = Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
+    "#{user.id}:#{token}:js"
   end)
 
-File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))
+File.write!("/tmp/tokens.txt", Enum.join(tokens, "\n"))
