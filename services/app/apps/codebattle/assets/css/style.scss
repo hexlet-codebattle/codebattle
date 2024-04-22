@@ -115,6 +115,10 @@ em-emoji-picker {
   color: $orange !important;
 }
 
+.cb-text-transparent {
+  color: transparent;
+}
+
 .bg-gray {
   background-color: rgba(128, 128, 128, 1);
 }
@@ -542,12 +546,20 @@ a {
   opacity: 0;
 }
 
+.cb-opacity-25 {
+  opacity: 0.25;
+}
+
 .cb-opacity-50 {
   opacity: 0.5;
 }
 
 .cb-opacity-75 {
   opacity: 0.75;
+}
+
+.cb-opacity-100 {
+  opacity: 1;
 }
 
 .x-bg-gray {
@@ -594,7 +606,6 @@ a {
   opacity: 0;
   transform: translateX(-100%);
 }
-
 
 .tournament-info-ratingMode-enter-active,
 .tournament-info-playerMode-enter-active,
@@ -894,4 +905,81 @@ a:hover {
 
 .cb-username-max-length {
   max-width: 180px;
+}
+
+.cb-gold-place-bg {
+  background-color: #fce300 !important;
+}
+
+.cb-silver-place-bg {
+  background-color: #c3c2bc !important;
+}
+
+.cb-bronze-place-bg {
+  background-color: #ff9c41 !important;
+}
+
+.cb-custom-event-table .cb-custom-event-td:first-child {
+  border-top-left-radius: 0.6rem;
+  border-bottom-left-radius: 0.6rem;
+}
+
+.cb-custom-event-table .cb-custom-event-td:last-child {
+  border-top-right-radius: 0.6rem;
+  border-bottom-right-radius: 0.6rem;
+}
+
+.cb-custom-event-empty-space-tr {
+  height: 4px;
+}
+
+.cb-custom-event-tr.selected {
+  color: #ec9d7c !important;
+}
+
+.cb-custom-event-common-leaderboard-bg {
+  background-color: #d9d9d9;
+}
+
+.cb-custom-event-tournaments-item:nth-child(odd) {
+  background-color: #f3f4f4;
+}
+
+.cb-custom-event-td:not(:last-child)::after,
+.cb-custom-event-nav-item:not(:first-child)::after {
+  content: '';
+  position: absolute;
+  height: 40%;
+  width: 1.5px;
+}
+
+.cb-custom-event-td:not(:last-child)::after {
+  background-color: black;
+  right: 0;
+  top: 8px;
+}
+
+.cb-custom-event-nav-item:not(:first-child):not(.active)::after {
+  background-color: white;
+  left: 0;
+  top: 13px;
+}
+
+.cb-custom-event-nav-item.active + .cb-custom-event-nav-item::after {
+  width: 0px;
+}
+
+.cb-custom-event-badge-danger {
+  color: #fff;
+  background-color: #ff621e;
+}
+
+.cb-custom-event-badge-success {
+  color: #212529;
+  background-color: #2ae881;
+}
+
+.cb-custom-event-badge-warning {
+  color: #212529;
+  background-color: #ffe500;
 }

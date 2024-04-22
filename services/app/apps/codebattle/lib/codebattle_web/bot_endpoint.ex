@@ -4,7 +4,6 @@ defmodule CodebattleWeb.BotEndpoint do
 
   socket("/chat_bot", CodebattleWeb.ChatBotSocket,
     websocket: [timeout: :infinity, check_origin: false],
-    longpool: false,
     check_origin: false
   )
 

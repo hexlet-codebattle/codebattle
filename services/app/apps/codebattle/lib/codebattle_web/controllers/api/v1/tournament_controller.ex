@@ -16,4 +16,11 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
 
     json(conn, %{matches: matches})
   end
+
+  # def get_tournaments(conn, params) do
+  #   tournaments
+  #     |> Tournament.Context.get_by_params!()
+  #
+  #   json(conn, %)
+  # end
 end

@@ -216,12 +216,24 @@ msgstr "Вы победили в игре!"
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Hexlet"
-msgstr ""
+msgstr "Хекслет"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "My Profile"
 msgstr "Мой Профиль"
+
+#, elixir-format
+msgid "Tasks"
+msgstr "Задачи"
+
+#, elixir-format
+msgid "Tournaments"
+msgstr "Турниры"
+
+#, elixir-format
+msgid "Join Discord"
+msgstr "Чат Discord"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
@@ -231,7 +243,7 @@ msgstr "Настройки"
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Tg#codebattle"
-msgstr "Tg#codebattle"
+msgstr "Чат телеграмм"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
@@ -370,3 +382,63 @@ msgstr "Таймер на 1200 секунд"
 
 msgid "Timeout 3600 seconds"
 msgstr "Таймер на 3600 секунд"
+
+msgid "Top-3"
+msgstr "Топ-3"
+
+msgid "Total number of teams %{count}"
+msgstr "Общее количество команд %{count}"
+
+msgid "Place"
+msgstr "Место"
+
+msgid "Score"
+msgstr "Балл"
+
+msgid "Сlan players count"
+msgstr "Количество участников"
+
+msgid "Clan"
+msgstr "Вуз"
+
+msgid "Event rating"
+msgstr "Турнирная таблица"
+
+msgid "Clans rating"
+msgstr "Рейтинг вузов"
+
+msgid "Players rating"
+msgstr "Рейтинг участников"
+
+msgid "Clan players rating"
+msgstr "Рейтинг участников вуза"
+
+msgid "Clan players count"
+msgstr "Количество участников"
+
+msgid "Event stages"
+msgstr "Как устроен турнир"
+
+msgid "Stage %{name}"
+msgstr "Этап %{name}"
+
+msgid "closed"
+msgstr "закрыт"
+
+msgid "active"
+msgstr "активно"
+
+msgid "soon"
+msgstr "скоро"
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Tournament description"
+msgstr "Описание этапа"
+
+msgid "Open"
+msgstr "Oткрыть"
+
+msgid "Close"
+msgstr "Закрыть"

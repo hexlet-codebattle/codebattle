@@ -107,7 +107,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, :banned}, socket}
   end
 
-  def handle_in("tournament:restart", _, socket) do
+  def handle_in("tournament:restart", params, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Context.get!(tournament_id)
 
@@ -264,6 +264,8 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
+    current_user = socket.assigns.current_user
+
     matches =
       if payload.tournament.type in ["swiss", "arena", "show"] do
         []
@@ -272,8 +274,11 @@ defmodule CodebattleWeb.TournamentChannel do
       end
 
     tasks_info =
-      if payload.tournament.type == "versus" do
-        payload.tournament |> Helpers.get_tasks() |> Enum.map(&Map.take(&1, [:id, :level, :name]))
+      if payload.tournament.type == "versus" and
+           Helpers.can_moderate?(payload.tournament, current_user) do
+        payload.tournament
+        |> Helpers.get_tasks()
+        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
       else
         []
       end
@@ -411,13 +416,23 @@ defmodule CodebattleWeb.TournamentChannel do
     }
   end
 
-  defp get_tournament_join_payload(tournament = %{type: "versus"}, _socket) do
+  defp get_tournament_join_payload(tournament = %{type: "versus"}, socket) do
+    current_user = socket.assigns.current_user
+
+    tasks_info =
+      if Helpers.can_moderate?(tournament, current_user) do
+        tournament
+        |> Helpers.get_tasks()
+        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
+      else
+        []
+      end
+
     %{
       tournament: Map.drop(tournament, [:players_table, :matches_table, :tasks_table, :event]),
       matches: Helpers.get_matches(tournament),
       players: Helpers.get_players(tournament),
-      tasks_info:
-        tournament |> Helpers.get_tasks() |> Enum.map(&Map.take(&1, [:id, :level, :name]))
+      tasks_info: tasks_info
     }
   end
 

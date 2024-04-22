@@ -39,17 +39,13 @@ defmodule Codebattle.Game.Fsm do
   end
 
   def transition(:check_success, game = %{state: "playing"}, params) do
-    finishes_at = TimeHelper.utc_now()
-
     game =
       game
       |> update_check_result(params)
       |> update_player(params.id, %{result: "won"})
       |> update_other_players(params.id, %{result: "lost"})
       |> Game.RatingCalculator.call()
-      |> Map.put(:state, "game_over")
-      |> Map.put(:finishes_at, finishes_at)
-      |> Map.put(:duration_sec, NaiveDateTime.diff(finishes_at, game.starts_at))
+      |> finished_game_with_state("game_over")
 
     {:ok, game}
   end
@@ -80,7 +76,7 @@ defmodule Codebattle.Game.Fsm do
       |> update_player(params.id, %{result: "gave_up"})
       |> update_other_players(params.id, %{result: "won"})
       |> Game.RatingCalculator.call()
-      |> Map.put(:state, "game_over")
+      |> finished_game_with_state("game_over")
 
     {:ok, game}
   end
@@ -93,7 +89,12 @@ defmodule Codebattle.Game.Fsm do
       when s in ["waiting_opponent", "playing"] do
     new_players = Enum.map(players, fn player -> %{player | result: "timeout"} end)
 
-    {:ok, %{game | state: "timeout", players: new_players}}
+    game =
+      game
+      |> Map.put(:players, new_players)
+      |> finished_game_with_state("timeout")
+
+    {:ok, game}
   end
 
   def transition(:timeout, game = %{state: "game_over"}, _params), do: {:ok, game}
@@ -141,5 +142,14 @@ defmodule Codebattle.Game.Fsm do
           2
         )
     })
+  end
+
+  defp finished_game_with_state(game, state) do
+    finishes_at = TimeHelper.utc_now()
+
+    game
+    |> Map.put(:state, state)
+    |> Map.put(:finishes_at, finishes_at)
+    |> Map.put(:duration_sec, NaiveDateTime.diff(finishes_at, game.starts_at))
   end
 end

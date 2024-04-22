@@ -18,6 +18,9 @@ i18next.init({
     en: {
       translation: require('../../../priv/gettext/en/LC_MESSAGES/default.po'),
     },
+    ru: {
+      translation: require('../../../priv/gettext/ru/LC_MESSAGES/default.po'),
+    },
   },
 });
 
