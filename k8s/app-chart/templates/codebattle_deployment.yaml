@@ -32,8 +32,6 @@ spec:
             - name: NGINX_SERVER_ADDRESS
               value: 127.0.0.1
         - name: codebattle
-          securityContext:
-            privileged: true
           imagePullPolicy: "{{ .Values.codebattle.image.imagePullPolicy }}"
           image: "{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
           readinessProbe:

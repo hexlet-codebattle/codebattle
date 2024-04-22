@@ -1,0 +1,38 @@
+{{- if .Values.runnerRust.enabled -}}
+{{- range .Values.runnerRust.langs }}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "runner-{{ .name }}"
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      app: "runner-{{ .name }}"
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "runner-{{ .name }}"
+    spec:
+      containers:
+        - name: "runner"
+          imagePullPolicy: Always
+          image: "{{ .image }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          command:
+            - /runner/codebattle_runner
+          ports:
+            - containerPort: 8000
+{{- end }}
+{{- end }}

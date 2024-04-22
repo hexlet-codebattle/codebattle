@@ -1,0 +1,17 @@
+{{- if .Values.runnerRust.enabled -}}
+{{- range .Values.runnerRust.langs }}
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: "runner-{{ .name }}"
+spec:
+  selector:
+    app:  "runner-{{ .name }}"
+  ports:
+    - name: "runner-{{ .name }}"
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+{{- end }}
+{{- end }}

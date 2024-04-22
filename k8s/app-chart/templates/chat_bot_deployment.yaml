@@ -19,8 +19,6 @@ spec:
     spec:
       containers:
         - name: chatbot
-          securityContext:
-            privileged: true
           imagePullPolicy: "{{ .Values.chatbot.image.imagePullPolicy }}"
           image: "{{ .Values.chatbot.image.repository }}:{{ .Values.chatbot.image.tag }}"
           readinessProbe:

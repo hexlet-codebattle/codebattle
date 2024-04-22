@@ -51,6 +51,20 @@ nginx:
     repository: codebattle/nginx-assets
     imagePullPolicy: Always
 
+runnerRust:
+  enabled: false
+  langs:
+    - name: rust
+      image: codebattle/rust:1.76.0
+      replicaCount: 1
+    - name: js
+      image: codebattle/js:20.11.1
+      replicaCount: 2
+    - name: python
+      image: codebattle/python:3.12.2
+      replicaCount: 3
+
+
 resources: {}
 nodeSelector: {}
 tolerations: []
