@@ -18,7 +18,7 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="d-flex w-100">
+    <div class="d-flex w-100 px-1">
       <table class="table table-striped cb-custom-event-table">
         <thead class="sticky-top text-muted bg-light">
           <tr>
