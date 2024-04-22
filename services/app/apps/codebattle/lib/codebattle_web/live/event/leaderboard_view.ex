@@ -20,7 +20,7 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
     ~H"""
     <div class="d-flex w-100 px-1 bg-white">
       <table class="table table-striped cb-custom-event-table">
-        <thead class="sticky-top text-muted">
+        <thead class="sticky-top text-muted bg-white">
           <tr>
             <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Place") %></th>
             <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Score") %></th>
