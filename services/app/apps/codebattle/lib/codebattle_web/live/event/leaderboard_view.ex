@@ -18,9 +18,9 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="d-flex w-100 px-1">
+    <div class="d-flex w-100 px-1 bg-white">
       <table class="table table-striped cb-custom-event-table">
-        <thead class="sticky-top text-muted bg-light">
+        <thead class="sticky-top text-muted">
           <tr>
             <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Place") %></th>
             <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Score") %></th>
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
         <tbody>
           <%= for item <- @leaderboard_list do %>
             <tr class="cb-custom-event-empty-space-tr"></tr>
-            <tr class="text-dark font-weight-bold cb-custom-event-tr bg-white">
+            <tr class="text-dark font-weight-bold cb-custom-event-tr bg-light">
               <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
                 <%= item.place %>
               </td>
