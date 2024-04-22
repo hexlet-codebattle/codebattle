@@ -107,7 +107,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, :banned}, socket}
   end
 
-  def handle_in("tournament:restart", params, socket) do
+  def handle_in("tournament:restart", _params, socket) do
     tournament_id = socket.assigns.tournament_info.id
     tournament = Tournament.Context.get!(tournament_id)
 
