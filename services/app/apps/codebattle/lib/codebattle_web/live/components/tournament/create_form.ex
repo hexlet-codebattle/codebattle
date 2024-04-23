@@ -174,6 +174,19 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           <% end %>
         </div>
 
+        <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row">
+          <div class="d-flex flex-column justify-content-between w-auto">
+            <%= label(f, :event_id) %>
+              <%= number_input(
+                f,
+                :event_id,
+                class: "form-control",
+                value: f.params["event_id"],
+              ) %>
+            <%= error_tag(f, :event_id) %>
+          </div>
+        </div>
+
         <div class="d-flex flex-column flex-lg-row flex-xl-row mt-3">
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row">
             <div class="d-flex flex-column justify-content-between w-auto">

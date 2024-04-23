@@ -79,19 +79,19 @@
                 <%= if collab_logo(@current_user) do %>
                   <img
                     alt="collab icon"
-                    class="my-auto mx-2"
+                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
                     style="height:40px"
                     src={collab_logo(@current_user)}
                   />
                 <% end %>
-                <img alt="Logo" class="my-auto pt-1" src="/assets/images/logo.svg" />
+                <img alt="Logo" class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0" src="/assets/images/logo.svg" />
                 <%= if @current_user.is_guest do %>
-                  <div class="d-none d-sm-flex flex-column text-gray ml-1 pb-1">
+                  <div class="d-none d-sm-none d-md-flex d-lg-flex text-gray ml-1 pb-1">
                     <span class="font-weight-bold header-txt">Codebattle</span>
                     <span class="header-txt">by Hexlet’s community</span>
                   </div>
                 <% else %>
-                  <div class="d-flex d-sm-none d-md-flex flex-column text-gray ml-1 pb-1">
+                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
                     <span class="font-weight-bold header-txt">Codebattle</span>
                     <span class="header-txt">by Hexlet’s community</span>
                   </div>

@@ -321,7 +321,7 @@ const ActiveGames = ({
   );
 };
 
-const tabLinkClassName = (...hash) => {
+const getTabLinkClassName = (...hash) => {
   const url = new URL(window.location);
   const isActive = hash.includes(url.hash || '#lobby');
 
@@ -344,7 +344,7 @@ const tabContentClassName = (...hash) => {
   });
 };
 
-const tabLinkHandler = hash => () => {
+const getTabLinkHandler = hash => () => {
   window.location.hash = hash;
 };
 
@@ -363,12 +363,12 @@ const LobbyContainer = ({
 }) => {
   const handleClick = useCallback(e => {
     const { currentTarget: { dataset } } = e;
-    tabLinkHandler(dataset.hash)();
+    getTabLinkHandler(dataset.hash)();
   }, []);
 
   useEffect(() => {
     if (!window.location.hash) {
-      tabLinkHandler(hashLinkNames.default)();
+      getTabLinkHandler(hashLinkNames.default)();
       window.scrollTo({ top: 0 });
     }
   }, []);
@@ -382,7 +382,7 @@ const LobbyContainer = ({
           role="tablist"
         >
           <a
-            className={tabLinkClassName(
+            className={getTabLinkClassName(
               hashLinkNames.lobby,
               hashLinkNames.default,
             )}
@@ -398,7 +398,7 @@ const LobbyContainer = ({
             Lobby
           </a>
           <a
-            className={tabLinkClassName(
+            className={getTabLinkClassName(
               hashLinkNames.tournaments,
             )}
             id="tournaments-tab"
@@ -413,7 +413,7 @@ const LobbyContainer = ({
             Tournaments
           </a>
           <a
-            className={tabLinkClassName(
+            className={getTabLinkClassName(
               hashLinkNames.completedGames,
             )}
             id="completedGames-tab"

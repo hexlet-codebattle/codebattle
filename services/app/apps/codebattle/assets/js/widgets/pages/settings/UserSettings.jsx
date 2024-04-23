@@ -15,7 +15,11 @@ import { actions } from '../../slices';
 
 import UserSettingsForm from './UserSettingsForm';
 
-const PROVIDERS = ['github', 'discord'];
+const providers = ['github', 'discord'];
+const mapUserPropNameByProviderName = {
+  github: 'githubId',
+  discord: 'discordId',
+};
 const notifications = {
   success: { variant: 'success', message: i18n.t('Settings changed successfully') },
   error: { variant: 'danger', message: i18n.t('Something went wrong') },
@@ -41,24 +45,29 @@ function Notification({ notification, onClose }) {
 }
 
 function SocialButtons({ settings }) {
-  return PROVIDERS.map(provider => {
-    const providerName = settings[`${provider}Name`];
-    const isSocialLinked = !!providerName?.length;
+  const onlyOneProviderLinked = providers.filter(provider => (
+    !!settings[mapUserPropNameByProviderName[provider]]
+  )).length === 1;
+
+  return providers.map(provider => {
+    const providerPropName = mapUserPropNameByProviderName[provider];
+    const isLinked = !!settings[providerPropName];
     const formatedProviderName = capitalize(provider);
 
     return (
       <div key={provider} className="d-flex mb-2 align-items-center">
         <FontAwesomeIcon
-          className={cn('mr-2', { 'text-muted': isSocialLinked })}
+          className={cn('mr-2', { 'text-muted': isLinked })}
           icon={['fab', provider]}
         />
-        {isSocialLinked ? (
+        {isLinked ? (
           <button
             type="button"
             className="bind-social"
             data-method="delete"
             data-csrf={csrfToken}
             data-to={`/auth/${provider}`}
+            disabled={onlyOneProviderLinked}
           >
             {`Unlink ${formatedProviderName}`}
           </button>

@@ -62,6 +62,7 @@ const UserSettings = React.lazy(() => import('./pages/settings'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
+const EventWidget = React.lazy(() => import('./pages/event'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
 
 export const Invites = () => (
@@ -173,6 +174,18 @@ export const TournamentPage = () => (
         <Tournament
           waitingRoomMachine={waitingRoomMachine}
         />
+      </Suspense>
+    </PersistGate>
+  </Provider>
+);
+
+export const EventPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Suspense>
+        <NiceModal.Provider>
+          <EventWidget />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>

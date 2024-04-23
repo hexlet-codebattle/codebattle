@@ -40,6 +40,7 @@ import {
   renderSettingPage,
   renderStairwayGamePage,
   renderTournamentPage,
+  renderEventPage,
   renderTournamentPlayerPage,
   renderUserPage,
   renderUsersRating,
@@ -98,6 +99,7 @@ const settingsRoot = document.getElementById('settings');
 const stairwayGameRoot = document.getElementById('stairway-game-root');
 const tournamentPlayerRoot = document.getElementById('tournament-player-root');
 const tournamentRoot = document.getElementById('tournament-root');
+const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
 
 if (invitesRoot) {
@@ -150,4 +152,8 @@ if (tournamentPlayerRoot) {
 
 if (tournamentRoot) {
   renderTournamentPage(tournamentRoot);
+}
+
+if (eventWidgetRoot) {
+  renderEventPage(eventWidgetRoot);
 }

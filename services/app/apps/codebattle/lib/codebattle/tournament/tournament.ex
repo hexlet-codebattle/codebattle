@@ -5,6 +5,7 @@ defmodule Codebattle.Tournament do
   import Ecto.Changeset
 
   alias Runner.AtomizedMap
+  alias Codebattle.Event
   alias Codebattle.Tournament.Individual
 
   @type t :: %__MODULE__{}
@@ -145,7 +146,8 @@ defmodule Codebattle.Tournament do
       :use_timer,
       :use_infinite_break,
       :show_results,
-      :waiting_room_name
+      :waiting_room_name,
+      :event_id,
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
@@ -157,20 +159,23 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
+    |> validate_event_id(params["event_id"])
     |> add_creator(params["creator"] || params[:creator])
-    |> add_event(params["event"] || params[:event])
+  end
+
+  defp validate_event_id(changeset, nil), do: changeset
+  defp validate_event_id(changeset, ""), do: changeset
+  defp validate_event_id(changeset, event_id) do
+    case Event.get(event_id) do
+      nil -> add_error(changeset, :event_id, "Event not found")
+        _ -> change(changeset, %{event_id: event_id})
+    end
   end
 
   defp add_creator(changeset, nil), do: changeset
 
   defp add_creator(changeset, creator) do
     change(changeset, %{creator: creator})
-  end
-
-  defp add_event(changeset, nil), do: changeset
-
-  defp add_event(changeset, event) do
-    change(changeset, %{event: event})
   end
 
   def access_types, do: @access_types

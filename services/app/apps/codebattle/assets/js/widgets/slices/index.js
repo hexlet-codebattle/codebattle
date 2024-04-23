@@ -4,6 +4,7 @@ import completedGames, {
   actions as completedGamesActions,
 } from './completedGames';
 import editor, { actions as editorActions } from './editor';
+import event, { actions as eventActions } from './event';
 import executionOutput, {
   actions as executionOutputActions,
 } from './executionOutput';
@@ -45,6 +46,7 @@ export const actions = {
   ...tournamentPlayerActions,
   ...userActions,
   ...usersInfoActions,
+  ...eventActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -69,4 +71,5 @@ export default {
   tournamentPlayer,
   user,
   usersInfo,
+  event,
 };

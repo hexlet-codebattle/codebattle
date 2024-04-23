@@ -89,7 +89,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_event("validate", %{"tournament" => params}, socket) do
     creator = socket.assigns.current_user
 
-    changeset = Tournament.Context.validate(Map.merge(params, %{"creator" => creator}))
+    changeset =
+      Tournament.Context.validate(
+        Map.merge(params, %{"creator" => creator})
+      )
 
     {:noreply, assign(socket, changeset: changeset)}
   end
@@ -101,7 +104,8 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
         params,
         %{
           "creator" => socket.assigns.current_user,
-          "user_timezone" => socket.assigns.user_timezone
+          "user_timezone" => socket.assigns.user_timezone,
+          "event_id" => String.to_integer(params["event_id"])
         }
       )
 

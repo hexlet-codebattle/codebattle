@@ -43,6 +43,7 @@ const tournamentsData = Gon.getAsset('tournaments');
 const usersRatingData = Gon.getAsset('users_rating');
 const langsData = Gon.getAsset('langs');
 const leaderboardUsersData = Gon.getAsset('leaderboard_users');
+const eventData = Gon.getAsset('event');
 
 // ******************************
 //
@@ -59,13 +60,21 @@ const tournamentParams = tournamentData
 const completedGamesParams = completedGamesData
   ? camelizeKeys(completedGamesData)
   : [];
-const activeGamesParams = activeGamesData ? camelizeKeys(activeGamesData) : [];
+const initialActiveGames = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
 const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
 const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
 const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
+const initialEvent = eventData ? {
+  ...camelizeKeys(eventData.event),
+  tournaments: camelizeKeys(eventData.tournaments),
+  topLeaderboard: camelizeKeys(eventData.top_leaderboard),
+  loading: loadingStatuses.LOADING,
+} : {
+  loading: loadingStatuses.LOADING,
+};
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
@@ -416,9 +425,21 @@ const defaultTournamentPlayerParams = {
     users: Object[],
     error: {?Object},
  * }} LeaderboardState
+ * @typedef {{
+ *  slug: string,
+    type: @type {import("../config/eventTypes.js").default},
+    loading: @type {import("../config/loadingStatuses.js").default},
+    tournaments: TournamentState[]
+    topLeaderboard: Object[],
+    commonLeaderboard: Object[],
+    title: string,
+    description: string,
+    startsAt: string,
+ * }} EventState
  *
  * @const {{
  *   game: GameState,
+ *   event: EventState,
  *   tournament: TournamentState,
  *   tournamentPlayer: Object,
  *   editor: Object,
@@ -468,7 +489,7 @@ export default {
     textSolution: initialTemplates.solution,
     generatorLang: initialTask.generatorLang,
   },
-  activeGames: activeGamesParams,
+  activeGames: initialActiveGames,
   completedGames: completedGamesParams,
   liveTournaments: initialLiveTournaments,
   completedTournaments: initialCompletedTournaments,
@@ -494,4 +515,5 @@ export default {
     users: initialLeaderboardUsers,
     error: null,
   },
+  event: initialEvent,
 };

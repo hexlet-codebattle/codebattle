@@ -12,6 +12,7 @@ defmodule Codebattle.Event do
 
   @derive {Jason.Encoder,
            only: [
+             :id,
              :slug,
              :type,
              :title,
@@ -48,6 +49,11 @@ defmodule Codebattle.Event do
   @spec get!(String.t()) :: t() | no_return()
   def get!(id) do
     Repo.get!(__MODULE__, id)
+  end
+
+  @spec get(String.t()) :: t() | no_return()
+  def get(id) do
+    Repo.get(__MODULE__, id)
   end
 
   @spec get_by_slug!(String.t()) :: t() | no_return()

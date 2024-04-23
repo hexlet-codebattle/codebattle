@@ -20,7 +20,7 @@ const fetchUsers = createAsyncThunk(
   async ({ periodType }, { getState }) => {
     const { loading } = getState().leaderboard;
     if (loading !== loadingStatuses.PENDING) {
-      return;
+      return [];
     }
 
     const baseParams = {
@@ -41,7 +41,6 @@ const fetchUsers = createAsyncThunk(
 
     const response = await axios.get('/api/v1/users', { params });
 
-    /* eslint-disable-next-line */
     return response.data;
   },
 );

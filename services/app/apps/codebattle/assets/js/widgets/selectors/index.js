@@ -19,6 +19,8 @@ import { makeEditorTextKey } from '../utils/gameRoom';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
+export const currentUserClanIdSelector = state => state.user.users[state.user.currentUserId].clanId;
+
 export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].isAdmin;
 
 export const currentUserIsGuestSelector = state => state.user.users[state.user.currentUserId].isGuest;
@@ -497,3 +499,9 @@ export const completedGamesSelector = state => state.completedGames;
 export const activeRoomSelector = state => state.chat.activeRoom;
 
 export const roomsSelector = state => state.chat.rooms;
+
+export const eventSelector = state => state.event;
+
+export const eventTopLeaderboardSelector = state => state.event.topLeaderboard;
+
+export const eventCommonLeaderboardSelector = state => state.event.commonLeaderboard;

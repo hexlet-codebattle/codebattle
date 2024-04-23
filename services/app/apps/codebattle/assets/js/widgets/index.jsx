@@ -11,6 +11,7 @@ import {
   SettingsPage,
   StairwayGamePage,
   TournamentPage,
+  EventPage,
   TournamentPlayerPage,
   UserPage,
   UsersRating,
@@ -27,6 +28,7 @@ export const renderRegistrationPage = domElement => createRoot(domElement).rende
 export const renderSettingPage = domElement => createRoot(domElement).render(<SettingsPage />);
 export const renderStairwayGamePage = domElement => createRoot(domElement).render(<StairwayGamePage />);
 export const renderTournamentPage = domElement => createRoot(domElement).render(<TournamentPage />);
+export const renderEventPage = domElement => createRoot(domElement).render(<EventPage />);
 export const renderTournamentPlayerPage = domElement => createRoot(domElement).render(<TournamentPlayerPage />);
 export const renderUserPage = domElement => createRoot(domElement).render(<UserPage />);
 export const renderUsersRating = domElement => createRoot(domElement).render(<UsersRating />);

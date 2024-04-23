@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Context do
   alias Codebattle.Game
   alias Codebattle.Repo
+  alias Codebattle.Event
   alias Codebattle.Tournament
   alias Codebattle.User
   alias Runner.AtomizedMap
@@ -9,6 +10,7 @@ defmodule Codebattle.Tournament.Context do
   import Ecto.Changeset
 
   @type tournament_id :: pos_integer() | String.t()
+  @type event_id :: pos_integer() | String.t()
 
   @states_from_restore ["waiting_participants"]
   @max_alive_tournaments Application.compile_env(:codebattle, :max_alive_tournaments)
@@ -84,6 +86,16 @@ defmodule Codebattle.Tournament.Context do
       where: t.state in ^states,
       limit: 15,
       preload: [:creator]
+    )
+    |> Repo.all()
+  end
+
+  @spec get_all_by_event_id!(event_id()) :: Event.t() | no_return()
+  def get_all_by_event_id!(event_id) do
+    from(
+      t in Tournament,
+      order_by: t.starts_at,
+      where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
     )
     |> Repo.all()
   end
