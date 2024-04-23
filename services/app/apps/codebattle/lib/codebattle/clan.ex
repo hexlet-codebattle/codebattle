@@ -7,13 +7,15 @@ defmodule Codebattle.Clan do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.User
 
   @type t :: %__MODULE__{}
 
   @derive {Jason.Encoder, only: [:id, :name, :long_name]}
 
   schema "clans" do
-    belongs_to(:creator, Codebattle.User)
+    belongs_to(:creator, User)
+    has_many(:users, User)
 
     field(:name, :string)
     field(:long_name, :string)

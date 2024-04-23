@@ -226,7 +226,7 @@ const EventRatingPanel = ({
                       <td width="120" className={tableDataCellClassName}>
                         {item.score}
                       </td>
-                      {item.playersCount && (
+                      {item.playersCount !== undefined && (
                         <td width="240" className={tableDataCellClassName}>
                           {item.playersCount}
                         </td>

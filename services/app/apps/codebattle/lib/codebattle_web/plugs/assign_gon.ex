@@ -24,6 +24,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
     |> Map.take([
       :achievements,
       :clan,
+      :clan_id,
       :discord_avatar,
       :discord_id,
       :discord_name,

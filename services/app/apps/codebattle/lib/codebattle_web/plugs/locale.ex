@@ -8,21 +8,25 @@ defmodule CodebattleWeb.Plugs.Locale do
   def init(_opts), do: nil
 
   def call(conn, _opts) do
-    case conn.params["locale"] || get_session(conn, :locale) do
-      nil ->
-        if locale = Application.get_env(:codebattle, :default_locale) do
-          set_locale(conn, locale)
-        else
-          conn
-        end
+    Application.put_env(:codebattle, :default_locale, "ru")
+    locale = Application.get_env(:codebattle, :default_locale)
+    set_locale(conn, locale)
 
-      locale ->
-        set_locale(conn, locale)
-    end
+    # case conn.params["locale"] || get_session(conn, :locale) do
+    #   nil ->
+    #     if locale = Application.get_env(:codebattle, :default_locale) do
+    #       set_locale(conn, locale)
+    #     else
+    #       conn
+    #     end
+
+    #   locale ->
+    #     set_locale(conn, locale)
+    # end
   end
 
   defp set_locale(conn, locale) do
     Gettext.put_locale(CodebattleWeb.Gettext, locale)
-    conn |> put_gon(locale: :en) |> put_session(:locale, locale)
+    conn |> put_gon(locale: locale) |> put_session(:locale, locale)
   end
 end

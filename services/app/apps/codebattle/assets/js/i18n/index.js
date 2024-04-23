@@ -9,7 +9,7 @@ export const getLocale = () => lng;
 i18next.init({
   nsSeparator: false,
   keySeparator: false,
-  lng: 'en',
+  lng,
   interpolation: {
     prefix: '%{',
     suffix: '}',
