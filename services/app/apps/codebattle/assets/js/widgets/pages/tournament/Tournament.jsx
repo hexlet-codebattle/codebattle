@@ -5,6 +5,7 @@ import React, {
   useMemo,
 } from 'react';
 
+import { useInterpret } from '@xstate/react';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
@@ -30,7 +31,6 @@ import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
-import { useInterpret } from '@xstate/react';
 
 const getTournamentPresentationStatus = state => {
   switch (state) {

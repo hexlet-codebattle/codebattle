@@ -17,7 +17,6 @@ const fetchCommonLeaderboard = createAsyncThunk(
       userId,
       eventId,
     },
-    { getState },
   ) => {
     const params = {
       type,
