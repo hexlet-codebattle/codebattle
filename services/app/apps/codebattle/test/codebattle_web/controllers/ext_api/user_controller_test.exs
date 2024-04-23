@@ -62,7 +62,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     end
 
     test "creates user with existing clan by name", %{conn: conn} do
-      clan = insert(:clan, name: "kEk", long_name: "lOl_kEk")
+      clan = insert(:clan, name: "Kek", long_name: "lOl_kEk")
 
       conn
       |> put_req_header("x-auth-key", "x-key")
@@ -73,11 +73,11 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
 
       users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
       assert [clan.id] == Enum.map(users, & &1.clan_id)
-      assert ["kEk"] == Enum.map(users, & &1.clan)
+      assert ["Kek"] == Enum.map(users, & &1.clan)
     end
 
     test "creates user with existing clan by long_name", %{conn: conn} do
-      clan = insert(:clan, name: "kEk", long_name: "lOl_kEk")
+      clan = insert(:clan, name: "kEk", long_name: "LoL_KeK")
 
       conn
       |> put_req_header("x-auth-key", "x-key")

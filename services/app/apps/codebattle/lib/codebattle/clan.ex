@@ -33,20 +33,19 @@ defmodule Codebattle.Clan do
 
   @spec get_by_name!(String.t()) :: t() | no_return()
   def get_by_name!(name) do
-    Repo.get_by!(__MODULE__, name: String.downcase(name))
+    Repo.get_by!(__MODULE__, name: name)
   end
 
   @spec find_or_create_by_clan(String.t(), pos_integer()) :: {:ok, t()} | {:error, term()}
   def find_or_create_by_clan(name, user_id) do
     name
     |> String.trim()
-    |> String.downcase()
     |> String.replace(~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
     |> then(fn name ->
       __MODULE__
       |> where(
         [c],
-        fragment("lower(?)", c.name) == ^name or fragment("lower(?)", c.long_name) == ^name
+        c.name == ^name or c.long_name == ^name
       )
       |> limit(1)
       |> Repo.one()

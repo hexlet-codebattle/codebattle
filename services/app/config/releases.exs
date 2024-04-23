@@ -84,6 +84,7 @@ config :codebattle, checker_executor: checker_executor
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SLUG")
+config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
