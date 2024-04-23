@@ -44,11 +44,11 @@ function ApprovePlaybookButtons({ playbookSolutionType }) {
             className="btn btn-block btn-outline-danger rounded-lg"
             onClick={reject}
           >
-            To baned list
+            To banned list
           </button>
         </>
       );
-    case SolutionTypeCodes.baned:
+    case SolutionTypeCodes.banned:
       return (
         <>
           <button

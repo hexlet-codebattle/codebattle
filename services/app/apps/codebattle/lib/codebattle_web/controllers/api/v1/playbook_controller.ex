@@ -39,7 +39,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
 
     if User.admin?(conn.assigns.current_user) do
       {:ok, playbook} =
-        Repo.one(query) |> Playbook.changeset(%{solution_type: "baned"}) |> Repo.update()
+        Repo.one(query) |> Playbook.changeset(%{solution_type: "banned"}) |> Repo.update()
 
       json(conn, %{
         solution_type: playbook.solution_type

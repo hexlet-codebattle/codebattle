@@ -530,12 +530,15 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
     currentGameChannel.on('tournament:game:wait', handleTournamentGameWait),
     currentGameChannel.on('waiting_room:started', () => {}),
     currentGameChannel.on('waiting_room:ended', () => {}),
-    currentGameChannel.on('waiting_room:player:baned', () => {}),
-    currentGameChannel.on('waiting_room:player:unbaned', () => {}),
+    currentGameChannel.on('waiting_room:player:banned', () => {}),
+    currentGameChannel.on('waiting_room:player:unbanned', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_started', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_restarted', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_stoped', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_paused', () => {}),
+    // TODO: handle here state where player solved all tasks in round
+    currentGameChannel.on('tournament:player:finished_round', () => {}),
+    currentGameChannel.on('tournament:player:finished', () => {}),
   ];
 
   const clearGameListeners = () => {

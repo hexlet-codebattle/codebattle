@@ -8,7 +8,7 @@ const states = {
   },
   player: {
     idle: 'idle',
-    baned: 'baned',
+    banned: 'banned',
     matchmaking: 'matchmaking',
   },
   matchmaking: {
@@ -66,7 +66,7 @@ const machine = {
       states: {
         idle: {
           on: {
-            'waiting_room:player:baned': 'baned',
+            'waiting_room:player:banned': 'banned',
             'waiting_room:player:matchmaking_started': 'matchmaking',
             'waiting_room:started': [
               { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
@@ -77,7 +77,7 @@ const machine = {
         matchmaking: {
           initial: 'progress',
           on: {
-            'waiting_room:player:baned': 'baned',
+            'waiting_room:player:banned': 'banned',
             'waiting_room:player:matchmaking_stoped': 'idle',
           },
           states: {
@@ -95,9 +95,9 @@ const machine = {
             },
           },
         },
-        baned: {
+        banned: {
           on: {
-            'waiting_room:player:unbaned': [
+            'waiting_room:player:unbanned': [
               { target: 'matchmaking', cond: 'isMatchmakingInProgress' },
               { target: 'idle' },
             ],

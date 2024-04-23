@@ -35,13 +35,13 @@ const establishChat = () => dispatch => {
   const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
   const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
   const handleNewMessage = camelizeKeysAndDispatch(actions.newChatMessage);
-  const handleUserBaned = camelizeKeysAndDispatch(actions.banUserChat);
+  const handleUserbanned = camelizeKeysAndDispatch(actions.banUserChat);
 
   const refs = [
     channel.on('chat:user_joined', handleUserJoined),
     channel.on('chat:user_left', handleUserLeft),
     channel.on('chat:new_msg', handleNewMessage),
-    channel.on('chat:user_banned', handleUserBaned),
+    channel.on('chat:user_banned', handleUserbanned),
   ];
 
   const oldChannel = channel;

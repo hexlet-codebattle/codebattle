@@ -267,6 +267,30 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:player:updated", payload: payload}, socket) do
+    case payload.player.state do
+      "in_waiting_room_active" ->
+        push(socket, "waiting_room:player:matchmaking_started", %{user_id: payload.player.id})
+
+      "in_waiting_room_paused" ->
+        push(socket, "waiting_room:player:matchmaking_paused", %{user_id: payload.player.id})
+
+      "banned" ->
+        push(socket, "tournament:player:banned", %{user_id: payload.player.id})
+
+      "finished_round" ->
+        push(socket, "tournament:player:finished_round", %{user_id: payload.player.id})
+
+      "finished" ->
+        push(socket, "tournament:player:finished", %{user_id: payload.player.id})
+
+      _ ->
+        :noop
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_info(message, socket) do
     Logger.warning("GameChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}

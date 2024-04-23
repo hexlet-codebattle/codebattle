@@ -37,7 +37,7 @@ const states = {
     loading: 'loading',
     idle: 'idle',
     checking: 'checking',
-    baned: 'baned',
+    banned: 'banned',
   },
 };
 

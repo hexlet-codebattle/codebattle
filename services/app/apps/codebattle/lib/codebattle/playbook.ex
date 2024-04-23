@@ -6,7 +6,7 @@ defmodule Codebattle.Playbook do
   alias Codebattle.Repo
   alias Runner.AtomizedMap
 
-  @solution_types ~w(complete incomplete waiting_moderator baned)
+  @solution_types ~w(complete incomplete waiting_moderator banned)
 
   schema "playbooks" do
     # field(:game_id, :integer)
