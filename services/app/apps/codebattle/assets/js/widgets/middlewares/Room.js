@@ -351,7 +351,7 @@ export const activeEditorReady = (machine, isBanned) => {
   return clearEditorListeners;
 };
 
-export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch => {
+export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = false }) => dispatch => {
   const currentGameChannel = channel;
   initGameChannel(dispatch, machine, currentGameChannel);
 
@@ -528,6 +528,14 @@ export const activeGameReady = (machine, { cancelRedirect = false }) => dispatch
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
     currentGameChannel.on('tournament:game:wait', handleTournamentGameWait),
+    currentGameChannel.on('waiting_room:started', () => {}),
+    currentGameChannel.on('waiting_room:ended', () => {}),
+    currentGameChannel.on('waiting_room:player:baned', () => {}),
+    currentGameChannel.on('waiting_room:player:unbaned', () => {}),
+    currentGameChannel.on('waiting_room:player:matchmaking_started', () => {}),
+    currentGameChannel.on('waiting_room:player:matchmaking_restarted', () => {}),
+    currentGameChannel.on('waiting_room:player:matchmaking_stoped', () => {}),
+    currentGameChannel.on('waiting_room:player:matchmaking_paused', () => {}),
   ];
 
   const clearGameListeners = () => {
@@ -919,14 +927,14 @@ export const connectToTask = (gameMachine, taskMachine) => dispatch => {
   return () => { };
 };
 
-export const connectToGame = (machine, options) => dispatch => {
+export const connectToGame = (machine, waitingRoomMachine, options) => dispatch => {
   if (isRecord) {
     return fetchPlaybook(machine, initStoredGame)(dispatch);
   }
 
   machine.send('JOIN');
 
-  return activeGameReady(machine, options)(dispatch);
+  return activeGameReady(machine, waitingRoomMachine, options)(dispatch);
 };
 
 export const connectToEditor = (machine, isBanned) => () => (

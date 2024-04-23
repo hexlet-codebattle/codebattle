@@ -24,7 +24,7 @@ const useGameRoomSocketChannel = (pageName, machines) => {
 
     const options = { cancelRedirect: false };
 
-    const clearGame = GameRoomActions.connectToGame(machines.mainService, options)(
+    const clearGame = GameRoomActions.connectToGame(machines.mainService, machines.waitingRoomService, options)(
       dispatch,
     );
     const clearChat = ChatActions.connectToChat(useChat)(dispatch);
