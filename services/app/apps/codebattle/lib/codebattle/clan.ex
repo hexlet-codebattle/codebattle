@@ -44,14 +44,17 @@ defmodule Codebattle.Clan do
     |> String.replace(~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
     |> then(fn name ->
       __MODULE__
-      |> where([c], c.name == ^name or c.long_name == ^name)
+      |> where(
+        [c],
+        fragment("lower(?)", c.name) == ^name or fragment("lower(?)", c.long_name) == ^name
+      )
       |> limit(1)
       |> Repo.one()
     end)
     |> case do
       nil ->
         %__MODULE__{}
-        |> changeset(%{name: name, creator_id: user_id})
+        |> changeset(%{name: name, long_name: name, creator_id: user_id})
         |> Repo.insert()
 
       clan ->
@@ -62,7 +65,7 @@ defmodule Codebattle.Clan do
   defp changeset(clan, attrs) do
     clan
     |> cast(attrs, [:name, :creator_id])
-    |> validate_length(:name, min: 2, max: 39)
+    |> validate_length(:name, min: 2, max: 139)
     |> unique_constraint(:name)
   end
 end

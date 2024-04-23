@@ -182,7 +182,7 @@ defmodule Codebattle.User do
 
   def find_or_create_by_clan(changeset, clan_name, user_id) do
     case Clan.find_or_create_by_clan(clan_name, user_id) do
-      {:ok, clan} -> change(changeset, %{clan: String.trim(clan_name), clan_id: clan.id})
+      {:ok, clan} -> change(changeset, %{clan: clan.name, clan_id: clan.id})
       {:error, reason} -> add_error(changeset, :clan, inspect(reason))
     end
   end
