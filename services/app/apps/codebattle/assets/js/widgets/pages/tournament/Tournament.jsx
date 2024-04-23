@@ -30,6 +30,7 @@ import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
+import { useInterpret } from '@xstate/react';
 
 const getTournamentPresentationStatus = state => {
   switch (state) {
@@ -100,10 +101,12 @@ function InfoPanel({
   }
 }
 
-function Tournament() {
+function Tournament({ waitingRoomMachine }) {
   const dispatch = useDispatch();
 
   const searchParams = useSearchParams();
+
+  useInterpret(waitingRoomMachine);
 
   const activePresentationMode = searchParams.has('presentation');
 

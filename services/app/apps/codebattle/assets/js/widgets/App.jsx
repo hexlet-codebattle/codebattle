@@ -22,6 +22,7 @@ const {
   editor: editorMachine,
   task: taskMachine,
   spectator: spectatorMachine,
+  waitingRoom: waitingRoomMachine,
 } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
@@ -77,6 +78,7 @@ export const Game = () => (
           <RoomWidget
             pageName={PageNames.game}
             mainMachine={mainMachine}
+            waitingRoomMachine={waitingRoomMachine}
             taskMachine={taskMachine}
             editorMachine={editorMachine}
           />
@@ -94,6 +96,7 @@ export const Builder = () => (
           <RoomWidget
             pageName={PageNames.builder}
             mainMachine={mainMachine}
+            waitingRoomMachine={waitingRoomMachine}
             taskMachine={taskMachine}
             editorMachine={editorMachine}
           />
@@ -167,7 +170,9 @@ export const TournamentPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <Tournament />
+        <Tournament
+          waitingRoomMachine={waitingRoomMachine}
+        />
       </Suspense>
     </PersistGate>
   </Provider>

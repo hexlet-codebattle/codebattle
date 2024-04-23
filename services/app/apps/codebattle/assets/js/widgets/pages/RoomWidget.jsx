@@ -30,11 +30,13 @@ function RoomWidget({
   pageName,
   mainMachine,
   taskMachine,
+  waitingRoomMachine,
   editorMachine,
 }) {
   const machines = useGameRoomMachine({
     mainMachine,
     taskMachine,
+    waitingRoomMachine,
   });
 
   const roomMachineState = useMachineStateSelector(
