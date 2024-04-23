@@ -34,7 +34,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
   describe "#update" do
     test "updates current user settings", %{conn: conn} do
-      clan = insert(:clan, name: "bca")
+      clan = insert(:clan, name: "Bca")
 
       new_settings = %{
         "name" => "evgen",
