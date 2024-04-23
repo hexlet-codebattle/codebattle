@@ -3,10 +3,11 @@ defmodule CodebattleWeb.LiveViewEventController do
 
   alias Codebattle.Event
 
+  plug CodebattleWeb.Plugs.CORSPlug when action in [:show_leaderboard]
+
   def show_leaderboard(conn, params) do
     current_user = conn.assigns[:current_user]
     event = Event.get!(params["id"])
-    locale = Map.get(params, "locale", "en")
 
     leaderboard = [
       %{
@@ -88,7 +89,7 @@ defmodule CodebattleWeb.LiveViewEventController do
       url: Routes.event_leaderboard_url(conn, :show_leaderboard, event.id)
     })
     |> live_render(CodebattleWeb.Live.Event.LeaderboardView,
-      session: %{"current_user" => current_user, "leaderboard" => leaderboard, "locale" => locale},
+      session: %{"current_user" => current_user, "leaderboard" => leaderboard},
       layout: {CodebattleWeb.LayoutView, "empty.html"}
     )
   end

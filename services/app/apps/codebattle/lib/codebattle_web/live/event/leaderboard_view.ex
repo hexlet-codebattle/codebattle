@@ -6,8 +6,6 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
 
   @impl true
   def mount(_params, session, socket) do
-    Gettext.put_locale(CodebattleWeb.Gettext, session["locale"])
-
     {:ok,
      assign(socket,
        current_user: session["current_user"],
