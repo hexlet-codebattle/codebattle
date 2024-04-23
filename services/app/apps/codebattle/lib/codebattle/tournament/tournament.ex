@@ -147,7 +147,7 @@ defmodule Codebattle.Tournament do
       :use_infinite_break,
       :show_results,
       :waiting_room_name,
-      :event_id,
+      :event_id
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
@@ -165,10 +165,11 @@ defmodule Codebattle.Tournament do
 
   defp validate_event_id(changeset, nil), do: changeset
   defp validate_event_id(changeset, ""), do: changeset
+
   defp validate_event_id(changeset, event_id) do
     case Event.get(event_id) do
       nil -> add_error(changeset, :event_id, "Event not found")
-        _ -> change(changeset, %{event_id: event_id})
+      _ -> change(changeset, %{event_id: event_id})
     end
   end
 

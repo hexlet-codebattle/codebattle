@@ -82,7 +82,11 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       conn
       |> put_req_header("x-auth-key", "x-key")
       |> post(
-        Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "LoL_KeK", auth_token: "asdf"})
+        Routes.ext_api_user_path(conn, :create, %{
+          name: "oiblz",
+          clan: "LoL_KeK",
+          auth_token: "asdf"
+        })
       )
       |> json_response(200)
 

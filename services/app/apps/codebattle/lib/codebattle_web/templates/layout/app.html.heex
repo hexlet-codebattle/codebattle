@@ -84,7 +84,11 @@
                     src={collab_logo(@current_user)}
                   />
                 <% end %>
-                <img alt="Logo" class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0" src="/assets/images/logo.svg" />
+                <img
+                  alt="Logo"
+                  class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
+                  src="/assets/images/logo.svg"
+                />
                 <%= if @current_user.is_guest do %>
                   <div class="d-none d-sm-none d-md-flex d-lg-flex text-gray ml-1 pb-1">
                     <span class="font-weight-bold header-txt">Codebattle</span>

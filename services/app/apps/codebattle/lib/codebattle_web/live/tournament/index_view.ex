@@ -90,9 +90,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
     creator = socket.assigns.current_user
 
     changeset =
-      Tournament.Context.validate(
-        Map.merge(params, %{"creator" => creator})
-      )
+      Tournament.Context.validate(Map.merge(params, %{"creator" => creator}))
 
     {:noreply, assign(socket, changeset: changeset)}
   end
