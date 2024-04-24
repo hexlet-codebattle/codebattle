@@ -10,13 +10,7 @@ defmodule CodebattleWeb.AuthController do
 
     case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
-        url =
-          :codebattle
-          |> Application.get_env(:force_redirect_url)
-          |> case do
-            "" -> "/"
-            url -> url
-          end
+        url = Application.get_env(:codebattle, :force_redirect_url)
 
         conn
         |> put_flash(:info, gettext("Successfully authenticated"))
@@ -24,9 +18,14 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: url)
 
       {:error, reason} ->
-        conn
-        |> put_flash(:danger, reason)
-        |> redirect(to: "/")
+        if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
+          conn
+          |> redirect(external: url)
+        else
+          conn
+          |> put_flash(:danger, reason)
+          |> redirect(to: "/")
+        end
     end
   end
 

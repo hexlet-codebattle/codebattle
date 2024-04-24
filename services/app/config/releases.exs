@@ -69,7 +69,8 @@ config :codebattle, allow_guests: allow_guests
 config :codebattle, use_presence: use_presence
 config :codebattle, record_games: record_games
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
-config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL", "")
+config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL", "/")
+config :codebattle, guest_user_force_redirect_url: System.get_env("CODEBATTLE_GUEST_USER_FORCE_REDIRECT_URL")
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
