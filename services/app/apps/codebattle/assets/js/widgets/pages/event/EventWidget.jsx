@@ -104,11 +104,13 @@ const TopLeaderboardPanel = ({
                 <td width="120" className={tableDataCellClassName}>
                   {item.score}
                 </td>
-                <td width="240" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.playersCount}
                 </td>
-                <td width="240" className={tableDataCellClassName}>
-                  {item.clanName}
+                <td title={item.clanName} className={tableDataCellClassName}>
+                  <div className="cb-custom-event-name" >
+                    {item.clanName}
+                  </div>
                 </td>
               </tr>
             </React.Fragment>
@@ -272,16 +274,20 @@ const EventRatingPanel = ({
                         {item.score}
                       </td>
                       {item.playersCount !== undefined && (
-                        <td width="240" className={tableDataCellClassName}>
+                        <td className={tableDataCellClassName}>
                           {item.playersCount}
                         </td>
                       )}
-                      <td width="240" className={tableDataCellClassName}>
-                        {item.clanName}
+                      <td title={item.clanName} className={tableDataCellClassName}>
+                        <div className="cb-custom-event-name" >
+                          {item.clanName}
+                        </div>
                       </td>
                       {item.userName && (
-                        <td width="240" className={tableDataCellClassName}>
-                          {item.userName}
+                        <td title={item.userName} className={tableDataCellClassName}>
+                          <div className="cb-custom-event-name" >
+                            {item.userName}
+                          </div>
                         </td>
                       )}
                     </tr>
@@ -364,14 +370,10 @@ const TournamentInfo = ({
               className="text-primary"
               onClick={handleOpenInstruction}
             />
-)
+          )
           : (
-            <FontAwesomeIcon
-              disabled
-              icon="info-circle"
-              className="text-muted"
-            />
-)}
+            null
+          )}
       </span>
       <span className="ml-1 align-content-center cursor-pointer">
         {id
@@ -379,19 +381,15 @@ const TournamentInfo = ({
             <a href={`/tournaments/${id}`}>
               <FontAwesomeIcon icon="link" />
             </a>
-)
+          )
           : (
-            <FontAwesomeIcon
-              disabled
-              icon="unlink"
-              className="text-muted"
-            />
-)}
+            null
+          )}
       </span>
     </div>
     <div className="d-flex">
-      <span className="ml-4">{data}</span>
-      <span className="mx-4">{time}</span>
+      <span className="ml-1">{data}</span>
+      <span className="mx-4 text-nowrap">{time}</span>
     </div>
   </div>
 );
@@ -415,7 +413,7 @@ const EventCalendarPanel = ({ tournaments }) => {
           }
           name={i18next.t('Stage %{name}', { name: 1 })}
           data="18.05"
-          time="12:00"
+          time="12:00-12:30 (UTC+3)"
           handleOpenInstruction={() => handleOpenInstruction(tournaments[0]?.description)}
         />
         <TournamentInfo
@@ -427,7 +425,7 @@ const EventCalendarPanel = ({ tournaments }) => {
           name={i18next.t('Stage %{name}', { name: 1 })}
           nameClassName="cb-text-transparent"
           data="25.05"
-          time="12:00"
+          time="12:00-12:30 (UTC+3)"
           handleOpenInstruction={() => handleOpenInstruction(tournaments[1]?.description)}
         />
         <TournamentInfo
@@ -439,7 +437,7 @@ const EventCalendarPanel = ({ tournaments }) => {
           name={i18next.t('Stage %{name}', { name: 1 })}
           nameClassName="cb-text-transparent"
           data="01.06"
-          time="12:00"
+          time="12:00-12:30 (UTC+3)"
           handleOpenInstruction={() => handleOpenInstruction(tournaments[2]?.description)}
         />
         <TournamentInfo
@@ -450,7 +448,7 @@ const EventCalendarPanel = ({ tournaments }) => {
           }
           name={i18next.t('Stage %{name}', { name: 2 })}
           data="08.06"
-          time="12:10"
+          time="12:10-14:00 (UTC+3)"
           handleOpenInstruction={() => handleOpenInstruction(tournaments[3]?.description)}
         />
         <TournamentInfo
@@ -485,14 +483,14 @@ function EventWidget() {
 
   const contentClassName = cn(
     'd-flex flex-column-reverse flex-lg-row',
-    'flex-md-column-reverse flex-sm-column-reverse h-100',
+    'flex-md-column-reverse flex-sm-column-reverse',
     {
       'cb-opacity-50': loading === loadingStatuses.LOADING,
     },
   );
   const loadingClassName = cn(
     'justify-content-center align-items-center',
-    'position-absolute h-100 w-100',
+    'position-absolute w-100',
     {
       'd-flex': loading === loadingStatuses.LOADING,
       hidden: loading !== loadingStatuses.LOADING,
@@ -500,9 +498,9 @@ function EventWidget() {
   );
 
   return (
-    <div className="d-flex flex-column position-relative h-100 container-lg">
+    <div className="d-flex flex-column position-relative container-lg">
       <div className={contentClassName}>
-        <div className="d-flex flex-column h-100 m-2 mr-4 p-1 py-3">
+        <div className="d-flex col-7 flex-column m-2 p-1 py-3">
           {topLeaderboard.length > 0
             && (
               <TopLeaderboardPanel topLeaderboard={topLeaderboard} />)}
@@ -513,8 +511,10 @@ function EventWidget() {
             eventId={id}
           />
         </div>
-        <div className="rounded-lg border-0 bg-white m-2 py-3 h-100">
-          <EventCalendarPanel tournaments={tournaments} />
+        <div className="col-5">
+          <div className="rounded-lg border-0 bg-white m-1 py-3">
+            <EventCalendarPanel tournaments={tournaments} />
+          </div>
         </div>
       </div>
       <div className={loadingClassName}>

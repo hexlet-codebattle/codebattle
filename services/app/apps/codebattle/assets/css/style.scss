@@ -187,6 +187,7 @@ em-emoji-picker {
 .btn-hover {
   visibility: hidden;
 }
+
 @media (max-width: $sm) {
   .btn-hover {
     visibility: visible;
@@ -367,23 +368,26 @@ a {
     }
   }
 
-  & > .cb-asserts-progress {
+  &>.cb-asserts-progress {
     position: absolute;
     height: 100%;
     border-radius: 10px;
     background: #809b88;
   }
+
   &.failure {
-    & > .cb-asserts-progress {
+    &>.cb-asserts-progress {
       background: $success;
     }
   }
+
   &.error {
-    & > .cb-asserts-progress {
+    &>.cb-asserts-progress {
       background: $error;
       width: 100% !important;
     }
   }
+
   &.started {
     background: #bebebe;
   }
@@ -659,6 +663,7 @@ a {
 
 .nav-tabs {
   border-bottom: 1px solid black;
+
   .nav-item.active {
     color: var(--black);
   }
@@ -742,9 +747,11 @@ main {
   .cb-heading {
     font-size: 18px;
   }
+
   .cb-stats-number {
     font-size: 22px;
   }
+
   .lead {
     font-size: 14px;
   }
@@ -752,7 +759,8 @@ main {
 
 @media screen and (min-width: $md) {
   .modal-dialog {
-    min-width: 700px; /* New width for default modal */
+    min-width: 700px;
+    /* New width for default modal */
   }
 }
 
@@ -760,15 +768,19 @@ main {
   .cb-heading {
     font-size: 20px;
   }
+
   .cb-stats-number {
     font-size: 30px;
   }
+
   .lead {
     font-size: 16px;
   }
+
   .game-control-container {
     width: 100%;
   }
+
   .main-nav {
     margin-right: -15px;
     margin-left: -15px;
@@ -806,16 +818,19 @@ main {
   color: red;
   display: block;
 }
+
 a:hover {
   color: rgb(49, 47, 47);
   text-decoration: none;
 }
+
 .back-link {
   padding: 0.375rem 0.75rem;
   border: 2px solid transparent;
   background-color: #5389aa;
   margin-bottom: 0.5rem;
 }
+
 .back-link:hover {
   // background-color: #3b637c;
   border: 2px solid #4b809e;
@@ -850,21 +865,17 @@ a:hover {
 }
 
 .cb-right-scroll-control {
-  background: linear-gradient(
-    to right,
-    transparent 0,
-    var(--light) 12px,
-    var(--light) 100%
-  );
+  background: linear-gradient(to right,
+      transparent 0,
+      var(--light) 12px,
+      var(--light) 100%);
 }
 
 .cb-left-scroll-control {
-  background: linear-gradient(
-    to left,
-    transparent 0,
-    var(--light) 12px,
-    var(--light) 100%
-  );
+  background: linear-gradient(to left,
+      transparent 0,
+      var(--light) 12px,
+      var(--light) 100%);
 }
 
 // adapted styles from bootstrap 5.3
@@ -876,6 +887,7 @@ a:hover {
 .cb-overflow-x-hidden {
   overflow-x: hidden;
 }
+
 .cb-overflow-x-visible {
   overflow-x: visible;
 }
@@ -891,6 +903,7 @@ a:hover {
 .cb-overflow-y-hidden {
   overflow-y: hidden;
 }
+
 .cb-overflow-y-visible {
   overflow-y: visible;
 }
@@ -945,6 +958,18 @@ a:hover {
   background-color: #f3f4f4;
 }
 
+.cb-custom-event-name {
+  max-width: 220px;
+  /* Adjust according to your needs */
+  white-space: nowrap;
+  /* Prevent text from wrapping */
+  overflow: hidden;
+  /* Hide the overflow text */
+  text-overflow: ellipsis;
+  /* Display ellipsis for overflow text */
+
+}
+
 .cb-custom-event-td:not(:last-child)::after,
 .cb-custom-event-nav-item:not(:first-child)::after {
   content: '';
@@ -965,7 +990,7 @@ a:hover {
   top: 13px;
 }
 
-.cb-custom-event-nav-item.active + .cb-custom-event-nav-item::after {
+.cb-custom-event-nav-item.active+.cb-custom-event-nav-item::after {
   width: 0px;
 }
 
@@ -982,4 +1007,16 @@ a:hover {
 .cb-custom-event-badge-warning {
   color: #212529;
   background-color: #ffe500;
+}
+
+.cb-custom-event-badge-warning {
+  color: #212529;
+  background-color: #ffe500;
+}
+
+.cb-custom-event-bg {
+  flex: 1;
+  background: url('../static/images/eventStripes.svg');
+  background-position: bottom -5px right -5px;
+  background-repeat: no-repeat;
 }

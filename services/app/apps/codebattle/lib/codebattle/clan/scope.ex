@@ -13,7 +13,7 @@ defmodule Codebattle.Clan.Scope do
     |> join(:left, [c: c], u in assoc(c, :users), as: :u)
     |> where([u: u], fragment("? not like 'neBot_%'", u.name))
     |> group_by([c: c], c.id)
-    |> order_by([u: u], count(u.id))
+    |> order_by([u], {:desc, count(u.id)})
     |> select([u: u, c: c], %{
       players_count: count(u.id),
       # TODO: add score and place

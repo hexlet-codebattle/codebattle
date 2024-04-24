@@ -45,6 +45,7 @@ import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
 create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
 use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
 hide_header = System.get_env("CODEBATTLE_HIDE_HEADER") == "true"
+hide_footer = System.get_env("CODEBATTLE_HIDE_FOOTER") == "true"
 hide_user_dropdown = System.get_env("CODEBATTLE_HIDE_USER_DROPDOWN") == "true"
 hide_invites = System.get_env("CODEBATTLE_HIDE_INVITES") == "true"
 use_only_token_auth = System.get_env("CODEBATTLE_USE_ONLY_TOKEN_AUTH") == "true"
@@ -60,6 +61,7 @@ config :codebattle, import_github_tasks: import_github_tasks
 config :codebattle, create_bot_games: create_bot_games
 config :codebattle, use_external_js: use_external_js
 config :codebattle, hide_header: hide_header
+config :codebattle, hide_footer: hide_footer
 config :codebattle, hide_user_dropdown: hide_user_dropdown
 config :codebattle, hide_invites: hide_invites
 config :codebattle, use_only_token_auth: use_only_token_auth

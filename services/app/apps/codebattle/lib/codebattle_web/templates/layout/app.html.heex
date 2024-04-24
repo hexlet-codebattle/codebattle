@@ -288,40 +288,42 @@
         <div id="extension"></div>
       <% end %>
       <div class="content bg-light py-1"></div>
-      <main class="bg-light">
+      <main class="d-flex bg-light">
         <%= @inner_content %>
       </main>
       <footer>
-        <div class="footer-container container-lg">
-          <div>
-            <p class="text-nowrap text-white mb-0 mr-4">
-              ©
-              <a class="text-white" href="https://hexlet.io/">
-                Hexlet ltd
-              </a>
-              , 2024
-            </p>
+        <%= unless Application.get_env(:codebattle, :hide_footer) do %>
+          <div class="footer-container container-lg">
+            <div>
+              <p class="text-nowrap text-white mb-0 mr-4">
+                ©
+                <a class="text-white" href="https://hexlet.io/">
+                  Hexlet ltd
+                </a>
+                , 2024
+              </p>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+              <p class="m-0">
+                <%= link("Current version: #{app_short_version()}",
+                  to: github_commit_link(),
+                  class: "btn-link p-0 text-white"
+                ) %>
+              </p>
+              <p class="text-white m-0">
+                <span>deployedAt UTC:&nbsp;<%= deployed_at() %></span>
+              </p>
+              <%= if Application.get_env(:codebattle, :use_external_js) do %>
+                <a href="https://hits.seeyoufarm.com">
+                  <img
+                    class="mb-1"
+                    src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhexlet-codebattle%2Fcodebattle&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
+                  />
+                </a>
+              <% end %>
+            </div>
           </div>
-          <div class="d-flex flex-column align-items-center">
-            <p class="m-0">
-              <%= link("Current version: #{app_short_version()}",
-                to: github_commit_link(),
-                class: "btn-link p-0 text-white"
-              ) %>
-            </p>
-            <p class="text-white m-0">
-              <span>deployedAt UTC:&nbsp;<%= deployed_at() %></span>
-            </p>
-            <%= if Application.get_env(:codebattle, :use_external_js) do %>
-              <a href="https://hits.seeyoufarm.com">
-                <img
-                  class="mb-1"
-                  src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhexlet-codebattle%2Fcodebattle&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
-                />
-              </a>
-            <% end %>
-          </div>
-        </div>
+        <% end %>
       </footer>
     </div>
     <%= render_gon_script(@conn) %>

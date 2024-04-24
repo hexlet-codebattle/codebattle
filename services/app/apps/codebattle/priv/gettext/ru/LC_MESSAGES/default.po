@@ -402,7 +402,7 @@ msgid "Clan"
 msgstr "Вуз"
 
 msgid "Event rating"
-msgstr "Турнирная таблица"
+msgstr "Таблица регистраций"
 
 msgid "Clans rating"
 msgstr "Рейтинг вузов"
