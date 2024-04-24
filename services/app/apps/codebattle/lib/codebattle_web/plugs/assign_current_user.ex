@@ -20,10 +20,16 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
         if Application.get_env(:codebattle, :allow_guests) do
           conn |> assign(:current_user, User.build_guest())
         else
-          conn
-          |> put_flash(:danger, "You must be logged in to access that page")
-          |> redirect(to: Routes.session_path(conn, :new))
-          |> halt()
+          if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
+            conn
+            |> redirect(external: url)
+            |> halt()
+          else
+            conn
+            |> put_flash(:danger, "You must be logged in to access that page")
+            |> redirect(to: Routes.session_path(conn, :new))
+            |> halt()
+          end
         end
 
       {id, _path} ->
