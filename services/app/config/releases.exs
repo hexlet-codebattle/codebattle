@@ -53,6 +53,8 @@ show_extension_popup = System.get_env("CODEBATTLE_SHOW_EXTENSION_POPUP") == "tru
 allow_guests = System.get_env("CODEBATTLE_ALLOW_GUESTS") == "true"
 use_presence = System.get_env("CODEBATTLE_USE_PRESENCE") == "true"
 record_games = System.get_env("CODEBATTLE_RECORD_GAMES") == "true"
+use_event_rating = System.get_env("CODEBATTLE_USE_EVENT_RATING") == "true"
+use_event_rank = System.get_env("CODEBATTLE_USE_EVENT_RANK") == "true"
 
 tournament_rematch_timeout_ms =
   "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
@@ -73,6 +75,8 @@ config :codebattle, record_games: record_games
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
 config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")
 config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL", "/")
+config :codebattle, use_event_rating: use_event_rating
+config :codebattle, use_event_rank: use_event_rank
 
 config :codebattle,
   guest_user_force_redirect_url: System.get_env("CODEBATTLE_GUEST_USER_FORCE_REDIRECT_URL")

@@ -42,4 +42,22 @@ defmodule CodebattleWeb.LayoutView do
   def collab_logo_minor(_user) do
     Application.get_env(:codebattle, :collab_logo_minor)
   end
+
+  def user_rank(user) do
+    if Application.get_env(:codebattle, :use_event_rank) do
+      # TODO: add user rating from event
+      0
+    else
+      user.rank
+    end
+  end
+
+  def user_rating(user) do
+    if Application.get_env(:codebattle, :use_event_rating) do
+      # TODO: add user rating from event
+      0
+    else
+      user.rating
+    end
+  end
 end

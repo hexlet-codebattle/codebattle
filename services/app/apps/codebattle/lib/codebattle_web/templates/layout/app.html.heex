@@ -154,13 +154,13 @@
                             <div class="d-flex align-items-baseline">
                               <img alt="rank" src="/assets/images/cup.svg" title="rank" />
                               <span class="ml-1">
-                                <%= @current_user.rank %>
+                                <%= user_rank(@current_user) %>
                               </span>
                             </div>
                             <div class="d-flex align-items-baseline">
                               <img alt="rating" src="/assets/images/rating.svg" title="rating" />
                               <span class="ml-1">
-                                <%= @current_user.rating %>
+                                <%= user_rating(@current_user) %>
                               </span>
                             </div>
                           </div>
