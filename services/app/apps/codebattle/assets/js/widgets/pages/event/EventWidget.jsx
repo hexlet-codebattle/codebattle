@@ -108,7 +108,7 @@ const TopLeaderboardPanel = ({
                   {item.playersCount}
                 </td>
                 <td title={item.clanName} className={tableDataCellClassName}>
-                  <div className="cb-custom-event-name" >
+                  <div className="cb-custom-event-name">
                     {item.clanName}
                   </div>
                 </td>
@@ -279,13 +279,13 @@ const EventRatingPanel = ({
                         </td>
                       )}
                       <td title={item.clanName} className={tableDataCellClassName}>
-                        <div className="cb-custom-event-name" >
+                        <div className="cb-custom-event-name">
                           {item.clanName}
                         </div>
                       </td>
                       {item.userName && (
                         <td title={item.userName} className={tableDataCellClassName}>
-                          <div className="cb-custom-event-name" >
+                          <div className="cb-custom-event-name">
                             {item.userName}
                           </div>
                         </td>
@@ -500,7 +500,7 @@ function EventWidget() {
   return (
     <div className="d-flex flex-column position-relative container-lg">
       <div className={contentClassName}>
-        <div className="d-flex col-7 flex-column m-2 p-1 py-3">
+        <div className="d-flex col-12 col-lg-7  flex-column m-2 p-1 py-3">
           {topLeaderboard.length > 0
             && (
               <TopLeaderboardPanel topLeaderboard={topLeaderboard} />)}
@@ -511,7 +511,7 @@ function EventWidget() {
             eventId={id}
           />
         </div>
-        <div className="col-5">
+        <div className="col-12 col-lg-5">
           <div className="rounded-lg border-0 bg-white m-1 py-3">
             <EventCalendarPanel tournaments={tournaments} />
           </div>

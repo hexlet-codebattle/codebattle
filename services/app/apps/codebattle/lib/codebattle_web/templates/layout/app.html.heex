@@ -84,6 +84,14 @@
                     src={collab_logo(@current_user)}
                   />
                 <% end %>
+                <%= if collab_logo_minor(@current_user) do %>
+                  <img
+                    alt="collab icon"
+                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    style="height:40px"
+                    src={collab_logo_minor(@current_user)}
+                  />
+                <% end %>
                 <img
                   alt="Logo"
                   class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
@@ -288,7 +296,7 @@
         <div id="extension"></div>
       <% end %>
       <div class="content bg-light py-1"></div>
-      <main class="d-flex bg-light">
+      <main class="d-lg-flex bg-light">
         <%= @inner_content %>
       </main>
       <footer>

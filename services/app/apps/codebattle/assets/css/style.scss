@@ -1015,8 +1015,10 @@ a:hover {
 }
 
 .cb-custom-event-bg {
-  flex: 1;
-  background: url('../static/images/eventStripes.svg');
-  background-position: bottom -5px right -5px;
-  background-repeat: no-repeat;
+  @media (min-width: $lg) {
+    flex: 1;
+    background: url('../static/images/eventStripes.svg');
+    background-position: bottom -5px right -5px;
+    background-repeat: no-repeat;
+  }
 }

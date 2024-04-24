@@ -38,4 +38,8 @@ defmodule CodebattleWeb.LayoutView do
   def collab_logo(_user) do
     Application.get_env(:codebattle, :collab_logo)
   end
+
+  def collab_logo_minor(_user) do
+    Application.get_env(:codebattle, :collab_logo_minor)
+  end
 end
