@@ -9,6 +9,7 @@ import NiceModal, { unregister } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import i18next from 'i18next';
+import Pagination from 'react-js-pagination';
 import { useDispatch, useSelector } from 'react-redux';
 
 // import useSearchParams from '../../utils/useSearchParams';
@@ -72,13 +73,80 @@ const getTabLinkClassName = isActive => cn(
   },
 );
 
-const EventRatingPanel = ({
+const TopLeaderboardPanel = ({
   topLeaderboard = [],
+}) => (
+  <div className="d-flex flex-column">
+    <div className="d-flex w-100 font-weight-bold justify-content-between border-bottom border-dark pb-2">
+      <span>{i18next.t('Top-3')}</span>
+      <span className="px-3">{i18next.t('Total number of teams %{count}', { count: 3 })}</span>
+    </div>
+    <div className="d-flex w-100 pt-3 cb-overflow-x-auto">
+      <table
+        className="table table-striped cb-custom-event-table"
+      >
+        <thead className="text-muted">
+          <tr>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan players count')}</th>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {topLeaderboard.map(item => (
+            <React.Fragment key={item.userId || item.clanId}>
+              <tr className="cb-custom-event-empty-space-tr" />
+              <tr className={getTopItemClassName(item)}>
+                <td width="122" className={tableDataCellClassName}>
+                  {item.place}
+                </td>
+                <td width="120" className={tableDataCellClassName}>
+                  {item.score}
+                </td>
+                <td width="240" className={tableDataCellClassName}>
+                  {item.playersCount}
+                </td>
+                <td width="240" className={tableDataCellClassName}>
+                  {item.clanName}
+                </td>
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
+
+const renderPagination = (
+  { pageInfo: { pageNumber, pageSize, totalEntries } },
+  setPage,
+) => (
+  <Pagination
+    activePage={pageNumber}
+    itemsCountPerPage={pageSize}
+    totalItemsCount={totalEntries}
+    pageRangeDisplayed={5}
+    prevPageText="<"
+    firstPageText="<<"
+    lastPageText=">>"
+    nextPageText=">"
+    onChange={page => {
+      setPage(page);
+      // window.scrollTo({ top: 0, behavior: 'smooth' });
+    }}
+    itemClass="page-item"
+    linkClass="page-link"
+  />
+);
+
+const EventRatingPanel = ({
   commonLeaderboard: {
     items,
-    // pageNumber,
-    // pageSize,
-    // totalEntries,
+    pageNumber,
+    pageSize,
+    totalEntries,
   } = {
     items: [],
     pageNumber: 1,
@@ -98,6 +166,24 @@ const EventRatingPanel = ({
     setType(dataset.tabName);
   }, [setType]);
 
+  const setPage = useCallback(page => {
+    (async () => {
+      try {
+        await dispatch(actions.fetchCommonLeaderboard({
+          type,
+          eventId,
+          pageNumber: page,
+          pageSize,
+          clanId: currentUserClanId,
+          userId: currentUserId,
+        }));
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    })();
+    /* eslint-disable-next-line */
+  }, [type, eventId, pageSize, currentUserClanId, currentUserId]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -116,47 +202,6 @@ const EventRatingPanel = ({
 
   return (
     <>
-      <div className="d-flex flex-column">
-        <div className="d-flex w-100 font-weight-bold justify-content-between border-bottom border-dark pb-2">
-          <span>{i18next.t('Top-3')}</span>
-          <span className="px-3">{i18next.t('Total number of teams %{count}', { count: 3 })}</span>
-        </div>
-        <div className="d-flex w-100 pt-3 cb-overflow-x-auto">
-          <table
-            className="table table-striped cb-custom-event-table"
-          >
-            <thead className="text-muted">
-              <tr>
-                <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Place')}</th>
-                <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Score')}</th>
-                <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan players count')}</th>
-                <th className="p-1 pl-4 font-weight-light border-0">{i18next.t('Clan')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topLeaderboard.map(item => (
-                <React.Fragment key={item.place}>
-                  <tr className="cb-custom-event-empty-space-tr" />
-                  <tr className={getTopItemClassName(item)}>
-                    <td width="122" className={tableDataCellClassName}>
-                      {item.place}
-                    </td>
-                    <td width="120" className={tableDataCellClassName}>
-                      {item.score}
-                    </td>
-                    <td width="240" className={tableDataCellClassName}>
-                      {item.playersCount}
-                    </td>
-                    <td width="240" className={tableDataCellClassName}>
-                      {item.clanName}
-                    </td>
-                  </tr>
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
       <div className="d-flex flex-column">
         <div className="d-flex w-100 justify-content-starts border-bottom border-dark pb-2">
           <span className="font-weight-bold">{i18next.t('Event rating')}</span>
@@ -217,7 +262,7 @@ const EventRatingPanel = ({
               </thead>
               <tbody>
                 {items.map(item => (
-                  <React.Fragment key={item.place}>
+                  <React.Fragment key={`${type}${item.userId}${item.clanId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr className={getTopItemClassName({ clanId: item.clanId })}>
                       <td width="110" className={tableDataCellClassName}>
@@ -245,6 +290,7 @@ const EventRatingPanel = ({
               </tbody>
             </table>
           </div>
+          <div>{renderPagination({ pageInfo: { pageNumber, pageSize, totalEntries } }, setPage)}</div>
         </div>
       </div>
     </>
@@ -298,7 +344,7 @@ const TournamentInfo = ({
   nameClassName = '',
   data = '##.##',
   time = '##:##',
-  handleOpenInstruction = () => {},
+  handleOpenInstruction = () => { },
 }) => (
   <div className="d-flex flex-column flex-lg-row align-items-center py-2 cb-custom-event-tournaments-item">
     <div className="d-flex">
@@ -311,18 +357,37 @@ const TournamentInfo = ({
         />
       </span>
       <span className="ml-3 align-content-center cursor-pointer">
-        <FontAwesomeIcon
-          icon="info-circle"
-          className="text-primary"
-          onClick={handleOpenInstruction}
-        />
+        {id
+          ? (
+            <FontAwesomeIcon
+              icon="info-circle"
+              className="text-primary"
+              onClick={handleOpenInstruction}
+            />
+)
+          : (
+            <FontAwesomeIcon
+              disabled
+              icon="info-circle"
+              className="text-muted"
+            />
+)}
       </span>
-      <a href={`/tournaments/${id}`} className="ml-1 align-content-center">
-        <FontAwesomeIcon
-          icon="link"
-          className="text-muted"
-        />
-      </a>
+      <span className="ml-1 align-content-center cursor-pointer">
+        {id
+          ? (
+            <a href={`/tournaments/${id}`}>
+              <FontAwesomeIcon icon="link" />
+            </a>
+)
+          : (
+            <FontAwesomeIcon
+              disabled
+              icon="unlink"
+              className="text-muted"
+            />
+)}
+      </span>
     </div>
     <div className="d-flex">
       <span className="ml-4">{data}</span>
@@ -332,8 +397,8 @@ const TournamentInfo = ({
 );
 
 const EventCalendarPanel = ({ tournaments }) => {
-  const handleOpenInstruction = useCallback(() => {
-    NiceModal.show(ModalCodes.tournamentDescriptionModal);
+  const handleOpenInstruction = useCallback(description => {
+    NiceModal.show(ModalCodes.tournamentDescriptionModal, { description });
   }, []);
 
   return (
@@ -346,58 +411,58 @@ const EventCalendarPanel = ({ tournaments }) => {
           id={tournaments[0]?.id}
           type={
             tournaments[0]?.state
-              || TournamentStatusCodes.waitingParticipants
+            || TournamentStatusCodes.waitingParticipants
           }
           name={i18next.t('Stage %{name}', { name: 1 })}
           data="18.05"
-          time="18:00"
-          handleOpenInstruction={handleOpenInstruction}
+          time="12:00"
+          handleOpenInstruction={() => handleOpenInstruction(tournaments[0]?.description)}
         />
         <TournamentInfo
           id={tournaments[1]?.id}
           type={
             tournaments[1]?.state
-              || TournamentStatusCodes.waitingParticipants
+            || TournamentStatusCodes.waitingParticipants
           }
           name={i18next.t('Stage %{name}', { name: 1 })}
           nameClassName="cb-text-transparent"
           data="25.05"
-          time="18:00"
-          handleOpenInstruction={handleOpenInstruction}
+          time="12:00"
+          handleOpenInstruction={() => handleOpenInstruction(tournaments[1]?.description)}
         />
         <TournamentInfo
           id={tournaments[2]?.id}
           type={
             tournaments[2]?.state
-              || TournamentStatusCodes.waitingParticipants
+            || TournamentStatusCodes.waitingParticipants
           }
           name={i18next.t('Stage %{name}', { name: 1 })}
           nameClassName="cb-text-transparent"
           data="01.06"
-          time="18:00"
-          handleOpenInstruction={handleOpenInstruction}
+          time="12:00"
+          handleOpenInstruction={() => handleOpenInstruction(tournaments[2]?.description)}
         />
         <TournamentInfo
           id={tournaments[3]?.id}
           type={
             tournaments[3]?.state
-              || TournamentStatusCodes.waitingParticipants
+            || TournamentStatusCodes.waitingParticipants
           }
           name={i18next.t('Stage %{name}', { name: 2 })}
           data="08.06"
-          time="18:00"
-          handleOpenInstruction={handleOpenInstruction}
+          time="12:10"
+          handleOpenInstruction={() => handleOpenInstruction(tournaments[3]?.description)}
         />
         <TournamentInfo
           id={tournaments[4]?.id}
           type={
             tournaments[4]?.state
-              || TournamentStatusCodes.waitingParticipants
+            || TournamentStatusCodes.waitingParticipants
           }
           name={i18next.t('Stage %{name}', { name: 3 })}
-          data="26.06"
-          time="18:00"
-          handleOpenInstruction={handleOpenInstruction}
+          data="27.06"
+          time=""
+          handleOpenInstruction={() => handleOpenInstruction(tournaments[4]?.description)}
         />
       </div>
     </div>
@@ -438,10 +503,12 @@ function EventWidget() {
     <div className="d-flex flex-column position-relative h-100 container-lg">
       <div className={contentClassName}>
         <div className="d-flex flex-column h-100 m-2 mr-4 p-1 py-3">
+          {topLeaderboard.length > 0
+            && (
+              <TopLeaderboardPanel topLeaderboard={topLeaderboard} />)}
           <EventRatingPanel
             currentUserId={currentUserId}
             currentUserClanId={currentUserClanId}
-            topLeaderboard={topLeaderboard}
             commonLeaderboard={commonLeaderboard}
             eventId={id}
           />

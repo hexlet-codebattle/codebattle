@@ -16,29 +16,7 @@ defmodule CodebattleWeb.PublicEventController do
       event: %{
         event: event,
         tournaments: tournaments,
-        top_leaderboard: [
-          %{
-            place: 1,
-            score: 10,
-            players_count: 100,
-            clan_id: 1,
-            clan_name: "Clan1"
-          },
-          %{
-            place: 2,
-            score: 9,
-            players_count: 102,
-            clan_id: 2,
-            clan_name: "Clan2"
-          },
-          %{
-            place: 3,
-            score: 8,
-            players_count: 104,
-            clan_id: 3,
-            clan_name: "Clan3"
-          }
-        ]
+        top_leaderboard: []
       }
     )
     |> render("show.html")

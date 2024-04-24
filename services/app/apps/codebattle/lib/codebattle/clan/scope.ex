@@ -4,7 +4,6 @@ defmodule Codebattle.Clan.Scope do
   """
 
   alias Codebattle.Clan
-  alias Codebattle.User
 
   import Ecto.Query
 
@@ -37,6 +36,7 @@ defmodule Codebattle.Clan.Scope do
       score: 0,
       place: 0,
       clan_id: c.id,
+      user_id: u.id,
       user_name: u.name,
       clan_name: c.name,
       clan_long_name: c.long_name
@@ -55,6 +55,7 @@ defmodule Codebattle.Clan.Scope do
       score: 0,
       place: 0,
       clan_id: c.id,
+      user_id: u.id,
       user_name: u.name,
       clan_name: c.name,
       clan_long_name: c.long_name

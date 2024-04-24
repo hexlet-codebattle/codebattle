@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 
 import ModalCodes from '../../config/modalCodes';
 
-const TournamentDescriptionModal = NiceModal.create(() => {
+const TournamentDescriptionModal = NiceModal.create(({ description }) => {
   const modal = useModal(ModalCodes.tournamentDescriptionModal);
 
   return (
@@ -17,7 +17,7 @@ const TournamentDescriptionModal = NiceModal.create(() => {
         <Modal.Title>{i18next.t('Tournament description')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        Instruction
+        {description}
       </Modal.Body>
       <Modal.Footer>
         <div className="d-flex justify-content-end w-100">

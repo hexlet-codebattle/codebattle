@@ -117,17 +117,19 @@
 
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                   <ul class="navbar-nav ml-auto">
-                    <li class="nav-item align-self-center dropdown" id="invites-root">
-                      <span class="text-muted">0 Online</span>
+                    <%= unless Application.get_env(:codebattle, :hide_invites) do %>
+                      <li class="nav-item align-self-center dropdown" id="invites-root">
+                        <span class="text-muted">0 Online</span>
 
-                      <div class="btn btn-dark mx-2">
-                        <img
-                          alt="invites"
-                          src="/assets/images/fight.svg"
-                          style="width:46px; height:46px"
-                        />
-                      </div>
-                    </li>
+                        <div class="btn btn-dark mx-2">
+                          <img
+                            alt="invites"
+                            src="/assets/images/fight.svg"
+                            style="width:46px; height:46px"
+                          />
+                        </div>
+                      </li>
+                    <% end %>
                     <li class="nav-item dropdown">
                       <a
                         aria-expanded="false"
@@ -162,65 +164,68 @@
                           src={@current_user.avatar_url}
                           style="width:46px; height:46px"
                         />
-                        <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
-                          <a
-                            class="dropdown-item"
-                            href={Routes.user_path(@conn, :show, @current_user.id)}
-                          >
-                            <span class="fas fa-user mr-2"></span>
-                            <%= gettext("My Profile") %>
-                          </a>
-                          <a class="dropdown-item" href={Routes.user_setting_path(@conn, :edit)}>
-                            <span class="fas fa-cog mr-2"></span>
-                            <%= gettext("Settings") %>
-                          </a>
-                          <a class="dropdown-item" href={user_path(@conn, :index)}>
-                            <span class="fas fa-medal mr-2"></span>
-                            <%= gettext("Users rating") %>
-                          </a>
-                          <a class="dropdown-item" href={task_path(@conn, :index)}>
-                            <span class="fas fa-tasks mr-2"></span>
-                            <%= gettext("Tasks") %>
-                          </a>
-                          <a class="dropdown-item" href={tournament_path(@conn, :index)}>
-                            <span class="fas fa-trophy mr-2"></span>
-                            <%= gettext("Tournaments") %>
-                          </a>
-                          <div class="dropdown-divider"></div>
-                          <a
-                            class="dropdown-item"
-                            href="https://github.com/hexlet-codebattle/codebattle"
-                            target="_blank"
-                          >
-                            <span class="fab fa-github mr-2"></span>
-                            <%= gettext("SourceCode") %>
-                          </a>
-                          <a class="dropdown-item" href="https://hexlet.io" target="_blank">
-                            <span class="fa fa-university mr-2"></span>
-                            <%= gettext("Hexlet") %>
-                          </a>
-                          <a
-                            class="dropdown-item"
-                            href="https://discord.gg/dTpFXrYU3v"
-                            target="_blank"
-                          >
-                            <span class="fab fa-discord mr-2"></span>
-                            <%= gettext("Join Discord") %>
-                          </a>
-                          <a
-                            class="dropdown-item"
-                            href="https://t.me/hexletcommunity/5"
-                            target="_blank"
-                          >
-                            <span class="fab fa-telegram mr-2"></span>
-                            <%= gettext("Tg#codebattle") %>
-                          </a>
-                          <div class="dropdown-divider"></div>
-                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
-                            <span class="fas fa-sign-out-alt mr-2"></span>
-                            <%= gettext("Sign Out") %>
-                          <% end %>
-                        </div>
+
+                        <%= unless Application.get_env(:codebattle, :hide_user_dropdown) do %>
+                          <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                            <a
+                              class="dropdown-item"
+                              href={Routes.user_path(@conn, :show, @current_user.id)}
+                            >
+                              <span class="fas fa-user mr-2"></span>
+                              <%= gettext("My Profile") %>
+                            </a>
+                            <a class="dropdown-item" href={Routes.user_setting_path(@conn, :edit)}>
+                              <span class="fas fa-cog mr-2"></span>
+                              <%= gettext("Settings") %>
+                            </a>
+                            <a class="dropdown-item" href={user_path(@conn, :index)}>
+                              <span class="fas fa-medal mr-2"></span>
+                              <%= gettext("Users rating") %>
+                            </a>
+                            <a class="dropdown-item" href={task_path(@conn, :index)}>
+                              <span class="fas fa-tasks mr-2"></span>
+                              <%= gettext("Tasks") %>
+                            </a>
+                            <a class="dropdown-item" href={tournament_path(@conn, :index)}>
+                              <span class="fas fa-trophy mr-2"></span>
+                              <%= gettext("Tournaments") %>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a
+                              class="dropdown-item"
+                              href="https://github.com/hexlet-codebattle/codebattle"
+                              target="_blank"
+                            >
+                              <span class="fab fa-github mr-2"></span>
+                              <%= gettext("SourceCode") %>
+                            </a>
+                            <a class="dropdown-item" href="https://hexlet.io" target="_blank">
+                              <span class="fa fa-university mr-2"></span>
+                              <%= gettext("Hexlet") %>
+                            </a>
+                            <a
+                              class="dropdown-item"
+                              href="https://discord.gg/dTpFXrYU3v"
+                              target="_blank"
+                            >
+                              <span class="fab fa-discord mr-2"></span>
+                              <%= gettext("Join Discord") %>
+                            </a>
+                            <a
+                              class="dropdown-item"
+                              href="https://t.me/hexletcommunity/5"
+                              target="_blank"
+                            >
+                              <span class="fab fa-telegram mr-2"></span>
+                              <%= gettext("Tg#codebattle") %>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                              <span class="fas fa-sign-out-alt mr-2"></span>
+                              <%= gettext("Sign Out") %>
+                            <% end %>
+                          </div>
+                        <% end %>
                       </a>
                     </li>
                   </ul>

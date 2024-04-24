@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
     # TODO: find page_number from params or by user_id or clan_id
     # page Map.get(page) || find_by_user_clan_id
 
-    page_number = params |> Map.get("page", "1") |> String.to_integer() |> min(2000)
+    page_number = params |> Map.get("page_number", "1") |> String.to_integer() |> min(2000)
     page_size = params |> Map.get("page_size", "10") |> String.to_integer() |> min(20)
 
     response =

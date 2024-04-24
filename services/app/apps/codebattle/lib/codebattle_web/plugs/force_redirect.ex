@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
   alias Codebattle.User
 
   @allowed_paths [
+    ~r{^\/$},
     ~r{^\/tournaments\/\d+\/?$},
     ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
@@ -12,6 +13,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     ~r{^\/settings\/?$},
     ~r{^\/user\/current\/?$},
     ~r{^\/api\/v1\/settings\/?$},
+    ~r{^\/api\/v1\/events\/.+$},
     ~r{^\/api\/v1\/playbook\/\d+\/?$}
   ]
 

@@ -56,6 +56,9 @@ const eventSlice = createSlice({
       state.loading = loadingStatuses.PENDING;
       state.commonLeaderboard = {
         items: action.payload.items,
+        pageNumber: action.payload.pageInfo.pageNumber,
+        pageSize: action.payload.pageInfo.pageSize,
+        totalEntries: action.payload.pageInfo.totalEntries,
       };
     },
     [fetchCommonLeaderboard.rejected]: state => {
