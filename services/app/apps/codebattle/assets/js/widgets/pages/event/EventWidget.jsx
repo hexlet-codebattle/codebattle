@@ -121,10 +121,10 @@ const TopLeaderboardPanel = ({
   </div>
 );
 
-const renderPagination = (
-  { pageInfo: { pageNumber, pageSize, totalEntries } },
+const LeaderboardPagination = ({
+  pageInfo: { pageNumber, pageSize, totalEntries },
   setPage,
-) => (
+}) => (
   <Pagination
     activePage={pageNumber}
     itemsCountPerPage={pageSize}
@@ -138,8 +138,8 @@ const renderPagination = (
       setPage(page);
       // window.scrollTo({ top: 0, behavior: 'smooth' });
     }}
-    itemClass="page-item"
-    linkClass="page-link"
+    itemClass="cb-custom-event-pagination-page-item px-1"
+    linkClass="cb-custom-event-pagination-page-link px-1"
   />
 );
 
@@ -296,7 +296,12 @@ const EventRatingPanel = ({
               </tbody>
             </table>
           </div>
-          <div>{renderPagination({ pageInfo: { pageNumber, pageSize, totalEntries } }, setPage)}</div>
+          <div className="d-flex justify-content-end mr-1">
+            <LeaderboardPagination
+              pageInfo={{ pageNumber, pageSize, totalEntries }}
+              setPage={setPage}
+            />
+          </div>
         </div>
       </div>
     </>

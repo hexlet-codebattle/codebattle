@@ -1009,11 +1009,6 @@ a:hover {
   background-color: #ffe500;
 }
 
-.cb-custom-event-badge-warning {
-  color: #212529;
-  background-color: #ffe500;
-}
-
 .cb-custom-event-bg {
   @media (min-width: $lg) {
     flex: 1;
@@ -1021,4 +1016,56 @@ a:hover {
     background-position: bottom -5px right -5px;
     background-repeat: no-repeat;
   }
+}
+
+// .cb-custom-event-pagination-nav-item {
+//   background-color: #8C64FF;
+//   border-radius: 0.5rem;
+// }
+//
+// .cb-custom-event-pagination-nav-link {
+//   background-color: #8C64FF;
+//   border-radius: 0.5rem;
+// }
+
+.cb-custom-event-pagination-page-item .cb-custom-event-pagination-page-link {
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+.cb-custom-event-pagination-page-link {
+    position: relative;
+    display: block;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: black;
+}
+
+.cb-custom-event-pagination-page-item:first-child .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:nth-child(2) .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:nth-last-child(2) .cb-custom-event-pagination-page-link,
+.cb-custom-event-pagination-page-item:last-child .cb-custom-event-pagination-page-link {
+    color: white;
+    background-color: #8C64FF;
+    border: 1px solid #8C64FF;
+}
+
+.cb-custom-event-pagination-page-item.disabled .cb-custom-event-pagination-page-link {
+    pointer-events: none;
+    cursor: auto;
+    background-color: #9f8ed4;
+    border-color: #9f8ed4;
+}
+.cb-custom-event-pagination-page-item.active .cb-custom-event-pagination-page-link {
+    z-index: 3;
+    color: white;
+    background-color: #8C64FF;
+    border: 1px solid #8C64FF;
+}
+
+.cb-custom-event-pagination-page-item:not(.active):not(.disabled):hover .cb-custom-event-pagination-page-link {
+    z-index: 3;
+    color: white;
+    background-color: #8C64FF;
+    border: 1px solid #8C64FF;
 }
