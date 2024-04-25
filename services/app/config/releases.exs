@@ -41,6 +41,38 @@ config :codebattle, :oauth,
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
+config :phoenix_meta_tags,
+  title: System.get_env("CODEBATTLE_META_TITLE", "Hexlet Codebattle • Game for programmers"),
+  description:
+    System.get_env(
+      "CODEBATTLE_META_DESCRIPTION",
+      "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
+    ),
+  url:
+    System.get_env(
+      "CODEBATTLE_META_URL",
+      "https://codebattle.hexlet.io"
+    ),
+  image:
+    System.get_env(
+      "CODEBATTLE_META_IMAGE",
+      "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
+    ),
+  "og:type": "website",
+  fb: %{
+    size: %{
+      width: 100,
+      height: 200,
+      position: %{
+        x: 10,
+        y: 15
+      }
+    }
+  },
+  twitter: %{
+    card: "summary_large_image"
+  }
+
 import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
 create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
 use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
