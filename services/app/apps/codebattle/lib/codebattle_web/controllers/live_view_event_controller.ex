@@ -3,7 +3,7 @@ defmodule CodebattleWeb.LiveViewEventController do
 
   alias Codebattle.Event
 
-  plug CodebattleWeb.Plugs.CORSPlug when action in [:show_leaderboard]
+  # plug CodebattleWeb.Plugs.CORSPlug when action in [:show_leaderboard]
 
   def show_leaderboard(conn, params) do
     current_user = conn.assigns[:current_user]

@@ -11,7 +11,7 @@ defmodule CodebattleWeb.PublicEventController do
     tournaments = Tournament.Context.get_all_by_event_id!(event.id)
 
     conn
-    |> put_meta_tags(%{title: event.title})
+    |> put_meta_tags(%{title: event.title, description: event.description})
     |> put_gon(
       event: %{
         event: event,
