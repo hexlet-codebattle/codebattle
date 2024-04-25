@@ -60,4 +60,9 @@ defmodule CodebattleWeb.LayoutView do
       user.rating
     end
   end
+
+  def avatar_url(user) do
+    user.avatar_url ||
+      "https://ui-avatars.com/api/?name=#{user.name}&background=ffdb4d&color=ff0000"
+  end
 end
