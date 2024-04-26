@@ -223,11 +223,20 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Invite{}
   end
 
+  def event_factory do
+    %Codebattle.Event{}
+  end
+
   def clan_factory do
-    %Codebattle.Clan{}
+    %Codebattle.Clan{
+      name: unique("c"),
+      long_name: unique("clan")
+    }
   end
 
   def feedback_factory do
     %Feedback{author_name: "name", status: "proposal", text: "text", title_link: "title_link"}
   end
+
+  defp unique(prefix), do: "#{prefix}#{System.unique_integer([:positive, :monotonic])}"
 end

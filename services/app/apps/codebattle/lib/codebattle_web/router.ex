@@ -51,6 +51,10 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :public_api do
+    plug(:accepts, ["json"])
+  end
+
   pipeline :mounted_apps do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -83,6 +87,14 @@ defmodule CodebattleWeb.Router do
     get("/:provider/bind", AuthBindController, :request)
     get("/:provider/callback/bind", AuthBindController, :callback)
     delete("/:provider", AuthBindController, :unbind)
+  end
+
+  scope "/public_api", CodebattleWeb.Api, as: :api do
+    pipe_through(:public_api)
+
+    scope "/v1", V1, as: :v1 do
+      get("/events/:id/leaderboard", Event.LeaderboardController, :show)
+    end
   end
 
   scope "/api", CodebattleWeb.Api, as: :api do

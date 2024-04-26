@@ -44,7 +44,6 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
         |> halt()
       else
         conn
-        |> put_flash(:danger, "You must be logged in to access that page")
         |> redirect(to: Routes.session_path(conn, :new))
         |> halt()
       end
