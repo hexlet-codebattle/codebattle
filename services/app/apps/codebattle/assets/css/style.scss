@@ -30,6 +30,15 @@ em-emoji-picker {
   --shadow: 0px 0px 15px var(--gray);
 }
 
+.phx-connected,
+.phx-loading {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .xstate {
   height: 1000px;
 }
@@ -646,6 +655,26 @@ a {
     transform 200ms;
 }
 
+@keyframes ticker_1 {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes ticker_2 {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-200%);
+  }
+}
+
 @keyframes scale {
   0% {
     transform: scale(0.5);
@@ -1068,4 +1097,26 @@ a:hover {
     color: white;
     background-color: #8C64FF;
     border: 1px solid #8C64FF;
+}
+
+.cb-ticker-line-wrap {
+  white-space: pre;
+  background-color: #8C64FF;
+}
+
+.cb-ticker-line {
+  display: inline-block;
+  font-size: 18px;
+  color: white;
+  white-space: pre;
+}
+
+.cb-ticker-line-head {
+  animation: ticker_1 70s linear infinite;
+  animation-delay: -70s;
+}
+
+.cb-ticker-line-tail {
+  animation: ticker_2 70s linear infinite;
+  animation-delay: -35s;
 }
