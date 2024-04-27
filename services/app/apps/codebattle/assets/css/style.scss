@@ -1127,3 +1127,5 @@ a:hover {
   animation: ticker_2 70s linear infinite;
   animation-delay: -35s;
 }
+
+.scrollable-menu-dropdown-chat { height: auto; max-height: 400px; overflow-x: hidden; }

@@ -20,7 +20,7 @@ export default function Rooms({ disabled }) {
           <span className="mr-2">{activeRoom.name}</span>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu>
+        <Dropdown.Menu className="scrollable-menu-dropdown-chat">
           {
             rooms.map(room => (
               <Dropdown.Item
