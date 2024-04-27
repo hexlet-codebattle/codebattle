@@ -1101,13 +1101,13 @@ a:hover {
 
 .cb-ticker-line-wrap {
   white-space: pre;
+  overflow: hidden;
 
   background: url('../static/images/eventStripesPink.svg');
-  background-size: 16%;
-  background-position: bottom -5px right 25%;
+  background-size: 200px 43px;
+  background-position: bottom 0px right 25%;
   background-repeat: no-repeat;
   background-color: #8C64FF;
-  // fill: #B6A4FF;
 }
 
 .cb-ticker-line {
@@ -1115,6 +1115,7 @@ a:hover {
   font-size: 18px;
   color: white;
   white-space: pre;
+  white-space-collapse: collapse;
 }
 
 .cb-ticker-line-head {
