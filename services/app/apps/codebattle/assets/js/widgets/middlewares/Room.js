@@ -512,6 +512,22 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
     dispatch(actions.setTournamentWaitType(response.type));
   };
 
+  const handleWaitingRoomStarted = response => {
+    waitingRoomMachine.send('waiting_room:started');
+  };
+
+  const handleWaitingRoomEnded = response => {
+    waitingRoomMachine.send('waiting_room:ended');
+  };
+
+  const handleWaitingRoomPlayerBanned = response => {
+    waitingRoomMachine.send('waiting_room:player:banned');
+  };
+
+  const handleWaitingRoomPlayerUnbanned = response => {
+    waitingRoomMachine.send('waiting_room:player:unbanned');
+  };
+
   const refs = [
     currentGameChannel.on('editor:data', handleNewEditorData),
     currentGameChannel.on('user:start_check', handleStartsCheck),
@@ -528,10 +544,10 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
     currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
     currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
     currentGameChannel.on('tournament:game:wait', handleTournamentGameWait),
-    currentGameChannel.on('waiting_room:started', () => {}),
-    currentGameChannel.on('waiting_room:ended', () => {}),
-    currentGameChannel.on('waiting_room:player:banned', () => {}),
-    currentGameChannel.on('waiting_room:player:unbanned', () => {}),
+    currentGameChannel.on('waiting_room:started', handleWaitingRoomStarted),
+    currentGameChannel.on('waiting_room:ended', handleWaitingRoomEnded),
+    currentGameChannel.on('waiting_room:player:banned', handleWaitingRoomPlayerBanned),
+    currentGameChannel.on('waiting_room:player:unbanned', handleWaitingRoomPlayerUnbanned),
     currentGameChannel.on('waiting_room:player:matchmaking_started', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_restarted', () => {}),
     currentGameChannel.on('waiting_room:player:matchmaking_stoped', () => {}),
@@ -556,6 +572,17 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
       currentGameChannel.off('tournament:round_created', refs[10]);
       currentGameChannel.off('tournament:round_finished', refs[11]);
       currentGameChannel.off('tournament:game:wait', refs[12]);
+      currentGameChannel.off('waiting_room:started', refs[13]);
+      currentGameChannel.off('waiting_room:ended', refs[14]);
+      currentGameChannel.off('waiting_room:player:banned', refs[15]);
+      currentGameChannel.off('waiting_room:player:unbanned', refs[16]);
+      currentGameChannel.off('waiting_room:player:matchmaking_started', refs[17]);
+      currentGameChannel.off('waiting_room:player:matchmaking_restarted', refs[18]);
+      currentGameChannel.off('waiting_room:player:matchmaking_stoped', refs[19]);
+      currentGameChannel.off('waiting_room:player:matchmaking_paused', refs[20]);
+    // TODO: handle here state where player solved all tasks in round
+      currentGameChannel.off('tournament:player:finished_round', refs[21]);
+      currentGameChannel.off('tournament:player:finished', refs[22]);
     }
   };
 
