@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import shuffle from 'lodash/shuffle';
 
 import MatchStates from '../../config/matchStates';
 import { createCustomRound } from '../../middlewares/Tournament';
@@ -252,7 +253,7 @@ function TournamentGameCreatePanel({
                   className="btn btn-sm btn-secondary rounded-lg p-1"
                   onClick={() => {
                     createCustomRound({
-                      task_id: availableTasks[selectedTaskLevel][0]?.id,
+                      task_id: shuffle(availableTasks[selectedTaskLevel])[0]?.id,
                       timeout_seconds: selectedTimeoutSeconds,
                     });
                   }}

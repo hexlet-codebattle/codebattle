@@ -1,7 +1,9 @@
-<div id="game-widget-root"></div>
-<%= if Application.get_env(:codebattle, :html_debug_mode) do %>
-  <iframe class="xstate w-100"></iframe>
-<% end %>
+<div>
+  <div id="game-widget-root"></div>
+  <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
+    <iframe class="xstate w-100"></iframe>
+  <% end %>
+</div>
 <div id="modal-root" style="position: absolute; top: 0; left: 0;"></div>
 <script>
   window.csrf_token = "<%= csrf_token() %>"

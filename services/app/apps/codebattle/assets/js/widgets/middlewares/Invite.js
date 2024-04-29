@@ -97,6 +97,9 @@ export const createInvite = params => dispatch => channel
     dispatch(actions.newChatMessage(message));
 
     camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
+  })
+  .receive('error', ({ reason }) => {
+    throw new Error(reason);
   });
 
 export const acceptInvite = id => dispatch => channel
@@ -105,6 +108,10 @@ export const acceptInvite = id => dispatch => channel
     setTimeout(() => { window.location.href = `/games/${data.invite.game_id}`; }, 250);
 
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+  })
+  .receive('error', ({ reason }) => {
+    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    throw new Error(reason);
   });
 
 export const declineInvite = (id, opponentName) => dispatch => channel
@@ -114,6 +121,10 @@ export const declineInvite = (id, opponentName) => dispatch => channel
     dispatch(actions.newChatMessage(message));
 
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+  })
+  .receive('error', ({ reason }) => {
+    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    throw new Error(reason);
   });
 
 export const cancelInvite = (id, opponentName) => dispatch => channel
@@ -123,4 +134,8 @@ export const cancelInvite = (id, opponentName) => dispatch => channel
     dispatch(actions.newChatMessage(message));
 
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+  })
+  .receive('error', ({ reason }) => {
+    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    throw new Error(reason);
   });
