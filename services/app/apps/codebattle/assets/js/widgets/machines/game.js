@@ -1,6 +1,6 @@
-import { channelTopics } from 'assets/js/socket';
 import { assign, actions } from 'xstate';
 
+import { channelTopics } from '../../socket';
 import GameStateCodes from '../config/gameStateCodes';
 import speedModes from '../config/speedModes';
 import subscriptionTypes from '../config/subscriptionTypes';

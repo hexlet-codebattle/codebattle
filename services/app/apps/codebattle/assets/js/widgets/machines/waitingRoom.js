@@ -1,5 +1,6 @@
-import { channelTopics } from 'assets/js/socket';
 import { assign } from 'xstate';
+
+import { channelTopics } from '../../socket';
 
 const states = {
   room: {
