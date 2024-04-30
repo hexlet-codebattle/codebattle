@@ -1,6 +1,6 @@
 import { camelizeKeys } from 'humps';
 
-import socket from '../../socket';
+import socket, { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 
@@ -26,7 +26,7 @@ const getOpponentName = (data, user) => {
 
 export const initInvites = currentUser => dispatch => {
   const onJoinSuccess = () => {
-    channel.on('invites:init', data => {
+    channel.on(channelTopics.invitesInitTopic, data => {
       if (data.invites.length > 0) {
         const message = getSystemMessage({ text: `You have (${data.invites.length}) invites to battle. Check ` });
         setTimeout(() => dispatch(actions.newChatMessage(message)), 100);
@@ -34,7 +34,7 @@ export const initInvites = currentUser => dispatch => {
       camelizeKeysAndDispatch(dispatch, actions.setInvites)(data);
     });
 
-    channel.on('invites:created', data => {
+    channel.on(channelTopics.invitesCreatedTopic, data => {
       if (data.invite.creator_id !== currentUser.id) {
         const message = getSystemMessage({ text: `You received battle invite (from ${getCreatorName(data)})` });
         dispatch(actions.newChatMessage(message));
@@ -42,7 +42,7 @@ export const initInvites = currentUser => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
     });
-    channel.on('invites:canceled', data => {
+    channel.on(channelTopics.invitesCanceledTopic, data => {
       if (data.invite.executor_id !== currentUser.id) {
         const message = getSystemMessage({
           text: `Invite has been canceled (Opponent ${getOpponentName(data, currentUser)})`,
@@ -53,7 +53,7 @@ export const initInvites = currentUser => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on('invites:accepted', data => {
+    channel.on(channelTopics.invitesAcceptedTopic, data => {
       if (data.invite.executor_id !== currentUser.id) {
         const message = getSystemMessage({
           text: `Invite has been accepted (Opponent ${getOpponentName(data, currentUser)})`,
@@ -65,7 +65,7 @@ export const initInvites = currentUser => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on('invites:expired', data => {
+    channel.on(channelTopics.invitesExpiredTopic, data => {
       const message = getSystemMessage({
         text: `Invite has been expired by timeout (${getCreatorName(data)} vs ${getRecipientName(data)})`,
         status: 'failure',
@@ -74,7 +74,7 @@ export const initInvites = currentUser => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on('invites:dropped', data => {
+    channel.on(channelTopics.invitesDroppedTopic, data => {
       const message = getSystemMessage({
         text: `Invite has been dropped (${getCreatorName(data)} vs ${getRecipientName(data)})`,
         status: 'failure',
@@ -91,7 +91,7 @@ export const initInvites = currentUser => dispatch => {
 };
 
 export const createInvite = params => dispatch => channel
-  .push('invites:create', params)
+  .push(channelMethods.invitesCreate, params)
   .receive('ok', data => {
     const message = getSystemMessage({ text: `You invite ${params.recipient_name} to battle. Wait for his reply` });
     dispatch(actions.newChatMessage(message));
@@ -103,7 +103,7 @@ export const createInvite = params => dispatch => channel
   });
 
 export const acceptInvite = id => dispatch => channel
-  .push('invites:accept', { id })
+  .push(channelMethods.invitesAccept, { id })
   .receive('ok', data => {
     setTimeout(() => { window.location.href = `/games/${data.invite.game_id}`; }, 250);
 
@@ -115,7 +115,7 @@ export const acceptInvite = id => dispatch => channel
   });
 
 export const declineInvite = (id, opponentName) => dispatch => channel
-  .push('invites:cancel', { id })
+  .push(channelMethods.invitesCancel, { id })
   .receive('ok', data => {
     const message = getSystemMessage({ text: `You decline battle invite [Opponent ${opponentName}]` });
     dispatch(actions.newChatMessage(message));
@@ -128,7 +128,7 @@ export const declineInvite = (id, opponentName) => dispatch => channel
   });
 
 export const cancelInvite = (id, opponentName) => dispatch => channel
-  .push('invites:cancel', { id })
+  .push(channelMethods.invitesCancel, { id })
   .receive('ok', data => {
     const message = getSystemMessage({ text: `You cancel battle invite [Opponent ${opponentName}]` });
     dispatch(actions.newChatMessage(message));

@@ -2,7 +2,7 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import some from 'lodash/some';
 
-import socket from '../../socket';
+import socket, { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 import { calculateExpireDate } from '../utils/chatRoom';
@@ -47,25 +47,25 @@ export const fetchState = currentUserId => dispatch => {
   };
 
   const refs = [
-    channel.on('game:upsert', handleGameUpsert),
-    channel.on('game:check_started', handleGameCheckStarted),
+    channel.on(channelTopics.lobbyGameUpsertTopic, handleGameUpsert),
+    channel.on(channelTopics.lobbyGameCheckStartedTopic, handleGameCheckStarted),
     channel.on(
-      'game:check_completed',
+      channelTopics.lobbyGameCheckCompletedTopic,
       camelizeKeysAndDispatch(actions.updateCheckResult),
     ),
-    channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby)),
-    channel.on('game:finished', camelizeKeysAndDispatch(actions.finishGame)),
+    channel.on(channelTopics.lobbyGameRemoveTopic, camelizeKeysAndDispatch(actions.removeGameLobby)),
+    channel.on(channelTopics.lobbyGameFinishedTopic, camelizeKeysAndDispatch(actions.finishGame)),
   ];
 
   const oldChannel = channel;
 
   const clearLobbyListeners = () => {
     if (oldChannel) {
-      oldChannel.off('game:upsert', refs[0]);
-      oldChannel.off('game:check_started', refs[1]);
-      oldChannel.off('game:check_completed', refs[2]);
-      oldChannel.off('game:remove', refs[3]);
-      oldChannel.off('game:finished', refs[4]);
+      oldChannel.off(channelTopics.lobbyGameUpsertTopic, refs[0]);
+      oldChannel.off(channelTopics.lobbyGameCheckStartedTopic, refs[1]);
+      oldChannel.off(channelTopics.lobbyGameCheckCompletedTopic, refs[2]);
+      oldChannel.off(channelTopics.lobbyGameRemoveTopic, refs[3]);
+      oldChannel.off(channelTopics.lobbyGameFinishedTopic, refs[4]);
     }
   };
 
@@ -90,36 +90,36 @@ export const openDirect = (userId, name) => dispatch => {
 
 export const cancelGame = gameId => () => {
   channel
-    .push('game:cancel', { game_id: gameId })
+    .push(channelMethods.gameCancel, { game_id: gameId })
     .receive('error', error => console.error(error));
 };
 
 export const createGame = params => {
   channel
-    .push('game:create', params)
+    .push(channelMethods.gameCreate, params)
     .receive('error', error => console.error(error));
 };
 
 export const createInvite = invite => {
   channel
-    .push('game:create_invite', invite)
+    .push(channelMethods.gameCreateInvite, invite)
     .receive('error', error => console.error(error));
 };
 
 export const acceptInvite = invite => () => {
   channel
-    .push('game:accept_invite', invite)
+    .push(channelMethods.gameAcceptInvite, invite)
     .receive('error', error => console.error(error));
 };
 
 export const declineInvite = invite => () => {
   channel
-    .push('game:decline_invite', invite)
+    .push(channelMethods.gameDeclineInvite, invite)
     .receive('error', error => console.error(error));
 };
 
 export const cancelInvite = invite => () => {
   channel
-    .push('game:cancel_invite', invite)
+    .push(channelMethods.gameCancelInvite, invite)
     .receive('error', error => console.error(error));
 };

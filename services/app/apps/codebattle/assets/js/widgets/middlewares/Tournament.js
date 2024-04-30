@@ -3,7 +3,7 @@ import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
-import socket from '../../socket';
+import socket, { channelMethods } from '../../socket';
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
@@ -271,5 +271,14 @@ export const requestMatchesByPlayerId = userId => dispatch => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
     })
+    .receive('error', error => console.error(error));
+};
+
+export const sendTournamentWaitingRoomPaused = () => {
+  channel.push(channelMethods.matchmakingResume, {})
+    .receive('error', error => console.error(error));
+};
+export const sendTournamentWaitingRoomResumed = () => {
+  channel.push(channelMethods.matchmakingPause, {})
     .receive('error', error => console.error(error));
 };

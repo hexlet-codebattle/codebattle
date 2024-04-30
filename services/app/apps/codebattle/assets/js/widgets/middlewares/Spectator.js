@@ -1,7 +1,7 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 
-import socket from '../../socket';
+import socket, { channelTopics } from '../../socket';
 import { actions } from '../slices';
 
 const playerId = Gon.getAsset('player_id');
@@ -64,11 +64,11 @@ export const connectToSpectator = () => dispatch => {
   };
 
   const refs = [
-    currentSpectatorChannel.on('game:created', handleGameCreate),
+    currentSpectatorChannel.on(channelTopics.gameCreatedTopic, handleGameCreate),
   ];
 
   const clearSpectatorChannel = () => {
-    currentSpectatorChannel.off('game:created', refs[0]);
+    currentSpectatorChannel.off(channelTopics.gameCreatedTopic, refs[0]);
   };
 
   return clearSpectatorChannel;

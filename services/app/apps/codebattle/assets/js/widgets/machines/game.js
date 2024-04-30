@@ -1,3 +1,4 @@
+import { channelTopics } from 'assets/js/socket';
 import { assign, actions } from 'xstate';
 
 import GameStateCodes from '../config/gameStateCodes';
@@ -203,7 +204,7 @@ const machine = {
         },
         active: {
           on: {
-            'user:check_complete': [
+            [channelTopics.userCheckCompleteTopic]: [
               {
                 target: 'game_over',
                 cond: (_ctx, { payload }) => payload.state === 'game_over',
@@ -215,19 +216,19 @@ const machine = {
                 actions: ['blockGameRoomAfterCheck'],
               },
             ],
-            'user:give_up': {
+            [channelTopics.userGiveUpTopic]: {
               target: 'game_over',
               actions: ['soundGiveUp', 'showGameResultModal'],
             },
-            'game:timeout': {
+            [channelTopics.gameTimeoutTopic]: {
               target: 'game_over',
               actions: ['soundTimeIsOver'],
             },
-            'tournament:game:created': {
+            [channelTopics.tournamentGameCreatedTopic]: {
               target: 'active',
               actions: ['soundTournamentGameCreated'],
             },
-            'tournament:round_finished': {
+            [channelTopics.tournamentRoundFinishedTopic]: {
               target: 'game_over',
             },
             check_result: {
@@ -238,11 +239,11 @@ const machine = {
         },
         game_over: {
           on: {
-            'rematch:status_updated': {
+            [channelTopics.rematchStatusUpdatedTopic]: {
               target: 'game_over',
               actions: ['soundRematchUpdateStatus'],
             },
-            'tournament:game:created': {
+            [channelTopics.tournamentGameCreatedTopic]: {
               target: 'game_over',
             },
           },

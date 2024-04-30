@@ -6,7 +6,7 @@ import find from 'lodash/find';
 
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-import socket from '../../socket';
+import socket, { channelMethods, channelTopics } from '../../socket';
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
@@ -26,6 +26,8 @@ import {
   getPlayersText,
 } from '../utils/gameRoom';
 import notification from '../utils/notification';
+
+import { addWaitingRoomListeners } from './WaitingRoom';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
@@ -124,15 +126,15 @@ const initPlaybook = dispatch => data => {
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (dispatch, machine, currentChannel) => {
+const initGameChannel = (gameRoomMachine, currentChannel) => dispatch => {
   const onJoinFailure = payload => {
-    machine.send('REJECT_LOADING_GAME', { payload });
-    machine.send('FAILURE_JOIN', { payload });
+    gameRoomMachine.send('REJECT_LOADING_GAME', { payload });
+    gameRoomMachine.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
   currentChannel.onError(() => {
-    machine.send('FAILURE');
+    gameRoomMachine.send('FAILURE');
   });
 
   currentChannel.onMessage = (_event, payload) => camelizeKeys(payload);
@@ -155,7 +157,7 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
 
     const gameStatus = getGameStatus(response.game);
 
-    machine.send('LOAD_GAME', { payload: gameStatus });
+    gameRoomMachine.send('LOAD_GAME', { payload: gameStatus });
 
     updateStore(dispatch)({
       firstPlayer,
@@ -190,25 +192,34 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
 
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
 
-  channel.push('editor:data', {
+  channel.push(channelMethods.editorData, {
     editor_text: editorText,
     lang_slug: currentLangSlug,
   });
 };
 
 export const sendEditorCursorPosition = offset => {
-  channel.push('editor:cursor_position', { offset });
+  channel.push(channelMethods.editorCursorPosition, { offset });
 };
 
 export const sendEditorCursorSelection = (startOffset, endOffset) => {
-  channel.push('editor:cursor_selection', {
+  channel.push(channelMethods.editorCursorSelection, {
     start_offset: startOffset,
     end_offset: endOffset,
   });
 };
 
+export const sendWaitingRoomPaused = () => {
+  channel.push(channelMethods.matchmakingResume, {})
+    .receive('error', error => console.error(error));
+};
+export const sendWaitingRoomResumed = () => {
+  channel.push(channelMethods.matchmakingPause, {})
+    .receive('error', error => console.error(error));
+};
+
 export const sendPassCode = (passCode, onError) => dispatch => {
-  channel.push('enter_pass_code', { pass_code: passCode })
+  channel.push(channelMethods.enterPassCode, { pass_code: passCode })
     .receive('ok', () => {
       dispatch(actions.setLocked(false));
     })
@@ -218,19 +229,19 @@ export const sendPassCode = (passCode, onError) => dispatch => {
 };
 
 export const sendGiveUp = () => {
-  channel.push('give_up', {});
+  channel.push(channelMethods.giveUp, {});
 };
 
 export const sendOfferToRematch = () => {
-  channel.push('rematch:send_offer', {});
+  channel.push(channelMethods.rematchSendOffer, {});
 };
 
 export const sendRejectToRematch = () => {
-  channel.push('rematch:reject_offer', {});
+  channel.push(channelMethods.rematchRejectOffer, {});
 };
 
 export const sendAcceptToRematch = () => {
-  channel.push('rematch:accept_offer', {});
+  channel.push(channelMethods.rematchAcceptOffer, {});
 };
 
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
@@ -296,14 +307,14 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
   }, 200);
 
   const refs = [
-    oldChannel.on('editor:cursor_position', handleNewCursorPosition),
-    oldChannel.on('editor:cursor_selection', handleNewCursorSelection),
+    oldChannel.on(channelTopics.editorCursorPositionTopic, handleNewCursorPosition),
+    oldChannel.on(channelTopics.editorCursorSelectionTopic, handleNewCursorSelection),
   ];
 
   const clearCursorListeners = () => {
     if (oldChannel) {
-      oldChannel.off('editor:cursor_position', refs[0]);
-      oldChannel.off('editor:cursor_selection', refs[1]);
+      oldChannel.off(channelTopics.editorCursorPositionTopic, refs[0]);
+      oldChannel.off(channelTopics.editorCursorSelectionTopic, refs[1]);
     }
   };
 
@@ -333,8 +344,8 @@ export const activeEditorReady = (machine, isBanned) => {
   };
 
   const refs = [
-    channel.on('user:start_check', handleStartsCheck),
-    channel.on('user:check_complete', handleNewCheckResult),
+    channel.on(channelTopics.userStartCheckTopic, handleStartsCheck),
+    channel.on(channelTopics.userCheckCompleteTopic, handleNewCheckResult),
   ];
 
   const oldChannel = channel;
@@ -343,17 +354,17 @@ export const activeEditorReady = (machine, isBanned) => {
     machine.send('unload_editor');
 
     if (oldChannel) {
-      oldChannel.off('user:start_check', refs[0]);
-      oldChannel.off('user:check_complete', refs[1]);
+      oldChannel.off(channelTopics.userStartCheckTopic, refs[0]);
+      oldChannel.off(channelTopics.userCheckCompleteTopic, refs[1]);
     }
   };
 
   return clearEditorListeners;
 };
 
-export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = false }) => dispatch => {
+export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRedirect = false }) => (dispatch, getState) => {
   const currentGameChannel = channel;
-  initGameChannel(dispatch, machine, currentGameChannel);
+  initGameChannel(gameRoomMachine, currentGameChannel)(dispatch);
 
   const handleNewEditorData = data => {
     dispatch(actions.updateEditorText(data));
@@ -368,7 +379,7 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
       state, solutionStatus, checkResult, players, userId, award,
     } = responseData;
     if (solutionStatus) {
-      channel.push('game:score', {})
+      channel.push(channelMethods.gameScore, {})
         .receive('ok', data => dispatch(actions.setGameScore(data)));
     }
     dispatch(actions.updateGamePlayers({ players }));
@@ -383,7 +394,7 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
     dispatch(actions.updateCheckStatus({ [userId]: false }));
 
     const payload = { state, award };
-    machine.send('user:check_complete', { payload });
+    gameRoomMachine.send(channelTopics.userCheckCompleteTopic, { payload });
   };
 
   const handleUserJoined = data => {
@@ -443,32 +454,32 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
         timeoutSeconds,
       }),
     );
-    machine.send('game:user_joined', { payload: data });
+    gameRoomMachine.send(channelTopics.gameUserJoinedTopic, { payload: data });
   };
 
   const handleUserWon = data => {
     const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
-    machine.send('user:won', { payload: data });
+    gameRoomMachine.send(channelTopics.userWonTopic, { payload: data });
   };
 
   const handleUserGiveUp = data => {
     const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
-    channel.push('game:score', {})
+    channel.push(channelMethods.gameScore, {})
       .receive('ok', response => dispatch(actions.setGameScore(response)));
-    machine.send('user:give_up', { payload: data });
+    gameRoomMachine.send(channelTopics.userGiveUpTopic, { payload: data });
   };
 
   const handleRematchStatusUpdate = data => {
     dispatch(actions.updateRematchStatus(data));
-    machine.send('rematch:status_updated', { payload: data });
+    gameRoomMachine.send(channelTopics.rematchStatusUpdatedTopic, { payload: data });
   };
 
   const handleRematchAccepted = ({ gameId: newGameId }) => {
-    machine.send('rematch:accepted', { newGameId });
+    gameRoomMachine.send(channelTopics.rematchAcceptedTopic, { newGameId });
     redirectToNewGame(newGameId);
   };
 
@@ -476,7 +487,7 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
     const { gameState } = data;
     const payload = { state: gameState };
     dispatch(actions.updateGameStatus(payload));
-    machine.send('game:timeout', { payload });
+    gameRoomMachine.send(channelTopics.gameTimeoutTopic, { payload });
   };
 
   const handleGameToggleVisible = () => {
@@ -489,7 +500,10 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
 
   const handleTournamentGameCreated = data => {
     dispatch(actions.setTournamentsInfo(data));
-    machine.send('tournament:game:created', { payload: data });
+    gameRoomMachine.send(
+      channelTopics.tournamentGameCreatedTopic,
+      { payload: data },
+    );
     if (!cancelRedirect) {
       setTimeout(
         () => { window.location.replace(makeGameUrl(data.gameId)); },
@@ -505,84 +519,67 @@ export const activeGameReady = (machine, waitingRoomMachine, { cancelRedirect = 
   const handleTournamentRoundFinished = response => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentMatches(response.matches));
-    machine.send('tournament:round_finished', { payload: response.tournament });
+    gameRoomMachine.send(channelTopics.tournamentRoundFinishedTopic, { payload: response.tournament });
   };
 
   const handleTournamentGameWait = response => {
     dispatch(actions.setTournamentWaitType(response.type));
   };
 
-  const handleWaitingRoomStarted = response => {
-    waitingRoomMachine.send('waiting_room:started');
+  const clearWaitingRoomListeners = addWaitingRoomListeners(
+    currentGameChannel,
+    waitingRoomMachine,
+  )(dispatch, getState);
+
+  const handleWaitingRoomPlayerFinishedRound = response => {
+    waitingRoomMachine.send(channelTopics.tournamentPlayerFinishedRoundTopic, { payload: response });
   };
 
-  const handleWaitingRoomEnded = response => {
-    waitingRoomMachine.send('waiting_room:ended');
-  };
-
-  const handleWaitingRoomPlayerBanned = response => {
-    waitingRoomMachine.send('waiting_room:player:banned');
-  };
-
-  const handleWaitingRoomPlayerUnbanned = response => {
-    waitingRoomMachine.send('waiting_room:player:unbanned');
+  const handleWaitingRoomPlayerFinished = response => {
+    waitingRoomMachine.send(channelTopics.tournamentPlayerFinishedTopic, { payload: response });
   };
 
   const refs = [
-    currentGameChannel.on('editor:data', handleNewEditorData),
-    currentGameChannel.on('user:start_check', handleStartsCheck),
-    currentGameChannel.on('user:check_complete', handleNewCheckResult),
-    currentGameChannel.on('user:won', handleUserWon),
-    currentGameChannel.on('user:give_up', handleUserGiveUp),
-    currentGameChannel.on('rematch:status_updated', handleRematchStatusUpdate),
-    currentGameChannel.on('rematch:accepted', handleRematchAccepted),
-    currentGameChannel.on('game:user_joined', handleUserJoined),
-    currentGameChannel.on('game:timeout', handleGameTimeout),
-    currentGameChannel.on('game:toggle_visible', handleGameToggleVisible),
-    currentGameChannel.on('game:unlocked', handleGameUnlocked),
-    currentGameChannel.on('tournament:game:created', handleTournamentGameCreated),
-    currentGameChannel.on('tournament:round_created', handleTournamentRoundCreated),
-    currentGameChannel.on('tournament:round_finished', handleTournamentRoundFinished),
-    currentGameChannel.on('tournament:game:wait', handleTournamentGameWait),
-    currentGameChannel.on('waiting_room:started', handleWaitingRoomStarted),
-    currentGameChannel.on('waiting_room:ended', handleWaitingRoomEnded),
-    currentGameChannel.on('waiting_room:player:banned', handleWaitingRoomPlayerBanned),
-    currentGameChannel.on('waiting_room:player:unbanned', handleWaitingRoomPlayerUnbanned),
-    currentGameChannel.on('waiting_room:player:matchmaking_started', () => {}),
-    currentGameChannel.on('waiting_room:player:matchmaking_restarted', () => {}),
-    currentGameChannel.on('waiting_room:player:matchmaking_stoped', () => {}),
-    currentGameChannel.on('waiting_room:player:matchmaking_paused', () => {}),
-    // TODO: handle here state where player solved all tasks in round
-    currentGameChannel.on('tournament:player:finished_round', () => {}),
-    currentGameChannel.on('tournament:player:finished', () => {}),
+    currentGameChannel.on(channelTopics.editorDataTopic, handleNewEditorData),
+    currentGameChannel.on(channelTopics.userStartCheckTopic, handleStartsCheck),
+    currentGameChannel.on(channelTopics.userCheckCompleteTopic, handleNewCheckResult),
+    currentGameChannel.on(channelTopics.userWonTopic, handleUserWon),
+    currentGameChannel.on(channelTopics.userGiveUpTopic, handleUserGiveUp),
+    currentGameChannel.on(channelTopics.rematchStatusUpdatedTopic, handleRematchStatusUpdate),
+    currentGameChannel.on(channelTopics.rematchAcceptedTopic, handleRematchAccepted),
+    currentGameChannel.on(channelTopics.gameUserJoinedTopic, handleUserJoined),
+    currentGameChannel.on(channelTopics.gameTimeoutTopic, handleGameTimeout),
+    currentGameChannel.on(channelTopics.gameToggleVisibleTopic, handleGameToggleVisible),
+    currentGameChannel.on(channelTopics.gameUnlockedTopic, handleGameUnlocked),
+    currentGameChannel.on(channelTopics.tournamentGameCreatedTopic, handleTournamentGameCreated),
+    currentGameChannel.on(channelTopics.tournamentRoundCreatedTopic, handleTournamentRoundCreated),
+    currentGameChannel.on(channelTopics.tournamentRoundFinishedTopic, handleTournamentRoundFinished),
+    currentGameChannel.on(channelTopics.tournamentGameWaitTopic, handleTournamentGameWait),
+    currentGameChannel.on(channelTopics.tournamentPlayerFinishedRoundTopic, handleWaitingRoomPlayerFinishedRound),
+    currentGameChannel.on(channelTopics.tournamentPlayerFinishedTopic, handleWaitingRoomPlayerFinished),
   ];
 
   const clearGameListeners = () => {
     if (currentGameChannel) {
-      currentGameChannel.off('editor:data', refs[0]);
-      currentGameChannel.off('user:start_check', refs[1]);
-      currentGameChannel.off('user:check_complete', refs[2]);
-      currentGameChannel.off('user:won', refs[3]);
-      currentGameChannel.off('user:give_up', refs[4]);
-      currentGameChannel.off('rematch:status_updated', refs[5]);
-      currentGameChannel.off('rematch:accepted', refs[6]);
-      currentGameChannel.off('game:user_joined', refs[7]);
-      currentGameChannel.off('game:timeout', refs[8]);
-      currentGameChannel.off('tournament:game:created', refs[9]);
-      currentGameChannel.off('tournament:round_created', refs[10]);
-      currentGameChannel.off('tournament:round_finished', refs[11]);
-      currentGameChannel.off('tournament:game:wait', refs[12]);
-      currentGameChannel.off('waiting_room:started', refs[13]);
-      currentGameChannel.off('waiting_room:ended', refs[14]);
-      currentGameChannel.off('waiting_room:player:banned', refs[15]);
-      currentGameChannel.off('waiting_room:player:unbanned', refs[16]);
-      currentGameChannel.off('waiting_room:player:matchmaking_started', refs[17]);
-      currentGameChannel.off('waiting_room:player:matchmaking_restarted', refs[18]);
-      currentGameChannel.off('waiting_room:player:matchmaking_stoped', refs[19]);
-      currentGameChannel.off('waiting_room:player:matchmaking_paused', refs[20]);
-    // TODO: handle here state where player solved all tasks in round
-      currentGameChannel.off('tournament:player:finished_round', refs[21]);
-      currentGameChannel.off('tournament:player:finished', refs[22]);
+      currentGameChannel.off(channelTopics.editorDataTopic, refs[0]);
+      currentGameChannel.off(channelTopics.userStartCheckTopic, refs[1]);
+      currentGameChannel.off(channelTopics.userCheckCompleteTopic, refs[2]);
+      currentGameChannel.off(channelTopics.userWonTopic, refs[3]);
+      currentGameChannel.off(channelTopics.userGiveUpTopic, refs[4]);
+      currentGameChannel.off(channelTopics.rematchStatusUpdatedTopic, refs[5]);
+      currentGameChannel.off(channelTopics.rematchAcceptedTopic, refs[6]);
+      currentGameChannel.off(channelTopics.gameUserJoinedTopic, refs[7]);
+      currentGameChannel.off(channelTopics.gameTimeoutTopic, refs[8]);
+      currentGameChannel.off(channelTopics.gameToggleVisibleTopic, refs[9]);
+      currentGameChannel.off(channelTopics.gameUnlockedTopic, refs[10]);
+      currentGameChannel.off(channelTopics.tournamentGameCreatedTopic, refs[11]);
+      currentGameChannel.off(channelTopics.tournamentRoundCreatedTopic, refs[12]);
+      currentGameChannel.off(channelTopics.tournamentRoundFinishedTopic, refs[13]);
+      currentGameChannel.off(channelTopics.tournamentGameWaitTopic, refs[13]);
+      currentGameChannel.off(channelTopics.tournamentPlayerFinishedRoundTopic, refs[14]);
+      currentGameChannel.off(channelTopics.tournamentPlayerFinishedTopic, refs[15]);
+
+      clearWaitingRoomListeners();
     }
   };
 
@@ -988,7 +985,7 @@ export const checkGameSolution = () => (dispatch, getState) => {
     lang_slug: lang,
   };
 
-  channel.push('check_result', payload);
+  channel.push(channelMethods.checkResult, payload);
 };
 
 export const checkTaskSolution = editorMachine => (dispatch, getState) => {

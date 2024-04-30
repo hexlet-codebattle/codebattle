@@ -2,7 +2,7 @@ import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 
-import socket from '../../socket';
+import socket, { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 import getChatName from '../utils/names';
@@ -16,9 +16,10 @@ export const pushCommandTypes = {
 };
 
 const establishChat = () => dispatch => {
+  const oldChannel = channel;
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', data => {
+  oldChannel.join().receive('ok', data => {
     const page = getChatName('page');
     const greetingMessage = getSystemMessage({
       text: `Joined channel: ${capitalize(page)}`,
@@ -30,7 +31,7 @@ const establishChat = () => dispatch => {
     dispatch(actions.updateChatChannelState(true));
   });
 
-  channel.onError(() => dispatch(actions.updateChatChannelState(false)));
+  oldChannel.onError(() => dispatch(actions.updateChatChannelState(false)));
 
   const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
   const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
@@ -38,20 +39,18 @@ const establishChat = () => dispatch => {
   const handleUserbanned = camelizeKeysAndDispatch(actions.banUserChat);
 
   const refs = [
-    channel.on('chat:user_joined', handleUserJoined),
-    channel.on('chat:user_left', handleUserLeft),
-    channel.on('chat:new_msg', handleNewMessage),
-    channel.on('chat:user_banned', handleUserbanned),
+    oldChannel.on(channelTopics.chatUserJoinedTopic, handleUserJoined),
+    oldChannel.on(channelTopics.chatUserLeftTopic, handleUserLeft),
+    oldChannel.on(channelTopics.chatUserNewMsgTopic, handleNewMessage),
+    oldChannel.on(channelTopics.chatUserBannedTopic, handleUserbanned),
   ];
-
-  const oldChannel = channel;
 
   const clearChatListeners = () => {
     if (oldChannel) {
-      oldChannel.off('chat:user_joined', refs[0]);
-      oldChannel.off('chat:user_left', refs[1]);
-      oldChannel.off('chat:new_msg', refs[2]);
-      oldChannel.off('chat:user_banned', refs[3]);
+      oldChannel.off(channelTopics.chatUserJoinedTopic, refs[0]);
+      oldChannel.off(channelTopics.chatUserLeftTopic, refs[1]);
+      oldChannel.off(channelTopics.chatUserNewMsgTopic, refs[2]);
+      oldChannel.off(channelTopics.chatUserBannedTopic, refs[3]);
     }
   };
 
@@ -70,12 +69,12 @@ export const connectToChat = (useChat = true) => dispatch => {
 
 export const addMessage = payload => {
   channel
-    .push('chat:add_msg', decamelizeKeys(payload, { separator: '_' }))
+    .push(channelMethods.chatAddMsg, decamelizeKeys(payload, { separator: '_' }))
     .receive('error', error => console.error(error));
 };
 
 export const pushCommand = command => {
   channel
-    .push('chat:command', command)
+    .push(channelMethods.chatCommand, command)
     .receive('error', error => console.error(error));
 };

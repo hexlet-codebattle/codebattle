@@ -1,3 +1,4 @@
+import { channelTopics } from 'assets/js/socket';
 import { assign } from 'xstate';
 
 const states = {
@@ -39,24 +40,24 @@ const machine = {
               target: 'failure',
               actions: ['handleError', 'throwError'],
             },
-           'waiting_room:started': 'active',
+           [channelTopics.waitingRoomStartedTopic]: 'active',
           },
         },
         active: {
           entry: ['loadWaitingRoom'],
           on: {
-            'waiting_room:ended': 'inactive',
+            [channelTopics.waitingRoomEndedTopic]: 'inactive',
           },
           exit: ['unloadWaitingRoom'],
         },
         inactive: {
           on: {
-            'waiting_room:started': 'active',
+            [channelTopics.waitingRoomStartedTopic]: 'active',
           },
         },
         failure: {
           on: {
-            'waiting_room:started': 'active',
+            [channelTopics.waitingRoomStartedTopic]: 'active',
           },
         },
       },
@@ -66,9 +67,9 @@ const machine = {
       states: {
         idle: {
           on: {
-            'waiting_room:player:banned': 'banned',
-            'waiting_room:player:matchmaking_started': 'matchmaking',
-            'waiting_room:started': [
+            [channelTopics.waitingRoomPlayerBannedTopic]: 'banned',
+            [channelTopics.waitingRoomPlayerMatchmakingStartedTopic]: 'matchmaking',
+            [channelTopics.waitingRoomStartedTopic]: [
               { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
               { target: 'matchmaking' },
             ],
@@ -77,27 +78,27 @@ const machine = {
         matchmaking: {
           initial: 'progress',
           on: {
-            'waiting_room:player:banned': 'banned',
-            'waiting_room:player:matchmaking_stoped': 'idle',
+            [channelTopics.waitingRoomPlayerBannedTopic]: 'banned',
+            [channelTopics.waitingRoomPlayerMatchmakingStopedTopic]: 'idle',
           },
           states: {
             progress: {
               on: {
-                'waiting_room:player:matchmaking_paused': 'paused',
+                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
                 'waiting_room:player:match_created': 'success',
               },
             },
             success: {},
             paused: {
               on: {
-                'waiting_room:player:matchmaking_restarted': 'progress',
+                [channelTopics.waitingRoomPlayerMatchmakingResumedTopic]: 'progress',
               },
             },
           },
         },
         banned: {
           on: {
-            'waiting_room:player:unbanned': [
+            [channelTopics.waitingRoomPlayerUnbannedTopic]: [
               { target: 'matchmaking', cond: 'isMatchmakingInProgress' },
               { target: 'idle' },
             ],

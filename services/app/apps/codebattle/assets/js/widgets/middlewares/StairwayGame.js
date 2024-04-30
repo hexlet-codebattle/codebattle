@@ -3,7 +3,7 @@ import find from 'lodash/find';
 import groupBy from 'lodash/groupBy';
 import set from 'lodash/set';
 
-import socket from '../../socket';
+import socket, { channelTopics } from '../../socket';
 import { actions } from '../slices';
 
 // import notification from '../utils/notification';
@@ -56,7 +56,7 @@ const initTournamentChannel = dispatch => {
 export const connectToStairwayTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  tournamentChannel.on('tournament:update', response => {
+  tournamentChannel.on(channelTopics.tournamentUpdateTopic, response => {
     const data = camelizeKeys(response);
     const matches = groupBy(data.tournament.matches, 'roundId');
     set(data, 'tournament.matches', matches);
@@ -64,7 +64,7 @@ export const connectToStairwayTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(data));
   });
 
-  tournamentChannel.on('round:created', response => {
+  tournamentChannel.on(channelTopics.roundCreatedTopic, response => {
     const { tournament } = camelizeKeys(response);
 
     dispatch(actions.setNextRound(tournament));
