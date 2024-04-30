@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Swiss do
   def reset_meta(meta), do: meta
 
   @impl Tournament.Base
-  def finish_round?(_tournament), do: false
+  def finish_round_after_match?(_tournament), do: false
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do

@@ -9,7 +9,7 @@ import {
   finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
   showTournamentResults as handleShowResults,
-} from '../../middlewares/Tournament';
+} from '../../middlewares/TournamentAdmin';
 
 const CustomToggle = React.forwardRef(({ onClick, variant, disabled }, ref) => (
   <button

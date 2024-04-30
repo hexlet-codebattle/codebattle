@@ -1,5 +1,5 @@
 import React, {
- memo, useMemo, useState,
+  memo, useMemo, useState,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +10,7 @@ import reverse from 'lodash/reverse';
 
 import Loading from '../../components/Loading';
 import MatchStatesCodes from '../../config/matchStates';
+import TournamentTypes from '../../config/tournamentTypes';
 import { getOpponentId } from '../../utils/matches';
 
 import StageCard from './StageCard';
@@ -25,25 +26,36 @@ const navMatchesTabsClassName = cn(
 );
 
 const tabLinkClassName = active => cn(
-    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
-      active,
-    },
-  );
+  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
+  active,
+},
+);
 
 const tabContentClassName = active => cn('tab-pane fade', {
-    'd-flex flex-column show active': active,
-  });
+  'd-flex flex-column show active': active,
+});
+
+const ArenatPlayerPanelCodes = {
+  review: 'review',
+  matches: 'matches',
+};
 
 const PlayerPanelCodes = {
   review: 'review',
   stages: 'stages',
   matches: 'matches',
 };
-
-const playerPanels = Object.values(PlayerPanelCodes);
+const getPlayerPanelCodes = type => {
+  if (type === TournamentTypes.arena) {
+    return Object.values(ArenatPlayerPanelCodes);
+  } else {
+    return Object.values(PlayerPanelCodes);
+  }
+};
 
 function PlayerStatsPanel({
   currentRoundPosition,
+  type,
   roundsLimit,
   matches,
   players,
@@ -110,7 +122,7 @@ function PlayerStatsPanel({
           role="tablist"
           className={navMatchesTabsClassName}
         >
-          {playerPanels.map(panelName => (
+          {getPlayerPanelCodes(type).map(panelName => (
             <a
               className={tabLinkClassName(playerPanel === panelName)}
               id={`${panelName}-player-panel`}
@@ -154,6 +166,7 @@ function PlayerStatsPanel({
               />
               <StatisticsCard
                 playerId={currentUserId}
+                taskIds={currentPlayer.taskIds}
                 place={currentPlayer.place}
                 isBanned={currentPlayer.isBanned}
                 matchList={matchList}

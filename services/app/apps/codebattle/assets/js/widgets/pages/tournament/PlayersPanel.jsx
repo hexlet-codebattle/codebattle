@@ -7,9 +7,7 @@ import UserInfo from '../../components/UserInfo';
 const Players = ({
   playersCount,
   players,
-  canBan,
   showBots,
-  handleKick,
 }) => (
   <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
     <div className="d-flex align-items-center flex-wrap justify-content-start">
@@ -35,16 +33,6 @@ const Players = ({
               <div className="ml-1">
                 <UserInfo user={player} hideOnlineIndicator />
               </div>
-              {canBan && (
-                <button
-                  type="button"
-                  className="btn btn-link btn-sm text-danger rounded-lg"
-                  data-player-id={player.id}
-                  onClick={handleKick}
-                >
-                  Kick
-                </button>
-              )}
             </div>
           ))
       )}

@@ -1,5 +1,5 @@
 import React, {
- memo, useState, useCallback,
+  memo, useState, useCallback,
 } from 'react';
 
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -23,6 +23,7 @@ function CustomTournamentInfoPanel({
   hideBots = false,
   hideResults = false,
   hideCustomGameConsole = false,
+  type,
   canModerate = false,
 }) {
   const [searchedUser, setSearchedUser] = useState();
@@ -34,8 +35,8 @@ function CustomTournamentInfoPanel({
 
   const togglePanelMode = useCallback(() => {
     setPanelMode(mode => (mode === PanelModeCodes.playerMode
-        ? PanelModeCodes.ratingMode
-        : PanelModeCodes.playerMode));
+      ? PanelModeCodes.ratingMode
+      : PanelModeCodes.playerMode));
   }, [setPanelMode]);
 
   return (
@@ -74,6 +75,7 @@ function CustomTournamentInfoPanel({
                 roundsLimit={roundsLimit}
                 matches={matches}
                 players={players}
+                type={type}
                 currentUserId={currentUserId}
                 hideBots={hideBots}
                 canModerate={canModerate}

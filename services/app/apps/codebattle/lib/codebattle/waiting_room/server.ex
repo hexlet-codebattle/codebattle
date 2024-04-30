@@ -23,7 +23,7 @@ defmodule Codebattle.WaitingRoom.Server do
   def match_players(name), do: GenServer.call(wr_name(name), :match_players)
   def pause(name), do: GenServer.call(wr_name(name), :pause)
   def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
-  def ban_player(name, player_id), do: GenServer.call(wr_name(name), {:ban_player, player_id})
+  def delete_player(name, player_id), do: GenServer.cast(wr_name(name), {:delete_player, player_id})
 
   def put_players(name, players) do
     GenServer.cast(
@@ -69,6 +69,11 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   @impl GenServer
+  def handle_cast({:delete_player, player_id}, state) do
+    {:noreply, %{state | players: Enum.reject(state.players, &(&1.id == player_id))}}
+  end
+
+  @impl GenServer
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
@@ -102,12 +107,6 @@ defmodule Codebattle.WaitingRoom.Server do
   @impl GenServer
   def handle_call({:update_state, params}, _from, state) do
     new_state = Map.merge(state, params)
-    {:reply, new_state, new_state}
-  end
-
-  @impl GenServer
-  def handle_call({:ban_player, player_id}, _from, state) do
-    new_state = %{state | players: Enum.reject(state.players, &(&1.id == player_id))}
     {:reply, new_state, new_state}
   end
 

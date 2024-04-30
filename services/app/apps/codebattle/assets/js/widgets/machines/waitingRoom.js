@@ -86,7 +86,7 @@ const machine = {
             progress: {
               on: {
                 [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
-                'waiting_room:player:match_created': 'success',
+                [channelTopics.waitingRoomPlayerMatchCreatedTopic]: 'success',
               },
             },
             success: {},

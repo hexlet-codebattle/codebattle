@@ -49,7 +49,7 @@ defmodule Codebattle.Tournament.Helpers do
   # only for waiting_participants, cause all players have score = 0
   # we don't care about ordering
   def get_top_players(tournament = %{type: type, top_player_ids: []})
-      when type in ["arena"] do
+      when type in ["arena", "swiss"] do
     tournament |> get_players() |> Enum.take(30)
   end
 
@@ -100,6 +100,14 @@ defmodule Codebattle.Tournament.Helpers do
     |> get_matches()
     |> Enum.sort_by(& &1.round_position)
     |> Enum.chunk_by(& &1.round_position)
+  end
+
+  def get_player_opponents_from_matches(tournament, matches, player_id) do
+    matches
+    |> Enum.flat_map(& &1.player_ids)
+    |> Enum.reject(&(is_nil(&1) || &1 == player_id))
+    |> Enum.uniq()
+    |> then(&get_players(tournament, &1))
   end
 
   def get_opponents(tournament, player_ids) do
@@ -319,4 +327,21 @@ defmodule Codebattle.Tournament.Helpers do
   def to_id(id) when is_integer(id), do: id |> to_string() |> to_id()
   def to_id(id) when is_binary(id), do: String.to_atom(id)
   def to_id(id) when is_atom(id), do: id
+
+  def prepare_to_json(tournament) do
+    Map.drop(tournament, [
+      :__struct__,
+      :__meta__,
+      :players_table,
+      :matches_table,
+      :played_pair_ids,
+      :tasks_table,
+      :event,
+      :creator
+    ])
+  end
+
+  def tournament_info(tournament) do
+    Map.take(tournament, [:id, :players_table, :matches_table, :tasks_table])
+  end
 end

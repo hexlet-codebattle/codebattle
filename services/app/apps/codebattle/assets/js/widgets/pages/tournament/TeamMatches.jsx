@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
 import TournamentStates from '../../config/tournament';
-import { kickFromTournament } from '../../middlewares/Tournament';
 import { currentUserIsAdminSelector } from '../../selectors';
 
 import JoinButton from './JoinButton';
@@ -64,13 +63,6 @@ function TeamMatches({
 
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
-  const handleKick = useCallback(event => {
-    const { playerId } = event.currentTarget.dataset;
-    if (playerId) {
-      kickFromTournament(playerId);
-    }
-  }, []);
-
   return (
     <>
       <div className="py-2 bg-white border shadow-sm rounded-lg">
@@ -98,10 +90,6 @@ function TeamMatches({
               <Players
                 playersCount={Object.keys(omitBy(players, p => p.teamId !== team.id)).length}
                 players={omitBy(players, p => p.teamId !== team.id)}
-                canBan={
-                  isAdmin && state === TournamentStates.waitingParticipants
-                }
-                handleKick={handleKick}
               />
             </div>
           ))}

@@ -239,6 +239,14 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
+    event_id =
+      case params["event_id"] do
+        nil -> nil
+        "" -> nil
+        str when is_binary(str) -> String.to_integer(str)
+        int -> int
+      end
+
     show_results = params["show_results"] || true
 
     Map.merge(params, %{
@@ -246,6 +254,7 @@ defmodule Codebattle.Tournament.Context do
       "match_timeout_seconds" => match_timeout_seconds,
       "starts_at" => starts_at,
       "meta" => get_meta_from_params(params),
+      "event_id" => event_id,
       "show_results" => show_results
     })
   end
@@ -293,9 +302,8 @@ defmodule Codebattle.Tournament.Context do
 
       type when type in ["arena", "swiss"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        use_clan = Map.get(params, "use_clan", "false") == "true"
 
-        %{use_clan: use_clan, rounds_limit: rounds_limit}
+        %{rounds_limit: rounds_limit}
 
       _ ->
         %{}

@@ -268,45 +268,47 @@ function TournamentHeader({
             </div>
           </div>
         </div>
-        <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
-          <div title={type} className="d-flex align-items-center">
-            Mode:
-            <span className="ml-2">
-              <TournamentType type={type} />
-            </span>
-          </div>
-          <span className="mx-2">|</span>
-          <div
-            title={`Players limit is ${playersLimit}`}
-            className="d-flex align-items-center"
-          >
-            {`Players limit: ${playersLimit}`}
-          </div>
-          <span className="mx-2">|</span>
-          <div
-            title={`Is live ${isLive}`}
-            className="d-flex align-items-center"
-          >
-            {`Is live: ${isLive}`}
-          </div>
-          {canModerate && accessType === 'token' && (
-            <>
-              <span className="mx-2">|</span>
-              <div className="d-flex input-group ml-2">
-                <div title="Access token" className="input-group-prepend">
-                  <span className="input-group-text">
-                    <FontAwesomeIcon icon="key" />
-                  </span>
+        {canModerate && (
+          <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
+            <div title={type} className="d-flex align-items-center">
+              Mode:
+              <span className="ml-2">
+                <TournamentType type={type} />
+              </span>
+            </div>
+            <span className="mx-2">|</span>
+            <div
+              title={`Players limit is ${playersLimit}`}
+              className="d-flex align-items-center"
+            >
+              {`Players limit: ${playersLimit}`}
+            </div>
+            <span className="mx-2">|</span>
+            <div
+              title={`Is live ${isLive}`}
+              className="d-flex align-items-center"
+            >
+              {`Is live: ${isLive}`}
+            </div>
+            {accessType === 'token' && (
+              <>
+                <span className="mx-2">|</span>
+                <div className="d-flex input-group ml-2">
+                  <div title="Access token" className="input-group-prepend">
+                    <span className="input-group-text">
+                      <FontAwesomeIcon icon="key" />
+                    </span>
+                  </div>
+                  <CopyButton
+                    className="btn btn-sm btn-secondary rounded-right"
+                    value={accessToken}
+                    disabled={!isLive || !isOnline}
+                  />
                 </div>
-                <CopyButton
-                  className="btn btn-sm btn-secondary rounded-right"
-                  value={accessToken}
-                  disabled={!isLive || !isOnline}
-                />
-              </div>
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
       <div className="col bg-white shadow-sm rounded-lg p-2 mt-2 overflow-auto">
         <p className="h5 mb-0 text-nowrap">

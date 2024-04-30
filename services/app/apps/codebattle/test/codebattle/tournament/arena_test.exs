@@ -27,10 +27,12 @@ defmodule Codebattle.Tournament.ArenaTest do
           "task_pack_name" => "tp",
           "creator" => user1,
           "break_duration_seconds" => 0,
+          "task_provider" => "task_pack_per_round",
           "task_strategy" => "sequential",
           "type" => "arena",
           "state" => "waiting_participants",
           "use_clan" => "true",
+          "rounds_limit" => "3",
           "players_limit" => 200
         })
 
@@ -79,6 +81,7 @@ defmodule Codebattle.Tournament.ArenaTest do
           "task_pack_name" => "tp",
           "creator" => creator,
           "break_duration_seconds" => 0,
+          "task_provider" => "task_pack_per_round",
           "task_strategy" => "sequential",
           "type" => "arena",
           "state" => "waiting_participants",
@@ -144,7 +147,7 @@ defmodule Codebattle.Tournament.ArenaTest do
 
       assert_received %Codebattle.PubSub.Message{
         event: "tournament:player:updated",
-        payload: %{player: %{id: ^player1_id, state: "in_waiting_room_active"}}
+        payload: %{player: %{id: ^player1_id, state: "matchmaking_active"}}
       }
 
       assert tournament.current_round_position == 0

@@ -49,18 +49,11 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_finished", params) do
-    players =
-      params.tournament
-      |> Tournament.Helpers.get_top_players()
-      |> Enum.map(&Map.take(&1, [:id, :place, :score]))
-
     [
       %Message{
         topic: "tournament:#{params.tournament.id}:common",
         event: "tournament:round_finished",
         payload: %{
-          tournament_table:
-            Map.take(params.tournament, [:matches_table, :players_table, :tasks_table]),
           tournament: %{
             type: params.tournament.type,
             state: params.tournament.state,
@@ -69,8 +62,7 @@ defmodule Codebattle.PubSub.Events do
             last_round_started_at: params.tournament.last_round_started_at,
             current_round_position: params.tournament.current_round_position,
             break_state: "on"
-          },
-          players: players
+          }
         }
       },
       %Message{
@@ -162,7 +154,7 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("tournament:player:updated", params) do
+  def get_messages("tournament:player:finished_round", params) do
     player = get_player_changed_fields(params.player)
 
     [
@@ -173,7 +165,92 @@ defmodule Codebattle.PubSub.Events do
       },
       %Message{
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:matchmaking_stopped",
+        payload: %{player: player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:finished", params) do
+    player = get_player_changed_fields(params.player)
+
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
         event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:matchmaking_stopped",
+        payload: %{player: player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:matchmacking_started", params) do
+    player = get_player_changed_fields(params.player)
+
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:matchmacking_started",
+        payload: %{player: player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:banned", params) do
+    player = get_player_changed_fields(params.player)
+
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:banned",
+        payload: %{player: player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:matchmaking_paused", params) do
+    player = get_player_changed_fields(params.player)
+
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:matchmaking_paused",
+        payload: %{player: player}
+      }
+    ]
+  end
+
+  def get_messages("tournament:player:matchmaking_resumed", params) do
+    player = get_player_changed_fields(params.player)
+
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "waiting_room:player:matchmaking_resumed",
         payload: %{player: player}
       }
     ]
@@ -182,13 +259,27 @@ defmodule Codebattle.PubSub.Events do
   def get_messages("tournament:match:upserted", params) do
     players = Tournament.Helpers.get_players(params.tournament, params.match.player_ids)
 
-    Enum.map(params.match.player_ids, fn player_id ->
+    wr_events =
+      if params.tournament.waiting_room_name && params.match.state == "playing" do
+        Enum.map(players, fn player ->
+          %Message{
+            topic: "tournament:#{params.tournament.id}:player:#{player_id}",
+            event: "waiting_room:player:match_created",
+            payload: %{player: player}
+          }
+        end)
+      else
+        []
+      end
+
+    Enum.map(players, fn player ->
       %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{player_id}",
+        topic: "tournament:#{params.tournament.id}:player:#{player.id}",
         event: "tournament:match:upserted",
         payload: %{match: params.match, players: players}
       }
     end) ++
+      wr_events ++
       [
         %Message{
           topic: "tournament:#{params.tournament.id}",

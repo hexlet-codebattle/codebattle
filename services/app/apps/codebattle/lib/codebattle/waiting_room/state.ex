@@ -12,7 +12,6 @@ defmodule Codebattle.WaitingRoom.State do
     field(:name, String.t())
     field(:now, :integer)
     field(:pairs, {:array, :map}, default: [])
-    field(:paused_players, {:array, :map}, default: [])
     field(:played_pair_ids, MapSet.t())
     field(:players, {:array, :map}, default: [])
     field(:time_step_ms, integer(), default: 900)

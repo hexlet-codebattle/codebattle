@@ -3,16 +3,16 @@ import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
-import socket, { channelMethods } from '../../socket';
+import socket from '../../socket';
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');
-const channelName = `tournament:${tournamentId}`;
+const channelName = `tournament_admin:${tournamentId}`;
 let channel = socket.channel(channelName);
 
 export const updateTournamentChannel = newTournamentId => {
-  const newChannelName = `tournament:${newTournamentId}`;
+  const newChannelName = `tournament_admin:${newTournamentId}`;
   channel = socket.channel(newChannelName);
 };
 
@@ -200,7 +200,6 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
     requestMatchesByPlayerId(playerId)(dispatch)
   } else {
     axios
-      // TODO: add BE api for fetching games with tournaemnt_id+player_id and mapt to touanemtnMatch
       .get(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -214,29 +213,45 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   }
 };
 
-export const joinTournament = teamId => {
-  const params = teamId !== undefined ? { team_id: teamId } : {};
-  channel.push('tournament:join', params).receive('error', error => console.error(error));
+export const createCustomRound = params => {
+  channel.push('tournament:start_round', decamelizeKeys(params)).receive('error', error => console.error(error));
 };
 
-export const leaveTournament = teamId => {
-  const params = teamId !== undefined ? { team_id: teamId } : {};
-  channel.push('tournament:leave', params).receive('error', error => console.error(error));
+export const startTournament = () => {
+  channel.push('tournament:start', {}).receive('error', error => console.error(error));
 };
 
-export const pauseWaitingRoomMatchmaking = () => {
-  channel.push('waiting_room:player:matchmaking_pause', {}).receive('error', error => console.error(error));
+export const cancelTournament = () => {
+  channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
 };
 
-export const startWaitingRoomMatchmaking = () => {
-  channel.push('waiting_room:player:matchmaking_start', {}).receive('error', error => console.error(error));
+export const restartTournament = () => {
+  channel.push('tournament:restart', {}).receive('error', error => console.error(error));
 };
 
-export const sendTournamentWaitingRoomPaused = () => {
-  channel.push(channelMethods.matchmakingResume, {})
+export const startRoundTournament = () => {
+  channel.push('tournament:start_round', {}).receive('error', error => console.error(error));
+};
+
+export const finishRoundTournament = () => {
+  channel.push('tournament:finish_round', {}).receive('error', error => console.error(error));
+};
+
+export const toggleVisibleGameResult = gameId => {
+  channel.push('tournament:toggle_match_visible', { game_id: gameId }).receive('error', error => console.error(error));
+};
+
+export const openUpTournament = () => {
+  channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
+};
+
+export const showTournamentResults = () => {
+  channel.push('tournament:toggle_show_results', {}).receive('error', error => console.error(error));
+};
+
+export const toggleBanUser = (userId, isBanned) => dispatch => {
+  channel.push('tournament:ban:player', { user_id: userId })
+    .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
     .receive('error', error => console.error(error));
 };
-export const sendTournamentWaitingRoomResumed = () => {
-  channel.push(channelMethods.matchmakingPause, {})
-    .receive('error', error => console.error(error));
-};
+

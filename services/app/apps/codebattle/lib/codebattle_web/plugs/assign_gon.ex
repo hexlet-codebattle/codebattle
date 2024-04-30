@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   @moduledoc false
 
   import PhoenixGon.Controller
+  import Plug.Conn
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -12,7 +13,9 @@ defmodule CodebattleWeb.Plugs.AssignGon do
 
     user_token = Phoenix.Token.sign(conn, "user_token", current_user.id)
 
-    put_gon(conn,
+    conn
+    |> assign(:ticker_text, nil)
+    |> put_gon(
       user_token: user_token,
       current_user: prepare_user(current_user),
       rollbar_api_key: Application.get_env(:codebattle, Codebattle.Plugs)[:rollbar_api_key]

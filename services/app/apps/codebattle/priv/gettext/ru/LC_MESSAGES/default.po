@@ -348,6 +348,9 @@ msgstr "Начать заново"
 msgid "Back to Home"
 msgstr "Вернуться на главную"
 
+msgid "Open History"
+msgstr "Смотреть историю"
+
 msgid "%{name} (bot)"
 msgstr "%{name} (бот)"
 

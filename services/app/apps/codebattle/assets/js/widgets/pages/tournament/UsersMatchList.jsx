@@ -9,7 +9,6 @@ import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import Loading from '../../components/Loading';
 import UserInfo from '../../components/UserInfo';
-import { toggleBanUser } from '../../middlewares/Tournament';
 
 import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
@@ -49,9 +48,6 @@ function UsersMatchList({
   const dispatch = useDispatch();
 
   const [player] = useMatchesStatistics(playerId, matches);
-  const handleToggleBanUser = useCallback(() => {
-    dispatch(toggleBanUser(playerId, !isBanned));
-  }, [playerId, isBanned, dispatch]);
 
   if (matches.length === 0) {
     return (
@@ -85,25 +81,6 @@ function UsersMatchList({
             {Math.ceil(player.avgDuration)}
             {' sec'}
           </span>
-          {canBan && (
-            <button
-              type="button"
-              className="btn btn-sm btn-danger rounded-lg px-1 mx-1"
-              onClick={handleToggleBanUser}
-            >
-              {isBanned ? (
-                <>
-                  <FontAwesomeIcon className="mr-2" icon="ban" />
-                  Unban user
-                </>
-              ) : (
-                <>
-                  <FontAwesomeIcon className="mr-2" icon="ban" />
-                  Ban User
-                </>
-              )}
-            </button>
-          )}
         </div>
       )}
       {matches.map(match => {

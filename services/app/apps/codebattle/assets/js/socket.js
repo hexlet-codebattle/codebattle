@@ -58,8 +58,9 @@ export const channelTopics = {
   waitingRoomPlayerUnbannedTopic: 'waiting_room:player:unbanned',
   waitingRoomPlayerMatchmakingStartedTopic: 'waiting_room:player:matchmaking_started',
   waitingRoomPlayerMatchmakingResumedTopic: 'waiting_room:player:matchmaking_resumed',
-  waitingRoomPlayerMatchmakingStopedTopic: 'waiting_room:player:matchmaking_stoped',
+  waitingRoomPlayerMatchmakingStopedTopic: 'waiting_room:player:matchmaking_stopped',
   waitingRoomPlayerMatchmakingPausedTopic: 'waiting_room:player:matchmaking_paused',
+  waitingRoomPlayerMatchCreatedTopic: 'waiting_room:player:match_created',
 };
 
 export const channelMethods = {

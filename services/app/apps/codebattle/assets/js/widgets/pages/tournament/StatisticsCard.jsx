@@ -9,7 +9,7 @@ import useMatchesStatistics from '@/utils/useMatchesStatistics';
 import TournamentPlace from './TournamentPlace';
 
 function StatisticsCard({
- playerId, matchList = [], place,
+ playerId, taskIds = [], matchList = [], place,
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
 
@@ -33,6 +33,18 @@ function StatisticsCard({
         className="p-1"
       >
         {`Your score: ${playerStats.score}`}
+      </h6>
+      <h6
+        title="Your game played"
+        className="p-1"
+      >
+        {`Games: ${matchList.length}`}
+      </h6>
+      <h6
+        title="Your task_ids"
+        className="p-1"
+      >
+        {`taskIds: ${taskIds}`}
       </h6>
       <h6
         title="Your game played"

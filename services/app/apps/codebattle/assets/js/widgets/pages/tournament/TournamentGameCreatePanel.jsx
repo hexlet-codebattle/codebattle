@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import shuffle from 'lodash/shuffle';
 
 import MatchStates from '../../config/matchStates';
-import { createCustomRound } from '../../middlewares/Tournament';
+import { createCustomRound } from '../../middlewares/TournamentAdmin';
 import { tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
 
 const emptyPlayer = {};

@@ -701,8 +701,8 @@ export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
 export const uploadTask = (
   taskParams,
   taskMachine,
-  onSuccess = () => {},
-  onError = () => {},
+  onSuccess = () => { },
+  onError = () => { },
 ) => dispatch => {
   const payload = {
     task: decamelizeKeys(taskParams, { separator: '_' }),
@@ -736,8 +736,8 @@ export const uploadTask = (
 
 export const saveTask = (
   taskMachine,
-  onSuccess = () => {},
-  onError = () => {},
+  onSuccess = () => { },
+  onError = () => { },
 ) => (dispatch, getState) => {
   const state = getState();
 
@@ -986,6 +986,14 @@ export const checkGameSolution = () => (dispatch, getState) => {
   };
 
   channel.push(channelMethods.checkResult, payload);
+};
+
+export const pauseWaitingRoomMatchmaking = () => {
+  channel.push('waiting_room:player:matchmaking_pause', {}).receive('error', error => console.error(error));
+};
+
+export const startWaitingRoomMatchmaking = () => {
+  channel.push('waiting_room:player:matchmaking_start', {}).receive('error', error => console.error(error));
 };
 
 export const checkTaskSolution = editorMachine => (dispatch, getState) => {

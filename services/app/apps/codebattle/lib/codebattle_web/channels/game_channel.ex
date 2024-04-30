@@ -15,10 +15,6 @@ defmodule CodebattleWeb.GameChannel do
 
       Codebattle.PubSub.subscribe("game:#{game.id}")
 
-      if game.waiting_room_name && !socket.assigns.current_user.is_bot do
-        Codebattle.PubSub.subscribe("waiting_room:#{game.waiting_room_name}")
-      end
-
       if game.tournament_id && !socket.assigns.current_user.is_bot do
         player_ids = Enum.map(game.players, & &1.id)
         user_id = socket.assigns.current_user.id
@@ -58,7 +54,12 @@ defmodule CodebattleWeb.GameChannel do
              current_round_position: tournament.current_round_position
            },
            active_game_id: active_game_id
-         }, assign(socket, game_id: game_id, player_id: follow_id)}
+         },
+         assign(socket,
+           tournament_id: game.tournament_id,
+           game_id: game_id,
+           player_id: follow_id
+         )}
       else
         {:ok,
          %{
@@ -197,6 +198,30 @@ defmodule CodebattleWeb.GameChannel do
     |> handle_rematch_result(socket)
   end
 
+  def handle_in("matchmaking:pause", _, socket) do
+    send_matchmaking_event(
+      socket.assigns.tournament_id,
+      :matchmaking_pause,
+      %{
+        user_id: socket.assigns.current_user.id
+      }
+    )
+
+    {:noreply, socket}
+  end
+
+  def handle_in("matchmaking:resume", _, socket) do
+    send_matchmaking_event(
+      socket.assigns.tournament_id,
+      :matchmaking_resume,
+      %{
+        user_id: socket.assigns.current_user.id
+      }
+    )
+
+    {:noreply, socket}
+  end
+
   def handle_in("enter_pass_code", %{"pass_code" => pass_code}, socket) do
     game_id = socket.assigns.game_id
 
@@ -267,29 +292,29 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:player:updated", payload: payload}, socket) do
-    case payload.player.state do
-      "in_waiting_room_active" ->
-        push(socket, "waiting_room:player:matchmaking_started", %{user_id: payload.player.id})
-
-      "in_waiting_room_paused" ->
-        push(socket, "waiting_room:player:matchmaking_paused", %{user_id: payload.player.id})
-
-      "banned" ->
-        push(socket, "tournament:player:banned", %{user_id: payload.player.id})
-
-      "finished_round" ->
-        push(socket, "tournament:player:finished_round", %{user_id: payload.player.id})
-
-      "finished" ->
-        push(socket, "tournament:player:finished", %{user_id: payload.player.id})
-
-      _ ->
-        :noop
-    end
-
-    {:noreply, socket}
-  end
+  # def handle_info(%{event: "tournament:player:updated", payload: payload}, socket) do
+  #   case payload.player.state do
+  #     "matchmaking_active" ->
+  #       push(socket, "waiting_room:player:matchmaking_started", %{user_id: payload.player.id})
+  #
+  #     "matchmaking_paused" ->
+  #       push(socket, "waiting_room:player:matchmaking_paused", %{user_id: payload.player.id})
+  #
+  #     "banned" ->
+  #       push(socket, "tournament:player:banned", %{user_id: payload.player.id})
+  #
+  #     "finished_round" ->
+  #       push(socket, "tournament:player:finished_round", %{user_id: payload.player.id})
+  #
+  #     "finished" ->
+  #       push(socket, "tournament:player:finished", %{user_id: payload.player.id})
+  #
+  #     _ ->
+  #       :noop
+  #   end
+  #
+  #   {:noreply, socket}
+  # end
 
   def handle_info(message, socket) do
     Logger.warning("GameChannel Unexpected message: " <> inspect(message))
@@ -313,5 +338,19 @@ defmodule CodebattleWeb.GameChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  defp send_matchmaking_event(tournament_id, event, payload) do
+    tournament_id = socket.assigns.tournament_id
+
+    cond do
+      tournament_id ->
+        Tournament.Context.handle_event(tournament_id, event, payload)
+
+      true ->
+        Logger.error("GameChannel.handle_in:matchmaking:pause: unexpected state")
+    end
+
+    {:noreply, socket}
   end
 end

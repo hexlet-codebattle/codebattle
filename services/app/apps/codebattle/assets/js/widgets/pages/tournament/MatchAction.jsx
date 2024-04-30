@@ -3,26 +3,10 @@ import React, { memo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MatchStatesCodes from '../../config/matchStates';
-import { toggleVisibleGameResult } from '../../middlewares/Tournament';
 
 const handleToggleVisible = event => {
   const { gameId } = event.currentTarget.dataset;
-  toggleVisibleGameResult(Number(gameId));
 };
-
-const ToggleVisibleGameButton = ({ gameId, canModerate }) => (
-  canModerate ? (
-    <button
-      type="button"
-      data-game-id={gameId}
-      className="btn btn-success btn-sm text-white rounded-lg px-3 mr-1"
-      onClick={handleToggleVisible}
-    >
-      <FontAwesomeIcon className="mr-2" icon="eye" />
-      Toggle visible
-    </button>
-  ) : (<></>)
-);
 
 function MatchAction({
   match,
@@ -48,10 +32,6 @@ function MatchAction({
       if (currentUserIsPlayer) {
         return (
           <>
-            <ToggleVisibleGameButton
-              gameId={match.gameId}
-              canModerate={canModerate}
-            />
             <a
               href={href}
               title="Continue match"
@@ -66,10 +46,6 @@ function MatchAction({
 
       return (
         <>
-          <ToggleVisibleGameButton
-            gameId={match.gameId}
-            canModerate={canModerate}
-          />
           <a
             href={href}
             title="Show match"
@@ -86,10 +62,6 @@ function MatchAction({
     case MatchStatesCodes.gameOver:
       return (
         <>
-          <ToggleVisibleGameButton
-            gameId={match.gameId}
-            canModerate={canModerate}
-          />
           <a
             href={href}
             title="Show game history"

@@ -98,7 +98,7 @@ defmodule Codebattle.Tournament.Team do
   def maybe_create_rematch(tournament, _params), do: tournament
 
   @impl Tournament.Base
-  def finish_round?(tournament) do
+  def finish_round_after_match?(tournament) do
     !Enum.any?(get_matches(tournament), &(&1.state == "playing"))
   end
 

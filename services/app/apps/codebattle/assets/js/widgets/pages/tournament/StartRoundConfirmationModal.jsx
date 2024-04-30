@@ -11,7 +11,7 @@ import Modal from 'react-bootstrap/Modal';
 import {
   startTournament as handleStartTournament,
   startRoundTournament as handleStartRoundTournament,
-} from '../../middlewares/Tournament';
+} from '../../middlewares/TournamentAdmin';
 
 import StageTitle from './StageTitle';
 

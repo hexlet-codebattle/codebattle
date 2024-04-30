@@ -102,8 +102,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
         params,
         %{
           "creator" => socket.assigns.current_user,
-          "user_timezone" => socket.assigns.user_timezone,
-          "event_id" => String.to_integer(params["event_id"])
+          "user_timezone" => socket.assigns.user_timezone
         }
       )
 

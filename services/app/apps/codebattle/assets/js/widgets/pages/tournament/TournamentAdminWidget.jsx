@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
-import { connectToTournament, } from '../../middlewares/Tournament';
+import { connectToTournament, } from '../../middlewares/TournamentAdmin';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useSearchParams from '../../utils/useSearchParams';
@@ -21,7 +21,6 @@ import useSearchParams from '../../utils/useSearchParams';
 import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
 import DetailsModal from './DetailsModal';
 import IndividualMatches from './IndividualMatches';
-import JoinButton from './JoinButton';
 import MatchConfirmationModal from './MatchConfirmationModal';
 import Players from './PlayersPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
@@ -100,7 +99,7 @@ function InfoPanel({
   }
 }
 
-function Tournament({ waitingRoomMachine }) {
+function TournamentAdminWidget({ waitingRoomMachine }) {
   const dispatch = useDispatch();
 
   const searchParams = useSearchParams();
@@ -219,12 +218,6 @@ function Tournament({ waitingRoomMachine }) {
             ) : (
               <>
                 <span className="h3">{tournament.name}</span>
-                <div className="d-flex">
-                  <JoinButton
-                    isShow
-                    isParticipant={false}
-                  />
-                </div>
               </>
             )}
         </div>
@@ -340,4 +333,4 @@ function Tournament({ waitingRoomMachine }) {
   );
 }
 
-export default Tournament;
+export default TournamentAdminWidget;

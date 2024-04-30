@@ -154,13 +154,9 @@ defmodule CodebattleWeb.Router do
     resources("/tournaments", TournamentController, only: [:index, :show])
 
     scope "/tournaments" do
+      get("/:id/admin", Tournament.AdminController, :show)
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
-    end
-
-    scope "/events" do
-      pipe_through(:empty_layout)
-      get("/:id/leaderboard", LiveViewEventController, :show_leaderboard, as: :event_leaderboard)
     end
 
     scope "/tournaments" do

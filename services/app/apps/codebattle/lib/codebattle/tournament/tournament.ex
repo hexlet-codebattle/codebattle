@@ -43,6 +43,7 @@ defmodule Codebattle.Tournament do
              :task_strategy,
              :type,
              :use_chat,
+             :use_clan,
              :use_timer,
              :use_infinite_break
            ]}
@@ -92,6 +93,7 @@ defmodule Codebattle.Tournament do
     field(:type, :string, default: "individual")
     field(:task_pack_name, :string)
     field(:use_chat, :boolean, default: true)
+    field(:use_clan, :boolean, default: false)
     field(:use_timer, :boolean, default: true)
     field(:use_infinite_break, :boolean, default: false)
     field(:winner_ids, {:array, :integer})
@@ -143,6 +145,7 @@ defmodule Codebattle.Tournament do
       :task_pack_name,
       :type,
       :use_chat,
+      :use_clan,
       :use_timer,
       :use_infinite_break,
       :show_results,
@@ -178,6 +181,9 @@ defmodule Codebattle.Tournament do
   defp add_creator(changeset, creator) do
     change(changeset, %{creator: creator})
   end
+
+
+
 
   def access_types, do: @access_types
   def levels, do: @levels

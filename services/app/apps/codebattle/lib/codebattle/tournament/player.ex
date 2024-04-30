@@ -26,19 +26,19 @@ defmodule Codebattle.Tournament.Player do
   ]
 
   @states ~w(
-  base
+  active
   banned
   finished
   finished_round
-  in_waiting_room_active
-  in_waiting_room_paused
+  matchmaking_active
+  matchmaking_paused
   )
 
   embedded_schema do
     field(:avatar_url, :string)
     field(:id, :integer)
     field(:clan, :string)
-    field(:state, :string, default: "base")
+    field(:state, :string, default: "active")
     field(:clan_id, :integer)
     field(:is_bot, :boolean)
     field(:lang, :string)

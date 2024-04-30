@@ -15,6 +15,7 @@ defmodule Codebattle.Event do
              :id,
              :slug,
              :type,
+             :ticker_text,
              :title,
              :description,
              :starts_at
@@ -27,6 +28,7 @@ defmodule Codebattle.Event do
 
     field(:slug, :string)
     field(:type, :string)
+    field(:ticker_text, :string)
     field(:title, :string)
     field(:description, :string)
     field(:starts_at, :utc_datetime)
@@ -83,7 +85,7 @@ defmodule Codebattle.Event do
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(clan, attrs \\ %{}) do
     clan
-    |> cast(attrs, [:slug, :type, :title, :description, :creator_id, :starts_at])
+    |> cast(attrs, [:slug, :type, :ticker_text, :title, :description, :creator_id, :starts_at])
     |> validate_length(:slug, min: 2, max: 57)
     |> validate_length(:description, min: 3, max: 10_000)
     |> validate_length(:title, min: 3, max: 250)

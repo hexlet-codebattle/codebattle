@@ -14,7 +14,7 @@ defmodule Codebattle.Tournament.Arena do
   def reset_meta(meta), do: meta
 
   @impl Tournament.Base
-  def finish_round?(_tournament), do: false
+  def finish_round_after_match?(_tournament), do: false
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do
@@ -80,17 +80,31 @@ defmodule Codebattle.Tournament.Arena do
     Enum.each(
       players,
       fn player ->
-        new_player =
-          if player_finished_round?(tournament, player) do
-            %{player | state: "finished_round"}
-          else
-            new_player = %{player | state: "in_waiting_room_active"}
-            WaitingRoom.put_player(tournament.waiting_room_name, new_player)
-            new_player
-          end
+        cond do
+          palyer.state == "active" && player_finished_round?(tournament, player) ->
+            new_player = %{player | state: "finished_round"}
 
-        Tournament.Players.put_player(tournament, new_player)
-        broadcast_player_updated(tournament, new_player)
+            Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
+              tournament: tournament,
+              player: new_player
+            })
+
+            Tournament.Players.put_player(tournament, new_player)
+
+          palyer.state == "active" ->
+            new_player = %{player | state: "matchmaking_active"}
+            WaitingRoom.put_player(tournament.waiting_room_name, new_player)
+
+            Codebattle.PubSub.broadcast("tournament:player:matchmacking_started", %{
+              tournament: tournament,
+              player: new_player
+            })
+
+            Tournament.Players.put_player(tournament, new_player)
+
+          true ->
+            :noop
+        end
       end
     )
 
@@ -118,14 +132,23 @@ defmodule Codebattle.Tournament.Arena do
     |> Tournament.PairBuilder.ByScore.call()
   end
 
-  defp player_finished_round?(tournament, player) do
-    Enum.count(player.task_ids) == Enum.count(tournament.round_task_ids)
-  end
-
   defp broadcast_player_updated(tournament, player) do
+    # wr_events:
+    #   tournament:round_finished  || all tasks solved in the round
+    #   wr_finished_round:
+    #       active -> "finished_round"
+    #       matchmaking_active -> "finished_round"
+    #
+    #   tournament:finished  || all tasks solved in the last round
+    #   wr_finished:
+    #       active -> "finished"
+    #       matchmaking_active -> "finished"
+    #       matchmaking_paused -> "finished"
+
     Codebattle.PubSub.broadcast("tournament:player:updated", %{
       tournament: tournament,
-      player: player
+      player: player,
+      wr_event: "tournament:round_finished"
     })
   end
 end

@@ -12,6 +12,7 @@ defmodule CodebattleWeb.PublicEventController do
 
     conn
     |> put_meta_tags(%{title: event.title, description: event.description})
+    |> assign(:ticker_text, event.ticker_text)
     |> put_gon(
       event: %{
         event: event,

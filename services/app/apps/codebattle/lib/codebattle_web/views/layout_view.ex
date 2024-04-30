@@ -65,10 +65,4 @@ defmodule CodebattleWeb.LayoutView do
     user.avatar_url ||
       "https://ui-avatars.com/api/?name=#{user.name}&background=ffdb4d&color=ff0000"
   end
-
-  def show_ticker?(), do: false
-
-  def ticker_line() do
-    ""
-  end
 end
