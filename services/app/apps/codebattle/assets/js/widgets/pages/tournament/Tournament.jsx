@@ -105,7 +105,10 @@ function Tournament({ waitingRoomMachine }) {
 
   const searchParams = useSearchParams();
 
-  useInterpret(waitingRoomMachine);
+  const waitingRoomService = useInterpret(waitingRoomMachine, {
+    devTools: true,
+    actions: [],
+  });
 
   const activePresentationMode = searchParams.has('presentation');
 
@@ -161,7 +164,7 @@ function Tournament({ waitingRoomMachine }) {
   const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [setStartRoundConfirmationModalShowing]);
 
   useEffect(() => {
-    const clearTournament = connectToTournament()(dispatch);
+    const clearTournament = connectToTournament(waitingRoomService)(dispatch);
 
     return () => {
       clearTournament();

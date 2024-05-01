@@ -7,6 +7,8 @@ import socket, { channelMethods } from '../../socket';
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
+import { addWaitingRoomListeners } from './WaitingRoom';
+
 const tournamentId = Gon.getAsset('tournament_id');
 const channelName = `tournament:${tournamentId}`;
 let channel = socket.channel(channelName);
@@ -52,7 +54,7 @@ const initTournamentChannel = dispatch => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = () => dispatch => {
+export const connectToTournament = waitingRoomMachine => dispatch => {
   initTournamentChannel(dispatch);
 
   const oldChannel = channel;
@@ -124,6 +126,8 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
   };
 
+  const clearWaitingRoomListeners = addWaitingRoomListeners(oldChannel, waitingRoomMachine);
+
   const refs = [
     oldChannel.on('tournament:update', handleUpdate),
     oldChannel.on('tournament:matches:update', handleMatchesUpdate),
@@ -148,6 +152,8 @@ export const connectToTournament = () => dispatch => {
     oldChannel.off('tournament:match:upserted', refs[7]);
     oldChannel.off('tournament:restarted', refs[8]);
     oldChannel.off('tournament:finished', refs[9]);
+
+    clearWaitingRoomListeners();
   };
 
   return clearTournamentChannel;
