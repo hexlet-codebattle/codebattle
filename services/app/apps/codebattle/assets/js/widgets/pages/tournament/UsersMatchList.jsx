@@ -1,9 +1,9 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
@@ -38,15 +38,11 @@ function UserTournamentInfo({ userId }) {
 function UsersMatchList({
   currentUserId,
   playerId,
-  isBanned,
-  canBan,
   canModerate,
   matches,
   hideStats = false,
   hideBots = false,
 }) {
-  const dispatch = useDispatch();
-
   const [player] = useMatchesStatistics(playerId, matches);
 
   if (matches.length === 0) {

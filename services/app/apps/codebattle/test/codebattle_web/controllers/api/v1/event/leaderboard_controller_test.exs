@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
+defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   setup do

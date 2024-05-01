@@ -43,9 +43,9 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => () => {
     );
   };
 
-  const handleWaitingRoomPlayerMatchmakingStoped = response => {
+  const handleWaitingRoomPlayerMatchmakingStopped = response => {
     waitingRoomMachine.send(
-      channelTopics.waitingRoomPlayerMatchmakingStopedTopic,
+      channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
       { payload: response },
     );
   };
@@ -56,6 +56,14 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => () => {
       { payload: response },
     );
   };
+
+  const handleWaitingRoomPlayerMatchCreated = response => {
+    waitingRoomMachine.send(
+      channelTopics.waitingRoomPlayerMatchCreatedTopic,
+      { payload: response },
+    );
+  };
+
   const refs = [
     channel.on(channelTopics.waitingRoomStartedTopic, handleWaitingRoomStarted),
     channel.on(channelTopics.waitingRoomEndedTopic, handleWaitingRoomEnded),
@@ -76,12 +84,16 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => () => {
       handleWaitingRoomPlayerMatchmakingResumed,
     ),
     channel.on(
-      channelTopics.waitingRoomPlayerMatchmakingStopedTopic,
-      handleWaitingRoomPlayerMatchmakingStoped,
+      channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
+      handleWaitingRoomPlayerMatchmakingStopped,
     ),
     channel.on(
       channelTopics.waitingRoomPlayerMatchmakingPausedTopic,
       handleWaitingRoomPlayerMatchmakingPaused,
+    ),
+    channel.on(
+      channelTopics.waitingRoomPlayerMatchCreatedTopic,
+      handleWaitingRoomPlayerMatchCreated,
     ),
   ];
 
@@ -93,8 +105,9 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => () => {
       channel.off(channelTopics.waitingRoomPlayerUnbannedTopic, refs[3]);
       channel.off(channelTopics.waitingRoomPlayerMatchmakingStartedTopic, refs[4]);
       channel.off(channelTopics.waitingRoomPlayerMatchmakingResumedTopic, refs[5]);
-      channel.off(channelTopics.waitingRoomPlayerMatchmakingStopedTopic, refs[6]);
+      channel.off(channelTopics.waitingRoomPlayerMatchmakingStoppedTopic, refs[6]);
       channel.off(channelTopics.waitingRoomPlayerMatchmakingPausedTopic, refs[7]);
+      channel.off(channelTopics.waitingRoomPlayerMatchCreatedTopic, refs[8]);
     }
   };
 

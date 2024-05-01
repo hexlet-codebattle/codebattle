@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Gon from 'gon';
-import { camelizeKeys, decamelizeKeys } from 'humps';
+import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
 import socket, { channelMethods } from '../../socket';
@@ -197,7 +197,7 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   const { isLive, id } = state.tournament;
 
   if (isLive) {
-    requestMatchesByPlayerId(playerId)(dispatch)
+    requestMatchesByPlayerId(playerId)(dispatch);
   } else {
     axios
       // TODO: add BE api for fetching games with tournaemnt_id+player_id and mapt to touanemtnMatch

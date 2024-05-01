@@ -199,7 +199,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
     push(socket, "tournament:round_finished", %{
-      tournament: payload.tournament,
+      tournament: payload.tournament
     })
 
     {:noreply, socket}

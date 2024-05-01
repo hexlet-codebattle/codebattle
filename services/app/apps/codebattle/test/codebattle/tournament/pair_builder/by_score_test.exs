@@ -49,7 +49,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByScoreTest do
       assert Enum.empty?(unmatched_player_ids)
     end
 
-    test "10_000 palyers" do
+    test "10_000 players" do
       users = build_users(10_001)
 
       {pairs, unmatched_player_ids} = @matcher.call(users)

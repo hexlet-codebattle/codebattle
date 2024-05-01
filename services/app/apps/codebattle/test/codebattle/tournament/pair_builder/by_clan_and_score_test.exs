@@ -67,7 +67,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       assert length(unmatched_player_ids) == 1
     end
 
-    test "10_000 palyers with small amount of clans" do
+    test "10_000 players with small amount of clans" do
       users = build_users([4000, 3000, 2000, 1000, 100, 10, 1])
 
       {pairs, unmatched_player_ids} = @matcher.call(users)

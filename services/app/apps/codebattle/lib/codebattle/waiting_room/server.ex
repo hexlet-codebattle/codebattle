@@ -23,7 +23,9 @@ defmodule Codebattle.WaitingRoom.Server do
   def match_players(name), do: GenServer.call(wr_name(name), :match_players)
   def pause(name), do: GenServer.call(wr_name(name), :pause)
   def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
-  def delete_player(name, player_id), do: GenServer.cast(wr_name(name), {:delete_player, player_id})
+
+  def delete_player(name, player_id),
+    do: GenServer.cast(wr_name(name), {:delete_player, player_id})
 
   def put_players(name, players) do
     GenServer.cast(
@@ -50,20 +52,20 @@ defmodule Codebattle.WaitingRoom.Server do
 
   @impl GenServer
   def handle_cast({:put_players, players}, state) do
-    PubSub.broadcast("waiting_room:matchmaking_started", %{
-      name: state.name,
-      player_ids: Enum.map(players, & &1.id)
-    })
+    # PubSub.broadcast("waiting_room:matchmaking_started", %{
+    #   name: state.name,
+    #   player_ids: Enum.map(players, & &1.id)
+    # })
 
     {:noreply, %{state | players: Enum.concat(players, state.players)}}
   end
 
   @impl GenServer
   def handle_cast({:put_player, player}, state) do
-    PubSub.broadcast("waiting_room:matchmaking_started", %{
-      name: state.name,
-      player_ids: [player.id]
-    })
+    # PubSub.broadcast("waiting_room:matchmaking_started", %{
+    #   name: state.name,
+    #   player_ids: [player.id]
+    # })
 
     {:noreply, %{state | players: [player | state.players]}}
   end

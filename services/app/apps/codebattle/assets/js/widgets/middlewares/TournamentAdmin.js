@@ -197,7 +197,7 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
   const { isLive, id } = state.tournament;
 
   if (isLive) {
-    requestMatchesByPlayerId(playerId)(dispatch)
+    requestMatchesByPlayerId(playerId)(dispatch);
   } else {
     axios
       .get(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
@@ -254,4 +254,3 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
     .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
     .receive('error', error => console.error(error));
 };
-

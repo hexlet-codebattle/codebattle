@@ -1,13 +1,11 @@
-import React, { useMemo, memo, useCallback } from 'react';
+import React, { useMemo, memo } from 'react';
 
 import groupBy from 'lodash/groupBy';
 import omitBy from 'lodash/omitBy';
 import reverse from 'lodash/reverse';
-import { useSelector } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
 import TournamentStates from '../../config/tournament';
-import { currentUserIsAdminSelector } from '../../selectors';
 
 import JoinButton from './JoinButton';
 import Players from './PlayersPanel';
@@ -60,8 +58,6 @@ function TeamMatches({
     () => reverse(Object.keys(mapRoundPositionToMatches).sort()),
     [mapRoundPositionToMatches],
   );
-
-  const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
     <>

@@ -4,14 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import MatchStatesCodes from '../../config/matchStates';
 
-const handleToggleVisible = event => {
-  const { gameId } = event.currentTarget.dataset;
-};
-
 function MatchAction({
   match,
   currentUserIsPlayer,
-  canModerate,
 }) {
   const href = `/games/${match.gameId}`;
 

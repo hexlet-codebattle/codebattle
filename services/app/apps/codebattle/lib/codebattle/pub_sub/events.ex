@@ -182,7 +182,7 @@ defmodule Codebattle.PubSub.Events do
       },
       %Message{
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:matchmaking_stopped",
+        event: "waiting_room:ended",
         payload: %{player: player}
       }
     ]

@@ -80,7 +80,8 @@ const machine = {
           initial: 'progress',
           on: {
             [channelTopics.waitingRoomPlayerBannedTopic]: 'banned',
-            [channelTopics.waitingRoomPlayerMatchmakingStopedTopic]: 'idle',
+            [channelTopics.waitingRoomPlayerMatchmakingStoppedTopic]: 'idle',
+            [channelTopics.waitingRoomEndedTopic]: 'idle',
           },
           states: {
             progress: {
@@ -89,7 +90,15 @@ const machine = {
                 [channelTopics.waitingRoomPlayerMatchCreatedTopic]: 'success',
               },
             },
-            success: {},
+            success: {
+              on: {
+                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
+                [channelTopics.waitingRoomStartedTopic]: [
+                  { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
+                  { target: 'matchmaking' },
+                ],
+              },
+            },
             paused: {
               on: {
                 [channelTopics.waitingRoomPlayerMatchmakingResumedTopic]: 'progress',
@@ -112,8 +121,10 @@ const machine = {
 
 export const config = {
   guards: {
-    isMatchmakingInProgress: (_ctx, { payload }) => !!payload.isWait,
-    isMatchmakingPaused: (_ctx, { payload }) => !!payload.isPaused,
+    isMatchmakingInProgress: (_ctx, { payload }) => payload.state === 'matchmaking_active',
+    isMatchmakingPaused: (_ctx, { payload }) => payload.state === 'matchmaking_paused',
+    isTournamentFinished: (_ctx, { payload }) => payload.state === 'finished',
+    // isRoundFinished: (_ctx, { payload }) => payload.state === 'finished_round',
   },
   actions: {
     loadWaitingRoom: assign({

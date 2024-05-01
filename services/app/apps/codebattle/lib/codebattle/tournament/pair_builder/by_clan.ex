@@ -46,7 +46,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
           value
       end
 
-    new_palyers_map =
+    new_players_map =
       players_map
       |> then(fn pm ->
         if clan1_count == 1 do
@@ -56,8 +56,8 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
         end
       end)
 
-    new_palyers_map =
-      new_palyers_map
+    new_players_map =
+      new_players_map
       |> then(fn pm ->
         if clan2_count == 1 do
           Map.delete(pm, clan2_id)
@@ -66,6 +66,6 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
         end
       end)
 
-    match_players(new_palyers_map, [[player1_id, player2_id] | pairs])
+    match_players(new_players_map, [[player1_id, player2_id] | pairs])
   end
 end

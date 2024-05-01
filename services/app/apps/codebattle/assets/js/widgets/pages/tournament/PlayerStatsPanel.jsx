@@ -48,9 +48,8 @@ const PlayerPanelCodes = {
 const getPlayerPanelCodes = type => {
   if (type === TournamentTypes.arena) {
     return Object.values(ArenatPlayerPanelCodes);
-  } else {
-    return Object.values(PlayerPanelCodes);
   }
+    return Object.values(PlayerPanelCodes);
 };
 
 function PlayerStatsPanel({

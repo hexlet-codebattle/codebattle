@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
-import { connectToTournament, } from '../../middlewares/Tournament';
+import { connectToTournament } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useSearchParams from '../../utils/useSearchParams';

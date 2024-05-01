@@ -182,9 +182,6 @@ defmodule Codebattle.Tournament do
     change(changeset, %{creator: creator})
   end
 
-
-
-
   def access_types, do: @access_types
   def levels, do: @levels
   def score_strategies, do: @score_strategies

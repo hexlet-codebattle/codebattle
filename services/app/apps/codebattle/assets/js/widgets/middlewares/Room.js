@@ -322,6 +322,8 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
 };
 
 export const activeEditorReady = (machine, isBanned) => {
+  const currentGameChannel = channel;
+
   if (isBanned) {
     machine.send('load_banned_editor');
   } else {
@@ -344,18 +346,16 @@ export const activeEditorReady = (machine, isBanned) => {
   };
 
   const refs = [
-    channel.on(channelTopics.userStartCheckTopic, handleStartsCheck),
-    channel.on(channelTopics.userCheckCompleteTopic, handleNewCheckResult),
+    currentGameChannel.on(channelTopics.userStartCheckTopic, handleStartsCheck),
+    currentGameChannel.on(channelTopics.userCheckCompleteTopic, handleNewCheckResult),
   ];
-
-  const oldChannel = channel;
 
   const clearEditorListeners = () => {
     machine.send('unload_editor');
 
-    if (oldChannel) {
-      oldChannel.off(channelTopics.userStartCheckTopic, refs[0]);
-      oldChannel.off(channelTopics.userCheckCompleteTopic, refs[1]);
+    if (currentGameChannel) {
+      currentGameChannel.off(channelTopics.userStartCheckTopic, refs[0]);
+      currentGameChannel.off(channelTopics.userCheckCompleteTopic, refs[1]);
     }
   };
 

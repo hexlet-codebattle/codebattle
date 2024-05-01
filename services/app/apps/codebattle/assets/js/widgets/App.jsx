@@ -191,8 +191,6 @@ export const TournamentAdminPage = () => (
   </Provider>
 );
 
-
-
 export const EventPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
