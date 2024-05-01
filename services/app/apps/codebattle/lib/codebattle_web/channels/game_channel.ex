@@ -389,7 +389,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   defp send_matchmaking_event(tournament_id, event, payload) do
-    if (tournament_id) do
+    if tournament_id do
       Tournament.Context.handle_event(tournament_id, event, payload)
     else
       Logger.error("GameChannel.handle_in:matchmaking:event: unexpected state")
