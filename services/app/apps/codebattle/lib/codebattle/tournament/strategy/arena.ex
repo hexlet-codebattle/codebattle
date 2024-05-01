@@ -81,7 +81,7 @@ defmodule Codebattle.Tournament.Arena do
       players,
       fn player ->
         cond do
-          palyer.state == "active" && player_finished_round?(tournament, player) ->
+          player.state == "active" && player_finished_round?(tournament, player) ->
             new_player = %{player | state: "finished_round"}
 
             Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
@@ -91,7 +91,7 @@ defmodule Codebattle.Tournament.Arena do
 
             Tournament.Players.put_player(tournament, new_player)
 
-          palyer.state == "active" ->
+          player.state == "active" ->
             new_player = %{player | state: "matchmaking_active"}
             WaitingRoom.put_player(tournament.waiting_room_name, new_player)
 

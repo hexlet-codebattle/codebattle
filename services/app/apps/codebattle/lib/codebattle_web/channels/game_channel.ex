@@ -341,8 +341,6 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   defp send_matchmaking_event(tournament_id, event, payload) do
-    tournament_id = socket.assigns.tournament_id
-
     cond do
       tournament_id ->
         Tournament.Context.handle_event(tournament_id, event, payload)
@@ -350,7 +348,5 @@ defmodule CodebattleWeb.GameChannel do
       true ->
         Logger.error("GameChannel.handle_in:matchmaking:pause: unexpected state")
     end
-
-    {:noreply, socket}
   end
 end

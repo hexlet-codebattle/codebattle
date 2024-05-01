@@ -263,7 +263,7 @@ defmodule Codebattle.PubSub.Events do
       if params.tournament.waiting_room_name && params.match.state == "playing" do
         Enum.map(players, fn player ->
           %Message{
-            topic: "tournament:#{params.tournament.id}:player:#{player_id}",
+            topic: "tournament:#{params.tournament.id}:player:#{player.id}",
             event: "waiting_room:player:match_created",
             payload: %{player: player}
           }
