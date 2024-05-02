@@ -126,7 +126,7 @@ const initPlaybook = dispatch => data => {
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (gameRoomMachine, currentChannel) => dispatch => {
+const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) => dispatch => {
   const onJoinFailure = payload => {
     gameRoomMachine.send('REJECT_LOADING_GAME', { payload });
     gameRoomMachine.send('FAILURE_JOIN', { payload });
@@ -162,9 +162,9 @@ const initGameChannel = (gameRoomMachine, currentChannel) => dispatch => {
     gameRoomMachine.send('LOAD_GAME', { payload: gameStatus });
 
     if (waitingRoomName) {
-      waitingRoomMachineStates.send('LOAD_WAITING_ROOM', { payload: { currentPlayer } });
+      waitingRoomMachine.send('LOAD_WAITING_ROOM', { payload: { currentPlayer } });
     } else {
-      waitingRoomMachineStates.send('REJECT_LOADING', {});
+      waitingRoomMachine.send('REJECT_LOADING', {});
     }
 
     updateStore(dispatch)({
@@ -372,7 +372,7 @@ export const activeEditorReady = (machine, isBanned) => {
 
 export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRedirect = false }) => (dispatch, getState) => {
   const currentGameChannel = channel;
-  initGameChannel(gameRoomMachine, currentGameChannel)(dispatch);
+  initGameChannel(gameRoomMachine, waitingRoomMachine, currentGameChannel)(dispatch);
 
   const handleNewEditorData = data => {
     dispatch(actions.updateEditorText(data));
