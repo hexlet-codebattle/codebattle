@@ -18,27 +18,27 @@ defmodule CodebattleWeb.GameChannel do
       if game.tournament_id && !socket.assigns.current_user.is_bot do
         player_ids = Enum.map(game.players, & &1.id)
         user_id = socket.assigns.current_user.id
+        tournament = Tournament.Context.get_tournament_info(game.tournament_id)
 
-        follow_id =
+        {follow_id, active_game_id} =
           if user_id in player_ids do
-            user_id
+            Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{user_id}")
+
+            active_game_id =
+              tournament
+              |> Tournament.Helpers.get_matches_by_players([user_id])
+              |> Enum.find(&(&1.state == "playing"))
+              |> case do
+                nil -> nil
+                match -> match.game_id
+              end
+
+            {user_id, active_game_id}
           else
-            List.first(player_ids)
+            {nil, nil}
           end
 
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
-        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{follow_id}")
-
-        tournament = Tournament.Context.get_tournament_info(game.tournament_id)
-
-        active_game_id =
-          tournament
-          |> Tournament.Helpers.get_matches_by_players([follow_id])
-          |> Enum.find(&(&1.state == "playing"))
-          |> case do
-            nil -> nil
-            match -> match.game_id
-          end
 
         {:ok,
          %{
@@ -58,13 +58,13 @@ defmodule CodebattleWeb.GameChannel do
          assign(socket,
            tournament_id: game.tournament_id,
            game_id: game_id,
-           player_id: follow_id
+           follow_id: follow_id
          )}
       else
         {:ok,
          %{
            game: GameView.render_game(game, score)
-         }, assign(socket, :game_id, game_id)}
+         }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil)}
       end
     rescue
       _ ->
@@ -222,6 +222,24 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("player:follow", %{"user_id" => user_id}, socket) do
+    if socket.assigns.tournament_id do
+      Codebattle.PubSub.subscribe("tournament:#{socket.assigns.tournament_id}:player:#{user_id}")
+    end
+
+    {:noreply, assign(socket, follow_id: user_id)}
+  end
+
+  def handle_in("player:unfollow", %{"user_id" => user_id}, socket) do
+    if socket.assigns.tournament_id do
+      Codebattle.PubSub.unsubscribe(
+        "tournament:#{socket.assigns.tournament_id}:player:#{user_id}"
+      )
+    end
+
+    {:noreply, assign(socket, follow_id: nil)}
+  end
+
   def handle_in("enter_pass_code", %{"pass_code" => pass_code}, socket) do
     game_id = socket.assigns.game_id
 
@@ -274,20 +292,6 @@ defmodule CodebattleWeb.GameChannel do
     if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    matches =
-      Tournament.Helpers.get_matches_by_players(payload.tournament_table, [
-        socket.assigns.player_id
-      ])
-
-    push(socket, "tournament:round_finished", %{
-      tournament: payload.tournament,
-      matches: matches
-    })
 
     {:noreply, socket}
   end

@@ -15,9 +15,8 @@ defmodule CodebattleWeb.TournamentAdminChannel do
          true <- Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
-      Codebattle.PubSub.subscribe("waiting_room:t_#{tournament.id}")
 
-      {:ok, get_tournament_join_payload(tournament, current_user),
+      {:ok, get_tournament_join_payload(tournament),
        assign(socket, tournament_info: Helpers.tournament_info(tournament))}
     else
       _ ->
@@ -89,7 +88,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:cancel", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
-    tournament = Tournament.Server.get_tournament(tournament_id)
 
     Tournament.Context.handle_event(tournament_id, :cancel, %{
       user: socket.assigns.current_user
@@ -104,7 +102,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:start", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
-    tournament = Tournament.Server.get_tournament(tournament_id)
 
     Tournament.Context.handle_event(tournament_id, :start, %{
       user: socket.assigns.current_user
@@ -115,17 +112,14 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:start_round", params, socket) do
     tournament_id = socket.assigns.tournament_info.id
-    tournament = Tournament.Server.get_tournament(tournament_id)
-    new_round_params = cast_game_params(params)
 
-    Tournament.Context.handle_event(tournament_id, :start_round_force, new_round_params)
+    Tournament.Context.handle_event(tournament_id, :start_round_force, cast_game_params(params))
 
     {:noreply, socket}
   end
 
   def handle_in("tournament:finish_round", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
-    tournament = Tournament.Server.get_tournament(tournament_id)
 
     Tournament.Context.handle_event(tournament_id, :finish_round, %{})
 
@@ -155,13 +149,18 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
-    current_user = socket.assigns.current_user
-
     matches =
       if payload.tournament.type in ["swiss", "arena"] do
         []
       else
-        Helpers.get_matches(payload.tournament)
+        Helpers.get_matches(socket.assigns.tournament_info)
+      end
+
+    players =
+      if payload.tournament.type in ["swiss", "arena"] do
+        []
+      else
+        Helpers.get_players(socket.assigns.tournament_info)
       end
 
     tasks_info =
@@ -174,8 +173,8 @@ defmodule CodebattleWeb.TournamentAdminChannel do
       end
 
     push(socket, "tournament:update", %{
-      tournament: Helpers.prepare_to_json(payload.tournament),
-      players: Helpers.get_top_players(payload.tournament),
+      tournament: payload.tournament,
+      players: players,
       matches: matches,
       tasks_info: tasks_info
     })
@@ -230,7 +229,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, socket}
   end
 
-  defp get_tournament_join_payload(tournament = %{type: "versus"}, current_user) do
+  defp get_tournament_join_payload(tournament = %{type: "versus"}) do
     tasks_info =
       tournament
       |> Helpers.get_tasks()
@@ -244,7 +243,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     }
   end
 
-  defp get_tournament_join_payload(tournament, current_user) do
+  defp get_tournament_join_payload(tournament) do
     %{
       tournament: Helpers.prepare_to_json(tournament),
       players: Helpers.get_players(tournament),

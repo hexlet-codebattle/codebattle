@@ -45,7 +45,7 @@ defmodule Codebattle.WaitingRoom.Server do
 
   @impl GenServer
   def init([params]) do
-    state = Map.merge(%State{}, params)
+    state = struct(%State{}, params)
     schedule_matching(state)
     {:ok, state}
   end

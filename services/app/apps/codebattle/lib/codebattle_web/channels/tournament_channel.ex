@@ -15,7 +15,6 @@ defmodule CodebattleWeb.TournamentChannel do
          true <- Helpers.can_access?(tournament, current_user, payload) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
-      Codebattle.PubSub.subscribe("waiting_room:t_#{tournament.id}")
 
       {:ok, get_tournament_join_payload(tournament, current_user),
        assign(socket,
@@ -222,16 +221,17 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament, current_user) do
+    current_player = Helpers.get_player(tournament, current_user.id)
+
     player_data =
       if tournament.players_count > 128 do
-        current_player = Helpers.get_player(tournament, current_user.id)
-        player_matches = Helpers.get_matches_by_players(tournament, [current_user.id])
+        player_matches = Helpers.get_matches_by_players(tournament, [current_player.id])
 
         opponents =
           Helpers.get_player_opponents_from_matches(tournament, player_matches, current_user.id)
 
         %{
-          players: opponents,
+          players: [current_player | opponents],
           matches: player_matches
         }
       else
@@ -241,17 +241,9 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
-    Map.merge(player_data, %{tournament: Helpers.prepare_to_json(tournament)})
+    Map.merge(player_data, %{
+      current_player: current_player,
+      tournament: Helpers.prepare_to_json(tournament)
+    })
   end
-
-  defp cast_game_params(%{"task_level" => level, "timeout_seconds" => seconds}),
-    do: %{task_level: level, timeout_seconds: seconds}
-
-  defp cast_game_params(%{"task_level" => level}), do: %{task_level: level}
-
-  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}),
-    do: %{task_id: id, timeout_seconds: seconds}
-
-  defp cast_game_params(%{"task_id" => id}), do: %{task_id: id}
-  defp cast_game_params(_params), do: %{}
 end

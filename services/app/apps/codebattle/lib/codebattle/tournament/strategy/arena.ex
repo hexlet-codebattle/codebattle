@@ -17,6 +17,10 @@ defmodule Codebattle.Tournament.Arena do
   def finish_round_after_match?(_tournament), do: false
 
   @impl Tournament.Base
+  def calculate_round_results(tournament = %{score_strategy: "win_loss"}) do
+    tournament
+  end
+
   def calculate_round_results(tournament) do
     TournamentResult.upsert_results(tournament)
     get_player_results = TournamentResult.get_player_results(tournament)
@@ -130,25 +134,5 @@ defmodule Codebattle.Tournament.Arena do
     |> get_players()
     |> Enum.map(&{&1.id, &1.score})
     |> Tournament.PairBuilder.ByScore.call()
-  end
-
-  defp broadcast_player_updated(tournament, player) do
-    # wr_events:
-    #   tournament:round_finished  || all tasks solved in the round
-    #   wr_finished_round:
-    #       active -> "finished_round"
-    #       matchmaking_active -> "finished_round"
-    #
-    #   tournament:finished  || all tasks solved in the last round
-    #   wr_finished:
-    #       active -> "finished"
-    #       matchmaking_active -> "finished"
-    #       matchmaking_paused -> "finished"
-
-    Codebattle.PubSub.broadcast("tournament:player:updated", %{
-      tournament: tournament,
-      player: player,
-      wr_event: "tournament:round_finished"
-    })
   end
 end

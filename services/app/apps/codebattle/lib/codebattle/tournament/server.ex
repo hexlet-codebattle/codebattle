@@ -190,8 +190,6 @@ defmodule Codebattle.Tournament.Server do
       new_tournament =
         tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
 
-      match = get_match(tournament, match.id)
-      broadcast_match_update(new_tournament, match)
       {:noreply, %{tournament: new_tournament}}
     else
       {:noreply, %{tournament: tournament}}
@@ -238,13 +236,6 @@ defmodule Codebattle.Tournament.Server do
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
-  end
-
-  defp broadcast_match_update(tournament, match) do
-    Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-      tournament: tournament,
-      match: match
-    })
   end
 
   def broadcast_tournament_event_by_type(:join, %{users: users}, tournament) do

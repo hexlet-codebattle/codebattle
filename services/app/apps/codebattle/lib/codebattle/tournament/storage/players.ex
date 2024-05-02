@@ -21,6 +21,7 @@ defmodule Codebattle.Tournament.Players do
 
   def put_player(tournament, player) do
     :ets.insert(tournament.players_table, {player.id, player})
+    player
   end
 
   def get_player(tournament, player_id) do

@@ -273,13 +273,20 @@ defmodule Codebattle.Tournament.Base do
              )}
           end)
 
-        Tournament.Matches.put_match(tournament, %{
+        new_match = %{
           match
           | state: params.game_state,
             winner_id: winner_id,
             duration_sec: params.duration_sec,
             player_results: player_results,
             finished_at: TimeHelper.utc_now()
+        }
+
+        Tournament.Matches.put_match(tournament, new_match)
+
+        Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+          tournament: tournament,
+          match: new_match
         })
 
         params.player_results
@@ -547,7 +554,7 @@ defmodule Codebattle.Tournament.Base do
           })
         end)
 
-        Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+        Codebattle.PubSub.broadcast("tournament:match:created", %{
           tournament: tournament,
           match: match
         })
@@ -648,7 +655,7 @@ defmodule Codebattle.Tournament.Base do
       defp update_players_state_after_round_finished(tournament = %{state: "finished"}) do
         tournament
         |> get_players()
-        |> Enum.map(fn player ->
+        |> Enum.each(fn player ->
           if player.state not in ["banned", "finished"] do
             %{player | state: "finished"}
             |> then(&Tournament.Players.put_player(tournament, &1))
@@ -660,6 +667,8 @@ defmodule Codebattle.Tournament.Base do
             )
           end
         end)
+
+        tournament
       end
 
       defp update_players_state_after_round_finished(tournament) do
@@ -677,6 +686,8 @@ defmodule Codebattle.Tournament.Base do
             )
           end
         end)
+
+        tournament
       end
 
       defp set_stats(tournament) do

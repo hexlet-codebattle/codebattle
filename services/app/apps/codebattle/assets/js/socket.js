@@ -78,7 +78,7 @@ export const channelMethods = {
   checkResult: 'check_result',
   giveUp: 'give_up',
 
-  editorData: 'editor_data',
+  editorData: 'editor:data',
   editorCursorPosition: channelTopics.editorCursorPositionTopic,
   editorCursorSelection: channelTopics.editorCursorSelectionTopic,
 
