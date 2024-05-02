@@ -18,7 +18,7 @@ export const updateTournamentChannel = newTournamentId => {
   channel = socket.channel(newChannelName);
 };
 
-const initTournamentChannel = dispatch => {
+const initTournamentChannel = waitingRoomMachine => dispatch => {
   const onJoinFailure = () => {
     window.location.reload();
   };
@@ -34,6 +34,12 @@ const initTournamentChannel = dispatch => {
       playersPageNumber: 1,
       playersPageSize: 20,
     }));
+
+    if (response.tournament.waitingRoomName) {
+      waitingRoomMachine.send('LOAD_WAITING_ROOM', { payload: { currentPlayer: response.currentPlayer } });
+    } else {
+      waitingRoomMachine.send('REJECT_LOADING', {});
+    }
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
@@ -55,7 +61,7 @@ const initTournamentChannel = dispatch => {
 // export const soundNotification = notification();
 
 export const connectToTournament = waitingRoomMachine => dispatch => {
-  initTournamentChannel(dispatch);
+  initTournamentChannel(waitingRoomMachine)(dispatch);
 
   const oldChannel = channel;
 

@@ -69,10 +69,10 @@ const machine = {
         idle: {
           on: {
             [channelTopics.waitingRoomPlayerBannedTopic]: 'banned',
-            [channelTopics.waitingRoomPlayerMatchmakingStartedTopic]: 'matchmaking',
+            [channelTopics.waitingRoomPlayerMatchmakingStartedTopic]: 'matchmaking.progress',
             [channelTopics.waitingRoomStartedTopic]: [
               { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
-              { target: 'matchmaking' },
+              { target: 'matchmaking.progress' },
             ],
           },
         },
@@ -94,8 +94,8 @@ const machine = {
               on: {
                 [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
                 [channelTopics.waitingRoomStartedTopic]: [
-                  { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
-                  { target: 'matchmaking' },
+                  { target: 'paused', cond: 'isMatchmakingPaused' },
+                  { target: 'progress' },
                 ],
               },
             },
@@ -109,7 +109,7 @@ const machine = {
         banned: {
           on: {
             [channelTopics.waitingRoomPlayerUnbannedTopic]: [
-              { target: 'matchmaking', cond: 'isMatchmakingInProgress' },
+              { target: 'matchmaking.progress', cond: 'isMatchmakingInProgress' },
               { target: 'idle' },
             ],
           },
@@ -121,9 +121,9 @@ const machine = {
 
 export const config = {
   guards: {
-    isMatchmakingInProgress: (_ctx, { payload }) => payload.state === 'matchmaking_active',
-    isMatchmakingPaused: (_ctx, { payload }) => payload.state === 'matchmaking_paused',
-    isTournamentFinished: (_ctx, { payload }) => payload.state === 'finished',
+    isMatchmakingInProgress: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_active',
+    isMatchmakingPaused: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_paused',
+    isTournamentFinished: (_ctx, { payload }) => payload.currentPlayer.state === 'finished',
     // isRoundFinished: (_ctx, { payload }) => payload.state === 'finished_round',
   },
   actions: {

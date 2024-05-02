@@ -151,13 +151,21 @@ const initGameChannel = (gameRoomMachine, currentChannel) => dispatch => {
         task,
         langs,
         locked,
+        waitingRoomName,
         award,
       },
+      currentPlayer,
     } = response;
 
     const gameStatus = getGameStatus(response.game);
 
     gameRoomMachine.send('LOAD_GAME', { payload: gameStatus });
+
+    if (waitingRoomName) {
+      waitingRoomMachineStates.send('LOAD_WAITING_ROOM', { payload: { currentPlayer } });
+    } else {
+      waitingRoomMachineStates.send('REJECT_LOADING', {});
+    }
 
     updateStore(dispatch)({
       firstPlayer,
