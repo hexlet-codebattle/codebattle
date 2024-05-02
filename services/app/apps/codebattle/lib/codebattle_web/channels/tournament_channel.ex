@@ -210,50 +210,8 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "waiting_room:player:matchmaking_started", payload: payload}, socket) do
-    push(socket, "waiting_room:player:matchmaking_started", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:matchmaking_stopped", payload: payload}, socket) do
-    push(socket, "waiting_room:player:matchmaking_stopped", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:ended", payload: payload}, socket) do
-    push(socket, "waiting_room:ended", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:matchmaking_resumed", payload: payload}, socket) do
-    push(socket, "waiting_room:player:matchmaking_resumed", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:matchmaking_paused", payload: payload}, socket) do
-    push(socket, "waiting_room:player:matchmaking_paused", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:match_created", payload: payload}, socket) do
-    push(socket, "waiting_room:player:match_created", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:banned", payload: payload}, socket) do
-    push(socket, "waiting_room:player:banned", payload)
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "waiting_room:player:unbanned", payload: payload}, socket) do
-    push(socket, "waiting_room:player:unbanned", payload)
+  def handle_info(message = %{event: "waiting_room:player" <> _rest}, socket) do
+    push(socket, message.event, message.payload)
 
     {:noreply, socket}
   end
