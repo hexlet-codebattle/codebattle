@@ -674,7 +674,7 @@ defmodule Codebattle.Tournament.Base do
       defp update_players_state_after_round_finished(tournament) do
         tournament
         |> get_players()
-        |> Enum.map(fn player ->
+        |> Enum.each(fn player ->
           if player.state not in ["banned", "matchmaking_paused", "finished_round"] do
             %{player | state: "finished_round"}
             |> then(&Tournament.Players.put_player(tournament, &1))
