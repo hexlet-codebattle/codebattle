@@ -8,25 +8,29 @@ import { actions } from '../slices';
 const players = Gon.getAsset('players') || [];
 const currentUser = Gon.getAsset('current_user') || {};
 
+const mapViewerStateToWeight = {
+  online: 0,
+  lobby: 1,
+  task: 2,
+  tournament: 3,
+  watching: 4,
+  playing: 5,
+};
+
 const getMajorState = metas => (
-  metas.reduce((state, item) => {
-    switch (item.state) {
-      case 'playing':
-        return ['task'].includes(state) ? state : item.state;
-      case 'watching':
-        return ['task', 'playing'].includes(state) ? state : item.state;
-      case 'task':
-        return ['playing', 'watching'].includes(state) ? state : item.state;
-      case 'online':
-        return ['task', 'playing', 'watching'].includes(state) ? state : item.state;
-      default:
-        return state;
-    }
-  }, 'lobby')
+  metas.reduce((state, item) => (
+    mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
+      ? state
+      : item.state
+  ), 'online')
 );
 
 const getUserStateByPath = () => {
   const { pathname } = document.location;
+
+  if (pathname.startsWith('/tournament')) {
+    return ({ state: 'tournament' });
+  }
 
   if (pathname.startsWith('/games')) {
     const state = players.some(player => player.id === currentUser.id) ? 'playing' : 'watching';
@@ -55,10 +59,14 @@ const channel = socket.channel('main', getUserStateByPath());
 const presence = new Presence(channel);
 
 const listBy = (id, { metas: [first, ...rest] }) => {
-  first.count = rest.length + 1;
-  first.id = Number(id);
-  first.currentState = getMajorState([first, ...rest]);
-  return first;
+  const userInfo = {
+    ...first,
+    id: Number(id),
+    count: rest.length + 1,
+    currentState: getMajorState([first, ...rest]),
+  };
+
+  return userInfo;
 };
 
 const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
@@ -73,9 +81,20 @@ const initPresence = () => dispatch => {
 
   channel
     .join()
-    .receive('ok', () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); });
+    .receive(
+      'ok',
+      () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); },
+    );
 
   channel.onError(() => dispatch(actions.updateMainChannelState(false)));
+};
+
+export const changePresenceState = state => () => {
+  channel.push('change_presence_state', { state });
+};
+
+export const changePresenceUser = user => () => {
+  channel.push('change_presence_user', { user });
 };
 
 export default initPresence;

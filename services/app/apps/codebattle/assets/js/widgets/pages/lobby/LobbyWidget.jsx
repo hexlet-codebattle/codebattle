@@ -548,7 +548,7 @@ const LobbyWidget = () => {
       />
       <div className="row">
         <div className="d-flex flex-column col-12 col-lg-8 p-0 mb-2 pr-lg-2">
-          <div className="d-none d-sm-block d-md-none d-flex flex-column mb-2">
+          <div className="d-none d-lg-none d-flex flex-column mb-2">
             <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
           </div>
           <LobbyContainer
@@ -567,7 +567,7 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-12 col-lg-4 p-0">
-          <div className="d-none d-sm-none d-md-block">
+          <div className="d-none d-sm-none d-md-none d-lg-block">
             <div className="d-flex flex-column">
               <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
             </div>

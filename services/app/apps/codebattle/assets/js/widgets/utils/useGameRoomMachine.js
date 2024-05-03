@@ -2,6 +2,8 @@ import NiceModal from '@ebay/nice-modal-react';
 import { useInterpret } from '@xstate/react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { changePresenceState } from '@/middlewares/Main';
+
 import ModalCodes from '../config/modalCodes';
 import speedModes from '../config/speedModes';
 import { modalModes, modalActions } from '../pages/builder/TaskParamsModal';
@@ -36,6 +38,12 @@ const useGameRoomMachine = ({
       subscriptionType,
     },
     actions: {
+      handleOpenHistory: () => {
+        dispatch(changePresenceState('watching'));
+      },
+      handleOpenActiveGame: () => {
+        dispatch(changePresenceState('playing'));
+      },
       showGameResultModal: (_ctx, { payload }) => {
         if (!payload.award) {
           NiceModal.show(ModalCodes.gameResultModal);

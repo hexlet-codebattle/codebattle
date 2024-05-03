@@ -27,7 +27,7 @@ export const getGameStatus = ({
 });
 
 export const getGamePlayers = players => {
-  const [firstPlayer, secondPlayer] = sortBy(players, player => (player.id));
+  const [firstPlayer, secondPlayer] = sortBy(players, player => (player?.id));
   const typedPlayers = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {

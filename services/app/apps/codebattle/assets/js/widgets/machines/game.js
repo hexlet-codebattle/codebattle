@@ -301,7 +301,10 @@ const machine = {
                 cond: 'haveOnlyFreeAccess',
                 actions: ['showPremiumSubscribeRequestModal'],
               },
-              { target: 'on' },
+              {
+                target: 'on',
+                actions: ['handleOpenHistory'],
+              },
             ],
             REJECT_LOADING_PLAYBOOK: {
               target: 'failure',
@@ -311,7 +314,10 @@ const machine = {
         },
         on: {
           on: {
-            CLOSE_REPLAYER: 'off',
+            CLOSE_REPLAYER: {
+              target: 'off',
+              actions: ['handleOpenActiveGame'],
+            },
             TOGGLE_SPEED_MODE: {
               actions: ['toggleSpeedMode'],
             },
@@ -326,7 +332,10 @@ const machine = {
                 cond: 'haveOnlyFreeAccess',
                 actions: ['showPremiumSubscribeRequestModal'],
               },
-              { target: 'on' },
+              {
+                target: 'on',
+                actions: ['handleOpenHistory'],
+              },
             ],
           },
         },
@@ -377,6 +386,8 @@ export const config = {
     },
     soundRematchUpdateStatus: () => { },
     blockGameRoomAfterCheck: () => { },
+    handleOpenHistory: () => { },
+    handleOpenActiveGame: () => { },
 
     // replayer actions
     toggleSpeedMode: assign({
