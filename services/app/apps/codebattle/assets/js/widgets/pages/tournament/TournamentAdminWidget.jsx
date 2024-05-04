@@ -39,7 +39,7 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId, tournament, playersCount, hideResults, canModerate,
+  currentUserId, tournament, playersCount, hideResults,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -92,7 +92,7 @@ function InfoPanel({
           hideBots={!tournament.showBots}
           hideResults={hideResults}
           hideCustomGameConsole={tournament.type !== 'versus' || tournament.state !== TournamentStates.active}
-          canModerate={canModerate}
+          canModerate
         />
       );
     }
@@ -104,7 +104,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
 
   const searchParams = useSearchParams();
 
-  useInterpret(waitingRoomMachine);
+  const waitingRoomService = useInterpret(waitingRoomMachine);
 
   const activePresentationMode = searchParams.has('presentation');
 
@@ -143,10 +143,6 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
     ),
     [tournament.state],
   );
-  const canModerate = useMemo(
-    () => isOwner || isAdmin,
-    [isOwner, isAdmin],
-  );
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -160,7 +156,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
   const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [setStartRoundConfirmationModalShowing]);
 
   useEffect(() => {
-    const clearTournament = connectToTournament()(dispatch);
+    const clearTournament = connectToTournament(waitingRoomService)(dispatch);
 
     return () => {
       clearTournament();
@@ -285,7 +281,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
           isLive={tournament.isLive}
           isOnline={tournament.channel.online}
           isOver={isOver}
-          canModerate={canModerate}
+          canModerate
           lastRoundEndedAt={tournament.lastRoundEndedAt}
           lastRoundStartedAt={tournament.lastRoundStartedAt}
           level={tournament.level}
@@ -314,7 +310,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
                 playersCount={playersCount}
                 currentUserId={currentUserId}
                 hideResults={hideResults}
-                canModerate={canModerate}
+                canModerate
               />
             </div>
           </div>

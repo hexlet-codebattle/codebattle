@@ -97,7 +97,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     broadcast!(socket, "tournament:update", %{tournament: tournament})
 
-    {:noreply, socket}
+    {:reply, {:ok, %{tournament: tournament}}, socket}
   end
 
   def handle_in("tournament:start", _, socket) do

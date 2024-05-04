@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
 import { connectToTournament } from '../../middlewares/Tournament';
+import { connectToTournament as connectToTournamentAdmin } from '../../middlewares/TournamentAdmin';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import useSearchParams from '../../utils/useSearchParams';
@@ -166,11 +167,20 @@ function Tournament({ waitingRoomMachine }) {
   useEffect(() => {
     const clearTournament = connectToTournament(waitingRoomService)(dispatch);
 
+    if (canModerate) {
+      const clearTournamentAdmin = connectToTournamentAdmin(waitingRoomService)(dispatch);
+
+      return () => {
+        clearTournament();
+        clearTournamentAdmin();
+      };
+    }
+
     return () => {
       clearTournament();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [canModerate]);
 
   useEffect(() => {
     if (tournament.isLive) {

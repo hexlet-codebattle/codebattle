@@ -221,8 +221,12 @@ export const startTournament = () => {
   channel.push('tournament:start', {}).receive('error', error => console.error(error));
 };
 
-export const cancelTournament = () => {
-  channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
+export const cancelTournament = () => dispatch => {
+  channel.push('tournament:cancel', {})
+    .receive('ok', response => {
+      dispatch(actions.updateTournamentData(response.tournament));
+    })
+    .receive('error', error => console.error(error));
 };
 
 export const restartTournament = () => {

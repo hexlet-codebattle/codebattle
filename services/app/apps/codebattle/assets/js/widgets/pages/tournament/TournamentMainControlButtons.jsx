@@ -2,9 +2,10 @@ import React, { memo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { useDispatch } from 'react-redux';
 
 import {
-  cancelTournament as handleCancelTournament,
+  cancelTournament,
   restartTournament as handleRestartTournament,
   finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
@@ -38,9 +39,14 @@ const TournamentMainControlButtons = ({
   handleStartRound,
   handleOpenDetails,
 }) => {
+  const dispatch = useDispatch();
+
   const handleStartTournament = useCallback(() => {
     handleStartRound('firstRound');
   }, [handleStartRound]);
+  const handleCancelTournament = useCallback(() => {
+    dispatch(cancelTournament());
+  }, [dispatch]);
   const handleStartRoundTournament = useCallback(() => {
     handleStartRound('nextRound');
   }, [handleStartRound]);
