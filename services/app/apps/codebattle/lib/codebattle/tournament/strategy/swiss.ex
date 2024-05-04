@@ -47,12 +47,7 @@ defmodule Codebattle.Tournament.Swiss do
       Tournament.Players.put_player(tournament, %{player | place: index})
     end)
 
-    top_player_ids =
-      sorted_players_with_index
-      |> Enum.take(30)
-      |> Enum.map(& &1.id)
-
-    %{tournament | top_player_ids: top_player_ids}
+    tournament
   end
 
   @impl Tournament.Base

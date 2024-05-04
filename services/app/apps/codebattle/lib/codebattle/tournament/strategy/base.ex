@@ -273,6 +273,26 @@ defmodule Codebattle.Tournament.Base do
              )}
           end)
 
+        params.player_results
+        |> Map.keys()
+        |> Enum.each(fn player_id ->
+          player = Tournament.Players.get_player(tournament, player_id)
+
+          if player do
+            player = %{
+              player
+              | score: player.score + player_results[player_id].score,
+                lang: params.player_results[player_id].lang,
+                wins_count:
+                  player.wins_count +
+                    if(player_results[player_id].result == "won", do: 1, else: 0)
+            }
+
+            Tournament.Players.put_player(tournament, player)
+            Tournament.Ranking.update_player_result(tournament, player)
+          end
+        end)
+
         new_match = %{
           match
           | state: params.game_state,
@@ -288,23 +308,6 @@ defmodule Codebattle.Tournament.Base do
           tournament: tournament,
           match: new_match
         })
-
-        params.player_results
-        |> Map.keys()
-        |> Enum.each(fn player_id ->
-          player = Tournament.Players.get_player(tournament, player_id)
-
-          if player do
-            Tournament.Players.put_player(tournament, %{
-              player
-              | score: player.score + player_results[player_id].score,
-                lang: params.player_results[player_id].lang,
-                wins_count:
-                  player.wins_count +
-                    if(player_results[player_id].result == "won", do: 1, else: 0)
-            })
-          end
-        end)
 
         tournament
       end
@@ -445,7 +448,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_set_round_task_ids(tournament = %{current_round_position: 0}) do
-        update_struct(tournament, %{round_task_ids: get_round_task_ids(tournament)})
+        update_struct(tournament, %{round_task_ids: get_all_task_ids(tournament)})
       end
 
       defp maybe_set_round_task_ids(tournament), do: tournament

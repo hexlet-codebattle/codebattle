@@ -28,7 +28,7 @@ defmodule Codebattle.Tournament.TaskProvider do
     Tasks.get_task_ids(tournament, round)
   end
 
-  def get_round_task_ids(tournament) do
+  def get_all_task_ids(tournament) do
     Tasks.get_task_ids(tournament)
   end
 
