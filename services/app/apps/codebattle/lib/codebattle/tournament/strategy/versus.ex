@@ -30,6 +30,9 @@ defmodule Codebattle.Tournament.Versus do
   def calculate_round_results(tournament), do: tournament
 
   @impl Tournament.Base
+  def set_ranking(t), do: t
+
+  @impl Tournament.Base
   def build_round_pairs(tournament) do
     player_pairs =
       tournament

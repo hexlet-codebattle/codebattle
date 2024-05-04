@@ -75,6 +75,13 @@ defmodule Codebattle.Tournament.Arena do
   end
 
   @impl Tournament.Base
+  def set_ranking(tournament = %{ranking_type: "by_clan"}) do
+    Tournament.Ranking.set_ranking(tournament)
+  end
+
+  def set_ranking(t), do: t
+
+  @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
     players =
       tournament

@@ -33,6 +33,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
         "task_provider" => "task_pack_per_round",
         "score_strategy" => "win_loss",
         "task_strategy" => "sequential",
+        "ranking_type" => "by_clan",
         "type" => "arena",
         "state" => "waiting_participants",
         "use_clan" => "true",
@@ -164,10 +165,10 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
       payload: %{
         current_player: %{
           id: ^p1_id,
-          state: "active",
+          state: "matchmaking_active",
           task_ids: [^t1_id],
           score: 3,
-          wins_count: 3,
+          wins_count: 1,
           place: 0
         }
       }
@@ -190,7 +191,16 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     assert_received %Codebattle.PubSub.Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmacking_started",
-      payload: %{current_player: %{id: ^p2_id, score: 3}}
+      payload: %{
+        current_player: %{
+          id: ^p2_id,
+          state: "matchmaking_active",
+          task_ids: [^t1_id],
+          score: 3,
+          wins_count: 1,
+          place: 0
+        }
+      }
     }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
@@ -207,7 +217,14 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
-        current_player: %{id: ^p1_id, score: 3},
+        current_player: %{
+          id: ^p1_id,
+          state: "active",
+          task_ids: [^t2_id, ^t1_id],
+          score: 3,
+          wins_count: 1,
+          place: 0
+        },
         match: %{state: "playing"},
         players: [%{}, %{}]
       }
@@ -217,7 +234,14 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
-        current_player: %{id: ^p2_id, score: 3},
+        current_player: %{
+          id: ^p2_id,
+          state: "active",
+          task_ids: [^t2_id, ^t1_id],
+          score: 3,
+          wins_count: 1,
+          place: 0
+        },
         match: %{state: "playing"},
         players: [%{}, %{}]
       }
@@ -235,18 +259,6 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     :timer.sleep(100)
 
     assert_received %Codebattle.PubSub.Message{
-      topic: ^admin_topic,
-      event: "tournament:player:updated",
-      payload: %{player: %{id: ^p1_id, score: 6, state: "matchmaking_active"}}
-    }
-
-    assert_received %Codebattle.PubSub.Message{
-      topic: ^admin_topic,
-      event: "tournament:player:updated",
-      payload: %{player: %{id: _, score: 2, state: "matchmaking_active"}}
-    }
-
-    assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{state: "game_over"}, players: [%{}, %{}]}
@@ -255,7 +267,16 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmacking_started",
-      payload: %{current_player: %{id: _, score: 6, wins_count: 2, state: "matchmaking_active"}}
+      payload: %{
+        current_player: %{
+          id: ^p1_id,
+          state: "matchmaking_active",
+          task_ids: [^t2_id, ^t1_id],
+          score: 6,
+          wins_count: 2,
+          place: 0
+        }
+      }
     }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
@@ -272,7 +293,14 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
-        current_player: %{id: _, score: 6, wins_count: 2, state: "active"},
+        current_player: %{
+          id: ^p1_id,
+          state: "active",
+          task_ids: [^t3_id, ^t2_id, ^t1_id],
+          score: 6,
+          wins_count: 2,
+          place: 0
+        },
         match: %{state: "playing"},
         players: [%{}, %{}]
       }
@@ -291,7 +319,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
         current_player: %{
           id: ^p1_id,
           state: "finished_round",
-          task_ids: [_t1, _t2, _t3],
+          task_ids: [^t3_id, ^t2_id, ^t1_id],
           score: 9,
           wins_count: 3,
           place: 0
@@ -322,7 +350,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
         current_player: %{
           id: ^p1_id,
           state: "finished",
-          task_ids: [_t1, _t2, _t3],
+          task_ids: [^t3_id, ^t2_id, ^t1_id],
           score: 9,
           wins_count: 3,
           place: 0
@@ -337,7 +365,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
         current_player: %{
           id: ^p2_id,
           state: "finished",
-          task_ids: [_t1, _t2],
+          task_ids: [^t2_id, ^t1_id],
           score: 4,
           wins_count: 1,
           place: 0

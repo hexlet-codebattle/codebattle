@@ -85,13 +85,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             ) %>
             <%= error_tag(f, :task_strategy) %>
           </div>
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <%= label(f, :score_strategy) %>
-            <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
-              class: "custom-select"
-            ) %>
-            <%= error_tag(f, :score_strategy) %>
-          </div>
         </div>
         <div class="d-flex mt-3">
           <div class="form-check">
@@ -187,6 +180,16 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               ) %>
               <%= error_tag(f, :break_duration_seconds) %>
             </div>
+            <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
+              <%= label(f, :round_timeout_seconds) %>
+              <%= number_input(
+                f,
+                :round_timeout_seconds,
+                class: "form-control",
+                max: "10000"
+              ) %>
+              <%= error_tag(f, :break_duration_seconds) %>
+            </div>
             <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
               <%= label(f, :break_duration_seconds) %>
               <%= number_input(
@@ -197,6 +200,25 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
                 max: "1957"
               ) %>
               <%= error_tag(f, :break_duration_seconds) %>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-column flex-lg-row flex-xl-row mt-3">
+          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-md-3 mt-lg-0 mt-xl-0">
+            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
+              <%= label(f, :ranking_type) %>
+              <%= select(f, :ranking_type, Codebattle.Tournament.ranking_types(),
+                class: "custom-select",
+                value: f.params["ranking_type"] || f.data.ranking_type
+              ) %>
+              <%= error_tag(f, :ranking_type) %>
+            </div>
+            <div class="d-flex flex-column justify-content-between w-auto">
+              <%= label(f, :score_strategy) %>
+              <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
+                class: "custom-select"
+              ) %>
+              <%= error_tag(f, :score_strategy) %>
             </div>
           </div>
         </div>

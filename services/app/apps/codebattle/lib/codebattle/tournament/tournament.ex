@@ -55,6 +55,7 @@ defmodule Codebattle.Tournament do
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
+  @ranking_types ~w(by_player by_clan by_player_95th_percentile)
   @types ~w(individual team swiss arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
@@ -77,25 +78,26 @@ defmodule Codebattle.Tournament do
     field(:last_round_started_at, :naive_datetime)
     field(:level, :string, default: "easy")
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
-    field(:round_timeout_seconds, :integer)
     field(:matches, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
+    field(:ranking_type, :string, default: "by_player")
+    field(:round_timeout_seconds, :integer)
     field(:score_strategy, :string, default: "time_and_tests")
     field(:show_results, :boolean, default: true)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
     field(:stats, AtomizedMap, default: %{})
+    field(:task_pack_name, :string)
     field(:task_provider, :string, default: "level")
     field(:task_strategy, :string, default: "random_per_game")
     field(:type, :string, default: "individual")
-    field(:task_pack_name, :string)
     field(:use_chat, :boolean, default: true)
     field(:use_clan, :boolean, default: false)
-    field(:use_timer, :boolean, default: true)
     field(:use_infinite_break, :boolean, default: false)
+    field(:use_timer, :boolean, default: true)
     field(:winner_ids, {:array, :integer})
 
     field(:is_live, :boolean, virtual: true, default: false)
@@ -109,7 +111,7 @@ defmodule Codebattle.Tournament do
     field(:top_player_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
     field(:waiting_room_name, :string, virtual: true)
-    field(:live_stats, :map, virtual: true, default: %{})
+    field(:ranking, {:array, :map}, virtual: true, default: [])
 
     timestamps()
   end
@@ -125,6 +127,7 @@ defmodule Codebattle.Tournament do
       :current_round_position,
       :default_language,
       :description,
+      :event_id,
       :last_round_ended_at,
       :last_round_started_at,
       :level,
@@ -136,22 +139,22 @@ defmodule Codebattle.Tournament do
       :players,
       :players_count,
       :players_limit,
+      :ranking_type,
       :round_timeout_seconds,
       :score_strategy,
+      :show_results,
       :starts_at,
       :state,
       :task_pack_name,
+      :task_pack_name,
       :task_provider,
       :task_strategy,
-      :task_pack_name,
       :type,
       :use_chat,
       :use_clan,
-      :use_timer,
       :use_infinite_break,
-      :show_results,
-      :waiting_room_name,
-      :event_id
+      :use_timer,
+      :waiting_room_name
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
@@ -160,6 +163,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
+    |> validate_inclusion(:ranking_type, @ranking_types)
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
@@ -188,5 +192,6 @@ defmodule Codebattle.Tournament do
   def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
+  def ranking_types, do: @ranking_types
   def types, do: @types
 end

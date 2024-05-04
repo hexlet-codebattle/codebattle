@@ -11,6 +11,7 @@ defmodule Codebattle.Tournament.Base do
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
+  @callback set_ranking(Tournament.t()) :: Tournament.t()
   @callback maybe_create_rematch(Tournament.t(), map()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
   @callback finish_round_after_match?(Tournament.t()) :: boolean()
@@ -224,6 +225,7 @@ defmodule Codebattle.Tournament.Base do
             state: "active"
           })
           |> maybe_init_waiting_room(params)
+          |> set_ranking()
           |> broadcast_tournament_started()
           |> start_round()
         else
@@ -330,7 +332,7 @@ defmodule Codebattle.Tournament.Base do
 
       def maybe_finish_round_after_finish_match(tournament) do
         if finish_round_after_match?(tournament) do
-          do_finish_round_and_next_step(tournament)
+          finish_round_and_next_step(tournament)
         else
           tournament
         end
@@ -339,10 +341,13 @@ defmodule Codebattle.Tournament.Base do
       def finish_round(tournament) do
         WaitingRoom.pause(tournament.waiting_room_name)
         finish_all_playing_matches(tournament)
-        do_finish_round_and_next_step(tournament)
+
+        tournament
+        |> set_ranking()
+        |> finish_round_and_next_step()
       end
 
-      def do_finish_round_and_next_step(tournament) do
+      def finish_round_and_next_step(tournament) do
         tournament
         |> update_struct(%{
           last_round_ended_at: NaiveDateTime.utc_now(:second),
@@ -647,9 +652,11 @@ defmodule Codebattle.Tournament.Base do
           # |> db_save!()
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
+          |> then(fn tournament ->
+            Process.send_after(self(), :terminate, :timer.minutes(15))
 
-          # TODO: implement tournament termination in 15 mins
-          # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
+            tournament
+          end)
         else
           tournament
         end
@@ -676,7 +683,9 @@ defmodule Codebattle.Tournament.Base do
 
       defp update_players_state_after_round_finished(tournament) do
         tournament
+        |> dbg()
         |> get_players()
+        |> dbg()
         |> Enum.each(fn player ->
           if player.state not in ["banned", "matchmaking_paused", "finished_round"] do
             %{player | state: "finished_round"}

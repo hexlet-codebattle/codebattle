@@ -3,11 +3,11 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
 
   @page_size 10
 
-  def get_first_clans(tournament, num \\ @page_size) do
+  def get_first(tournament, num \\ @page_size) do
     Enum.take(tournament.ranking, num)
   end
 
-  def get_near_clans(tournament, clan_id) do
+  def get_closest_page(tournament, clan_id) do
     tournament.ranking
     |> Enum.find_index(clan_id)
     |> div(@page_size)
@@ -27,7 +27,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     }
   end
 
-  def set_all(tournament) do
+  def set_ranking(tournament) do
     tournament
     |> Helpers.get_players()
     |> Enum.group_by(& &1.clan_id)
@@ -67,14 +67,14 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> set_places(tournament)
   end
 
-  def set_places(ranking, tournament) do
+  defp set_places(ranking, tournament) do
     ranking
     |> Enum.group_by(& &1.score)
     |> Map.to_list()
     |> Enum.sort_by(&elem(&1, 0), &>=/2)
     |> Enum.with_index(1)
-    |> Enum.flat_map(fn {clans, index} ->
-      Enum.map(clans, fn ranking -> Map.put(ranking, :place, index) end)
+    |> Enum.flat_map(fn {{_score, clans}, place_index} ->
+      Enum.map(clans, fn ranking -> Map.put(ranking, :place, place_index) end)
     end)
     |> then(&Map.put(tournament, :ranking, &1))
   end

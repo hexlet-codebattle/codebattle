@@ -10,18 +10,34 @@ defmodule Codebattle.Tournament.TaskProvider do
     level |> Codebattle.Task.get_tasks_by_level() |> Enum.shuffle()
   end
 
-  def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name}) do
+  def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name})
+      when not is_nil(tp_name) do
     TaskPack.get_tasks_by_pack_name(tp_name)
   end
 
-  def get_all_tasks(%{task_provider: "task_pack_per_round", task_pack_name: tp_name}) do
+  def get_all_tasks(%{task_provider: "task_pack_per_round", task_pack_name: tp_name})
+      when not is_nil(tp_name) do
     tp_name
-    |> String.trim()
-    |> String.split(",", trim: true)
-    |> Enum.map(&String.trim/1)
+    |> get_task_pack_names()
     |> Enum.map(&TaskPack.get_tasks_by_pack_name/1)
     |> Enum.with_index(&{&2, &1})
     |> Map.new()
+  end
+
+  def get_round_task_ids(
+        %{
+          task_provider: "task_pack_per_round",
+          task_strategy: "sequential",
+          task_pack_name: tp_name
+        },
+        round
+      )
+      when not is_nil(tp_name) do
+    tp_name
+    |> get_task_pack_names()
+    |> Enum.map(&TaskPack.get_by!(name: &1))
+    |> Enum.at(round)
+    |> Map.get(:task_ids)
   end
 
   def get_round_task_ids(tournament, round) do
@@ -94,4 +110,11 @@ defmodule Codebattle.Tournament.TaskProvider do
   defp safe_random(nil), do: nil
   defp safe_random([]), do: nil
   defp safe_random(list), do: Enum.random(list)
+
+  defp get_task_pack_names(tp_name) do
+    tp_name
+    |> String.trim()
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
+  end
 end

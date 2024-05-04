@@ -269,6 +269,16 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               <%= error_tag(f, :rounds_limit) %>
             </div>
           </div>
+          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
+            <div class="d-flex flex-column justify-content-between w-auto">
+              <%= label(f, :ranking_type) %>
+              <%= select(f, :ranking_type, Codebattle.Tournament.ranking_types(),
+                class: "custom-select",
+                value: f.params["ranking_type"] || f.data.ranking_type
+              ) %>
+              <%= error_tag(f, :ranking_type) %>
+            </div>
+          </div>
         <% end %>
         <%= if f.params["type"] in ["arena"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">

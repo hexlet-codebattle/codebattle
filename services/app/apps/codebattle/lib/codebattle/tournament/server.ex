@@ -210,6 +210,10 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def handle_info(:terminate, %{tournament: tournament}) do
+    Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+  end
+
   def handle_info(
         %{
           topic: "waiting_room:" <> _wr_name,
