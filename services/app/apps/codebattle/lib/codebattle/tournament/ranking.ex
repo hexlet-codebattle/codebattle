@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.Ranking do
   alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByPlayer
   alias Codebattle.Tournament.Ranking.ByPlayer95thPercentile
+  alias Codebattle.Tournament.Storage.Ranking
 
   def get_first(tournament, num) do
     get_module(tournament).get_first(tournament, num)
@@ -25,6 +26,10 @@ defmodule Codebattle.Tournament.Ranking do
 
   def add_new_player(tournament, player) do
     get_module(tournament).add_new_player(tournament, player)
+  end
+
+  def create_table(tournament_id) do
+    Ranking.create_table(tournament_id)
   end
 
   def get_module(%{ranking_type: "by_clan"}), do: ByClan

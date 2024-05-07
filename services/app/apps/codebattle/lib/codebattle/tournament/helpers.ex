@@ -333,6 +333,7 @@ defmodule Codebattle.Tournament.Helpers do
       :__struct__,
       :__meta__,
       :players_table,
+      :ranking_table,
       :matches_table,
       :played_pair_ids,
       :tasks_table,
@@ -342,6 +343,6 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def tournament_info(tournament) do
-    Map.take(tournament, [:id, :players_table, :matches_table, :tasks_table])
+    Map.take(tournament, [:id, :players_table, :ranking_table, :matches_table, :tasks_table])
   end
 end

@@ -19,7 +19,13 @@ defmodule CodebattleWeb.TournamentChannel do
       {:ok, get_tournament_join_payload(tournament, current_user),
        assign(socket,
          tournament_info:
-           Map.take(tournament, [:id, :players_table, :matches_table, :tasks_table])
+           Map.take(tournament, [
+             :id,
+             :players_table,
+             :ranking_table,
+             :matches_table,
+             :tasks_table
+           ])
        )}
     else
       _ ->
@@ -154,6 +160,7 @@ defmodule CodebattleWeb.TournamentChannel do
           :players,
           :matches,
           :players_table,
+          :ranking_table,
           :matches_table,
           :tasks_table,
           :round_tasks,

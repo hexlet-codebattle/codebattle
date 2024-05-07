@@ -1,21 +1,25 @@
 defmodule Codebattle.Tournament.Ranking.ByClan do
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.Storage.Ranking
 
   @page_size 10
 
   def get_first(tournament, num \\ @page_size) do
-    Enum.take(tournament.ranking, num)
+    Ranking.get_first(tournament, num)
   end
 
   def get_closest_page(tournament, clan_id) do
-    tournament.ranking
-    |> Enum.find_index(clan_id)
-    |> div(@page_size)
+    tournament
+    |> Ranking.get_by_id(clan_id)
+    |> case do
+      nil -> 0
+      %{place: place} -> div(place, @page_size)
+    end
     |> then(&get_clans_by_page(tournament, &1))
   end
 
   def get_clans_by_page(tournament, page) do
-    total_entries = Enum.count(tournament.ranking)
+    total_entries = Ranking.count(tournament)
 
     page = min(page, div(total_entries, @page_size))
 
@@ -23,7 +27,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
       total_entries: total_entries,
       page_number: page,
       page_size: @page_size,
-      entries: Enum.slice(tournament.ranking, page * @page_size, (page + 1) * @page_size - 1)
+      entries: Ranking.get_slice(tournament, page * @page_size, (page + 1) * @page_size - 1)
     }
   end
 
@@ -33,16 +37,18 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> Enum.group_by(& &1.clan_id)
     |> Enum.map(fn {clan_id, players} ->
       score = players |> Enum.map(& &1.score) |> Enum.sum()
-      %{clan_id: clan_id, score: score, place: 0, players_count: Enum.count(players)}
+      %{id: clan_id, score: score, place: 0, players_count: Enum.count(players)}
     end)
     |> set_places(tournament)
   end
 
   def update_player_result(tournament, player) do
-    index = Enum.find_index(tournament.ranking, &(&1.clan_id == player.clan_id))
+    ranking = Ranking.get_all(tournament)
 
-    List.update_at(
-      tournament.ranking,
+    index = Enum.find_index(ranking, &(&1.id == player.clan_id))
+
+    ranking
+    |> List.update_at(
       index,
       &%{&1 | score: &1.score + player.score}
     )
@@ -50,16 +56,20 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
   end
 
   def add_new_player(tournament, player) do
-    case Enum.find_index(tournament.ranking, player.clan_id) do
+    ranking = Ranking.get_all(tournament)
+
+    ranking
+    |> Enum.find_index(&(&1.id == player.clan_id))
+    |> case do
       nil ->
         [
-          %{clan_id: player.clan_id, score: 0, place: 0, players_count: 1}
-          | tournament.ranking
+          %{id: player.clan_id, score: 0, place: 0, players_count: 1}
+          | ranking
         ]
 
       index ->
         List.update_at(
-          tournament.ranking,
+          ranking,
           index,
           &%{&1 | players_count: &1.players_count + 1}
         )
@@ -69,13 +79,13 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
 
   defp set_places(ranking, tournament) do
     ranking
-    |> Enum.group_by(& &1.score)
-    |> Map.to_list()
-    |> Enum.sort_by(&elem(&1, 0), &>=/2)
+    |> Enum.sort_by(& &1[:score], :desc)
     |> Enum.with_index(1)
-    |> Enum.flat_map(fn {{_score, clans}, place_index} ->
-      Enum.map(clans, fn ranking -> Map.put(ranking, :place, place_index) end)
+    |> Enum.map(fn {clan_rank, place_index} ->
+      Map.put(clan_rank, :place, place_index)
     end)
-    |> then(&Map.put(tournament, :ranking, &1))
+    |> then(&Ranking.put_ranking(tournament, &1))
+
+    tournament
   end
 end
