@@ -39,13 +39,15 @@ defmodule CodebattleWeb.GameChannel do
           end
 
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
+        current_player = Tournament.Helpers.get_player(tournament, user_id)
 
         {:ok,
          %{
            game: GameView.render_game(game, score),
-           current_player: Tournament.Helpers.get_player(tournament, user_id),
+           current_player: current_player,
            tournament: %{
              tournament_id: game.tournament_id,
+             ranking: Tournament.Ranking.get_nearest_page_by_player(tournament, current_player),
              state: tournament.state,
              type: tournament.type,
              meta: tournament.meta,

@@ -16,7 +16,9 @@ defmodule CodebattleWeb.TournamentChannel do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
-      {:ok, get_tournament_join_payload(tournament, current_user),
+      current_player = Helpers.get_player(tournament, current_user.id)
+
+      {:ok, get_tournament_join_payload(tournament, current_player),
        assign(socket,
          tournament_info:
            Map.take(tournament, [
@@ -227,15 +229,23 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  defp get_tournament_join_payload(tournament, current_user) do
-    current_player = Helpers.get_player(tournament, current_user.id)
+  defp get_tournament_join_payload(tournament, nil) do
+    %{
+      matches: [],
+      players: [],
+      ranking: Tournament.Ranking.get_page(tournament, 1),
+      current_player: nil,
+      tournament: Helpers.prepare_to_json(tournament)
+    }
+  end
 
+  defp get_tournament_join_payload(tournament, current_player) do
     player_data =
       if tournament.players_count > 128 do
         player_matches = Helpers.get_matches_by_players(tournament, [current_player.id])
 
         opponents =
-          Helpers.get_player_opponents_from_matches(tournament, player_matches, current_user.id)
+          Helpers.get_player_opponents_from_matches(tournament, player_matches, current_player.id)
 
         %{
           players: [current_player | opponents],
@@ -249,6 +259,7 @@ defmodule CodebattleWeb.TournamentChannel do
       end
 
     Map.merge(player_data, %{
+      ranking: Tournament.Ranking.get_nearest_page_by_player(tournament, current_player),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
     })

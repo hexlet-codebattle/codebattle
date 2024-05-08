@@ -291,7 +291,12 @@ defmodule Codebattle.Tournament.Base do
             }
 
             Tournament.Players.put_player(tournament, player)
-            Tournament.Ranking.update_player_result(tournament, player)
+
+            Tournament.Ranking.update_player_result(
+              tournament,
+              player,
+              player_results[player_id].score
+            )
           end
         end)
 

@@ -17,9 +17,9 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     |> then(&:ets.insert(tournament.ranking_table, &1))
   end
 
-  def get_first(tournament, num) do
+  def get_first(tournament, limit) do
     :ets.select(tournament.ranking_table, [
-      {{:"$1", :_, :"$3"}, [{:>=, :"$1", 1}, {:"=<", :"$1", num}], [:"$3"]}
+      {{:"$1", :_, :"$3"}, [{:>=, :"$1", 1}, {:"=<", :"$1", limit}], [:"$3"]}
     ])
   end
 

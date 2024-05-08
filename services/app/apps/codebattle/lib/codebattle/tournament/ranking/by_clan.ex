@@ -4,30 +4,35 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
 
   @page_size 10
 
-  def get_first(tournament, num \\ @page_size) do
-    Ranking.get_first(tournament, num)
+  def get_first(tournament, limit \\ @page_size) do
+    Ranking.get_first(tournament, limit)
   end
 
-  def get_closest_page(tournament, clan_id) do
+  def get_nearest_page_by_player(tournament, nil) do
+    get_page(tournament, 1)
+  end
+
+  def get_nearest_page_by_player(tournament, player) do
     tournament
-    |> Ranking.get_by_id(clan_id)
+    |> Ranking.get_by_id(player.clan_id)
     |> case do
       nil -> 0
       %{place: place} -> div(place, @page_size)
     end
-    |> then(&get_clans_by_page(tournament, &1))
+    |> then(&get_page(tournament, &1))
   end
 
-  def get_clans_by_page(tournament, page) do
+  def get_page(tournament, page) do
     total_entries = Ranking.count(tournament)
 
-    page = min(page, div(total_entries, @page_size))
+    start_index = (page - 1) * @page_size + 1
+    end_index = start_index + @page_size - 1
 
     %{
       total_entries: total_entries,
       page_number: page,
       page_size: @page_size,
-      entries: Ranking.get_slice(tournament, page * @page_size, (page + 1) * @page_size - 1)
+      entries: Ranking.get_slice(tournament, start_index, end_index)
     }
   end
 
@@ -42,7 +47,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> set_places(tournament)
   end
 
-  def update_player_result(tournament, player) do
+  def update_player_result(tournament, player, score) do
     ranking = Ranking.get_all(tournament)
 
     index = Enum.find_index(ranking, &(&1.id == player.clan_id))
@@ -50,7 +55,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     ranking
     |> List.update_at(
       index,
-      &%{&1 | score: &1.score + player.score}
+      &%{&1 | score: &1.score + score}
     )
     |> set_places(tournament)
   end

@@ -147,8 +147,32 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     assert players_count(tournament) == 8
     assert Enum.count(matches) == 4
 
+    assert %{
+             entries: [
+               %{score: 0, place: 1},
+               %{score: 0, place: 2},
+               %{score: 0, place: 3},
+               %{score: 0, place: 4},
+               %{score: 0, place: 5},
+               %{score: 0, place: 6},
+               %{score: 0, place: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
+
     send_user_win_match(tournament, user1)
     :timer.sleep(100)
+
+    assert %{
+             entries: [
+               %{score: 3, place: 1, id: 1, players_count: 2},
+               %{score: 1, place: 2, players_count: 1},
+               %{score: 0, place: 3},
+               %{score: 0, place: 4},
+               %{score: 0, place: 5},
+               %{score: 0, place: 6},
+               %{score: 0, place: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -178,6 +202,18 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
 
     send_user_win_match(tournament, user2)
     :timer.sleep(100)
+
+    assert %{
+             entries: [
+               %{score: 6, place: 1, id: 1, players_count: 2},
+               %{score: 1, place: 2, players_count: 1},
+               %{score: 1, place: 3, players_count: 1},
+               %{score: 0, place: 4},
+               %{score: 0, place: 5},
+               %{score: 0, place: 6},
+               %{score: 0, place: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player2_topic,
@@ -258,6 +294,18 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     send_user_win_match(tournament, user1)
     :timer.sleep(100)
 
+    assert %{
+             entries: [
+               %{score: 9, place: 1, id: 1, players_count: 2},
+               %{score: 2, place: 2, players_count: 1},
+               %{score: 1, place: 3, players_count: 1},
+               %{score: 0, place: 4},
+               %{score: 0, place: 5},
+               %{score: 0, place: 6},
+               %{score: 0, place: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
+
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
@@ -311,6 +359,18 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
     assert Enum.empty?(players)
     send_user_win_match(tournament, user1)
     :timer.sleep(200)
+
+    assert %{
+             entries: [
+               %{score: 12, place: 1, id: 1, players_count: 2},
+               %{score: 3, place: 2, players_count: 1},
+               %{score: 1, place: 3, players_count: 1},
+               %{score: 0, place: 4},
+               %{score: 0, place: 5},
+               %{score: 0, place: 6},
+               %{score: 0, place: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -448,11 +508,38 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
+    assert %{
+             entries: [
+               %{id: 1, place: 1, players_count: 2, score: 13},
+               %{place: 2, players_count: 1},
+               %{place: 3, players_count: 1},
+               %{place: 4, players_count: 1},
+               %{place: 5, players_count: 1},
+               %{place: 6, players_count: 1},
+               %{place: 7, players_count: 1}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
+
     tournament = Tournament.Context.get(tournament.id)
 
     assert tournament.current_round_position == 0
     matches = get_matches(tournament)
 
     assert Enum.count(matches) == 7
+
+    assert %{
+             entries: [
+               %{id: 1, place: 1, players_count: 2, score: 13},
+               %{place: 2, players_count: 1},
+               %{place: 3, players_count: 1},
+               %{place: 4, players_count: 1},
+               %{place: 5, players_count: 1},
+               %{place: 6, players_count: 1},
+               %{place: 7, players_count: 1}
+             ],
+             page_number: 1,
+             page_size: 10,
+             total_entries: 7
+           } = Tournament.Ranking.get_page(tournament, 1)
   end
 end
