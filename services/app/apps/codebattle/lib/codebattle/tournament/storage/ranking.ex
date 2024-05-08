@@ -28,7 +28,13 @@ defmodule Codebattle.Tournament.Storage.Ranking do
   end
 
   def get_by_id(tournament, id) do
-    :ets.lookup_element(tournament.ranking_table, id, 2)
+    case :ets.select(tournament.ranking_table, [{{:_, :"$2", :"$3"}, [{:==, :"$2", id}], [:"$3"]}]) do
+      [ranking_entity] -> ranking_entity
+      [] -> nil
+    end
+  rescue
+    _e ->
+      nil
   end
 
   def count(tournament) do

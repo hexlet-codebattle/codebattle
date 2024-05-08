@@ -16,6 +16,7 @@ defmodule CodebattleWeb.TournamentChannel do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
+
       current_player = Helpers.get_player(tournament, current_user.id)
 
       {:ok, get_tournament_join_payload(tournament, current_player),

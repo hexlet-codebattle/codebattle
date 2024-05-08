@@ -247,6 +247,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   defp get_tournament_join_payload(tournament) do
     %{
       tournament: Helpers.prepare_to_json(tournament),
+      ranking: Tournament.Ranking.get_page(tournament, 1),
       players: Helpers.get_players(tournament),
       matches: Helpers.get_matches(tournament)
     }

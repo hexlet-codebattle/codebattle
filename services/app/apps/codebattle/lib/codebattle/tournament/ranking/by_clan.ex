@@ -17,7 +17,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> Ranking.get_by_id(player.clan_id)
     |> case do
       nil -> 0
-      %{place: place} -> div(place, @page_size)
+      %{place: place} -> (div(place, @page_size) + 1)
     end
     |> then(&get_page(tournament, &1))
   end

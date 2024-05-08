@@ -6,17 +6,25 @@ defmodule Codebattle.Tournament.Ranking do
   alias Codebattle.Tournament.Storage.Ranking
 
   @spec get_first(tournament :: Tournament.t(), limit :: pos_integer()) :: list(map())
+  def get_first(%{ranking_table: nil}, _num), do: []
+
   def get_first(tournament, num) do
     get_module(tournament).get_first(tournament, num)
   end
 
   @spec get_nearest_page_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
           map()
+  def get_nearest_page_by_player(%{ranking_table: nil}, _player),
+    do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+
   def get_nearest_page_by_player(tournament, player) do
     get_module(tournament).get_nearest_page_by_player(tournament, player)
   end
 
   @spec get_page(tournament :: Tournament.t(), page :: pos_integer()) :: map()
+  def get_page(%{ranking_table: nil}, _page),
+    do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+
   def get_page(tournament, page) do
     get_module(tournament).get_page(tournament, page)
   end
