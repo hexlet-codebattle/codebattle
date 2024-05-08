@@ -40,14 +40,16 @@ defmodule Codebattle.Clan do
 
   @spec find_or_create_by_clan(String.t(), pos_integer()) :: {:ok, t()} | {:error, term()}
   def find_or_create_by_clan(name, user_id) do
-    name
-    |> String.trim()
-    |> String.replace(~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
-    |> then(fn name ->
+    name = String.replace(name, ~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")
+    trimmed_name = String.trim(name)
+
+    {name, trimmed_name}
+    |> then(fn {name, trimmed_name} ->
       __MODULE__
       |> where(
         [c],
-        c.name == ^name or c.long_name == ^name
+        c.name == ^name or c.long_name == ^name or c.name == ^trimmed_name or
+          c.long_name == ^trimmed_name
       )
       |> limit(1)
       |> Repo.one()
