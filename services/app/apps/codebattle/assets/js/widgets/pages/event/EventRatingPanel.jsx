@@ -182,13 +182,13 @@ const EventRatingPanel = ({
                         </td>
                       )}
                       <td title={item.clanName} className={tableDataCellClassName}>
-                        <div className="cb-custom-event-name">
+                        <div className="cb-custom-event-name" style={{ maxWidth: 220 }}>
                           {item.clanName}
                         </div>
                       </td>
                       {item.userName && (
                         <td title={item.userName} className={tableDataCellClassName}>
-                          <div className="cb-custom-event-name">
+                          <div className="cb-custom-event-name" style={{ maxWidth: 220 }}>
                             {item.userName}
                           </div>
                         </td>

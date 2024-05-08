@@ -76,11 +76,11 @@ function ChatWidget() {
       inputRef={inputRef}
       request={menuRequest}
     >
-      <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 rounded-lg">
+      <div className="d-flex flex-wrap flex-sm-nowrap bg-white shadow-sm h-100 rounded-lg">
         <div
           className={cn(
-            'd-flex flex-column flex-grow-1 position-relative bg-white p-0 mh-100 rounded-left',
-            'game-chat-container cb-messages-container',
+            'd-flex flex-column flex-grow-1 position-relative p-0 mh-100 rounded-left',
+            'cb-game-chat-container cb-messages-container',
           )}
         >
           <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
@@ -99,7 +99,7 @@ function ChatWidget() {
           )}
           {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
         </div>
-        <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
+        <div className="flex-shrink-1 p-0 border-left rounded-right cb-game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />

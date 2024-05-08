@@ -46,6 +46,7 @@ defmodule CodebattleWeb.GameChannel do
            game: GameView.render_game(game, score),
            current_player: current_player,
            tournament: %{
+             event_id: tournament.event_id,
              tournament_id: game.tournament_id,
              ranking: Tournament.Ranking.get_nearest_page_by_player(tournament, current_player),
              state: tournament.state,

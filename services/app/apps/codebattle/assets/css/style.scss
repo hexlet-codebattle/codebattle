@@ -365,11 +365,13 @@ a {
 }
 
 .cb-check-result-bar {
-  width: 144px;
-  height: 9px;
+  width: 72px;
+  height: 4px;
   background: white;
   position: relative;
-  border-radius: 10px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  clip-path: polygon(0 0, 92% 0, 100% 100%, 0% 100%);
 
   @media (max-width: $sm) {
     & {
@@ -380,7 +382,8 @@ a {
   &>.cb-asserts-progress {
     position: absolute;
     height: 100%;
-    border-radius: 10px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
     background: #809b88;
   }
 
@@ -761,7 +764,7 @@ main {
   flex-grow: 1;
 }
 
-.game-control-container {
+.cb-game-control-container {
   width: 250px;
   min-width: 250px;
 }
@@ -806,7 +809,7 @@ main {
     font-size: 16px;
   }
 
-  .game-control-container {
+  .cb-game-control-container {
     width: 100%;
   }
 
@@ -827,7 +830,7 @@ main {
   @include button-outline-variant($orange);
 }
 
-.game-chat-container {
+.cb-game-chat-container {
   min-width: 250px;
 }
 
@@ -975,6 +978,11 @@ a:hover {
   height: 4px;
 }
 
+.cb-custom-event-dots-space-tr {
+  height: 4px;
+  border-top: dashed #D9D9D5;
+}
+
 .cb-custom-event-tr.selected {
   color: #ec9d7c !important;
 }
@@ -988,7 +996,6 @@ a:hover {
 }
 
 .cb-custom-event-name {
-  max-width: 220px;
   /* Adjust according to your needs */
   white-space: nowrap;
   /* Prevent text from wrapping */
@@ -1127,6 +1134,34 @@ a:hover {
 .cb-ticker-line-tail {
   animation: ticker_2 70s linear infinite;
   animation-delay: -35s;
+}
+
+.cb-custom-event-btn-outline-success {
+  color: #23BD6A;
+  border-color: #23BD6A;
+}
+
+.cb-custom-event-btn-outline-success:hover:not(:disabled) {
+  color: #ffffff;
+  background-color: #23BD6A;
+  border-color: #23BD6A;
+}
+
+.cb-custom-event-btn-outline-warning {
+  color: #FF621E;
+  border-color: #FF621E;
+}
+
+.cb-custom-event-btn-outline-warning:hover:not(:disabled) {
+  color: #ffffff;
+  background-color: #FF621E;
+  border-color: #FF621E;
+}
+
+.cb-custom-event-btn-outline-success:disabled,
+.cb-custom-event-btn-outline-warning:disabled {
+  color: #C3C2BC;
+  border-color: #C3C2BC;
 }
 
 .cb-scrollable-menu-dropdown-chat { max-height: 400px }

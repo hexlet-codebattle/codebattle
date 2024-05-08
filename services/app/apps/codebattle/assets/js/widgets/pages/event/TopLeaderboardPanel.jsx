@@ -52,7 +52,7 @@ const TopLeaderboardPanel = ({
                   {item.playersCount}
                 </td>
                 <td title={item.clanName} className={tableDataCellClassName}>
-                  <div className="cb-custom-event-name">
+                  <div className="cb-custom-event-name" style={{ maxWidth: 220 }}>
                     {item.clanName}
                   </div>
                 </td>

@@ -254,6 +254,9 @@ msgstr "Исходный Код"
 msgid "Task: "
 msgstr "Задача: "
 
+msgid "Task"
+msgstr "Зaдача"
+
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
 
@@ -346,7 +349,7 @@ msgid "Try again"
 msgstr "Начать заново"
 
 msgid "Back to Home"
-msgstr "Вернуться на главную"
+msgstr "На главную"
 
 msgid "Open History"
 msgstr "Смотреть историю"
@@ -445,3 +448,24 @@ msgstr "Oткрыть"
 
 msgid "Close"
 msgstr "Закрыть"
+
+msgid "Teams"
+msgstr "Команды"
+
+msgid "Search opponent"
+msgstr "Поиск соперника"
+
+msgid "Stop searching"
+msgstr "Приостановить"
+
+msgid "arena_task_stats"
+msgid_plural "%{count} tasks left"
+msgstr[0] "Осталась %{count} задача"
+msgstr[1] "Осталось %{count} задачи"
+msgstr[2] "Осталось %{count} задач"
+
+msgid "Searching opponent"
+msgstr "Поиск соперника"
+
+msgid "Congrats! All tasks is solved"
+msgstr "Задачи закончились, поздравляем!"

@@ -109,8 +109,6 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
   const activePresentationMode = searchParams.has('presentation');
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-  const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 

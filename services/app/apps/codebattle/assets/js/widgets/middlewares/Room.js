@@ -154,6 +154,7 @@ const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) =>
         waitingRoomName,
         award,
       },
+      tournament,
       currentPlayer,
     } = response;
 
@@ -161,10 +162,20 @@ const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) =>
 
     gameRoomMachine.send('LOAD_GAME', { payload: gameStatus });
 
-    if (waitingRoomName) {
+    if (waitingRoomName && currentPlayer) {
       waitingRoomMachine.send('LOAD_WAITING_ROOM', { payload: { currentPlayer } });
-    } else {
-      waitingRoomMachine.send('REJECT_LOADING', {});
+      dispatch(actions.setActiveTournamentPlayer(currentPlayer));
+    }
+
+    if (tournament?.eventId) {
+      dispatch(actions.fetchCommonLeaderboard({
+        type: 'clan',
+        userId: currentPlayer?.userId,
+        clanId: currentPlayer?.clanId,
+        eventId: tournament.eventId,
+        pageNumber: 1,
+        paseSize: 3,
+      }));
     }
 
     updateStore(dispatch)({
@@ -996,11 +1007,11 @@ export const checkGameSolution = () => (dispatch, getState) => {
   channel.push(channelMethods.checkResult, payload);
 };
 
-export const pauseWaitingRoomMatchmaking = () => {
+export const pauseWaitingRoomMatchmaking = () => () => {
   channel.push('waiting_room:player:matchmaking_pause', {}).receive('error', error => console.error(error));
 };
 
-export const startWaitingRoomMatchmaking = () => {
+export const startWaitingRoomMatchmaking = () => () => {
   channel.push('waiting_room:player:matchmaking_start', {}).receive('error', error => console.error(error));
 };
 

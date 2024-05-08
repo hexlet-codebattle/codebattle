@@ -312,6 +312,7 @@ const defaultTournamentPlayerParams = {
   tournamentId,
   playerId,
   gameId: null,
+  user: null,
   channel: { online: false },
 };
 
@@ -322,6 +323,10 @@ const defaultTournamentPlayerParams = {
 // ******************************
 
 /**
+ * @typedef {{
+ *  online: boolean,
+ * }} ChannelState
+ *
  * @typedef {{
  *  avatarUrl: string,
  *  checkResult: Object,
@@ -419,6 +424,7 @@ const defaultTournamentPlayerParams = {
  *   showBots: boolean,
  *   showResults: boolean,
  *   waitingRoomName: string,
+ *   channel: ChannelState,
  * }} TournamentState
  *
  * @typedef {{
@@ -439,11 +445,19 @@ const defaultTournamentPlayerParams = {
     startsAt: string,
  * }} EventState
  *
+ * @typedef {{
+ *   gameId: {?number},
+ *   playerId: {?number},
+ *   tournamentId: {?number},
+ *   user: {?Player},
+ *   channel: ChannelState,
+ * }} TournamentPlayerState
+ *
  * @const {{
  *   game: GameState,
  *   event: EventState,
  *   tournament: TournamentState,
- *   tournamentPlayer: Object,
+ *   tournamentPlayer: TournamentPlayerState,
  *   editor: Object,
  *   executionOutput: Object,
  *   builder: Object,

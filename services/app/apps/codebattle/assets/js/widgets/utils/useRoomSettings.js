@@ -20,7 +20,7 @@ const useRoomSettings = (pageName, roomMachineState) => {
   const locked = useSelector(selectors.gameLockedSelector);
   const visible = useSelector(selectors.gameVisibleSelector);
 
-  const inWaitingRoom = machineSelectors.inWaitingRoomSelector(roomMachineState);
+  const inWaitingRoom = machineSelectors.inWaitingOpponentStateSelector(roomMachineState);
   const inBuilderRoom = machineSelectors.inBuilderRoomSelector(roomMachineState);
   const inPreviewRoom = machineSelectors.inPreviewRoomSelector(roomMachineState);
   const replayerIsOpen = machineSelectors.openedReplayerSelector(roomMachineState);

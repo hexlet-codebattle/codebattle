@@ -35,8 +35,9 @@ const initTournamentChannel = waitingRoomMachine => dispatch => {
       playersPageSize: 20,
     }));
 
-    if (response.tournament.waitingRoomName) {
+    if (response.tournament.waitingRoomName && response.currentPlayer) {
       waitingRoomMachine.send('LOAD_WAITING_ROOM', { payload: { currentPlayer: response.currentPlayer } });
+      dispatch(actions.setActiveTournamentPlayer(response.currentPlayer));
     } else {
       waitingRoomMachine.send('REJECT_LOADING', {});
     }

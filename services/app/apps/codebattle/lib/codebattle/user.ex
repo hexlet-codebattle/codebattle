@@ -128,7 +128,7 @@ defmodule Codebattle.User do
     %__MODULE__{
       is_guest: true,
       id: @guest_id,
-      name: "John Dou",
+      name: "John Doe",
       subscription_type: "free",
       rating: 0,
       rank: 0,

@@ -130,7 +130,7 @@ function CompletedGames({ className, tableClassName = '' }) {
         tableClassName={cn(commonTableClassName, tableClassName)}
         games={completedGames}
       />
-      <div className="mt-auto border-top py-2 px-5 font-weight-bold bg-white">
+      <div className="mt-auto border-top py-2 px-5 font-weight-bold bg-white rounded-bottom">
         {`Total games: ${totalGames}`}
       </div>
     </>
