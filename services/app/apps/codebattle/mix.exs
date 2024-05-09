@@ -41,6 +41,7 @@ defmodule Codebattle.MixProject do
     [
       {:runner, in_umbrella: true, runtime: false},
       {:phoenix_gon, in_umbrella: true},
+      {:cowboy, "~> 2.8"},
       {:delta, github: "slab/delta-elixir"},
       {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:earmark, "~> 1.4"},
@@ -60,6 +61,7 @@ defmodule Codebattle.MixProject do
       {:phoenix_meta_tags, "~> 0.1.8"},
       {:phoenix_view, "~> 2.0"},
       {:plug, "~> 1.14"},
+      {:plug_cowboy, "~> 2.7"},
       {:postgrex, ">= 0.0.0"},
       {:sentry, "~> 10.0"},
       {:telemetry_metrics, "~> 0.6"},

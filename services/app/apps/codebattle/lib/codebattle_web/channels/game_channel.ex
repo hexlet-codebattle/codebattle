@@ -24,14 +24,7 @@ defmodule CodebattleWeb.GameChannel do
         if user_id in player_ids do
           Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{user_id}")
 
-          active_game_id =
-            tournament
-            |> Tournament.Helpers.get_matches_by_players([user_id])
-            |> Enum.find(&(&1.state == "playing"))
-            |> case do
-              nil -> nil
-              match -> match.game_id
-            end
+          active_game_id = Tournament.Helpers.get_active_game_id(tournament, user_id)
 
           {user_id, active_game_id}
         else
