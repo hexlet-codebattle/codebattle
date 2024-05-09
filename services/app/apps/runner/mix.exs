@@ -43,7 +43,6 @@ defmodule Runner.MixProject do
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:rambo, "~> 0.3"},
       {:rambo, github: "Apelsinka223/rambo", branch: "update_futures_dependencies"},
       {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:sentry, "~> 10.0"},
