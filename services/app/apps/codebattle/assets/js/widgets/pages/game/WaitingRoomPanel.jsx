@@ -114,7 +114,7 @@ const WaitingRoomPanel = ({ taskCount, maxPlayerTasks }) => {
                     count: maxPlayerTasks - taskCount,
                   })
                 ) : (
-                  i18next.t('Congrats! All tasks is solved')
+                  i18next.t('Congrats! All tasks are solved')
                 )}
               </span>
               <button

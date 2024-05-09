@@ -467,5 +467,5 @@ msgstr[2] "Осталось %{count} задач"
 msgid "Searching opponent"
 msgstr "Поиск соперника"
 
-msgid "Congrats! All tasks is solved"
+msgid "Congrats! All tasks are solved"
 msgstr "Задачи закончились, поздравляем!"
