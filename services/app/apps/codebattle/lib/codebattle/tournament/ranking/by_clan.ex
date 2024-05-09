@@ -8,6 +8,10 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     Ranking.get_first(tournament, limit)
   end
 
+  def get_by_player(tournament, player) do
+    Ranking.get_by_id(tournament, get_clan_id(player))
+  end
+
   def get_nearest_page_by_player(tournament, nil) do
     get_page(tournament, 1)
   end
@@ -52,10 +56,6 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     ranking = Ranking.get_all(tournament)
 
     index = Enum.find_index(ranking, &(&1.id == get_clan_id(player)))
-
-    dbg(player)
-    dbg(ranking)
-    dbg(index)
 
     ranking
     |> List.update_at(

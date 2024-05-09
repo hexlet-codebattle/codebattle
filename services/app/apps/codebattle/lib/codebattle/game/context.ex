@@ -36,6 +36,7 @@ defmodule Codebattle.Game.Context do
           optional(:visibility_type) => String.t(),
           optional(:use_chat) => boolean(),
           optional(:use_timer) => boolean(),
+          optional(:waiting_room_name) => String.t(),
           optional(:task) => Codebattle.Task.t() | nil
         }
 

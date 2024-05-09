@@ -26,6 +26,7 @@ defmodule CodebattleWeb.Api.GameView do
       timeout_seconds: game.timeout_seconds,
       tournament_id: Map.get(game, :tournament_id),
       type: game.type,
+      waiting_room_name: game.waiting_room_name,
       use_chat: game.use_chat,
       use_timer: game.use_timer,
       visibility_type: game.visibility_type

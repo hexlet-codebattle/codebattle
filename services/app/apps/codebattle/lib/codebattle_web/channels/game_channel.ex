@@ -9,70 +9,80 @@ defmodule CodebattleWeb.GameChannel do
   require Logger
 
   def join("game:" <> game_id, _payload, socket) do
-    try do
-      game = Context.get_game!(game_id)
-      score = Context.fetch_score_by_game_id(game_id)
+    # try do
+    game = Context.get_game!(game_id)
+    score = Context.fetch_score_by_game_id(game_id)
 
-      Codebattle.PubSub.subscribe("game:#{game.id}")
+    Codebattle.PubSub.subscribe("game:#{game.id}")
 
-      if game.tournament_id && !socket.assigns.current_user.is_bot do
-        player_ids = Enum.map(game.players, & &1.id)
-        user_id = socket.assigns.current_user.id
-        tournament = Tournament.Context.get_tournament_info(game.tournament_id)
+    if game.tournament_id && !socket.assigns.current_user.is_bot do
+      player_ids = Enum.map(game.players, & &1.id)
+      user_id = socket.assigns.current_user.id
+      tournament = Tournament.Context.get_tournament_info(game.tournament_id)
 
-        {follow_id, active_game_id} =
-          if user_id in player_ids do
-            Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{user_id}")
+      {follow_id, active_game_id} =
+        if user_id in player_ids do
+          Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{user_id}")
 
-            active_game_id =
-              tournament
-              |> Tournament.Helpers.get_matches_by_players([user_id])
-              |> Enum.find(&(&1.state == "playing"))
-              |> case do
-                nil -> nil
-                match -> match.game_id
-              end
+          active_game_id =
+            tournament
+            |> Tournament.Helpers.get_matches_by_players([user_id])
+            |> Enum.find(&(&1.state == "playing"))
+            |> case do
+              nil -> nil
+              match -> match.game_id
+            end
 
-            {user_id, active_game_id}
-          else
-            {nil, nil}
-          end
+          {user_id, active_game_id}
+        else
+          {nil, nil}
+        end
 
-        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
-        current_player = Tournament.Helpers.get_player(tournament, user_id)
+      Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
+      current_player = Tournament.Helpers.get_player(tournament, user_id)
 
-        {:ok,
-         %{
-           game: GameView.render_game(game, score),
-           current_player: current_player,
-           tournament: %{
-             event_id: tournament.event_id,
-             tournament_id: game.tournament_id,
-             ranking: Tournament.Ranking.get_nearest_page_by_player(tournament, current_player),
-             state: tournament.state,
-             type: tournament.type,
-             meta: tournament.meta,
-             break_state: tournament.break_state,
-             round_task_ids: tournament.round_task_ids,
-             current_round_position: tournament.current_round_position
-           },
-           active_game_id: active_game_id
-         },
-         assign(socket,
+      ranking =
+        tournament
+        |> Tournament.Ranking.get_first(3)
+        |> then(&Enum.concat(&1, [Tournament.Ranking.get_by_player(tournament, current_player)]))
+        |> Enum.filter(& &1)
+        |> Enum.uniq_by(& &1.id)
+
+      {:ok,
+       %{
+         game: GameView.render_game(game, score),
+         current_player: current_player,
+         tournament: %{
+           event_id: tournament.event_id,
            tournament_id: game.tournament_id,
-           game_id: game_id,
-           follow_id: follow_id
-         )}
-      else
-        {:ok,
-         %{
-           game: GameView.render_game(game, score)
-         }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil)}
-      end
-    rescue
-      _ ->
-        {:ok, %{error: "Game not found"}, socket}
+           ranking: ranking,
+           clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
+           state: tournament.state,
+           type: tournament.type,
+           meta: tournament.meta,
+           break_state: tournament.break_state,
+           round_task_ids: tournament.round_task_ids,
+           current_round_position: tournament.current_round_position
+         },
+         active_game_id: active_game_id
+       },
+       assign(socket,
+         tournament_id: game.tournament_id,
+         game_id: game_id,
+         follow_id: follow_id
+       )}
+    else
+      {:ok,
+       %{
+         game: GameView.render_game(game, score)
+       }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil)}
     end
+
+    # rescue
+    #   e ->
+    #     Logger.error(inspect(e))
+    #     {:ok, %{error: "Game not found"}, socket}
+    # end
   end
 
   def terminate(_reason, socket) do

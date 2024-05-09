@@ -229,27 +229,30 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, socket}
   end
 
-  defp get_tournament_join_payload(tournament = %{type: "versus"}) do
-    tasks_info =
-      tournament
-      |> Helpers.get_tasks()
-      |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
-
-    %{
-      tournament: Helpers.prepare_to_json(tournament),
-      ranking: Tournament.Ranking.get_page(tournament, 1),
-      matches: Helpers.get_matches(tournament),
-      players: Helpers.get_players(tournament),
-      tasks_info: tasks_info
-    }
-  end
-
   defp get_tournament_join_payload(tournament) do
+    tasks_info =
+      if tournament.type == "versus" do
+        tournament
+        |> Helpers.get_tasks()
+        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
+      else
+        %{}
+      end
+
+    clans =
+      if tournament.use_clan do
+        Tournament.Clans.get_all(tournament)
+      else
+        %{}
+      end
+
     %{
+      tasks_info: tasks_info,
       tournament: Helpers.prepare_to_json(tournament),
       ranking: Tournament.Ranking.get_page(tournament, 1),
       players: Helpers.get_players(tournament),
-      matches: Helpers.get_matches(tournament)
+      matches: Helpers.get_matches(tournament),
+      clans: clans
     }
   end
 

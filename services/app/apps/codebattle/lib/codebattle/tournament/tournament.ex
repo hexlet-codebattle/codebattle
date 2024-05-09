@@ -100,17 +100,20 @@ defmodule Codebattle.Tournament do
     field(:use_timer, :boolean, default: true)
     field(:winner_ids, {:array, :integer})
 
-    field(:is_live, :boolean, virtual: true, default: false)
+    # ETS storage
+    field(:clans_table, :string, virtual: true)
     field(:matches_table, :string, virtual: true)
+    field(:players_table, :string, virtual: true)
+    field(:ranking_table, :string, virtual: true)
+    field(:tasks_table, :string, virtual: true)
+
+    field(:is_live, :boolean, virtual: true, default: false)
     field(:module, :any, virtual: true, default: Individual)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
-    field(:players_table, :string, virtual: true)
     field(:ranking, {:array, :map}, virtual: true, default: [])
-    field(:ranking_table, :string, virtual: true)
     field(:round_task_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
-    field(:tasks_table, :string, virtual: true)
     field(:top_player_ids, {:array, :integer}, virtual: true, default: [])
     field(:waiting_room_name, :string, virtual: true)
 

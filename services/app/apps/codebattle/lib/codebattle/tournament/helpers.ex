@@ -214,6 +214,22 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
 
+  def get_clans_by_ranking(tournament, %{entries: ranking}) when is_list(ranking) do
+    get_clans_by_ranking(tournament, ranking)
+  end
+
+  def get_clans_by_ranking(tournament, ranking) when is_list(ranking) do
+    if tournament.use_clan do
+      ranking
+      |> Enum.map(& &1.id)
+      |> then(&Tournament.Clans.get_clans(tournament, &1))
+    else
+      []
+    end
+  end
+
+  def get_clans_by_ranking(_tournament, _ranking), do: []
+
   # def get_players_statistics(tournament = %{type: "team"}) do
   #   all_win_matches =
   #     tournament
@@ -332,17 +348,25 @@ defmodule Codebattle.Tournament.Helpers do
     Map.drop(tournament, [
       :__struct__,
       :__meta__,
-      :players_table,
-      :ranking_table,
+      :clans_table,
+      :creator,
+      :event,
       :matches_table,
       :played_pair_ids,
-      :tasks_table,
-      :event,
-      :creator
+      :players_table,
+      :ranking_table,
+      :tasks_table
     ])
   end
 
   def tournament_info(tournament) do
-    Map.take(tournament, [:id, :players_table, :ranking_table, :matches_table, :tasks_table])
+    Map.take(tournament, [
+      :id,
+      :clans_table,
+      :matches_table,
+      :players_table,
+      :ranking_table,
+      :tasks_table
+    ])
   end
 end

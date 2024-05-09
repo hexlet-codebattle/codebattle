@@ -33,6 +33,12 @@ defmodule Codebattle.Tournament.Base do
 
       def add_player(tournament, player) do
         Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
+
+        if tournament.use_clan do
+          Tournament.Clans.add_players_clan(tournament, player)
+          Tournament.Ranking.add_new_player(tournament, player)
+        end
+
         Map.put(tournament, :players_count, players_count(tournament))
       end
 
@@ -502,6 +508,7 @@ defmodule Codebattle.Tournament.Base do
               round_id: tournament.current_round_id,
               state: "playing",
               task: get_task(tournament, task_id),
+              waiting_room_name: tournament.waiting_room_name,
               timeout_seconds: get_game_timeout(tournament),
               tournament_id: tournament.id,
               type: game_type(),
@@ -534,6 +541,7 @@ defmodule Codebattle.Tournament.Base do
                 state: "playing",
                 task: task,
                 timeout_seconds: get_game_timeout(tournament),
+                waiting_room_name: tournament.waiting_room_name,
                 tournament_id: tournament.id,
                 type: game_type(),
                 use_chat: tournament.use_chat,
@@ -637,7 +645,8 @@ defmodule Codebattle.Tournament.Base do
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
-              use_timer: tournament.use_timer
+              use_timer: tournament.use_timer,
+              waiting_room_name: tournament.waiting_room_name
             }
           end)
           |> Game.Context.bulk_create_games()

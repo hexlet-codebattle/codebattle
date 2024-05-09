@@ -16,7 +16,6 @@ defmodule CodebattleWeb.TournamentChannel do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
-
       current_player = Helpers.get_player(tournament, current_user.id)
 
       {:ok, get_tournament_join_payload(tournament, current_player),
@@ -26,6 +25,7 @@ defmodule CodebattleWeb.TournamentChannel do
              :id,
              :players_table,
              :ranking_table,
+             :clans_table,
              :matches_table,
              :tasks_table
            ])
@@ -158,15 +158,16 @@ defmodule CodebattleWeb.TournamentChannel do
         Map.drop(payload.tournament, [
           :__struct__,
           :__meta__,
+          :clans_table,
           :creator,
           :event,
-          :players,
           :matches,
+          :matches_table,
+          :players,
           :players_table,
           :ranking_table,
-          :matches_table,
-          :tasks_table,
           :round_tasks,
+          :tasks_table,
           :played_pair_ids
         ]),
       players: Helpers.get_top_players(payload.tournament),
@@ -231,10 +232,13 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament, nil) do
+    ranking = Tournament.Ranking.get_page(tournament, 1)
+
     %{
       matches: [],
       players: [],
-      ranking: Tournament.Ranking.get_page(tournament, 1),
+      ranking: ranking,
+      clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: nil,
       tournament: Helpers.prepare_to_json(tournament)
     }
@@ -259,8 +263,11 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
+    ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, current_player)
+
     Map.merge(player_data, %{
-      ranking: Tournament.Ranking.get_nearest_page_by_player(tournament, current_player),
+      ranking: ranking,
+      clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
     })

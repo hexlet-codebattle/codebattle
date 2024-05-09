@@ -12,6 +12,14 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_first(tournament, num)
   end
 
+  @spec get_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
+          map() | nil
+  def get_by_player(%{ranking_table: nil}, _player), do: nil
+
+  def get_by_player(tournament, player) do
+    get_module(tournament).get_by_player(tournament, player)
+  end
+
   @spec get_nearest_page_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
           map()
   def get_nearest_page_by_player(%{ranking_table: nil}, _player),
@@ -30,7 +38,7 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()
-  def add_new_player(tournament, %{is_bot: true}, score), do: tournament
+  def add_new_player(tournament, %{is_bot: true}, _score), do: tournament
 
   def add_new_player(tournament, player) do
     get_module(tournament).add_new_player(tournament, player)
@@ -38,7 +46,7 @@ defmodule Codebattle.Tournament.Ranking do
 
   @spec update_player_result(Tournament.t(), Tournament.Player.t(), non_neg_integer()) ::
           Tournament.t()
-  def update_player_result(tournament, %{is_bot: true}, score), do: tournament
+  def update_player_result(tournament, %{is_bot: true}, _score), do: tournament
 
   def update_player_result(tournament, player, score) do
     get_module(tournament).update_player_result(tournament, player, score)

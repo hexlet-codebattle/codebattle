@@ -28,6 +28,7 @@ config :codebattle, CodebattleWeb.BotEndpoint,
 # Configures the runner endpoint
 config :runner, RunnerWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
   render_errors: [view: RunnerWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Runner.PubSub

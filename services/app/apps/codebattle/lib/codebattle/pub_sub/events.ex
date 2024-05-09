@@ -199,13 +199,13 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("tournament:player:matchmacking_started", params) do
+  def get_messages("tournament:player:matchmaking_started", params) do
     player = get_player_changed_fields(params.player)
 
     [
       %Message{
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:matchmacking_started",
+        event: "waiting_room:player:matchmaking_started",
         payload: %{current_player: player}
       }
     ]
@@ -512,7 +512,7 @@ defmodule Codebattle.PubSub.Events do
     [
       %Message{
         topic: "waiting_room:#{params.name}",
-        event: "waiting_room:matchmaking_started",
+        event: "waiting_room:player:matchmaking_started",
         payload: %{player_ids: params.player_ids}
       }
     ]

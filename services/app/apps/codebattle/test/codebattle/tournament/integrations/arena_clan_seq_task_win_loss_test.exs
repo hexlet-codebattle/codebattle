@@ -185,7 +185,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
-      event: "waiting_room:player:matchmacking_started",
+      event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
           id: ^p1_id,
@@ -226,7 +226,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player2_topic,
-      event: "waiting_room:player:matchmacking_started",
+      event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
           id: ^p2_id,
@@ -314,7 +314,7 @@ defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
-      event: "waiting_room:player:matchmacking_started",
+      event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
           id: ^p1_id,

@@ -28,6 +28,11 @@ defmodule Codebattle.Clan do
     Repo.all(__MODULE__)
   end
 
+  @spec get(String.t()) :: t() | nil
+  def get(id) do
+    Repo.get(__MODULE__, id)
+  end
+
   @spec get!(String.t()) :: t() | no_return()
   def get!(id) do
     Repo.get!(__MODULE__, id)

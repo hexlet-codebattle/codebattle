@@ -79,6 +79,7 @@ defmodule Codebattle.Tournament.Server do
     matches_table = Tournament.Matches.create_table(tournament_id)
     tasks_table = Tournament.Tasks.create_table(tournament_id)
     ranking_table = Tournament.Ranking.create_table(tournament_id)
+    clans_table = Tournament.Clans.create_table(tournament_id)
 
     Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
 
@@ -91,6 +92,7 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:players_table, players_table)
       |> Map.put(:ranking_table, ranking_table)
       |> Map.put(:tasks_table, tasks_table)
+      |> Map.put(:clans_table, clans_table)
 
     {:ok, %{tournament: tournament}}
   end

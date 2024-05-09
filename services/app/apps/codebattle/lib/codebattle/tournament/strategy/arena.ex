@@ -106,7 +106,7 @@ defmodule Codebattle.Tournament.Arena do
             new_player = %{player | state: "matchmaking_active"}
             WaitingRoom.put_player(tournament.waiting_room_name, new_player)
 
-            Codebattle.PubSub.broadcast("tournament:player:matchmacking_started", %{
+            Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
               tournament: tournament,
               player: new_player
             })
