@@ -6,7 +6,6 @@ alias Codebattle.UserGame
 alias Codebattle.TaskPack
 
 levels = ["elementary", "easy", "medium", "hard"]
-creator = User.get!(1)
 
 1..30
 |> Enum.each(fn x ->
@@ -153,6 +152,22 @@ creator = User.get!(1)
   end
 end)
 
+creator = %{
+  name: "User1_admin",
+  is_bot: false,
+  rating: 1300,
+  email: "admin@user1",
+  avatar_url: "/assets/images/logo.svg",
+  lang: "ruby",
+  inserted_at: TimeHelper.utc_now(),
+  updated_at: TimeHelper.utc_now()
+}
+
+{:ok, creator} =
+  %User{}
+  |> User.changeset(creator)
+  |> Repo.insert()
+
 %Codebattle.Tournament{}
 |> Codebattle.Tournament.changeset(%{
   name: "Codebattle Hexlet summer tournament 2019",
@@ -232,7 +247,7 @@ six_hours_ago = Timex.shift(now, hours: -6)
     lang: user_1.lang
   }
 
-  {:ok, user_game_1_params} =
+  {:ok, _user_game_1_params} =
     %UserGame{}
     |> UserGame.changeset(user_game_1_params)
     |> Repo.insert()
@@ -247,7 +262,7 @@ six_hours_ago = Timex.shift(now, hours: -6)
     lang: user_2.lang
   }
 
-  {:ok, user_game_2_params} =
+  {:ok, _user_game_2_params} =
     %UserGame{}
     |> UserGame.changeset(user_game_2_params)
     |> Repo.insert()
