@@ -6,6 +6,8 @@ import React, {
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
+import { pauseWaitingRoomMatchmaking, startWaitingRoomMatchmaking } from '@/middlewares/Room';
+
 import RoomContext from '../../components/RoomContext';
 import {
   isWaitingRoomActiveSelector,
@@ -16,7 +18,6 @@ import {
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 import Notifications from './Notifications';
-import { pauseWaitingRoomMatchmaking, startWaitingRoomMatchmaking } from '@/middlewares/Room';
 
 const WaitingRoomPanel = ({ taskCount, maxPlayerTasks }) => {
   const dispatch = useDispatch();
