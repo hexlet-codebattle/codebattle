@@ -29,8 +29,17 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_page(tournament, page)
   end
 
+  @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()
+  def add_new_player(tournament, %{is_bot: true}, score), do: tournament
+
+  def add_new_player(tournament, player) do
+    get_module(tournament).add_new_player(tournament, player)
+  end
+
   @spec update_player_result(Tournament.t(), Tournament.Player.t(), non_neg_integer()) ::
           Tournament.t()
+  def update_player_result(tournament, %{is_bot: true}, score), do: tournament
+
   def update_player_result(tournament, player, score) do
     get_module(tournament).update_player_result(tournament, player, score)
   end
@@ -38,11 +47,6 @@ defmodule Codebattle.Tournament.Ranking do
   @spec set_ranking(Tournament.t()) :: Tournament.t()
   def set_ranking(tournament) do
     get_module(tournament).set_ranking(tournament)
-  end
-
-  @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()
-  def add_new_player(tournament, player) do
-    get_module(tournament).add_new_player(tournament, player)
   end
 
   @spec create_table(pos_integer()) :: term()
