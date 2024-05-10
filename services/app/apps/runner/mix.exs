@@ -14,7 +14,8 @@ defmodule Runner.MixProject do
       test_coverage: [tool: ExCoveralls, threshold: 60],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      compilers: [:rambo | Mix.compilers()]
     ]
   end
 
@@ -43,7 +44,8 @@ defmodule Runner.MixProject do
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
-      {:rambo, github: "Apelsinka223/rambo", branch: "update_futures_dependencies"},
+      # {:rambo, github: "Apelsinka223/rambo", branch: "update_futures_dependencies"},
+      {:rambo, github: "jayjun/rambo", branch: "master"},
       {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:sentry, "~> 10.0"},
       {:temp, "~> 0.4"},

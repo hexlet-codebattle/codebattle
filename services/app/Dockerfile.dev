@@ -16,6 +16,12 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
+
+# Get Rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 ARG GIT_HASH
 
 ENV APP_VERSION=$GIT_HASH
