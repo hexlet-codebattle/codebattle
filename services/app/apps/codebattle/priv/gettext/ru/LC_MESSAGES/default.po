@@ -257,13 +257,43 @@ msgstr "Задача: "
 msgid "Task"
 msgstr "Зaдача"
 
+msgid "Editor"
+msgstr "Редактор"
+
+msgid "Output"
+msgstr "Тесты"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Notification"
+msgstr "Нотификация"
+
+msgid "Run"
+msgstr "Запустить"
+
+msgid "Сharging..."
+msgstr "Заряжается..."
+
+msgid "Running..."
+msgstr "Запускается..."
+
+msgid "Show guide"
+msgstr "Гайд"
+
+msgid "Reset solution"
+msgstr "Cбросить решение"
+
+msgid "Check solution"
+msgstr "Проверить решение"
+
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
 
 msgid "Run your code!"
 msgstr "Запустите Ваш код!"
 
-msgid "solution cannot be executed"
+msgid "Solution cannot be executed"
 msgstr "Решение не может быть выполнено"
 
 msgid "Tests failed"
@@ -290,7 +320,7 @@ msgstr "Поздравляю! Если вы хотите сражаться с �
 msgid "Lose Game Message"
 msgstr "К сожалению, Ваш оппонент выиграл эту битву"
 
-msgid "Press Check solution or Give up"
+msgid "Press Check solution or press Give up"
 msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
 
 msgid "Give up"

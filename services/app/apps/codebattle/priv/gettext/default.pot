@@ -250,7 +250,7 @@ msgstr ""
 msgid "Run your code!"
 msgstr ""
 
-msgid "solution cannot be executed"
+msgid "Solution cannot be executed"
 msgstr ""
 
 msgid "Tests failed"

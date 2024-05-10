@@ -1,6 +1,7 @@
 import React, { useState, useContext, memo } from 'react';
 
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 import Editor from '../../components/Editor';
@@ -51,7 +52,7 @@ function RightSide({ output, children }) {
               setShowTab('editor');
             }}
           >
-            Editor
+            {i18next.t('Editor')}
           </a>
           <a
             className={cn(

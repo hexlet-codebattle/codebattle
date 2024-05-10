@@ -1,13 +1,18 @@
 import React, { useContext, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import i18next from 'i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
 import { inTestingRoomSelector } from '../../machines/selectors';
-import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Room';
+import {
+  sendGiveUp,
+  resetTextToTemplateAndSend,
+  resetTextToTemplate,
+} from '../../middlewares/Room';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
@@ -16,7 +21,7 @@ function CheckResultButton({ onClick, status }) {
   const commonProps = {
     type: 'button',
     className: 'btn btn-outline-success btn-check rounded-lg',
-    title: 'Check solution&#013;Ctrl + Enter',
+    title: `${i18next.t('Check solution')}&#013;Ctrl + Enter`,
     'data-toggle': 'tooltip',
     'data-guide-id': 'CheckResultButton',
     'data-placement': 'top',
@@ -31,29 +36,35 @@ function CheckResultButton({ onClick, status }) {
     case 'enabled':
       return (
         <button type="button" {...commonEnabledProps}>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
-          Run
+          <FontAwesomeIcon
+            icon={['fas', 'play-circle']}
+            className="mr-2 success"
+          />
+          {i18next.t('Run')}
         </button>
       );
     case 'charging':
       return (
         <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          Charging...
+          {i18next.t('Charging...')}
         </button>
       );
     case 'checking':
       return (
         <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon className="mr-2" icon="spinner" pulse />
-          Running...
+          {i18next.t('Running...')}
         </button>
       );
     case 'disabled':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="mr-2 success" />
-          Run
+          <FontAwesomeIcon
+            icon={['fas', 'play-circle']}
+            className="mr-2 success"
+          />
+          {i18next.t('Run')}
         </button>
       );
     default: {
@@ -68,7 +79,7 @@ function GiveUpButton({ onClick, status }) {
   const commonProps = {
     type: 'button',
     className: 'btn btn-outline-danger rounded-lg',
-    title: 'Give Up',
+    title: i18next.t('Give Up'),
     onClick,
     'data-toggle': 'tooltip',
     'data-placement': 'top',
@@ -100,7 +111,7 @@ function ResetButton({ onClick, status }) {
   const commonProps = {
     type: 'button',
     className: 'btn btn-outline-secondary rounded-lg mx-1',
-    title: 'Reset editor',
+    title: i18next.t('Reset solution'),
     onClick,
     'data-toggle': 'tooltip',
     'data-placement': 'top',
@@ -138,7 +149,10 @@ function GameActionButtons({
   const dispatch = useDispatch();
 
   const { mainService } = useContext(RoomContext);
-  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const isTestingRoom = useMachineStateSelector(
+    mainService,
+    inTestingRoomSelector,
+  );
 
   const [modalShowing, setModalShowing] = useState(false);
 
@@ -169,15 +183,25 @@ function GameActionButtons({
         Are you sure you want to give up?
       </Modal.Body>
       <Modal.Footer className="mx-auto">
-        <Button onClick={handleGiveUp} className="btn-danger rounded-lg">Give up</Button>
-        <Button onClick={modalHide} className="btn-secondary rounded-lg">Cancel</Button>
+        <Button onClick={handleGiveUp} className="btn-danger rounded-lg">
+          Give up
+        </Button>
+        <Button onClick={modalHide} className="btn-secondary rounded-lg">
+          Cancel
+        </Button>
       </Modal.Footer>
     </Modal>
   );
 
   return (
-    <div className="btn-group btn-group-sm py-2 mr-2" role="group" aria-label="Game actions">
-      {showGiveUpBtn && <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />}
+    <div
+      className="btn-group btn-group-sm py-2 mr-2"
+      role="group"
+      aria-label="Game actions"
+    >
+      {showGiveUpBtn && (
+        <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
+      )}
       <ResetButton onClick={handleReset} status={resetBtnStatus} />
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
       {renderModal()}

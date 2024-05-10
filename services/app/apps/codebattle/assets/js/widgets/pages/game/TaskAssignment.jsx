@@ -44,7 +44,7 @@ function ShowGuideButton() {
       data-placement="top"
       title="Show guide"
     >
-      Show guide
+      {i18n.t('Show guide')}
     </button>
   );
 }

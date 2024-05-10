@@ -11,7 +11,7 @@ const getMessage = status => {
     case 'timeout':
       return i18n.t("We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:");
     case 'error':
-      return i18n.t('solution cannot be executed');
+      return i18n.t('Solution cannot be executed');
     case 'failure':
       return i18n.t('Test failed');
     case 'ok':

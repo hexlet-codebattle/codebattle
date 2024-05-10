@@ -248,7 +248,7 @@ msgstr "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgid "Run your code!"
 msgstr "Run your code!"
 
-msgid "solution cannot be executed"
+msgid "Solution cannot be executed"
 msgstr "The solution cannot be executed"
 
 msgid "Tests failed"

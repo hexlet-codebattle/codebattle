@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
 
+import i18next from 'i18next';
+
 import RoomContext from '../../components/RoomContext';
 import {
   isWaitingRoomNoneSelector,
@@ -43,7 +45,7 @@ const InfoPanel = ({
                 aria-controls="task"
                 aria-selected="true"
               >
-                Task
+                {i18next.t('Task')}
               </a>
               <a
                 className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
@@ -54,7 +56,7 @@ const InfoPanel = ({
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
               >
-                Output
+                {i18next.t('Output')}
               </a>
               <div
                 className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"

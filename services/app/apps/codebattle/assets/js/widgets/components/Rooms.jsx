@@ -1,5 +1,6 @@
 import React from 'react';
 
+import i18next from 'i18next';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,7 +18,7 @@ export default function Rooms({ disabled }) {
     <>
       <Dropdown as={ButtonGroup} title="" disabled={disabled}>
         <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
-          <span className="mr-2">{activeRoom.name}</span>
+          <span className="mr-2">{i18next.t(activeRoom.name)}</span>
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat">
@@ -28,7 +29,7 @@ export default function Rooms({ disabled }) {
                 key={room.targetUserId || room.name}
                 onSelect={() => dispatch(actions.setActiveRoom(room))}
               >
-                {room.name}
+                {i18next.t(room.name)}
               </Dropdown.Item>
             ))
           }

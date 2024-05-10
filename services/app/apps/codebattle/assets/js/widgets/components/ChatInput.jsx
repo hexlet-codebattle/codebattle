@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import data from '@emoji-mart/data';
 import { SearchIndex, init } from 'emoji-mart';
+import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
 import { useSelector } from 'react-redux';
 
@@ -153,7 +154,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           onClick={handleSubmit}
           disabled={disabled || isMaxLengthExceeded}
         >
-          Send
+          {i18next.t('Send')}
         </button>
       </div>
     </form>
