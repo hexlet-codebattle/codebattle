@@ -4,10 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import moment from 'moment';
 
+import useTournamentStats from '@/utils/useTournamentStats';
+
 import CopyButton from '../../components/CopyButton';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
+import WaitingRoomStatus from '../../components/WaitingRoomStatus';
 import TournamentStates from '../../config/tournament';
 import TournamentTypes from '../../config/tournamentTypes';
 import useTimer from '../../utils/useTimer';
@@ -147,6 +150,7 @@ function TournamentHeader({
   handleStartRound,
   handleOpenDetails,
 }) {
+  const { taskSolvedCount, maxPlayerTasks } = useTournamentStats();
   const stateBadgeTitle = useMemo(
     () => getBadgeTitle(state, breakState, hideResults),
     [state, breakState, hideResults],
@@ -311,7 +315,12 @@ function TournamentHeader({
           </div>
         )}
       </div>
-      <div className="col bg-white shadow-sm rounded-lg p-2 mt-2 overflow-auto">
+      <div
+        className={cn(
+          'col bg-white shadow-sm rounded-lg p-2 mt-2 overflow-auto',
+          'd-flex align-items-center justify-content-between',
+        )}
+      >
         <p className="h5 mb-0 text-nowrap">
           <span className={stateClassName}>{stateBadgeTitle}</span>
           <span className="h6 text-nowrap">
@@ -330,6 +339,15 @@ function TournamentHeader({
             />
           </span>
         </p>
+        {type === TournamentTypes.arena && state === TournamentStates.active && (
+          <div className="d-flex align-items-center">
+            <WaitingRoomStatus
+              page="tournament"
+              taskCount={taskSolvedCount}
+              maxPlayerTasks={maxPlayerTasks}
+            />
+          </div>
+        )}
       </div>
     </>
   );

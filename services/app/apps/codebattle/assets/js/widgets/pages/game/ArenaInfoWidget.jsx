@@ -1,15 +1,18 @@
 import React, { memo } from 'react';
 
-import { useSelector } from 'react-redux';
+import useTournamentStats from '@/utils/useTournamentStats';
+
+import WaitingRoomStatus from '../../components/WaitingRoomStatus';
 
 import ArenaTopLeaderboardPanel from './ArenaTopLeaderboardPanel';
 import WaitingRoomPanel from './WaitingRoomPanel';
 
 const ArenaInfoWidget = () => {
-  const { user } = useSelector(state => state.tournamentPlayer);
-  const { roundTaskIds } = useSelector(state => state.tournament);
-  const taskCount = user?.taskIds?.length || 1;
-  const taskSolvedCount = user.state === 'active' ? taskCount - 1 : taskCount;
+  const {
+    taskCount,
+    taskSolvedCount,
+    maxPlayerTasks,
+  } = useTournamentStats();
 
   return (
     <div
@@ -17,12 +20,15 @@ const ArenaInfoWidget = () => {
     >
       <ArenaTopLeaderboardPanel
         taskCount={taskCount}
-        maxPlayerTasks={roundTaskIds.length}
+        maxPlayerTasks={maxPlayerTasks}
       />
-      <WaitingRoomPanel
-        taskCount={taskSolvedCount}
-        maxPlayerTasks={roundTaskIds.length}
-      />
+      <WaitingRoomPanel>
+        <WaitingRoomStatus
+          page="game"
+          taskCount={taskSolvedCount}
+          maxPlayerTasks={maxPlayerTasks}
+        />
+      </WaitingRoomPanel>
     </div>
   );
 };

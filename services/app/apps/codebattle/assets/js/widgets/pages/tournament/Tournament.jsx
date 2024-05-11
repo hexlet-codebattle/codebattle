@@ -11,6 +11,7 @@ import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
+import RoomContext from '../../components/RoomContext';
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
 import { connectToTournament } from '../../middlewares/Tournament';
@@ -110,6 +111,8 @@ function Tournament({ waitingRoomMachine }) {
     devTools: true,
     actions: [],
   });
+
+  const machines = { waitingRoomService };
 
   const activePresentationMode = searchParams.has('presentation');
 
@@ -269,7 +272,7 @@ function Tournament({ waitingRoomMachine }) {
   //   : tournament.matchTimeoutSeconds;
 
   return (
-    <>
+    <RoomContext.Provider value={machines}>
       <DetailsModal
         tournament={tournament}
         modalShowing={detailsModalShowing}
@@ -349,7 +352,7 @@ function Tournament({ waitingRoomMachine }) {
           </div>
         </div>
       </div>
-    </>
+    </RoomContext.Provider>
   );
 }
 

@@ -421,6 +421,8 @@ export const tournamentHideResultsSelector = state => !state.tournament.showResu
 
 export const tournamentOwnerIdSelector = state => state.tournament.ownerId;
 
+export const currentTournamentPlayerSelector = state => state.tournamentPlayer;
+
 export const tournamentPlayersSelector = state => state.tournament.players;
 
 export const tournamentMatchesSelector = state => state.tournament.matches;
