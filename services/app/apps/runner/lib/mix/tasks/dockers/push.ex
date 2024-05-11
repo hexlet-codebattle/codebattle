@@ -20,6 +20,6 @@ defmodule Mix.Tasks.Dockers.Push do
   defp push(meta) do
     IO.puts("Start pushing image for #{meta.slug}")
     result = Porcelain.shell("docker push #{meta.docker_image}", err: :string)
-    IO.puts result.out
+    IO.puts(result.out)
   end
 end

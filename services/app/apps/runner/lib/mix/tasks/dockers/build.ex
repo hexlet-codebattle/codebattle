@@ -23,7 +23,7 @@ defmodule Mix.Tasks.Dockers.Build do
 
     IO.puts("Start building image for #{meta.slug}")
     result = Porcelain.shell(command, err: :string)
-    IO.puts result.out
+    IO.puts(result.out)
   end
 
   defp root do
