@@ -80,7 +80,7 @@ function StageCard({
         <>
           <img
             alt={`${opponent.name} avatar`}
-            src={opponent.avatarUrl}
+            src={opponent.avatarUrl || tournamentEmptyPlayerUrl}
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
           />
           <div className={cardInfoClassName}>
