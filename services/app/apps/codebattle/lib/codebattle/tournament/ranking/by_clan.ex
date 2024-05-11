@@ -99,6 +99,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     tournament
   end
 
+  defp get_clan_id(nil), do: -1
   defp get_clan_id(%{clan_id: nil}), do: -1
   defp get_clan_id(%{clan_id: clan_id}), do: clan_id
 end

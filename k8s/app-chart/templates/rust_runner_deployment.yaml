@@ -19,8 +19,22 @@ spec:
       labels:
         app: "runner-{{ .name }}"
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: "codebattle"
+            topologyKey: "kubernetes.io/hostname"
       containers:
         - name: "runner"
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
           imagePullPolicy: Always
           image: "{{ .image }}"
           readinessProbe:

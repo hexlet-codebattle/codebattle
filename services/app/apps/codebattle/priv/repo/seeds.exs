@@ -153,10 +153,10 @@ levels = ["elementary", "easy", "medium", "hard"]
 end)
 
 creator = %{
-  name: "User1_admin",
+  name: "User1_admin#{Timex.format!(Timex.now(), "%FT%T%:z", :strftime)}",
   is_bot: false,
   rating: 1300,
-  email: "admin@user1",
+  email: "admin@user1#{Timex.format!(Timex.now(), "%FT%T%:z", :strftime)}",
   avatar_url: "/assets/images/logo.svg",
   lang: "ruby",
   inserted_at: TimeHelper.utc_now(),
@@ -288,7 +288,7 @@ for level <- levels do
     |> TaskPack.changeset()
     |> Repo.insert!()
 
-  name = "3_#{level}"
+  name = "7_#{level}"
 
   Repo.get_by(TaskPack, name: name) ||
     %TaskPack{
@@ -296,7 +296,7 @@ for level <- levels do
       name: name,
       visibility: "public",
       state: "active",
-      task_ids: Enum.take(task_ids, 3)
+      task_ids: Enum.take(task_ids, 7)
     }
     |> TaskPack.changeset()
     |> Repo.insert!()
@@ -321,7 +321,7 @@ Enum.each(1..100, fn id ->
 end)
 
 tokens =
-  Enum.map(1..70, fn id ->
+  Enum.map(1..100, fn id ->
     t = Timex.now()
 
     clan_id =
@@ -353,4 +353,4 @@ tokens =
     "#{user.id}:#{token}:js"
   end)
 
-File.write!("/tmp/tokens.txt", Enum.join(tokens, "\n"))
+File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))

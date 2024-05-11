@@ -127,7 +127,7 @@ defmodule Codebattle.WaitingRoom.Server do
   end
 
   defp do_match_players(state = %{players: []}) do
-    Logger.debug("WR #{state.name} idle")
+    # Logger.debug("WR #{state.name} idle")
     state
   end
 
