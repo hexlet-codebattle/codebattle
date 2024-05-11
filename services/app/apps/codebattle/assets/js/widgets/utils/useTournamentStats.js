@@ -9,12 +9,12 @@ const useTournamentStats = () => {
   const { user } = useSelector(currentTournamentPlayerSelector);
   const { roundTaskIds } = useSelector(tournamentSelector);
   const taskCount = user?.taskIds?.length || 1;
-  const taskSolvedCount = user.state === 'active' ? taskCount - 1 : taskCount;
+  const taskSolvedCount = user?.state === 'active' ? taskCount - 1 : taskCount;
 
   return {
     taskCount,
     taskSolvedCount,
-    maxPlayerTasks: roundTaskIds.length,
+    maxPlayerTasks: roundTaskIds?.length,
   };
 };
 

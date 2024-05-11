@@ -41,7 +41,7 @@ const machine = {
               target: 'failure',
               actions: ['handleError', 'throwError'],
             },
-           [channelTopics.waitingRoomStartedTopic]: 'active',
+            [channelTopics.waitingRoomStartedTopic]: 'active',
           },
         },
         active: {
@@ -68,8 +68,15 @@ const machine = {
       states: {
         idle: {
           on: {
+            LOAD_WAITING_ROOM: [
+              { target: 'banned', cond: 'isPlayerBanned' },
+              { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
+              { target: 'matchmaking.progress', cond: 'isMatchmakingInProgress' },
+              { target: 'idle' },
+            ],
             [channelTopics.waitingRoomPlayerBannedTopic]: 'banned',
-            [channelTopics.waitingRoomPlayerMatchmakingStartedTopic]: 'matchmaking.progress',
+            [channelTopics.waitingRoomPlayerMatchmakingStartedTopic]:
+              'matchmaking.progress',
             [channelTopics.waitingRoomStartedTopic]: [
               { target: 'matchmaking.paused', cond: 'isMatchmakingPaused' },
               { target: 'matchmaking.progress' },
@@ -86,13 +93,15 @@ const machine = {
           states: {
             progress: {
               on: {
-                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
+                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]:
+                  'paused',
                 [channelTopics.waitingRoomPlayerMatchCreatedTopic]: 'success',
               },
             },
             success: {
               on: {
-                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]: 'paused',
+                [channelTopics.waitingRoomPlayerMatchmakingPausedTopic]:
+                  'paused',
                 [channelTopics.waitingRoomStartedTopic]: [
                   { target: 'paused', cond: 'isMatchmakingPaused' },
                   { target: 'progress' },
@@ -101,7 +110,8 @@ const machine = {
             },
             paused: {
               on: {
-                [channelTopics.waitingRoomPlayerMatchmakingResumedTopic]: 'progress',
+                [channelTopics.waitingRoomPlayerMatchmakingResumedTopic]:
+                  'progress',
               },
             },
           },
@@ -109,7 +119,10 @@ const machine = {
         banned: {
           on: {
             [channelTopics.waitingRoomPlayerUnbannedTopic]: [
-              { target: 'matchmaking.progress', cond: 'isMatchmakingInProgress' },
+              {
+                target: 'matchmaking.progress',
+                cond: 'isMatchmakingInProgress',
+              },
               { target: 'idle' },
             ],
           },
@@ -121,9 +134,14 @@ const machine = {
 
 export const config = {
   guards: {
-    isMatchmakingInProgress: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_active',
-    isMatchmakingPaused: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_paused',
-    isTournamentFinished: (_ctx, { payload }) => payload.currentPlayer.state === 'finished',
+    isMatchmakingInProgress: (_ctx, { payload }) =>
+      payload.currentPlayer.state === 'matchmaking_active',
+    isMatchmakingPaused: (_ctx, { payload }) =>
+      payload.currentPlayer.state === 'matchmaking_paused',
+    isTournamentFinished: (_ctx, { payload }) =>
+      payload.currentPlayer.state === 'finished',
+    isPlayerBanned: (_ctx, { payload }) =>
+      payload.currentPlayer.state === 'banned',
     // isRoundFinished: (_ctx, { payload }) => payload.state === 'finished_round',
   },
   actions: {

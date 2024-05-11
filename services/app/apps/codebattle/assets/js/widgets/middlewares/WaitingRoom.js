@@ -1,10 +1,15 @@
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-import { channelTopics } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 
-export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch => {
-    const handleWaitingRoomStarted = response => {
+let channel = null;
+
+export const addWaitingRoomListeners =
+  (oldChannel, waitingRoomMachine, { cancelRedirect = false }) =>
+  (dispatch) => {
+    channel = oldChannel;
+    const handleWaitingRoomStarted = (response) => {
       waitingRoomMachine.send(channelTopics.waitingRoomStartedTopic, {
         payload: response,
       });
@@ -12,7 +17,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.setActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomEnded = response => {
+    const handleWaitingRoomEnded = (response) => {
       waitingRoomMachine.send(channelTopics.waitingRoomEndedTopic, {
         payload: response,
       });
@@ -20,7 +25,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerBanned = response => {
+    const handleWaitingRoomPlayerBanned = (response) => {
       waitingRoomMachine.send(channelTopics.waitingRoomPlayerBannedTopic, {
         payload: response,
       });
@@ -28,7 +33,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerUnbanned = response => {
+    const handleWaitingRoomPlayerUnbanned = (response) => {
       waitingRoomMachine.send(channelTopics.waitingRoomPlayerUnbannedTopic, {
         payload: response,
       });
@@ -36,7 +41,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerMatchmakingStarted = response => {
+    const handleWaitingRoomPlayerMatchmakingStarted = (response) => {
       waitingRoomMachine.send(
         channelTopics.waitingRoomPlayerMatchmakingStartedTopic,
         { payload: response },
@@ -45,7 +50,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerMatchmakingResumed = response => {
+    const handleWaitingRoomPlayerMatchmakingResumed = (response) => {
       waitingRoomMachine.send(
         channelTopics.waitingRoomPlayerMatchmakingResumedTopic,
         { payload: response },
@@ -54,7 +59,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerMatchmakingStopped = response => {
+    const handleWaitingRoomPlayerMatchmakingStopped = (response) => {
       waitingRoomMachine.send(
         channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
         { payload: response },
@@ -63,7 +68,7 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerMatchmakingPaused = response => {
+    const handleWaitingRoomPlayerMatchmakingPaused = (response) => {
       waitingRoomMachine.send(
         channelTopics.waitingRoomPlayerMatchmakingPausedTopic,
         { payload: response },
@@ -72,81 +77,97 @@ export const addWaitingRoomListeners = (channel, waitingRoomMachine) => dispatch
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
     };
 
-    const handleWaitingRoomPlayerMatchCreated = response => {
+    const handleWaitingRoomPlayerMatchCreated = (response) => {
       waitingRoomMachine.send(
         channelTopics.waitingRoomPlayerMatchCreatedTopic,
         { payload: response },
       );
 
+      dispatch(actions.updateTournamentMatches([response.match]));
+      dispatch(actions.updateTournamentPlayers(response.players));
       dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
-      setTimeout(() => {
-        window.location.replace(makeGameUrl(response.match.gameId));
-      }, 10);
+      if (!cancelRedirect) {
+        setTimeout(() => {
+          window.location.replace(makeGameUrl(response.match.gameId));
+        }, 10);
+      }
     };
 
     const refs = [
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomStartedTopic,
         handleWaitingRoomStarted,
       ),
-      channel.on(channelTopics.waitingRoomEndedTopic, handleWaitingRoomEnded),
-      channel.on(
+      oldChannel.on(channelTopics.waitingRoomEndedTopic, handleWaitingRoomEnded),
+      oldChannel.on(
         channelTopics.waitingRoomPlayerBannedTopic,
         handleWaitingRoomPlayerBanned,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerUnbannedTopic,
         handleWaitingRoomPlayerUnbanned,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerMatchmakingStartedTopic,
         handleWaitingRoomPlayerMatchmakingStarted,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerMatchmakingResumedTopic,
         handleWaitingRoomPlayerMatchmakingResumed,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
         handleWaitingRoomPlayerMatchmakingStopped,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerMatchmakingPausedTopic,
         handleWaitingRoomPlayerMatchmakingPaused,
       ),
-      channel.on(
+      oldChannel.on(
         channelTopics.waitingRoomPlayerMatchCreatedTopic,
         handleWaitingRoomPlayerMatchCreated,
       ),
     ];
 
     const clearWaitingRoomListeners = () => {
-      if (channel) {
-        channel.off(channelTopics.waitingRoomStartedTopic, refs[0]);
-        channel.off(channelTopics.waitingRoomEndedTopic, refs[1]);
-        channel.off(channelTopics.waitingRoomPlayerBannedTopic, refs[2]);
-        channel.off(channelTopics.waitingRoomPlayerUnbannedTopic, refs[3]);
-        channel.off(
+      if (oldChannel) {
+        oldChannel.off(channelTopics.waitingRoomStartedTopic, refs[0]);
+        oldChannel.off(channelTopics.waitingRoomEndedTopic, refs[1]);
+        oldChannel.off(channelTopics.waitingRoomPlayerBannedTopic, refs[2]);
+        oldChannel.off(channelTopics.waitingRoomPlayerUnbannedTopic, refs[3]);
+        oldChannel.off(
           channelTopics.waitingRoomPlayerMatchmakingStartedTopic,
           refs[4],
         );
-        channel.off(
+        oldChannel.off(
           channelTopics.waitingRoomPlayerMatchmakingResumedTopic,
           refs[5],
         );
-        channel.off(
+        oldChannel.off(
           channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
           refs[6],
         );
-        channel.off(
+        oldChannel.off(
           channelTopics.waitingRoomPlayerMatchmakingPausedTopic,
           refs[7],
         );
-        channel.off(channelTopics.waitingRoomPlayerMatchCreatedTopic, refs[8]);
+        oldChannel.off(channelTopics.waitingRoomPlayerMatchCreatedTopic, refs[8]);
       }
     };
 
     return clearWaitingRoomListeners;
   };
+
+export const pauseWaitingRoomMatchmaking = () => () => {
+  channel
+    .push(channelMethods.matchmakingPause, {})
+    .receive('error', (error) => console.error(error));
+};
+
+export const startWaitingRoomMatchmaking = () => () => {
+  channel
+    .push(channelMethods.matchmakingResume, {})
+    .receive('error', (error) => console.error(error));
+};
 
 export default addWaitingRoomListeners;

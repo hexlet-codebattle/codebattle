@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import {
   pauseWaitingRoomMatchmaking,
   startWaitingRoomMatchmaking,
-} from '@/middlewares/Room';
+} from '@/middlewares/WaitingRoom';
 
 import {
   isMatchmakingInProgressSelector,
