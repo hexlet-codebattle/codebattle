@@ -485,8 +485,14 @@ msgstr "Команды"
 msgid "Search opponent"
 msgstr "Поиск соперника"
 
+msgid "Back to tournament"
+msgstr "Назад в турнир"
+
 msgid "Stop searching"
 msgstr "Приостановить"
+
+msgid "Go to active game"
+msgstr "К активной игре"
 
 msgid "arena_task_stats"
 msgid_plural "%{count} tasks left"

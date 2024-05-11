@@ -4,24 +4,20 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-const maxPlayerTasks = 7;
-
-const getTopItemClassName = item => (
-  cn('text-dark font-weight-bold cb-custom-event-tr', {
+const getTopItemClassName = item => cn('text-dark font-weight-bold cb-custom-event-tr', {
     'cb-gold-place-bg': item?.place === 1,
     'cb-silver-place-bg': item?.place === 2,
     'cb-bronze-place-bg': item?.place === 3,
     'bg-white': !item?.place || item.place > 3,
     // 'bg-success': item.clanId && item.clanId === 1,
-  })
-);
+  });
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
-const ArenaTopLeaderboardPanel = ({ taskCount }) => {
-  const clans = useSelector(state => state.event.topLeaderboard || []);
+const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
+  const { clans, ranking } = useSelector(state => state.tournament);
 
   return (
     <div
@@ -30,44 +26,32 @@ const ArenaTopLeaderboardPanel = ({ taskCount }) => {
         'cb-game-chat-container cb-messages-container',
       )}
     >
-      <div
-        className="d-flex justify-content-between border-bottom border-dark pb-2 px-3"
-      >
-        <span className="font-weight-bold">
-          {i18next.t('Teams')}
-        </span>
+      <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
+        <span className="font-weight-bold">{i18next.t('Teams')}</span>
         <span className="text-muted px-3">
           {i18next.t('Task').toLowerCase()}
           {' '}
           {`${taskCount}/${maxPlayerTasks}`}
         </span>
       </div>
-      <div
-        className="d-flex cb-overflow-x-auto"
-      >
+      <div className="d-flex cb-overflow-x-auto">
         <table className="table table-striped cb-custom-event-table">
           <thead>
             <tr>
-              <th
-                className="p-1 pl-4 font-weight-light border-0"
-              >
+              <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Clan')}
               </th>
-              <th
-                className="p-1 pl-4 font-weight-light border-0"
-              >
+              <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Score')}
               </th>
-              <th
-                className="p-1 pl-4 font-weight-light border-0"
-              >
+              <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Place')}
               </th>
             </tr>
           </thead>
           <tbody>
-            {clans.map(item => (
-              <React.Fragment key={item.clanId}>
+            {ranking.map(item => (
+              <React.Fragment key={item.id}>
                 {item.place > 3 ? (
                   <>
                     <tr className="cb-custom-event-empty-space-tr" />
@@ -80,18 +64,15 @@ const ArenaTopLeaderboardPanel = ({ taskCount }) => {
                 <tr className={getTopItemClassName(item)}>
                   <td className={tableDataCellClassName}>
                     <div
+                      title={clans[item.id]?.longName}
                       className="cb-custom-event-name"
-                      style={{ maxWidth: '150px' }}
+                      style={{ maxWidth: '270px' }}
                     >
-                      {item.clanName}
+                      {clans[item.id]?.name}
                     </div>
                   </td>
-                  <td className={tableDataCellClassName}>
-                    {item.score}
-                  </td>
-                  <td className={tableDataCellClassName}>
-                    {item.place}
-                  </td>
+                  <td className={tableDataCellClassName}>{item.score}</td>
+                  <td className={tableDataCellClassName}>{item.place}</td>
                 </tr>
               </React.Fragment>
             ))}

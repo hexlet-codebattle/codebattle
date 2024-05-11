@@ -214,6 +214,8 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
 
+  def get_clans_by_ranking(%{use_clan: false}, _), do: %{}
+
   def get_clans_by_ranking(tournament, %{entries: ranking}) when is_list(ranking) do
     get_clans_by_ranking(tournament, ranking)
   end
@@ -223,12 +225,14 @@ defmodule Codebattle.Tournament.Helpers do
       ranking
       |> Enum.map(& &1.id)
       |> then(&Tournament.Clans.get_clans(tournament, &1))
+      |> Enum.map(&{&1.id, &1})
+      |> Enum.into(%{})
     else
-      []
+      %{}
     end
   end
 
-  def get_clans_by_ranking(_tournament, _ranking), do: []
+  def get_clans_by_ranking(_tournament, _ranking), do: %{}
 
   # def get_players_statistics(tournament = %{type: "team"}) do
   #   all_win_matches =

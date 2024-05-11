@@ -6,9 +6,9 @@ defmodule Codebattle.WaitingRoom.State do
     field(:state, :string, default: "paused")
     field(:groups, {:array, :map}, default: [])
     field(:matched_with_bot, {:array, :map}, default: [])
-    field(:min_time_sec, integer(), default: 1)
-    field(:min_time_with_bot_sec, integer(), default: 15)
-    field(:min_time_with_played_sec, integer(), default: 10)
+    field(:min_time_sec, integer(), default: 3)
+    field(:min_time_with_bot_sec, integer(), default: 3)
+    field(:min_time_with_played_sec, integer(), default: 3)
     field(:name, String.t())
     field(:now, :integer)
     field(:pairs, {:array, :map}, default: [])
@@ -19,7 +19,7 @@ defmodule Codebattle.WaitingRoom.State do
     field(:use_clan?, boolean(), default: false)
     field(:use_match_with_bots?, boolean(), default: true)
     field(:use_played_pairs?, boolean(), default: true)
-    field(:use_sequential_tasks?, boolean(), default: true)
+    field(:use__tasks?, boolean(), default: true)
     field(:use_score?, boolean(), default: true)
   end
 end

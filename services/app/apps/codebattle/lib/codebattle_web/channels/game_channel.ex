@@ -43,6 +43,7 @@ defmodule CodebattleWeb.GameChannel do
 
       {:ok,
        %{
+         active_game_id: active_game_id,
          game: GameView.render_game(game, score),
          current_player: current_player,
          tournament: %{
@@ -56,8 +57,7 @@ defmodule CodebattleWeb.GameChannel do
            break_state: tournament.break_state,
            round_task_ids: tournament.round_task_ids,
            current_round_position: tournament.current_round_position
-         },
-         active_game_id: active_game_id
+         }
        },
        assign(socket,
          tournament_id: game.tournament_id,

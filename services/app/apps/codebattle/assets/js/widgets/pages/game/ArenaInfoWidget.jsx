@@ -5,11 +5,11 @@ import { useSelector } from 'react-redux';
 import ArenaTopLeaderboardPanel from './ArenaTopLeaderboardPanel';
 import WaitingRoomPanel from './WaitingRoomPanel';
 
-const maxPlayerTasks = 7;
-
 const ArenaInfoWidget = () => {
   const { user } = useSelector(state => state.tournamentPlayer);
+  const { roundTaskIds } = useSelector(state => state.tournament);
   const taskCount = user?.taskIds?.length || 1;
+  const taskSolvedCount = user.state === 'active' ? taskCount - 1 : taskCount;
 
   return (
     <div
@@ -17,11 +17,11 @@ const ArenaInfoWidget = () => {
     >
       <ArenaTopLeaderboardPanel
         taskCount={taskCount}
-        maxPlayerTasks={maxPlayerTasks}
+        maxPlayerTasks={roundTaskIds.length}
       />
       <WaitingRoomPanel
-        taskCount={taskCount}
-        maxPlayerTasks={maxPlayerTasks}
+        taskCount={taskSolvedCount}
+        maxPlayerTasks={roundTaskIds.length}
       />
     </div>
   );

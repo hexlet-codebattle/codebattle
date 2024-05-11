@@ -298,12 +298,8 @@
 
       <%= if @ticker_text do %>
         <div class="d-flex cb-ticker-line-wrap p-2">
-          <span class="cb-ticker-line cb-ticker-line-head">
-            <%= @ticker_text %>
-          </span>
-          <span class="cb-ticker-line cb-ticker-line-tail">
-            <%= @ticker_text %>
-          </span>
+          <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
+          <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
         </div>
       <% end %>
       <div class="content bg-light py-1"></div>
