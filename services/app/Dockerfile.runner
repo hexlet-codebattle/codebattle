@@ -11,6 +11,8 @@ COPY mix.lock .
 COPY config ./config
 COPY apps/runner/mix.exs apps/runner/mix.exs
 
+RUN apk update && apk add --no-cache ca-certificates git make curl
+
 RUN mix do deps.get --only prod, compile
 
 COPY ./apps/runner/ ./apps/runner/
@@ -21,12 +23,18 @@ RUN mix release runner \
 FROM elixir:1.16-alpine AS runtime-image
 
 ENV DOCKER_CHANNEL stable
-ENV DOCKER_VERSION 20.10.9
+ENV DOCKER_VERSION 24.0.9
+
+ENV GOON_VERSION v1.1.1
+
 
 RUN apk update && apk add --no-cache ca-certificates git make curl vim
 
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
+
+RUN curl -fsSL "https://github.com/alco/goon/releases/download/${GOON_VERSION}/goon_linux_amd64.tar.gz" \
+  | tar -xzC /usr/local/bin
 
 ENV PORT=4001
 EXPOSE ${PORT}
