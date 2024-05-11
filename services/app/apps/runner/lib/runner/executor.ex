@@ -109,14 +109,17 @@ defmodule Runner.Executor do
       Logger.info("Start docker execution: #{inspect(cmd_opts)}")
 
       {execution_time, result} =
-        :timer.tc(fn -> Rambo.run(cmd, cmd_opts, log: false) end)
+        :timer.tc(fn -> Porcelain.exec(cmd, cmd_opts, err: :string) end)
 
       Logger.error(
         "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
       )
 
       case result do
-        {_ok_or_error, %Rambo{status: status, out: out, err: err}} ->
+        %Porcelain.Result{status: status, out: out, err: err} ->
+          Logger.debug("Execution status: #{status}")
+          Logger.debug("Execution output: #{out}")
+          Logger.debug("Execution error: #{err}")
           {out, err, status}
 
         error ->

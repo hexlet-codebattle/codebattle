@@ -7,10 +7,12 @@ defmodule Mix.Tasks.Dockers.Pull do
   @shortdoc "Pull dockers from docker hub"
 
   def run([slug]) do
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
     slug |> Runner.Languages.meta() |> pull()
   end
 
   def run(_) do
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
     Runner.Languages.meta() |> Map.values() |> Enum.each(&pull/1)
   end
 
@@ -18,7 +20,7 @@ defmodule Mix.Tasks.Dockers.Pull do
 
   defp pull(meta) do
     IO.puts("Start pulling image for #{meta.slug}")
-    Rambo.run("docker", ["pull", meta.docker_image], log: :stdout)
-    IO.puts("End pulling image for #{meta.slug}")
+    result = Porcelain.shell("docker pull #{meta.docker_image}", err: :string)
+    IO.puts result.out
   end
 end
