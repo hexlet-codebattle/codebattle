@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.dev
     working_dir: /app
     env_file: .env
-    command: mix do compile.rambo, phx.server
+    command: mix phx.server
     environment:
       - "USER=${USER}"
     ports:
