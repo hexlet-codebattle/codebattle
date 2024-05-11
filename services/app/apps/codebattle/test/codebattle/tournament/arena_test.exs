@@ -12,7 +12,7 @@ defmodule Codebattle.Tournament.ArenaTest do
     :ok
   end
 
-  test "add bots to complete teams" do
+  test "add bots to games" do
     user1 = insert(:user)
 
     {:ok, tournament} =
@@ -26,6 +26,7 @@ defmodule Codebattle.Tournament.ArenaTest do
         "break_duration_seconds" => 0,
         "task_provider" => "task_pack_per_round",
         "task_strategy" => "sequential",
+        "ranking_type" => "by_clan",
         "type" => "arena",
         "state" => "waiting_participants",
         "use_clan" => "true",

@@ -4,7 +4,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
   alias Codebattle.WaitingRoom.Engine
   alias Codebattle.WaitingRoom.State
 
-  test "matches players" do
+  test "matches players with clans" do
     now = :os.system_time(:seconds)
     joined = now - 5
     pair_with_same_opponent = now - 16
@@ -34,6 +34,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
     state = %State{
       name: "wr",
       state: "active",
+      use_clan?: true,
       time_step_ms: 100_000,
       min_time_sec: 3,
       min_time_with_bot_sec: 20,
@@ -65,7 +66,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
     assert MapSet.new([[1, 4], [2, 3], [2, 4], [6, 7], [8, 9], [14, 15]]) == played_pair_ids
   end
 
-  test "10_000 players" do
+  test "10_000 players with clans" do
     joined = :os.system_time(:seconds) - 5
 
     players =
@@ -86,6 +87,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
     state = %State{
       name: "wr",
       time_step_ms: 100_000,
+      use_clan?: true,
       min_time_sec: 3,
       players: players,
       played_pair_ids: played_pair_ids

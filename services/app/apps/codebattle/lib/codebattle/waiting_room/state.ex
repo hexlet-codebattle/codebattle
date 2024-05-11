@@ -16,10 +16,10 @@ defmodule Codebattle.WaitingRoom.State do
     field(:players, {:array, :map}, default: [])
     field(:time_step_ms, integer(), default: 900)
     field(:unmatched, {:array, :map}, default: [])
-    field(:use_clan?, boolean(), default: true)
+    field(:use_clan?, boolean(), default: false)
     field(:use_match_with_bots?, boolean(), default: true)
     field(:use_played_pairs?, boolean(), default: true)
-    field(:use_same_tasks?, boolean(), default: true)
+    field(:use_sequential_tasks?, boolean(), default: true)
     field(:use_score?, boolean(), default: true)
   end
 end

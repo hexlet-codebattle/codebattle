@@ -260,7 +260,13 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_init_waiting_room(t = %{waiting_room_name: nil}, _params), do: t
 
       defp maybe_init_waiting_room(tournament, params) do
-        WaitingRoom.start_link(Map.put(params, :name, tournament.waiting_room_name))
+        params =
+          params
+          |> Map.put(:name, tournament.waiting_room_name)
+          |> Map.put(:use_clan?, tournament.use_clan)
+          |> Map.put(:use_sequential_tasks?, tournament.task_strategy == "sequential")
+
+        WaitingRoom.start_link(params)
         Codebattle.PubSub.subscribe("waiting_room:#{tournament.waiting_room_name}")
         tournament
       end

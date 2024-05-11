@@ -122,14 +122,14 @@ defmodule Codebattle.Tournament.Arena do
     tournament
   end
 
-  defp build_player_pairs(tournament = %{meta: %{use_clan: true}, current_round_position: 0}) do
+  defp build_player_pairs(tournament = %{use_clan: true, current_round_position: 0}) do
     tournament
     |> get_players()
     |> Enum.map(&{&1.id, &1.clan_id})
     |> Tournament.PairBuilder.ByClan.call()
   end
 
-  defp build_player_pairs(tournament = %{meta: %{use_clan: true}}) do
+  defp build_player_pairs(tournament = %{use_clan: true}) do
     tournament
     |> get_players()
     |> Enum.map(&{&1.id, &1.clan_id, &1.score})

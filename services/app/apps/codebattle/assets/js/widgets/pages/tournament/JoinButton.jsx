@@ -6,7 +6,7 @@ import cn from 'classnames';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
- isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true
+ isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
 }) => {
   const onClick = isParticipant ? leaveTournament : joinTournament;
   const text = isParticipant ? 'Leave' : 'Join';

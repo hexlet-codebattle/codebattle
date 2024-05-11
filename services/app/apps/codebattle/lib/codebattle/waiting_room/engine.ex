@@ -41,7 +41,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     }
   end
 
-  defp do_build_groups(%{use_same_tasks?: true}, groups) do
+  defp do_build_groups(%{use_sequential_tasks?: true}, groups) do
     groups
     |> Enum.group_by(& &1.tasks)
     |> Map.values()
