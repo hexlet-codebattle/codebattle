@@ -78,8 +78,13 @@ defmodule Codebattle.GameCases.RematchTest do
 
     # Second player accept rematch offer
     Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
-    :timer.sleep(70)
-    game = Game.Context.get_game!(game_id + 1)
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      event: "rematch:accepted",
+      payload: %{game_id: new_game_id}
+    }
+
+    game = Game.Context.get_game!(new_game_id)
 
     assert game.state == "playing"
     assert Helpers.get_level(game) == "easy"
