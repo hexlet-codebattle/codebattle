@@ -228,7 +228,8 @@ function TournamentHeader({
                   {type !== 'team' && (
                     <div className="mr-2 mr-lg-0">
                       <JoinButton
-                        isShow={state !== TournamentStates.active}
+                        isShow={state !== TournamentStates.active || type === 'arena'}
+                        isShowLeave={!(type === 'arena' && state === TournamentStates.active)}
                         isParticipant={!!players[currentUserId]}
                         disabled={!isOnline || !isLive}
                       />

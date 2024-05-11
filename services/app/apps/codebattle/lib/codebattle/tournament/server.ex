@@ -149,6 +149,7 @@ defmodule Codebattle.Tournament.Server do
         apply(module, event_type, [tournament, params])
       end
 
+    # TODO: rethink broadcasting during applying event, maybe put inside tournament module
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
@@ -253,10 +254,12 @@ defmodule Codebattle.Tournament.Server do
   def broadcast_tournament_event_by_type(:join, params, tournament) do
     player = Tournament.Helpers.get_player(tournament, params.user.id)
 
-    Codebattle.PubSub.broadcast("tournament:player:joined", %{
-      tournament: tournament,
-      player: player
-    })
+    if player do
+      Codebattle.PubSub.broadcast("tournament:player:joined", %{
+        tournament: tournament,
+        player: player
+      })
+    end
   end
 
   def broadcast_tournament_event_by_type(:leave, params, tournament) do

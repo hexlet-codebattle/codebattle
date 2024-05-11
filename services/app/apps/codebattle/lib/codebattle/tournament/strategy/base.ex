@@ -64,6 +64,22 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def join(tournament = %{state: "active", type: "arena"}, params) do
+        player =
+          params.user
+          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:team_id, Map.get(params, :team_id))
+
+        if players_count(tournament) < tournament.players_limit do
+          tournament = add_player(tournament, player)
+          new_player = Tournament.Players.get_player(tournament, params.user.id)
+          WaitingRoom.put_player(tournament.waiting_room_name, new_player)
+          tournament
+        else
+          tournament
+        end
+      end
+
       def join(tournament, _), do: tournament
 
       def leave(tournament, %{user: user}) do
