@@ -34,13 +34,14 @@ defmodule Codebattle.WaitingRoom.EngineTest do
     state = %State{
       name: "wr",
       state: "active",
-      use_clan?: true,
-      time_step_ms: 100_000,
       min_time_sec: 3,
       min_time_with_bot_sec: 20,
       min_time_with_played_sec: 15,
+      played_pair_ids: MapSet.new([[2, 4], [8, 9], [14, 15]]),
       players: players,
-      played_pair_ids: MapSet.new([[2, 4], [8, 9], [14, 15]])
+      time_step_ms: 100_000,
+      use_clan?: true,
+      use_sequential_tasks?: true
     }
 
     %{
@@ -88,6 +89,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
       name: "wr",
       time_step_ms: 100_000,
       use_clan?: true,
+      use_sequential_tasks?: true,
       min_time_sec: 3,
       players: players,
       played_pair_ids: played_pair_ids
