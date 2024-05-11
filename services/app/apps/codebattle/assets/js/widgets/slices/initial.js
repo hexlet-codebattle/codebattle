@@ -254,7 +254,7 @@ const defaultTournamentParams = {
   players: {},
   playersCount: 0,
   playersLimit: 128,
-  ranking: [],
+  ranking: { entries: [] },
   startsAt: null,
   state: 'loading',
   type: null,

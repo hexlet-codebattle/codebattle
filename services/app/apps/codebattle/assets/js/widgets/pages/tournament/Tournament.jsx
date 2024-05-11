@@ -1,8 +1,5 @@
 import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
+ useState, useCallback, useEffect, useMemo,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -42,7 +39,11 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId, tournament, playersCount, hideResults, canModerate,
+  currentUserId,
+  tournament,
+  playersCount,
+  hideResults,
+  canModerate,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -94,7 +95,10 @@ function InfoPanel({
           pageSize={tournament.playersPageSize}
           hideBots={!tournament.showBots}
           hideResults={hideResults}
-          hideCustomGameConsole={tournament.type !== 'versus' || tournament.state !== TournamentStates.active}
+          hideCustomGameConsole={
+            tournament.type !== 'versus'
+            || tournament.state !== TournamentStates.active
+          }
           canModerate={canModerate}
         />
       );
@@ -122,39 +126,26 @@ function Tournament({ waitingRoomMachine }) {
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 
-  const hideResults = tournament.showResults === undefined
-    ? false
-    : !tournament.showResults;
+  const hideResults = tournament.showResults === undefined ? false : !tournament.showResults;
 
-  const [
-    detailsModalShowing,
-    setDetailsModalShowing,
-  ] = useState(false);
+  const [detailsModalShowing, setDetailsModalShowing] = useState(false);
   const [
     startRoundConfirmationModalShowing,
     setStartRoundConfirmationModalShowing,
   ] = useState(false);
-  const [
-    matchConfirmationModalShowing,
-    setMatchConfirmationModalShowing,
-  ] = useState(false);
+  const [matchConfirmationModalShowing, setMatchConfirmationModalShowing] = useState(false);
 
   const playersCount = useMemo(
-    () => Object.values(tournament.players)
-      .filter(player => (tournament.showBots ? true : !player.isBot))
-      .length,
+    () => Object.values(tournament.players).filter(player => (tournament.showBots ? true : !player.isBot)).length,
     [tournament.players, tournament.showBots],
   );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
-      tournament.state,
-    ),
+        tournament.state,
+      ),
     [tournament.state],
   );
-  const canModerate = useMemo(
-    () => isOwner || isAdmin,
-    [isOwner, isAdmin],
-  );
+  const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -165,7 +156,9 @@ function Tournament({ waitingRoomMachine }) {
   const toggleShowBots = useCallback(() => {
     dispatch(actions.toggleShowBots());
   }, [dispatch]);
-  const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [setStartRoundConfirmationModalShowing]);
+  const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [
+    setStartRoundConfirmationModalShowing,
+  ]);
 
   useEffect(() => {
     const clearTournament = connectToTournament(waitingRoomService)(dispatch);
@@ -194,23 +187,20 @@ function Tournament({ waitingRoomMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(
-    () => {
-      if (matchConfirmationModalShowing) {
-        setDetailsModalShowing(false);
-        setStartRoundConfirmationModalShowing(false);
-      }
-    },
-    [
-      matchConfirmationModalShowing,
-      setStartRoundConfirmationModalShowing,
-      setDetailsModalShowing,
-    ],
-  );
+  useEffect(() => {
+    if (matchConfirmationModalShowing) {
+      setDetailsModalShowing(false);
+      setStartRoundConfirmationModalShowing(false);
+    }
+  }, [
+    matchConfirmationModalShowing,
+    setStartRoundConfirmationModalShowing,
+    setDetailsModalShowing,
+  ]);
 
   if (activePresentationMode) {
     return (
@@ -224,25 +214,20 @@ function Tournament({ waitingRoomMachine }) {
           currentRoundPosition={tournament.currentRoundPosition}
           redirectImmediatly={activePresentationMode}
         />
-        <div
-          className="d-flex flex-column justify-content-center align-items-center p-3"
-        >
-          {has(tournament.players, currentUserId) || tournament.state !== TournamentStates.waitingParticipants
-            ? (
-              <span className="h3">
-                {getTournamentPresentationStatus(tournament.state)}
-              </span>
-            ) : (
-              <>
-                <span className="h3">{tournament.name}</span>
-                <div className="d-flex">
-                  <JoinButton
-                    isShow
-                    isParticipant={false}
-                  />
-                </div>
-              </>
-            )}
+        <div className="d-flex flex-column justify-content-center align-items-center p-3">
+          {has(tournament.players, currentUserId)
+          || tournament.state !== TournamentStates.waitingParticipants ? (
+            <span className="h3">
+              {getTournamentPresentationStatus(tournament.state)}
+            </span>
+          ) : (
+            <>
+              <span className="h3">{tournament.name}</span>
+              <div className="d-flex">
+                <JoinButton isShow isParticipant={false} />
+              </div>
+            </>
+          )}
         </div>
       </>
     );
@@ -342,13 +327,15 @@ function Tournament({ waitingRoomMachine }) {
             </div>
           </div>
           <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
-            <Players
-              playersCount={playersCount}
-              players={tournament.players}
-              showBots={tournament.showBots}
-            />
-            {tournament.useChat && (<TournamentChat />)}
-            {tournament.useClan && (<TournamentClanTable />)}
+            {!tournament.useClan && (
+              <Players
+                playersCount={playersCount}
+                players={tournament.players}
+                showBots={tournament.showBots}
+              />
+            )}
+            {tournament.useChat && <TournamentChat />}
+            {tournament.useClan && <TournamentClanTable />}
           </div>
         </div>
       </div>

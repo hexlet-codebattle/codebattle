@@ -134,14 +134,10 @@ const machine = {
 
 export const config = {
   guards: {
-    isMatchmakingInProgress: (_ctx, { payload }) =>
-      payload.currentPlayer.state === 'matchmaking_active',
-    isMatchmakingPaused: (_ctx, { payload }) =>
-      payload.currentPlayer.state === 'matchmaking_paused',
-    isTournamentFinished: (_ctx, { payload }) =>
-      payload.currentPlayer.state === 'finished',
-    isPlayerBanned: (_ctx, { payload }) =>
-      payload.currentPlayer.state === 'banned',
+    isMatchmakingInProgress: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_active',
+    isMatchmakingPaused: (_ctx, { payload }) => payload.currentPlayer.state === 'matchmaking_paused',
+    isTournamentFinished: (_ctx, { payload }) => payload.currentPlayer.state === 'finished',
+    isPlayerBanned: (_ctx, { payload }) => payload.currentPlayer.state === 'banned',
     // isRoundFinished: (_ctx, { payload }) => payload.state === 'finished_round',
   },
   actions: {

@@ -22,16 +22,20 @@ const initTournamentChannel = dispatch => {
   };
 
   const onJoinSuccess = response => {
-    dispatch(actions.setTournamentData({
-      ...response.tournament,
-      topPlayerIds: response.topPlayerIds || [],
-      matches: {},
-      players: {},
-      showBots: response.tournament.type !== TournamentTypes.show,
-      channel: { online: true },
-      playersPageNumber: 1,
-      playersPageSize: 20,
-    }));
+    // dispatch(
+    //   actions.setTournamentData({
+    //     ...response.tournament,
+    //     topPlayerIds: response.topPlayerIds || [],
+    //     matches: {},
+    //     ranking: response.ranking || { entries: [] },
+    //     clans: response.clans || {},
+    //     players: {},
+    //     showBots: response.tournament.type !== TournamentTypes.show,
+    //     channel: { online: true },
+    //     playersPageNumber: 1,
+    //     playersPageSize: 20,
+    //   }),
+    // );
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
@@ -40,10 +44,7 @@ const initTournamentChannel = dispatch => {
 
   channel.onMessage = (_event, payload) => camelizeKeys(payload);
 
-  channel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   channel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));
@@ -79,40 +80,40 @@ export const connectToTournament = () => dispatch => {
   };
 
   const handleRoundFinished = response => {
-    dispatch(actions.updateTournamentData({
-      ...response.tournament,
-      topPlayerIds: response.topPlayerIds,
-      playersPageNumber: 1,
-      playersPageSize: 20,
-    }));
+    dispatch(
+      actions.updateTournamentData({
+        ...response.tournament,
+        topPlayerIds: response.topPlayerIds,
+        playersPageNumber: 1,
+        playersPageSize: 20,
+      }),
+    );
 
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTopPlayers(compact(response.players)));
   };
 
   const handleTournamentRestarted = response => {
-    dispatch(actions.setTournamentData({
-      ...response.tournament,
-      channel: { online: true },
-      playersPageNumber: 1,
-      playersPageSize: 20,
-      matches: {},
-      players: {},
-    }));
+    dispatch(
+      actions.setTournamentData({
+        ...response.tournament,
+        channel: { online: true },
+        playersPageNumber: 1,
+        playersPageSize: 20,
+        matches: {},
+        players: {},
+      }),
+    );
   };
 
   const handlePlayerJoined = response => {
     dispatch(actions.addTournamentPlayer(response));
-    dispatch(actions.updateTournamentData(
-      response.tournament,
-    ));
+    dispatch(actions.updateTournamentData(response.tournament));
   };
 
   const handlePlayerLeft = response => {
     dispatch(actions.removeTournamentPlayer(response));
-    dispatch(actions.updateTournamentData(
-      response.tournament,
-    ));
+    dispatch(actions.updateTournamentData(response.tournament));
   };
 
   const handleMatchUpserted = response => {
@@ -160,7 +161,8 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
   const { isLive, id } = state.tournament;
 
   if (isLive) {
-    channel.push('tournament:players:request', { player_ids: playerIds })
+    channel
+      .push('tournament:players:request', { player_ids: playerIds })
       .receive('ok', response => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })
@@ -183,7 +185,8 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
 };
 
 export const requestMatchesByPlayerId = userId => dispatch => {
-  channel.push('tournament:matches:request', { player_id: userId })
+  channel
+    .push('tournament:matches:request', { player_id: userId })
     .receive('ok', data => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
@@ -214,15 +217,20 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
 };
 
 export const createCustomRound = params => {
-  channel.push('tournament:start_round', decamelizeKeys(params)).receive('error', error => console.error(error));
+  channel
+    .push('tournament:start_round', decamelizeKeys(params))
+    .receive('error', error => console.error(error));
 };
 
 export const startTournament = () => {
-  channel.push('tournament:start', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:start', {})
+    .receive('error', error => console.error(error));
 };
 
 export const cancelTournament = () => dispatch => {
-  channel.push('tournament:cancel', {})
+  channel
+    .push('tournament:cancel', {})
     .receive('ok', response => {
       dispatch(actions.updateTournamentData(response.tournament));
     })
@@ -230,31 +238,44 @@ export const cancelTournament = () => dispatch => {
 };
 
 export const restartTournament = () => {
-  channel.push('tournament:restart', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:restart', {})
+    .receive('error', error => console.error(error));
 };
 
 export const startRoundTournament = () => {
-  channel.push('tournament:start_round', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:start_round', {})
+    .receive('error', error => console.error(error));
 };
 
 export const finishRoundTournament = () => {
-  channel.push('tournament:finish_round', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:finish_round', {})
+    .receive('error', error => console.error(error));
 };
 
 export const toggleVisibleGameResult = gameId => {
-  channel.push('tournament:toggle_match_visible', { game_id: gameId }).receive('error', error => console.error(error));
+  channel
+    .push('tournament:toggle_match_visible', { game_id: gameId })
+    .receive('error', error => console.error(error));
 };
 
 export const openUpTournament = () => {
-  channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:open_up', {})
+    .receive('error', error => console.error(error));
 };
 
 export const showTournamentResults = () => {
-  channel.push('tournament:toggle_show_results', {}).receive('error', error => console.error(error));
+  channel
+    .push('tournament:toggle_show_results', {})
+    .receive('error', error => console.error(error));
 };
 
 export const toggleBanUser = (userId, isBanned) => dispatch => {
-  channel.push('tournament:ban:player', { user_id: userId })
+  channel
+    .push('tournament:ban:player', { user_id: userId })
     .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
     .receive('error', error => console.error(error));
 };

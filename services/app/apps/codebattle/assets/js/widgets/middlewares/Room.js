@@ -11,7 +11,9 @@ import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import { taskStateCodes } from '../config/task';
-import { parse, getFinalState, getText, resolveDiffs } from '../lib/player';
+import {
+ parse, getFinalState, getText, resolveDiffs,
+} from '../lib/player';
 import * as selectors from '../selectors';
 import { actions, redirectToNewGame } from '../slices';
 import {
@@ -36,12 +38,12 @@ const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 let channel = !isRecord && gameId ? socket.channel(channelName) : null;
 
-export const updateGameChannel = (newGameId) => {
+export const updateGameChannel = newGameId => {
   const newChannelName = `game:${newGameId}`;
   channel = !isRecord && newGameId ? socket.channel(newChannelName) : null;
 };
 
-const initEditors = (dispatch) => (playbookStatusCode, players) => {
+const initEditors = dispatch => (playbookStatusCode, players) => {
   const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
   const updateEditorTextAction = isHistory
     ? actions.updateEditorTextHistory
@@ -50,7 +52,7 @@ const initEditors = (dispatch) => (playbookStatusCode, players) => {
     ? actions.updateExecutionOutputHistory
     : actions.updateExecutionOutput;
 
-  players.forEach((player) => {
+  players.forEach(player => {
     const editorData = getPlayersText(player);
     const executionOutputData = getPlayersExecutionData(player);
 
@@ -60,9 +62,7 @@ const initEditors = (dispatch) => (playbookStatusCode, players) => {
   });
 };
 
-const updateStore =
-  (dispatch) =>
-  ({
+const updateStore = dispatch => ({
     firstPlayer,
     secondPlayer,
     task,
@@ -93,7 +93,7 @@ const updateStore =
     }
   };
 
-const initStoredGame = (dispatch) => (data) => {
+const initStoredGame = dispatch => data => {
   const mode = GameRoomModes.history;
 
   const gameStatus = {
@@ -119,15 +119,14 @@ const initStoredGame = (dispatch) => (data) => {
   dispatch(actions.updateChatData(data.chat));
 };
 
-const initPlaybook = (dispatch) => (data) => {
+const initPlaybook = dispatch => data => {
   initEditors(dispatch)(PlaybookStatusCodes.stored, data.players);
 
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel =
-  (gameRoomMachine, waitingRoomMachine, currentChannel) => (dispatch) => {
-    const onJoinFailure = (payload) => {
+const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) => dispatch => {
+    const onJoinFailure = payload => {
       gameRoomMachine.send('REJECT_LOADING_GAME', { payload });
       gameRoomMachine.send('FAILURE_JOIN', { payload });
       window.location.reload();
@@ -139,7 +138,7 @@ const initGameChannel =
 
     currentChannel.onMessage = (_event, payload) => camelizeKeys(payload);
 
-    const onJoinSuccess = (response) => {
+    const onJoinSuccess = response => {
       if (response.error) {
         console.error(response.error);
         return;
@@ -214,13 +213,10 @@ const initGameChannel =
       .receive('error', onJoinFailure);
   };
 
-export const updateEditorText =
-  (editorText, langSlug = null) =>
-  (dispatch, getState) => {
+export const updateEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
     const state = getState();
     const userId = selectors.currentUserIdSelector(state);
-    const currentLangSlug =
-      langSlug || selectors.userLangSelector(userId)(state);
+    const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
     dispatch(
       actions.updateEditorText({
         userId,
@@ -230,13 +226,10 @@ export const updateEditorText =
     );
   };
 
-export const sendEditorText =
-  (editorText, langSlug = null) =>
-  (dispatch, getState) => {
+export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
     const state = getState();
     const userId = selectors.currentUserIdSelector(state);
-    const currentLangSlug =
-      langSlug || selectors.userLangSelector(userId)(state);
+    const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
 
     dispatch(
       actions.updateEditorText({
@@ -252,7 +245,7 @@ export const sendEditorText =
     });
   };
 
-export const sendEditorCursorPosition = (offset) => {
+export const sendEditorCursorPosition = offset => {
   channel.push(channelMethods.editorCursorPosition, { offset });
 };
 
@@ -266,21 +259,21 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
 export const sendWaitingRoomPaused = () => {
   channel
     .push(channelMethods.matchmakingResume, {})
-    .receive('error', (error) => console.error(error));
+    .receive('error', error => console.error(error));
 };
 export const sendWaitingRoomResumed = () => {
   channel
     .push(channelMethods.matchmakingPause, {})
-    .receive('error', (error) => console.error(error));
+    .receive('error', error => console.error(error));
 };
 
-export const sendPassCode = (passCode, onError) => (dispatch) => {
+export const sendPassCode = (passCode, onError) => dispatch => {
   channel
     .push(channelMethods.enterPassCode, { pass_code: passCode })
     .receive('ok', () => {
       dispatch(actions.setLocked(false));
     })
-    .receive('error', (error) => {
+    .receive('error', error => {
       onError({ message: error.reason });
     });
 };
@@ -301,44 +294,39 @@ export const sendAcceptToRematch = () => {
   channel.push(channelMethods.rematchAcceptOffer, {});
 };
 
-export const sendEditorLang = (currentLangSlug) => (dispatch, getState) => {
+export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
 
   dispatch(actions.updateEditorLang({ userId, currentLangSlug }));
 };
 
-export const updateCurrentLangAndSetTemplate =
-  (langSlug) => (dispatch, getState) => {
+export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
     const state = getState();
     const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-    const currentText =
-      selectors.currentPlayerTextByLangSelector(langSlug)(state);
+    const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
     const { solutionTemplate: template } = find(langs, { slug: langSlug });
     const textToSet = currentText || template;
     dispatch(updateEditorText(textToSet, langSlug));
   };
 
-export const sendCurrentLangAndSetTemplate =
-  (langSlug) => (dispatch, getState) => {
+export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
     const state = getState();
     const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-    const currentText =
-      selectors.currentPlayerTextByLangSelector(langSlug)(state);
+    const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
     const { solutionTemplate: template } = find(langs, { slug: langSlug });
     const textToSet = currentText || template;
     dispatch(sendEditorText(textToSet, langSlug));
   };
 
-export const resetTextToTemplate = (langSlug) => (dispatch, getState) => {
+export const resetTextToTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
   dispatch(updateEditorText(template, langSlug));
 };
 
-export const resetTextToTemplateAndSend =
-  (langSlug) => (dispatch, getState) => {
+export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
     const state = getState();
     const langs = selectors.editorLangsSelector(state) || defaultLanguages;
     const { solutionTemplate: template } = find(langs, { slug: langSlug });
@@ -354,14 +342,14 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
 
   const oldChannel = channel;
 
-  const handleNewCursorPosition = debounce((data) => {
+  const handleNewCursorPosition = debounce(data => {
     const { userId, offset } = data;
     if (id === userId) {
       onChangePosition(offset);
     }
   }, 80);
 
-  const handleNewCursorSelection = debounce((data) => {
+  const handleNewCursorSelection = debounce(data => {
     const { userId, startOffset, endOffset } = data;
     if (id === userId) {
       onChangeSelection(startOffset, endOffset);
@@ -403,12 +391,12 @@ export const activeEditorReady = (machine, isBanned) => {
   //   machine.send('typing', { userId });
   // });
 
-  const handleStartsCheck = (data) => {
+  const handleStartsCheck = data => {
     const { userId } = data;
     machine.send('check_solution_received', { userId });
   };
 
-  const handleNewCheckResult = (data) => {
+  const handleNewCheckResult = data => {
     const { userId } = data;
     machine.send('receive_check_result', { userId });
   };
@@ -433,9 +421,7 @@ export const activeEditorReady = (machine, isBanned) => {
   return clearEditorListeners;
 };
 
-export const activeGameReady =
-  (gameRoomMachine, waitingRoomMachine, { cancelRedirect = false }) =>
-  (dispatch, getState) => {
+export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRedirect = false }) => (dispatch, getState) => {
     const currentGameChannel = channel;
     initGameChannel(
       gameRoomMachine,
@@ -443,7 +429,7 @@ export const activeGameReady =
       currentGameChannel,
     )(dispatch);
 
-    const handleNewEditorData = (data) => {
+    const handleNewEditorData = data => {
       dispatch(actions.updateEditorText(data));
     };
 
@@ -451,13 +437,14 @@ export const activeGameReady =
       dispatch(actions.updateCheckStatus({ [userId]: true }));
     };
 
-    const handleNewCheckResult = (responseData) => {
-      const { state, solutionStatus, checkResult, players, userId, award } =
-        responseData;
+    const handleNewCheckResult = responseData => {
+      const {
+ state, solutionStatus, checkResult, players, userId, award,
+} = responseData;
       if (solutionStatus) {
         channel
           .push(channelMethods.gameScore, {})
-          .receive('ok', (data) => dispatch(actions.setGameScore(data)));
+          .receive('ok', data => dispatch(actions.setGameScore(data)));
       }
       dispatch(actions.updateGamePlayers({ players }));
 
@@ -474,8 +461,10 @@ export const activeGameReady =
       gameRoomMachine.send(channelTopics.userCheckCompleteTopic, { payload });
     };
 
-    const handleUserJoined = (data) => {
-      const { state, startsAt, timeoutSeconds, langs, players, task } = data;
+    const handleUserJoined = data => {
+      const {
+ state, startsAt, timeoutSeconds, langs, players, task,
+} = data;
 
       const gamePlayers = getGamePlayers(players);
       const [firstPlayer, secondPlayer] = gamePlayers;
@@ -529,24 +518,24 @@ export const activeGameReady =
       });
     };
 
-    const handleUserWon = (data) => {
+    const handleUserWon = data => {
       const { players, state, msg } = data;
       dispatch(actions.updateGamePlayers({ players }));
       dispatch(actions.updateGameStatus({ state, msg }));
       gameRoomMachine.send(channelTopics.userWonTopic, { payload: data });
     };
 
-    const handleUserGiveUp = (data) => {
+    const handleUserGiveUp = data => {
       const { players, state, msg } = data;
       dispatch(actions.updateGamePlayers({ players }));
       dispatch(actions.updateGameStatus({ state, msg }));
       channel
         .push(channelMethods.gameScore, {})
-        .receive('ok', (response) => dispatch(actions.setGameScore(response)));
+        .receive('ok', response => dispatch(actions.setGameScore(response)));
       gameRoomMachine.send(channelTopics.userGiveUpTopic, { payload: data });
     };
 
-    const handleRematchStatusUpdate = (data) => {
+    const handleRematchStatusUpdate = data => {
       dispatch(actions.updateRematchStatus(data));
       gameRoomMachine.send(channelTopics.rematchStatusUpdatedTopic, {
         payload: data,
@@ -558,7 +547,7 @@ export const activeGameReady =
       redirectToNewGame(newGameId);
     };
 
-    const handleGameTimeout = (data) => {
+    const handleGameTimeout = data => {
       const { gameState } = data;
       const payload = { state: gameState };
       dispatch(actions.updateGameStatus(payload));
@@ -573,7 +562,7 @@ export const activeGameReady =
       dispatch(actions.setLocked(false));
     };
 
-    const handleTournamentGameCreated = (data) => {
+    const handleTournamentGameCreated = data => {
       dispatch(actions.setTournamentsInfo(data));
       gameRoomMachine.send(channelTopics.tournamentGameCreatedTopic, {
         payload: data,
@@ -585,11 +574,11 @@ export const activeGameReady =
       }
     };
 
-    const handleTournamentRoundCreated = (response) => {
+    const handleTournamentRoundCreated = response => {
       dispatch(actions.updateTournamentData(response));
     };
 
-    const handleTournamentRoundFinished = (response) => {
+    const handleTournamentRoundFinished = response => {
       dispatch(actions.updateTournamentData(response.tournament));
       dispatch(actions.updateTournamentMatches(response.matches));
       gameRoomMachine.send(channelTopics.tournamentRoundFinishedTopic, {
@@ -597,7 +586,7 @@ export const activeGameReady =
       });
     };
 
-    const handleTournamentGameWait = (response) => {
+    const handleTournamentGameWait = response => {
       dispatch(actions.setTournamentWaitType(response.type));
     };
 
@@ -607,14 +596,14 @@ export const activeGameReady =
       { cancelRedirect: false },
     )(dispatch, getState);
 
-    const handleWaitingRoomPlayerFinishedRound = (response) => {
+    const handleWaitingRoomPlayerFinishedRound = response => {
       waitingRoomMachine.send(
         channelTopics.tournamentPlayerFinishedRoundTopic,
         { payload: response },
       );
     };
 
-    const handleWaitingRoomPlayerFinished = (response) => {
+    const handleWaitingRoomPlayerFinished = response => {
       waitingRoomMachine.send(channelTopics.tournamentPlayerFinishedTopic, {
         payload: response,
       });
@@ -724,8 +713,7 @@ export const activeGameReady =
     return clearGameListeners;
   };
 
-const fetchOrCreateTask =
-  (gameMachine, taskMachine) => (dispatch, getState) => {
+const fetchOrCreateTask = (gameMachine, taskMachine) => (dispatch, getState) => {
     const currentTask = getState().builder.task;
 
     taskMachine.send('SETUP_TASK', { payload: currentTask });
@@ -735,24 +723,21 @@ const fetchOrCreateTask =
     gameMachine.send('LOAD_GAME', message);
   };
 
-export const reloadGeneratorAndSolutionTemplates =
-  (taskMachine) => (dispatch, getState) => {
+export const reloadGeneratorAndSolutionTemplates = taskMachine => (dispatch, getState) => {
     const state = getState();
 
     const langs = selectors.editorLangsSelector(state);
 
     const solution = langs.reduce(
-      (acc, lang) =>
-        lang.argumentsGeneratorTemplate
+      (acc, lang) => (lang.argumentsGeneratorTemplate
           ? { ...acc, [lang.slug]: lang.solutionTemplate }
-          : acc,
+          : acc),
       {},
     );
     const argumentsGenerator = langs.reduce(
-      (acc, lang) =>
-        lang.argumentsGeneratorTemplate
+      (acc, lang) => (lang.argumentsGeneratorTemplate
           ? { ...acc, [lang.slug]: lang.argumentsGeneratorTemplate }
-          : acc,
+          : acc),
       {},
     );
 
@@ -760,7 +745,7 @@ export const reloadGeneratorAndSolutionTemplates =
     taskMachine.send('CHANGES');
   };
 
-export const validateTaskName = (name) => (dispatch, getState) => {
+export const validateTaskName = name => (dispatch, getState) => {
   if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
     return;
   }
@@ -772,10 +757,9 @@ export const validateTaskName = (name) => (dispatch, getState) => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then((response) => {
+    .then(response => {
       const data = camelizeKeys(response.data);
-      const { name: currentTaskName } =
-        selectors.builderTaskSelector(getState());
+      const { name: currentTaskName } = selectors.builderTaskSelector(getState());
 
       if (currentTaskName !== name) {
         return;
@@ -791,12 +775,12 @@ export const validateTaskName = (name) => (dispatch, getState) => {
         );
       }
     })
-    .catch((error) => {
+    .catch(error => {
       dispatch(actions.setValidationStatuses({ name: [false, error.message] }));
     });
 };
 
-export const updateTaskState = (id, state) => (dispatch) => {
+export const updateTaskState = (id, state) => dispatch => {
   axios
     .patch(
       `/api/v1/tasks/${id}`,
@@ -811,13 +795,13 @@ export const updateTaskState = (id, state) => (dispatch) => {
     .then(() => {
       dispatch(actions.setTaskState(state));
     })
-    .catch((error) => {
+    .catch(error => {
       dispatch(actions.setError(error));
       console.error(error);
     });
 };
 
-export const publishTask = (id) => (dispatch, getState) => {
+export const publishTask = id => (dispatch, getState) => {
   const state = getState();
   const isAdmin = selectors.currentUserIsAdminSelector(state);
   const nextTaskState = isAdmin
@@ -827,7 +811,7 @@ export const publishTask = (id) => (dispatch, getState) => {
   dispatch(updateTaskState(id, nextTaskState));
 };
 
-export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
+export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
   axios
     .patch(
       `/api/v1/tasks/${id}`,
@@ -842,16 +826,14 @@ export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
     .then(() => {
       dispatch(actions.setTaskVisibility(visibility));
     })
-    .catch((error) => {
+    .catch(error => {
       dispatch(actions.setError(error));
       console.error(error);
       onError(error);
     });
 };
 
-export const uploadTask =
-  (taskParams, taskMachine, onSuccess = () => {}, onError = () => {}) =>
-  (dispatch) => {
+export const uploadTask = (taskParams, taskMachine, onSuccess = () => {}, onError = () => {}) => dispatch => {
     const payload = {
       task: decamelizeKeys(taskParams, { separator: '_' }),
       options: {
@@ -866,7 +848,7 @@ export const uploadTask =
           'x-csrf-token': window.csrf_token,
         },
       })
-      .then((response) => {
+      .then(response => {
         const data = camelizeKeys(response.data);
         const labledTask = labelTaskParamsWithIds(data.task);
 
@@ -874,7 +856,7 @@ export const uploadTask =
         taskMachine.send('CONFIRM');
         onSuccess();
       })
-      .catch((err) => {
+      .catch(err => {
         onError(err);
 
         dispatch(actions.setError(err));
@@ -882,9 +864,7 @@ export const uploadTask =
       });
   };
 
-export const saveTask =
-  (taskMachine, onSuccess = () => {}, onError = () => {}) =>
-  (dispatch, getState) => {
+export const saveTask = (taskMachine, onSuccess = () => {}, onError = () => {}) => (dispatch, getState) => {
     const state = getState();
 
     const taskParams = selectors.taskParamsSelector()(state);
@@ -903,14 +883,14 @@ export const saveTask =
             'x-csrf-token': window.csrf_token,
           },
         })
-        .then((response) => {
+        .then(response => {
           const data = camelizeKeys(response.data);
 
           taskMachine.send('CONFIRM');
           window.location.href = `/tasks/${data.task.id}`;
           onSuccess();
         })
-        .catch((err) => {
+        .catch(err => {
           onError(err);
 
           dispatch(actions.setError(err));
@@ -924,7 +904,7 @@ export const saveTask =
             'x-csrf-token': window.csrf_token,
           },
         })
-        .then((response) => {
+        .then(response => {
           const data = camelizeKeys(response.data);
           const labledTask = labelTaskParamsWithIds(data.task);
 
@@ -932,7 +912,7 @@ export const saveTask =
           taskMachine.send('CONFIRM');
           onSuccess();
         })
-        .catch((err) => {
+        .catch(err => {
           onError(err);
 
           dispatch(actions.setError(err));
@@ -941,7 +921,7 @@ export const saveTask =
     }
   };
 
-export const deleteTask = (id) => (dispatch) => {
+export const deleteTask = id => dispatch => {
   axios
     .delete(`/api/v1/tasks/${id}`, {
       headers: {
@@ -952,13 +932,13 @@ export const deleteTask = (id) => (dispatch) => {
     .then(() => {
       window.location.href = '/tasks';
     })
-    .catch((err) => {
+    .catch(err => {
       dispatch(actions.setError(err));
       console.error(err);
     });
 };
 
-export const buildTaskAsserts = (taskMachine) => (dispatch, getState) => {
+export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
   const state = getState();
 
   if (state.builder.templates.state !== taskTemplatesStates.init) {
@@ -1002,7 +982,7 @@ export const buildTaskAsserts = (taskMachine) => (dispatch, getState) => {
         },
       },
     )
-    .then((response) => {
+    .then(response => {
       const data = camelizeKeys(response.data);
 
       dispatch(
@@ -1034,7 +1014,7 @@ export const buildTaskAsserts = (taskMachine) => (dispatch, getState) => {
         }
       }
     })
-    .catch((err) => {
+    .catch(err => {
       dispatch(
         actions.setTaskAsserts({
           asserts: [],
@@ -1049,12 +1029,12 @@ export const buildTaskAsserts = (taskMachine) => (dispatch, getState) => {
     });
 };
 
-const fetchPlaybook = (machine, init) => (dispatch) => {
+const fetchPlaybook = (machine, init) => dispatch => {
   machine.send('START_LOADING_PLAYBOOK');
 
   axios
     .get(`/api/v1/playbook/${gameId}`)
-    .then((response) => {
+    .then(response => {
       const data = camelizeKeys(response.data);
       const type = isRecord
         ? PlaybookStatusCodes.stored
@@ -1065,7 +1045,7 @@ const fetchPlaybook = (machine, init) => (dispatch) => {
 
       machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
-    .catch((err) => {
+    .catch(err => {
       console.error(err);
       dispatch(actions.setError(err));
       machine.send('REJECT_LOADING_PLAYBOOK', { payload: err });
@@ -1074,7 +1054,7 @@ const fetchPlaybook = (machine, init) => (dispatch) => {
   return () => {};
 };
 
-export const changePlaybookSolution = (method) => (dispatch) => {
+export const changePlaybookSolution = method => dispatch => {
   axios
     .post(
       `/api/v1/playbooks/${method}`,
@@ -1088,7 +1068,7 @@ export const changePlaybookSolution = (method) => (dispatch) => {
         },
       },
     )
-    .then((response) => {
+    .then(response => {
       const data = camelizeKeys(response.data);
 
       if (data.errors) {
@@ -1102,34 +1082,33 @@ export const changePlaybookSolution = (method) => (dispatch) => {
         dispatch(actions.changeSolutionType(data));
       }
     })
-    .catch((error) => {
+    .catch(error => {
       console.error(error);
       dispatch(actions.setError(error));
     });
 };
 
-export const storedEditorReady = (machine) => {
+export const storedEditorReady = machine => {
   machine.send('load_stored_editor');
 
   return () => {};
 };
 
-export const downloadPlaybook = (machine) => (dispatch) => {
+export const downloadPlaybook = machine => dispatch => {
   dispatch(fetchPlaybook(machine, initPlaybook));
 };
 
-export const openPlaybook = (machine) => () => {
+export const openPlaybook = machine => () => {
   machine.send('OPEN_REPLAYER');
 };
 
-export const connectToTask = (gameMachine, taskMachine) => (dispatch) => {
+export const connectToTask = (gameMachine, taskMachine) => dispatch => {
   dispatch(fetchOrCreateTask(gameMachine, taskMachine));
 
   return () => {};
 };
 
-export const connectToGame =
-  (machine, waitingRoomMachine, options) => (dispatch) => {
+export const connectToGame = (machine, waitingRoomMachine, options) => dispatch => {
     if (isRecord) {
       return fetchPlaybook(machine, initStoredGame)(dispatch);
     }
@@ -1139,8 +1118,7 @@ export const connectToGame =
     return activeGameReady(machine, waitingRoomMachine, options)(dispatch);
   };
 
-export const connectToEditor = (machine, isBanned) => () =>
-  isRecord ? storedEditorReady(machine) : activeEditorReady(machine, isBanned);
+export const connectToEditor = (machine, isBanned) => () => (isRecord ? storedEditorReady(machine) : activeEditorReady(machine, isBanned));
 
 export const checkGameSolution = () => (dispatch, getState) => {
   const state = getState();
@@ -1163,16 +1141,16 @@ export const checkGameSolution = () => (dispatch, getState) => {
 export const pauseWaitingRoomMatchmaking = () => () => {
   channel
     .push(channelMethods.matchmakingPause, {})
-    .receive('error', (error) => console.error(error));
+    .receive('error', error => console.error(error));
 };
 
 export const startWaitingRoomMatchmaking = () => () => {
   channel
     .push(channelMethods.matchmakingResume, {})
-    .receive('error', (error) => console.error(error));
+    .receive('error', error => console.error(error));
 };
 
-export const checkTaskSolution = (editorMachine) => (dispatch, getState) => {
+export const checkTaskSolution = editorMachine => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const { text, lang } = selectors.getSolution(currentUserId)(state);
@@ -1198,7 +1176,7 @@ export const checkTaskSolution = (editorMachine) => (dispatch, getState) => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then((response) => {
+    .then(response => {
       const { checkResult } = camelizeKeys(response.data);
 
       dispatch(
@@ -1209,7 +1187,7 @@ export const checkTaskSolution = (editorMachine) => (dispatch, getState) => {
       );
       editorMachine.send('receive_check_result', { userId: currentUserId });
     })
-    .catch((error) => {
+    .catch(error => {
       dispatch(
         actions.updateExecutionOutput({
           status: 'error',
@@ -1223,7 +1201,7 @@ export const checkTaskSolution = (editorMachine) => (dispatch, getState) => {
     });
 };
 
-export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
+export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
   const payload = { user_id: userId, reason: 'cheat', comment: '' };
 
   axios
@@ -1233,10 +1211,10 @@ export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then((data) => {
+    .then(data => {
       onSuccess(camelizeKeys(data));
     })
-    .catch((error) => {
+    .catch(error => {
       onError(error);
 
       dispatch(actions.setError(error));
@@ -1244,16 +1222,14 @@ export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
     });
 };
 
-export const compressEditorHeight = (userId) => (dispatch) =>
-  dispatch(actions.compressEditorHeight({ userId }));
-export const expandEditorHeight = (userId) => (dispatch) =>
-  dispatch(actions.expandEditorHeight({ userId }));
+export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
+export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));
 
 /*
  * Middleware actions for CodebattlePlayer
  */
 
-export const setGameHistoryState = (recordId) => (dispatch, getState) => {
+export const setGameHistoryState = recordId => (dispatch, getState) => {
   const state = getState();
   const initRecords = selectors.playbookInitRecordsSelector(state);
   const records = selectors.playbookRecordsSelector(state);
@@ -1264,7 +1240,7 @@ export const setGameHistoryState = (recordId) => (dispatch, getState) => {
     initRecords,
   });
 
-  editorsState.forEach((player) => {
+  editorsState.forEach(player => {
     dispatch(
       actions.updateEditorTextHistory({
         userId: player.id,
@@ -1284,8 +1260,7 @@ export const setGameHistoryState = (recordId) => (dispatch, getState) => {
   dispatch(actions.updateChatDataHistory(chatState));
 };
 
-export const updateGameHistoryState =
-  (nextRecordId) => (dispatch, getState) => {
+export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
     const state = getState();
     const records = selectors.playbookRecordsSelector(state);
     const nextRecord = parse(records[nextRecordId]) || {};
