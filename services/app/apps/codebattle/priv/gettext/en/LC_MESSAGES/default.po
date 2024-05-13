@@ -387,3 +387,9 @@ msgstr "Your settings has been changed"
 
 msgid "Something went wrong"
 msgstr "Oops, something has gone wrong"
+
+msgid "arena_task_stats"
+msgid_plural "%{count} tasks left"
+msgstr[0] "%{count} task left"
+msgstr[1] "%{count} tasks left"
+msgstr[2] "%{count} tasks left"
