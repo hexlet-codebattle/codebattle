@@ -4,7 +4,6 @@ import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
 import socket from '../../socket';
-import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
 const tournamentId = Gon.getAsset('tournament_id');

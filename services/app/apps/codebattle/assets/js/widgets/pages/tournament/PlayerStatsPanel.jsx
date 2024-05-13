@@ -10,6 +10,7 @@ import reverse from 'lodash/reverse';
 
 import Loading from '../../components/Loading';
 import MatchStatesCodes from '../../config/matchStates';
+import TournamentTypes from '../../config/tournamentTypes';
 import { getOpponentId } from '../../utils/matches';
 
 import StageCard from './StageCard';
