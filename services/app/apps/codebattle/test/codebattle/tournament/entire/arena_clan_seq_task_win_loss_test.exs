@@ -57,12 +57,6 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
     Enum.each(users, fn %{id: id, name: name} ->
       assert_received %Codebattle.PubSub.Message{
-        topic: ^admin_topic,
-        event: "tournament:player:joined",
-        payload: %{player: %{name: ^name, id: ^id, state: "active"}}
-      }
-
-      assert_received %Codebattle.PubSub.Message{
         topic: ^common_topic,
         event: "tournament:player:joined",
         payload: %{player: %{name: ^name, id: ^id, state: "active"}}
