@@ -4,6 +4,8 @@ import React, {
 
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
+import TournamentTypes from '../../config/tournamentTypes';
+
 import ControlPanel, { PanelModeCodes } from './ControlPanel';
 import PlayerStatsPanel from './PlayerStatsPanel';
 import RatingPanel from './RatingPanel';
@@ -43,6 +45,7 @@ function CustomTournamentInfoPanel({
     <>
       {!hideCustomGameConsole && canModerate && (
         <TournamentGameCreatePanel
+          type={type}
           players={players}
           matches={matches}
           taskList={taskList}
@@ -65,7 +68,7 @@ function CustomTournamentInfoPanel({
               setSearchOption={setSearchedUser}
               togglePanelMode={togglePanelMode}
               disabledPanelModeControl={
-                !players[currentUserId] || (hideResults && !canModerate)
+                !players[currentUserId] || (hideResults && !canModerate) || (type === TournamentTypes.arena && !canModerate)
               }
               disabledSearch={!canModerate}
             />

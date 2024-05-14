@@ -369,8 +369,8 @@ a {
   height: 4px;
   background: white;
   position: relative;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
   clip-path: polygon(0 0, 92% 0, 100% 100%, 0% 100%);
 
   @media (max-width: $sm) {
@@ -382,8 +382,8 @@ a {
   &>.cb-asserts-progress {
     position: absolute;
     height: 100%;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
     background: #809b88;
   }
 
@@ -436,7 +436,7 @@ a {
 }
 
 .cb-tournament-profile-avatar {
-  width: min(100%, 110px);
+  width: min(100%, 82px);
 }
 
 .cb-user-avatar {
@@ -987,6 +987,11 @@ a:hover {
   color: #ec9d7c !important;
 }
 
+.cb-custom-event-tr-brown-border {
+  outline: 1px solid #FF621E;
+  border-radius: 0.50rem;
+}
+
 .cb-custom-event-common-leaderboard-bg {
   background-color: #d9d9d9;
 }
@@ -1053,16 +1058,6 @@ a:hover {
     background-repeat: no-repeat;
   }
 }
-
-// .cb-custom-event-pagination-nav-item {
-//   background-color: #8C64FF;
-//   border-radius: 0.5rem;
-// }
-//
-// .cb-custom-event-pagination-nav-link {
-//   background-color: #8C64FF;
-//   border-radius: 0.5rem;
-// }
 
 .cb-custom-event-pagination-page-item .cb-custom-event-pagination-page-link {
     border: 1px solid transparent;
@@ -1162,6 +1157,26 @@ a:hover {
 .cb-custom-event-btn-outline-warning:disabled {
   color: #C3C2BC;
   border-color: #C3C2BC;
+}
+
+.cb-custom-event-active-status,
+.cb-custom-event-draw-status,
+.cb-custom-event-win-status,
+.cb-custom-event-lose-status {
+  border-radius: 0.50rem;
+}
+
+.cb-custom-event-draw-status,
+.cb-custom-event-active-status {
+  background-color: #FFE500;
+}
+
+.cb-custom-event-win-status {
+  background-color: #2AE881;
+}
+
+.cb-custom-event-lose-status {
+  background-color: #FF621E;
 }
 
 .cb-scrollable-menu-dropdown-chat { max-height: 400px }

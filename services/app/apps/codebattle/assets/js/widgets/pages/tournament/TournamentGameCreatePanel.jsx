@@ -7,7 +7,7 @@ import shuffle from 'lodash/shuffle';
 
 import MatchStates from '../../config/matchStates';
 import { createCustomRound } from '../../middlewares/TournamentAdmin';
-import { tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
+import { getCustomEventPlayerDefaultImgUrl, tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
 
 const emptyPlayer = {};
 
@@ -179,7 +179,7 @@ function TournamentGameCreatePanel({
             <div className="d-flex flex-column align-items-center pr-1">
               <img
                 alt={`${selectedPlayer.name} avatar`}
-                src={selectedPlayer.avatarUrl}
+                src={selectedPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(selectedPlayer)}
                 className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
               />
               {
@@ -188,7 +188,7 @@ function TournamentGameCreatePanel({
                     vs
                     <img
                       alt={`${opponentPlayer.name} avatar`}
-                      src={opponentPlayer?.avatarUrl}
+                      src={opponentPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(opponentPlayer) || tournamentEmptyPlayerUrl}
                       className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
                     />
                   </>

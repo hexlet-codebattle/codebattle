@@ -7,6 +7,7 @@ import React, {
   memo,
 } from 'react';
 
+import i18next from 'i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -127,7 +128,7 @@ function MatchConfirmationModal({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openMatch]);
 
-  const title = 'Next match will be opened. Show now?';
+  const title = i18next.t('Next match will be opened. Show now?');
 
   return (
     <Modal show={modalShowing} onHide={handleCancel}>
@@ -136,7 +137,12 @@ function MatchConfirmationModal({
       </Modal.Header>
       <Modal.Body>
         {opponentId && (
-          <span className="d-flex justify-content-center text-center mb-2">{`Your opponent is waiting: ${players[opponentId]?.name}`}</span>
+          <span className="d-flex justify-content-center text-center mb-2">
+            {i18next.t(
+              'Your opponent is waiting: %{name}',
+              { name: players[opponentId]?.name },
+            )}
+          </span>
         )}
         {remainingTime !== null && (
           <div className="progress mx-5">
@@ -158,7 +164,7 @@ function MatchConfirmationModal({
             onClick={handleCancel}
             className="btn btn-secondary rounded-lg"
           >
-            Cancel
+            {i18next.t('Cancel')}
           </Button>
           <div className="d-flex">
             <Button
@@ -166,7 +172,7 @@ function MatchConfirmationModal({
               onClick={handleConfirmation}
               className="btn btn-primary text-white rounded-lg"
             >
-              Open
+              {i18next.t('Open')}
             </Button>
           </div>
         </div>

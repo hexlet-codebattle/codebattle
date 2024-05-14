@@ -1,6 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { camelizeKeys } from 'humps';
+import { camelizeKeys, decamelizeKeys } from 'humps';
+
+import {
+  currentUserClanIdSelector,
+  currentUserIdSelector,
+} from '@/selectors';
 
 import loadingStatuses from '../config/loadingStatuses';
 
@@ -9,28 +14,33 @@ import initial from './initial';
 const fetchCommonLeaderboard = createAsyncThunk(
   'events/fetchLeaderboard',
   async (
+    params,
     {
-      type,
-      pageNumber,
-      pageSize,
-      clanId,
-      userId,
-      eventId,
+      getState,
     },
   ) => {
-    const params = {
-      type,
-      clan_id: clanId,
-      user_id: userId,
-      page_number: pageNumber,
-      page_size: pageSize,
-    };
+    const state = getState();
+
+    params.clanId = params.clanId || currentUserClanIdSelector(state);
+    params.userId = params.userId || currentUserIdSelector(state);
 
     const response = await axios.get(
-      `/api/v1/events/${eventId}/leaderboard`,
-      { params },
+      `/api/v1/events/${params.eventId}/leaderboard`,
+      { params: decamelizeKeys(params, { separator: '_' }) },
     );
 
+    // return {
+    //   items: [
+    //     { id: 101, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 1 },
+    //     { id: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 2 },
+    //     { id: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 3 },
+    //     { id: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 4 },
+    //     { id: 101, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 5 },
+    //     { id: 6, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 6 },
+    //     { id: 7, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 7 },
+    //   ],
+    //   pageInfo: { pageNumber: 1, pageSize: 10, totalEntries: 1000 },
+    // };
     return camelizeKeys(response.data);
   },
 );

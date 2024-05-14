@@ -2,6 +2,7 @@ import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import moment from 'moment';
 
 import useTournamentStats from '@/utils/useTournamentStats';
@@ -42,9 +43,9 @@ const getBadgeTitle = (state, breakState, hideResults) => {
 const getDescriptionByState = state => {
   switch (state) {
     case TournamentStates.cancelled:
-      return 'The tournament is cancelled';
+      return i18next.t('The tournament is cancelled');
     case TournamentStates.finished:
-      return 'The tournament is finished';
+      return i18next.t('The tournament is finished');
     default:
       return '';
   }
@@ -59,11 +60,10 @@ function TournamentTimer({ startsAt, isOnline }) {
 
   return seconds > 0 ? (
     <span>
-      The tournament will start in&nbsp;
-      {duration}
+      {i18next.t('The tournament will start: %{duration}', { duration })}
     </span>
   ) : (
-    <span>The tournament will start soon</span>
+    <span>{i18next.t('The tournament will start soon')}</span>
   );
 }
 
@@ -95,7 +95,7 @@ function TournamentStateDescription({
   if (state === TournamentStates.active && breakState === 'off') {
     return (
       <span>
-        {'Round ends in '}
+        {i18next.t('Round ends in ')}
         <TournamentRemainingTimer
           key={lastRoundStartedAt}
           startsAt={lastRoundStartedAt}
@@ -108,7 +108,7 @@ function TournamentStateDescription({
   if (state === TournamentStates.active && breakState === 'on') {
     return (
       <span>
-        {'Next round will start in '}
+        {i18next.t('Next round will start in ')}
         <TournamentRemainingTimer
           key={lastRoundEndedAt}
           startsAt={lastRoundEndedAt}
@@ -152,7 +152,7 @@ function TournamentHeader({
 }) {
   const { taskSolvedCount, maxPlayerTasks } = useTournamentStats();
   const stateBadgeTitle = useMemo(
-    () => getBadgeTitle(state, breakState, hideResults),
+    () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
     [state, breakState, hideResults],
   );
   const stateClassName = cn('badge mr-2', {

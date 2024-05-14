@@ -4,21 +4,75 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
 import { uploadPlayers } from '@/middlewares/Tournament';
 
 import MatchStateCodes from '../../config/matchStates';
-import { tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
+import TournamentTypes from '../../config/tournamentTypes';
+import { getCustomEventPlayerDefaultImgUrl, tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
 import useMatchesStatistics from '../../utils/useMatchesStatistics';
 
 import StageTitle from './StageTitle';
 
+function ArenaStageStatus({
+  playerId,
+  matchList,
+  matchState,
+}) {
+  const [player, opponent] = useMatchesStatistics(playerId, matchList);
+
+  if (matchState === MatchStateCodes.playing) {
+    return (
+      <span className="cb-custom-event-active-status text-nowrap px-2 my-1">
+        {i18next.t('Active match')}
+      </span>
+    );
+  }
+
+  if (
+    player.winMatches.length === opponent.winMatches.length
+    && player.score === opponent.score
+    && player.avgTests === opponent.avgTests
+    && player.avgDuration === opponent.avgDuration
+  ) {
+    return <span className="cb-custom-event-draw-status px-2">{i18next.t('Draw')}</span>;
+  }
+
+  if (
+    player.score > opponent.score
+    || (player.score === opponent.score
+      && player.winMatches.length > opponent.winMatches.length)
+    || (player.winMatches.length === opponent.winMatches.length
+      && player.score === opponent.score
+      && player.avgTests > opponent.avgTests)
+    || (player.winMatches.length === opponent.winMatches.length
+      && player.score === opponent.score
+      && player.avgTests === opponent.avgTests
+      && player.avgDuration > opponent.avgDuration)
+  ) {
+    return <span className="cb-custom-event-win-status px-2">{i18next.t('You win')}</span>;
+  }
+
+  return <span className="cb-custom-event-lose-status text-white px-2">{i18next.t('You lose')}</span>;
+}
+
 function StageStatus({
   playerId,
   matchList,
+  matchState,
 }) {
   const [player, opponent] = useMatchesStatistics(playerId, matchList);
+
+  if (matchState === MatchStateCodes.playing) {
+    return (
+      <span className="text-primary">
+        {i18next.t('Active match')}
+      </span>
+    );
+  }
+
   if (
     player.winMatches.length === opponent.winMatches.length
     && player.score === opponent.score
@@ -47,6 +101,7 @@ function StageStatus({
 }
 
 function StageCard({
+  type,
   playerId,
   opponentId,
   stage,
@@ -80,31 +135,45 @@ function StageCard({
         <>
           <img
             alt={`${opponent.name} avatar`}
-            src={opponent.avatarUrl || tournamentEmptyPlayerUrl}
+            src={opponent.avatarUrl || getCustomEventPlayerDefaultImgUrl(opponent) || tournamentEmptyPlayerUrl}
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
           />
           <div className={cardInfoClassName}>
+            {type !== TournamentTypes.arena && (
+              <h6 className="p-1">
+                {'Stage: '}
+                <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
+              </h6>
+            )}
+            <h6 className="p-1">{`${i18next.t('Opponent')}: ${opponent.name}`}</h6>
+            {opponent.clanId && (
+              <h6 className="p">
+                {`${i18next.t('Opponent clan')}: ${opponent.clanId}`}
+              </h6>
+            )}
             <h6 className="p-1">
-              {'Stage: '}
-              <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
-            </h6>
-            <h6 className="p-1">{`Opponent: ${opponent.name}`}</h6>
-            <h6 className="p-1">
-              {'Status: '}
-              {lastMatchState === MatchStateCodes.playing ? (
-                <span className="text-primary">Active</span>
-              ) : (
-                <StageStatus
-                  playerId={playerId}
-                  matchList={matchList}
-                />
-              )}
+              {`${i18next.t('Status')}: `}
+              {
+                type === TournamentTypes.arena ? (
+                  <ArenaStageStatus
+                    playerId={playerId}
+                    matchList={matchList}
+                    matchState={lastMatchState}
+                  />
+                ) : (
+                  <StageStatus
+                    playerId={playerId}
+                    matchList={matchList}
+                    matchState={lastMatchState}
+                  />
+                )
+              }
             </h6>
             <div className="d-flex">
               {isBanned ? (
                 <a href="_blank" className="btn btn-danger rounded-lg m-1 px-4 disabled">
                   <FontAwesomeIcon className="mr-2" icon="ban" />
-                  You banned
+                  {i18next.t('You banned')}
                 </a>
               ) : (
                 <a
@@ -112,7 +181,7 @@ function StageCard({
                   className="btn btn-primary rounded-lg m-1 px-4"
                 >
                   <FontAwesomeIcon className="mr-2" icon="eye" />
-                  Open match
+                  {i18next.t('Open match')}
                 </a>
               )}
             </div>
@@ -126,16 +195,22 @@ function StageCard({
             className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray rounded p-3"
           />
           <div className="d-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3">
+            {type !== TournamentTypes.arena && (
+              <h6 className="p-1">
+                {'Stage: '}
+                <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
+              </h6>
+            )}
+            <h6 className="p-1">{`${i18next.t('Opponent')}: ?`}</h6>
             <h6 className="p-1">
-              {'Stage: '}
-              <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
+              {`${i18next.t('Status')}: `}
+              <span className="cb-tournament-status">
+                {i18next.t('Waiting')}
+              </span>
             </h6>
-            <h6 className="p-1">Opponent: ?</h6>
-            <h6 className="p-1">
-              {'Status: '}
-              <span className="text-warning">Waiting</span>
+            <h6 className="p-1 text-muted">
+              {i18next.t('Wait round starts')}
             </h6>
-            <h6 className="p-1 text-muted">Wait round starts</h6>
           </div>
         </>
       )}

@@ -30,14 +30,19 @@ const getTabLinkClassName = isActive => cn(
   },
 );
 
-const getTopItemClassName = item => (
-  cn('text-dark font-weight-bold cb-custom-event-tr', {
-    'cb-gold-place-bg': item?.place === 1,
-    'cb-silver-place-bg': item?.place === 2,
-    'cb-bronze-place-bg': item?.place === 3,
-    'bg-white': !item?.place || item.place > 3,
-    // 'bg-success': item.clanId && item.clanId === 1,
-  })
+const getCustomEventTrClassName = (item, selectedId) => (
+  cn(
+    'text-dark font-weight-bold cb-custom-event-tr',
+    {
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'bg-white': !item?.place || item.place > 3,
+    },
+    {
+      'cb-custom-event-tr-brown-border': console.log(item, selectedId) || item.id === selectedId,
+    },
+  )
 );
 
 const commonRatingTypes = {
@@ -65,6 +70,9 @@ const EventRatingPanel = ({
   const dispatch = useDispatch();
 
   const [type, setType] = useState(commonRatingTypes.clan);
+  const selectedId = type === commonRatingTypes.clan
+    ? currentUserClanId
+    : currentUserId;
 
   const handleClick = useCallback(e => {
     const { currentTarget: { dataset } } = e;
@@ -79,15 +87,12 @@ const EventRatingPanel = ({
           eventId,
           pageNumber: page,
           pageSize,
-          clanId: currentUserClanId,
-          userId: currentUserId,
         }));
       } catch (e) {
         throw new Error(e.message);
       }
     })();
-    /* eslint-disable-next-line */
-  }, [type, eventId, pageSize, currentUserClanId, currentUserId]);
+  }, [type, eventId, pageSize, dispatch]);
 
   useEffect(() => {
     (async () => {
@@ -95,8 +100,6 @@ const EventRatingPanel = ({
         await dispatch(actions.fetchCommonLeaderboard({
           type,
           eventId,
-          clanId: currentUserClanId,
-          userId: currentUserId,
         }));
       } catch (e) {
         throw new Error(e.message);
@@ -167,9 +170,9 @@ const EventRatingPanel = ({
               </thead>
               <tbody>
                 {items.map(item => (
-                  <React.Fragment key={`${type}${item.userId}${item.clanId}`}>
+                  <React.Fragment key={`${type}${item.id}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
-                    <tr className={getTopItemClassName({ clanId: item.clanId })}>
+                    <tr className={getCustomEventTrClassName(item, selectedId)}>
                       <td width="110" className={tableDataCellClassName}>
                         {item.place}
                       </td>
@@ -181,7 +184,7 @@ const EventRatingPanel = ({
                           {item.playersCount}
                         </td>
                       )}
-                      <td title={item.clanName} className={tableDataCellClassName}>
+                      <td title={item.clanLongName} className={tableDataCellClassName}>
                         <div className="cb-custom-event-name" style={{ maxWidth: 220 }}>
                           {item.clanName}
                         </div>

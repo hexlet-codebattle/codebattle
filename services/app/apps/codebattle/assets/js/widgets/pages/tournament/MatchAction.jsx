@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import i18next from 'i18next';
 
 import MatchStatesCodes from '../../config/matchStates';
 
@@ -29,11 +30,11 @@ function MatchAction({
           <>
             <a
               href={href}
-              title="Continue match"
+              title={i18next.t('Continue match')}
               className="btn btn-success btn-sm text-white rounded-lg px-3"
             >
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
-              Continue
+              {i18next.t('Continue')}
             </a>
           </>
         );
@@ -43,11 +44,11 @@ function MatchAction({
         <>
           <a
             href={href}
-            title="Show match"
+            title={i18next.t('Show match')}
             className="btn btn-primary btn-sm rounded-lg px-3"
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
-            Show
+            {i18next.t('Show')}
           </a>
         </>
       );
@@ -59,11 +60,11 @@ function MatchAction({
         <>
           <a
             href={href}
-            title="Show game history"
+            title={i18next.t('Show game history')}
             className="btn btn-primary btn-sm rounded-lg px-3"
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
-            Show
+            {i18next.t('Show')}
           </a>
         </>
       );

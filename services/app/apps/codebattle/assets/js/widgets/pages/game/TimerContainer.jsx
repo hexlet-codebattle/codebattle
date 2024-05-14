@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
 
+import i18next from 'i18next';
+
 import CountdownTimer from '../../components/CountdownTimer';
 import RoomContext from '../../components/RoomContext';
 import Timer from '../../components/Timer';
@@ -19,12 +21,12 @@ import {
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 const gameStatuses = {
-  stored: 'stored',
-  game_over: 'game_over',
-  timeout: 'game_over',
+  stored: i18next.t('stored'),
+  game_over: i18next.t('game_over'),
+  timeout: i18next.t('game_over'),
 };
 
-const loadingTitle = 'Loading...';
+const loadingTitle = i18next.t('Loading...');
 
 const GameRoomTimer = ({ timeoutSeconds, time }) => {
   if (timeoutSeconds === null) {
@@ -64,7 +66,7 @@ function TimerContainer({
   }
 
   if (mode === GameRoomModes.history) {
-    return 'History';
+    return i18next.t('History');
   }
 
   if (isBuilderRoom) {

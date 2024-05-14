@@ -14,7 +14,7 @@ const TournamentInfo = ({
   time = '##:##',
   handleOpenInstruction = () => { },
 }) => (
-  <div className="d-flex flex-column flex-lg-row align-items-center py-2 cb-custom-event-tournaments-item">
+  <div className="d-flex flex-column flex-lg-row align-items-center py-2 cb-custom-event-tournaments-item cb-overflow-x-auto">
     <div className="d-flex">
       <span className={`${nameClassName} mx-3 font-weight-bold text-nowrap`}>
         {name}
@@ -24,34 +24,28 @@ const TournamentInfo = ({
           type={type}
         />
       </span>
-      <span className="ml-3 align-content-center cursor-pointer">
-        {id
-          ? (
+    </div>
+    <div className="d-flex ml-2">
+      {id ? (
+        <>
+          <span className="mx-1 align-content-center cursor-pointer">
             <FontAwesomeIcon
               icon="info-circle"
               className="text-primary"
               onClick={handleOpenInstruction}
             />
-          )
-          : (
-            null
-          )}
-      </span>
-      <span className="ml-1 align-content-center cursor-pointer">
-        {id
-          ? (
+          </span>
+          <span className="mx-1 align-content-center cursor-pointer">
             <a href={`/tournaments/${id}`}>
               <FontAwesomeIcon icon="link" />
             </a>
-          )
-          : (
-            null
-          )}
-      </span>
-    </div>
-    <div className="d-flex">
-      <span className="ml-1">{data}</span>
-      <span className="mx-4 text-nowrap">{time}</span>
+          </span>
+        </>
+      ) : (
+        <span>{data}</span>
+      )}
+
+      <span className="mx-3 text-nowrap">{time}</span>
     </div>
   </div>
 );

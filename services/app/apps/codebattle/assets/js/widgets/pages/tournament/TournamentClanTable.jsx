@@ -4,25 +4,35 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-const getTopItemClassName = item => cn('text-dark font-weight-bold cb-custom-event-tr', {
+import { currentUserClanIdSelector, tournamentSelector } from '@/selectors';
+
+const getCustomEventTrClassName = (item, selectedId) => cn(
+  'text-dark font-weight-bold cb-custom-event-tr',
+  {
     'cb-gold-place-bg': item?.place === 1,
     'cb-silver-place-bg': item?.place === 2,
     'cb-bronze-place-bg': item?.place === 3,
     'bg-white': !item?.place || item.place > 3,
-  });
+  },
+  {
+    'cb-custom-event-tr-brown-border': item.id === selectedId,
+  },
+);
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 function TournamentClanTable() {
-  const { clans, ranking } = useSelector(state => state.tournament);
+  const currentUserClanId = useSelector(currentUserClanIdSelector);
+  const { clans, ranking } = useSelector(tournamentSelector);
+
   if (!ranking || !ranking.entries || ranking.entries.length === 0) {
-    return (<> </>);
+    return <></>;
   }
 
   return (
-    <div className="my-2 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto">
+    <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto">
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>
@@ -35,22 +45,19 @@ function TournamentClanTable() {
             <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t('Place')}
             </th>
-            {/* <th className="p-1 pl-4 font-weight-light border-0"> */}
-            {/*   {i18next.t('Clan players count')} */}
-            {/* </th> */}
           </tr>
         </thead>
         <tbody>
           {ranking.entries.map(item => (
             <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" />
-              <tr className={getTopItemClassName(item)}>
+              <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                 <td
                   title={clans[item.id]?.longName}
                   className={tableDataCellClassName}
                 >
                   <div
-                    className="cb-custom-event-name"
+                    className="cb-custom-event-name mr-1"
                     style={{ maxWidth: 220 }}
                   >
                     {clans[item.id]?.name}
@@ -62,7 +69,6 @@ function TournamentClanTable() {
                 <td width="122" className={tableDataCellClassName}>
                   {item.place}
                 </td>
-                {/* <td className={tableDataCellClassName}>{item.playersCount}</td> */}
               </tr>
             </React.Fragment>
           ))}

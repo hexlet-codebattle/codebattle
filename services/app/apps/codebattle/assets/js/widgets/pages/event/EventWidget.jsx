@@ -71,7 +71,10 @@ function EventWidget() {
       <div className={contentClassName}>
         <div className="d-flex col-12 col-lg-7  flex-column m-2 p-1 py-3">
           {topLeaderboard.length > 0 && (
-            <TopLeaderboardPanel topLeaderboard={topLeaderboard} />
+            <TopLeaderboardPanel
+              topLeaderboard={topLeaderboard}
+              selectedId={currentUserClanId}
+            />
           )}
           <EventRatingPanel
             currentUserId={currentUserId}

@@ -4,6 +4,7 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 import {
@@ -35,7 +36,7 @@ function TourrnamentPlace({
         <FontAwesomeIcon className={iconClassName} icon="trophy" />
       )}
       <span className={textClassName}>
-        {title}
+        {i18next.t(title)}
         {prefix}
         {text}
       </span>

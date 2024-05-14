@@ -66,11 +66,14 @@ msgstr "id: %{id}, состояние: %{state}, игроки: %{players}  "
 
 #: lib/codebattle_web/templates/game/index.html.slim:19
 msgid "Join"
-msgstr "Подключиться"
+msgstr "Присоединиться"
 
 #: lib/codebattle_web/templates/game/index.html.slim:21
 msgid "Show"
 msgstr "Наблюдать"
+
+msgid "Continue"
+msgstr "Продолжать"
 
 #: lib/codebattle_web/templates/game/index.html.slim:25
 msgid "Main page"
@@ -476,8 +479,14 @@ msgstr "Описание этапа"
 msgid "Open"
 msgstr "Oткрыть"
 
+msgid "Cancel"
+msgstr "Отменить"
+
 msgid "Close"
 msgstr "Закрыть"
+
+msgid "Leave"
+msgstr "Выйти"
 
 msgid "Teams"
 msgstr "Команды"
@@ -505,3 +514,132 @@ msgstr "Поиск соперника"
 
 msgid "Congrats! All tasks are solved"
 msgstr "Задачи закончились, поздравляем!"
+
+msgid "The tournament will start: %{duration}"
+msgstr "Этап начнется через: %{duration}"
+
+msgid "The tournament will start soon"
+msgstr "Этап скоро начнется"
+
+msgid "The tournament is cancelled"
+msgstr "Игры этапа отменены"
+
+msgid "The tournament is finished"
+msgstr "Игры этапа завершились"
+
+msgid "Your opponent is waiting: %{name}"
+msgstr "Ваш следующий оппонент: %{name}"
+
+msgid "Next match will be opened. Show now?"
+msgstr "Cледующая битва началась. Открыть сейчас?"
+
+msgid "review"
+msgstr "общее"
+
+msgid "matches"
+msgstr "история"
+
+msgid "Opponent"
+msgstr "Соперник"
+
+msgid "Opponent сlan"
+msgstr "Вуз соперника"
+
+msgid "Status"
+msgstr "Cтатус задачи"
+
+msgid "Open match"
+msgstr "Перейти к задаче"
+
+msgid "You banned"
+msgstr "Вы забанены"
+
+msgid "Active match"
+msgstr "Есть активная задача"
+
+msgid "Waiting"
+msgstr "Ожидание"
+
+msgid "Wait round starts"
+msgstr "Ожидайте начала матча"
+
+msgid "Waiting Participants"
+msgstr "Ожидаем участников"
+
+msgid "Active"
+msgstr "Активен"
+
+msgid "Round break"
+msgstr "Перерыв на следующий раунд"
+
+msgid "Canceled"
+msgstr "Отменен"
+
+msgid "Finished"
+msgstr "Завершен"
+
+msgid "Loading"
+msgstr "Загружается"
+
+msgid "Round ends in "
+msgstr "Игры этапа завершаться через "
+
+msgid "Next round will start in "
+msgstr "Cледующие игры начнуться через "
+
+msgid "Draw"
+msgstr "Последняя задача в ничью"
+
+msgid "You lose"
+msgstr "Последняя задача проиграна"
+
+msgid "You win"
+msgstr "Последняя задача выиграна"
+
+msgid "Your place in tournament"
+msgstr "Твое место в турнире"
+
+msgid "Your place"
+msgstr "Твое место"
+
+msgid "Your score"
+msgstr "Твой балл"
+
+msgid "Your clan place"
+msgstr "Место твоего вуза"
+
+msgid "Your clan score"
+msgstr "Балл твоего вуза"
+
+msgid "Statistics"
+msgstr "Статистика"
+
+msgid "Wins"
+msgstr "Побед"
+
+msgid "Loses"
+msgstr "Поражений"
+
+msgid "Timeout"
+msgstr "Нет победителя"
+
+msgid "Show match"
+msgstr "Показать игру"
+
+msgid "Show match history"
+msgstr "Показать исторую игры"
+
+msgid "Continue match"
+msgstr "Продолжить игру"
+
+msgid "History"
+msgstr "История"
+
+msgid "stored"
+msgstr "Cохранена"
+
+msgid "game_over"
+msgstr "Игра завершена"
+
+msgid "Loading..."
+msgstr "Загрузка..."

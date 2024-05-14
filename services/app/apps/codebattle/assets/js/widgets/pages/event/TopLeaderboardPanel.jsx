@@ -3,14 +3,19 @@ import React from 'react';
 import cn from 'classnames';
 import i18next from 'i18next';
 
-const getTopItemClassName = item => (
-  cn('text-dark font-weight-bold cb-custom-event-tr', {
-    'cb-gold-place-bg': item?.place === 1,
-    'cb-silver-place-bg': item?.place === 2,
-    'cb-bronze-place-bg': item?.place === 3,
-    'bg-white': !item?.place || item.place > 3,
-    // 'bg-success': item.clanId && item.clanId === 1,
-  })
+const getCustomEventTrClassName = (item, selectedId) => (
+  cn(
+    'text-dark font-weight-bold cb-custom-event-tr',
+    {
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'bg-white': !item?.place || item.place > 3,
+    },
+    {
+      'cb-custom-event-tr-brown-border': item.id === selectedId,
+    },
+  )
 );
 
 const tableDataCellClassName = cn(
@@ -19,6 +24,7 @@ const tableDataCellClassName = cn(
 
 const TopLeaderboardPanel = ({
   topLeaderboard = [],
+  selectedId,
 }) => (
   <div className="d-flex flex-column">
     <div className="d-flex w-100 font-weight-bold justify-content-between border-bottom border-dark pb-2">
@@ -39,9 +45,9 @@ const TopLeaderboardPanel = ({
         </thead>
         <tbody>
           {topLeaderboard.map(item => (
-            <React.Fragment key={item.userId || item.clanId}>
+            <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" />
-              <tr className={getTopItemClassName(item)}>
+              <tr className={getCustomEventTrClassName(item, selectedId)}>
                 <td width="122" className={tableDataCellClassName}>
                   {item.place}
                 </td>

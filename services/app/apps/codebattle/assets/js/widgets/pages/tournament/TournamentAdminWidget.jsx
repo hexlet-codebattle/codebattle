@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
+import cn from 'classnames';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
 import ReactMarkdown from 'react-markdown';
@@ -141,6 +142,15 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
     ),
     [tournament.state],
   );
+
+  const mainPanelClassName = cn('col-12 mb-2 mb-lg-0', {
+    'col-lg-9': !tournament.useClan,
+    'col-lg-8': tournament.useClan,
+  });
+  const sidePanelClassName = cn('d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100', {
+    'col-lg-3': !tournament.useClan,
+    'col-lg-4': tournament.useClan,
+  });
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -301,7 +311,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
       </div>
       <div className="container-fluid mb-2">
         <div className="row flex-lg-row-reverse">
-          <div className="col-12 col-lg-9 mb-2 mb-lg-0">
+          <div className={mainPanelClassName}>
             <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
               <InfoPanel
                 tournament={tournament}
@@ -312,7 +322,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
               />
             </div>
           </div>
-          <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
+          <div className={sidePanelClassName}>
             <Players
               playersCount={playersCount}
               players={tournament.players}

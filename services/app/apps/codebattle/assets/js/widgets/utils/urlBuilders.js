@@ -9,4 +9,6 @@ export const getTournamentUrl = (tournamentId, params) => (
 export const getTournamentSpectatorUrl = (tournamentId, playerId) => (
   `/tournaments/${tournamentId}/player/${playerId}`
 );
+export const getCustomEventPlayerDefaultImgUrl = user => `https://ui-avatars.com/api/?name=${user.name}&background=ffdb4d&color=ff0000`;
+
 export const tournamentEmptyPlayerUrl = '/assets/images/question-mark-50.png';

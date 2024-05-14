@@ -393,3 +393,6 @@ msgid_plural "%{count} tasks left"
 msgstr[0] "%{count} task left"
 msgstr[1] "%{count} tasks left"
 msgstr[2] "%{count} tasks left"
+
+msgid "Active match"
+msgstr "Есть активная задача"

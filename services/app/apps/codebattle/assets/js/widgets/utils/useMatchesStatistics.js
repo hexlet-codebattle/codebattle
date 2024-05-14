@@ -4,6 +4,7 @@ import sum from 'lodash/sum';
 
 const emptyStats = {
   playerId: null,
+  matchesCount: 0,
   winMatches: [],
   lostMatches: [],
   score: 0,
@@ -18,7 +19,13 @@ const emptyStats = {
  * @typedef {Object.<number, PlayerResult>} PlayerResults
  * @typedef {{playerIds: array, winnerId: number, playerResults: [PlayerResults]}} Match
  * @typedef {{
- *  playerId: {?number}, winMatches: Match[], lostMatches: Match[], score: number, avgTests: number, avgDuration: number
+ *  playerId: {?number},
+ *  matchesCount: number,
+ *  winMatches: Match[],
+ *  lostMatches: Match[],
+ *  score: number,
+ *  avgTests: number,
+ *  avgDuration: number,
  * }} PlayerStatistics
  *
  * @param {number} playerId - player id
@@ -41,8 +48,18 @@ function useMatchesStatistics(playerId, matches) {
     const playerWinMatches = matches.filter(
       match => playerId === match.winnerId,
     );
+    const playerLostMatches = matches.filter(
+      match => playerId !== match.winnerId
+        && match.playerIds.some(id => id === playerId)
+        && match.playerIds.some(id => id === match.winnerId),
+    );
     const opponentWinMatches = matches.filter(
       match => opponentId === match.winnerId,
+    );
+    const opponentLostMatches = matches.filter(
+      match => opponentId !== match.winnerId
+        && match.playerIds.some(id => id === opponentId)
+        && match.playerIds.some(id => id === match.winnerId),
     );
 
     const playerScore = sum(
@@ -86,16 +103,18 @@ function useMatchesStatistics(playerId, matches) {
 
     const player = {
       playerId,
+      matchesCount: matches.length,
       winMatches: playerWinMatches,
-      lostMatches: opponentWinMatches,
+      lostMatches: playerLostMatches,
       score: playerScore,
       avgTests: playerAvgTests,
       avgDuration: playerAvgDuration,
     };
     const opponent = {
       playerId: opponentId,
+      matchesCount: matches.length,
       winMatches: opponentWinMatches,
-      lostMatches: playerWinMatches,
+      lostMatches: opponentLostMatches,
       score: opponentScore,
       avgTests: opponentAvgTests,
       avgDuration: opponentAvgDuration,

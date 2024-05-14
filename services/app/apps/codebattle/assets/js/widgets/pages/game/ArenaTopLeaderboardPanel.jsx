@@ -4,20 +4,32 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-const getTopItemClassName = item => cn('text-dark font-weight-bold cb-custom-event-tr', {
+import {
+  currentUserClanIdSelector,
+  tournamentSelector,
+} from '@/selectors';
+
+const getCustomEventTrClassName = (item, selectedId) => cn(
+  'text-dark font-weight-bold cb-custom-event-tr',
+  {
     'cb-gold-place-bg': item?.place === 1,
     'cb-silver-place-bg': item?.place === 2,
     'cb-bronze-place-bg': item?.place === 3,
     'bg-white': !item?.place || item.place > 3,
     // 'bg-success': item.clanId && item.clanId === 1,
-  });
+  },
+  {
+    'cb-custom-event-tr-brown-border': item.id === selectedId,
+  },
+);
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
-  const { clans, ranking } = useSelector(state => state.tournament);
+  const currentUserClanId = useSelector(currentUserClanIdSelector);
+  const { clans, ranking } = useSelector(tournamentSelector);
 
   return (
     <div
@@ -35,7 +47,7 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
         </span>
       </div>
       <div className="d-flex cb-overflow-x-auto">
-        <table className="table table-striped cb-custom-event-table">
+        <table className="table table-striped cb-custom-event-table m-1">
           <thead>
             <tr>
               <th className="p-1 pl-4 font-weight-light border-0">
@@ -61,7 +73,7 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
                 ) : (
                   <tr className="cb-custom-event-empty-space-tr" />
                 )}
-                <tr className={getTopItemClassName(item)}>
+                <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                   <td className={tableDataCellClassName}>
                     <div
                       title={clans[item.id]?.longName}

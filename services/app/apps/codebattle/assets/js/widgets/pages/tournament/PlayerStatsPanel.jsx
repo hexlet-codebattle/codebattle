@@ -4,18 +4,21 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import capitalize from 'lodash/capitalize';
 import groupBy from 'lodash/groupBy';
 import reverse from 'lodash/reverse';
+import { useSelector } from 'react-redux';
 
 import Loading from '../../components/Loading';
 import MatchStatesCodes from '../../config/matchStates';
 import TournamentTypes from '../../config/tournamentTypes';
+import { currentUserClanIdSelector } from '../../selectors';
 import { getOpponentId } from '../../utils/matches';
 
 import StageCard from './StageCard';
 import StageTitle from './StageTitle';
-import StatisticsCard from './StatisticsCard';
+import StatisticsCard, { ArenaStatisticsCard } from './StatisticsCard';
 import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
@@ -35,7 +38,7 @@ const tabContentClassName = active => cn('tab-pane fade', {
   'd-flex flex-column show active': active,
 });
 
-const ArenatPlayerPanelCodes = {
+const ArenaPlayerPanelCodes = {
   review: 'review',
   matches: 'matches',
 };
@@ -45,16 +48,17 @@ const PlayerPanelCodes = {
   stages: 'stages',
   matches: 'matches',
 };
+
 const getPlayerPanelCodes = type => {
   if (type === TournamentTypes.arena) {
-    return Object.values(ArenatPlayerPanelCodes);
+    return Object.values(ArenaPlayerPanelCodes);
   }
     return Object.values(PlayerPanelCodes);
 };
 
 function PlayerStatsPanel({
-  currentRoundPosition,
   type,
+  currentRoundPosition,
   roundsLimit,
   matches,
   players,
@@ -62,6 +66,8 @@ function PlayerStatsPanel({
   hideBots,
   canModerate,
 }) {
+  const currentUserClanId = useSelector(currentUserClanIdSelector);
+
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
 
@@ -102,10 +108,9 @@ function PlayerStatsPanel({
     <div className="d-flex flex-column border border-success rounded-lg shadow-sm">
       <div className="d-flex border-bottom p-2">
         <div>
-          <span className="text-nowrap" title={currentPlayer.name}>
+          <span className="text-nowrap pr-1" title={currentPlayer.name}>
             {currentPlayer.name}
             {currentPlayer.isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
-            <span className="badge badge-success text-white mx-2">you</span>
           </span>
           <span title="Your place in tournament">
             <TournamentPlace
@@ -135,7 +140,7 @@ function PlayerStatsPanel({
                 setPlayerPanel(panelName);
               }}
             >
-              {capitalize(panelName)}
+              {capitalize(i18next.t(panelName))}
             </a>
           ))}
         </div>
@@ -153,6 +158,7 @@ function PlayerStatsPanel({
           >
             <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom p-2">
               <StageCard
+                type={type}
                 playerId={currentUserId}
                 opponentId={opponentId}
                 stage={currentRoundPosition}
@@ -163,13 +169,26 @@ function PlayerStatsPanel({
                 matchList={groupedMatchListByRound[currentRoundPosition]}
                 isBanned={currentPlayer.isBanned}
               />
-              <StatisticsCard
-                playerId={currentUserId}
-                taskIds={currentPlayer.taskIds}
-                place={currentPlayer.place}
-                isBanned={currentPlayer.isBanned}
-                matchList={matchList}
-              />
+              {type === TournamentTypes.arena ? (
+                <ArenaStatisticsCard
+                  type={type}
+                  playerId={currentUserId}
+                  clanId={currentUserClanId}
+                  taskIds={currentPlayer.taskIds}
+                  place={currentPlayer.place}
+                  isBanned={currentPlayer.isBanned}
+                  matchList={matchList}
+                />
+              ) : (
+                <StatisticsCard
+                  type={type}
+                  playerId={currentUserId}
+                  taskIds={currentPlayer.taskIds}
+                  place={currentPlayer.place}
+                  isBanned={currentPlayer.isBanned}
+                  matchList={matchList}
+                />
+              )}
             </div>
           </div>
           <div
@@ -198,10 +217,21 @@ function PlayerStatsPanel({
                     lastMatchState={stageFirstMatch?.state}
                     matchList={groupedMatchListByRound[stage]}
                   />
-                  <StatisticsCard
-                    playerId={currentUserId}
-                    matchList={groupedMatchListByRound[stage]}
-                  />
+                  {type === TournamentTypes.arena ? (
+                    <ArenaStatisticsCard
+                      type={type}
+                      playerId={currentUserId}
+                      taskIds={currentPlayer.taskIds}
+                      place={currentPlayer.place}
+                      isBanned={currentPlayer.isBanned}
+                      matchList={matchList}
+                    />
+                  ) : (
+                    <StatisticsCard
+                      playerId={currentUserId}
+                      matchList={groupedMatchListByRound[stage]}
+                    />
+                  )}
                 </div>
               );
             })}
@@ -216,12 +246,14 @@ function PlayerStatsPanel({
             {stages.map(stage => (
               <React.Fragment key={`stage-${stage}-matches`}>
 
-                <div className="d-flex justify-content-center p-2">
-                  <StageTitle
-                    stage={stage}
-                    stagesLimit={roundsLimit}
-                  />
-                </div>
+                {type !== TournamentTypes.arena && (
+                  <div className="d-flex justify-content-center p-2">
+                    <StageTitle
+                      stage={stage}
+                      stagesLimit={roundsLimit}
+                    />
+                  </div>
+                )}
                 <div className="border-top">
                   <UsersMatchList
                     currentUserId={currentUserId}
