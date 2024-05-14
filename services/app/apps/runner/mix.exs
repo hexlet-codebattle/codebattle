@@ -37,6 +37,8 @@ defmodule Runner.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bandit, "~> 1.0"},
+      {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:ecto, "~> 3.7"},
       {:envy, "~> 1.1.1"},
       {:hackney, "~> 1.18"},
@@ -44,7 +46,6 @@ defmodule Runner.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
       {:porcelain, "~> 2.0"},
-      {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:sentry, "~> 10.0"},
       {:temp, "~> 0.4"},
       {:typed_struct, "~> 0.3"}
