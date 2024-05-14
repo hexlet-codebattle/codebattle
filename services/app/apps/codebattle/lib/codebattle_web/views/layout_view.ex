@@ -4,6 +4,7 @@ defmodule CodebattleWeb.LayoutView do
   import CodebattleWeb.Router.Helpers
 
   @app_version Application.compile_env(:codebattle, :app_version)
+  @colors = ["#ffdb4d", "#ff0000", "#00ff00", "#0000ff", "#ff00ff", "#00ffff", "#ffa500"]
 
   def get_next_path(conn) do
     next = conn.params["next"]
@@ -63,6 +64,10 @@ defmodule CodebattleWeb.LayoutView do
 
   def avatar_url(user) do
     user.avatar_url ||
-      "https://ui-avatars.com/api/?name=#{user.name}&background=ffdb4d&color=ff0000"
+      "https://ui-avatars.com/api/?name=#{user.name}&background=#{get_background_color(user)}&color=ffffff"
+  end
+
+  defp get_background_color(user) do
+    Enum.at(@colors, rem(String.length(user.name), length(@colors)))
   end
 end
