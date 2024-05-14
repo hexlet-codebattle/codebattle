@@ -126,14 +126,6 @@ defmodule Codebattle.PubSub.Events do
           player: params.player,
           tournament: %{players_count: params.tournament.players_count}
         }
-      },
-      %Message{
-        topic: "tournament:#{params.tournament.id}",
-        event: "tournament:player:joined",
-        payload: %{
-          player: params.player,
-          tournament: %{players_count: params.tournament.players_count}
-        }
       }
     ]
   end

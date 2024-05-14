@@ -1,4 +1,4 @@
-defmodule Codebattle.GameCases.TimeoutTest do
+defmodule CodebattleWeb.Integration.Game.TimeoutTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.Game

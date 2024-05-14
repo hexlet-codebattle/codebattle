@@ -25,7 +25,7 @@ defmodule Codebattle.Tournament.Clans do
   def put_clans(tournament, clans), do: Clans.put_clans(tournament, clans)
 
   @spec get_all(tournament :: Tournament.t()) :: list(map())
-  def get_all(%{clans_table: nil}), do: []
+  def get_all(%{clans_table: nil}), do: %{}
   def get_all(tournament), do: Clans.get_all(tournament)
 
   @spec get_clan(tournament :: Tournament.t(), clan_id :: integer()) :: map() | nil
@@ -33,8 +33,8 @@ defmodule Codebattle.Tournament.Clans do
   def get_clan(tournament, clan_id), do: Clans.get_clan(tournament, clan_id)
 
   @spec get_clans(tournament :: Tournament.t(), ids :: list(integer())) :: list(map())
-  def get_clans(%{clans_table: nil}, _ids), do: []
-  def get_clans(_tournament, []), do: []
+  def get_clans(%{clans_table: nil}, _ids), do: %{}
+  def get_clans(_tournament, []), do: %{}
   def get_clans(tournament, ids), do: Clans.get_clans(tournament, ids)
 
   @spec count(tournament :: Tournament.t()) :: non_neg_integer()

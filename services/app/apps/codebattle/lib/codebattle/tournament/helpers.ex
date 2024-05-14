@@ -225,8 +225,6 @@ defmodule Codebattle.Tournament.Helpers do
       ranking
       |> Enum.map(& &1.id)
       |> then(&Tournament.Clans.get_clans(tournament, &1))
-      |> Enum.map(&{&1.id, &1})
-      |> Enum.into(%{})
     else
       %{}
     end

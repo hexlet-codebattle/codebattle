@@ -1,4 +1,4 @@
-defmodule Codebattle.GameCases.RematchTest do
+defmodule CodebattleWeb.Integration.Game.RematchTest do
   use Codebattle.IntegrationCase, async: false
 
   alias Codebattle.Bot

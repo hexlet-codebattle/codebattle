@@ -18,6 +18,8 @@ defmodule Codebattle.IntegrationCase do
       alias Codebattle.Game.Helpers
       alias CodebattleWeb.GameChannel
       alias CodebattleWeb.LobbyChannel
+      alias CodebattleWeb.TournamentAdminChannel
+      alias CodebattleWeb.TournamentChannel
       alias CodebattleWeb.UserSocket
 
       @endpoint CodebattleWeb.Endpoint

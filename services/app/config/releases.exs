@@ -106,7 +106,7 @@ config :codebattle, use_presence: use_presence
 config :codebattle, record_games: record_games
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
 config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")
-config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL", "/")
+config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL")
 config :codebattle, use_event_rating: use_event_rating
 config :codebattle, use_event_rank: use_event_rank
 

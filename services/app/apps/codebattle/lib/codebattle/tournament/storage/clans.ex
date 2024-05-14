@@ -20,7 +20,7 @@ defmodule Codebattle.Tournament.Storage.Clans do
   end
 
   def get_all(tournament) do
-    :ets.select(tournament.clans_table, [{{:_, :_, :"$3"}, [], [:"$3"]}])
+    tournament.clans_table |> :ets.tab2list() |> Enum.into(%{})
   end
 
   def get_clan(tournament, clan_id) do
@@ -34,12 +34,12 @@ defmodule Codebattle.Tournament.Storage.Clans do
     :ets.foldl(
       fn {id, clan}, acc ->
         if id in ids do
-          [clan | acc]
+          Map.put(acc, id, clan)
         else
           acc
         end
       end,
-      [],
+      %{},
       tournament.clans_table
     )
   end

@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
 
   @allowed_paths [
     ~r{^\/$},
+    ~r{^\/e\/\S+\/?$},
     ~r{^\/tournaments\/\d+\/?$},
     ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
@@ -27,7 +28,8 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     else
       url = Application.get_env(:codebattle, :force_redirect_url)
 
-      if url == "" || Enum.any?(@allowed_paths, &Regex.match?(&1, conn.request_path)) do
+      if url == nil || url == "" ||
+           Enum.any?(@allowed_paths, &Regex.match?(&1, conn.request_path)) do
         conn
       else
         conn

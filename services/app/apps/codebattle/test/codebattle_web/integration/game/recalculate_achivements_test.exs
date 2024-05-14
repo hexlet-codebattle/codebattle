@@ -1,4 +1,4 @@
-defmodule RecalculateAchivementsTest do
+defmodule CodebattleWeb.Integration.Game.RecalculateAchivementsTest do
   use Codebattle.IntegrationCase
 
   import CodebattleWeb.Factory

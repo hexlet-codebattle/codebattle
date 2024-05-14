@@ -1,4 +1,4 @@
-defmodule Codebattle.GameCases.GiveUpTest do
+defmodule CodebattleWeb.Integration.Game.GiveUpTest do
   use Codebattle.IntegrationCase
 
   setup %{conn: conn} do

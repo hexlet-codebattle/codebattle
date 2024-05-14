@@ -1,4 +1,4 @@
-defmodule Codebattle.ForbidMultipleGamesTest do
+defmodule CodebattleWeb.Integration.ForbidMultipleGamesTest do
   use Codebattle.IntegrationCase
 
   test "User cannot create second game", %{conn: conn} do

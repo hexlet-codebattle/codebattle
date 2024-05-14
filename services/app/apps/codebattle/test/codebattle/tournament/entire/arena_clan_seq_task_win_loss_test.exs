@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.ArenaClanSeqTaskWinLossTest do
+defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
   use Codebattle.DataCase, async: false
 
   alias Codebattle.Tournament
