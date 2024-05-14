@@ -166,6 +166,31 @@ defmodule Codebattle.User do
     |> Repo.all()
   end
 
+  def search_users(query) do
+    __MODULE__
+    |> where([u], u.is_bot == false)
+    |> where([u], fragment("? ilike ?", u.name, ^"#{query}%"))
+    |> limit(20)
+    |> order_by([u], {:desc, :updated_at})
+    |> Repo.all()
+  end
+
+  def reset_auth_token(user_id) do
+    user_id
+    |> get!()
+    |> changeset(%{auth_token: generate_new_token()})
+    |> Repo.update()
+  end
+
+  def update_subscription_type(user_id, type) do
+    user_id
+    |> get!()
+    |> changeset(%{subscription_type: type})
+    |> Repo.update()
+  end
+
+  def subscription_types, do: @subscription_types
+
   defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil], do: changeset
   defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil], do: changeset
 
@@ -185,5 +210,9 @@ defmodule Codebattle.User do
       {:ok, clan} -> change(changeset, %{clan: clan.name, clan_id: clan.id})
       {:error, reason} -> add_error(changeset, :clan, inspect(reason))
     end
+  end
+
+  defp generate_new_token do
+    42 |> :crypto.strong_rand_bytes() |> Base.encode64()
   end
 end

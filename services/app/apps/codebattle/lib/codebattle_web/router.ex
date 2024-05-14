@@ -71,9 +71,10 @@ defmodule CodebattleWeb.Router do
     get("/health", HealthController, :index)
   end
 
-  scope "/" do
+  scope "/admin" do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
+    live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
   end
 
   scope "/auth", CodebattleWeb do

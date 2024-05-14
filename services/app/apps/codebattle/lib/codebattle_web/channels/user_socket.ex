@@ -16,7 +16,7 @@ defmodule CodebattleWeb.UserSocket do
   def connect(%{"token" => user_token}, socket) do
     guest_id = User.guest_id()
 
-    case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_00000) do
+    case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000_000) do
       {:ok, ^guest_id} ->
         {:ok, assign(socket, current_user: User.build_guest())}
 
