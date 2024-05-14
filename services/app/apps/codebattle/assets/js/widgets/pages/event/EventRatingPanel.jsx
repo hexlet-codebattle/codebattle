@@ -170,7 +170,7 @@ const EventRatingPanel = ({
               </thead>
               <tbody>
                 {items.map(item => (
-                  <React.Fragment key={`${type}${item.id}`}>
+                  <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
                       <td width="110" className={tableDataCellClassName}>
