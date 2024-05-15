@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import NiceModal, { unregister } from '@ebay/nice-modal-react';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
-// import groupBy from 'lodash/groupBy';
-// import reverse from 'lodash/reverse';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
 // import CountdownTimer from '@/components/CountdownTimer';
@@ -18,6 +16,7 @@ import { connectToSpectator } from '@/middlewares/Spectator';
 import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 
 import EditorUserTypes from '../../config/editorUserTypes';
+import ModalCodes from '../../config/modalCodes';
 // import GameStateCodes from '../../config/gameStateCodes';
 // import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
@@ -27,40 +26,9 @@ import { actions } from '../../slices';
 import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
+import TournamentAwardModal from '../game/TournamentAwardModal';
 
 import SpectatorEditor from './SpectatorEditor';
-
-const ResultModal = ({ solutionStatus, visible, isWinner }) => {
-  const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    if (solutionStatus && visible) {
-      setTimeout(() => {
-        setShowModal(true);
-      }, 100);
-    }
-  }, [solutionStatus, visible]);
-
-  useEffect(() => {
-    if (showModal) {
-      setTimeout(() => {
-        setShowModal(false);
-      }, 4000);
-    }
-  }, [showModal]);
-
-  return (
-    <Modal centered show={showModal}>
-      <Modal.Body className="bg-light rounded-lg">
-        <div className="d-flex bg-light justify-content-center align-items-center">
-          <span className={`h2 ${isWinner ? 'text-success' : 'text-danger'}`}>
-            {isWinner ? 'Won battle' : 'Lost battle'}
-          </span>
-        </div>
-      </Modal.Body>
-    </Modal>
-  );
-};
 
 // const RoundStatus = ({ playerId, matches }) => {
 //   const [
@@ -174,7 +142,7 @@ const setTaskSizeDefault = size => (
   window.localStorage.setItem('CodebattleSpectatorTaskSize', size)
 );
 
-function TournamentPlayer({ spectatorMachine }) {
+function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const dispatch = useDispatch();
 
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
@@ -188,14 +156,12 @@ function TournamentPlayer({ spectatorMachine }) {
     [setTaskSize],
   );
 
-  const {
-    // startsAt,
-    // timeoutSeconds,
-    // state: gameState,
-    solutionStatus,
-  } = useSelector(selectors.gameStatusSelector);
-  const locked = useSelector(selectors.gameLockedSelector);
-  const visible = useSelector(selectors.gameVisibleSelector);
+  // const {
+  //   // startsAt,
+  //   // timeoutSeconds,
+  //   // state: gameState,
+  //   solutionStatus,
+  // } = useSelector(selectors.gameStatusSelector);
 
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
@@ -203,10 +169,6 @@ function TournamentPlayer({ spectatorMachine }) {
   const { playerId, gameId } = useSelector(state => state.tournamentPlayer);
 
   const output = useSelector(selectors.executionOutputSelector(playerId));
-
-  const isGameWinner = useSelector(state => (
-    state.executionOutput.results[playerId]?.status === 'ok'
-  ));
 
   const spectatorStatus = getSpectatorStatus(tournament.state, task, gameId);
   // TODO: if there is not active_match set html, LOADING
@@ -221,17 +183,26 @@ function TournamentPlayer({ spectatorMachine }) {
     actions: {
       blockGameRoomAfterCheck: (_ctx, { payload }) => {
         if (payload?.award) {
-          dispatch(actions.setVisible(false));
+          NiceModal.show(ModalCodes.awardModal);
         }
       },
     },
   });
+  const waitingRoomService = useInterpret(waitingRoomMachine, {});
 
   const handleSwitchWidgets = useCallback(
     () => setSwitchedWidgetsStatus(state => !state),
     [setSwitchedWidgetsStatus],
   );
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+
+  useEffect(() => {
+    NiceModal.register(ModalCodes.awardModal, TournamentAwardModal);
+
+    return () => {
+      unregister(ModalCodes.awardModal);
+    };
+  }, []);
 
   useEffect(() => {
     // updateSpectatorChannel(playerId);
@@ -251,7 +222,7 @@ function TournamentPlayer({ spectatorMachine }) {
     updateTournamentChannel(tournament.id);
 
     if (tournament.id) {
-      const clearTournamentConnection = connectToTournament()(dispatch);
+      const clearTournamentConnection = connectToTournament(waitingRoomService)(dispatch);
 
       return () => {
         clearTournamentConnection();
@@ -259,7 +230,7 @@ function TournamentPlayer({ spectatorMachine }) {
     }
 
     return () => {};
-  }, [tournament.id, dispatch]);
+  }, [tournament.id, waitingRoomService, dispatch]);
 
   useEffect(() => {
     updateGameChannel(gameId);
@@ -267,7 +238,7 @@ function TournamentPlayer({ spectatorMachine }) {
     if (gameId) {
       const options = { cancelRedirect: true };
 
-      const clearGameConnection = connectToGame(spectatorService, options)(dispatch);
+      const clearGameConnection = connectToGame(spectatorService, waitingRoomService, options)(dispatch);
       const clearEditorConnection = connectToEditor(spectatorService)(dispatch);
 
       return () => {
@@ -277,7 +248,7 @@ function TournamentPlayer({ spectatorMachine }) {
     }
 
     return () => {};
-  }, [gameId, spectatorService, dispatch]);
+  }, [gameId, spectatorService, waitingRoomService, dispatch]);
 
   const spectatorDisplayClassName = cn('d-flex flex-column', {
     'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
@@ -394,48 +365,21 @@ function TournamentPlayer({ spectatorMachine }) {
   return (
     <>
       <div className="container-fluid d-flex flex-column">
-        <ResultModal
-          visible={visible}
-          isWinner={isGameWinner}
-          solutionStatus={solutionStatus}
-        />
-        {locked && (
+        <div className={spectatorDisplayClassName}>
           <div
-            className="d-flex justify-content-center align-items-center w-100 vh-100"
+            className="d-flex flex-column col-12 col-xl-6 col-lg-6 p-1 vh-100"
           >
-            <FontAwesomeIcon
-              style={{ height: '20%', width: '20%' }}
-              icon="lock"
-            />
+            <GamePanel />
+            {/* <MatchesPannel /> */}
           </div>
-        )}
-        {visible === false && (
-          <div
-            className="d-flex justify-content-center align-items-center w-100 vh-100"
-          >
-            <FontAwesomeIcon
-              style={{ height: '20%', width: '20%' }}
-              icon="cut"
-            />
-          </div>
-        )}
-        {visible !== false && !locked && (
-          <div className={spectatorDisplayClassName}>
-            <div
-              className="d-flex flex-column col-12 col-xl-6 col-lg-6 p-1 vh-100"
-            >
-              <GamePanel />
-              {/* <MatchesPannel /> */}
-            </div>
-            <SpectatorEditor
-              panelClassName="col-12 col-lg-6 col-xl-6 p-1"
-              switchedWidgetsStatus={switchedWidgetsStatus}
-              handleSwitchWidgets={handleSwitchWidgets}
-              spectatorService={spectatorService}
-              playerId={playerId}
-            />
-          </div>
-        )}
+          <SpectatorEditor
+            panelClassName="col-12 col-lg-6 col-xl-6 p-1"
+            switchedWidgetsStatus={switchedWidgetsStatus}
+            handleSwitchWidgets={handleSwitchWidgets}
+            spectatorService={spectatorService}
+            playerId={playerId}
+          />
+        </div>
       </div>
     </>
   );

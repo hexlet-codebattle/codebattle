@@ -582,7 +582,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
   const clearWaitingRoomListeners = addWaitingRoomListeners(
     currentGameChannel,
     waitingRoomMachine,
-    { cancelRedirect: false },
+    { cancelRedirect },
   )(dispatch, getState);
 
   const handleWaitingRoomPlayerFinishedRound = response => {

@@ -117,7 +117,6 @@ const machine = {
               },
               {
                 target: 'active',
-                actions: ['blockGameRoomAfterCheck'],
               },
             ],
             'user:give_up': {

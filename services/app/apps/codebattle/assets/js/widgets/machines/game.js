@@ -213,7 +213,6 @@ const machine = {
               },
               {
                 target: 'active',
-                actions: ['blockGameRoomAfterCheck'],
               },
             ],
             [channelTopics.userGiveUpTopic]: {

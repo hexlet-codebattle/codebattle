@@ -316,6 +316,16 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :game_passwords_json) %>
           </div>
+          <div class="d-flex mt-3 overflow-x">
+            <%= label(f, :rounds_config_json) %>
+            <%= textarea(f, :rounds_config_json,
+              class: "form-control",
+              value: f.params["rounds_config_json"] || @default_rounds_config_json,
+              maxlength: "9350",
+              rows: "10"
+            ) %>
+            <%= error_tag(f, :rounds_config_json) %>
+          </div>
         <% end %>
         <%= submit("Create",
           phx_disable_with: "Creating...",

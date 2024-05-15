@@ -55,7 +55,6 @@ const useGameRoomMachine = ({
       blockGameRoomAfterCheck: (_ctx, { payload }) => {
         if (payload.award) {
           NiceModal.show(ModalCodes.awardModal);
-          dispatch(actions.setVisible(false));
         }
       },
     },

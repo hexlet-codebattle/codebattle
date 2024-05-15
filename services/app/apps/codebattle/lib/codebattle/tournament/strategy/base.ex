@@ -537,6 +537,7 @@ defmodule Codebattle.Tournament.Base do
               use_chat: tournament.use_chat,
               use_timer: tournament.use_timer
             }
+            |> maybe_add_award(tournament)
         end)
         |> Game.Context.bulk_create_games()
         |> Enum.zip(batch)
@@ -894,6 +895,23 @@ defmodule Codebattle.Tournament.Base do
 
           {:error, _reason} ->
             %{}
+        end
+      end
+
+      defp maybe_add_award(game_params, tournament) do
+        tournament.meta
+        |> Map.get(:rounds_config)
+        |> case do
+          nil ->
+            Map.put(game_params, :award, nil)
+
+          config ->
+            config
+            |> Enum.at(tournament.current_round_position)
+            |> case do
+              %{award: award} -> Map.put(game_params, :award, award)
+              _ -> Map.put(game_params, :award, nil)
+            end
         end
       end
     end

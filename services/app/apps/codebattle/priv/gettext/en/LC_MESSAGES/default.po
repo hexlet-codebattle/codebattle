@@ -395,4 +395,4 @@ msgstr[1] "%{count} tasks left"
 msgstr[2] "%{count} tasks left"
 
 msgid "Active match"
-msgstr "Есть активная задача"
+msgstr "Асtive"

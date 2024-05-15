@@ -56,7 +56,7 @@ defmodule Codebattle.Tournament do
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
   @ranking_types ~w(by_player by_clan by_player_95th_percentile)
-  @types ~w(individual team swiss arena versus)
+  @types ~w(individual team show swiss arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

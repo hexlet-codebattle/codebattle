@@ -36,7 +36,7 @@ defmodule Codebattle.Tournament.Show do
   def maybe_create_rematch(tournament, _params), do: tournament
 
   @impl Tournament.Base
-  def finish_round_after_match?(_tournament), do: false
+  def finish_round_after_match?(_tournament), do: true
 
   @impl Tournament.Base
   def set_ranking(t), do: t
@@ -44,11 +44,11 @@ defmodule Codebattle.Tournament.Show do
   defp final_round?(
          _tournament = %{
            task_provider: "task_pack",
-           meta: %{task_ids: task_ids},
+           round_task_ids: round_task_ids,
            current_round_position: position
          }
        ) do
-    Enum.count(task_ids) == position + 1
+    Enum.count(round_task_ids) == position + 1
   end
 
   defp final_round?(_tournament) do

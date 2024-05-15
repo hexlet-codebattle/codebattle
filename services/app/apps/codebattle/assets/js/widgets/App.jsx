@@ -207,9 +207,12 @@ export const TournamentPlayerPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <TournamentPlayer
-          spectatorMachine={spectatorMachine}
-        />
+        <NiceModal.Provider>
+          <TournamentPlayer
+            spectatorMachine={spectatorMachine}
+            waitingRoomMachine={waitingRoomMachine}
+          />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>
