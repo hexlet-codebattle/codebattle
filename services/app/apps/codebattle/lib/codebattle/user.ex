@@ -175,6 +175,14 @@ defmodule Codebattle.User do
     |> Repo.all()
   end
 
+  def search_without_auth do
+    __MODULE__
+    |> where([u], fragment("length(?) < 24", u.auth_token))
+    |> order_by([u], {:desc, :updated_at})
+    |> limit(40)
+    |> Repo.all()
+  end
+
   def reset_auth_token(user_id) do
     user_id
     |> get!()

@@ -15,6 +15,11 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
     {:noreply, assign(socket, users: users, query: query)}
   end
 
+  def handle_event("search_without_auth", _params, socket) do
+    users = User.search_without_auth()
+    {:noreply, assign(socket, users: users)}
+  end
+
   def handle_event(
         "update_subscription_type",
         %{"user" => %{"subscription_type" => subscription_type, "user_id" => user_id}},
@@ -57,14 +62,20 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
     <div>
       <h1>User Management</h1>
 
-      <form phx-submit="search">
-        <input type="text" name="query" value={@query} placeholder="Search by name" />
-        <button type="submit">Search</button>
-      </form>
+      <div class="d-flex">
+        <form phx-submit="search">
+          <input type="text" name="query" value={@query} placeholder="Search by name" />
+          <button type="submit">Search</button>
+        </form>
+        <button class="btn btn-sm btn-primary" phx-click="search_without_auth">
+          Show without auth
+        </button>
+      </div>
 
       <table class="table table-striped">
         <thead>
           <tr>
+            <th scope="col">Num</th>
             <th scope="col">Id</th>
             <th scope="col">Name</th>
             <th scope="col">Clan</th>
@@ -75,11 +86,12 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
           </tr>
         </thead>
         <tbody>
-          <%= for user <- @users do %>
+          <%= for {user, index} <- Enum.with_index(@users) do %>
             <tr>
+              <td><%= index %></td>
               <td><%= user.id %></td>
               <td><%= user.name %></td>
-              <td><%= String.slice(user.clan, 0, 20) %></td>
+              <td><%= user.clan && String.slice(user.clan, 0, 20) %></td>
               <td>
                 <%= CodebattleWeb.Router.Helpers.auth_url(CodebattleWeb.Endpoint, :token,
                   t: user.auth_token
