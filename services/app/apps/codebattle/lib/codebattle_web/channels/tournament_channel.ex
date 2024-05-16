@@ -23,6 +23,8 @@ defmodule CodebattleWeb.TournamentChannel do
          tournament_info:
            Map.take(tournament, [
              :id,
+             :ranking_type,
+             :use_clan,
              :players_table,
              :ranking_table,
              :clans_table,
@@ -48,10 +50,11 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_in("tournament:join", _, socket) do
-    tournament_id = socket.assigns.tournament_info.id
+    tournament = socket.assigns.tournament_info
+    user = socket.assigns.current_user
 
-    Tournament.Context.handle_event(tournament_id, :join, %{
-      user: socket.assigns.current_user
+    Tournament.Context.handle_event(tournament.id, :join, %{
+      user: user
     })
 
     {:noreply, socket}
@@ -209,7 +212,17 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
-    push(socket, "tournament:player:joined", payload)
+    if payload.player.id == socket.assigns.current_user.id do
+      tournament = socket.assigns.tournament_info
+      user = socket.assigns.current_user
+      ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, user)
+      clans = Tournament.Helpers.get_clans_by_ranking(tournament, ranking)
+
+      push(socket, "tournament:player:joined", payload)
+      push(socket, "tournament:ranking_update", %{ranking: ranking, clans: clans})
+    else
+      push(socket, "tournament:player:joined", payload)
+    end
 
     {:noreply, socket}
   end

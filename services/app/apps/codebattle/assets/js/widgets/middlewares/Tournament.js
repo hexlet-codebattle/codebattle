@@ -136,6 +136,10 @@ export const connectToTournament = waitingRoomMachine => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
   };
 
+  const handleTournamentRankingUpdate = response => {
+    dispatch(actions.updateTournamentData({ ranking: response.ranking, clans: response.clans }));
+  };
+
   const clearWaitingRoomListeners = addWaitingRoomListeners(
     oldChannel,
     waitingRoomMachine,
@@ -153,6 +157,7 @@ export const connectToTournament = waitingRoomMachine => dispatch => {
     oldChannel.on('tournament:match:upserted', handleMatchUpserted),
     oldChannel.on('tournament:restarted', handleTournamentRestarted),
     oldChannel.on('tournament:finished', handleTournamentFinished),
+    oldChannel.on('tournament:ranking_update', handleTournamentRankingUpdate),
   ];
 
   const clearTournamentChannel = () => {
@@ -166,6 +171,7 @@ export const connectToTournament = waitingRoomMachine => dispatch => {
     oldChannel.off('tournament:match:upserted', refs[7]);
     oldChannel.off('tournament:restarted', refs[8]);
     oldChannel.off('tournament:finished', refs[9]);
+    oldChannel.off('tournament:ranking_update', refs[10]);
 
     clearWaitingRoomListeners();
   };
