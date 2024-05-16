@@ -21,7 +21,7 @@ function BuilderSettingsWidget() {
     state: gameStateName,
     mode: gameRoomMode,
   } = useSelector(selectors.gameStatusSelector);
-  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector);
 
   const openTaskConfiguration = useCallback(() => {
     NiceModal.show('task_configuration_modal');

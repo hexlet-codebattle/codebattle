@@ -13,7 +13,7 @@ const getMessage = status => {
     case 'error':
       return i18n.t('Solution cannot be executed');
     case 'failure':
-      return i18n.t('Test failed');
+      return i18n.t('Tests failed');
     case 'ok':
       return i18n.t('Yay! All tests passed!!111');
     default:

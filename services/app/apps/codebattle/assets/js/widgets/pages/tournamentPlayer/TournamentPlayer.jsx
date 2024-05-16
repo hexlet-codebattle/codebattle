@@ -165,7 +165,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
-  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector);
   const { playerId, gameId } = useSelector(state => state.tournamentPlayer);
 
   const output = useSelector(selectors.executionOutputSelector(playerId));

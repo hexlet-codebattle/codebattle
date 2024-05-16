@@ -31,7 +31,7 @@ export function ArenaStatisticsCard({
       <div className="d-flex w-100 justify-content-between">
         <div className={cardColumnClassName}>
           <span className="p-1">{`${i18next.t('Your clan place')}: ${clanStats?.place || '?'}`}</span>
-          <span className="p-1">{`${i18next.t('Your place')}: ${playerStats.place || '?'}`}</span>
+          {/* <span className="p-1">{`${i18next.t('Your place')}: ${playerStats.place || '?'}`}</span> */}
           <span className="p-1">{`${i18next.t('Task')}: ${playerStats.matchesCount}/${taskIds.length}`}</span>
         </div>
         <div className={cardColumnClassName}>

@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 import Loading from '../../components/Loading';
 import MatchStatesCodes from '../../config/matchStates';
 import TournamentTypes from '../../config/tournamentTypes';
-import { currentUserClanIdSelector } from '../../selectors';
+import { tournamentSelector, currentUserClanIdSelector } from '../../selectors';
 import { getOpponentId } from '../../utils/matches';
 
 import StageCard from './StageCard';
@@ -66,6 +66,7 @@ function PlayerStatsPanel({
   hideBots,
   canModerate,
 }) {
+  const { roundTaskIds } = useSelector(tournamentSelector);
   const currentUserClanId = useSelector(currentUserClanIdSelector);
 
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
@@ -174,7 +175,7 @@ function PlayerStatsPanel({
                   type={type}
                   playerId={currentUserId}
                   clanId={currentUserClanId}
-                  taskIds={currentPlayer.taskIds}
+                  taskIds={roundTaskIds}
                   place={currentPlayer.place}
                   isBanned={currentPlayer.isBanned}
                   matchList={matchList}

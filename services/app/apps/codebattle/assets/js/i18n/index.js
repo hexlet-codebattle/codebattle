@@ -2,7 +2,7 @@
 import Gon from 'gon';
 import i18next from 'i18next';
 
-const lng = (Gon.getAsset('locale') || navigator.language || navigator.userLanguage).slice(0, 2);
+const lng = (Gon.getAsset('locale') || navigator.language || navigator.userLanguage).slice(0, 2) || 'en';
 
 export const getLocale = () => lng;
 

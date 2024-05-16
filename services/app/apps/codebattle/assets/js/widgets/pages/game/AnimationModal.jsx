@@ -1,6 +1,7 @@
 import React, { memo, useEffect } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
+import i18n from 'i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
@@ -43,9 +44,9 @@ const AnimationModal = NiceModal.create(() => {
   const { result } = currentPlayer;
 
   const titleModal = result === 'won'
-    ? "Woohoo, you're Champion!!!!!"
-    : "If you read this you've lost the game";
-  const buttonText = result === 'won' ? 'Thanks' : "I'll be back";
+    ? i18n.t("Woohoo, you're Champion!!!!!")
+    : i18n.t("If you read this you've lost the game");
+  const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
 
   useEffect(() => {
     if (modal.visible) {

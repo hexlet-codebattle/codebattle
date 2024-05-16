@@ -643,3 +643,32 @@ msgstr "Игра завершена"
 
 msgid "Loading..."
 msgstr "Загрузка..."
+
+msgid "Join the tournament"
+msgstr "Перейти в турнир"
+
+msgid "Timeout in: %{time}"
+msgstr "Завершится через: %{time}"
+
+msgid "Woohoo, you're Champion!!!!!"
+msgstr "Баттл официально затащен!"
+
+msgid "If you read this you've lost the game"
+msgstr "Ты заслуживаешь победы, продолжай!"
+
+msgid "I'll be back"
+msgstr "Айл би бэк"
+
+msgid "GG"
+msgstr "Чемпион"
+
+msgid "We could not verify your solution"
+msgstr "Мы не смогли проверить ваше решение"
+
+msgid "Please try to fix your code and submit it again"
+msgstr "Пожалуйста, исправьте ваш код и отправьте его снова"
+
+msgid "Note that your code may contain an infinite loop or complex calculations"
+msgstr "Обратите внимание, что ваш код может содержать бесконечный цикл или сложные вычисления"
+
+

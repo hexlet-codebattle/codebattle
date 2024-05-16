@@ -5,6 +5,7 @@ import React, {
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 // import useSearchParams from '../../utils/useSearchParams';
@@ -65,6 +66,7 @@ function EventWidget() {
       hidden: loading !== loadingStatuses.LOADING,
     },
   );
+  const lastActiveTournament = tournaments.slice().reverse().find(tournament => tournament.state !== 'finished');
 
   return (
     <div className="d-flex flex-column position-relative container-lg">
@@ -86,6 +88,11 @@ function EventWidget() {
         <div className="col-12 col-lg-5">
           <div className="rounded-lg border-0 bg-white m-1 py-3">
             <EventCalendarPanel tournaments={tournaments} />
+          </div>
+          <div>
+            <a className="btn cb-custom-event-btn-dark rounded-lg mt-2 mx-1" href={`/tournaments/${lastActiveTournament.id}`}>
+              {i18next.t('Join the tournament')}
+            </a>
           </div>
         </div>
       </div>

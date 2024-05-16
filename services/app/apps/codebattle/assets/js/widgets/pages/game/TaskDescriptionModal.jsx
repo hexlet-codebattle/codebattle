@@ -7,7 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  gameTaskSelector, taskDescriptionLanguageselector,
+  gameTaskSelector, taskDescriptionLanguageSelector,
 } from '@/selectors';
 
 import ModalCodes from '../../config/modalCodes';
@@ -21,7 +21,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
   const modal = useModal(ModalCodes.taskDescriptionModal);
 
   const task = useSelector(gameTaskSelector);
-  const taskLanguage = useSelector(taskDescriptionLanguageselector);
+  const taskLanguage = useSelector(taskDescriptionLanguageSelector);
 
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 

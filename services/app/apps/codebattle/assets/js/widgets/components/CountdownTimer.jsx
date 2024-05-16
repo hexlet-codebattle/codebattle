@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import cn from 'classnames';
+import i18n from 'i18next';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-const getProgress = (a, b) => (
-  100 - Math.ceil((a / b) * 100)
-);
+const getProgress = (a, b) => 100 - Math.ceil((a / b) * 100);
 
 const getDuration = (time, timeoutSeconds) => {
   const diff = moment().diff(moment.utc(time));
@@ -44,13 +43,15 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }) {
   return (
     <>
       <span className="text-monospace">
-        {timeoutSeconds && 'Timeout in: '}
-        <span>{moment.utc(duration).format('HH:mm:ss')}</span>
+        {timeoutSeconds && (
+          <span>
+            {i18n.t('Timeout in: %{time}', {
+              time: moment.utc(duration).format('HH:mm:ss'),
+            })}
+          </span>
+        )}
       </span>
-      <div
-        className={progressBgColor}
-        style={{ width: `${progress}%` }}
-      />
+      <div className={progressBgColor} style={{ width: `${progress}%` }} />
     </>
   );
 }

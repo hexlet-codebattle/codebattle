@@ -13,7 +13,7 @@ import {
   gameTaskSelector,
   gameStatusSelector,
   builderTaskSelector,
-  taskDescriptionLanguageselector,
+  taskDescriptionLanguageSelector,
 } from '../../selectors';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
@@ -31,7 +31,7 @@ function InfoWidget({ viewMode }) {
   const isTestingRoom = inTestingRoomSelector(roomMachineState);
   const isRestricted = isRestrictedContentSelector(roomMachineState);
 
-  const taskLanguage = useSelector(taskDescriptionLanguageselector);
+  const taskLanguage = useSelector(taskDescriptionLanguageSelector);
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
   const {
     startsAt,

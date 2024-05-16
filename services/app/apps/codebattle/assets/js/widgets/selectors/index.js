@@ -1,4 +1,5 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
+import Gon from 'gon';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
@@ -443,7 +444,7 @@ export const currentChatUserSelector = state => {
   return find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
+export const taskDescriptionLanguageSelector = state => Gon.getAsset('locale') || state.gameUI.taskDescriptionLanguage;
 
 export const playbookStatusSelector = state => state.playbook.state;
 
