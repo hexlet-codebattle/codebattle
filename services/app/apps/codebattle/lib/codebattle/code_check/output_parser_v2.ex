@@ -92,8 +92,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
         true ->
           """
           STDERR: #{container_stderr}\n
-          STDOUT: #{container_output}\n
-          Please check your code or write to dev team in our Telegram
+          STDOUT: #{container_output}
           """
       end
 

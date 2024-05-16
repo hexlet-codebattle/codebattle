@@ -118,7 +118,7 @@ function SubMenu({
     <div className="list-group-item border-left-0 gorder-right-0">
       <div id={`heading${uniqIndex}`}>
         <div>
-          <div className="d-flex">
+          <div className="d-flex align-items-center">
             {statusColor === 'success' ? (
               <FontAwesomeIcon
                 className={`text-${statusColor} mr-2 ${fontClassName}`}
@@ -141,7 +141,7 @@ function SubMenu({
             </OverlayTrigger>
             {assert.output && (
               <button
-                className="btn btn-sm btn-outline-info badge ml-2"
+                className="btn btn-sm btn-outline-info badge rounded-lg"
                 type="button"
                 onClick={() => setIsShowLog(!isShowLog)}
                 data-toggle="collapse"
@@ -149,8 +149,8 @@ function SubMenu({
                 aria-controls={`collapse${uniqIndex}`}
               >
                 <span className={fontClassName}>
-                  {isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
-                  {' Log'}
+                  <FontAwesomeIcon icon={isShowLog ? 'arrow-circle-up' : 'arrow-circle-down'} className="mr-1" />
+                  {i18n.t('STDOUT')}
                 </span>
               </button>
             )}
@@ -195,7 +195,6 @@ const Item = ({ output, fontSize }) => {
   return (
     <div className={`alert alert-secondary mb-0 ${fontClassName}`}>
       <pre>
-        <span className="font-weight-bold d-block">Output:</span>
         {output}
       </pre>
     </div>

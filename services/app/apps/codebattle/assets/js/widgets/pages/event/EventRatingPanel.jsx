@@ -202,7 +202,12 @@ const EventRatingPanel = ({
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-end mr-1">
+          <div className="d-flex justify-content-between mr-1 px-2">
+            <div className="pl-2">
+              <span>
+                {i18next.t('Total entries: %{totalEntries}', { totalEntries })}
+              </span>
+            </div>
             <LeaderboardPagination
               pageInfo={{ pageNumber, pageSize, totalEntries }}
               setPage={setPage}

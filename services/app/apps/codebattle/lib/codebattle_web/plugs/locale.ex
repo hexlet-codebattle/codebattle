@@ -16,7 +16,9 @@ defmodule CodebattleWeb.Plugs.Locale do
       |> put_gon(locale: locale)
       |> put_session(:locale, locale)
     else
-      locale = conn.params["locale"] || get_session(conn, :locale) || Application.get_env(:codebattle, :default_locale)
+      locale =
+        conn.params["locale"] || get_session(conn, :locale) ||
+          Application.get_env(:codebattle, :default_locale)
 
       Gettext.put_locale(CodebattleWeb.Gettext, locale)
 

@@ -542,7 +542,7 @@ msgstr "история"
 msgid "Opponent"
 msgstr "Соперник"
 
-msgid "Opponent сlan"
+msgid "Opponent clan"
 msgstr "Вуз соперника"
 
 msgid "Status"
@@ -661,6 +661,12 @@ msgstr "Айл би бэк"
 
 msgid "GG"
 msgstr "Чемпион"
+
+msgid "STDOUT"
+msgstr "ВЫВОД"
+
+msgid "Total entries: %{totalEntries}"
+msgstr "Общее количество: %{totalEntries}"
 
 msgid "We could not verify your solution"
 msgstr "Мы не смогли проверить ваше решение"

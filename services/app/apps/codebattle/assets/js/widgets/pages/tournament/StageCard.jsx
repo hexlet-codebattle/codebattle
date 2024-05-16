@@ -147,8 +147,8 @@ function StageCard({
             )}
             <h6 className="p-1">{`${i18next.t('Opponent')}: ${opponent.name}`}</h6>
             {opponent.clanId && (
-              <h6 className="p">
-                {`${i18next.t('Opponent clan')}: ${opponent.clanId}`}
+              <h6 className="p-1">
+                {`${i18next.t('Opponent clan')}: ${opponent.clan}`}
               </h6>
             )}
             <h6 className="p-1">

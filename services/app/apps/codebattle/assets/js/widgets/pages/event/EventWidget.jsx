@@ -90,9 +90,11 @@ function EventWidget() {
             <EventCalendarPanel tournaments={tournaments} />
           </div>
           <div>
-            <a className="btn cb-custom-event-btn-dark rounded-lg mt-2 mx-1" href={`/tournaments/${lastActiveTournament.id}`}>
+            { lastActiveTournament && (
+            <a className="btn cb-custom-event-btn-dark rounded-lg mt-2 mx-1" href={`/tournaments/${lastActiveTournament?.id}`}>
               {i18next.t('Join the tournament')}
             </a>
+)}
           </div>
         </div>
       </div>
