@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
 
+  alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.WaitingRoom
@@ -387,6 +388,7 @@ defmodule Codebattle.Tournament.Base do
           show_results: need_show_results?(tournament)
         })
         |> calculate_round_results()
+        |> Tournament.TournamentResult.upsert_results()
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> update_players_state_after_round_finished()
@@ -687,6 +689,7 @@ defmodule Codebattle.Tournament.Base do
           |> set_stats()
           |> set_winner_ids()
           # |> db_save!()
+          |> maybe_save_event_results()
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
           |> then(fn tournament ->
@@ -914,6 +917,21 @@ defmodule Codebattle.Tournament.Base do
             end
         end
       end
+
+      defp maybe_save_event_results(tournament = %{use_clan: true, event_id: event_id})
+           when not is_nil(event_id) do
+        Event.EventClanResult.save_results(tournament)
+        Event.EventResult.save_results(tournament)
+        tournament
+      end
+
+      defp maybe_save_event_results(tournament = %{event_id: event_id})
+           when not is_nil(event_id) do
+        Event.EventResult.save_results(tournament)
+        tournament
+      end
+
+      defp maybe_save_event_results(t), do: t
     end
   end
 end

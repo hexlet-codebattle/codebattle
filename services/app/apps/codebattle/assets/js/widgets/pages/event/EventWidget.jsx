@@ -92,7 +92,7 @@ function EventWidget() {
           <div>
             { lastActiveTournament && (
             <a className="btn cb-custom-event-btn-dark rounded-lg mt-2 mx-1" href={`/tournaments/${lastActiveTournament?.id}`}>
-              {i18next.t('Join the tournament')}
+              {i18next.t('Join the round')}
             </a>
 )}
           </div>

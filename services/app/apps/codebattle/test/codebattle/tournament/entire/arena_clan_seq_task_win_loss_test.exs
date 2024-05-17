@@ -1,19 +1,26 @@
 defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
   use Codebattle.DataCase, async: false
 
+  alias Codebattle.Event.EventClanResult
+  alias Codebattle.Event.EventResult
+  alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.TournamentResult
   alias Codebattle.WaitingRoom
 
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
 
+  @decimal100 Decimal.new("100.0")
+
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "tp", task_ids: [t1_id, t2_id, t3_id])
 
+    event = %{id: e_id} = insert(:event)
     creator = insert(:user)
-    user1 = insert(:user, %{clan_id: 1, clan: "1", name: "1"})
-    user2 = insert(:user, %{clan_id: 1, clan: "1", name: "2"})
+    user1 = %{id: u1_id} = insert(:user, %{clan_id: 1, clan: "1", name: "1"})
+    user2 = %{id: u2_id} = insert(:user, %{clan_id: 1, clan: "1", name: "2"})
     user3 = insert(:user, %{clan_id: 2, clan: "3", name: "3"})
     user4 = insert(:user, %{clan_id: 3, clan: "4", name: "4"})
     user5 = insert(:user, %{clan_id: 4, clan: "5", name: "5"})
@@ -25,6 +32,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
         "name" => "Test Swiss",
+        "event_id" => to_string(event.id),
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
         "task_pack_name" => "tp",
@@ -535,5 +543,111 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
              page_size: 10,
              total_entries: 7
            } = Tournament.Ranking.get_page(tournament, 1)
+
+    tournament_id = tournament.id
+
+    assert [
+             %{
+               score: 3,
+               clan_id: 1,
+               duration_sec: 0,
+               game_id: _,
+               id: _,
+               level: "easy",
+               result_percent: @decimal100,
+               task_id: ^t1_id,
+               tournament_id: ^tournament_id,
+               user_id: ^u1_id,
+               user_name: "1"
+             },
+             %{
+               score: 3,
+               clan_id: 1,
+               duration_sec: 0,
+               game_id: _,
+               id: _,
+               level: "easy",
+               result_percent: @decimal100,
+               task_id: ^t2_id,
+               tournament_id: ^tournament_id,
+               user_id: ^u1_id,
+               user_name: "1"
+             },
+             %{
+               score: 3,
+               clan_id: 1,
+               duration_sec: 0,
+               game_id: _,
+               id: _,
+               level: "easy",
+               result_percent: @decimal100,
+               task_id: ^t3_id,
+               tournament_id: ^tournament_id,
+               user_id: ^u1_id,
+               user_name: "1"
+             },
+             %{
+               score: 3,
+               clan_id: 1,
+               duration_sec: 0,
+               game_id: _,
+               id: _,
+               level: "easy",
+               result_percent: @decimal100,
+               task_id: ^t1_id,
+               tournament_id: ^tournament_id,
+               user_id: ^u2_id,
+               user_name: "2"
+             },
+             %{},
+             %{},
+             %{},
+             %{},
+             %{},
+             %{},
+             %{},
+             %{},
+             %{},
+             %{}
+           ] = TournamentResult |> Repo.all() |> Enum.sort_by(&{&1.user_id, &1.task_id})
+
+    assert [
+             %{id: _, event_id: ^e_id, clan_id: 1, players_count: 2, place: 1, score: 13},
+             %{id: _, event_id: ^e_id, players_count: 1, place: 2},
+             %{id: _, event_id: ^e_id, players_count: 1},
+             %{id: _, event_id: ^e_id, players_count: 1},
+             %{id: _, event_id: ^e_id, players_count: 1},
+             %{id: _, event_id: ^e_id, players_count: 1},
+             %{id: _, event_id: ^e_id, players_count: 1}
+           ] = EventClanResult |> Repo.all() |> Enum.sort_by(&{&1.place, &1.clan_id})
+
+    assert [
+             %{
+               id: _,
+               event_id: ^e_id,
+               clan_id: 1,
+               user_id: ^u1_id,
+               user_name: "1",
+               clan_place: 1,
+               place: 1,
+               score: 9
+             },
+             %{
+               id: _,
+               event_id: ^e_id,
+               clan_id: 1,
+               user_id: ^u2_id,
+               user_name: "2",
+               clan_place: 2,
+               place: 2,
+               score: 4
+             },
+             %{id: _, event_id: ^e_id, clan_place: 1},
+             %{id: _, event_id: ^e_id, clan_place: 1},
+             %{id: _, event_id: ^e_id, clan_place: 1},
+             %{id: _, event_id: ^e_id, clan_place: 1},
+             %{id: _, event_id: ^e_id, clan_place: 1},
+             %{id: _, event_id: ^e_id, clan_place: 1}
+           ] = EventResult |> Repo.all() |> Enum.sort_by(&{&1.place, &1.clan_id})
   end
 end

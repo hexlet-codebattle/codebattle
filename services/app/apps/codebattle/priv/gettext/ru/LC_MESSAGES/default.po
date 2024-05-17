@@ -275,7 +275,7 @@ msgstr "Нотификация"
 msgid "Run"
 msgstr "Запустить"
 
-msgid "Сharging..."
+msgid "Charging..."
 msgstr "Заряжается..."
 
 msgid "Running..."
@@ -497,6 +497,9 @@ msgstr "Поиск соперника"
 msgid "Back to tournament"
 msgstr "Назад в турнир"
 
+msgid "Back to tournaments"
+msgstr "На главную"
+
 msgid "Stop searching"
 msgstr "Приостановить"
 
@@ -644,8 +647,8 @@ msgstr "Игра завершена"
 msgid "Loading..."
 msgstr "Загрузка..."
 
-msgid "Join the tournament"
-msgstr "Перейти в турнир"
+msgid "Join the round"
+msgstr "Перейти в раунд"
 
 msgid "Timeout in: %{time}"
 msgstr "Завершится через: %{time}"

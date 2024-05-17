@@ -71,6 +71,11 @@ defmodule Codebattle.Game.TasksQueuesServer do
     end
   end
 
+  def handle_info(:reshuffled_task_ids, state) do
+    Process.send_after(self(), :reshuffled_task_ids, @reshuffle_timeout)
+    {:noreply, %{state | task_ids: fetch_task_ids()}}
+  end
+
   ## Helpers
   defp initial_cursors do
     Enum.reduce(Codebattle.Task.levels(), %{}, fn level, acc ->

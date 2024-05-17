@@ -2,7 +2,6 @@ defmodule Codebattle.Tournament.Arena do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.TournamentResult
 
   @impl Tournament.Base
   def game_type, do: "duo"
@@ -17,32 +16,7 @@ defmodule Codebattle.Tournament.Arena do
   def finish_round_after_match?(_tournament), do: false
 
   @impl Tournament.Base
-  def calculate_round_results(tournament = %{score_strategy: "win_loss"}) do
-    tournament
-  end
-
-  def calculate_round_results(tournament) do
-    TournamentResult.upsert_results(tournament)
-    get_player_results = TournamentResult.get_player_results(tournament)
-
-    get_player_results
-    |> Enum.each(fn %{score: score, place: place, player_id: player_id} ->
-      Tournament.Players.put_player(tournament, %{
-        Tournament.Players.get_player(tournament, player_id)
-        | place: place,
-          score: score
-      })
-    end)
-
-    top_player_ids =
-      tournament
-      |> Tournament.Players.get_players()
-      |> Enum.sort_by(& &1.score)
-      |> Enum.take(30)
-      |> Enum.map(& &1.id)
-
-    %{tournament | top_player_ids: top_player_ids}
-  end
+  def calculate_round_results(t), do: t
 
   @impl Tournament.Base
   def build_round_pairs(tournament) do

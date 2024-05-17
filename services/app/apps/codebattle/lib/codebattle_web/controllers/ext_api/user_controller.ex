@@ -11,7 +11,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
   @adjectives ~w(Swift Agile Robust Stealthy Precise Nimble Efficient Reliable Versatile Dynamic Resilient Tenacious Sharp Astute Ingenious Crafty Clever Adaptable Resourceful Dexterous Brilliant Smart Intuitive Systematic Logical Strategic Tactical Flexible Creative Innovative Analytical Precise Methodical Persistent Perceptive Diligent Meticulous Inventive Quick-witted Cunning Problem-solving Insightful Versatile Ambitious Tenacious Robust Adaptive Ingenious Efficient Collaborative)
 
   def create(conn, params) do
-    %{}
+    %{sound_settings: %{level: 0, type: "silent"}}
     |> cast_name(params)
     |> cast_clan(params)
     |> cast_auth_token(params)

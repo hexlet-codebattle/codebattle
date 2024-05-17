@@ -130,6 +130,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     %{params | state: :finished}
   end
 
+  def get_editor_text([]), do: ""
   def get_editor_text(%{insert: text}), do: text
   def get_editor_text(%{"insert" => text}), do: text
   def get_editor_text([%{insert: text}]), do: text

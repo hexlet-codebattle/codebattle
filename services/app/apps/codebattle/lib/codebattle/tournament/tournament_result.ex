@@ -2,6 +2,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   @moduledoc false
 
   alias Codebattle.Repo
+  alias Codebattle.Tournament
+  alias Codebattle.Tournament.Score.WinLoss
 
   use Ecto.Schema
   import Ecto.Query
@@ -23,7 +25,7 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   def get_by(tournament_id) do
     __MODULE__
-    |> where([tr: tr], tr.tournament_id == ^tournament_id)
+    |> where([tr], tr.tournament_id == ^tournament_id)
     |> Repo.all()
   end
 
@@ -44,6 +46,66 @@ defmodule Codebattle.Tournament.TournamentResult do
       }
     )
     |> Repo.all()
+  end
+
+  @spec upsert_results(tounament :: Tournament.t()) :: Tournament.t()
+  def upsert_results(tournament = %{score_strategy: "win_loss"}) do
+    Repo.query!("""
+      with stats as (
+      select
+      (p.player_info->>'result_percent')::numeric AS result_percent,
+      (p.player_info->>'id')::integer AS user_id,
+      (p.player_info->>'name')::text AS user_name,
+      (p.player_info->>'clan_id')::integer AS clan_id,
+      g.duration_sec,
+      g.level,
+      g.tournament_id,
+      g.task_id,
+      g.id as game_id,
+      CASE
+      WHEN (p.player_info->'result_percent')::numeric = 100.0 THEN
+        CASE
+          WHEN g.level = 'elementary' THEN #{WinLoss.game_level_score("elementary")}
+          WHEN g.level = 'easy' THEN #{WinLoss.game_level_score("easy")}
+          WHEN g.level = 'medium' THEN #{WinLoss.game_level_score("medium")}
+          WHEN g.level = 'hard' THEN #{WinLoss.game_level_score("hard")}
+          ELSE 0
+        END
+      ELSE #{WinLoss.loss_score()}
+      END AS score
+      FROM games g
+      CROSS JOIN LATERAL
+      jsonb_array_elements(g.players) AS p(player_info)
+      where g.tournament_id = #{tournament.id}
+      )
+      insert into tournament_results
+      (
+      tournament_id,
+      game_id,
+      user_id,
+      user_name,
+      clan_id,
+      task_id,
+      score,
+      level,
+      duration_sec,
+      result_percent
+      )
+      select
+      tournament_id,
+      game_id,
+      user_id,
+      user_name,
+      clan_id,
+      task_id,
+      score,
+      level,
+      duration_sec,
+      result_percent
+      from stats
+    """)
+
+    tournament
   end
 
   @doc """
@@ -92,10 +154,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       task_id, level),
       stats as (
       select
-      (p.player_info->'result_percent')::numeric AS result_percent,
-      (p.player_info->'id')::integer AS user_id,
-      (p.player_info->'name') AS user_name,
-      (p.player_info->'clan_id')::integer AS clan_id,
+      (p.player_info->>'result_percent')::numeric AS result_percent,
+      (p.player_info->>'id')::integer AS user_id,
+      (p.player_info->>'name')::text AS user_name,
+      (p.player_info->>'clan_id')::integer AS clan_id,
       g.duration_sec,
       g.tournament_id,
       g.id as game_id,
@@ -112,7 +174,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       from games g
       CROSS JOIN LATERAL
       jsonb_array_elements(g.players) AS p(player_info)
-      inner join  duration_percentile_for_tasks dt
+      inner join duration_percentile_for_tasks dt
       on dt.task_id = g.task_id
       where g.tournament_id = #{tournament.id}
       )
@@ -142,5 +204,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       result_percent
       from stats
     """)
+
+    tournament
   end
 end

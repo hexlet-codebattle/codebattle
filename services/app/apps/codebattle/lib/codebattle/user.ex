@@ -101,6 +101,7 @@ defmodule Codebattle.User do
       :subscription_type
     ])
     |> unique_constraint(:name)
+    |> cast_embed(:sound_settings)
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
     |> assign_clan(params, 1)
@@ -118,6 +119,7 @@ defmodule Codebattle.User do
   def token_changeset(user, params \\ %{}) do
     user
     |> cast(params, [:auth_token, :name, :clan])
+    |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)
     |> assign_clan(params, user.id)

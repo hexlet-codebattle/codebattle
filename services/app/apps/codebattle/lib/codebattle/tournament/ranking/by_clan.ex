@@ -89,6 +89,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
 
   defp set_places(ranking, tournament) do
     ranking
+    |> Enum.uniq_by(& &1.id)
     |> Enum.sort_by(&{&1[:score], &1[:players_count]}, :desc)
     |> Enum.with_index(1)
     |> Enum.map(fn {clan_rank, place_index} ->

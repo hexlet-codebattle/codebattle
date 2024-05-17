@@ -17,6 +17,10 @@ spec:
       labels:
         app: "codebattle"
     spec:
+      {{- with .Values.codebattle.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"

@@ -21,6 +21,7 @@ defmodule Codebattle.Game.Player do
              :avatar_url,
              :check_result,
              :creator,
+             :clan_id,
              :editor_lang,
              :editor_text,
              :id,
@@ -47,6 +48,7 @@ defmodule Codebattle.Game.Player do
     field(:editor_lang, :string, default: "js")
     field(:editor_text, :string, default: @default_editor_text)
     field(:id, :integer)
+    field(:clan_id, :integer)
     field(:is_banned, :boolean, default: false)
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)
@@ -70,6 +72,7 @@ defmodule Codebattle.Game.Player do
       :is_bot,
       :is_guest,
       :lang,
+      :clan_id,
       :editor_text,
       :editor_lang,
       :creator,
@@ -98,6 +101,7 @@ defmodule Codebattle.Game.Player do
             is_bot: user.is_bot,
             is_guest: user.is_guest,
             rank: user.rank,
+            clan_id: user.clan_id,
             name: user.name,
             achievements: user.achievements,
             avatar_url: user.avatar_url,
@@ -119,6 +123,7 @@ defmodule Codebattle.Game.Player do
       is_banned: player.state == "banned",
       is_bot: player.is_bot,
       is_guest: false,
+      clan_id: player.clan_id,
       name: player.name,
       rating: player.rating,
       rank: player.rank,
@@ -142,6 +147,7 @@ defmodule Codebattle.Game.Player do
       is_banned: player.is_banned,
       is_bot: player.is_bot,
       is_guest: player.is_guest,
+      clan_id: player.clan_id,
       name: player.name,
       rating: player.rating,
       rank: player.rank,
@@ -171,6 +177,7 @@ defmodule Codebattle.Game.Player do
             is_bot: user.is_bot,
             is_guest: user.is_guest,
             name: user.name,
+            clan_id: user.clan_id,
             rating: user.rating,
             rank: user.rank,
             editor_lang: user.lang || "js",

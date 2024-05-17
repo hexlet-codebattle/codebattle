@@ -7,7 +7,7 @@ defmodule Codebattle.Clan.Scope do
 
   import Ecto.Query
 
-  def by_clan(_params) do
+  def by_clan do
     Clan
     |> from(as: :c)
     |> join(:left, [c: c], u in assoc(c, :users), as: :u)
@@ -16,7 +16,6 @@ defmodule Codebattle.Clan.Scope do
     |> order_by([u], {:desc, count(u.id)})
     |> select([u: u, c: c], %{
       players_count: count(u.id),
-      # TODO: add score and place
       score: 0,
       place: 0,
       clan_id: c.id,
@@ -25,14 +24,13 @@ defmodule Codebattle.Clan.Scope do
     })
   end
 
-  def by_player(_params) do
+  def by_player do
     Clan
     |> from(as: :c)
     |> join(:inner, [c: c], u in assoc(c, :users), as: :u)
     |> where([u: u], fragment("? not like 'neBot_%'", u.name))
     |> where([u: u], u.is_bot != true)
     |> select([u: u, c: c], %{
-      # TODO: add score and place
       score: 0,
       place: 0,
       clan_id: c.id,
@@ -43,15 +41,14 @@ defmodule Codebattle.Clan.Scope do
     })
   end
 
-  def by_player_clan(params) do
+  def by_player_clan(clan_id) do
     Clan
     |> from(as: :c)
     |> join(:inner, [c: c], u in assoc(c, :users), as: :u)
     |> where([u: u], fragment("? not like 'neBot_%'", u.name))
     |> where([u: u], u.is_bot != true)
-    |> where([c: c], c.id == ^params.clan_id)
+    |> where([c: c], c.id == ^clan_id)
     |> select([u: u, c: c], %{
-      # TODO: add score and place
       score: 0,
       place: 0,
       clan_id: c.id,

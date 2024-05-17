@@ -247,7 +247,7 @@ function TournamentHeader({
                     href="/tournaments"
                   >
                     <FontAwesomeIcon className="mr-2" icon="undo" />
-                    Tournaments
+                    {i18next.t('Back to tournaments')}
                   </a>
                 </div>
               )

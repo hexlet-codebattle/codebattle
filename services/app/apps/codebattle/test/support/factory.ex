@@ -219,6 +219,16 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
+  def tournament_result_factory do
+    %Codebattle.Tournament.TournamentResult{
+      tournament_id: 1,
+      user_id: 1,
+      result_percent: Decimal.new(100),
+      score: 1,
+      duration_sec: 1
+    }
+  end
+
   def invite_factory do
     %Codebattle.Invite{}
   end

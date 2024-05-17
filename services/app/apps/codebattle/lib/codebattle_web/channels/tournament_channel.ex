@@ -123,64 +123,6 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
-  # def handle_in(
-  #       "tournament:players:paginated",
-  #       %{"page_num" => page_num, "page_size" => page_size},
-  #       socket
-  #     ) do
-  #   tournament_info = socket.assigns.tournament_info
-  #
-  #   players =
-  #     Helpers.get_paginated_players(tournament_info, min(page_num, 1000), min(page_size, 30))
-  #
-  #   {:reply, {:ok, %{players: players, top_player_ids: players}}, socket}
-  # end
-
-  def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
-    current_user = socket.assigns.current_user
-
-    matches =
-      if payload.tournament.type in ["swiss", "arena", "show"] do
-        []
-      else
-        Helpers.get_matches(payload.tournament)
-      end
-
-    tasks_info =
-      if payload.tournament.type == "versus" and
-           Helpers.can_moderate?(payload.tournament, current_user) do
-        payload.tournament
-        |> Helpers.get_tasks()
-        |> Enum.map(&Map.take(&1, [:id, :level, :name, :description]))
-      else
-        []
-      end
-
-    push(socket, "tournament:update", %{
-      tournament:
-        Map.drop(payload.tournament, [
-          :__struct__,
-          :__meta__,
-          :clans_table,
-          :creator,
-          :event,
-          :matches,
-          :matches_table,
-          :players,
-          :players_table,
-          :ranking_table,
-          :round_tasks,
-          :tasks_table,
-          :played_pair_ids
-        ]),
-      players: Helpers.get_top_players(payload.tournament),
-      matches: matches,
-      tasks_info: tasks_info
-    })
-
-    {:noreply, socket}
-  end
-
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
     push(socket, "tournament:match:upserted", %{match: payload.match, players: payload.players})
 

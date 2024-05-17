@@ -12,6 +12,7 @@ ingress:
   #      - codebattle.example.com
 
 codebattle:
+  affinity: {}
   replicaCount: 1
   image:
     repository: codebattle/codebattle

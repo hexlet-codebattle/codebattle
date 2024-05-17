@@ -25,6 +25,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       assert "asdf" == user.auth_token
       assert 1 == clan.creator_id
       assert user.clan_id == clan.id
+      assert user.sound_settings == %User.SoundSettings{level: 0, type: "silent"}
     end
 
     test "creates user with empty params", %{conn: conn} do

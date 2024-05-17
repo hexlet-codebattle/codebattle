@@ -71,7 +71,7 @@ defmodule Codebattle.Game.Engine do
 
   # for tournaments games to decrease db queries
   def bulk_create_games(games_params) do
-    now = NaiveDateTime.utc_now(:second)
+    now = TimeHelper.utc_now()
 
     to_insert =
       Enum.map(games_params, fn params ->
@@ -384,19 +384,25 @@ defmodule Codebattle.Game.Engine do
     case {old_game_state, new_game.state} do
       {old_state, "timeout"}
       when old_state in ["waiting_opponent", "playing"] ->
+        update_game!(new_game, %{
+          state: get_state(new_game),
+          players: get_players(new_game),
+          duration_sec: new_game.duration_sec,
+          finishes_at: new_game.finishes_at
+        })
+
         if game.tournament_id do
           terminate_game_after(game, 1)
         else
           Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-          update_game!(new_game, %{state: "timeout"})
           terminate_game_after(game, 15)
         end
 
-        :ok
-
       _ ->
-        :ok
+        :noop
     end
+
+    :ok
   end
 
   defp maybe_fire_playing_game_side_effects(game = %{state: "playing"}) do

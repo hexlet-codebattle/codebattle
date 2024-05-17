@@ -16,4 +16,8 @@ defmodule Codebattle.Tournament.Score.WinLoss do
       @loss_score
     end
   end
+
+  def game_level_score, do: @game_level_score
+  def game_level_score(level), do: Map.get(@game_level_score, level, "0")
+  def loss_score, do: @loss_score
 end

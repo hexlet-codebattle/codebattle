@@ -41,27 +41,6 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.slice(start_index..end_index)
   end
 
-  def get_top_players(tournament = %{players_table: nil}) do
-    # return all players, cause we don't want to paginate if tournament finished
-    get_players(tournament)
-  end
-
-  # only for waiting_participants, cause all players have score = 0
-  # we don't care about ordering
-  def get_top_players(tournament = %{type: type, top_player_ids: []})
-      when type in ["arena", "swiss"] do
-    tournament |> get_players() |> Enum.take(30)
-  end
-
-  # we don't want to cut plaeyrs for team/individual tournaments for players
-  def get_top_players(tournament = %{top_player_ids: []}) do
-    get_players(tournament)
-  end
-
-  def get_top_players(tournament = %{top_player_ids: ids}) do
-    get_players(tournament, ids)
-  end
-
   def players_count(tournament, team_id) do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
