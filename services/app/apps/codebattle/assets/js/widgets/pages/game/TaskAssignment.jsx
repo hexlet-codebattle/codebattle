@@ -58,6 +58,7 @@ function TaskAssignment({
   hideGuide = false,
   hideContribution = false,
   hideContent = false,
+  hidingControls = false,
   fullSize = false,
 }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
@@ -122,7 +123,7 @@ function TaskAssignment({
               </button>
             )}
             {!hideGuide && <ShowGuideButton />}
-            {changeTaskDescriptionSizes && (
+            {changeTaskDescriptionSizes && !hidingControls && (
               <div
                 className="btn-group align-items-center ml-2 mr-auto"
                 role="group"

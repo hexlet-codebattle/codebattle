@@ -60,23 +60,6 @@ defmodule Codebattle.Tournament.Show do
   # |> maybe_add_award(tournament)
   # |> maybe_add_locked(tournament)
 
-  # defp maybe_add_award(game_params, tournament) do
-  #   tournament.meta
-  #   |> Map.get(:rounds_config)
-  #   |> case do
-  #     nil ->
-  #       Map.put(game_params, :award, nil)
-
-  #     config ->
-  #       config
-  #       |> Enum.at(tournament.current_round_position)
-  #       |> case do
-  #         %{award: award} -> Map.put(game_params, :award, award)
-  #         _ -> Map.put(game_params, :award, nil)
-  #       end
-  #   end
-  # end
-
   # defp maybe_add_locked(game_params, tournament) do
   #   tournament.meta
   #   |> Map.get(:game_passwords)

@@ -23,7 +23,7 @@ import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 // import useMatchesStatistics from '../../utils/useMatchesStatistics';
-import Output from '../game/Output';
+// import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 import TaskAssignment from '../game/TaskAssignment';
 import TournamentAwardModal from '../game/TournamentAwardModal';
@@ -145,6 +145,7 @@ const setTaskSizeDefault = size => (
 function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const dispatch = useDispatch();
 
+  const [hidingControls, setHidingControls] = useState(false);
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
   const [taskSize, setTaskSize] = useState(taskSizeDefault);
 
@@ -194,6 +195,13 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     () => setSwitchedWidgetsStatus(state => !state),
     [setSwitchedWidgetsStatus],
   );
+  const handleSwitchHidingControls = useCallback(
+    () => {
+      setHidingControls(state => !state);
+    },
+    [setHidingControls],
+  );
+
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
@@ -250,15 +258,18 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     return () => {};
   }, [gameId, spectatorService, waitingRoomService, dispatch]);
 
-  const spectatorDisplayClassName = cn('d-flex flex-column', {
-    'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
-    'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
-  });
+  const spectatorDisplayClassName = cn(
+    'd-flex flex-column vh-100',
+    'vh-100', {
+    // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
+    // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
+    },
+  );
 
   const spectatorGameStatusClassName = cn(
     'd-flex justify-content-around align-items-center w-100 p-2',
     {
-      'flex-row-reverse': switchedWidgetsStatus,
+      // 'flex-row-reverse': switchedWidgetsStatus,
     },
   );
 
@@ -273,11 +284,12 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
           changeTaskDescriptionSizes={changeTaskDescriptionSizes}
           hideGuide
           hideContribution
+          hidingControls={hidingControls}
           fullSize
         />
       </div>
       <div
-        className="card border-0 shadow-sm mt-1 h-100 cb-overflow-y-auto"
+        className="card border-0 shadow-sm mt-1 cb-overflow-y-auto"
       >
         <div className={spectatorGameStatusClassName}>
           {/* {GameStateCodes.playing !== gameState && <h3>Game Over</h3>} */}
@@ -286,16 +298,16 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
           {/* )} */}
           <OutputTab sideOutput={output} large />
         </div>
-        <div
-          className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto"
-        >
-          <Output fontSize={taskSize} sideOutput={output} />
-        </div>
+        {/* <div */}
+        {/*   className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto" */}
+        {/* > */}
+        {/*   <Output fontSize={taskSize} sideOutput={output} /> */}
+        {/* </div> */}
       </div>
     </>
     ) : (
-      <div className="card border-0 h-100 w-100">
-        <div className="d-flex justify-content-center align-items-center w-100 h-100">
+      <div className="card border-0 w-100">
+        <div className="d-flex justify-content-center align-items-center w-100">
           {spectatorStatus}
         </div>
       </div>
@@ -367,15 +379,17 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       <div className="container-fluid d-flex flex-column">
         <div className={spectatorDisplayClassName}>
           <div
-            className="d-flex flex-column col-12 col-xl-6 col-lg-6 p-1 vh-100"
+            className="d-flex flex-column p-1"
           >
             <GamePanel />
             {/* <MatchesPannel /> */}
           </div>
           <SpectatorEditor
-            panelClassName="col-12 col-lg-6 col-xl-6 p-1"
+            panelClassName="h-100 p-1"
             switchedWidgetsStatus={switchedWidgetsStatus}
             handleSwitchWidgets={handleSwitchWidgets}
+            hidingControls={hidingControls}
+            handleSwitchHidingControls={handleSwitchHidingControls}
             spectatorService={spectatorService}
             playerId={playerId}
           />

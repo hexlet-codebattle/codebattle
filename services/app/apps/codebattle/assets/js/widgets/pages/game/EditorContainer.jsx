@@ -187,6 +187,7 @@ function EditorContainer({
 
   const editorParams = {
     userId: id,
+    hidingPanelControls: false,
     userType: type,
     syntax: editorState?.currentLangSlug || 'js',
     onChange,
