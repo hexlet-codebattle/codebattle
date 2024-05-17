@@ -231,8 +231,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
              asserts: [],
              exit_code: 37,
              asserts_count: 1,
-             output_error:
-               "STDERR: lolkek\n\nSTDOUT: asdf\n",
+             output_error: "STDERR: lolkek\n\nSTDOUT: asdf\n",
              status: "error",
              success_count: 0
            } == result

@@ -234,10 +234,10 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       }
     end)
 
-      assert_receive %Phoenix.Socket.Message{
-        event: "tournament:ranking_update",
-        payload: %{ ranking: %{}, clans: %{} }
-      }
+    assert_receive %Phoenix.Socket.Message{
+      event: "tournament:ranking_update",
+      payload: %{ranking: %{}, clans: %{}}
+    }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
