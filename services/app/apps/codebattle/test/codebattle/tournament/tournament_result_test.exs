@@ -4,7 +4,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
   alias Codebattle.Tournament.TournamentResult
 
   describe "get_player_results" do
-    test "calculates results correctly" do
+    test "calculates results correctly by_player_95th_percentile" do
       task = insert(:task, level: "hard")
       user1 = insert(:user, name: "Alice", clan_id: 1)
       user2 = insert(:user, name: "Tom", clan_id: 2)
@@ -19,7 +19,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       user11 = insert(:user, name: "Alex", clan_id: 2)
       user12 = insert(:user, name: "Elon", clan_id: 4)
 
-      tournament = insert(:tournament)
+      tournament = insert(:tournament, type: "arena", ranking_type: "by_player_95th_percentile")
 
       insert(:game,
         state: "game_over",
