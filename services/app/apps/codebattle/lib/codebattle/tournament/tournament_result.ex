@@ -50,6 +50,8 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   @spec upsert_results(tounament :: Tournament.t()) :: Tournament.t()
   def upsert_results(tournament = %{type: "arena", score_strategy: "win_loss"}) do
+    clean_results(tournament.id)
+
     Repo.query!("""
       with stats as (
       select
@@ -131,6 +133,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   """
 
   def upsert_results(tournament = %{type: "arena", ranking_type: "by_player_95th_percentile"}) do
+    clean_results(tournament.id)
+
     Repo.query!("""
       with duration_percentile_for_tasks
       as (
@@ -209,4 +213,10 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def upsert_results(t), do: t
+
+  def clean_results(tournament_id) do
+    __MODULE__
+    |> where([tr], tr.tournament_id == ^tournament_id)
+    |> Repo.delete_all()
+  end
 end
