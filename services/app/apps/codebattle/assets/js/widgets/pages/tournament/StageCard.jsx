@@ -145,9 +145,17 @@ function StageCard({
                 <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
               </h6>
             )}
-            <h6 className="p-1">{`${i18next.t('Opponent')}: ${opponent.name}`}</h6>
+            <h6
+              className="cb-custom-event-name p-1"
+              style={{ maxWidth: 300 }}
+            >
+              {`${i18next.t('Opponent')}: ${opponent.name}`}
+            </h6>
             {opponent.clanId && (
-              <h6 className="p-1">
+              <h6
+                className="cb-custom-event-name p-1"
+                style={{ maxWidth: 250 }}
+              >
                 {`${i18next.t('Opponent clan')}: ${opponent.clan}`}
               </h6>
             )}

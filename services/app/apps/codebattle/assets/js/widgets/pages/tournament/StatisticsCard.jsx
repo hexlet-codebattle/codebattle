@@ -14,7 +14,10 @@ export function ArenaStatisticsCard({
  playerId, taskIds = [], matchList = [], clanId,
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
-  const clanStats = useSelector(state => state.tournament.ranking.entries.find(({ id }) => id === clanId));
+  const clanStats = useSelector(state => state.tournament.ranking?.entries?.find(({ id }) => id === clanId));
+
+  const timeoutGamesLength = matchList
+    .filter(({ state }) => state !== 'playing').length - playerStats.winMatches.length - playerStats.lostMatches.length;
 
   const cardClassName = cn(
     'd-flex flex-column justify-content-center p-2 w-100',
@@ -52,7 +55,7 @@ export function ArenaStatisticsCard({
           </span>
           <span className="text-muted p-1">
             <span className="pr-1">{i18next.t('Timeout')}</span>
-            {matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length}
+            {timeoutGamesLength}
           </span>
         </div>
       </div>
