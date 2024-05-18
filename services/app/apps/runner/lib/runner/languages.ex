@@ -26,8 +26,12 @@ defmodule Runner.Languages do
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
       docker_image: "codebattle/ruby:3.3.0",
-      solution_template:
-        "def solution(<%= arguments %>)\n  # puts(\"use print for debug\")\n<%= return_statement %>\nend",
+      solution_template: """
+      def solution(<%= arguments %>)
+        # puts("use print for debug")
+        <%= return_statement %>
+      end
+      """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "  <%= default_value %>",
       default_values: %{
@@ -56,8 +60,17 @@ defmodule Runner.Languages do
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:20.11.1",
-      solution_template:
-        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n  // console.log(\"use print for debug\")\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
+      solution_template: """
+      const _ = require("lodash");
+      const R = require("rambda");
+
+      const solution = (<%= arguments %>) => {
+        // console.log("use print for debug")
+      <%= return_statement %>
+      };
+
+      module.exports = solution;
+      """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "  return <%= default_value %>;",
       default_values: %{
@@ -93,8 +106,16 @@ defmodule Runner.Languages do
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
       docker_image: "codebattle/js:20.11.1",
-      solution_template:
-        "import * as _ from \"lodash\";\nimport * as R from \"rambda\";\n\nfunction solution(<%= arguments %>)<%= expected %>{\n  // console.log(\"use print for debug\")\n};\n\nexport default solution;",
+      solution_template: """
+      import * as _ from "lodash";
+      import * as R from "rambda";
+
+      function solution(<%= arguments %>)<%= expected %>{
+        // console.log("use print for debug")
+      };
+
+      export default solution;
+      """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: ": <%= type %> ",
       types: %{
@@ -122,8 +143,12 @@ defmodule Runner.Languages do
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:3.3.1",
-      solution_template:
-        "<%= expected %>solution(<%= arguments %>) {\n  // print(\"use print for debug\");\n}",
+      solution_template: """
+      <%= expected %>
+      solution(<%= arguments %>) {
+        // print("use print for debug");
+      }
+      """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -150,8 +175,17 @@ defmodule Runner.Languages do
       solution_file_name: "solution.cpp",
       checker_file_name: "checker.cpp",
       docker_image: "codebattle/cpp:20",
-      solution_template:
-        "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n// std::cout << \"use print for debug\" << std::endl;\n}",
+      solution_template: """
+      #include <iostream>
+      #include <map>
+      #include <vector>
+
+      using namespace std;
+
+      <%= expected %> solution(<%= arguments %>) {
+      // std::cout << "use print for debug" << std::endl;
+      }
+      """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %>",
       types: %{
@@ -183,8 +217,18 @@ defmodule Runner.Languages do
       solution_file_name: "Solution.java",
       checker_file_name: "Checker.java",
       docker_image: "codebattle/java:21",
-      solution_template:
-        "package solution;\n\nimport java.util.*;\nimport java.util.stream.*;\n\npublic class Solution {\n    public <%= expected %>solution(<%= arguments %>) {\n      // System.out.println(\"use print for debug\");\n    }\n}",
+      solution_template: """
+      package solution;
+
+      import java.util.*;
+      import java.util.stream.*;
+
+      public class Solution {
+        public <%= expected %>solution(<%= arguments %>) {
+        // System.out.println("use print for debug");
+        }
+      }
+      """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -218,8 +262,15 @@ defmodule Runner.Languages do
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
       docker_image: "codebattle/kotlin:1.9.23",
-      solution_template:
-        "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n  // println(\"use print for debug\")\n}",
+      solution_template: """
+      package solution
+
+      import kotlin.collections.*
+
+      fun solution(<%= arguments %>):<%= expected %> {
+          // println("use print for debug")
+      }
+      """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -253,8 +304,21 @@ defmodule Runner.Languages do
       solution_file_name: "solution.cs",
       checker_file_name: "checker.cs",
       docker_image: "codebattle/csharp:8.0.201",
-      solution_template:
-        "using System;\nusing System.Collections.Generic;\n\nnamespace app\n{\n    public class Solution\n    {\n        public<%= expected %> solution(<%= arguments %>)\n        {\n\n        // Console.WriteLine(\"use print for debug\");\n       }\n    }\n}",
+      solution_template: """
+      using System;
+      using System.Collections.Generic;
+
+      namespace app
+      {
+        public class Solution
+          {
+            public<%= expected %> solution(<%= arguments %>)
+              {
+                // Console.WriteLine("use print for debug");
+              }
+          }
+      }
+      """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -289,8 +353,14 @@ defmodule Runner.Languages do
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
       docker_image: "codebattle/golang:1.22.1",
-      solution_template:
-        "package main;\n// import \"fmt\"\n\nfunc solution(<%= arguments %>)<%= expected %> {\n// fmt.Print(\"use print for debug\")\n}",
+      solution_template: """
+      package main;
+      // import "fmt"
+
+      func solution(<%= arguments %>)<%= expected %> {
+      // fmt.Print("use print for debug")
+      }
+      """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -320,8 +390,14 @@ defmodule Runner.Languages do
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
       docker_image: "codebattle/elixir:1.16.1",
-      solution_template:
-        "defmodule Solution do\n  def solution(<%= arguments %>) do\n    # IO.puts(\"use print for debug\")\n<%= return_statement %>\n  end\nend",
+      solution_template: """
+      defmodule Solution do
+        def solution(<%= arguments %>) do
+          # IO.puts("use print for debug")
+          <%= return_statement %>
+        end
+      end
+      """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "    <%= default_value %>",
       default_values: %{
@@ -350,8 +426,13 @@ defmodule Runner.Languages do
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
       docker_image: "codebattle/python:3.12.2",
-      solution_template:
-        "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:\n#  print(\"use print for debug\")",
+      solution_template: """
+      from typing import List, Dict
+
+      def solution(<%= arguments %>)<%= expected %>:
+        #  print("use print for debug")
+        <%= return_statement %>
+      """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
       types: %{
@@ -380,8 +461,15 @@ defmodule Runner.Languages do
       solution_file_name: "solution.php",
       checker_file_name: "checker.php",
       docker_image: "codebattle/php:8.3.3",
-      solution_template:
-        "<?php\n\nfunction solution(<%= arguments %>)\n{\n    // echo(\"use print for debug\");\n    <%= return_statement %>\n}",
+      solution_template: """
+      <?php
+
+      function solution(<%= arguments %>)
+      {
+        // echo("use print for debug");
+        <%= return_statement %>
+      }
+      """,
       return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
       default_values: %{
@@ -424,8 +512,12 @@ defmodule Runner.Languages do
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
       docker_image: "codebattle/clojure:1.11.2.3",
-      solution_template:
-        "(defn solution [<%= arguments %>]\n  ;; (println \"use print for debug\")\n  <%= return_statement %>)",
+      solution_template: """
+      (defn solution [<%= arguments %>]
+        ;; (println "use print for debug")
+        <%= return_statement %>
+      )
+      """,
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
       default_values: %{
@@ -452,8 +544,41 @@ defmodule Runner.Languages do
       checker_file_name: "Checker.hs",
       check_dir: "check",
       docker_image: "codebattle/haskell:9.4.7",
-      solution_template:
-        "module Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= typespec %><%= expected %>\nsolution <%= arguments %> =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+      solution_template: """
+      module Solution where
+
+      import qualified Data.HashMap.Lazy as HM
+
+      solution :: <%= typespec %><%= expected %>
+      solution <%= arguments %> =
+
+      {- Included packages:
+        aeson
+        bytestring
+        case-insensitive
+        containers
+        deepseq
+        fgl
+        integer-logarithms
+        megaparsec
+        mtl
+        parser-combinators
+        pretty
+        random
+        regex-base
+        regex-compat
+        regex-posix
+        scientific
+        split
+        template-haskell
+        text
+        time
+        transformers
+        unordered-containers
+        vector
+        vector-algorithms
+      -}
+      """,
       typespec_template: %{argument: "<%= type %>", delimiter: " -> "},
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       expected_template: " -> <%= type %>",
@@ -489,8 +614,13 @@ defmodule Runner.Languages do
       checker_file_name: "checker.rs",
       check_dir: "check",
       docker_image: "codebattle/rust:1.76.0",
-      solution_template:
-        "use std::collections::HashMap;\n\npub fn solution(<%= arguments %>) -> <%= expected %> {\n  // println!(\"use print for debug\");\n  \n}",
+      solution_template: """
+      use std::collections::HashMap;
+
+      pub fn solution(<%= arguments %>) -> <%= expected %> {
+        // println!("use print for debug");
+      }
+      """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: "<%= type %>",
       types: %{
