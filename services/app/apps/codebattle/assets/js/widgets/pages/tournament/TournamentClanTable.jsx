@@ -27,7 +27,9 @@ function TournamentClanTable() {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const { clans, ranking } = useSelector(tournamentSelector);
 
-  if (!ranking || !ranking.entries || ranking.entries.length === 0) {
+  const items = Array.isArray(ranking) ? ranking : ranking?.entries;
+
+  if (!items || items.length === 0) {
     return <></>;
   }
 
@@ -48,7 +50,7 @@ function TournamentClanTable() {
           </tr>
         </thead>
         <tbody>
-          {ranking?.entries?.map(item => (
+          {items?.map(item => (
             <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
