@@ -40,7 +40,7 @@ const getCustomEventTrClassName = (item, selectedId) => (
       'bg-white': !item?.place || item.place > 3,
     },
     {
-      'cb-custom-event-tr-brown-border': console.log(item, selectedId) || item.id === selectedId,
+      'cb-custom-event-tr-brown-border': item.userId ? item.userId === selectedId : item.clanId === selectedId,
     },
   )
 );
