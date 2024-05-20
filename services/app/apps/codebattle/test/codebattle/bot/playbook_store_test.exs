@@ -128,7 +128,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;\n",
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
@@ -140,7 +140,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;\n",
                    id: ^user1_id,
                    name: "first",
                    record_id: 0,
@@ -150,14 +150,14 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;",
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  // console.log(\"use print for debug\")\n  return 0;\n};\n\nmodule.exports = solution;\n",
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
                    type: "init"
                  },
                  %{
-                   diff: %{delta: [%{delete: 170}, %{insert: "t"}]},
+                   diff: %{delta: [%{delete: 171}, %{insert: "t"}]},
                    id: ^user1_id,
                    record_id: 2,
                    type: "update_editor_data"

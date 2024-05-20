@@ -15,7 +15,7 @@ const TournamentInfo = ({
   handleOpenInstruction = () => { },
 }) => (
   <div className="d-flex flex-column flex-lg-row align-items-center py-2 cb-custom-event-tournaments-item cb-overflow-x-auto">
-    <div className="d-flex">
+    <div className="d-flex align-items-center">
       <span className={`${nameClassName} mx-3 font-weight-bold text-nowrap`}>
         {name}
       </span>
@@ -25,7 +25,7 @@ const TournamentInfo = ({
         />
       </span>
     </div>
-    <div className="d-flex ml-2">
+    <div className="d-flex align-items-center ml-2">
       {id ? (
         <>
           <span className="mx-1 align-content-center cursor-pointer">
