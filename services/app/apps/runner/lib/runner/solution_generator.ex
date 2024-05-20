@@ -13,7 +13,9 @@ defmodule Runner.SolutionGenerator do
       |> add_return_statement(lang_meta, task.output_signature)
       |> Map.to_list()
 
-    EEx.eval_string(lang_meta.solution_template, binding)
+    lang_meta.solution_template
+    |> String.trim_trailing("\n")
+    |> EEx.eval_string(binding)
   end
 
   defp add_arguments(binding, meta, input_signature) do

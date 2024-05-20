@@ -33,7 +33,7 @@ defmodule Runner.Languages do
       end
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "  <%= default_value %>",
+      return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -66,13 +66,13 @@ defmodule Runner.Languages do
 
       const solution = (<%= arguments %>) => {
         // console.log("use print for debug")
-      <%= return_statement %>
+        <%= return_statement %>
       };
 
       module.exports = solution;
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "  return <%= default_value %>;",
+      return_template: "return <%= default_value %>;",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -144,8 +144,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:3.3.1",
       solution_template: """
-      <%= expected %>
-      solution(<%= arguments %>) {
+      <%= expected %>solution(<%= arguments %>) {
         // print("use print for debug");
       }
       """,
@@ -176,17 +175,25 @@ defmodule Runner.Languages do
       checker_file_name: "checker.cpp",
       docker_image: "codebattle/cpp:20",
       solution_template: """
-      #include <iostream>
-      #include <map>
-      #include <vector>
+      #include <bits/stdc++.h>
 
       using namespace std;
 
       <%= expected %> solution(<%= arguments %>) {
-      // std::cout << "use print for debug" << std::endl;
+        // std::cout << "use print for debug";
+        <%= return_statement %>
       }
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
+      return_template: "return <%= default_value %>;",
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "{<%= value %>}",
+        "boolean" => "true",
+        "hash" => "{{\"key\", <%= value %>}}"
+      },
       expected_template: "<%= type %>",
       types: %{
         "integer" => "int",
@@ -225,7 +232,7 @@ defmodule Runner.Languages do
 
       public class Solution {
         public <%= expected %>solution(<%= arguments %>) {
-        // System.out.println("use print for debug");
+          // System.out.println("use print for debug");
         }
       }
       """,
@@ -268,7 +275,7 @@ defmodule Runner.Languages do
       import kotlin.collections.*
 
       fun solution(<%= arguments %>):<%= expected %> {
-          // println("use print for debug")
+        // println("use print for debug")
       }
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
@@ -311,12 +318,12 @@ defmodule Runner.Languages do
       namespace app
       {
         public class Solution
+        {
+          public<%= expected %> solution(<%= arguments %>)
           {
-            public<%= expected %> solution(<%= arguments %>)
-              {
-                // Console.WriteLine("use print for debug");
-              }
+            // Console.WriteLine("use print for debug");
           }
+        }
       }
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
@@ -399,7 +406,7 @@ defmodule Runner.Languages do
       end
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "    <%= default_value %>",
+      return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -430,11 +437,20 @@ defmodule Runner.Languages do
       from typing import List, Dict
 
       def solution(<%= arguments %>)<%= expected %>:
-        #  print("use print for debug")
+        # print("use print for debug")
         <%= return_statement %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
+      return_template: "return <%= default_value %>;",
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "True",
+        "hash" => "{\"key\": <%= value %>}"
+      },
       types: %{
         "integer" => "int",
         "float" => "float",
