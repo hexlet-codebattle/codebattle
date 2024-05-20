@@ -51,7 +51,7 @@ defmodule Codebattle.DockerExecution.JSTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "const solution = (a, b) => { return a - b; }; module.exports = solution;\n",
+      editor_text: "const solution = (a, b) => { return a - b; }; module.exports = solution;",
       lang_slug: "js"
     })
 
@@ -83,7 +83,7 @@ defmodule Codebattle.DockerExecution.JSTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "const solution = (a, b) => { return a + b; }; module.exports = solution;\n",
+      editor_text: "const solution = (a, b) => { return a + b; }; module.exports = solution;",
       lang_slug: "js"
     })
 
