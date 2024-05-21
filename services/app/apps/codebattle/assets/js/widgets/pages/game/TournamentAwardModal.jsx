@@ -22,7 +22,9 @@ const startRound = () => {
   }
 };
 
-const TournamentAwardModal = NiceModal.create(() => {
+const TournamentAwardModal = NiceModal.create(params => {
+  const onlyShowAward = params?.onlyShowAward || false;
+
   const award = useSelector(gameAwardSelector);
   const waitType = useSelector(gameWaitTypeSelector);
   const submitBtnRef = useRef(null);
@@ -30,14 +32,14 @@ const TournamentAwardModal = NiceModal.create(() => {
   const modal = useModal(ModalCodes.awardModal);
 
   useEffect(() => {
-    if (!modal.visible) {
+    if (!modal.visible && !onlyShowAward) {
       startRound();
     }
 
-    if (modal.visible) {
+    if (modal.visible && !onlyShowAward) {
       submitBtnRef.current.focus();
     }
-  }, [modal.visible]);
+  }, [modal.visible, onlyShowAward]);
 
   return (
     <Modal centered show={modal.visible} onHide={modal.hide}>
@@ -59,17 +61,19 @@ const TournamentAwardModal = NiceModal.create(() => {
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer>
-        <div className="d-flex justify-content-end w-100">
-          <Button
-            ref={submitBtnRef}
-            className="btn btn-primary rounded-lg"
-            onClick={modal.hide}
-          >
-            {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
-          </Button>
-        </div>
-      </Modal.Footer>
+      {!onlyShowAward && (
+        <Modal.Footer>
+          <div className="d-flex justify-content-end w-100">
+            <Button
+              ref={submitBtnRef}
+              className="btn btn-primary rounded-lg"
+              onClick={modal.hide}
+            >
+              {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
+            </Button>
+          </div>
+        </Modal.Footer>
+      )}
     </Modal>
   );
 });

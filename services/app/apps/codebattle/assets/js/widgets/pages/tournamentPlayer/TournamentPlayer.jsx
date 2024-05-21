@@ -184,7 +184,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     actions: {
       blockGameRoomAfterCheck: (_ctx, { payload }) => {
         if (payload?.award) {
-          NiceModal.show(ModalCodes.awardModal);
+          NiceModal.show(ModalCodes.awardModal, { onlyShowAward: true });
         }
       },
     },
@@ -244,6 +244,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     updateGameChannel(gameId);
 
     if (gameId) {
+      NiceModal.hide(ModalCodes.awardModal);
       const options = { cancelRedirect: true };
 
       const clearGameConnection = connectToGame(spectatorService, waitingRoomService, options)(dispatch);
@@ -257,6 +258,10 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
     return () => {};
   }, [gameId, spectatorService, waitingRoomService, dispatch]);
+
+  useEffect(() => {
+    NiceModal.hide(ModalCodes.awardModal);
+  }, [gameId]);
 
   const spectatorDisplayClassName = cn(
     'd-flex flex-column vh-100',
