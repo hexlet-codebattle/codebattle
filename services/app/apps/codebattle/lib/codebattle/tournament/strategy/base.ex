@@ -487,6 +487,14 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      defp maybe_set_round_task_ids(
+             tournament = %{task_provider: "task_pack", current_round_position: 0}
+           ) do
+        update_struct(tournament, %{
+          round_task_ids: get_round_task_ids(tournament, 0)
+        })
+      end
+
       defp maybe_set_round_task_ids(tournament = %{task_provider: "task_pack_per_round"}) do
         update_struct(tournament, %{
           round_task_ids: get_round_task_ids(tournament, tournament.current_round_position)

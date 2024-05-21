@@ -26,6 +26,20 @@ defmodule Codebattle.Tournament.TaskProvider do
 
   def get_round_task_ids(
         %{
+          task_provider: "task_pack",
+          task_strategy: "sequential",
+          task_pack_name: tp_name
+        },
+        round
+      )
+      when not is_nil(tp_name) do
+    [name: tp_name]
+    |> TaskPack.get_by!()
+    |> Map.get(:task_ids)
+  end
+
+  def get_round_task_ids(
+        %{
           task_provider: "task_pack_per_round",
           task_strategy: "sequential",
           task_pack_name: tp_name
