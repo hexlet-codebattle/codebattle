@@ -146,6 +146,13 @@ const machine = {
             'tournament:round_created': {
               target: 'game_over',
             },
+            'user:check_complete': [
+              {
+                target: 'game_over',
+                cond: (_ctx, { payload }) => payload.state === 'game_over',
+                actions: ['soundWin', 'blockGameRoomAfterCheck'],
+              },
+            ],
           },
         },
         failure: {
