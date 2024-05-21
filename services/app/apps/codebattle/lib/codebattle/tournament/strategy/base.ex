@@ -272,13 +272,15 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      def start_round_force(tournament, params \\ %{})
+
       def start_round_force(
             tournament = %{state: "finished"},
             _new_round_params
           ),
           do: tournament
 
-      def start_round_force(tournament, new_round_params \\ %{}) do
+      def start_round_force(tournament, new_round_params) do
         tournament
         |> increment_current_round()
         |> start_round(new_round_params)

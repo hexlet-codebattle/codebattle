@@ -73,18 +73,16 @@ defmodule Codebattle.Tournament.Show do
   #   Enum.count(player.task_ids) == Enum.count(round_task_ids)
   # end
 
-  defp final_round?(
-         tournament = %{
-           task_provider: "task_pack",
-           round_task_ids: round_task_ids,
-           current_round_position: current_round_position
-         }
-       ) do
+  defp final_round?(%{
+         task_provider: "task_pack",
+         round_task_ids: round_task_ids,
+         current_round_position: current_round_position
+       }) do
     current_round_position === Enum.count(round_task_ids) - 1
   end
 
-  defp get_wait_type(tournament, timeout_ms) do
-    min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
+  defp get_wait_type(tournament, _timeout_ms) do
+    # min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 
     if final_round?(tournament) do
       if finish_tournament?(tournament) do

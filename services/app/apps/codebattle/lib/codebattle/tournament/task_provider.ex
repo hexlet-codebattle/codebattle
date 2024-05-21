@@ -30,7 +30,7 @@ defmodule Codebattle.Tournament.TaskProvider do
           task_strategy: "sequential",
           task_pack_name: tp_name
         },
-        round
+        _round
       )
       when not is_nil(tp_name) do
     [name: tp_name]
