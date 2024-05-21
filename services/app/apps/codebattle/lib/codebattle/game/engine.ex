@@ -394,9 +394,10 @@ defmodule Codebattle.Game.Engine do
         if game.tournament_id do
           terminate_game_after(game, 1)
         else
-          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
           terminate_game_after(game, 15)
         end
+
+        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
       _ ->
         :noop

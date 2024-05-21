@@ -28,6 +28,9 @@ spec:
             topologyKey: "kubernetes.io/hostname"
       containers:
         - name: "runner"
+          env:
+            - name: RUST_LOG
+              value: debug
           resources:
             limits:
               cpu: "1"
