@@ -102,8 +102,8 @@ defmodule Codebattle.Event.EventResult do
         user_name,
         clan_id,
         SUM(score),
-        DENSE_RANK() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC),
-        DENSE_RANK() OVER (PARTITION BY clan_id ORDER BY SUM(score) DESC, SUM(duration_sec) ASC)
+        ROW_NUMBER() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC),
+        ROW_NUMBER() OVER (PARTITION BY clan_id ORDER BY SUM(score) DESC, SUM(duration_sec) ASC)
       FROM
         tournament_results
         WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})

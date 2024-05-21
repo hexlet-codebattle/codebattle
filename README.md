@@ -9,6 +9,11 @@
 Codebattle - is an open source game being developed by the Hexlet community.
 The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
 We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow to subscribe on last game updates.
+
+This project exists thanks to all the people who contribute. [[Contribute]](CONTRIBUTING.md).
+
+<a href="https://github.com/hexlet-codebattle/codebattle/graphs/contributors"><img src="https://opencollective.com/codebattle/contributors.svg?width=890"></a>
+
 ### Requirements
 
 - Mac / Linux

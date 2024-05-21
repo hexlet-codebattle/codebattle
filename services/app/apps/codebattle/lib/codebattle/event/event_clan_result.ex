@@ -66,7 +66,7 @@ defmodule Codebattle.Event.EventClanResult do
         #{tournament.event_id},
         COUNT(distinct user_id),
         SUM(score),
-        DENSE_RANK() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC, COUNT(user_id) DESC)
+        ROW_NUMBER() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC, COUNT(user_id) DESC)
       FROM
         tournament_results
         WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})
