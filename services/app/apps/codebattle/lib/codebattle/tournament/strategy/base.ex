@@ -272,6 +272,12 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      def start_round_force(
+            tournament = %{state: "finished"},
+            _new_round_params
+          ),
+          do: tournament
+
       def start_round_force(tournament, new_round_params \\ %{}) do
         tournament
         |> increment_current_round()
@@ -539,6 +545,7 @@ defmodule Codebattle.Tournament.Base do
               use_chat: tournament.use_chat,
               use_timer: tournament.use_timer
             }
+            |> maybe_set_free_task(tournament, p1)
             |> maybe_add_award(tournament)
         end)
         |> Game.Context.bulk_create_games()
@@ -558,7 +565,7 @@ defmodule Codebattle.Tournament.Base do
 
           task ->
             {:ok, game} =
-              Game.Context.create_game(%{
+              %{
                 level: task.level,
                 players: players,
                 ref: ref,
@@ -571,7 +578,9 @@ defmodule Codebattle.Tournament.Base do
                 type: game_type(),
                 use_chat: tournament.use_chat,
                 use_timer: tournament.use_timer
-              })
+              }
+              |> maybe_add_award(tournament)
+              |> Game.Context.create_game()
 
             game
         end
@@ -912,10 +921,28 @@ defmodule Codebattle.Tournament.Base do
             config
             |> Enum.at(tournament.current_round_position)
             |> case do
-              %{award: award} -> Map.put(game_params, :award, award)
-              _ -> Map.put(game_params, :award, nil)
+              %{award: award} ->
+                Map.put(game_params, :award, award)
+
+              _ ->
+                Map.put(game_params, :award, nil)
             end
         end
+      end
+
+      defp maybe_set_free_task(
+             game_params,
+             tournament = %Tournament{type: "show", task_strategy: "sequential"},
+             player
+           ) do
+        task_id = Enum.at(tournament.round_task_ids, Enum.count(player.task_ids))
+
+        Map.put(game_params, :task_id, task_id)
+        Map.put(game_params, :task, get_task(tournament, task_id))
+      end
+
+      defp maybe_set_free_task(game_params, _tournament, _player) do
+        game_params
       end
 
       defp maybe_save_event_results(tournament = %{use_clan: true, event_id: event_id})

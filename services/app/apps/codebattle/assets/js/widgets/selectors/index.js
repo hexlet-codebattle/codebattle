@@ -72,6 +72,8 @@ export const gameVisibleSelector = state => state.game.visible;
 
 export const gameAwardSelector = state => state.game.award;
 
+export const gameWaitTypeSelector = state => state.game.waitType;
+
 export const getSolution = playerId => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);

@@ -234,6 +234,13 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
   });
 };
 
+// TODO: only for show tournament
+export const startRoundTournament = () => {
+  channel
+    .push('tournament:start_round', {})
+    .receive('error', error => console.error(error));
+};
+
 export const sendEditorCursorPosition = offset => {
   channel.push(channelMethods.editorCursorPosition, { offset });
 };
@@ -685,14 +692,14 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
         channelTopics.tournamentRoundFinishedTopic,
         refs[13],
       );
-      currentGameChannel.off(channelTopics.tournamentGameWaitTopic, refs[13]);
+      currentGameChannel.off(channelTopics.tournamentGameWaitTopic, refs[14]);
       currentGameChannel.off(
         channelTopics.tournamentPlayerFinishedRoundTopic,
-        refs[14],
+        refs[15],
       );
       currentGameChannel.off(
         channelTopics.tournamentPlayerFinishedTopic,
-        refs[15],
+        refs[16],
       );
 
       clearWaitingRoomListeners();

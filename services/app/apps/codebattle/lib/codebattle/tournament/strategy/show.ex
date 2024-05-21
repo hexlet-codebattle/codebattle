@@ -33,7 +33,25 @@ defmodule Codebattle.Tournament.Show do
   def finish_tournament?(tournament), do: final_round?(tournament)
 
   @impl Tournament.Base
-  def maybe_create_rematch(tournament, _params), do: tournament
+  def maybe_create_rematch(tournament, game_params) do
+    timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
+    wait_type = get_wait_type(tournament, timeout_ms)
+
+    if wait_type == "rematch" do
+      Process.send_after(
+        self(),
+        {:start_rematch, game_params.ref, tournament.current_round_position},
+        timeout_ms
+      )
+    end
+
+    Codebattle.PubSub.broadcast("tournament:game:wait", %{
+      game_id: game_params.game_id,
+      type: wait_type
+    })
+
+    tournament
+  end
 
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: true
@@ -41,18 +59,42 @@ defmodule Codebattle.Tournament.Show do
   @impl Tournament.Base
   def set_ranking(t), do: t
 
+  # defp final_round?(
+  #   tournament = %{
+  #     task_provider: "task_pack",
+  #     round_task_ids: round_task_ids,
+  #   }
+  # ) do
+  #   player =
+  #     tournament
+  #     |> get_players()
+  #     |> List.first()
+  #
+  #   Enum.count(player.task_ids) == Enum.count(round_task_ids)
+  # end
+
   defp final_round?(
-         _tournament = %{
+         tournament = %{
            task_provider: "task_pack",
            round_task_ids: round_task_ids,
-           current_round_position: position
+           current_round_position: current_round_position
          }
        ) do
-    Enum.count(round_task_ids) == position + 1
+    current_round_position === Enum.count(round_task_ids) - 1
   end
 
-  defp final_round?(_tournament) do
-    false
+  defp get_wait_type(tournament, timeout_ms) do
+    min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
+
+    if final_round?(tournament) do
+      if finish_tournament?(tournament) do
+        "tournament"
+      else
+        "round"
+      end
+    else
+      "rematch"
+    end
   end
 
   # Code from base module, only for show tournament

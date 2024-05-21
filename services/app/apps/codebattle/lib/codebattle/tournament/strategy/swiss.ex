@@ -90,6 +90,8 @@ defmodule Codebattle.Tournament.Swiss do
       game_id: game_params.game_id,
       type: wait_type
     })
+
+    tournament
   end
 
   defp get_wait_type(tournament, timeout_ms) do

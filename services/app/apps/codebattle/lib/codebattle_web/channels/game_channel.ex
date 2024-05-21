@@ -261,6 +261,17 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
+  # TODO: only for show tournaments
+  def handle_in("tournament:start_round", _params, socket) do
+    if socket.assigns.tournament_id do
+      tournament_id = socket.assigns.tournament_id
+
+      Tournament.Context.handle_event(tournament_id, :start_round_force, %{})
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in(type, params) do
     Logger.warning("Unexpected message: #{inspect(type)}, params: #{inspect(params)}")
   end

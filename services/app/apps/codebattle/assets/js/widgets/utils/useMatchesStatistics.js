@@ -35,7 +35,7 @@ const emptyStats = {
  */
 function useMatchesStatistics(playerId, matches) {
   return useMemo(() => {
-    if (matches.length === 0 && playerId) {
+    if (!matches || (matches.length === 0 && playerId)) {
       return [emptyStats, emptyStats];
     }
 

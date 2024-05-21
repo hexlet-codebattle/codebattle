@@ -668,6 +668,12 @@ msgstr "Чемпион"
 msgid "STDOUT"
 msgstr "ВЫВОД"
 
+msgid "Next game"
+msgstr "Cледующая задача"
+
+msgid "Award"
+msgstr "Награда"
+
 msgid "Total entries: %{totalEntries}"
 msgstr "Общее количество: %{totalEntries}"
 
