@@ -217,8 +217,19 @@ defmodule Codebattle.User do
 
   def find_or_create_by_clan(changeset, clan_name, user_id) do
     case Clan.find_or_create_by_clan(clan_name, user_id) do
-      {:ok, clan} -> change(changeset, %{clan: clan.name, clan_id: clan.id})
-      {:error, reason} -> add_error(changeset, :clan, inspect(reason))
+      {:ok, clan} ->
+        # TODO: drop me in 3 weeks. Sorry for the mess
+        clan =
+          if clan.id in [379, 4373] do
+            clan = Clan.get!(4375)
+          else
+            clan
+          end
+
+        change(changeset, %{clan: clan.name, clan_id: clan.id})
+
+      {:error, reason} ->
+        add_error(changeset, :clan, inspect(reason))
     end
   end
 
