@@ -9,6 +9,7 @@ defmodule Checker.MixProject do
       start_permanent: false,
       deps: deps(),
       escript: escript(),
+      aliases: aliases(),
       elixirc_paths: ["."],
       elixirc_options: [ignore_module_conflict: true]
     ]
@@ -17,6 +18,12 @@ defmodule Checker.MixProject do
   def application do
     [
       extra_applications: [:ex_unit]
+    ]
+  end
+
+  defp aliases do
+    [
+      "run.checker": "run -e 'Checker.run'"
     ]
   end
 

@@ -1,4 +1,4 @@
 test:
-	./checker
+	mix run.checker
 
 .PHONY: test

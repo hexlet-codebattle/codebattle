@@ -19,7 +19,9 @@ RUN mix deps.get
 
 ADD check check
 ADD checker.ex checker.ex
-RUN mix escript.build
+
+RUN mix compile
+RUN mix run.checker
 
 ADD Makefile .
 

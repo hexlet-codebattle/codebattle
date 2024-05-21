@@ -1,7 +1,7 @@
 defmodule Checker do
   import ExUnit.CaptureIO
 
-  def main(_args) do
+  def run do
     arguments = Jason.decode!(File.read!(Path.join(__DIR__, ~c"./check/asserts.json")))
 
     try do
