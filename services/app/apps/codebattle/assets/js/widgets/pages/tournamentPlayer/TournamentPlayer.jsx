@@ -213,6 +213,10 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   }, []);
 
   useEffect(() => {
+    NiceModal.hide(ModalCodes.awardModal);
+  }, [gameId]);
+
+  useEffect(() => {
     // updateSpectatorChannel(playerId);
 
     if (playerId) {
@@ -258,10 +262,6 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
     return () => {};
   }, [gameId, spectatorService, waitingRoomService, dispatch]);
-
-  useEffect(() => {
-    NiceModal.hide(ModalCodes.awardModal);
-  }, [gameId]);
 
   const spectatorDisplayClassName = cn(
     'd-flex flex-column vh-100',

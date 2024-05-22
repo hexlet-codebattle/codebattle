@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import ModalCodes from '../../config/modalCodes';
 import { startRoundTournament } from '../../middlewares/Room';
 import {
-  gameAwardSelector, gameWaitTypeSelector,
+  gameAwardSelector, gameStatusSelector, gameWaitTypeSelector,
 } from '../../selectors';
 
 let count = 0;
@@ -25,6 +25,7 @@ const startRound = () => {
 const TournamentAwardModal = NiceModal.create(params => {
   const onlyShowAward = params?.onlyShowAward || false;
 
+  const gameStatus = useSelector(gameStatusSelector);
   const award = useSelector(gameAwardSelector);
   const waitType = useSelector(gameWaitTypeSelector);
   const submitBtnRef = useRef(null);
@@ -48,17 +49,19 @@ const TournamentAwardModal = NiceModal.create(params => {
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex flex-row justify-content-center p-2">
-          <div className="d-flex flex-column align-items-center">
-            {award && award.startsWith('http') ? (
-              <img
-                alt="Game award"
-                src={award}
-                style={{ width: '100%', height: '100%' }}
-              />
-            ) : (
-              <span style={{ fontSize: '10rem' }}>{award}</span>
-            )}
-          </div>
+          {gameStatus?.state !== 'playing' && (
+            <div className="d-flex flex-column align-items-center">
+              {award && award.startsWith('http') ? (
+                <img
+                  alt="Game award"
+                  src={award}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              ) : (
+                <span style={{ fontSize: '10rem' }}>{award}</span>
+              )}
+            </div>
+          )}
         </div>
       </Modal.Body>
       {!onlyShowAward && (
@@ -69,7 +72,9 @@ const TournamentAwardModal = NiceModal.create(params => {
               className="btn btn-primary rounded-lg"
               onClick={modal.hide}
             >
-              {waitType === 'tournament' ? i18next.t('Close') : i18next.t('Next game')}
+              {waitType === 'tournament'
+                ? i18next.t('Close')
+                : i18next.t('Next game')}
             </Button>
           </div>
         </Modal.Footer>
