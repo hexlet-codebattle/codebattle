@@ -39,10 +39,12 @@ defmodule Codebattle.Event.EventResult do
   def get_by_user_id(event_id, _user_id, page_size, page_number) do
     User
     |> from(as: :u)
-    |> join(:left, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
-    |> join(:left, [u: u], er in __MODULE__, on: er.user_id == u.id, as: :er)
+    |> join(:inner, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
+    |> join(:left, [u: u], er in __MODULE__,
+      on: er.user_id == u.id and er.event_id == ^event_id,
+      as: :er
+    )
     |> where([u: u], fragment("? not like 'neBot_%'", u.name))
-    |> where([er: er], er.event_id == ^event_id)
     |> order_by([er: er], {:asc_nulls_last, er.place})
     |> select([u: u, c: c, er: er], %{
       user_id: u.id,
@@ -71,9 +73,11 @@ defmodule Codebattle.Event.EventResult do
   def get_by_user_id_and_clan_id(event_id, _user_id, clan_id, page_size, page_number) do
     User
     |> from(as: :u)
-    |> join(:left, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
-    |> join(:left, [u: u], er in __MODULE__, on: er.user_id == u.id, as: :er)
-    |> where([er: er], er.event_id == ^event_id)
+    |> join(:inner, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
+    |> join(:left, [u: u], er in __MODULE__,
+      on: er.user_id == u.id and er.event_id == ^event_id,
+      as: :er
+    )
     |> where([u: u], fragment("? not like 'neBot_%'", u.name))
     |> where([u: u], u.clan_id == ^clan_id)
     |> order_by([er: er], {:asc_nulls_last, er.clan_place})

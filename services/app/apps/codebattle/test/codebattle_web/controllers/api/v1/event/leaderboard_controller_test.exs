@@ -107,8 +107,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user1_id,
                  "user_name" => "u1"
                },
@@ -116,8 +116,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user2_id,
                  "user_name" => "u2"
                },
@@ -125,8 +125,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan2_id,
                  "clan_long_name" => "cl2",
                  "clan_name" => "c2",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user3_id,
                  "user_name" => "u3"
                }
@@ -165,8 +165,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user1_id,
                  "user_name" => "u1"
                },
@@ -174,8 +174,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user2_id,
                  "user_name" => "u2"
                }
@@ -514,8 +514,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user1_id,
                  "user_name" => "u1"
                },
@@ -523,8 +523,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user2_id,
                  "user_name" => "u2"
                },
@@ -532,8 +532,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan2_id,
                  "clan_long_name" => "cl2",
                  "clan_name" => "c2",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user3_id,
                  "user_name" => "u3"
                }
@@ -572,8 +572,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user1_id,
                  "user_name" => "u1"
                },
@@ -581,8 +581,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "score" => 0,
+                 "place" => nil,
+                 "score" => nil,
                  "user_id" => ^user2_id,
                  "user_name" => "u2"
                }
