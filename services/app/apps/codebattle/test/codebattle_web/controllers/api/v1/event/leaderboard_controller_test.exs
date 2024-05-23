@@ -59,17 +59,19 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "players_count" => 2,
-                 "score" => 0
+                 "place" => nil,
+                 "clans_players_count" => 2,
+                 "event_players_count" => nil,
+                 "score" => nil
                },
                %{
                  "clan_id" => ^clan2_id,
                  "clan_long_name" => "cl2",
                  "clan_name" => "c2",
-                 "place" => 0,
-                 "players_count" => 1,
-                 "score" => 0
+                 "place" => nil,
+                 "clans_players_count" => 1,
+                 "event_players_count" => nil,
+                 "score" => nil
                }
              ] = Enum.sort_by(items, & &1["clan_id"])
     end
@@ -287,7 +289,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
                  "place" => 1,
-                 "players_count" => 2,
+                 "clans_players_count" => 2,
+                 "event_players_count" => 2,
                  "score" => 40
                },
                %{
@@ -295,7 +298,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_long_name" => "cl2",
                  "clan_name" => "c2",
                  "place" => 2,
-                 "players_count" => 1,
+                 "clans_players_count" => 1,
+                 "event_players_count" => 1,
                  "score" => 30
                }
              ] = items
@@ -462,17 +466,19 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                  "clan_id" => ^clan1_id,
                  "clan_long_name" => "cl1",
                  "clan_name" => "c1",
-                 "place" => 0,
-                 "players_count" => 2,
-                 "score" => 0
+                 "place" => nil,
+                 "clans_players_count" => 2,
+                 "event_players_count" => nil,
+                 "score" => nil
                },
                %{
                  "clan_id" => ^clan2_id,
                  "clan_long_name" => "cl2",
                  "clan_name" => "c2",
-                 "place" => 0,
-                 "players_count" => 1,
-                 "score" => 0
+                 "place" => nil,
+                 "clans_players_count" => 1,
+                 "event_players_count" => nil,
+                 "score" => nil
                }
              ] = Enum.sort_by(items, & &1["clan_id"])
     end

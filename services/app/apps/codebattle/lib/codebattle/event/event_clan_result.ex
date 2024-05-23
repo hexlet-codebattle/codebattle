@@ -34,12 +34,19 @@ defmodule Codebattle.Event.EventClanResult do
   end
 
   def get_by_clan_id(event_id, _clan_id, page_size, page_number) do
-    __MODULE__
-    |> where([er], er.event_id == ^event_id)
-    |> order_by([er], er.place)
-    |> join(:inner, [er], c in assoc(er, :clan))
-    |> select([er, c], %{
-      players_count: er.players_count,
+    Clan
+    |> from(as: :c)
+    |> join(:left, [c: c], u in assoc(c, :users), as: :u)
+    |> join(:left, [c: c], er in __MODULE__,
+      on: er.clan_id == c.id and er.event_id == ^event_id,
+      as: :er
+    )
+    |> where([u: u], fragment("? not like 'neBot_%'", u.name))
+    |> group_by([c: c, er: er], [c.id, er.id])
+    |> order_by([er: er], {:asc_nulls_last, er.place})
+    |> select([u: u, c: c, er: er], %{
+      event_players_count: er.players_count,
+      clans_players_count: count(u.id),
       score: er.score,
       place: er.place,
       clan_id: c.id,

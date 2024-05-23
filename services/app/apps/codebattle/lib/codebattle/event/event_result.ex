@@ -4,6 +4,7 @@ defmodule Codebattle.Event.EventResult do
   alias Codebattle.Clan
   alias Codebattle.Event
   alias Codebattle.Repo
+  alias Codebattle.User
 
   use Ecto.Schema
   import Ecto.Query
@@ -36,14 +37,17 @@ defmodule Codebattle.Event.EventResult do
   end
 
   def get_by_user_id(event_id, _user_id, page_size, page_number) do
-    __MODULE__
-    |> where([er], er.event_id == ^event_id)
-    |> order_by([er], er.place)
-    |> join(:left, [er], c in assoc(er, :clan))
-    |> select([er, c], %{
+    User
+    |> from(as: :u)
+    |> join(:left, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
+    |> join(:left, [u: u], er in __MODULE__, on: er.user_id == u.id, as: :er)
+    |> where([u: u], fragment("? not like 'neBot_%'", u.name))
+    |> where([er: er], er.event_id == ^event_id)
+    |> order_by([er: er], {:asc_nulls_last, er.place})
+    |> select([u: u, c: c, er: er], %{
+      user_id: u.id,
+      user_name: u.name,
       score: er.score,
-      user_id: er.user_id,
-      user_name: er.user_name,
       place: er.place,
       clan_id: c.id,
       clan_name: c.name,
@@ -65,15 +69,18 @@ defmodule Codebattle.Event.EventResult do
   end
 
   def get_by_user_id_and_clan_id(event_id, _user_id, clan_id, page_size, page_number) do
-    __MODULE__
-    |> where([er], er.event_id == ^event_id)
-    |> where([er], er.clan_id == ^clan_id)
-    |> order_by([er], er.clan_place)
-    |> join(:left, [er], c in assoc(er, :clan))
-    |> select([er, c], %{
+    User
+    |> from(as: :u)
+    |> join(:left, [u: u], c in Clan, on: u.clan_id == c.id, as: :c)
+    |> join(:left, [u: u], er in __MODULE__, on: er.user_id == u.id, as: :er)
+    |> where([er: er], er.event_id == ^event_id)
+    |> where([u: u], fragment("? not like 'neBot_%'", u.name))
+    |> where([u: u], u.clan_id == ^clan_id)
+    |> order_by([er: er], {:asc_nulls_last, er.clan_place})
+    |> select([u: u, c: c, er: er], %{
+      user_id: u.id,
+      user_name: u.name,
       score: er.score,
-      user_id: er.user_id,
-      user_name: er.user_name,
       place: er.clan_place,
       clan_id: c.id,
       clan_name: c.name,

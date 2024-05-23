@@ -221,7 +221,7 @@ defmodule Codebattle.User do
         # TODO: drop me in 3 weeks. Sorry for the mess
         clan =
           if clan.id in [379, 4373] do
-            clan = Clan.get!(4375)
+            Clan.get!(4375)
           else
             clan
           end
