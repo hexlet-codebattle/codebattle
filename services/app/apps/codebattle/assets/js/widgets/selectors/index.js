@@ -29,7 +29,7 @@ export const currentUserIsGuestSelector = state => state.user.users[state.user.c
 export const subscriptionTypeSelector = state => (
   currentUserIsAdminSelector(state)
     ? SubscriptionTypeCodes.admin
-    : SubscriptionTypeCodes.free
+    : SubscriptionTypeCodes.premium
 );
 
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
