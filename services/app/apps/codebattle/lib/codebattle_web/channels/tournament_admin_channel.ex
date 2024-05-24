@@ -126,6 +126,14 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, socket}
   end
 
+  def handle_in("tournament:match:game_over", %{"match_id" => match_id}, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    # Tournament.Context.handle_event(tournament_id, :match_over, %{})
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:players:request", %{"player_ids" => player_ids}, socket) do
     tournament_info = socket.assigns.tournament_info
     players = Helpers.get_players(tournament_info, player_ids)
