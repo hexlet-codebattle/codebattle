@@ -4,9 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
 
 import MatchStatesCodes from '../../config/matchStates';
+import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
 
 function MatchAction({
   match,
+  canModerate,
   currentUserIsPlayer,
 }) {
   const href = `/games/${match.gameId}`;
@@ -50,6 +52,16 @@ function MatchAction({
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
           </a>
+          {canModerate && (
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm rounded-lg px-3"
+              onClick={() => sendMatchGameOver(match.id)}
+            >
+              <FontAwesomeIcon className="mr-2" icon="window-close" />
+              {i18next.t('Game Over')}
+            </button>
+          )}
         </>
       );
     }

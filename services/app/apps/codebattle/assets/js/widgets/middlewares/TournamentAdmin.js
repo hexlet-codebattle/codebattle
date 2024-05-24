@@ -272,6 +272,12 @@ export const showTournamentResults = () => {
     .receive('error', error => console.error(error));
 };
 
+export const sendMatchGameOver = matchId => {
+  channel
+    .push('tournament:match:game_over', { match_id: matchId })
+    .receive('error', error => console.error(error));
+};
+
 export const toggleBanUser = (userId, isBanned) => dispatch => {
   channel
     .push('tournament:ban:player', { user_id: userId })
