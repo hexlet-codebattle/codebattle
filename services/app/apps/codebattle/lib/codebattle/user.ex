@@ -118,7 +118,7 @@ defmodule Codebattle.User do
 
   def token_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:auth_token, :name, :clan])
+    |> cast(params, [:auth_token, :name, :clan, :subscription_type])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)

@@ -32,7 +32,7 @@ defmodule Codebattle.Game.Fsm do
   end
 
   def transition(:update_editor_data, game = %{state: s}, params)
-      when s in ["playing", "game_over"] do
+      when s in ["playing", "game_over", "timeout"] do
     params_to_update = Map.take(params, [:editor_text, :editor_lang])
     game = update_player(game, params.id, params_to_update)
     {:ok, game}
