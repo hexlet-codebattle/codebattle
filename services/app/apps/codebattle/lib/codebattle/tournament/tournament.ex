@@ -44,6 +44,7 @@ defmodule Codebattle.Tournament do
              :type,
              :use_chat,
              :use_clan,
+             :use_event_ranking,
              :use_timer,
              :use_infinite_break
            ]}
@@ -96,6 +97,7 @@ defmodule Codebattle.Tournament do
     field(:type, :string, default: "individual")
     field(:use_chat, :boolean, default: true)
     field(:use_clan, :boolean, default: false)
+    field(:use_event_ranking, :boolean, default: false)
     field(:use_infinite_break, :boolean, default: false)
     field(:use_timer, :boolean, default: true)
     field(:winner_ids, {:array, :integer})
@@ -111,7 +113,7 @@ defmodule Codebattle.Tournament do
     field(:module, :any, virtual: true, default: Individual)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
-    field(:ranking, {:array, :map}, virtual: true, default: [])
+    field(:event_ranking, :map, virtual: true, default: %{})
     field(:round_task_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
     field(:waiting_room_name, :string, virtual: true)
@@ -155,6 +157,7 @@ defmodule Codebattle.Tournament do
       :type,
       :use_chat,
       :use_clan,
+      :use_event_ranking,
       :use_infinite_break,
       :use_timer,
       :waiting_room_name

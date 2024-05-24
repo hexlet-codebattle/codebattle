@@ -81,14 +81,14 @@ function TournamentUserPanel({
                 {': '}
                 {score}
               </span>
-              {place !== undefined && (
-                <>
-                  <span className="mx-1">|</span>
-                  <span title="Place on tournament">
-                    <TournamentPlace place={place + 1} withIcon />
-                  </span>
-                </>
-              )}
+              {/* {place !== undefined && ( */}
+              {/*   <> */}
+              {/*     <span className="mx-1">|</span> */}
+              {/*     <span title="Place on tournament"> */}
+              {/*       <TournamentPlace place={place + 1} withIcon /> */}
+              {/*     </span> */}
+              {/*   </> */}
+              {/* )} */}
               {/* {localPlace && ( */}
               {/*   <> */}
               {/*     <span className="mx-1">|</span> */}

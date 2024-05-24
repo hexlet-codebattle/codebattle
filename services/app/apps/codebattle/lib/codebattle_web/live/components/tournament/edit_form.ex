@@ -97,6 +97,11 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <%= label(f, :use_clan, class: "form-check-label") %>
             <%= error_tag(f, :use_clan) %>
           </div>
+          <div class="form-check">
+            <%= checkbox(f, :use_event_ranking, class: "form-check-input") %>
+            <%= label(f, :use_event_ranking, class: "form-check-label") %>
+            <%= error_tag(f, :use_event_ranking) %>
+          </div>
           <div class="form-check ml-3">
             <%= checkbox(f, :use_timer, class: "form-check-input") %>
             <%= label(f, :use_timer, class: "form-check-label") %>

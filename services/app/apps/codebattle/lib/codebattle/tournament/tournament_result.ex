@@ -79,6 +79,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       CROSS JOIN LATERAL
       jsonb_array_elements(g.players) AS p(player_info)
       where g.tournament_id = #{tournament.id}
+      and (p.player_info->>'is_bot')::boolean = 'f'
       )
       insert into tournament_results
       (

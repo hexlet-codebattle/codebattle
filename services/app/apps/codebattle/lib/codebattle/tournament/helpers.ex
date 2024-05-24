@@ -199,6 +199,10 @@ defmodule Codebattle.Tournament.Helpers do
     get_clans_by_ranking(tournament, ranking)
   end
 
+  def get_clans_by_ranking(tournament, ranking) when is_map(ranking) do
+    get_clans_by_ranking(tournament, Map.values(ranking))
+  end
+
   def get_clans_by_ranking(tournament, ranking) when is_list(ranking) do
     if tournament.use_clan do
       ranking

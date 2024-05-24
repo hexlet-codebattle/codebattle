@@ -149,13 +149,13 @@ function UsersMatchList({
                     <FontAwesomeIcon className="text-success mr-2" icon="tasks" />
                     {matchResult.resultPercent}
                   </span>
-                  {matchResult.result === 'won' && (
+                  {match.durationSec && (
                     <span
                       title="Match duration seconds"
                       className="text-nowrap mx-2"
                     >
                       <FontAwesomeIcon className="text-primary mr-2" icon="stopwatch" />
-                      {matchResult.durationSec}
+                      {match.durationSec}
                     </span>
                   )}
 

@@ -187,10 +187,10 @@ defmodule Codebattle.Game.Engine do
               lang: editor_lang
             })
 
+            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+
             {:ok, _game} = store_result!(new_game)
             store_playbook_async(new_game)
-
-            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
             {:ok, new_game, %{check_result: check_result, solution_status: true}}
 
@@ -238,7 +238,6 @@ defmodule Codebattle.Game.Engine do
   def terminate_game(game = %Game{}) do
     case game.is_live do
       true ->
-        store_playbook_async(game)
         Game.GlobalSupervisor.terminate_game(game.id)
 
         if game.tournament_id do
@@ -384,6 +383,8 @@ defmodule Codebattle.Game.Engine do
     case {old_game_state, new_game.state} do
       {old_state, "timeout"}
       when old_state in ["waiting_opponent", "playing"] ->
+        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+
         update_game!(new_game, %{
           state: get_state(new_game),
           players: get_players(new_game),
@@ -397,7 +398,7 @@ defmodule Codebattle.Game.Engine do
           terminate_game_after(game, 15)
         end
 
-        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+        store_playbook_async(game)
 
       _ ->
         :noop

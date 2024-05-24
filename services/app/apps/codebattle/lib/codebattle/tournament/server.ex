@@ -1,6 +1,8 @@
 defmodule Codebattle.Tournament.Server do
   use GenServer
   require Logger
+
+  alias Codebattle.Clan
   alias Codebattle.Tournament
 
   import Tournament.Helpers
@@ -93,6 +95,7 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:ranking_table, ranking_table)
       |> Map.put(:tasks_table, tasks_table)
       |> Map.put(:clans_table, clans_table)
+      |> maybe_preload_event_ranking()
 
     {:ok, %{tournament: tournament}}
   end
@@ -280,6 +283,28 @@ defmodule Codebattle.Tournament.Server do
   def broadcast_tournament_event_by_type(_default_event, _params, _tournament) do
     # TODO: updated
   end
+
+  defp maybe_preload_event_ranking(
+         tournament = %{use_clan: true, use_event_ranking: true, event_id: event_id}
+       )
+       when not is_nil(event_id) do
+    new_tournament = Tournament.Ranking.preload_event_ranking(tournament)
+
+    clans =
+      new_tournament.event_ranking
+      |> Map.keys()
+      |> Clan.get_by_ids()
+
+    Tournament.Clans.put_clans(new_tournament, clans)
+    new_tournament
+  end
+
+  defp maybe_preload_event_ranking(tournament = %{use_event_ranking: true, event_id: event_id})
+       when not is_nil(event_id) do
+    Tournament.Ranking.preload_event_ranking(tournament)
+  end
+
+  defp maybe_preload_event_ranking(t), do: t
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}
 end

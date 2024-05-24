@@ -24,6 +24,8 @@ defmodule CodebattleWeb.TournamentChannel do
            Map.take(tournament, [
              :id,
              :ranking_type,
+             :players,
+             :matches,
              :use_clan,
              :players_table,
              :ranking_table,

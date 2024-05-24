@@ -57,6 +57,19 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).set_ranking(tournament)
   end
 
+  @spec preload_event_ranking(Tournament.t()) :: Tournament.t()
+  def preload_event_ranking(tournament = %{use_event_ranking: true, event_id: event_id})
+      when not is_nil(event_id) do
+    ranking = get_module(tournament).get_event_ranking(tournament)
+
+    Ranking.put_ranking(tournament, ranking)
+
+    event_ranking = Map.new(ranking, fn item = %{id: id} -> {id, item} end)
+    Map.put(tournament, :event_ranking, event_ranking)
+  end
+
+  def preload_event_ranking(t), do: t
+
   @spec create_table(pos_integer()) :: term()
   def create_table(tournament_id) do
     Ranking.create_table(tournament_id)

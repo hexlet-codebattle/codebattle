@@ -21,6 +21,12 @@ defmodule Codebattle.Event.EventClanResult do
     field(:score, :integer)
   end
 
+  def get_by_event_id(event_id) do
+    __MODULE__
+    |> where([er], er.event_id == ^event_id)
+    |> Repo.all()
+  end
+
   def get_by_clan_id(event_id, clan_id, page_size, nil) do
     page_number =
       __MODULE__

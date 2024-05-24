@@ -43,6 +43,13 @@ defmodule Codebattle.Clan do
     Repo.get_by!(__MODULE__, name: name)
   end
 
+  @spec get_by_ids(String.t()) :: list(t())
+  def get_by_ids(ids) do
+    __MODULE__
+    |> where([c], c.id in ^ids)
+    |> Repo.all()
+  end
+
   @spec find_or_create_by_clan(String.t(), pos_integer()) :: {:ok, t()} | {:error, term()}
   def find_or_create_by_clan(name, user_id) do
     name = String.replace(name, ~r/[^\p{L}\p{M}\p{N}\p{P}\p{S}\p{Z}\p{C}]/u, "")

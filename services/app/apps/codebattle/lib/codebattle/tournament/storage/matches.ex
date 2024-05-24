@@ -11,6 +11,12 @@ defmodule Codebattle.Tournament.Matches do
     )
   end
 
+  def update_match(tournament, match_id, params) do
+    match = get_match(tournament, match_id)
+    new_match = Map.merge(match, params)
+    put_match(tournament, new_match)
+  end
+
   def put_match(tournament, match) do
     :ets.insert(tournament.matches_table, {match.id, match.state, match})
   end

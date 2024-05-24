@@ -6,12 +6,12 @@ defmodule Mix.Tasks.Dockers.Build do
   @shortdoc "Build docker runner image"
 
   def run([slug]) do
-    {:ok, _started} = Application.ensure_all_started(:porcelain) |> dbg()
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
     slug |> Runner.Languages.meta() |> build()
   end
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:porcelain) |> dbg()
+    {:ok, _started} = Application.ensure_all_started(:porcelain)
     Runner.Languages.meta() |> Map.values() |> Enum.each(&build/1)
   end
 

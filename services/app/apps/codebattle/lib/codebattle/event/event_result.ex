@@ -24,6 +24,12 @@ defmodule Codebattle.Event.EventResult do
     field(:score, :integer)
   end
 
+  def get_by_event_id(event_id) do
+    __MODULE__
+    |> where([er], er.event_id == ^event_id)
+    |> Repo.all()
+  end
+
   def get_by_user_id(event_id, user_id, page_size, nil) do
     page_number =
       __MODULE__
@@ -110,7 +116,7 @@ defmodule Codebattle.Event.EventResult do
       SELECT
         #{tournament.event_id},
         user_id,
-        user_name,
+        max(user_name) as user_name,
         clan_id,
         SUM(score),
         ROW_NUMBER() OVER (ORDER BY SUM(score) DESC, SUM(duration_sec) ASC),
@@ -118,7 +124,7 @@ defmodule Codebattle.Event.EventResult do
       FROM
         tournament_results
         WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})
-        GROUP BY user_id, user_name, clan_id
+        GROUP BY user_id, clan_id
     """
 
     Ecto.Adapters.SQL.query!(Repo, sql)

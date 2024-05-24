@@ -303,6 +303,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               <%= label(f, :use_clan, class: "form-check-label") %>
               <%= error_tag(f, :use_clan) %>
             </div>
+            <div class="form-check">
+              <%= checkbox(f, :use_event_ranking, class: "form-check-input") %>
+              <%= label(f, :use_event_ranking, class: "form-check-label") %>
+              <%= error_tag(f, :use_event_ranking) %>
+            </div>
           </div>
         <% end %>
         <%= if (f.params["type"] == "show") do %>

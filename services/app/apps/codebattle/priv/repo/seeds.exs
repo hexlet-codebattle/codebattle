@@ -353,4 +353,5 @@ tokens =
     "#{user.id}:#{token}:js"
   end)
 
+File.mkdir_p!("tmp")
 File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))

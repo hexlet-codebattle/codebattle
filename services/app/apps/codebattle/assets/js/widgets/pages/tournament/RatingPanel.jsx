@@ -111,7 +111,7 @@ function RatingPanel({
 
   const playersList = useMemo(
     () => Object.values(players)
-        .sort((a, b) => a.place - b.place)
+        .sort((a, b) => b.score - a.score)
         .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
         .reduce((acc, player) => {
           if (player.isBot && hideBots) {
@@ -131,7 +131,7 @@ function RatingPanel({
     () => (topPlayerIds || [])
       .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
       .map(id => players[id])
-      .sort((a, b) => a.place - b.place)
+      .sort((a, b) => b.score - a.score)
       .reduce((acc, player) => {
         if (player.isBot && hideBots) {
           return acc;
