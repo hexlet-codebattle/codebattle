@@ -12,9 +12,14 @@ defmodule Codebattle.Tournament.Matches do
   end
 
   def update_match(tournament, match_id, params) do
-    match = get_match(tournament, match_id)
-    new_match = Map.merge(match, params)
-    put_match(tournament, new_match)
+    case get_match(tournament, match_id) do
+      nil ->
+        :noop
+
+      match ->
+        match = Map.merge(match, params)
+        put_match(tournament, match)
+    end
   end
 
   def put_match(tournament, match) do

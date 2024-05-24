@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
 import { currentUserIsAdminSelector, currentUserIsTournamentOwnerSelector } from '@/selectors';
 
-import TournamentPlace from './TournamentPlace';
+// import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
 function TournamentUserPanel({
@@ -19,7 +19,7 @@ function TournamentUserPanel({
   userId,
   name,
   score,
-  place,
+  // place,
   isBanned = false,
   // localPlace,
   searchedUserId = 0,

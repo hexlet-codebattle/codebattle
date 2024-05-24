@@ -65,7 +65,7 @@ defmodule CodebattleWeb.GameController do
         end
 
       game ->
-        if Playbook.Context.exists?(game.id) do
+        if Playbook.Context.exists?(game.id) && can_see_game(user, game) do
           [first, second] = get_users(game)
 
           score = Context.fetch_score_by_game_id(game.id)
@@ -182,6 +182,15 @@ defmodule CodebattleWeb.GameController do
       ])
     )
   end
+
+  defp can_see_game(%{subscription_type: :admin}, _game), do: true
+
+  defp can_see_game(user = %{subscription_type: :premium}, game) do
+    [first, second] = get_users(game)
+    user.id == first.id || user.id == second.id
+  end
+
+  defp can_see_game(_user, _game), do: false
 
   defp maybe_get_reports(user, game_id) do
     if User.admin?(user) do

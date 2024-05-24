@@ -38,6 +38,16 @@ function MatchAction({
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
               {i18next.t('Continue')}
             </a>
+          {canModerate && (
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm rounded-lg px-3"
+              onClick={() => sendMatchGameOver(match.id)}
+            >
+              <FontAwesomeIcon className="mr-2" icon="window-close" />
+              {i18next.t('Game Over')}
+            </button>
+          )}
           </>
         );
       }

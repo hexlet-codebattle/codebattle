@@ -129,7 +129,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   def handle_in("tournament:match:game_over", %{"match_id" => match_id}, socket) do
     tournament_id = socket.assigns.tournament_info.id
 
-    # Tournament.Context.handle_event(tournament_id, :match_over, %{})
+    Tournament.Context.handle_event(tournament_id, :game_over_match, %{match_id: match_id})
 
     {:noreply, socket}
   end

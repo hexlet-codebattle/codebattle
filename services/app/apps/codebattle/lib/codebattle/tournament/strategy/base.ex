@@ -356,6 +356,18 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      def game_over_match(tournament, params) do
+        Tournament.Matches.update_match(tournament, params.match_id, %{state: "game_over"})
+        match = Tournament.Matches.get_match(tournament, params.match_id)
+
+        Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+          tournament: tournament,
+          match: match
+        })
+
+        tournament
+      end
+
       def remove_pass_code(tournament = %{meta: %{game_passwords: passwords}}, %{
             pass_code: pass_code
           }) do
