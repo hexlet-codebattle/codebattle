@@ -434,9 +434,6 @@ msgstr "Место"
 msgid "Score"
 msgstr "Балл"
 
-msgid "Сlan players count"
-msgstr "Количество участников"
-
 msgid "Clan"
 msgstr "Вуз"
 
@@ -451,6 +448,9 @@ msgstr "Рейтинг участников"
 
 msgid "Clan players rating"
 msgstr "Рейтинг участников вуза"
+
+msgid "Clan players_count/registrations"
+msgstr "Участники/Регистрации"
 
 msgid "Clan players count"
 msgstr "Количество участников"

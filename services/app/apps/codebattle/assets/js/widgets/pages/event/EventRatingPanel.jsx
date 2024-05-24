@@ -169,7 +169,7 @@ const EventRatingPanel = ({
                   </th>
                   {type === commonRatingTypes.clan && (
                     <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Clan players count')}
+                      {i18next.t('Clan players_count/registrations')}
                     </th>
                   )}
                   <th className="p-1 pl-4 font-weight-light border-0">
