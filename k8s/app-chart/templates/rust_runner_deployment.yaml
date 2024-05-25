@@ -19,6 +19,13 @@ spec:
       labels:
         app: "runner-{{ .name }}"
     spec:
+      topologySpreadConstraints:
+      - maxSkew: 3
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: "runner-{{ .name }}"
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -37,7 +44,7 @@ spec:
               memory: "2Gi"
             requests:
               cpu: "150m"
-              memory: "256Mi"
+              memory: "128Mi"
           imagePullPolicy: Always
           image: "{{ .image }}"
           readinessProbe:
