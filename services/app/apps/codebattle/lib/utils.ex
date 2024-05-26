@@ -33,4 +33,31 @@ defmodule Utils do
   end
 
   def right_rotate(l, n), do: left_rotate(l, -n)
+
+  def sanitize_jsonb(json_string) when is_binary(json_string) do
+    json_string
+    |> remove_null_bytes()
+    |> replace_invalid_unicode_escape_sequences()
+  end
+
+  def sanitize_jsonb(_), do: ""
+
+  # Remove null bytes from JSON string
+  defp remove_null_bytes(json_string) do
+    String.replace(json_string, <<0>>, "")
+  end
+
+  # Replace invalid Unicode escape sequences with placeholders
+  defp replace_invalid_unicode_escape_sequences(json_string) do
+    Regex.replace(~r/\\u([0-9A-Fa-f]{4})/, json_string, fn _, match ->
+      code_point = String.to_integer(match, 16)
+
+      if code_point < 128 do
+        <<code_point>>
+      else
+        # Replace with placeholder for invalid sequences
+        "?"
+      end
+    end)
+  end
 end

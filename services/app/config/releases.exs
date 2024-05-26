@@ -133,7 +133,8 @@ config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SL
 config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
 config :codebattle, force_locale: System.get_env("CODEBATTLE_FORCE_LOCALE", "false") == "true"
 
-config :sentry_fe, dsn:  System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
+config :sentry_fe, dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
+
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
   environment_name: :prod,

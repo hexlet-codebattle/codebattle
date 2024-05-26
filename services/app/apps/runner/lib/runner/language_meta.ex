@@ -9,7 +9,7 @@ defmodule Runner.LanguageMeta do
     field(:checker_file_name, String.t())
     field(:checker_meta, map())
     field(:checker_version, pos_integer(), default: 1)
-    field(:output_version, pos_integer(), default: 1)
+    field(:output_version, pos_integer(), default: 2)
     field(:container_run_timeout, String.t(), defatul: "10s")
     field(:default_values, map())
     field(:docker_image, String.t())

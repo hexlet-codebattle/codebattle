@@ -145,7 +145,7 @@ defmodule Codebattle.WaitingRoom.Server do
 
     maybe_broadcast_pairs(new_state)
 
-    %{new_state | pairs: []}
+    %{new_state | pairs: [], matched_with_bot: []}
   end
 
   defp schedule_matching(state) do

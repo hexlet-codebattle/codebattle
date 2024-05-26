@@ -5,13 +5,13 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   alias Codebattle.CodeCheck.Result
 
   def call(%{execution_error: :timeout}) do
-    %Result{status: "service_timeout"}
+    %Result.V2{status: "service_timeout"}
   end
 
   def call(%{execution_error: error}) when not is_nil(error) do
-    %Result{
+    %Result.V2{
       status: "service_failure",
-      output: inspect(error)
+      output_error: inspect(error)
     }
   end
 

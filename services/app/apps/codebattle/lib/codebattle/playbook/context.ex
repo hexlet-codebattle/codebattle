@@ -143,6 +143,20 @@ defmodule Codebattle.Playbook.Context do
     data |> update_players_state(new_player_state) |> update_history(new_record)
   end
 
+  defp add_record_to_playbook_data(record = %{type: :check_complete}, data) do
+    sanitized_check_result =
+      case get_in(record, [:check_result, :asserts]) do
+        nil ->
+          record.check_result
+
+        asserts ->
+          dbg(asserts)
+          Map.put(record.check_result, :asserts, asserts)
+      end
+
+    update_history(data, Map.merge(record, %{check_result: sanitized_check_result}))
+  end
+
   defp add_record_to_playbook_data(record, data), do: update_history(data, record)
 
   defp create_diff(player_state, %{time: time, editor_text: text, editor_lang: editor_lang}) do

@@ -24,7 +24,10 @@ defmodule Codebattle.WaitingRoom.Engine do
 
   defp filter_new(state) do
     threshold = state.now - state.min_time_sec
-    {groups, unmatched} = Enum.split_with(state.players, &(&1.joined <= threshold))
+
+    {groups, unmatched} =
+      state.players |> Enum.uniq_by(& &1.id) |> Enum.split_with(&(&1.joined <= threshold))
+
     %{state | groups: groups, unmatched: unmatched}
   end
 
@@ -173,7 +176,7 @@ defmodule Codebattle.WaitingRoom.Engine do
         match_group(state, remained_players, [Enum.sort(new_pair) | pairs], unmatched)
 
       # if it didn't find a new player from another clan
-      # then put into unmatched_player_ids
+      # then put into unmatched
       :no_match ->
         match_group(state, remained_players, pairs, [p1 | unmatched])
     end

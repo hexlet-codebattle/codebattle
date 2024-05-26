@@ -321,7 +321,7 @@ defmodule Codebattle.Game.Engine do
 
       update_game!(game, %{
         state: get_state(game),
-        players: get_players(game),
+        players: get_game_players(game),
         duration_sec: game.duration_sec,
         finishes_at: game.finishes_at
       })
@@ -387,7 +387,7 @@ defmodule Codebattle.Game.Engine do
 
         update_game!(new_game, %{
           state: get_state(new_game),
-          players: get_players(new_game),
+          players: get_game_players(new_game),
           duration_sec: new_game.duration_sec,
           finishes_at: new_game.finishes_at
         })
@@ -490,6 +490,18 @@ defmodule Codebattle.Game.Engine do
         task: task,
         playbook_id: maybe_get_playbook_id_for_bot(player, task)
       })
+    end)
+  end
+
+  defp get_game_players(game) do
+    game
+    |> get_players()
+    |> Enum.map(fn player ->
+      editor_text = Utils.sanitize_jsonb(player.editor_text)
+
+      player
+      |> Map.take([:id, :result, :result_percent, :name, :clan_id, :is_bot])
+      |> Map.put(:editor_text, editor_text)
     end)
   end
 end
