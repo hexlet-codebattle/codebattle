@@ -16,6 +16,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
     conn
     |> assign(:ticker_text, nil)
     |> put_gon(
+      sentry_data_source_name: Application.get_env(:sentry_fe, :dsn),
       user_token: user_token,
       current_user: prepare_user(current_user),
       rollbar_api_key: Application.get_env(:codebattle, Codebattle.Plugs)[:rollbar_api_key]
