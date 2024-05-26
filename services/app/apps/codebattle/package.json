@@ -50,6 +50,7 @@
     "@fortawesome/react-fontawesome": "^0.1.13",
     "@inline-svg-unique-id/react": "^1.2.3",
     "@reduxjs/toolkit": "^1.6.2",
+    "@sentry/react": "^8.4.0",
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "@xstate/test": "^1.0.0-alpha.1",
