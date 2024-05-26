@@ -30,6 +30,7 @@ import { LiveSocket } from 'phoenix_live_view';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
+import './widgets/lib/sentry';
 import {
   renderBuilderWidget,
   renderGameWidget,
