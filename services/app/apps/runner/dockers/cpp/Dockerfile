@@ -10,6 +10,8 @@ RUN wget https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp
 RUN wget https://raw.githubusercontent.com/nlohmann/fifo_map/master/src/fifo_map.hpp
 
 ADD check ./check
+RUN g++ -std=c++20 check/checker.hpp
+
 ADD Makefile .
 
 EXPOSE 8000

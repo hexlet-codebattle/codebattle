@@ -1,13 +1,4 @@
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <chrono>
-#include <map>
-
-#include "../json.hpp"
-#include "../fifo_map.hpp"
-
+#include "checker.hpp"
 #include "solution.cpp"
 
 using namespace std;
