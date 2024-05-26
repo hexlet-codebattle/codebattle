@@ -248,12 +248,11 @@ class Editor extends PureComponent {
   handleChangeCursorSelection = e => {
     const {
       editable,
-      // isTournamentGame,
+      isTournamentGame,
       onChangeCursorSelection,
     } = this.props;
 
-    // if (!editable || isTournamentGame) {
-    if (!editable) {
+    if (!editable || isTournamentGame) {
       const { column, lineNumber } = this.editor.getPosition();
       this.editor.setPosition({ lineNumber, column });
     } else if (editable && onChangeCursorSelection) {
@@ -339,7 +338,7 @@ class Editor extends PureComponent {
     this.editor = editor;
     this.monaco = monaco;
     const {
-      // isTournamentGame,
+      isTournamentGame,
       editable,
       gameMode,
       userId,
@@ -361,16 +360,15 @@ class Editor extends PureComponent {
       this.clearCursorListeners = clearCursorListeners;
     }
 
-    // if (editable && !isTournamentGame && !isBuilder) {
-    if (editable && !isBuilder) {
+    if (editable && !isTournamentGame && !isBuilder) {
       this.editor.focus();
-    // } else if (editable && isTournamentGame) {
-    //   this.editor.addCommand(
-    //     monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
-    //     () => null,
-    //   );
-    //
-    //   this.editor.focus();
+    } else if (editable && isTournamentGame) {
+      this.editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
+        () => null,
+      );
+
+      this.editor.focus();
     } else {
       // disable copying for spectator
       this.editor.addCommand(
