@@ -65,6 +65,21 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  @spec stop_round_break_after(tournament_id, non_neg_integer(), pos_integer()) ::
+          :ok | {:error, :not_found}
+  def stop_round_break_after(tournament_id, round_position, timeout_in_seconds) do
+    try do
+      GenServer.call(
+        server_name(tournament_id),
+        {:stop_round_break_after, round_position, timeout_in_seconds}
+      )
+    catch
+      :exit, reason ->
+        Logger.error("Error to send tournament update: #{inspect(reason)}")
+        {:error, :not_found}
+    end
+  end
+
   def handle_event(tournament_id, event_type, params) do
     try do
       GenServer.call(server_name(tournament_id), {:fire_event, event_type, params})
@@ -116,6 +131,16 @@ defmodule Codebattle.Tournament.Server do
     Process.send_after(
       self(),
       {:finish_round_force, round_position},
+      :timer.seconds(timeout_in_seconds)
+    )
+
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:stop_round_break_after, round_position, timeout_in_seconds}, _from, state) do
+    Process.send_after(
+      self(),
+      {:stop_round_break, round_position},
       :timer.seconds(timeout_in_seconds)
     )
 

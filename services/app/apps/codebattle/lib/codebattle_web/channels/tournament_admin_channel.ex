@@ -24,6 +24,16 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     end
   end
 
+  def handle_in("tournament:player:join", %{"user_id" => user_id}, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.handle_event(tournament_id, :join, %{
+      user_id: user_id
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("tournament:ban:player", %{"user_id" => user_id}, socket) do
     tournament_id = socket.assigns.tournament_info.id
 
@@ -228,6 +238,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_info(%{event: "tournament:player:left", payload: payload}, socket) do
     push(socket, "tournament:player:left", payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:results_updated", payload: payload}, socket) do
+    push(socket, "tournament:results_updated", payload)
 
     {:noreply, socket}
   end

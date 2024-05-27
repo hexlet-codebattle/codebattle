@@ -22,7 +22,7 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
       %{
         id: to_string(tournament.id),
         restart: :transient,
-        start: {Tournament.Supervisor, :start_link, [tournament.id]}
+        start: {Tournament.Supervisor, :start_link, [tournament]}
       }
     )
   end

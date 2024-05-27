@@ -31,7 +31,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
     {:ok, tournament} =
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
-        "name" => "Test Swiss",
+        "name" => "Test Clan Arena",
         "event_id" => to_string(event.id),
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
@@ -161,7 +161,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    send_user_win_match(tournament, user1)
+    win_active_match(tournament, user1)
     :timer.sleep(100)
 
     assert %{
@@ -202,7 +202,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
-    send_user_win_match(tournament, user2)
+    win_active_match(tournament, user2)
     :timer.sleep(100)
 
     assert %{
@@ -293,7 +293,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
     assert Enum.count(matches) == 6
 
-    send_user_win_match(tournament, user1)
+    win_active_match(tournament, user1)
     :timer.sleep(100)
 
     assert %{
@@ -359,7 +359,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     assert Enum.empty?(players)
-    send_user_win_match(tournament, user1)
+    win_active_match(tournament, user1)
     :timer.sleep(200)
 
     assert %{

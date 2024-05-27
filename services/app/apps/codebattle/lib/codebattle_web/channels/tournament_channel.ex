@@ -92,6 +92,15 @@ defmodule CodebattleWeb.TournamentChannel do
 
     {:noreply, socket}
   end
+  def handle_in("matchmaking:restart", _, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.handle_event(tournament_id, :matchmaking_restart, %{
+      user_id: socket.assigns.current_user.id
+    })
+
+    {:noreply, socket}
+  end
 
   def handle_in("matchmaking:resume", _, socket) do
     tournament_id = socket.assigns.tournament_info.id

@@ -244,31 +244,13 @@ defmodule Codebattle.Tournament.Helpers do
   #   end
   # end
 
-  # TODO: optimize search active_game algo
   def get_active_game_id(tournament, player_id) do
     tournament
-    |> get_matches()
-    |> Enum.find(fn match ->
-      match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == player_id end)
-    end)
+    |> get_matches("active")
+    |> Enum.find(fn match -> player_id in match.player_ids end)
     |> case do
       nil -> nil
       match -> match.game_id
-    end
-  end
-
-  # TODO: optimize search active_match algo
-  def get_active_match(tournament, player) do
-    match =
-      tournament
-      |> get_matches()
-      |> Enum.find(fn match ->
-        match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == player.id end)
-      end)
-
-    case match do
-      nil -> tournament |> get_matches |> Enum.find(&match_is_active?/1)
-      match -> match
     end
   end
 
@@ -305,9 +287,6 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{state: "game_over", player_ids: [_, id], winner_id: id}), do: [0, 1]
   defp calc_match_result(_), do: [0, 0]
 
-  defp match_is_active?(%{state: "active"}), do: true
-  defp match_is_active?(%{state: "playing"}), do: true
-  defp match_is_active?(_match), do: false
   # defp match_is_finished?(%{state: "game_over"}), do: true
   # defp match_is_finished?(%{state: "canceled"}), do: true
   # defp match_is_finished?(%{state: "timeout"}), do: true
@@ -335,6 +314,8 @@ defmodule Codebattle.Tournament.Helpers do
       :__meta__,
       :clans_table,
       :creator,
+      :matches,
+      :players,
       :event,
       :matches_table,
       :played_pair_ids,

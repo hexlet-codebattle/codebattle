@@ -94,6 +94,23 @@ defmodule Codebattle.Tournament.Base do
 
       def leave(tournament, _user_id), do: tournament
 
+      def matchmaking_restart(tournament, %{user_id: user_id}) do
+        player = Tournament.Players.get_player(tournament, user_id)
+
+        if player.state in ["matchmaking_active", "active", "matchmaking_paused"] do
+          new_player = %{player | state: "matchmaking_active"}
+          Tournament.Players.put_player(tournament, new_player)
+          WaitingRoom.delete_player(tournament.waiting_room_name, player.id)
+
+          Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
+            tournament: tournament,
+            player: new_player
+          })
+        end
+
+        tournament
+      end
+
       def matchmaking_pause(tournament, %{user_id: user_id}) do
         player = Tournament.Players.get_player(tournament, user_id)
 
@@ -486,6 +503,7 @@ defmodule Codebattle.Tournament.Base do
         |> maybe_preload_tasks()
         |> maybe_set_round_task_ids()
         |> maybe_start_round_timer()
+        |> maybe_activate_players()
         |> build_round_matches(round_params)
         |> db_save!()
         |> maybe_start_waiting_room()
@@ -981,6 +999,22 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_save_event_results(t), do: t
+
+      defp maybe_activate_players(t = %{current_round_position: 0}), do: t
+
+      defp maybe_activate_players(tournament = %{type: "arena"}) do
+        tournament
+        |> get_players()
+        |> Enum.map(fn player ->
+          if player.state not in ["active", "banned", "finished"] do
+            Tournament.Players.put_player(tournament, %{player | state: "active"})
+          end
+        end)
+
+        tournament
+      end
+
+      defp maybe_activate_players(t), do: t
     end
   end
 end

@@ -49,11 +49,9 @@ defmodule Codebattle.Tournament.Arena do
   end
 
   @impl Tournament.Base
-  def set_ranking(tournament = %{ranking_type: "by_clan"}) do
+  def set_ranking(tournament) do
     Tournament.Ranking.set_ranking(tournament)
   end
-
-  def set_ranking(t), do: t
 
   @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
@@ -78,14 +76,13 @@ defmodule Codebattle.Tournament.Arena do
 
           player.state == "active" ->
             new_player = %{player | state: "matchmaking_active"}
+            Tournament.Players.put_player(tournament, new_player)
             WaitingRoom.put_player(tournament.waiting_room_name, new_player)
 
             Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
               tournament: tournament,
               player: new_player
             })
-
-            Tournament.Players.put_player(tournament, new_player)
 
           true ->
             :noop

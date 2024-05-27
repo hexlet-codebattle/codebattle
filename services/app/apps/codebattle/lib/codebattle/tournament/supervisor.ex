@@ -3,23 +3,38 @@ defmodule Codebattle.Tournament.Supervisor do
 
   require Logger
 
-  def start_link(tournament_id) do
-    Supervisor.start_link(__MODULE__, tournament_id, name: supervisor_name(tournament_id))
+  def start_link(tournament) do
+    Supervisor.start_link(__MODULE__, [tournament], name: supervisor_name(tournament.id))
   end
 
-  def init(tournament_id) do
+  def init([tournament]) do
     children = [
       %{
-        id: "Codebattle.Tournament.Server.#{tournament_id}",
+        id: "Codebattle.Tournament.Server.#{tournament.id}",
         restart: :transient,
-        start: {Codebattle.Tournament.Server, :start_link, [tournament_id]}
+        start: {Codebattle.Tournament.Server, :start_link, [tournament.id]}
       },
       %{
-        id: "Codebattle.Chat.Tournament.#{tournament_id}",
+        id: "Codebattle.Chat.Tournament.#{tournament.id}",
         restart: :transient,
-        start: {Codebattle.Chat, :start_link, [{:tournament, tournament_id}, %{}]}
+        start: {Codebattle.Chat, :start_link, [{:tournament, tournament.id}, %{}]}
       }
     ]
+
+    children =
+      if tournament.ranking_type == "by_player_95th_percentile" do
+        children ++
+          [
+            %{
+              id: "Codebattle.Tournament.Ranking.UpdateFromResultsServer.#{tournament.id}",
+              restart: :transient,
+              start:
+                {Codebattle.Tournament.Ranking.UpdateFromResultsServer, :start_link, [tournament.id]}
+            }
+          ]
+      else
+        children
+      end
 
     Supervisor.init(children, strategy: :one_for_one)
   end

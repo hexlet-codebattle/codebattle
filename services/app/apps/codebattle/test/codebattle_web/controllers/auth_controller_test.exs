@@ -28,7 +28,7 @@ defmodule CodebattleWeb.AuthControllerTest do
   end
 
   describe "callback" do
-    # TODO: add failuer tests
+    # TODO: add failure tests
     test "/auth/github/callback creates user", %{conn: conn} do
       conn = get(conn, "/auth/github/callback", %{"code" => "asfd", "next" => "/next_path"})
       user = Repo.get_by(User, name: "test_user")
