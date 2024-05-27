@@ -12,6 +12,7 @@
     <table class="table table-sm">
       <thead>
         <tr>
+          <th>id</th>
           <th>name</th>
           <th>level</th>
           <th>tags</th>
@@ -24,6 +25,7 @@
       <tbody>
         <%= for task <- @tasks do %>
           <tr>
+            <td class="align-middle text"><%= task.id %></td>
             <td class="align-middle text"><%= task.name %></td>
             <td class="align-middle text-nowrap">
               <img alt={task.level} src={"/assets/images/levels/#{task.level}.svg"} />
