@@ -48,13 +48,12 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
 
   @impl true
   def handle_event("validate", %{"tournament" => params}, socket) do
-    creator = socket.assigns.current_user
     user_timezone = socket.assigns.user_timezone
     tournament = socket.assigns.tournament
 
     changeset =
       Tournament.Context.validate(
-        Map.merge(params, %{"user_timezone" => user_timezone, "creator" => creator}),
+        Map.merge(params, %{"user_timezone" => user_timezone}),
         tournament
       )
 
@@ -77,13 +76,12 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
 
   @impl true
   def handle_event("update", %{"tournament" => params}, socket) do
-    creator = socket.assigns.current_user
     user_timezone = socket.assigns.user_timezone
     tournament = Tournament.Context.get!(params["tournament_id"])
 
     case Tournament.Context.update(
            tournament,
-           Map.merge(params, %{"creator" => creator, "user_timezone" => user_timezone})
+           Map.merge(params, %{"user_timezone" => user_timezone})
          ) do
       {:ok, tournament} ->
         {:noreply,
