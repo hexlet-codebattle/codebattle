@@ -438,7 +438,7 @@ msgid "Clan"
 msgstr "Вуз"
 
 msgid "Event rating"
-msgstr "Таблица регистраций"
+msgstr "Таблица Участников"
 
 msgid "Clans rating"
 msgstr "Рейтинг вузов"
@@ -459,7 +459,7 @@ msgid "Event stages"
 msgstr "Как устроен турнир"
 
 msgid "Stage %{name}"
-msgstr "Этап %{name}"
+msgstr "Тур %{name}"
 
 msgid "closed"
 msgstr "закрыт"
@@ -474,7 +474,7 @@ msgid "Login"
 msgstr "Логин"
 
 msgid "Tournament description"
-msgstr "Описание этапа"
+msgstr "Описание тура"
 
 msgid "Open"
 msgstr "Oткрыть"
@@ -519,16 +519,16 @@ msgid "Congrats! All tasks are solved"
 msgstr "Задачи закончились, поздравляем!"
 
 msgid "The tournament will start: %{duration}"
-msgstr "Этап начнется через: %{duration}"
+msgstr "Тур начнется через: %{duration}"
 
 msgid "The tournament will start soon"
-msgstr "Этап скоро начнется"
+msgstr "Тур скоро начнется"
 
 msgid "The tournament is cancelled"
-msgstr "Игры этапа отменены"
+msgstr "Игры тура отменены"
 
 msgid "The tournament is finished"
-msgstr "Игры этапа завершились"
+msgstr "Игры тура завершились"
 
 msgid "Your opponent is waiting: %{name}"
 msgstr "Ваш следующий оппонент: %{name}"

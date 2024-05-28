@@ -83,7 +83,6 @@ defmodule Codebattle.Tournament do
     field(:meta, AtomizedMap, default: %{})
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
-    field(:ranking, AtomizedMap, default: %{})
     field(:players_limit, :integer)
     field(:ranking_type, :string, default: "by_player")
     field(:round_timeout_seconds, :integer)
