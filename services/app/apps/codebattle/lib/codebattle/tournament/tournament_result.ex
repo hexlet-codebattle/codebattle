@@ -207,7 +207,7 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   def get_user_ranking(tournament) do
     query =
-      from r in __MODULE__,
+      from(r in __MODULE__,
         select: %{
           id: r.user_id,
           score: sum(r.score),
@@ -216,13 +216,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         group_by: [r.user_id],
         order_by: [desc: sum(r.score)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), desc: sum(r.duration_sec)]]]
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+      )
 
     Repo.all(query)
   end
 
-  def get_top_users_ranking(tournament, players_limit \\ 5, clans_limit \\ 7) do
-    Repo.query!("""
+  def get_top_users_by_clan_ranking(tournament, players_limit \\ 5, clans_limit \\ 7) do
+    """
     WITH PlayerAggregates AS (
       SELECT
           tr.clan_id,
@@ -307,26 +308,154 @@ defmodule Codebattle.Tournament.TournamentResult do
     ORDER BY
       t.clan_rank,
       t.total_score DESC
-    """)
-    |> then(fn result ->
-      columns = Enum.map(result.columns, &String.to_atom/1)
-
-      Enum.map(result.rows, fn row ->
-        Enum.zip(columns, row) |> Enum.into(%{})
-      end)
-    end)
+    """
+    |> Repo.query!()
+    |> map_repo_result()
   end
 
-  def get_user_task_ranking(tournament, task_id, limit \\ 10) do
+  def get_tasks_ranking(tournament) do
+    """
+    WITH tasks_data AS (
+    SELECT
+        ROUND(MIN(duration_sec)::numeric, 2) AS min,
+        ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p5,
+        ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p25,
+        ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p50,
+        ROUND(PERCENTILE_CONT(0.85) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p75,
+        ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p95,
+        ROUND(MAX(duration_sec)::numeric, 2) AS max,
+        tr.task_id,
+        SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END) AS wins_count
+    FROM
+        tournament_results tr
+    WHERE
+        tr.tournament_id = #{tournament.id}
+    GROUP BY
+        tr.task_id
+    )
+    SELECT
+        t.name, t.level, td.*
+    FROM
+        tasks_data td
+    INNER JOIN
+        tasks t ON t.id = td.task_id
+    ORDER BY
+        CASE
+          WHEN t.level = 'hard' THEN 1
+          WHEN t.level = 'medium' THEN 2
+          WHEN t.level = 'easy' THEN 3
+          ELSE 4
+        END,
+        min DESC
+    """
+    |> Repo.query!()
+    |> map_repo_result()
+  end
+
+  def get_task_duration_distribution(tournament, task_id, step \\ 37) do
+    """
+    WITH DurationStats AS (
+    SELECT
+        MIN(duration_sec) AS min_duration,
+        MAX(duration_sec) AS max_duration
+    FROM
+        tournament_results
+    WHERE
+        tournament_id = #{tournament.id}
+        AND task_id = #{task_id}
+        AND result_percent = 100.0
+    ),
+    IntervalParams AS (
+    SELECT
+        min_duration,
+        max_duration,
+        CEIL((max_duration - min_duration) / #{step}) AS num_intervals,
+        #{step} AS interval_step
+    FROM
+        DurationStats
+    ),
+    Intervals AS (
+    SELECT
+        min_duration + (#{step} * generate_series) AS interval_start,
+        min_duration + (#{step} * (generate_series + 1)) AS interval_end
+    FROM
+        IntervalParams,
+        generate_series(0, CEIL((max_duration - min_duration) / #{step})::int)
+    )
+    SELECT
+      interval_start AS start,
+      interval_end AS end,
+      COUNT(tr.duration_sec) AS wins_count
+    FROM
+      Intervals
+    LEFT JOIN
+      tournament_results tr
+    ON
+      tr.duration_sec >= interval_start
+      AND tr.duration_sec < interval_end
+      AND tr.task_id = #{task_id}
+      AND tr.result_percent = 100.0
+      AND tr.tournament_id = #{tournament.id}
+    GROUP BY
+      interval_start, interval_end
+    ORDER BY
+      interval_start
+    """
+    |> Repo.query!()
+    |> map_repo_result()
+  end
+
+  def get_clans_bubble_distribution(tournament, max_radius \\ 7) do
+    """
+    WITH clans_result AS (
+    SELECT
+        tr.clan_id,
+        COUNT(DISTINCT tr.user_id) AS player_count,
+        SUM(tr.score) AS total_score,
+        SUM(tr.score) / NULLIF(COUNT(DISTINCT tr.user_id), 0) AS performance,
+        CASE
+            WHEN (player_counts.max_player_count - player_counts.min_player_count) != 0
+            THEN (ROUND((1.0 *(COUNT(DISTINCT tr.user_id) - player_counts.min_player_count) /  (player_counts.max_player_count - player_counts.min_player_count)) * #{max_radius - 1}) + 1)::int
+            ELSE 1
+        END AS radius
+    FROM
+        tournament_results tr,
+        (SELECT MIN(cnt) AS min_player_count, MAX(cnt) AS max_player_count FROM (SELECT COUNT(DISTINCT user_id) AS cnt FROM tournament_results GROUP BY clan_id) AS counts) AS player_counts
+    WHERE
+        tr.tournament_id = #{tournament.id}
+    GROUP BY
+        tr.clan_id, player_counts.min_player_count, player_counts.max_player_count
+    )
+    SELECT
+      c.id AS clan_id,
+      c.name AS clan_name,
+      c.long_name AS clan_long_name,
+      cr.total_score,
+      cr.player_count,
+      cr.performance,
+      cr.radius
+    FROM
+      clans_result cr
+    INNER JOIN
+      clans c ON cr.clan_id = c.id
+    ORDER BY
+      cr.total_score DESC
+    """
+    |> Repo.query!()
+    |> map_repo_result()
+  end
+
+  def get_top_user_by_task_ranking(tournament, task_id, limit \\ 10) do
     query =
-      from r in __MODULE__,
+      from(r in __MODULE__,
         join: c in Clan,
         on: r.clan_id == c.id,
         group_by: [r.user_id, c.id],
         where: r.tournament_id == ^tournament.id,
         where: r.task_id == ^task_id,
+        where: r.result_percent == 100.0,
         order_by: [desc: sum(r.score)],
-        windows: [user_partition: [order_by: [desc: sum(r.score)]]],
+        windows: [user_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]],
         limit: ^limit,
         select: %{
           user_id: r.user_id,
@@ -337,7 +466,16 @@ defmodule Codebattle.Tournament.TournamentResult do
           score: sum(r.score),
           place: over(row_number(), :user_partition)
         }
+      )
 
     Repo.all(query)
+  end
+
+  defp map_repo_result(result) do
+    columns = Enum.map(result.columns, &String.to_atom/1)
+
+    Enum.map(result.rows, fn row ->
+      Enum.zip(columns, row) |> Enum.into(%{})
+    end)
   end
 end
