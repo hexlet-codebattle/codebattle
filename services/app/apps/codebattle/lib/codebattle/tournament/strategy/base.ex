@@ -1005,7 +1005,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_activate_players(tournament = %{type: "arena"}) do
         tournament
         |> get_players()
-        |> Enum.map(fn player ->
+        |> Enum.each(fn player ->
           if player.state not in ["active", "banned", "finished"] do
             Tournament.Players.put_player(tournament, %{player | state: "active"})
           end

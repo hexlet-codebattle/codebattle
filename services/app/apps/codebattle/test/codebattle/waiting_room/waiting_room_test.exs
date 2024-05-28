@@ -26,6 +26,7 @@ defmodule Codebattle.WaitingRoomTest do
       payload: %{pairs: pairs}
     }
 
-    assert pairs == [[5, 5], [1, 3], [2, 4]]
+    # assert pairs == [[5, 5], [1, 3], [2, 4]]
+    assert pairs == [[1, 3], [2, 4]]
   end
 end

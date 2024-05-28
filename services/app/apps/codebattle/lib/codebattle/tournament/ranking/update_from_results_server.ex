@@ -46,7 +46,11 @@ defmodule Codebattle.Tournament.Ranking.UpdateFromResultsServer do
     if state.updates_received do
       perform_update(state.tournament_id)
       Logger.debug("UpdateFromResultsServer: performed for tournament #{state.tournament_id}")
-      Codebattle.PubSub.broadcast("tournament:results_updated", %{tournament_id: state.tournament_id})
+
+      Codebattle.PubSub.broadcast("tournament:results_updated", %{
+        tournament_id: state.tournament_id
+      })
+
       schedule_work()
       {:noreply, %{state | updates_received: false}}
     else

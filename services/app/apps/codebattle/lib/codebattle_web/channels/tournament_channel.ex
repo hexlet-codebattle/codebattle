@@ -92,6 +92,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     {:noreply, socket}
   end
+
   def handle_in("matchmaking:restart", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
 

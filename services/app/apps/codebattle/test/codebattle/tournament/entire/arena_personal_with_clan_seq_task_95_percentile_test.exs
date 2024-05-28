@@ -684,6 +684,8 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
+    assert Enum.empty?(players)
+
     ##### user1 win 2 round 2 game
     win_active_match(tournament, user1)
     :timer.sleep(100)
