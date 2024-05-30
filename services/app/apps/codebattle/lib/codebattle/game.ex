@@ -48,14 +48,10 @@ defmodule Codebattle.Game do
     has_one(:playbook, Codebattle.Playbook)
     embeds_many(:players, Player, on_replace: :delete)
 
-    field(:award, :string, virtual: true)
+    field(:player_ids, {:array, :integer}, default: [])
     field(:duration_sec, :integer)
     field(:finishes_at, :naive_datetime)
-    field(:is_bot, :boolean, default: false, virtual: true)
-    field(:is_live, :boolean, default: false, virtual: true)
-    field(:is_tournament, :boolean, default: false, virtual: true)
     field(:level, :string)
-    field(:locked, :boolean, default: false, virtual: true)
     field(:mode, :string, default: "standard")
     field(:ref, :integer)
     field(:rematch_initiator_id, :integer)
@@ -68,6 +64,12 @@ defmodule Codebattle.Game do
     field(:use_timer, :boolean, default: true)
     field(:visibility_type, :string, default: "public")
     field(:waiting_room_name, :string)
+
+    field(:award, :string, virtual: true)
+    field(:is_bot, :boolean, default: false, virtual: true)
+    field(:is_live, :boolean, default: false, virtual: true)
+    field(:is_tournament, :boolean, default: false, virtual: true)
+    field(:locked, :boolean, default: false, virtual: true)
 
     timestamps()
   end

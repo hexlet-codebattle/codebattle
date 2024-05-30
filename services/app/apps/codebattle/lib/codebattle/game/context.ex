@@ -244,6 +244,25 @@ defmodule Codebattle.Game.Context do
 
   def terminate_game(id), do: get_game!(id) |> terminate_game()
 
+  @spec get_active_game_id(integer() | String.t()) :: nil | integer()
+  def get_active_game_id(nil), do: nil
+
+  def get_active_game_id(user_id) when is_binary(user_id) do
+    get_active_game_id(String.to_integer(user_id))
+  end
+
+  def get_active_game_id(user_id) do
+    Game
+    |> where([g], g.state == "playing")
+    |> where([g], fragment("? = ANY(player_ids)", ^user_id))
+    |> order_by([g], desc: g.id)
+    |> Repo.all()
+    |> case do
+      [%Game{id: id} | _] -> id
+      _ -> nil
+    end
+  end
+
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
     Repo.one!(query)

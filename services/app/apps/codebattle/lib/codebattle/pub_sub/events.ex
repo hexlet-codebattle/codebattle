@@ -341,8 +341,19 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("game:created", %{game: game}) do
+    user_messages =
+      game
+      |> Game.Helpers.get_players()
+      |> Enum.map(fn player ->
+        %Message{
+          topic: "user:#{player.id}",
+          event: "user:game_created",
+          payload: %{game_id: game.id}
+        }
+      end)
+
     if game.tournament_id do
-      []
+      user_messages
     else
       [
         %Message{
@@ -350,6 +361,7 @@ defmodule Codebattle.PubSub.Events do
           event: "game:created",
           payload: %{game: game_main_data(game)}
         }
+        | user_messages
       ]
     end
   end

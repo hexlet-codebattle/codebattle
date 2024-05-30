@@ -334,7 +334,11 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
     tournament = Tournament.Context.get(tournament.id)
     %{players: players} = WaitingRoom.get_state(tournament.waiting_room_name)
     assert Enum.count(players) == 2
-    WaitingRoom.update_state(tournament.waiting_room_name, %{min_time_with_played_sec: 0})
+
+    WaitingRoom.update_state(tournament.waiting_room_name, %{
+      min_time_with_bot_sec: 0,
+      min_time_with_played_sec: 0
+    })
 
     %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
     :timer.sleep(100)

@@ -3,20 +3,48 @@ defmodule CodebattleWeb.MainChannel do
   use CodebattleWeb, :channel
 
   alias CodebattleWeb.Presence
+  alias Codebattle.Game
 
-  def join("main", %{"state" => state}, socket) do
+  require Logger
+
+  def join("main", params = %{"state" => state}, socket) do
     current_user = socket.assigns.current_user
 
-    if !current_user.is_guest do
-      topic = "main:#{current_user.id}"
-      Codebattle.PubSub.subscribe(topic)
+    active_game_id =
+      if !current_user.is_guest do
+        topic = "main:#{current_user.id}"
+        Codebattle.PubSub.subscribe(topic)
 
-      if Application.get_env(:codebattle, :use_presence) do
-        send(self(), {:after_join, state})
+        if Application.get_env(:codebattle, :use_presence) do
+          send(self(), {:after_join, state})
+        end
+
+        follow_id = params["follow_id"]
+
+        if follow_id do
+          Codebattle.PubSub.subscribe("user:#{follow_id}")
+          Game.Context.get_active_game_id(follow_id)
+        else
+          nil
+        end
       end
-    end
 
-    {:ok, %{}, socket}
+    {:ok, %{active_game_id: active_game_id}, socket}
+  end
+
+  def handle_in("user:follow", %{"user_id" => user_id}, socket) do
+    if socket.assigns.current_user.is_guest do
+      {:noreply, socket}
+    else
+      Codebattle.PubSub.subscribe("user:#{user_id}")
+      active_game_id = Game.Context.get_active_game_id(user_id)
+      {:reply, {:ok, %{active_game_id: active_game_id}}, socket}
+    end
+  end
+
+  def handle_in("user:unfollow", %{"user_id" => user_id}, socket) do
+    Codebattle.PubSub.unsubscribe("user:#{user_id}")
+    {:noreply, socket}
   end
 
   def handle_in("change_presence_state", %{"state" => state}, socket) do
@@ -34,6 +62,16 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
+  def handle_in(_, _, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "user:game:created", payload: payload}, socket) do
+    push(socket, "user:game:created", %{game_id: payload.game_id})
+
+    {:noreply, socket}
+  end
+
   def handle_info({:after_join, state}, socket) do
     {:ok, _} =
       Presence.track(socket, socket.assigns.current_user.id, %{
@@ -45,6 +83,17 @@ defmodule CodebattleWeb.MainChannel do
 
     push(socket, "presence_state", Presence.list(socket))
 
+    {:noreply, socket}
+  end
+
+  def handle_info(message = %{event: "user:game_created"}, socket) do
+    push(socket, "user:game_created", message.payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(message, socket) do
+    Logger.warning("MainChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}
   end
 end

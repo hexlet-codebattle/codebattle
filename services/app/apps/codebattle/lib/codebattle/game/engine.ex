@@ -55,6 +55,7 @@ defmodule Codebattle.Game.Engine do
              waiting_room_name: params[:waiting_room_name],
              task: task,
              players: players,
+             player_ids: Enum.map(players, & &1.id),
              starts_at: TimeHelper.utc_now()
            }),
          game = fill_virtual_fields(game),
@@ -87,6 +88,7 @@ defmodule Codebattle.Game.Engine do
           level: task.level,
           mode: mode,
           players: build_players(params.players, task),
+          player_ids: Enum.map(params.players, & &1.id),
           ref: params[:ref],
           round_id: params[:round_id],
           starts_at: now,
@@ -124,12 +126,19 @@ defmodule Codebattle.Game.Engine do
     now = TimeHelper.utc_now()
 
     with :ok <- check_auth(user, game.mode, game.tournament_id),
+         players = game.players ++ [Game.Player.build(user, %{task: game.task})],
          {:ok, {_old_game_state, game}} <-
            fire_transition(game.id, :join, %{
-             players: game.players ++ [Game.Player.build(user, %{task: game.task})],
+             players: players,
              starts_at: now
            }),
-         update_game!(game, %{state: "playing", starts_at: now, task_id: game.task.id}),
+         update_game!(game, %{
+           players: players,
+           player_ids: Enum.map(players, & &1.id),
+           state: "playing",
+           starts_at: now,
+           task_id: game.task.id
+         }),
          :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_game_updated(game) do
       {:ok, game}

@@ -129,6 +129,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       game1 = insert(:game, state: "game_over")
       game2 = insert(:game, state: "game_over")
       game3 = insert(:game, state: "game_over")
+      %{id: game4_id} = insert(:game, state: "playing", player_ids: [user1.id])
       insert(:user_game, user: user1, creator: false, game: game1, result: "won", lang: "js")
       insert(:user_game, user: user2, creator: false, game: game1, result: "lost", lang: "js")
       insert(:user_game, user: user1, creator: false, game: game2, result: "lost", lang: "ruby")
@@ -136,11 +137,10 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       insert(:user_game, user: user1, creator: false, game: game3, result: "lost", lang: "golang")
       insert(:user_game, user: user2, creator: false, game: game3, result: "won", lang: "golang")
 
-      conn =
+      resp_body =
         conn
         |> get(Routes.api_v1_user_path(conn, :stats, user1.id))
-
-      resp_body = json_response(conn, 200)
+        |> json_response(200)
 
       assert [
                %{"count" => 1, "lang" => "golang", "result" => "lost"},
@@ -149,7 +149,19 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
              ] = resp_body["stats"]["all"] |> Enum.sort_by(& &1["lang"])
 
       assert %{
+               "active_game_id" => ^game4_id,
                "stats" => %{"games" => %{"gave_up" => 0, "lost" => 2, "won" => 1}},
+               "user" => _user
+             } = resp_body
+
+      resp_body =
+        conn
+        |> get(Routes.api_v1_user_path(conn, :stats, user2.id))
+        |> json_response(200)
+
+      assert %{
+               "active_game_id" => nil,
+               "stats" => %{"games" => %{"gave_up" => 0, "lost" => 1, "won" => 2}},
                "user" => _user
              } = resp_body
     end

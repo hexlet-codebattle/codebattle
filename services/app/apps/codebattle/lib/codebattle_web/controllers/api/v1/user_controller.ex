@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
+  alias Codebattle.Game
   alias Codebattle.PremiumRequest
   alias Codebattle.User
   alias Codebattle.User.Stats
@@ -49,8 +50,9 @@ defmodule CodebattleWeb.Api.V1.UserController do
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
     user = User.get!(id)
+    active_game_id = Game.Context.get_active_game_id(id)
 
-    json(conn, %{stats: game_stats, user: user})
+    json(conn, %{active_game_id: active_game_id, stats: game_stats, user: user})
   end
 
   def simple_stats(conn, %{"id" => id}) do
