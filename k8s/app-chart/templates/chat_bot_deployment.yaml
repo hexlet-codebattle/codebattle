@@ -20,7 +20,7 @@ spec:
       containers:
         - name: chatbot
           imagePullPolicy: "{{ .Values.chatbot.image.imagePullPolicy }}"
-          image: "{{ .Values.chatbot.image.repository }}:{{ .Values.chatbot.image.tag }}"
+          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.chatbot.image.repository }}:{{ .Values.chatbot.image.tag }}"
           readinessProbe:
             httpGet:
               path: /

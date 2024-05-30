@@ -29,7 +29,7 @@ spec:
           securityContext:
             privileged: true
           imagePullPolicy: "{{ .Values.runner.image.imagePullPolicy }}"
-          image: "{{ .Values.runner.image.repository }}:{{ .Values.version }}"
+          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.runner.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
               path: /health

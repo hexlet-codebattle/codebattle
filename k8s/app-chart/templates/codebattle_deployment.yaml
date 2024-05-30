@@ -24,7 +24,7 @@ spec:
       containers:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
-          image: "{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
+          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
               path: /health
@@ -37,7 +37,7 @@ spec:
               value: 127.0.0.1
         - name: codebattle
           imagePullPolicy: "{{ .Values.codebattle.image.imagePullPolicy }}"
-          image: "{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
+          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
               path: /health
