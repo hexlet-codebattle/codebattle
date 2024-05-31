@@ -29,6 +29,7 @@ function TaskRankingPanel({ type, state }) {
 
   useEffect(() => {
     if (state === 'active') {
+      dispatch(getResults(type, undefined, setItems));
       const interval = setInterval(() => {
         dispatch(getResults(type, undefined, setItems));
       }, 1000 * 30);

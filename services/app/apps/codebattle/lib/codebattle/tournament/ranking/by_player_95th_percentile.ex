@@ -5,11 +5,24 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
 
   @page_size 10
 
+  def get_first(_t, _num), do: []
+
+  def get_by_player(_t, _p), do: nil
+
   def set_ranking(tournament) do
     ranking = TournamentResult.get_user_ranking(tournament)
     set_places_with_score(tournament, ranking)
     Ranking.put_ranking(tournament, ranking)
     tournament
+  end
+
+  def get_nearest_page_by_player(_t, _p) do
+    %{
+      total_entries: 10,
+      page_number: 0,
+      page_size: @page_size,
+      entries: []
+    }
   end
 
   def set_ranking_to_ets(tournament) do
@@ -39,7 +52,14 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
     Enum.each(ranking, fn %{id: id, place: place, score: score} ->
       tournament
       |> Players.get_player(id)
-      |> then(&Players.put_player(tournament, %{&1 | place: place, score: score}))
+      |> case do
+        nil ->
+        :noop
+        player ->
+
+
+      Players.put_player(tournament, %{player | place: place, score: score})
+      end
     end)
   end
 end
