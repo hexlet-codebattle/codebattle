@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 
 import cn from 'classnames';
-import Gon from 'gon';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';

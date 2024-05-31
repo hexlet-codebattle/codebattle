@@ -2,9 +2,10 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import { Presence } from 'phoenix';
 
+import { makeGameUrl } from '@/utils/urlBuilders';
+
 import socket from '../../socket';
 import { actions } from '../slices';
-import { makeGameUrl } from '@/utils/urlBuilders';
 
 const players = Gon.getAsset('players') || [];
 const currentUser = Gon.getAsset('current_user') || {};

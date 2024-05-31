@@ -7,6 +7,8 @@ import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
+import { unfollowUser } from '@/middlewares/Main';
+
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ModalCodes from '../../config/modalCodes';
@@ -17,7 +19,6 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 import TaskLanguagesSelection from './TaskLanguageSelection';
-import { unfollowUser } from '@/middlewares/Main';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;

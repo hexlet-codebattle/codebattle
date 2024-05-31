@@ -257,7 +257,6 @@ defmodule Codebattle.Game.Context do
     |> where([g], fragment("? = ANY(player_ids)", ^user_id))
     |> order_by([g], desc: g.id)
     |> Repo.all()
-    |> IO.inspect()
     |> case do
       [%Game{id: id} | _] -> id
       _ -> nil
