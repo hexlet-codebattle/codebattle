@@ -5,30 +5,26 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
 
   @page_size 10
 
-  def get_first(_t, _num), do: []
+  def get_first(tournament, limit \\ @page_size) do
+    Ranking.get_first(tournament, limit)
+  end
 
-  def get_by_player(_t, _p), do: nil
+  def get_by_player(tournament, player) do
+    Ranking.get_by_id(tournament, player.id)
+  end
 
-  def set_ranking(tournament) do
-    ranking = TournamentResult.get_user_ranking(tournament)
-    set_places_with_score(tournament, ranking)
-    Ranking.put_ranking(tournament, ranking)
+  def get_nearest_page_by_player(tournament, nil) do
+    get_page(tournament, 1)
+  end
+
+  def get_nearest_page_by_player(tournament, player) do
     tournament
-  end
-
-  def get_nearest_page_by_player(_t, _p) do
-    %{
-      total_entries: 10,
-      page_number: 0,
-      page_size: @page_size,
-      entries: []
-    }
-  end
-
-  def set_ranking_to_ets(tournament) do
-    ranking = TournamentResult.get_user_ranking(tournament)
-    Ranking.put_ranking(tournament, ranking)
-    :ok
+    |> Ranking.get_by_id(player.id)
+    |> case do
+      nil -> 0
+      %{place: place} -> div(place, @page_size) + 1
+    end
+    |> then(&get_page(tournament, &1))
   end
 
   def get_page(tournament, page) do
@@ -45,7 +41,36 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
     }
   end
 
-  def add_new_player(tournament, _player), do: tournament
+  def set_ranking(tournament) do
+    ranking = TournamentResult.get_user_ranking(tournament)
+    set_places_with_score(tournament, ranking)
+    Ranking.put_ranking(tournament, ranking)
+    tournament
+  end
+
+  def set_ranking_to_ets(tournament) do
+    ranking = TournamentResult.get_user_ranking(tournament)
+    Ranking.put_ranking(tournament, ranking)
+    :ok
+  end
+
+  def add_new_player(tournament = %{state: "waiting_participants"}, player) do
+    place = Ranking.count(tournament) + 1
+
+    Ranking.put_single_record(tournament, place, %{
+      id: player.id,
+      place: place,
+      score: 0,
+      name: player.name,
+      clan_id: player.clan_id,
+      clan: player.clan
+    })
+
+    tournament
+  end
+
+  def add_new_player(t, _player), do: t
+
   def update_player_result(tournament, _player, _score), do: tournament
 
   def set_places_with_score(tournament, ranking) do
@@ -54,11 +79,10 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
       |> Players.get_player(id)
       |> case do
         nil ->
-        :noop
+          :noop
+
         player ->
-
-
-      Players.put_player(tournament, %{player | place: place, score: score})
+          Players.put_player(tournament, %{player | place: place, score: score})
       end
     end)
   end

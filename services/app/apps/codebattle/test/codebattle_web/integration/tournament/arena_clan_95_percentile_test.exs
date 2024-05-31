@@ -1,9 +1,9 @@
-defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
+defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.Tournament
 
-  test "Arena Clan 1 round sequential task_pack" do
+  test "Arena Clan 1 round sequential 95_percentile task_pack" do
     %{id: t1_id} = insert(:task, level: "easy")
     %{id: t2_id} = insert(:task, level: "medium")
     %{id: t3_id} = insert(:task, level: "hard")
@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
     {:ok, tournament} =
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
-        "name" => "Test Clan Arena",
+        "name" => "Test Personal Clan Arena",
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
         "task_pack_name" => "tp",
@@ -23,7 +23,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
         "score_strategy" => "win_loss",
         "task_provider" => "task_pack_per_round",
         "task_strategy" => "sequential",
-        "ranking_type" => "by_clan",
+        "ranking_type" => "by_player_95th_percentile",
         "type" => "arena",
         "state" => "waiting_participants",
         "use_clan" => "true",
@@ -66,10 +66,15 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
     {:ok, _response, socket6} = subscribe_and_join(socket6, TournamentChannel, tournament_topic)
 
     Phoenix.ChannelTest.push(socket1, "tournament:join", %{})
+    :timer.sleep(10)
     Phoenix.ChannelTest.push(socket2, "tournament:join", %{})
+    :timer.sleep(10)
     Phoenix.ChannelTest.push(socket3, "tournament:join", %{})
+    :timer.sleep(10)
     Phoenix.ChannelTest.push(socket4, "tournament:join", %{})
+    :timer.sleep(10)
     Phoenix.ChannelTest.push(socket5, "tournament:join", %{})
+    :timer.sleep(10)
     Phoenix.ChannelTest.push(socket6, "tournament:join", %{})
 
     # 7 users joined for 7 user sockets
@@ -88,22 +93,20 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       subscribe_and_join(socket7, TournamentChannel, tournament_topic)
 
     assert %{
-             clans: %{
-               ^c1_id => %{id: ^c1_id, name: "c1", long_name: "cl1"},
-               ^c2_id => %{id: ^c2_id, name: "c2", long_name: "cl2"},
-               ^c3_id => %{id: ^c3_id, name: "c3", long_name: "cl3"}
-             },
              matches: [],
              players: [],
              ranking: %{
                page_size: 10,
                entries: [
-                 %{id: _, score: 0, players_count: 2, place: 1},
-                 %{id: _, score: 0, players_count: 2, place: 2},
-                 %{id: _, score: 0, players_count: 2, place: 3}
+                 %{clan: "c1", clan_id: _, id: _, place: 1, score: 0, name: "1"},
+                 %{clan: "c1", clan_id: _, id: _, place: 2, score: 0, name: "2"},
+                 %{clan: "c2", clan_id: _, id: _, place: 3, score: 0, name: "3"},
+                 %{clan: "c2", clan_id: _, id: _, place: 4, score: 0, name: "4"},
+                 %{clan: "c3", clan_id: _, id: _, place: 5, score: 0, name: "5"},
+                 %{clan: "c3", clan_id: _, id: _, place: 6, score: 0, name: "6"}
                ],
                page_number: 1,
-               total_entries: 3
+               total_entries: 6
              },
              tournament: %{
                access_type: "public",
@@ -149,13 +152,16 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
              ranking: %{
                page_size: 10,
                entries: [
-                 %{id: _, score: 0, players_count: 2, place: 1},
-                 %{id: _, score: 0, players_count: 2, place: 2},
-                 %{id: _, score: 0, players_count: 2, place: 3},
-                 %{id: _, score: 0, players_count: 1, place: 4}
+                 %{clan: "c1", clan_id: _, id: _, place: 1, score: 0, name: "1"},
+                 %{clan: "c1", clan_id: _, id: _, place: 2, score: 0, name: "2"},
+                 %{clan: "c2", clan_id: _, id: _, place: 3, score: 0, name: "3"},
+                 %{clan: "c2", clan_id: _, id: _, place: 4, score: 0, name: "4"},
+                 %{clan: "c3", clan_id: _, id: _, place: 5, score: 0, name: "5"},
+                 %{clan: "c3", clan_id: _, id: _, place: 6, score: 0, name: "6"},
+                 %{clan: "c4", clan_id: _, id: _, place: 7, score: 0, name: "7"}
                ],
                page_number: 1,
-               total_entries: 4
+               total_entries: 7
              },
              tasks_info: %{},
              tournament: %{
@@ -333,6 +339,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       },
       topic: ^tournament_topic
     }
+
+    :timer.sleep(100)
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
   end

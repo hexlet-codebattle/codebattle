@@ -33,11 +33,13 @@ defmodule Codebattle.Tournament.Base do
       require Logger
 
       def add_player(tournament, player) do
-        Tournament.Players.put_player(tournament, Tournament.Player.new!(player))
+        tournament_player = Tournament.Player.new!(player)
+        Tournament.Players.put_player(tournament, tournament_player)
+
+        Tournament.Ranking.add_new_player(tournament, tournament_player)
 
         if tournament.use_clan do
-          Tournament.Clans.add_players_clan(tournament, player)
-          Tournament.Ranking.add_new_player(tournament, player)
+          Tournament.Clans.add_players_clan(tournament, tournament_player)
         end
 
         Map.put(tournament, :players_count, players_count(tournament))
