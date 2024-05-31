@@ -4,10 +4,9 @@ import React, {
 
 import cn from 'classnames';
 import i18next from 'i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { getResults } from '../../middlewares/TournamentAdmin';
-import { tournamentSelector } from '../../selectors';
 
 const getCustomEventTrClassName = (type, muted) => cn(
   'text-dark font-weight-bold cb-custom-event-tr',
@@ -30,8 +29,6 @@ function RatingClansPanel({ type, state }) {
   const dispatch = useDispatch();
 
   const [items, setItems] = useState([]);
-
-  const { clans } = useSelector(tournamentSelector);
 
   useEffect(() => {
     if (state === 'active') {
@@ -70,9 +67,6 @@ function RatingClansPanel({ type, state }) {
               {i18next.t('Wins count')}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Average time for solving task')}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t('Total time for solving task')}
             </th>
           </tr>
@@ -86,27 +80,24 @@ function RatingClansPanel({ type, state }) {
                   {users[0].clanRank}
                 </td>
                 <td
-                  title={clans[users[0].clanId]?.longName}
+                  title={users[0].clanLongName}
                   className={tableDataCellClassName()}
                 >
                   <div
                     className="cb-custom-event-name mr-1"
                     style={{ maxWidth: 220 }}
                   >
-                    {clans[users[0].clanId]?.name}
+                    {users[0].clanName}
                   </div>
                 </td>
                 <td width="120" className={tableDataCellClassName()}>
-                  {clans[users[0].clanId]?.score || 0}
+                  {users.reduce((acc, user) => (acc + user.totalScore), 0) || 0}
                 </td>
                 <td width="122" className={tableDataCellClassName()}>
-                  {clans[users[0].clanId]?.winsCount || 0}
+                  {users.reduce((acc, user) => (acc + user.winsCount), 0) || 0}
                 </td>
                 <td width="122" className={tableDataCellClassName()}>
-                  {clans[users[0].clanId]?.avgDurationSec || 0}
-                </td>
-                <td width="122" className={tableDataCellClassName()}>
-                  {clans[users[0].clanId]?.totalDurationSec || 0}
+                  {users.reduce((acc, user) => (acc + user.totalDurationSec), 0) || 0}
                 </td>
               </tr>
               {users.map(user => (
@@ -115,14 +106,14 @@ function RatingClansPanel({ type, state }) {
                   <tr className={getCustomEventTrClassName('user', index > 3)}>
                     <td width="60" className={tableDataCellClassName(true)} />
                     <td
-                      title={clans[user.clanId]?.longName}
+                      title={user.userName}
                       className={tableDataCellClassName()}
                     >
                       <div
                         className="cb-custom-event-name mr-1"
                         style={{ maxWidth: 220 }}
                       >
-                        {clans[user.clanId]?.name}
+                        {user.userName}
                       </div>
                     </td>
                     <td width="120" className={tableDataCellClassName()}>
@@ -130,9 +121,6 @@ function RatingClansPanel({ type, state }) {
                     </td>
                     <td width="122" className={tableDataCellClassName()}>
                       {user.winsCount || 0}
-                    </td>
-                    <td width="122" className={tableDataCellClassName()}>
-                      {user.avgDurationSec || 0}
                     </td>
                     <td width="122" className={tableDataCellClassName()}>
                       {user.totalDurationSec || 0}

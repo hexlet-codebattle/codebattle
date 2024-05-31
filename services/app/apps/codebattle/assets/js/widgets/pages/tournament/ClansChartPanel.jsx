@@ -12,7 +12,6 @@ function ClansChartPanel({ type, state }) {
 
   const [items, setItems] = useState({ results: [] });
 
-  console.log(items)
   useEffect(() => {
     if (state === 'active') {
       dispatch(getResults(type, undefined, setItems));

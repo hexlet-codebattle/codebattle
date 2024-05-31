@@ -295,7 +295,8 @@ export const getResults = (type, taskId, onSuccess) => () => {
       const result = camelizeKeys(data);
 
       if (type === PanelModeCodes.topUserByClansMode) {
-        onSuccess(Object.values(groupBy(result.result, item => item.clanRank)));
+        const ans = Object.values(groupBy(result.results, item => item.clanRank));
+        onSuccess(ans);
       } else {
         onSuccess(result);
       }
