@@ -293,8 +293,9 @@ export const getResults = (type, taskId, onSuccess) => () => {
     .push('tournament:get_results', { params: { type, task_id: taskId } })
     .receive('ok', data => {
       const result = camelizeKeys(data);
+
       if (type === PanelModeCodes.topUserByClansMode) {
-        onSuccess(Object.values(groupBy(result, item => item.clanRank)));
+        onSuccess(Object.values(groupBy(result.result, item => item.clanRank)));
       } else {
         onSuccess(result);
       }
