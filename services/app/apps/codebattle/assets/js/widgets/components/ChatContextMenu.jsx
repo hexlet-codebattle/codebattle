@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { pushCommand } from '@/middlewares/Chat';
 import { openDirect } from '@/middlewares/Lobby';
+import { followUser } from '@/middlewares/Main';
 import {
   currentUserIsAdminSelector,
   currentUserIdSelector,
@@ -92,6 +93,9 @@ function ChatContextMenu({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+  const handleFollow = useCallback(() => {
+    dispatch(followUser(userId));
+  }, [userId, dispatch]);
 
   const handleCreateInviteModal = useCallback(() => {
     if (userId && name) {
@@ -152,6 +156,17 @@ function ChatContextMenu({
             icon="user"
           />
           <span>Info</span>
+        </Item>
+        <Item
+          role="menuitem"
+          aria-label="Follow"
+          onClick={handleFollow}
+        >
+          <FontAwesomeIcon
+            className="mr-2"
+            icon="binoculars"
+          />
+          <span>Follow</span>
         </Item>
         {canCreatePrivateRoom ? (
           <Item

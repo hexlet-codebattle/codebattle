@@ -1059,6 +1059,34 @@ a:hover {
   }
 }
 
+.cb-custom-event-bg-success {
+  background-color: #2AE881;
+}
+
+.cb-custom-event-bg-muted-success {
+  background-color: #D4FAE6;
+}
+
+.cb-custom-event-bg-purple {
+  background-color: #B6A4FF;
+}
+
+.cb-custom-event-bg-muted-purple {
+  background-color: #F0EDFF;
+}
+
+.cb-custom-event-bg-orange {
+  background-color: #FF621E;
+}
+
+.cb-custom-event-bg-blue {
+  background-color: #73CCFE;
+}
+
+.cb-custom-event-bg-brown {
+  background-color: #FF9C41;
+}
+
 .cb-custom-event-pagination-page-item .cb-custom-event-pagination-page-link {
     border: 1px solid transparent;
     border-radius: 0.25rem;
@@ -2009,7 +2037,7 @@ a:hover {
   width: 1.5px;
 }
 
-.cb-custom-event-td:not(:last-child)::after {
+.cb-custom-event-td:not(:last-child):not(.hide-separator)::after {
   background-color: black;
   right: 0;
   top: 8px;

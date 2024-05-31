@@ -88,17 +88,19 @@ function OnlineIndicator() {
 }
 
 function InvitesContainer() {
+  const dispatch = useDispatch();
+
+  const followId = useSelector(state => state.gameUI.followId);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const checkInvitePlayers = ({ creatorId, recipientId }) => creatorId === currentUserId || recipientId === currentUserId;
   const filterInvites = invite => invite.state === 'pending' && checkInvitePlayers(invite);
   const invites = useSelector(invitesSelectors.selectAll).filter(filterInvites);
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
-    const user = Gon.getAsset('current_user');
-    dispatch(initInvites(user));
-    dispatch(initPresence());
+    dispatch(initInvites(currentUserId));
+    const clearPresence = initPresence(followId)(dispatch);
+
+    return clearPresence;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -4,9 +4,12 @@ import { Presence } from 'phoenix';
 
 import socket from '../../socket';
 import { actions } from '../slices';
+import { makeGameUrl } from '@/utils/urlBuilders';
 
 const players = Gon.getAsset('players') || [];
 const currentUser = Gon.getAsset('current_user') || {};
+
+let channel;
 
 const mapViewerStateToWeight = {
   online: 0,
@@ -55,9 +58,6 @@ const getUserStateByPath = () => {
   return { state: 'online' };
 };
 
-const channel = socket.channel('main', getUserStateByPath());
-const presence = new Presence(channel);
-
 const listBy = (id, { metas: [first, ...rest] }) => {
   const userInfo = {
     ...first,
@@ -73,7 +73,13 @@ const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
   dispatch(actionCreator(camelizeKeys(data)))
 );
 
-const initPresence = () => dispatch => {
+const initPresence = followId => dispatch => {
+  channel = socket.channel(
+    'main',
+    { ...getUserStateByPath(), follow_id: followId },
+  );
+  const presence = new Presence(channel);
+
   presence.onSync(() => {
     const list = presence.list(listBy);
     camelizeKeysAndDispatch(dispatch, actions.syncPresenceList)(list);
@@ -87,6 +93,15 @@ const initPresence = () => dispatch => {
     );
 
   channel.onError(() => dispatch(actions.updateMainChannelState(false)));
+
+  const ref = channel.on('user:game_created', data => {
+    camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
+    window.location.replace(makeGameUrl(camelizeKeys(data).activeGameId));
+  });
+
+  return () => {
+    channel.off('user:game_created', ref);
+  };
 };
 
 export const changePresenceState = state => () => {
@@ -95,6 +110,25 @@ export const changePresenceState = state => () => {
 
 export const changePresenceUser = user => () => {
   channel.push('change_presence_user', { user });
+};
+
+export const followUser = userId => dispatch => {
+  channel.push('user:follow', { user_id: userId })
+    .receive('ok', data => {
+      if (!camelizeKeys(data).activeGameId) return;
+
+      camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
+      camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
+
+      setTimeout(() => {
+        window.location.replace(makeGameUrl(camelizeKeys(data).activeGameId));
+      }, 1000);
+    });
+};
+
+export const unfollowUser = userId => dispatch => {
+  channel.push('user:unfollow', { user_id: userId });
+  camelizeKeysAndDispatch(dispatch, actions.followUser)();
 };
 
 export default initPresence;

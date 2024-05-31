@@ -2,6 +2,9 @@ import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
+
+import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
 import socket from '../../socket';
 import { actions } from '../slices';
@@ -283,4 +286,17 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
     .push('tournament:ban:player', { user_id: userId })
     .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
     .receive('error', error => console.error(error));
+};
+
+export const getResults = (type, taskId, onSuccess) => () => {
+  channel
+    .push('tournament:get_results', { params: { type, task_id: taskId } })
+    .receive('ok', data => {
+      const result = camelizeKeys(data);
+      if (type === PanelModeCodes.topUserByClansMode) {
+        onSuccess(Object.values(groupBy(result, item => item.clanRank)));
+      } else {
+        onSuccess(result);
+      }
+    });
 };

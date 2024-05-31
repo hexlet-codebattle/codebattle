@@ -31,6 +31,7 @@ function InfoWidget({ viewMode }) {
   const isTestingRoom = inTestingRoomSelector(roomMachineState);
   const isRestricted = isRestrictedContentSelector(roomMachineState);
 
+  const followId = useSelector(state => state.gameUI.followId);
   const taskLanguage = useSelector(taskDescriptionLanguageSelector);
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
   const {
@@ -50,6 +51,7 @@ function InfoWidget({ viewMode }) {
     gameStateName,
   };
   const taskPanelProps = {
+    followId,
     task,
     taskLanguage,
     handleSetLanguage,

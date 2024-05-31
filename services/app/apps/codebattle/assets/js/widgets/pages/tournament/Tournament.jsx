@@ -85,6 +85,7 @@ function InfoPanel({
           matchTimeoutSeconds={tournament.matchTimeoutSeconds}
           taskList={tournament.taskList}
           type={tournament.type}
+          state={tournament.state}
           topPlayerIds={tournament.topPlayerIds}
           matches={tournament.matches}
           tournamentId={tournament.id}

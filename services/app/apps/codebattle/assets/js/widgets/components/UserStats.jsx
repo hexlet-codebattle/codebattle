@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch } from 'react-redux';
+
+import { followUser } from '../middlewares/Main';
 
 import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
 
 const UserStats = ({ data, user: userInfo }) => {
+  const dispatch = useDispatch();
+
   const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || '/assets/images/logo.svg';
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
+
+  const handleFollowClick = useCallback(() => {
+    dispatch(followUser(userInfo.id));
+  }, [userInfo.id, dispatch]);
+
   return (
     <div className="container-fluid p-2">
       <div className="row">
@@ -20,9 +32,19 @@ const UserStats = ({ data, user: userInfo }) => {
               alt="User avatar"
             />
             <div className="d-flex flex-column ml-2">
-              <div className="d-flex align-items-center">
-                <span>{name}</span>
-                <LanguageIcon className="ml-1" lang={lang} />
+              <div className="d-flex justify-content-between">
+                <div className="d-flex align-items-center">
+                  <span>{name}</span>
+                  <LanguageIcon className="ml-1" lang={lang} />
+                </div>
+                <button
+                  type="button"
+                  title="follow"
+                  className="btn btn-sm text-primary border-0 rounded-lg"
+                  onClick={handleFollowClick}
+                >
+                  <FontAwesomeIcon icon="binoculars" />
+                </button>
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">

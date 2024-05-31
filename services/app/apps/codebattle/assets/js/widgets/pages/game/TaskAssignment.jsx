@@ -17,6 +17,7 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 import TaskLanguagesSelection from './TaskLanguageSelection';
+import { unfollowUser } from '@/middlewares/Main';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -50,6 +51,7 @@ function ShowGuideButton() {
 }
 
 function TaskAssignment({
+  followId,
   task,
   taskLanguage,
   taskSize = 0,
@@ -61,8 +63,13 @@ function TaskAssignment({
   hidingControls = false,
   fullSize = false,
 }) {
+  const dispatch = useDispatch();
+
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
 
+  const handleUnfollowClick = useCallback(() => {
+    dispatch(unfollowUser());
+  }, [dispatch]);
   const handleTaskSizeIncrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize + 1);
   }, [taskSize, changeTaskDescriptionSizes]);
@@ -123,6 +130,16 @@ function TaskAssignment({
               </button>
             )}
             {!hideGuide && <ShowGuideButton />}
+            {followId && (
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={handleUnfollowClick}
+              >
+                <FontAwesomeIcon icon="binoculars" className="mr-1" />
+                Unfollow
+              </button>
+            )}
             {changeTaskDescriptionSizes && !hidingControls && (
               <div
                 className="btn-group align-items-center ml-2 mr-auto"

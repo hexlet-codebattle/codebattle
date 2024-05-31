@@ -38,7 +38,7 @@ defmodule CodebattleWeb.MainChannel do
     else
       Codebattle.PubSub.subscribe("user:#{user_id}")
       active_game_id = Game.Context.get_active_game_id(user_id)
-      {:reply, {:ok, %{active_game_id: active_game_id}}, socket}
+      {:reply, {:ok, %{active_game_id: active_game_id, follow_id: user_id}}, socket}
     end
   end
 
@@ -66,8 +66,8 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "user:game:created", payload: payload}, socket) do
-    push(socket, "user:game:created", %{game_id: payload.game_id})
+  def handle_info(%{event: "user:game_created", payload: payload}, socket) do
+    push(socket, "user:game_created", %{active_game_id: payload.active_game_id})
 
     {:noreply, socket}
   end
@@ -86,12 +86,13 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message = %{event: "user:game_created"}, socket) do
-    push(socket, "user:game_created", message.payload)
-
-    {:noreply, socket}
-  end
-
+  #
+  # def handle_info(message = %{event: "user:game_created"}, socket) do
+  #   push(socket, "user:game:created", message.payload)
+  #
+  #   {:noreply, socket}
+  # end
+  #
   def handle_info(message, socket) do
     Logger.warning("MainChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}

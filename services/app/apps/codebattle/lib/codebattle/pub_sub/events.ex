@@ -348,7 +348,7 @@ defmodule Codebattle.PubSub.Events do
         %Message{
           topic: "user:#{player.id}",
           event: "user:game_created",
-          payload: %{game_id: game.id}
+          payload: %{active_game_id: game.id}
         }
       end)
 

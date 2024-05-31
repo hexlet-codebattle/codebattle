@@ -12,19 +12,19 @@ const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
 
 const getRecipientName = data => data.invite.recipient.name;
 const getCreatorName = data => data.invite.creator.name;
-const getOpponentName = (data, user) => {
-  if (user.id === data.invite.creator_id) {
+const getOpponentName = (data, userId) => {
+  if (userId === data.invite.creator_id) {
     return getRecipientName(data);
   }
 
-  if (user.id === data.invite.recipient_id) {
+  if (userId === data.invite.recipient_id) {
     return getCreatorName(data);
   }
 
   return 'Anonymous';
 };
 
-export const initInvites = currentUser => dispatch => {
+export const initInvites = currentUserId => dispatch => {
   const onJoinSuccess = () => {
     channel.on(channelTopics.invitesInitTopic, data => {
       if (data.invites.length > 0) {
@@ -35,7 +35,7 @@ export const initInvites = currentUser => dispatch => {
     });
 
     channel.on(channelTopics.invitesCreatedTopic, data => {
-      if (data.invite.creator_id !== currentUser.id) {
+      if (data.invite.creator_id !== currentUserId) {
         const message = getSystemMessage({ text: `You received battle invite (from ${getCreatorName(data)})` });
         dispatch(actions.newChatMessage(message));
       }
@@ -43,9 +43,9 @@ export const initInvites = currentUser => dispatch => {
       camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
     });
     channel.on(channelTopics.invitesCanceledTopic, data => {
-      if (data.invite.executor_id !== currentUser.id) {
+      if (data.invite.executor_id !== currentUserId) {
         const message = getSystemMessage({
-          text: `Invite has been canceled (Opponent ${getOpponentName(data, currentUser)})`,
+          text: `Invite has been canceled (Opponent ${getOpponentName(data, currentUserId)})`,
           status: 'failure',
         });
         dispatch(actions.newChatMessage(message));
@@ -54,9 +54,9 @@ export const initInvites = currentUser => dispatch => {
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
     channel.on(channelTopics.invitesAcceptedTopic, data => {
-      if (data.invite.executor_id !== currentUser.id) {
+      if (data.invite.executor_id !== currentUserId) {
         const message = getSystemMessage({
-          text: `Invite has been accepted (Opponent ${getOpponentName(data, currentUser)})`,
+          text: `Invite has been accepted (Opponent ${getOpponentName(data, currentUserId)})`,
           status: 'success',
         });
         dispatch(actions.newChatMessage(message));

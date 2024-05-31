@@ -12,9 +12,30 @@ import {
   tournamentPlayersSelector,
 } from '../../selectors';
 
+        // %{"type" => "top_users_by_clan_ranking"} ->
+        // %{"type" => "tasks_ranking"} ->
+        // %{"type" => "task_duration_distribution", "task_id" => task_id} ->
+        // %{"type" => "clans_bubble_distribution"} ->
+        // %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
+//
 export const PanelModeCodes = {
   ratingMode: 'ratingMode',
   playerMode: 'playerMode',
+  topUserByClansMode: 'top_users_by_clan_ranking',
+  taskRatingMode: 'tasks_ranking',
+  clansBubbleDistributionMode: 'clans_bubble_distribution',
+  taskDurationDistributionMode: 'task_duration_distribution',
+  topUserByTasksMode: 'top_user_by_task_ranking',
+};
+
+export const mapPanelModeToTitle = {
+  [PanelModeCodes.ratingMode]: 'Rating Panel',
+  [PanelModeCodes.playerMode]: 'Player Panel',
+  [PanelModeCodes.topUserByClansMode]: 'Top users by clan ranking',
+  [PanelModeCodes.taskRatingMode]: 'Tasks ranking',
+  [PanelModeCodes.clansBubbleDistributionMode]: 'Clans bubble distribution',
+  [PanelModeCodes.taskDurationDistributionMode]: 'task duration distribution',
+  [PanelModeCodes.topUserByTasksMode]: 'Top user by task ranking',
 };
 
 function ControlPanel({
@@ -23,10 +44,13 @@ function ControlPanel({
   disabledPanelModeControl = false,
   disabledSearch = false,
   setSearchOption,
-  togglePanelMode,
+  setPanelMode,
 }) {
   const allPlayers = useSelector(tournamentPlayersSelector);
 
+  const onChangePanelMode = useCallback(e => {
+    setPanelMode(e.target.value);
+  }, [setPanelMode]);
   const onChangeSearchedPlayer = useCallback(
     ({ value = '' }) => setSearchOption(value),
     [setSearchOption],
@@ -49,7 +73,7 @@ function ControlPanel({
 
   return (
     <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-      {panelMode !== PanelModeCodes.playerMode && !disabledSearch ? (
+      {panelMode === PanelModeCodes.ratingMode && !disabledSearch ? (
         <div className="input-group flex-nowrap mb-2">
           <div className="input-group-prepend">
             <span className="input-group-text" id="search-icon">
@@ -71,30 +95,29 @@ function ControlPanel({
         </div>
       ) : <div />}
       <div
-        className={cn('d-flex mb-2 text-nowrap', {
+        className={cn('d-flex mb-2 text-nowrap justify-content-end', {
           'text-muted': disabledPanelModeControl,
-          'justify-content-end': panelMode === PanelModeCodes.playerMode,
         })}
       >
-        <button
-          type="button"
-          className="btn btn-sm btn-outline-light border-0 text-dark rounded-lg p-2"
-          onClick={togglePanelMode}
-          disabled={disabledPanelModeControl}
+        <select
+          key="select_panel_mode"
+          className="form-control custom-select rounded-lg"
+          value={panelMode}
+          onChange={onChangePanelMode}
         >
-          {panelMode === PanelModeCodes.playerMode && (
-            <>
-              Rating Panel
-              <FontAwesomeIcon icon="caret-square-right" className="ml-2" />
-            </>
-          )}
-          {panelMode === PanelModeCodes.ratingMode && (
-            <>
-              <FontAwesomeIcon icon="caret-square-left" className="mr-2" />
-              Player Panel
-            </>
-          )}
-        </button>
+          {Object.values(PanelModeCodes).map(mode => (
+            (![
+              PanelModeCodes.taskDurationDistributionMode,
+              PanelModeCodes.topUserByTasksMode,
+            ].includes(mode) || mode === panelMode) && (
+            <option
+              key={mode}
+              value={mode}
+            >
+              {mapPanelModeToTitle[mode]}
+            </option>
+          )))}
+        </select>
       </div>
     </div>
   );

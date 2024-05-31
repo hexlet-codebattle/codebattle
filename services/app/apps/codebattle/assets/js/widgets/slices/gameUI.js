@@ -5,6 +5,7 @@ import editorThemes from '../config/editorThemes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const initialState = {
+  followId: undefined,
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
@@ -27,6 +28,12 @@ const gameUI = createSlice({
     },
     updateGameUI: (state, { payload }) => {
       Object.assign(state, payload);
+    },
+    followUser: (state, { payload }) => {
+      state.followId = payload.followId;
+    },
+    unfollowUser: state => {
+      state.followId = undefined;
     },
   },
 });

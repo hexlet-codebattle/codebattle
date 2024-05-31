@@ -95,7 +95,7 @@ defmodule CodebattleWeb.MainChannelTest do
     assert_receive %Phoenix.Socket.Message{
       topic: "main",
       event: "user:game_created",
-      payload: %{game_id: _}
+      payload: %{active_game_id: _}
     }
 
     push(socket, "user:unfollow", %{user_id: user.id})
@@ -106,7 +106,7 @@ defmodule CodebattleWeb.MainChannelTest do
     refute_receive %Phoenix.Socket.Message{
       topic: "main",
       event: "user:game_created",
-      payload: %{game_id: _}
+      payload: %{active_game_id: _}
     }
   end
 end

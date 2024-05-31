@@ -219,27 +219,8 @@ export const requestMatchesByPlayerId = userId => dispatch => {
     .receive('error', error => console.error(error));
 };
 
-export const uploadPlayersMatches = playerId => (dispatch, getState) => {
-  const state = getState();
-
-  const { isLive, id } = state.tournament;
-
-  if (isLive) {
-    requestMatchesByPlayerId(playerId)(dispatch);
-  } else {
-    axios
-      // TODO: add BE api for fetching games with tournaemnt_id+player_id and mapt to touanemtnMatch
-      .get(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
-        },
-      })
-      .then(response => {
-        dispatch(actions.updateTournamentMatches(response.matches));
-      })
-      .catch(error => console.error(error));
-  }
+export const uploadPlayersMatches = playerId => dispatch => {
+  requestMatchesByPlayerId(playerId)(dispatch);
 };
 
 export const joinTournament = teamId => {

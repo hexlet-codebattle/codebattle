@@ -1,14 +1,17 @@
 import React, {
-  memo, useState, useCallback,
+  memo, useState,
 } from 'react';
 
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
+// import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import TournamentTypes from '../../config/tournamentTypes';
 
+import ClansChartPanel from './ClansChartPanel';
 import ControlPanel, { PanelModeCodes } from './ControlPanel';
 import PlayerStatsPanel from './PlayerStatsPanel';
+import RatingClansPanel from './RatingClansPanel';
 import RatingPanel from './RatingPanel';
+import TaskRankingPanel from './TaskRankingPanel';
 import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 function CustomTournamentInfoPanel({
@@ -26,6 +29,7 @@ function CustomTournamentInfoPanel({
   hideResults = false,
   hideCustomGameConsole = false,
   type,
+  state,
   canModerate = false,
 }) {
   const [searchedUser, setSearchedUser] = useState();
@@ -34,12 +38,6 @@ function CustomTournamentInfoPanel({
       ? PanelModeCodes.playerMode
       : PanelModeCodes.ratingMode,
   );
-
-  const togglePanelMode = useCallback(() => {
-    setPanelMode(mode => (mode === PanelModeCodes.playerMode
-      ? PanelModeCodes.ratingMode
-      : PanelModeCodes.playerMode));
-  }, [setPanelMode]);
 
   return (
     <>
@@ -53,20 +51,20 @@ function CustomTournamentInfoPanel({
           defaultMatchTimeoutSeconds={matchTimeoutSeconds}
         />
       )}
-      <SwitchTransition mode="out-in">
-        <CSSTransition
-          key={panelMode}
-          addEndListener={(node, done) => {
-            node.addEventListener('transitionend', done, false);
-          }}
-          classNames={`tournament-info-${panelMode}`}
-        >
+      {/* <SwitchTransition mode="out-in"> */}
+      {/*   <CSSTransition */}
+      {/*     key={panelMode} */}
+      {/*     addEndListener={(node, done) => { */}
+      {/*       node.addEventListener('transitionend', done, false); */}
+      {/*     }} */}
+      {/*     classNames={`tournament-info-${panelMode}`} */}
+      {/*   > */}
           <div>
             <ControlPanel
               searchOption={searchedUser}
               panelMode={panelMode}
               setSearchOption={setSearchedUser}
-              togglePanelMode={togglePanelMode}
+              setPanelMode={setPanelMode}
               disabledPanelModeControl={
                 !players[currentUserId] || (hideResults && !canModerate) || (type === TournamentTypes.arena && !canModerate)
               }
@@ -99,9 +97,27 @@ function CustomTournamentInfoPanel({
                 hideResults={hideResults && !canModerate}
               />
             )}
+            {panelMode === PanelModeCodes.topUserByClansMode && (
+              <RatingClansPanel
+                type={panelMode}
+                state={state}
+              />
+            )}
+            {panelMode === PanelModeCodes.taskRatingMode && (
+              <TaskRankingPanel
+                type={panelMode}
+                state={state}
+              />
+            )}
+            {panelMode === PanelModeCodes.clansBubbleDistributionMode && (
+              <ClansChartPanel
+                type={panelMode}
+                state={state}
+              />
+            )}
           </div>
-        </CSSTransition>
-      </SwitchTransition>
+      {/*   </CSSTransition> */}
+      {/* </SwitchTransition> */}
     </>
   );
 }
