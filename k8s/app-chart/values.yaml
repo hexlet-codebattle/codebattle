@@ -1,6 +1,5 @@
 ---
 version: latest
-registry: cr.yandex/crpsl78aabtlpcg93e2s
 
 ingress:
   className: "nginx"
