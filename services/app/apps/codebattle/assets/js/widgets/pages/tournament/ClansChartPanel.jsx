@@ -2,10 +2,19 @@ import React, {
   memo, useState, useEffect,
 } from 'react';
 
+import {
+  Chart as ChartJS,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { Bubble } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
 
 import { getResults } from '../../middlewares/TournamentAdmin';
+
+ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
 function ClansChartPanel({ type, state }) {
   const dispatch = useDispatch();
@@ -50,11 +59,7 @@ function ClansChartPanel({ type, state }) {
         legend: {
           position: 'top',
         },
-        tooltip: false,
       },
-      // elements: {
-      //   point: {},
-      // },
     },
   };
 
