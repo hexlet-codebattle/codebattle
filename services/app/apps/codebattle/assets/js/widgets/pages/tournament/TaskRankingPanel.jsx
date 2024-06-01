@@ -25,11 +25,12 @@ const tableDataCellClassName = cn(
 function TaskRankingPanel({ type, state }) {
   const dispatch = useDispatch();
 
-  const [items, setItems] = useState({ results: [] });
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     if (state === 'active') {
       dispatch(getResults(type, undefined, setItems));
+
       const interval = setInterval(() => {
         dispatch(getResults(type, undefined, setItems));
       }, 1000 * 30);
@@ -45,8 +46,6 @@ function TaskRankingPanel({ type, state }) {
 
     return () => {};
   }, [setItems, dispatch, type, state]);
-
-  console.log(items);
 
   return (
     <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
@@ -83,7 +82,7 @@ function TaskRankingPanel({ type, state }) {
           </tr>
         </thead>
         <tbody>
-          {items.results?.map(item => (
+          {items.map(item => (
             <React.Fragment key={`${type}-task-${item.taskId}`}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr className={getCustomEventTrClassName(item.level)}>

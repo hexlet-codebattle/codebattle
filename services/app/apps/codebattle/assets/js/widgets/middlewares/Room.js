@@ -252,17 +252,6 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
   });
 };
 
-export const sendWaitingRoomPaused = () => {
-  channel
-    .push(channelMethods.matchmakingResume, {})
-    .receive('error', error => console.error(error));
-};
-export const sendWaitingRoomResumed = () => {
-  channel
-    .push(channelMethods.matchmakingPause, {})
-    .receive('error', error => console.error(error));
-};
-
 export const sendPassCode = (passCode, onError) => dispatch => {
   channel
     .push(channelMethods.enterPassCode, { pass_code: passCode })
@@ -1132,18 +1121,6 @@ export const checkGameSolution = () => (dispatch, getState) => {
   };
 
   channel.push(channelMethods.checkResult, payload);
-};
-
-export const pauseWaitingRoomMatchmaking = () => () => {
-  channel
-    .push(channelMethods.matchmakingPause, {})
-    .receive('error', error => console.error(error));
-};
-
-export const startWaitingRoomMatchmaking = () => () => {
-  channel
-    .push(channelMethods.matchmakingResume, {})
-    .receive('error', error => console.error(error));
 };
 
 export const checkTaskSolution = editorMachine => (dispatch, getState) => {

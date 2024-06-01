@@ -3,7 +3,7 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
-import socket, { channelMethods } from '../../socket';
+import socket from '../../socket';
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
@@ -234,28 +234,5 @@ export const leaveTournament = teamId => {
   const params = teamId !== undefined ? { team_id: teamId } : {};
   channel
     .push('tournament:leave', params)
-    .receive('error', error => console.error(error));
-};
-
-export const pauseWaitingRoomMatchmaking = () => {
-  channel
-    .push('waiting_room:player:matchmaking_pause', {})
-    .receive('error', error => console.error(error));
-};
-
-export const startWaitingRoomMatchmaking = () => {
-  channel
-    .push('waiting_room:player:matchmaking_start', {})
-    .receive('error', error => console.error(error));
-};
-
-export const sendTournamentWaitingRoomPaused = () => {
-  channel
-    .push(channelMethods.matchmakingResume, {})
-    .receive('error', error => console.error(error));
-};
-export const sendTournamentWaitingRoomResumed = () => {
-  channel
-    .push(channelMethods.matchmakingPause, {})
     .receive('error', error => console.error(error));
 };

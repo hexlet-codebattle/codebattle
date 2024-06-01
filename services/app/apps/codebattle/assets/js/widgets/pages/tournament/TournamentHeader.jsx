@@ -150,7 +150,7 @@ function TournamentHeader({
   handleStartRound,
   handleOpenDetails,
 }) {
-  const { taskSolvedCount, maxPlayerTasks } = useTournamentStats();
+  const { taskSolvedCount, maxPlayerTasks, activeGameId } = useTournamentStats({ type: 'tournament' });
   const stateBadgeTitle = useMemo(
     () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
     [state, breakState, hideResults],
@@ -345,6 +345,7 @@ function TournamentHeader({
               page="tournament"
               taskCount={taskSolvedCount}
               maxPlayerTasks={maxPlayerTasks}
+              activeGameId={activeGameId}
             />
           </div>
         )}

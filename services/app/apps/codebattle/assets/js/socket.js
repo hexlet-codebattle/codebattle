@@ -96,6 +96,7 @@ export const channelMethods = {
 
   matchmakingPause: 'matchmaking:pause',
   matchmakingResume: 'matchmaking:resume',
+  matchmakingRestart: 'matchmaking:restart',
 };
 
 socket.connect();

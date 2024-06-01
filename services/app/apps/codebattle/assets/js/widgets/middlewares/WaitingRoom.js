@@ -168,4 +168,10 @@ export const startWaitingRoomMatchmaking = () => () => {
     .receive('error', error => console.error(error));
 };
 
+export const restartWaitingRoomMatchmaking = () => () => {
+  channel
+    .push(channelMethods.matchmakingRestart, {})
+    .receive('error', error => console.error(error));
+};
+
 export default addWaitingRoomListeners;

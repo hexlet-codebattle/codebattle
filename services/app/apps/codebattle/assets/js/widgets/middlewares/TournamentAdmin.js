@@ -291,14 +291,14 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
 export const getResults = (type, taskId, onSuccess) => () => {
   channel
     .push('tournament:get_results', { params: { type, task_id: taskId } })
-    .receive('ok', data => {
-      const result = camelizeKeys(data);
+    .receive('ok', payload => {
+      const data = camelizeKeys(payload);
 
       if (type === PanelModeCodes.topUserByClansMode) {
-        const ans = Object.values(groupBy(result.results, item => item.clanRank));
-        onSuccess(ans);
-      } else {
+        const result = Object.values(groupBy(data.results, item => item.clanRank));
         onSuccess(result);
+      } else {
+        onSuccess(data.results);
       }
     });
 };

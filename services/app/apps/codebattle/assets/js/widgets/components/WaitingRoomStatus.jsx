@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import {
   pauseWaitingRoomMatchmaking,
   startWaitingRoomMatchmaking,
+  restartWaitingRoomMatchmaking,
 } from '@/middlewares/WaitingRoom';
 
 import {
@@ -23,6 +24,7 @@ const WaitingRoomStatus = ({
   page,
   taskCount,
   maxPlayerTasks,
+  activeGameId,
 }) => {
   const dispatch = useDispatch();
 
@@ -57,6 +59,10 @@ const WaitingRoomStatus = ({
 
   const handlePauseMatchmaking = useCallback(() => {
     dispatch(pauseWaitingRoomMatchmaking());
+  }, [dispatch]);
+
+  const handleRestartMatchmaking = useCallback(() => {
+    dispatch(restartWaitingRoomMatchmaking());
   }, [dispatch]);
 
   return (
@@ -122,13 +128,23 @@ const WaitingRoomStatus = ({
               })
               : i18next.t('Congrats! All tasks are solved')}
           </span>
-          <button
-            type="button"
-            className="btn cb-custom-event-btn-outline-success rounded-lg"
-            disabled
-          >
-            {i18next.t('Stop searching')}
-          </button>
+          {!activeGameId ? (
+            <button
+              type="button"
+              className="btn cb-custom-event-btn-outline-success rounded-lg"
+              onClick={handleRestartMatchmaking}
+            >
+              {i18next.t('Restart searching')}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn cb-custom-event-btn-outline-success rounded-lg"
+              disabled
+            >
+              {i18next.t('Stop searching')}
+            </button>
+          )}
         </>
       )}
     </>

@@ -10,11 +10,12 @@ import { getResults } from '../../middlewares/TournamentAdmin';
 function ClansChartPanel({ type, state }) {
   const dispatch = useDispatch();
 
-  const [items, setItems] = useState({ results: [] });
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     if (state === 'active') {
       dispatch(getResults(type, undefined, setItems));
+
       const interval = setInterval(() => {
         dispatch(getResults(type, undefined, setItems));
       }, 1000 * 30);
@@ -33,14 +34,14 @@ function ClansChartPanel({ type, state }) {
 
   const config = {
     data: {
-      datasets: items.results.map(item => ({
+      datasets: items.map(item => ({
         label: `${item.clanName} [${item.playerCount}]`,
         data: [{
           x: item.totalScore,
           y: item.performance,
           z: item.radius,
         }],
-        backgroundColor: `rgb(255, ${item.clanId}, 132)`,
+        backgroundColor: `rgb(255, ${item.clanId || 155}, 132)`,
       })),
     },
     options: {
@@ -51,9 +52,9 @@ function ClansChartPanel({ type, state }) {
         },
         tooltip: false,
       },
-      elements: {
-        point: {},
-      },
+      // elements: {
+      //   point: {},
+      // },
     },
   };
 

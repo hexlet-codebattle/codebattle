@@ -228,6 +228,18 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("matchmaking:restart", _, socket) do
+    send_matchmaking_event(
+      socket.assigns.tournament_id,
+      :matchmaking_restart,
+      %{
+        user_id: socket.assigns.current_user.id
+      }
+    )
+
+    {:noreply, socket}
+  end
+
   def handle_in("player:follow", %{"user_id" => user_id}, socket) do
     if socket.assigns.tournament_id do
       Codebattle.PubSub.subscribe("tournament:#{socket.assigns.tournament_id}:player:#{user_id}")

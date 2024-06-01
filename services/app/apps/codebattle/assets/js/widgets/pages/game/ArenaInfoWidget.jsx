@@ -12,7 +12,8 @@ const ArenaInfoWidget = () => {
     taskCount,
     taskSolvedCount,
     maxPlayerTasks,
-  } = useTournamentStats();
+    activeGameId,
+  } = useTournamentStats({ type: 'room' });
 
   return (
     <div
@@ -27,6 +28,7 @@ const ArenaInfoWidget = () => {
           page="game"
           taskCount={taskSolvedCount}
           maxPlayerTasks={maxPlayerTasks}
+          activeGameId={activeGameId}
         />
       </WaitingRoomPanel>
     </div>
