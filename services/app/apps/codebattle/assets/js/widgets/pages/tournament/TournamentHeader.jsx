@@ -339,7 +339,7 @@ function TournamentHeader({
             />
           </span>
         </p>
-        {type === TournamentTypes.arena && state === TournamentStates.active && (
+        {type === TournamentTypes.arena && state === TournamentStates.active && !!players[currentUserId] && (
           <div className="d-flex align-items-center">
             <WaitingRoomStatus
               page="tournament"
