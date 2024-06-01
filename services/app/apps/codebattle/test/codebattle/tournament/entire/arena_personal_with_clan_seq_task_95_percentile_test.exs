@@ -153,7 +153,18 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     assert players_count(tournament) == 8
     assert Enum.count(matches) == 4
 
-    assert %{entries: []} = Tournament.Ranking.get_page(tournament, 1)
+    assert %{
+             entries: [
+               %{id: 354, name: "1", score: 0, clan: "1", place: 1, clan_id: 1},
+               %{id: 355, name: "2", score: 0, clan: "1", place: 2, clan_id: 1},
+               %{id: 356, name: "3", score: 0, clan: "3", place: 3, clan_id: 2},
+               %{id: 357, name: "4", score: 0, clan: "4", place: 4, clan_id: 3},
+               %{id: 358, name: "5", score: 0, clan: "5", place: 5, clan_id: 4},
+               %{id: 359, name: "6", score: 0, clan: "6", place: 6, clan_id: 5},
+               %{id: 360, name: "7", score: 0, clan: "7", place: 7, clan_id: 6},
+               %{id: 361, name: "8", score: 0, clan: "8", place: 8, clan_id: 7}
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
     ##### user1 win 1 round 1 game
     win_active_match(tournament, user1, %{opponent_percent: 33})
@@ -164,7 +175,13 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     assert %{
              entries: [
                %{id: ^u1_id, place: 1, score: 100},
-               %{place: 2, score: 33}
+               %{place: 2, score: 33},
+               %{id: 356, name: "3", score: 0, clan: "3", clan_id: 2, place: 3},
+               %{id: 357, name: "4", score: 0, clan: "4", clan_id: 3, place: 4},
+               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
+               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
+               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
+               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -205,7 +222,11 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 1, score: 100},
                %{place: 2, score: 100},
                %{place: 3, score: 67},
-               %{place: 4, score: 33}
+               %{place: 4, score: 33},
+               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
+               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
+               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
+               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -296,7 +317,11 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 1, score: 200},
                %{place: 2, score: 100},
                %{place: 3, score: 67},
-               %{place: 4, score: 33}
+               %{place: 4, score: 33},
+               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
+               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
+               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
+               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -363,7 +388,11 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 1, score: 300},
                %{place: 2, score: 100},
                %{place: 3, score: 67},
-               %{place: 4, score: 33}
+               %{place: 4, score: 33},
+               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
+               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
+               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
+               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -544,7 +573,11 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 1, score: 300},
                %{place: 2, score: 100},
                %{place: 3, score: 67},
-               %{place: 4, score: 33}
+               %{place: 4, score: 33},
+               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
+               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
+               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
+               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
