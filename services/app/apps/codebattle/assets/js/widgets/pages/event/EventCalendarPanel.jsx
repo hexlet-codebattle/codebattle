@@ -64,7 +64,7 @@ const EventCalendarPanel = ({ tournaments }) => {
           }
           name={i18next.t('Stage %{name}', { name: 2 })}
           data="08.06"
-          time="11:10-13:00 (UTC+3)"
+          time="11:00-13:00 (UTC+3)"
           handleOpenInstruction={() => handleOpenInstruction(tournaments[3]?.description)}
         />
         <TournamentInfo
