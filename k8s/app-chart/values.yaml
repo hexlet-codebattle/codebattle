@@ -1,5 +1,6 @@
 ---
 version: latest
+registry: docker.io
 
 ingress:
   className: "nginx"

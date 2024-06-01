@@ -46,7 +46,7 @@ spec:
               cpu: "150m"
               memory: "128Mi"
           imagePullPolicy: Always
-          image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .image }}"
+          image: "{{- if $.Values.registry -}}{{ $.Values.registry }}/{{- end -}}{{ .image }}"
           readinessProbe:
             httpGet:
               path: /health
