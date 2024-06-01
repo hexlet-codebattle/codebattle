@@ -500,6 +500,9 @@ msgstr "Назад в турнир"
 msgid "Back to tournaments"
 msgstr "На главную"
 
+msgid "Restart searching"
+msgstr "Вернуться к поиску"
+
 msgid "Stop searching"
 msgstr "Приостановить"
 

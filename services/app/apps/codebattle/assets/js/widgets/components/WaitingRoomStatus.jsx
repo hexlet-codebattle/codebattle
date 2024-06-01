@@ -128,7 +128,7 @@ const WaitingRoomStatus = ({
               })
               : i18next.t('Congrats! All tasks are solved')}
           </span>
-          {!activeGameId ? (
+          {!activeGameId && maxPlayerTasks - taskCount > 0 ? (
             <button
               type="button"
               className="btn cb-custom-event-btn-outline-success rounded-lg"
