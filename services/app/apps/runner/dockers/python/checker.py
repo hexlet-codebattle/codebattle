@@ -1,4 +1,5 @@
 import json
+import traceback
 import time
 import sys
 import os
@@ -40,7 +41,7 @@ class Checker:
                     sys.stdout.close()
                     sys.stdout = StringIO()
         except Exception as e:
-            self.execution_result.append({'type': 'error', 'value': str(e)})
+            self.execution_result.append({'type': 'error', 'value': traceback.format_exc()})
         finally:
             sys.stdout = original_stdout
             print(json.dumps(self.execution_result))

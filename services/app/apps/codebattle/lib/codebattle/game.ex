@@ -90,6 +90,7 @@ defmodule Codebattle.Game do
       :round_id,
       :starts_at,
       :state,
+      :player_ids,
       :task_id,
       :timeout_seconds,
       :tournament_id,

@@ -28,9 +28,10 @@ defmodule Runner.Languages do
       docker_image: "codebattle/ruby:3.3.0",
       solution_template: """
       def solution(<%= arguments %>)
-        # puts("use print for debug")
         <%= return_statement %>
       end
+
+      # use `puts` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -65,10 +66,10 @@ defmodule Runner.Languages do
       const R = require("rambda");
 
       const solution = (<%= arguments %>) => {
-        // console.log("use print for debug")
         <%= return_statement %>
       };
 
+      // use `console.log` for debug
       module.exports = solution;
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
@@ -111,9 +112,9 @@ defmodule Runner.Languages do
       import * as R from "rambda";
 
       function solution(<%= arguments %>)<%= expected %>{
-        // console.log("use print for debug")
       };
 
+      // use `console.log` for debug
       export default solution;
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
@@ -145,8 +146,10 @@ defmodule Runner.Languages do
       docker_image: "codebattle/dart:3.3.1",
       solution_template: """
       <%= expected %>solution(<%= arguments %>) {
-        // print("use print for debug");
+
       }
+
+      // use `print` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -180,9 +183,10 @@ defmodule Runner.Languages do
       using namespace std;
 
       <%= expected %> solution(<%= arguments %>) {
-        // std::cout << "use print for debug";
         <%= return_statement %>
       }
+
+      // use std::cout for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       return_template: "return <%= default_value %>;",
@@ -232,9 +236,11 @@ defmodule Runner.Languages do
 
       public class Solution {
         public <%= expected %>solution(<%= arguments %>) {
-          // System.out.println("use print for debug");
+
         }
       }
+
+      // use `System.out.println` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -275,8 +281,10 @@ defmodule Runner.Languages do
       import kotlin.collections.*
 
       fun solution(<%= arguments %>):<%= expected %> {
-        // println("use print for debug")
+
       }
+
+      // use println for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -321,10 +329,12 @@ defmodule Runner.Languages do
         {
           public<%= expected %> solution(<%= arguments %>)
           {
-            // Console.WriteLine("use print for debug");
+
           }
         }
       }
+
+      // Console.WriteLine("use print for debug");
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -437,8 +447,9 @@ defmodule Runner.Languages do
       from typing import List, Dict
 
       def solution(<%= arguments %>)<%= expected %>:
-        # print("use print for debug")
         <%= return_statement %>
+
+      # use `print` for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
@@ -482,9 +493,10 @@ defmodule Runner.Languages do
 
       function solution(<%= arguments %>)
       {
-        // echo("use print for debug");
         <%= return_statement %>
       }
+
+      // use `echo` for debug
       """,
       return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
@@ -530,9 +542,10 @@ defmodule Runner.Languages do
       docker_image: "codebattle/clojure:1.11.2.3",
       solution_template: """
       (defn solution [<%= arguments %>]
-        ;; (println "use print for debug")
         <%= return_statement %>
       )
+
+      ;; use `println` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
@@ -634,8 +647,9 @@ defmodule Runner.Languages do
       use std::collections::HashMap;
 
       pub fn solution(<%= arguments %>) -> <%= expected %> {
-        // println!("use print for debug");
       }
+
+      // use `println!` for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: "<%= type %>",

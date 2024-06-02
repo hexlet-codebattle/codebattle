@@ -24,6 +24,8 @@ import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor
 
 import Loading from './Loading';
 
+let editorClipboard = '';
+
 class Editor extends PureComponent {
   static propTypes = {
     gameId: PropTypes.number,
@@ -248,11 +250,10 @@ class Editor extends PureComponent {
   handleChangeCursorSelection = e => {
     const {
       editable,
-      isTournamentGame,
       onChangeCursorSelection,
     } = this.props;
 
-    if (!editable || isTournamentGame) {
+    if (!editable) {
       const { column, lineNumber } = this.editor.getPosition();
       this.editor.setPosition({ lineNumber, column });
     } else if (editable && onChangeCursorSelection) {
@@ -335,6 +336,7 @@ class Editor extends PureComponent {
   clearCursorListeners = () => {};
 
   editorDidMount = (editor, monaco) => {
+
     this.editor = editor;
     this.monaco = monaco;
     const {
@@ -346,6 +348,39 @@ class Editor extends PureComponent {
     } = this.props;
     const isBuilder = gameMode === GameRoomModes.builder;
     const isHistory = gameMode === GameRoomModes.history;
+
+// Handle copy event
+    // this.editor.onDidCopyText((event) => {
+    //   console.log('Copy event:', event);
+    //   // Custom copy logic
+    //   const customText = `Custom copied text: ${event.text}`;
+    //   navigator.clipboard.writeText(customText);
+    //   event.preventDefault();
+    // });
+    this.editor.onKeyDown((e) => {
+      // Custom Copy Event
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
+        const selection = editor.getModel().getValueInRange(editor.getSelection());
+        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
+        e.preventDefault();
+      }
+
+      // Custom Paste Event
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
+          if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
+            const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
+            editor.executeEdits('custom-paste', [
+              {
+                range: editor.getSelection(),
+                text: customText,
+                forceMoveMarkers: true,
+              },
+            ]);
+          }
+        e.preventDefault();
+      }
+    });
+
 
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
     this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
@@ -360,28 +395,9 @@ class Editor extends PureComponent {
       this.clearCursorListeners = clearCursorListeners;
     }
 
-    if (editable && !isTournamentGame && !isBuilder) {
+    if (editable && !isBuilder) {
       this.editor.focus();
-    } else if (editable && isTournamentGame) {
-      this.editor.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
-        () => null,
-      );
-
-      this.editor.focus();
-    } else {
-      // disable copying for spectator
-      this.editor.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C,
-        () => null,
-      );
-      // this.editor.onDidChangeCursorSelection(() => {
-      //   const { column, lineNumber } = this.editor.getPosition();
-      //   this.editor.setPosition({ lineNumber, column });
-      // });
     }
-
-    // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
     this.editor.addCommand(
       this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter,
