@@ -75,9 +75,13 @@ defmodule Codebattle.Tournament.Arena do
             Tournament.Players.put_player(tournament, new_player)
 
           player.state == "active" ->
-            new_player = %{player | state: "matchmaking_active"}
+            new_player = %{
+              player
+              | state: "matchmaking_active",
+                wr_joined_at: :os.system_time(:second)
+            }
+
             Tournament.Players.put_player(tournament, new_player)
-            WaitingRoom.put_player(tournament.waiting_room_name, new_player)
 
             Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
               tournament: tournament,

@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { getResults } from '../../middlewares/TournamentAdmin';
 
 const getCustomEventTrClassName = level => cn(
-  'text-dark font-weight-bold cb-custom-event-tr',
+  'text-dark font-weight-bold cb-custom-event-tr cursor-pointer',
   {
     'cb-custom-event-bg-success': level === 'easy',
     'cb-custom-event-bg-orange': level === 'elementary',
@@ -22,7 +22,7 @@ const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
-function TaskRankingPanel({ type, state }) {
+function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
   const dispatch = useDispatch();
 
   const [items, setItems] = useState([]);
@@ -85,7 +85,7 @@ function TaskRankingPanel({ type, state }) {
           {items.map(item => (
             <React.Fragment key={`${type}-task-${item.taskId}`}>
               <tr className="cb-custom-event-empty-space-tr" />
-              <tr className={getCustomEventTrClassName(item.level)}>
+              <tr onClick={handleTaskSelectClick} data-task-id={item.taskId} className={getCustomEventTrClassName(item.level)}>
                 <td
                   title={item.name}
                   className={tableDataCellClassName}

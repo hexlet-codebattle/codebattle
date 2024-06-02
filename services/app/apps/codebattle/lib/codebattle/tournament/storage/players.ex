@@ -20,19 +20,23 @@ defmodule Codebattle.Tournament.Players do
   end
 
   def put_player(tournament, player) do
-    :ets.insert(tournament.players_table, {player.id, player})
+    :ets.insert(tournament.players_table, {player.id, player.state, player})
     player
   end
 
   def get_player(tournament, player_id) do
-    :ets.lookup_element(tournament.players_table, player_id, 2)
+    :ets.lookup_element(tournament.players_table, player_id, 3)
   rescue
     _e ->
       nil
   end
 
   def get_players(tournament) do
-    :ets.select(tournament.players_table, [{{:"$1", :"$2"}, [], [:"$2"]}])
+    :ets.select(tournament.players_table, [{{:"$1", :"$2", :"$3"}, [], [:"$3"]}])
+  end
+
+  def get_players(tournament, state) when is_binary(state) do
+    :ets.select(tournament.players_table, [{{:"$1", state, :"$3"}, [], [:"$3"]}])
   end
 
   def get_players(tournament, player_ids) do

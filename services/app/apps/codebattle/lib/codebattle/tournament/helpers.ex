@@ -321,6 +321,7 @@ defmodule Codebattle.Tournament.Helpers do
       :played_pair_ids,
       :players_table,
       :ranking_table,
+      :waiting_room_state,
       :tasks_table
     ])
   end

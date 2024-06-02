@@ -24,6 +24,7 @@ export const PanelModeCodes = {
   topUserByClansMode: 'top_users_by_clan_ranking',
   taskRatingMode: 'tasks_ranking',
   clansBubbleDistributionMode: 'clans_bubble_distribution',
+  taskRatingAdvanced: 'task_rating_advanced',
   taskDurationDistributionMode: 'task_duration_distribution',
   topUserByTasksMode: 'top_user_by_task_ranking',
 };
@@ -107,6 +108,7 @@ function ControlPanel({
         >
           {Object.values(PanelModeCodes).map(mode => (
             (![
+              PanelModeCodes.taskRatingAdvanced,
               PanelModeCodes.taskDurationDistributionMode,
               PanelModeCodes.topUserByTasksMode,
             ].includes(mode) || mode === panelMode) && (

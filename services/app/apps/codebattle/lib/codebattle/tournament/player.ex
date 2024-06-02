@@ -22,6 +22,7 @@ defmodule Codebattle.Tournament.Player do
     :rating,
     :score,
     :team_id,
+    :wr_joined_at,
     :wins_count
   ]
 
@@ -36,10 +37,9 @@ defmodule Codebattle.Tournament.Player do
 
   embedded_schema do
     field(:avatar_url, :string)
-    field(:id, :integer)
     field(:clan, :string)
-    field(:state, :string, default: "active")
     field(:clan_id, :integer)
+    field(:id, :integer)
     field(:is_bot, :boolean)
     field(:lang, :string)
     field(:matches_ids, {:array, :integer}, default: [])
@@ -48,9 +48,11 @@ defmodule Codebattle.Tournament.Player do
     field(:rank, :integer, default: 5432)
     field(:rating, :integer)
     field(:score, :integer, default: 0)
+    field(:state, :string, default: "active")
     field(:task_ids, {:array, :integer}, default: [])
     field(:team_id, :integer)
     field(:wins_count, :integer, default: 0)
+    field(:wr_joined_at, :integer)
   end
 
   @spec new!(params :: map()) :: t()

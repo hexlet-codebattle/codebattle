@@ -1,5 +1,5 @@
 import React, {
-  memo, useState,
+  memo, useState, useCallback,
 } from 'react';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -12,6 +12,7 @@ import PlayerStatsPanel from './PlayerStatsPanel';
 import RatingClansPanel from './RatingClansPanel';
 import RatingPanel from './RatingPanel';
 import TaskRankingPanel from './TaskRankingPanel';
+import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
 import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 function CustomTournamentInfoPanel({
@@ -38,6 +39,14 @@ function CustomTournamentInfoPanel({
       ? PanelModeCodes.playerMode
       : PanelModeCodes.ratingMode,
   );
+  const [selectedTaskId, setSelectedTaskId] = useState();
+
+  const handleTaskSelectClick = useCallback((event) => {
+    const { taskId } = event.currentTarget.dataset;
+    setPanelMode(PanelModeCodes.taskRatingAdvanced);
+    setSelectedTaskId(Number(taskId));
+
+  }, [setSelectedTaskId, setPanelMode]);
 
   return (
     <>
@@ -107,11 +116,18 @@ function CustomTournamentInfoPanel({
         <TaskRankingPanel
           type={panelMode}
           state={state}
+          handleTaskSelectClick={handleTaskSelectClick}
         />
             )}
         {panelMode === PanelModeCodes.clansBubbleDistributionMode && (
         <ClansChartPanel
           type={panelMode}
+          state={state}
+        />
+            )}
+        {panelMode === PanelModeCodes.taskRatingAdvanced && (
+        <TaskRankingAdvancedPanel
+          taskId={selectedTaskId}
           state={state}
         />
             )}

@@ -4,7 +4,7 @@ defmodule Codebattle.WaitingRoom.Engine do
   require Logger
 
   @spec call(State.t()) :: State.t()
-  def call(%State{players: []}), do: {[], []}
+  def call(state = %State{players: []}), do: state
 
   def call(state = %State{}) do
     Logger.debug("WREngine match players " <> inspect(state.players))
@@ -26,7 +26,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     threshold = state.now - state.min_time_sec
 
     {groups, unmatched} =
-      state.players |> Enum.uniq_by(& &1.id) |> Enum.split_with(&(&1.joined <= threshold))
+      state.players |> Enum.uniq_by(& &1.id) |> Enum.split_with(&(&1.wr_joined_at <= threshold))
 
     %{state | groups: groups, unmatched: unmatched}
   end
@@ -82,7 +82,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     threshold = state.now - state.min_time_with_played_sec
 
     {match_with_played, wait_more} =
-      Enum.split_with(state.unmatched, &(&1.joined <= threshold))
+      Enum.split_with(state.unmatched, &(&1.wr_joined_at <= threshold))
 
     {pairs, unmatched} =
       do_match_groups(%{
@@ -106,7 +106,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     threshold = state.now - state.min_time_with_bot_sec
 
     {match_with_bot, unmatched} =
-      Enum.split_with(state.unmatched, &(&1.joined <= threshold))
+      Enum.split_with(state.unmatched, &(&1.wr_joined_at <= threshold))
 
     %{
       state

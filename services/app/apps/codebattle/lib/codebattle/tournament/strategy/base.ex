@@ -76,7 +76,13 @@ defmodule Codebattle.Tournament.Base do
         if players_count(tournament) < tournament.players_limit do
           tournament = add_player(tournament, player)
           new_player = Tournament.Players.get_player(tournament, params.user.id)
-          WaitingRoom.put_player(tournament.waiting_room_name, new_player)
+
+          Tournament.Players.put_player(tournament, %{
+            new_player
+            | state: "matchmaking_active",
+              wr_joined_at: :os.system_time(:second)
+          })
+
           tournament
         else
           tournament
@@ -100,9 +106,13 @@ defmodule Codebattle.Tournament.Base do
         player = Tournament.Players.get_player(tournament, user_id)
 
         if player.state in ["matchmaking_active", "active", "matchmaking_paused"] do
-          new_player = %{player | state: "matchmaking_active"}
+          new_player = %{
+            player
+            | state: "matchmaking_active",
+              wr_joined_at: :os.system_time(:second)
+          }
+
           Tournament.Players.put_player(tournament, new_player)
-          WaitingRoom.delete_player(tournament.waiting_room_name, player.id)
 
           Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
             tournament: tournament,
@@ -119,7 +129,6 @@ defmodule Codebattle.Tournament.Base do
         if player.state in ["matchmaking_active", "finished_round"] do
           new_player = %{player | state: "matchmaking_paused"}
           Tournament.Players.put_player(tournament, new_player)
-          WaitingRoom.delete_player(tournament.waiting_room_name, player.id)
 
           Codebattle.PubSub.broadcast("tournament:player:matchmaking_paused", %{
             tournament: tournament,
@@ -137,9 +146,13 @@ defmodule Codebattle.Tournament.Base do
           player.state == "matchmaking_paused" &&
             tournament.break_state == "off" &&
               !player_finished_round?(tournament, player) ->
-            new_player = %{player | state: "matchmaking_active"}
+            new_player = %{
+              player
+              | state: "matchmaking_active",
+                wr_joined_at: :os.system_time(:second)
+            }
+
             Tournament.Players.put_player(tournament, new_player)
-            WaitingRoom.put_player(tournament.waiting_room_name, new_player)
 
             Codebattle.PubSub.broadcast("tournament:player:matchmaking_resumed", %{
               tournament: tournament,
@@ -167,7 +180,6 @@ defmodule Codebattle.Tournament.Base do
 
         if player do
           new_player = %{player | state: "banned"}
-          WaitingRoom.delete_player(tournament.waiting_room_name, player.id)
 
           Tournament.Players.put_player(tournament, new_player)
 
@@ -280,15 +292,16 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_init_waiting_room(t = %{waiting_room_name: nil}, _params), do: t
 
       defp maybe_init_waiting_room(tournament, params) do
-        params =
+        state =
           params
           |> Map.put(:name, tournament.waiting_room_name)
           |> Map.put(:use_clan?, tournament.use_clan)
           |> Map.put(:use_sequential_tasks?, tournament.task_strategy == "sequential")
+          |> then(&struct(%WaitingRoom.State{}, &1))
 
-        WaitingRoom.start_link(params)
-        Codebattle.PubSub.subscribe("waiting_room:#{tournament.waiting_room_name}")
-        tournament
+        send(self(), :match_waiting_room_players)
+
+        %{tournament | waiting_room_state: state}
       end
 
       def start_round_force(tournament, params \\ %{})
@@ -412,10 +425,10 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def finish_round(tournament) do
-        WaitingRoom.pause(tournament.waiting_room_name)
         finish_all_playing_matches(tournament)
 
         tournament
+        |> maybe_pause_waiting_room()
         |> set_ranking()
         |> finish_round_and_next_step()
       end
@@ -517,8 +530,13 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_start_waiting_room(tournament) do
-        WaitingRoom.start(tournament.waiting_room_name, tournament.played_pair_ids)
-        tournament
+        %{
+          tournament
+          | waiting_room_state: %{
+              tournament.waiting_room_state
+              | state: "active"
+            }
+        }
       end
 
       defp maybe_set_round_task_ids(
@@ -737,6 +755,7 @@ defmodule Codebattle.Tournament.Base do
         if finish_tournament?(tournament) do
           tournament
           |> update_struct(%{state: "finished", finished_at: TimeHelper.utc_now()})
+          |> maybe_finish_waiting_room()
           |> set_stats()
           |> set_winner_ids()
           # |> db_save!()
@@ -1017,6 +1036,30 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_activate_players(t), do: t
+
+      defp maybe_pause_waiting_room(t = %{waiting_room_name: nil}), do: t
+
+      defp maybe_pause_waiting_room(tournament) do
+        %{
+          tournament
+          | waiting_room_state: %{
+              tournament.waiting_room_state
+              | state: "paused"
+            }
+        }
+      end
+
+      defp maybe_finish_waiting_room(t = %{waiting_room_name: nil}), do: t
+
+      defp maybe_finish_waiting_room(tournament) do
+        %{
+          tournament
+          | waiting_room_state: %{
+              tournament.waiting_room_state
+              | state: "finished"
+            }
+        }
+      end
     end
   end
 end

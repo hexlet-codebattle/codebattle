@@ -1,6 +1,4 @@
-import React, {
-  memo, useState, useEffect,
-} from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import {
   Chart as ChartJS,
@@ -41,16 +39,32 @@ function ClansChartPanel({ type, state }) {
     return () => {};
   }, [setItems, dispatch, type, state]);
 
+  const colors = [
+    '#FF621E',
+    '#2AE881',
+    '#FFE500',
+    '#B6A4FF',
+    '#73CCFE',
+    '#FF9C41',
+  ];
+
+  const getBackgroundColor = (id) => {
+    const index = id % colors.length;
+    return colors[index];
+  };
+
   const config = {
     data: {
-      datasets: items.map(item => ({
+      datasets: items.map((item) => ({
         label: `${item.clanName} [${item.playerCount}]`,
-        data: [{
-          x: item.totalScore,
-          y: item.performance,
-          z: item.radius,
-        }],
-        backgroundColor: `rgb(255, ${item.clanId || 155}, 132)`,
+        data: [
+          {
+            x: item.totalScore,
+            y: item.performance,
+            z: item.radius,
+          },
+        ],
+        backgroundColor: getBackgroundColor(item.clanId),
       })),
     },
     options: {
@@ -65,10 +79,7 @@ function ClansChartPanel({ type, state }) {
 
   return (
     <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
-      <Bubble
-        data={config.data}
-        options={config.options}
-      />
+      <Bubble data={config.data} options={config.options} />
     </div>
   );
 }

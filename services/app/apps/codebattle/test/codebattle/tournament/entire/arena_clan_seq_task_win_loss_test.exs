@@ -6,7 +6,6 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.TournamentResult
-  alias Codebattle.WaitingRoom
 
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
@@ -245,11 +244,13 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
     tournament = Tournament.Context.get(tournament.id)
 
-    %{players: players} = WaitingRoom.get_state(tournament.waiting_room_name)
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
     assert Enum.count(players) == 4
 
-    %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
-    :timer.sleep(200)
+    Tournament.Server.match_waiting_room_players(tournament.id)
+    :timer.sleep(100)
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
+    assert Enum.empty?(players)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -286,7 +287,6 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
     }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-    assert Enum.empty?(players)
 
     :timer.sleep(100)
     matches = get_matches(tournament)
@@ -332,16 +332,18 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     tournament = Tournament.Context.get(tournament.id)
-    %{players: players} = WaitingRoom.get_state(tournament.waiting_room_name)
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
     assert Enum.count(players) == 2
 
-    WaitingRoom.update_state(tournament.waiting_room_name, %{
+    Tournament.Server.update_waiting_room_state(tournament.id, %{
       min_time_with_bot_sec: 0,
       min_time_with_played_sec: 0
     })
 
-    %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
+    Tournament.Server.match_waiting_room_players(tournament.id)
     :timer.sleep(100)
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
+    assert Enum.empty?(players)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -362,7 +364,6 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
-    assert Enum.empty?(players)
     win_active_match(tournament, user1)
     :timer.sleep(200)
 

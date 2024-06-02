@@ -89,10 +89,10 @@ defmodule CodebattleWeb.TournamentAdminChannel do
           TournamentResult.get_tasks_ranking(tournament)
 
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
-          TournamentResult.get_top_users_by_clan_ranking(
+          TournamentResult.get_task_duration_distribution(
             tournament,
             task_id,
-            Map.get(params, "step", 37)
+            Map.get(params, "step", 1)
           )
 
         %{"type" => "clans_bubble_distribution"} ->

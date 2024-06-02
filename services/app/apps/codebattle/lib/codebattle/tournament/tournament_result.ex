@@ -69,7 +69,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       end AS base_score,
       array_agg(duration_sec),
       max(duration_sec) as max_duration,
-      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec DESC) AS percentile_95
+      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_95
       FROM
       games g
       where tournament_id = #{tournament.id}
@@ -452,21 +452,19 @@ defmodule Codebattle.Tournament.TournamentResult do
       from(r in __MODULE__,
         join: c in Clan,
         on: r.clan_id == c.id,
-        group_by: [r.user_id, c.id],
+        group_by: [r.user_id, c.id, r.duration_sec],
         where: r.tournament_id == ^tournament.id,
         where: r.task_id == ^task_id,
         where: r.result_percent == 100.0,
-        order_by: [desc: sum(r.score)],
-        windows: [user_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]],
+        order_by: [asc: r.duration_sec],
         limit: ^limit,
         select: %{
           user_id: r.user_id,
           user_name: max(r.user_name),
+          duration_sec: r.duration_sec,
           clan_id: c.id,
           clan_name: c.name,
-          clan_long_name: c.long_name,
-          score: sum(r.score),
-          place: over(row_number(), :user_partition)
+          clan_long_name: c.long_name
         }
       )
 

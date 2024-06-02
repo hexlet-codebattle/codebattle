@@ -117,6 +117,7 @@ defmodule Codebattle.Tournament do
     field(:round_task_ids, {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
     field(:waiting_room_name, :string, virtual: true)
+    field(:waiting_room_state, :map, virtual: true, default: %{})
 
     timestamps()
   end
