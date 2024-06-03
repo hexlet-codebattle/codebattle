@@ -112,6 +112,7 @@ defmodule Runner.Languages do
       import * as R from "rambda";
 
       function solution(<%= arguments %>)<%= expected %>{
+
       };
 
       // use `console.log` for debug
@@ -186,7 +187,7 @@ defmodule Runner.Languages do
         <%= return_statement %>
       }
 
-      // use std::cout for debug
+      // use `std::cout` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       return_template: "return <%= default_value %>;",
@@ -334,7 +335,7 @@ defmodule Runner.Languages do
         }
       }
 
-      // Console.WriteLine("use print for debug");
+      // use `Console.WriteLine` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -375,8 +376,10 @@ defmodule Runner.Languages do
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
-      // fmt.Print("use print for debug")
+
       }
+
+      // use `fmt.Print` for debug
       """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -410,10 +413,11 @@ defmodule Runner.Languages do
       solution_template: """
       defmodule Solution do
         def solution(<%= arguments %>) do
-          # IO.puts("use print for debug")
           <%= return_statement %>
         end
       end
+
+      # use `IO.puts` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -491,8 +495,7 @@ defmodule Runner.Languages do
       solution_template: """
       <?php
 
-      function solution(<%= arguments %>)
-      {
+      function solution(<%= arguments %>) {
         <%= return_statement %>
       }
 
@@ -647,6 +650,7 @@ defmodule Runner.Languages do
       use std::collections::HashMap;
 
       pub fn solution(<%= arguments %>) -> <%= expected %> {
+
       }
 
       // use `println!` for debug

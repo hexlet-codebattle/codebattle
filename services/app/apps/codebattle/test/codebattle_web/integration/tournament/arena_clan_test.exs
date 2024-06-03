@@ -228,7 +228,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       assert_receive %Phoenix.Socket.Message{
         event: "tournament:player:joined",
         payload: %{
-          player: %Tournament.Player{clan_id: _, id: _, name: _, state: "active"},
+          player: %Tournament.Player{clan_id: _, id: _, name: _, state: "matchmaking_active"},
           tournament: %{players_count: _}
         }
       }

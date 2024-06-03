@@ -11,8 +11,8 @@ import ControlPanel, { PanelModeCodes } from './ControlPanel';
 import PlayerStatsPanel from './PlayerStatsPanel';
 import RatingClansPanel from './RatingClansPanel';
 import RatingPanel from './RatingPanel';
-import TaskRankingPanel from './TaskRankingPanel';
 import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
+import TaskRankingPanel from './TaskRankingPanel';
 import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 function CustomTournamentInfoPanel({
@@ -41,11 +41,10 @@ function CustomTournamentInfoPanel({
   );
   const [selectedTaskId, setSelectedTaskId] = useState();
 
-  const handleTaskSelectClick = useCallback((event) => {
+  const handleTaskSelectClick = useCallback(event => {
     const { taskId } = event.currentTarget.dataset;
     setPanelMode(PanelModeCodes.taskRatingAdvanced);
     setSelectedTaskId(Number(taskId));
-
   }, [setSelectedTaskId, setPanelMode]);
 
   return (

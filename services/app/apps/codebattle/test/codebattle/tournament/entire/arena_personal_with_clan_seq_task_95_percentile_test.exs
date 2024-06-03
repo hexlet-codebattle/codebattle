@@ -6,12 +6,9 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking.UpdateFromResultsServer
   alias Codebattle.Tournament.TournamentResult
-  alias Codebattle.WaitingRoom
 
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
-
-  @decimal100 Decimal.new("100.0")
 
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
@@ -155,14 +152,14 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
 
     assert %{
              entries: [
-               %{id: 354, name: "1", score: 0, clan: "1", place: 1, clan_id: 1},
-               %{id: 355, name: "2", score: 0, clan: "1", place: 2, clan_id: 1},
-               %{id: 356, name: "3", score: 0, clan: "3", place: 3, clan_id: 2},
-               %{id: 357, name: "4", score: 0, clan: "4", place: 4, clan_id: 3},
-               %{id: 358, name: "5", score: 0, clan: "5", place: 5, clan_id: 4},
-               %{id: 359, name: "6", score: 0, clan: "6", place: 6, clan_id: 5},
-               %{id: 360, name: "7", score: 0, clan: "7", place: 7, clan_id: 6},
-               %{id: 361, name: "8", score: 0, clan: "8", place: 8, clan_id: 7}
+               %{id: _, name: _, score: 0, clan: _, place: 1, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 2, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 3, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 4, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 5, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 6, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 7, clan_id: _},
+               %{id: _, name: _, score: 0, clan: _, place: 8, clan_id: _}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -176,12 +173,12 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              entries: [
                %{id: ^u1_id, place: 1, score: 100},
                %{place: 2, score: 33},
-               %{id: 356, name: "3", score: 0, clan: "3", clan_id: 2, place: 3},
-               %{id: 357, name: "4", score: 0, clan: "4", clan_id: 3, place: 4},
-               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
-               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
-               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
-               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 3},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 4},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -223,10 +220,10 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 2, score: 100},
                %{place: 3, score: 67},
                %{place: 4, score: 33},
-               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
-               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
-               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
-               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -258,11 +255,14 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
 
     tournament = Tournament.Context.get(tournament.id)
 
-    %{players: players} = WaitingRoom.get_state(tournament.waiting_room_name)
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
     assert Enum.count(players) == 4
 
-    %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
-    :timer.sleep(200)
+    Tournament.Server.match_waiting_room_players(tournament.id)
+    :timer.sleep(100)
+
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
+    assert Enum.empty?(players)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -299,7 +299,6 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-    assert Enum.empty?(players)
 
     :timer.sleep(100)
     matches = get_matches(tournament)
@@ -318,10 +317,10 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 2, score: 100},
                %{place: 3, score: 67},
                %{place: 4, score: 33},
-               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
-               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
-               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
-               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -349,12 +348,23 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     tournament = Tournament.Context.get(tournament.id)
-    %{players: players} = WaitingRoom.get_state(tournament.waiting_room_name)
-    assert Enum.count(players) == 2
-    WaitingRoom.update_state(tournament.waiting_room_name, %{min_time_with_played_sec: 0})
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
 
-    %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
+    assert Enum.count(players) == 2
+
+    Tournament.Server.update_waiting_room_state(tournament.id, %{
+      min_time_with_played_sec: 0
+    })
+
+    Tournament.Server.match_waiting_room_players(tournament.id)
     :timer.sleep(100)
+
+    Tournament.Server.update_waiting_room_state(tournament.id, %{
+      min_time_with_played_sec: 1000
+    })
+
+    players = Tournament.Players.get_players(tournament, "matchmaking_active")
+    assert Enum.empty?(players)
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,
@@ -375,8 +385,6 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
-    assert Enum.empty?(players)
-
     ##### user1 win 1 round 3 game
     win_active_match(tournament, user1)
     :timer.sleep(100)
@@ -389,10 +397,10 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 2, score: 100},
                %{place: 3, score: 67},
                %{place: 4, score: 33},
-               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
-               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
-               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
-               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -574,10 +582,10 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
                %{place: 2, score: 100},
                %{place: 3, score: 67},
                %{place: 4, score: 33},
-               %{id: 358, name: "5", score: 0, clan: "5", clan_id: 4, place: 5},
-               %{id: 359, name: "6", score: 0, clan: "6", clan_id: 5, place: 6},
-               %{id: 360, name: "7", score: 0, clan: "7", clan_id: 6, place: 7},
-               %{id: 361, name: "8", score: 0, clan: "8", clan_id: 7, place: 8}
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
+               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -676,10 +684,16 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     ##### match players
-    WaitingRoom.update_state(tournament.waiting_room_name, %{min_time_with_played_sec: 0})
-    %{players: players} = WaitingRoom.match_players(tournament.waiting_room_name)
+    Tournament.Server.update_waiting_room_state(tournament.id, %{
+      min_time_with_played_sec: 0
+    })
 
+    Tournament.Server.match_waiting_room_players(tournament.id)
     :timer.sleep(100)
+
+    Tournament.Server.update_waiting_room_state(tournament.id, %{
+      min_time_with_played_sec: 1000
+    })
 
     assert_received %Codebattle.PubSub.Message{
       topic: ^player1_topic,

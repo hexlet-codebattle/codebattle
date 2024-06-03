@@ -9,13 +9,14 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
 import cn from 'classnames';
 import i18next from 'i18next';
+import { Line } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
-import { getResults } from '../../middlewares/TournamentAdmin';
+
 import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
+
+import { getResults } from '../../middlewares/TournamentAdmin';
 
 ChartJS.register(
   CategoryScale,
@@ -37,8 +38,7 @@ const options = {
   },
 };
 
-const getCustomEventTrClassName = () =>
-  cn('text-dark font-weight-bold cb-custom-event-tr bg-white');
+const getCustomEventTrClassName = () => cn('text-dark font-weight-bold cb-custom-event-tr bg-white');
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -92,12 +92,12 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
 
     return () => {};
   }, [setUsers, setTaskItems, dispatch, taskId, state]);
-  console.log(taskItems)
-  const labels = taskItems.map((x) => x.start);
-  const lineData = taskItems.map((x) => x.winsCount);
+  console.log(taskItems);
+  const labels = taskItems.map(x => x.start);
+  const lineData = taskItems.map(x => x.winsCount);
 
   const taskChartData = {
-    labels: labels,
+    labels,
     datasets: [
       {
         data: lineData,
@@ -109,7 +109,7 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
   return (
     <div className="d-flex">
       <div className="w-50">
-      <Line options={options} data={taskChartData} />
+        <Line options={options} data={taskChartData} />
       </div>
       <div className="w-50 my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
         <table className="table table-striped cb-custom-event-table">
@@ -127,7 +127,7 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
             </tr>
           </thead>
           <tbody>
-            {users.map((item) => (
+            {users.map(item => (
               <React.Fragment
                 key={`${PanelModeCodes.topUserByTasksMode}-user-${item.userId}`}
               >

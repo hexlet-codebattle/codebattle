@@ -48,14 +48,14 @@ function ClansChartPanel({ type, state }) {
     '#FF9C41',
   ];
 
-  const getBackgroundColor = (id) => {
+  const getBackgroundColor = id => {
     const index = id % colors.length;
     return colors[index];
   };
 
   const config = {
     data: {
-      datasets: items.map((item) => ({
+      datasets: items.map(item => ({
         label: `${item.clanName} [${item.playerCount}]`,
         data: [
           {

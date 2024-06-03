@@ -6,8 +6,7 @@ import { useSelector } from 'react-redux';
 
 import { currentUserClanIdSelector, tournamentSelector } from '@/selectors';
 
-const getCustomEventTrClassName = (item, selectedId) =>
-  cn(
+const getCustomEventTrClassName = (item, selectedId) => cn(
     'text-dark font-weight-bold cb-custom-event-tr',
     {
       'cb-gold-place-bg': item?.place === 1,
@@ -56,7 +55,7 @@ function TournamentClanTable() {
           </tr>
         </thead>
         <tbody>
-          {items?.map((item) => (
+          {items?.map(item => (
             <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr

@@ -4,7 +4,14 @@ defmodule CodebattleWeb.LayoutView do
   import CodebattleWeb.Router.Helpers
 
   @app_version Application.compile_env(:codebattle, :app_version)
-  @colors ["ff0000", "00ff00", "ff00ff", "00ffff", "ffa500"]
+  @colors [
+    "2AE881",
+    "73CCFE",
+    "B6A4FF",
+    "FF621E",
+    "FF9C41",
+    "FFE500"
+  ]
 
   def get_next_path(conn) do
     next = conn.params["next"]

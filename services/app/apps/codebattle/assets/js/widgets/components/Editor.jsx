@@ -336,11 +336,9 @@ class Editor extends PureComponent {
   clearCursorListeners = () => {};
 
   editorDidMount = (editor, monaco) => {
-
     this.editor = editor;
     this.monaco = monaco;
     const {
-      isTournamentGame,
       editable,
       gameMode,
       userId,
@@ -357,7 +355,7 @@ class Editor extends PureComponent {
     //   navigator.clipboard.writeText(customText);
     //   event.preventDefault();
     // });
-    this.editor.onKeyDown((e) => {
+    this.editor.onKeyDown(e => {
       // Custom Copy Event
       if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
         const selection = editor.getModel().getValueInRange(editor.getSelection());
@@ -380,7 +378,6 @@ class Editor extends PureComponent {
         e.preventDefault();
       }
     });
-
 
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
     this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
