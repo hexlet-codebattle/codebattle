@@ -40,7 +40,7 @@ function UserPopoverContent({ user }) {
     };
   }, [dispatch, setStats, user.id]);
 
-  return <UserStats user={user} data={stats}/>;
+  return <UserStats user={user} data={stats} />;
 }
 
 function UserInfo({

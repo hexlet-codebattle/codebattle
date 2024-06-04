@@ -91,8 +91,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
           TournamentResult.get_task_duration_distribution(
             tournament,
-            task_id,
-            Map.get(params, "step", 1)
+            task_id
           )
 
         %{"type" => "clans_bubble_distribution"} ->

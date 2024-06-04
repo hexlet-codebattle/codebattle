@@ -21,39 +21,40 @@ const mapViewerStateToWeight = {
   playing: 5,
 };
 
-const getMajorState = metas => (
-  metas.reduce((state, item) => (
-    mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
-      ? state
-      : item.state
-  ), 'online')
-);
+const getMajorState = metas => metas.reduce(
+    (state, item) => (mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
+        ? state
+        : item.state),
+    'online',
+  );
 
 const getUserStateByPath = () => {
   const { pathname } = document.location;
 
   if (pathname.startsWith('/tournament')) {
-    return ({ state: 'tournament' });
+    return { state: 'tournament' };
   }
 
   if (pathname.startsWith('/games')) {
-    const state = players.some(player => player.id === currentUser.id) ? 'playing' : 'watching';
+    const state = players.some(player => player.id === currentUser.id)
+      ? 'playing'
+      : 'watching';
 
-    return ({
+    return {
       state,
-    });
+    };
   }
 
   if (pathname === '/') {
-    return ({
+    return {
       state: 'lobby',
-    });
+    };
   }
 
   if (pathname.startsWith('/tasks')) {
-    return ({
+    return {
       state: 'task',
-    });
+    };
   }
 
   return { state: 'online' };
@@ -70,15 +71,13 @@ const listBy = (id, { metas: [first, ...rest] }) => {
   return userInfo;
 };
 
-const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
-  dispatch(actionCreator(camelizeKeys(data)))
-);
+const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => dispatch(actionCreator(camelizeKeys(data)));
 
 const initPresence = followId => dispatch => {
-  channel = socket.channel(
-    'main',
-    { ...getUserStateByPath(), follow_id: followId },
-  );
+  channel = socket.channel('main', {
+    ...getUserStateByPath(),
+    follow_id: followId,
+  });
   const presence = new Presence(channel);
 
   presence.onSync(() => {
@@ -86,12 +85,9 @@ const initPresence = followId => dispatch => {
     camelizeKeysAndDispatch(dispatch, actions.syncPresenceList)(list);
   });
 
-  channel
-    .join()
-    .receive(
-      'ok',
-      () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); },
-    );
+  channel.join().receive('ok', () => {
+    camelizeKeysAndDispatch(dispatch, actions.syncPresenceList);
+  });
 
   channel.onError(() => dispatch(actions.updateMainChannelState(false)));
 
@@ -113,23 +109,26 @@ export const changePresenceUser = user => () => {
   channel.push('change_presence_user', { user });
 };
 
-export const followUser = userId => dispatch => {
-  channel.push('user:follow', { user_id: userId })
-    .receive('ok', data => {
-      if (!camelizeKeys(data).activeGameId) return;
+export const followUser = userId => (dispatch, getState) => {
+  channel.push('user:follow', { user_id: userId }).receive('ok', payload => {
+    const data = camelizeKeys(payload);
 
-      camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
-      camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
+    if (!data.activeGameId) return;
 
+    camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
+    camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
+
+    if (data.activeGameId !== getState().game?.gameStatus?.gameId) {
       setTimeout(() => {
-        window.location.replace(makeGameUrl(camelizeKeys(data).activeGameId));
+        window.location.replace(makeGameUrl(data.activeGameId));
       }, 1000);
-    });
+    }
+  });
 };
 
 export const unfollowUser = userId => dispatch => {
   channel.push('user:unfollow', { user_id: userId });
-  camelizeKeysAndDispatch(dispatch, actions.followUser)();
+  camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
 };
 
 export default initPresence;

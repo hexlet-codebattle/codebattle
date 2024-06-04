@@ -92,33 +92,32 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
                 >
                   <div
                     className="cb-custom-event-name mr-1"
-                    style={{ maxWidth: 220 }}
                   >
                     {item.name}
                   </div>
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.winsCount}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.min}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.p5}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.p25}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.p50}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.p75}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.p95}
                 </td>
-                <td width="120" className={tableDataCellClassName}>
+                <td className={tableDataCellClassName}>
                   {item.max}
                 </td>
               </tr>

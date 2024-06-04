@@ -352,7 +352,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
-  def get_task_duration_distribution(tournament, task_id, step \\ 37) do
+  def get_task_duration_distribution(tournament, task_id) do
     """
     WITH DurationStats AS (
     SELECT
@@ -369,22 +369,22 @@ defmodule Codebattle.Tournament.TournamentResult do
     SELECT
         min_duration,
         max_duration,
-        CEIL((max_duration - min_duration) / #{step}) AS num_intervals,
-        #{step} AS interval_step
+        15 AS num_intervals,
+        (max_duration - min_duration) / 15.0 AS interval_step
     FROM
         DurationStats
     ),
     Intervals AS (
     SELECT
-        min_duration + (#{step} * generate_series) AS interval_start,
-        min_duration + (#{step} * (generate_series + 1)) AS interval_end
+        min_duration + (interval_step * generate_series) AS interval_start,
+        min_duration + (interval_step * (generate_series + 1)) AS interval_end
     FROM
         IntervalParams,
-        generate_series(0, CEIL((max_duration - min_duration) / #{step})::int)
+        generate_series(0, 15)
     )
     SELECT
-      interval_start AS start,
-      interval_end AS end,
+      CEIL(interval_start) AS start,
+      CEIL(interval_end) AS end,
       COUNT(tr.duration_sec) AS wins_count
     FROM
       Intervals

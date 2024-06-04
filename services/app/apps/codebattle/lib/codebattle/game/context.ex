@@ -255,6 +255,7 @@ defmodule Codebattle.Game.Context do
     Game
     |> where([g], g.state == "playing")
     |> where([g], fragment("? = ANY(player_ids)", ^user_id))
+    |> where([g], g.inserted_at > fragment("now() - interval '30 minutes'"))
     |> order_by([g], desc: g.id)
     |> Repo.all()
     |> case do

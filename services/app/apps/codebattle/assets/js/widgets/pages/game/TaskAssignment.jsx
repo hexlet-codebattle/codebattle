@@ -7,8 +7,6 @@ import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 
-import { unfollowUser } from '@/middlewares/Main';
-
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ModalCodes from '../../config/modalCodes';
@@ -52,7 +50,6 @@ function ShowGuideButton() {
 }
 
 function TaskAssignment({
-  followId,
   task,
   taskLanguage,
   taskSize = 0,
@@ -64,13 +61,8 @@ function TaskAssignment({
   hidingControls = false,
   fullSize = false,
 }) {
-  const dispatch = useDispatch();
-
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
 
-  const handleUnfollowClick = useCallback(() => {
-    dispatch(unfollowUser());
-  }, [dispatch]);
   const handleTaskSizeIncrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize + 1);
   }, [taskSize, changeTaskDescriptionSizes]);
@@ -131,16 +123,6 @@ function TaskAssignment({
               </button>
             )}
             {!hideGuide && <ShowGuideButton />}
-            {followId && (
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={handleUnfollowClick}
-              >
-                <FontAwesomeIcon icon="binoculars" className="mr-1" />
-                Unfollow
-              </button>
-            )}
             {changeTaskDescriptionSizes && !hidingControls && (
               <div
                 className="btn-group align-items-center ml-2 mr-auto"

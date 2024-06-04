@@ -103,6 +103,9 @@ msgstr "Проверить результат"
 msgid "Waiting for an opponent"
 msgstr "Ожидание соперника"
 
+msgid "You are following ID: %{followId}"
+msgstr "Вы подписаны на ID: %{followId}"
+
 #: lib/codebattle_web/templates/game/show.html.slim:21
 msgid "Back to the list of games"
 msgstr "Вернуться к списку игр"

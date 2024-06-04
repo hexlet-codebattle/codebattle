@@ -19,7 +19,7 @@ const UserStats = ({ data, user: userInfo }) => {
   const lang = userInfo.lang || data?.user?.lang || 'js';
 
   const handlePlayClick = useCallback(() => {
-    dispatch(redirectToNewGame(activeGameId));
+    redirectToNewGame(activeGameId);
   }, [activeGameId, dispatch]);
 
   const handleFollowClick = useCallback(() => {

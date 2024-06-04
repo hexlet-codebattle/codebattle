@@ -1,29 +1,25 @@
-import React, {
-  memo, useState, useEffect,
-} from 'react';
+import React, { memo, useState, useEffect } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
+import UserInfo from '../../components/UserInfo';
 import { getResults } from '../../middlewares/TournamentAdmin';
 
-const getCustomEventTrClassName = (type, muted) => cn(
-  'text-dark font-weight-bold cb-custom-event-tr',
-  {
+const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
     'cb-custom-event-bg-purple': type === 'user' && !muted,
     'cb-custom-event-bg-muted-purple': type === 'user' && muted,
-  },
-);
+  });
 
 const tableDataCellClassName = hideSeparator => cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-  {
-    'hide-separator': hideSeparator,
-  },
-);
+    'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+    {
+      'hide-separator': hideSeparator,
+    },
+  );
 
 function RatingClansPanel({ type, state }) {
   const dispatch = useDispatch();
@@ -55,9 +51,7 @@ function RatingClansPanel({ type, state }) {
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>
-            <th className="p-1 pl-4 font-weight-light border-0">
-              {}
-            </th>
+            <th className="p-1 pl-4 font-weight-light border-0">{}</th>
             <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t('Clan')}
             </th>
@@ -77,7 +71,7 @@ function RatingClansPanel({ type, state }) {
             <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr className={getCustomEventTrClassName('clan', index > 3)}>
-                <td width="60" className={tableDataCellClassName(true)}>
+                <td className={tableDataCellClassName(true)}>
                   {users[0].clanRank}
                 </td>
                 <td
@@ -86,44 +80,45 @@ function RatingClansPanel({ type, state }) {
                 >
                   <div
                     className="cb-custom-event-name mr-1"
-                    style={{ maxWidth: 220 }}
                   >
                     {users[0].clanName}
                   </div>
                 </td>
-                <td width="120" className={tableDataCellClassName()}>
-                  {users.reduce((acc, user) => (acc + user.totalScore), 0) || 0}
+                <td className={tableDataCellClassName()}>
+                  {users.reduce((acc, user) => acc + user.totalScore, 0) || 0}
                 </td>
-                <td width="122" className={tableDataCellClassName()}>
-                  {users.reduce((acc, user) => (acc + user.winsCount), 0) || 0}
+                <td className={tableDataCellClassName()}>
+                  {users.reduce((acc, user) => acc + user.winsCount, 0) || 0}
                 </td>
-                <td width="122" className={tableDataCellClassName()}>
-                  {users.reduce((acc, user) => (acc + user.totalDurationSec), 0) || 0}
+                <td className={tableDataCellClassName()}>
+                  {users.reduce(
+                    (acc, user) => acc + user.totalDurationSec,
+                    0,
+                  ) || 0}
                 </td>
               </tr>
               {users.map(user => (
                 <React.Fragment key={`${type}-user-${user.userId}`}>
                   <tr className="cb-custom-event-empty-space-tr" />
                   <tr className={getCustomEventTrClassName('user', index > 3)}>
-                    <td width="60" className={tableDataCellClassName(true)} />
-                    <td
-                      title={user.userName}
-                      className={tableDataCellClassName()}
-                    >
+                    <td className={tableDataCellClassName(true)} />
+                    <td className={tableDataCellClassName()}>
                       <div
                         className="cb-custom-event-name mr-1"
-                        style={{ maxWidth: 220 }}
                       >
-                        {user.userName}
+                        <UserInfo
+                          user={{ id: user.userId, name: user.userName }}
+                          hideOnlineIndicator
+                        />
                       </div>
                     </td>
-                    <td width="120" className={tableDataCellClassName()}>
+                    <td className={tableDataCellClassName()}>
                       {user.totalScore || 0}
                     </td>
-                    <td width="122" className={tableDataCellClassName()}>
+                    <td className={tableDataCellClassName()}>
                       {user.winsCount || 0}
                     </td>
-                    <td width="122" className={tableDataCellClassName()}>
+                    <td className={tableDataCellClassName()}>
                       {user.totalDurationSec || 0}
                     </td>
                   </tr>

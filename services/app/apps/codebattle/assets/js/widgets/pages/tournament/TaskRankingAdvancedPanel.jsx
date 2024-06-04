@@ -4,25 +4,24 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
 } from 'chart.js';
 import cn from 'classnames';
 import i18next from 'i18next';
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
 
 import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
+import UserInfo from '../../components/UserInfo';
 import { getResults } from '../../middlewares/TournamentAdmin';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
 );
@@ -41,7 +40,7 @@ const options = {
 const getCustomEventTrClassName = () => cn('text-dark font-weight-bold cb-custom-event-tr bg-white');
 
 const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-custom-event-bg-purple',
 );
 
 function TaskRankingAdvancedPanel({ taskId, state }) {
@@ -92,7 +91,6 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
 
     return () => {};
   }, [setUsers, setTaskItems, dispatch, taskId, state]);
-  console.log(taskItems);
   const labels = taskItems.map(x => x.start);
   const lineData = taskItems.map(x => x.winsCount);
 
@@ -109,7 +107,7 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
   return (
     <div className="d-flex">
       <div className="w-50">
-        <Line options={options} data={taskChartData} />
+        <Bar options={options} data={taskChartData} />
       </div>
       <div className="w-50 my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
         <table className="table table-striped cb-custom-event-table">
@@ -133,12 +131,15 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
               >
                 <tr className="cb-custom-event-empty-space-tr" />
                 <tr className={getCustomEventTrClassName()}>
-                  <td title={item.userName} className={tableDataCellClassName}>
+                  <td className={tableDataCellClassName}>
                     <div
                       className="cb-custom-event-name mr-1"
                       style={{ maxWidth: 220 }}
                     >
-                      {item.userName}
+                      <UserInfo
+                        user={{ id: item.userId, name: item.userName }}
+                        hideOnlineIndicator
+                      />
                     </div>
                   </td>
                   <td

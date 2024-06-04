@@ -29,6 +29,7 @@ const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 const gameUIPersistWhitelist = [
   'editorMode',
   'editorTheme',
+  'followId',
   'taskDescriptionLanguage',
 ];
 

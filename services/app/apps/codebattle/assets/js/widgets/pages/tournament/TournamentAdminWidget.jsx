@@ -1,15 +1,12 @@
 import React, {
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
+ useState, useCallback, useEffect, useMemo,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
@@ -40,7 +37,7 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId, tournament, playersCount, hideResults,
+ currentUserId, tournament, playersCount, hideResults,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -48,7 +45,7 @@ function InfoPanel({
   ) {
     return (
       <div className="h-100">
-        <ReactMarkdown source={tournament.description} />
+        <Markdown>{tournament.description}</Markdown>
       </div>
     );
   }
@@ -92,7 +89,10 @@ function InfoPanel({
           pageSize={tournament.playersPageSize}
           hideBots={!tournament.showBots}
           hideResults={hideResults}
-          hideCustomGameConsole={tournament.type !== 'versus' || tournament.state !== TournamentStates.active}
+          hideCustomGameConsole={
+            tournament.type !== 'versus'
+            || tournament.state !== TournamentStates.active
+          }
           canModerate
         />
       );
@@ -113,33 +113,23 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 
-  const hideResults = tournament.showResults === undefined
-    ? false
-    : !tournament.showResults;
+  const hideResults = tournament.showResults === undefined ? false : !tournament.showResults;
 
-  const [
-    detailsModalShowing,
-    setDetailsModalShowing,
-  ] = useState(false);
+  const [detailsModalShowing, setDetailsModalShowing] = useState(false);
   const [
     startRoundConfirmationModalShowing,
     setStartRoundConfirmationModalShowing,
   ] = useState(false);
-  const [
-    matchConfirmationModalShowing,
-    setMatchConfirmationModalShowing,
-  ] = useState(false);
+  const [matchConfirmationModalShowing, setMatchConfirmationModalShowing] = useState(false);
 
   const playersCount = useMemo(
-    () => Object.values(tournament.players)
-      .filter(player => (tournament.showBots ? true : !player.isBot))
-      .length,
+    () => Object.values(tournament.players).filter(player => (tournament.showBots ? true : !player.isBot)).length,
     [tournament.players, tournament.showBots],
   );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
-      tournament.state,
-    ),
+        tournament.state,
+      ),
     [tournament.state],
   );
 
@@ -147,10 +137,13 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
     'col-lg-9': !tournament.useClan,
     'col-lg-8': tournament.useClan,
   });
-  const sidePanelClassName = cn('d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100', {
-    'col-lg-3': !tournament.useClan,
-    'col-lg-4': tournament.useClan,
-  });
+  const sidePanelClassName = cn(
+    'd-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100',
+    {
+      'col-lg-3': !tournament.useClan,
+      'col-lg-4': tournament.useClan,
+    },
+  );
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -161,7 +154,9 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
   const toggleShowBots = useCallback(() => {
     dispatch(actions.toggleShowBots());
   }, [dispatch]);
-  const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [setStartRoundConfirmationModalShowing]);
+  const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [
+    setStartRoundConfirmationModalShowing,
+  ]);
 
   useEffect(() => {
     const clearTournament = connectToTournament(waitingRoomService)(dispatch);
@@ -181,23 +176,20 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(
-    () => {
-      if (matchConfirmationModalShowing) {
-        setDetailsModalShowing(false);
-        setStartRoundConfirmationModalShowing(false);
-      }
-    },
-    [
-      matchConfirmationModalShowing,
-      setStartRoundConfirmationModalShowing,
-      setDetailsModalShowing,
-    ],
-  );
+  useEffect(() => {
+    if (matchConfirmationModalShowing) {
+      setDetailsModalShowing(false);
+      setStartRoundConfirmationModalShowing(false);
+    }
+  }, [
+    matchConfirmationModalShowing,
+    setStartRoundConfirmationModalShowing,
+    setDetailsModalShowing,
+  ]);
 
   if (activePresentationMode) {
     return (
@@ -211,19 +203,17 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
           currentRoundPosition={tournament.currentRoundPosition}
           redirectImmediatly={activePresentationMode}
         />
-        <div
-          className="d-flex flex-column justify-content-center align-items-center p-3"
-        >
-          {has(tournament.players, currentUserId) || tournament.state !== TournamentStates.waitingParticipants
-            ? (
-              <span className="h3">
-                {getTournamentPresentationStatus(tournament.state)}
-              </span>
-            ) : (
-              <>
-                <span className="h3">{tournament.name}</span>
-              </>
-            )}
+        <div className="d-flex flex-column justify-content-center align-items-center p-3">
+          {has(tournament.players, currentUserId)
+          || tournament.state !== TournamentStates.waitingParticipants ? (
+            <span className="h3">
+              {getTournamentPresentationStatus(tournament.state)}
+            </span>
+          ) : (
+            <>
+              <span className="h3">{tournament.name}</span>
+            </>
+          )}
         </div>
       </>
     );
@@ -328,8 +318,8 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
               players={tournament.players}
               showBots={tournament.showBots}
             />
-            {tournament.useChat && (<TournamentChat />)}
-            {tournament.useClan && (<TournamentClanTable />)}
+            {tournament.useChat && <TournamentChat />}
+            {tournament.useClan && <TournamentClanTable />}
           </div>
         </div>
       </div>

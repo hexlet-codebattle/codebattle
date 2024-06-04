@@ -3,9 +3,10 @@ import React, {
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
+import cn from 'classnames';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
@@ -51,7 +52,7 @@ function InfoPanel({
   ) {
     return (
       <div className="h-100">
-        <ReactMarkdown source={tournament.description} />
+        <Markdown>{tournament.description}</Markdown>
       </div>
     );
   }
@@ -147,6 +148,7 @@ function Tournament({ waitingRoomMachine }) {
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
+  const hiddenSidePanel = tournament.type === 'arena' && tournament.state !== 'waiting_participants';
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -316,7 +318,11 @@ function Tournament({ waitingRoomMachine }) {
       </div>
       <div className="container-fluid mb-2">
         <div className="row flex-lg-row-reverse">
-          <div className="col-12 col-lg-9 mb-2 mb-lg-0">
+          <div
+            className={cn('col-12  mb-2 mb-lg-0', {
+              'col-lg-9': !hiddenSidePanel,
+            })}
+          >
             <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
               <InfoPanel
                 tournament={tournament}
@@ -328,15 +334,15 @@ function Tournament({ waitingRoomMachine }) {
             </div>
           </div>
           <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
-            {!tournament.useClan && (
+            {!tournament.useClan && !hiddenSidePanel && (
               <Players
                 playersCount={playersCount}
                 players={tournament.players}
                 showBots={tournament.showBots}
               />
             )}
-            {tournament.useChat && <TournamentChat />}
-            {tournament.useClan && <TournamentClanTable />}
+            {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
+            {tournament.useClan && !hiddenSidePanel && <TournamentClanTable />}
           </div>
         </div>
       </div>

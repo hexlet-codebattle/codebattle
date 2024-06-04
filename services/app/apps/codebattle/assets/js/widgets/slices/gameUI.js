@@ -30,6 +30,7 @@ const gameUI = createSlice({
       Object.assign(state, payload);
     },
     followUser: (state, { payload }) => {
+      console.log('followUser', payload);
       state.followId = payload.followId;
     },
     unfollowUser: state => {

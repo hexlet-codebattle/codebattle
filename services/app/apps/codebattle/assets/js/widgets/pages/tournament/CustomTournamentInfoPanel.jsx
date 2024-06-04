@@ -1,6 +1,4 @@
-import React, {
-  memo, useState, useCallback,
-} from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
@@ -35,17 +33,23 @@ function CustomTournamentInfoPanel({
 }) {
   const [searchedUser, setSearchedUser] = useState();
   const [panelMode, setPanelMode] = useState(
+    // eslint-disable-next-line no-nested-ternary
     players[currentUserId]
       ? PanelModeCodes.playerMode
-      : PanelModeCodes.ratingMode,
+      : type === TournamentTypes.arena
+        ? PanelModeCodes.topUserByClansMode
+        : PanelModeCodes.ratingMode,
   );
   const [selectedTaskId, setSelectedTaskId] = useState();
 
-  const handleTaskSelectClick = useCallback(event => {
-    const { taskId } = event.currentTarget.dataset;
-    setPanelMode(PanelModeCodes.taskRatingAdvanced);
-    setSelectedTaskId(Number(taskId));
-  }, [setSelectedTaskId, setPanelMode]);
+  const handleTaskSelectClick = useCallback(
+    event => {
+      const { taskId } = event.currentTarget.dataset;
+      setPanelMode(PanelModeCodes.taskRatingAdvanced);
+      setSelectedTaskId(Number(taskId));
+    },
+    [setSelectedTaskId, setPanelMode],
+  );
 
   return (
     <>
@@ -74,62 +78,55 @@ function CustomTournamentInfoPanel({
           setSearchOption={setSearchedUser}
           setPanelMode={setPanelMode}
           disabledPanelModeControl={
-            !players[currentUserId] || (hideResults && !canModerate) || (type === TournamentTypes.arena && !canModerate)
+            !players[currentUserId]
+            || (hideResults && !canModerate)
+            || (type === TournamentTypes.arena && !canModerate)
           }
           disabledSearch={!canModerate}
         />
         {panelMode === PanelModeCodes.playerMode && (
-        <PlayerStatsPanel
-          currentRoundPosition={currentRoundPosition}
-          roundsLimit={roundsLimit}
-          matches={matches}
-          players={players}
-          type={type}
-          currentUserId={currentUserId}
-          hideBots={hideBots}
-          canModerate={canModerate}
-        />
-            )}
+          <PlayerStatsPanel
+            currentRoundPosition={currentRoundPosition}
+            roundsLimit={roundsLimit}
+            matches={matches}
+            players={players}
+            type={type}
+            currentUserId={currentUserId}
+            hideBots={hideBots}
+            canModerate={canModerate}
+          />
+        )}
         {panelMode === PanelModeCodes.ratingMode && (
-        <RatingPanel
-          searchedUser={searchedUser}
-          roundsLimit={roundsLimit}
-          currentRoundPosition={currentRoundPosition}
-          matches={matches}
-          players={players}
-          topPlayerIds={topPlayerIds}
-          currentUserId={currentUserId}
-          pageNumber={pageNumber}
-          pageSize={pageSize}
-          hideBots={hideBots}
-          hideResults={hideResults && !canModerate}
-        />
-            )}
+          <RatingPanel
+            searchedUser={searchedUser}
+            roundsLimit={roundsLimit}
+            currentRoundPosition={currentRoundPosition}
+            matches={matches}
+            players={players}
+            topPlayerIds={topPlayerIds}
+            currentUserId={currentUserId}
+            pageNumber={pageNumber}
+            pageSize={pageSize}
+            hideBots={hideBots}
+            hideResults={hideResults && !canModerate}
+          />
+        )}
         {panelMode === PanelModeCodes.topUserByClansMode && (
-        <RatingClansPanel
-          type={panelMode}
-          state={state}
-        />
-            )}
+          <RatingClansPanel type={panelMode} state={state} />
+        )}
         {panelMode === PanelModeCodes.taskRatingMode && (
-        <TaskRankingPanel
-          type={panelMode}
-          state={state}
-          handleTaskSelectClick={handleTaskSelectClick}
-        />
-            )}
+          <TaskRankingPanel
+            type={panelMode}
+            state={state}
+            handleTaskSelectClick={handleTaskSelectClick}
+          />
+        )}
         {panelMode === PanelModeCodes.clansBubbleDistributionMode && (
-        <ClansChartPanel
-          type={panelMode}
-          state={state}
-        />
-            )}
+          <ClansChartPanel type={panelMode} state={state} />
+        )}
         {panelMode === PanelModeCodes.taskRatingAdvanced && (
-        <TaskRankingAdvancedPanel
-          taskId={selectedTaskId}
-          state={state}
-        />
-            )}
+          <TaskRankingAdvancedPanel taskId={selectedTaskId} state={state} />
+        )}
       </div>
       {/*   </CSSTransition> */}
       {/* </SwitchTransition> */}
