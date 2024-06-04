@@ -46,7 +46,7 @@ const UserStats = ({ data, user: userInfo }) => {
                 <div>
                   <button
                     type="button"
-                    title="follow"
+                    title="play active game"
                     className="btn btn-sm text-primary border-0 rounded-lg"
                     onClick={handlePlayClick}
                     disabled={!activeGameId}
