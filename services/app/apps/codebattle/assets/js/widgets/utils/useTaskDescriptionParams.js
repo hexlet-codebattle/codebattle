@@ -18,7 +18,7 @@ const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
     // TODO: remove russian text from string (create ru/en templates of basic description)
     const taskDescriptionMapping = {
       en: `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`,
-      ru: `${task.descriptionRu}\n\n**примеры:**\n${task.examples}`,
+      ru: `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`,
     };
 
     const description = taskDescriptionMapping[taskLanguage];

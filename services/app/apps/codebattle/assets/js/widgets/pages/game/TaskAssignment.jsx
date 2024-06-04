@@ -87,7 +87,7 @@ function TaskAssignment({
   }
 
   const cardClassName = cn({
-    'card h-100 border-0 shadow-sm': !fullSize,
+    'card border-0 shadow-sm': !fullSize,
     h5: taskSize === 1,
     h4: taskSize === 2,
     h3: taskSize === 3,
@@ -107,7 +107,7 @@ function TaskAssignment({
 
   return (
     <div className={cardClassName}>
-      <div className="px-3 py-3 h-100 overflow-auto" data-guide-id={!fullSize && 'Task'}>
+      <div className="px-3 py-3 h-100" data-guide-id={!fullSize && 'Task'}>
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text d-flex align-items-center">
             <GameLevelBadge level={task.level} />

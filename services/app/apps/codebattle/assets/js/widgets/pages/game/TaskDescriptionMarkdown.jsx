@@ -1,25 +1,14 @@
 import React from 'react';
 
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'react-markdown';
+import rehypeKatex from 'rehype-katex';
+import remarkMath from 'remark-math';
+import 'katex/dist/katex.min.css';
 
 const TaskDescriptionMarkdown = ({ description }) => (
-  <ReactMarkdown
-    source={description}
-    renderers={{
-      linkReference: reference => {
-        if (!reference.href) {
-          return (
-            <>
-              [
-              {reference.children}
-              ]
-            </>
-);
-        }
-        return <a href={reference.$ref}>{reference.children}</a>;
-      },
-    }}
-  />
+  <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+    {description}
+  </Markdown>
 );
 
 export default TaskDescriptionMarkdown;
