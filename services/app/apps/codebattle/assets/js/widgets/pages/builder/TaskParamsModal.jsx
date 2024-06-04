@@ -24,6 +24,7 @@ import ExamplePreview from './ExamplePreview';
 import SignaturePreview from './SignaturePreview';
 
 export const modalActions = {
+  edit: 'edit',
   upload: 'upload',
   save: 'save',
   copy: 'copy',
@@ -39,6 +40,8 @@ export const modalModes = {
 
 const getTitle = (action, taskParamsState) => {
   switch (action) {
+    case 'edit':
+      return 'Edit task json model';
     case 'upload':
       return 'Upload task json model';
     case 'copy':
@@ -63,6 +66,7 @@ const getBtnTitle = (action, state) => {
   }
 
   switch (action) {
+    case 'edit': return 'Edit task';
     case 'upload': return 'Upload task';
     case 'save': return 'Confirm';
     case 'copy': return 'Copy';
@@ -162,6 +166,7 @@ const TaskParamsModal = NiceModal.create(({
 
     try {
       switch (action) {
+        case 'edit':
         case 'upload': {
           handleUpload(taskService, onSuccess, onError);
           break;
@@ -196,15 +201,15 @@ const TaskParamsModal = NiceModal.create(({
   }, [defaultMode, setMode]);
 
   useEffect(() => {
-    if (modal.visible && !isEmpty(value) && action === modalActions.upload) {
+    if (modal.visible && !isEmpty(value) && [modalActions.upload, modalActions.edit].includes(action)) {
       taskParamsRef.current.value = value;
     }
 
-    if (modal.visible && isEmpty(value) && action === modalActions.upload) {
+    if (modal.visible && isEmpty(value) && [modalActions.upload, modalActions.edit].includes(action)) {
       taskParamsRef.current.value = taskParamsJSON;
     }
 
-    if (modal.visible && action === modalActions.upload) {
+    if (modal.visible && [modalActions.upload, modalActions.edit].includes(action)) {
       // taskParamsRef.current.focus();
       taskParamsRef.current.select();
     }

@@ -150,6 +150,9 @@ function BuilderActions({
   const openCopyTaskModal = useCallback(() => {
     NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.showJSON, action: modalActions.copy });
   }, []);
+  const openEditTaskModal = useCallback(() => {
+    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.editJSON, action: modalActions.edit });
+  }, []);
 
   if (!(isAdmin || isOwner)) {
     return null;
@@ -168,14 +171,24 @@ function BuilderActions({
         </button>
       )}
       {task.state !== taskStateCodes.blank && (
-        <button
-          type="button"
-          className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
-          onClick={openCopyTaskModal}
-        >
-          <FontAwesomeIcon className="mr-2" icon="copy" />
-          Copy
-        </button>
+        <>
+          <button
+            type="button"
+            className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
+            onClick={openCopyTaskModal}
+          >
+            <FontAwesomeIcon className="mr-2" icon="copy" />
+            Copy
+          </button>
+          <button
+            type="button"
+            className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
+            onClick={openEditTaskModal}
+          >
+            <FontAwesomeIcon className="mr-2" icon="edit" />
+            Edit
+          </button>
+        </>
       )}
       <button
         type="button"
