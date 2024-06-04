@@ -18,7 +18,7 @@ import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
-jest.mock('react-markdown', () => (<></>));
+jest.mock('../widgets/pages/game/TaskDescriptionMarkdown', () => () => (<>Examples: </>));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
