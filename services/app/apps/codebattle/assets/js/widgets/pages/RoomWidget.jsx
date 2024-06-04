@@ -53,7 +53,6 @@ export function useWindowDimensions() {
 function PanelsSplitPane({ children, viewMode }) {
   const dimensions = useWindowDimensions();
 
-  console.log(dimensions);
   if (viewMode !== 'duel' || dimensions.width < 992) return children;
 
   return (
