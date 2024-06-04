@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 
 import { followUser } from '../middlewares/Main';
+import { redirectToNewGame } from '../slices';
 
 import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
@@ -12,9 +13,14 @@ import UserAchievements from './UserAchievements';
 const UserStats = ({ data, user: userInfo }) => {
   const dispatch = useDispatch();
 
+  const activeGameId = data?.activeGameId;
   const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || '/assets/images/logo.svg';
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
+
+  const handlePlayClick = useCallback(() => {
+    dispatch(redirectToNewGame(activeGameId));
+  }, [activeGameId, dispatch]);
 
   const handleFollowClick = useCallback(() => {
     dispatch(followUser(userInfo.id));
@@ -37,23 +43,38 @@ const UserStats = ({ data, user: userInfo }) => {
                   <span>{name}</span>
                   <LanguageIcon className="ml-1" lang={lang} />
                 </div>
-                <button
-                  type="button"
-                  title="follow"
-                  className="btn btn-sm text-primary border-0 rounded-lg"
-                  onClick={handleFollowClick}
-                >
-                  <FontAwesomeIcon icon="binoculars" />
-                </button>
+                <div>
+                  <button
+                    type="button"
+                    title="follow"
+                    className="btn btn-sm text-primary border-0 rounded-lg"
+                    onClick={handlePlayClick}
+                    disabled={!activeGameId}
+                  >
+                    <FontAwesomeIcon icon="play" />
+                  </button>
+                  <button
+                    type="button"
+                    title="follow"
+                    className="btn btn-sm text-primary border-0 rounded-lg"
+                    onClick={handleFollowClick}
+                  >
+                    <FontAwesomeIcon icon="binoculars" />
+                  </button>
+                </div>
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">
                   <img src="/assets/images/cup.svg" alt="rating" />
-                  <span className="ml-1">{data?.user?.rank || userInfo.rank || '####'}</span>
+                  <span className="ml-1">
+                    {data?.user?.rank || userInfo.rank || '####'}
+                  </span>
                 </div>
                 <div className="d-flex align-items-baseline ml-2">
                   <img src="/assets/images/rating.svg" alt="rating" />
-                  <span className="ml-1">{data?.user?.rating || userInfo.rating || '####'}</span>
+                  <span className="ml-1">
+                    {data?.user?.rating || userInfo.rating || '####'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -72,7 +93,9 @@ const UserStats = ({ data, user: userInfo }) => {
           </div>
           <div className="ml-1">
             <span>GaveUp:</span>
-            <b className="text-warning">{data ? data.stats.games.gaveUp : '#'}</b>
+            <b className="text-warning">
+              {data ? data.stats.games.gaveUp : '#'}
+            </b>
           </div>
         </div>
       </div>

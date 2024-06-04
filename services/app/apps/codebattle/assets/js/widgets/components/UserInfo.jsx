@@ -28,6 +28,7 @@ function UserPopoverContent({ user }) {
       .then(response => {
         if (!controller.signal.aborted) {
           setStats(camelizeKeys(response.data));
+          setStats(camelizeKeys(response.data));
         }
       })
       .catch(error => {
@@ -39,7 +40,7 @@ function UserPopoverContent({ user }) {
     };
   }, [dispatch, setStats, user.id]);
 
-  return <UserStats user={user} data={stats} />;
+  return <UserStats user={user} data={stats}/>;
 }
 
 function UserInfo({
