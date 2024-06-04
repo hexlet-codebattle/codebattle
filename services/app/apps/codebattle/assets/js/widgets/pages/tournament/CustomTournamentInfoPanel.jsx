@@ -74,8 +74,8 @@ function CustomTournamentInfoPanel({
           setSearchOption={setSearchedUser}
           setPanelMode={setPanelMode}
           disabledPanelModeControl={
-                !players[currentUserId] || (hideResults && !canModerate) || (type === TournamentTypes.arena && !canModerate)
-              }
+            !players[currentUserId] || (hideResults && !canModerate) || (type === TournamentTypes.arena && !canModerate)
+          }
           disabledSearch={!canModerate}
         />
         {panelMode === PanelModeCodes.playerMode && (

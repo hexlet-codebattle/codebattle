@@ -105,6 +105,7 @@ function ControlPanel({
           className="form-control custom-select rounded-lg"
           value={panelMode}
           onChange={onChangePanelMode}
+          disabled={disabledPanelModeControl}
         >
           {Object.values(PanelModeCodes).map(mode => (
             (![
