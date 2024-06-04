@@ -79,7 +79,7 @@ function ChatWidget() {
       <div className="d-flex flex-wrap flex-sm-nowrap bg-white shadow-sm h-100 rounded-lg">
         <div
           className={cn(
-            'd-flex flex-column flex-grow-1 position-relative p-0 mh-100 rounded-left',
+            'd-flex flex-column flex-grow-1 position-relative p-0 h-100 mh-100 rounded-left',
             'cb-game-chat-container cb-messages-container',
           )}
         >

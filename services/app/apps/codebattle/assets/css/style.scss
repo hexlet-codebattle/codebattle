@@ -111,6 +111,13 @@ em-emoji-picker {
   border-radius: unset;
 }
 
+.gutter-vertical {
+  background-image: url('../static/images/verticalGutter.svg');
+  cursor: col-resize;
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
 .header-txt {
   font-size: 18px;
   line-height: 18px;
@@ -494,24 +501,6 @@ a {
 
 .cb-players-container {
   max-height: 500px;
-}
-
-.cb-height-info {
-  height: 300px;
-
-  .nav-link.active {
-    color: black;
-    border-bottom: 1px;
-    background-color: white;
-  }
-
-  .nav-link:hover {
-    color: #b60314;
-  }
-
-  @media (max-width: $sm) {
-    height: auto;
-  }
 }
 
 .cb-mute-icon {
@@ -1515,7 +1504,7 @@ a {
 }
 
 .cb-height-info {
-  height: 300px;
+  // min-height: 300px;
 
   .nav-link.active {
     color: black;

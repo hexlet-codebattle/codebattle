@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import Split from 'react-split';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
@@ -25,6 +26,51 @@ import InfoWidget from './game/InfoWidget';
 import NetworkAlert from './game/NetworkAlert';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
+
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height,
+  };
+}
+
+export function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+
+function PanelsSplitPane({ children, viewMode }) {
+  const dimensions = useWindowDimensions();
+
+  console.log(dimensions);
+  if (viewMode !== 'duel' || dimensions.width < 992) return children;
+
+  return (
+    <Split
+      style={{ maxHeight: 'calc(100vh - 77px)' }}
+      sizes={[33, 62]}
+      className="d-flex flex-column w-100"
+      direction="vertical"
+      gutterSize="5"
+      gutterAlign="center"
+      cursor="row-resize"
+    >
+      <div style={{ minHeight: 150 }} className="d-flex w-100">{children[0]}</div>
+      <div style={{ minHeight: 200 }} className="d-flex w-100 cb-overflow-y-hidden">{children[1]}</div>
+    </Split>
+  );
+}
 
 function RoomWidget({
   pageName,
@@ -93,16 +139,16 @@ function RoomWidget({
             >
               <div className="row no-gutter cb-game">
                 {showTaskBuilder && (
-                  <>
+                  <PanelsSplitPane viewMode={viewMode}>
                     <BuilderSettingsWidget />
                     <BuilderEditorsWidget />
-                  </>
+                  </PanelsSplitPane>
                 )}
                 {showBattleRoom && (
-                  <>
+                  <PanelsSplitPane viewMode={viewMode}>
                     <InfoWidget viewMode={viewMode} />
                     <GameWidget viewMode={viewMode} editorMachine={editorMachine} />
-                  </>
+                  </PanelsSplitPane>
                 )}
                 {mute && (
                   <div className="rounded p-2 bg-dark cb-mute-icon">

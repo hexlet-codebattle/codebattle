@@ -87,7 +87,7 @@ function TaskAssignment({
   }
 
   const cardClassName = cn({
-    'card border-0 shadow-sm': !fullSize,
+    'card border-0': !fullSize,
     h5: taskSize === 1,
     h4: taskSize === 2,
     h3: taskSize === 3,
