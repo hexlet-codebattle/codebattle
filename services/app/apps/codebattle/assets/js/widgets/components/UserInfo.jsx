@@ -21,13 +21,13 @@ function UserPopoverContent({ user }) {
   useEffect(() => {
     const userId = user.id;
     const controller = new AbortController();
+
     axios
       .get(`/api/v1/user/${userId}/stats`, {
         signal: controller.signal,
       })
       .then(response => {
         if (!controller.signal.aborted) {
-          setStats(camelizeKeys(response.data));
           setStats(camelizeKeys(response.data));
         }
       })

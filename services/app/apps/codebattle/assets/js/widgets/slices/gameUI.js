@@ -6,6 +6,7 @@ import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const initialState = {
   followId: undefined,
+  followPaused: false,
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
@@ -30,11 +31,15 @@ const gameUI = createSlice({
       Object.assign(state, payload);
     },
     followUser: (state, { payload }) => {
-      console.log('followUser', payload);
       state.followId = payload.followId;
+      state.followPaused = false;
     },
     unfollowUser: state => {
       state.followId = undefined;
+      state.followPaused = false;
+    },
+    togglePausedFollow: state => {
+      state.followPaused = !state.followPaused;
     },
   },
 });

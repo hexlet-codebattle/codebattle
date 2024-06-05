@@ -30,6 +30,7 @@ const gameUIPersistWhitelist = [
   'editorMode',
   'editorTheme',
   'followId',
+  'followPaused',
   'taskDescriptionLanguage',
 ];
 
@@ -55,6 +56,7 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
+const OnlineContainer = React.lazy(() => import('./components/OnlineContainer'));
 const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
 const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
@@ -66,6 +68,12 @@ const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
 const EventWidget = React.lazy(() => import('./pages/event'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
+
+export const Online = () => (
+  <Provider store={store}>
+    <OnlineContainer />
+  </Provider>
+);
 
 export const Invites = () => (
   <Provider store={store}>

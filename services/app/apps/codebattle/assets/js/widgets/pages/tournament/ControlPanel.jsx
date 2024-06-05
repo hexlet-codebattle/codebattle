@@ -35,6 +35,7 @@ export const mapPanelModeToTitle = {
   [PanelModeCodes.topUserByClansMode]: 'Top users by clan ranking',
   [PanelModeCodes.taskRatingMode]: 'Tasks ranking',
   [PanelModeCodes.clansBubbleDistributionMode]: 'Clans bubble distribution',
+  [PanelModeCodes.taskRatingAdvanced]: 'Duration distribution and top users by task',
   [PanelModeCodes.taskDurationDistributionMode]: 'task duration distribution',
   [PanelModeCodes.topUserByTasksMode]: 'Top user by task ranking',
 };
@@ -89,6 +90,7 @@ function ControlPanel({
               }
             }
             defaultOptions
+            className="w-25"
             classNamePrefix="rounded-0 "
             onChange={onChangeSearchedPlayer}
             loadOptions={loadOptions}

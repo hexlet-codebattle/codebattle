@@ -35,6 +35,7 @@ import {
   renderBuilderWidget,
   renderGameWidget,
   renderHeatmapWidget,
+  renderOnlineWidget,
   renderInvitesWidget,
   renderLobby,
   renderRegistrationPage,
@@ -93,6 +94,7 @@ const builderWidgetRoot = document.getElementById('builder-widget-root');
 const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
+const onlineRoot = document.getElementById('online-root');
 const invitesRoot = document.getElementById('invites-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
@@ -104,6 +106,10 @@ const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
+
+if (onlineRoot) {
+  renderOnlineWidget(onlineRoot);
+}
 
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);

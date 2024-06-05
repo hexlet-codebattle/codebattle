@@ -36,6 +36,7 @@ defmodule CodebattleWeb.MainChannel do
     if socket.assigns.current_user.is_guest do
       {:noreply, socket}
     else
+      Codebattle.PubSub.unsubscribe("user:#{user_id}")
       Codebattle.PubSub.subscribe("user:#{user_id}")
       active_game_id = Game.Context.get_active_game_id(user_id)
       {:reply, {:ok, %{active_game_id: active_game_id, follow_id: user_id}}, socket}
@@ -98,5 +99,3 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 end
-
-

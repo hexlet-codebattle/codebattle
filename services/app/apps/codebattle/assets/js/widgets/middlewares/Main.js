@@ -73,6 +73,14 @@ const listBy = (id, { metas: [first, ...rest] }) => {
 
 const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => dispatch(actionCreator(camelizeKeys(data)));
 
+const redirectToNewGame = data => (_dispatch, getState) => {
+  const { followPaused } = getState().gameUI;
+
+  if (!followPaused) {
+    window.location.replace(makeGameUrl(data.activeGameId));
+  }
+};
+
 const initPresence = followId => dispatch => {
   channel = socket.channel('main', {
     ...getUserStateByPath(),
@@ -93,7 +101,7 @@ const initPresence = followId => dispatch => {
 
   const ref = channel.on('user:game_created', data => {
     camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
-    window.location.replace(makeGameUrl(camelizeKeys(data).activeGameId));
+    dispatch(redirectToNewGame(camelizeKeys(data)));
   });
 
   return () => {

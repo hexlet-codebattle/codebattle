@@ -95,7 +95,7 @@ function BuilderActions({
   const readySave = useSelector(selectors.isValidTask);
 
   const disabledTestingBtn = (
-    task.state === taskStateCodes.active
+    task.state === taskStateCodes.active || isSavedTask
       ? false
       : !readyTesting || isInvalidTaskMachineState || isTestingPrepare
   );

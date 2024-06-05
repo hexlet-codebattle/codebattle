@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch } from 'react-redux';
+import cn from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { followUser } from '../middlewares/Main';
+import { followUser, unfollowUser } from '../middlewares/Main';
 import { redirectToNewGame } from '../slices';
 
 import LanguageIcon from './LanguageIcon';
@@ -18,13 +19,21 @@ const UserStats = ({ data, user: userInfo }) => {
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
 
-  const handlePlayClick = useCallback(() => {
-    redirectToNewGame(activeGameId);
-  }, [activeGameId, dispatch]);
+  const followId = useSelector(state => state.gameUI.followId);
 
-  const handleFollowClick = useCallback(() => {
-    dispatch(followUser(userInfo.id));
-  }, [userInfo.id, dispatch]);
+  const handlePlayClick = useCallback(() => {
+    if (activeGameId) {
+      redirectToNewGame(activeGameId);
+    }
+  }, [activeGameId]);
+
+  const toggleFollowClick = useCallback(() => {
+    if (userInfo.id && followId === userInfo.id) {
+      dispatch(unfollowUser(userInfo.id));
+    } else {
+      dispatch(followUser(userInfo.id));
+    }
+  }, [userInfo.id, followId, dispatch]);
 
   return (
     <div className="container-fluid p-2">
@@ -47,7 +56,13 @@ const UserStats = ({ data, user: userInfo }) => {
                   <button
                     type="button"
                     title="play active game"
-                    className="btn btn-sm text-primary border-0 rounded-lg"
+                    className={cn(
+                      'btn btn-sm text-primary border-0 rounded-lg',
+                      {
+                        'text-primary': !!activeGameId,
+                        'text-muted': !activeGameId,
+                      },
+                    )}
                     onClick={handlePlayClick}
                     disabled={!activeGameId}
                   >
@@ -55,9 +70,15 @@ const UserStats = ({ data, user: userInfo }) => {
                   </button>
                   <button
                     type="button"
-                    title="follow"
-                    className="btn btn-sm text-primary border-0 rounded-lg"
-                    onClick={handleFollowClick}
+                    title="follow user"
+                    className={cn(
+                      'btn btn-sm border-0 rounded-lg',
+                      {
+                        'text-primary': followId !== userInfo.id,
+                        'text-danger': followId === userInfo.id,
+                      },
+                    )}
+                    onClick={toggleFollowClick}
                   >
                     <FontAwesomeIcon icon="binoculars" />
                   </button>
