@@ -18,7 +18,10 @@ const userSlice = createSlice({
     updateUsers: (state, { payload }) => {
       const { users: usersList } = payload;
       const users = usersList.reduce(
-        (acc, user) => ({ ...acc, [user.id]: user }),
+        (acc, user) => (state.users[user.id]
+          ? { ...acc, [user.id]: { ...state.users[user.id], ...user } }
+          : { ...acc, [user.id]: user }
+          ),
         {},
       );
       if (!isEmpty(users)) {

@@ -22,9 +22,9 @@ export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const currentUserClanIdSelector = state => state.user.users[state.user.currentUserId].clanId;
 
-export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].isAdmin;
+export const currentUserIsAdminSelector = state => !!state.user.users[state.user.currentUserId].isAdmin;
 
-export const currentUserIsGuestSelector = state => state.user.users[state.user.currentUserId].isGuest;
+export const currentUserIsGuestSelector = state => !!state.user.users[state.user.currentUserId].isGuest;
 
 export const subscriptionTypeSelector = state => (
   currentUserIsAdminSelector(state)
@@ -32,7 +32,7 @@ export const subscriptionTypeSelector = state => (
     : SubscriptionTypeCodes.premium
 );
 
-export const isShowGuideSelector = state => state.gameUI.isShowGuide;
+export const isShowGuideSelector = state => !!state.gameUI.isShowGuide;
 
 export const gameIdSelector = state => state.game.gameStatus.gameId;
 
