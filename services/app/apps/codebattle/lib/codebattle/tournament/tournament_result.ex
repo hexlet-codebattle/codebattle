@@ -452,7 +452,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       from(r in __MODULE__,
         join: c in Clan,
         on: r.clan_id == c.id,
-        group_by: [r.user_id, c.id, r.duration_sec],
+        group_by: [r.user_id, c.id, r.duration_sec, r.score],
         where: r.tournament_id == ^tournament.id,
         where: r.task_id == ^task_id,
         where: r.result_percent == 100.0,
@@ -462,6 +462,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           user_id: r.user_id,
           user_name: max(r.user_name),
           duration_sec: r.duration_sec,
+          score: r.score,
           clan_id: c.id,
           clan_name: c.name,
           clan_long_name: c.long_name
