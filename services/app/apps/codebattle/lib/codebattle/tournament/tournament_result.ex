@@ -405,7 +405,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
-  def get_clans_bubble_distribution(tournament, max_radius \\ 7) do
+  def get_clans_bubble_distribution(tournament, max_radius \\ 7, limit \\ 10) do
     """
     WITH clans_result AS (
     SELECT
@@ -440,6 +440,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       clans c ON cr.clan_id = c.id
     ORDER BY
       cr.total_score DESC
+    LIMIT
+      #{limit}
     """
     |> Repo.query!()
     |> map_repo_result()
@@ -452,20 +454,21 @@ defmodule Codebattle.Tournament.TournamentResult do
       from(r in __MODULE__,
         join: c in Clan,
         on: r.clan_id == c.id,
-        group_by: [r.user_id, c.id, r.duration_sec, r.score],
+        group_by: [r.user_id, c.id, r.duration_sec, r.score, r.game_id],
         where: r.tournament_id == ^tournament.id,
         where: r.task_id == ^task_id,
         where: r.result_percent == 100.0,
         order_by: [asc: r.duration_sec],
         limit: ^limit,
         select: %{
-          user_id: r.user_id,
-          user_name: max(r.user_name),
-          duration_sec: r.duration_sec,
-          score: r.score,
           clan_id: c.id,
+          clan_long_name: c.long_name,
           clan_name: c.name,
-          clan_long_name: c.long_name
+          duration_sec: r.duration_sec,
+          game_id: r.game_id,
+          score: r.score,
+          user_id: r.user_id,
+          user_name: max(r.user_name)
         }
       )
 
