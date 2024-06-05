@@ -69,7 +69,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       end AS base_score,
       array_agg(duration_sec),
       max(duration_sec) as max_duration,
-      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_95
+      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_95,
+      PERCENTILE_CONT(0.05) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_5
       FROM
       games g
       where tournament_id = #{tournament.id}
@@ -87,11 +88,12 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.tournament_id,
       g.id as game_id,
       dt.percentile_95,
+      dt.percentile_5,
       dt.base_score,
       CASE
-      WHEN g.duration_sec <= dt.percentile_95 THEN base_score
-      WHEN g.duration_sec >= dt.max_duration THEN base_score * 0.3
-      ELSE base_score * (0.3 + 0.7 * (g.duration_sec - dt.max_duration) / (dt.percentile_95 - dt.max_duration))
+      WHEN g.duration_sec <= dt.percentile_5 THEN base_score
+      WHEN g.duration_sec >= dt.percentile_95 THEN base_score * 0.3
+      ELSE base_score - (base_score * 0.7 * (g.duration_sec - dt.percentile_5) / (dt.percentile_95 - dt.percentile_5))
       END AS score,
       g.level,
       g.task_id,
@@ -104,7 +106,6 @@ defmodule Codebattle.Tournament.TournamentResult do
       where g.tournament_id = #{tournament.id}
       and state in ('game_over', 'timeout')
       )
-
       insert into tournament_results
       (
       tournament_id,
@@ -383,8 +384,8 @@ defmodule Codebattle.Tournament.TournamentResult do
         generate_series(0, 15)
     )
     SELECT
-      CEIL(interval_start) AS start,
-      CEIL(interval_end) AS end,
+      CEIL(interval_start)::int AS start,
+      CEIL(interval_end)::int AS end,
       COUNT(tr.duration_sec) AS wins_count
     FROM
       Intervals

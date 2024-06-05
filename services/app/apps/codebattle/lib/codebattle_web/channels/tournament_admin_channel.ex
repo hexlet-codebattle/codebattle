@@ -74,7 +74,11 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_in("tournament:get_task", %{"task_id" => task_id}, socket) do
-    task_id |>  Codebattle.Task.get() |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
+    task_id
+    |> Codebattle.Task.get()
+    |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
+
+    {:noreply, socket}
   end
 
   def handle_in("tournament:get_results", %{"params" => params}, socket) do
@@ -93,8 +97,10 @@ defmodule CodebattleWeb.TournamentAdminChannel do
           TournamentResult.get_tasks_ranking(tournament)
 
         %{"type" => "task_duration_distribution", "task_id" => task_id} ->
-
-          |> TournamentResult.get_task_duration_distribution(task_id)
+          TournamentResult.get_task_duration_distribution(
+            tournament,
+            task_id
+          )
 
         %{"type" => "clans_bubble_distribution"} ->
           TournamentResult.get_clans_bubble_distribution(

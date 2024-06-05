@@ -18,6 +18,7 @@ defmodule Codebattle.Event do
              :ticker_text,
              :title,
              :description,
+             :personal_tournament_id,
              :starts_at
            ]}
 
@@ -32,6 +33,7 @@ defmodule Codebattle.Event do
     field(:title, :string)
     field(:description, :string)
     field(:starts_at, :utc_datetime)
+    field(:personal_tournament_id, :integer)
 
     timestamps()
   end

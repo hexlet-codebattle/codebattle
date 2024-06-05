@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+import groupBy from 'lodash/groupBy';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
@@ -7,6 +8,21 @@ import { useDispatch } from 'react-redux';
 import { actions } from '../../slices';
 
 import LeaderboardPagination from './LeaderboardPagination';
+
+const getCustomEventTrClassNamePersonal = (type, muted, isUser) => cn('text-dark font-weight-bold cb-custom-event-tr', {
+    'cb-custom-event-bg-success': type === 'clan' && !muted,
+    'cb-custom-event-bg-muted-success': type === 'clan' && muted,
+    'cb-custom-event-bg-purple': type === 'user' && !muted,
+    'cb-custom-event-bg-muted-purple': type === 'user' && muted,
+    'cb-custom-event-tr-brown-border': isUser,
+  });
+
+const tableDataCellClassNamePersonal = hideSeparator => cn(
+    'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+    {
+      'hide-separator': hideSeparator,
+    },
+  );
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -17,7 +33,8 @@ const navTabsClassName = cn(
   'rounded-top',
 );
 
-const getTabLinkClassName = isActive => cn(
+const getTabLinkClassName = (isActive) =>
+  cn(
     'nav-item nav-link cb-custom-event-nav-item position-relative',
     'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
     {
@@ -27,7 +44,8 @@ const getTabLinkClassName = isActive => cn(
     },
   );
 
-const getCustomEventTrClassName = (item, selectedId) => cn(
+const getCustomEventTrClassName = (item, selectedId) =>
+  cn(
     'text-dark font-weight-bold cb-custom-event-tr',
     {
       'cb-gold-place-bg': item?.place === 1,
@@ -43,15 +61,14 @@ const getCustomEventTrClassName = (item, selectedId) => cn(
   );
 
 const commonRatingTypes = {
+  personal: 'personal',
   clan: 'clan',
   player: 'player',
   playerClan: 'player_clan',
 };
 
 const EventRatingPanel = ({
-  commonLeaderboard: {
- items, pageNumber, pageSize, totalEntries,
-} = {
+  commonLeaderboard: { items, pageNumber, pageSize, totalEntries } = {
     items: [],
     pageNumber: 1,
     pageSize: 10,
@@ -59,15 +76,19 @@ const EventRatingPanel = ({
   },
   currentUserClanId,
   currentUserId,
+  personalTournamentId,
   eventId,
 }) => {
   const dispatch = useDispatch();
 
-  const [type, setType] = useState(commonRatingTypes.clan);
-  const selectedId = type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
+  const [type, setType] = useState(
+    personalTournamentId ? commonRatingTypes.personal : commonRatingTypes.clan,
+  );
+  const selectedId =
+    type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
 
   const handleClick = useCallback(
-    e => {
+    (e) => {
       const {
         currentTarget: { dataset },
       } = e;
@@ -77,7 +98,7 @@ const EventRatingPanel = ({
   );
 
   const setPage = useCallback(
-    page => {
+    (page) => {
       (async () => {
         try {
           await dispatch(
@@ -112,6 +133,89 @@ const EventRatingPanel = ({
     /* eslint-disable-next-line */
   }, [type]);
 
+  if (personalTournamentId) {
+    const groupedItems = Object.values(groupBy(items, (item) => item.clanRank));
+
+    return (
+      <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+        <table className="table table-striped cb-custom-event-table">
+          <thead className="text-muted">
+            <tr>
+              <th className="p-1 pl-4 font-weight-light border-0">{}</th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Clan')}
+              </th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Score')}
+              </th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Wins count')}
+              </th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Total time for solving task')}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {groupedItems?.map((users, index) => (
+              <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
+                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className={getCustomEventTrClassNamePersonal('clan', index > 3)}>
+                  <td className={tableDataCellClassNamePersonal(true)}>
+                    {users[0].clanRank}
+                  </td>
+                  <td
+                    title={users[0].clanLongName}
+                    className={tableDataCellClassNamePersonal()}
+                  >
+                    <div className="cb-custom-event-name mr-1">
+                      {users[0].clanName}
+                    </div>
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {users.reduce((acc, user) => acc + user.totalScore, 0) || 0}
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {users.reduce((acc, user) => acc + user.winsCount, 0) || 0}
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {users.reduce(
+                      (acc, user) => acc + user.totalDurationSec,
+                      0,
+                    ) || 0}
+                  </td>
+                </tr>
+                {users.map((user) => (
+                  <React.Fragment key={`${type}-user-${user.userId}`}>
+                    <tr className="cb-custom-event-empty-space-tr" />
+                    <tr
+                      className={getCustomEventTrClassNamePersonal('user', index > 3, user.userId === currentUserId)}
+                    >
+                      <td className={tableDataCellClassNamePersonal(true)} />
+                      <td className={tableDataCellClassNamePersonal()}>
+                        <div style={{maxWidth: 200 }} className="cb-custom-event-name mr-1">
+                          {user.userName}
+                        </div>
+                      </td>
+                      <td className={tableDataCellClassNamePersonal()}>
+                        {user.totalScore || 0}
+                      </td>
+                      <td className={tableDataCellClassNamePersonal()}>
+                        {user.winsCount || 0}
+                      </td>
+                      <td className={tableDataCellClassNamePersonal()}>
+                        {user.totalDurationSec || 0}
+                      </td>
+                    </tr>
+                  </React.Fragment>
+                ))}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
   return (
     <>
       <div className="d-flex flex-column">
@@ -183,7 +287,7 @@ const EventRatingPanel = ({
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items.map((item) => (
                   <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
@@ -194,12 +298,12 @@ const EventRatingPanel = ({
                         {item.score || '-'}
                       </td>
                       {item.eventPlayersCount !== undefined && (
-                      <td className={tableDataCellClassName}>
-                        {item.eventPlayersCount !== null
-      ? `${item.eventPlayersCount}/${item.clansPlayersCount}`
-      : item.clansPlayersCount}
-                      </td>
-)}
+                        <td className={tableDataCellClassName}>
+                          {item.eventPlayersCount !== null
+                            ? `${item.eventPlayersCount}/${item.clansPlayersCount}`
+                            : item.clansPlayersCount}
+                        </td>
+                      )}
                       <td
                         title={item.clanLongName}
                         className={tableDataCellClassName}

@@ -591,10 +591,10 @@ msgid "Loading"
 msgstr "Загружается"
 
 msgid "Round ends in "
-msgstr "Игры этапа завершаться через "
+msgstr "Игры этапа завершатся через "
 
 msgid "Next round will start in "
-msgstr "Cледующие игры начнуться через "
+msgstr "Cледующие игры начнутся через "
 
 msgid "Draw"
 msgstr "Последняя задача в ничью"

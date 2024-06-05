@@ -168,6 +168,6 @@ defmodule Codebattle.WaitingRoom.Server do
     player
     |> Map.take([:id, :clan_id, :score])
     |> Map.put(:tasks, Enum.count(player.task_ids))
-    |> Map.put(:joined, :os.system_time(:second))
+    |> Map.put(:wr_joined_at, :os.system_time(:second))
   end
 end

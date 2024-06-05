@@ -44,6 +44,7 @@ function EventWidget() {
   const {
     id,
     loading,
+    personalTournamentId,
     tournaments,
     topLeaderboard,
     commonLeaderboard,
@@ -83,6 +84,7 @@ function EventWidget() {
             currentUserClanId={currentUserClanId}
             commonLeaderboard={commonLeaderboard}
             eventId={id}
+personalTournamentId={personalTournamentId}
           />
         </div>
         <div className="col-12 col-lg-5">

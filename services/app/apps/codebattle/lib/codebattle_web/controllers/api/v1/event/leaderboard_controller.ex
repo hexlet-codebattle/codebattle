@@ -1,10 +1,13 @@
 defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Repo
   alias Codebattle.Clan.Scope
+  alias Codebattle.Event
   alias Codebattle.Event.EventClanResult
   alias Codebattle.Event.EventResult
+  alias Codebattle.Repo
+  alias Codebattle.Tournament.TournamentResult
+
   @page_size 10
 
   def show(conn, params) do
@@ -20,31 +23,52 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
     clan_id = cast_int(params["clan_id"], 1)
     user_id = cast_int(params["user_id"], 1)
 
-    response =
-      case Map.get(params, "type", "clan") do
-        # rating for all clans without players
-        # %{"clan_id" => clan_id} ->
-        "clan" ->
-          get_by_clan(event_id, clan_id, page_size, page_number)
-
-        # rating for players in all clans
-        # %{"user_id" => user_id} ->
-        "player" ->
-          get_by_player(event_id, user_id, page_size, page_number)
-
-        # rating for players only inside users clan
-        "player_clan" ->
-          # %{"user_id" => user_id, "clan_id" => clan_id} ->
-          get_by_clan_palyer(event_id, clan_id, user_id, page_size, page_number)
-
-        _ ->
-          %{
-            items: [],
-            page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0}
-          }
-      end
+    response = get_leaderboard_by_type(params, event_id, clan_id, user_id, page_size, page_number)
 
     json(conn, response)
+  end
+
+  defp get_leaderboard_by_type(params, event_id, clan_id, user_id, page_size, page_number) do
+    case Map.get(params, "type", "clan") do
+      # personal results
+      "personal" ->
+        event_id
+        |> Event.get()
+        |> case do
+          nil ->
+            %{
+              items: [],
+              page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0}
+            }
+
+          %{personal_tournament_id: id} ->
+            %{
+              page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0},
+              items: TournamentResult.get_top_users_by_clan_ranking(%{id: id}, 5, 7)
+            }
+        end
+
+      # rating for all clans without players
+      # %{"clan_id" => clan_id} ->
+      "clan" ->
+        get_by_clan(event_id, clan_id, page_size, page_number)
+
+      # rating for players in all clans
+      # %{"user_id" => user_id} ->
+      "player" ->
+        get_by_player(event_id, user_id, page_size, page_number)
+
+      # rating for players only inside users clan
+      "player_clan" ->
+        # %{"user_id" => user_id, "clan_id" => clan_id} ->
+        get_by_clan_palyer(event_id, clan_id, user_id, page_size, page_number)
+
+      _ ->
+        %{
+          items: [],
+          page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0}
+        }
+    end
   end
 
   defp get_by_clan(event_id, clan_id, page_size, page_number) do
