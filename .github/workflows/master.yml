@@ -48,17 +48,17 @@ jobs:
         env:
           MIX_ENV: test
 
-      # - name: Mix format
-      #   run: mix format --check-formatted
-      #   working-directory: ./services/app
-      #   env:
-      #     MIX_ENV: test
+      - name: Mix format
+        run: mix format --check-formatted
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
 
-      # - name: Mix credo
-      #   run: mix credo
-      #   working-directory: ./services/app
-      #   env:
-      #     MIX_ENV: test
+      - name: Mix credo
+        run: mix credo
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
 
       - name: Get yarn cache
         id: yarn-cache
@@ -79,9 +79,9 @@ jobs:
         run: yarn lint
         working-directory: ./services/app/apps/codebattle
 
-      # - name: Run jest
-      #   run: yarn test
-      #   working-directory:  ./services/app/apps/codebattle
+      - name: Run jest
+        run: yarn test
+        working-directory:  ./services/app/apps/codebattle
 
       - name: Compile
         run: mix compile
@@ -95,10 +95,10 @@ jobs:
         env:
           MIX_ENV: test
 
-      # - name: Mix tests
-      #   run: make test
-      #   env:
-      #     MIX_ENV: test
+      - name: Mix tests
+        run: make test
+        env:
+          MIX_ENV: test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
