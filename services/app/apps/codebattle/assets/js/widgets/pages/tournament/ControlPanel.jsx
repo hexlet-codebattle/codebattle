@@ -4,6 +4,7 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 import AsyncSelect from 'react-select/async';
 
@@ -41,18 +42,30 @@ export const mapPanelModeToTitle = {
 };
 
 function ControlPanel({
+  isPlayer,
   searchOption,
   panelMode,
+  panelHistory,
   disabledPanelModeControl = false,
   disabledSearch = false,
+  setPanelHistory,
   setSearchOption,
   setPanelMode,
 }) {
   const allPlayers = useSelector(tournamentPlayersSelector);
 
+  const onPanelBack = useCallback(() => {
+    if (panelHistory.length === 0) return;
+
+    const [prev, ...rest] = panelHistory.reverse();
+
+    setPanelMode(prev);
+    setPanelHistory(rest.reverse());
+  }, [panelHistory, setPanelHistory, setPanelMode]);
   const onChangePanelMode = useCallback(e => {
-    setPanelMode(e.target.value);
-  }, [setPanelMode]);
+    setPanelMode({ panel: e.target.value });
+    setPanelHistory(items => [...items, panelMode]);
+  }, [setPanelMode, setPanelHistory, panelMode]);
   const onChangeSearchedPlayer = useCallback(
     ({ value = '' }) => setSearchOption(value),
     [setSearchOption],
@@ -75,28 +88,39 @@ function ControlPanel({
 
   return (
     <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-      {panelMode === PanelModeCodes.ratingMode && !disabledSearch ? (
-        <div className="input-group flex-nowrap mb-2">
-          <div className="input-group-prepend">
-            <span className="input-group-text" id="search-icon">
-              <FontAwesomeIcon icon="search" />
-            </span>
-          </div>
-          <AsyncSelect
-            value={
-              searchOption && {
-                label: <UserLabel user={searchOption} />,
-                value: searchOption,
+      <div className="d-flex align-items-center w-50">
+        <button
+          type="button"
+          className="btn btn-outline-secondary text-nowrap rounded-lg mr-1 mb-2"
+          onClick={onPanelBack}
+          disabled={panelHistory.length === 0}
+        >
+          <FontAwesomeIcon icon="backward" className="mr-1" />
+          {i18next.t('Back')}
+        </button>
+        {panelMode.panel === PanelModeCodes.ratingMode && !disabledSearch ? (
+          <div className="input-group flex-nowrap mb-2">
+            <div className="input-group-prepend">
+              <span className="input-group-text" id="search-icon">
+                <FontAwesomeIcon icon="search" />
+              </span>
+            </div>
+            <AsyncSelect
+              value={
+                searchOption && {
+                  label: <UserLabel user={searchOption} />,
+                  value: searchOption,
+                }
               }
-            }
-            defaultOptions
-            className="w-25"
-            classNamePrefix="rounded-0 "
-            onChange={onChangeSearchedPlayer}
-            loadOptions={loadOptions}
-          />
-        </div>
-      ) : <div />}
+              defaultOptions
+              className="w-50"
+              classNamePrefix="rounded-0 "
+              onChange={onChangeSearchedPlayer}
+              loadOptions={loadOptions}
+            />
+          </div>
+        ) : <div />}
+      </div>
       <div
         className={cn('d-flex mb-2 text-nowrap justify-content-end', {
           'text-muted': disabledPanelModeControl,
@@ -105,7 +129,7 @@ function ControlPanel({
         <select
           key="select_panel_mode"
           className="form-control custom-select rounded-lg"
-          value={panelMode}
+          value={panelMode.panel}
           onChange={onChangePanelMode}
           disabled={disabledPanelModeControl}
         >
@@ -114,10 +138,11 @@ function ControlPanel({
               PanelModeCodes.taskRatingAdvanced,
               PanelModeCodes.taskDurationDistributionMode,
               PanelModeCodes.topUserByTasksMode,
-            ].includes(mode) || mode === panelMode) && (
+            ].includes(mode) || mode === panelMode.panel) && (
             <option
               key={mode}
               value={mode}
+              disabled={mode === PanelModeCodes.playerMode && !isPlayer}
             >
               {mapPanelModeToTitle[mode]}
             </option>

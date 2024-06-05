@@ -34,7 +34,7 @@ function TournamentClanTable() {
   }
 
   return (
-    <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto">
+    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto">
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>

@@ -1,4 +1,8 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, {
+  memo,
+  useState,
+  useCallback,
+} from 'react';
 
 import {
   Chart as ChartJS,
@@ -17,6 +21,8 @@ import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
 import UserInfo from '../../components/UserInfo';
 import { getResults } from '../../middlewares/TournamentAdmin';
+
+import useTournamentPanel from './useTournamentPanel';
 
 ChartJS.register(
   CategoryScale,
@@ -49,48 +55,19 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
   const [users, setUsers] = useState([]);
   const [taskItems, setTaskItems] = useState([]);
 
-  useEffect(() => {
-    if (state === 'active') {
-      dispatch(getResults(PanelModeCodes.topUserByTasksMode, taskId, setUsers));
-      dispatch(
-        getResults(
-          PanelModeCodes.taskDurationDistributionMode,
-          taskId,
-          setTaskItems,
-        ),
-      );
+  const fetchData = useCallback(() => {
+    dispatch(getResults(PanelModeCodes.topUserByTasksMode, taskId, setUsers));
+    dispatch(
+      getResults(
+        PanelModeCodes.taskDurationDistributionMode,
+        taskId,
+        setTaskItems,
+      ),
+    );
+  }, [setUsers, setTaskItems, dispatch, taskId]);
 
-      const interval = setInterval(() => {
-        dispatch(
-          getResults(PanelModeCodes.topUserByTasksMode, taskId, setUsers),
-        );
-        dispatch(
-          getResults(
-            PanelModeCodes.taskDurationDistributionMode,
-            taskId,
-            setTaskItems,
-          ),
-        );
-      }, 1000 * 15);
+  useTournamentPanel(fetchData, state);
 
-      return () => {
-        clearInterval(interval);
-      };
-    }
-
-    if (state === 'finished') {
-      dispatch(getResults(PanelModeCodes.topUserByTasksMode, taskId, setUsers));
-      dispatch(
-        getResults(
-          PanelModeCodes.taskDurationDistributionMode,
-          taskId,
-          setTaskItems,
-        ),
-      );
-    }
-
-    return () => {};
-  }, [setUsers, setTaskItems, dispatch, taskId, state]);
   const labels = taskItems.map(x => x.start);
   const lineData = taskItems.map(x => x.winsCount);
 
@@ -104,12 +81,13 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
       },
     ],
   };
+
   return (
-    <div className="d-flex">
-      <div className="w-50">
+    <div className="d-flex h-100">
+      <div className="w-50 p-2">
         <Bar options={options} data={taskChartData} />
       </div>
-      <div className="w-50 my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+      <div className="w-50 p-2 my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
         <table className="table table-striped cb-custom-event-table">
           <thead className="text-muted">
             <tr>
@@ -118,6 +96,9 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
               </th>
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Clan')}
+              </th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Score')}
               </th>
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Duration (sec)')}
@@ -152,6 +133,9 @@ function TaskRankingAdvancedPanel({ taskId, state }) {
                     >
                       {item.clanName}
                     </div>
+                  </td>
+                  <td width="120" className={tableDataCellClassName}>
+                    {item.score}
                   </td>
                   <td width="120" className={tableDataCellClassName}>
                     {item.durationSec}

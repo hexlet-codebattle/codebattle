@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 import {
   Chart as ChartJS,
@@ -12,6 +12,8 @@ import { useDispatch } from 'react-redux';
 
 import { getResults } from '../../middlewares/TournamentAdmin';
 
+import useTournamentPanel from './useTournamentPanel';
+
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
 function ClansChartPanel({ type, state }) {
@@ -19,25 +21,12 @@ function ClansChartPanel({ type, state }) {
 
   const [items, setItems] = useState([]);
 
-  useEffect(() => {
-    if (state === 'active') {
-      dispatch(getResults(type, undefined, setItems));
+  const fetchData = useCallback(
+    () => dispatch(getResults(type, undefined, setItems)),
+    [setItems, dispatch, type],
+  );
 
-      const interval = setInterval(() => {
-        dispatch(getResults(type, undefined, setItems));
-      }, 1000 * 30);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-
-    if (state === 'finished') {
-      dispatch(getResults(type, undefined, setItems));
-    }
-
-    return () => {};
-  }, [setItems, dispatch, type, state]);
+  useTournamentPanel(fetchData, state);
 
   const colors = [
     '#FF621E',
@@ -56,15 +45,15 @@ function ClansChartPanel({ type, state }) {
   const config = {
     data: {
       datasets: items.map(item => ({
-        label: `${item.clanName} [${item.playerCount}]`,
+        label: `${item?.clanName || 'undefined'} [${item?.playerCount || 0}]`,
         data: [
           {
-            x: item.totalScore,
-            y: item.performance,
-            z: item.radius,
+            x: item?.totalScore || 0,
+            y: item?.performance || 0,
+            r: item?.radius < 3 ? 3 : item?.radius || 3,
           },
         ],
-        backgroundColor: getBackgroundColor(item.clanId),
+        backgroundColor: getBackgroundColor(item?.clanId),
       })),
     },
     options: {
@@ -78,7 +67,7 @@ function ClansChartPanel({ type, state }) {
   };
 
   return (
-    <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
       <Bubble data={config.data} options={config.options} />
     </div>
   );

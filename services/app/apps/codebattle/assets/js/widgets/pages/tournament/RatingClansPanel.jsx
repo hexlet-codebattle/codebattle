@@ -1,4 +1,4 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
 import { getResults } from '../../middlewares/TournamentAdmin';
+
+import useTournamentPanel from './useTournamentPanel';
 
 const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
@@ -26,28 +28,15 @@ function RatingClansPanel({ type, state }) {
 
   const [items, setItems] = useState([]);
 
-  useEffect(() => {
-    if (state === 'active') {
-      dispatch(getResults(type, undefined, setItems));
+  const fetchData = useCallback(
+    () => dispatch(getResults(type, undefined, setItems)),
+    [setItems, dispatch, type],
+  );
 
-      const interval = setInterval(() => {
-        dispatch(getResults(type, undefined, setItems));
-      }, 1000 * 30);
-
-      return () => {
-        clearInterval(interval);
-      };
-    }
-
-    if (state === 'finished') {
-      dispatch(getResults(type, undefined, setItems));
-    }
-
-    return () => {};
-  }, [setItems, dispatch, type, state]);
+  useTournamentPanel(fetchData, state);
 
   return (
-    <div className="my-2 px-1 mt-lg-0 sticky-top rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>

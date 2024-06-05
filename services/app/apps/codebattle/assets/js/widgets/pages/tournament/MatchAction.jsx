@@ -19,7 +19,7 @@ function MatchAction({
         <a
           href={href}
           title="Show match"
-          className="btn btn-primary btn-sm rounded-lg px-3"
+          className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
           disabled
         >
           <FontAwesomeIcon className="mr-2" icon="eye" />
@@ -33,7 +33,7 @@ function MatchAction({
             <a
               href={href}
               title={i18next.t('Continue match')}
-              className="btn btn-success btn-sm text-white rounded-lg px-3"
+              className="btn btn-success btn-sm text-white text-nowrap rounded-lg px-3"
             >
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
               {i18next.t('Continue')}
@@ -41,7 +41,7 @@ function MatchAction({
             {canModerate && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm rounded-lg px-3"
+              className="btn btn-outline-danger btn-sm text-nowrap rounded-lg px-3"
               onClick={() => sendMatchGameOver(match.id)}
             >
               <FontAwesomeIcon className="mr-2" icon="window-close" />
@@ -57,7 +57,7 @@ function MatchAction({
           <a
             href={href}
             title={i18next.t('Show match')}
-            className="btn btn-primary btn-sm rounded-lg px-3"
+            className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
@@ -65,7 +65,7 @@ function MatchAction({
           {canModerate && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm rounded-lg px-3"
+              className="btn btn-outline-danger btn-sm text-nowrap rounded-lg px-3"
               onClick={() => sendMatchGameOver(match.id)}
             >
               <FontAwesomeIcon className="mr-2" icon="window-close" />
@@ -83,7 +83,7 @@ function MatchAction({
           <a
             href={href}
             title={i18next.t('Show game history')}
-            className="btn btn-primary btn-sm rounded-lg px-3"
+            className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
