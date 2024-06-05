@@ -356,6 +356,7 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
     if (oldChannel) {
       oldChannel.off(channelTopics.editorCursorPositionTopic, refs[0]);
       oldChannel.off(channelTopics.editorCursorSelectionTopic, refs[1]);
+      oldChannel.leave();
     }
   };
 

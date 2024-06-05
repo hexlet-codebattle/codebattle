@@ -66,6 +66,7 @@ export const fetchState = currentUserId => dispatch => {
       oldChannel.off(channelTopics.lobbyGameCheckCompletedTopic, refs[2]);
       oldChannel.off(channelTopics.lobbyGameRemoveTopic, refs[3]);
       oldChannel.off(channelTopics.lobbyGameFinishedTopic, refs[4]);
+      oldChannel.leave();
     }
   };
 

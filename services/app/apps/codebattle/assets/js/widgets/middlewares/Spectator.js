@@ -69,6 +69,7 @@ export const connectToSpectator = () => dispatch => {
 
   const clearSpectatorChannel = () => {
     currentSpectatorChannel.off(channelTopics.gameCreatedTopic, refs[0]);
+    currentSpectatorChannel.leave();
   };
 
   return clearSpectatorChannel;

@@ -161,19 +161,22 @@ export const connectToTournament = waitingRoomMachine => dispatch => {
   ];
 
   const clearTournamentChannel = () => {
-    oldChannel.off('tournament:update', refs[0]);
-    oldChannel.off('tournament:matches:update', refs[1]);
-    oldChannel.off('tournament:players:update', refs[2]);
-    oldChannel.off('tournament:round_created', refs[3]);
-    oldChannel.off('tournament:round_finished', refs[4]);
-    oldChannel.off('tournament:player:joined', refs[5]);
-    oldChannel.off('tournament:player:left', refs[6]);
-    oldChannel.off('tournament:match:upserted', refs[7]);
-    oldChannel.off('tournament:restarted', refs[8]);
-    oldChannel.off('tournament:finished', refs[9]);
-    oldChannel.off('tournament:ranking_update', refs[10]);
-
     clearWaitingRoomListeners();
+
+    if (oldChannel) {
+      oldChannel.off('tournament:update', refs[0]);
+      oldChannel.off('tournament:matches:update', refs[1]);
+      oldChannel.off('tournament:players:update', refs[2]);
+      oldChannel.off('tournament:round_created', refs[3]);
+      oldChannel.off('tournament:round_finished', refs[4]);
+      oldChannel.off('tournament:player:joined', refs[5]);
+      oldChannel.off('tournament:player:left', refs[6]);
+      oldChannel.off('tournament:match:upserted', refs[7]);
+      oldChannel.off('tournament:restarted', refs[8]);
+      oldChannel.off('tournament:finished', refs[9]);
+      oldChannel.off('tournament:ranking_update', refs[10]);
+      oldChannel.leave();
+    }
   };
 
   return clearTournamentChannel;
