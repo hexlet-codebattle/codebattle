@@ -94,6 +94,7 @@ jest.mock(
         channel: jest.fn(() => {
           const channel = {
             join: jest.fn(() => channel),
+            leave: jest.fn(() => channel),
             receive: jest.fn(() => channel),
             on: jest.fn(),
             off: jest.fn(),
