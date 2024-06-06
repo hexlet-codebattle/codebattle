@@ -16,6 +16,7 @@
     <table class="table table-sm">
       <thead>
         <tr>
+          <th>index</th>
           <th>id</th>
           <th>name</th>
           <th>level</th>
@@ -26,11 +27,14 @@
         </tr>
       </thead>
       <tbody>
-        <%= for task_id <- @task_pack.task_ids do %>
+        <%= for {task_id, index} <- Enum.with_index(@task_pack.task_ids) do %>
           <%= if task = Enum.find(@tasks, fn task -> task.id == task_id end) do %>
             <tr>
+              <td class="align-middle text"><%= index %></td>
               <td class="align-middle text"><%= task.id %></td>
-              <td class="align-middle text"><%= task.name %></td>
+              <td class="align-middle text">
+            <%= link(task.name, to: Routes.raw_task_path(@conn, :show, task.id), class: "ml-auto") %>
+        </td>
               <td class="align-middle text"><%= task.level %></td>
               <td class="align-middle text"><%= Enum.join(task.tags, ", ") %></td>
               <td class="align-middle text"><%= task.origin %></td>

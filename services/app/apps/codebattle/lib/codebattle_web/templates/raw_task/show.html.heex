@@ -4,7 +4,6 @@
   </h1>
   <h3 class="text-center mt-4">Params</h3>
   <div class="d-flex flex-wrap align-items-center justify-content-around text-muted">
-    <span>Played count: <%= @played_count %></span>
     <%= if @task.origin == "github" do %>
       <a
         href="https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/"
@@ -64,7 +63,7 @@
 
   <div class="d-flex">
     <%= if Codebattle.Task.can_access_task?(@task, @current_user) do %>
-      <%= link("Edit", to: Routes.task_path(@conn, :edit, @task), class: "btn btn-success mt-2") %>
+      <%= link("Edit", to: Routes.raw_task_path(@conn, :edit, @task), class: "btn btn-success mt-2") %>
     <% end %>
     <%= if Codebattle.Task.can_delete_task?(@task, @current_user) do %>
       <%= link("Delete",

@@ -58,6 +58,11 @@
                     method: "patch",
                     class: "btn btn-sm btn-danger rounded-right"
                   ) %>
+                  <%= button("Delete",
+                    to: CodebattleWeb.Router.Helpers.task_path(@conn, :delete, task.id),
+                    method: "delete",
+                    class: "btn btn-sm btn-danger rounded-right"
+                  ) %>
                 <% end %>
               </div>
             </td>

@@ -50,7 +50,7 @@ function ClansChartPanel({ type, state }) {
           {
             x: item?.totalScore || 0,
             y: item?.performance || 0,
-            r: item?.radius + 3
+            r: item?.radius + 3,
           },
         ],
         backgroundColor: getBackgroundColor(item?.clanId),

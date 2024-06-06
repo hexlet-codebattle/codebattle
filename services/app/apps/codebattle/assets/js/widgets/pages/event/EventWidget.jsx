@@ -84,7 +84,7 @@ function EventWidget() {
             currentUserClanId={currentUserClanId}
             commonLeaderboard={commonLeaderboard}
             eventId={id}
-personalTournamentId={personalTournamentId}
+            personalTournamentId={personalTournamentId}
           />
         </div>
         <div className="col-12 col-lg-5">

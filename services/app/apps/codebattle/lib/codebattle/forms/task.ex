@@ -90,8 +90,7 @@ defmodule Codebattle.TaskForm do
       :input_signature,
       :output_signature,
       :description_en,
-      :visibility,
-      :creator_id
+      :visibility
     ])
     |> validate_inclusion(:state, Task.states())
     |> validate_inclusion(:level, Task.levels())

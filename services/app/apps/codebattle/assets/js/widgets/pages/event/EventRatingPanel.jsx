@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import groupBy from 'lodash/groupBy';
 import cn from 'classnames';
 import i18next from 'i18next';
+import groupBy from 'lodash/groupBy';
 import { useDispatch } from 'react-redux';
 
 import { actions } from '../../slices';
@@ -33,8 +33,7 @@ const navTabsClassName = cn(
   'rounded-top',
 );
 
-const getTabLinkClassName = (isActive) =>
-  cn(
+const getTabLinkClassName = isActive => cn(
     'nav-item nav-link cb-custom-event-nav-item position-relative',
     'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
     {
@@ -44,8 +43,7 @@ const getTabLinkClassName = (isActive) =>
     },
   );
 
-const getCustomEventTrClassName = (item, selectedId) =>
-  cn(
+const getCustomEventTrClassName = (item, selectedId) => cn(
     'text-dark font-weight-bold cb-custom-event-tr',
     {
       'cb-gold-place-bg': item?.place === 1,
@@ -68,7 +66,9 @@ const commonRatingTypes = {
 };
 
 const EventRatingPanel = ({
-  commonLeaderboard: { items, pageNumber, pageSize, totalEntries } = {
+  commonLeaderboard: {
+ items, pageNumber, pageSize, totalEntries,
+} = {
     items: [],
     pageNumber: 1,
     pageSize: 10,
@@ -84,11 +84,10 @@ const EventRatingPanel = ({
   const [type, setType] = useState(
     personalTournamentId ? commonRatingTypes.personal : commonRatingTypes.clan,
   );
-  const selectedId =
-    type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
+  const selectedId = type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
 
   const handleClick = useCallback(
-    (e) => {
+    e => {
       const {
         currentTarget: { dataset },
       } = e;
@@ -98,7 +97,7 @@ const EventRatingPanel = ({
   );
 
   const setPage = useCallback(
-    (page) => {
+    page => {
       (async () => {
         try {
           await dispatch(
@@ -134,7 +133,7 @@ const EventRatingPanel = ({
   }, [type]);
 
   if (personalTournamentId) {
-    const groupedItems = Object.values(groupBy(items, (item) => item.clanRank));
+    const groupedItems = Object.values(groupBy(items, item => item.clanRank));
 
     return (
       <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
@@ -185,7 +184,7 @@ const EventRatingPanel = ({
                     ) || 0}
                   </td>
                 </tr>
-                {users.map((user) => (
+                {users.map(user => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr
@@ -193,7 +192,7 @@ const EventRatingPanel = ({
                     >
                       <td className={tableDataCellClassNamePersonal(true)} />
                       <td className={tableDataCellClassNamePersonal()}>
-                        <div style={{maxWidth: 200 }} className="cb-custom-event-name mr-1">
+                        <div style={{ maxWidth: 200 }} className="cb-custom-event-name mr-1">
                           {user.userName}
                         </div>
                       </td>
@@ -287,7 +286,7 @@ const EventRatingPanel = ({
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
+                {items.map(item => (
                   <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
