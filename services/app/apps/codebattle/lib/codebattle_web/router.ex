@@ -195,6 +195,7 @@ defmodule CodebattleWeb.Router do
     end
 
     resources("/raw_tasks", RawTaskController)
+
     resources("/tasks", TaskController) do
       patch("/activate", TaskController, :activate, as: :activate)
       patch("/disable", TaskController, :disable, as: :disable)
