@@ -107,19 +107,20 @@ function TaskAssignment({
             <span className="ml-2 text-muted">{task.name}</span>
           </h6>
           <div className="d-flex align-items-center">
-            <TaskLanguagesSelection
-              handleSetLanguage={handleSetLanguage}
-              avaibleLanguages={avaibleLanguages}
-              displayLanguage={displayLanguage}
-            />
+            {/* <TaskLanguagesSelection */}
+            {/*   handleSetLanguage={handleSetLanguage} */}
+            {/*   avaibleLanguages={avaibleLanguages} */}
+            {/*   displayLanguage={displayLanguage} */}
+            {/* /> */}
 
             {!fullSize && (
               <button
                 type="button"
-                className="btn btn-outline-secondary rounded-lg ml-2"
+                className="btn btn-outline-secondary  btn-sm rounded-lg ml-2"
                 onClick={handleOpenFullSizeTaskDescription}
               >
-                <FontAwesomeIcon icon="expand" />
+                <FontAwesomeIcon className="mr-2" icon="expand" />
+                {i18n.t('Expand')}
               </button>
             )}
             {!hideGuide && <ShowGuideButton />}

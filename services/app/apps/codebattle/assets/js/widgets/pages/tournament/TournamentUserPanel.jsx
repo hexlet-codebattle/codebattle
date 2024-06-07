@@ -1,5 +1,9 @@
 import React, {
-  memo, useCallback, useContext, useState,
+  memo,
+  useCallback,
+  useEffect,
+  useContext,
+  useState,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +13,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
-import { currentUserIsAdminSelector, currentUserIsTournamentOwnerSelector } from '@/selectors';
+import {
+  currentUserIsAdminSelector,
+  currentUserIsTournamentOwnerSelector,
+} from '@/selectors';
 
 // import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
@@ -31,7 +38,7 @@ function TournamentUserPanel({
 
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
-  const canModerate = (isAdmin || isOwner);
+  const canModerate = isAdmin || isOwner;
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
@@ -47,26 +54,36 @@ function TournamentUserPanel({
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
     hasCustomEventStyles
       ? {
-        'cb-custom-event-border-success': userId === currentUserId,
-        'cb-custom-event-border-info': userId === searchedUserId,
-      } : {
-        'border-success': userId === currentUserId,
-        'border-primary': userId === searchedUserId,
-      },
+          'cb-custom-event-border-success': userId === currentUserId,
+          'cb-custom-event-border-info': userId === searchedUserId,
+        }
+      : {
+          'border-success': userId === currentUserId,
+          'border-primary': userId === searchedUserId,
+        },
   );
 
   const titleClassName = cn(
     'd-flex align-items-center justify-content-start px-2 py-1',
   );
 
-  const handleOpenMatches = useCallback(event => {
-    event.preventDefault();
-    if (!open && userId !== currentUserId) {
+  const handleOpenMatches = useCallback(
+    event => {
+      event.preventDefault();
+      if (!open && userId !== currentUserId) {
+        dispatch(requestMatchesByPlayerId(userId));
+      }
+
+      setOpen(!open);
+    },
+    [open, setOpen, dispatch, userId, currentUserId],
+  );
+
+  useEffect(() => {
+    if (open) {
       dispatch(requestMatchesByPlayerId(userId));
     }
-
-    setOpen(!open);
-  }, [open, setOpen, dispatch, userId, currentUserId]);
+  }, [open, dispatch, userId]);
 
   return (
     <div className={panelClassName}>
@@ -81,11 +98,17 @@ function TournamentUserPanel({
           <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
             <div>
               <span className="text-nowrap" title={name}>
-                {searchedUserId === userId && (<span className={searchBadge}>Search</span>)}
-                {currentUserId === userId && (<span className={playerBadge}>you</span>)}
+                {searchedUserId === userId && (
+                  <span className={searchBadge}>Search</span>
+                )}
+                {currentUserId === userId && (
+                  <span className={playerBadge}>you</span>
+                )}
                 {name}
               </span>
-              {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
+              {isBanned && (
+                <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
+              )}
               <span className="d-none d-sm-inline d-md-inline d-lg-inline mx-1">
                 |
               </span>
@@ -118,11 +141,7 @@ function TournamentUserPanel({
           </div>
         </div>
         <div className="d-flex ml-1">
-          <button
-            type="button"
-            className="btn"
-            onClick={handleOpenMatches}
-          >
+          <button type="button" className="btn" onClick={handleOpenMatches}>
             <FontAwesomeIcon icon={open ? 'chevron-up' : 'chevron-down'} />
           </button>
         </div>

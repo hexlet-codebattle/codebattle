@@ -311,6 +311,9 @@ msgstr "Cбросить решение"
 msgid "Check solution"
 msgstr "Проверить решение"
 
+msgid "Expand"
+msgstr "Развернуть описание"
+
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
 
