@@ -29,7 +29,7 @@ const tableDataCellClassName = cn(
 
 const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
-  const { clans, ranking } = useSelector(tournamentSelector);
+  const { ranking } = useSelector(tournamentSelector);
 
   return (
     <div
@@ -50,6 +50,9 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
         <table className="table table-striped cb-custom-event-table m-1">
           <thead>
             <tr>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('User')}
+              </th>
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Clan')}
               </th>
@@ -76,11 +79,20 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
                 <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                   <td className={tableDataCellClassName}>
                     <div
-                      title={clans[item.id]?.longName}
+                      title={console.log(item) || item?.userName}
                       className="cb-custom-event-name"
-                      style={{ maxWidth: '270px' }}
+                      style={{ maxWidth: '135px' }}
                     >
-                      {clans[item.id]?.name}
+                      {item?.userName}
+                    </div>
+                  </td>
+                  <td className={tableDataCellClassName}>
+                    <div
+                      title={item?.clanlongName}
+                      className="cb-custom-event-name"
+                      style={{ maxWidth: '135px' }}
+                    >
+                      {item?.clanName}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>{item.score}</td>

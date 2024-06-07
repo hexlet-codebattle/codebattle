@@ -64,7 +64,7 @@ const AnimationModal = NiceModal.create(() => {
         <div className="d-flex justify-content-center">
           <img
             className="w-100 rounded-lg"
-            style={{ maxWidth: '400px', height: '300px' }}
+            style={{ maxWidth: '400px' }}
             src={gifs[result]}
             alt="animation"
           />

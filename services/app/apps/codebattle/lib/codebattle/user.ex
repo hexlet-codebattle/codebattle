@@ -131,7 +131,7 @@ defmodule Codebattle.User do
       is_guest: true,
       id: @guest_id,
       name: "John Doe",
-      subscription_type: "free",
+      subscription_type: :free,
       rating: 0,
       rank: 0,
       sound_settings: %SoundSettings{}

@@ -17,8 +17,14 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     |> then(&:ets.insert(tournament.ranking_table, &1))
   end
 
-  def put_single_record(tournament, place, player) do
-    :ets.insert(tournament.ranking_table, {place, player.id, player})
+  def put_single_record(tournament, place, record) do
+    :ets.insert(tournament.ranking_table, {place, record.id, record})
+  end
+
+  def drop_player(tournament, player_id) do
+    match_spec = [{{:"$1", player_id, :"$2"}, [], [true]}]
+
+    :ets.select_delete(tournament.ranking_table, match_spec)
   end
 
   def get_first(tournament, limit) do

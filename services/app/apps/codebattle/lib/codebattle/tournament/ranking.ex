@@ -44,6 +44,13 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).add_new_player(tournament, player)
   end
 
+  @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: Tournament.t()
+  def drop_player(tournament, player_id) do
+    if get_module(tournament) == ByPlayer95thPercentile do
+      Ranking.drop_player(tournament, player_id)
+    end
+  end
+
   @spec update_player_result(Tournament.t(), Tournament.Player.t(), non_neg_integer()) ::
           Tournament.t()
   def update_player_result(tournament, %{is_bot: true}, _score), do: tournament

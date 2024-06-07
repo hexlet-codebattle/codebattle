@@ -97,6 +97,7 @@ defmodule Codebattle.Tournament.Base do
 
       def leave(tournament, %{user_id: user_id}) do
         Tournament.Players.drop_player(tournament, user_id)
+        Tournament.Ranking.drop_player(tournament, user_id)
         Map.put(tournament, :players_count, players_count(tournament))
       end
 
