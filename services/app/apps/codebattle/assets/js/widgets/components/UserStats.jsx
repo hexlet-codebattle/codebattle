@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
+import i18next from '../../i18n';
 import { followUser, unfollowUser } from '../middlewares/Main';
 import { redirectToNewGame } from '../slices';
 
@@ -105,15 +106,15 @@ const UserStats = ({ data, user: userInfo }) => {
       <div className="row">
         <div className="col d-flex justify-content-between">
           <div>
-            <span>Won:</span>
+            <span>{i18next.t('Won:')}</span>
             <b className="text-success">{data ? data.stats.games.won : '#'}</b>
           </div>
           <div className="ml-1">
-            <span>Lost:</span>
+            <span>{i18next.t('Lost:')}</span>
             <b className="text-danger">{data ? data.stats.games.lost : '#'}</b>
           </div>
           <div className="ml-1">
-            <span>GaveUp:</span>
+            <span>{i18next.t('GaveUp:')}</span>
             <b className="text-warning">
               {data ? data.stats.games.gaveUp : '#'}
             </b>

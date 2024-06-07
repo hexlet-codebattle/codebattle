@@ -1,5 +1,5 @@
 import React, {
-  memo, useCallback, useState,
+  memo, useCallback, useContext, useState,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,7 @@ import cn from 'classnames';
 import Collapse from 'react-bootstrap/Collapse';
 import { useDispatch, useSelector } from 'react-redux';
 
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
 import { currentUserIsAdminSelector, currentUserIsTournamentOwnerSelector } from '@/selectors';
 
@@ -32,12 +33,26 @@ function TournamentUserPanel({
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
   const canModerate = (isAdmin || isOwner);
 
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
+  const searchBadge = cn('badge mr-2', {
+    'badge-primary': !hasCustomEventStyles,
+    'cb-custom-event-badge-primary': hasCustomEventStyles,
+  });
+  const playerBadge = cn('badge text-white mr-2', {
+    'badge-success': !hasCustomEventStyles,
+    'cb-custom-event-badge-success': hasCustomEventStyles,
+  });
   const panelClassName = cn(
     'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
-    {
-      'border-success': userId === currentUserId,
-      'border-primary': userId === searchedUserId,
-    },
+    hasCustomEventStyles
+      ? {
+        'cb-custom-event-border-success': userId === currentUserId,
+        'cb-custom-event-border-info': userId === searchedUserId,
+      } : {
+        'border-success': userId === currentUserId,
+        'border-primary': userId === searchedUserId,
+      },
   );
 
   const titleClassName = cn(
@@ -66,8 +81,8 @@ function TournamentUserPanel({
           <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
             <div>
               <span className="text-nowrap" title={name}>
-                {searchedUserId === userId && (<span className="badge badge-primary mr-2">Search</span>)}
-                {currentUserId === userId && (<span className="badge badge-success text-white mr-2">you</span>)}
+                {searchedUserId === userId && (<span className={searchBadge}>Search</span>)}
+                {currentUserId === userId && (<span className={playerBadge}>you</span>)}
                 {name}
               </span>
               {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}

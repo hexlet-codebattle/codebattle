@@ -29,9 +29,11 @@ const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 const gameUIPersistWhitelist = [
   'editorMode',
   'editorTheme',
+  'streamMode',
   'followId',
   'followPaused',
   'taskDescriptionLanguage',
+  'tournamentVisibleMode',
 ];
 
 const gameUIPersistConfig = {

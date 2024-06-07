@@ -2,11 +2,14 @@ import React, {
   useCallback,
   useRef,
   memo,
+  useContext,
 } from 'react';
 
 import cn from 'classnames';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
 import {
   startTournament as handleStartTournament,
@@ -50,6 +53,17 @@ function StartRoundConfirmationModal({
   onClose,
 }) {
   const confirmBtnRef = useRef(null);
+
+  const hasCustomEventStyle = useContext(CustomEventStylesContext);
+
+  const cancelBtnClassName = cn('btn rounded-lg', {
+    'btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
+  });
+  const confirmBtnClassName = cn('btn text-white rounded-lg', {
+    'btn-success': !hasCustomEventStyle,
+    'cb-custom-event-btn-success': hasCustomEventStyle,
+  });
 
   const handleConfirmation = useCallback(() => {
     switch (modalShowing) {
@@ -141,14 +155,14 @@ function StartRoundConfirmationModal({
       </Modal.Body>
       <Modal.Footer>
         <div className="d-flex justify-content-between w-100">
-          <Button onClick={onClose} className="btn btn-secondary rounded-lg">
+          <Button onClick={onClose} className={cancelBtnClassName}>
             Cancel
           </Button>
           <div className="d-flex">
             <Button
               ref={confirmBtnRef}
               onClick={handleConfirmation}
-              className="btn btn-success text-white rounded-lg"
+              className={confirmBtnClassName}
             >
               Confirm
             </Button>

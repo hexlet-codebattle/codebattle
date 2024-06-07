@@ -1,9 +1,11 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch } from 'react-redux';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import {
   cancelTournament,
   restartTournament as handleRestartTournament,
@@ -12,11 +14,11 @@ import {
   showTournamentResults as handleShowResults,
 } from '../../middlewares/TournamentAdmin';
 
-const CustomToggle = React.forwardRef(({ onClick, variant, disabled }, ref) => (
+const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) => (
   <button
     type="button"
     ref={ref}
-    className={`btn btn-${variant} text-white rounded-right`}
+    className={className.replace('dropdown-toggle', '')}
     onClick={onClick}
     disabled={disabled}
   >
@@ -26,6 +28,7 @@ const CustomToggle = React.forwardRef(({ onClick, variant, disabled }, ref) => (
 
 const TournamentMainControlButtons = ({
   accessType,
+  streamMode,
   tournamentId,
   canStart,
   canStartRound,
@@ -38,8 +41,11 @@ const TournamentMainControlButtons = ({
   toggleShowBots,
   handleStartRound,
   handleOpenDetails,
+  toggleStreamMode,
 }) => {
   const dispatch = useDispatch();
+
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const handleStartTournament = useCallback(() => {
     handleStartRound('firstRound');
@@ -51,59 +57,81 @@ const TournamentMainControlButtons = ({
     handleStartRound('nextRound');
   }, [handleStartRound]);
 
+  const restartBtnClassName = cn('btn text-white text-nowrap ml-lg-2 rounded-left', {
+    'btn-info': !hasCustomEventStyles,
+    'cb-custom-event-btn-info': hasCustomEventStyles,
+  });
+  const roundBtnClassName = cn('btn text-white text-nowrap ml-lg-2 rounded-left', {
+    'btn-success': !hasCustomEventStyles,
+    'cb-custom-event-btn-success': hasCustomEventStyles,
+  });
+
+  const dropdownBtnClassName = cn('btn text-white rounded-right', {
+    'rounded-left': streamMode,
+    'btn-info': !hasCustomEventStyles && canRestart,
+    'btn-success': !hasCustomEventStyles && !canRestart,
+    'cb-custom-event-btn-info': hasCustomEventStyles && canRestart,
+    'cb-custom-event-btn-success': hasCustomEventStyles && !canRestart,
+  });
+
   return (
     <>
-      {canStartRound ? (
-        <button
-          type="button"
-          className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
-          onClick={handleStartRoundTournament}
-          disabled={!canStartRound || disabled}
-        >
-          <FontAwesomeIcon className="mr-2" icon="arrow-right" />
-          Start Round
-        </button>
-      ) : null}
-      {canFinishRound ? (
-        <button
-          type="button"
-          className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
-          onClick={handleFinishRoundTournament}
-          disabled={!canFinishRound || disabled}
-        >
-          <FontAwesomeIcon className="mr-2" icon="arrow-right" />
-          Finish Round
-        </button>
-      ) : null}
-      {canRestart ? (
-        <button
-          type="button"
-          className="btn btn-info text-white text-nowrap ml-lg-2 rounded-left"
-          onClick={handleRestartTournament}
-          disabled={!canRestart || disabled}
-        >
-          <FontAwesomeIcon className="mr-2" icon="sync" />
-          Restart
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
-          onClick={handleStartTournament}
-          disabled={!canStart || disabled}
-        >
-          <FontAwesomeIcon className="mr-2" icon="play" />
-          Start
-        </button>
+      {!streamMode && (
+        <>
+          {canStartRound ? (
+            <button
+              type="button"
+              className={roundBtnClassName}
+              onClick={handleStartRoundTournament}
+              disabled={!canStartRound || disabled}
+            >
+              <FontAwesomeIcon className="mr-2" icon="arrow-right" />
+              Start Round
+            </button>
+          ) : null}
+          {canFinishRound ? (
+            <button
+              type="button"
+              className={roundBtnClassName}
+              onClick={handleFinishRoundTournament}
+              disabled={!canFinishRound || disabled}
+            >
+              <FontAwesomeIcon className="mr-2" icon="arrow-right" />
+              Finish Round
+            </button>
+          ) : null}
+          {canRestart ? (
+            <button
+              type="button"
+              className={restartBtnClassName}
+              onClick={handleRestartTournament}
+              disabled={!canRestart || disabled}
+            >
+              <FontAwesomeIcon className="mr-2" icon="sync" />
+              Restart
+            </button>
+          ) : (
+            <button
+              type="button"
+              className={roundBtnClassName}
+              onClick={handleStartTournament}
+              disabled={!canStart || disabled}
+            >
+              <FontAwesomeIcon className="mr-2" icon="play" />
+              Start
+            </button>
+          )}
+        </>
       )}
       <Dropdown title="Task actions" className="d-flex">
         <Dropdown.Toggle
           as={CustomToggle}
           id="tournament-actions-dropdown-toggle"
+          className={dropdownBtnClassName}
           variant={canRestart ? 'info' : 'success'}
           disabled={disabled}
         />
-        <Dropdown.Menu>
+        <Dropdown.Menu className="dropdown-menu-end">
           <Dropdown.Item
             disabled={disabled}
             key="edit"
@@ -123,6 +151,14 @@ const TournamentMainControlButtons = ({
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             Show Results
+          </Dropdown.Item>
+          <Dropdown.Item
+            disabled={disabled}
+            key="streamMode"
+            onSelect={toggleStreamMode}
+          >
+            <FontAwesomeIcon className="mr-2" icon="eye" />
+            Toggle stream mode
           </Dropdown.Item>
           <Dropdown.Item
             disabled={disabled || !canToggleShowBots}

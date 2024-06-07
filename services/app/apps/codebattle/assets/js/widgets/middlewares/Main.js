@@ -121,9 +121,10 @@ export const followUser = userId => (dispatch, getState) => {
   channel.push('user:follow', { user_id: userId }).receive('ok', payload => {
     const data = camelizeKeys(payload);
 
+    camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
+
     if (!data.activeGameId) return;
 
-    camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
     camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
 
     if (data.activeGameId !== getState().game?.gameStatus?.gameId) {

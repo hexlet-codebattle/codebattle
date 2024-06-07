@@ -9,6 +9,7 @@ import isEmpty from 'lodash/isEmpty';
 import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import RoomContext from '../../components/RoomContext';
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
@@ -121,12 +122,16 @@ function Tournament({ waitingRoomMachine }) {
   const machines = { waitingRoomService };
 
   const activePresentationMode = searchParams.has('presentation');
+  const activeStreamMode = searchParams.has('stream');
 
+  const streamMode = useSelector(state => state.gameUI.streamMode);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
+
+  const hasCustomEventStyles = !!tournament.eventId;
 
   const hideResults = tournament.showResults === undefined ? false : !tournament.showResults;
 
@@ -148,7 +153,11 @@ function Tournament({ waitingRoomMachine }) {
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
-  const hiddenSidePanel = tournament.type === 'arena' && tournament.state !== 'waiting_participants';
+  const hiddenSidePanel = (tournament.type === 'arena' && tournament.state !== 'waiting_participants') || streamMode;
+
+  const panelClassName = cn('mb-2', {
+    'container-fluid': !streamMode,
+  });
 
   const handleOpenDetails = useCallback(() => {
     setDetailsModalShowing(true);
@@ -159,6 +168,12 @@ function Tournament({ waitingRoomMachine }) {
   const toggleShowBots = useCallback(() => {
     dispatch(actions.toggleShowBots());
   }, [dispatch]);
+  const toggleStreamMode = useCallback(() => {
+    if (streamMode) {
+      document.getElementsByTagName('main')[0].style.zoom = '100%';
+    }
+    dispatch(actions.toggleStreamMode());
+  }, [dispatch, streamMode]);
   const handleStartRound = useCallback(setStartRoundConfirmationModalShowing, [
     setStartRoundConfirmationModalShowing,
   ]);
@@ -204,6 +219,17 @@ function Tournament({ waitingRoomMachine }) {
     setStartRoundConfirmationModalShowing,
     setDetailsModalShowing,
   ]);
+
+  useEffect(() => {
+    if (activeStreamMode && !streamMode) {
+      toggleStreamMode();
+    }
+
+    if (activeStreamMode || streamMode) {
+      document.getElementsByTagName('main')[0].style.zoom = '130%';
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (activePresentationMode) {
     return (
@@ -260,93 +286,97 @@ function Tournament({ waitingRoomMachine }) {
   //   : tournament.matchTimeoutSeconds;
 
   return (
-    <RoomContext.Provider value={machines}>
-      <DetailsModal
-        tournament={tournament}
-        modalShowing={detailsModalShowing}
-        setModalShowing={setDetailsModalShowing}
-      />
-      <StartRoundConfirmationModal
-        meta={tournament.meta}
-        currentRoundPosition={tournament.currentRoundPosition}
-        level={tournament.level}
-        matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-        taskPackName={tournament.taskPackName}
-        taskProvider={tournament.taskProvider}
-        modalShowing={startRoundConfirmationModalShowing}
-        onClose={onCloseRoundConfirmationModal}
-      />
-      <MatchConfirmationModal
-        players={tournament.players}
-        matches={tournament.matches}
-        currentUserId={currentUserId}
-        modalShowing={matchConfirmationModalShowing}
-        setModalShowing={setMatchConfirmationModalShowing}
-        currentRoundPosition={tournament.currentRoundPosition}
-        redirectImmediatly={activePresentationMode}
-      />
-      <div className="container-fluid mb-2">
-        <TournamentHeader
-          id={tournament.id}
-          accessToken={tournament.accessToken}
-          accessType={tournament.accessType}
-          breakDurationSeconds={tournament.breakDurationSeconds}
-          breakState={tournament.breakState}
-          currentUserId={currentUserId}
-          isLive={tournament.isLive}
-          isOnline={tournament.channel.online}
-          isOver={isOver}
-          canModerate={canModerate}
-          lastRoundEndedAt={tournament.lastRoundEndedAt}
-          lastRoundStartedAt={tournament.lastRoundStartedAt}
+    <CustomEventStylesContext.Provider value={hasCustomEventStyles}>
+      <RoomContext.Provider value={machines}>
+        <DetailsModal
+          tournament={tournament}
+          modalShowing={detailsModalShowing}
+          setModalShowing={setDetailsModalShowing}
+        />
+        <StartRoundConfirmationModal
+          meta={tournament.meta}
+          currentRoundPosition={tournament.currentRoundPosition}
           level={tournament.level}
           matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-          roundTimeoutSeconds={tournament.roundTimeoutSeconds}
-          name={tournament.name}
-          players={tournament.players}
-          playersCount={playersCount}
-          playersLimit={tournament.playersLimit}
-          showBots={tournament.showBots}
-          hideResults={hideResults}
-          startsAt={tournament.startsAt}
-          state={tournament.state}
-          type={tournament.type}
-          handleStartRound={handleStartRound}
-          handleOpenDetails={handleOpenDetails}
-          toggleShowBots={toggleShowBots}
+          taskPackName={tournament.taskPackName}
+          taskProvider={tournament.taskProvider}
+          modalShowing={startRoundConfirmationModalShowing}
+          onClose={onCloseRoundConfirmationModal}
         />
-      </div>
-      <div className="container-fluid mb-2">
-        <div className="row flex-lg-row-reverse">
-          <div
-            className={cn('col-12  mb-2 mb-lg-0', {
-              'col-lg-9': !hiddenSidePanel,
-            })}
-          >
-            <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
-              <InfoPanel
-                tournament={tournament}
-                playersCount={playersCount}
-                currentUserId={currentUserId}
-                hideResults={hideResults}
-                canModerate={canModerate}
-              />
+        <MatchConfirmationModal
+          players={tournament.players}
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+          modalShowing={matchConfirmationModalShowing}
+          setModalShowing={setMatchConfirmationModalShowing}
+          currentRoundPosition={tournament.currentRoundPosition}
+          redirectImmediatly={activePresentationMode}
+        />
+        <div className={panelClassName}>
+          <TournamentHeader
+            id={tournament.id}
+            streamMode={streamMode}
+            accessToken={tournament.accessToken}
+            accessType={tournament.accessType}
+            breakDurationSeconds={tournament.breakDurationSeconds}
+            breakState={tournament.breakState}
+            currentUserId={currentUserId}
+            isLive={tournament.isLive}
+            isOnline={tournament.channel.online}
+            isOver={isOver}
+            canModerate={canModerate}
+            lastRoundEndedAt={tournament.lastRoundEndedAt}
+            lastRoundStartedAt={tournament.lastRoundStartedAt}
+            level={tournament.level}
+            matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+            roundTimeoutSeconds={tournament.roundTimeoutSeconds}
+            name={tournament.name}
+            players={tournament.players}
+            playersCount={playersCount}
+            playersLimit={tournament.playersLimit}
+            showBots={tournament.showBots}
+            hideResults={hideResults}
+            startsAt={tournament.startsAt}
+            state={tournament.state}
+            type={tournament.type}
+            handleStartRound={handleStartRound}
+            handleOpenDetails={handleOpenDetails}
+            toggleShowBots={toggleShowBots}
+            toggleStreamMode={toggleStreamMode}
+          />
+        </div>
+        <div className={panelClassName}>
+          <div className="row flex-lg-row-reverse">
+            <div
+              className={cn('col-12  mb-2 mb-lg-0', {
+                'col-lg-9': !hiddenSidePanel,
+              })}
+            >
+              <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
+                <InfoPanel
+                  tournament={tournament}
+                  playersCount={playersCount}
+                  currentUserId={currentUserId}
+                  hideResults={hideResults}
+                  canModerate={canModerate}
+                />
+              </div>
+            </div>
+            <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
+              {!tournament.useClan && !hiddenSidePanel && (
+                <Players
+                  playersCount={playersCount}
+                  players={tournament.players}
+                  showBots={tournament.showBots}
+                />
+              )}
+              {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
+              {tournament.useClan && !hiddenSidePanel && <TournamentClanTable />}
             </div>
           </div>
-          <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
-            {!tournament.useClan && !hiddenSidePanel && (
-              <Players
-                playersCount={playersCount}
-                players={tournament.players}
-                showBots={tournament.showBots}
-              />
-            )}
-            {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
-            {tournament.useClan && !hiddenSidePanel && <TournamentClanTable />}
-          </div>
         </div>
-      </div>
-    </RoomContext.Provider>
+      </RoomContext.Provider>
+    </CustomEventStylesContext.Provider>
   );
 }
 

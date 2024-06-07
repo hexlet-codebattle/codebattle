@@ -850,60 +850,67 @@ export const uploadTask = (taskParams, taskMachine, onSuccess = () => { }, onErr
     });
 };
 
-export const saveTask = (taskMachine, onSuccess = () => { }, onError = () => { }) => (dispatch, getState) => {
-  const state = getState();
+export const saveTask = (taskMachine, onSuccess = () => { }, onError = () => { }, newTaskParams) => (dispatch, getState) => {
+  try {
+    const state = getState();
 
-  const taskParams = selectors.taskParamsSelector()(state);
-  const payload = {
-    task: decamelizeKeys(taskParams, { separator: '_' }),
-    options: {
-      next_state: taskStateCodes.draft,
-    },
-  };
+    const taskParams = newTaskParams || selectors.taskParamsSelector()(state);
+    const payload = {
+      task: decamelizeKeys(taskParams, { separator: '_' }),
+      options: {
+        next_state: newTaskParams?.state || taskStateCodes.draft,
+      },
+    };
 
-  if (taskParams.state === taskStateCodes.blank) {
-    axios
-      .post('/api/v1/tasks', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
-        },
-      })
-      .then(response => {
-        const data = camelizeKeys(response.data);
+    if (taskParams.state === taskStateCodes.blank) {
+      axios
+        .post('/api/v1/tasks', payload, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': window.csrf_token,
+          },
+        })
+        .then(response => {
+          const data = camelizeKeys(response.data);
 
-        taskMachine.send('CONFIRM');
-        window.location.href = `/tasks/${data.task.id}`;
-        onSuccess();
-      })
-      .catch(err => {
-        onError(err);
+          taskMachine.send('CONFIRM');
+          window.location.href = `/tasks/${data.task.id}`;
+          onSuccess();
+        })
+        .catch(err => {
+          onError(err);
 
-        dispatch(actions.setError(err));
-        console.error(err);
-      });
-  } else {
-    axios
-      .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
-        },
-      })
-      .then(response => {
-        const data = camelizeKeys(response.data);
-        const labledTask = labelTaskParamsWithIds(data.task);
+          dispatch(actions.setError(err));
+          console.error(err);
+        });
+    } else {
+      axios
+        .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': window.csrf_token,
+          },
+        })
+        .then(response => {
+          const data = camelizeKeys(response.data);
+          const labledTask = labelTaskParamsWithIds(data.task);
 
-        dispatch(actions.setTask({ task: labledTask }));
-        taskMachine.send('CONFIRM');
-        onSuccess();
-      })
-      .catch(err => {
-        onError(err);
+          dispatch(actions.setTask({ task: labledTask }));
+          taskMachine.send('CONFIRM');
+          onSuccess();
+        })
+        .catch(err => {
+          onError(err);
 
-        dispatch(actions.setError(err));
-        console.error(err);
-      });
+          dispatch(actions.setError(err));
+          console.error(err);
+        });
+    }
+  } catch (err) {
+    onError(err);
+
+    dispatch(actions.setError(err));
+    console.error(err);
   }
 };
 

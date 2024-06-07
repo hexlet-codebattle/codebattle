@@ -1,9 +1,10 @@
 import React, {
-  memo, useMemo,
+  memo, useContext, useMemo,
 } from 'react';
 
 import cn from 'classnames';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import MatchStatesCodes from '../../config/matchStates';
 
 function TournamentMatchBadge({ matchState, isWinner, currentUserIsPlayer }) {
@@ -29,7 +30,19 @@ function TournamentMatchBadge({ matchState, isWinner, currentUserIsPlayer }) {
         return 'Over';
     }
   }, [matchState, isWinner]);
-  const className = cn('badge px-2 mr-2', {
+
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
+  const className = cn('badge px-2 mr-2', hasCustomEventStyles ? {
+    'cb-custom-event-badge-warning': isWinner && matchState === MatchStatesCodes.gameOver,
+    'cb-custom-event-badge-light':
+      matchState === MatchStatesCodes.pending
+      || matchState === MatchStatesCodes.timeout
+      || matchState === MatchStatesCodes.canceled,
+    'cb-custom-event-badge-primary': !currentUserIsPlayer && matchState === MatchStatesCodes.playing,
+    'cb-custom-event-badge-success': matchState === MatchStatesCodes.playing,
+    'cb-custom-event-badge-danger': !isWinner && matchState === MatchStatesCodes.gameOver,
+  } : {
     'badge-warning': isWinner && matchState === MatchStatesCodes.gameOver,
     'badge-light':
       matchState === MatchStatesCodes.pending

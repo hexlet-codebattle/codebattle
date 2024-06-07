@@ -1,11 +1,12 @@
 import React, {
- memo,
+ memo, useContext,
 } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import TournamentPlace from './TournamentPlace';
@@ -13,6 +14,8 @@ import TournamentPlace from './TournamentPlace';
 export function ArenaStatisticsCard({
  playerId, taskIds = [], matchList = [], clanId,
 }) {
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
   const [playerStats] = useMatchesStatistics(playerId, matchList);
   const clanStats = useSelector(state => {
     if (Array.isArray(state.tournament.ranking)) {
@@ -51,15 +54,33 @@ export function ArenaStatisticsCard({
       <div className="d-flex flex-column w-100">
         <span className="p-1">{`${i18next.t('Statistics')}:`}</span>
         <div className="d-flex justify-content-between">
-          <span className="text-success p-1">
+          <span
+            className={
+              cn('p-1', {
+                'text-success': !hasCustomEventStyles,
+                'cb-custom-event-text-success': hasCustomEventStyles,
+              })
+            }
+          >
             <span className="pr-1">{i18next.t('Wins')}</span>
             {playerStats.winMatches.length}
           </span>
-          <span className="text-danger p-1">
+          <span
+            className={
+              cn('p-1', {
+                'text-danger': !hasCustomEventStyles,
+                'cb-custom-event-text-danger': hasCustomEventStyles,
+              })
+            }
+          >
             <span className="pr-1">{i18next.t('Loses')}</span>
             {playerStats.lostMatches.length}
           </span>
-          <span className="text-muted p-1">
+          <span
+            className={
+              cn('p-1 text-muted')
+            }
+          >
             <span className="pr-1">{i18next.t('Timeout')}</span>
             {timeoutGamesLength}
           </span>

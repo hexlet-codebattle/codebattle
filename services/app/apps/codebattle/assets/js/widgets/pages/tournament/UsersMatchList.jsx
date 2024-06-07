@@ -32,7 +32,7 @@ function UserTournamentInfo({ userId }) {
     return <Loading adaptive />;
   }
 
-  return <UserInfo user={user} hideOnlineIndicator />;
+  return <UserInfo user={user} hideOnlineIndicator hideLink />;
 }
 
 function UsersMatchList({

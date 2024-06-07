@@ -1,8 +1,13 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, {
+ memo, useState, useCallback, useRef,
+} from 'react';
+
+import { useSelector } from 'react-redux';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import TournamentTypes from '../../config/tournamentTypes';
+import { tournamentPlayersSelector } from '../../selectors';
 
 import ClansChartPanel from './ClansChartPanel';
 import ControlPanel, { PanelModeCodes } from './ControlPanel';
@@ -31,6 +36,7 @@ function CustomTournamentInfoPanel({
   state,
   canModerate = false,
 }) {
+  const infoPanelRef = useRef();
   const [searchedUser, setSearchedUser] = useState();
   const [panelHistory, setPanelHistory] = useState([]);
   const [panelMode, setPanelMode] = useState(
@@ -42,6 +48,17 @@ function CustomTournamentInfoPanel({
         : { panel: PanelModeCodes.ratingMode },
   );
 
+  const allPlayers = useSelector(tournamentPlayersSelector);
+
+  const handleUserSelectClick = useCallback(
+    event => {
+      const { userId } = event.currentTarget.dataset;
+      setPanelMode({ panel: PanelModeCodes.ratingMode, userId: Number(userId) });
+      setPanelHistory(items => [...items, panelMode]);
+      setSearchedUser(allPlayers[Number(userId)]);
+    },
+    [panelMode, setPanelMode, setPanelHistory, setSearchedUser, allPlayers],
+  );
   const handleTaskSelectClick = useCallback(
     event => {
       const { taskId } = event.currentTarget.dataset;
@@ -50,6 +67,12 @@ function CustomTournamentInfoPanel({
     },
     [panelMode, setPanelMode, setPanelHistory],
   );
+
+  // useEffect(() => {
+  //   if (infoPanelRef.current?.style) {
+  //     infoPanelRef.current.style.zoom = '140%';
+  //   }
+  // }, [infoPanelRef.current?.style]);
 
   return (
     <>
@@ -71,7 +94,7 @@ function CustomTournamentInfoPanel({
       {/*     }} */}
       {/*     classNames={`tournament-info-${panelMode}`} */}
       {/*   > */}
-      <div>
+      <div ref={infoPanelRef}>
         <ControlPanel
           isPlayer={!!players[currentUserId]}
           searchOption={searchedUser}
@@ -111,7 +134,11 @@ function CustomTournamentInfoPanel({
           />
         )}
         {panelMode.panel === PanelModeCodes.topUserByClansMode && (
-          <RatingClansPanel type={panelMode.panel} state={state} />
+          <RatingClansPanel
+            type={panelMode.panel}
+            state={state}
+            handleUserSelectClick={handleUserSelectClick}
+          />
         )}
         {panelMode.panel === PanelModeCodes.taskRatingMode && (
           <TaskRankingPanel
@@ -121,10 +148,17 @@ function CustomTournamentInfoPanel({
           />
         )}
         {panelMode.panel === PanelModeCodes.clansBubbleDistributionMode && (
-          <ClansChartPanel type={panelMode.panel} state={state} />
+          <ClansChartPanel
+            type={panelMode.panel}
+            state={state}
+          />
         )}
         {panelMode.panel === PanelModeCodes.taskRatingAdvanced && (
-          <TaskRankingAdvancedPanel taskId={panelMode.taskId} state={state} />
+          <TaskRankingAdvancedPanel
+            taskId={panelMode.taskId}
+            state={state}
+            handleUserSelectClick={handleUserSelectClick}
+          />
         )}
       </div>
       {/*   </CSSTransition> */}

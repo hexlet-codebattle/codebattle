@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import i18next from 'i18next';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
  isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
 }) => {
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
   const onClick = isParticipant ? leaveTournament : joinTournament;
   const text = isParticipant ? i18next.t('Leave') : i18next.t('Join');
   const actionIcon = isParticipant ? 'user-minus' : 'user-plus';
@@ -26,8 +29,10 @@ const JoinButton = ({
           onClick(teamId);
         }}
         className={cn('btn text-nowrap rounded-lg', {
-          'btn-outline-danger': isParticipant,
-          'btn-outline-secondary': !isParticipant,
+          'btn-outline-danger': isParticipant && !hasCustomEventStyles,
+          'btn-outline-secondary': !isParticipant && !hasCustomEventStyles,
+          'cb-custom-event-btn-outline-danger': isParticipant && hasCustomEventStyles,
+          'cb-custom-event-btn-outline-secondary': !isParticipant && hasCustomEventStyles,
           'd-none': !isShow,
         })}
         disabled={disabled}

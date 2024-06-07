@@ -74,11 +74,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_in("tournament:get_task", %{"task_id" => task_id}, socket) do
-    task_id
-    |> Codebattle.Task.get()
-    |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
+    task =
+      task_id
+      |> Codebattle.Task.get()
+      |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
 
-    {:noreply, socket}
+    {:reply, {:ok, task}, socket}
   end
 
   def handle_in("tournament:get_results", %{"params" => params}, socket) do

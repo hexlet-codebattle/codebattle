@@ -7,6 +7,8 @@ import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 const initialState = {
   followId: undefined,
   followPaused: false,
+  streamMode: false,
+  tournamentVisibleMode: 'full', // 'full', 'without_info_and_controls'
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
@@ -40,6 +42,9 @@ const gameUI = createSlice({
     },
     togglePausedFollow: state => {
       state.followPaused = !state.followPaused;
+    },
+    toggleStreamMode: state => {
+      state.streamMode = !state.streamMode;
     },
   },
 });

@@ -5,12 +5,15 @@ import React, {
   useEffect,
   useMemo,
   memo,
+  useContext,
 } from 'react';
 
+import cn from 'classnames';
 import i18next from 'i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
 
@@ -36,6 +39,8 @@ function MatchConfirmationModal({
   redirectImmediatly = false,
 }) {
   const confirmBtnRef = useRef(null);
+
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const [remainingTime, setRemainingTime] = useState(null);
   const [openMatch, setOpenMatch] = useState(false);
@@ -129,6 +134,14 @@ function MatchConfirmationModal({
   }, [openMatch]);
 
   const title = i18next.t('Next match will be opened. Show now?');
+  const closeBtnClassName = cn('btn rounded-lg', {
+    'btn-secondary': !hasCustomEventStyles,
+    'cb-custom-event-btn-info': hasCustomEventStyles,
+  });
+  const openBtnClassName = cn('btn text-white rounded-lg', {
+    'btn-primary': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
+  });
 
   return (
     <Modal show={modalShowing} onHide={handleCancel}>
@@ -162,7 +175,7 @@ function MatchConfirmationModal({
         <div className="d-flex justify-content-between w-100">
           <Button
             onClick={handleCancel}
-            className="btn btn-secondary rounded-lg"
+            className={closeBtnClassName}
           >
             {i18next.t('Cancel')}
           </Button>
@@ -170,7 +183,7 @@ function MatchConfirmationModal({
             <Button
               ref={confirmBtnRef}
               onClick={handleConfirmation}
-              className="btn btn-primary text-white rounded-lg"
+              className={openBtnClassName}
             >
               {i18next.t('Open')}
             </Button>

@@ -12,8 +12,8 @@ import useTournamentPanel from './useTournamentPanel';
 const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
-    'cb-custom-event-bg-purple': type === 'user' && !muted,
-    'cb-custom-event-bg-muted-purple': type === 'user' && muted,
+    'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
+    'cb-custom-event-bg-muted-purple cursor-pointer': type === 'user' && muted,
   });
 
 const tableDataCellClassName = hideSeparator => cn(
@@ -23,7 +23,7 @@ const tableDataCellClassName = hideSeparator => cn(
     },
   );
 
-function RatingClansPanel({ type, state }) {
+function RatingClansPanel({ type, state, handleUserSelectClick }) {
   const dispatch = useDispatch();
 
   const [items, setItems] = useState([]);
@@ -91,13 +91,21 @@ function RatingClansPanel({ type, state }) {
                   <tr className="cb-custom-event-empty-space-tr" />
                   <tr className={getCustomEventTrClassName('user', index > 3)}>
                     <td className={tableDataCellClassName(true)} />
-                    <td className={tableDataCellClassName()}>
+                    <td
+                      className={tableDataCellClassName()}
+                    >
                       <div
-                        className="cb-custom-event-name mr-1"
+                        role="button"
+                        tabIndex={0}
+                        className="cb-custom-event-name cursor-pointer mr-1"
+                        onClick={handleUserSelectClick}
+                        onKeyPress={handleUserSelectClick}
+                        data-user-id={user.userId}
                       >
                         <UserInfo
                           user={{ id: user.userId, name: user.userName }}
                           hideOnlineIndicator
+                          hideLink
                         />
                       </div>
                     </td>

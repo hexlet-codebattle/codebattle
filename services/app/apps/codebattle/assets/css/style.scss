@@ -20,6 +20,10 @@ $fa-font-path: '/fonts';
 @import 'tournaments';
 @import 'taskComponent';
 
+.katex .rlap > .inner {
+  position: relative !important;
+}
+
 em-emoji-picker {
   position: absolute;
   bottom: 52px;
@@ -1034,6 +1038,11 @@ a:hover {
   background-color: #2ae881;
 }
 
+.cb-custom-event-badge-secondary {
+  color: #fff;
+  background-color: #B6A4FF;
+}
+
 .cb-custom-event-badge-warning {
   color: #212529;
   background-color: #ffe500;
@@ -1147,35 +1156,145 @@ a:hover {
   animation: ticker_2 70s linear infinite;
   animation-delay: -35s;
 }
-
-.cb-custom-event-btn-outline-success {
-  color: #23BD6A;
-  border-color: #23BD6A;
+.cb-custom-event-text-success {
+  color: #2ae881;
 }
 
-.cb-custom-event-btn-outline-success:hover:not(:disabled) {
-  color: #ffffff;
+.cb-custom-event-text-danger {
+  color: #FF621E;
+}
+
+.cb-custom-event-border-success {
+  border-color: #2ae881 !important;
+}
+
+.cb-custom-event-border-info {
+  border-color: #34b4fe !important;
+}
+
+.cb-custom-event-btn-success {
+  color: #212529;
   background-color: #23BD6A;
   border-color: #23BD6A;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #1c9755;
+    border-color: #1c9755;
+  }
+}
+
+.cb-custom-event-btn-info {
+  color: #ffffff;
+  background-color: #34b4fe;
+  border-color: #34b4fe;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #0191e4;
+    border-color: #0191e4;
+  }
+}
+
+div.cb-dropdown-menu {
+  transform: translate3d(-100%, 0, 0);
+}
+
+.cb-custom-event-btn-primary,
+.cb-custom-event-btn-secondary {
+  color: #ffffff;
+  background-color: #8566ff;
+  border-color: #8566ff;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #704dff;
+    border-color: #704dff;
+  }
+}
+
+.cb-custom-event-btn-warning {
+  color: #212529;
+  background-color: #FF621E;
+  border-color: #FF621E;
+
+  &:hover:not(:disabled) {
+    color: #212529;
+    background-color: #e64500;
+    border-color: #e64500;
+  }
+}
+
+.cb-custom-event-btn-outline-success {
+  color: #2ae881;
+  border-color: #2ae881;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #2ae881;
+    border-color: #2ae881;
+  }
+}
+
+.cb-custom-event-btn-outline-info {
+  color: #73CCFE;
+  border-color: #73CCFE;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #73CCFE;
+    border-color: #73CCFE;
+  }
+}
+
+.cb-custom-event-btn-outline-primary,
+.cb-custom-event-btn-outline-secondary {
+  color: #8566ff;
+  border-color: #8566ff;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #8566ff;
+    border-color: #8566ff;
+  }
 }
 
 .cb-custom-event-btn-outline-warning {
-  color: #FF621E;
-  border-color: #FF621E;
+  color: #FFE500;
+  border-color: #FFE500;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #FFE500;
+    border-color: #FFE500;
+  }
 }
 
-.cb-custom-event-btn-outline-warning:hover:not(:disabled) {
-  color: #ffffff;
-  background-color: #FF621E;
+.cb-custom-event-btn-outline-danger {
+  color: #FF621E;
   border-color: #FF621E;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background-color: #FF621E;
+    border-color: #FF621E;
+  }
 }
 
 .cb-custom-event-btn-outline-success:disabled,
+.cb-custom-event-btn-outline-secondary:disabled,
+.cb-custom-event-btn-outline-primary:disabled,
+.cb-custom-event-btn-outline-danger:disabled,
 .cb-custom-event-btn-outline-warning:disabled {
   color: #C3C2BC;
   border-color: #C3C2BC;
 }
 
+.cb-custom-event-badge-success,
+.cb-custom-event-badge-warning,
+.cb-custom-event-badge-danger,
+.cb-custom-event-badge-primary,
+.cb-custom-event-badge-light,
 .cb-custom-event-active-status,
 .cb-custom-event-draw-status,
 .cb-custom-event-win-status,
@@ -1183,6 +1302,24 @@ a:hover {
   border-radius: 0.50rem;
 }
 
+.cb-custom-event-badge-success {
+  background-color: #23BD6A;
+}
+
+.cb-custom-event-badge-danger {
+  background-color: #FF621E;
+}
+
+.cb-custom-event-badge-primary {
+  color: #ffffff;
+  background-color: #34b4fe;
+}
+
+.cb-custom-event-badge-light {
+  background-color: var(--light);
+}
+
+.cb-custom-event-badge-warning,
 .cb-custom-event-draw-status,
 .cb-custom-event-active-status {
   background-color: #FFE500;

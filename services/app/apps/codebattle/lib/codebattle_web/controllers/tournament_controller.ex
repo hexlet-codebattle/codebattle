@@ -36,6 +36,7 @@ defmodule CodebattleWeb.TournamentController do
         url: Routes.tournament_url(conn, :show, tournament.id)
       })
       |> put_gon(tournament_id: params["id"])
+      |> put_gon(event_id: tournament.event_id)
       |> render("show.html")
     else
       conn
@@ -59,6 +60,7 @@ defmodule CodebattleWeb.TournamentController do
         url: Routes.tournament_url(conn, :show, tournament.id)
       })
       |> put_gon(tournament_id: params["id"])
+      |> put_gon(event_id: tournament.event_id)
       |> render("show.html")
     else
       conn

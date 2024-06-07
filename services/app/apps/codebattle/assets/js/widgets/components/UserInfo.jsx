@@ -46,6 +46,7 @@ function UserPopoverContent({ user }) {
 function UserInfo({
   className,
   user,
+  hideLink = false,
   hideInfo = false,
   truncate = false,
   hideOnlineIndicator = false,
@@ -76,6 +77,7 @@ function UserInfo({
         truncate={truncate}
         isOnline={isOnline}
         hideOnlineIndicator={hideOnlineIndicator}
+        hideLink={hideLink}
       />
     );
   }
@@ -93,6 +95,7 @@ function UserInfo({
           truncate={truncate}
           isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}
+          hideLink={hideLink}
         />
       </div>
     </PopoverStickOnHover>

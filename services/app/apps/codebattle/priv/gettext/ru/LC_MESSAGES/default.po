@@ -257,8 +257,26 @@ msgid "SourceCode"
 msgstr "Исходный Код"
 
 # JSX
+msgid "Pause"
+msgstr "Приостановить"
+
+msgid "Unpause"
+msgstr "Возобновить"
+
+msgid "Unfollow"
+msgstr "Прекратить"
+
 msgid "Task: "
 msgstr "Задача: "
+
+msgid "Won:"
+msgstr "Побед:"
+
+msgid "Lost:"
+msgstr "Поражений:"
+
+msgid "GaveUp:"
+msgstr "Cдался:"
 
 msgid "Task"
 msgstr "Зaдача"
@@ -437,8 +455,35 @@ msgstr "Место"
 msgid "Score"
 msgstr "Балл"
 
+msgid "User"
+msgstr "Участник"
+
+msgid "Duration (sec)"
+msgstr "Время (сек)"
+
 msgid "Clan"
 msgstr "Вуз"
+
+msgid "Count of solutions"
+msgstr "Количество успешных решений"
+
+msgid "Total time for solving task"
+msgstr "Общее время решения задачи"
+
+msgid "Task duration distribution"
+msgstr "Распределение по времени решения задачи (Количество решений/сек)"
+
+msgid "Show task description"
+msgstr "Показать описание задачи"
+
+msgid "%{percent}% (sec)"
+msgstr "%{percent}% (сек)"
+
+msgid "Fastest time to solve task (sec)"
+msgstr "Самое быстрое решение (сек)"
+
+msgid "Slowest time to solve task (sec)"
+msgstr "Самое медленное решение (сек)"
 
 msgid "Event rating"
 msgstr "Таблица Участников"
@@ -626,6 +671,9 @@ msgstr "Статистика"
 msgid "Wins"
 msgstr "Побед"
 
+msgid "Wins count"
+msgstr "Количество побед"
+
 msgid "Loses"
 msgstr "Поражений"
 
@@ -692,4 +740,23 @@ msgstr "Пожалуйста, исправьте ваш код и отправь
 msgid "Note that your code may contain an infinite loop or complex calculations"
 msgstr "Обратите внимание, что ваш код может содержать бесконечный цикл или сложные вычисления"
 
+msgid "Rating Panel"
+msgstr "Рейтинг участников"
 
+msgid "Player Panel"
+msgstr "Панель участника"
+
+msgid "Top users by clan ranking"
+msgstr "Лучшие игроки в рейтинге вузов"
+
+msgid "Tasks ranking"
+msgstr "Рейтинг задач"
+
+msgid "Clans bubble distribution"
+msgstr "График распределения лучших вузов"
+
+msgid "Duration distribution and top users by task"
+msgstr "Cтатистика по задаче"
+
+msgid "Back"
+msgstr "Назад"

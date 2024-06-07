@@ -305,3 +305,13 @@ export const getResults = (type, taskId, onSuccess) => () => {
       }
     });
 };
+
+export const getTask = (taskId, onSuccess) => () => {
+  channel
+    .push('tournament:get_task', { task_id: taskId })
+    .receive('ok', payload => {
+      const data = camelizeKeys(payload);
+
+      onSuccess(data.descriptionRu);
+    });
+};

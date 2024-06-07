@@ -34,8 +34,7 @@ defmodule CodebattleWeb.Api.V1.TaskController do
   def build(conn, %{
         "task" => task_params,
         "solution_text" => solution_text,
-        "arguments_generator_text" => arguments_generator_text,
-        "editor_lang" => editor_lang
+        "arguments_generator_text" => arguments_generator_text
       }) do
     task = %Task{
       name: Map.get(task_params, "name"),
@@ -49,7 +48,7 @@ defmodule CodebattleWeb.Api.V1.TaskController do
            task: task,
            solution_text: solution_text,
            arguments_generator_text: arguments_generator_text,
-           editor_lang: editor_lang
+           editor_lang: "js"
          }) do
       {:ok, asserts} ->
         conn

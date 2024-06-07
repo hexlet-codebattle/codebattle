@@ -1,5 +1,5 @@
 import React, {
- memo, useCallback,
+ memo, useCallback, useContext,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 import AsyncSelect from 'react-select/async';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import UserLabel from '../../components/UserLabel';
 import {
   tournamentPlayersSelector,
@@ -31,14 +32,14 @@ export const PanelModeCodes = {
 };
 
 export const mapPanelModeToTitle = {
-  [PanelModeCodes.ratingMode]: 'Rating Panel',
-  [PanelModeCodes.playerMode]: 'Player Panel',
-  [PanelModeCodes.topUserByClansMode]: 'Top users by clan ranking',
-  [PanelModeCodes.taskRatingMode]: 'Tasks ranking',
-  [PanelModeCodes.clansBubbleDistributionMode]: 'Clans bubble distribution',
-  [PanelModeCodes.taskRatingAdvanced]: 'Duration distribution and top users by task',
-  [PanelModeCodes.taskDurationDistributionMode]: 'task duration distribution',
-  [PanelModeCodes.topUserByTasksMode]: 'Top user by task ranking',
+  [PanelModeCodes.ratingMode]: i18next.t('Rating Panel'),
+  [PanelModeCodes.playerMode]: i18next.t('Player Panel'),
+  [PanelModeCodes.topUserByClansMode]: i18next.t('Top users by clan ranking'),
+  [PanelModeCodes.taskRatingMode]: i18next.t('Tasks ranking'),
+  [PanelModeCodes.clansBubbleDistributionMode]: i18next.t('Clans bubble distribution'),
+  [PanelModeCodes.taskRatingAdvanced]: i18next.t('Duration distribution and top users by task'),
+  [PanelModeCodes.taskDurationDistributionMode]: i18next.t('task duration distribution'),
+  [PanelModeCodes.topUserByTasksMode]: i18next.t('Top user by task ranking'),
 };
 
 function ControlPanel({
@@ -53,6 +54,7 @@ function ControlPanel({
   setPanelMode,
 }) {
   const allPlayers = useSelector(tournamentPlayersSelector);
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const onPanelBack = useCallback(() => {
     if (panelHistory.length === 0) return;
@@ -61,18 +63,22 @@ function ControlPanel({
 
     setPanelMode(prev);
     setPanelHistory(rest.reverse());
-  }, [panelHistory, setPanelHistory, setPanelMode]);
+
+    if (prev.userId) {
+      setSearchOption(allPlayers[prev.userId]);
+    }
+  }, [panelHistory, setPanelHistory, setPanelMode, setSearchOption, allPlayers]);
   const onChangePanelMode = useCallback(e => {
     setPanelMode({ panel: e.target.value });
     setPanelHistory(items => [...items, panelMode]);
   }, [setPanelMode, setPanelHistory, panelMode]);
   const onChangeSearchedPlayer = useCallback(
-    ({ value = '' }) => setSearchOption(value),
+    ({ value = {} }) => setSearchOption(value),
     [setSearchOption],
   );
   const loadOptions = useCallback(
     (inputValue, callback) => {
-      const substr = inputValue.toLowerCase();
+      const substr = (inputValue || '').toLowerCase();
 
       const options = Object.values(allPlayers)
         .filter(player => player.name.toLowerCase().indexOf(substr) !== -1)
@@ -86,12 +92,17 @@ function ControlPanel({
     [allPlayers],
   );
 
+  const backBtnClassName = cn('btn text-nowrap rounded-lg mr-1 mb-2', {
+    'btn-outline-secondary': !hasCustomEventStyles,
+    'cb-custom-event-btn-outline-secondary': hasCustomEventStyles,
+  });
+
   return (
     <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
       <div className="d-flex align-items-center w-50">
         <button
           type="button"
-          className="btn btn-outline-secondary text-nowrap rounded-lg mr-1 mb-2"
+          className={backBtnClassName}
           onClick={onPanelBack}
           disabled={panelHistory.length === 0}
         >

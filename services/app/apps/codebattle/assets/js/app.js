@@ -107,14 +107,6 @@ const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
 
-if (onlineRoot) {
-  renderOnlineWidget(onlineRoot);
-}
-
-if (invitesRoot) {
-  renderInvitesWidget(invitesRoot);
-}
-
 if (extension) {
   renderExtensionPopup(extension);
 }
@@ -169,4 +161,12 @@ if (adminTournamentRoot) {
 
 if (eventWidgetRoot) {
   renderEventPage(eventWidgetRoot);
+}
+
+if (onlineRoot) {
+  renderOnlineWidget(onlineRoot);
+}
+
+if (invitesRoot) {
+  renderInvitesWidget(invitesRoot);
 }

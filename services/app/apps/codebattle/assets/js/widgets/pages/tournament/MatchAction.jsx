@@ -1,8 +1,10 @@
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 import i18next from 'i18next';
 
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import MatchStatesCodes from '../../config/matchStates';
 import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
 
@@ -12,6 +14,20 @@ function MatchAction({
   currentUserIsPlayer,
 }) {
   const href = `/games/${match.gameId}`;
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
+  const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+    'btn-primary': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
+  });
+  const continueBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+    'btn-success text-white': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
+  });
+  const gameOverBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+    'btn-outline-danger': !hasCustomEventStyles,
+    'cb-custom-event-btn-outline-danger': hasCustomEventStyles,
+  });
 
   switch (match.state) {
     case MatchStatesCodes.pending:
@@ -19,11 +35,11 @@ function MatchAction({
         <a
           href={href}
           title="Show match"
-          className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
+          className={showBtnClassName}
           disabled
         >
           <FontAwesomeIcon className="mr-2" icon="eye" />
-          Show
+          {i18next.t('Show')}
         </a>
       );
     case MatchStatesCodes.playing: {
@@ -33,7 +49,7 @@ function MatchAction({
             <a
               href={href}
               title={i18next.t('Continue match')}
-              className="btn btn-success btn-sm text-white text-nowrap rounded-lg px-3"
+              className={continueBtnClassName}
             >
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
               {i18next.t('Continue')}
@@ -41,7 +57,7 @@ function MatchAction({
             {canModerate && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm text-nowrap rounded-lg px-3"
+              className={gameOverBtnClassName}
               onClick={() => sendMatchGameOver(match.id)}
             >
               <FontAwesomeIcon className="mr-2" icon="window-close" />
@@ -57,7 +73,7 @@ function MatchAction({
           <a
             href={href}
             title={i18next.t('Show match')}
-            className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
+            className={showBtnClassName}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
@@ -65,7 +81,7 @@ function MatchAction({
           {canModerate && (
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm text-nowrap rounded-lg px-3"
+              className={gameOverBtnClassName}
               onClick={() => sendMatchGameOver(match.id)}
             >
               <FontAwesomeIcon className="mr-2" icon="window-close" />
@@ -83,7 +99,7 @@ function MatchAction({
           <a
             href={href}
             title={i18next.t('Show game history')}
-            className="btn btn-primary btn-sm text-nowrap rounded-lg px-3"
+            className={showBtnClassName}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}

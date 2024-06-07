@@ -2,11 +2,15 @@ import React, {
   useCallback,
   useMemo,
   memo,
+  useContext,
 } from 'react';
 
+import cn from 'classnames';
 import omit from 'lodash/omit';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 
 function DetailsModal({
   tournament,
@@ -34,6 +38,12 @@ function DetailsModal({
     ),
     [tournament],
   );
+  const hasCustomEventStyles = useContext(CustomEventStylesContext);
+
+  const closeBtnClassName = cn('btn rounded-lg', {
+    'btn-secondary': !hasCustomEventStyles,
+    'cb-custome-event-btn-secondary': !hasCustomEventStyles,
+  });
 
   const handleCancel = useCallback(
     () => setModalShowing(false),
@@ -51,7 +61,7 @@ function DetailsModal({
       <Modal.Footer>
         <Button
           onClick={handleCancel}
-          className="btn btn-secondary rounded-lg"
+          className={closeBtnClassName}
         >
           Close
         </Button>

@@ -1,5 +1,5 @@
 import React, {
- memo, useEffect,
+ memo, useContext, useEffect,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,6 +7,7 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { uploadPlayers } from '@/middlewares/Tournament';
 
 import MatchStateCodes from '../../config/matchStates';
@@ -115,10 +116,21 @@ function StageCard({
   const dispatch = useDispatch();
   const opponent = players[opponentId];
 
+  const hasCustomEventStyle = useContext(CustomEventStylesContext);
+
   const cardInfoClassName = cn(
     'd-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3',
     'align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline',
   );
+
+  const bunnedBtnClassName = cn('btn rounded-lg m-1 px-4 disabled', {
+    'btn-danger': !hasCustomEventStyle,
+    'cb-custom-event-btn-danger': hasCustomEventStyle,
+  });
+  const openBtnClassName = cn('btn rounded-lg m-1 px-4', {
+    'btn-primary': !hasCustomEventStyle,
+    'cb-custom-event-btn-primary': hasCustomEventStyle,
+  });
 
   useEffect(() => {
     if (!opponent && opponentId) {
@@ -179,14 +191,14 @@ function StageCard({
             </h6>
             <div className="d-flex">
               {isBanned ? (
-                <a href="_blank" className="btn btn-danger rounded-lg m-1 px-4 disabled">
+                <a href="_blank" className={bunnedBtnClassName}>
                   <FontAwesomeIcon className="mr-2" icon="ban" />
                   {i18next.t('You banned')}
                 </a>
               ) : (
                 <a
                   href={`/games/${lastGameId}`}
-                  className="btn btn-primary rounded-lg m-1 px-4"
+                  className={openBtnClassName}
                 >
                   <FontAwesomeIcon className="mr-2" icon="eye" />
                   {i18next.t('Open match')}

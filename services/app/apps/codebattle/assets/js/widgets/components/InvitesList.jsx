@@ -12,8 +12,12 @@ import GameLevelBadge from './GameLevelBadge';
 
 const NoInvites = () => <div className="p-2 text-center">No Invites</div>;
 
-function InvitesList({ list, currentUserId }) {
+function InvitesList({ list, followId, currentUserId }) {
   const dispatch = useDispatch();
+
+  if (followId && list.length === 0) {
+    return <></>;
+  }
 
   if (list.length === 0) {
     return <NoInvites />;

@@ -1,4 +1,9 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, {
+  memo,
+  useState,
+  useCallback,
+  useRef,
+} from 'react';
 
 import {
   Chart as ChartJS,
@@ -19,6 +24,7 @@ ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 function ClansChartPanel({ type, state }) {
   const dispatch = useDispatch();
 
+  const chartRef = useRef();
   const [items, setItems] = useState([]);
 
   const fetchData = useCallback(
@@ -44,7 +50,7 @@ function ClansChartPanel({ type, state }) {
 
   const config = {
     data: {
-      datasets: items.map(item => ({
+      datasets: items.slice(0, 6).map(item => ({
         label: `${item?.clanName || 'undefined'} [${item?.playerCount || 0}]`,
         data: [
           {
@@ -67,7 +73,7 @@ function ClansChartPanel({ type, state }) {
   };
 
   return (
-    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+    <div ref={chartRef} className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
       <Bubble data={config.data} options={config.options} />
     </div>
   );

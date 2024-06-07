@@ -51,19 +51,19 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
               {i18next.t('Fastest time to solve task (sec)')}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('25% (sec)')}
+              {i18next.t('%{percent}% (sec)', { percent: 25 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('50% (sec)')}
+              {i18next.t('%{percent}% (sec)', { percent: 50 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('75% (sec)')}
+              {i18next.t('%{percent}% (sec)', { percent: 75 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('85% (sec)')}
+              {i18next.t('%{percent}% (sec)', { percent: 85 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('95% (sec)')}
+              {i18next.t('%{percent}% (sec)', { percent: 95 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t('Slowest time to solve task (sec)')}

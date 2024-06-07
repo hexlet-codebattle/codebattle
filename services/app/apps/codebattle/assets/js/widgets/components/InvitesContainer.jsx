@@ -91,11 +91,11 @@ function InvitesContainer() {
                   onClick={handleUnfollowClick}
                 >
                   <FontAwesomeIcon icon="binoculars" className="mr-1" />
-                  Unfollow
+                  {i18n.t('Unfollow')}
                 </button>
               </div>
             )}
-            <InvitesList list={invites} currentUserId={currentUserId} />
+            <InvitesList followId={followId} list={invites} currentUserId={currentUserId} />
           </Popover>
         )}
       >

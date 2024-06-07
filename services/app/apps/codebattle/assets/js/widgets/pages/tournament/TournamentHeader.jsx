@@ -1,10 +1,11 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useContext, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import i18next from 'i18next';
 import moment from 'moment';
 
+import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import useTournamentStats from '@/utils/useTournamentStats';
 
 import CopyButton from '../../components/CopyButton';
@@ -124,6 +125,7 @@ function TournamentStateDescription({
 function TournamentHeader({
   id: tournamentId,
   state,
+  streamMode,
   breakState,
   breakDurationSeconds,
   matchTimeoutSeconds,
@@ -147,6 +149,7 @@ function TournamentHeader({
   isOver,
   canModerate,
   toggleShowBots,
+  toggleStreamMode,
   handleStartRound,
   handleOpenDetails,
 }) {
@@ -155,13 +158,30 @@ function TournamentHeader({
     () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
     [state, breakState, hideResults],
   );
-  const stateClassName = cn('badge mr-2', {
+  const hasCustomEventStyle = useContext(CustomEventStylesContext);
+
+  const stateClassName = cn('badge mr-2', hasCustomEventStyle ? {
+    'cb-custom-event-badge-warning': state === TournamentStates.waitingParticipants,
+    'cb-custom-event-badge-success':
+      !hideResults && (breakState === 'off' || state === TournamentStates.finished),
+    'cb-custom-event-badge-light': state === TournamentStates.cancelled,
+    'cb-custom-event-badge-danger': breakState === 'on',
+    'cb-custom-event-badge-primary': hideResults && state === TournamentStates.finished,
+  } : {
     'badge-warning': state === TournamentStates.waitingParticipants,
     'badge-success':
       !hideResults && (breakState === 'off' || state === TournamentStates.finished),
     'badge-light': state === TournamentStates.cancelled,
     'badge-danger': breakState === 'on',
     'badge-primary': hideResults && state === TournamentStates.finished,
+  });
+  const copyBtnClassName = cn('btn btn-sm rounded-right', {
+    'btn-secondary': !hasCustomEventStyle,
+    'cb-custom-event-btn-secondary': hasCustomEventStyle,
+  });
+  const backBtnClassName = cn('btn rounded-lg ml-lg-2 ml-md-2 mr-2', {
+    'btn-primary': !hasCustomEventStyle,
+    'cb-custom-event-btn-primary': hasCustomEventStyle,
   });
 
   const canStart = isLive
@@ -183,7 +203,7 @@ function TournamentHeader({
   return (
     <>
       <div className="col bg-white shadow-sm rounded-lg p-2">
-        <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between border-bottom">
+        <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between">
           <div className="d-flex align-items-center pb-2">
             <h2
               title={name}
@@ -226,7 +246,7 @@ function TournamentHeader({
             )}
           </div>
           <div className="d-flex">
-            {
+            {!streamMode && (
               !isOver ? (
                 <div className="d-flex justify-items-center pb-2">
                   {type !== 'team' && (
@@ -243,7 +263,7 @@ function TournamentHeader({
               ) : (
                 <div className="d-flex justify-items-center pb-2">
                   <a
-                    className="btn btn-primary rounded-lg ml-lg-2 ml-md-2 mr-2"
+                    className={backBtnClassName}
                     href="/tournaments"
                   >
                     <FontAwesomeIcon className="mr-2" icon="undo" />
@@ -251,11 +271,12 @@ function TournamentHeader({
                   </a>
                 </div>
               )
-            }
+            )}
             <div className="d-flex justify-items-center pb-2">
               {canModerate && (
                 <TournamentMainControlButtons
                   accessType={accessType}
+                  streamMode={streamMode}
                   tournamentId={tournamentId}
                   canStart={canStart}
                   canStartRound={canStartRound}
@@ -268,13 +289,14 @@ function TournamentHeader({
                   handleStartRound={handleStartRound}
                   handleOpenDetails={handleOpenDetails}
                   toggleShowBots={toggleShowBots}
+                  toggleStreamMode={toggleStreamMode}
                 />
               )}
             </div>
           </div>
         </div>
-        {canModerate && (
-          <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto">
+        {canModerate && !streamMode && (
+          <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto border-top">
             <div title={type} className="d-flex align-items-center">
               Mode:
               <span className="ml-2">
@@ -305,7 +327,7 @@ function TournamentHeader({
                     </span>
                   </div>
                   <CopyButton
-                    className="btn btn-sm btn-secondary rounded-right"
+                    className={copyBtnClassName}
                     value={accessToken}
                     disabled={!isLive || !isOnline}
                   />

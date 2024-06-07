@@ -66,7 +66,7 @@ const getBtnTitle = (action, state) => {
   }
 
   switch (action) {
-    case 'edit': return 'Edit task';
+    case 'edit': return 'Update task';
     case 'upload': return 'Upload task';
     case 'save': return 'Confirm';
     case 'copy': return 'Copy';
@@ -166,9 +166,12 @@ const TaskParamsModal = NiceModal.create(({
 
     try {
       switch (action) {
-        case 'edit':
         case 'upload': {
           handleUpload(taskService, onSuccess, onError);
+          break;
+        }
+        case 'edit': {
+          handleSave(taskService, onSuccess, onError, JSON.parse(value));
           break;
         }
         case 'save': {
@@ -185,7 +188,7 @@ const TaskParamsModal = NiceModal.create(({
     } catch (err) {
       setError(err);
     }
-  }, [modal, action, taskService, handleUpload, handleSave, handleCopy]);
+  }, [value, modal, action, taskService, handleUpload, handleSave, handleCopy]);
 
   const handleCancel = useCallback(() => {
     if (taskService) {

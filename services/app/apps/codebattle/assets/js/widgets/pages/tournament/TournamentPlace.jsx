@@ -27,7 +27,7 @@ function TourrnamentPlace({
   const muteResults = (isAdmin || isOwner) && hideResults;
 
   const className = cn({ 'p-1 bg-light rounded-lg': muteResults });
-  const iconClassName = 'text-warning';
+  const iconClassName = 'text-warninG';
   const textClassName = cn({ 'text-muted': muteResults });
 
   return (
