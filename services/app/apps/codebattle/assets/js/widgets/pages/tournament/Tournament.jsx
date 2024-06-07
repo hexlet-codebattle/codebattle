@@ -170,7 +170,8 @@ function Tournament({ waitingRoomMachine }) {
   }, [dispatch]);
   const toggleStreamMode = useCallback(() => {
     if (streamMode) {
-      document.getElementsByTagName('main')[0].style.zoom = '100%';
+      // document.getElementsByTagName('main')[0].style.zoom = '100%';
+      document.body.style.zoom = '100%';
     }
     dispatch(actions.toggleStreamMode());
   }, [dispatch, streamMode]);
@@ -226,7 +227,8 @@ function Tournament({ waitingRoomMachine }) {
     }
 
     if (activeStreamMode || streamMode) {
-      document.getElementsByTagName('main')[0].style.zoom = '130%';
+      // document.getElementsByTagName('main')[0].style.zoom = '130%';
+      document.body.style.zoom = '130%';
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

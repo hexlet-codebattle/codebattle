@@ -5,6 +5,7 @@ import React, {
   useEffect,
 } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -132,6 +133,9 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                 <th className="p-1 pl-4 font-weight-light border-0">
                   {i18next.t('Duration (sec)')}
                 </th>
+                <th className="p-1 pl-4 font-weight-light border-0">
+                  {' '}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -169,11 +173,16 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                         {item.clanName}
                       </div>
                     </td>
-                    <td width="120" className={tableDataCellClassName}>
+                    <td width="100" className={tableDataCellClassName}>
                       {item.score}
                     </td>
-                    <td width="120" className={tableDataCellClassName}>
+                    <td width="100" className={tableDataCellClassName}>
                       {item.durationSec}
+                    </td>
+                    <td className={tableDataCellClassName}>
+                      <a className="text-primary" href={`/games/${item.gameId}`}>
+                        <FontAwesomeIcon icon="link" className="mr-1" />
+                      </a>
                     </td>
                   </tr>
                 </React.Fragment>
