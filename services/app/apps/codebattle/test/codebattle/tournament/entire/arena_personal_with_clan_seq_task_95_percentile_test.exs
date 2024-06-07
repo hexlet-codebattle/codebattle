@@ -18,16 +18,29 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     insert(:task_pack, name: "tp2", task_ids: [t4_id, t5_id])
     insert(:task_pack, name: "tp3", task_ids: [t6_id])
 
+    [
+      %{id: c1_id},
+      %{id: c2_id},
+      %{id: c3_id},
+      %{id: c4_id},
+      %{id: c5_id},
+      %{id: c6_id},
+      %{id: c7_id}
+    ] =
+      Enum.map(1..7, fn i ->
+        insert(:clan, %{name: to_string(i)})
+      end)
+
     event = %{id: e_id} = insert(:event)
     creator = insert(:user)
-    user1 = %{id: u1_id} = insert(:user, %{clan_id: 1, clan: "1", name: "1"})
-    user2 = %{id: u2_id} = insert(:user, %{clan_id: 1, clan: "1", name: "2"})
-    user3 = insert(:user, %{clan_id: 2, clan: "3", name: "3"})
-    user4 = insert(:user, %{clan_id: 3, clan: "4", name: "4"})
-    user5 = insert(:user, %{clan_id: 4, clan: "5", name: "5"})
-    user6 = insert(:user, %{clan_id: 5, clan: "6", name: "6"})
-    user7 = insert(:user, %{clan_id: 6, clan: "7", name: "7"})
-    user8 = insert(:user, %{clan_id: 7, clan: "8", name: "8"})
+    user1 = %{id: u1_id} = insert(:user, %{clan_id: c1_id, clan: "1", name: "1"})
+    user2 = %{id: u2_id} = insert(:user, %{clan_id: c1_id, clan: "1", name: "2"})
+    user3 = insert(:user, %{clan_id: c2_id, clan: "2", name: "3"})
+    user4 = insert(:user, %{clan_id: c3_id, clan: "3", name: "4"})
+    user5 = insert(:user, %{clan_id: c4_id, clan: "4", name: "5"})
+    user6 = insert(:user, %{clan_id: c5_id, clan: "5", name: "6"})
+    user7 = insert(:user, %{clan_id: c6_id, clan: "6", name: "7"})
+    user8 = insert(:user, %{clan_id: c7_id, clan: "7", name: "8"})
 
     {:ok, tournament} =
       Tournament.Context.create(%{
@@ -1095,7 +1108,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              %{
                id: _,
                event_id: ^e_id,
-               clan_id: 1,
+               clan_id: ^c1_id,
                user_id: ^u2_id,
                user_name: "2",
                place: 1,
@@ -1104,7 +1117,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              %{
                id: _,
                event_id: ^e_id,
-               clan_id: 1,
+               clan_id: ^c1_id,
                user_id: ^u1_id,
                user_name: "1",
                place: 2,

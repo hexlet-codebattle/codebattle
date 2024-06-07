@@ -52,7 +52,6 @@ defmodule CodebattleWeb.RawTaskController do
           |> redirect(to: Routes.raw_task_path(conn, :edit, task.id))
 
         {:error, %Ecto.Changeset{} = changeset} ->
-          dbg(changeset)
           render(conn, "edit.html", task: task, changeset: changeset)
       end
     else
