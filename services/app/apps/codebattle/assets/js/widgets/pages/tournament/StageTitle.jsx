@@ -4,7 +4,7 @@ import capitalize from 'lodash/capitalize';
 
 import mapStagesToTitle from '../../config/mapStagesToTitle';
 
-function StageTitle({ stage, _stagesLimit, hideDescription = false }) {
+function StageTitle({ stage, hideDescription = false }) {
   // TODO: fix tmp translation
   //
   // if (stage === stagesLimit - 1) {

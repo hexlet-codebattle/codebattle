@@ -10,6 +10,7 @@ import {
   restartWaitingRoomMatchmaking,
 } from '@/middlewares/WaitingRoom';
 
+import TournamentStates from '../config/tournament';
 import {
   isMatchmakingInProgressSelector,
   isMatchmakingPausedSelector,
@@ -23,6 +24,8 @@ import RoomContext from './RoomContext';
 const WaitingRoomStatus = ({
   page,
   taskCount,
+  breakState,
+  tournamentState,
   maxPlayerTasks,
   activeGameId,
 }) => {
@@ -64,6 +67,21 @@ const WaitingRoomStatus = ({
   const handleRestartMatchmaking = useCallback(() => {
     dispatch(restartWaitingRoomMatchmaking());
   }, [dispatch]);
+
+  if (breakState === 'on' || tournamentState !== TournamentStates.active) {
+    return (
+      <>
+        <img
+          src="/assets/images/event/stars.png"
+          alt="Matchmaking is paused"
+          className="my-2"
+        />
+        <span className={statusTextClassName}>
+          {i18next.t('Tournament is paused')}
+        </span>
+      </>
+    );
+  }
 
   return (
     <>

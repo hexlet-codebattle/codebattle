@@ -763,3 +763,6 @@ msgstr "Cтатистика по задаче"
 
 msgid "Back"
 msgstr "Назад"
+
+msgid "Tournament is paused"
+msgstr "Игра этапа завершены"

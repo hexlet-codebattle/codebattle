@@ -9,9 +9,11 @@ import WaitingRoomPanel from './WaitingRoomPanel';
 
 const ArenaInfoWidget = () => {
   const {
+    state,
     taskCount,
     taskSolvedCount,
     maxPlayerTasks,
+    breakState,
     activeGameId,
   } = useTournamentStats({ type: 'room' });
 
@@ -27,6 +29,8 @@ const ArenaInfoWidget = () => {
         <WaitingRoomStatus
           page="game"
           taskCount={taskSolvedCount}
+          tournamentState={state}
+          breakState={breakState}
           maxPlayerTasks={maxPlayerTasks}
           activeGameId={activeGameId}
         />

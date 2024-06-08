@@ -366,6 +366,8 @@ function TournamentHeader({
             <WaitingRoomStatus
               page="tournament"
               taskCount={taskSolvedCount}
+              tournamentState={state}
+              breakState={breakState}
               maxPlayerTasks={maxPlayerTasks}
               activeGameId={activeGameId}
             />

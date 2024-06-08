@@ -25,7 +25,7 @@ const getActiveGameId = (gameStatus, gameId) => {
 const useTournamentStats = ({ type }) => {
   const gameStatus = useSelector(gameStatusSelector);
   const { user, gameId } = useSelector(currentTournamentPlayerSelector);
-  const { roundTaskIds } = useSelector(tournamentSelector);
+  const { roundTaskIds, breakState, state } = useSelector(tournamentSelector);
   const matches = useSelector(tournamentMatchesSelector);
 
   const taskCount = user?.taskIds?.length || 1;
@@ -39,8 +39,10 @@ const useTournamentStats = ({ type }) => {
     : getActiveGameId(gameStatus, gameId);
 
   return {
+    state,
     taskCount,
     taskSolvedCount,
+    breakState,
     maxPlayerTasks: roundTaskIds?.length,
     activeGameId,
   };
