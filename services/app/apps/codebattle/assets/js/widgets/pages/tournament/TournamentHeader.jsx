@@ -361,7 +361,7 @@ function TournamentHeader({
             />
           </span>
         </p>
-        {type === TournamentTypes.arena && state === TournamentStates.active && !!players[currentUserId] && (
+        {type === TournamentTypes.arena && state === TournamentStates.active && !!players[currentUserId] && breakState === 'off' && (
           <div className="d-flex align-items-center">
             <WaitingRoomStatus
               page="tournament"
