@@ -303,6 +303,7 @@ defmodule Codebattle.Tournament.Server do
               }
         }
       ) do
+    Logger.error("WR matchingstarted")
     players =
       tournament
       |> Tournament.Players.get_players("matchmaking_active")

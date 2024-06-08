@@ -118,6 +118,7 @@ defmodule Codebattle.Game.Engine do
       game = Map.put(game, :award, params[:award])
       {:ok, _} = Game.GlobalSupervisor.start_game(game)
       :ok = maybe_fire_playing_game_side_effects(game)
+       broadcast_game_created(game)
       game
     end)
   end
