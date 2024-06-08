@@ -364,19 +364,19 @@ class Editor extends PureComponent {
       }
 
       // Custom Paste Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
-          if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
-            const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
-            editor.executeEdits('custom-paste', [
-              {
-                range: editor.getSelection(),
-                text: customText,
-                forceMoveMarkers: true,
-              },
-            ]);
-          }
-        e.preventDefault();
-      }
+      // if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
+      //     if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
+      //       const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
+      //       editor.executeEdits('custom-paste', [
+      //         {
+      //           range: editor.getSelection(),
+      //           text: customText,
+      //           forceMoveMarkers: true,
+      //         },
+      //       ]);
+      //     }
+      //   e.preventDefault();
+      // }
     });
 
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
