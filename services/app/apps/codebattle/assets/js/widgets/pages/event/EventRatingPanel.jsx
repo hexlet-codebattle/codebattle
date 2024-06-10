@@ -65,6 +65,9 @@ const commonRatingTypes = {
   playerClan: 'player_clan',
 };
 
+const maxTopClansCount = 4;
+const maxTopPlayersCount = 5;
+
 const EventRatingPanel = ({
   commonLeaderboard: {
  items, pageNumber, pageSize, totalEntries,
@@ -156,10 +159,18 @@ const EventRatingPanel = ({
             </tr>
           </thead>
           <tbody>
-            {groupedItems?.map((users, index) => (
+            {groupedItems?.map((users, clanIndex) => (
               <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
                 <tr className="cb-custom-event-empty-space-tr" />
-                <tr className={getCustomEventTrClassNamePersonal('clan', index > 3)}>
+                <tr
+                  className={
+                    getCustomEventTrClassNamePersonal(
+                      'clan',
+                      clanIndex > maxTopClansCount - 1,
+                      users[0].clanId === currentUserClanId,
+                    )
+                  }
+                >
                   <td className={tableDataCellClassNamePersonal(true)}>
                     {users[0].clanRank}
                   </td>
@@ -172,23 +183,27 @@ const EventRatingPanel = ({
                     </div>
                   </td>
                   <td className={tableDataCellClassNamePersonal()}>
-                    {users.reduce((acc, user) => acc + user.totalScore, 0) || 0}
+                    {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.totalScore, 0) || 0}
                   </td>
                   <td className={tableDataCellClassNamePersonal()}>
-                    {users.reduce((acc, user) => acc + user.winsCount, 0) || 0}
+                    {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.winsCount, 0) || 0}
                   </td>
                   <td className={tableDataCellClassNamePersonal()}>
-                    {users.reduce(
+                    {users.slice(0, maxTopPlayersCount).reduce(
                       (acc, user) => acc + user.totalDurationSec,
                       0,
                     ) || 0}
                   </td>
                 </tr>
-                {users.map(user => (
+                {users.map((user, userIndex) => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr
-                      className={getCustomEventTrClassNamePersonal('user', index > 3, user.userId === currentUserId)}
+                      className={getCustomEventTrClassNamePersonal(
+                        'user',
+                        clanIndex > maxTopClansCount - 1 || userIndex > maxTopPlayersCount - 1,
+                        user.userId === currentUserId,
+                      )}
                     >
                       <td className={tableDataCellClassNamePersonal(true)} />
                       <td className={tableDataCellClassNamePersonal()}>

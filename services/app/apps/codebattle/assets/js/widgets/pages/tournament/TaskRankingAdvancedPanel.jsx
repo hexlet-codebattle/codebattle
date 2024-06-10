@@ -65,11 +65,11 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
   }, [setMode]);
 
   const fetchData = useCallback(() => {
-    dispatch(getResults(PanelModeCodes.topUserByTasksMode, taskId, setUsers));
+    dispatch(getResults(PanelModeCodes.topUserByTasksMode, { taskId }, setUsers));
     dispatch(
       getResults(
         PanelModeCodes.taskDurationDistributionMode,
-        taskId,
+        { taskId },
         setTaskItems,
       ),
     );

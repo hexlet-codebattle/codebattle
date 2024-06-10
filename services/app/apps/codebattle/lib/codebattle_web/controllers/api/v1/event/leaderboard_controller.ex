@@ -44,7 +44,11 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
           %{personal_tournament_id: id} ->
             %{
               page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0},
-              items: TournamentResult.get_top_users_by_clan_ranking(%{id: id}, 5, 7)
+              items: TournamentResult.get_top_users_by_clan_ranking(
+                %{id: id},
+                Map.get(params, "players_limit", 5),
+                Map.get(params, "clans_limit", 7)
+              )
             }
         end
 

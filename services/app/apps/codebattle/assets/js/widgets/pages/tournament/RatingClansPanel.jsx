@@ -34,7 +34,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
   const [items, setItems] = useState([]);
 
   const fetchData = useCallback(
-    () => dispatch(getResults(type, undefined, setItems)),
+    () => dispatch(getResults(type, {}, setItems)),
     [setItems, dispatch, type],
   );
 

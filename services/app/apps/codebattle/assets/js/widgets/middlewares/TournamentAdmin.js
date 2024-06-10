@@ -291,9 +291,9 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
     .receive('error', error => console.error(error));
 };
 
-export const getResults = (type, taskId, onSuccess) => () => {
+export const getResults = (type, params, onSuccess) => () => {
   channel
-    .push('tournament:get_results', { params: { type, task_id: taskId } })
+    .push('tournament:get_results', { params: { type, ...decamelizeKeys(params) } })
     .receive('ok', payload => {
       const data = camelizeKeys(payload);
 

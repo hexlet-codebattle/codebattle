@@ -23,6 +23,8 @@ const fetchCommonLeaderboard = createAsyncThunk(
 
     params.clanId = params.clanId || currentUserClanIdSelector(state);
     params.userId = params.userId || currentUserIdSelector(state);
+    params.clansLimit = params.clansLimit || 40;
+    params.playersLimit = params.playersLimit || 400;
 
     const response = await axios.get(
       `/api/v1/events/${params.eventId}/leaderboard`,
