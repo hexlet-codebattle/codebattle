@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
   alias Codebattle.Repo
   alias Codebattle.Tournament.TournamentResult
 
-  @page_size 10
+  @page_size 15
 
   def show(conn, params) do
     page_number =

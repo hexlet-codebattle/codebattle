@@ -1,6 +1,8 @@
 import React, {
   memo,
+  useState,
   useEffect,
+  useCallback,
 } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
@@ -52,6 +54,16 @@ function EventWidget() {
   const currentUserId = useSelector(currentUserIdSelector);
   const currentUserClanId = useSelector(currentUserClanIdSelector);
 
+  const [showPersonal, setShowPersonal] = useState(!!personalTournamentId);
+
+  const handleChangeMode = useCallback(
+    e => {
+      const { checked } = e.target;
+      setShowPersonal(!checked);
+    },
+    [setShowPersonal],
+  );
+
   const contentClassName = cn(
     'd-flex flex-column-reverse flex-lg-row',
     'flex-md-column-reverse flex-sm-column-reverse',
@@ -79,12 +91,24 @@ function EventWidget() {
               selectedId={currentUserClanId}
             />
           )}
+          <div className="m-1 custom-control custom-switch">
+            <input
+              id="task-params-view"
+              type="checkbox"
+              className="custom-control-input"
+              checked={!showPersonal}
+              onChange={handleChangeMode}
+            />
+            <label className="custom-control-label" htmlFor="task-params-view">
+              {i18next.t('Show full tournament table')}
+            </label>
+          </div>
           <EventRatingPanel
             currentUserId={currentUserId}
             currentUserClanId={currentUserClanId}
             commonLeaderboard={commonLeaderboard}
             eventId={id}
-            personalTournamentId={personalTournamentId}
+            showPersonal={showPersonal}
           />
         </div>
         <div className="col-12 col-lg-5">

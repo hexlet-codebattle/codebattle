@@ -11,6 +11,8 @@ import loadingStatuses from '../config/loadingStatuses';
 
 import initial from './initial';
 
+const defaultPageSize = 15;
+
 const fetchCommonLeaderboard = createAsyncThunk(
   'events/fetchLeaderboard',
   async (
@@ -21,10 +23,9 @@ const fetchCommonLeaderboard = createAsyncThunk(
   ) => {
     const state = getState();
 
+    params.pageSize = params.pageSize || defaultPageSize;
     params.clanId = params.clanId || currentUserClanIdSelector(state);
     params.userId = params.userId || currentUserIdSelector(state);
-    params.clansLimit = params.clansLimit || 40;
-    params.playersLimit = params.playersLimit || 400;
 
     const response = await axios.get(
       `/api/v1/events/${params.eventId}/leaderboard`,
@@ -33,13 +34,41 @@ const fetchCommonLeaderboard = createAsyncThunk(
 
     // return {
     //   items: [
-    //     { id: 101, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 1 },
-    //     { id: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 2 },
-    //     { id: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 3 },
-    //     { id: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 4 },
-    //     { id: 101, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 5 },
-    //     { id: 6, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 6 },
-    //     { id: 7, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, score: 1000, place: 7 },
+    //     { userId: 1, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 2, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 3, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 4, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 5, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 6, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 7, clanId: 1, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 1 },
+    //     { userId: 8, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 9, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 10, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 11, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 12, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 13, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 14, clanId: 2, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 2 },
+    //     { userId: 15, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 16, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 17, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 18, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 19, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 20, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 21, clanId: 3, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 3 },
+    //     { userId: 22, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 23, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 24, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 25, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 26, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 27, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 28, clanId: 4, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 4 },
+    //     { userId: 29, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 30, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 31, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 32, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 33, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 34, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
+    //     { userId: 10000, clanId: 5, clanName: 'Clan1', longName: 'Clan2', playersCount: 1000, totalScore: 1000, clanRank: 5 },
     //   ],
     //   pageInfo: { pageNumber: 1, pageSize: 10, totalEntries: 1000 },
     // };

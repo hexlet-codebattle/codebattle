@@ -766,3 +766,6 @@ msgstr "Назад"
 
 msgid "Tournament is paused"
 msgstr "Игра этапа завершены"
+
+msgid "Show full tournament table"
+msgstr "Показать полную турнирную таблицу"

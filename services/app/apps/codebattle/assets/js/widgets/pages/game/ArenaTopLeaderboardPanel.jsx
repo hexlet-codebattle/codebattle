@@ -79,7 +79,7 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
                 <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
                   <td className={tableDataCellClassName}>
                     <div
-                      title={console.log(item) || item?.userName}
+                      title={item?.userName}
                       className="cb-custom-event-name"
                       style={{ maxWidth: '135px' }}
                     >

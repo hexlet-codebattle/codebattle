@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
@@ -70,26 +74,25 @@ const maxTopPlayersCount = 5;
 
 const EventRatingPanel = ({
   commonLeaderboard: {
- items, pageNumber, pageSize, totalEntries,
-} = {
+    items, pageNumber, pageSize, totalEntries,
+  } = {
     items: [],
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: 15,
     totalEntries: 0,
   },
   currentUserClanId,
   currentUserId,
-  personalTournamentId,
+  showPersonal,
   eventId,
 }) => {
   const dispatch = useDispatch();
 
   const [type, setType] = useState(
-    personalTournamentId ? commonRatingTypes.personal : commonRatingTypes.clan,
+    showPersonal ? commonRatingTypes.personal : commonRatingTypes.clan,
   );
   const selectedId = type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
-
-  const handleClick = useCallback(
+  const handleChangePanelTypeClick = useCallback(
     e => {
       const {
         currentTarget: { dataset },
@@ -135,11 +138,15 @@ const EventRatingPanel = ({
     /* eslint-disable-next-line */
   }, [type]);
 
-  if (personalTournamentId) {
+  useEffect(() => {
+    setType(showPersonal ? commonRatingTypes.personal : commonRatingTypes.clan);
+  }, [showPersonal]);
+
+  if (type === commonRatingTypes.personal) {
     const groupedItems = Object.values(groupBy(items, item => item.clanRank));
 
     return (
-      <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+      <div className="mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto bg-white rounded-lg py-2 px-1">
         <table className="table table-striped cb-custom-event-table">
           <thead className="text-muted">
             <tr>
@@ -245,7 +252,7 @@ const EventRatingPanel = ({
                 className={getTabLinkClassName(type === commonRatingTypes.clan)}
                 role="tab"
                 data-tab-name="clan"
-                onClick={handleClick}
+                onClick={handleChangePanelTypeClick}
               >
                 {i18next.t('Clans rating')}
               </button>
@@ -257,7 +264,7 @@ const EventRatingPanel = ({
                 )}
                 role="tab"
                 data-tab-name="player"
-                onClick={handleClick}
+                onClick={handleChangePanelTypeClick}
               >
                 {i18next.t('Players rating')}
               </button>
@@ -269,7 +276,7 @@ const EventRatingPanel = ({
                 )}
                 role="tab"
                 data-tab-name="player_clan"
-                onClick={handleClick}
+                onClick={handleChangePanelTypeClick}
               >
                 {i18next.t('Clan players rating')}
               </button>
@@ -301,7 +308,7 @@ const EventRatingPanel = ({
                 </tr>
               </thead>
               <tbody>
-                {items.map(item => (
+                {items?.map(item => (
                   <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr className={getCustomEventTrClassName(item, selectedId)}>
