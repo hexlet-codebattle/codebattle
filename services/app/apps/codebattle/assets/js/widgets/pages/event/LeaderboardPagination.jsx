@@ -5,7 +5,7 @@ import Pagination from 'react-js-pagination';
 const LeaderboardPagination = ({
   pageInfo: { pageNumber, pageSize, totalEntries },
   setPage,
-}) => (
+}) => (totalEntries > 0 && (
   <Pagination
     activePage={pageNumber}
     itemsCountPerPage={pageSize}
@@ -21,6 +21,6 @@ const LeaderboardPagination = ({
     itemClass="cb-custom-event-pagination-page-item px-1"
     linkClass="cb-custom-event-pagination-page-link px-1"
   />
-);
+));
 
 export default LeaderboardPagination;

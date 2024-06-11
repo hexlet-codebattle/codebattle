@@ -72,6 +72,105 @@ const commonRatingTypes = {
 const maxTopClansCount = 4;
 const maxTopPlayersCount = 5;
 
+const PersonalEventTable = ({
+  currentUserId,
+  currentUserClanId,
+  items,
+  type,
+}) => {
+  const groupedItems = Object.values(groupBy(items, item => item.clanRank));
+
+  return (
+    <table className="table table-striped cb-custom-event-table">
+      <thead className="text-muted">
+        <tr>
+          <th className="p-1 pl-4 font-weight-light border-0">{}</th>
+          <th className="p-1 pl-4 font-weight-light border-0">
+            {i18next.t('Clan')}
+          </th>
+          <th className="p-1 pl-4 font-weight-light border-0">
+            {i18next.t('Score')}
+          </th>
+          <th className="p-1 pl-4 font-weight-light border-0">
+            {i18next.t('Wins count')}
+          </th>
+          <th className="p-1 pl-4 font-weight-light border-0">
+            {i18next.t('Total time for solving task')}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {groupedItems?.map((users, clanIndex) => (
+          <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
+            <tr className="cb-custom-event-empty-space-tr" />
+            <tr
+              className={
+                getCustomEventTrClassNamePersonal(
+                  'clan',
+                  clanIndex > maxTopClansCount - 1,
+                  users[0].clanId === currentUserClanId,
+                )
+              }
+            >
+              <td className={tableDataCellClassNamePersonal(true)}>
+                {users[0].clanRank}
+              </td>
+              <td
+                title={users[0].clanLongName}
+                className={tableDataCellClassNamePersonal()}
+              >
+                <div className="cb-custom-event-name mr-1">
+                  {users[0].clanName}
+                </div>
+              </td>
+              <td className={tableDataCellClassNamePersonal()}>
+                {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.totalScore, 0) || 0}
+              </td>
+              <td className={tableDataCellClassNamePersonal()}>
+                {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.winsCount, 0) || 0}
+              </td>
+              <td className={tableDataCellClassNamePersonal()}>
+                {users.slice(0, maxTopPlayersCount).reduce(
+                  (acc, user) => acc + user.totalDurationSec,
+                  0,
+                ) || 0}
+              </td>
+            </tr>
+            {users.map((user, userIndex) => (
+              <React.Fragment key={`${type}-user-${user.userId}`}>
+                <tr className="cb-custom-event-empty-space-tr" />
+                <tr
+                  className={getCustomEventTrClassNamePersonal(
+                    'user',
+                    clanIndex > maxTopClansCount - 1 || userIndex > maxTopPlayersCount - 1,
+                    user.userId === currentUserId,
+                  )}
+                >
+                  <td className={tableDataCellClassNamePersonal(true)} />
+                  <td className={tableDataCellClassNamePersonal()}>
+                    <div style={{ maxWidth: 200 }} className="cb-custom-event-name mr-1">
+                      {user.userName}
+                    </div>
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {user.totalScore || 0}
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {user.winsCount || 0}
+                  </td>
+                  <td className={tableDataCellClassNamePersonal()}>
+                    {user.totalDurationSec || 0}
+                  </td>
+                </tr>
+              </React.Fragment>
+            ))}
+          </React.Fragment>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
 const EventRatingPanel = ({
   commonLeaderboard: {
     items, pageNumber, pageSize, totalEntries,
@@ -83,13 +182,12 @@ const EventRatingPanel = ({
   },
   currentUserClanId,
   currentUserId,
-  showPersonal,
   eventId,
 }) => {
   const dispatch = useDispatch();
 
   const [type, setType] = useState(
-    showPersonal ? commonRatingTypes.personal : commonRatingTypes.clan,
+    commonRatingTypes.personal,
   );
   const selectedId = type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
   const handleChangePanelTypeClick = useCallback(
@@ -138,105 +236,6 @@ const EventRatingPanel = ({
     /* eslint-disable-next-line */
   }, [type]);
 
-  useEffect(() => {
-    setType(showPersonal ? commonRatingTypes.personal : commonRatingTypes.clan);
-  }, [showPersonal]);
-
-  if (type === commonRatingTypes.personal) {
-    const groupedItems = Object.values(groupBy(items, item => item.clanRank));
-
-    return (
-      <div className="mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto bg-white rounded-lg py-2 px-1">
-        <table className="table table-striped cb-custom-event-table">
-          <thead className="text-muted">
-            <tr>
-              <th className="p-1 pl-4 font-weight-light border-0">{}</th>
-              <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('Clan')}
-              </th>
-              <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('Score')}
-              </th>
-              <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('Wins count')}
-              </th>
-              <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('Total time for solving task')}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {groupedItems?.map((users, clanIndex) => (
-              <React.Fragment key={`${type}-clan-${users[0].clanId}`}>
-                <tr className="cb-custom-event-empty-space-tr" />
-                <tr
-                  className={
-                    getCustomEventTrClassNamePersonal(
-                      'clan',
-                      clanIndex > maxTopClansCount - 1,
-                      users[0].clanId === currentUserClanId,
-                    )
-                  }
-                >
-                  <td className={tableDataCellClassNamePersonal(true)}>
-                    {users[0].clanRank}
-                  </td>
-                  <td
-                    title={users[0].clanLongName}
-                    className={tableDataCellClassNamePersonal()}
-                  >
-                    <div className="cb-custom-event-name mr-1">
-                      {users[0].clanName}
-                    </div>
-                  </td>
-                  <td className={tableDataCellClassNamePersonal()}>
-                    {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.totalScore, 0) || 0}
-                  </td>
-                  <td className={tableDataCellClassNamePersonal()}>
-                    {users.slice(0, maxTopPlayersCount).reduce((acc, user) => acc + user.winsCount, 0) || 0}
-                  </td>
-                  <td className={tableDataCellClassNamePersonal()}>
-                    {users.slice(0, maxTopPlayersCount).reduce(
-                      (acc, user) => acc + user.totalDurationSec,
-                      0,
-                    ) || 0}
-                  </td>
-                </tr>
-                {users.map((user, userIndex) => (
-                  <React.Fragment key={`${type}-user-${user.userId}`}>
-                    <tr className="cb-custom-event-empty-space-tr" />
-                    <tr
-                      className={getCustomEventTrClassNamePersonal(
-                        'user',
-                        clanIndex > maxTopClansCount - 1 || userIndex > maxTopPlayersCount - 1,
-                        user.userId === currentUserId,
-                      )}
-                    >
-                      <td className={tableDataCellClassNamePersonal(true)} />
-                      <td className={tableDataCellClassNamePersonal()}>
-                        <div style={{ maxWidth: 200 }} className="cb-custom-event-name mr-1">
-                          {user.userName}
-                        </div>
-                      </td>
-                      <td className={tableDataCellClassNamePersonal()}>
-                        {user.totalScore || 0}
-                      </td>
-                      <td className={tableDataCellClassNamePersonal()}>
-                        {user.winsCount || 0}
-                      </td>
-                      <td className={tableDataCellClassNamePersonal()}>
-                        {user.totalDurationSec || 0}
-                      </td>
-                    </tr>
-                  </React.Fragment>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
   return (
     <>
       <div className="d-flex flex-column">
@@ -248,10 +247,10 @@ const EventRatingPanel = ({
             <div id="nav-tab" className={navTabsClassName} role="tablist">
               <button
                 type="button"
-                id="clan-tab"
-                className={getTabLinkClassName(type === commonRatingTypes.clan)}
+                id="personal-tab"
+                className={getTabLinkClassName(type === commonRatingTypes.personal)}
                 role="tab"
-                data-tab-name="clan"
+                data-tab-name="personal"
                 onClick={handleChangePanelTypeClick}
               >
                 {i18next.t('Clans rating')}
@@ -283,88 +282,103 @@ const EventRatingPanel = ({
             </div>
           </nav>
           <div className="px-3 cb-overflow-x-auto">
-            <table className="table table-striped cb-custom-event-table mt-3">
-              <thead className="text-muted">
-                <tr>
-                  <th className="p-1 pl-4 font-weight-light border-0">
-                    {i18next.t('Place')}
-                  </th>
-                  <th className="p-1 pl-4 font-weight-light border-0">
-                    {i18next.t('Score')}
-                  </th>
-                  {type === commonRatingTypes.clan && (
+            {type === commonRatingTypes.personal ? (
+              <PersonalEventTable
+                type={type}
+                items={items}
+                currentUserId={currentUserId}
+                currentUserClanId={currentUserClanId}
+              />
+            ) : (
+              <table className="table table-striped cb-custom-event-table mt-3">
+                <thead className="text-muted">
+                  <tr>
                     <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Clan players_count/registrations')}
+                      {i18next.t('Place')}
                     </th>
-                  )}
-                  <th className="p-1 pl-4 font-weight-light border-0">
-                    {i18next.t('Clan')}
-                  </th>
-                  {type !== commonRatingTypes.clan && (
                     <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Login')}
+                      {i18next.t('Score')}
                     </th>
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {items?.map(item => (
-                  <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
-                    <tr className="cb-custom-event-empty-space-tr" />
-                    <tr className={getCustomEventTrClassName(item, selectedId)}>
-                      <td width="110" className={tableDataCellClassName}>
-                        {item.place || '-'}
-                      </td>
-                      <td width="120" className={tableDataCellClassName}>
-                        {item.score || '-'}
-                      </td>
-                      {item.eventPlayersCount !== undefined && (
-                        <td className={tableDataCellClassName}>
-                          {item.eventPlayersCount !== null
-                            ? `${item.eventPlayersCount}/${item.clansPlayersCount}`
-                            : item.clansPlayersCount}
-                        </td>
-                      )}
-                      <td
-                        title={item.clanLongName}
-                        className={tableDataCellClassName}
+                    {type === commonRatingTypes.clan && (
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('Clan players_count/registrations')}
+                      </th>
+                    )}
+                    <th className="p-1 pl-4 font-weight-light border-0">
+                      {i18next.t('Clan')}
+                    </th>
+                    {type !== commonRatingTypes.clan && (
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('Login')}
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {items?.map(item => (
+                    <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
+                      <tr className="cb-custom-event-empty-space-tr" />
+                      <tr
+                        className={getCustomEventTrClassName(item, selectedId)}
                       >
-                        <div
-                          className="cb-custom-event-name"
-                          style={{ maxWidth: 220 }}
-                        >
-                          {item.clanName}
-                        </div>
-                      </td>
-                      {item.userName && (
+                        <td width="110" className={tableDataCellClassName}>
+                          {item.place || '-'}
+                        </td>
+                        <td width="120" className={tableDataCellClassName}>
+                          {item.score || '-'}
+                        </td>
+                        {item.eventPlayersCount !== undefined && (
+                          <td className={tableDataCellClassName}>
+                            {item.eventPlayersCount !== null
+                              ? `${item.eventPlayersCount}/${item.clansPlayersCount}`
+                              : item.clansPlayersCount}
+                          </td>
+                        )}
                         <td
-                          title={item.userName}
+                          title={item.clanLongName}
                           className={tableDataCellClassName}
                         >
                           <div
                             className="cb-custom-event-name"
                             style={{ maxWidth: 220 }}
                           >
-                            {item.userName}
+                            {item.clanName}
                           </div>
                         </td>
-                      )}
-                    </tr>
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                        {item.userName && (
+                          <td
+                            title={item.userName}
+                            className={tableDataCellClassName}
+                          >
+                            <div
+                              className="cb-custom-event-name"
+                              style={{ maxWidth: 220 }}
+                            >
+                              {item.userName}
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
           <div className="d-flex justify-content-between mr-1 px-2">
-            <div className="pl-2">
-              <span>
-                {i18next.t('Total entries: %{totalEntries}', { totalEntries })}
-              </span>
-            </div>
-            <LeaderboardPagination
-              pageInfo={{ pageNumber, pageSize, totalEntries }}
-              setPage={setPage}
-            />
+            {totalEntries > 0 && (
+              <>
+                <div className="pl-2">
+                  <span>
+                    {i18next.t('Total entries: %{totalEntries}', { totalEntries })}
+                  </span>
+                </div>
+                <LeaderboardPagination
+                  pageInfo={{ pageNumber, pageSize, totalEntries }}
+                  setPage={setPage}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
