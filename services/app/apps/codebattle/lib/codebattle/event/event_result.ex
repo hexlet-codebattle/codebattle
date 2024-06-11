@@ -99,8 +99,21 @@ defmodule Codebattle.Event.EventResult do
     |> Repo.paginate(%{page: page_number, page_size: page_size, total: true})
   end
 
+  def save_results(%{event_id: nil}), do: :noop
+
   def save_results(tournament) do
     clean_results(tournament.event_id)
+
+    tournament_scope =
+      tournament.event_id
+      |> Event.get!()
+      |> case do
+        %Event{personal_tournament_id: pt_id} when not is_nil(pt_id) ->
+          "WHERE tournament_id = #{pt_id}"
+
+        _ ->
+          "WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})"
+      end
 
     sql = """
     INSERT INTO event_results
@@ -123,8 +136,8 @@ defmodule Codebattle.Event.EventResult do
         ROW_NUMBER() OVER (PARTITION BY clan_id ORDER BY SUM(score) DESC, SUM(duration_sec) ASC)
       FROM
         tournament_results
-        WHERE tournament_id in (select id from tournaments where event_id = #{tournament.event_id})
-        GROUP BY user_id, clan_id
+      #{tournament_scope}
+      GROUP BY user_id, clan_id
     """
 
     Ecto.Adapters.SQL.query!(Repo, sql)

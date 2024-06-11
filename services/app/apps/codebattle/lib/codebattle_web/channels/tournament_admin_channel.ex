@@ -113,7 +113,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
           TournamentResult.get_top_user_by_task_ranking(
             tournament,
             task_id,
-            Map.get(params, "limit", 10)
+            Map.get(params, "limit", 40)
           )
 
         _ ->

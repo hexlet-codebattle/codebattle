@@ -75,9 +75,13 @@ defmodule Codebattle.Tournament.TournamentResult do
       games g
       where tournament_id = #{tournament.id}
       and state = 'game_over'
+      and cheater_id is null
+      and id not in (
+        select distinct g.id from user_games ug inner join games g on g.id = ug.game_id
+        where ug.user_id < 0 and ug.result = 'won' and g.tournament_id = #{tournament.id}
+      )
       GROUP BY
       task_id, level),
-
       stats as (
       select
       (p.player_info->>'result_percent')::numeric AS result_percent,
@@ -97,6 +101,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       END AS score,
       g.level,
       g.task_id,
+      g.cheater_id,
       g.id
       from games g
       CROSS JOIN LATERAL
@@ -114,6 +119,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
+      cheater_id,
       score,
       level,
       duration_sec,
@@ -126,6 +132,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
+      cheater_id,
       COALESCE(result_percent * score / 100.0, 0) as score,
       level,
       duration_sec,
@@ -336,6 +343,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tournament_results tr
     WHERE
         tr.tournament_id = #{tournament.id}
+        and score > 0
     GROUP BY
         tr.task_id
     )
@@ -370,6 +378,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tournament_id = #{tournament.id}
         AND task_id = #{task_id}
         AND result_percent = 100.0
+        AND score > 0
     ),
     IntervalParams AS (
     SELECT
@@ -453,8 +462,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> map_repo_result()
   end
 
-  def get_top_user_by_task_ranking(tournament, task_id, limit \\ 10) do
-    limit = min(limit, 100)
+  def get_top_user_by_task_ranking(tournament, task_id, limit \\ 30) do
 
     query =
       from(r in __MODULE__,
@@ -464,6 +472,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         where: r.task_id == ^task_id,
         where: r.result_percent == 100.0,
+        where: r.score > 0,
         order_by: [asc: r.duration_sec],
         limit: ^limit,
         select: %{
@@ -489,3 +498,4 @@ defmodule Codebattle.Tournament.TournamentResult do
     end)
   end
 end
+

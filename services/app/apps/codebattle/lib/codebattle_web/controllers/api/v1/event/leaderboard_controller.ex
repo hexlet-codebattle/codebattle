@@ -42,13 +42,17 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
             }
 
           %{personal_tournament_id: id} ->
+            players_limit = Map.get(params, "players_limit", 5) |> cast_int() |> min(100)
+            clans_limit = Map.get(params, "clans_limit", 40) |> cast_int() |> min(100)
+
             %{
               page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0},
-              items: TournamentResult.get_top_users_by_clan_ranking(
-                %{id: id},
-                Map.get(params, "players_limit", 5),
-                Map.get(params, "clans_limit", 7)
-              )
+              items:
+                TournamentResult.get_top_users_by_clan_ranking(
+                  %{id: id},
+                  players_limit,
+                  clans_limit
+                )
             }
         end
 

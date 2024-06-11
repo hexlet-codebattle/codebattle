@@ -171,7 +171,7 @@ defmodule Codebattle.User do
   def search_users(query) do
     __MODULE__
     |> where([u], u.is_bot == false)
-    |> where([u], fragment("? ilike ?", u.name, ^"#{query}%"))
+    |> where([u], fragment("? ilike ?", u.name, ^"%#{query}%"))
     |> limit(20)
     |> order_by([u], {:desc, :updated_at})
     |> Repo.all()
