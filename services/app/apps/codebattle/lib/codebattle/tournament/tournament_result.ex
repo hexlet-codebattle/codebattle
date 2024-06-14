@@ -463,7 +463,6 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def get_top_user_by_task_ranking(tournament, task_id, limit \\ 30) do
-
     query =
       from(r in __MODULE__,
         join: c in Clan,
@@ -498,4 +497,3 @@ defmodule Codebattle.Tournament.TournamentResult do
     end)
   end
 end
-

@@ -81,6 +81,8 @@ defmodule Codebattle.Tournament.Show do
     current_round_position === Enum.count(round_task_ids) - 1
   end
 
+  defp final_round?(_t), do: false
+
   defp get_wait_type(tournament, _timeout_ms) do
     # min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 

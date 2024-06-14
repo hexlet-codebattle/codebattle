@@ -52,12 +52,12 @@ defmodule Codebattle.Tournament do
   @access_types ~w(public token)
   @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
-  @score_strategies ~w(time_and_tests win_loss)
+  @score_strategies ~w(time_and_tests win_loss one_zero)
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
-  @ranking_types ~w(by_player by_clan by_player_95th_percentile)
-  @types ~w(individual team show swiss arena versus)
+  @ranking_types ~w(void by_player by_clan by_player_95th_percentile)
+  @types ~w(individual team show swiss arena versus squad)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 

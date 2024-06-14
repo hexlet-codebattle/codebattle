@@ -280,7 +280,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if f.params["type"] in ["arena"] do %>
+        <%= if f.params["type"] in ["arena", "squad"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
             <div class="d-flex flex-column justify-content-between w-auto">
               <%= label(f, :round_timeout_seconds) %>

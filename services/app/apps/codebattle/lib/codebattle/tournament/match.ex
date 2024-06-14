@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament.Match do
     field(:player_ids, {:array, :integer}, default: [])
     field(:player_results, AtomizedMap, default: %{})
     field(:round_id, :integer)
+    field(:task_id, :integer)
     field(:round_position, :integer)
     field(:started_at, :naive_datetime)
     field(:state, :string)
@@ -31,6 +32,7 @@ defmodule Codebattle.Tournament.Match do
       :duration_sec,
       :finished_at,
       :game_id,
+      :task_id,
       :id,
       :integer,
       :level,

@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Ranking do
   alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByPlayer
   alias Codebattle.Tournament.Ranking.ByPlayer95thPercentile
+  alias Codebattle.Tournament.Ranking.Void
   alias Codebattle.Tournament.Storage.Ranking
 
   @spec get_first(tournament :: Tournament.t(), limit :: pos_integer()) :: list(map())
@@ -90,5 +91,6 @@ defmodule Codebattle.Tournament.Ranking do
   defp get_module(%{ranking_type: "by_clan"}), do: ByClan
   defp get_module(%{ranking_type: "by_player_95th_percentile"}), do: ByPlayer95thPercentile
   defp get_module(%{ranking_type: "by_player"}), do: ByPlayer
+  defp get_module(%{ranking_type: "void"}), do: Void
   defp get_module(_tournament), do: ByPlayer
 end

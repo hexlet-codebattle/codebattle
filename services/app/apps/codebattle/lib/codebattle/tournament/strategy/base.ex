@@ -469,6 +469,21 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
+      def start_round_games(tournament, match_ref) do
+        finished_match = get_match(tournament, match_ref)
+        matches = get_round_matches(tournament, tournament.current_round_position)
+
+        task_index = round(2 * Enum.count(matches) / players_count(tournament))
+
+        task_id = Enum.at(tournament.round_task_ids, task_index)
+
+        if task_id do
+          build_round_matches(tournament, %{task_id: task_id})
+        end
+
+        tournament
+      end
+
       defp pick_game_winner_id(player_ids, player_results) do
         Enum.find(player_ids, &(player_results[&1] && player_results[&1].result == "won"))
       end
@@ -650,6 +665,7 @@ defmodule Codebattle.Tournament.Base do
       defp build_and_run_match(tournament, players, game, reset_task_ids) do
         match = %Tournament.Match{
           game_id: game.id,
+          task_id: game.task_id,
           id: game.ref,
           level: game.level,
           player_ids: players |> Enum.map(& &1.id) |> Enum.sort(),
@@ -773,7 +789,9 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp update_players_state_after_round_finished(tournament = %{state: "finished"}) do
+      defp update_players_state_after_round_finished(
+             tournament = %{type: "arena", state: "finished"}
+           ) do
         tournament
         |> get_players()
         |> Enum.each(fn player ->
@@ -792,7 +810,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp update_players_state_after_round_finished(tournament) do
+      defp update_players_state_after_round_finished(tournament = %{type: "arena"}) do
         tournament
         |> get_players()
         |> Enum.each(fn player ->
@@ -810,6 +828,8 @@ defmodule Codebattle.Tournament.Base do
 
         tournament
       end
+
+      defp update_players_state_after_round_finished(t), do: t
 
       defp set_stats(tournament) do
         update_struct(tournament, %{stats: get_stats(tournament)})
@@ -853,7 +873,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp get_game_timeout(tournament) do
-        if use_waiting_room?(tournament) or tournament.type == "swiss" do
+        if use_waiting_room?(tournament) or tournament.type in ["squad", "swiss"] do
           min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
         else
           get_round_timeout_seconds(tournament)
@@ -897,6 +917,10 @@ defmodule Codebattle.Tournament.Base do
 
       defp get_score("win_loss", level, player_result, _duration_sec) do
         Score.WinLoss.get_score(level, player_result)
+      end
+
+      defp get_score("one_zero", level, player_result, _duration_sec) do
+        Score.OneZero.get_score(level, player_result)
       end
 
       defp get_task_id_by_params(%{task_id: task_id}), do: task_id

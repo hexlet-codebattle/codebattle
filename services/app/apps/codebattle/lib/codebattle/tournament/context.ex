@@ -300,7 +300,7 @@ defmodule Codebattle.Tournament.Context do
       "versus" ->
         %{rounds_limit: 1000}
 
-      type when type in ["arena", "swiss"] ->
+      type when type in ["arena", "swiss", "squad"] ->
         rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
 
         %{rounds_limit: rounds_limit}
@@ -326,11 +326,12 @@ defmodule Codebattle.Tournament.Context do
   def get_waiting_room_name(_tournament), do: nil
 
   defp get_module(%{type: "arena"}), do: Tournament.Arena
-  defp get_module(%{type: "swiss"}), do: Tournament.Swiss
+  defp get_module(%{type: "squad"}), do: Tournament.Squad
+  defp get_module(%{type: "individual"}), do: Tournament.Individual
   defp get_module(%{type: "show"}), do: Tournament.Show
+  defp get_module(%{type: "swiss"}), do: Tournament.Swiss
   defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(%{type: "versus"}), do: Tournament.Versus
-  defp get_module(%{type: "individual"}), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 

@@ -1,12 +1,12 @@
-defmodule Codebattle.Tournament.Score.WinLoss do
+defmodule Codebattle.Tournament.Score.OneZero do
   @moduledoc false
 
-  @loss_score 1
+  @loss_score 0
   @game_level_score %{
-    "elementary" => 2,
-    "easy" => 3,
-    "medium" => 5,
-    "hard" => 8
+    "elementary" => 1,
+    "easy" => 1,
+    "medium" => 1,
+    "hard" => 1
   }
 
   def get_score(task_level, tests_percent) do
