@@ -40,7 +40,7 @@ defmodule Codebattle.Game.TasksQueuesServer do
   end
 
   def handle_cast(:reshuffle_task_ids, state) do
-    Process.send_after(self(), :reshuffled_task_ids, @reshuffle_timeout)
+    Process.send_after(self(), :reshuffle_task_ids, @reshuffle_timeout)
     {:noreply, %{state | task_ids: fetch_task_ids()}}
   end
 
@@ -71,8 +71,8 @@ defmodule Codebattle.Game.TasksQueuesServer do
     end
   end
 
-  def handle_info(:reshuffled_task_ids, state) do
-    Process.send_after(self(), :reshuffled_task_ids, @reshuffle_timeout)
+  def handle_info(:reshuffle_task_ids, state) do
+    Process.send_after(self(), :reshuffle_task_ids, @reshuffle_timeout)
     {:noreply, %{state | task_ids: fetch_task_ids()}}
   end
 
