@@ -14,6 +14,8 @@ This project exists thanks to all the people who contribute. [[Contribute]](CONT
 
 <a href="https://github.com/hexlet-codebattle/codebattle/graphs/contributors"><img src="https://opencollective.com/codebattle/contributors.svg?width=890"></a>
 
+![Alt](https://repobeats.axiom.co/api/embed/cb0f9e443414905bb8a0e437460095b05bc11caf.svg "Repobeats analytics image")
+
 ### Requirements
 
 - Mac / Linux
