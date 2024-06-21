@@ -16,7 +16,7 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 
 import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
-// import TaskLanguagesSelection from './TaskLanguageSelection';
+import TaskLanguagesSelection from './TaskLanguageSelection';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -53,7 +53,7 @@ function TaskAssignment({
   task,
   taskLanguage,
   taskSize = 0,
-  // handleSetLanguage,
+  handleSetLanguage,
   changeTaskDescriptionSizes,
   hideGuide = false,
   hideContribution = false,
@@ -61,7 +61,7 @@ function TaskAssignment({
   hidingControls = false,
   fullSize = false,
 }) {
-  const [,, description] = useTaskDescriptionParams(task, taskLanguage);
+  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
 
   const handleTaskSizeIncrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize + 1);
@@ -107,11 +107,11 @@ function TaskAssignment({
             <span className="ml-2 text-muted">{task.name}</span>
           </h6>
           <div className="d-flex align-items-center">
-            {/* <TaskLanguagesSelection */}
-            {/*   handleSetLanguage={handleSetLanguage} */}
-            {/*   avaibleLanguages={avaibleLanguages} */}
-            {/*   displayLanguage={displayLanguage} */}
-            {/* /> */}
+            <TaskLanguagesSelection
+              handleSetLanguage={handleSetLanguage}
+              avaibleLanguages={avaibleLanguages}
+              displayLanguage={displayLanguage}
+            />
 
             {!fullSize && (
               <button

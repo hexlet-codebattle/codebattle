@@ -8,7 +8,12 @@ import { useSelector } from 'react-redux';
 
 import * as selectors from '../../selectors';
 
-function GameResultIcon({ editor: { userId } }) {
+const mapModeToWinImgProps = {
+  default: { src: '/assets/images/big-gold-cup.png', alt: 'gold-cup' },
+  spectator: { src: '/assets/images/check.png', alt: 'green-check', style: { width: '100px', height: '100px' } },
+};
+
+function GameResultIcon({ userId, mode = 'default' }) {
   const players = useSelector(selectors.gamePlayersSelector);
 
   const opponent = find(players, ({ id }) => id !== userId);
@@ -17,6 +22,7 @@ function GameResultIcon({ editor: { userId } }) {
   const resultUser2 = get(players, [opponent?.Id, 'result']);
 
   const tooltipId = `tooltip-${resultUser1}`;
+  const winIconProps = mapModeToWinImgProps[mode];
 
   if (resultUser1 === 'gave_up') {
     return (
@@ -39,7 +45,10 @@ function GameResultIcon({ editor: { userId } }) {
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
         placement="left"
       >
-        <img src="/assets/images/big-gold-cup.png" alt="gold-cup" />
+        <img
+          alt="empty win icon"
+          {...winIconProps}
+        />
       </OverlayTrigger>
     );
   }

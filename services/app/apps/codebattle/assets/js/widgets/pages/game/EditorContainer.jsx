@@ -188,6 +188,7 @@ function EditorContainer({
 
   const editorParams = {
     userId: id,
+    wordWrap: 'off',
     hidingPanelControls: false,
     userType: type,
     syntax: editorState?.currentLangSlug || 'js',

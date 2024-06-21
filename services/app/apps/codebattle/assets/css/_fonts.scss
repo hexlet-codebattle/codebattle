@@ -7,3 +7,8 @@
     src: url('../static/fonts/pixy.ttf')  format('truetype'), /* Safari, Android, iOS */
          url('../static/fonts/pixy.woff') format('woff'); /* Modern Browsers */
 }
+
+@font-face {
+    font-family: 'furore';
+    src: url('../static/fonts/Furore.otf'); /* IE9 Compat Modes */
+}

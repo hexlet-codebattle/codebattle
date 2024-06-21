@@ -6,7 +6,6 @@ import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
-// import CountdownTimer from '@/components/CountdownTimer';
 import {
   connectToEditor,
   connectToGame,
@@ -15,13 +14,15 @@ import {
 import { connectToSpectator } from '@/middlewares/Spectator';
 import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
 
+import CountdownTimer from '../../components/CountdownTimer';
 import EditorUserTypes from '../../config/editorUserTypes';
+import GameStateCodes from '../../config/gameStateCodes';
 import ModalCodes from '../../config/modalCodes';
-// import GameStateCodes from '../../config/gameStateCodes';
 // import MatchStatesCodes from '../../config/matchStates';
 import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
+import useSearchParams from '../../utils/useSearchParams';
 // import useMatchesStatistics from '../../utils/useMatchesStatistics';
 // import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
@@ -145,9 +146,14 @@ const setTaskSizeDefault = size => (
 function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const dispatch = useDispatch();
 
+  const searchParams = useSearchParams();
+
   const [hidingControls, setHidingControls] = useState(false);
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
   const [taskSize, setTaskSize] = useState(taskSizeDefault);
+
+  const activeEditorMode = searchParams.has('editor');
+  const activeTimerMode = searchParams.has('timer');
 
   const changeTaskDescriptionSizes = useCallback(
     size => {
@@ -157,12 +163,12 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     [setTaskSize],
   );
 
-  // const {
-  //   // startsAt,
-  //   // timeoutSeconds,
-  //   // state: gameState,
-  //   solutionStatus,
-  // } = useSelector(selectors.gameStatusSelector);
+  const {
+    startsAt,
+    timeoutSeconds,
+    state: gameState,
+    // solutionStatus,
+  } = useSelector(selectors.gameStatusSelector);
 
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
@@ -378,6 +384,30 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   //     </div>
   //   );
   // };
+
+  if (activeEditorMode) {
+    return (
+      <SpectatorEditor
+        panelClassName="h-100 p-1"
+        switchedWidgetsStatus={switchedWidgetsStatus}
+        handleSwitchWidgets={handleSwitchWidgets}
+        hidingControls={hidingControls}
+        handleSwitchHidingControls={handleSwitchHidingControls}
+        spectatorService={spectatorService}
+        playerId={playerId}
+      />
+    );
+  }
+
+  if (activeTimerMode) {
+    return (
+      <>
+        {startsAt && gameState === GameStateCodes.playing && (
+          <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} />
+        )}
+      </>
+    );
+  }
 
   return (
     <>

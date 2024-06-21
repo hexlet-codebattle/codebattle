@@ -21,6 +21,8 @@ import UserInfo from '../../components/UserInfo';
 import Placements from '../../config/placements';
 import * as selectors from '../../selectors';
 import DakModeButton from '../game/DarkModeButton';
+import EditorResultIcon from '../game/EditorResultIcon';
+import GameResultIcon from '../game/GameResultIcon';
 import VimModeButton from '../game/VimModeButton';
 
 const fontSizeDefault = Number(
@@ -57,11 +59,11 @@ function SpectatorEditor({
   }, [setFontSize]);
 
   const handleIncreaseFontSize = useCallback(
-    () => handleChangeSize(fontSize + 2),
+    () => handleChangeSize(Math.min(32, fontSize + 2)),
     [handleChangeSize, fontSize],
   );
   const handleDecreaseFontSize = useCallback(
-    () => handleChangeSize(fontSize - 2),
+    () => handleChangeSize(Math.max(4, fontSize - 2)),
     [handleChangeSize, fontSize],
   );
 
@@ -78,6 +80,7 @@ function SpectatorEditor({
 
   const editorParams = {
     ...params,
+    wordWrap: 'on',
     value: editorData?.text || '',
     onChange: () => {},
   };
@@ -174,6 +177,9 @@ function SpectatorEditor({
             </div>
           </div>
           <Editor {...editorParams} />
+          <EditorResultIcon mode="spectator">
+            <GameResultIcon mode="spectator" userId={params.userId} />
+          </EditorResultIcon>
         </div>
       </div>
     </>

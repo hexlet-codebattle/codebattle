@@ -15,9 +15,9 @@ const useSearchParams = () => {
     }
   }, [search, currentSearch, setSearch]);
 
-  const searchParms = useMemo(() => new URLSearchParams(search), [search]);
+  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
 
-  return searchParms;
+  return searchParams;
 };
 
 export default useSearchParams;

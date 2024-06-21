@@ -246,7 +246,7 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_active_game_id(tournament, player_id) do
     tournament
-    |> get_matches("active")
+    |> get_matches("playing")
     |> Enum.find(fn match -> player_id in match.player_ids end)
     |> case do
       nil -> nil

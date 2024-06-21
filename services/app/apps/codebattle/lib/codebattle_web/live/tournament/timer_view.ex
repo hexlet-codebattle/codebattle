@@ -25,8 +25,8 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div style="background:#000000;display:flex;justify-content:center;align-items:center;height:100vh;font-size:37vw;font-family:pixy;color:#FFCF04;">
-      <div>
+    <div style="background:#000000;display:flex;justify-content:center;align-items:center;height:100vh;font-size:25vw;font-family:furore;color:#FFFFFF;font-variant-numeric: tabular-nums;white-space: nowrap;">
+      <div style="padding-left: 10%;text-align: left;width:100%;">
         <%= render_remaining_time(
           @tournament.break_state,
           @tournament.last_round_started_at,
@@ -104,8 +104,8 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
 
   defp render_break(assigns) do
     ~H"""
-    <div>
-      <img alt="¯\_(ツ)_/¯" src="/assets/images/timer.svg" />
+    <div style="color: #ffffff">
+      00:00
     </div>
     """
   end

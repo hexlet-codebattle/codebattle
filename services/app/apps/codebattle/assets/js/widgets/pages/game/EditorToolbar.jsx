@@ -6,6 +6,7 @@ import GameRoomModes from '../../config/gameModes';
 import Placements from '../../config/placements';
 
 import DarkModeButton from './DarkModeButton';
+import EditorResultIcon from './EditorResultIcon';
 import GameActionButtons from './GameActionButtons';
 import GameResultIcon from './GameResultIcon';
 import TournamentUserGameScore from './TournamentUserGameScore';
@@ -71,18 +72,9 @@ const EditorToolbar = ({
         </div>
       </div>
     </div>
-
-    <div
-      className="position-absolute"
-      style={{
-        bottom: '5%',
-        right: '5%',
-        opacity: '0.5',
-        zIndex: '100',
-      }}
-    >
-      <GameResultIcon editor={editor} />
-    </div>
+    <EditorResultIcon>
+      <GameResultIcon userId={editor.userId} />
+    </EditorResultIcon>
   </>
 );
 

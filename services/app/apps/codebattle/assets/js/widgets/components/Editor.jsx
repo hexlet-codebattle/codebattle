@@ -29,6 +29,7 @@ let editorClipboard = '';
 class Editor extends PureComponent {
   static propTypes = {
     gameId: PropTypes.number,
+    wordWrap: PropTypes.string,
     userId: PropTypes.number,
     locked: PropTypes.bool,
     value: PropTypes.string,
@@ -41,6 +42,7 @@ class Editor extends PureComponent {
   };
 
   static defaultProps = {
+    wordWrap: 'off',
     gameId: null,
     userId: null,
     locked: true,
@@ -66,6 +68,7 @@ class Editor extends PureComponent {
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
+      wordWrap: props.wordWrap,
       tabSize: getLanguageTabSize(props.syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(props.syntax),
       lineNumbersMinChars: 3,
