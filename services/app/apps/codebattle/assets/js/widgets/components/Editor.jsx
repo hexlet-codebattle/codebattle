@@ -6,7 +6,6 @@ import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
-import { connect } from 'react-redux';
 
 import editorThemes from '../config/editorThemes';
 import editorUserTypes from '../config/editorUserTypes';
@@ -14,12 +13,6 @@ import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
 import { addCursorListeners } from '../middlewares/Room';
-import {
-  gameIdSelector,
-  gameModeSelector,
-  gameLockedSelector,
-} from '../selectors/index';
-import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
 
 import Loading from './Loading';
@@ -30,6 +23,7 @@ class Editor extends PureComponent {
   static propTypes = {
     gameId: PropTypes.number,
     wordWrap: PropTypes.string,
+    lineNumbers: PropTypes.string,
     userId: PropTypes.number,
     locked: PropTypes.bool,
     value: PropTypes.string,
@@ -43,6 +37,7 @@ class Editor extends PureComponent {
 
   static defaultProps = {
     wordWrap: 'off',
+    lineNumbers: 'on',
     gameId: null,
     userId: null,
     locked: true,
@@ -69,6 +64,7 @@ class Editor extends PureComponent {
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
       wordWrap: props.wordWrap,
+      lineNumbers: props.lineNumbers,
       tabSize: getLanguageTabSize(props.syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(props.syntax),
       lineNumbersMinChars: 3,
@@ -452,18 +448,4 @@ class Editor extends PureComponent {
   }
 }
 
-const mapStateToProps = state => {
-  const gameId = gameIdSelector(state);
-  const gameMode = gameModeSelector(state);
-  const locked = gameLockedSelector(state);
-  return {
-    gameId,
-    gameMode,
-    locked,
-    mute: state.user.settings.mute,
-  };
-};
-
-const mapDispatchToProps = { toggleMuteSound: actions.toggleMuteSound };
-
-export default connect(mapStateToProps, mapDispatchToProps)(Editor);
+export default Editor;

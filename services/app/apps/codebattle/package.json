@@ -73,6 +73,7 @@
     "moment": "^2.29.4",
     "monaco-ace-tokenizer": "^0.2.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
+    "monaco-themes": "^0.4.4",
     "monaco-vim": "^0.1.7",
     "nprogress": "^0.2.0",
     "path-browserify": "^1.0.1",

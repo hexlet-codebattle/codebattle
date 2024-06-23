@@ -10,7 +10,7 @@ import cn from 'classnames';
 import noop from 'lodash/noop';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Editor from '../../components/Editor';
+import ExtendedEditor from '../../components/ExtendedEditor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import RoomContext from '../../components/RoomContext';
 import { gameRoomEditorStyles } from '../../config/editorSettings';
@@ -234,7 +234,7 @@ function BuilderEditorsWidget() {
               </div>
             </div>
           </div>
-          <Editor {...generatorParams} />
+          <ExtendedEditor {...generatorParams} />
           {disabledEditors && (
             <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
           )}
@@ -289,7 +289,7 @@ function BuilderEditorsWidget() {
             <AssertsOutput asserts={asserts} {...assertsStatus} />
           </div>
           <div id="editor" className={assertsPanelShowing ? 'd-none' : 'd-flex flex-column flex-grow-1'}>
-            <Editor {...solutionParams} />
+            <ExtendedEditor {...solutionParams} />
           </div>
           {disabledEditors && (
             <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />

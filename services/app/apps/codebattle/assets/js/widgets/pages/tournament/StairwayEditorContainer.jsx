@@ -3,7 +3,7 @@ import React from 'react';
 import find from 'lodash/find';
 import { useSelector } from 'react-redux';
 
-import Editor from '../../components/Editor';
+import ExtendedEditer from '../../components/ExtendedEditor';
 import { currentUserIdSelector } from '../../selectors';
 
 function StairwayEditorContainer({ playerId }) {
@@ -15,7 +15,7 @@ function StairwayEditorContainer({ playerId }) {
     return null;
   }
   return (
-    <Editor
+    <ExtendedEditer
       value={playerData.editorText}
       editable={editable}
       syntax={playerData.editorLang}

@@ -388,7 +388,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   if (activeEditorMode) {
     return (
       <SpectatorEditor
-        panelClassName="h-100 p-1"
+        panelClassName="h-100 p-1 overflow-hidden"
         switchedWidgetsStatus={switchedWidgetsStatus}
         handleSwitchWidgets={handleSwitchWidgets}
         hidingControls={hidingControls}

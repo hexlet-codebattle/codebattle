@@ -4,7 +4,7 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-import Editor from '../../components/Editor';
+import ExtendedEditor from '../../components/ExtendedEditor';
 import RoomContext from '../../components/RoomContext';
 import BattleRoomViewModes from '../../config/battleRoomViewModes';
 import { roomStateSelector } from '../../machines/selectors';
@@ -92,7 +92,7 @@ function GameWidget({ viewMode, editorMachine }) {
           >
             {params => (
               <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
-                <Editor {...params} />
+                <ExtendedEditor {...params} />
               </EditorWrapper>
             )}
           </EditorContainer>
@@ -105,7 +105,7 @@ function GameWidget({ viewMode, editorMachine }) {
           >
             {params => (
               <RightSide output={editors[1].output}>
-                <Editor {...params} />
+                <ExtendedEditor {...params} />
               </RightSide>
             )}
           </EditorContainer>
@@ -125,7 +125,7 @@ function GameWidget({ viewMode, editorMachine }) {
           >
             {params => (
               <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
-                <Editor {...params} />
+                <ExtendedEditor {...params} />
               </EditorWrapper>
             )}
           </EditorContainer>

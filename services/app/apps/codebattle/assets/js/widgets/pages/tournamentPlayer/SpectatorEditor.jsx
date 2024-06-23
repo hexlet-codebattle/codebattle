@@ -7,6 +7,7 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import themeList from 'monaco-themes/themes/themelist.json';
 import { useSelector } from 'react-redux';
 
 import {
@@ -15,7 +16,7 @@ import {
 } from '@/machines/selectors';
 import useMachineStateSelector from '@/utils/useMachineStateSelector';
 
-import Editor from '../../components/Editor';
+import ExtendedEditor from '../../components/ExtendedEditor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import UserInfo from '../../components/UserInfo';
 import Placements from '../../config/placements';
@@ -32,6 +33,13 @@ const setFontSizeDefault = size => (
   window.localStorage.setItem('CodebattleSpectatorEditorFontSize', size)
 );
 
+const monacoThemeDefault = (
+  window.localStorage.getItem('CodebattleSpectatorEditorMonacoTheme') || 'Amy'
+);
+const setMonacoThemeDefault = theme => (
+  window.localStorage.setItem('CodebattleSpectatorEditorMonacoTheme', theme)
+);
+
 function SpectatorEditor({
   // switchedWidgetsStatus,
   // handleSwitchWidgets,
@@ -42,6 +50,8 @@ function SpectatorEditor({
   panelClassName,
 }) {
   const toolbarRef = useRef();
+
+  const [monacoTheme, setMonacoTheme] = useState(monacoThemeDefault);
 
   const players = useSelector(selectors.gamePlayersSelector);
   const editorData = useSelector(selectors.editorDataSelector(playerId));
@@ -57,6 +67,12 @@ function SpectatorEditor({
     setFontSize(size);
     setFontSizeDefault(size);
   }, [setFontSize]);
+  const handleChangeMonacoTheme = useCallback(e => {
+    setMonacoTheme(e.target.value);
+    setMonacoThemeDefault(e.target.value);
+    // setFontSize(size);
+    // setFontSizeDefault(size);
+  }, [setMonacoTheme]);
 
   const handleIncreaseFontSize = useCallback(
     () => handleChangeSize(Math.min(32, fontSize + 2)),
@@ -81,6 +97,9 @@ function SpectatorEditor({
   const editorParams = {
     ...params,
     wordWrap: 'on',
+    fontFamily: 'IBM Plex Mono',
+    lineNumbers: 'off',
+    monacoTheme,
     value: editorData?.text || '',
     onChange: () => {},
   };
@@ -145,6 +164,24 @@ function SpectatorEditor({
                         +
                       </button>
                     </div>
+
+                    <div className="d-flex align-items-center">
+                      <select
+                        key="select_panel_mode"
+                        className="form-control custom-select rounded-lg"
+                        value={monacoTheme}
+                        onChange={handleChangeMonacoTheme}
+                      >
+                        {Object.values(themeList).map(item => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </>
                 )}
               </div>
@@ -176,7 +213,7 @@ function SpectatorEditor({
               </div>
             </div>
           </div>
-          <Editor {...editorParams} />
+          <ExtendedEditor {...editorParams} />
           <EditorResultIcon mode="spectator">
             <GameResultIcon mode="spectator" userId={params.userId} />
           </EditorResultIcon>
