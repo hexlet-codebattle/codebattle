@@ -388,7 +388,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   if (activeEditorMode) {
     return (
       <SpectatorEditor
-        panelClassName="h-100 p-1 overflow-hidden"
+        panelClassName="spectator h-100 p-1 overflow-hidden"
         switchedWidgetsStatus={switchedWidgetsStatus}
         handleSwitchWidgets={handleSwitchWidgets}
         hidingControls={hidingControls}
@@ -420,7 +420,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
             {/* <MatchesPannel /> */}
           </div>
           <SpectatorEditor
-            panelClassName="h-100 p-1"
+            panelClassName="spectator h-100 p-1"
             switchedWidgetsStatus={switchedWidgetsStatus}
             handleSwitchWidgets={handleSwitchWidgets}
             hidingControls={hidingControls}

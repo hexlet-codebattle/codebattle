@@ -1908,6 +1908,12 @@ main {
   flex-grow: 1;
 }
 
+.spectator {
+  .view-lines {
+    margin-top: 18px;
+  }
+}
+
 .cb-game-control-container {
   width: 250px;
   min-width: 250px;
