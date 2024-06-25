@@ -354,29 +354,29 @@ class Editor extends PureComponent {
     //   navigator.clipboard.writeText(customText);
     //   event.preventDefault();
     // });
-    this.editor.onKeyDown(e => {
-      // Custom Copy Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
-        const selection = editor.getModel().getValueInRange(editor.getSelection());
-        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
-        e.preventDefault();
-      }
-
-      // Custom Paste Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
-          if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
-            const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
-            editor.executeEdits('custom-paste', [
-              {
-                range: editor.getSelection(),
-                text: customText,
-                forceMoveMarkers: true,
-              },
-            ]);
-          }
-        e.preventDefault();
-      }
-    });
+    // this.editor.onKeyDown(e => {
+    //   // Custom Copy Event
+    //   if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
+    //     const selection = editor.getModel().getValueInRange(editor.getSelection());
+    //     editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
+    //     e.preventDefault();
+    //   }
+    //
+    //   // Custom Paste Event
+    //   if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
+    //       if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
+    //         const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
+    //         editor.executeEdits('custom-paste', [
+    //           {
+    //             range: editor.getSelection(),
+    //             text: customText,
+    //             forceMoveMarkers: true,
+    //           },
+    //         ]);
+    //       }
+    //     e.preventDefault();
+    //   }
+    // });
 
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
     this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
