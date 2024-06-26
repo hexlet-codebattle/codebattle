@@ -33,9 +33,9 @@ const setFontSizeDefault = size => (
   window.localStorage.setItem('CodebattleSpectatorEditorFontSize', size)
 );
 
-const monacoThemeDefault = (
-  window.localStorage.getItem('CodebattleSpectatorEditorMonacoTheme') || 'Amy'
-);
+// const monacoThemeDefault = (
+//   window.localStorage.getItem('CodebattleSpectatorEditorMonacoTheme') || 'Amy'
+// );
 const setMonacoThemeDefault = theme => (
   window.localStorage.setItem('CodebattleSpectatorEditorMonacoTheme', theme)
 );
@@ -51,7 +51,8 @@ function SpectatorEditor({
 }) {
   const toolbarRef = useRef();
 
-  const [monacoTheme, setMonacoTheme] = useState(monacoThemeDefault);
+  // const [monacoTheme, setMonacoTheme] = useState(monacoThemeDefault);
+  const [monacoTheme, setMonacoTheme] = useState('custom');
 
   const players = useSelector(selectors.gamePlayersSelector);
   const editorData = useSelector(selectors.editorDataSelector(playerId));
@@ -172,6 +173,12 @@ function SpectatorEditor({
                         value={monacoTheme}
                         onChange={handleChangeMonacoTheme}
                       >
+                        <option
+                          key="custom"
+                          value="custom"
+                        >
+                          custom
+                        </option>
                         {Object.values(themeList).map(item => (
                           <option
                             key={item}
