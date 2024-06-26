@@ -30,8 +30,6 @@ defmodule Runner.Languages do
       def solution(<%= arguments %>)
         <%= return_statement %>
       end
-
-      # use `puts` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -69,7 +67,6 @@ defmodule Runner.Languages do
         <%= return_statement %>
       };
 
-      // use `console.log` for debug
       module.exports = solution;
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
@@ -115,7 +112,6 @@ defmodule Runner.Languages do
 
       };
 
-      // use `console.log` for debug
       export default solution;
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
@@ -149,8 +145,6 @@ defmodule Runner.Languages do
       <%= expected %>solution(<%= arguments %>) {
 
       }
-
-      // use `print` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -186,8 +180,6 @@ defmodule Runner.Languages do
       <%= expected %> solution(<%= arguments %>) {
         <%= return_statement %>
       }
-
-      // use `std::cout` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       return_template: "return <%= default_value %>;",
@@ -240,8 +232,6 @@ defmodule Runner.Languages do
 
         }
       }
-
-      // use `System.out.println` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -284,8 +274,6 @@ defmodule Runner.Languages do
       fun solution(<%= arguments %>):<%= expected %> {
 
       }
-
-      // use println for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -334,8 +322,6 @@ defmodule Runner.Languages do
           }
         }
       }
-
-      // use `Console.WriteLine` for debug
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -378,8 +364,6 @@ defmodule Runner.Languages do
       func solution(<%= arguments %>)<%= expected %> {
 
       }
-
-      // use `fmt.Print` for debug
       """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -416,8 +400,6 @@ defmodule Runner.Languages do
           <%= return_statement %>
         end
       end
-
-      # use `IO.puts` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -452,8 +434,6 @@ defmodule Runner.Languages do
 
       def solution(<%= arguments %>)<%= expected %>:
         <%= return_statement %>
-
-      # use `print` for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
@@ -498,8 +478,6 @@ defmodule Runner.Languages do
       function solution(<%= arguments %>) {
         <%= return_statement %>
       }
-
-      // use `echo` for debug
       """,
       return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
@@ -547,8 +525,6 @@ defmodule Runner.Languages do
       (defn solution [<%= arguments %>]
         <%= return_statement %>
       )
-
-      ;; use `println` for debug
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
@@ -652,8 +628,6 @@ defmodule Runner.Languages do
       pub fn solution(<%= arguments %>) -> <%= expected %> {
 
       }
-
-      // use `println!` for debug
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: "<%= type %>",

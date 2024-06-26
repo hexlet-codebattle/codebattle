@@ -713,6 +713,12 @@ msgstr "Завершится через: %{time}"
 msgid "Woohoo, you're Champion!!!!!"
 msgstr "Баттл официально затащен!"
 
+msgid "Loading next game"
+msgstr "Ожидайте следующую игру"
+
+msgid "Tournament is over"
+msgstr "Турнир завершен"
+
 msgid "If you read this you've lost the game"
 msgstr "Ты заслуживаешь победы, продолжай!"
 
@@ -766,6 +772,9 @@ msgstr "Назад"
 
 msgid "Tournament is paused"
 msgstr "Игра этапа завершены"
+
+msgid "Connection lost, please reload the page"
+msgstr "Связь с сервером потеряна, перезагрузите страницу"
 
 msgid "Show full tournament table"
 msgstr "Показать полную турнирную таблицу"

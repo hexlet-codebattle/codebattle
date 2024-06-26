@@ -1,4 +1,5 @@
 import React, { useContext, memo } from 'react';
+import i18n from 'i18next';
 
 import RoomContext from '../../components/RoomContext';
 import { isDisconnectedWithMessageSelector } from '../../machines/selectors';
@@ -12,7 +13,7 @@ function NetworkAlert() {
     return (
       <div className="mx-1 text-center">
         <div className="bg-warning">
-          Server is temporarily unavailable ¯\_(ツ)_/¯ :prod_is_down:
+          {i18n.t('Connection lost, please reload the page')}
         </div>
       </div>
     );

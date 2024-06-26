@@ -76,11 +76,11 @@ function SpectatorEditor({
   }, [setMonacoTheme]);
 
   const handleIncreaseFontSize = useCallback(
-    () => handleChangeSize(Math.min(32, fontSize + 2)),
+    () => handleChangeSize(Math.min(42, fontSize + 0.5)),
     [handleChangeSize, fontSize],
   );
   const handleDecreaseFontSize = useCallback(
-    () => handleChangeSize(Math.max(4, fontSize - 2)),
+    () => handleChangeSize(Math.max(4, fontSize - 0.5)),
     [handleChangeSize, fontSize],
   );
 
@@ -164,6 +164,7 @@ function SpectatorEditor({
                       >
                         +
                       </button>
+                      {fontSize}
                     </div>
 
                     <div className="d-flex align-items-center">

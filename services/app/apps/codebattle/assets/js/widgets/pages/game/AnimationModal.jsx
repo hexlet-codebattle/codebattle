@@ -16,12 +16,12 @@ function TournamentInfoPanel() {
   const waitType = useSelector(state => state.game.waitType);
 
   switch (waitType) {
-    case 'tournament': return 'Tournament is over';
+    case 'tournament': return i18n.t('Tournament is over');
     case 'round': return 'Round is over, wait for the next round';
     case 'rematch': return (
       <div className="d-flex flex-row">
         <Loading adaptive />
-        <span className="pl-2">Loading next game</span>
+        <span className="pl-2">{i18n.t('Loading next game')}</span>
       </div>
     );
     default: return <></>;

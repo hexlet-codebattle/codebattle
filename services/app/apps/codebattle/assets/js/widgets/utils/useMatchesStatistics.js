@@ -88,15 +88,15 @@ function useMatchesStatistics(playerId, matches) {
 
     const playerAvgDuration = matchesCount !== 0
         ? sum(
-            finishedMatches.map(
-              match => match.playerResults[playerId]?.durationSec || 0,
+            finishedMatches.filter(match => match.winnerId === playerId).map(
+              match => match?.durationSec || 0,
             ),
           ) / matchesCount
         : 0;
     const opponentAvgDuration = matchesCount !== 0
         ? sum(
-            finishedMatches.map(
-              match => match.playerResults[opponentId]?.durationSec || 0,
+            finishedMatches.filter(match => match.winnerId === opponentId).map(
+              match => match?.durationSec || 0,
             ),
           ) / matchesCount
         : 0;
