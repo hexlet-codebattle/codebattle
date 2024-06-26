@@ -86,19 +86,19 @@ function useMatchesStatistics(playerId, matches) {
           ) / matchesCount
         : 0;
 
-    const playerAvgDuration = finishedMatches.filter(match => match.winnerId === playerId) !== 0
+    const playerAvgDuration = finishedMatches.filter(match => match.winnerId === playerId).length !== 0
         ? sum(
             finishedMatches.filter(match => match.winnerId === playerId).map(
               match => match?.durationSec || 0,
             ),
-          ) / finishedMatches.filter(match => match.winnerId === playerId)
+          ) / finishedMatches.filter(match => match.winnerId === playerId).length
         : 0;
-    const opponentAvgDuration = finishedMatches.filter(match => match.winnerId === opponentId) !== 0
+    const opponentAvgDuration = finishedMatches.filter(match => match.winnerId === opponentId).length !== 0
         ? sum(
             finishedMatches.filter(match => match.winnerId === opponentId).map(
               match => match?.durationSec || 0,
             ),
-          ) / finishedMatches.filter(match => match.winnerId === opponentId)
+          ) / finishedMatches.filter(match => match.winnerId === opponentId).length
         : 0;
 
     const player = {
