@@ -101,10 +101,6 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
   end
 
   defp render_break(assigns) do
-    ~H"""
-    <div style="color: #ffffff">
-      00:00
-    </div>
-    """
+    "00:00"
   end
 end
