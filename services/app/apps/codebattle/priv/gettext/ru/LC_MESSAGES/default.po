@@ -418,7 +418,7 @@ msgid "%{name} (you)"
 msgstr "%{name} (вы)"
 
 msgid "Fight"
-msgstr "Cражаться"
+msgstr "Сражаться"
 
 #, elixir-format
 #: lib/codebattle_web/support/notifications.ex:13
