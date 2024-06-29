@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Plugs.Locale do
   def init(_opts), do: nil
 
   def call(conn, _opts) do
-    conn =
+    locale =
     if Application.get_env(:codebattle, :force_locale) do
       Application.get_env(:codebattle, :default_locale)
     else
