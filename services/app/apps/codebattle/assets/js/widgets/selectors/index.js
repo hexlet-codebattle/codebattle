@@ -446,7 +446,7 @@ export const currentChatUserSelector = state => {
   return find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const taskDescriptionLanguageSelector = state => Gon.getAsset('locale') || state.gameUI.taskDescriptionLanguage;
+export const taskDescriptionLanguageSelector = state => state.gameUI.taskDescriptionLanguage;
 
 export const playbookStatusSelector = state => state.playbook.state;
 

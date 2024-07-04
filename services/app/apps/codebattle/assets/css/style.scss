@@ -2281,6 +2281,14 @@ a:hover {
   animation-delay: -35s;
 }
 
+.user-select-none {
+  user-select: none;
+  -webkit-user-select: text; /* Safari fallback only */
+  -webkit-user-select: none; /* Chrome/Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+ */
+}
+
 .cb-custom-event-btn-outline-success {
   color: #23BD6A;
   border-color: #23BD6A;
