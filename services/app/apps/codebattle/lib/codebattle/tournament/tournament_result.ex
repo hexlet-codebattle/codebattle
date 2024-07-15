@@ -75,7 +75,6 @@ defmodule Codebattle.Tournament.TournamentResult do
       games g
       where tournament_id = #{tournament.id}
       and state = 'game_over'
-      and cheater_id is null
       and id not in (
         select distinct g.id from user_games ug inner join games g on g.id = ug.game_id
         where ug.user_id < 0 and ug.result = 'won' and g.tournament_id = #{tournament.id}
@@ -101,7 +100,6 @@ defmodule Codebattle.Tournament.TournamentResult do
       END AS score,
       g.level,
       g.task_id,
-      g.cheater_id,
       g.id
       from games g
       CROSS JOIN LATERAL
@@ -119,7 +117,6 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
-      cheater_id,
       score,
       level,
       duration_sec,
@@ -132,7 +129,6 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
-      cheater_id,
       COALESCE(result_percent * score / 100.0, 0) as score,
       level,
       duration_sec,
