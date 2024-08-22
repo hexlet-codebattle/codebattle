@@ -41,13 +41,6 @@ Each tournament is a unique event with its own settings, but there are general p
 - **How we supplement participants**: If there aren’t enough participants to ensure fair play, we add bots to maintain balance.
 - **Who it's for**: For those who love dynamic competitions with the opportunity to test their skills at different levels.
 
-### Show
-
-- **Description**: A tournament where each player competes alone, solving tasks in front of an audience.
-- **How it works**: Players solve tasks, competing for the best time and the most correct solutions. Each participant fights for themselves, and at the end of the tournament, the best player is determined.
-- **How we supplement participants**: To maintain competition, we can add bots that will act as opponents.
-- **Who it's for**: For those who like to showcase their skills and aim to be the best in individual scoring.
-
 ### Swiss
 
 - **Description**: A Swiss-system tournament where participants play several rounds, meeting opponents with similar levels of success in each round.
@@ -61,10 +54,3 @@ Each tournament is a unique event with its own settings, but there are general p
 - **How it works**: Participants face off in duels, where the winner advances, and the loser is eliminated. The tournament continues until there is one champion.
 - **How we supplement participants**: If there aren't enough participants for fair competition, we add bots.
 - **Who it's for**: For those who love intense duels and are ready to fight for the champion title.
-
-### Squad
-
-- **Description**: A team tournament where participants are divided into small teams and compete against each other.
-- **How it works**: The tournament involves teams, each consisting of several players. Teams compete against each other, and the victory depends on the overall contribution of each team member.
-- **How we supplement participants**: If teams lack players, we add bots to ensure equal chances for everyone.
-- **Who it's for**: For those who prefer working in a team and are ready to use their skills in team strategy.

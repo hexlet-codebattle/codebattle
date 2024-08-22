@@ -42,7 +42,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
           </div>
           <div class="d-flex flex-column justify-content-between w-100 ml-md-3 ml-lg-3 ml-xl-3">
             <%= label(f, :type) %>
-            <%= select(f, :type, Codebattle.Tournament.types(), class: "custom-select") %>
+            <%= select(f, :type, Codebattle.Tournament.public_types(), class: "custom-select") %>
             <%= error_tag(f, :type) %>
           </div>
         </div>

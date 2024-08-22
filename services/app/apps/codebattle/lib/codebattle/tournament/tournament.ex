@@ -58,6 +58,7 @@ defmodule Codebattle.Tournament do
   @task_strategies ~w(random_per_game random_per_round sequential)
   @ranking_types ~w(void by_player by_clan by_player_95th_percentile)
   @types ~w(individual team show swiss arena versus squad)
+  @public_types ~w(individual team swiss arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -201,4 +202,5 @@ defmodule Codebattle.Tournament do
   def task_strategies, do: @task_strategies
   def ranking_types, do: @ranking_types
   def types, do: @types
+  def public_types, do: @public_types
 end
