@@ -100,7 +100,7 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
     }
   end
 
-  defp render_break(assigns) do
+  defp render_break(_assigns) do
     "00:00"
   end
 end
