@@ -358,7 +358,7 @@ defmodule Runner.Languages do
       checker_file_name: "checker.go",
       docker_image: "codebattle/golang:1.22.1",
       solution_template: """
-      package main;
+      package main
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
