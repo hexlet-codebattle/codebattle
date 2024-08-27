@@ -10,7 +10,7 @@ defmodule Codebattle.Auth.Github do
   @http_client Application.compile_env(:codebattle, :github_oauth_client)
 
   @doc """
-  `http_client/0` injects a TestDouble of HTTPoison in Test
+  `http_client/0` injects a TestDouble of Req in Test
   """
   def http_client, do: @http_client
 

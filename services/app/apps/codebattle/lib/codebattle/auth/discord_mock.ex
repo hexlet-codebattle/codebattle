@@ -8,7 +8,7 @@ defmodule Codebattle.Auth.DiscordMock do
   """
 
   @doc """
-  `get/3` stubs the HTTPoison get! function when parameters match test vars.
+  `get/3` stubs the Req get! function when parameters match test vars.
   """
   @valid_body %{
     "accent_color" => nil,
@@ -75,7 +75,7 @@ defmodule Codebattle.Auth.DiscordMock do
   end
 
   @doc """
-  `post/3` stubs the HTTPoison post! function when parameters match test vars.
+  `post/3` stubs the Req post! function when parameters match test vars.
   """
   def post!(url, body, headers \\ [], options \\ [])
 

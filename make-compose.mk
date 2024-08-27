@@ -1,4 +1,4 @@
-ASSERTS_PATH = "tmp/battle_asserts"
+ASSERTS_PATH = "/tmp/battle_asserts"
 
 compose:
 	docker compose up app
@@ -69,11 +69,11 @@ compose-stop:
 compose-logs:
 	docker compose logs -f --tail=100
 
-compose-upload-asserts:
-	rm -rf $(ASSERTS_PATH)
-	git clone "https://github.com/hexlet-codebattle/battle_asserts.git" $(ASSERTS_PATH)
-	cd $(ASSERTS_PATH) && make generate-from-docker
-	docker compose run --rm --name codebattle_app -v $(CURDIR)/tmp:/app/tmp app mix issues.upload $(ASSERTS_PATH)/issues
+compose-compile:
+	docker compose  run --rm --name codebattle_app app mix compile
+
+compose-upload-battle-asserts:
+	docker compose run --rm --name codebattle_app app mix asserts.upload
 
 compose-build-dockers:
 	docker compose run --rm --name codebattle_app app mix dockers.build ${lang}

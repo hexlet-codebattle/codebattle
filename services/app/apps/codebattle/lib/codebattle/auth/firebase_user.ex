@@ -52,11 +52,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   end
 
   defp create_in_firebase(%{email: email, password: password}) do
-    case HTTPoison.post(
+    case Req.post(
            "#{firebase_url()}:signUp?key=#{api_key()}",
-           Jason.encode!(%{email: email, password: password})
+           json: %{email: email, password: password}
          ) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+      {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid =
           body
           |> Jason.decode!()
@@ -64,7 +64,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
         {:ok, firebase_uid}
 
-      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+      {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
           |> Jason.decode!()
@@ -73,20 +73,20 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
         {:error, %{base: error_message}}
 
-      {:ok, %HTTPoison.Response{body: body}} ->
+      {:ok, %Req.Response{body: body}} ->
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(body)}"}}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(reason)}"}}
     end
   end
 
   defp find_in_firebase(%{email: email, password: password}) do
-    case HTTPoison.post(
+    case Req.post(
            "#{firebase_url()}:signInWithPassword?key=#{api_key()}",
-           Jason.encode!(%{email: email, password: password, returnSecureToken: true})
+           json: %{email: email, password: password, returnSecureToken: true}
          ) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+      {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid =
           body
           |> Jason.decode!()
@@ -94,7 +94,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
         {:ok, firebase_uid}
 
-      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+      {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
           |> Jason.decode!()
@@ -103,23 +103,23 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
         {:error, %{base: error_message}}
 
-      {:ok, %HTTPoison.Response{body: body}} ->
+      {:ok, %Req.Response{body: body}} ->
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(body)}"}}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(reason)}"}}
     end
   end
 
   defp reset_in_firebase(%{email: email}) do
-    case HTTPoison.post(
+    case Req.post(
            "#{firebase_url()}:sendOobCode?key=#{api_key()}",
-           Jason.encode!(%{email: email, requestType: "PASSWORD_RESET"})
+           json: %{email: email, requestType: "PASSWORD_RESET"}
          ) do
-      {:ok, %HTTPoison.Response{status_code: 200}} ->
+      {:ok, %Req.Response{status: 200}} ->
         :ok
 
-      {:ok, %HTTPoison.Response{status_code: 400, body: body}} ->
+      {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
           |> Jason.decode!()
@@ -128,11 +128,11 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
         {:error, %{base: error_message}}
 
-      {:ok, %HTTPoison.Response{body: body}} ->
+      {:ok, %Req.Response{body: body}} ->
         Logger.error(inspect(body))
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(body)}"}}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         Logger.error(inspect(reason))
         {:error, %{base: "Something went wrong, pls, try again later. #{inspect(reason)}"}}
     end

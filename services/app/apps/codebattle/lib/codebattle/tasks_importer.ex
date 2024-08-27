@@ -18,6 +18,10 @@ defmodule Codebattle.TasksImporter do
     GenServer.cast(__MODULE__, :run)
   end
 
+  def run_sync do
+    fetch_issues() |> upsert()
+  end
+
   # SERVER
   def init(state) do
     Logger.debug("Start Tasks Importer")
@@ -36,11 +40,14 @@ defmodule Codebattle.TasksImporter do
     {:noreply, state}
   end
 
+
   def fetch_issues do
     File.rm_rf(@tmp_basedir)
     File.mkdir_p!(@tmp_basedir)
     dir_path = Temp.mkdir!(%{basedir: @tmp_basedir, prefix: to_string(:rand.uniform(10_000_000))})
-    response = HTTPoison.get!(@issues_link, %{}, follow_redirect: true, timeout: 15_000)
+
+    response = Req.get!(@issues_link) |> dbg()
+
     file_name = Path.join(dir_path, "issues.tar.gz")
     File.write!(file_name, response.body)
 

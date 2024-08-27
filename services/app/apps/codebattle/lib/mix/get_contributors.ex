@@ -15,13 +15,13 @@ defmodule Mix.Tasks.GetContributors do
   }
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:httpoison)
+    {:ok, _started} = Application.ensure_all_started(:req)
 
     @repos
     |> Enum.each(fn {repo_name, url} ->
       content =
         url
-        |> HTTPoison.get!()
+        |> Req.get!()
         |> Map.get(:body)
         |> Jason.decode!()
         |> Enum.filter(fn params -> params["type"] == "User" end)

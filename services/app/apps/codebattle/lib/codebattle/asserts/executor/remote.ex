@@ -33,18 +33,18 @@ defmodule Codebattle.AssertsService.Executor.Remote do
     headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
     body = Jason.encode!(params)
 
-    case HTTPoison.post("#{runner_url()}/api/v1/generate", body, headers,
+    case Req.post("#{runner_url()}/api/v1/generate", body: body, headers: headers,
            timeout: 30_000,
            recv_timeout: 30_000
          ) do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+      {:ok, %Req.Response{status: 200, body: body}} ->
         AtomizedMap.load(body)
 
-      {:ok, %HTTPoison.Response{body: body}} ->
+      {:ok, %Req.Response{body: body}} ->
         Logger.error("RemoteExecutor failure: #{inspect(body)}")
         {:error, %{base: "RemoteExecutor failure: #{inspect(body)}"}}
 
-      {:error, %HTTPoison.Error{reason: reason}} ->
+      {:error, reason} ->
         Logger.error("RemoteExecutor failure: #{inspect(reason)}")
         {:error, "RemoteExecutor failure: #{inspect(reason)}"}
     end

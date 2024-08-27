@@ -68,7 +68,7 @@ $ mix dockers.build elixir
 $ mix dockers.pull # all
 $ mix dockers.pull elixir
 
-$ mix issues.upload # Upsert issues by name in db
+$ mix asserts.upload # Pulls from battle_asserts all issues and upserts into DB
 
 #If you use docker in dev env, run commands in make compose-bash
 ```
