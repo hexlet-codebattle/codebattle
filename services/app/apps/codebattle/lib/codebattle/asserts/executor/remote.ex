@@ -33,7 +33,9 @@ defmodule Codebattle.AssertsService.Executor.Remote do
     headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
     body = Jason.encode!(params)
 
-    case Req.post("#{runner_url()}/api/v1/generate", body: body, headers: headers,
+    case Req.post("#{runner_url()}/api/v1/generate",
+           body: body,
+           headers: headers,
            timeout: 30_000,
            recv_timeout: 30_000
          ) do

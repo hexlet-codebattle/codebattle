@@ -40,7 +40,6 @@ defmodule Codebattle.TasksImporter do
     {:noreply, state}
   end
 
-
   def fetch_issues do
     File.rm_rf(@tmp_basedir)
     File.mkdir_p!(@tmp_basedir)
