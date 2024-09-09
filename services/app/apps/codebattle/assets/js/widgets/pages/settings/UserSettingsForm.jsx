@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Slider from 'calcite-react/Slider';
 import cn from 'classnames';
@@ -10,6 +10,7 @@ import * as Icon from 'react-feather';
 import * as Yup from 'yup';
 
 import languages from '../../config/languages';
+import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
 
 const playingLanguages = Object.entries(languages);
@@ -49,8 +50,15 @@ const TextInput = ({
   );
 };
 
+const player = createPlayer();
+
+const playSound = (type, volume) => {
+  player.stop();
+  player[type].play('win', volume);
+};
+
 const UserSettingsForm = ({ onSubmit, settings }) => {
-  const initialValues = {
+  const initialValues = useMemo(() => ({
     name: settings.name,
     soundSettings: {
       type: settings.soundSettings.type,
@@ -58,32 +66,9 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
     },
     clan: settings.clan || '',
     lang: settings.lang || '',
-  };
+  }), [settings]);
 
-  const player = createPlayer();
-
-  const playSound = (type, volume) => {
-    player.stop();
-    player[type].play('win', volume);
-  };
-
-  const validationSchema = Yup.object({
-    name: Yup.string()
-      .strict()
-      .required("Field can't be empty")
-      .min(3, 'Should be at least 3 characters')
-      // .max(5, 'Should be 16 character(s) or less')
-      .test(
-        'max',
-        'Should be 16 character(s) or less',
-        (name = '') => (
-          settings.name === name || name.length <= 16
-        ),
-      )
-      .trim(),
-    clan: Yup.string()
-      .strict(),
-  });
+  const validationSchema = useMemo(() => Yup.object(schemas.userSettings(settings)), [settings]);
 
   return (
     <Formik
