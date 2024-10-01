@@ -4,7 +4,8 @@ import axios from 'axios';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import schemas from '@/formik';
+
+import schemas from '../../formik';
 
 const getCsrfToken = () => document
   .querySelector("meta[name='csrf-token']")

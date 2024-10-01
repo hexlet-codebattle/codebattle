@@ -3,19 +3,20 @@ import find from 'lodash/find';
 import groupBy from 'lodash/groupBy';
 import set from 'lodash/set';
 
-import socket, { channelTopics } from '../../socket';
+import { channelTopics } from '../../socket';
 import { actions } from '../slices';
 
+import Channel from './Channel';
 // import notification from '../utils/notification';
 
 const tournamentId = window.location.pathname.split('/').pop();
 const tournamentChannelName = `tournament:${tournamentId}`;
-const tournamentChannel = socket.channel(tournamentChannelName);
+const tournamentChannel = new Channel(tournamentChannelName);
 
 // export const soundNotification = notification();
 const connectToStairwayGame = gameId => dispatch => {
   const activeMatchChannelName = `game:${gameId}`;
-  const activeMatchChannel = socket.channel(activeMatchChannelName);
+  const activeMatchChannel = new Channel(activeMatchChannelName);
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
     dispatch(actions.setGameData(data));
@@ -56,7 +57,7 @@ const initTournamentChannel = dispatch => {
 export const connectToStairwayTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  tournamentChannel.on(channelTopics.tournamentUpdateTopic, response => {
+  tournamentChannel.addListener(channelTopics.tournamentUpdateTopic, response => {
     const data = camelizeKeys(response);
     const matches = groupBy(data.tournament.matches, 'roundId');
     set(data, 'tournament.matches', matches);
@@ -64,7 +65,7 @@ export const connectToStairwayTournament = () => dispatch => {
     dispatch(actions.updateTournamentData(data));
   });
 
-  tournamentChannel.on(channelTopics.roundCreatedTopic, response => {
+  tournamentChannel.addListener(channelTopics.roundCreatedTopic, response => {
     const { tournament } = camelizeKeys(response);
 
     dispatch(actions.setNextRound(tournament));
@@ -79,7 +80,7 @@ const initActiveMatchChannel = (dispatch, state) => {
 
     const { gameId } = state.tournament.activeMatch;
     const activeMatchChannelName = `game:${gameId}`;
-    const activeMatchChannel = socket.channel(activeMatchChannelName);
+    const activeMatchChannel = new Channel(activeMatchChannelName);
 
     const onJoinFailure = () => {
       window.location.reload();

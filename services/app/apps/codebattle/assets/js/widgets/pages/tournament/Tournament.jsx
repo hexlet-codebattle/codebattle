@@ -180,29 +180,31 @@ function Tournament({ waitingRoomMachine }) {
   ]);
 
   useEffect(() => {
-    const clearTournament = connectToTournament(waitingRoomService)(dispatch);
+    const tournamentChannel = connectToTournament(waitingRoomService, tournament?.id)(dispatch);
 
     if (canModerate) {
-      const clearTournamentAdmin = connectToTournamentAdmin(waitingRoomService)(dispatch);
+      const tournamentAdminChannel = connectToTournamentAdmin(waitingRoomService, tournament?.id)(dispatch);
 
       return () => {
-        clearTournament();
-        clearTournamentAdmin();
+        tournamentChannel.leave();
+        tournamentAdminChannel.leave();
       };
     }
 
     return () => {
-      clearTournament();
+      tournamentChannel.leave();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canModerate]);
 
   useEffect(() => {
     if (tournament.isLive) {
-      const clearChat = connectToChat(tournament.useChat)(dispatch);
+      const channel = connectToChat(tournament.useChat)(dispatch);
 
       return () => {
-        clearChat();
+        if (channel) {
+          channel.leave();
+        }
       };
     }
 

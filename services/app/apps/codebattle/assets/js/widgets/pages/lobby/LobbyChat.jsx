@@ -133,7 +133,13 @@ function LobbyChat({
   );
 
   useEffect(() => {
-    connectToChat();
+    const channel = connectToChat();
+
+    return () => {
+      if (channel) {
+        channel.leave();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

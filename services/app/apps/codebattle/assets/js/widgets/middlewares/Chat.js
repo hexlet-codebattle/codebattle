@@ -2,24 +2,26 @@ import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 
-import socket, { channelMethods, channelTopics } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 import getChatName from '../utils/names';
 
+import Channel from './Channel';
+
 const isRecord = Gon.getAsset('is_record');
 
-const channel = isRecord ? null : socket.channel(getChatName('channel'));
+const channel = isRecord ? null : new Channel(getChatName('channel'));
 
 export const pushCommandTypes = {
   cleanBanned: 'clead_banned',
 };
 
 const establishChat = () => dispatch => {
-  const oldChannel = channel;
+  const currentChannel = channel;
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  oldChannel.join().receive('ok', data => {
+  currentChannel.join().receive('ok', data => {
     const page = getChatName('page');
     const greetingMessage = getSystemMessage({
       text: `Joined channel: ${capitalize(page)}`,
@@ -31,40 +33,28 @@ const establishChat = () => dispatch => {
     dispatch(actions.updateChatChannelState(true));
   });
 
-  oldChannel.onError(() => dispatch(actions.updateChatChannelState(false)));
+  currentChannel.onError(() => dispatch(actions.updateChatChannelState(false)));
 
   const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
   const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
   const handleNewMessage = camelizeKeysAndDispatch(actions.newChatMessage);
   const handleUserbanned = camelizeKeysAndDispatch(actions.banUserChat);
 
-  const refs = [
-    oldChannel.on(channelTopics.chatUserJoinedTopic, handleUserJoined),
-    oldChannel.on(channelTopics.chatUserLeftTopic, handleUserLeft),
-    oldChannel.on(channelTopics.chatUserNewMsgTopic, handleNewMessage),
-    oldChannel.on(channelTopics.chatUserBannedTopic, handleUserbanned),
-  ];
-
-  const clearChatListeners = () => {
-    if (oldChannel) {
-      oldChannel.off(channelTopics.chatUserJoinedTopic, refs[0]);
-      oldChannel.off(channelTopics.chatUserLeftTopic, refs[1]);
-      oldChannel.off(channelTopics.chatUserNewMsgTopic, refs[2]);
-      oldChannel.off(channelTopics.chatUserBannedTopic, refs[3]);
-    }
-  };
-
-  return clearChatListeners;
+  return currentChannel
+    .addListener(channelTopics.chatUserJoinedTopic, handleUserJoined)
+    .addListener(channelTopics.chatUserLeftTopic, handleUserLeft)
+    .addListener(channelTopics.chatUserNewMsgTopic, handleNewMessage)
+    .addListener(channelTopics.chatUserBannedTopic, handleUserbanned);
 };
 
 export const connectToChat = (useChat = true) => dispatch => {
   if (!isRecord && useChat) {
-    const clearChatConnection = establishChat()(dispatch);
+    const currentChannel = establishChat()(dispatch);
 
-    return clearChatConnection;
+    return currentChannel;
   }
 
-  return () => {};
+  return undefined;
 };
 
 export const addMessage = payload => {

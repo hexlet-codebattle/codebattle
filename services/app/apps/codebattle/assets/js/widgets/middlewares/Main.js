@@ -1,11 +1,11 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
-import { Presence } from 'phoenix';
 
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-import socket from '../../socket';
 import { actions } from '../slices';
+
+import Channel from './Channel';
 
 const players = Gon.getAsset('players') || [];
 const currentUser = Gon.getAsset('current_user') || {};
@@ -60,17 +60,6 @@ const getUserStateByPath = () => {
   return { state: 'online' };
 };
 
-const listBy = (id, { metas: [first, ...rest] }) => {
-  const userInfo = {
-    ...first,
-    id: Number(id),
-    count: rest.length + 1,
-    currentState: getMajorState([first, ...rest]),
-  };
-
-  return userInfo;
-};
-
 const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => dispatch(actionCreator(camelizeKeys(data)));
 
 const redirectToNewGame = data => (_dispatch, getState) => {
@@ -82,16 +71,19 @@ const redirectToNewGame = data => (_dispatch, getState) => {
 };
 
 const initPresence = followId => dispatch => {
-  channel = socket.channel('main', {
+  channel = new Channel('main', {
     ...getUserStateByPath(),
-    follow_id: followId,
+    followId,
   });
-  const presence = new Presence(channel);
-
-  presence.onSync(() => {
-    const list = presence.list(listBy);
-    camelizeKeysAndDispatch(dispatch, actions.syncPresenceList)(list);
-  });
+  channel.syncPresence(
+    list => {
+      const updatedList = list.map(userInfo => ({
+        ...userInfo,
+        state: getMajorState(userInfo.userPresence),
+      }));
+      dispatch(actions.syncPresenceList(updatedList));
+    },
+  );
 
   channel.join().receive('ok', () => {
     camelizeKeysAndDispatch(dispatch, actions.syncPresenceList);
@@ -99,14 +91,14 @@ const initPresence = followId => dispatch => {
 
   channel.onError(() => dispatch(actions.updateMainChannelState(false)));
 
-  const ref = channel.on('user:game_created', data => {
-    camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
-    dispatch(redirectToNewGame(camelizeKeys(data)));
-  });
-
-  return () => {
-    channel.off('user:game_created', ref);
-  };
+  return channel
+    .addListener(
+      'user:game_created',
+      data => {
+        camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
+        dispatch(redirectToNewGame(camelizeKeys(data)));
+      },
+    );
 };
 
 export const changePresenceState = state => () => {
@@ -118,7 +110,7 @@ export const changePresenceUser = user => () => {
 };
 
 export const followUser = userId => (dispatch, getState) => {
-  channel.push('user:follow', { user_id: userId }).receive('ok', payload => {
+  channel.push('user:follow', { userId }).receive('ok', payload => {
     const data = camelizeKeys(payload);
 
     camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
@@ -136,7 +128,7 @@ export const followUser = userId => (dispatch, getState) => {
 };
 
 export const unfollowUser = userId => dispatch => {
-  channel.push('user:unfollow', { user_id: userId });
+  channel.push('user:unfollow', { userId });
   camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
 };
 

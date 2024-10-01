@@ -69,6 +69,7 @@ export const channelMethods = {
   gameScore: 'game:score',
   gameCancel: 'game:cancel',
   gameCreate: 'game:create',
+  cssGameCreate: 'game:css:create',
   gameCreateInvite: 'game:create_invite',
   gameAcceptInvite: 'game:accept_invite',
   gameDeclineInvite: 'game:decline_invite',

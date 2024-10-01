@@ -13,26 +13,38 @@ const useGameRoomSocketChannel = (pageName, machines) => {
   const useChat = useSelector(selectors.gameUseChatSelector);
 
   useEffect(() => {
+    const channel = GameRoomActions.setGameChannel();
+
+    const clearGameChannel = () => {
+      if (channel) {
+        channel.leave();
+      }
+    };
+
     if (pageName === PageNames.builder) {
-      const clearTask = GameRoomActions.connectToTask(
+      GameRoomActions.connectToTask(
         machines.mainService,
         machines.taskService,
       )(dispatch);
 
-      return clearTask;
+      return clearGameChannel;
     }
 
     const options = { cancelRedirect: false };
 
-    const clearGame = GameRoomActions.connectToGame(machines.mainService, machines.waitingRoomService, options)(
+    GameRoomActions.connectToGame(machines.mainService, machines.waitingRoomService, options)(
       dispatch,
     );
-    const clearChat = ChatActions.connectToChat(useChat)(dispatch);
+    const chatChannel = ChatActions.connectToChat(useChat)(dispatch);
 
-    return () => {
-      clearGame();
-      clearChat();
+    const clearChannels = () => {
+      clearGameChannel();
+      if (chatChannel) {
+        chatChannel.leave();
+      }
     };
+
+    return clearChannels;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

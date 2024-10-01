@@ -1,5 +1,4 @@
 import React, {
-  memo,
   useState,
   useRef,
   useEffect,
@@ -11,17 +10,12 @@ import Gon from 'gon';
 import find from 'lodash/find';
 import groupBy from 'lodash/groupBy';
 import isEmpty from 'lodash/isEmpty';
-import orderBy from 'lodash/orderBy';
 import sortBy from 'lodash/sortBy';
-import moment from 'moment';
 import Modal from 'react-bootstrap/Modal';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GameLevelBadge from '../../components/GameLevelBadge';
 import HorizontalScrollControls from '../../components/SideScrollControls';
-import UserInfo from '../../components/UserInfo';
 import gameStateCodes from '../../config/gameStateCodes';
 import hashLinkNames from '../../config/hashLinkNames';
 import levelRatio from '../../config/levelRatio';
@@ -33,187 +27,17 @@ import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
 import Announcement from './Announcement';
 import ChatActionModal from './ChatActionModal';
 import CompletedGames from './CompletedGames';
+import CompletedTournaments from './CompletedTournaments';
 import CreateGameDialog from './CreateGameDialog';
 import GameActionButton from './GameActionButton';
 import GameCard from './GameCard';
-import GameProgressBar from './GameProgressBar';
 import GameStateBadge from './GameStateBadge';
 import Leaderboard from './Leaderboard';
+import LiveTournaments from './LiveTournaments';
 import LobbyChat from './LobbyChat';
-import ShowButton from './ShowButton';
-import TournamentCard from './TournamentCard';
+import Players from './Players';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
-
-const Players = memo(({ players, isBot, gameId }) => {
-  if (players.length === 1) {
-    const badgeClassName = cn('badge badge-pill ml-2', {
-      'badge-secondary': isBot,
-      'badge-warning text-white': !isBot,
-    });
-    const tooltipId = `tooltip-${gameId}-${players[0].id}`;
-    const tooltipInfo = isBot
-      ? 'No points are awarded - Only for games with other players'
-      : 'Points are awarded for winning this game';
-
-    return (
-      <td className="p-3 align-middle text-nowrap" colSpan={2}>
-        <div className="d-flex align-items-center">
-          <UserInfo user={players[0]} />
-          <OverlayTrigger
-            overlay={<Tooltip id={tooltipId}>{tooltipInfo}</Tooltip>}
-            placement="right"
-          >
-            <span className={badgeClassName}>
-              {isBot ? 'No rating' : 'Rating'}
-            </span>
-          </OverlayTrigger>
-        </div>
-      </td>
-    );
-  }
-
-  return (
-    <>
-      <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex flex-column position-relative">
-          <UserInfo
-            user={players[0]}
-            hideOnlineIndicator
-            loading={players[0].checkResult.status === 'started'}
-          />
-          <GameProgressBar player={players[0]} position="left" />
-        </div>
-      </td>
-      <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex flex-column position-relative">
-          <UserInfo
-            user={players[1]}
-            hideOnlineIndicator
-            loading={players[1].checkResult.status === 'started'}
-          />
-          <GameProgressBar player={players[1]} position="right" />
-        </div>
-      </td>
-    </>
-  );
-});
-
-const LiveTournaments = ({ tournaments }) => {
-  if (isEmpty(tournaments)) {
-    return (
-      <div className="d-flex flex-column text-center">
-        <span className="mb-0 mt-3 p-3 text-muted">
-          There are no active tournaments right now
-        </span>
-        <a className="text-primary" href="/tournaments/#create">
-          <u>You may want to create one</u>
-        </a>
-      </div>
-    );
-  }
-
-  const sortedTournaments = orderBy(tournaments, 'startsAt', 'desc');
-
-  return (
-    <div className="table-responsive">
-      <h2 className="text-center mt-3">Live tournaments</h2>
-      <div className="d-none d-md-block table-responsive rounded-bottom">
-        <table className="table table-striped">
-          <thead className="">
-            <tr>
-              <th className="p-3 border-0">Title</th>
-              <th className="p-3 border-0">Starts_at</th>
-              <th className="p-3 border-0">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="">
-            {sortedTournaments.map(tournament => (
-              <tr key={tournament.id}>
-                <td className="p-3 align-middle">{tournament.name}</td>
-                <td className="p-3 align-middle text-nowrap">
-                  {moment
-                    .utc(tournament.startsAt)
-                    .local()
-                    .format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className="p-3 align-middle">
-                  <ShowButton url={`/tournaments/${tournament.id}/`} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <HorizontalScrollControls className="d-md-none m-2">
-        {sortedTournaments.map(tournament => (
-          <TournamentCard
-            key={`card-${tournament.id}`}
-            type="active"
-            tournament={tournament}
-          />
-        ))}
-      </HorizontalScrollControls>
-      <div className="text-center mt-3">
-        <a href="/tournaments">
-          <u>Tournaments Info</u>
-        </a>
-      </div>
-    </div>
-  );
-};
-
-const CompletedTournaments = ({ tournaments }) => {
-  if (isEmpty(tournaments)) {
-    return null;
-  }
-
-  const sortedTournaments = orderBy(tournaments, 'startsAt', 'desc');
-
-  return (
-    <div className="table-responsive">
-      <h2 className="text-center mt-3">Completed tournaments</h2>
-      <div className="d-none d-md-block table-responsive rounded-bottom">
-        <table className="table table-striped">
-          <thead className="">
-            <tr>
-              <th className="p-3 border-0">Title</th>
-              <th className="p-3 border-0">Type</th>
-              <th className="p-3 border-0">Starts_at</th>
-              <th className="p-3 border-0">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="">
-            {sortedTournaments.map(tournament => (
-              <tr key={tournament.id}>
-                <td className="p-3 align-middle">{tournament.name}</td>
-                <td className="p-3 align-middle">{tournament.type}</td>
-                <td className="p-3 align-middle text-nowrap">
-                  {moment
-                    .utc(tournament.startsAt)
-                    .local()
-                    .format('YYYY-MM-DD HH:mm')}
-                </td>
-                <td className="p-3 align-middle">
-                  <ShowButton url={`/tournaments/${tournament.id}/`} />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <HorizontalScrollControls className="d-md-none m-2">
-        {sortedTournaments.map(tournament => (
-          <TournamentCard
-            key={`card-${tournament.id}`}
-            type="completed"
-            tournament={tournament}
-          />
-        ))}
-      </HorizontalScrollControls>
-    </div>
-  );
-};
 
 const ActiveGames = ({
   games, currentUserId, isGuest, isOnline,
@@ -468,21 +292,36 @@ const LobbyContainer = ({
   );
 };
 
-const renderModal = (show, handleCloseModal) => (
-  <Modal show={show} onHide={handleCloseModal}>
-    <Modal.Header closeButton>
-      <Modal.Title>Create a game</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <CreateGameDialog hideModal={handleCloseModal} />
-    </Modal.Body>
-  </Modal>
+const createBtnClassName = cn(
+  'btn border-0 rounded-lg',
+  'text-uppercase font-weight-bold py-3',
+);
+
+const createBasicGameBtnClassName = cn(
+  createBtnClassName,
+ 'btn-success',
+);
+
+const createCssGameBtnClassName = cn(
+  createBtnClassName,
+ 'btn-secondary',
+);
+
+const CreateCssGameButton = ({ onClick, isOnline }) => (
+  <button
+    type="button"
+    className={createCssGameBtnClassName}
+    onClick={onClick}
+    disabled={!isOnline}
+  >
+    Create a CSS Game
+  </button>
 );
 
 const CreateGameButton = ({ onClick, isOnline, isContinue }) => (
   <button
     type="button"
-    className="btn btn-success border-0 text-uppercase font-weight-bold py-3 rounded-lg"
+    className={createBasicGameBtnClassName}
     onClick={onClick}
     disabled={!isOnline}
   >
@@ -497,9 +336,12 @@ const LobbyWidget = () => {
 
   const chatInputRef = useRef(null);
 
+  const [actionModalShowing, setActionModalShowing] = useState({ opened: false });
+
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
-  const isModalShow = useSelector(selectors.isModalShow);
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const showCreateGameModal = useSelector(selectors.isModalShow);
   const activeGame = useSelector(selectors.activeGameSelector);
   const {
     activeGames,
@@ -509,21 +351,33 @@ const LobbyWidget = () => {
     channel: { online },
   } = useSelector(selectors.lobbyDataSelector);
 
-  const [actionModalShowing, setActionModalShowing] = useState({ opened: false });
+  const showCssGameButton = !!activeGame && isAdmin;
 
-  const handleShowModal = useCallback(() => dispatch(actions.showCreateGameModal()), [dispatch]);
-  const handleCloseModal = () => dispatch(actions.closeCreateGameModal());
+  const handleShowCreateGameModal = useCallback(
+    () => dispatch(actions.showCreateGameModal()),
+    [dispatch],
+  );
+  const handleCloseCreateGameModal = useCallback(
+    () => dispatch(actions.closeCreateGameModal()),
+    [dispatch],
+  );
 
   const handleCreateGameBtnClick = useCallback(() => {
     if (activeGame) {
       window.location.href = makeGameUrl(activeGame.id);
     } else {
-      handleShowModal();
+      handleShowCreateGameModal();
     }
-  }, [activeGame, handleShowModal]);
+  }, [activeGame, handleShowCreateGameModal]);
+  const handleCreateCssGameBtnClick = useCallback(() => {
+    if (isAdmin) {
+      lobbyMiddlewares.createCssGame({});
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
-    const clearLobby = lobbyMiddlewares.fetchState(currentUserId)(dispatch);
+    const channel = lobbyMiddlewares.fetchState(currentUserId)(dispatch);
+
     if (currentOpponent) {
       window.history.replaceState({}, document.title, getLobbyUrl());
       dispatch(
@@ -533,13 +387,24 @@ const LobbyWidget = () => {
       );
     }
 
-    return clearLobby;
+    return () => {
+      if (channel) {
+        channel.leave();
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="container-lg">
-      {renderModal(isModalShow, handleCloseModal)}
+      <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Create a game</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <CreateGameDialog hideModal={handleCloseCreateGameModal} />
+        </Modal.Body>
+      </Modal>
       <ChatActionModal
         presenceList={presenceList}
         chatInputRef={chatInputRef}
@@ -550,6 +415,7 @@ const LobbyWidget = () => {
         <div className="d-flex flex-column col-12 col-lg-8 p-0 mb-2 pr-lg-2">
           <div className="d-none d-lg-none d-flex flex-column mb-2">
             <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
+            {showCssGameButton && <CreateCssGameButton onClick={handleCreateCssGameBtnClick} isOnline={online} />}
           </div>
           <LobbyContainer
             activeGames={activeGames}
@@ -570,6 +436,7 @@ const LobbyWidget = () => {
           <div className="d-none d-sm-none d-md-none d-lg-block">
             <div className="d-flex flex-column">
               <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
+              {showCssGameButton && <CreateCssGameButton onClick={handleCreateCssGameBtnClick} isOnline={online} />}
             </div>
           </div>
           <div className="mt-2">

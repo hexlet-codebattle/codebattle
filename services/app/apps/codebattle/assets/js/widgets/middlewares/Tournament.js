@@ -3,24 +3,24 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
-import socket from '../../socket';
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
+import Channel from './Channel';
 import { addWaitingRoomListeners } from './WaitingRoom';
 
 const tournamentId = Gon.getAsset('tournament_id');
-const channelName = `tournament:${tournamentId}`;
-let channel = socket.channel(channelName);
+let channel;
 
-export const updateTournamentChannel = newTournamentId => {
+export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
-  channel = socket.channel(newChannelName);
+  channel = new Channel(newChannelName);
 };
 
-const initTournamentChannel = waitingRoomMachine => dispatch => {
-  const onJoinFailure = () => {
-    window.location.reload();
+const initTournamentChannel = (waitingRoomMachine, currentChannel) => dispatch => {
+  const onJoinFailure = err => {
+    console.error(err);
+    // window.location.reload();
   };
 
   const onJoinSuccess = response => {
@@ -53,21 +53,21 @@ const initTournamentChannel = waitingRoomMachine => dispatch => {
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
   };
 
-  channel.onMessage = (_event, payload) => camelizeKeys(payload);
+  currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
 
-  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
+  currentChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
-  channel.onError(() => {
+  currentChannel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));
   });
 };
 
 // export const soundNotification = notification();
 
-export const connectToTournament = waitingRoomMachine => dispatch => {
-  initTournamentChannel(waitingRoomMachine)(dispatch);
-
-  const oldChannel = channel;
+export const connectToTournament = (waitingRoomMachine, newTournamentId) => dispatch => {
+  setTournamentChannel(newTournamentId);
+  const currentChannel = channel;
+  initTournamentChannel(waitingRoomMachine, currentChannel)(dispatch);
 
   const handleUpdate = response => {
     dispatch(actions.updateTournamentData(response.tournament));
@@ -140,46 +140,24 @@ export const connectToTournament = waitingRoomMachine => dispatch => {
     dispatch(actions.updateTournamentData({ ranking: response.ranking, clans: response.clans }));
   };
 
-  const clearWaitingRoomListeners = addWaitingRoomListeners(
-    oldChannel,
+  addWaitingRoomListeners(
+    currentChannel,
     waitingRoomMachine,
     { cancelRedirect: true },
   )(dispatch);
 
-  const refs = [
-    oldChannel.on('tournament:update', handleUpdate),
-    oldChannel.on('tournament:matches:update', handleMatchesUpdate),
-    oldChannel.on('tournament:players:update', handlePlayersUpdate),
-    oldChannel.on('tournament:round_created', handleTournamentRoundCreated),
-    oldChannel.on('tournament:round_finished', handleRoundFinished),
-    oldChannel.on('tournament:player:joined', handlePlayerJoined),
-    oldChannel.on('tournament:player:left', handlePlayerLeft),
-    oldChannel.on('tournament:match:upserted', handleMatchUpserted),
-    oldChannel.on('tournament:restarted', handleTournamentRestarted),
-    oldChannel.on('tournament:finished', handleTournamentFinished),
-    oldChannel.on('tournament:ranking_update', handleTournamentRankingUpdate),
-  ];
-
-  const clearTournamentChannel = () => {
-    clearWaitingRoomListeners();
-
-    if (oldChannel) {
-      oldChannel.off('tournament:update', refs[0]);
-      oldChannel.off('tournament:matches:update', refs[1]);
-      oldChannel.off('tournament:players:update', refs[2]);
-      oldChannel.off('tournament:round_created', refs[3]);
-      oldChannel.off('tournament:round_finished', refs[4]);
-      oldChannel.off('tournament:player:joined', refs[5]);
-      oldChannel.off('tournament:player:left', refs[6]);
-      oldChannel.off('tournament:match:upserted', refs[7]);
-      oldChannel.off('tournament:restarted', refs[8]);
-      oldChannel.off('tournament:finished', refs[9]);
-      oldChannel.off('tournament:ranking_update', refs[10]);
-      oldChannel.leave();
-    }
-  };
-
-  return clearTournamentChannel;
+  return currentChannel
+    .addListener('tournament:update', handleUpdate)
+    .addListener('tournament:matches:update', handleMatchesUpdate)
+    .addListener('tournament:players:update', handlePlayersUpdate)
+    .addListener('tournament:round_created', handleTournamentRoundCreated)
+    .addListener('tournament:round_finished', handleRoundFinished)
+    .addListener('tournament:player:joined', handlePlayerJoined)
+    .addListener('tournament:player:left', handlePlayerLeft)
+    .addListener('tournament:match:upserted', handleMatchUpserted)
+    .addListener('tournament:restarted', handleTournamentRestarted)
+    .addListener('tournament:finished', handleTournamentFinished)
+    .addListener('tournament:ranking_update', handleTournamentRankingUpdate);
 };
 
 // TODO (tournaments): request matches by searched player id
@@ -190,7 +168,7 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
 
   if (isLive) {
     channel
-      .push('tournament:players:request', { player_ids: playerIds })
+      .push('tournament:players:request', { playerIds })
       .receive('ok', response => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })
@@ -214,7 +192,7 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
 
 export const requestMatchesByPlayerId = userId => dispatch => {
   channel
-    .push('tournament:matches:request', { player_id: userId })
+    .push('tournament:matches:request', { playerId: userId })
     .receive('ok', data => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
@@ -227,14 +205,14 @@ export const uploadPlayersMatches = playerId => dispatch => {
 };
 
 export const joinTournament = teamId => {
-  const params = teamId !== undefined ? { team_id: teamId } : {};
+  const params = teamId !== undefined ? { teamId } : {};
   channel
     .push('tournament:join', params)
     .receive('error', error => console.error(error));
 };
 
 export const leaveTournament = teamId => {
-  const params = teamId !== undefined ? { team_id: teamId } : {};
+  const params = teamId !== undefined ? { teamId } : {};
   channel
     .push('tournament:leave', params)
     .receive('error', error => console.error(error));

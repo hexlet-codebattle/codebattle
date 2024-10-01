@@ -159,20 +159,22 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
   ]);
 
   useEffect(() => {
-    const clearTournament = connectToTournament(waitingRoomService)(dispatch);
+    const channel = connectToTournament(waitingRoomService, tournament.id)(dispatch);
 
     return () => {
-      clearTournament();
+      channel.leave();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (tournament.isLive) {
-      const clearChat = connectToChat(tournament.useChat)(dispatch);
+      const channel = connectToChat(tournament.useChat)(dispatch);
 
       return () => {
-        clearChat();
+        if (channel) {
+          channel.leave();
+        }
       };
     }
 

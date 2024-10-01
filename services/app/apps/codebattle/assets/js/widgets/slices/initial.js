@@ -241,7 +241,7 @@ const initialValidationStatuses = taskParams
   : defaultValidationStatuses;
 
 const defaultTournamentParams = {
-  id: null,
+  id: undefined,
   clans: {},
   creator: {},
   creatorId: null,

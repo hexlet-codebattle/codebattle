@@ -1,17 +1,20 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 
-import socket, { channelTopics } from '../../socket';
+import { channelTopics } from '../../socket';
 import { actions } from '../slices';
+
+import Channel from './Channel';
 
 const playerId = Gon.getAsset('player_id');
 const tournamentId = Gon.getAsset('tournament_id');
 const channelName = `spectator:${playerId}`;
-let channel = socket.channel(channelName, { tournament_id: tournamentId });
+
+let channel = new Channel(channelName, { tournamentId });
 
 export const updateSpectatorChannel = (newPlayerId, newTournamentId) => {
   const newChannelName = `spectator:${newPlayerId}`;
-  channel = socket.channel(newChannelName, { tournament_id: newTournamentId });
+  channel = new Channel(newChannelName, { tournamentId: newTournamentId });
 };
 
 const initSpectatorChannel = (dispatch, spectatorChannel) => {
@@ -63,14 +66,6 @@ export const connectToSpectator = () => dispatch => {
     }, 10, data);
   };
 
-  const refs = [
-    currentSpectatorChannel.on(channelTopics.gameCreatedTopic, handleGameCreate),
-  ];
-
-  const clearSpectatorChannel = () => {
-    currentSpectatorChannel.off(channelTopics.gameCreatedTopic, refs[0]);
-    currentSpectatorChannel.leave();
-  };
-
-  return clearSpectatorChannel;
+  return currentSpectatorChannel
+    .addListener(channelTopics.gameCreatedTopic, handleGameCreate);
 };

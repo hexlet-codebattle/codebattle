@@ -346,40 +346,43 @@ class Editor extends PureComponent {
     const isBuilder = gameMode === GameRoomModes.builder;
     const isHistory = gameMode === GameRoomModes.history;
 
-// Handle copy event
-    // this.editor.onDidCopyText((event) => {
-    //   console.log('Copy event:', event);
+    // Handle copy event
+    // editor.onDidCopyText(event => {
     //   // Custom copy logic
     //   const customText = `Custom copied text: ${event.text}`;
     //   navigator.clipboard.writeText(customText);
     //   event.preventDefault();
     // });
-    // this.editor.onKeyDown(e => {
-    //   // Custom Copy Event
-    //   if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
-    //     const selection = editor.getModel().getValueInRange(editor.getSelection());
-    //     editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
-    //     e.preventDefault();
-    //   }
-    //
-    //   // Custom Paste Event
-    //   if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
-    //       if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
-    //         const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
-    //         editor.executeEdits('custom-paste', [
-    //           {
-    //             range: editor.getSelection(),
-    //             text: customText,
-    //             forceMoveMarkers: true,
-    //           },
-    //         ]);
-    //       }
-    //     e.preventDefault();
-    //   }
-    // });
 
-    this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
-    this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
+    editor.onKeyDown(e => {
+      // Custom Copy Event
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
+        const selection = editor.getModel().getValueInRange(editor.getSelection());
+        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
+
+        e.preventDefault();
+      }
+
+      // Custom Paste Event
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
+        if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
+          const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
+
+          editor.executeEdits('custom-paste', [
+            {
+              range: editor.getSelection(),
+              text: customText,
+              forceMoveMarkers: true,
+            },
+          ]);
+        }
+
+        e.preventDefault();
+      }
+    });
+
+    editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
+    editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
 
     if (!isBuilder && !isHistory && gameId) {
       const clearCursorListeners = addCursorListeners(
@@ -392,16 +395,16 @@ class Editor extends PureComponent {
     }
 
     if (editable && !isBuilder) {
-      this.editor.focus();
+      editor.focus();
     }
 
     this.editor.addCommand(
-      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter,
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
       () => null,
     );
 
-    this.editor.addCommand(
-      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M,
+    editor.addCommand(
+      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M,
       () => null,
     );
 

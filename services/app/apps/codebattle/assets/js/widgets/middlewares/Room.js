@@ -6,7 +6,7 @@ import find from 'lodash/find';
 
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-import socket, { channelMethods, channelTopics } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
@@ -30,17 +30,19 @@ import {
 } from '../utils/gameRoom';
 import notification from '../utils/notification';
 
+import Channel from './Channel';
 import { addWaitingRoomListeners } from './WaitingRoom';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
-const channelName = `game:${gameId}`;
-let channel = !isRecord && gameId ? socket.channel(channelName) : null;
+let channel;
 
-export const updateGameChannel = newGameId => {
+export const setGameChannel = (newGameId = gameId) => {
   const newChannelName = `game:${newGameId}`;
-  channel = !isRecord && newGameId ? socket.channel(newChannelName) : null;
+  channel = !isRecord && newGameId ? new Channel(newChannelName) : null;
+  console.log(channel);
+  return channel;
 };
 
 const initEditors = dispatch => (playbookStatusCode, players) => {
@@ -125,18 +127,18 @@ const initPlaybook = dispatch => data => {
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) => dispatch => {
+const initGameChannel = (gameRoomService, waitingRoomService, currentChannel) => dispatch => {
   const onJoinFailure = payload => {
-    gameRoomMachine.send('REJECT_LOADING_GAME', { payload });
-    gameRoomMachine.send('FAILURE_JOIN', { payload });
+    gameRoomService.send('REJECT_LOADING_GAME', { payload });
+    gameRoomService.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
   currentChannel.onError(() => {
-    gameRoomMachine.send('FAILURE');
+    gameRoomService.send('FAILURE');
   });
 
-  currentChannel.onMessage = (_event, payload) => camelizeKeys(payload);
+  currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
 
   const onJoinSuccess = response => {
     if (response.error) {
@@ -160,10 +162,10 @@ const initGameChannel = (gameRoomMachine, waitingRoomMachine, currentChannel) =>
 
     const gameStatus = getGameStatus(response.game);
 
-    gameRoomMachine.send('LOAD_GAME', { payload: gameStatus });
+    gameRoomService.send('LOAD_GAME', { payload: gameStatus });
 
     if (waitingRoomName && currentPlayer) {
-      waitingRoomMachine.send('LOAD_WAITING_ROOM', {
+      waitingRoomService.send('LOAD_WAITING_ROOM', {
         payload: { currentPlayer },
       });
       dispatch(actions.setActiveTournamentPlayer(currentPlayer));
@@ -229,8 +231,8 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
   );
 
   channel.push(channelMethods.editorData, {
-    editor_text: editorText,
-    lang_slug: currentLangSlug,
+    editorText,
+    langSlug: currentLangSlug,
   });
 };
 
@@ -247,14 +249,14 @@ export const sendEditorCursorPosition = offset => {
 
 export const sendEditorCursorSelection = (startOffset, endOffset) => {
   channel.push(channelMethods.editorCursorSelection, {
-    start_offset: startOffset,
-    end_offset: endOffset,
+    startOffset,
+    endOffset,
   });
 };
 
 export const sendPassCode = (passCode, onError) => dispatch => {
   channel
-    .push(channelMethods.enterPassCode, { pass_code: passCode })
+    .push(channelMethods.enterPassCode, { passCode })
     .receive('ok', () => {
       dispatch(actions.setLocked(false));
     })
@@ -320,98 +322,100 @@ export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
 
 export const soundNotification = notification();
 
-export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
-  if (!id) {
-    return () => { };
+export const addCursorListeners = (userId, onChangePosition, onChangeSelection) => {
+  const currentGameChannel = channel;
+
+  if (!userId || !currentGameChannel) {
+    return () => {};
   }
 
-  const oldChannel = channel;
-
   const handleNewCursorPosition = debounce(data => {
-    const { userId, offset } = data;
-    if (id === userId) {
+    const { offset } = data;
+    if (userId === data.userId) {
       onChangePosition(offset);
     }
   }, 80);
 
   const handleNewCursorSelection = debounce(data => {
-    const { userId, startOffset, endOffset } = data;
-    if (id === userId) {
+    const { startOffset, endOffset } = data;
+    if (userId === data.userId) {
       onChangeSelection(startOffset, endOffset);
     }
   }, 200);
 
-  const refs = [
-    oldChannel.on(
+  const listenerParams = { userId };
+
+  currentGameChannel
+    .addListener(
       channelTopics.editorCursorPositionTopic,
       handleNewCursorPosition,
-    ),
-    oldChannel.on(
+      listenerParams,
+    )
+    .addListener(
       channelTopics.editorCursorSelectionTopic,
       handleNewCursorSelection,
-    ),
-  ];
+      listenerParams,
+    );
 
-  const clearCursorListeners = () => {
-    if (oldChannel) {
-      oldChannel.off(channelTopics.editorCursorPositionTopic, refs[0]);
-      oldChannel.off(channelTopics.editorCursorSelectionTopic, refs[1]);
-      oldChannel.leave();
+  return () => {
+    if (currentGameChannel) {
+      currentGameChannel
+        .clearListeners(
+          channelTopics.editorCursorPositionTopic,
+          listenerParams,
+        )
+        .clearListeners(
+          channelTopics.editorCursorSelectionTopic,
+          listenerParams,
+        );
     }
   };
-
-  return clearCursorListeners;
 };
 
-export const activeEditorReady = (machine, isBanned) => {
+export const activeEditorReady = (service, isBanned) => {
+  console.log(channel);
   const currentGameChannel = channel;
+  const listenerParams = { userId: service.machine.context.userId };
 
   if (isBanned) {
-    machine.send('load_banned_editor');
+    service.send('load_banned_editor');
   } else {
-    machine.send('load_active_editor');
+    service.send('load_active_editor');
   }
 
   // channel.on('editor:data', data => {
   //   const { userId } = data;
-  //   machine.send('typing', { userId });
+  //   service.send('typing', { userId });
   // });
 
   const handleStartsCheck = data => {
-    const { userId } = data;
-    machine.send('check_solution_received', { userId });
+    service.send('check_solution_received', data);
   };
 
   const handleNewCheckResult = data => {
-    const { userId } = data;
-    machine.send('receive_check_result', { userId });
+    service.send('receive_check_result', data);
   };
 
-  const refs = [
-    currentGameChannel.on(channelTopics.userStartCheckTopic, handleStartsCheck),
-    currentGameChannel.on(
+  currentGameChannel
+    .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
+    .addListener(
       channelTopics.userCheckCompleteTopic,
       handleNewCheckResult,
-    ),
-  ];
+    );
 
-  const clearEditorListeners = () => {
-    machine.send('unload_editor');
-
-    if (currentGameChannel) {
-      currentGameChannel.off(channelTopics.userStartCheckTopic, refs[0]);
-      currentGameChannel.off(channelTopics.userCheckCompleteTopic, refs[1]);
-    }
+  return () => {
+    currentGameChannel
+      .clearListeners(channelTopics.userStartCheckTopic, listenerParams)
+      .clearListeners(channelTopics.userCheckCompleteTopic, listenerParams);
   };
-
-  return clearEditorListeners;
 };
 
-export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRedirect = false }) => (dispatch, getState) => {
+export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRedirect = false }) => (dispatch, getState) => {
   const currentGameChannel = channel;
+
   initGameChannel(
-    gameRoomMachine,
-    waitingRoomMachine,
+    gameRoomService,
+    waitingRoomService,
     currentGameChannel,
   )(dispatch);
 
@@ -444,7 +448,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
     dispatch(actions.updateCheckStatus({ [userId]: false }));
 
     const payload = { state, award };
-    gameRoomMachine.send(channelTopics.userCheckCompleteTopic, { payload });
+    gameRoomService.send(channelTopics.userCheckCompleteTopic, { payload });
   };
 
   const handleUserJoined = data => {
@@ -499,7 +503,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
         timeoutSeconds,
       }),
     );
-    gameRoomMachine.send(channelTopics.gameUserJoinedTopic, {
+    gameRoomService.send(channelTopics.gameUserJoinedTopic, {
       payload: data,
     });
   };
@@ -508,7 +512,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
     const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
-    gameRoomMachine.send(channelTopics.userWonTopic, { payload: data });
+    gameRoomService.send(channelTopics.userWonTopic, { payload: data });
   };
 
   const handleUserGiveUp = data => {
@@ -518,18 +522,18 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
     channel
       .push(channelMethods.gameScore, {})
       .receive('ok', response => dispatch(actions.setGameScore(response)));
-    gameRoomMachine.send(channelTopics.userGiveUpTopic, { payload: data });
+    gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
   };
 
   const handleRematchStatusUpdate = data => {
     dispatch(actions.updateRematchStatus(data));
-    gameRoomMachine.send(channelTopics.rematchStatusUpdatedTopic, {
+    gameRoomService.send(channelTopics.rematchStatusUpdatedTopic, {
       payload: data,
     });
   };
 
   const handleRematchAccepted = ({ gameId: newGameId }) => {
-    gameRoomMachine.send(channelTopics.rematchAcceptedTopic, { newGameId });
+    gameRoomService.send(channelTopics.rematchAcceptedTopic, { newGameId });
     redirectToNewGame(newGameId);
   };
 
@@ -537,7 +541,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
     const { gameState } = data;
     const payload = { state: gameState };
     dispatch(actions.updateGameStatus(payload));
-    gameRoomMachine.send(channelTopics.gameTimeoutTopic, { payload });
+    gameRoomService.send(channelTopics.gameTimeoutTopic, { payload });
   };
 
   const handleGameToggleVisible = () => {
@@ -550,7 +554,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
 
   const handleTournamentGameCreated = data => {
     dispatch(actions.setTournamentsInfo(data));
-    gameRoomMachine.send(channelTopics.tournamentGameCreatedTopic, {
+    gameRoomService.send(channelTopics.tournamentGameCreatedTopic, {
       payload: data,
     });
     if (!cancelRedirect) {
@@ -567,7 +571,7 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
   const handleTournamentRoundFinished = response => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentMatches(response.matches));
-    gameRoomMachine.send(channelTopics.tournamentRoundFinishedTopic, {
+    gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
       payload: response.tournament,
     });
   };
@@ -576,140 +580,95 @@ export const activeGameReady = (gameRoomMachine, waitingRoomMachine, { cancelRed
     dispatch(actions.setTournamentWaitType(response.type));
   };
 
-  const clearWaitingRoomListeners = addWaitingRoomListeners(
-    currentGameChannel,
-    waitingRoomMachine,
-    { cancelRedirect },
-  )(dispatch, getState);
-
   const handleWaitingRoomPlayerFinishedRound = response => {
-    waitingRoomMachine.send(
+    waitingRoomService.send(
       channelTopics.tournamentPlayerFinishedRoundTopic,
       { payload: response },
     );
   };
 
   const handleWaitingRoomPlayerFinished = response => {
-    waitingRoomMachine.send(channelTopics.tournamentPlayerFinishedTopic, {
+    waitingRoomService.send(channelTopics.tournamentPlayerFinishedTopic, {
       payload: response,
     });
   };
 
-  const refs = [
-    currentGameChannel.on(channelTopics.editorDataTopic, handleNewEditorData),
-    currentGameChannel.on(
+  addWaitingRoomListeners(
+    currentGameChannel,
+    waitingRoomService,
+    { cancelRedirect },
+  )(dispatch, getState);
+
+  return currentGameChannel
+    .addListener(channelTopics.editorDataTopic, handleNewEditorData)
+    .addListener(
       channelTopics.userStartCheckTopic,
       handleStartsCheck,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.userCheckCompleteTopic,
       handleNewCheckResult,
-    ),
-    currentGameChannel.on(channelTopics.userWonTopic, handleUserWon),
-    currentGameChannel.on(channelTopics.userGiveUpTopic, handleUserGiveUp),
-    currentGameChannel.on(
+    )
+    .addListener(channelTopics.userWonTopic, handleUserWon)
+    .addListener(channelTopics.userGiveUpTopic, handleUserGiveUp)
+    .addListener(
       channelTopics.rematchStatusUpdatedTopic,
       handleRematchStatusUpdate,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.rematchAcceptedTopic,
       handleRematchAccepted,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.gameUserJoinedTopic,
       handleUserJoined,
-    ),
-    currentGameChannel.on(channelTopics.gameTimeoutTopic, handleGameTimeout),
-    currentGameChannel.on(
+    )
+    .addListener(channelTopics.gameTimeoutTopic, handleGameTimeout)
+    .addListener(
       channelTopics.gameToggleVisibleTopic,
       handleGameToggleVisible,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.gameUnlockedTopic,
       handleGameUnlocked,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentGameCreatedTopic,
       handleTournamentGameCreated,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentRoundCreatedTopic,
       handleTournamentRoundCreated,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentRoundFinishedTopic,
       handleTournamentRoundFinished,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentGameWaitTopic,
       handleTournamentGameWait,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentPlayerFinishedRoundTopic,
       handleWaitingRoomPlayerFinishedRound,
-    ),
-    currentGameChannel.on(
+    )
+    .addListener(
       channelTopics.tournamentPlayerFinishedTopic,
       handleWaitingRoomPlayerFinished,
-    ),
-  ];
-
-  const clearGameListeners = () => {
-    if (currentGameChannel) {
-      currentGameChannel.off(channelTopics.editorDataTopic, refs[0]);
-      currentGameChannel.off(channelTopics.userStartCheckTopic, refs[1]);
-      currentGameChannel.off(channelTopics.userCheckCompleteTopic, refs[2]);
-      currentGameChannel.off(channelTopics.userWonTopic, refs[3]);
-      currentGameChannel.off(channelTopics.userGiveUpTopic, refs[4]);
-      currentGameChannel.off(
-        channelTopics.rematchStatusUpdatedTopic,
-        refs[5],
-      );
-      currentGameChannel.off(channelTopics.rematchAcceptedTopic, refs[6]);
-      currentGameChannel.off(channelTopics.gameUserJoinedTopic, refs[7]);
-      currentGameChannel.off(channelTopics.gameTimeoutTopic, refs[8]);
-      currentGameChannel.off(channelTopics.gameToggleVisibleTopic, refs[9]);
-      currentGameChannel.off(channelTopics.gameUnlockedTopic, refs[10]);
-      currentGameChannel.off(
-        channelTopics.tournamentGameCreatedTopic,
-        refs[11],
-      );
-      currentGameChannel.off(
-        channelTopics.tournamentRoundCreatedTopic,
-        refs[12],
-      );
-      currentGameChannel.off(
-        channelTopics.tournamentRoundFinishedTopic,
-        refs[13],
-      );
-      currentGameChannel.off(channelTopics.tournamentGameWaitTopic, refs[14]);
-      currentGameChannel.off(
-        channelTopics.tournamentPlayerFinishedRoundTopic,
-        refs[15],
-      );
-      currentGameChannel.off(
-        channelTopics.tournamentPlayerFinishedTopic,
-        refs[16],
-      );
-
-      clearWaitingRoomListeners();
-    }
-  };
-
-  return clearGameListeners;
+    );
 };
 
-const fetchOrCreateTask = (gameMachine, taskMachine) => (dispatch, getState) => {
+const fetchOrCreateTask = (gameService, taskService) => (dispatch, getState) => {
   const currentTask = getState().builder.task;
 
-  taskMachine.send('SETUP_TASK', { payload: currentTask });
+  taskService.send('SETUP_TASK', { payload: currentTask });
 
   const state = GameStateCodes.builder;
   const message = { payload: { state } };
-  gameMachine.send('LOAD_GAME', message);
+  gameService.send('LOAD_GAME', message);
 };
 
-export const reloadGeneratorAndSolutionTemplates = taskMachine => (dispatch, getState) => {
+export const reloadGeneratorAndSolutionTemplates = taskService => (dispatch, getState) => {
   const state = getState();
 
   const langs = selectors.editorLangsSelector(state);
@@ -728,7 +687,7 @@ export const reloadGeneratorAndSolutionTemplates = taskMachine => (dispatch, get
   );
 
   dispatch(actions.setTaskTemplates({ solution, argumentsGenerator }));
-  taskMachine.send('CHANGES');
+  taskService.send('CHANGES');
 };
 
 export const validateTaskName = name => (dispatch, getState) => {
@@ -819,7 +778,7 @@ export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
     });
 };
 
-export const uploadTask = (taskParams, taskMachine, onSuccess = () => { }, onError = () => { }) => dispatch => {
+export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onError = () => { }) => dispatch => {
   const payload = {
     task: decamelizeKeys(taskParams, { separator: '_' }),
     options: {
@@ -839,7 +798,7 @@ export const uploadTask = (taskParams, taskMachine, onSuccess = () => { }, onErr
       const labledTask = labelTaskParamsWithIds(data.task);
 
       dispatch(actions.setTask({ task: labledTask }));
-      taskMachine.send('CONFIRM');
+      taskService.send('CONFIRM');
       onSuccess();
     })
     .catch(err => {
@@ -850,7 +809,7 @@ export const uploadTask = (taskParams, taskMachine, onSuccess = () => { }, onErr
     });
 };
 
-export const saveTask = (taskMachine, onSuccess = () => { }, onError = () => { }, newTaskParams) => (dispatch, getState) => {
+export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }, newTaskParams) => (dispatch, getState) => {
   try {
     const state = getState();
 
@@ -873,7 +832,7 @@ export const saveTask = (taskMachine, onSuccess = () => { }, onError = () => { }
         .then(response => {
           const data = camelizeKeys(response.data);
 
-          taskMachine.send('CONFIRM');
+          taskService.send('CONFIRM');
           window.location.href = `/tasks/${data.task.id}`;
           onSuccess();
         })
@@ -896,7 +855,7 @@ export const saveTask = (taskMachine, onSuccess = () => { }, onError = () => { }
           const labledTask = labelTaskParamsWithIds(data.task);
 
           dispatch(actions.setTask({ task: labledTask }));
-          taskMachine.send('CONFIRM');
+          taskService.send('CONFIRM');
           onSuccess();
         })
         .catch(err => {
@@ -931,7 +890,7 @@ export const deleteTask = id => dispatch => {
     });
 };
 
-export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
+export const buildTaskAsserts = taskService => (dispatch, getState) => {
   const state = getState();
 
   if (state.builder.templates.state !== taskTemplatesStates.init) {
@@ -947,7 +906,7 @@ export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
       }),
     );
 
-    taskMachine.send('SUCCESS');
+    taskService.send('SUCCESS');
     return;
   }
 
@@ -988,20 +947,20 @@ export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
 
       switch (data.status) {
         case 'ok': {
-          taskMachine.send('SUCCESS');
+          taskService.send('SUCCESS');
           break;
         }
         case 'failure':
-          taskMachine.send('FAILURE', {
+          taskService.send('FAILURE', {
             message: "Actual values doesn't match with expected values",
           });
           break;
         case 'error': {
-          taskMachine.send('ERROR', { message: data.message });
+          taskService.send('ERROR', { message: data.message });
           break;
         }
         default: {
-          taskMachine.send('ERROR', {
+          taskService.send('ERROR', {
             message: data.message || 'Something Wrong',
           });
         }
@@ -1015,15 +974,15 @@ export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
           output: err.message,
         }),
       );
-      taskMachine.send('ERROR', { message: err.message });
+      taskService.send('ERROR', { message: err.message });
 
       dispatch(actions.setError(err));
       console.error(err);
     });
 };
 
-const fetchPlaybook = (machine, init) => dispatch => {
-  machine.send('START_LOADING_PLAYBOOK');
+const fetchPlaybook = (service, init) => dispatch => {
+  service.send('START_LOADING_PLAYBOOK');
 
   axios
     .get(`/api/v1/playbook/${gameId}`)
@@ -1036,15 +995,13 @@ const fetchPlaybook = (machine, init) => dispatch => {
 
       init(dispatch)(resolvedData);
 
-      machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
+      service.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
     .catch(err => {
       console.error(err);
       dispatch(actions.setError(err));
-      machine.send('REJECT_LOADING_PLAYBOOK', { payload: err });
+      service.send('REJECT_LOADING_PLAYBOOK', { payload: err });
     });
-
-  return () => { };
 };
 
 export const changePlaybookSolution = method => dispatch => {
@@ -1081,37 +1038,35 @@ export const changePlaybookSolution = method => dispatch => {
     });
 };
 
-export const storedEditorReady = machine => {
-  machine.send('load_stored_editor');
+export const storedEditorReady = service => {
+  service.send('load_stored_editor');
 
-  return () => { };
+  return () => {};
 };
 
-export const downloadPlaybook = machine => dispatch => {
-  dispatch(fetchPlaybook(machine, initPlaybook));
+export const downloadPlaybook = service => dispatch => {
+  dispatch(fetchPlaybook(service, initPlaybook));
 };
 
-export const openPlaybook = machine => () => {
-  machine.send('OPEN_REPLAYER');
+export const openPlaybook = service => () => {
+  service.send('OPEN_REPLAYER');
 };
 
-export const connectToTask = (gameMachine, taskMachine) => dispatch => {
-  dispatch(fetchOrCreateTask(gameMachine, taskMachine));
-
-  return () => { };
+export const connectToTask = (gameService, taskService) => dispatch => {
+  dispatch(fetchOrCreateTask(gameService, taskService));
 };
 
-export const connectToGame = (machine, waitingRoomMachine, options) => dispatch => {
+export const connectToGame = (gameRoomService, waitingRoomService, options) => dispatch => {
   if (isRecord) {
-    return fetchPlaybook(machine, initStoredGame)(dispatch);
+    return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
 
-  machine.send('JOIN');
+  gameRoomService.send('JOIN');
 
-  return activeGameReady(machine, waitingRoomMachine, options)(dispatch);
+  return activeGameReady(gameRoomService, waitingRoomService, options)(dispatch);
 };
 
-export const connectToEditor = (machine, isBanned) => () => (isRecord ? storedEditorReady(machine) : activeEditorReady(machine, isBanned));
+export const connectToEditor = (service, isBanned) => () => (isRecord ? storedEditorReady(service) : activeEditorReady(service, isBanned));
 
 export const checkGameSolution = () => (dispatch, getState) => {
   const state = getState();
@@ -1124,14 +1079,14 @@ export const checkGameSolution = () => (dispatch, getState) => {
   dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
 
   const payload = {
-    editor_text: text,
-    lang_slug: lang,
+    editorText: text,
+    langSlug: lang,
   };
 
   channel.push(channelMethods.checkResult, payload);
 };
 
-export const checkTaskSolution = editorMachine => (dispatch, getState) => {
+export const checkTaskSolution = editorService => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const { text, lang } = selectors.getSolution(currentUserId)(state);
@@ -1148,7 +1103,7 @@ export const checkTaskSolution = editorMachine => (dispatch, getState) => {
     lang_slug: lang,
   };
 
-  editorMachine.send('user_check_solution');
+  editorService.send('user_check_solution');
 
   axios
     .post('/api/v1/tasks/check', payload, {
@@ -1166,7 +1121,7 @@ export const checkTaskSolution = editorMachine => (dispatch, getState) => {
           userId: currentUserId,
         }),
       );
-      editorMachine.send('receive_check_result', { userId: currentUserId });
+      editorService.send('receive_check_result', { userId: currentUserId });
     })
     .catch(error => {
       dispatch(
@@ -1178,7 +1133,7 @@ export const checkTaskSolution = editorMachine => (dispatch, getState) => {
           userId: currentUserId,
         }),
       );
-      editorMachine.send('receive_check_result', { userId: currentUserId });
+      editorService.send('receive_check_result', { userId: currentUserId });
     });
 };
 

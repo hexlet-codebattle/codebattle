@@ -9,10 +9,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   connectToEditor,
   connectToGame,
-  updateGameChannel,
+  setGameChannel,
 } from '@/middlewares/Room';
 import { connectToSpectator } from '@/middlewares/Spectator';
-import { connectToTournament, updateTournamentChannel } from '@/middlewares/Tournament';
+import { connectToTournament } from '@/middlewares/Tournament';
 
 import CountdownTimer from '../../components/CountdownTimer';
 import EditorUserTypes from '../../config/editorUserTypes';
@@ -237,13 +237,11 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   }, [playerId, dispatch]);
 
   useEffect(() => {
-    updateTournamentChannel(tournament.id);
-
     if (tournament.id) {
-      const clearTournamentConnection = connectToTournament(waitingRoomService)(dispatch);
+      const channel = connectToTournament(waitingRoomService, tournament.id)(dispatch);
 
       return () => {
-        clearTournamentConnection();
+        channel.leave();
       };
     }
 
@@ -251,22 +249,23 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   }, [tournament.id, waitingRoomService, dispatch]);
 
   useEffect(() => {
-    updateGameChannel(gameId);
+    const channel = setGameChannel(gameId);
 
     if (gameId) {
       NiceModal.hide(ModalCodes.awardModal);
       const options = { cancelRedirect: true };
 
-      const clearGameConnection = connectToGame(spectatorService, waitingRoomService, options)(dispatch);
-      const clearEditorConnection = connectToEditor(spectatorService)(dispatch);
-
-      return () => {
-        clearGameConnection();
-        clearEditorConnection();
-      };
+      connectToGame(spectatorService, waitingRoomService, options)(dispatch);
+      connectToEditor(spectatorService, options)(dispatch);
     }
 
-    return () => {};
+    const clearChannel = () => {
+      if (channel) {
+        channel.leave();
+      }
+    };
+
+    return clearChannel;
   }, [gameId, spectatorService, waitingRoomService, dispatch]);
 
   const spectatorDisplayClassName = cn(

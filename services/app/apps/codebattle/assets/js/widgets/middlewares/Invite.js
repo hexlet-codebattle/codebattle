@@ -1,10 +1,12 @@
 import { camelizeKeys } from 'humps';
 
-import socket, { channelMethods, channelTopics } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 
-const channel = socket.channel('invites');
+import Channel from './Channel';
+
+const channel = new Channel('invites');
 
 const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
   dispatch(actionCreator(camelizeKeys(data)))
@@ -26,7 +28,7 @@ const getOpponentName = (data, userId) => {
 
 export const initInvites = currentUserId => dispatch => {
   const onJoinSuccess = () => {
-    channel.on(channelTopics.invitesInitTopic, data => {
+    channel.addListener(channelTopics.invitesInitTopic, data => {
       if (data.invites.length > 0) {
         const message = getSystemMessage({ text: `You have (${data.invites.length}) invites to battle. Check ` });
         setTimeout(() => dispatch(actions.newChatMessage(message)), 100);
@@ -34,7 +36,7 @@ export const initInvites = currentUserId => dispatch => {
       camelizeKeysAndDispatch(dispatch, actions.setInvites)(data);
     });
 
-    channel.on(channelTopics.invitesCreatedTopic, data => {
+    channel.addListener(channelTopics.invitesCreatedTopic, data => {
       if (data.invite.creator_id !== currentUserId) {
         const message = getSystemMessage({ text: `You received battle invite (from ${getCreatorName(data)})` });
         dispatch(actions.newChatMessage(message));
@@ -42,7 +44,7 @@ export const initInvites = currentUserId => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
     });
-    channel.on(channelTopics.invitesCanceledTopic, data => {
+    channel.addListener(channelTopics.invitesCanceledTopic, data => {
       if (data.invite.executor_id !== currentUserId) {
         const message = getSystemMessage({
           text: `Invite has been canceled (Opponent ${getOpponentName(data, currentUserId)})`,
@@ -53,7 +55,7 @@ export const initInvites = currentUserId => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on(channelTopics.invitesAcceptedTopic, data => {
+    channel.addListener(channelTopics.invitesAcceptedTopic, data => {
       if (data.invite.executor_id !== currentUserId) {
         const message = getSystemMessage({
           text: `Invite has been accepted (Opponent ${getOpponentName(data, currentUserId)})`,
@@ -65,7 +67,7 @@ export const initInvites = currentUserId => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on(channelTopics.invitesExpiredTopic, data => {
+    channel.addListener(channelTopics.invitesExpiredTopic, data => {
       const message = getSystemMessage({
         text: `Invite has been expired by timeout (${getCreatorName(data)} vs ${getRecipientName(data)})`,
         status: 'failure',
@@ -74,7 +76,7 @@ export const initInvites = currentUserId => dispatch => {
 
       camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
     });
-    channel.on(channelTopics.invitesDroppedTopic, data => {
+    channel.addListener(channelTopics.invitesDroppedTopic, data => {
       const message = getSystemMessage({
         text: `Invite has been dropped (${getCreatorName(data)} vs ${getRecipientName(data)})`,
         status: 'failure',

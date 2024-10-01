@@ -39,6 +39,30 @@ import EditorToolbar from './EditorToolbar';
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 
+const useEditorChannelSubscription = (mainService, editorService, player) => {
+  const dispatch = useDispatch();
+
+  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
+
+  useEffect(() => {
+    if (isPreview) {
+      return () => {};
+    }
+
+    if (inTestingRoom) {
+      editorService.send('load_testing_editor');
+
+      return () => {};
+    }
+
+    const clearEditorListeners = GameActions.connectToEditor(editorService, player?.isBanned)(dispatch);
+
+    return clearEditorListeners;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPreview]);
+};
+
 function EditorContainer({
   id,
   editorMachine,
@@ -116,20 +140,9 @@ function EditorContainer({
     ? checkTestTaskSolution
     : checkActiveTaskSolution;
 
-  useEffect(() => {
-    if (inTestingRoom) {
-      editorService.send('load_testing_editor');
-
-      return () => {};
-    }
-
-    const clearEditor = GameActions.connectToEditor(editorService, player?.isBanned)(dispatch);
-
-    return clearEditor;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;
+
+  useEditorChannelSubscription(mainService, editorService, player);
 
   useEffect(() => {
     /** @param {KeyboardEvent} e */
@@ -183,8 +196,8 @@ function EditorContainer({
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
   const onChange = canChange ? updateEditor : noop();
-  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : undefined;
-  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : undefined;
+  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : () => {};
+  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : () => {};
 
   const editorParams = {
     userId: id,

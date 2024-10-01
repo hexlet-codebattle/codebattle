@@ -1,5 +1,6 @@
 import React from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -200,13 +201,15 @@ test('test rendering preview game component', async () => {
 
   const { findByText } = setup(
     <Provider store={store}>
-      <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
-        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-        waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
-      />
+      <NiceModal.Provider>
+        <RootContainer
+          pageName="game"
+          mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+          taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+          editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
+        />
+      </NiceModal.Provider>
     </Provider>,
   );
 
@@ -221,13 +224,15 @@ test('test game guide', async () => {
 
   const { findByRole, user } = setup(
     <Provider store={store}>
-      <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
-        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-        waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
-      />
+      <NiceModal.Provider>
+        <RootContainer
+          pageName="game"
+          mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+          taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+          editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
+        />
+      </NiceModal.Provider>
     </Provider>,
   );
 
@@ -251,13 +256,15 @@ test('test a bot invite button', async () => {
 
   const { findByLabelText, findByTitle, user } = setup(
     <Provider store={store}>
-      <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
-        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-        waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
-      />
+      <NiceModal.Provider>
+        <RootContainer
+          pageName="game"
+          mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+          taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+          editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
+        />
+      </NiceModal.Provider>
     </Provider>,
   );
 

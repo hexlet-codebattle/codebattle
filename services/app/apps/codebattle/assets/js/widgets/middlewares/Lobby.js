@@ -2,29 +2,33 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import some from 'lodash/some';
 
-import socket, { channelMethods, channelTopics } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
 import { calculateExpireDate } from '../utils/chatRoom';
 
+import Channel from './Channel';
+
 const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');
-const channel = !isRecord ? socket.channel(channelName) : null;
+const channel = !isRecord ? new Channel(channelName) : null;
 
 export const fetchState = currentUserId => dispatch => {
+  const currentChannel = channel;
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  currentChannel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
-  channel.onError(() => {
+  currentChannel.onError(() => {
     dispatch(actions.updateLobbyChannelState(false));
   });
 
+  currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
+
   const handleGameUpsert = data => {
-    const newData = camelizeKeys(data);
     const {
       game: { players, id, state: gameState },
-    } = newData;
+    } = data;
     const currentPlayerId = currentUserId;
     const isGameStarted = gameState === 'playing';
     const isCurrentUserInGame = some(
@@ -35,42 +39,32 @@ export const fetchState = currentUserId => dispatch => {
     if (isGameStarted && isCurrentUserInGame) {
       window.location.href = `/games/${id}`;
     } else {
-      dispatch(actions.upsertGameLobby(newData));
+      dispatch(actions.upsertGameLobby(data));
     }
   };
 
   const handleGameCheckStarted = data => {
-    const { gameId, userId } = camelizeKeys(data);
+    const { gameId, userId } = data;
     const payload = { gameId, userId, checkResult: { status: 'started' } };
 
     dispatch(actions.updateCheckResult(payload));
   };
 
-  const refs = [
-    channel.on(channelTopics.lobbyGameUpsertTopic, handleGameUpsert),
-    channel.on(channelTopics.lobbyGameCheckStartedTopic, handleGameCheckStarted),
-    channel.on(
+  return currentChannel
+    .addListener(channelTopics.lobbyGameUpsertTopic, handleGameUpsert)
+    .addListener(channelTopics.lobbyGameCheckStartedTopic, handleGameCheckStarted)
+    .addListener(
       channelTopics.lobbyGameCheckCompletedTopic,
       camelizeKeysAndDispatch(actions.updateCheckResult),
-    ),
-    channel.on(channelTopics.lobbyGameRemoveTopic, camelizeKeysAndDispatch(actions.removeGameLobby)),
-    channel.on(channelTopics.lobbyGameFinishedTopic, camelizeKeysAndDispatch(actions.finishGame)),
-  ];
-
-  const oldChannel = channel;
-
-  const clearLobbyListeners = () => {
-    if (oldChannel) {
-      oldChannel.off(channelTopics.lobbyGameUpsertTopic, refs[0]);
-      oldChannel.off(channelTopics.lobbyGameCheckStartedTopic, refs[1]);
-      oldChannel.off(channelTopics.lobbyGameCheckCompletedTopic, refs[2]);
-      oldChannel.off(channelTopics.lobbyGameRemoveTopic, refs[3]);
-      oldChannel.off(channelTopics.lobbyGameFinishedTopic, refs[4]);
-      oldChannel.leave();
-    }
-  };
-
-  return clearLobbyListeners;
+    )
+    .addListener(
+      channelTopics.lobbyGameRemoveTopic,
+      camelizeKeysAndDispatch(actions.removeGameLobby),
+    )
+    .addListener(
+      channelTopics.lobbyGameFinishedTopic,
+      camelizeKeysAndDispatch(actions.finishGame),
+    );
 };
 
 export const openDirect = (userId, name) => dispatch => {
@@ -91,13 +85,19 @@ export const openDirect = (userId, name) => dispatch => {
 
 export const cancelGame = gameId => () => {
   channel
-    .push(channelMethods.gameCancel, { game_id: gameId })
+    .push(channelMethods.gameCancel, { gameId })
     .receive('error', error => console.error(error));
 };
 
 export const createGame = params => {
   channel
     .push(channelMethods.gameCreate, params)
+    .receive('error', error => console.error(error));
+};
+
+export const createCssGame = params => {
+  channel
+    .push(channelMethods.cssGameCreate, params)
     .receive('error', error => console.error(error));
 };
 

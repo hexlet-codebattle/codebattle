@@ -11,7 +11,7 @@ const getKey = (id, time, name) => {
     return id;
   }
 
-  return `${time}-${name}`;
+  return `${id}-${time}-${name}`;
 };
 
 function Messages({ messages, displayMenu = () => {}, disabled = false }) {

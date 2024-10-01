@@ -1,5 +1,4 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
-import Gon from 'gon';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
