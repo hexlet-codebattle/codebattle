@@ -79,7 +79,7 @@ const initPresence = followId => dispatch => {
     list => {
       const updatedList = list.map(userInfo => ({
         ...userInfo,
-        state: getMajorState(userInfo.userPresence),
+        currentState: getMajorState(userInfo.userPresence),
       }));
       dispatch(actions.syncPresenceList(updatedList));
     },
