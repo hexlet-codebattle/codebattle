@@ -351,7 +351,8 @@ const LobbyWidget = () => {
     channel: { online },
   } = useSelector(selectors.lobbyDataSelector);
 
-  const showCssGameButton = !!activeGame && isAdmin;
+  // const showCssGameButton = !!activeGame && isAdmin;
+  const showCssGameButton = false;
 
   const handleShowCreateGameModal = useCallback(
     () => dispatch(actions.showCreateGameModal()),
