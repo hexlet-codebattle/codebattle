@@ -71,6 +71,7 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.7.3",
     "moment": "^2.29.4",
+    "monaco-editor": "^0.52.0",
     "monaco-themes": "^0.4.4",
     "nprogress": "^0.2.0",
     "path-browserify": "^1.0.1",

@@ -7,8 +7,9 @@ import React, {
   useMemo,
 } from 'react';
 
-import MonacoEditor from '@monaco-editor/react';
+import MonacoEditor, { loader } from '@monaco-editor/react';
 import cn from 'classnames';
+import * as monacoLib from 'monaco-editor';
 
 import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
@@ -17,6 +18,8 @@ import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor
 import useRemoteCursor from '../utils/useRemoteCursor';
 
 import Loading from './Loading';
+
+loader.config({ monaco: monacoLib });
 
 let editorClipboard = '';
 // const notIncludedSyntaxHightlight = new Set(['haskell']);

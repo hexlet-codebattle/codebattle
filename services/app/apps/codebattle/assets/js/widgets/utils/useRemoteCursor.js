@@ -6,7 +6,6 @@ import { addCursorListeners } from '../middlewares/Room';
 
 const useRemoteCursor = (editor, monaco, props) => {
   const {
-    gameId,
     gameMode,
     editable,
     userType,
@@ -23,7 +22,7 @@ const useRemoteCursor = (editor, monaco, props) => {
   const isBuilder = gameMode === GameRoomModes.builder;
   const isHistory = gameMode === GameRoomModes.history;
 
-  const needSubscribeCursorUpdates = !isBuilder && !isHistory && !!gameId;
+  const needSubscribeCursorUpdates = !isBuilder && !isHistory;
 
   const updateRemoteCursorPosition = useCallback(offset => {
     const position = editor.getModel().getPositionAt(offset);
@@ -127,7 +126,6 @@ const useRemoteCursor = (editor, monaco, props) => {
     return () => {};
   }, [
       userId,
-      gameId,
       needSubscribeCursorUpdates,
       updateRemoteCursorPosition,
       updateRemoteCursorSelection,
