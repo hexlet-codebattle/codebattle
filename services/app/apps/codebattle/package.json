@@ -18,6 +18,7 @@
   "jest": {
     "verbose": true,
     "moduleNameMapper": {
+      "^monaco-editor$": "<rootDir>/node_modules/@monaco-editor/react",
       "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
       "^@/components(.*)$": "<rootDir>/assets/js/widgets/components$1",
       "^@/lib(.*)$": "<rootDir>/assets/js/widgets/lib$1",
