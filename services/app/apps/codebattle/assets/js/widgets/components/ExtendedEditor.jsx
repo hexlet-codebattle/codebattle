@@ -3,7 +3,6 @@
 
 // import cn from 'classnames';
 // import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
-// import { initVimMode } from 'monaco-vim';
 // import PropTypes from 'prop-types';
 // import MonacoEditor from 'react-monaco-editor';
 
@@ -18,23 +17,19 @@ import {
 } from '../selectors/index';
 import { actions } from '../slices';
 
-import Editor from './Editor';
-
-class ExtendedEditor extends Editor {
+class ExtendedEditor {
   static propTypes = {
-    ...Editor.propTypes,
     monacoTheme: PropTypes.string,
     fontFamly: PropTypes.string || undefined,
   };
 
   static defaultProps = {
-    ...Editor.defaultProps,
     monacoTheme: 'default',
     fontFamly: undefined,
   }
 
   constructor(props) {
-    super(props);
+    // super(props);
 
     this.options = {
       fontFamily: props.fontFamily,

@@ -1,350 +1,126 @@
 /* eslint-disable no-bitwise */
-import React, { PureComponent } from 'react';
+import React, {
+  memo,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
 
+import MonacoEditor from '@monaco-editor/react';
 import cn from 'classnames';
-import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
-import { initVimMode } from 'monaco-vim';
-import PropTypes from 'prop-types';
-import MonacoEditor from 'react-monaco-editor';
 
-import editorThemes from '../config/editorThemes';
-import editorUserTypes from '../config/editorUserTypes';
 import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
-import { addCursorListeners } from '../middlewares/Room';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
+import useRemoteCursor from '../utils/useRemoteCursor';
 
 import Loading from './Loading';
 
 let editorClipboard = '';
+// const notIncludedSyntaxHightlight = new Set(['haskell']);
 
-class Editor extends PureComponent {
-  static propTypes = {
-    gameId: PropTypes.number,
-    wordWrap: PropTypes.string,
-    lineNumbers: PropTypes.string,
-    userId: PropTypes.number,
-    locked: PropTypes.bool,
-    value: PropTypes.string,
-    editable: PropTypes.bool,
-    syntax: PropTypes.string,
-    onChange: PropTypes.func,
-    mode: PropTypes.string.isRequired,
-    mute: PropTypes.bool,
-    fontSize: PropTypes.number,
-  };
+const useOption = ({
+  wordWrap = 'off',
+  lineNumbers = 'on',
+  syntax = 'js',
+  fontSize = 16,
+  editable = false,
+  loading = false,
+}) => {
+  const options = useMemo(() => ({
+    wordWrap,
+    lineNumbers,
+    tabSize: getLanguageTabSize(syntax),
+    insertSpaces: shouldReplaceTabsWithSpaces(syntax),
+    lineNumbersMinChars: 3,
+    fontSize,
+    scrollBeyondLastLine: false,
+    selectOnLineNumbers: true,
+    minimap: {
+      enabled: false,
+    },
+    parameterHints: {
+      enabled: false,
+    },
+    readOnly: !editable || loading,
+    contextmenu: editable && !loading,
+    scrollbar: {
+      useShadows: false,
+      verticalHasArrows: true,
+      horizontalHasArrows: true,
+      vertical: 'visible',
+      horizontal: 'visible',
+      verticalScrollbarSize: 17,
+      horizontalScrollbarSize: 17,
+      arrowSize: 30,
+    },
+  }), [
+    wordWrap,
+    lineNumbers,
+    syntax,
+    fontSize,
+    editable,
+    loading,
+  ]);
 
-  static defaultProps = {
-    wordWrap: 'off',
-    lineNumbers: 'on',
-    gameId: null,
-    userId: null,
-    locked: true,
-    value: '',
-    editable: false,
-    onChange: null,
-    syntax: 'js',
-    mute: false,
-    fontSize: 16,
-  };
+  return options;
+};
 
-  // eslint-disable-next-line react/sort-comp
-  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
+const useEditor = props => {
+  const [editor, setEditor] = useState();
+  const [monaco, setMonaco] = useState();
+  // const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+  // this.statusBarHeight = lineHeight = current fontSize * 1.5
+  // this.statusBarHeight = convertRemToPixels(1) * 1.5;
 
-  ctrPlusS = null
+  useRemoteCursor(editor, monaco, props);
+  const options = useOption(props);
 
-  remoteKeys = []
+  const handleResize = useCallback(() => {
+    if (editor) {
+      editor.layout();
+    }
+  }, [editor]);
 
-  constructor(props) {
-    super(props);
-    this.statusBarRef = React.createRef();
-    const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-    // statusBarHeight = lineHeight = current fontSize * 1.5
-    this.statusBarHeight = convertRemToPixels(1) * 1.5;
-    this.options = {
-      wordWrap: props.wordWrap,
-      lineNumbers: props.lineNumbers,
-      tabSize: getLanguageTabSize(props.syntax),
-      insertSpaces: shouldReplaceTabsWithSpaces(props.syntax),
-      lineNumbersMinChars: 3,
-      fontSize: props.fontSize || 16,
-      scrollBeyondLastLine: false,
-      selectOnLineNumbers: true,
-      minimap: {
-        enabled: false,
-      },
-      parameterHints: {
-        enabled: false,
-      },
-      readOnly: !props.editable,
-      contextmenu: props.editable,
-    };
+  // if (editor) {
+  //   const model = editor.getModel();
+  //   console.log(model);
+  //
+  //   // fix flickering in editor
+  //   model.forceTokenization(model.getLineCount());
+  // }
 
-    this.state = {
-      remote: {
-        cursor: {},
-        selection: {},
-      },
-    };
-    /** @param {KeyboardEvent} e */
-    this.ctrPlusS = e => {
+  useEffect(() => {
+    handleResize();
+  }, [props.locked, handleResize]);
+
+  useEffect(() => {
+    const ctrPlusS = e => {
       if (e.key === 's' && (e.metaKey || e.ctrlKey)) e.preventDefault();
     };
-  }
 
-  async componentDidMount() {
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', ctrPlusS);
+    };
+  }, [handleResize]);
+
+  const handleEditorDidMount = (newEditor, newMonaco) => {
+    setEditor(newEditor);
+    setMonaco(newMonaco);
+
     const {
-      mode,
-      syntax,
+      editable,
+      gameMode,
       checkResult,
       toggleMuteSound,
-    } = this.props;
-
-    this.modes = {
-      default: () => null,
-      vim: () => initVimMode(this.editor, this.statusBarRef.current),
-    };
-    await this.updateHightLightForNotIncludeSyntax(syntax);
-    this.currentMode = this.modes[mode]();
-
-    if (checkResult) {
-      this.editor.addAction({
-        id: 'codebattle-check-keys',
-        label: 'Codebattle check start',
-        keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
-        run: () => {
-          if (!this.options.readOnly) {
-            checkResult();
-          }
-        },
-      });
-    }
-
-    this.editor.addAction({
-      id: 'codebattle-mute-keys',
-      label: 'Codebattle mute sound',
-      keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M],
-      run: () => {
-        const { mute } = this.props;
-        // eslint-disable-next-line no-unused-expressions
-        mute ? sound.toggle() : sound.toggle(0);
-        toggleMuteSound();
-      },
-    });
-    window.addEventListener('keydown', this.ctrPlusS);
-  }
-
-  async componentDidUpdate(prevProps, prevState) {
-    const { remote } = this.state;
-    const {
-      syntax,
-      mode,
-      editable,
-      loading = false,
-      userId,
-      gameId,
-      gameMode,
-      locked,
-      fontSize,
-    } = this.props;
+    } = props;
 
     const isBuilder = gameMode === GameRoomModes.builder;
-    const isHistory = gameMode === GameRoomModes.history;
-
-    if (!gameId || prevProps.gameId !== gameId) {
-      this.clearCursorListeners();
-      this.clearCursorListeners = () => {};
-    }
-
-    if (!isBuilder && !isHistory && gameId && prevProps.gameId !== gameId) {
-      const clearCursorListeners = addCursorListeners(
-        userId,
-        this.updateRemoteCursorPosition,
-        this.updateRemoteCursorSelection,
-      );
-
-      this.clearCursorListeners = clearCursorListeners;
-    }
-
-    if (mode !== prevProps.mode) {
-      if (this.currentMode) {
-        this.currentMode.dispose();
-      }
-      this.statusBarRef.current.innerHTML = '';
-      this.currentMode = this.modes[mode]();
-    }
-    if (prevProps.fontSize !== fontSize) {
-      this.options = {
-        ...this.options,
-        fontSize: fontSize || 16,
-      };
-      this.editor.updateOptions(this.options);
-    }
-    if (prevProps.editable !== editable || prevProps.loading !== loading) {
-      this.options = {
-        ...this.options,
-        readOnly: !editable || loading,
-        contextMenu: editable && !loading,
-        scrollbar: {
-          useShadows: false,
-          verticalHasArrows: true,
-          horizontalHasArrows: true,
-          vertical: 'visible',
-          horizontal: 'visible',
-          verticalScrollbarSize: 17,
-          horizontalScrollbarSize: 17,
-          arrowSize: 30,
-        },
-      };
-      this.editor.updateOptions(this.options);
-    }
-
-    const model = this.editor.getModel();
-
-    if (prevProps.syntax !== syntax) {
-      model.updateOptions({ tabSize: getLanguageTabSize(syntax), insertSpaces: shouldReplaceTabsWithSpaces(syntax) });
-
-      await this.updateHightLightForNotIncludeSyntax(syntax);
-    }
-
-    if (
-      prevState.remote !== remote
-        && remote.cursor.range
-        && remote.selection.range
-    ) {
-      this.remoteKeys = this.editor.deltaDecorations(this.remoteKeys, Object.values(remote));
-    }
-
-    // fix flickering in editor
-    model.forceTokenization(model.getLineCount());
-
-    if (prevProps.locked !== locked) {
-      this.handleResize();
-    }
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('keydown', this.ctrPlusS);
-
-    this.clearCursorListeners();
-  }
-
-  updateHightLightForNotIncludeSyntax = async syntax => {
-    if (this.notIncludedSyntaxHightlight.has(syntax)) {
-      const { default: HighlightRules } = await import(
-        `monaco-ace-tokenizer/lib/ace/definitions/${syntax}`
-      );
-      this.notIncludedSyntaxHightlight.delete(syntax);
-      this.monaco.languages.register({
-        id: syntax,
-      });
-      registerRulesForLanguage(syntax, new HighlightRules());
-    }
-  };
-
-  handleResize = () => this.editor.layout();
-
-  handleChangeCursorSelection = e => {
-    const {
-      editable,
-      onChangeCursorSelection,
-    } = this.props;
-
-    if (!editable) {
-      const { column, lineNumber } = this.editor.getPosition();
-      this.editor.setPosition({ lineNumber, column });
-    } else if (editable && onChangeCursorSelection) {
-      const startOffset = this.editor.getModel().getOffsetAt(e.selection.getStartPosition());
-      const endOffset = this.editor.getModel().getOffsetAt(e.selection.getEndPosition());
-      onChangeCursorSelection(startOffset, endOffset);
-    }
-  };
-
-  handleChangeCursorPosition = e => {
-    const {
-      editable,
-      onChangeCursorPosition,
-    } = this.props;
-
-    if (editable && onChangeCursorPosition) {
-      const offset = this.editor.getModel().getOffsetAt(e.position);
-      onChangeCursorPosition(offset);
-    }
-  };
-
-  updateRemoteCursorSelection = (startOffset, endOffset) => {
-    const { editable, userType } = this.props;
-    const userClassName = userType === editorUserTypes.opponent
-      ? 'cb-remote-opponent'
-      : 'cb-remote-player';
-
-    if (!editable) {
-      const startPosition = this.editor.getModel().getPositionAt(startOffset);
-      const endPosition = this.editor.getModel().getPositionAt(endOffset);
-
-      const startColumn = startPosition.column;
-      const startLineNumber = startPosition.lineNumber;
-      const endColumn = endPosition.column;
-      const endLineNumber = endPosition.lineNumber;
-
-      const selection = {
-        range: new this.monaco.Range(
-          startLineNumber,
-          startColumn,
-          endLineNumber,
-          endColumn,
-        ),
-        options: { className: `cb-editor-remote-selection ${userClassName}` },
-      };
-
-      this.setState(state => ({
-        remote: { ...state.remote, selection },
-      }));
-    }
-  }
-
-  updateRemoteCursorPosition = offset => {
-    const { editable, userType } = this.props;
-    const position = this.editor.getModel().getPositionAt(offset);
-    const userClassName = userType === editorUserTypes.opponent
-      ? 'cb-remote-opponent'
-      : 'cb-remote-player';
-
-    if (!editable) {
-      const cursor = {
-        range: new this.monaco.Range(
-          position.lineNumber,
-          position.column,
-          position.lineNumber,
-          position.column,
-        ),
-        options: { className: `cb-editor-remote-cursor ${userClassName}` },
-      };
-
-      this.setState(state => ({
-        remote: {
-          ...state.remote,
-          cursor,
-        },
-      }));
-    }
-  }
-
-  clearCursorListeners = () => {};
-
-  editorDidMount = (editor, monaco) => {
-    this.editor = editor;
-    this.monaco = monaco;
-    const {
-      editable,
-      gameMode,
-      userId,
-      gameId,
-    } = this.props;
-    const isBuilder = gameMode === GameRoomModes.builder;
-    const isHistory = gameMode === GameRoomModes.history;
 
     // Handle copy event
     // editor.onDidCopyText(event => {
@@ -354,23 +130,23 @@ class Editor extends PureComponent {
     //   event.preventDefault();
     // });
 
-    editor.onKeyDown(e => {
+    newEditor.onKeyDown(e => {
       // Custom Copy Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_C) {
-        const selection = editor.getModel().getValueInRange(editor.getSelection());
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === newMonaco.KeyCode.KEY_C) {
+        const selection = newEditor.getModel().getValueInRange(newEditor.getSelection());
         editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
 
         e.preventDefault();
       }
 
       // Custom Paste Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === monaco.KeyCode.KEY_V) {
+      if ((e.ctrlKey || e.metaKey) && e.keyCode === newMonaco.KeyCode.KEY_V) {
         if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
           const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
 
-          editor.executeEdits('custom-paste', [
+          newEditor.executeEdits('custom-paste', [
             {
-              range: editor.getSelection(),
+              range: newEditor.getSelection(),
               text: customText,
               forceMoveMarkers: true,
             },
@@ -381,74 +157,92 @@ class Editor extends PureComponent {
       }
     });
 
-    editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
-    editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
-
-    if (!isBuilder && !isHistory && gameId) {
-      const clearCursorListeners = addCursorListeners(
-        userId,
-        this.updateRemoteCursorPosition,
-        this.updateRemoteCursorSelection,
-      );
-
-      this.clearCursorListeners = clearCursorListeners;
-    }
-
     if (editable && !isBuilder) {
-      editor.focus();
+      newEditor.focus();
     }
 
-    this.editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+    newEditor.addCommand(
+      newMonaco.KeyMod.CtrlCmd | newMonaco.KeyCode.Enter,
       () => null,
     );
 
-    editor.addCommand(
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_M,
+    newEditor.addCommand(
+      newMonaco.KeyMod.CtrlCmd | newMonaco.KeyCode.KEY_M,
       () => null,
     );
 
-    window.addEventListener('resize', this.handleResize);
+    if (checkResult) {
+      newEditor.addAction({
+        id: 'codebattle-check-keys',
+        label: 'Codebattle check start',
+        keybindings: [newMonaco.KeyMod.CtrlCmd | newMonaco.KeyCode.Enter],
+        run: () => {
+          if (options.readOnly) {
+            checkResult();
+          }
+        },
+      });
+    }
+
+    newEditor.addAction({
+      id: 'codebattle-mute-keys',
+      label: 'Codebattle mute sound',
+      keybindings: [newMonaco.KeyMod.CtrlCmd | newMonaco.KeyCode.KEY_M],
+      run: () => {
+        const { mute } = props;
+        // eslint-disable-next-line no-unused-expressions
+        mute ? sound.toggle() : sound.toggle(0);
+        toggleMuteSound();
+      },
+    });
   };
 
-  render() {
+  return {
+    options,
+    handleEditorWillMount: () => {},
+    handleEditorDidMount,
+  };
+};
+
+function Editor(props) {
     const {
-      value, syntax, onChange, theme, loading = false,
-    } = this.props;
+      value,
+      syntax,
+      onChange,
+      theme,
+      loading = false,
+    } = props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
-    const statusBarClassName = cn('position-absolute px-1', {
-      'bg-dark text-white': theme === editorThemes.dark,
-      'bg-white text-dark': theme === editorThemes.light,
-    });
 
     const loadingClassName = cn('position-absolute align-items-center justify-content-center w-100 h-100', {
       'd-flex cb-loading-background': loading,
       'd-none': !loading,
     });
 
+    const {
+      options,
+      handleEditorDidMount,
+      handleEditorWillMount,
+    } = useEditor(props);
+
     return (
       <>
         <MonacoEditor
           theme={theme}
-          options={this.options}
+          options={options}
           width="100%"
           height="100%"
           language={mappedSyntax}
-          editorDidMount={this.editorDidMount}
+          beforeMount={handleEditorWillMount}
+          onMount={handleEditorDidMount}
           value={value}
           onChange={onChange}
           data-guide-id="Editor"
         />
-        <div
-          ref={this.statusBarRef}
-          className={statusBarClassName}
-          style={{ bottom: '40px' }}
-        />
         <div className={loadingClassName}><Loading /></div>
       </>
     );
-  }
 }
 
-export default Editor;
+export default memo(Editor);

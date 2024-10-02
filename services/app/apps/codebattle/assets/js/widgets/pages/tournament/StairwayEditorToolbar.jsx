@@ -8,7 +8,6 @@ import { currentUserIdSelector } from '../../selectors';
 import { actions } from '../../slices';
 import DarkModeButton from '../game/DarkModeButton';
 import GameActionButtons from '../game/GameActionButtons';
-import VimModeButton from '../game/VimModeButton';
 
 import PlayerPicker from './PlayerPicker';
 
@@ -23,7 +22,6 @@ const ModeButtons = ({ player }) => (
     role="group"
     aria-label="Editor mode"
   >
-    <VimModeButton player={player} />
     <DarkModeButton player={player} />
   </div>
 );

@@ -15,7 +15,7 @@ function DakModeButton() {
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const classNames = cn('btn btn-sm mr-2 border-left rounded-right', {
+  const classNames = cn('btn btn-sm mr-2 border rounded', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });

@@ -2,7 +2,6 @@ const path = require('path');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const webpack = require('webpack');
 
 // const env = process.env.NODE_ENV || 'development';
@@ -101,18 +100,6 @@ module.exports = {
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
       Popper: ['popper.js', 'default'],
-    }),
-    new MonacoWebpackPlugin({
-      languages: [
-        'rust',
-        'ruby',
-        'javascript',
-        'typescript',
-        'python',
-        'clojure',
-        'php',
-        'go',
-      ],
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',

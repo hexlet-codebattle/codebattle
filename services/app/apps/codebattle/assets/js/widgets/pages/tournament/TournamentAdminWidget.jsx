@@ -169,7 +169,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
 
   useEffect(() => {
     if (tournament.isLive) {
-      const channel = connectToChat(tournament.useChat)(dispatch);
+      const channel = connectToChat(tournament.useChat, 'channel')(dispatch);
 
       return () => {
         if (channel) {

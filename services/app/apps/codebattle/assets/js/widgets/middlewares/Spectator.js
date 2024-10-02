@@ -8,13 +8,12 @@ import Channel from './Channel';
 
 const playerId = Gon.getAsset('player_id');
 const tournamentId = Gon.getAsset('tournament_id');
-const channelName = `spectator:${playerId}`;
 
-let channel = new Channel(channelName, { tournamentId });
+const channel = new Channel();
 
-export const updateSpectatorChannel = (newPlayerId, newTournamentId) => {
+export const setSpectatorChannel = (newPlayerId = playerId, newTournamentId = tournamentId) => {
   const newChannelName = `spectator:${newPlayerId}`;
-  channel = new Channel(newChannelName, { tournamentId: newTournamentId });
+  channel.setupChannel(newChannelName, { tournamentId: newTournamentId });
 };
 
 const initSpectatorChannel = (dispatch, spectatorChannel) => {
@@ -52,8 +51,8 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
 // export const soundNotification = notification();
 
 export const connectToSpectator = () => dispatch => {
-  const currentSpectatorChannel = channel;
-  initSpectatorChannel(dispatch, currentSpectatorChannel);
+  setSpectatorChannel();
+  initSpectatorChannel(dispatch, channel);
 
   const handleGameCreate = payload => {
     const data = camelizeKeys(payload);
@@ -66,6 +65,6 @@ export const connectToSpectator = () => dispatch => {
     }, 10, data);
   };
 
-  return currentSpectatorChannel
+  return channel
     .addListener(channelTopics.gameCreatedTopic, handleGameCreate);
 };

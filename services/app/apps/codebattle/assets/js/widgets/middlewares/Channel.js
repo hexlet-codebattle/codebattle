@@ -10,6 +10,8 @@ const nonChannelErrorMessage = "Socket channel wasn't initialize";
 const nonPresenceErrorMessage = "Socket channel presence wasn't initialize";
 
 export default class Channel {
+  topic;
+
   listeners = {};
 
   channel;
@@ -17,22 +19,44 @@ export default class Channel {
   presence;
 
   constructor(topic, params) {
+    if (!topic) {
+      return;
+    }
+    this.setupChannel(topic, params);
+  }
+
+  setupChannel(topic, params) {
     const channel = socket.channel(
       topic,
       decamelizeKeys(params, { separator: '_' }),
     );
 
+    this.topic = topic;
     this.channel = channel;
     this.presence = new Presence(channel);
+
+    Object.keys(this.listeners).forEach(listenerTopic => {
+      const listeners = this.listeners[listenerTopic];
+      if (listeners) {
+        const newListeners = listeners.map(listener => {
+          const { cb } = listener;
+          const ref = channel.on(listenerTopic, cb);
+
+          return { ...listener, ref };
+        });
+
+        this.listeners[listenerTopic] = newListeners;
+      }
+    });
+
+    return this;
   }
 
   addListener(topic, cb, params = {}) {
-    if (!this.channel) {
-      throw new Error(nonChannelErrorMessage);
-    }
-
     const currentListeners = this.listeners[topic];
-    const newRef = this.channel.on(topic, cb);
+    const newRef = this.channel
+      ? this.channel.on(topic, cb)
+      : null;
     const newListener = { ref: newRef, callback: cb, params };
 
     if (!currentListeners) {
@@ -44,11 +68,7 @@ export default class Channel {
     return this;
   }
 
-  clearListeners(topic, params) {
-    if (!this.channel) {
-      throw new Error(nonChannelErrorMessage);
-    }
-
+  removeListeners(topic, params) {
     if (!topic) {
       return this.clear();
     }
@@ -142,6 +162,7 @@ export default class Channel {
 
     const pushInstance = this.channel.leave(...params);
 
+    this.topic = undefined;
     this.channel = undefined;
     this.presence = undefined;
 

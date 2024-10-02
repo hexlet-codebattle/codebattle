@@ -195,9 +195,9 @@ function EditorContainer({
   const editable = !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned';
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
-  const onChange = canChange ? updateEditor : noop();
-  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : () => {};
-  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : () => {};
+  const onChange = canChange ? updateEditor : noop;
+  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : noop;
+  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : noop;
 
   const editorParams = {
     userId: id,

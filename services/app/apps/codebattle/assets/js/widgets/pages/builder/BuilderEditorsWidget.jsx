@@ -30,7 +30,6 @@ import { actions } from '../../slices';
 import { taskTemplatesStates } from '../../utils/builder';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 import DakModeButton from '../game/DarkModeButton';
-import VimModeButton from '../game/VimModeButton';
 
 import AssertsOutput from './AssertsOutput';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
@@ -201,7 +200,6 @@ function BuilderEditorsWidget() {
                   role="group"
                   aria-label="Editor mode"
                 >
-                  <VimModeButton playerId={currentUserId} />
                   <DakModeButton playerId={currentUserId} />
                 </div>
               </div>

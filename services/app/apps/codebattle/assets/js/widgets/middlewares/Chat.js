@@ -5,24 +5,22 @@ import capitalize from 'lodash/capitalize';
 import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 import { getSystemMessage } from '../utils/chat';
-import getChatName from '../utils/names';
+import getChatTopic from '../utils/names';
 
 import Channel from './Channel';
 
 const isRecord = Gon.getAsset('is_record');
 
-const channel = isRecord ? null : new Channel(getChatName('channel'));
+const channel = new Channel();
 
 export const pushCommandTypes = {
   cleanBanned: 'clead_banned',
 };
 
-const establishChat = () => dispatch => {
-  const currentChannel = channel;
+const establishChat = page => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  currentChannel.join().receive('ok', data => {
-    const page = getChatName('page');
+  channel.join().receive('ok', data => {
     const greetingMessage = getSystemMessage({
       text: `Joined channel: ${capitalize(page)}`,
       status: 'success',
@@ -33,23 +31,25 @@ const establishChat = () => dispatch => {
     dispatch(actions.updateChatChannelState(true));
   });
 
-  currentChannel.onError(() => dispatch(actions.updateChatChannelState(false)));
+  channel.onError(() => dispatch(actions.updateChatChannelState(false)));
 
   const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
   const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
   const handleNewMessage = camelizeKeysAndDispatch(actions.newChatMessage);
   const handleUserbanned = camelizeKeysAndDispatch(actions.banUserChat);
 
-  return currentChannel
+  return channel
     .addListener(channelTopics.chatUserJoinedTopic, handleUserJoined)
     .addListener(channelTopics.chatUserLeftTopic, handleUserLeft)
     .addListener(channelTopics.chatUserNewMsgTopic, handleNewMessage)
     .addListener(channelTopics.chatUserBannedTopic, handleUserbanned);
 };
 
-export const connectToChat = (useChat = true) => dispatch => {
+export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => dispatch => {
   if (!isRecord && useChat) {
-    const currentChannel = establishChat()(dispatch);
+    const page = getChatTopic(chatPage, chatId);
+    channel.setupChannel(page);
+    const currentChannel = establishChat(page)(dispatch);
 
     return currentChannel;
   }

@@ -11,7 +11,6 @@ import GameActionButtons from './GameActionButtons';
 import GameResultIcon from './GameResultIcon';
 import TournamentUserGameScore from './TournamentUserGameScore';
 import UserGameScore from './UserGameScore';
-import VimModeButton from './VimModeButton';
 
 const ModeButtons = ({ player }) => (
   <div
@@ -19,7 +18,6 @@ const ModeButtons = ({ player }) => (
     role="group"
     aria-label="Editor mode"
   >
-    <VimModeButton playerId={player.id} />
     <DarkModeButton playerId={player.id} />
   </div>
 );

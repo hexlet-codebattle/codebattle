@@ -12,11 +12,11 @@ import {
   clearExpiredPrivateRooms,
   updatePrivateRooms,
 } from './chatRoom';
-import getChatName from './names';
+import getChatTopic from './names';
 
-const useChatRooms = key => {
+const useChatRooms = (pageName = 'channel', chatId) => {
   const dispatch = useDispatch();
-  const pageName = getChatName(key);
+  const page = getChatTopic(pageName, chatId);
   const rooms = useSelector(selectors.roomsSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
 
@@ -27,14 +27,14 @@ const useChatRooms = key => {
 
   useEffect(() => {
     clearExpiredPrivateRooms(storageKey);
-    const existingPrivateRooms = getPrivateRooms(pageName, storageKey);
+    const existingPrivateRooms = getPrivateRooms(page, storageKey);
     dispatch(actions.setPrivateRooms(existingPrivateRooms));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const privateRooms = filterPrivateRooms(rooms);
-    updatePrivateRooms(privateRooms, pageName, storageKey);
+    updatePrivateRooms(privateRooms, page, storageKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rooms, storageKey]);
 

@@ -1,4 +1,3 @@
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import some from 'lodash/some';
 
@@ -9,21 +8,21 @@ import { calculateExpireDate } from '../utils/chatRoom';
 
 import Channel from './Channel';
 
-const channelName = 'lobby';
-const isRecord = Gon.getAsset('is_record');
-const channel = !isRecord ? new Channel(channelName) : null;
+const channel = new Channel();
 
 export const fetchState = currentUserId => dispatch => {
-  const currentChannel = channel;
+  const channelName = 'lobby';
+  channel.setupChannel(channelName);
+
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  currentChannel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
-  currentChannel.onError(() => {
+  channel.onError(() => {
     dispatch(actions.updateLobbyChannelState(false));
   });
 
-  currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
+  channel.onMessage((_event, payload) => camelizeKeys(payload));
 
   const handleGameUpsert = data => {
     const {
@@ -50,7 +49,7 @@ export const fetchState = currentUserId => dispatch => {
     dispatch(actions.updateCheckResult(payload));
   };
 
-  return currentChannel
+  return channel
     .addListener(channelTopics.lobbyGameUpsertTopic, handleGameUpsert)
     .addListener(channelTopics.lobbyGameCheckStartedTopic, handleGameCheckStarted)
     .addListener(

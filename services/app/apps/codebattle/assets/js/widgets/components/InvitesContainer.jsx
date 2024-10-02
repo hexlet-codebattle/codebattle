@@ -43,9 +43,11 @@ function InvitesContainer() {
 
   useEffect(() => {
     dispatch(initInvites(currentUserId));
-    const clearPresence = initPresence(followId)(dispatch);
+    const channel = initPresence(followId)(dispatch);
 
-    return clearPresence;
+    return () => {
+      channel.leave();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

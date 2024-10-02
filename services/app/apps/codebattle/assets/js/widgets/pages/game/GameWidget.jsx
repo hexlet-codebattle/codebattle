@@ -4,7 +4,8 @@ import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
-import ExtendedEditor from '../../components/ExtendedEditor';
+// import ExtendedEditor from '../../components/ExtendedEditor';
+import ExtendedEditor from '../../components/Editor';
 import RoomContext from '../../components/RoomContext';
 import BattleRoomViewModes from '../../config/battleRoomViewModes';
 import { roomStateSelector } from '../../machines/selectors';

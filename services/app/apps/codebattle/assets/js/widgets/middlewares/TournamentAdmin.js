@@ -11,11 +11,12 @@ import { actions } from '../slices';
 import Channel from './Channel';
 
 const tournamentId = Gon.getAsset('tournament_id');
-let channel;
+const channel = new Channel();
 
 export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament_admin:${newTournamentId}`;
-  channel = new Channel(newChannelName);
+  channel.setupChannel(newChannelName);
+  return channel;
 };
 
 const initTournamentChannel = dispatch => {
@@ -58,7 +59,6 @@ const initTournamentChannel = dispatch => {
 
 export const connectToTournament = (_machine, newTournamentId) => dispatch => {
   setTournamentChannel(newTournamentId);
-  const currentChannel = channel;
   initTournamentChannel(dispatch);
 
   const handleUpdate = response => {
@@ -128,7 +128,7 @@ export const connectToTournament = (_machine, newTournamentId) => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
   };
 
-  return currentChannel
+  return channel
     .addListener('tournament:update', handleUpdate)
     .addListener('tournament:matches:update', handleMatchesUpdate)
     .addListener('tournament:players:update', handlePlayersUpdate)

@@ -24,7 +24,6 @@ import * as selectors from '../../selectors';
 import DakModeButton from '../game/DarkModeButton';
 import EditorResultIcon from '../game/EditorResultIcon';
 import GameResultIcon from '../game/GameResultIcon';
-import VimModeButton from '../game/VimModeButton';
 
 const fontSizeDefault = Number(
   window.localStorage.getItem('CodebattleSpectatorEditorFontSize') || '20',
@@ -142,7 +141,6 @@ function SpectatorEditor({
                       role="group"
                       aria-label="Editor mode"
                     >
-                      <VimModeButton playerId={currentUserId} />
                       <DakModeButton playerId={currentUserId} />
                     </div>
                     <div

@@ -36,13 +36,11 @@ import { addWaitingRoomListeners } from './WaitingRoom';
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
-let channel;
+const channel = new Channel();
 
 export const setGameChannel = (newGameId = gameId) => {
   const newChannelName = `game:${newGameId}`;
-  channel = !isRecord && newGameId ? new Channel(newChannelName) : null;
-  console.log(channel);
-  return channel;
+  return channel.setupChannel(!isRecord && newGameId ? newChannelName : undefined);
 };
 
 const initEditors = dispatch => (playbookStatusCode, players) => {
@@ -127,18 +125,18 @@ const initPlaybook = dispatch => data => {
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (gameRoomService, waitingRoomService, currentChannel) => dispatch => {
+const initGameChannel = (gameRoomService, waitingRoomService) => dispatch => {
   const onJoinFailure = payload => {
     gameRoomService.send('REJECT_LOADING_GAME', { payload });
     gameRoomService.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
-  currentChannel.onError(() => {
+  channel.onError(() => {
     gameRoomService.send('FAILURE');
   });
 
-  currentChannel.onMessage((_event, payload) => camelizeKeys(payload));
+  channel.onMessage((_event, payload) => camelizeKeys(payload));
 
   const onJoinSuccess = response => {
     if (response.error) {
@@ -198,7 +196,7 @@ const initGameChannel = (gameRoomService, waitingRoomService, currentChannel) =>
     });
   };
 
-  currentChannel
+  channel
     .join()
     .receive('ok', onJoinSuccess)
     .receive('error', onJoinFailure);
@@ -323,9 +321,7 @@ export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
 export const soundNotification = notification();
 
 export const addCursorListeners = (userId, onChangePosition, onChangeSelection) => {
-  const currentGameChannel = channel;
-
-  if (!userId || !currentGameChannel) {
+  if (!userId) {
     return () => {};
   }
 
@@ -345,7 +341,7 @@ export const addCursorListeners = (userId, onChangePosition, onChangeSelection) 
 
   const listenerParams = { userId };
 
-  currentGameChannel
+  channel
     .addListener(
       channelTopics.editorCursorPositionTopic,
       handleNewCursorPosition,
@@ -358,13 +354,13 @@ export const addCursorListeners = (userId, onChangePosition, onChangeSelection) 
     );
 
   return () => {
-    if (currentGameChannel) {
-      currentGameChannel
-        .clearListeners(
+    if (channel) {
+      channel
+        .removeListeners(
           channelTopics.editorCursorPositionTopic,
           listenerParams,
         )
-        .clearListeners(
+        .removeListeners(
           channelTopics.editorCursorSelectionTopic,
           listenerParams,
         );
@@ -373,8 +369,6 @@ export const addCursorListeners = (userId, onChangePosition, onChangeSelection) 
 };
 
 export const activeEditorReady = (service, isBanned) => {
-  console.log(channel);
-  const currentGameChannel = channel;
   const listenerParams = { userId: service.machine.context.userId };
 
   if (isBanned) {
@@ -396,7 +390,7 @@ export const activeEditorReady = (service, isBanned) => {
     service.send('receive_check_result', data);
   };
 
-  currentGameChannel
+  channel
     .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
     .addListener(
       channelTopics.userCheckCompleteTopic,
@@ -404,19 +398,16 @@ export const activeEditorReady = (service, isBanned) => {
     );
 
   return () => {
-    currentGameChannel
-      .clearListeners(channelTopics.userStartCheckTopic, listenerParams)
-      .clearListeners(channelTopics.userCheckCompleteTopic, listenerParams);
+    channel
+      .removeListeners(channelTopics.userStartCheckTopic, listenerParams)
+      .removeListeners(channelTopics.userCheckCompleteTopic, listenerParams);
   };
 };
 
 export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRedirect = false }) => (dispatch, getState) => {
-  const currentGameChannel = channel;
-
   initGameChannel(
     gameRoomService,
     waitingRoomService,
-    currentGameChannel,
   )(dispatch);
 
   const handleNewEditorData = data => {
@@ -594,12 +585,12 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
   };
 
   addWaitingRoomListeners(
-    currentGameChannel,
+    channel,
     waitingRoomService,
     { cancelRedirect },
   )(dispatch, getState);
 
-  return currentGameChannel
+  return channel
     .addListener(channelTopics.editorDataTopic, handleNewEditorData)
     .addListener(
       channelTopics.userStartCheckTopic,

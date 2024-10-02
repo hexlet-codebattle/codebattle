@@ -10,11 +10,12 @@ import Channel from './Channel';
 import { addWaitingRoomListeners } from './WaitingRoom';
 
 const tournamentId = Gon.getAsset('tournament_id');
-let channel;
+const channel = new Channel();
 
 export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
-  channel = new Channel(newChannelName);
+  channel.setupChannel(newChannelName);
+  return channel;
 };
 
 const initTournamentChannel = (waitingRoomMachine, currentChannel) => dispatch => {
@@ -66,8 +67,7 @@ const initTournamentChannel = (waitingRoomMachine, currentChannel) => dispatch =
 
 export const connectToTournament = (waitingRoomMachine, newTournamentId) => dispatch => {
   setTournamentChannel(newTournamentId);
-  const currentChannel = channel;
-  initTournamentChannel(waitingRoomMachine, currentChannel)(dispatch);
+  initTournamentChannel(waitingRoomMachine, channel)(dispatch);
 
   const handleUpdate = response => {
     dispatch(actions.updateTournamentData(response.tournament));
@@ -141,12 +141,12 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => disp
   };
 
   addWaitingRoomListeners(
-    currentChannel,
+    channel,
     waitingRoomMachine,
     { cancelRedirect: true },
   )(dispatch);
 
-  return currentChannel
+  return channel
     .addListener('tournament:update', handleUpdate)
     .addListener('tournament:matches:update', handleMatchesUpdate)
     .addListener('tournament:players:update', handlePlayersUpdate)

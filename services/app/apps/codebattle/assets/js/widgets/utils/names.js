@@ -16,15 +16,15 @@ const prefixes = {
   },
 };
 
-const getChatName = entityName => {
+const getChatTopic = (entityName, newChatId = chatId) => {
   if (tournamentId) {
     return `${prefixes[entityName].tournament}_${tournamentId}`;
   }
-  if (chatId) {
-    return `${prefixes[entityName].game}_${chatId}`;
+  if (newChatId) {
+    return `${prefixes[entityName].game}_${newChatId}`;
   }
 
   return prefixes[entityName].lobby;
 };
 
-export default getChatName;
+export default getChatTopic;

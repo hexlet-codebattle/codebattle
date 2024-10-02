@@ -133,7 +133,7 @@ function LobbyChat({
   );
 
   useEffect(() => {
-    const channel = connectToChat();
+    const channel = connectToChat(true, 'channel');
 
     return () => {
       if (channel) {

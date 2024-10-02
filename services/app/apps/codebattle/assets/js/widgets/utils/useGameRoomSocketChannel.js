@@ -35,7 +35,7 @@ const useGameRoomSocketChannel = (pageName, machines) => {
     GameRoomActions.connectToGame(machines.mainService, machines.waitingRoomService, options)(
       dispatch,
     );
-    const chatChannel = ChatActions.connectToChat(useChat)(dispatch);
+    const chatChannel = ChatActions.connectToChat(useChat, 'channel')(dispatch);
 
     const clearChannels = () => {
       clearGameChannel();
