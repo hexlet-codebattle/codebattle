@@ -694,7 +694,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 2}
 
     ##### match players
     Tournament.Server.update_waiting_room_state(tournament.id, %{

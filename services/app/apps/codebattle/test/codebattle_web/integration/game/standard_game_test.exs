@@ -78,7 +78,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -92,7 +91,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -124,7 +122,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -153,7 +150,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -231,7 +227,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -245,7 +240,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -277,7 +271,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()
@@ -306,7 +299,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return 0;
              };
 
-             // use `console.log` for debug
              module.exports = solution;
              """
              |> String.trim()

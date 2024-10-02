@@ -48,7 +48,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
@@ -96,7 +96,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 3,
                  "total_pages" => 1
                }
@@ -154,7 +154,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
@@ -277,7 +277,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
@@ -325,7 +325,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 3,
                  "total_pages" => 1
                }
@@ -383,7 +383,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
@@ -455,7 +455,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
@@ -503,7 +503,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 3,
                  "total_pages" => 1
                }
@@ -561,7 +561,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
                "items" => items,
                "page_info" => %{
                  "page_number" => 1,
-                 "page_size" => 10,
+                 "page_size" => 15,
                  "total_entries" => 2,
                  "total_pages" => 1
                }
