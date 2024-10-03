@@ -45,7 +45,7 @@ defmodule Codebattle.TasksImporter do
     File.mkdir_p!(@tmp_basedir)
     dir_path = Temp.mkdir!(%{basedir: @tmp_basedir, prefix: to_string(:rand.uniform(10_000_000))})
 
-    response = Req.get!(@issues_link) |> dbg()
+    response = Req.get!(@issues_link)
 
     file_name = Path.join(dir_path, "issues.tar.gz")
     File.write!(file_name, response.body)

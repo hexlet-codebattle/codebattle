@@ -29,6 +29,7 @@ defmodule CodebattleWeb.ConnCase do
       import Phoenix.ConnTest
       import Phoenix.LiveViewTest
       import CodebattleWeb.Factory
+      import Codebattle.OauthTestHelpers
 
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.Game.{Player}

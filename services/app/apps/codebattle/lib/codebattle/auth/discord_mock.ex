@@ -67,11 +67,11 @@ defmodule Codebattle.Auth.DiscordMock do
         ],
         _options
       ) do
-    %{body: Jason.encode!(@body_email_nil)}
+    %{body: @body_email_nil}
   end
 
   def get!("https://discord.com/api/users/@me", _headers, _options) do
-    %{body: Jason.encode!(@valid_body)}
+    %{body: @valid_body}
   end
 
   @doc """
@@ -85,10 +85,10 @@ defmodule Codebattle.Auth.DiscordMock do
         _headers,
         _options
       ) do
-    %{body: Jason.encode!(%{error: "error"})}
+    %{body: %{error: "error"}}
   end
 
   def post!(_url, _body, _headers, _options) do
-    %{body: Jason.encode!(%{access_token: "asfd"})}
+    %{body: %{access_token: "asfd"}}
   end
 end

@@ -47,9 +47,6 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
-config :codebattle, github_oauth_client: Req
-config :codebattle, discord_oauth_client: Req
-
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),

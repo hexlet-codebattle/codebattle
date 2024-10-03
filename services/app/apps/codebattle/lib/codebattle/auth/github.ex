@@ -5,14 +5,8 @@ defmodule Codebattle.Auth.Github do
   """
 
   @github_url "https://github.com/login/oauth/"
-  @github_auth_url @github_url <> "access_token?"
-
-  @http_client Application.compile_env(:codebattle, :github_oauth_client)
-
-  @doc """
-  `http_client/0` injects a TestDouble of Req in Test
-  """
-  def http_client, do: @http_client
+  @github_auth_url "https://github.com/login/oauth/access_token?"
+  @github_user_url "https://api.github.com/user"
 
   @doc """
   `client_id/0` returns a `String` of the `GITHUB_CLIENT_ID`
@@ -51,15 +45,21 @@ defmodule Codebattle.Auth.Github do
   """
   def github_auth(code) do
     query =
-      URI.encode_query(%{
-        "client_id" => client_id(),
-        "client_secret" => client_secret(),
-        "code" => code
-      })
+      @github_auth_url <>
+        URI.encode_query(%{
+          "client_id" => client_id(),
+          "client_secret" => client_secret(),
+          "code" => code
+        })
 
-    http_client().post!(@github_auth_url <> query,
-      headers: ["content-type": "application/x-www-form-urlencoded"]
-    )
+    opts =
+      Keyword.merge(
+        Application.get_env(:codebattle, :auth_req_options, []),
+        headers: ["content-type": "application/x-www-form-urlencoded"]
+      )
+
+    query
+    |> Req.post!(opts)
     |> Map.get(:body)
     |> URI.decode_query()
     |> check_authenticated
@@ -73,28 +73,29 @@ defmodule Codebattle.Auth.Github do
   defp check_authenticated(error), do: {:error, error}
 
   defp get_user_details(access_token) do
-    http_client().get!("https://api.github.com/user",
-      #  https://developer.github.com/v3/#user-agent-required
-      headers: [
-        "user-agent": "Codebattle",
-        authorization: "token #{access_token}"
-      ]
-    )
+    opts =
+      Keyword.merge(
+        Application.get_env(:codebattle, :auth_req_options, []),
+        headers: [
+          "user-agent": "Codebattle",
+          authorization: "token #{access_token}"
+        ]
+      )
+
+    @github_user_url
+    |> Req.get!(opts)
     |> Map.get(:body)
-    # |> Jason.decode!()
     |> set_user_details(access_token)
   end
 
   defp get_primary_email(access_token) do
-    http_client().get!("https://api.github.com/user/emails",
-      #  https://developer.github.com/v3/#user-agent-required
+    Req.get!("https://api.github.com/user/emails",
       headers: [
         "user-agent": "Codebattle",
         authorization: "token #{access_token}"
       ]
     )
     |> Map.get(:body)
-    # |> Jason.decode!()
     |> Enum.find_value(&if &1["primary"], do: &1["email"])
   end
 

@@ -6,13 +6,7 @@ defmodule Codebattle.Auth.Discord do
 
   @discord_auth_url "https://discord.com/oauth2/authorize"
   @discord_token_url "https://discord.com/api/v10/oauth2/token"
-
-  @http_client Application.compile_env(:codebattle, :discord_oauth_client)
-
-  @doc """
-  `http_client/0` injects a TestDouble of Req in Test
-  """
-  def http_client, do: @http_client
+  @discord_user_url "https://discord.com/api/users/@me"
 
   @doc """
   `client_id/0` returns a `String` of the `DISCORD_CLIENT_ID`
@@ -52,23 +46,23 @@ defmodule Codebattle.Auth.Discord do
   Bad authentication codes will return a tuple with `:error` and an error map.
   """
   def discord_auth(code, redirect_uri) do
-    query =
-      URI.encode_query(%{
-        client_id: client_id(),
-        client_secret: client_secret(),
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: redirect_uri
-      })
+    opts =
+      Keyword.merge(
+        Application.get_env(:codebattle, :auth_req_options, []),
+        form: %{
+          client_id: client_id(),
+          client_secret: client_secret(),
+          grant_type: "authorization_code",
+          code: code,
+          redirect_uri: redirect_uri
+        }
+      )
 
-    http_client().post!(@discord_token_url <> query,
-      headers: [
-        "content-type": "application/x-www-form-urlencoded"
-      ]
-    )
+    @discord_token_url
+    |> Req.post!(opts)
     |> Map.get(:body)
     |> URI.decode_query()
-    |> check_authenticated
+    |> check_authenticated()
   end
 
   defp check_authenticated(%{"access_token" => access_token}) do
@@ -78,21 +72,24 @@ defmodule Codebattle.Auth.Discord do
   defp check_authenticated(error), do: {:error, error}
 
   defp get_user_details(access_token) do
-    http_client().get!("https://discord.com/api/users/@me",
-      headers: [
-        "user-agent": "Codebattle",
-        authorization: "Bearer #{access_token}"
-      ]
-    )
+    opts =
+      Keyword.merge(
+        Application.get_env(:codebattle, :auth_req_options, []),
+        headers: [
+          "user-agent": "Codebattle",
+          authorization: "Bearer #{access_token}"
+        ]
+      )
+
+    @discord_user_url
+    |> Req.get!(opts)
     |> Map.get(:body)
     |> set_user_details()
   end
 
-  defp set_user_details({:ok, profile}) do
+  defp set_user_details(profile) do
     atom_key_map = for {key, val} <- profile, into: %{}, do: {String.to_atom(key), val}
 
     {:ok, atom_key_map}
   end
-
-  defp set_user_details({:error, reason}), do: {:error, reason}
 end
