@@ -23,7 +23,7 @@ function UserGameScore({ userId }) {
 
   return (
     <div className={scoreResultClass}>
-      Score:
+      <span className="d-none d-lg-flex d-md-flex">Score:</span>
       {score}
     </div>
   );
