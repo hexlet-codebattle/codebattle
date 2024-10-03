@@ -151,6 +151,11 @@ em-emoji-picker {
   border: 2px solid #d9d9d9;
 }
 
+.border-winner {
+  border: 2px solid !important;
+  border-color: $gold !important;
+}
+
 .min-h-100 {
   min-height: 100%;
 }

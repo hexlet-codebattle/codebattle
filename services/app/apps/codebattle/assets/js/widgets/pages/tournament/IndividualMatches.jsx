@@ -76,19 +76,19 @@ const getTitleByRoundType = (type, playersCount) => {
 const getLinkParams = (match, currentUserId) => {
   const isWinner = match.winnerId === currentUserId;
   const isParticipant = match.playerIds.includes(currentUserId);
-  const cardClassName = 'p-1 border border-success';
+  const cardClassName = 'p-1 border rounded-lg';
 
   switch (true) {
     case match.state === 'waiting' && isParticipant:
-      return ['Wait', cn(cardClassName, 'bg-warning')];
+      return ['Wait', cn(cardClassName, 'border-warning')];
     case (match.state === 'playing' && isParticipant):
-      return ['Join', cn(cardClassName, 'bg-winner')];
+      return ['Join', cn(cardClassName, 'border-winner')];
     case isWinner:
-      return ['Show', cn(cardClassName, 'bg-winner')];
+      return ['Show', cn(cardClassName, 'border-winner')];
     case isParticipant:
-      return ['Show', cn(cardClassName, 'x-bg-gray')];
+      return ['Show', cn(cardClassName, 'x-bg-gray border-secondary')];
     default:
-      return ['Show', cardClassName];
+      return ['Show', cn(cardClassName, 'border-gray')];
   }
 };
 
