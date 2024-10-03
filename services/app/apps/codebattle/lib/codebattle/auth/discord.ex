@@ -54,16 +54,16 @@ defmodule Codebattle.Auth.Discord do
   def discord_auth(code, redirect_uri) do
     query =
       URI.encode_query(%{
-        "client_id": client_id(),
-        "client_secret": client_secret(),
-        "grant_type": "authorization_code",
-        "code": code,
-        "redirect_uri": redirect_uri
+        client_id: client_id(),
+        client_secret: client_secret(),
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirect_uri
       })
 
     http_client().post!(@discord_token_url <> query,
       headers: [
-        "content-type": "application/x-www-form-urlencoded",
+        "content-type": "application/x-www-form-urlencoded"
       ]
     )
     |> Map.get(:body)
@@ -81,7 +81,7 @@ defmodule Codebattle.Auth.Discord do
     http_client().get!("https://discord.com/api/users/@me",
       headers: [
         "user-agent": "Codebattle",
-        "authorization": "Bearer #{access_token}",
+        authorization: "Bearer #{access_token}"
       ]
     )
     |> Map.get(:body)

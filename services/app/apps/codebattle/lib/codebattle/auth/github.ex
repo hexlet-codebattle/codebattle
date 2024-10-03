@@ -77,7 +77,7 @@ defmodule Codebattle.Auth.Github do
       #  https://developer.github.com/v3/#user-agent-required
       headers: [
         "user-agent": "Codebattle",
-        "authorization": "token #{access_token}",
+        authorization: "token #{access_token}"
       ]
     )
     |> Map.get(:body)
@@ -90,7 +90,7 @@ defmodule Codebattle.Auth.Github do
       #  https://developer.github.com/v3/#user-agent-required
       headers: [
         "user-agent": "Codebattle",
-        "authorization": "token #{access_token}",
+        authorization: "token #{access_token}"
       ]
     )
     |> Map.get(:body)
