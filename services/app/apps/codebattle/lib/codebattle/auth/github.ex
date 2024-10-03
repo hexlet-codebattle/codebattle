@@ -57,7 +57,9 @@ defmodule Codebattle.Auth.Github do
         "code" => code
       })
 
-    http_client().post!(@github_auth_url <> query, "")
+    http_client().post!(@github_auth_url <> query,
+      headers: ["content-type": "application/x-www-form-urlencoded"]
+    )
     |> Map.get(:body)
     |> URI.decode_query()
     |> check_authenticated
@@ -71,24 +73,28 @@ defmodule Codebattle.Auth.Github do
   defp check_authenticated(error), do: {:error, error}
 
   defp get_user_details(access_token) do
-    http_client().get!("https://api.github.com/user", [
+    http_client().get!("https://api.github.com/user",
       #  https://developer.github.com/v3/#user-agent-required
-      {"User-Agent", "Codebattle"},
-      {"Authorization", "token #{access_token}"}
-    ])
+      headers: [
+        "user-agent": "Codebattle",
+        "authorization": "token #{access_token}",
+      ]
+    )
     |> Map.get(:body)
-    |> Jason.decode!()
+    # |> Jason.decode!()
     |> set_user_details(access_token)
   end
 
   defp get_primary_email(access_token) do
-    http_client().get!("https://api.github.com/user/emails", [
+    http_client().get!("https://api.github.com/user/emails",
       #  https://developer.github.com/v3/#user-agent-required
-      {"User-Agent", "Codebattle"},
-      {"Authorization", "token #{access_token}"}
-    ])
+      headers: [
+        "user-agent": "Codebattle",
+        "authorization": "token #{access_token}",
+      ]
+    )
     |> Map.get(:body)
-    |> Jason.decode!()
+    # |> Jason.decode!()
     |> Enum.find_value(&if &1["primary"], do: &1["email"])
   end
 

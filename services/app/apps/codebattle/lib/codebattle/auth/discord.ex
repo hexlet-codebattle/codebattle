@@ -54,18 +54,20 @@ defmodule Codebattle.Auth.Discord do
   def discord_auth(code, redirect_uri) do
     query =
       URI.encode_query(%{
-        client_id: client_id(),
-        client_secret: client_secret(),
-        grant_type: "authorization_code",
-        code: code,
-        redirect_uri: redirect_uri
+        "client_id": client_id(),
+        "client_secret": client_secret(),
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": redirect_uri
       })
 
-    http_client().post!(@discord_token_url, query, [
-      {"Content-Type", "application/x-www-form-urlencoded"}
-    ])
+    http_client().post!(@discord_token_url <> query,
+      headers: [
+        "content-type": "application/x-www-form-urlencoded",
+      ]
+    )
     |> Map.get(:body)
-    |> Jason.decode!()
+    |> URI.decode_query()
     |> check_authenticated
   end
 
@@ -76,12 +78,13 @@ defmodule Codebattle.Auth.Discord do
   defp check_authenticated(error), do: {:error, error}
 
   defp get_user_details(access_token) do
-    http_client().get!("https://discord.com/api/users/@me", [
-      {"User-Agent", "Codebattle"},
-      {"Authorization", "Bearer #{access_token}"}
-    ])
+    http_client().get!("https://discord.com/api/users/@me",
+      headers: [
+        "user-agent": "Codebattle",
+        "authorization": "Bearer #{access_token}",
+      ]
+    )
     |> Map.get(:body)
-    |> Jason.decode()
     |> set_user_details()
   end
 
