@@ -15,7 +15,7 @@ function UserGameScore({ userId }) {
   }
 
   const score = results[userId];
-  const scoreResultClass = cn('ml-2', {
+  const scoreResultClass = cn('ml-2 text-center', {
     'cb-game-score-won': winnerId === userId,
     'cb-game-score-lost': winnerId !== null && winnerId !== userId,
     'cb-game-score-draw': winnerId === null,
