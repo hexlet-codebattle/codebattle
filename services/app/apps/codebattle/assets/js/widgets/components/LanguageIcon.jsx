@@ -3,11 +3,15 @@ import React from 'react';
 import ClojureOriginalIcon from 'react-devicons/clojure/original';
 import CppOriginalIcon from 'react-devicons/cplusplus/original';
 import CsharpOriginalIcon from 'react-devicons/csharp/original';
+import CssOriginalIcon from 'react-devicons/css3/original';
 import DartOriginalIcon from 'react-devicons/dart/original';
 import GolangOriginalIcon from 'react-devicons/go/original';
 import HaskellOriginalIcon from 'react-devicons/haskell/original';
 import JavaOriginalIcon from 'react-devicons/java/original';
+import LessOriginalIcon from 'react-devicons/less/plain-wordmark';
 import NodejsPlainIcon from 'react-devicons/nodejs/plain';
+import SassOriginalIcon from 'react-devicons/sass/original';
+import StylusOriginalIcon from 'react-devicons/stylus/original';
 import TypescriptOriginalIcon from 'react-devicons/typescript/original';
 
 import ElixirOriginalIcon from './icons/ElixirOriginalIcon';
@@ -33,6 +37,10 @@ const iconRenderers = {
   ruby: className => <RubyOriginalIcon className={className} />,
   rust: className => <RustOriginalIcon className={className} size="1.125em" />,
   ts: className => <TypescriptOriginalIcon className={className} size="1.125em" />,
+  css: className => <CssOriginalIcon className={className} size="1.125em" />,
+  stylus: className => <StylusOriginalIcon className={className} size="1.185em" />,
+  less: className => <LessOriginalIcon className={className} size="1.135em" />,
+  sass: className => <SassOriginalIcon className={className} size="1.135em" />,
   typescript: className => <TypescriptOriginalIcon className={className} size="1.125em" />,
   java: className => (
     <JavaOriginalIcon

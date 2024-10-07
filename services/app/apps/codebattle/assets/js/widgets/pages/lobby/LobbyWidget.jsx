@@ -304,7 +304,7 @@ const createBasicGameBtnClassName = cn(
 
 const createCssGameBtnClassName = cn(
   createBtnClassName,
- 'btn-secondary',
+ 'btn-secondary mt-2',
 );
 
 const CreateCssGameButton = ({ onClick, isOnline }) => (

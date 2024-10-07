@@ -7,10 +7,12 @@ import React, {
   useMemo,
 } from 'react';
 
-import MonacoEditor from '@monaco-editor/react';
+import MonacoEditor, { loader } from '@monaco-editor/react';
 import cn from 'classnames';
-// import * as monacoLib from 'monaco-editor';
 
+import haskellProvider from '../config/editor/haskell';
+import sassProvider from '../config/editor/sass';
+import stylusProvider from '../config/editor/stylus';
 import GameRoomModes from '../config/gameModes';
 import languages from '../config/languages';
 import sound from '../lib/sound';
@@ -19,10 +21,27 @@ import useRemoteCursor from '../utils/useRemoteCursor';
 
 import Loading from './Loading';
 
-// loader.config({ monaco: monacoLib });
+const editorPlaceholder = 'Please! Help me!!!';
+const monacoVersion = '0.52.0';
+
+loader.config({
+  paths: {
+    vs: `https://cdn.jsdelivr.net/npm/monaco-editor@${monacoVersion}/min/vs`,
+  },
+});
+
+loader.init().then(monaco => {
+  monaco.languages.register({ id: 'haskell', aliases: ['haskell'] });
+  monaco.languages.setMonarchTokensProvider('haskell', haskellProvider);
+
+  monaco.languages.register({ id: 'stylus', aliases: ['stylus'] });
+  monaco.languages.setMonarchTokensProvider('stylus', stylusProvider);
+
+  monaco.languages.register({ id: 'scss', aliases: ['scss'] });
+  monaco.languages.setMonarchTokensProvider('scss', sassProvider);
+});
 
 let editorClipboard = '';
-// const notIncludedSyntaxHightlight = new Set(['haskell']);
 
 const useOption = ({
   wordWrap = 'off',
@@ -33,6 +52,7 @@ const useOption = ({
   loading = false,
 }) => {
   const options = useMemo(() => ({
+    placeholder: editorPlaceholder,
     wordWrap,
     lineNumbers,
     tabSize: getLanguageTabSize(syntax),
@@ -89,7 +109,6 @@ const useEditor = props => {
 
   // if (editor) {
   //   const model = editor.getModel();
-  //   console.log(model);
   //
   //   // fix flickering in editor
   //   model.forceTokenization(model.getLineCount());
@@ -111,6 +130,8 @@ const useEditor = props => {
       window.removeEventListener('keydown', ctrPlusS);
     };
   }, [handleResize]);
+
+  const handleEditorWillMount = () => {};
 
   const handleEditorDidMount = (newEditor, newMonaco) => {
     setEditor(newEditor);
@@ -202,7 +223,7 @@ const useEditor = props => {
 
   return {
     options,
-    handleEditorWillMount: () => {},
+    handleEditorWillMount,
     handleEditorDidMount,
   };
 };

@@ -24,7 +24,7 @@ const Players = memo(({ players, isBot, gameId }) => {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
         <div className="d-flex align-items-center">
-          <UserInfo user={players[0]} />
+          <UserInfo user={players[0]} lang={players[0].editorLang} hideOnlineIndicator />
           <OverlayTrigger
             overlay={<Tooltip id={tooltipId}>{tooltipInfo}</Tooltip>}
             placement="right"
@@ -44,6 +44,7 @@ const Players = memo(({ players, isBot, gameId }) => {
         <div className="d-flex flex-column position-relative">
           <UserInfo
             user={players[0]}
+            lang={players[0].editorLang}
             hideOnlineIndicator
             loading={players[0].checkResult.status === 'started'}
           />
@@ -54,6 +55,7 @@ const Players = memo(({ players, isBot, gameId }) => {
         <div className="d-flex flex-column position-relative">
           <UserInfo
             user={players[1]}
+            lang={players[1].editorLang}
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />

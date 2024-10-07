@@ -7,7 +7,7 @@ import cn from 'classnames';
 import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
-  className = '', user, truncate, isOnline, hideOnlineIndicator, hideLink,
+  className = '', user, lang = user.lang, truncate, isOnline, hideOnlineIndicator, hideLink,
 }) => {
   const commonClassName = 'd-flex align-items-center';
   const onlineIndicatorClassName = cn('mr-1', {
@@ -24,7 +24,7 @@ const UserName = ({
   return (
     <div className={cn(commonClassName, className)}>
       {(!hideOnlineIndicator && !user.isBot) && <FontAwesomeIcon icon={faCircle} className={onlineIndicatorClassName} />}
-      <LanguageIcon className="mr-1" lang={user.lang} />
+      <LanguageIcon className="mr-1" lang={lang} />
       {user.isBot && <FontAwesomeIcon className="mr-1" icon={faRobot} transform="up-1" />}
       {hideLink ? (
         <span className={userClassName}>{userName}</span>

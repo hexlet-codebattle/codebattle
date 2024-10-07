@@ -15,8 +15,9 @@ import UserStats from './UserStats';
 
 function UserPopoverContent({ user }) {
   // TODO: store stats in global redux state
-  const [stats, setStats] = useState(null);
   const dispatch = useDispatch();
+
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     const userId = user.id;
@@ -46,6 +47,7 @@ function UserPopoverContent({ user }) {
 function UserInfo({
   className,
   user,
+  lang,
   hideLink = false,
   hideInfo = false,
   truncate = false,
@@ -74,6 +76,7 @@ function UserInfo({
       <UserName
         className={userClassName}
         user={user}
+        lang={lang}
         truncate={truncate}
         isOnline={isOnline}
         hideOnlineIndicator={hideOnlineIndicator}
@@ -92,6 +95,7 @@ function UserInfo({
         <UserName
           className={userClassName}
           user={user}
+          lang={lang}
           truncate={truncate}
           isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}

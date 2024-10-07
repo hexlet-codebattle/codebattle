@@ -14,6 +14,10 @@ export default {
   ruby: 'ruby',
   rust: 'rust',
   ts: 'typescript',
+  css: 'css',
+  less: 'less',
+  sass: 'scss',
+  stylus: 'stylus',
 };
 
 export const constructorLangauges = ['ruby'];
