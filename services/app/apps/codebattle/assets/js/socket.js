@@ -30,6 +30,7 @@ export const channelTopics = {
   chatUserBannedTopic: 'chat:user_banned',
 
   lobbyGameUpsertTopic: 'game:upsert',
+  lobbyGameEditorLangChangedTopic: 'game:editor_lang_changed',
   lobbyGameCheckStartedTopic: 'game:check_started',
   lobbyGameCheckCompletedTopic: 'game:check_completed',
   lobbyGameRemoveTopic: 'game:remove',
@@ -82,6 +83,7 @@ export const channelMethods = {
   giveUp: 'give_up',
 
   editorData: 'editor:data',
+  editorLang: 'editor:lang',
   editorCursorPosition: channelTopics.editorCursorPositionTopic,
   editorCursorSelection: channelTopics.editorCursorSelectionTopic,
 

@@ -169,6 +169,7 @@ export const currentPlayerTextByLangSelector = lang => state => {
 };
 
 export const userLangSelector = userId => state => get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
+
 export const userGameScoreSelector = createDraftSafeSelector(
   state => state.game.gameStatus.score,
   score => ({

@@ -397,7 +397,7 @@ const LobbyWidget = () => {
   }, []);
 
   return (
-    <div className="container-lg">
+    <div className="container-fluid">
       <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
         <Modal.Header closeButton>
           <Modal.Title>Create a game</Modal.Title>

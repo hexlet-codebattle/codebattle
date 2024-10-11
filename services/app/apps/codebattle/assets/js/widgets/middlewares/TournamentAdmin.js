@@ -46,8 +46,6 @@ const initTournamentChannel = dispatch => {
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
   };
 
-  channel.onMessage((_event, payload) => camelizeKeys(payload));
-
   channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   channel.onError(() => {

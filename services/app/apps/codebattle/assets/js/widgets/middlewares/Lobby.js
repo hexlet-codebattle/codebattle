@@ -22,8 +22,6 @@ export const fetchState = currentUserId => dispatch => {
     dispatch(actions.updateLobbyChannelState(false));
   });
 
-  channel.onMessage((_event, payload) => camelizeKeys(payload));
-
   const handleGameUpsert = data => {
     const {
       game: { players, id, state: gameState },
@@ -42,6 +40,10 @@ export const fetchState = currentUserId => dispatch => {
     }
   };
 
+  const handleGameEditorLangChanged = data => {
+    dispatch(actions.updateEditorLang(data));
+  };
+
   const handleGameCheckStarted = data => {
     const { gameId, userId } = data;
     const payload = { gameId, userId, checkResult: { status: 'started' } };
@@ -51,6 +53,7 @@ export const fetchState = currentUserId => dispatch => {
 
   return channel
     .addListener(channelTopics.lobbyGameUpsertTopic, handleGameUpsert)
+    .addListener(channelTopics.lobbyGameEditorLangChangedTopic, handleGameEditorLangChanged)
     .addListener(channelTopics.lobbyGameCheckStartedTopic, handleGameCheckStarted)
     .addListener(
       channelTopics.lobbyGameCheckCompletedTopic,

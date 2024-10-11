@@ -37,6 +37,21 @@ const lobby = createSlice({
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
     }),
+    updateEditorLang: (state, { payload }) => {
+      state.activeGames = state.activeGames.map(game => {
+        if (game.id === payload.gameId) {
+          const newPlayers = game.players.map(player => (
+            player.id === payload.userId
+              ? { ...player, editorLang: payload.editorLang }
+              : player
+          ));
+
+          return { ...game, players: newPlayers };
+        }
+
+        return game;
+      });
+    },
     updateCheckResult: (state, { payload }) => {
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {

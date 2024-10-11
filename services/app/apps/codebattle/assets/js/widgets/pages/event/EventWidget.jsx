@@ -69,7 +69,7 @@ function EventWidget() {
   const lastActiveTournament = tournaments.slice().reverse().find(tournament => tournament.state !== 'finished');
 
   return (
-    <div className="d-flex flex-column position-relative container-lg">
+    <div className="d-flex flex-column position-relative container-fluid">
       <div className={contentClassName}>
         <div className="d-flex col-12 col-lg-7  flex-column m-2 p-1 py-3">
           {topLeaderboard.length > 0 && (

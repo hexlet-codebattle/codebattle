@@ -136,8 +136,6 @@ const initGameChannel = (gameRoomService, waitingRoomService) => dispatch => {
     gameRoomService.send('FAILURE');
   });
 
-  channel.onMessage((_event, payload) => camelizeKeys(payload));
-
   const onJoinSuccess = response => {
     if (response.error) {
       console.error(response.error);
@@ -215,6 +213,23 @@ export const updateEditorText = (editorText, langSlug = null) => (dispatch, getS
   );
 };
 
+export const sendEditorLang = langSlug => (dispatch, getState) => {
+  const state = getState();
+  const userId = selectors.currentUserIdSelector(state);
+  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+
+  dispatch(
+    actions.updateEditorText({
+      userId,
+      langSlug: currentLangSlug,
+    }),
+  );
+
+  channel.push(channelMethods.editorLang, {
+    langSlug: currentLangSlug,
+  });
+};
+
 export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
@@ -279,13 +294,6 @@ export const sendAcceptToRematch = () => {
   channel.push(channelMethods.rematchAcceptOffer, {});
 };
 
-export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
-  const state = getState();
-  const userId = selectors.currentUserIdSelector(state);
-
-  dispatch(actions.updateEditorLang({ userId, currentLangSlug }));
-};
-
 export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
@@ -302,6 +310,7 @@ export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) =>
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
   const textToSet = currentText || template;
   dispatch(sendEditorText(textToSet, langSlug));
+  dispatch(sendEditorLang(langSlug));
 };
 
 export const resetTextToTemplate = langSlug => (dispatch, getState) => {

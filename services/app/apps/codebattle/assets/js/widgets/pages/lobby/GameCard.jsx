@@ -110,7 +110,7 @@ function GameCard({
           {game.players.length === 1 ? (
             <>
               <div className="d-flex flex-column align-items-center">
-                <UserInfo user={player1.data} />
+                <UserInfo user={player1.data} lang={player1.data.editorLang} />
                 {currentUserId !== player1.data.id && (
                   <UserSimpleStats user={player1.data} />
                 )}
@@ -121,7 +121,7 @@ function GameCard({
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex align-items-center">
                   <ResultIcon icon={player1.icon} />
-                  <UserInfo user={player1.data} />
+                  <UserInfo user={player1.data} lang={player1.data.editorLang} />
                 </div>
                 {type === 'active' && <GameProgressBar player={player1.data} position="left" />}
               </div>
@@ -129,7 +129,7 @@ function GameCard({
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex align-items-center">
                   <ResultIcon icon={player2.icon} />
-                  <UserInfo user={player2.data} />
+                  <UserInfo user={player2.data} lang={player2.data.editorLang} />
                 </div>
                 {type === 'active' && <GameProgressBar player={player2.data} position="left" />}
               </div>

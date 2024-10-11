@@ -1,4 +1,4 @@
-import { decamelizeKeys } from 'humps';
+import { decamelizeKeys, camelizeKeys } from 'humps';
 import map from 'lodash/map';
 import remove from 'lodash/remove';
 import { Presence } from 'phoenix';
@@ -10,28 +10,34 @@ const nonChannelErrorMessage = "Socket channel wasn't initialize";
 const nonPresenceErrorMessage = "Socket channel presence wasn't initialize";
 
 export default class Channel {
-  topic;
-
   listeners = {};
 
   channel;
 
   presence;
 
+  onMessageHandler = (_event, payload) => payload;
+
   constructor(topic, params) {
-    if (!topic) {
-      return;
-    }
     this.setupChannel(topic, params);
   }
 
   setupChannel(topic, params) {
+    if (!topic) {
+      return this;
+    }
+
     const channel = socket.channel(
       topic,
       decamelizeKeys(params, { separator: '_' }),
     );
 
-    this.topic = topic;
+    channel.onMessage = (event, payload) => {
+      const result = this.onMessageHandler(event, camelizeKeys(payload));
+
+      return result;
+    };
+
     this.channel = channel;
     this.presence = new Presence(channel);
 
@@ -162,9 +168,9 @@ export default class Channel {
 
     const pushInstance = this.channel.leave(...params);
 
-    this.topic = undefined;
     this.channel = undefined;
     this.presence = undefined;
+    this.onMessageHandler = (_event, payload) => payload;
 
     return pushInstance;
   }
@@ -179,12 +185,12 @@ export default class Channel {
     return this.channel;
   }
 
-  onMessage(cb) {
-    if (!this.channel) {
-      throw new Error(nonChannelErrorMessage);
+  onMessage(handler) {
+    if (typeof handler !== 'function') {
+      throw new Error('Value must be a function');
     }
 
-    this.channel.onMessage = cb;
+    this.onMessageHandler = handler;
 
     return this;
   }
@@ -194,10 +200,12 @@ export default class Channel {
       throw new Error(nonChannelErrorMessage);
     }
 
-    return this.channel.push(
+    const pushInstance = this.channel.push(
       topic,
       decamelizeKeys(params, { separator: '_' }),
     );
+
+    return pushInstance;
   }
 
   syncPresence(cb) {
@@ -216,6 +224,10 @@ export default class Channel {
     });
 
     return this;
+  }
+
+  get topic() {
+    return this.channel?.topic;
   }
 
   listBy = (id, { metas: [first, ...rest] }) => {

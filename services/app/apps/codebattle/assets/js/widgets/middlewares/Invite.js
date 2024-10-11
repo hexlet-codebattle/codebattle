@@ -8,9 +8,7 @@ import Channel from './Channel';
 
 const channel = new Channel('invites');
 
-const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
-  dispatch(actionCreator(camelizeKeys(data)))
-);
+const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => dispatch(actionCreator(camelizeKeys(data)));
 
 const getRecipientName = data => data.invite.recipient.name;
 const getCreatorName = data => data.invite.creator.name;
@@ -33,7 +31,7 @@ export const initInvites = currentUserId => dispatch => {
         const message = getSystemMessage({ text: `You have (${data.invites.length}) invites to battle. Check ` });
         setTimeout(() => dispatch(actions.newChatMessage(message)), 100);
       }
-      camelizeKeysAndDispatch(dispatch, actions.setInvites)(data);
+      dispatch(actions.setInvites(data));
     });
 
     channel.addListener(channelTopics.invitesCreatedTopic, data => {
@@ -42,7 +40,7 @@ export const initInvites = currentUserId => dispatch => {
         dispatch(actions.newChatMessage(message));
       }
 
-      camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
+      dispatch(actions.addInvite(data));
     });
     channel.addListener(channelTopics.invitesCanceledTopic, data => {
       if (data.invite.executor_id !== currentUserId) {
@@ -53,7 +51,7 @@ export const initInvites = currentUserId => dispatch => {
         dispatch(actions.newChatMessage(message));
       }
 
-      camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+      dispatch(actions.updateInvite(data));
     });
     channel.addListener(channelTopics.invitesAcceptedTopic, data => {
       if (data.invite.executor_id !== currentUserId) {
@@ -65,7 +63,7 @@ export const initInvites = currentUserId => dispatch => {
       }
       setTimeout(() => { window.location.href = `/games/${data.invite.game_id}`; }, 250);
 
-      camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+      dispatch(actions.updateInvite(data));
     });
     channel.addListener(channelTopics.invitesExpiredTopic, data => {
       const message = getSystemMessage({
@@ -83,7 +81,7 @@ export const initInvites = currentUserId => dispatch => {
       });
       dispatch(actions.newChatMessage(message));
 
-      camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+      dispatch(actions.updateInvite(data));
     });
   };
 
@@ -98,7 +96,7 @@ export const createInvite = params => dispatch => channel
     const message = getSystemMessage({ text: `You invite ${params.recipient_name} to battle. Wait for his reply` });
     dispatch(actions.newChatMessage(message));
 
-    camelizeKeysAndDispatch(dispatch, actions.addInvite)(data);
+    dispatch(actions.addInvite(data));
   })
   .receive('error', ({ reason }) => {
     throw new Error(reason);
@@ -109,10 +107,10 @@ export const acceptInvite = id => dispatch => channel
   .receive('ok', data => {
     setTimeout(() => { window.location.href = `/games/${data.invite.game_id}`; }, 250);
 
-    camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+    dispatch(actions.updateInvite(data));
   })
   .receive('error', ({ reason }) => {
-    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    dispatch(actions.updateInvite({ id, state: 'invalid' }));
     throw new Error(reason);
   });
 
@@ -125,7 +123,7 @@ export const declineInvite = (id, opponentName) => dispatch => channel
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
   })
   .receive('error', ({ reason }) => {
-    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    dispatch(actions.updateInvite({ id, state: 'invalid' }));
     throw new Error(reason);
   });
 
@@ -138,6 +136,6 @@ export const cancelInvite = (id, opponentName) => dispatch => channel
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
   })
   .receive('error', ({ reason }) => {
-    camelizeKeysAndDispatch(dispatch, actions.updateInvite)({ id, state: 'invalid' });
+    dispatch(actions.updateInvite({ id, state: 'invalid' }));
     throw new Error(reason);
   });

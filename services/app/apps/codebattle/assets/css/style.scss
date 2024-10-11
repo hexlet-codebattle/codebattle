@@ -385,9 +385,8 @@ a {
   height: 4px;
   background: white;
   position: relative;
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-  clip-path: polygon(0 0, 92% 0, 100% 100%, 0% 100%);
+  border-radius: 0.25rem;
+  border-radius: 0.25rem;
 
   @media (max-width: $sm) {
     & {
@@ -398,14 +397,19 @@ a {
   &>.cb-asserts-progress {
     position: absolute;
     height: 100%;
-    border-top-left-radius: 0.25rem;
-    border-bottom-left-radius: 0.25rem;
+    border-radius: 0.25rem;
     background: #809b88;
+  }
+
+  &.ok {
+    &>.cb-asserts-progress {
+      background: $gold;
+    }
   }
 
   &.failure {
     &>.cb-asserts-progress {
-      background: $success;
+      background: $error;
     }
   }
 
@@ -1518,9 +1522,7 @@ a {
   height: 4px;
   background: white;
   position: relative;
-  border-top-left-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-  clip-path: polygon(0 0, 92% 0, 100% 100%, 0% 100%);
+  border-radius: 0.25rem;
 
   @media (max-width: $sm) {
     & {

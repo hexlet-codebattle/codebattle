@@ -1,5 +1,4 @@
 import Gon from 'gon';
-import { camelizeKeys, decamelizeKeys } from 'humps';
 import capitalize from 'lodash/capitalize';
 
 import { channelMethods, channelTopics } from '../../socket';
@@ -18,7 +17,7 @@ export const pushCommandTypes = {
 };
 
 const establishChat = page => dispatch => {
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
+  const getDispatchActionHandler = actionCreator => data => dispatch(actionCreator(data));
 
   channel.join().receive('ok', data => {
     const greetingMessage = getSystemMessage({
@@ -27,16 +26,16 @@ const establishChat = page => dispatch => {
     });
     const messages = [greetingMessage, ...data.messages];
     const updatedData = { ...data, page, messages };
-    camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
+    dispatch(actions.updateChatData(updatedData));
     dispatch(actions.updateChatChannelState(true));
   });
 
   channel.onError(() => dispatch(actions.updateChatChannelState(false)));
 
-  const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
-  const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
-  const handleNewMessage = camelizeKeysAndDispatch(actions.newChatMessage);
-  const handleUserbanned = camelizeKeysAndDispatch(actions.banUserChat);
+  const handleUserJoined = getDispatchActionHandler(actions.userJoinedChat);
+  const handleUserLeft = getDispatchActionHandler(actions.userLeftChat);
+  const handleNewMessage = getDispatchActionHandler(actions.newChatMessage);
+  const handleUserbanned = getDispatchActionHandler(actions.banUserChat);
 
   return channel
     .addListener(channelTopics.chatUserJoinedTopic, handleUserJoined)
@@ -59,7 +58,7 @@ export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => d
 
 export const addMessage = payload => {
   channel
-    .push(channelMethods.chatAddMsg, decamelizeKeys(payload, { separator: '_' }))
+    .push(channelMethods.chatAddMsg, payload)
     .receive('error', error => console.error(error));
 };
 

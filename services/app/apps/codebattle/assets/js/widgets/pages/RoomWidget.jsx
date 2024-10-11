@@ -61,11 +61,11 @@ function PanelsSplitPane({ children, viewMode }) {
       sizes={[33, 62]}
       className="d-flex flex-column w-100"
       direction="vertical"
-      gutterSize="5"
+      gutterSize={5}
       gutterAlign="center"
       cursor="row-resize"
     >
-      <div style={{ minHeight: 150 }} className="d-flex w-100">{children[0]}</div>
+      <div style={{ minHeight: 300 }} className="d-flex w-100">{children[0]}</div>
       <div style={{ minHeight: 200 }} className="d-flex w-100 cb-overflow-y-hidden">{children[1]}</div>
     </Split>
   );
