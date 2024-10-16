@@ -17,12 +17,12 @@ const getKey = (id, time, name) => {
 function Messages({ messages, displayMenu = () => {}, disabled = false }) {
   const listRef = useRef();
 
-  const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
+  const { /*stayScrolled  ,*/ scrollBottom  } = useStayScrolled(listRef);
   // Typically you will want to use stayScrolled or scrollBottom inside
   // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
   useLayoutEffect(() => {
-    stayScrolled();
-  }, [messages.length, stayScrolled]);
+    scrollBottom();
+  }, [messages.length, scrollBottom]);
 
   if (disabled) {
     return (
