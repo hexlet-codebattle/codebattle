@@ -1,20 +1,20 @@
 import React, {
   useContext,
-  useMemo,
+  // useMemo,
   useRef,
 } from 'react';
 
 import cn from 'classnames';
-import filter from 'lodash/filter';
-import uniqBy from 'lodash/uniqBy';
+// import filter from 'lodash/filter';
+// import uniqBy from 'lodash/uniqBy';
 import { useSelector } from 'react-redux';
 
 import ChatContextMenu from '../../components/ChatContextMenu';
 import ChatHeader from '../../components/ChatHeader';
 import ChatInput from '../../components/ChatInput';
+// import ChatUserInfo from '../../components/ChatUserInfo';
 import Messages from '../../components/Messages';
 import RoomContext from '../../components/RoomContext';
-import UserInfo from '../../components/UserInfo';
 import GameRoomModes from '../../config/gameModes';
 import {
   inTestingRoomSelector,
@@ -43,10 +43,10 @@ function ChatWidget() {
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
 
-  const isTournamentGame = (gameMode === GameRoomModes.tournament);
+  // const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = (gameMode === GameRoomModes.standard);
   const showChatInput = !openedReplayer && !isTestingRoom && useChat && !isRestricted;
-  const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
+  // const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
 
   const disabledChatHeader = isTestingRoom || !isOnline || !useChat;
   const disabledChatMessages = isTestingRoom || !useChat || isRestricted;
@@ -62,10 +62,10 @@ function ChatWidget() {
 
   useChatRooms('page');
 
-  const listOfUsers = useMemo(() => {
-    const uniqUsers = uniqBy(users, 'id');
-    return isTournamentGame ? filter(uniqUsers, { isBot: false }) : uniqUsers;
-  }, [isTournamentGame, users]);
+  // const listOfUsers = useMemo(() => {
+  //   const uniqUsers = uniqBy(users, 'id');
+  //   return isTournamentGame ? filter(uniqUsers, { isBot: false }) : uniqUsers;
+  // }, [isTournamentGame, users]);
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
@@ -104,29 +104,14 @@ function ChatWidget() {
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />
             </div>
-            {showChatParticipants && (
-              <div className="px-3 py-3 w-100 border-top">
-                <p className="mb-1 text-nowrap">
-                  {`Online players: ${listOfUsers.length}`}
-                </p>
-                {listOfUsers.map(user => (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    className="my-1"
-                    title={user.name}
-                    key={user.id}
-                    data-user-id={user.id}
-                    data-user-name={user.name}
-                    onContextMenu={displayMenu}
-                    onClick={displayMenu}
-                    onKeyPress={displayMenu}
-                  >
-                    <UserInfo user={user} hideInfo hideOnlineIndicator />
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* {showChatParticipants && ( */}
+            {/*   <div className="px-3 py-3 w-100 border-top"> */}
+            {/*     <p className="mb-1 text-nowrap"> */}
+            {/*       {`Online players: ${listOfUsers.length}`} */}
+            {/*     </p> */}
+            {/*     {listOfUsers.map(user => <ChatUserInfo key={user.id} user={user} displayMenu={displayMenu} className="my-1" />)} */}
+            {/*   </div> */}
+            {/* )} */}
           </div>
         </div>
       </div>

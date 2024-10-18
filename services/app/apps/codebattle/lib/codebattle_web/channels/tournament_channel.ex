@@ -135,6 +135,10 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
+  def handle_in(_topic, _payload, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
     push(socket, "tournament:match:upserted", %{match: payload.match, players: payload.players})
 

@@ -36,6 +36,10 @@ defmodule CodebattleWeb.SpectatorChannel do
     {:noreply, socket}
   end
 
+  def handle_in(_topic, _payload, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
     if payload.match.state == "playing" do
       push(socket, "game:created", %{active_game_id: payload.match.game_id})

@@ -11,14 +11,14 @@ const getSize = ({ small = false, large = false, adaptive = false }) => {
   }
 };
 
-const Loading = params => {
-  const size = getSize(params);
+function Loading(props) {
+  const size = getSize(props);
 
   return (
     <div className="d-flex my-0 py-1 justify-content-center">
       <ReactLoading type="spin" color="#6c757d" height={size} width={size} />
     </div>
   );
-};
+}
 
 export default Loading;

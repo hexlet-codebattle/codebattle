@@ -284,8 +284,9 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_in(type, params) do
+  def handle_in(type, params, socket) do
     Logger.warning("Unexpected message: #{inspect(type)}, params: #{inspect(params)}")
+    {:noreply, socket}
   end
 
   def handle_info(%{event: "game:terminated", payload: payload}, socket) do

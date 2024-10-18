@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18next from 'i18next';
+import { Dropdown } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
@@ -74,68 +75,54 @@ function CheckResultButton({ onClick, status }) {
   }
 }
 
-function GiveUpButton({ onClick, status }) {
-  const dispatch = useDispatch();
+const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) => (
+  <button
+    type="button"
+    ref={ref}
+    className={className.replace('dropdown-toggle', '')}
+    onClick={onClick}
+    disabled={disabled}
+  >
+    <FontAwesomeIcon icon="ellipsis-v" />
+  </button>
+));
+
+function GiveUpButtonDropdownItem({ onSelect, status }) {
   const commonProps = {
-    type: 'button',
-    className: 'btn btn-outline-danger rounded-lg',
+    key: 'giveUp',
+    href: '#',
     title: i18next.t('Give Up'),
-    onClick,
-    'data-toggle': 'tooltip',
-    'data-placement': 'top',
-    'data-guide-id': 'GiveUpButton',
+    onSelect,
+    disabled: status === 'disabled',
   };
 
-  switch (status) {
-    case 'enabled':
-      return (
-        <button type="button" {...commonProps}>
-          <FontAwesomeIcon icon={['far', 'flag']} />
-        </button>
-      );
-    case 'disabled':
-      return (
-        <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={['far', 'flag']} />
-        </button>
-      );
-    default: {
-      dispatch(actions.setError(new Error('unnexpected give up status')));
-      return null;
-    }
-  }
+  return (
+    <Dropdown.Item {...commonProps}>
+      <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
+        <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
+        Give up
+      </span>
+    </Dropdown.Item>
+  );
 }
 
-function ResetButton({ onClick, status }) {
-  const dispatch = useDispatch();
+function ResetButtonDropDownItem({ onSelect, status }) {
   const commonProps = {
-    type: 'button',
-    className: 'btn btn-outline-secondary rounded-lg mx-1',
+    key: 'reset',
+    href: '#',
     title: i18next.t('Reset solution'),
-    onClick,
-    'data-toggle': 'tooltip',
-    'data-placement': 'top',
-    'data-guide-id': 'ResetButton',
+    onSelect,
+    disabled: status === 'disabled',
   };
 
-  switch (status) {
-    case 'enabled':
-      return (
-        <button type="button" {...commonProps}>
-          <FontAwesomeIcon icon={['fas', 'sync']} />
-        </button>
-      );
-    case 'disabled':
-      return (
-        <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={['fas', 'sync']} />
-        </button>
-      );
-    default: {
-      dispatch(actions.setError(new Error('unnexpected reset status')));
-      return null;
-    }
-  }
+  return (
+    <Dropdown.Item {...commonProps}>
+      <span>
+        <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
+        Reset Solution
+      </span>
+    </Dropdown.Item>
+  );
 }
 
 function GameActionButtons({
@@ -199,11 +186,23 @@ function GameActionButtons({
       role="group"
       aria-label="Game actions"
     >
-      {showGiveUpBtn && (
-        <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
-      )}
-      <ResetButton onClick={handleReset} status={resetBtnStatus} />
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
+      <Dropdown title="Other actions">
+        <Dropdown.Toggle
+          as={CustomToggle}
+          className="btn btm-sm btn-primary rounded mx-1"
+          split
+          variant="primary"
+          id="dropdown-actions"
+        >
+          <FontAwesomeIcon icon="ellipsis-v" className="mr-1" />
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat">
+          <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
+          {showGiveUpBtn && <GiveUpButtonDropdownItem onSelect={modalShow} status={giveUpBtnStatus} />}
+        </Dropdown.Menu>
+      </Dropdown>
       {renderModal()}
     </div>
   );

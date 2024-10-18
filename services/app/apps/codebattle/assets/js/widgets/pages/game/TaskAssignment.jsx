@@ -116,7 +116,7 @@ function TaskAssignment({
             {!fullSize && (
               <button
                 type="button"
-                className="btn btn-outline-secondary  btn-sm rounded-lg ml-2"
+                className="btn btn-outline-secondary text-nowrap btn-sm rounded-lg ml-2"
                 onClick={handleOpenFullSizeTaskDescription}
               >
                 <FontAwesomeIcon className="mr-2" icon="expand" />

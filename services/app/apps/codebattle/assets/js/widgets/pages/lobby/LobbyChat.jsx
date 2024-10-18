@@ -1,22 +1,43 @@
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, {
+  memo,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
-import { connect, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import ChatContextMenu from '../../components/ChatContextMenu';
 import ChatHeader from '../../components/ChatHeader';
 import ChatInput from '../../components/ChatInput';
+import ChatUserInfo from '../../components/ChatUserInfo';
 import Loading from '../../components/Loading';
 import Messages from '../../components/Messages';
-import UserInfo from '../../components/UserInfo';
 import * as chatMiddlewares from '../../middlewares/Chat';
 import * as selectors from '../../selectors';
 import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
+
+function UsersList({ list, title, displayMenu }) {
+  return (
+    <>
+      {list.length !== 0 && <div>{`${title}: `}</div>}
+      {list.map(player => (
+        <ChatUserInfo
+          key={player.id}
+          user={player.user}
+          displayMenu={displayMenu}
+          className="mb-1"
+        />
+      ))}
+    </>
+  );
+}
 
 function ChatGroupedPlayersList({ players, displayMenu }) {
   const {
@@ -29,86 +50,11 @@ function ChatGroupedPlayersList({ players, displayMenu }) {
 
   return (
     <>
-      {watchingList.length !== 0 && <div>Watching: </div>}
-      {watchingList.map(player => (
-        <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
-          key={player.id}
-          data-user-id={player.id}
-          data-user-name={player.user.name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
-        </div>
-      ))}
-      {playingList.length !== 0 && <div>Playing: </div>}
-      {playingList.map(player => (
-        <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
-          key={player.id}
-          data-user-id={player.id}
-          data-user-name={player.user.name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
-        </div>
-      ))}
-      {lobbyList.length !== 0 && <div>Lobby: </div>}
-      {lobbyList.map(player => (
-        <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
-          key={player.id}
-          data-user-id={player.id}
-          data-user-name={player.user.name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
-        </div>
-      ))}
-      {onlineList.length !== 0 && <div>Online: </div>}
-      {onlineList.map(player => (
-        <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
-          key={player.id}
-          data-user-id={player.id}
-          data-user-name={player.user.name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
-        </div>
-      ))}
-      {builderList.length !== 0 && <div>Edit task: </div>}
-      {builderList.map(player => (
-        <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
-          key={player.id}
-          data-user-id={player.id}
-          data-user-name={player.user.name}
-          onContextMenu={displayMenu}
-          onClick={displayMenu}
-          onKeyPress={displayMenu}
-        >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
-        </div>
-      ))}
+      <UsersList title="Watching" list={watchingList} displayMenu={displayMenu} />
+      <UsersList title="Playing" list={playingList} displayMenu={displayMenu} />
+      <UsersList title="Lobby" list={lobbyList} displayMenu={displayMenu} />
+      <UsersList title="Online" list={onlineList} displayMenu={displayMenu} />
+      <UsersList title="Edit task" list={builderList} displayMenu={displayMenu} />
     </>
   );
 }
@@ -119,11 +65,12 @@ const chatHeaderClassName = cn(
 );
 
 function LobbyChat({
-  connectToChat,
   presenceList,
   setOpenActionModalShowing,
   inputRef,
 }) {
+  const dispatch = useDispatch();
+
   const messages = useSelector(selectors.chatMessagesSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
 
@@ -133,7 +80,7 @@ function LobbyChat({
   );
 
   useEffect(() => {
-    const channel = connectToChat(true, 'channel');
+    const channel = dispatch(chatMiddlewares.connectToChat(true, 'channel'));
 
     return () => {
       if (channel) {
@@ -229,8 +176,4 @@ function LobbyChat({
   );
 }
 
-const mapDispatchToProps = {
-  connectToChat: chatMiddlewares.connectToChat,
-};
-
-export default connect(null, mapDispatchToProps)(LobbyChat);
+export default memo(LobbyChat);

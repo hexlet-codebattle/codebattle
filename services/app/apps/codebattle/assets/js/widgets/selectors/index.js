@@ -25,6 +25,8 @@ export const currentUserIsAdminSelector = state => !!state.user.users[state.user
 
 export const currentUserIsGuestSelector = state => !!state.user.users[state.user.currentUserId].isGuest;
 
+export const userIsAdminSelector = userId => state => !!state.user.users[userId]?.isAdmin;
+
 export const subscriptionTypeSelector = state => (
   currentUserIsAdminSelector(state)
     ? SubscriptionTypeCodes.admin

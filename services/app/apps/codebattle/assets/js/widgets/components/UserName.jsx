@@ -7,7 +7,7 @@ import cn from 'classnames';
 import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
-  className = '', user, lang = user.lang, truncate, isOnline, hideOnlineIndicator, hideLink,
+  className = '', user, lang = user.lang, truncate, isOnline, hovered, hideOnlineIndicator, hideLink,
 }) => {
   const commonClassName = 'd-flex align-items-center';
   const onlineIndicatorClassName = cn('mr-1', {
@@ -15,11 +15,11 @@ const UserName = ({
     'cb-user-offline': !isOnline,
   });
   const userClassName = cn('text-truncate', {
-    'text-danger': user.isAdmin,
     'x-username-truncated': truncate,
   });
-
-  const userName = user.rank ? `${user.name}(${user.rank})` : user.name;
+  const userNameClassName = cn({
+    'text-primary': hovered,
+  });
 
   return (
     <div className={cn(commonClassName, className)}>
@@ -27,9 +27,15 @@ const UserName = ({
       <LanguageIcon className="mr-1" lang={lang} />
       {user.isBot && <FontAwesomeIcon className="mr-1" icon={faRobot} transform="up-1" />}
       {hideLink ? (
-        <span className={userClassName}>{userName}</span>
+        <span className={userClassName}>
+          <span className={userNameClassName}>{user.name}</span>
+          {user.rank && <span>{`(${user.rank})`}</span>}
+        </span>
       ) : (
-        <a href={`/users/${user.id}`} className={userClassName}>{userName}</a>
+        <a href={`/users/${user.id}`} className={userClassName}>
+          <span className={userNameClassName}>{user.name}</span>
+          {user.rank && <span>{`(${user.rank})`}</span>}
+        </a>
       )}
     </div>
   );

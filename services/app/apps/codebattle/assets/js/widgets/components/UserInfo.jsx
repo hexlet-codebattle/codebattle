@@ -48,6 +48,7 @@ function UserInfo({
   className,
   user,
   lang,
+  hovered = false,
   hideLink = false,
   hideInfo = false,
   truncate = false,
@@ -56,6 +57,7 @@ function UserInfo({
   placement = Placements.bottomStart,
 }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const isAdmin = useSelector(selectors.userIsAdminSelector(user?.id));
   const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
 
   if (!user?.id) {
@@ -75,9 +77,11 @@ function UserInfo({
     return (
       <UserName
         className={userClassName}
+        hovered={hovered}
         user={user}
         lang={lang}
         truncate={truncate}
+        isAdmin={isAdmin}
         isOnline={isOnline}
         hideOnlineIndicator={hideOnlineIndicator}
         hideLink={hideLink}
@@ -94,9 +98,11 @@ function UserInfo({
       <div>
         <UserName
           className={userClassName}
+          hovered={hovered}
           user={user}
           lang={lang}
           truncate={truncate}
+          isAdmin={isAdmin}
           isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}
           hideLink={hideLink}

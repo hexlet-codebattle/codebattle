@@ -4,6 +4,21 @@ import editorUserTypes from '../config/editorUserTypes';
 import GameRoomModes from '../config/gameModes';
 import { addCursorListeners } from '../middlewares/Room';
 
+/**
+ * @param {object} editor
+ * @param {object} monaco
+ * @param {{
+ *   editable: boolean,
+ *   gameMode: @type {import("../config/gameModes.js).default},
+ *   checkResult: Function,
+ *   toggleMuteSound: Function,
+ *   mute: boolean,
+ *   userType: string,
+ *   userId: string,
+ *   onChangeCursorSelection: Function,
+ *   onChangeCursorPosition: Function,
+ * }} props
+*/
 const useRemoteCursor = (editor, monaco, props) => {
   const {
     gameMode,

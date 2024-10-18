@@ -213,35 +213,20 @@ export const updateEditorText = (editorText, langSlug = null) => (dispatch, getS
   );
 };
 
-export const sendEditorLang = langSlug => (dispatch, getState) => {
+export const sendEditorLang = langSlug => (_dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
   const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
-
-  dispatch(
-    actions.updateEditorText({
-      userId,
-      langSlug: currentLangSlug,
-    }),
-  );
 
   channel.push(channelMethods.editorLang, {
     langSlug: currentLangSlug,
   });
 };
 
-export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
+export const sendEditorText = (editorText, langSlug = null) => (_dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
   const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
-
-  dispatch(
-    actions.updateEditorText({
-      userId,
-      editorText,
-      langSlug: currentLangSlug,
-    }),
-  );
 
   channel.push(channelMethods.editorData, {
     editorText,
@@ -309,6 +294,18 @@ export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) =>
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
   const textToSet = currentText || template;
+
+  const userId = selectors.currentUserIdSelector(state);
+  const newLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+
+  dispatch(
+    actions.updateEditorText({
+      userId,
+      editorText: textToSet,
+      langSlug: newLangSlug,
+    }),
+  );
+
   dispatch(sendEditorText(textToSet, langSlug));
   dispatch(sendEditorLang(langSlug));
 };
@@ -324,13 +321,14 @@ export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
+  dispatch(updateEditorText(template, langSlug));
   dispatch(sendEditorText(template, langSlug));
 };
 
 export const soundNotification = notification();
 
 export const addCursorListeners = (userId, onChangePosition, onChangeSelection) => {
-  if (!userId) {
+  if (!userId || isRecord) {
     return () => {};
   }
 

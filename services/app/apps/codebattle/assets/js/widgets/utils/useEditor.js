@@ -16,13 +16,25 @@ const editorPlaceholder = 'Please! Help me!!!';
 
 let editorClipboard = '';
 
+/**
+ * @param {{
+ *   wordWrap: string,
+ *   lineNumbers: string,
+ *   fontSize: number,
+ *   editable: boolean,
+ *   gameMode: string,
+ *   checkResult: Function,
+ *   toggleMuteSound: Function,
+ *   mute: boolean,
+ * }} props
+*/
 const useOption = ({
-  wordWrap = 'off',
-  lineNumbers = 'on',
-  syntax = 'js',
-  fontSize = 16,
-  editable = false,
-  loading = false,
+  wordWrap,
+  lineNumbers,
+  syntax,
+  fontSize,
+  editable,
+  loading,
 }) => {
   const options = useMemo(() => ({
     placeholder: editorPlaceholder,
@@ -67,6 +79,22 @@ const useOption = ({
   return options;
 };
 
+/**
+ * @param {{
+ *   wordWrap: string,
+ *   lineNumbers: string,
+ *   fontSize: number,
+ *   editable: boolean,
+ *   gameMode: string,
+ *   checkResult: Function,
+ *   toggleMuteSound: Function,
+ *   mute: boolean,
+ *   userType: string,
+ *   userId: string,
+ *   onChangeCursorSelection: Function,
+ *   onChangeCursorPosition: Function,
+ * }} props
+*/
 const useEditor = props => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();

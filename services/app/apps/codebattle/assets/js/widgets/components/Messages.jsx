@@ -6,12 +6,12 @@ import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
 
-const getKey = (id, time, name) => {
+const getKey = (id, time, name, index) => {
   if (!time || !name) {
     return id;
   }
 
-  return `${id}-${time}-${name}`;
+  return `${id}-${time}-${name}-${index}`;
 };
 
 function Messages({ messages, displayMenu = () => {}, disabled = false }) {
@@ -41,12 +41,12 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
         ref={listRef}
         className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
       >
-        {messages.map(message => {
+        {messages.map((message, index) => {
           const {
             id, userId, name, text, type, time, meta,
           } = message;
 
-          const key = getKey(id, time, name);
+          const key = getKey(id, time, name, messages.length - index);
 
           return (
             <Message

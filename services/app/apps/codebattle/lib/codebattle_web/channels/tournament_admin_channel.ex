@@ -217,6 +217,10 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
+  def handle_in(_topic, _payload, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
     matches =
       if payload.tournament.type in ["swiss", "arena"] do

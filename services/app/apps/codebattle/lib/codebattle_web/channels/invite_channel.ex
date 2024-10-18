@@ -161,6 +161,10 @@ defmodule CodebattleWeb.InviteChannel do
     end
   end
 
+  def handle_in(_topic, _payload, socket) do
+    {:noreply, socket}
+  end
+
   defp create_invite(params) do
     case Invite.create_invite(params) do
       {:ok, invite} ->

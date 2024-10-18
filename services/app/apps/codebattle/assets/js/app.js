@@ -48,7 +48,6 @@ import {
   renderUserPage,
   renderUsersRating,
 } from './widgets';
-import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
 if (process.env.NODE_ENV === 'development') {
   inspect({
@@ -91,7 +90,6 @@ window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 liveSocket.connect();
 
 const builderWidgetRoot = document.getElementById('builder-widget-root');
-const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const onlineRoot = document.getElementById('online-root');
@@ -106,10 +104,6 @@ const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
-
-if (extension) {
-  renderExtensionPopup(extension);
-}
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);

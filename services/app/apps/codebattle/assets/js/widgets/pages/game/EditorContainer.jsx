@@ -89,7 +89,10 @@ function EditorContainer({
   const currentEditorLangSlug = useSelector(selectors.userLangSelector(currentUserId));
 
   const updateEditorValue = useCallback(data => dispatch(GameActions.updateEditorText(data)), [dispatch]);
-  const sendEditorValue = useCallback(data => dispatch(GameActions.sendEditorText(data)), [dispatch]);
+  const updateAndSendEditorValue = useCallback(data => {
+    dispatch(GameActions.updateEditorText(data));
+    dispatch(GameActions.sendEditorText(data));
+  }, [dispatch]);
 
   const { mainService } = useContext(RoomContext);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
@@ -194,7 +197,7 @@ function EditorContainer({
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
   const editable = !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned';
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
-  const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
+  const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
   const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : noop;
   const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : noop;

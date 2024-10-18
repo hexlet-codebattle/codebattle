@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 
 import MonacoEditor, { loader } from '@monaco-editor/react';
+import PropTypes from 'prop-types';
 
 import haskellProvider from '../config/editor/haskell';
 import sassProvider from '../config/editor/sass';
@@ -63,5 +64,34 @@ function Editor(props) {
       </>
     );
 }
+
+Editor.propTypes = {
+  value: PropTypes.string.isRequired,
+  syntax: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  theme: PropTypes.string.isRequired,
+  loading: PropTypes.bool,
+  wordWrap: PropTypes.string,
+  lineNumbers: PropTypes.string,
+  fontSize: PropTypes.number,
+  editable: PropTypes.bool,
+  gameMode: PropTypes.string.isRequired,
+  checkResult: PropTypes.func.isRequired,
+  toggleMuteSound: PropTypes.func.isRequired,
+  mute: PropTypes.bool.isRequired,
+  userType: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  onChangeCursorSelection: PropTypes.func.isRequired,
+  onChangeCursorPosition: PropTypes.func.isRequired,
+};
+
+Editor.defaultProps = {
+  wordWrap: 'off',
+  lineNumbers: 'on',
+  syntax: 'js',
+  fontSize: 16,
+  editable: false,
+  loading: false,
+};
 
 export default memo(Editor);

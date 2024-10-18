@@ -230,8 +230,10 @@ class CodebattlePlayer extends Component {
                     onIntentEnd={this.onSliderHandleChangeIntentEnd}
                   >
                     <CodebattleSliderBar
+                      holded={roomMachineState.matches({
+                        replayer: replayerMachineStates.holded,
+                      })}
                       mainEvents={mainEvents}
-                      roomMachineState={roomMachineState}
                       handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
                       recordsCount={recordsCount}
