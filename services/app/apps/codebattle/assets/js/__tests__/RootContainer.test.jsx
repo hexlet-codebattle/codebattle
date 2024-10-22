@@ -19,6 +19,8 @@ import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
+jest.mock('../widgets/initEditor.js', () => ({}));
+
 jest.mock('../widgets/pages/game/TaskDescriptionMarkdown', () => () => (<>Examples: </>));
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
@@ -77,7 +79,7 @@ jest.mock(
 
 jest.mock(
   '../widgets/utils/useStayScrolled',
-  () => () => ({ stayScrolled: () => {} }),
+  () => () => ({ stayScrolled: () => { } }),
   { virtual: true },
 );
 
@@ -105,7 +107,7 @@ jest.mock(
 
           return channel;
         }),
-        connect: jest.fn(() => {}),
+        connect: jest.fn(() => { }),
       })),
     };
   },
@@ -161,8 +163,8 @@ const preloadedState = {
     },
   },
   usersInfo: {
-    1: { },
-    2: { },
+    1: {},
+    2: {},
   },
   chat: {
     users: Object.values(players),

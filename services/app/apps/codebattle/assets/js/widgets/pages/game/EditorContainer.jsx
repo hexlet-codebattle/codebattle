@@ -47,13 +47,13 @@ const useEditorChannelSubscription = (mainService, editorService, player) => {
 
   useEffect(() => {
     if (isPreview) {
-      return () => {};
+      return () => { };
     }
 
     if (inTestingRoom) {
       editorService.send('load_testing_editor');
 
-      return () => {};
+      return () => { };
     }
 
     const clearEditorListeners = GameActions.connectToEditor(editorService, player?.isBanned)(dispatch);
@@ -199,10 +199,9 @@ function EditorContainer({
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
-  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : noop;
-  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : noop;
 
   const editorParams = {
+    roomMode: tournamentId ? GameModeCodes.tournament : gameMode,
     userId: id,
     wordWrap: 'off',
     lineNumbers: 'on',
@@ -210,8 +209,7 @@ function EditorContainer({
     userType: type,
     syntax: editorState?.currentLangSlug || 'js',
     onChange,
-    onChangeCursorSelection,
-    onChangeCursorPosition,
+    canSendCursor,
     checkResult,
     value: isRestricted ? restrictedText : editorState?.text,
     editorHeight,

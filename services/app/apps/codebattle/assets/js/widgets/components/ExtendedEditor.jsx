@@ -98,7 +98,7 @@ const mapStateToProps = state => {
   const locked = gameLockedSelector(state);
   return {
     gameId,
-    gameMode,
+    roomMode: gameMode,
     locked,
     mute: state.user.settings.mute,
   };

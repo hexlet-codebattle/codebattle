@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -15,7 +16,7 @@ function DakModeButton() {
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const classNames = cn('btn btn-sm mr-2 border rounded', {
+  const className = cn('btn mr-2 border rounded', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });
@@ -25,8 +26,8 @@ function DakModeButton() {
   };
 
   return (
-    <button type="button" className={classNames} onClick={handleToggleDarkMode}>
-      {isDarkMode ? 'Light' : 'Dark'}
+    <button type="button" className={className} onClick={handleToggleDarkMode}>
+      <FontAwesomeIcon icon={isDarkMode ? 'sun' : 'moon'} />
     </button>
   );
 }

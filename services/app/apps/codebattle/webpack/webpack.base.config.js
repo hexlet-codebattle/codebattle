@@ -2,6 +2,7 @@ const path = require('path');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const webpack = require('webpack');
 
 // const env = process.env.NODE_ENV || 'development';
@@ -89,6 +90,7 @@ module.exports = {
     },
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     new webpack.ProvidePlugin({
       process: 'process/browser',
     }),

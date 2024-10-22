@@ -327,9 +327,19 @@ export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
 
 export const soundNotification = notification();
 
-export const addCursorListeners = (userId, onChangePosition, onChangeSelection) => {
-  if (!userId || isRecord) {
-    return () => {};
+export const addCursorListeners = (params, onChangePosition, onChangeSelection) => {
+  const {
+    roomMode,
+    userId,
+  } = params;
+
+  const isBuilder = roomMode === GameRoomModes.builder;
+  const isHistory = roomMode === GameRoomModes.history;
+
+  const canReceivedRemoteCursor = !isBuilder && !isHistory && !!userId && !isRecord;
+
+  if (!canReceivedRemoteCursor) {
+    return () => { };
   }
 
   const handleNewCursorPosition = debounce(data => {
@@ -1039,7 +1049,7 @@ export const changePlaybookSolution = method => dispatch => {
 export const storedEditorReady = service => {
   service.send('load_stored_editor');
 
-  return () => {};
+  return () => { };
 };
 
 export const downloadPlaybook = service => dispatch => {
