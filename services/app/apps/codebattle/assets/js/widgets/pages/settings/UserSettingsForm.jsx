@@ -6,14 +6,15 @@ import {
   Formik, Form, Field, useField,
 } from 'formik';
 import capitalize from 'lodash/capitalize';
+import omit from 'lodash/omit';
 import * as Icon from 'react-feather';
 import * as Yup from 'yup';
 
-import languages from '../../config/languages';
+import languages, { cssProcessors } from '../../config/languages';
 import schemas from '../../formik';
 import { createPlayer } from '../../lib/sound';
 
-const playingLanguages = Object.entries(languages);
+const playingLanguages = Object.entries(omit(languages, cssProcessors));
 
 const getPlaceholder = ({ disabled, placeholder }) => {
   if (!disabled) {

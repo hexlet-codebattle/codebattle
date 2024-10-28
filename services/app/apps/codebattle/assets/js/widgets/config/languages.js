@@ -1,4 +1,4 @@
-export default {
+const languages = {
   clojure: 'clojure',
   cpp: 'cpp',
   csharp: 'csharp',
@@ -20,4 +20,8 @@ export default {
   stylus: 'stylus',
 };
 
+export const cssProcessors = ['css', 'less', 'sass', 'stylus'];
+
 export const constructorLangauges = ['ruby'];
+
+export default languages;
