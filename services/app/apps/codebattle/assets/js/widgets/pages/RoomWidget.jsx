@@ -27,6 +27,8 @@ import NetworkAlert from './game/NetworkAlert';
 import TimeoutGameInfo from './game/TimeoutGameInfo';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
+const disableSplit = true;
+
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
   return {
@@ -53,7 +55,7 @@ export function useWindowDimensions() {
 function PanelsSplitPane({ children, viewMode }) {
   const dimensions = useWindowDimensions();
 
-  if (viewMode !== 'duel' || dimensions.width < 992) return children;
+  if (viewMode !== 'duel' || dimensions.width < 992 || disableSplit) return children;
 
   return (
     <Split
@@ -131,9 +133,9 @@ function RoomWidget({
             <div
               className={cn(
                 'container-fluid', {
-                  'd-none': roomLocked,
-                  invisible: !visible,
-                },
+                'd-none': roomLocked,
+                invisible: !visible,
+              },
               )}
             >
               <div className="row no-gutter cb-game">
