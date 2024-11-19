@@ -59,7 +59,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid =
           body
-          |> Jason.decode!()
           |> Map.get("localId")
 
         {:ok, firebase_uid}
@@ -67,7 +66,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
-          |> Jason.decode!()
           |> Map.get("error")
           |> Map.get("message")
 
@@ -89,7 +87,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:ok, %Req.Response{status: 200, body: body}} ->
         firebase_uid =
           body
-          |> Jason.decode!()
           |> Map.get("localId")
 
         {:ok, firebase_uid}
@@ -97,7 +94,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
-          |> Jason.decode!()
           |> Map.get("error")
           |> Map.get("message")
 
@@ -122,7 +118,6 @@ defmodule Codebattle.Auth.User.FirebaseUser do
       {:ok, %Req.Response{status: 400, body: body}} ->
         error_message =
           body
-          |> Jason.decode!()
           |> Map.get("error")
           |> Map.get("message")
 
