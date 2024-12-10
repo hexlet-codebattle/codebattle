@@ -134,7 +134,7 @@ defmodule CodebattleWeb.Router do
       get("/:user_id/activity", ActivityController, :show)
 
       scope("/games") do
-        resources("/:id/user_game_reports", UserGameReportController, only: [:create])
+        resources("/:game_id/user_game_reports", UserGameReportController, only: [:create])
       end
     end
   end

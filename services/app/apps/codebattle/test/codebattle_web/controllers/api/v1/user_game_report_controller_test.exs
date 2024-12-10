@@ -18,8 +18,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => bot.id,
-        "reason" => "bot_cheated",
+        "offender_id" => bot.id,
+        "reason" => "cheater",
         "comment" => "Bot is cheating"
       }
 
@@ -33,22 +33,22 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
                "user_game_report" => %{
                  "id" => user_game_report_id,
                  "reporter_id" => reporter_id,
-                 "reported_user_id" => reported_user_id,
+                 "offender_id" => offender_id,
                  "state" => "pending",
-                 "reason" => "bot_cheated",
+                 "reason" => "cheater",
                  "comment" => "Bot is cheating"
                }
              } = response
 
       assert reporter_id == user.id
-      assert reported_user_id == bot.id
+      assert offender_id == bot.id
 
       user_game_report =
-        UserGameReport.get!(user_game_report_id) |> Repo.preload([:reporter, :reported_user])
+        UserGameReport.get!(user_game_report_id) |> Repo.preload([:reporter, :offender])
 
       assert user_game_report.state == :pending
       assert user_game_report.reporter.id == user.id
-      assert user_game_report.reported_user.id == bot.id
+      assert user_game_report.offender.id == bot.id
     end
 
     test "player cannot report himself", %{conn: conn} do
@@ -62,9 +62,9 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => user.id,
-        "reason" => "cheating",
-        "comment" => "Bot is cheating"
+        "offender_id" => user.id,
+        "reason" => "copypaste",
+        "comment" => "User are cheating"
       }
 
       response =
@@ -88,8 +88,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => other_user.id,
-        "reason" => "cheating",
+        "offender_id" => other_user.id,
+        "reason" => "cheater",
         "comment" => "Bot is cheating"
       }
 
@@ -99,7 +99,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
         |> post(Routes.api_v1_user_game_report_path(conn, :create, game.id), params)
         |> json_response(422)
 
-      assert %{"errors" => ["reported_user_not_a_player_of_game"]} = response
+      assert %{"errors" => ["offender_not_a_player_of_game"]} = response
     end
 
     test "player which is not game player cannot report player of the game", %{conn: conn} do
@@ -114,8 +114,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => user.id,
-        "reason" => "cheating",
+        "offender_id" => user.id,
+        "reason" => "cheater",
         "comment" => "Bot is cheating"
       }
 
@@ -139,8 +139,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => bot.id,
-        "reason" => "bot_cheated"
+        "offender_id" => bot.id,
+        "reason" => "wrong_solution"
       }
 
       response =
@@ -163,7 +163,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       {:ok, game} = Game.Context.create_game(game_params)
 
       params = %{
-        "user_id" => bot.id,
+        "offender_id" => bot.id,
         "reason" => "not_existed_reason",
         "comment" => "Some comment"
       }

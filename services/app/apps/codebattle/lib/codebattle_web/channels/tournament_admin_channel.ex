@@ -7,6 +7,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.UserGameReport
 
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
@@ -33,6 +34,13 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     })
 
     {:noreply, socket}
+  end
+
+  def handle_in("tournament:ban:list_reports", _params, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+    reports = UserGameReport.list_by_tournament(tournament_id)
+
+    {:reply, {:ok, %{reports: reports}}, socket}
   end
 
   def handle_in("tournament:ban:player", %{"user_id" => user_id}, socket) do

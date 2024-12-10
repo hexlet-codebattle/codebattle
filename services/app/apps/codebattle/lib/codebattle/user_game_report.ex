@@ -7,22 +7,25 @@ defmodule Codebattle.UserGameReport do
 
   alias Codebattle.Game
   alias Codebattle.Repo
+  alias Codebattle.Tournament
   alias Codebattle.User
 
   @derive {Jason.Encoder,
            only: [
-             :id,
-             :reported_user_id,
-             :reporter_id,
-             :reason,
              :comment,
-             :state
+             :game_id,
+             :id,
+             :offender,
+             :reason,
+             :reporter,
+             :state,
+             :tournament_id
            ]}
 
   @type t :: %__MODULE__{}
 
   @states ~w(pending processed)a
-  @reasons ~w(bot_cheated bot_wrong_solution user_copypasted)a
+  @reasons ~w(cheater wrong_solution copypaste)a
 
   schema "user_game_reports" do
     field(:reason, Ecto.Enum, values: @reasons)
@@ -30,8 +33,9 @@ defmodule Codebattle.UserGameReport do
     field(:comment, :string)
 
     belongs_to(:game, Game)
+    belongs_to(:tournament, Tournament)
     belongs_to(:reporter, User)
-    belongs_to(:reported_user, User, foreign_key: :reported_user_id)
+    belongs_to(:offender, User, foreign_key: :offender_id)
 
     timestamps()
   end
@@ -39,18 +43,19 @@ defmodule Codebattle.UserGameReport do
   def changeset(struct = %__MODULE__{}, params \\ %{}) do
     struct
     |> cast(params, [
+      :comment,
       :game_id,
-      :reporter_id,
-      :reported_user_id,
+      :offender_id,
       :reason,
-      :comment
+      :reporter_id,
+      :tournament_id
     ])
     |> validate_required([
+      :comment,
       :game_id,
-      :reporter_id,
-      :reported_user_id,
+      :offender_id,
       :reason,
-      :comment
+      :reporter_id
     ])
   end
 
@@ -63,6 +68,14 @@ defmodule Codebattle.UserGameReport do
     __MODULE__
     |> where([ugr], ugr.game_id == ^game_id)
     |> Repo.all()
+    |> Repo.preload([:offender, :reporter])
+  end
+
+  def list_by_tournament(tournament_id) do
+    __MODULE__
+    |> where([ugr], ugr.tournament_id == ^tournament_id)
+    |> Repo.all()
+    |> Repo.preload([:offender, :reporter])
   end
 
   def create(params) do
