@@ -122,6 +122,22 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("like", %{"liked_user_id" => user_id}, socket) do
+    broadcast_from!(socket, "like", %{
+      user_id: user_id
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("dislike", %{"disliked_user_id" => user_id}, socket) do
+    broadcast_from!(socket, "dislike", %{
+      user_id: user_id
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("give_up", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
