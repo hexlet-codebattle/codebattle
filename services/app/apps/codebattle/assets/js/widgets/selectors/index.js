@@ -450,6 +450,17 @@ export const currentChatUserSelector = state => {
 
 export const taskDescriptionLanguageSelector = state => state.gameUI.taskDescriptionLanguage;
 
+export const videoConferenceSettingsSelector = createDraftSafeSelector(
+  state => state.gameUI.audioMute,
+  state => state.gameUI.videoMute,
+  (audioMute, videoMute) => ({
+    audioMute,
+    videoMute,
+  }),
+);
+
+export const showVideoConferencePanelSelector = state => state.gameUI.showVideoConferencePanel;
+
 export const playbookStatusSelector = state => state.playbook.state;
 
 export const playbookInitRecordsSelector = state => state.playbook.initRecords;

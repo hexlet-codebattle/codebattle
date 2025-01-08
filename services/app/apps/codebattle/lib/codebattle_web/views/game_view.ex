@@ -23,6 +23,10 @@ defmodule CodebattleWeb.GameView do
     end)
   end
 
+  def load_jitsi?(user, player1, player2) do
+    Codebattle.User.admin?(user) || player1.id == user.id || player2.id == user.id
+  end
+
   def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end

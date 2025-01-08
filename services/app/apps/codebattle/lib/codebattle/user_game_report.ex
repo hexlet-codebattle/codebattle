@@ -15,8 +15,10 @@ defmodule Codebattle.UserGameReport do
              :comment,
              :game_id,
              :id,
+             :offender_id,
              :offender,
              :reason,
+             :reporter_id,
              :reporter,
              :state,
              :tournament_id
@@ -79,8 +81,14 @@ defmodule Codebattle.UserGameReport do
   end
 
   def create(params) do
-    %__MODULE__{}
-    |> changeset(params)
-    |> Repo.insert()
+    result =
+      %__MODULE__{}
+      |> changeset(params)
+      |> Repo.insert()
+
+    case result do
+      {:ok, report} -> {:ok, Repo.preload(report, [:offender, :reporter])}
+      _ -> result
+    end
   end
 end

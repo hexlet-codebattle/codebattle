@@ -120,6 +120,9 @@ config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
+config :codebattle,
+  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
+
 config :runner, :runner_url, "http://localhost:4001"
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false

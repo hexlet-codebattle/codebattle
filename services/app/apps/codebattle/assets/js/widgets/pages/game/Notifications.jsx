@@ -17,6 +17,7 @@ import BackToTournamentButton from './BackToTournamentButton';
 import GameResult from './GameResult';
 import GoToNextGame from './GoToNextGame';
 import ReplayerControlButton from './ReplayerControlButton';
+import VideoConferenceButton from './VideoConferenceButton';
 
 function Notifications() {
   const { mainService } = useContext(RoomContext);
@@ -35,6 +36,10 @@ function Notifications() {
   return (
     <>
       {roomMachineState.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
+      {(isAdmin
+        && !roomMachineState.matches({ replayer: replayerMachineStates.off })
+        && !roomMachineState.matches({ room: roomMachineStates.testing })
+      ) && <VideoConferenceButton />}
       <ReplayerControlButton />
       {(isCurrentUserPlayer && roomMachineState.matches({ room: roomMachineStates.gameOver }))
         && (

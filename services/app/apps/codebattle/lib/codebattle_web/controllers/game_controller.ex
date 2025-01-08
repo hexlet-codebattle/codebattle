@@ -13,6 +13,8 @@ defmodule CodebattleWeb.GameController do
 
   alias CodebattleWeb.Api.GameView
 
+  @jitsi_api_key Application.compile_env(:codebattle, :jitsi_api_key)
+
   action_fallback(CodebattleWeb.FallbackController)
 
   def show(conn, %{"id" => id}) do
@@ -26,6 +28,7 @@ defmodule CodebattleWeb.GameController do
 
         conn =
           put_gon(conn,
+            jitsi_api_key: @jitsi_api_key,
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
             game: game_params,
             game_id: id,
@@ -47,7 +50,7 @@ defmodule CodebattleWeb.GameController do
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([player])
             })
-            |> render("join.html", %{game: game})
+            |> render("join.html", %{game: game, user: user})
 
           _ ->
             first = Helpers.get_first_player(game)
@@ -61,7 +64,7 @@ defmodule CodebattleWeb.GameController do
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([first, second])
             })
-            |> render("show.html", %{game: game})
+            |> render("show.html", %{game: game, user: user})
         end
 
       game ->
@@ -77,6 +80,7 @@ defmodule CodebattleWeb.GameController do
 
           conn
           |> put_gon(
+            jitsi_api_key: @jitsi_api_key,
             is_record: true,
             game_id: id,
             game: game_params,
@@ -91,7 +95,7 @@ defmodule CodebattleWeb.GameController do
             image: Routes.game_image_url(conn, :show, id),
             twitter: get_twitter_labels_meta(game.users)
           })
-          |> render("show.html")
+          |> render("show.html", %{game: game, user: user})
         else
           conn
           |> put_meta_tags(%{
@@ -100,7 +104,7 @@ defmodule CodebattleWeb.GameController do
             image: Routes.game_image_url(conn, :show, id),
             url: Routes.game_url(conn, :show, id)
           })
-          |> render("game_result.html", %{game: game})
+          |> render("game_result.html", %{game: game, user: user})
         end
     end
   end

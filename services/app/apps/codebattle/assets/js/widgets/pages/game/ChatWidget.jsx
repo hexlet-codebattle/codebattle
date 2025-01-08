@@ -28,6 +28,7 @@ import useChatRooms from '../../utils/useChatRooms';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 import Notifications from './Notifications';
+import VideoConference from './VideoConference';
 
 function ChatWidget() {
   const { mainService } = useContext(RoomContext);
@@ -38,6 +39,7 @@ function ChatWidget() {
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const useChat = useSelector(selectors.gameUseChatSelector);
+  const showVideoConferencePanel = useSelector(selectors.showVideoConferencePanelSelector);
 
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
@@ -45,7 +47,7 @@ function ChatWidget() {
 
   // const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = (gameMode === GameRoomModes.standard);
-  const showChatInput = !openedReplayer && !isTestingRoom && useChat && !isRestricted;
+  const showChatInput = !openedReplayer && !isTestingRoom && !isRestricted && useChat;
   // const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
 
   const disabledChatHeader = isTestingRoom || !isOnline || !useChat;
@@ -83,21 +85,27 @@ function ChatWidget() {
             'cb-game-chat-container cb-messages-container',
           )}
         >
-          <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
-          {openedReplayer
-            ? (
-              <Messages
-                messages={historyMessages}
-                disabled={disabledChatMessages}
-              />
-            ) : (
-              <Messages
-                displayMenu={displayMenu}
-                messages={filteredMessages}
-                disabled={disabledChatMessages}
-              />
+          {showVideoConferencePanel ? (
+            <VideoConference />
+          ) : (
+            <>
+              <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
+              {openedReplayer
+                ? (
+                  <Messages
+                    messages={historyMessages}
+                    disabled={disabledChatMessages}
+                  />
+                ) : (
+                  <Messages
+                    displayMenu={displayMenu}
+                    messages={filteredMessages}
+                    disabled={disabledChatMessages}
+                  />
+                )}
+              {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
+            </>
           )}
-          {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
         </div>
         <div className="flex-shrink-1 p-0 border-left rounded-right cb-game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">

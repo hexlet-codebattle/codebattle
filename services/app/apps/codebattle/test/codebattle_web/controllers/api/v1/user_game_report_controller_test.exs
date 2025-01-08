@@ -17,10 +17,13 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       {:ok, game} = Game.Context.create_game(game_params)
 
+      reason = "cheater"
+      comment = "Bot is cheating"
+
       params = %{
         "offender_id" => bot.id,
-        "reason" => "cheater",
-        "comment" => "Bot is cheating"
+        "reason" => reason,
+        "comment" => comment
       }
 
       response =
@@ -35,8 +38,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
                  "reporter_id" => reporter_id,
                  "offender_id" => offender_id,
                  "state" => "pending",
-                 "reason" => "cheater",
-                 "comment" => "Bot is cheating"
+                 "reason" => ^reason,
+                 "comment" => ^comment
                }
              } = response
 
