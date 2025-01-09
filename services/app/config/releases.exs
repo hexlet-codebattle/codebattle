@@ -21,6 +21,9 @@ config :codebattle, CodebattleWeb.BotEndpoint,
 
 config :codebattle, host: host
 
+config :codebattle,
+  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
+
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
   ssl: true,
