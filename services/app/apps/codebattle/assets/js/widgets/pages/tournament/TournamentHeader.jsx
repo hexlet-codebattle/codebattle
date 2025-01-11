@@ -179,7 +179,7 @@ function TournamentHeader({
     'btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const backBtnClassName = cn('btn rounded-lg ml-lg-2 ml-md-2 mr-2', {
+  const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
     'btn-primary': !hasCustomEventStyle,
     'cb-custom-event-btn-primary': hasCustomEventStyle,
   });
@@ -203,7 +203,7 @@ function TournamentHeader({
   return (
     <>
       <div className="col bg-white shadow-sm rounded-lg p-2">
-        <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between">
+        <div className="d-flex flex-column flex-lg-row justify-content-between">
           <div className="d-flex align-items-center pb-2">
             <h2
               title={name}
@@ -247,21 +247,8 @@ function TournamentHeader({
           </div>
           <div className="d-flex">
             {!streamMode && (
-              !isOver ? (
-                <div className="d-flex justify-items-center pb-2">
-                  {type !== 'team' && (
-                    <div className="mr-2 mr-lg-0">
-                      <JoinButton
-                        isShow={state !== TournamentStates.active || type === 'arena'}
-                        isShowLeave={!(type === 'arena' && state === TournamentStates.active)}
-                        isParticipant={!!players[currentUserId]}
-                        disabled={!isOnline || !isLive}
-                      />
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="d-flex justify-items-center pb-2">
+              <div className="d-flex justify-items-center pb-2">
+                {!players[currentUserId] && (
                   <a
                     className={backBtnClassName}
                     href="/tournaments"
@@ -269,8 +256,18 @@ function TournamentHeader({
                     <FontAwesomeIcon className="mr-2" icon="undo" />
                     {i18next.t('Back to tournaments')}
                   </a>
-                </div>
-              )
+                )}
+                {type !== 'team' && !isOver && (
+                  <div className="d-flex mr-2 mr-lg-0">
+                    <JoinButton
+                      isShow={state !== TournamentStates.active || type === 'arena'}
+                      isShowLeave={type !== 'arena' || state !== TournamentStates.active}
+                      isParticipant={!!players[currentUserId]}
+                      disabled={!isOnline || !isLive}
+                    />
+                  </div>
+                )}
+              </div>
             )}
             <div className="d-flex justify-items-center pb-2">
               {canModerate && (
