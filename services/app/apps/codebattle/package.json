@@ -68,7 +68,7 @@
     "humps": "^2.0.1",
     "i18next": "^19.8.4",
     "jquery": "^3.5.1",
-    "katex": "^0.16.10",
+    "katex": "^0.16.21",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.7.3",
     "moment": "^2.29.4",
