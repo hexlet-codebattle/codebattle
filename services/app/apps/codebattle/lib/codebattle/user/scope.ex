@@ -50,7 +50,7 @@ defmodule Codebattle.User.Scope do
 
   defp search_by_name(query, %{"q" => %{"name_ilike" => term}})
        when is_binary(term) do
-    where(query, [u: u], ilike(u.name, ^"%#{term}%"))
+    where(query, [u: u], ilike(u.name, ^"#{term}%"))
   end
 
   defp search_by_name(query, _params), do: query
