@@ -15,8 +15,10 @@ const initialState = {
   showToastActionsAfterGame: false,
   isShowGuide: false,
   showVideoConferencePanel: false,
-  videoMute: true,
-  audioMute: true,
+  videoMuted: false,
+  audioMuted: false,
+  audioAvailable: false,
+  videoAvailable: false,
 };
 
 const gameUI = createSlice({
@@ -52,11 +54,17 @@ const gameUI = createSlice({
     toggleShowVideoConferencePanel: state => {
       state.showVideoConferencePanel = !state.showVideoConferencePanel;
     },
-    setAudioMute: (state, payload) => {
-      state.audioMute = payload;
+    setAudioMuted: (state, { payload }) => {
+      state.audioMuted = payload;
     },
-    setVideoMute: (state, payload) => {
-      state.videoMute = payload;
+    setVideoMuted: (state, { payload }) => {
+      state.videoMuted = payload;
+    },
+    setAudioAvailable: (state, { payload }) => {
+      state.audioAvailable = payload;
+    },
+    setVideoAvailable: (state, { payload }) => {
+      state.videoAvailable = payload;
     },
   },
 });

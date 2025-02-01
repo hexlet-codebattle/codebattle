@@ -56,12 +56,8 @@ Editor.propTypes = {
   editable: PropTypes.bool,
   roomMode: PropTypes.string.isRequired,
   checkResult: PropTypes.func.isRequired,
-  toggleMuteSound: PropTypes.func.isRequired,
-  mute: PropTypes.bool.isRequired,
   userType: PropTypes.string.isRequired,
-  userId: PropTypes.string.isRequired,
-  onChangeCursorSelection: PropTypes.func.isRequired,
-  onChangeCursorPosition: PropTypes.func.isRequired,
+  userId: PropTypes.number.isRequired,
 };
 
 Editor.defaultProps = {

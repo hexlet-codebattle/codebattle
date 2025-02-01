@@ -109,7 +109,7 @@ const useOption = (editor, {
  *   toggleMuteSound: Function,
  *   mute: boolean,
  *   userType: string,
- *   userId: string,
+ *   userId: number,
  *   onChangeCursorSelection: Function,
  *   onChangeCursorPosition: Function,
  * }} props

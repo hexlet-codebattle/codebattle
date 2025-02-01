@@ -27,8 +27,8 @@ const {
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
 const gameUIPersistWhitelist = [
-  'audioMute',
-  'videoMute',
+  'audioMuted',
+  'videoMuted',
   'showVideoConferencePanel',
   'editorMode',
   'editorTheme',

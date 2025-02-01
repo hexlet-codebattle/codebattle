@@ -25,6 +25,8 @@ export const currentUserIsAdminSelector = state => !!state.user.users[state.user
 
 export const currentUserIsGuestSelector = state => !!state.user.users[state.user.currentUserId].isGuest;
 
+export const userByIdSelector = userId => state => state.user.users[userId];
+
 export const userIsAdminSelector = userId => state => !!state.user.users[userId]?.isAdmin;
 
 export const subscriptionTypeSelector = state => (
@@ -450,12 +452,21 @@ export const currentChatUserSelector = state => {
 
 export const taskDescriptionLanguageSelector = state => state.gameUI.taskDescriptionLanguage;
 
+export const videoConferenceMediaAvailableSelector = createDraftSafeSelector(
+  state => state.gameUI.audioAvailable,
+  state => state.gameUI.videoAvailable,
+  (audioAvailable, videoAvailable) => ({
+    audioAvailable,
+    videoAvailable,
+  }),
+);
+
 export const videoConferenceSettingsSelector = createDraftSafeSelector(
-  state => state.gameUI.audioMute,
-  state => state.gameUI.videoMute,
-  (audioMute, videoMute) => ({
-    audioMute,
-    videoMute,
+  state => state.gameUI.audioMuted,
+  state => state.gameUI.videoMuted,
+  (audioMuted, videoMuted) => ({
+    audioMuted,
+    videoMuted,
   }),
 );
 
