@@ -71,7 +71,7 @@ defmodule CodebattleWeb.Api.V1.TaskController do
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
-        |> put_status(:failure)
+        |> put_status(:unprocessable_entity)
         |> json(%{error: "failure", changeset: changeset})
     end
   end
