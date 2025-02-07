@@ -95,7 +95,7 @@ class ExtendedEditor extends Component {
 
   render() {
     // Implement your render method here
-    return null;
+    return <></>;
   }
 }
 
