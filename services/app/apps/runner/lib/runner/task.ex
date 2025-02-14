@@ -9,9 +9,10 @@ defmodule Runner.Task do
 
   @type t :: %__MODULE__{}
 
-  @fields [:input_signature, :output_signature, :asserts, :asserts_examples]
+  @fields [:comment, :input_signature, :output_signature, :asserts, :asserts_examples]
   @primary_key false
   embedded_schema do
+    field(:comment, :string, default: "use stdout to debug")
     field(:input_signature, {:array, AtomizedMap}, default: [])
     field(:output_signature, AtomizedMap, default: %{})
     field(:asserts, {:array, AtomizedMap}, default: [])

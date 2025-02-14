@@ -30,6 +30,7 @@ defmodule Runner.Languages do
       def solution(<%= arguments %>)
         <%= return_statement %>
       end
+      # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -66,6 +67,7 @@ defmodule Runner.Languages do
       const solution = (<%= arguments %>) => {
         <%= return_statement %>
       };
+      // <%= comment %>
 
       module.exports = solution;
       """,
@@ -112,6 +114,8 @@ defmodule Runner.Languages do
 
       };
 
+      // <%= comment %>
+
       export default solution;
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
@@ -145,6 +149,7 @@ defmodule Runner.Languages do
       <%= expected %>solution(<%= arguments %>) {
 
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -180,6 +185,7 @@ defmodule Runner.Languages do
       <%= expected %> solution(<%= arguments %>) {
         <%= return_statement %>
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       return_template: "return <%= default_value %>;",
@@ -232,6 +238,7 @@ defmodule Runner.Languages do
 
         }
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
@@ -274,6 +281,7 @@ defmodule Runner.Languages do
       fun solution(<%= arguments %>):<%= expected %> {
 
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -322,6 +330,7 @@ defmodule Runner.Languages do
           }
         }
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -364,6 +373,7 @@ defmodule Runner.Languages do
       func solution(<%= arguments %>)<%= expected %> {
 
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
@@ -400,6 +410,7 @@ defmodule Runner.Languages do
           <%= return_statement %>
         end
       end
+      # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "<%= default_value %>",
@@ -434,6 +445,7 @@ defmodule Runner.Languages do
 
       def solution(<%= arguments %>)<%= expected %>:
         <%= return_statement %>
+      # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
@@ -478,6 +490,7 @@ defmodule Runner.Languages do
       function solution(<%= arguments %>) {
         <%= return_statement %>
       }
+      // <%= comment %>
       """,
       return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
@@ -525,6 +538,7 @@ defmodule Runner.Languages do
       (defn solution [<%= arguments %>]
         <%= return_statement %>
       )
+      ; <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
@@ -586,6 +600,7 @@ defmodule Runner.Languages do
         vector
         vector-algorithms
       -}
+      -- <%= comment %>
       """,
       typespec_template: %{argument: "<%= type %>", delimiter: " -> "},
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
@@ -628,6 +643,7 @@ defmodule Runner.Languages do
       pub fn solution(<%= arguments %>) -> <%= expected %> {
 
       }
+      // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: "<%= type %>",

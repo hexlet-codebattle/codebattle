@@ -13,24 +13,25 @@ defmodule Codebattle.Task do
 
   @derive {Jason.Encoder,
            only: [
-             :id,
-             :name,
-             :level,
-             :examples,
-             :description_ru,
-             :description_en,
-             :tags,
-             :state,
-             :origin,
-             :visibility,
-             :creator_id,
-             :input_signature,
-             :output_signature,
+             :arguments_generator,
              :asserts,
              :asserts_examples,
+             :comment,
+             :creator_id,
+             :description_en,
+             :description_ru,
+             :examples,
+             :generator_lang,
+             :id,
+             :input_signature,
+             :level,
+             :name,
+             :origin,
+             :output_signature,
              :solution,
-             :arguments_generator,
-             :generator_lang
+             :state,
+             :tags,
+             :visibility
            ]}
 
   @level_order %{
@@ -62,6 +63,7 @@ defmodule Codebattle.Task do
     field(:description_en, :string)
     field(:name, :string)
     field(:level, :string)
+    field(:comment, :string)
     field(:input_signature, {:array, AtomizedMap}, default: [])
     field(:output_signature, AtomizedMap, default: %{})
     field(:asserts_examples, {:array, AtomizedMap}, default: [])
@@ -84,23 +86,24 @@ defmodule Codebattle.Task do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :examples,
-      :asserts,
-      :description_ru,
-      :description_en,
-      :name,
-      :level,
-      :input_signature,
-      :output_signature,
-      :disabled,
-      :tags,
-      :state,
-      :origin,
-      :visibility,
-      :creator_id,
-      :solution,
       :arguments_generator,
-      :generator_lang
+      :asserts,
+      :comment,
+      :creator_id,
+      :description_en,
+      :description_ru,
+      :disabled,
+      :examples,
+      :generator_lang,
+      :input_signature,
+      :level,
+      :name,
+      :origin,
+      :output_signature,
+      :solution,
+      :state,
+      :tags,
+      :visibility
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])
     |> validate_inclusion(:state, @states)
@@ -116,22 +119,24 @@ defmodule Codebattle.Task do
     |> Codebattle.Repo.insert!(
       on_conflict: [
         set: [
-          creator_id: params[:creator_id],
-          origin: params.origin,
-          state: params.state,
-          visibility: params.visibility,
-          examples: params.examples,
-          description_en: params.description_en,
-          description_ru: params.description_ru,
-          level: params.level,
-          input_signature: params.input_signature,
-          output_signature: params.output_signature,
+          arguments_generator: Map.get(params, :arguments_generator, ""),
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
-          solution: Map.get(params, :solution, ""),
-          arguments_generator: Map.get(params, :arguments_generator, ""),
+          comment: Map.get(params, :comment),
+          conflict: params.conflict,
+          creator_id: params[:creator_id],
+          description_en: params.description_en,
+          description_ru: params.description_ru,
+          examples: params.examples,
           generator_lang: Map.get(params, :generator_lang, "js"),
-          tags: params.tags
+          input_signature: params.input_signature,
+          level: params.level,
+          origin: params.origin,
+          output_signature: params.output_signature,
+          solution: Map.get(params, :solution, ""),
+          state: params.state,
+          tags: params.tags,
+          visibility: params.visibility
         ]
       ],
       conflict_target: :name
@@ -233,6 +238,7 @@ defmodule Codebattle.Task do
       name: "",
       description_ru: "",
       description_en: "",
+      comment: "",
       level: "elementary",
       input_signature: [],
       output_signature: %{
