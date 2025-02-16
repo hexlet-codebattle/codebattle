@@ -1,0 +1,51 @@
+name: Build package
+
+on:
+  push:
+
+jobs:
+  build-package:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Timoni
+        uses: stefanprodan/timoni/actions/setup@main
+      - name: Setup Flux
+        uses: fluxcd/flux2/action@main
+
+      - name: Preapre tag
+        run: |
+          tag=$(echo ${{ github.ref_name}} | tr '/' '-')
+          echo "tag=${tag}" >> "${GITHUB_ENV}"
+
+      - name: Build bundle
+        env:
+          BUNDLE_PATH: k8s/timoni/
+        run: |
+          mkdir ${{ runner.temp }}/timoni
+          timoni bundle build \
+            -f ${BUNDLE_PATH}bundle.cue \
+            -f ${BUNDLE_PATH}runners.cue \
+            -f ${BUNDLE_PATH}values.cue > ${{ runner.temp }}/timoni/build.yaml
+
+      - name: Diff artifacts
+        run: |
+          set +e
+          flux diff artifact \
+            --creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            oci://ghcr.io/${{ github.repository }}-manifests:${tag} \
+            --path ${{ runner.temp }}/timoni
+          echo "diff=$?" >> "${GITHUB_ENV}"
+
+      - name: Push artifact
+        if: ${{ env.diff != '0' }}
+        run: |
+          flux push artifact \
+            --creds ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }} \
+            -f ${{ runner.temp }}/timoni \
+            --source ${{ github.repositoryUrl }} \
+            --revision ${{ inputs.tag }}@sha1:${{ github.sha }} \
+            oci://ghcr.io/${{ github.repository }}-manifests:${tag}
