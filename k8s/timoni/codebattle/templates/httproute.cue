@@ -11,9 +11,9 @@ import (
 	metadata:   #config.metadata
 	spec: {
 		parentRefs: [{
-			name: #config.gateway.gatewayName
+			name:        #config.gateway.gatewayName
+			sectionName: "https"
 		}]
-		hostnames: [#config.gateway.host]
 		rules: [{
 			matches: [{
 				path: {

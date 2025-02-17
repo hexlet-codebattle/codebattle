@@ -9,18 +9,21 @@ import (
 	apiVersion: "gateway.networking.k8s.io/v1"
 	kind:       "Gateway"
 	metadata:   #config.metadata
+	metadata: annotations: "cert-manager.io/issuer": "codebattle"
 	spec: {
 		gatewayClassName: metadata.name
 		listeners: [{
-			name:     "tls"
+			name:     "http"
+			port:     80
+			protocol: "HTTP"
+		}, {
+			name:     "https"
 			port:     443
 			protocol: "HTTPS"
 			tls: {
 				mode: "Terminate"
 				certificateRefs: [{
-					group: ""
-					kind:  "Secret"
-					name:  metadata.name
+					name: metadata.name
 				}]
 			}
 		}]

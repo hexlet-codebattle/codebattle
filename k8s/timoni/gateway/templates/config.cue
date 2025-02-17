@@ -21,5 +21,6 @@ import (
 	objects: {
 		gatewayclass: #GatewayClass & {#config: config}
 		gateway: #Gateway & {#config: config}
+		httproute: #HTTPRoute & {#config: config}
 	}
 }
