@@ -8,6 +8,7 @@ defmodule Runner.SolutionGeneratorTest do
   (defn solution [a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings]
     ["value"]
   )
+  ; use stdout to debug
   """
   @cpp_expected """
   #include <bits/stdc++.h>
@@ -17,6 +18,7 @@ defmodule Runner.SolutionGeneratorTest do
   vector<string> solution(int a, string text, double b, bool c, map<string,string> nested_hash_of_string, vector<string> nested_array_of_string, vector<vector<string>> nested_array_of_array_of_strings) {
     return {"value"};
   }
+  // use stdout to debug
   """
 
   @csharp_expected """
@@ -33,12 +35,14 @@ defmodule Runner.SolutionGeneratorTest do
       }
     }
   }
+  // use stdout to debug
   """
 
   @dart_expected """
   List<String> solution(int a, String text, double b, bool c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
 
   }
+  // use stdout to debug
   """
 
   @elixir_expected """
@@ -47,6 +51,7 @@ defmodule Runner.SolutionGeneratorTest do
       ["value"]
     end
   end
+  # use stdout to debug
   """
 
   @golang_expected """
@@ -56,6 +61,7 @@ defmodule Runner.SolutionGeneratorTest do
   func solution(a int64, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
 
   }
+  // use stdout to debug
   """
 
   @haskell_expected """
@@ -66,6 +72,7 @@ defmodule Runner.SolutionGeneratorTest do
   solution :: Int -> String -> Double -> Bool -> HM.HashMap String String -> [String] -> [[String]] -> [String]
   solution a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings =
 
+  -- use stdout to debug
   {- Included packages:
     aeson
     bytestring
@@ -105,6 +112,7 @@ defmodule Runner.SolutionGeneratorTest do
 
     }
   }
+  // use stdout to debug
   """
 
   @js_expected """
@@ -114,6 +122,7 @@ defmodule Runner.SolutionGeneratorTest do
   const solution = (a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) => {
     return ["value"];
   };
+  // use stdout to debug
 
   module.exports = solution;
   """
@@ -126,6 +135,7 @@ defmodule Runner.SolutionGeneratorTest do
   fun solution(a: Int, text: String, b: Double, c: Boolean, nested_hash_of_string: Map<String, String>, nested_array_of_string: List<String>, nested_array_of_array_of_strings: List<List<String>>): List<String> {
 
   }
+  // use stdout to debug
   """
 
   @php_expected """
@@ -134,6 +144,7 @@ defmodule Runner.SolutionGeneratorTest do
   function solution(int $a, string $text, float $b, bool $c, array $nested_hash_of_string, array $nested_array_of_string, array $nested_array_of_array_of_strings) {
     return ["value"];
   }
+  // use stdout to debug
   """
 
   @python_expected """
@@ -141,12 +152,14 @@ defmodule Runner.SolutionGeneratorTest do
 
   def solution(a: int, text: str, b: float, c: bool, nested_hash_of_string: Dict[str, str], nested_array_of_string: List[str], nested_array_of_array_of_strings: List[List[str]]) -> List[str]:
     return ["value"];
+  # use stdout to debug
   """
 
   @ruby_expected """
   def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)
     ["value"]
   end
+  # use stdout to debug
   """
 
   @rust_expected """
@@ -155,6 +168,7 @@ defmodule Runner.SolutionGeneratorTest do
   pub fn solution(a: i64, text: String, b: f64, c: bool, nested_hash_of_string: HashMap<String, String>, nested_array_of_string: Vec<String>, nested_array_of_array_of_strings: Vec<Vec<String>>) -> Vec<String> {
 
   }
+  // use stdout to debug
   """
   @ts_expected """
   import * as _ from "lodash";
@@ -163,6 +177,8 @@ defmodule Runner.SolutionGeneratorTest do
   function solution(a: number, text: string, b: number, c: boolean, nested_hash_of_string: any, nested_array_of_string: Array<string>, nested_array_of_array_of_strings: Array<Array<string>>): Array<string> {
 
   };
+
+  // use stdout to debug
 
   export default solution;
   """

@@ -77,6 +77,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -90,6 +91,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -121,6 +123,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -149,6 +152,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -226,6 +230,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -239,6 +244,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -270,6 +276,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """
@@ -298,6 +305,7 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
              """

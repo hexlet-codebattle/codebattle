@@ -149,7 +149,7 @@ defmodule CodebattleWeb.Router do
 
     get("/", RootController, :index)
 
-    resources("/session", SessionController, singleton: true, only: [:delete, :new])
+    resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show])

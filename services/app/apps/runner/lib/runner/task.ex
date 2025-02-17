@@ -9,7 +9,9 @@ defmodule Runner.Task do
 
   @type t :: %__MODULE__{}
 
-  @fields [:comment, :input_signature, :output_signature, :asserts, :asserts_examples]
+  @required_fields [:input_signature, :output_signature, :asserts, :asserts_examples]
+  @all_fields @required_fields ++ [:comment]
+
   @primary_key false
   embedded_schema do
     field(:comment, :string, default: "use stdout to debug")
@@ -24,8 +26,8 @@ defmodule Runner.Task do
 
   def new!(params = %{}) do
     %__MODULE__{}
-    |> cast(params, @fields)
-    |> validate_required(@fields)
+    |> cast(params, @all_fields)
+    |> validate_required(@required_fields)
     |> apply_action!(:validate)
   end
 end

@@ -574,6 +574,7 @@ defmodule Runner.Languages do
       solution :: <%= typespec %><%= expected %>
       solution <%= arguments %> =
 
+      -- <%= comment %>
       {- Included packages:
         aeson
         bytestring
@@ -600,7 +601,6 @@ defmodule Runner.Languages do
         vector
         vector-algorithms
       -}
-      -- <%= comment %>
       """,
       typespec_template: %{argument: "<%= type %>", delimiter: " -> "},
       arguments_template: %{argument: "<%= name %>", delimiter: " "},

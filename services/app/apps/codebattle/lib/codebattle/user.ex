@@ -2,6 +2,7 @@ defmodule Codebattle.User do
   @moduledoc """
     Represents authenticatable user
   """
+
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -63,6 +64,7 @@ defmodule Codebattle.User do
     field(:is_bot, :boolean, default: false)
     field(:lang, :string, default: "js")
     field(:name, :string)
+    field(:password_hash, :string)
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
@@ -197,6 +199,38 @@ defmodule Codebattle.User do
     |> get!()
     |> changeset(%{subscription_type: type})
     |> Repo.update()
+  end
+
+  def authenticate(name, password) do
+    __MODULE__
+    |> Repo.get_by(name: name)
+    |> case do
+      nil -> nil
+      user -> verify_password(user, password)
+    end
+  end
+
+  defp verify_password(_user, nil), do: nil
+
+  defp verify_password(user, password) do
+    if Bcrypt.verify_pass(password, user.password_hash) do
+      user
+    else
+      nil
+    end
+  end
+
+  def create_password_hash_by_id(user_id, password) do
+    user_id
+    |> get!()
+    |> create_password_hash(password)
+  end
+
+  def create_password_hash(user, password) do
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+
+    from(u in __MODULE__, where: u.id == ^user.id)
+    |> Repo.update_all(set: [password_hash: hashed_password])
   end
 
   def subscription_types, do: @subscription_types

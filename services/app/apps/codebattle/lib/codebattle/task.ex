@@ -123,7 +123,6 @@ defmodule Codebattle.Task do
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
           comment: Map.get(params, :comment),
-          conflict: params.conflict,
           creator_id: params[:creator_id],
           description_en: params.description_en,
           description_ru: params.description_ru,
