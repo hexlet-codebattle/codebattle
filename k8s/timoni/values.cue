@@ -3,4 +3,5 @@ codebattleValues: {
 		enable:      true
 		gatewayName: "gateway"
 	}
+	certManager: enable: true
 }

@@ -66,10 +66,12 @@ import (
 	}
 
 	gateway: {
-		enable:      *false | bool
+		enable:      certManager.enable & (*false | bool)
 		gatewayName: string
 		host:        *"codebattle.hexlet.io" | string
 	}
+
+	certManager: enable: *false | bool
 }
 
 // Instance takes the config values and outputs the Kubernetes objects.
@@ -84,6 +86,9 @@ import (
 		}
 		if config.gateway.enable {
 			gateway: #HTTPRoute & {#config: config}
+		}
+		if config.certManager.enable {
+			issuer: #Issuer & {#config: config}
 		}
 	}
 }

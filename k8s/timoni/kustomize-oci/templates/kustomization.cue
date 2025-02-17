@@ -32,6 +32,9 @@ import (
 		if #config.dependsOn != _|_ {
 			dependsOn: #config.dependsOn
 		}
-		patches: [for p in #config.patches {patch: yaml.Marshal(p)}]
+		patches: [for p in #config.patches {
+			patch:  yaml.Marshal(p.patch)
+			target: p.target
+		}]
 	}
 }
