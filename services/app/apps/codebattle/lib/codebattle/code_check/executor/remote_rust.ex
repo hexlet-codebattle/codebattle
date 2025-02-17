@@ -100,5 +100,8 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
   end
 
   # defp runner_url(_lang), do: "http://localhost:4002/run"
-  defp runner_url(lang), do: "http://runner-#{lang}.default.svc/run"
+  defp runner_url(lang) do
+    namespace = Application.get_env(:codebattle, :k8s_namespace, "default")
+    "http://runner-#{lang}.#{namespace}.svc/run"
+  end
 end

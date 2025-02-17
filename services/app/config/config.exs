@@ -123,6 +123,8 @@ config :codebattle,
 config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
+config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
+
 config :runner, :runner_url, "http://localhost:4001"
 config :runner, load_dot_env_file: true
 config :runner, pull_docker_images: false
