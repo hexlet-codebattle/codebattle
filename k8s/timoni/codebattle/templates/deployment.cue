@@ -47,6 +47,9 @@ import (
 					}, {
 						name:  "CODEBATTLE_VERSION"
 						value: #config.image.codebattle.tag
+					}, {
+						name: "KUBERNETES_NAMESPACE"
+						valueFrom: fieldRef: fieldPath: "metadata.namespace"
 					}]
 				}, {
 					name:            "nginx"
