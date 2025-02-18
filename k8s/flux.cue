@@ -63,6 +63,21 @@ bundle: {
 						name:      "gateway"
 						namespace: "codebattle"
 					}
+				}, {
+					patch: [{
+						op:   "add"
+						path: "/spec/template/spec/containers/0/env/-"
+						value: {
+							name:  "CODEBATTLE_HOSTNAME"
+							value: _hostname
+						}
+					}]
+					target: {
+						group:     "apps"
+						kind:      "Deployment"
+						name:      "codebattle"
+						namespace: "codebattle"
+					}
 				}]
 			}
 		}

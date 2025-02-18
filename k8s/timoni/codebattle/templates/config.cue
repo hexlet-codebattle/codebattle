@@ -72,6 +72,8 @@ import (
 	}
 
 	certManager: enable: *false | bool
+
+	rustExecutor: *false | bool
 }
 
 // Instance takes the config values and outputs the Kubernetes objects.
