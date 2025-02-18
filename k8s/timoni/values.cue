@@ -4,4 +4,5 @@ codebattleValues: {
 		gatewayName: "gateway"
 	}
 	certManager: enable: true
+	rustExecutor: true
 }

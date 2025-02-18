@@ -50,6 +50,9 @@ import (
 					}, {
 						name: "KUBERNETES_NAMESPACE"
 						valueFrom: fieldRef: fieldPath: "metadata.namespace"
+					}, if #config.rustExecutor {
+						name:  "CODEBATTLE_EXECUTOR"
+						value: "rust"
 					}]
 				}, {
 					name:            "nginx"
