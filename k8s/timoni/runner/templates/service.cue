@@ -13,7 +13,7 @@ import (
 		type:     corev1.#ServiceTypeClusterIP
 		selector: #config.selector.labels
 		ports: [{
-			port:       #config.service.port
+			port:       80
 			protocol:   "TCP"
 			name:       "http"
 			targetPort: name
