@@ -13,11 +13,13 @@ defmodule CodebattleWeb.AuthController do
         url = Application.get_env(:codebattle, :force_redirect_url, "/")
 
         url =
-          if url == "" do
+          if url in [nil, ""] do
             "/"
           else
             url
           end
+
+        Logger.info("Redirecting to #{url}")
 
         conn
         |> put_flash(:info, gettext("Successfully authenticated"))
@@ -25,6 +27,8 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: url)
 
       {:error, reason} ->
+        Logger.error("Failed to authenticate user: #{inspect(reason)}")
+
         if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
           conn
           |> redirect(external: url)
