@@ -1,6 +1,5 @@
 defmodule CodebattleWeb.Live.Event.LeaderboardView do
   use CodebattleWeb, :live_view
-
   use Gettext, backend: CodebattleWeb.Gettext
 
   @impl true

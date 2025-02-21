@@ -2,9 +2,10 @@ defmodule Codebattle.User.Achievements do
   @moduledoc """
     Count user achievements
   """
-  alias Codebattle.{Repo, UserGame}
-
   import Ecto.Query, warn: false
+
+  alias Codebattle.Repo
+  alias Codebattle.UserGame
 
   def recalculate_achievements(user) do
     {user.achievements, user}
@@ -14,9 +15,7 @@ defmodule Codebattle.User.Achievements do
   end
 
   def count_played_games({achievements, user}) do
-    user_games_count =
-      from(ug in UserGame, select: ug.result, where: ug.user_id == ^user.id)
-      |> Repo.aggregate(:count, :id)
+    user_games_count = Repo.aggregate(from(ug in UserGame, select: ug.result, where: ug.user_id == ^user.id), :count, :id)
 
     filtered_achievements = Enum.filter(achievements, &(!Regex.match?(~r/played_.+_games/, &1)))
 
@@ -62,19 +61,19 @@ defmodule Codebattle.User.Achievements do
         group_by: ug.lang
       )
 
-    languages = Repo.all(query) |> Enum.into(%{}) |> Map.keys()
+    languages = query |> Repo.all() |> Map.new() |> Map.keys()
 
     exist_achievement =
-      Enum.filter(achievements, fn x -> String.contains?(x, "win_games_with") end) |> Enum.at(0)
+      achievements |> Enum.filter(fn x -> String.contains?(x, "win_games_with") end) |> Enum.at(0)
 
     new_achievement = "win_games_with?#{Enum.join(languages, "_")}"
 
     if Enum.count(languages) >= 3 do
-      if new_achievement !== exist_achievement do
+      if new_achievement === exist_achievement do
+        {achievements, user}
+      else
         new_list = List.delete(achievements, exist_achievement)
         {new_list ++ [new_achievement], user}
-      else
-        {achievements, user}
       end
     else
       {achievements, user}

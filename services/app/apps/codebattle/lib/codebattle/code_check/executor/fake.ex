@@ -20,12 +20,12 @@ defmodule Codebattle.CodeCheck.Executor.Fake do
   """
 
   @spec call(Token.t()) :: Token.t()
-  def call(token = %{solution_text: "solve_percent_33"}) do
+  def call(%{solution_text: "solve_percent_33"} = token) do
     %{token | container_stderr: "", container_output: @fake_output_33, exit_code: 0}
   end
 
   @spec call(Token.t()) :: Token.t()
-  def call(token = %{solution_text: "solve_percent_66"}) do
+  def call(%{solution_text: "solve_percent_66"} = token) do
     %{token | container_stderr: "", container_output: @fake_output_66, exit_code: 0}
   end
 

@@ -7,12 +7,7 @@ defmodule Codebattle.TaskPackForm do
   alias Codebattle.TaskPack
 
   def create(params, user) do
-    new_params =
-      params
-      |> Map.merge(%{
-        "state" => "draft",
-        "creator_id" => user.id
-      })
+    new_params = Map.merge(params, %{"state" => "draft", "creator_id" => user.id})
 
     %TaskPack{}
     |> changeset(new_params)

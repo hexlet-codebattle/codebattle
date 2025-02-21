@@ -2,6 +2,9 @@ defmodule CodebattleWeb.AuthController do
   use CodebattleWeb, :controller
   use Gettext, backend: CodebattleWeb.Gettext
 
+  alias Codebattle.Auth.Discord
+  alias Codebattle.Auth.Github
+
   require Logger
 
   def token(conn, params) do
@@ -29,8 +32,7 @@ defmodule CodebattleWeb.AuthController do
         Logger.error("Failed to authenticate user: #{inspect(reason)}")
 
         if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
-          conn
-          |> redirect(external: url)
+          redirect(conn, external: url)
         else
           conn
           |> put_flash(:danger, reason)
@@ -44,27 +46,26 @@ defmodule CodebattleWeb.AuthController do
     # TODO: add next from request prams to callback
     redirect_uri = Routes.auth_url(conn, :callback, provider_name)
 
-    case provider_name do
-      "github" ->
-        oauth_github_url = Codebattle.Auth.Github.login_url(%{redirect_uri: redirect_uri})
+    case_result =
+      case provider_name do
+        "github" ->
+          oauth_github_url = Github.login_url(%{redirect_uri: redirect_uri})
 
-        conn
-        |> redirect(external: oauth_github_url)
+          redirect(conn, external: oauth_github_url)
 
-      "discord" ->
-        oauth_discord_url = Codebattle.Auth.Discord.login_url(%{redirect_uri: redirect_uri})
+        "discord" ->
+          oauth_discord_url = Discord.login_url(%{redirect_uri: redirect_uri})
 
-        conn
-        |> redirect(external: oauth_discord_url)
+          redirect(conn, external: oauth_discord_url)
 
-      _ ->
-        conn
-        |> redirect(to: "/")
-    end
-    |> halt()
+        _ ->
+          redirect(conn, to: "/")
+      end
+
+    halt(case_result)
   end
 
-  def callback(conn, params = %{"code" => code}) do
+  def callback(conn, %{"code" => code} = params) do
     provider_name = params["provider"]
 
     next_path =
@@ -74,17 +75,19 @@ defmodule CodebattleWeb.AuthController do
         next -> next
       end
 
-    case provider_name do
-      "github" ->
-        {:ok, profile} = Codebattle.Auth.Github.github_auth(code)
-        Codebattle.Auth.User.GithubUser.find_or_create(profile)
+    case_result =
+      case provider_name do
+        "github" ->
+          {:ok, profile} = Github.github_auth(code)
+          Codebattle.Auth.User.GithubUser.find_or_create(profile)
 
-      "discord" ->
-        redirect_uri = Routes.auth_url(conn, :callback, provider_name)
-        {:ok, profile} = Codebattle.Auth.Discord.discord_auth(code, redirect_uri)
-        Codebattle.Auth.User.DiscordUser.find_or_create(profile)
-    end
-    |> case do
+        "discord" ->
+          redirect_uri = Routes.auth_url(conn, :callback, provider_name)
+          {:ok, profile} = Discord.discord_auth(code, redirect_uri)
+          Codebattle.Auth.User.DiscordUser.find_or_create(profile)
+      end
+
+    case case_result do
       {:ok, user} ->
         conn
         |> put_flash(:info, gettext("Successfully authenticated"))
@@ -92,11 +95,10 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: next_path)
 
       {:error, reason} ->
-        conn
-        # TODO: add flash messages to landing, otherwise users wouldn't get a real error messages
-        |> put_flash(:danger, inspect(reason))
-        |> redirect(to: "/")
+        conn |> put_flash(:danger, inspect(reason)) |> redirect(to: "/")
     end
+
+    # TODO: add flash messages to landing, otherwise users wouldn't get a real error messages
   end
 
   def callback(conn, _params) do

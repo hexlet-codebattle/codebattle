@@ -1,11 +1,11 @@
 defmodule Codebattle.AssertsService.OutputParser do
   @moduledoc "Parse container output for representing check status of solution"
 
-  require Logger
-
   alias Codebattle.AssertsService.AssertResult
   alias Codebattle.AssertsService.Result
   alias Runner.AtomizedMap
+
+  require Logger
 
   def call(checker_token) do
     %{container_output: container_output, exit_code: exit_code} = checker_token
@@ -21,7 +21,7 @@ defmodule Codebattle.AssertsService.OutputParser do
     |> Map.get(:execution_result)
   end
 
-  defp parse_output(token = %{exit_code: 0}) do
+  defp parse_output(%{exit_code: 0} = token) do
     %{token | execution_result: Jason.decode!(token.container_output)}
   rescue
     _e ->
@@ -87,7 +87,7 @@ defmodule Codebattle.AssertsService.OutputParser do
     }
   end
 
-  defp parse_assert_result(item = %{"type" => "result"}) do
+  defp parse_assert_result(%{"type" => "result"} = item) do
     status =
       if AtomizedMap.atomize(item["actual"]) == AtomizedMap.atomize(item["expected"]) do
         "success"

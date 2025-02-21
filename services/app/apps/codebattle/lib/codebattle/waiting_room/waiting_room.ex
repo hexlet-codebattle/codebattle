@@ -1,4 +1,5 @@
 defmodule Codebattle.WaitingRoom do
+  @moduledoc false
   alias Codebattle.WaitingRoom.Server
 
   defdelegate delete_player(name, player_id), to: Server

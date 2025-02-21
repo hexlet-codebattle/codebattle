@@ -32,12 +32,12 @@ defmodule CodebattleWeb do
       use PhoenixMetaTags.TagController
       use Gettext, backend: CodebattleWeb.Gettext
 
-      alias Codebattle.Repo
-      alias CodebattleWeb.Router.Helpers, as: Routes
-
       import Ecto
       import Ecto.Query
       import Phoenix.LiveView.Controller, only: [live_render: 3]
+
+      alias Codebattle.Repo
+      alias CodebattleWeb.Router.Helpers, as: Routes
 
       defp translate_errors(changeset) do
         Ecto.Changeset.traverse_errors(changeset, fn {msg, _} -> msg end)
@@ -52,20 +52,19 @@ defmodule CodebattleWeb do
         namespace: CodebattleWeb
 
       use PhoenixMetaTags.TagView
-
-      alias CodebattleWeb.Router.Helpers, as: Routes
-
-      # Import convenience functions from controllers
-      import Phoenix.Controller, only: [view_module: 1]
-
-      # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
-      import Phoenix.HTML.Form
       use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.FormHelpers
+      import Phoenix.Controller, only: [view_module: 1]
+      import Phoenix.HTML.Form
 
+      alias CodebattleWeb.Router.Helpers, as: Routes
+
+      # Import convenience functions from controllers
+
+      # Use all HTML functionality (forms, tags, etc)
       unquote(view_helpers())
     end
   end
@@ -77,17 +76,19 @@ defmodule CodebattleWeb do
         namespace: CodebattleWeb
 
       use PhoenixMetaTags.TagView
+      use Phoenix.HTML
+      use Gettext, backend: CodebattleWeb.Gettext
+
+      import CodebattleWeb.ErrorHelpers
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-      import Phoenix.HTML.{Form, Tag, Link, Format}
-
-      use Gettext, backend: CodebattleWeb.Gettext
-
-      import CodebattleWeb.ErrorHelpers
+      import Phoenix.HTML.Form
+      import Phoenix.HTML.Format
+      import Phoenix.HTML.Link
+      import Phoenix.HTML.Tag
 
       unquote(view_helpers())
     end
@@ -123,9 +124,10 @@ defmodule CodebattleWeb do
   def router do
     quote do
       use Phoenix.Router
-      import Plug.Conn
+
       import Phoenix.Controller
       import Phoenix.LiveView.Router
+      import Plug.Conn
     end
   end
 

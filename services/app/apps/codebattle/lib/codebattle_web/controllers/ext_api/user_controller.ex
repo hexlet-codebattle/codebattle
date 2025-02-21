@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.ExtApi.UserController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Auth.User
-
   import Plug.Conn
+
+  alias Codebattle.Auth.User
 
   plug(CodebattleWeb.Plugs.TokenAuth)
 
@@ -44,8 +44,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
       {:ok, user} ->
         {:ok, user}
 
-      {:error,
-       %{errors: [name: {_reason, [constraint: :unique, constraint_name: "users_name_index"]}]}} ->
+      {:error, %{errors: [name: {_reason, [constraint: :unique, constraint_name: "users_name_index"]}]}} ->
         create_user_with_uniq_name(user_attrs, retries + 1)
 
       {:error, changeset} ->

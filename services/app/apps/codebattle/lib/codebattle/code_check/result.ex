@@ -4,6 +4,7 @@ defmodule Codebattle.CodeCheck.Result do
   # statuses: "initial", "ok", "failure", "error", "service_timeout", "service_failure"
 
   use TypedStruct
+
   @derive Jason.Encoder
 
   typedstruct do

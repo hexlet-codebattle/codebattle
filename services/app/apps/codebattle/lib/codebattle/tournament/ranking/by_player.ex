@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.ByPlayer do
+  @moduledoc false
   @page_size 10
 
   def get_first(_tournament, _limit \\ @page_size) do

@@ -2,7 +2,9 @@ defmodule Codebattle.UserGame do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
+
   alias Codebattle.UserGame
 
   @results ~w(undefined won lost gave_up timeout)
@@ -22,7 +24,7 @@ defmodule Codebattle.UserGame do
   end
 
   @doc false
-  def changeset(user_game = %UserGame{}, attrs) do
+  def changeset(%UserGame{} = user_game, attrs) do
     user_game
     |> cast(attrs, [
       :user_id,

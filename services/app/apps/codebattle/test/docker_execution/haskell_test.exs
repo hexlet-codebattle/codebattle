@@ -1,9 +1,11 @@
 defmodule Codebattle.DockerExecution.HaskellTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.GameChannel
+  alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user)
@@ -30,18 +32,17 @@ defmodule Codebattle.DockerExecution.HaskellTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text:
-        "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
+      editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
       lang_slug: "haskell"
     })
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "failure", success_count: 0} = check_result
+    assert %Result{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 
@@ -65,11 +66,11 @@ defmodule Codebattle.DockerExecution.HaskellTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "error", success_count: 0} = check_result
+    assert %Result{status: "error", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 
@@ -92,14 +93,13 @@ defmodule Codebattle.DockerExecution.HaskellTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text:
-        "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
+      editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
       lang_slug: "haskell"
     })
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{solution_status: true, state: "game_over"}
     }
 

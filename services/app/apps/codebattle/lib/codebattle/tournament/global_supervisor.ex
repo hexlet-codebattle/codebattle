@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.GlobalSupervisor do
+  @moduledoc false
   use Supervisor
 
   alias Codebattle.Tournament
@@ -28,18 +29,15 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   end
 
   def terminate_tournament(tournament_id) do
-    try do
-      Supervisor.terminate_child(__MODULE__, to_string(tournament_id))
-      Supervisor.delete_child(__MODULE__, to_string(tournament_id))
-    rescue
-      _ -> Logger.error("tournament not found while terminating #{tournament_id}")
-    end
+    Supervisor.terminate_child(__MODULE__, to_string(tournament_id))
+    Supervisor.delete_child(__MODULE__, to_string(tournament_id))
+  rescue
+    _ -> Logger.error("tournament not found while terminating #{tournament_id}")
   end
 
-  defp restore_tournaments() do
+  defp restore_tournaments do
     if Application.get_env(:codebattle, :restore_tournaments) do
-      Tournament.Context.get_tournament_for_restore()
-      |> Enum.each(fn tournament ->
+      Enum.each(Tournament.Context.get_tournament_for_restore(), fn tournament ->
         Supervisor.start_child(
           __MODULE__,
           %{

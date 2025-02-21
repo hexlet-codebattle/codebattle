@@ -1,7 +1,8 @@
 defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
-  alias Codebattle.Tournament.TournamentResult
-  alias Codebattle.Tournament.Storage.Ranking
+  @moduledoc false
   alias Codebattle.Tournament.Players
+  alias Codebattle.Tournament.Storage.Ranking
+  alias Codebattle.Tournament.TournamentResult
 
   @page_size 10
 
@@ -56,7 +57,7 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
     :ok
   end
 
-  def add_new_player(tournament = %{state: "waiting_participants"}, player) do
+  def add_new_player(%{state: "waiting_participants"} = tournament, player) do
     place = Ranking.count(tournament) + 1
 
     Ranking.put_single_record(tournament, place, %{

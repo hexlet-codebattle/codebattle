@@ -3,6 +3,7 @@ defmodule Codebattle.Auth.User do
     dispatcher for Auth
   """
 
+  alias Codebattle.Auth.User.FirebaseUser
   alias Codebattle.Repo
   alias Codebattle.User
 
@@ -19,14 +20,14 @@ defmodule Codebattle.Auth.User do
   end
 
   def find_by_firebase(user_attrs) do
-    Codebattle.Auth.User.FirebaseUser.find(user_attrs)
+    FirebaseUser.find(user_attrs)
   end
 
   def create_in_firebase(user_attrs) do
-    Codebattle.Auth.User.FirebaseUser.create(user_attrs)
+    FirebaseUser.create(user_attrs)
   end
 
   def reset_in_firebase(user_attrs) do
-    Codebattle.Auth.User.FirebaseUser.reset(user_attrs)
+    FirebaseUser.reset(user_attrs)
   end
 end

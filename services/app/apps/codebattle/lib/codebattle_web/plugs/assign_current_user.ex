@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.AssignCurrentUser do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   alias Codebattle.User
   alias CodebattleWeb.Router.Helpers, as: Routes
@@ -14,7 +15,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
 
     case {user_id, conn.request_path} do
       {nil, path} when path in ["/auth/token/", "/auth/token"] ->
-        conn |> assign(:current_user, User.build_guest())
+        assign(conn, :current_user, User.build_guest())
 
       {nil, _path} ->
         handle_guest(conn)
@@ -36,7 +37,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
 
   defp handle_guest(conn) do
     if Application.get_env(:codebattle, :allow_guests) do
-      conn |> assign(:current_user, User.build_guest())
+      assign(conn, :current_user, User.build_guest())
     else
       if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
         conn

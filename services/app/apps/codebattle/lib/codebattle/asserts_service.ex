@@ -3,13 +3,13 @@ defmodule Codebattle.AssertsService do
   Asserts service for tasks (validation and generation).
   """
 
-  require Logger
-
-  alias Runner.Languages
   alias Codebattle.AssertsService.Executor
   alias Codebattle.AssertsService.Executor.Token
   alias Codebattle.AssertsService.OutputParser
   alias Codebattle.AssertsService.Result
+  alias Runner.Languages
+
+  require Logger
 
   @type executor :: Executor.Local | Executor.Fake | Executor.Remote
 
@@ -68,7 +68,7 @@ defmodule Codebattle.AssertsService do
 
   def valid_asserts?(asserts, dest) do
     typed_asserts = type_asserts(asserts)
-    prepared_dest = dest |> Enum.map(&Map.delete(&1, "argument-name"))
+    prepared_dest = Enum.map(dest, &Map.delete(&1, "argument-name"))
 
     typed_asserts == prepared_dest
   end
@@ -78,11 +78,11 @@ defmodule Codebattle.AssertsService do
   """
   @spec type_asserts([any()]) :: any()
   def type_asserts(asserts) do
-    asserts |> Enum.map(&get_type/1)
+    Enum.map(asserts, &get_type/1)
   end
 
   defp get_type(element) when is_map(element) do
-    value = element |> Map.values() |> hd
+    value = element |> Map.values() |> hd()
     %{"name" => "hash", "nested" => get_type(value)}
   end
 

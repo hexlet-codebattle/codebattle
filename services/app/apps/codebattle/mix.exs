@@ -81,6 +81,7 @@ defmodule Codebattle.MixProject do
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
 
       # dev
       {:phoenix_live_reload, "~> 1.3", only: :dev},

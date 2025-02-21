@@ -48,25 +48,11 @@ defmodule Codebattle.Auth.DiscordMock do
 
   def get!(url, headers \\ [], options \\ [])
 
-  def get!(
-        "https://discord.com/api/users/@me",
-        [
-          {"User-Agent", "Codebattle"},
-          {"Authorization", "Bearer 123"}
-        ],
-        _options
-      ) do
-    %{body: "{\"error\": \"test error\"}"}
+  def get!("https://discord.com/api/users/@me", [{"User-Agent", "Codebattle"}, {"Authorization", "Bearer 123"}], _options) do
+    %{body: ~s({"error": "test error"})}
   end
 
-  def get!(
-        "https://discord.com/api/users/@me",
-        [
-          {"User-Agent", "Codebattle"},
-          {"Authorization", "Bearer 42"}
-        ],
-        _options
-      ) do
+  def get!("https://discord.com/api/users/@me", [{"User-Agent", "Codebattle"}, {"Authorization", "Bearer 42"}], _options) do
     %{body: @body_email_nil}
   end
 

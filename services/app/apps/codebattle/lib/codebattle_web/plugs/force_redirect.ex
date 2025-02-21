@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.ForceRedirect do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   alias Codebattle.User
 

@@ -5,6 +5,8 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Codebattle.Game.Player
   alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
+  alias Phoenix.Socket.Reply
 
   setup do
     user1 = insert(:user, rating: 1001)
@@ -65,25 +67,25 @@ defmodule CodebattleWeb.GameChannelTest do
       payload3 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: editor_lang1}
       payload4 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: editor_lang2}
 
-      assert_receive %Phoenix.Socket.Broadcast{
+      assert_receive %Broadcast{
         topic: ^game_topic,
         event: "editor:data",
         payload: ^payload1
       }
 
-      assert_receive %Phoenix.Socket.Broadcast{
+      assert_receive %Broadcast{
         topic: ^game_topic,
         event: "editor:data",
         payload: ^payload2
       }
 
-      assert_receive %Phoenix.Socket.Broadcast{
+      assert_receive %Broadcast{
         topic: ^game_topic,
         event: "editor:data",
         payload: ^payload3
       }
 
-      assert_receive %Phoenix.Socket.Broadcast{
+      assert_receive %Broadcast{
         topic: ^game_topic,
         event: "editor:data",
         payload: ^payload4
@@ -115,7 +117,7 @@ defmodule CodebattleWeb.GameChannelTest do
     assert Game.Helpers.gave_up?(game, user1.id) == true
     assert Game.Helpers.winner?(game, user2.id) == true
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       topic: ^game_topic,
       event: "user:give_up",
       payload: payload
@@ -134,7 +136,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
       push(socket1, "editor:data", %{editor_text: "oi", lang_slug: "js"})
 
-      assert_receive %Phoenix.Socket.Reply{
+      assert_receive %Reply{
         topic: ^game_topic,
         payload: %{reason: :game_is_dead}
       }
@@ -155,7 +157,7 @@ defmodule CodebattleWeb.GameChannelTest do
       user1_id = user1.id
       push(socket1, "game:score", %{})
 
-      assert_receive %Phoenix.Socket.Reply{
+      assert_receive %Reply{
         topic: ^game_topic,
         payload: %{score: %{game_results: [%{}], player_results: %{}, winner_id: ^user1_id}}
       }

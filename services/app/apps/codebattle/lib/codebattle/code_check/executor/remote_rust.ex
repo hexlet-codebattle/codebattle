@@ -1,12 +1,12 @@
 defmodule Codebattle.CodeCheck.Executor.RemoteRust do
   @moduledoc false
 
-  require Logger
-
   alias Codebattle.CodeCheck.Checker.Token
   alias Runner.AtomizedMap
-  alias Runner.Languages
   alias Runner.CheckerGenerator
+  alias Runner.Languages
+
+  require Logger
 
   @spec call(Token.t()) :: Token.t()
   def call(token) do
@@ -15,8 +15,6 @@ defmodule Codebattle.CodeCheck.Executor.RemoteRust do
     checker_text =
       if token.lang_meta.generate_checker? do
         CheckerGenerator.call(token.task, token.lang_meta, seed)
-      else
-        nil
       end
 
     asserts =

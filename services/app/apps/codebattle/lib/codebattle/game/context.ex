@@ -4,20 +4,20 @@ defmodule Codebattle.Game.Context do
   Public interface to interacting with games.
   """
 
-  require Logger
-
   import Codebattle.Game.Auth
   import Codebattle.Game.Helpers
   import Ecto.Query
 
+  alias Codebattle.Bot
   alias Codebattle.CodeCheck
   alias Codebattle.Game
   alias Codebattle.Game.Engine
   alias Codebattle.Game.Player
-  alias Codebattle.Bot
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
+
+  require Logger
 
   @type raw_game_id :: String.t() | non_neg_integer()
   @type game_id :: non_neg_integer()
@@ -110,9 +110,7 @@ defmodule Codebattle.Game.Context do
       |> User.get!()
       |> Player.build()
 
-    opponent_bot =
-      Bot.Context.build()
-      |> Player.build()
+    opponent_bot = Player.build(Bot.Context.build())
 
     players = [
       current_player,
@@ -162,7 +160,7 @@ defmodule Codebattle.Game.Context do
           {:ok, Game.t()} | {:error, atom}
   def update_editor_data(game_id, user, editor_text, editor_lang) do
     case get_game!(game_id) do
-      game = %{is_live: true} ->
+      %{is_live: true} = game ->
         Engine.update_editor_data(game, %{
           id: user.id,
           editor_text: editor_text,
@@ -183,7 +181,7 @@ defmodule Codebattle.Game.Context do
           | {:error, atom}
   def check_result(id, params) do
     case get_game!(id) do
-      game = %{is_live: true} -> Engine.check_result(game, params)
+      %{is_live: true} = game -> Engine.check_result(game, params)
       _ -> {:error, :game_is_dead}
     end
   end
@@ -191,7 +189,7 @@ defmodule Codebattle.Game.Context do
   @spec give_up(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def give_up(id, user) do
     case get_game!(id) do
-      game = %{is_live: true} -> Engine.give_up(game, user)
+      %{is_live: true} = game -> Engine.give_up(game, user)
       _ -> {:error, :game_is_dead}
     end
   end
@@ -201,7 +199,7 @@ defmodule Codebattle.Game.Context do
           | {:rematch_accepted, Game.t()}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
-    with game = %{is_live: true} <- get_game!(game_id),
+    with %{is_live: true} = game <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
     end
@@ -210,7 +208,7 @@ defmodule Codebattle.Game.Context do
   @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
     case get_game!(game_id) do
-      game = %{is_live: true} -> Engine.rematch_reject(game)
+      %{is_live: true} = game -> Engine.rematch_reject(game)
       _ -> {:error, :game_is_dead}
     end
   end
@@ -218,7 +216,7 @@ defmodule Codebattle.Game.Context do
   @spec unlock_game(game_id, String.t()) :: :ok | {:error, term()}
   def unlock_game(game_id, pass_code) do
     case get_game!(game_id) do
-      game = %{tournament_id: t_id} when not is_nil(t_id) ->
+      %{tournament_id: t_id} = game when not is_nil(t_id) ->
         if Tournament.Context.check_pass_code(t_id, pass_code) do
           Tournament.Context.remove_pass_code(t_id, pass_code)
           Engine.unlock_game(game)
@@ -238,11 +236,11 @@ defmodule Codebattle.Game.Context do
   end
 
   @spec terminate_game(game_id | Game.t()) :: :ok
-  def terminate_game(game = %Game{}) do
+  def terminate_game(%Game{} = game) do
     Engine.terminate_game(game)
   end
 
-  def terminate_game(id), do: get_game!(id) |> terminate_game()
+  def terminate_game(id), do: id |> get_game!() |> terminate_game()
 
   @spec get_active_game_id(integer() | String.t()) :: nil | integer()
   def get_active_game_id(nil), do: nil

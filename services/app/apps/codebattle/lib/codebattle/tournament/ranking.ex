@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking do
+  @moduledoc false
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByPlayer
@@ -31,8 +32,7 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   @spec get_page(tournament :: Tournament.t(), page :: pos_integer()) :: map()
-  def get_page(%{ranking_table: nil}, _page),
-    do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+  def get_page(%{ranking_table: nil}, _page), do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
 
   def get_page(tournament, page) do
     get_module(tournament).get_page(tournament, page)
@@ -72,8 +72,7 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   @spec preload_event_ranking(Tournament.t()) :: Tournament.t()
-  def preload_event_ranking(tournament = %{use_event_ranking: true, event_id: event_id})
-      when not is_nil(event_id) do
+  def preload_event_ranking(%{use_event_ranking: true, event_id: event_id} = tournament) when not is_nil(event_id) do
     # ranking = get_module(tournament).get_event_ranking(tournament)
 
     # Ranking.put_ranking(tournament, ranking)

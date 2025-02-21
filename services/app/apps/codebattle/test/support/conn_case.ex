@@ -24,15 +24,18 @@ defmodule CodebattleWeb.ConnCase do
 
   using do
     quote do
-      # Import conveniences for testing with connections
-      import Plug.Conn
+      import Codebattle.OauthTestHelpers
+      import CodebattleWeb.Factory
       import Phoenix.ConnTest
       import Phoenix.LiveViewTest
-      import CodebattleWeb.Factory
-      import Codebattle.OauthTestHelpers
+      # Import conveniences for testing with connections
+      import Plug.Conn
 
-      alias Codebattle.{Repo, User, Game, UserGame}
-      alias Codebattle.Game.{Player}
+      alias Codebattle.Game
+      alias Codebattle.Game.Player
+      alias Codebattle.Repo
+      alias Codebattle.User
+      alias Codebattle.UserGame
       alias CodebattleWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing

@@ -1,10 +1,10 @@
 defmodule CodebattleWeb.Api.GameView do
   use CodebattleWeb, :view
 
-  alias Runner.Languages
-  alias Codebattle.CodeCheck
-
   import Codebattle.Game.Helpers
+
+  alias Codebattle.CodeCheck
+  alias Runner.Languages
 
   def render_game(game, score) do
     %{

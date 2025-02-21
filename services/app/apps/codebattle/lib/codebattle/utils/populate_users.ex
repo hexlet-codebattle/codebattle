@@ -2,13 +2,13 @@ defmodule Codebattle.Utils.PopulateUsers do
   @moduledoc false
 
   def from_csv(file) do
-    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    utc_now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
-    File.stream!(file)
+    file
+    |> File.stream!()
     |> NimbleCSV.RFC4180.parse_stream()
     |> Stream.chunk_every(500)
-    |> Stream.each(&process_batch(&1, utc_now))
-    |> Stream.run()
+    |> Enum.each(&process_batch(&1, utc_now))
   end
 
   defp process_batch(users, now) do

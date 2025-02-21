@@ -1,8 +1,8 @@
 defmodule Codebattle.PlaybookStoreTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.Playbook
+  alias CodebattleWeb.GameChannel
   # alias Codebattle.Repo
   alias CodebattleWeb.UserSocket
 
@@ -128,7 +128,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;",
+                     ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;|,
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
@@ -140,7 +140,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;",
+                     ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;|,
                    id: ^user1_id,
                    name: "first",
                    record_id: 0,
@@ -150,7 +150,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
-                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;",
+                     ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;|,
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,

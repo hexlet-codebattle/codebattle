@@ -1,10 +1,12 @@
 defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   use CodebattleWeb.ConnCase, async: true
 
-  alias Codebattle.CodeCheck.Result
-  alias Codebattle.CodeCheck.OutputParser
-
   import CodebattleWeb.Factory
+
+  alias Codebattle.CodeCheck.OutputParser
+  alias Codebattle.CodeCheck.Result
+  alias Codebattle.CodeCheck.Result.V2
+  alias Codebattle.CodeCheck.Result.V2.AssertResult
 
   @success_output """
   {"type":"result","time":0.0076,"value":1,"output":"asdf"}
@@ -35,7 +37,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     status: "failure",
     output_error: "pre_output",
     asserts: [
-      %Result.V2.AssertResult{
+      %AssertResult{
         arguments: [1, 3],
         expected: 4,
         output: "Output",
@@ -43,7 +45,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         execution_time: 0.1406,
         status: "failure"
       },
-      %Result.V2.AssertResult{
+      %AssertResult{
         status: "success",
         execution_time: 0.0076,
         result: 1,
@@ -51,7 +53,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         arguments: [1, 1],
         output: "asdf"
       },
-      %Result.V2.AssertResult{
+      %AssertResult{
         status: "success",
         execution_time: 0.1234,
         result: 2,
@@ -68,7 +70,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     status: "ok",
     success_count: 2,
     asserts: [
-      %Result.V2.AssertResult{
+      %AssertResult{
         arguments: [1, 1],
         execution_time: 0.0076,
         expected: 1,
@@ -76,7 +78,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         result: 1,
         status: "success"
       },
-      %Result.V2.AssertResult{
+      %AssertResult{
         arguments: [2, 1],
         expected: 2,
         result: 2,
@@ -93,7 +95,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     status: "ok",
     success_count: 1,
     asserts: [
-      %Result.V2.AssertResult{
+      %AssertResult{
         status: "success",
         execution_time: 0.0076,
         result: 1,
@@ -184,7 +186,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         exit_code: 2
       })
 
-    assert result == %Codebattle.CodeCheck.Result.V2{
+    assert result == %V2{
              asserts: [],
              exit_code: 2,
              asserts_count: 1,
@@ -205,12 +207,11 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         exit_code: 143
       })
 
-    assert result == %Codebattle.CodeCheck.Result.V2{
+    assert result == %V2{
              asserts: [],
              exit_code: 143,
              asserts_count: 1,
-             output_error:
-               "Your solution was executed for longer than 15 seconds, try to write more optimally",
+             output_error: "Your solution was executed for longer than 15 seconds, try to write more optimally",
              status: "error",
              success_count: 0
            }
@@ -227,7 +228,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         exit_code: 37
       })
 
-    assert %Codebattle.CodeCheck.Result.V2{
+    assert %V2{
              asserts: [],
              exit_code: 37,
              asserts_count: 1,

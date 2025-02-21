@@ -1,7 +1,8 @@
 defmodule Codebattle.TasksImporterTest do
   use CodebattleWeb.ConnCase
 
-  alias Codebattle.{Repo, Task}
+  alias Codebattle.Repo
+  alias Codebattle.Task
 
   @root_dir File.cwd!()
 
@@ -11,12 +12,11 @@ defmodule Codebattle.TasksImporterTest do
     issue_names =
       path
       |> File.ls!()
-      |> Enum.map(fn file_name ->
+      |> MapSet.new(fn file_name ->
         file_name
         |> String.split(".")
         |> List.first()
       end)
-      |> MapSet.new()
 
     {:ok, %{path: path, issue_names: issue_names}}
   end
@@ -30,8 +30,7 @@ defmodule Codebattle.TasksImporterTest do
     task_names =
       Task
       |> Repo.all()
-      |> Enum.map(fn task -> task.name end)
-      |> MapSet.new()
+      |> MapSet.new(fn task -> task.name end)
 
     assert MapSet.equal?(task_names, issue_names)
   end
@@ -43,8 +42,7 @@ defmodule Codebattle.TasksImporterTest do
     task_names =
       Task
       |> Repo.all()
-      |> Enum.map(fn task -> task.name end)
-      |> MapSet.new()
+      |> MapSet.new(fn task -> task.name end)
 
     assert MapSet.equal?(task_names, issue_names)
   end
@@ -72,9 +70,9 @@ defmodule Codebattle.TasksImporterTest do
     path = Path.join(@root_dir, "test/support/fixtures/issues_with_disabled")
     Codebattle.TasksImporter.upsert([path])
 
-    assert Repo.all(Task) |> Enum.count() == 2
+    assert Task |> Repo.all() |> Enum.count() == 2
 
-    assert Repo.all(Task.visible(Task)) |> Enum.count() == 1
+    assert Task |> Task.visible() |> Repo.all() |> Enum.count() == 1
   end
 
   test "update fields", %{path: path} do
@@ -93,7 +91,7 @@ defmodule Codebattle.TasksImporterTest do
     assert task.creator_id == nil
     assert task.input_signature == [%{argument_name: "num", type: %{name: "integer"}}]
     assert task.output_signature == %{type: %{name: "integer"}}
-    assert task.asserts |> Enum.count() == 20
+    assert Enum.count(task.asserts) == 20
 
     Codebattle.TasksImporter.upsert([new_path])
 
@@ -112,7 +110,7 @@ defmodule Codebattle.TasksImporterTest do
            ]
 
     assert updated.output_signature == %{type: %{name: "string"}}
-    assert updated.asserts |> Enum.count() == 1
+    assert Enum.count(updated.asserts) == 1
     assert updated.id == task.id
   end
 end

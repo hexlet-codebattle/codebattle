@@ -3,12 +3,13 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   Module for playing playbooks
   """
 
-  require Logger
-
   alias Codebattle.Bot
+  alias Codebattle.Bot.PlaybookPlayer.Params
   alias Codebattle.Game
   alias Codebattle.Playbook
   alias Delta.Op
+
+  require Logger
 
   defmodule Params do
     @moduledoc false
@@ -33,9 +34,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     )a
   end
 
-  alias Bot.PlaybookPlayer.Params
-
-  @min_bot_step_timeout Application.compile_env(:codebattle, Codebattle.Bot)[
+  @min_bot_step_timeout Application.compile_env(:codebattle, Bot)[
                           :min_bot_step_timeout
                         ]
 
@@ -43,17 +42,17 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   @junior_rating 1212
 
   @pro_time_ms %{
-    "elementary" => :timer.minutes(2),
-    "easy" => :timer.minutes(3),
-    "medium" => :timer.minutes(5),
-    "hard" => :timer.minutes(7)
+    "elementary" => to_timeout(minute: 2),
+    "easy" => to_timeout(minute: 3),
+    "medium" => to_timeout(minute: 5),
+    "hard" => to_timeout(minute: 7)
   }
 
   @junior_time_ms %{
-    "elementary" => :timer.minutes(7),
-    "easy" => :timer.minutes(11),
-    "medium" => :timer.minutes(13),
-    "hard" => :timer.minutes(17)
+    "elementary" => to_timeout(minute: 7),
+    "easy" => to_timeout(minute: 11),
+    "medium" => to_timeout(minute: 13),
+    "hard" => to_timeout(minute: 17)
   }
 
   def init(%{game: game, bot_id: bot_id}) do
@@ -83,7 +82,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   end
 
   # init
-  def next_step(params = %Params{editor_state: nil}) do
+  def next_step(%Params{editor_state: nil} = params) do
     %{actions: [%{editor_text: editor_text, editor_lang: editor_lang} | rest_actions]} = params
 
     %{
@@ -91,15 +90,11 @@ defmodule Codebattle.Bot.PlaybookPlayer do
       | actions: rest_actions,
         step_command: :update_editor,
         editor_state: {[Op.insert(editor_text)], editor_lang},
-        step_timeout_ms: :timer.seconds(1)
+        step_timeout_ms: to_timeout(second: 1)
     }
   end
 
-  def next_step(
-        params = %Params{
-          actions: [action = %{type: "update_editor_data", diff: diff} | rest_actions]
-        }
-      ) do
+  def next_step(%Params{actions: [%{type: "update_editor_data", diff: diff} = action | rest_actions]} = params) do
     {operations, lang} = params.editor_state
 
     operations = Delta.compose(operations, stringify_keys(diff.delta))
@@ -114,7 +109,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     }
   end
 
-  def next_step(params = %Params{actions: [action = %{type: "game_over"} | _rest]}) do
+  def next_step(%Params{actions: [%{type: "game_over"} = action | _rest]} = params) do
     {operations, lang} = params.editor_state
 
     %{
@@ -126,7 +121,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     }
   end
 
-  def next_step(params = %Params{actions: []}) do
+  def next_step(%Params{actions: []} = params) do
     %{params | state: :finished}
   end
 
@@ -150,7 +145,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     |> max(diff.time * step_coefficient)
     |> Kernel.*(1.0)
     |> Float.round(3)
-    |> round
+    |> round()
   end
 
   # Calculates the total operating time of the bot

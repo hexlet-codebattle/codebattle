@@ -1,10 +1,11 @@
 defmodule CodebattleWeb.Plugs.AdminOnly do
-  alias Codebattle.User
-
+  @moduledoc false
   use Gettext, backend: CodebattleWeb.Gettext
 
   import Phoenix.Controller
   import Plug.Conn
+
+  alias Codebattle.User
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts

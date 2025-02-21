@@ -1,10 +1,11 @@
 defmodule Codebattle.Game.Supervisor do
-  require Logger
-
+  @moduledoc false
   use Supervisor
 
-  alias Codebattle.Game
   alias Codebattle.Bot
+  alias Codebattle.Game
+
+  require Logger
 
   def start_link(game) do
     Supervisor.start_link(__MODULE__, game, name: supervisor_name(game.id))
@@ -34,6 +35,5 @@ defmodule Codebattle.Game.Supervisor do
     Supervisor.init(children ++ chat, strategy: :one_for_one)
   end
 
-  defp supervisor_name(game_id),
-    do: {:via, Registry, {Codebattle.Registry, "game_sup:#{game_id}"}}
+  defp supervisor_name(game_id), do: {:via, Registry, {Codebattle.Registry, "game_sup:#{game_id}"}}
 end

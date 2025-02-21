@@ -1,5 +1,7 @@
 defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
+  @moduledoc false
   use CodebattleWeb, :live_component
+
   import CodebattleWeb.ErrorHelpers
 
   @impl true

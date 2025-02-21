@@ -1,17 +1,22 @@
 defmodule Codebattle.Invite do
+  @moduledoc false
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query, warn: false
 
+  alias __MODULE__
   alias Codebattle.Game.Context
   alias Codebattle.Repo
-  alias __MODULE__
 
   @type t :: %__MODULE__{}
 
   defmodule GameParams do
+    @moduledoc false
     use Ecto.Schema
+
     import Ecto.Changeset
+
     @primary_key false
     @timeout_seconds 3600
 
@@ -28,8 +33,7 @@ defmodule Codebattle.Invite do
     end
   end
 
-  @derive {Jason.Encoder,
-           only: [:id, :state, :creator, :recipient, :game_params, :creator_id, :recipient_id]}
+  @derive {Jason.Encoder, only: [:id, :state, :creator, :recipient, :game_params, :creator_id, :recipient_id]}
 
   schema "invites" do
     field(:state, :string, default: "pending")
@@ -50,7 +54,8 @@ defmodule Codebattle.Invite do
 
   @spec list_invites() :: [] | [t()]
   def list_invites do
-    Repo.all(Invite)
+    Invite
+    |> Repo.all()
     |> Repo.preload([:creator, :recipient])
   end
 
@@ -61,18 +66,19 @@ defmodule Codebattle.Invite do
         where: i.state == "pending" and (i.creator_id == ^user_id or i.recipient_id == ^user_id)
       )
 
-    Repo.all(query)
+    query
+    |> Repo.all()
     |> Repo.preload([:creator, :recipient])
   end
 
   @spec list_all_active_invites() :: [] | [t()]
-  def list_all_active_invites() do
+  def list_all_active_invites do
     query =
       from(i in Invite,
         where: i.state == "pending"
       )
 
-    Repo.all(query) |> Repo.preload([:creator, :recipient])
+    query |> Repo.all() |> Repo.preload([:creator, :recipient])
   end
 
   @spec expire_invite(t()) :: t()
@@ -92,7 +98,7 @@ defmodule Codebattle.Invite do
     Repo.exists?(query)
   end
 
-  def get_invite!(id), do: Repo.get!(Invite, id) |> Repo.preload([:creator, :recipient])
+  def get_invite!(id), do: Invite |> Repo.get!(id) |> Repo.preload([:creator, :recipient])
 
   def create_invite(attrs \\ %{}) do
     %Invite{}
@@ -104,25 +110,24 @@ defmodule Codebattle.Invite do
     end
   end
 
-  def update_invite(invite = %Invite{}, attrs) do
+  def update_invite(%Invite{} = invite, attrs) do
     invite
     |> Invite.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_invite(invite = %Invite{}) do
+  def delete_invite(%Invite{} = invite) do
     Repo.delete(invite)
   end
 
-  def change_invite(invite = %Invite{}, attrs \\ %{}) do
+  def change_invite(%Invite{} = invite, attrs \\ %{}) do
     Invite.changeset(invite, attrs)
   end
 
   def drop_invites_by_users(creator_id, recipient_id) do
     query =
       from(i in Invite,
-        where:
-          i.state == "pending" and (i.creator_id == ^creator_id or i.creator_id == ^recipient_id),
+        where: i.state == "pending" and (i.creator_id == ^creator_id or i.creator_id == ^recipient_id),
         select: i
       )
 

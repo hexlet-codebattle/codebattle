@@ -2,12 +2,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  require Logger
-
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.TournamentResult
   alias Codebattle.UserGameReport
+
+  require Logger
 
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
@@ -18,8 +18,11 @@ defmodule CodebattleWeb.TournamentAdminChannel do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
 
-      {:ok, get_tournament_join_payload(tournament),
-       assign(socket, tournament_info: Helpers.tournament_info(tournament))}
+      {
+        :ok,
+        get_tournament_join_payload(tournament),
+        assign(socket, tournament_info: Helpers.tournament_info(tournament))
+      }
     else
       _ ->
         {:error, %{reason: "not_found"}}
@@ -348,8 +351,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   defp cast_game_params(%{"task_level" => level}), do: %{task_level: level}
 
-  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}),
-    do: %{task_id: id, timeout_seconds: seconds}
+  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}), do: %{task_id: id, timeout_seconds: seconds}
 
   defp cast_game_params(%{"task_id" => id}), do: %{task_id: id}
   defp cast_game_params(_params), do: %{}

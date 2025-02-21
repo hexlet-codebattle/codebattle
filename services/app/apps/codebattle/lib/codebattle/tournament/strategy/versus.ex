@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Versus do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot

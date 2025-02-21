@@ -4,20 +4,27 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
     # Use test environment by default
     env:
       MIX_ENV: test
+      POSTGRES_PASSWORD: postgres
 
     services:
       db:
         image: postgres:16-alpine
         ports: ["5432:5432"]
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -28,6 +35,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -35,21 +44,19 @@ jobs:
           otp-version: "27.2"
           elixir-version: "1.18.2"
 
-      - name: Restore mix build cache
+      - name: Cache Dependencies
         uses: actions/cache@v4
+        id: deps-cache
         with:
-          path: ./services/app/deps
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-deps-
-
-      - name: Restore Build Cache
-        uses: actions/cache@v4
-        with:
-          path: ./services/app/_build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-build-
+          path: |
+            ./services/app/deps
+            ./services/app/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
 
       - name: Get deps
+        if: steps.deps-cache.outputs.cache-hit != 'true'
         run: mix deps.get
         working-directory: ./services/app
 
@@ -62,12 +69,12 @@ jobs:
         working-directory: ./services/app
 
       - name: Mix credo
-        run: mix credo
+        run: mix credo --strict
         working-directory: ./services/app
 
       - name: Get yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
         with:
@@ -77,7 +84,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install yarn dependencies
-        run: yarn install --froze-lockfile
+        run: yarn install --frozen-lockfile
         working-directory: ./services/app/apps/codebattle
 
       - name: Eslint
@@ -89,14 +96,16 @@ jobs:
         working-directory: ./services/app/apps/codebattle
 
       - name: Setup db
-        run: mix ecto.create && mix ecto.migrate
+        run: |
+          mix ecto.create
+          mix ecto.migrate
         working-directory: ./services/app
 
       - name: Mix tests
         run: make test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./services/app/assp/codebattle/cover/excoveralls.json

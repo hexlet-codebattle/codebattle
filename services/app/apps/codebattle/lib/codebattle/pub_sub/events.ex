@@ -1,4 +1,5 @@
 defmodule Codebattle.PubSub.Events do
+  @moduledoc false
   alias Codebattle.Game
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament

@@ -8,11 +8,7 @@ defmodule CodebattleWeb.RawTaskController do
     task = Task.get!(id)
 
     if Task.can_see_task?(task, conn.assigns.current_user) do
-      conn
-      |> render("show.html", %{
-        task: task,
-        current_user: conn.assigns.current_user
-      })
+      render(conn, "show.html", %{task: task, current_user: conn.assigns.current_user})
     else
       conn
       |> put_status(:not_found)

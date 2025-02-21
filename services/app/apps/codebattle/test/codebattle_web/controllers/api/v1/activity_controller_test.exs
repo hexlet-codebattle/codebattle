@@ -16,7 +16,8 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
       %{"count" => 2, "date" => "2000-01-01"}
     ]
 
-    assert json_response(conn, 200)
+    assert conn
+           |> json_response(200)
            |> Map.get("activities")
            |> Enum.sort(&(Map.get(&1, "count") >= Map.get(&2, "count"))) == asserted_data
   end

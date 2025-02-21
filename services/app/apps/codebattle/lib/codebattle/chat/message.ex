@@ -1,5 +1,7 @@
 defmodule Codebattle.Chat.Message do
+  @moduledoc false
   use TypedStruct
+
   @derive Jason.Encoder
 
   @type type() :: :text | :info

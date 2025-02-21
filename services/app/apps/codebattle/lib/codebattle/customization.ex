@@ -1,5 +1,7 @@
 defmodule Codebattle.Customization do
+  @moduledoc false
   use Ecto.Schema
+
   import Ecto.Changeset
 
   alias Codebattle.Repo

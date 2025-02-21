@@ -66,9 +66,7 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
 
       resp_body =
         conn
-        |> get(
-          Routes.api_v1_game_path(conn, :completed, %{user_id: user1.id, page: 2, page_size: 1})
-        )
+        |> get(Routes.api_v1_game_path(conn, :completed, %{user_id: user1.id, page: 2, page_size: 1}))
         |> json_response(200)
 
       %{"games" => games, "page_info" => page_info} = resp_body
