@@ -4,15 +4,12 @@ ENV MIX_ENV=prod
 WORKDIR /tmp/codebattle/assets
 
 COPY apps/codebattle/package.json apps/codebattle/yarn.lock ./
-
 RUN yarn install --frozen-lockfile --network-timeout 300000
 
-COPY apps/codebattle/postcss.config.js \
-  apps/codebattle/.babelrc \
-  apps/codebattle/webpack \
-  apps/codebattle/assets \
-  apps/codebattle/priv/gettext \
-  ./
+COPY apps/codebattle/postcss.config.js apps/codebattle/.babelrc ./
+COPY apps/codebattle/webpack ./webpack
+COPY apps/codebattle/assets ./assets
+COPY apps/codebattle/priv/gettext ./priv/gettext
 
 RUN yarn build
 
@@ -24,11 +21,12 @@ ENV MIX_ENV=prod
 
 WORKDIR /opt/app
 
-RUN apk add --no-cache build-base \
+RUN apk add --no-cache build-base git ca-certificates \
   && mix local.hex --force \
   && mix local.rebar --force
 
-COPY mix.exs mix.lock ./
+COPY mix.exs .
+COPY mix.lock .
 COPY config ./config
 COPY apps/runner/mix.exs apps/runner/mix.exs
 COPY apps/phoenix_gon/mix.exs apps/phoenix_gon/mix.exs
