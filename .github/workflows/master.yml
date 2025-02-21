@@ -42,19 +42,16 @@ jobs:
           otp-version: "27.2"
           elixir-version: "1.18.2"
 
-      - name: Restore Dependencies Cache
+      - name: Cache Dependencies
         uses: actions/cache@v4
+        id: deps-cache
         with:
-          path: ./services/app/deps
-          key: ${{ runner.os }}-deps-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-deps-
-
-      - name: Restore Build Cache
-        uses: actions/cache@v4
-        with:
-          path: ./services/app/_build
-          key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
-          restore-keys: ${{ runner.os }}-build-
+          path: |
+            ./services/app/deps
+            ./services/app/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
 
       - name: Get deps
         run: |
