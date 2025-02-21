@@ -1,7 +1,6 @@
 defmodule CodebattleWeb.AuthController do
   use CodebattleWeb, :controller
-
-  import CodebattleWeb.Gettext
+  use Gettext, backend: CodebattleWeb.Gettext
 
   require Logger
 

@@ -30,12 +30,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
     test "shows rating list with date_from filter", %{conn: conn} do
       date_from = "2020-10-10"
-
-      starts_at =
-        date_from
-        |> Timex.parse!("{YYYY}-{0M}-{0D}")
-        |> Timex.to_naive_datetime()
-        |> NaiveDateTime.truncate(:second)
+      starts_at = ~N[2020-10-10 10:00:00]
 
       user1 =
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})

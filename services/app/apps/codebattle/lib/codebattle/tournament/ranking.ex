@@ -67,18 +67,19 @@ defmodule Codebattle.Tournament.Ranking do
 
   @spec set_ranking_to_ets(Tournament.t()) :: Tournament.t()
   def set_ranking_to_ets(tournament) do
-    get_module(tournament).set_ranking_to_ets(tournament)
+    # get_module(tournament).set_ranking_to_ets(tournament)
+    tournament
   end
 
   @spec preload_event_ranking(Tournament.t()) :: Tournament.t()
   def preload_event_ranking(tournament = %{use_event_ranking: true, event_id: event_id})
       when not is_nil(event_id) do
-    ranking = get_module(tournament).get_event_ranking(tournament)
+    # ranking = get_module(tournament).get_event_ranking(tournament)
 
-    Ranking.put_ranking(tournament, ranking)
+    # Ranking.put_ranking(tournament, ranking)
 
-    event_ranking = Map.new(ranking, fn item = %{id: id} -> {id, item} end)
-    Map.put(tournament, :event_ranking, event_ranking)
+    # event_ranking = Map.new(ranking, fn item = %{id: id} -> {id, item} end)
+    Map.put(tournament, :event_ranking, %{})
   end
 
   def preload_event_ranking(t), do: t

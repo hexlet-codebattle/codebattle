@@ -37,7 +37,7 @@ defmodule Codebattle.User.Scope do
   end
 
   defp filter_by_date(query, %{"date_from" => date_from}) when date_from !== "" do
-    starts_at = Timex.parse!(date_from, "{YYYY}-{0M}-{D}")
+    starts_at = Date.from_iso8601!(date_from) |> NaiveDateTime.new!(~T[00:00:00])
 
     query
     |> where([ug: ug], ug.inserted_at >= type(^starts_at, :naive_datetime))

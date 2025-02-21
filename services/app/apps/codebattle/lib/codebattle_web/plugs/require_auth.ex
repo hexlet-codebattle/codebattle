@@ -1,7 +1,8 @@
 defmodule CodebattleWeb.Plugs.RequireAuth do
   alias CodebattleWeb.Router.Helpers, as: Routes
 
-  import CodebattleWeb.Gettext
+  use Gettext, backend: CodebattleWeb.Gettext
+
   import Phoenix.Controller
   import Plug.Conn
 
