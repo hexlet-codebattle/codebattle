@@ -14,7 +14,7 @@ defmodule Codebattle.Utils.PopulateUsersTest do
     IO.write(fd, csv)
     File.close(fd)
 
-    assert {4, nil} = Codebattle.Utils.PopulateUsers.from_csv(path)
+    assert :ok = Codebattle.Utils.PopulateUsers.from_csv(path)
     assert %{name: "user1"} = Codebattle.User.authenticate("user1", "p@ssw0rd!")
   end
 end

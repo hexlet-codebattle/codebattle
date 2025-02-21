@@ -4,12 +4,15 @@ defmodule Codebattle.Utils.PopulateUsers do
   def from_csv(file) do
     utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
-    users =
-      File.stream!(file)
-      |> NimbleCSV.RFC4180.parse_stream()
-      |> Stream.map(&row_to_user(&1, utc_now))
-      |> Enum.to_list()
+    File.stream!(file)
+    |> NimbleCSV.RFC4180.parse_stream()
+    |> Stream.chunk_every(500)
+    |> Stream.each(&process_batch(&1, utc_now))
+    |> Stream.run()
+  end
 
+  defp process_batch(users, now) do
+    users = Enum.map(users, &row_to_user(&1, now))
     Codebattle.Repo.insert_all(Codebattle.User, users)
   end
 
