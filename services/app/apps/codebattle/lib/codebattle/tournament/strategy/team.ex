@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Team do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot
@@ -34,7 +35,7 @@ defmodule Codebattle.Tournament.Team do
 
   @impl Tournament.Base
   def reset_meta(meta) do
-    new_teams = Enum.map(meta.teams, fn {id, team} -> {id, Map.merge(team, score: 0.0)} end)
+    new_teams = Enum.map(meta.teams, fn {id, team} -> {id, Map.put(team, :score, 0.0)} end)
     Map.merge(meta, %{round_results: %{}, teams: new_teams})
   end
 

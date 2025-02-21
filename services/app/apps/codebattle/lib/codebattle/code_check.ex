@@ -1,4 +1,5 @@
 defmodule Codebattle.CodeCheck do
+  @moduledoc false
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.CodeCheck.Result
   alias Runner.LanguageMeta

@@ -1,12 +1,13 @@
 defmodule Codebattle.Event.EventClanResult do
   @moduledoc false
 
+  use Ecto.Schema
+
+  import Ecto.Query
+
   alias Codebattle.Clan
   alias Codebattle.Event
   alias Codebattle.Repo
-
-  use Ecto.Schema
-  import Ecto.Query
 
   @type t :: %__MODULE__{}
 

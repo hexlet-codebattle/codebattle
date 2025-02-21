@@ -53,33 +53,32 @@ defmodule Codebattle.Auth.Github do
         })
 
     opts =
-      Keyword.merge(
+      Keyword.put(
         Application.get_env(:codebattle, :auth_req_options, []),
-        headers: ["content-type": "application/x-www-form-urlencoded"]
+        :headers,
+        "content-type": "application/x-www-form-urlencoded"
       )
 
     query
     |> Req.post!(opts)
     |> Map.get(:body)
     |> URI.decode_query()
-    |> check_authenticated
+    |> check_authenticated()
   end
 
   defp check_authenticated(%{"access_token" => access_token}) do
-    access_token
-    |> get_user_details
+    get_user_details(access_token)
   end
 
   defp check_authenticated(error), do: {:error, error}
 
   defp get_user_details(access_token) do
     opts =
-      Keyword.merge(
+      Keyword.put(
         Application.get_env(:codebattle, :auth_req_options, []),
-        headers: [
-          "user-agent": "Codebattle",
-          authorization: "token #{access_token}"
-        ]
+        :headers,
+        "user-agent": "Codebattle",
+        authorization: "token #{access_token}"
       )
 
     @github_user_url
@@ -89,7 +88,8 @@ defmodule Codebattle.Auth.Github do
   end
 
   defp get_primary_email(access_token) do
-    Req.get!("https://api.github.com/user/emails",
+    "https://api.github.com/user/emails"
+    |> Req.get!(
       headers: [
         "user-agent": "Codebattle",
         authorization: "token #{access_token}"
@@ -106,7 +106,7 @@ defmodule Codebattle.Auth.Github do
 
   defp set_user_email(user, email, _access_token), do: Map.put(user, "email", email)
 
-  defp set_user_details(user = %{"login" => _name, "email" => email}, access_token) do
+  defp set_user_details(%{"login" => _name, "email" => email} = user, access_token) do
     user =
       user
       |> Map.put("access_token", access_token)

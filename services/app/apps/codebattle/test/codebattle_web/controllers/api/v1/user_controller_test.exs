@@ -11,9 +11,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
       insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
 
-      conn =
-        conn
-        |> get(Routes.api_v1_user_path(conn, :index))
+      conn = get(conn, Routes.api_v1_user_path(conn, :index))
 
       resp_body = json_response(conn, 200)
 
@@ -41,9 +39,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
       insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
 
-      conn =
-        conn
-        |> get(Routes.api_v1_user_path(conn, :index), %{"date_from" => date_from})
+      conn = get(conn, Routes.api_v1_user_path(conn, :index), %{"date_from" => date_from})
 
       resp_body = json_response(conn, 200)
 
@@ -64,9 +60,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       insert(:user, %{name: "bbb", email: "test2@test.test", github_id: 2, rating: 2310})
       insert(:user, %{name: "ab", email: "test3@test.test", github_id: 3, rating: 2210})
 
-      conn =
-        conn
-        |> get(Routes.api_v1_user_path(conn, :index, q: %{name_ilike: "a"}))
+      conn = get(conn, Routes.api_v1_user_path(conn, :index, q: %{name_ilike: "a"}))
 
       resp_body = json_response(conn, 200)
 
@@ -93,9 +87,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
         }
       )
 
-      conn =
-        conn
-        |> get(Routes.api_v1_user_path(conn, :index, s: "inserted_at+asc"))
+      conn = get(conn, Routes.api_v1_user_path(conn, :index, s: "inserted_at+asc"))
 
       resp_body = json_response(conn, 200)
 
@@ -141,7 +133,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
                %{"count" => 1, "lang" => "golang", "result" => "lost"},
                %{"count" => 1, "lang" => "js", "result" => "won"},
                %{"count" => 1, "lang" => "ruby", "result" => "lost"}
-             ] = resp_body["stats"]["all"] |> Enum.sort_by(& &1["lang"])
+             ] = Enum.sort_by(resp_body["stats"]["all"], & &1["lang"])
 
       assert %{
                "active_game_id" => ^game4_id,

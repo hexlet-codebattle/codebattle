@@ -1,8 +1,4 @@
 defmodule Codebattle.AssertsService.Result do
-  use TypedStruct
-
-  alias Codebattle.AssertsService.AssertResult
-
   @moduledoc """
   statuses:
   initial ->  no generation runs
@@ -11,6 +7,10 @@ defmodule Codebattle.AssertsService.Result do
   failure -> some asserts checks/generate fails
   error -> compile error, or out of memory
   """
+
+  use TypedStruct
+
+  alias Codebattle.AssertsService.AssertResult
 
   @derive Jason.Encoder
 

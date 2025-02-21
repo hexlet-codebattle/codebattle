@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Match do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset

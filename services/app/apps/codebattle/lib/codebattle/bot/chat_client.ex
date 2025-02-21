@@ -40,8 +40,8 @@ defmodule Codebattle.Bot.ChatClient do
     send_text(chat_channel, start_code_text(total_time_min))
   end
 
-  defp excuse_text() do
-    [
+  defp excuse_text do
+    Enum.random([
       "You lucky. I don't have a clue, how solve it",
       "Perhaps, you can solve this better than I can",
       "Dame it!!!! It's hard task...",
@@ -53,8 +53,7 @@ defmodule Codebattle.Bot.ChatClient do
       "RedBrother, HELP me, please!!!!",
       "I seem to remember how to solve this task in Clojure...",
       "Ruby or not to Ruby?..."
-    ]
-    |> Enum.random()
+    ])
   end
 
   defp congratulate_opponent_text("training") do
@@ -62,7 +61,7 @@ defmodule Codebattle.Bot.ChatClient do
   end
 
   defp congratulate_opponent_text(_) do
-    [
+    Enum.random([
       "GG WP",
       "Good job!",
       "Well played!",
@@ -70,51 +69,45 @@ defmodule Codebattle.Bot.ChatClient do
       "I'll be back next time!",
       "I will return!!111",
       "I'll get my revenge next time!"
-    ]
-    |> Enum.random()
+    ])
   end
 
-  defp advice_on_give_up_text() do
-    [
+  defp advice_on_give_up_text do
+    Enum.random([
       "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!",
       "Hey, there! Learn JS and be happy!",
       "Maybe you should pick Ruby for this task?",
       "You know that PHP has levenshtein distance calculation function?",
       "You know that Ruby has functions for calculating complex numbers?"
-    ]
-    |> Enum.random()
+    ])
   end
 
-  defp advice_on_win() do
-    ["Nice shot!", "GG WP!", "Good job!", "Good one!", "Nice one!"]
-    |> Enum.random()
+  defp advice_on_win do
+    Enum.random(["Nice shot!", "GG WP!", "Good job!", "Good one!", "Nice one!"])
   end
 
-  defp advice_on_check_complete_success() do
-    ["Nice try", "Wow", "Easy", "Ez"]
-    |> Enum.random()
+  defp advice_on_check_complete_success do
+    Enum.random(["Nice try", "Wow", "Easy", "Ez"])
   end
 
-  defp advice_on_check_complete_failure() do
-    ["Oh snap", "Take it easy"]
-    |> Enum.random()
+  defp advice_on_check_complete_failure do
+    Enum.random(["Oh snap", "Take it easy"])
   end
 
-  defp greet_opponent_text() do
-    [
+  defp greet_opponent_text do
+    Enum.random([
       "Hey, I'll join when you start writing code",
       "Hey there! I will wait... Until you start coding.",
       "I won't start writing code. Only after you :)"
-    ]
-    |> Enum.random()
+    ])
   end
 
   defp start_code_text(total_time_min) do
     "I'll solve this task in about #{total_time_min} minutes. Good luck!"
   end
 
-  defp say_about_code() do
-    [
+  defp say_about_code do
+    Enum.random([
       "Your code looks very strange...",
       "I'll be nice, once, then I won't",
       "What did you just type? Looks strange...",
@@ -122,8 +115,7 @@ defmodule Codebattle.Bot.ChatClient do
       "Hmmmm...",
       "Whaaaaat?...",
       "¯\_(ツ)_/¯"
-    ]
-    |> Enum.random()
+    ])
   end
 
   # TODO: add this event

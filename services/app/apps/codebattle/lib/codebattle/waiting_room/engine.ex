@@ -1,12 +1,13 @@
 defmodule Codebattle.WaitingRoom.Engine do
+  @moduledoc false
   alias Codebattle.WaitingRoom.State
 
   require Logger
 
   @spec call(State.t()) :: State.t()
-  def call(state = %State{players: []}), do: state
+  def call(%State{players: []} = state), do: state
 
-  def call(state = %State{}) do
+  def call(%State{} = state) do
     Logger.debug("WREngine match players " <> inspect(state.players))
 
     state
@@ -31,7 +32,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     %{state | groups: groups, unmatched: unmatched}
   end
 
-  defp maybe_filter_score(state = %{use_score?: true}) do
+  defp maybe_filter_score(%{use_score?: true} = state) do
     %{state | groups: Enum.sort_by(state.groups, & &1.score, :desc)}
   end
 
@@ -74,7 +75,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     end)
   end
 
-  defp maybe_match_with_played(state = %{use_played_pairs?: false}) do
+  defp maybe_match_with_played(%{use_played_pairs?: false} = state) do
     state
   end
 
@@ -98,7 +99,7 @@ defmodule Codebattle.WaitingRoom.Engine do
     }
   end
 
-  defp maybe_match_with_bots(state = %{use_match_with_bots?: false}) do
+  defp maybe_match_with_bots(%{use_match_with_bots?: false} = state) do
     state
   end
 
@@ -127,17 +128,12 @@ defmodule Codebattle.WaitingRoom.Engine do
     {pairs, [player | unmatched]}
   end
 
-  defp match_group(
-         %{use_clan?: true},
-         [p1 = %{clan_id: c1_id}, p2 = %{clan_id: c2_id}],
-         pairs,
-         unmatched
-       )
+  defp match_group(%{use_clan?: true}, [%{clan_id: c1_id} = p1, %{clan_id: c2_id} = p2], pairs, unmatched)
        when c1_id == c2_id do
     {pairs, [p1, p2 | unmatched]}
   end
 
-  defp match_group(state = %{use_played_pairs?: true}, [p1, p2], pairs, unmatched) do
+  defp match_group(%{use_played_pairs?: true} = state, [p1, p2], pairs, unmatched) do
     pair = Enum.sort([p1.id, p2.id])
 
     if MapSet.member?(state.played_pair_ids, pair) do
@@ -152,8 +148,8 @@ defmodule Codebattle.WaitingRoom.Engine do
   end
 
   defp match_group(state, [p1 | remained_players], pairs, unmatched) do
-    Enum.reduce_while(
-      remained_players,
+    remained_players
+    |> Enum.reduce_while(
       nil,
       fn p2, _acc ->
         cond do

@@ -2,6 +2,7 @@ defmodule Codebattle.InvitesKillerServer do
   @moduledoc "Invites killer server"
 
   use GenServer
+
   alias Codebattle.Invite
 
   @timeout Application.compile_env(:codebattle, Invite)[:timeout]
@@ -21,7 +22,7 @@ defmodule Codebattle.InvitesKillerServer do
     {:ok, %{}}
   end
 
-  def call() do
+  def call do
     GenServer.cast(__MODULE__, :check_invites)
   end
 
@@ -36,7 +37,7 @@ defmodule Codebattle.InvitesKillerServer do
     {:noreply, %{}}
   end
 
-  defp expire_outdated_invites() do
+  defp expire_outdated_invites do
     invites = Invite.list_all_active_invites()
     current_time = NaiveDateTime.utc_now()
 

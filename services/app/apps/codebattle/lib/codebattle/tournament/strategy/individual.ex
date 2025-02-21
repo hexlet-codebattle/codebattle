@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Individual do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot
@@ -32,10 +33,10 @@ defmodule Codebattle.Tournament.Individual do
   def set_ranking(t), do: t
 
   @impl Tournament.Base
-  def build_round_pairs(tournament = %{current_round_position: 0}) do
+  def build_round_pairs(%{current_round_position: 0} = tournament) do
     player_pairs =
       tournament
-      |> get_players
+      |> get_players()
       |> Enum.shuffle()
       |> Enum.chunk_every(2)
 

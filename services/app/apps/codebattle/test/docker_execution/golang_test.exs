@@ -1,9 +1,11 @@
 defmodule Codebattle.DockerExecution.GolangTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.GameChannel
+  alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user)
@@ -33,11 +35,11 @@ defmodule Codebattle.DockerExecution.GolangTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "error", success_count: 0} = check_result
+    assert %Result{status: "error", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
@@ -63,11 +65,11 @@ defmodule Codebattle.DockerExecution.GolangTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "failure", success_count: 0} = check_result
+    assert %Result{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
@@ -95,7 +97,7 @@ defmodule Codebattle.DockerExecution.GolangTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{solution_status: true, state: "game_over"}
     }
 

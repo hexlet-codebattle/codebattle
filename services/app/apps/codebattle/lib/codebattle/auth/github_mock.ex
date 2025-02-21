@@ -45,37 +45,16 @@ defmodule Codebattle.Auth.GithubMock do
 
   def get!(url, headers \\ [], options \\ [])
 
-  def get!(
-        "https://api.github.com/user",
-        [
-          {"User-Agent", "Codebattle"},
-          {"Authorization", "token 123"}
-        ],
-        _options
-      ) do
-    %{body: "{\"error\": \"test error\"}"}
+  def get!("https://api.github.com/user", [{"User-Agent", "Codebattle"}, {"Authorization", "token 123"}], _options) do
+    %{body: ~s({"error": "test error"})}
   end
 
-  def get!(
-        "https://api.github.com/user",
-        [
-          {"User-Agent", "Codebattle"},
-          {"Authorization", "token 42"}
-        ],
-        _options
-      ) do
+  def get!("https://api.github.com/user", [{"User-Agent", "Codebattle"}, {"Authorization", "token 42"}], _options) do
     %{body: @body_email_nil}
   end
 
   # user emails
-  def get!(
-        "https://api.github.com/user/emails",
-        [
-          {"User-Agent", "Codebattle"},
-          {"Authorization", "token 42"}
-        ],
-        _options
-      ) do
+  def get!("https://api.github.com/user/emails", [{"User-Agent", "Codebattle"}, {"Authorization", "token 42"}], _options) do
     %{body: @emails}
   end
 

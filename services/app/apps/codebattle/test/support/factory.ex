@@ -1,4 +1,5 @@
 defmodule CodebattleWeb.Factory do
+  @moduledoc false
   use ExMachina.Ecto, repo: Codebattle.Repo
 
   alias Codebattle.Feedback

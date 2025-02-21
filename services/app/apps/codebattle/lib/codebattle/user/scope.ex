@@ -3,16 +3,17 @@ defmodule Codebattle.User.Scope do
     Module with scopes for the User scheme
   """
 
-  alias Codebattle.User
-
   import Ecto.Query
+
+  alias Codebattle.User
 
   def by_email_or_name(query, %{name: name, email: email}) do
     from(u in query, where: u.name == ^name or u.email == ^email)
   end
 
   def list_users(params) do
-    base_query(params)
+    params
+    |> base_query()
     |> filter_by_date(params)
     |> search_by_name(params)
     |> without_bots(params)
@@ -37,7 +38,7 @@ defmodule Codebattle.User.Scope do
   end
 
   defp filter_by_date(query, %{"date_from" => date_from}) when date_from !== "" do
-    starts_at = Date.from_iso8601!(date_from) |> NaiveDateTime.new!(~T[00:00:00])
+    starts_at = date_from |> Date.from_iso8601!() |> NaiveDateTime.new!(~T[00:00:00])
 
     query
     |> where([ug: ug], ug.inserted_at >= type(^starts_at, :naive_datetime))
@@ -48,8 +49,7 @@ defmodule Codebattle.User.Scope do
 
   defp search_by_name(query, %{"q" => %{"name_ilike" => ""}}), do: query
 
-  defp search_by_name(query, %{"q" => %{"name_ilike" => term}})
-       when is_binary(term) do
+  defp search_by_name(query, %{"q" => %{"name_ilike" => term}}) when is_binary(term) do
     where(query, [u: u], ilike(u.name, ^"%#{term}%"))
   end
 

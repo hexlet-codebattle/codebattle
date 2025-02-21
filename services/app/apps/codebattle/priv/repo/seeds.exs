@@ -1,20 +1,18 @@
 alias Codebattle.Clan
 alias Codebattle.Game
 alias Codebattle.Repo
+alias Codebattle.TaskPack
 alias Codebattle.User
 alias Codebattle.UserGame
-alias Codebattle.TaskPack
 
 levels = ["elementary", "easy", "medium", "hard"]
 
-1..30
-|> Enum.each(fn x ->
+Enum.each(1..30, fn x ->
   for level <- levels do
     task_params = %{
       level: level,
       name: "task_#{level}_#{x}",
-      tags:
-        Enum.take_random(["math", "lol", "kek", "asdf", "strings", "hash-maps", "collections"], 3),
+      tags: Enum.take_random(["math", "lol", "kek", "asdf", "strings", "hash-maps", "collections"], 3),
       origin: "github",
       state: "active",
       visibility: "public",
@@ -153,10 +151,10 @@ levels = ["elementary", "easy", "medium", "hard"]
 end)
 
 creator = %{
-  name: "User1_admin#{Timex.format!(Timex.now(), "%FT%T%:z", :strftime)}",
+  name: "User1_admin#{Timex.format!(DateTime.utc_now(), "%FT%T%:z", :strftime)}",
   is_bot: false,
   rating: 1300,
-  email: "admin@user1#{Timex.format!(Timex.now(), "%FT%T%:z", :strftime)}",
+  email: "admin@user1#{Timex.format!(DateTime.utc_now(), "%FT%T%:z", :strftime)}",
   avatar_url: "/assets/images/logo.svg",
   lang: "ruby",
   inserted_at: TimeHelper.utc_now(),
@@ -180,14 +178,13 @@ creator = %{
 })
 |> Repo.insert!()
 
-now = Timex.now()
+now = DateTime.utc_now()
 one_month_ago = Timex.shift(now, months: -1)
 two_weeks_ago = Timex.shift(now, weeks: -2)
 five_days_ago = Timex.shift(now, days: -5)
 six_hours_ago = Timex.shift(now, hours: -6)
 
-[one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago]
-|> Enum.each(fn t ->
+Enum.each([one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago], fn t ->
   game_params = %{
     state: "game_over",
     level: "easy",
@@ -322,7 +319,7 @@ end)
 
 tokens =
   Enum.map(1..100, fn id ->
-    t = Timex.now()
+    t = DateTime.utc_now()
 
     clan_id =
       50

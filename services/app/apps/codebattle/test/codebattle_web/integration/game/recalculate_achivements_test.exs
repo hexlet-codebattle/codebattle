@@ -3,8 +3,8 @@ defmodule CodebattleWeb.Integration.Game.RecalculateAchivementsTest do
 
   import CodebattleWeb.Factory
 
-  alias CodebattleWeb.UserSocket
   alias Codebattle.User
+  alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
     insert(:task)
@@ -76,8 +76,7 @@ defmodule CodebattleWeb.Integration.Game.RecalculateAchivementsTest do
     user1: user1,
     user2: _user2
   } do
-    ["js", "php", "ruby"]
-    |> Enum.each(fn x ->
+    Enum.each(["js", "php", "ruby"], fn x ->
       insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
     end)
 

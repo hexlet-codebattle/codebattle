@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.PairBuilder.ByClanAndScore do
+  @moduledoc false
   @opaque player_id :: pos_integer()
   @opaque clan_id :: pos_integer()
   @opaque score :: pos_integer()
@@ -19,19 +20,17 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScore do
     {pairs, [elem(player, 0) | unmatched_player_ids]}
   end
 
-  defp match_players([{p1_id, c1_id, _s1}, {p2_id, c2_id, _s2}], pairs, unmatched_player_ids)
-       when c1_id != c2_id do
+  defp match_players([{p1_id, c1_id, _s1}, {p2_id, c2_id, _s2}], pairs, unmatched_player_ids) when c1_id != c2_id do
     {[[p1_id, p2_id] | pairs], unmatched_player_ids}
   end
 
-  defp match_players([{p1_id, c1_id, _s1}, {p2_id, c2_id, _s2}], pairs, unmatched_player_ids)
-       when c1_id == c2_id do
+  defp match_players([{p1_id, c1_id, _s1}, {p2_id, c2_id, _s2}], pairs, unmatched_player_ids) when c1_id == c2_id do
     {pairs, [p1_id, p2_id | unmatched_player_ids]}
   end
 
   defp match_players([{p1_id, c1_id, _s1} | remained_players], pairs, unmatched_player_ids) do
-    Enum.reduce_while(
-      remained_players,
+    remained_players
+    |> Enum.reduce_while(
       nil,
       fn {p2_id, c2_id, _s}, _acc ->
         if c1_id == c2_id do

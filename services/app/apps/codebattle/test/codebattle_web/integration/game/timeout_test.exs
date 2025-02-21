@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.Game
+  alias Codebattle.Game.Context
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -56,9 +57,9 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
     |> get(game_path(conn2, :show, game_id))
     |> follow_button("Join")
 
-    Codebattle.Game.Context.trigger_timeout(game_id)
+    Context.trigger_timeout(game_id)
 
-    assert %{state: "timeout"} = Codebattle.Game.Context.get_game!(game_id)
+    assert %{state: "timeout"} = Context.get_game!(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
     ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})

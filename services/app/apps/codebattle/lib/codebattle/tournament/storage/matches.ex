@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Matches do
+  @moduledoc false
   def create_table(id) do
     :ets.new(
       :"t_#{id}_matches",

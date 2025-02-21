@@ -2,6 +2,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.Tournament
+  alias Phoenix.Socket.Broadcast
+  alias Phoenix.Socket.Message
 
   test "Arena Clan 1 round sequential task_pack" do
     %{id: t1_id} = insert(:task, level: "easy")
@@ -73,9 +75,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
     Phoenix.ChannelTest.push(socket6, "tournament:join", %{})
 
     # 7 users joined for 7 user sockets
-    1..36
-    |> Enum.each(fn _i ->
-      assert_receive %Phoenix.Socket.Message{
+    Enum.each(1..36, fn _i ->
+      assert_receive %Message{
         event: "tournament:player:joined",
         payload: %{
           player: %Tournament.Player{clan_id: _, id: _, name: _, state: "active"},
@@ -116,9 +117,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
 
     Phoenix.ChannelTest.push(socket7, "tournament:join", %{})
 
-    1..7
-    |> Enum.each(fn _i ->
-      assert_receive %Phoenix.Socket.Message{
+    Enum.each(1..7, fn _i ->
+      assert_receive %Message{
         event: "tournament:player:joined",
         payload: %{
           player: %Tournament.Player{clan_id: _, id: _, name: _, state: "active"},
@@ -126,7 +126,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
         }
       }
 
-      assert_receive %Phoenix.Socket.Message{
+      assert_receive %Message{
         event: "tournament:ranking_update",
         payload: %{ranking: %{}, clans: %{}}
       }
@@ -173,9 +173,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
 
     :timer.sleep(100)
 
-    1..8
-    |> Enum.each(fn _i ->
-      assert_receive %Phoenix.Socket.Message{
+    Enum.each(1..8, fn _i ->
+      assert_receive %Message{
         event: "tournament:round_created",
         payload: %{
           tournament: %{
@@ -189,7 +188,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       }
     end)
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "waiting_room:player:match_created",
       payload: %{
         current_player: %{id: ^u1_id, state: "active"},
@@ -198,9 +197,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       }
     }
 
-    1..6
-    |> Enum.each(fn _i ->
-      assert_receive %Phoenix.Socket.Message{
+    Enum.each(1..6, fn _i ->
+      assert_receive %Message{
         event: "waiting_room:player:match_created",
         payload: %{
           current_player: %{state: "active"},
@@ -210,7 +208,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       }
     end)
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "tournament:update",
       payload: %{tournament: %{}},
       topic: ^tournament_admin_topic
@@ -223,9 +221,8 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
 
     Phoenix.ChannelTest.push(socket8, "tournament:join", %{})
 
-    1..9
-    |> Enum.each(fn _i ->
-      assert_receive %Phoenix.Socket.Message{
+    Enum.each(1..9, fn _i ->
+      assert_receive %Message{
         event: "tournament:player:joined",
         payload: %{
           player: %Tournament.Player{clan_id: _, id: _, name: _, state: "matchmaking_active"},
@@ -234,7 +231,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       }
     end)
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "tournament:ranking_update",
       payload: %{ranking: %{}, clans: %{}}
     }
@@ -249,25 +246,25 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       lang_slug: "js"
     })
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       event: "user:start_check",
       payload: %{user_id: ^u1_id},
       topic: ^game_topic
     }
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       event: "user:check_complete",
       payload: %{user_id: ^u1_id, solution_status: true},
       topic: ^game_topic
     }
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "user:check_complete",
       payload: %{user_id: ^u1_id, solution_status: true},
       topic: ^game_topic
     }
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
@@ -287,7 +284,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
     Phoenix.ChannelTest.assert_reply(ref_1, :ok)
     assert_receive {:socket_close, _, {:shutdown, :left}}
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
@@ -302,7 +299,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       topic: ^tournament_topic
     }
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "waiting_room:player:matchmaking_started",
       payload: %{
         current_player: %{
@@ -316,7 +313,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       topic: ^tournament_topic
     }
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "tournament:match:upserted",
       payload: %{
         players: [%{state: "active"}, %{state: "active"}],
@@ -325,7 +322,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
       topic: ^tournament_topic
     }
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "tournament:match:upserted",
       payload: %{
         players: [%{state: "active"}, %{state: "active"}],

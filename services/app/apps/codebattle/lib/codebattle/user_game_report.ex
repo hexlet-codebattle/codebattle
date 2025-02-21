@@ -2,6 +2,7 @@ defmodule Codebattle.UserGameReport do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
@@ -42,7 +43,7 @@ defmodule Codebattle.UserGameReport do
     timestamps()
   end
 
-  def changeset(struct = %__MODULE__{}, params \\ %{}) do
+  def changeset(%__MODULE__{} = struct, params \\ %{}) do
     struct
     |> cast(params, [
       :comment,

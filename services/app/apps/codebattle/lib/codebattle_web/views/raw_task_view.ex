@@ -7,7 +7,7 @@ defmodule CodebattleWeb.RawTaskView do
   def render_tags(task), do: Enum.join(task.tags, ", ")
 
   def render_asserts(task) do
-    task.asserts |> Jason.encode!()
+    Jason.encode!(task.asserts)
   end
 
   def render_markdown(nil), do: ""

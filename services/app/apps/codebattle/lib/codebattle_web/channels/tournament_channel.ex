@@ -2,10 +2,10 @@ defmodule CodebattleWeb.TournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  require Logger
-
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+
+  require Logger
 
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
@@ -191,7 +191,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message = %{event: "waiting_room:player" <> _rest}, socket) do
+  def handle_info(%{event: "waiting_room:player" <> _rest} = message, socket) do
     push(socket, message.event, message.payload)
 
     {:noreply, socket}

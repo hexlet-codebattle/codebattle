@@ -4,10 +4,10 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
 
   import Ecto.Changeset
 
-  require Logger
-
   alias Codebattle.Tournament
   alias CodebattleWeb.Live.Tournament.EditFormComponent
+
+  require Logger
 
   @impl true
   def mount(_params, session, socket) do
@@ -53,7 +53,7 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
 
     changeset =
       Tournament.Context.validate(
-        Map.merge(params, %{"user_timezone" => user_timezone}),
+        Map.put(params, "user_timezone", user_timezone),
         tournament
       )
 
@@ -81,12 +81,10 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
 
     case Tournament.Context.update(
            tournament,
-           Map.merge(params, %{"user_timezone" => user_timezone})
+           Map.put(params, "user_timezone", user_timezone)
          ) do
       {:ok, tournament} ->
-        {:noreply,
-         socket
-         |> redirect(to: "/tournaments/#{tournament.id}")}
+        {:noreply, redirect(socket, to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

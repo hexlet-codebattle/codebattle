@@ -1,8 +1,8 @@
 defmodule Runner.SolutionGeneratorTest do
   use ExUnit.Case, async: true
 
-  alias Runner.SolutionGenerator
   alias Runner.Languages
+  alias Runner.SolutionGenerator
 
   @clojure_expected """
   (defn solution [a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings]

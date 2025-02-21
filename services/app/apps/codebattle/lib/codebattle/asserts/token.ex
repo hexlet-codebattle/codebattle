@@ -1,4 +1,5 @@
 defmodule Codebattle.AssertsService.Executor.Token do
+  @moduledoc false
   use TypedStruct
 
   alias Codebattle.AssertsService

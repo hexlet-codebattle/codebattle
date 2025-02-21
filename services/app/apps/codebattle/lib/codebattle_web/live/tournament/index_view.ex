@@ -2,10 +2,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   use CodebattleWeb, :live_view
   use Timex
 
+  import CodebattleWeb.TournamentView
+
   alias Codebattle.Tournament
   alias CodebattleWeb.Live.Tournament.CreateFormComponent
-
-  import CodebattleWeb.TournamentView
 
   @impl true
   def mount(_params, session, socket) do
@@ -81,7 +81,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   @impl true
-  def handle_event(_event, _params, socket = %{assigns: %{current_user: %{is_guest: true}}}) do
+  def handle_event(_event, _params, %{assigns: %{current_user: %{is_guest: true}}} = socket) do
     {:noreply, socket}
   end
 
@@ -90,7 +90,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
     creator = socket.assigns.current_user
 
     changeset =
-      Tournament.Context.validate(Map.merge(params, %{"creator" => creator}))
+      Tournament.Context.validate(Map.put(params, "creator", creator))
 
     {:noreply, assign(socket, changeset: changeset)}
   end
@@ -108,9 +108,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
 
     case Tournament.Context.create(params) do
       {:ok, tournament} ->
-        {:noreply,
-         socket
-         |> redirect(to: "/tournaments/#{tournament.id}")}
+        {:noreply, redirect(socket, to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

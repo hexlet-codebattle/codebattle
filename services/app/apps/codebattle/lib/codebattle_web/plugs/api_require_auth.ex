@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.ApiRequireAuth do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   def init(options), do: options
 
@@ -9,7 +10,7 @@ defmodule CodebattleWeb.Plugs.ApiRequireAuth do
       conn
       |> put_status(:unauthorized)
       |> json(%{error: "oiblz"})
-      |> halt
+      |> halt()
     else
       conn
     end

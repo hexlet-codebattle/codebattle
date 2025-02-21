@@ -19,8 +19,7 @@ defmodule Codebattle.Repo do
           |> exclude(:order_by)
           |> exclude(:select)
 
-        from(u in subquery(query))
-        |> Repo.count()
+        Repo.count(from(u in subquery(query)))
       else
         0
       end

@@ -24,7 +24,7 @@ defmodule Codebattle.Clan do
   end
 
   @spec get_all() :: list(t())
-  def get_all() do
+  def get_all do
     Repo.all(__MODULE__)
   end
 

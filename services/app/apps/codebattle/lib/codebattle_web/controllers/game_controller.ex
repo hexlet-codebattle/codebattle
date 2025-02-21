@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.GameController do
   use CodebattleWeb, :controller
+
   import PhoenixGon.Controller
-  require Logger
 
   alias Codebattle.Game
   alias Codebattle.Game.Context
@@ -9,9 +9,10 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.Playbook
   alias Codebattle.User
   alias Codebattle.UserGameReport
+  alias CodebattleWeb.Api.GameView
   alias Runner.Languages
 
-  alias CodebattleWeb.Api.GameView
+  require Logger
 
   action_fallback(CodebattleWeb.FallbackController)
 
@@ -187,7 +188,7 @@ defmodule CodebattleWeb.GameController do
 
   defp can_see_game(%{subscription_type: :admin}, _game), do: true
 
-  defp can_see_game(user = %{subscription_type: :premium}, game) do
+  defp can_see_game(%{subscription_type: :premium} = user, game) do
     [first, second] = get_users(game)
     user.id == first.id || user.id == second.id
   end

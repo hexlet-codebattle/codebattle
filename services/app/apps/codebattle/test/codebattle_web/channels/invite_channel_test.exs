@@ -3,6 +3,8 @@ defmodule CodebattleWeb.InviteChannelTest do
 
   alias CodebattleWeb.InviteChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Message
+  alias Phoenix.Socket.Reply
 
   setup do
     creator = insert(:user)
@@ -29,7 +31,7 @@ defmodule CodebattleWeb.InviteChannelTest do
 
     assert response == %{}
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       event: "invites:init",
       payload: response
@@ -50,7 +52,7 @@ defmodule CodebattleWeb.InviteChannelTest do
 
     assert response == %{}
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       event: "invites:init",
       payload: response
@@ -73,7 +75,7 @@ defmodule CodebattleWeb.InviteChannelTest do
 
     response_ref = push(creator_socket, "invites:create", %{recipient_id: recipient.id})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "invites",
       ref: ^response_ref,
       payload: response
@@ -83,7 +85,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       event: "invites:created",
       payload: response
@@ -110,7 +112,7 @@ defmodule CodebattleWeb.InviteChannelTest do
 
     response_ref = push(recipient_socket, "invites:accept", %{"id" => invite.id})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "invites",
       ref: ^response_ref,
       payload: response
@@ -121,7 +123,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       payload: _response
     }
@@ -145,7 +147,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     recipient_response_ref =
       push(recipient_socket, "invites:cancel", %{"id" => creator_invite.id})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "invites",
       ref: ^recipient_response_ref,
       payload: response
@@ -156,7 +158,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       payload: _response
     }
@@ -164,7 +166,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     ## Creator cancels invite
     creator_response_ref = push(creator_socket, "invites:cancel", %{"id" => recipient_invite.id})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "invites",
       ref: ^creator_response_ref,
       payload: response
@@ -175,7 +177,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "invites",
       payload: _response
     }

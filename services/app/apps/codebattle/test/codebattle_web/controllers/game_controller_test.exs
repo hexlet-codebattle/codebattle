@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
+
   alias Codebattle.Game
 
   describe "GET games/:id" do

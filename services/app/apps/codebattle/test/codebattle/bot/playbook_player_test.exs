@@ -1,10 +1,10 @@
 defmodule Codebattle.Bot.PlaybookPlayerTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.{GameChannel, UserSocket}
-  alias Codebattle.Game.Helpers
-  alias Codebattle.Game
   alias Codebattle.Bot
+  alias Codebattle.Game
+  alias Codebattle.Game.Helpers
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
 
   test "Bot playing with user and bot wins", %{conn: conn} do
@@ -90,7 +90,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
 
     :timer.sleep(3_000)
     # bot write_some_text
-    game = Game.Context.get_game!(game.id) |> Repo.preload(user_games: [:playbook])
+    game = game.id |> Game.Context.get_game!() |> Repo.preload(user_games: [:playbook])
     bot_user_game = Enum.find(game.user_games, fn user_game -> user_game.user_id == bot.id end)
 
     assert Helpers.get_first_player(game).editor_text == "tes"

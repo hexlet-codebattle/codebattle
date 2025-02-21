@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Storage.Clans do
+  @moduledoc false
   def create_table(id) do
     :ets.new(
       :"t_#{id}_clans",
@@ -20,7 +21,7 @@ defmodule Codebattle.Tournament.Storage.Clans do
   end
 
   def get_all(tournament) do
-    tournament.clans_table |> :ets.tab2list() |> Enum.into(%{})
+    tournament.clans_table |> :ets.tab2list() |> Map.new()
   end
 
   def get_clan(tournament, clan_id) do

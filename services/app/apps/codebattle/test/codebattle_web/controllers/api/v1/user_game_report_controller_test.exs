@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Repo
-  alias Codebattle.Game
   alias Codebattle.Bot
+  alias Codebattle.Game
+  alias Codebattle.Repo
   alias Codebattle.UserGameReport
 
   describe "create/1" do
@@ -47,7 +47,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       assert offender_id == bot.id
 
       user_game_report =
-        UserGameReport.get!(user_game_report_id) |> Repo.preload([:reporter, :offender])
+        user_game_report_id |> UserGameReport.get!() |> Repo.preload([:reporter, :offender])
 
       assert user_game_report.state == :pending
       assert user_game_report.reporter.id == user.id

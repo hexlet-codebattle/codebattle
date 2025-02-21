@@ -1,7 +1,8 @@
 defmodule CodebattleWeb.LayoutView do
   use CodebattleWeb, :view
-  import PhoenixGon.View
+
   import CodebattleWeb.Router.Helpers
+  import PhoenixGon.View
 
   @app_version Application.compile_env(:codebattle, :app_version)
   @colors [

@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Game.ImageController do
     ~s(<p>Codebattle game</p>)
   end
 
-  defp render_content(game = %{players: [player1]}) do
+  defp render_content(%{players: [player1]} = game) do
     ~s(
       <p>Game state: #{game.state}</p>
       <p>Level: #{game.level}</p>
@@ -48,7 +48,7 @@ defmodule CodebattleWeb.Game.ImageController do
     )
   end
 
-  defp render_content(game = %{players: [player1, player2]}) do
+  defp render_content(%{players: [player1, player2]} = game) do
     ~s(
     <p>Game state: #{game.state}</p>
     <p>Level: #{game.level}</p>

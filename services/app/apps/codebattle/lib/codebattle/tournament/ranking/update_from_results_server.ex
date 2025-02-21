@@ -1,12 +1,14 @@
 defmodule Codebattle.Tournament.Ranking.UpdateFromResultsServer do
+  @moduledoc false
   use GenServer
-  require Logger
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking
   alias Codebattle.Tournament.TournamentResult
 
-  @interval :timer.seconds(10)
+  require Logger
+
+  @interval to_timeout(second: 10)
 
   # API
   def start_link(tournament_id) do
@@ -15,14 +17,12 @@ defmodule Codebattle.Tournament.Ranking.UpdateFromResultsServer do
 
   @spec update(tournament :: Tournament.t()) :: :ok | {:error, :not_found}
   def update(tournament) do
-    try do
-      GenServer.call(server_name(tournament.id), :update)
-      :ok
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament ranking update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    GenServer.call(server_name(tournament.id), :update)
+    :ok
+  catch
+    :exit, reason ->
+      Logger.error("Error to send tournament ranking update: #{inspect(reason)}")
+      {:error, :not_found}
   end
 
   # SERVER
@@ -60,13 +60,7 @@ defmodule Codebattle.Tournament.Ranking.UpdateFromResultsServer do
     end
   end
 
-  def handle_info(
-        %{
-          topic: "game:tournament:" <> _t_id,
-          event: "game:tournament:finished"
-        },
-        state
-      ) do
+  def handle_info(%{topic: "game:tournament:" <> _t_id, event: "game:tournament:finished"}, state) do
     {:noreply, %{state | updates_received: true}}
   end
 
@@ -80,10 +74,9 @@ defmodule Codebattle.Tournament.Ranking.UpdateFromResultsServer do
     Ranking.set_ranking_to_ets(tournament)
   end
 
-  defp schedule_work() do
+  defp schedule_work do
     Process.send_after(self(), :work, @interval)
   end
 
-  defp server_name(id),
-    do: {:via, Registry, {Codebattle.Registry, "tournament_update_ranking_srv::#{id}"}}
+  defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_update_ranking_srv::#{id}"}}
 end

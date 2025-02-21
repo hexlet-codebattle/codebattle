@@ -17,11 +17,15 @@ defmodule CodebattleWeb.ChannelCase do
 
   using do
     quote do
+      import CodebattleWeb.Factory
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
-      import CodebattleWeb.Factory
+
+      alias Codebattle.Game
+      alias Codebattle.Repo
+      alias Codebattle.User
+      alias Codebattle.UserGame
       alias CodebattleWeb.Router.Helpers, as: Routes
-      alias Codebattle.{Repo, User, Game, UserGame}
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

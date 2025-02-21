@@ -4,15 +4,15 @@ defmodule Codebattle.Bot.Server do
   """
   use GenServer
 
-  require Logger
-
   alias Codebattle.Bot
   alias Codebattle.Game
+
+  require Logger
 
   @port Application.compile_env(:codebattle, :ws_port, 4000)
 
   @spec start_link(%{game: Game.t(), bot_id: integer()}) :: GenServer.on_start()
-  def start_link(params = %{game: game, bot_id: bot_id}) do
+  def start_link(%{game: game, bot_id: bot_id} = params) do
     GenServer.start_link(__MODULE__, params, name: server_name(game.id, bot_id))
   end
 
@@ -58,7 +58,7 @@ defmodule Codebattle.Bot.Server do
       params ->
         Logger.debug("""
         Start bot playbook player for game_id: #{inspect(state.game.id)},
-        with playbook_params: #{inspect(Map.drop(params, [:actions]))}
+        with playbook_params: #{inspect(Map.delete(params, :actions))}
         """)
 
         {:noreply, state}
@@ -93,10 +93,7 @@ defmodule Codebattle.Bot.Server do
   end
 
   @impl GenServer
-  def handle_info(
-        %{event: "user:check_complete", payload: %{"check_result" => %{"status" => "ok"}}},
-        state
-      ) do
+  def handle_info(%{event: "user:check_complete", payload: %{"check_result" => %{"status" => "ok"}}}, state) do
     send_chat_message(state, :advice_on_check_complete_success)
 
     {:noreply, state}
@@ -114,7 +111,7 @@ defmodule Codebattle.Bot.Server do
   @impl GenServer
   def handle_info(:say_about_code, state) do
     send_message_about_code(state)
-    Process.send_after(self(), :say_about_code, :timer.minutes(Enum.random(7..10)))
+    Process.send_after(self(), :say_about_code, to_timeout(minute: Enum.random(7..10)))
 
     {:noreply, state}
   end
@@ -143,7 +140,7 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
-  defp do_playbook_step(state = %{state: :finished}), do: {:noreply, state}
+  defp do_playbook_step(%{state: :finished} = state), do: {:noreply, state}
 
   defp do_playbook_step(state) do
     playbook_params = Bot.PlaybookPlayer.next_step(state.playbook_params)
@@ -206,7 +203,7 @@ defmodule Codebattle.Bot.Server do
   defp send_game_message(game_channel, :check_result, editor_params),
     do: Bot.GameClient.send(game_channel, :check_result, editor_params)
 
-  defp send_init_chat_message(state = %{playbook_params: nil}) do
+  defp send_init_chat_message(%{playbook_params: nil} = state) do
     send_chat_message(state, :excuse)
   end
 
@@ -257,7 +254,7 @@ defmodule Codebattle.Bot.Server do
     end
   end
 
-  defp prepare_to_commenting_code() do
-    Process.send_after(self(), :say_about_code, :timer.minutes(1))
+  defp prepare_to_commenting_code do
+    Process.send_after(self(), :say_about_code, to_timeout(minute: 1))
   end
 end

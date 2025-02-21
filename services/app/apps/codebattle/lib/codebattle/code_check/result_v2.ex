@@ -1,8 +1,4 @@
 defmodule Codebattle.CodeCheck.Result.V2 do
-  use TypedStruct
-
-  alias Codebattle.CodeCheck.Result.V2.AssertResult
-
   @moduledoc """
   statuses:
   initial ->  no check runs
@@ -13,6 +9,10 @@ defmodule Codebattle.CodeCheck.Result.V2 do
   service_timeout -> remote execution timeout
   service_failure ->  remote execution failure
   """
+
+  use TypedStruct
+
+  alias Codebattle.CodeCheck.Result.V2.AssertResult
 
   @derive Jason.Encoder
 
