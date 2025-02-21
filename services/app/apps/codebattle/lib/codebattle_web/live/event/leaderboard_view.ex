@@ -1,8 +1,7 @@
 defmodule CodebattleWeb.Live.Event.LeaderboardView do
   use CodebattleWeb, :live_view
 
-  # require Logger
-  import CodebattleWeb.Gettext
+  use Gettext, backend: CodebattleWeb.Gettext
 
   @impl true
   def mount(_params, session, socket) do

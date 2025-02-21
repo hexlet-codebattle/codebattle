@@ -9,10 +9,14 @@ jobs:
     if: github.repository == 'hexlet-codebattle/codebattle'
     runs-on: ubuntu-latest
 
+    # Use test environment by default
+    env:
+      MIX_ENV: test
+
     services:
       db:
-        image: postgres:12-alpine
-        ports: ['5432:5432']
+        image: postgres:16-alpine
+        ports: ["5432:5432"]
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -20,51 +24,53 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --name=pg_ci
+          --mount type=tmpfs,destination=/var/lib/postgresql/data
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26'
-          elixir-version: '1.16'
-      - name: Restore mix build cache
-        uses: actions/cache@v3
+          otp-version: "27.2"
+          elixir-version: "1.18.2"
+
+      - name: Restore Dependencies Cache
+        uses: actions/cache@v4
         with:
-          path: |
-            deps
-            _build
-            ~/.mix
-          key: mix:1-${{ hashFiles('**/mix.lock') }}
-          restore-keys: mix:1-
+          path: ./services/app/deps
+          key: ${{ runner.os }}-deps-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-deps-
+
+      - name: Restore Build Cache
+        uses: actions/cache@v4
+        with:
+          path: ./services/app/_build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-build-
 
       - name: Get deps
         run: mix deps.get
         working-directory: ./services/app
 
       - name: Mix deps.compile
-        run: mix compile
+        run: mix compile --warnings-as-errors
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix format
         run: mix format --check-formatted
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix credo
         run: mix credo
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -81,24 +87,14 @@ jobs:
 
       - name: Run jest
         run: yarn test
-        working-directory:  ./services/app/apps/codebattle
-
-      - name: Compile
-        run: mix compile
-        working-directory: ./services/app
-        env:
-          MIX_ENV: test
+        working-directory: ./services/app/apps/codebattle
 
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix tests
         run: make test
-        env:
-          MIX_ENV: test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -123,10 +119,6 @@ jobs:
       # - name: Pull dockers
       #   run: mix dockers.pull
       #   working-directory: ./services/app
-      #   env:
-      #     MIX_ENV: test
 
       # - name: Run code checkers tests
       #   run: make test-code-checkers
-      #   env:
-      #     MIX_ENV: test

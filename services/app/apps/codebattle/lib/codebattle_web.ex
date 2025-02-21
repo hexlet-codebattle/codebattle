@@ -30,13 +30,13 @@ defmodule CodebattleWeb do
     quote do
       use Phoenix.Controller, namespace: CodebattleWeb
       use PhoenixMetaTags.TagController
+      use Gettext, backend: CodebattleWeb.Gettext
 
       alias Codebattle.Repo
       alias CodebattleWeb.Router.Helpers, as: Routes
 
       import Ecto
       import Ecto.Query
-      import CodebattleWeb.Gettext
       import Phoenix.LiveView.Controller, only: [live_render: 3]
 
       defp translate_errors(changeset) do
@@ -61,9 +61,9 @@ defmodule CodebattleWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
       import Phoenix.HTML.Form
+      use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers
-      import CodebattleWeb.Gettext
       import CodebattleWeb.FormHelpers
 
       unquote(view_helpers())
@@ -85,8 +85,9 @@ defmodule CodebattleWeb do
       use Phoenix.HTML
       import Phoenix.HTML.{Form, Tag, Link, Format}
 
+      use Gettext, backend: CodebattleWeb.Gettext
+
       import CodebattleWeb.ErrorHelpers
-      import CodebattleWeb.Gettext
 
       unquote(view_helpers())
     end
@@ -131,7 +132,7 @@ defmodule CodebattleWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import CodebattleWeb.Gettext
+      use Gettext, backend: CodebattleWeb.Gettext
     end
   end
 

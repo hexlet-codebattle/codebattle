@@ -9,7 +9,7 @@ defmodule CodebattleWeb.SessionController do
         render(conn, "token_only.html")
 
       Application.get_env(:codebattle, :use_local_password_auth) ->
-        render(conn, "local_password.html")
+        render(conn, "local_password.html", layout: {CodebattleWeb.LayoutView, :empty})
 
       :default ->
         render(conn, "index.html")

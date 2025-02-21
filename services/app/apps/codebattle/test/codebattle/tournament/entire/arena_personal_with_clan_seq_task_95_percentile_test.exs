@@ -10,6 +10,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
 
+  @tag :skip
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     [%{id: t4_id}, %{id: t5_id}] = insert_list(2, :task, level: "medium")

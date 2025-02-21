@@ -113,18 +113,19 @@ defmodule Codebattle.Tournament.Swiss do
     end
   end
 
-  defp build_player_pairs(tournament) do
-    played_pair_ids = MapSet.new(tournament.played_pair_ids)
+  # defp build_player_pairs(_tournament) do
+  # played_pair_ids = MapSet.new(tournament.played_pair_ids)
 
-    sorted_players =
-      tournament
-      |> get_players()
-      |> Enum.sort_by(& &1.score, :desc)
+  # sorted_players =
+  #   tournament
+  #   |> get_players()
+  #   |> Enum.sort_by(& &1.score, :desc)
 
-    {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
+  # {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
 
-    {Enum.reverse(player_pairs), played_pair_ids}
-  end
+  # {Enum.reverse(player_pairs), played_pair_ids}
+  # {[], MapSet.new()}
+  # end
 
   def build_new_pairs([], player_pairs, played_pair_ids) do
     {player_pairs, played_pair_ids}

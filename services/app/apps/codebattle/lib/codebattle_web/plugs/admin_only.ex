@@ -1,7 +1,8 @@
 defmodule CodebattleWeb.Plugs.AdminOnly do
   alias Codebattle.User
 
-  import CodebattleWeb.Gettext
+  use Gettext, backend: CodebattleWeb.Gettext
+
   import Phoenix.Controller
   import Plug.Conn
 
