@@ -15,9 +15,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     test "creates user with clan and auth token", %{conn: conn} do
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(
-        Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"})
-      )
+      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"}))
       |> json_response(200)
 
       user = Repo.get_by(User, name: "lol")
@@ -45,16 +43,12 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     test "creates user with existing name", %{conn: conn} do
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(
-        Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"})
-      )
+      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"}))
       |> json_response(200)
 
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(
-        Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"})
-      )
+      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", auth_token: "asdf"}))
       |> json_response(200)
 
       clan = Repo.get_by(Clan, name: "kek")
@@ -68,9 +62,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
 
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(
-        Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "Kek ", auth_token: "asdf"})
-      )
+      |> post(Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "Kek ", auth_token: "asdf"}))
       |> json_response(200)
 
       users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))

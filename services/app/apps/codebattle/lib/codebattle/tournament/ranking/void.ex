@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.Void do
+  @moduledoc false
   def get_first(_tournament, _limit \\ 0) do
     []
   end

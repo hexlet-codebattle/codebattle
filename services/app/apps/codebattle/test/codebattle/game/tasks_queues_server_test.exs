@@ -1,8 +1,8 @@
 defmodule Codebattle.Game.TasksQueuesServerTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Task
   alias Codebattle.Game.TasksQueuesServer
+  alias Codebattle.Task
 
   test "gets next task" do
     tasks = insert_list(2, :task, level: "easy")
@@ -29,11 +29,12 @@ defmodule Codebattle.Game.TasksQueuesServerTest do
     fetched_tasks = for _i <- 1..12, do: TasksQueuesServer.get_task("easy").id
 
     grouped_ids =
-      Enum.group_by(fetched_tasks, &Function.identity/1)
+      fetched_tasks
+      |> Enum.group_by(&Function.identity/1)
       |> Map.values()
       |> Enum.map(&Enum.count/1)
 
     assert 1 == grouped_ids |> Enum.uniq() |> Enum.count()
-    assert 4 == grouped_ids |> List.first()
+    assert 4 == List.first(grouped_ids)
   end
 end

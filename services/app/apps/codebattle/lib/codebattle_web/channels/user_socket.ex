@@ -1,8 +1,10 @@
 defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
-  require Logger
   alias Codebattle.User
+
+  require Logger
+
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("tournament:*", CodebattleWeb.TournamentChannel)

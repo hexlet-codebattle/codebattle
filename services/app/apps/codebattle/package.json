@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watchAll",
-    "watch": "webpack-dev-server --config ./webpack/webpack.dev.config.js --host 0.0.0.0",
+    "watch": "webpack-dev-server --config ./webpack/webpack.dev.config.js",
     "profile": "webpack --config ./webpack/webpack.build.config.js --profile --json > stats.json && webpack-bundle-analyzer stats.json ./priv/static/assets/",
     "profile:build": "webpack --config ./webpack/webpack.build.config.js --profile --json > stats.json",
     "profile:visualize": "npx webpack-bundle-analyzer stats.json",
@@ -56,7 +56,7 @@
     "@xstate/react": "^3.2.2",
     "@xstate/test": "^1.0.0-alpha.1",
     "axios": "^1.6.0",
-    "bootstrap": "^5.0.0",
+    "bootstrap": "^4.6.2",
     "calcite-react": "^0.56.2",
     "chart.js": "^4.4.3",
     "classnames": "^2.2.6",

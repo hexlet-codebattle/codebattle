@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.PairBuilder.ByScore do
+  @moduledoc false
   @opaque player_id :: pos_integer()
   @opaque score :: pos_integer()
   @opaque player :: {player_id(), score()}

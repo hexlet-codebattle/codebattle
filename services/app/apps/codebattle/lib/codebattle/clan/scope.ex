@@ -3,9 +3,9 @@ defmodule Codebattle.Clan.Scope do
     Module with scopes for the Clan scheme
   """
 
-  alias Codebattle.Clan
-
   import Ecto.Query
+
+  alias Codebattle.Clan
 
   def by_clan do
     Clan

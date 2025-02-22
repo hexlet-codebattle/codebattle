@@ -109,8 +109,7 @@ defmodule CodebattleWeb.LobbyChannel do
     game.visibility_type == "public" || Game.Helpers.player?(game, user)
   end
 
-  defp add_players(acc, %{"opponent_type" => "bot"}, user),
-    do: Map.put(acc, :players, [user, Bot.Context.build()])
+  defp add_players(acc, %{"opponent_type" => "bot"}, user), do: Map.put(acc, :players, [user, Bot.Context.build()])
 
   defp add_players(acc, _payload, user), do: Map.put(acc, :players, [user])
 

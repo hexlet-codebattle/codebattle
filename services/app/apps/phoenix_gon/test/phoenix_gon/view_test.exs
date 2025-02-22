@@ -7,7 +7,7 @@ defmodule PhoenixGon.ViewTest do
   alias Plug.Conn
 
   describe "#render_gon_script" do
-    test 'text' do
+    test "text" do
       conn =
         %Conn{}
         |> with_gon
@@ -26,11 +26,7 @@ defmodule PhoenixGon.ViewTest do
 
       conn =
         conn
-        |>
-        put_gon(
-          malicious:
-          "all your base</script><script>alert('are belong to us!')</script>"
-        )
+        |> put_gon(malicious: "all your base</script><script>alert('are belong to us!')</script>")
 
       actual = PhoenixGon.View.escape_assets(conn)
 

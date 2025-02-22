@@ -2,6 +2,7 @@ defmodule Codebattle.Task do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
@@ -13,24 +14,25 @@ defmodule Codebattle.Task do
 
   @derive {Jason.Encoder,
            only: [
-             :id,
-             :name,
-             :level,
-             :examples,
-             :description_ru,
-             :description_en,
-             :tags,
-             :state,
-             :origin,
-             :visibility,
-             :creator_id,
-             :input_signature,
-             :output_signature,
+             :arguments_generator,
              :asserts,
              :asserts_examples,
+             :comment,
+             :creator_id,
+             :description_en,
+             :description_ru,
+             :examples,
+             :generator_lang,
+             :id,
+             :input_signature,
+             :level,
+             :name,
+             :origin,
+             :output_signature,
              :solution,
-             :arguments_generator,
-             :generator_lang
+             :state,
+             :tags,
+             :visibility
            ]}
 
   @level_order %{
@@ -62,6 +64,7 @@ defmodule Codebattle.Task do
     field(:description_en, :string)
     field(:name, :string)
     field(:level, :string)
+    field(:comment, :string)
     field(:input_signature, {:array, AtomizedMap}, default: [])
     field(:output_signature, AtomizedMap, default: %{})
     field(:asserts_examples, {:array, AtomizedMap}, default: [])
@@ -84,23 +87,24 @@ defmodule Codebattle.Task do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :examples,
-      :asserts,
-      :description_ru,
-      :description_en,
-      :name,
-      :level,
-      :input_signature,
-      :output_signature,
-      :disabled,
-      :tags,
-      :state,
-      :origin,
-      :visibility,
-      :creator_id,
-      :solution,
       :arguments_generator,
-      :generator_lang
+      :asserts,
+      :comment,
+      :creator_id,
+      :description_en,
+      :description_ru,
+      :disabled,
+      :examples,
+      :generator_lang,
+      :input_signature,
+      :level,
+      :name,
+      :origin,
+      :output_signature,
+      :solution,
+      :state,
+      :tags,
+      :visibility
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])
     |> validate_inclusion(:state, @states)
@@ -116,22 +120,23 @@ defmodule Codebattle.Task do
     |> Codebattle.Repo.insert!(
       on_conflict: [
         set: [
-          creator_id: params[:creator_id],
-          origin: params.origin,
-          state: params.state,
-          visibility: params.visibility,
-          examples: params.examples,
-          description_en: params.description_en,
-          description_ru: params.description_ru,
-          level: params.level,
-          input_signature: params.input_signature,
-          output_signature: params.output_signature,
+          arguments_generator: Map.get(params, :arguments_generator, ""),
           asserts: params.asserts,
           asserts_examples: Map.get(params, :asserts_examples, []),
-          solution: Map.get(params, :solution, ""),
-          arguments_generator: Map.get(params, :arguments_generator, ""),
+          comment: Map.get(params, :comment),
+          creator_id: params[:creator_id],
+          description_en: params.description_en,
+          description_ru: params.description_ru,
+          examples: params.examples,
           generator_lang: Map.get(params, :generator_lang, "js"),
-          tags: params.tags
+          input_signature: params.input_signature,
+          level: params.level,
+          origin: params.origin,
+          output_signature: params.output_signature,
+          solution: Map.get(params, :solution, ""),
+          state: params.state,
+          tags: params.tags,
+          visibility: params.visibility
         ]
       ],
       conflict_target: :name
@@ -151,9 +156,7 @@ defmodule Codebattle.Task do
     __MODULE__
     |> filter_visibility(user)
     |> Repo.all()
-    |> Enum.sort_by(
-      &{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name}
-    )
+    |> Enum.sort_by(&{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name})
   end
 
   defp filter_visibility(query, user) do
@@ -217,7 +220,7 @@ defmodule Codebattle.Task do
   end
 
   @spec list_task_ids() :: list(integer())
-  def list_task_ids() do
+  def list_task_ids do
     from(task in Codebattle.Task)
     |> visible()
     |> select([x], x.id)
@@ -233,11 +236,10 @@ defmodule Codebattle.Task do
       name: "",
       description_ru: "",
       description_en: "",
+      comment: "",
       level: "elementary",
       input_signature: [],
-      output_signature: %{
-        type: %{name: "integer"}
-      },
+      output_signature: %{type: %{name: "integer"}},
       asserts: [],
       asserts_examples: [],
       tags: [],
@@ -267,7 +269,7 @@ defmodule Codebattle.Task do
   end
 
   @spec get_all_visible() :: list(t())
-  def get_all_visible() do
+  def get_all_visible do
     from(task in Codebattle.Task)
     |> visible()
     |> Repo.all()
@@ -275,8 +277,7 @@ defmodule Codebattle.Task do
 
   @spec get_played_count(integer()) :: integer()
   def get_played_count(task_id) do
-    from(game in Codebattle.Game, where: game.task_id == ^task_id)
-    |> Repo.count()
+    Repo.count(from(game in Codebattle.Game, where: game.task_id == ^task_id))
   end
 
   @spec can_see_task?(t(), User.t()) :: boolean()

@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.Api.V1.FeedbackController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Feedback
-
   import Ecto.Query
+
+  alias Codebattle.Feedback
 
   def index(conn, params) do
     page_number = params |> Map.get("page", "1") |> String.to_integer()
@@ -19,9 +19,7 @@ defmodule CodebattleWeb.Api.V1.FeedbackController do
     })
   end
 
-  def create(conn, %{
-        "attachments" => attachments
-      }) do
+  def create(conn, %{"attachments" => attachments}) do
     %{
       "author_name" => author_name,
       "fallback" => status,

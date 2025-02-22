@@ -1,10 +1,11 @@
 defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
   use Codebattle.DataCase, async: false
 
-  alias Codebattle.Tournament
-
   import Codebattle.Tournament.Helpers
   import Codebattle.TournamentTestHelpers
+
+  alias Codebattle.PubSub.Message
+  alias Codebattle.Tournament
 
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}] = insert_list(2, :task, level: "easy")
@@ -58,7 +59,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     Tournament.Server.handle_event(tournament.id, :join, %{users: users})
 
     Enum.each(users, fn %{id: id, name: name} ->
-      assert_received %Codebattle.PubSub.Message{
+      assert_received %Message{
         topic: ^common_topic,
         event: "tournament:player:joined",
         payload: %{player: %{name: ^name, id: ^id, state: "active"}}
@@ -73,7 +74,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       min_time_sec: 0
     })
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -87,7 +88,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -101,7 +102,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -114,7 +115,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -127,7 +128,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -140,7 +141,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -165,13 +166,13 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 0, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 0, state: "game_over"}, players: [%{}, %{}]}
@@ -183,19 +184,19 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 1, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 1, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -209,7 +210,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -218,7 +219,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -227,7 +228,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -236,7 +237,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -255,13 +256,13 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 2, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 2, state: "game_over"}, players: [%{}, %{}]}
@@ -275,19 +276,19 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 3, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 3, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -303,7 +304,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -319,7 +320,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -352,7 +353,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -366,7 +367,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -375,7 +376,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -384,7 +385,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -393,7 +394,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -402,7 +403,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -422,7 +423,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -431,7 +432,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -446,7 +447,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -455,7 +456,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -464,7 +465,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -478,7 +479,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -487,7 +488,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -496,7 +497,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -505,7 +506,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -524,13 +525,13 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 6, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 6, state: "game_over"}, players: [%{}, %{}]}
@@ -544,19 +545,19 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 7, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 7, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -572,7 +573,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -588,7 +589,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -618,7 +619,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -632,7 +633,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -641,7 +642,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -650,7 +651,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -659,7 +660,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -668,7 +669,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -688,13 +689,13 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 8, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 8, state: "game_over"}, players: [%{}, %{}]}
@@ -706,19 +707,19 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 9, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 9, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -732,7 +733,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -741,7 +742,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -750,7 +751,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -759,7 +760,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -778,13 +779,13 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 10, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 10, state: "game_over"}, players: [%{}, %{}]}
@@ -798,19 +799,19 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
     win_active_match(tournament, user3)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player3_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 11, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player4_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{id: 11, state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -826,7 +827,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -842,7 +843,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -858,7 +859,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:finished",
       payload: %{

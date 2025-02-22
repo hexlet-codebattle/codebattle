@@ -1,8 +1,10 @@
 defmodule CodebattleWeb.Api.V1.GameActivityController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, Game}
   import Ecto.Query, only: [from: 2]
+
+  alias Codebattle.Game
+  alias Codebattle.Repo
 
   defmacro to_char(field, format) do
     quote do

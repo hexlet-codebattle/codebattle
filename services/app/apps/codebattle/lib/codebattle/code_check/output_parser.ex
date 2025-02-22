@@ -1,10 +1,11 @@
 defmodule Codebattle.CodeCheck.OutputParser do
   @moduledoc "Parse container output for representing check status of solution"
 
-  require Logger
   alias Codebattle.CodeCheck.Result
 
-  def call(token = %{lang_meta: %{output_version: 2}}) do
+  require Logger
+
+  def call(%{lang_meta: %{output_version: 2}} = token) do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end
 

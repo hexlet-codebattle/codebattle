@@ -1,24 +1,20 @@
 defmodule Mix.Tasks.GetContributors do
+  @shortdoc "Get contributors for landing"
+
   @moduledoc false
 
   use Mix.Task
 
-  @shortdoc "Get contributors for landing"
-
   @repos %{
-    codebattle:
-      ~c"https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000",
-    asserts:
-      ~c"https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000",
-    extension:
-      ~c"https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000"
+    codebattle: ~c"https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000",
+    asserts: ~c"https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000",
+    extension: ~c"https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000"
   }
 
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:req)
 
-    @repos
-    |> Enum.each(fn {repo_name, url} ->
+    Enum.each(@repos, fn {repo_name, url} ->
       content =
         url
         |> Req.get!()
@@ -31,9 +27,7 @@ defmodule Mix.Tasks.GetContributors do
         |> Enum.map_join("", fn params -> template(params) end)
 
       File.cwd!()
-      |> Path.join(
-        "apps/codebattle/lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex"
-      )
+      |> Path.join("apps/codebattle/lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex")
       |> File.write!(content)
     end)
   end

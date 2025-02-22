@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Arena do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
@@ -22,16 +23,12 @@ defmodule Codebattle.Tournament.Arena do
   def build_round_pairs(tournament) do
     {player_pair_ids, unmatched_player_ids} = build_player_pairs(tournament)
 
-    played_pair_ids =
-      player_pair_ids
-      |> Enum.map(&Enum.sort/1)
-      |> MapSet.new()
+    played_pair_ids = MapSet.new(player_pair_ids, &Enum.sort/1)
 
-    opponent_bot = Bot.Context.build() |> Tournament.Player.new!()
+    opponent_bot = Tournament.Player.new!(Bot.Context.build())
 
     unmatched =
-      unmatched_player_ids
-      |> Enum.map(fn id ->
+      Enum.map(unmatched_player_ids, fn id ->
         [get_player(tournament, id), opponent_bot]
       end)
 
@@ -97,14 +94,14 @@ defmodule Codebattle.Tournament.Arena do
     tournament
   end
 
-  defp build_player_pairs(tournament = %{use_clan: true, current_round_position: 0}) do
+  defp build_player_pairs(%{use_clan: true, current_round_position: 0} = tournament) do
     tournament
     |> get_players()
     |> Enum.map(&{&1.id, &1.clan_id})
     |> Tournament.PairBuilder.ByClan.call()
   end
 
-  defp build_player_pairs(tournament = %{use_clan: true}) do
+  defp build_player_pairs(%{use_clan: true} = tournament) do
     tournament
     |> get_players()
     |> Enum.map(&{&1.id, &1.clan_id, &1.score})

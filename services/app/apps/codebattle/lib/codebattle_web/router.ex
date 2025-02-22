@@ -4,10 +4,13 @@ defmodule CodebattleWeb.Router do
 
   import Phoenix.LiveDashboard.Router
 
+  alias CodebattleWeb.Plugs.AssignCurrentUser
+  alias CodebattleWeb.Plugs.ForceRedirect
+
   require Logger
 
   pipeline :admins_only do
-    plug(CodebattleWeb.Plugs.AssignCurrentUser)
+    plug(AssignCurrentUser)
     plug(CodebattleWeb.Plugs.AdminOnly)
   end
 
@@ -24,8 +27,8 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:fetch_live_flash)
-    plug(CodebattleWeb.Plugs.AssignCurrentUser)
-    plug(CodebattleWeb.Plugs.ForceRedirect)
+    plug(AssignCurrentUser)
+    plug(ForceRedirect)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(PhoenixGon.Pipeline)
@@ -40,8 +43,8 @@ defmodule CodebattleWeb.Router do
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:fetch_session)
-    plug(CodebattleWeb.Plugs.AssignCurrentUser)
-    plug(CodebattleWeb.Plugs.ForceRedirect)
+    plug(AssignCurrentUser)
+    plug(ForceRedirect)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
   end
@@ -149,7 +152,7 @@ defmodule CodebattleWeb.Router do
 
     get("/", RootController, :index)
 
-    resources("/session", SessionController, singleton: true, only: [:delete, :new])
+    resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show])
@@ -208,9 +211,7 @@ defmodule CodebattleWeb.Router do
     end
 
     # only for dev-admin liveView experiments
-    resources("/live_view_tournaments", LiveViewTournamentController,
-      only: [:index, :show, :edit]
-    )
+    resources("/live_view_tournaments", LiveViewTournamentController, only: [:index, :show, :edit])
   end
 
   scope "/feature-flags" do
@@ -222,14 +223,14 @@ defmodule CodebattleWeb.Router do
     conn
     |> put_status(:not_found)
     |> json(%{error: "NOT_FOUND"})
-    |> halt
+    |> halt()
   end
 
   def handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{}}) do
     conn
     |> put_status(:not_found)
     |> json(%{error: "NOT_FOUND"})
-    |> halt
+    |> halt()
   end
 
   def handle_errors(conn, %{kind: _kind, reason: reason}) do

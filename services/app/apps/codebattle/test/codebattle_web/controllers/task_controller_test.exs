@@ -125,10 +125,10 @@ defmodule CodebattleWeb.TaskControllerTest do
       "description_ru" => "проверка суммирования: для руби",
       "examples" => "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       "input_signature" =>
-        "[{\"argument_name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument_name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
+        ~s([{"argument_name":"a","type":{"name":"integer"}},{"argument_name":"b","type":{"name":"integer"}}]),
       "level" => "hard",
       "name" => "mega_task",
-      "output_signature" => "{\"type\":{\"name\":\"string\"}}",
+      "output_signature" => ~s({"type":{"name":"string"}}),
       "tags" => " kek,lol"
     }
 

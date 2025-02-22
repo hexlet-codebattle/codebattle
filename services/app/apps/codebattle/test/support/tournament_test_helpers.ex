@@ -1,4 +1,5 @@
 defmodule Codebattle.TournamentTestHelpers do
+  @moduledoc false
   import Codebattle.Tournament.Helpers
 
   def win_active_match(tournament, user, params \\ %{opponent_percent: 0}) do

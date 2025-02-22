@@ -1,10 +1,10 @@
 defmodule CodebattleWeb.PublicEventController do
   use CodebattleWeb, :controller
 
+  import PhoenixGon.Controller
+
   alias Codebattle.Event
   alias Codebattle.Tournament
-
-  import PhoenixGon.Controller
 
   def show(conn, %{"slug" => slug}) do
     event = Event.get_by_slug!(slug)

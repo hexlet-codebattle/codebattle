@@ -11,7 +11,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
     pair_with_bot = now - 21
 
     players =
-      [
+      Enum.shuffle([
         %{id: 1, tasks: 1, score: 1, wr_joined_at: joined, clan_id: 1},
         %{id: 2, tasks: 1, score: 4, wr_joined_at: joined, clan_id: 1},
         %{id: 3, tasks: 1, score: 3, wr_joined_at: joined, clan_id: 2},
@@ -28,8 +28,7 @@ defmodule Codebattle.WaitingRoom.EngineTest do
         %{id: 14, tasks: 7, score: 9, wr_joined_at: pair_with_same_opponent, clan_id: 5},
         %{id: 15, tasks: 7, score: 9, wr_joined_at: pair_with_same_opponent, clan_id: 6},
         %{id: 16, tasks: 8, score: 9, wr_joined_at: pair_with_bot, clan_id: 6}
-      ]
-      |> Enum.shuffle()
+      ])
 
     state = %State{
       name: "wr",

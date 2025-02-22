@@ -10,7 +10,7 @@ import cn from 'classnames';
 import noop from 'lodash/noop';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ExtendedEditor from '../../components/ExtendedEditor';
+import ExtendedEditor from '../../components/Editor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import RoomContext from '../../components/RoomContext';
 import { gameRoomEditorStyles } from '../../config/editorSettings';
@@ -36,8 +36,8 @@ import TaskPropStatusIcon from './TaskPropStatusIcon';
 
 const isGeneratorsError = status => (
   status === assertsStatuses.error
-    || status === assertsStatuses.memoryLeak
-    || status === assertsStatuses.timeout
+  || status === assertsStatuses.memoryLeak
+  || status === assertsStatuses.timeout
 );
 
 const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {

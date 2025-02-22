@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.ByClan do
+  @moduledoc false
   alias Codebattle.Event.EventClanResult
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.Storage.Ranking

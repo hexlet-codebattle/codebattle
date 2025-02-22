@@ -1,10 +1,10 @@
 defmodule Codebattle.AssertsService.Executor.Remote do
   @moduledoc false
 
-  require Logger
-
-  alias Runner.AtomizedMap
   alias Codebattle.AssertsService.Executor.Token
+  alias Runner.AtomizedMap
+
+  require Logger
 
   @spec call(Token.t()) :: Token.t()
   def call(token) do

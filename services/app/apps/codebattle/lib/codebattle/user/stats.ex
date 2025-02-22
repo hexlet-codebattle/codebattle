@@ -3,22 +3,23 @@ defmodule Codebattle.User.Stats do
     Find user game statistic
   """
 
+  import Ecto.Query
+
   alias Codebattle.Repo
   alias Codebattle.UserGame
-
-  import Ecto.Query
 
   @default_game_stats %{"won" => 0, "lost" => 0, "gave_up" => 0}
 
   def get_game_stats(user_id) do
     user_games_stats =
-      from(ug in UserGame,
-        select: %{result: ug.result, lang: ug.lang, count: count(ug.id)},
-        where: ug.user_id == ^user_id,
-        where: ug.result in ["won", "lost", "gave_up"],
-        group_by: [ug.result, ug.lang]
+      Repo.all(
+        from(ug in UserGame,
+          select: %{result: ug.result, lang: ug.lang, count: count(ug.id)},
+          where: ug.user_id == ^user_id,
+          where: ug.result in ["won", "lost", "gave_up"],
+          group_by: [ug.result, ug.lang]
+        )
       )
-      |> Repo.all()
 
     games_stats =
       user_games_stats

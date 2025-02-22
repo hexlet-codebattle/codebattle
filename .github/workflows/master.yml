@@ -4,67 +4,79 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
 jobs:
   build:
     if: github.repository == 'hexlet-codebattle/codebattle'
     runs-on: ubuntu-latest
+    timeout-minutes: 30 # Add timeout to prevent hanging builds
+
+    env:
+      MIX_ENV: test
+      DOCKER_BUILDKIT: 1 # Enable buildkit for faster docker builds
 
     services:
       db:
-        image: postgres:12-alpine
-        ports: ['5432:5432']
+        image: postgres:16-alpine
+        ports: ["5432:5432"]
         env:
           POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust # Simplify auth for CI
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+          --name=pg_ci
+          --mount type=tmpfs,destination=/var/lib/postgresql/data
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch complete history for better caching
+
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26'
-          elixir-version: '1.16'
-      - name: Restore mix build cache
-        uses: actions/cache@v3
+          otp-version: "27.2"
+          elixir-version: "1.18.2"
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: deps-cache
         with:
           path: |
-            deps
-            _build
-            ~/.mix
-          key: mix:1-${{ hashFiles('**/mix.lock') }}
-          restore-keys: mix:1-
+            ./services/app/deps
+            ./services/app/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
 
       - name: Get deps
-        run: mix deps.get
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
         working-directory: ./services/app
 
       - name: Mix deps.compile
-        run: mix compile
+        run: mix compile --warnings-as-errors
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix format
         run: mix format --check-formatted
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix credo
         run: mix credo
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Get yarn cache
         id: yarn-cache
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -72,7 +84,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Install yarn dependencies
-        run: yarn install --froze-lockfile
+        run: yarn install --frozen-lockfile --network-timeout 300000
         working-directory: ./services/app/apps/codebattle
 
       - name: Eslint
@@ -81,52 +93,49 @@ jobs:
 
       - name: Run jest
         run: yarn test
-        working-directory:  ./services/app/apps/codebattle
+        working-directory: ./services/app/apps/codebattle
 
-      - name: Compile
-        run: mix compile
+      - name: Mix audit
+        run: mix hex.audit
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
         working-directory: ./services/app
-        env:
-          MIX_ENV: test
 
       - name: Mix tests
         run: make test
-        env:
-          MIX_ENV: test
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./services/app/assp/codebattle/cover/excoveralls.json
           fail_ci_if_error: false
 
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build docker image for codebattle
-        run: make GIT_HASH=${{ github.sha }} docker-build-codebattle
-      - name: Push docker image for codebattle
-        run: make docker-push-codebattle
-      - name: Build docker image for runner
-        run: make docker-build-runner
-      - name: Push docker image for runner
-        run: make docker-push-runner
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push codebattle image
+        run: |
+          make GIT_HASH=${{ github.sha }} docker-build-codebattle
+          make docker-push-codebattle
+
+      - name: Build and push runner image
+        run: |
+          make docker-build-runner
+          make docker-push-runner
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers
       #   run: mix dockers.pull
       #   working-directory: ./services/app
-      #   env:
-      #     MIX_ENV: test
 
       # - name: Run code checkers tests
       #   run: make test-code-checkers
-      #   env:
-      #     MIX_ENV: test

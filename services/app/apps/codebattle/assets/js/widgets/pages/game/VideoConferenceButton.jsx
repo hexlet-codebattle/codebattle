@@ -8,10 +8,10 @@ import { actions } from '@/slices';
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 
+import VideoConferenceMediaControls from './VideoConferenceMediaControls';
+
 function VideoConferenceButton() {
   const dispatch = useDispatch();
-
-  // const { audioMute, videoMute } = useSelector(selectors.videoConferenceSettingsSelector);
   const showVideoConferencePanel = useSelector(selectors.showVideoConferencePanelSelector);
 
   const toggleVideoConference = () => {
@@ -40,20 +40,9 @@ function VideoConferenceButton() {
             : i18n.t('Open Video Chat')
         }
       </button>
-      {/* {showVideoConferencePanel && ( */}
-      {/*   <div className="d-flex"> */}
-      {/*     <button */}
-      {/*       type="button" */}
-      {/*       className="btn btn-secondary btn-block w-100 rounded-lg" */}
-      {/*       aria-label="Mute audio" */}
-      {/*     /> */}
-      {/*     <button */}
-      {/*       type="button" */}
-      {/*       className="btn btn-secondary btn-block w-100 rounded-lg" */}
-      {/*       aria-label="Mute video" */}
-      {/*     /> */}
-      {/*   </div> */}
-      {/* )} */}
+      {showVideoConferencePanel && (
+        <VideoConferenceMediaControls />
+      )}
     </>
   );
 }

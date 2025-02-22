@@ -2,6 +2,7 @@ defmodule Codebattle.TaskPack do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
@@ -52,7 +53,7 @@ defmodule Codebattle.TaskPack do
   def get_by!(params), do: Repo.get_by!(__MODULE__, params)
   def get_by(params), do: Repo.get_by(__MODULE__, params)
 
-  def get_tasks(task_pack = %__MODULE__{}) do
+  def get_tasks(%__MODULE__{} = task_pack) do
     query = from(t in Task, where: t.id in ^task_pack.task_ids)
     Repo.all(query)
   end
@@ -94,8 +95,7 @@ defmodule Codebattle.TaskPack do
   defp retrieve_tasks_from_task_pack(task_pack) do
     tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
 
-    task_pack.task_ids
-    |> Enum.map(fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
+    Enum.map(task_pack.task_ids, fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
   end
 
   def list_visible(user) do

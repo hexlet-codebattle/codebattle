@@ -1,10 +1,11 @@
 defmodule CodebattleWeb.RootView do
   use CodebattleWeb, :view
 
-  alias Codebattle.Feedback
   import CodebattleWeb.Router.Helpers
 
-  def csrf_token() do
+  alias Codebattle.Feedback
+
+  def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end
 
@@ -15,17 +16,11 @@ defmodule CodebattleWeb.RootView do
     end
   end
 
-  def feedback() do
-    Feedback.get_all() |> Enum.map(&item/1)
+  def feedback do
+    Enum.map(Feedback.get_all(), &item/1)
   end
 
-  defp item(%{
-         title: title,
-         description: description,
-         pubDate: pub_date,
-         link: link,
-         guid: guid
-       }) do
+  defp item(%{title: title, description: description, pubDate: pub_date, link: link, guid: guid}) do
     """
     <item>
       <title>#{title}</title>

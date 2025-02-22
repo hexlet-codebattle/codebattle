@@ -1,4 +1,5 @@
 defmodule Codebattle.CodeCheck.Checker do
+  @moduledoc false
   alias Codebattle.CodeCheck
   alias Codebattle.CodeCheck.Checker.Token
   alias Codebattle.CodeCheck.OutputParser

@@ -1,4 +1,5 @@
 defmodule Utils do
+  @moduledoc false
   def blank?(x) when is_binary(x) do
     String.trim(x) == ""
   end
@@ -12,8 +13,6 @@ defmodule Utils do
   def presence(x) do
     if present?(x) do
       x
-    else
-      nil
     end
   end
 

@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Swiss do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot
@@ -9,19 +10,12 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def complete_players(tournament) do
-    if rem(players_count(tournament), 2) == 0 do
-      tournament
+    # just for the UI test
+    if false do
+      bots = Bot.Context.build_list(111)
+      add_players(tournament, %{users: bots})
     else
-      bot = Tournament.Player.new!(Bot.Context.build())
-      # bots = Bot.Context.build_list(11)
-      # add_players(tournament, %{users: bots})
-
-      Codebattle.PubSub.broadcast("tournament:player:joined", %{
-        tournament: tournament,
-        player: bot
-      })
-
-      add_players(tournament, %{users: [bot]})
+      tournament
     end
   end
 
@@ -55,16 +49,27 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def build_round_pairs(tournament) do
-    tournament
-    |> get_players()
-    |> Enum.map(&{&1.id, &1.score})
-    |> Tournament.PairBuilder.ByScore.call()
+    {player_pair_ids, unmatched_player_ids} =
+      tournament
+      |> get_players()
+      |> Enum.filter(&(&1.state == "active"))
+      |> Enum.map(&{&1.id, &1.score})
+      |> Tournament.PairBuilder.ByScore.call()
 
-    {player_pairs, new_played_pair_ids} = build_player_pairs(tournament)
+    opponent_bot = Tournament.Player.new!(Bot.Context.build())
+
+    unmatched =
+      Enum.map(unmatched_player_ids, fn id ->
+        [get_player(tournament, id), opponent_bot]
+      end)
+
+    played_pair_ids = []
 
     {
-      update_struct(tournament, %{played_pair_ids: new_played_pair_ids}),
-      player_pairs
+      update_struct(tournament, %{played_pair_ids: played_pair_ids}),
+      player_pair_ids
+      |> Enum.map(&get_players(tournament, &1))
+      |> Enum.concat(unmatched)
     }
   end
 
@@ -108,33 +113,34 @@ defmodule Codebattle.Tournament.Swiss do
     end
   end
 
-  defp build_player_pairs(tournament) do
-    played_pair_ids = MapSet.new(tournament.played_pair_ids)
+  # defp build_player_pairs(_tournament) do
+  # played_pair_ids = MapSet.new(tournament.played_pair_ids)
 
-    sorted_players =
-      tournament
-      |> get_players()
-      |> Enum.sort_by(& &1.score, :desc)
+  # sorted_players =
+  #   tournament
+  #   |> get_players()
+  #   |> Enum.sort_by(& &1.score, :desc)
 
-    {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
+  # {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
 
-    {Enum.reverse(player_pairs), played_pair_ids}
-  end
+  # {Enum.reverse(player_pairs), played_pair_ids}
+  # {[], MapSet.new()}
+  # end
 
   def build_new_pairs([], player_pairs, played_pair_ids) do
     {player_pairs, played_pair_ids}
   end
 
   def build_new_pairs([p1, p2], player_pairs, played_pair_ids) do
-    pair_ids = [p1.id, p2.id] |> Enum.sort()
+    pair_ids = Enum.sort([p1.id, p2.id])
 
     {[[p1, p2] | player_pairs], MapSet.put(played_pair_ids, pair_ids)}
   end
 
   def build_new_pairs([player | remain_players], player_pairs, played_pair_ids) do
     {player_pair, pair_ids, remain_players} =
-      Enum.reduce_while(
-        remain_players,
+      remain_players
+      |> Enum.reduce_while(
         {player, remain_players, played_pair_ids},
         fn candidate, _acc ->
           pair_ids = Enum.sort([player.id, candidate.id])
@@ -142,8 +148,7 @@ defmodule Codebattle.Tournament.Swiss do
           if MapSet.member?(played_pair_ids, pair_ids) do
             {:cont, {player, remain_players, played_pair_ids}}
           else
-            {:halt,
-             {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
+            {:halt, {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
           end
         end
       )

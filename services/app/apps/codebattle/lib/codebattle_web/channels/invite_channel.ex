@@ -2,8 +2,9 @@ defmodule CodebattleWeb.InviteChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.{Invite, User}
+  alias Codebattle.Invite
   alias Codebattle.PubSub.Message
+  alias Codebattle.User
 
   def join("invites", _payload, socket) do
     current_user = socket.assigns.current_user
@@ -23,10 +24,7 @@ defmodule CodebattleWeb.InviteChannel do
     {:noreply, socket}
   end
 
-  def handle_info(
-        %{topic: "invites:" <> _user_id, event: "invites:" <> action, payload: payload},
-        socket
-      ) do
+  def handle_info(%{topic: "invites:" <> _user_id, event: "invites:" <> action, payload: payload}, socket) do
     push(socket, "invites:#{action}", payload)
     {:noreply, socket}
   end

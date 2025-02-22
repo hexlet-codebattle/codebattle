@@ -1,9 +1,11 @@
 defmodule Codebattle.DockerExecution.ElixirTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.GameChannel
+  alias Codebattle.CodeCheck.Result.V2
   alias Codebattle.Game
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user)
@@ -36,11 +38,11 @@ defmodule Codebattle.DockerExecution.ElixirTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result.V2{status: "failure", success_count: 0} = check_result
+    assert %V2{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 
@@ -64,11 +66,11 @@ defmodule Codebattle.DockerExecution.ElixirTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result.V2{status: "error", success_count: 0} = check_result
+    assert %V2{status: "error", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 
@@ -97,7 +99,7 @@ defmodule Codebattle.DockerExecution.ElixirTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{solution_status: true, state: "game_over"}
     }
 

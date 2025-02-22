@@ -17,19 +17,11 @@ defmodule Codebattle.User.RankUpdateTest do
       User
       |> Repo.all()
       |> Enum.filter(fn user -> !user.is_bot end)
-      |> Enum.map(fn user -> {user.id, user.rank} end)
-      |> MapSet.new()
+      |> MapSet.new(fn user -> {user.id, user.rank} end)
 
     assert MapSet.equal?(
              ranks,
-             [
-               {user1.id, 1},
-               {user2.id, 2},
-               {user3.id, 3},
-               {user4.id, 3},
-               {user5.id, 4}
-             ]
-             |> MapSet.new()
+             MapSet.new([{user1.id, 1}, {user2.id, 2}, {user3.id, 3}, {user4.id, 3}, {user5.id, 4}])
            )
 
     # add new user
@@ -42,20 +34,11 @@ defmodule Codebattle.User.RankUpdateTest do
       User
       |> Repo.all()
       |> Enum.filter(fn user -> !user.is_bot end)
-      |> Enum.map(fn user -> {user.id, user.rank} end)
-      |> MapSet.new()
+      |> MapSet.new(fn user -> {user.id, user.rank} end)
 
     assert MapSet.equal?(
              ranks,
-             [
-               {user1.id, 1},
-               {user2.id, 2},
-               {user6.id, 3},
-               {user3.id, 3},
-               {user4.id, 3},
-               {user5.id, 4}
-             ]
-             |> MapSet.new()
+             MapSet.new([{user1.id, 1}, {user2.id, 2}, {user6.id, 3}, {user3.id, 3}, {user4.id, 3}, {user5.id, 4}])
            )
 
     # rating has been updated
@@ -79,20 +62,11 @@ defmodule Codebattle.User.RankUpdateTest do
       |> Repo.all()
       |> Enum.filter(fn user -> !user.is_bot end)
       |> Enum.sort_by(fn user -> !user.is_bot end)
-      |> Enum.map(fn user -> {user.id, user.rank} end)
-      |> MapSet.new()
+      |> MapSet.new(fn user -> {user.id, user.rank} end)
 
     assert MapSet.equal?(
              ranks,
-             [
-               {user6.id, 1},
-               {user5.id, 2},
-               {user2.id, 3},
-               {user3.id, 4},
-               {user4.id, 4},
-               {user1.id, 5}
-             ]
-             |> MapSet.new()
+             MapSet.new([{user6.id, 1}, {user5.id, 2}, {user2.id, 3}, {user3.id, 4}, {user4.id, 4}, {user1.id, 5}])
            )
   end
 end

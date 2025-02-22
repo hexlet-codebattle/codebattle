@@ -1,13 +1,14 @@
 defmodule Codebattle.Tournament.Context do
+  @moduledoc false
+  import Ecto.Changeset
+  import Ecto.Query
+
+  alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Repo
-  alias Codebattle.Event
   alias Codebattle.Tournament
   alias Codebattle.User
   alias Runner.AtomizedMap
-
-  import Ecto.Query
-  import Ecto.Changeset
 
   @type tournament_id :: pos_integer() | String.t()
   @type event_id :: pos_integer() | String.t()
@@ -80,24 +81,17 @@ defmodule Codebattle.Tournament.Context do
 
   @spec get_db_tournaments(nonempty_list(String.t())) :: list(Tournament.t())
   def get_db_tournaments(states) do
-    from(
-      t in Tournament,
-      order_by: [desc: t.id],
-      where: t.state in ^states,
-      limit: 15,
-      preload: [:creator]
-    )
-    |> Repo.all()
+    Repo.all(from(t in Tournament, order_by: [desc: t.id], where: t.state in ^states, limit: 15, preload: [:creator]))
   end
 
   @spec get_all_by_event_id!(event_id()) :: Event.t() | no_return()
   def get_all_by_event_id!(event_id) do
-    from(
-      t in Tournament,
-      order_by: t.starts_at,
-      where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
+    Repo.all(
+      from(t in Tournament,
+        order_by: t.starts_at,
+        where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
+      )
     )
-    |> Repo.all()
   end
 
   @spec get_live_tournaments() :: list(Tournament.t())
@@ -116,7 +110,7 @@ defmodule Codebattle.Tournament.Context do
   end
 
   @spec get_live_tournaments_count() :: non_neg_integer()
-  def get_live_tournaments_count, do: get_live_tournaments() |> Enum.count()
+  def get_live_tournaments_count, do: Enum.count(get_live_tournaments())
 
   @spec validate(map(), Tournament.t()) :: Ecto.Changeset.t()
   def validate(params, tournament \\ %Tournament{}) do
@@ -127,8 +121,7 @@ defmodule Codebattle.Tournament.Context do
 
   @spec create(map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
-    changeset =
-      %Tournament{} |> Tournament.changeset(prepare_tournament_params(params))
+    changeset = Tournament.changeset(%Tournament{}, prepare_tournament_params(params))
 
     alive_count = get_live_tournaments_count()
 
@@ -197,10 +190,10 @@ defmodule Codebattle.Tournament.Context do
 
   def upsert!(tournament, :with_ets) do
     players =
-      tournament |> Tournament.Players.get_players() |> Enum.map(&{&1.id, &1}) |> Enum.into(%{})
+      tournament |> Tournament.Players.get_players() |> Map.new(&{&1.id, &1})
 
     matches =
-      tournament |> Tournament.Matches.get_matches() |> Enum.map(&{&1.id, &1}) |> Enum.into(%{})
+      tournament |> Tournament.Matches.get_matches() |> Map.new(&{&1.id, &1})
 
     tournament
     |> Map.put(:updated_at, TimeHelper.utc_now())
@@ -335,8 +328,8 @@ defmodule Codebattle.Tournament.Context do
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 
-  defp generate_access_token() do
-    :crypto.strong_rand_bytes(17) |> Base.url_encode64() |> binary_part(0, 17)
+  defp generate_access_token do
+    17 |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, 17)
   end
 
   defp cast_json_value(value) do

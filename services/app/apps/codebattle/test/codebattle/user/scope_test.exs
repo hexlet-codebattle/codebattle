@@ -16,7 +16,7 @@ defmodule Codebattle.User.ScopeTest do
 
       params = %{"q" => %{"name_ilike" => "first"}}
       query = Scope.list_users(params)
-      [result] = query |> Repo.all()
+      [result] = Repo.all(query)
       assert user1.id == result.id
     end
 

@@ -2,13 +2,14 @@ defmodule Codebattle.User do
   @moduledoc """
     Represents authenticatable user
   """
+
   use Ecto.Schema
 
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.Repo
   alias Codebattle.Clan
+  alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
 
   @type t :: %__MODULE__{}
@@ -63,6 +64,7 @@ defmodule Codebattle.User do
     field(:is_bot, :boolean, default: false)
     field(:lang, :string, default: "js")
     field(:name, :string)
+    field(:password_hash, :string)
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
@@ -146,7 +148,7 @@ defmodule Codebattle.User do
   def bot?(user_id) when is_integer(user_id), do: user_id < 0
 
   @spec guest_id() :: integer()
-  def guest_id(), do: @guest_id
+  def guest_id, do: @guest_id
 
   @spec get!(raw_id()) :: t() | no_return()
   def get!(user_id) do
@@ -199,6 +201,35 @@ defmodule Codebattle.User do
     |> Repo.update()
   end
 
+  def authenticate(name, password) do
+    __MODULE__
+    |> Repo.get_by(name: name)
+    |> case do
+      nil -> nil
+      user -> verify_password(user, password)
+    end
+  end
+
+  defp verify_password(_user, nil), do: nil
+
+  defp verify_password(user, password) do
+    if Bcrypt.verify_pass(password, user.password_hash) do
+      user
+    end
+  end
+
+  def create_password_hash_by_id(user_id, password) do
+    user_id
+    |> get!()
+    |> create_password_hash(password)
+  end
+
+  def create_password_hash(user, password) do
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+
+    Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id), set: [password_hash: hashed_password])
+  end
+
   def subscription_types, do: @subscription_types
 
   defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil], do: changeset
@@ -207,11 +238,9 @@ defmodule Codebattle.User do
   # nil for new token users, clan will be managed by admin
   defp assign_clan(changeset, params, nil), do: assign_clan(changeset, params, 1)
 
-  defp assign_clan(changeset, %{clan: clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{clan: clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
-  defp assign_clan(changeset, %{"clan" => clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{"clan" => clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
   defp assign_clan(changeset, _params, _user_id), do: changeset
 

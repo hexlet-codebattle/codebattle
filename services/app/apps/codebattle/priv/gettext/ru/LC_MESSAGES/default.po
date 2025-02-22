@@ -122,6 +122,14 @@ msgstr "%{index}) имя: %{name}, рейтинг: %{rating}"
 msgid "You have been logged out!"
 msgstr "Вы успешно вышли из системы!"
 
+#: lib/codebattle_web/controllers/session_controller.ex:29
+msgid "Welcome to Codebattle!"
+msgstr  "Добро пожаловать в Codebattle!"
+
+#: lib/codebattle_web/controllers/session_controller.ex:24
+msgid "Invalid name or password"
+msgstr  "Неверное имя пользователя или пароль"
+
 #: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
 msgstr "Ошибка аутентификации."

@@ -70,30 +70,30 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_second_player(game).name == "second"
 
     assert Helpers.get_first_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # First player won
     editor_text1 = "Hello world1!"
@@ -114,17 +114,17 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world1!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # Winner cannot check results again
     Phoenix.ChannelTest.push(socket1, "check_result", %{
@@ -142,17 +142,17 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world2!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # Second player complete game
     Phoenix.ChannelTest.push(socket2, "check_result", %{
@@ -219,30 +219,30 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_second_player(game).name == "second"
 
     assert Helpers.get_first_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # First player won
     editor_text1 = "Hello world1!"
@@ -263,17 +263,17 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world1!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # Winner cannot check results again
     Phoenix.ChannelTest.push(socket1, "check_result", %{
@@ -291,17 +291,17 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world2!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             """
+             String.trim("""
              const _ = require("lodash");
              const R = require("rambda");
 
              const solution = (a, b) => {
                return 0;
              };
+             // use stdout to debug
 
              module.exports = solution;
-             """
-             |> String.trim()
+             """)
 
     # Second player complete game
     Phoenix.ChannelTest.push(socket2, "check_result", %{

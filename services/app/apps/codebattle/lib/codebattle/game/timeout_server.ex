@@ -3,9 +3,9 @@ defmodule Codebattle.Game.TimeoutServer do
 
   use GenServer
 
-  require Logger
-
   alias Codebattle.Game
+
+  require Logger
 
   # API
   def start_timer(game_id, timeout_seconds) do
@@ -29,14 +29,14 @@ defmodule Codebattle.Game.TimeoutServer do
 
   def handle_cast({:start, timeout_seconds}, state) do
     if timeout_seconds >= 0 do
-      Process.send_after(self(), :trigger_timeout, :timer.seconds(timeout_seconds))
+      Process.send_after(self(), :trigger_timeout, to_timeout(second: timeout_seconds))
     end
 
     {:noreply, state}
   end
 
   def handle_cast({:terminate, timeout_minutes}, state) do
-    Process.send_after(self(), :trigger_terminate, :timer.minutes(timeout_minutes))
+    Process.send_after(self(), :trigger_terminate, to_timeout(minute: timeout_minutes))
     {:noreply, state}
   end
 
@@ -58,6 +58,5 @@ defmodule Codebattle.Game.TimeoutServer do
     {:noreply, state}
   end
 
-  defp server_name(game_id),
-    do: {:via, Registry, {Codebattle.Registry, "game_timeout_server:#{game_id}"}}
+  defp server_name(game_id), do: {:via, Registry, {Codebattle.Registry, "game_timeout_server:#{game_id}"}}
 end

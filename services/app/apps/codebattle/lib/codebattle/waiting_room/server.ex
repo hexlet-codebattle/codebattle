@@ -10,7 +10,7 @@ defmodule Codebattle.WaitingRoom.Server do
 
   require Logger
 
-  def start_link(params = %{name: name}) do
+  def start_link(%{name: name} = params) do
     GenServer.start_link(__MODULE__, [params], name: wr_name(name))
   end
 
@@ -24,8 +24,7 @@ defmodule Codebattle.WaitingRoom.Server do
   def pause(name), do: GenServer.call(wr_name(name), :pause)
   def update_state(name, params), do: GenServer.call(wr_name(name), {:update_state, params})
 
-  def delete_player(name, player_id),
-    do: GenServer.cast(wr_name(name), {:delete_player, player_id})
+  def delete_player(name, player_id), do: GenServer.cast(wr_name(name), {:delete_player, player_id})
 
   def put_players(name, players) do
     GenServer.cast(
@@ -121,12 +120,12 @@ defmodule Codebattle.WaitingRoom.Server do
     {:noreply, new_state}
   end
 
-  defp do_match_players(state = %{state: "paused"}) do
+  defp do_match_players(%{state: "paused"} = state) do
     Logger.debug("WR #{state.name} paused")
     state
   end
 
-  defp do_match_players(state = %{players: []}) do
+  defp do_match_players(%{players: []} = state) do
     Logger.debug("WR #{state.name} idle")
     state
   end

@@ -1,13 +1,14 @@
 defmodule Codebattle.Chat.Server do
+  @moduledoc false
   use GenServer
-
-  require Logger
 
   alias Codebattle.Chat
   alias Codebattle.User
 
-  @default_message_ttl :timer.hours(1)
-  @default_clean_timeout :timer.minutes(1)
+  require Logger
+
+  @default_message_ttl to_timeout(hour: 1)
+  @default_clean_timeout to_timeout(minute: 1)
   @initial_state %{
     message_ttl: @default_message_ttl,
     clean_timeout: @default_clean_timeout,
@@ -107,8 +108,7 @@ defmodule Codebattle.Chat.Server do
   def handle_call({:join, user}, _from, state) do
     new_users = [user | state.users]
 
-    {:reply, %{users: new_users, messages: Enum.reverse(state.messages)},
-     %{state | users: new_users}}
+    {:reply, %{users: new_users, messages: Enum.reverse(state.messages)}, %{state | users: new_users}}
   end
 
   @impl GenServer
@@ -169,7 +169,7 @@ defmodule Codebattle.Chat.Server do
   end
 
   @impl GenServer
-  def handle_info(:clean_messages, state = %{messages: messages}) do
+  def handle_info(:clean_messages, %{messages: messages} = state) do
     new_messages =
       Enum.reject(
         messages,
