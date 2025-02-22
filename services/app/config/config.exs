@@ -5,6 +5,10 @@
 # is restricted to this project.
 import Config
 
+config :chromic_pdf, chrome_args: ["--no-sandbox", "--disable-gpu"]
+config :chromic_pdf, session_pool: [timeout: 30_000]
+
+config :codebattle, ChromicPDF, on_demand: false
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
 config :codebattle, CodebattleWeb.BotEndpoint,
@@ -30,6 +34,7 @@ config :codebattle, CodebattleWeb.Gettext,
   default_locale: "en"
 
 config :codebattle, :api_key, "x-key"
+config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),

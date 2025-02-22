@@ -52,7 +52,7 @@ COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ 
 
 FROM elixir:1.18-alpine AS runtime-image
 
-RUN apk add --no-cache ca-certificates wkhtmltopdf git make curl vim
+RUN apk add --no-cache ca-certificates chromium git make curl vim
 
 ARG GIT_HASH
 

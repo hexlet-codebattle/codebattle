@@ -16,7 +16,7 @@ defmodule CodebattleUmbrella.MixProject do
       ],
       test_coverage: [tool: ExCoveralls, threshold: 60],
       deps: [
-        {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
+        {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.13", only: :test}
       ],

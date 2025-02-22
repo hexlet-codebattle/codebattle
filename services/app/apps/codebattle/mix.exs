@@ -55,7 +55,7 @@ defmodule Codebattle.MixProject do
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
       {:gettext, "~> 0.18"},
-      {:html_to_image, github: "vtm9/html_to_image"},
+      {:chromic_pdf, "~> 1.17"},
       {:jason, "~> 1.2"},
       {:nimble_csv, "~> 1.1"},
       {:phoenix, "~> 1.7"},
@@ -83,7 +83,6 @@ defmodule Codebattle.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-
       # dev
       {:phoenix_live_reload, "~> 1.3", only: :dev},
 

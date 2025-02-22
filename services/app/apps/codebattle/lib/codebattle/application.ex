@@ -38,6 +38,7 @@ defmodule Codebattle.Application do
 
     children =
       [
+        {ChromicPDF, chromic_pdf_opts()},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
@@ -77,5 +78,11 @@ defmodule Codebattle.Application do
   def config_change(changed, _new, removed) do
     CodebattleWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  @chromic_pdf_opts Application.compile_env!(:codebattle, ChromicPDF)
+  # in milliseconds
+  defp chromic_pdf_opts do
+    @chromic_pdf_opts ++ [session_pool: [size: 3, timeout: 30_000, checkout_timeout: 30_000]]
   end
 end

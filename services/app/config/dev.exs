@@ -11,6 +11,8 @@ root_dir = File.cwd!()
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 
+config :codebattle, ChromicPDF, on_demand: true
+
 config :codebattle, Codebattle.Invite,
   timeout: to_timeout(minute: 15),
   lifetime: to_timeout(minute: 15)
