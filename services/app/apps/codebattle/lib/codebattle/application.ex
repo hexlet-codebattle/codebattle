@@ -39,6 +39,7 @@ defmodule Codebattle.Application do
     children =
       [
         {ChromicPDF, chromic_pdf_opts()},
+        {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,

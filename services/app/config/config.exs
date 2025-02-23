@@ -34,6 +34,7 @@ config :codebattle, CodebattleWeb.Gettext,
   default_locale: "en"
 
 config :codebattle, :api_key, "x-key"
+config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,

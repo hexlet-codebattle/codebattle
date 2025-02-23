@@ -64,6 +64,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   server: true
 
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
+config :codebattle, :app_title, System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
