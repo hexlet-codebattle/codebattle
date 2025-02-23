@@ -15,6 +15,8 @@ asserts_executor =
     _ -> Codebattle.AssertsService.Executor.Fake
   end
 
+config :codebattle, ChromicPDF, on_demand: true
+
 config :codebattle, Codebattle.Bot,
   timeout: 60_000,
   min_bot_step_timeout: 0

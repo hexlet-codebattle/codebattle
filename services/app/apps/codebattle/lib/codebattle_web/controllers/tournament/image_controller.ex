@@ -3,24 +3,21 @@ defmodule CodebattleWeb.Tournament.ImageController do
   use Gettext, backend: CodebattleWeb.Gettext
 
   alias Codebattle.Tournament
+  alias CodebattleWeb.HtmlImage
 
   def show(conn, %{"id" => id}) do
-    # TODO: add ETS cache for image
     case Tournament.Context.get(id) do
       nil ->
         send_resp(conn, :ok, "")
 
       tournament ->
-        html_content = render_image(tournament)
-        {:ok, image} = generate_png(html_content)
-
-        conn
-        |> put_resp_content_type("image/png")
-        |> send_resp(200, Base.decode64!(image))
+        cache_key = "t_#{id}_#{tournament.state}"
+        html = prepare_image_html(tournament)
+        HtmlImage.render_image(conn, cache_key, html)
     end
   end
 
-  defp render_image(tournament) do
+  defp prepare_image_html(tournament) do
     """
     <html>
       <head>
@@ -29,14 +26,16 @@ defmodule CodebattleWeb.Tournament.ImageController do
           html, body {
             margin: 0;
             padding: 0;
-            /* Let them expand to the “browser” size (which we'll define via ChromicPDF) */
             width: 100%;
             height: 100%;
             background: #f5f7fa;
-            font-family: 'Helvetica Neue', Arial, sans-serif; /* Change to desired font */
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+          }
+          p {
+            margin: 5px;
+            padding: 5px;
           }
           .card {
-            /* Fill the entire viewport */
             width: 100%;
             height: 100%;
             background: #ffffff;
@@ -47,14 +46,14 @@ defmodule CodebattleWeb.Tournament.ImageController do
             flex-direction: column;
           }
           .header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            background: #000; /* Dark background */
-            font-family: 'Helvetica Neue', Arial, sans-serif; /* Change to desired font */
-            color: #fff; /* White text */
+            background: #000;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            color: #fff;
             text-align: center;
           }
           .header img {
-            width: 60px;
+            width: 100px;
+            margin-top: 20px;
             height: auto;
           }
           .content {
@@ -68,24 +67,33 @@ defmodule CodebattleWeb.Tournament.ImageController do
           }
           .footer {
             text-align: center;
-            font-size: 10px;
-            color: #aaa;
-            padding: 5px;
-            background: #f0f0f0;
+            font-size: 12px;
+            color: #fff;
+            padding: 8px;
+            background: #000;
           }
         </style>
       </head>
       <body>
         <div class="card">
           <div class="header">
-            <img src="#{logo_url()}" alt="Logo">
+            <img src="#{HtmlImage.logo_url()}" alt="Logo">
             <h1>#{tournament.name}</h1>
           </div>
           <div class="content">
             #{render_content(tournament)}
           </div>
           <div class="footer">
-            Made with ♥ by Codebattle
+            <p>
+              Made with
+              <svg width="14" height="14" viewBox="0 0 24 24" style="fill:#ff5252; vertical-align:middle;">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42
+                         4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81
+                         14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4
+                         6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              by Codebattle
+            </p>
           </div>
         </div>
       </body>
@@ -93,26 +101,14 @@ defmodule CodebattleWeb.Tournament.ImageController do
     """
   end
 
-  defp logo_url do
-    if logo = Application.get_env(:codebattle, :collab_logo) do
-      logo
-    else
-      "https://codebattle.hexlet.io/assets/images/logo.svg"
-    end
-  end
-
   defp render_content(tournament) do
-    type = to_string(tournament.type)
-    state = to_string(tournament.state)
+    type = Gettext.gettext(CodebattleWeb.Gettext, to_string(tournament.type))
+    state = Gettext.gettext(CodebattleWeb.Gettext, "Tournament #{tournament.state}")
 
     """
-    <h4>#{gettext("Type: %{type}", type: type)}</h4>
-    <h4>#{gettext("State: %{state}", state: state)}</h4>
-    <h4>#{gettext("Starts At")}: #{tournament.starts_at} UTC</h4>
+    <p>#{gettext("Type: %{type}", type: type)}</p>
+    <p>#{state}</p>
+    <p>#{gettext("Starts At")}: #{tournament.starts_at} UTC</p>
     """
-  end
-
-  defp generate_png(html_content) do
-    ChromicPDF.capture_screenshot({:html, html_content}, capture_screenshot: %{format: "png"})
   end
 end

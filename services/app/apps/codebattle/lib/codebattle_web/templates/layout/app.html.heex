@@ -97,8 +97,9 @@
                   src="/assets/images/logo.svg"
                 />
                 <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
-                  <span class="font-weight-bold header-txt">Codebattle</span>
-                  <span class="header-txt">by Hexlet’s community</span>
+                  <span class="font-weight-bold">
+                    <%= Application.get_env(:codebattle, :app_title) %>
+                  </span>
                 </div>
               </a>
               <%= unless @current_user.is_guest do %>
