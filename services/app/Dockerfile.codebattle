@@ -21,7 +21,7 @@ ENV MIX_ENV=prod
 
 WORKDIR /opt/app
 
-RUN apk add --no-cache build-base git ca-certificates \
+RUN apk update && apk add --no-cache build-base git ca-certificates make curl \
   && mix local.hex --force \
   && mix local.rebar --force
 
