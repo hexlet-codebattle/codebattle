@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.TokenAuth do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   def init(options), do: options
 
@@ -13,7 +14,7 @@ defmodule CodebattleWeb.Plugs.TokenAuth do
       conn
       |> put_status(:unauthorized)
       |> json(%{error: "oiblz"})
-      |> halt
+      |> halt()
     end
   end
 end

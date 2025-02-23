@@ -8,11 +8,11 @@ defmodule Codebattle.Application do
   def start(_type, _args) do
     if Application.get_env(:codebattle, :load_dot_env_file) do
       root_dir = @app_dir |> Path.join("../../../../") |> Path.expand()
-      config_path = Mix.Project.config() |> Keyword.get(:config_path)
+      config_path = Keyword.get(Mix.Project.config(), :config_path)
       env_path = Path.join(root_dir, ".env")
 
       Envy.load([env_path])
-      Config.Reader.read!(config_path) |> Application.put_all_env()
+      config_path |> Config.Reader.read!() |> Application.put_all_env()
     end
 
     github_tasks =
@@ -38,6 +38,8 @@ defmodule Codebattle.Application do
 
     children =
       [
+        {ChromicPDF, chromic_pdf_opts()},
+        {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
@@ -61,7 +63,7 @@ defmodule Codebattle.Application do
         {Codebattle.InvitesKillerServer, []},
         %{
           id: Codebattle.Chat.Lobby,
-          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: :timer.hours(8)}]}
+          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
         }
       ] ++ github_tasks ++ bot_games ++ user_rank
 
@@ -77,5 +79,11 @@ defmodule Codebattle.Application do
   def config_change(changed, _new, removed) do
     CodebattleWeb.Endpoint.config_change(changed, removed)
     :ok
+  end
+
+  @chromic_pdf_opts Application.compile_env!(:codebattle, ChromicPDF)
+  # in milliseconds
+  defp chromic_pdf_opts do
+    @chromic_pdf_opts ++ [session_pool: [size: 3, timeout: 30_000, checkout_timeout: 30_000]]
   end
 end

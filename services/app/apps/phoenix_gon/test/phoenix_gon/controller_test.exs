@@ -7,7 +7,7 @@ defmodule PhoenixGon.ControllerTest do
   alias Plug.Conn
 
   describe "#put_gon" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon
@@ -21,7 +21,7 @@ defmodule PhoenixGon.ControllerTest do
   end
 
   describe "update_gon" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon
@@ -36,7 +36,7 @@ defmodule PhoenixGon.ControllerTest do
   end
 
   describe "drop_gon" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon
@@ -51,7 +51,7 @@ defmodule PhoenixGon.ControllerTest do
   end
 
   describe "get_gon" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon

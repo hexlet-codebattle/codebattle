@@ -245,6 +245,9 @@ msgstr "Задачи"
 msgid "Tournaments"
 msgstr "Турниры"
 
+msgid "Tournament"
+msgstr "Турнир"
+
 #, elixir-format
 msgid "Join Discord"
 msgstr "Чат Discord"
@@ -786,3 +789,99 @@ msgstr "Связь с сервером потеряна, перезагрузи�
 
 msgid "Show full tournament table"
 msgstr "Показать полную турнирную таблицу"
+
+msgid "Type: %{type}"
+msgstr "Тип: %{type}"
+
+msgid "swiss"
+msgstr "Швейцарская система"
+
+msgid "individual"
+msgstr "Олимпийская система"
+
+msgid "team"
+msgstr "Командный турнир"
+
+msgid "arena"
+msgstr "Арена"
+
+msgid "Tournament waiting_participants"
+msgstr "Турнир скоро начнется"
+
+msgid "Tournament canceled"
+msgstr "Турнир отменен"
+
+msgid "Tournament active"
+msgstr "Турнир активен"
+
+msgid "Tournament finished"
+msgstr "Турнир завершен"
+
+msgid "Starts At"
+msgstr "Начало"
+
+msgid "Game playing"
+msgstr "Игра продолжается"
+
+msgid "Game waiting_opponent"
+msgstr "Ожидание соперника"
+
+msgid "Game state: timeout"
+msgstr "Статус: время истекло"
+
+msgid "Game state: canceled"
+msgstr "Статус: игра отменена"
+
+msgid "Game state: game_over"
+msgstr "Статус: игра окончена"
+
+msgid "Game state: initial"
+msgstr "Статус: игра создается"
+
+msgid "Game state: builder"
+msgstr "Статус: игра готовится к запуску"
+
+msgid "Game state: waiting_opponent"
+msgstr "Статус: ожидание соперника"
+
+msgid "Game state: playing"
+msgstr "Статус: игра идет"
+
+msgid "Level: elementary"
+msgstr "Уровень: элементарный"
+
+msgid "Level: easy"
+msgstr "Уровень: легкий"
+
+msgid "Level: medium"
+msgstr "Уровень: средний"
+
+msgid "Level: hard"
+msgstr "Уровень: сложный"
+
+msgid "Timeout: %{sec} seconds"
+msgstr "Время на задачу: %{sec} секунд"
+
+msgid "undefined"
+msgstr "не определено"
+
+msgid "won"
+msgstr "победа"
+
+msgid "lost"
+msgstr "поражение"
+
+msgid "gave_up"
+msgstr "сдался"
+
+msgid "timeout"
+msgstr "время вышло"
+
+msgid "Game between"
+msgstr "Игра между"
+
+msgid "Game level"
+msgstr "Уровень сложности"
+
+msgid "Play with"
+msgstr "Играть с"

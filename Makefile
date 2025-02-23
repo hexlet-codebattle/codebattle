@@ -61,17 +61,14 @@ docker-build-local:
 				--tag codebattle/runner:latest services/app
 
 docker-build-codebattle:
-	docker pull codebattle/codebattle:assets-image  || true
-	docker pull codebattle/codebattle:compile-image || true
-	docker pull codebattle/codebattle:latest        || true
+	# docker pull codebattle/codebattle:assets-image  || true
+	# docker pull codebattle/codebattle:compile-image || true
+	# docker pull codebattle/codebattle:latest        || true
 	docker build --target assets-image \
-				--cache-from=codebattle/codebattle:assets-image \
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:assets-image services/app
 	docker build --target compile-image \
-				--cache-from=codebattle/codebattle:assets-image \
-				--cache-from=codebattle/codebattle:compile-image \
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:compile-image services/app
@@ -79,9 +76,6 @@ docker-build-codebattle:
 				--file services/app/Dockerfile.codebattle \
 				--tag codebattle/nginx-assets:latest services/app
 	docker build --target runtime-image \
-				--cache-from=codebattle/codebattle:assets-image \
-				--cache-from=codebattle/codebattle:compile-image \
-				--cache-from=codebattle/codebattle:latest \
 				--file services/app/Dockerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:latest services/app
@@ -93,15 +87,12 @@ docker-push-codebattle:
 	docker push codebattle/nginx-assets:latest
 
 docker-build-runner:
-	docker pull codebattle/runner:compile-image || true
-	docker pull codebattle/runner:latest        || true
+	# docker pull codebattle/runner:compile-image || true
+	# docker pull codebattle/runner:latest        || true
 	docker build --target compile-image \
-				--cache-from=codebattle/runner:compile-image \
 				--file services/app/Dockerfile.runner \
 				--tag codebattle/runner:compile-image services/app
 	docker build --target runtime-image \
-				--cache-from=codebattle/runner:compile-image \
-				--cache-from=codebattle/runner:latest \
 				--file services/app/Dockerfile.runner \
 				--tag codebattle/runner:latest services/app
 

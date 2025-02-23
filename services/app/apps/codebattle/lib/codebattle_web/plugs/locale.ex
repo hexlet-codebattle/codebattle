@@ -2,8 +2,8 @@ defmodule CodebattleWeb.Plugs.Locale do
   @moduledoc """
     I18n configuration
   """
-  import Plug.Conn
   import PhoenixGon.Controller
+  import Plug.Conn
 
   def init(_opts), do: nil
 
@@ -16,8 +16,7 @@ defmodule CodebattleWeb.Plugs.Locale do
           Application.get_env(:codebattle, :default_locale)
       end
 
-    conn
-    |> put_locale(locale)
+    put_locale(conn, locale)
   end
 
   defp put_locale(conn, locale) do

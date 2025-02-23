@@ -1,4 +1,5 @@
 defmodule Codebattle.Game.Auth do
+  @moduledoc false
   alias Codebattle.Game
 
   def player_can_play_game?(players) when is_list(players) do
@@ -15,14 +16,14 @@ defmodule Codebattle.Game.Auth do
 
   def player_can_play_game?(player) do
     is_player =
-      Game.Context.get_active_games()
-      |> Enum.any?(fn game ->
+      Enum.any?(Game.Context.get_active_games(), fn game ->
         Game.Helpers.player?(game, player.id)
       end)
 
-    case is_player do
-      false -> :ok
-      true -> {:error, :already_in_a_game}
+    if is_player do
+      {:error, :already_in_a_game}
+    else
+      :ok
     end
   end
 
@@ -35,9 +36,10 @@ defmodule Codebattle.Game.Auth do
   end
 
   def player_can_rematch?(game, player_id) do
-    case Game.Helpers.player?(game, player_id) do
-      true -> :ok
-      false -> {:error, :not_authorized}
+    if Game.Helpers.player?(game, player_id) do
+      :ok
+    else
+      {:error, :not_authorized}
     end
   end
 end

@@ -1,9 +1,9 @@
 defmodule Codebattle.Tournament.ArenaTest do
   use Codebattle.DataCase, async: false
 
-  alias Codebattle.Tournament
-
   import Codebattle.Tournament.Helpers
+
+  alias Codebattle.Tournament
 
   setup do
     tasks = insert_list(3, :task, level: "easy")

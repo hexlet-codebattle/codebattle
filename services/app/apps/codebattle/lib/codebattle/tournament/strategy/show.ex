@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Show do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
@@ -22,7 +23,7 @@ defmodule Codebattle.Tournament.Show do
   def build_round_pairs(tournament) do
     player_pairs =
       tournament
-      |> get_players
+      |> get_players()
       |> Enum.shuffle()
       |> Enum.chunk_every(2)
 

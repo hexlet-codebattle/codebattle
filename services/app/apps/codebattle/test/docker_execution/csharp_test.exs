@@ -1,9 +1,11 @@
 defmodule Codebattle.DockerExecution.CsharpTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.GameChannel
+  alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user)
@@ -33,11 +35,11 @@ defmodule Codebattle.DockerExecution.CsharpTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "error", success_count: 0} = check_result
+    assert %Result{status: "error", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
@@ -57,19 +59,18 @@ defmodule Codebattle.DockerExecution.CsharpTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text:
-        "using System; \n
+      editor_text: "using System; \n
         namespace app{ public class Solution { public int solution(int a, int b) { return a - b; } } }",
       lang_slug: "csharp"
     })
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "failure", success_count: 0} = check_result
+    assert %Result{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
@@ -98,7 +99,7 @@ defmodule Codebattle.DockerExecution.CsharpTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{solution_status: true, state: "game_over"}
     }
 

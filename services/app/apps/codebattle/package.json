@@ -7,7 +7,7 @@
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watchAll",
-    "watch": "webpack-dev-server --config ./webpack/webpack.dev.config.js --host 0.0.0.0",
+    "watch": "webpack-dev-server --config ./webpack/webpack.dev.config.js",
     "profile": "webpack --config ./webpack/webpack.build.config.js --profile --json > stats.json && webpack-bundle-analyzer stats.json ./priv/static/assets/",
     "profile:build": "webpack --config ./webpack/webpack.build.config.js --profile --json > stats.json",
     "profile:visualize": "npx webpack-bundle-analyzer stats.json",

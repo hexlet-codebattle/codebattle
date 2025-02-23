@@ -10,18 +10,20 @@ defmodule Codebattle.Tournament.Round.Context do
 
   @spec upsert!(Tournament.t()) :: Round.t()
   def build(tournament) do
-    %Round{
-      state: "active",
-      break_duration_seconds: tournament.break_duration_seconds,
-      level: tournament.level,
-      player_ids: Tournament.Players.get_players(tournament) |> Enum.map(& &1.id),
-      task_provider: tournament.task_provider,
-      task_strategy: tournament.task_strategy,
-      tournament_id: tournament.id,
-      tournament_type: tournament.type,
-      use_infinite_break: tournament.use_infinite_break
-    }
-    |> add_round_timeout_and_task_pack(tournament)
+    add_round_timeout_and_task_pack(
+      %Round{
+        state: "active",
+        break_duration_seconds: tournament.break_duration_seconds,
+        level: tournament.level,
+        player_ids: tournament |> Tournament.Players.get_players() |> Enum.map(& &1.id),
+        task_provider: tournament.task_provider,
+        task_strategy: tournament.task_strategy,
+        tournament_id: tournament.id,
+        tournament_type: tournament.type,
+        use_infinite_break: tournament.use_infinite_break
+      },
+      tournament
+    )
   end
 
   @spec upsert!(Round.t()) :: Round.t()
@@ -36,9 +38,7 @@ defmodule Codebattle.Tournament.Round.Context do
 
   @spec upsert_all(list(Round.t())) :: list(Round.t())
   def upsert_all(rounds) do
-    rounds =
-      rounds
-      |> Enum.map(&(&1 |> Map.put(:updated_at, TimeHelper.utc_now())))
+    rounds = Enum.map(rounds, &Map.put(&1, :updated_at, TimeHelper.utc_now()))
 
     Codebattle.Repo.insert_all(
       Round,
@@ -51,9 +51,7 @@ defmodule Codebattle.Tournament.Round.Context do
   @spec add_round_timeout_and_task_pack(Round.t(), Tournament.t()) :: Round.t()
   defp add_round_timeout_and_task_pack(
          round,
-         tournament = %{
-           meta: %{rounds_config_type: "per_round", rounds_config: rounds_config}
-         }
+         %{meta: %{rounds_config_type: "per_round", rounds_config: rounds_config}} = tournament
        ) do
     round_config = Enum.at(rounds_config, tournament.current_round_position)
 

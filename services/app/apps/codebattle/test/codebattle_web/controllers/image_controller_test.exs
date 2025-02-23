@@ -10,9 +10,7 @@ defmodule CodebattleWeb.ImageControllerTest do
 
     game = insert(:game, level: "elementary", state: "playing", players: players)
 
-    conn =
-      conn
-      |> get(Routes.game_image_path(conn, :show, game.id))
+    conn = get(conn, Routes.game_image_path(conn, :show, game.id))
 
     assert conn.status == 200
     assert conn.resp_body =~ user1.name
@@ -26,9 +24,7 @@ defmodule CodebattleWeb.ImageControllerTest do
 
     game = insert(:game, level: "elementary", state: "waiting_opponent", players: players)
 
-    conn =
-      conn
-      |> get(Routes.game_image_path(conn, :show, game.id))
+    conn = get(conn, Routes.game_image_path(conn, :show, game.id))
 
     assert conn.status == 200
     assert conn.resp_body =~ user1.name
@@ -38,20 +34,17 @@ defmodule CodebattleWeb.ImageControllerTest do
   test "returns 200 without players", %{conn: conn} do
     game = insert(:game, level: "elementary", state: "init", players: [])
 
-    conn =
-      conn
-      |> get(Routes.game_image_path(conn, :show, game.id))
+    conn = get(conn, Routes.game_image_path(conn, :show, game.id))
 
     assert conn.status == 200
-    assert conn.resp_body =~ "game"
   end
 
-  test "returns 404 withot game", %{conn: conn} do
+  test "returns empty 200 without a game", %{conn: conn} do
     response =
       conn
       |> get(Routes.game_image_path(conn, :show, 1_000_001))
-      |> json_response(404)
+      |> response(200)
 
-    assert response == %{"error" => ":not_found"}
+    assert response == ""
   end
 end

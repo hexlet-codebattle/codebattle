@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Supervisor do
+  @moduledoc false
   use Supervisor
 
   require Logger
@@ -28,9 +29,7 @@ defmodule Codebattle.Tournament.Supervisor do
             %{
               id: "Codebattle.Tournament.Ranking.UpdateFromResultsServer.#{tournament.id}",
               restart: :transient,
-              start:
-                {Codebattle.Tournament.Ranking.UpdateFromResultsServer, :start_link,
-                 [tournament.id]}
+              start: {Codebattle.Tournament.Ranking.UpdateFromResultsServer, :start_link, [tournament.id]}
             }
           ]
       else

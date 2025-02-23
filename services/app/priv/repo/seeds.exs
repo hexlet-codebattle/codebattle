@@ -7,8 +7,9 @@ umbrella_directory
 |> Enum.each(fn directory ->
   app_seeds = Path.join([umbrella_directory, directory, seeds_path])
 
-  case File.exists?(app_seeds) do
-    true -> Mix.Tasks.Run.run([app_seeds])
-    _ -> :ok
+  if File.exists?(app_seeds) do
+    Mix.Tasks.Run.run([app_seeds])
+  else
+    :ok
   end
 end)

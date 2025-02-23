@@ -1,9 +1,9 @@
 defmodule Codebattle.Tournament.TeamTest do
   use Codebattle.DataCase, async: false
 
-  alias Codebattle.Tournament
-
   import Codebattle.Tournament.Helpers
+
+  alias Codebattle.Tournament
 
   setup do
     insert(:task, level: "elementary", name: "2")

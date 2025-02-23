@@ -3,7 +3,7 @@ defmodule Codebattle.Game.TasksQueuesServer do
 
   use GenServer
 
-  @reshuffle_timeout :timer.hours(7)
+  @reshuffle_timeout to_timeout(hour: 7)
 
   ## Client API
 

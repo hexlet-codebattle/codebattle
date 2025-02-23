@@ -13,7 +13,7 @@ defmodule CodebattleWeb.SpectatorChannel do
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
-      game_id = tournament |> Tournament.Helpers.get_active_game_id(player_id)
+      game_id = Tournament.Helpers.get_active_game_id(tournament, player_id)
       matches = Tournament.Helpers.get_matches_by_players(tournament, [player_id])
 
       {:ok,

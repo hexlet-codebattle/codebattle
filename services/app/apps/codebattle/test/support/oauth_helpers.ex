@@ -1,4 +1,5 @@
 defmodule Codebattle.OauthTestHelpers do
+  @moduledoc false
   @valid_github_body %{
     "access_token" => "12345",
     "login" => "test_user",

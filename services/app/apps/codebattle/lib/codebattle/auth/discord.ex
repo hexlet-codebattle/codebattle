@@ -47,9 +47,10 @@ defmodule Codebattle.Auth.Discord do
   """
   def discord_auth(code, redirect_uri) do
     opts =
-      Keyword.merge(
+      Keyword.put(
         Application.get_env(:codebattle, :auth_req_options, []),
-        form: %{
+        :form,
+        %{
           client_id: client_id(),
           client_secret: client_secret(),
           grant_type: "authorization_code",
@@ -73,12 +74,11 @@ defmodule Codebattle.Auth.Discord do
 
   defp get_user_details(access_token) do
     opts =
-      Keyword.merge(
+      Keyword.put(
         Application.get_env(:codebattle, :auth_req_options, []),
-        headers: [
-          "user-agent": "Codebattle",
-          authorization: "Bearer #{access_token}"
-        ]
+        :headers,
+        "user-agent": "Codebattle",
+        authorization: "Bearer #{access_token}"
       )
 
     @discord_user_url

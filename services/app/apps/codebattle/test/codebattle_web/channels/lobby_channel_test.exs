@@ -3,9 +3,10 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   import ExUnit.CaptureIO
 
+  alias Codebattle.Game
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
-  alias Codebattle.Game
+  alias Phoenix.Socket.Message
 
   test "sends game info when user join" do
     task = insert(:task)
@@ -44,7 +45,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     push(socket, "game:create", %{opponent_type: "other_user", level: "elementary"})
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert"
     }
   end
@@ -60,7 +61,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     push(socket, "game:create", %{opponent_type: "bot", level: "elementary"})
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert"
     }
   end
@@ -90,7 +91,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       task_id: task1.id
     })
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert",
       payload: %{game: %{id: game_id}}
     }
@@ -110,7 +111,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       task_id: task1.id
     })
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert",
       payload: %{game: %{id: game_id}}
     }
@@ -146,7 +147,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       task_tags: ["lol"]
     })
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert",
       payload: %{game: %{id: game_id}}
     }
@@ -166,7 +167,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       task_tags: ["lol"]
     })
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert",
       payload: %{game: %{id: game_id}}
     }
@@ -186,7 +187,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       task_tags: ["kek"]
     })
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       event: "game:upsert",
       payload: %{game: %{id: game_id}}
     }

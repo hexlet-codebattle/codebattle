@@ -45,16 +45,16 @@ const establishChat = page => dispatch => {
 };
 
 export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => dispatch => {
-  if (!isRecord && useChat) {
-    const page = getChatTopic(chatPage, chatId);
-    channel.setupChannel(page);
-    const currentChannel = establishChat(page)(dispatch);
+    if (!isRecord && useChat) {
+      const page = getChatTopic(chatPage, chatId);
+      channel.setupChannel(page);
+      const currentChannel = establishChat(page)(dispatch);
 
-    return currentChannel;
-  }
+      return currentChannel;
+    }
 
-  return undefined;
-};
+    return undefined;
+  };
 
 export const addMessage = payload => {
   channel

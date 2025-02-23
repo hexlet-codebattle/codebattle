@@ -1,9 +1,10 @@
 defmodule CodebattleWeb.ChatChannelTest do
   use CodebattleWeb.ChannelCase, async: true
 
-  alias CodebattleWeb.ChatChannel
   alias Codebattle.Chat
+  alias CodebattleWeb.ChatChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user, name: "alice")
@@ -19,8 +20,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     admin_token = Phoenix.Token.sign(socket(UserSocket), "user_token", admin.id)
     {:ok, admin_socket} = connect(UserSocket, %{"token" => admin_token})
 
-    {:ok,
-     %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, admin_socket: admin_socket}}
+    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, admin_socket: admin_socket}}
   end
 
   test "sends chat info when user join", %{user1: user1, socket1: socket1} do
@@ -40,7 +40,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     chat_topic = get_chat_topic(chat_id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       topic: ^chat_topic,
       event: "chat:user_joined",
       payload: response
@@ -95,7 +95,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     Process.unlink(socket2.channel_pid)
     :timer.sleep(100)
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       topic: ^chat_topic,
       event: "chat:user_left",
       payload: response

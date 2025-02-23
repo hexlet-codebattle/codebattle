@@ -1,4 +1,5 @@
 defmodule Codebattle.Playbook do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -27,7 +28,7 @@ defmodule Codebattle.Playbook do
   end
 
   @doc false
-  def changeset(playbook = %__MODULE__{}, attrs) do
+  def changeset(%__MODULE__{} = playbook, attrs) do
     playbook
     |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id])
     |> validate_required([

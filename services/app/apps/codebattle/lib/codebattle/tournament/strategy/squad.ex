@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Squad do
+  @moduledoc false
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
@@ -53,11 +54,11 @@ defmodule Codebattle.Tournament.Squad do
 
   @impl Tournament.Base
   def finish_round_after_match?(
-        tournament = %{
+        %{
           task_provider: "task_pack_per_round",
           round_task_ids: round_task_ids,
           current_round_position: current_round_position
-        }
+        } = tournament
       ) do
     matches = get_round_matches(tournament, current_round_position)
 

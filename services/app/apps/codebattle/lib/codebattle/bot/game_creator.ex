@@ -1,10 +1,11 @@
 defmodule Codebattle.Bot.GameCreator do
-  alias Codebattle.Game
-  alias Codebattle.Bot
-
+  @moduledoc false
   use GenServer
 
-  @timeout :timer.seconds(3)
+  alias Codebattle.Bot
+  alias Codebattle.Game
+
+  @timeout to_timeout(second: 3)
 
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do

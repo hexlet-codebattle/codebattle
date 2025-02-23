@@ -2,6 +2,7 @@ defmodule Codebattle.Game.ContextTest do
   use Codebattle.DataCase
 
   alias Codebattle.Game.Player
+  alias Codebattle.PubSub.Message
 
   describe "trigger_timeout/1" do
     setup do
@@ -17,7 +18,7 @@ defmodule Codebattle.Game.ContextTest do
       {:ok, %{id: game_id, players: [%{id: user1_id}, %{id: user2_id}]}} =
         Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
-      assert_received %Codebattle.PubSub.Message{
+      assert_received %Message{
         event: "game:created",
         topic: "games",
         payload: _
@@ -28,7 +29,7 @@ defmodule Codebattle.Game.ContextTest do
 
       :ok = Game.Context.trigger_timeout(game_id)
 
-      assert_received %Codebattle.PubSub.Message{
+      assert_received %Message{
         event: "game:finished",
         topic: "games",
         payload: %{
@@ -38,7 +39,7 @@ defmodule Codebattle.Game.ContextTest do
         }
       }
 
-      assert_received %Codebattle.PubSub.Message{
+      assert_received %Message{
         event: "game:finished",
         topic: ^game_topic,
         payload: %{game_id: ^game_id, game_state: "timeout"}

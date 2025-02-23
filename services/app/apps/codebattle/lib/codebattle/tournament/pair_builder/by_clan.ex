@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.PairBuilder.ByClan do
+  @moduledoc false
   @opaque player_id :: pos_integer()
   @opaque clan_id :: pos_integer()
   @opaque player :: {player_id(), clan_id()}
@@ -10,10 +11,9 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
     grouped_players =
       players
       |> Enum.group_by(&elem(&1, 1), &elem(&1, 0))
-      |> Enum.map(fn {clan_id, player_ids} ->
+      |> Map.new(fn {clan_id, player_ids} ->
         {clan_id, {length(player_ids), clan_id, player_ids}}
       end)
-      |> Map.new()
 
     match_players(grouped_players, [])
   end
@@ -47,8 +47,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
       end
 
     new_players_map =
-      players_map
-      |> then(fn pm ->
+      then(players_map, fn pm ->
         if clan1_count == 1 do
           Map.delete(pm, clan1_id)
         else
@@ -57,8 +56,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClan do
       end)
 
     new_players_map =
-      new_players_map
-      |> then(fn pm ->
+      then(new_players_map, fn pm ->
         if clan2_count == 1 do
           Map.delete(pm, clan2_id)
         else

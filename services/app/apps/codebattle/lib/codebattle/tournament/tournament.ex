@@ -2,11 +2,12 @@ defmodule Codebattle.Tournament do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
-  alias Runner.AtomizedMap
   alias Codebattle.Event
   alias Codebattle.Tournament.Individual
+  alias Runner.AtomizedMap
 
   @type t :: %__MODULE__{}
 

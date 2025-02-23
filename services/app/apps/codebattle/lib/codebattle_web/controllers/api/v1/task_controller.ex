@@ -1,14 +1,12 @@
 defmodule CodebattleWeb.Api.V1.TaskController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Task
   alias Codebattle.CodeCheck
+  alias Codebattle.Task
   alias CodebattleWeb.Api.TaskView
 
   def index(conn, _) do
-    tasks =
-      conn.assigns.current_user
-      |> Task.list_visible()
+    tasks = Task.list_visible(conn.assigns.current_user)
 
     json(conn, %{tasks: TaskView.render_tasks(tasks)})
   end
@@ -51,16 +49,13 @@ defmodule CodebattleWeb.Api.V1.TaskController do
            editor_lang: "js"
          }) do
       {:ok, asserts} ->
-        conn
-        |> json(%{status: "ok", asserts: asserts})
+        json(conn, %{status: "ok", asserts: asserts})
 
       {:failure, asserts} ->
-        conn
-        |> json(%{status: "failure", asserts: asserts})
+        json(conn, %{status: "failure", asserts: asserts})
 
       {:error, asserts, message} ->
-        conn
-        |> json(%{status: "error", asserts: asserts, message: message})
+        json(conn, %{status: "error", asserts: asserts, message: message})
     end
   end
 
@@ -110,11 +105,7 @@ defmodule CodebattleWeb.Api.V1.TaskController do
     end
   end
 
-  def check(conn, %{
-        "task" => task_params,
-        "editor_text" => solution_text,
-        "lang_slug" => lang_slug
-      }) do
+  def check(conn, %{"task" => task_params, "editor_text" => solution_text, "lang_slug" => lang_slug}) do
     task = %Task{
       name: Map.get(task_params, "name"),
       asserts:

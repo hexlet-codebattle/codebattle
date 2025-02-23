@@ -4,7 +4,7 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
 
   require Logger
 
-  @timer_tick_frequency :timer.seconds(1)
+  @timer_tick_frequency to_timeout(second: 1)
 
   @impl true
   def mount(_params, session, socket) do

@@ -1,11 +1,11 @@
 defmodule CodebattleWeb.ErrorView do
   use CodebattleWeb, :view
-  import CodebattleWeb.Gettext
+  use Gettext, backend: CodebattleWeb.Gettext
 
   def render("404.html", assigns) do
     render(
       "404_page.html",
-      Map.merge(assigns, %{msg: assigns[:msg] || gettext("Page not found")})
+      Map.put(assigns, :msg, assigns[:msg] || gettext("Page not found"))
     )
   end
 

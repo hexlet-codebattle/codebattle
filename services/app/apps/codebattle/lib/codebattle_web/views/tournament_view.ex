@@ -1,27 +1,27 @@
 defmodule CodebattleWeb.TournamentView do
   use CodebattleWeb, :view
 
-  def csrf_token() do
+  def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end
 
   def format_datetime(nil), do: "none"
   def format_datetime(nil, _time_zone), do: "none"
 
-  def format_datetime(datetime = %NaiveDateTime{}, user_timezone) do
+  def format_datetime(%NaiveDateTime{} = datetime, user_timezone) do
     datetime
     |> DateTime.from_naive!("UTC")
     |> format_datetime(user_timezone)
   end
 
-  def format_datetime(datetime = %DateTime{}, user_timezone) do
+  def format_datetime(%DateTime{} = datetime, user_timezone) do
     datetime
     |> DateTime.shift_zone!(user_timezone)
     |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
   end
 
   def get_link_params(match, %{id: id}) do
-    is_participant = Enum.map(match.players, & &1.id) |> Enum.any?(&(&1 == id))
+    is_participant = match.players |> Enum.map(& &1.id) |> Enum.any?(&(&1 == id))
 
     case {match.state, is_participant} do
       {"pending", true} -> {"Pending", "bg-warning"}

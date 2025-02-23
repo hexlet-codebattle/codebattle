@@ -2,10 +2,10 @@ defmodule CodebattleWeb.ChatChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  require Logger
-
   alias Codebattle.Chat
   alias Codebattle.Game
+
+  require Logger
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
@@ -15,8 +15,7 @@ defmodule CodebattleWeb.ChatChannel do
     %{users: users, messages: messages} = Chat.join_chat(type, user)
 
     filtered_messages =
-      messages
-      |> Enum.filter(fn message ->
+      Enum.filter(messages, fn message ->
         if message.meta && message.meta["type"] == "private" do
           users_private_message?(message, user.id)
         else
@@ -41,7 +40,7 @@ defmodule CodebattleWeb.ChatChannel do
       meta: payload["meta"]
     })
 
-    unless get_in(payload, ["meta", "type"]) == "private" do
+    if get_in(payload, ["meta", "type"]) != "private" do
       update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
     end
 
@@ -151,6 +150,5 @@ defmodule CodebattleWeb.ChatChannel do
     Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
 
-  defp users_private_message?(message, user_id),
-    do: user_id in [message.user_id, message.meta["target_user_id"]]
+  defp users_private_message?(message, user_id), do: user_id in [message.user_id, message.meta["target_user_id"]]
 end

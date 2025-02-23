@@ -1,12 +1,12 @@
 defmodule Codebattle.CodeCheck.Result.V2.AssertResult do
-  use TypedStruct
-
   @moduledoc """
   statuses:
   failure -> wrong assert check
   success -> success assert check
   error   -> caught error from solution()
   """
+
+  use TypedStruct
 
   @derive Jason.Encoder
 

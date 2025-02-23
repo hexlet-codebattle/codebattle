@@ -1,11 +1,15 @@
 defmodule CodebattleWeb.Api.V1.PlaybookController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Game, Repo, User, Task}
-  alias Codebattle.Game.{Helpers, Server}
-
-  alias Codebattle.Playbook
   import Ecto.Query, warn: false
+
+  alias Codebattle.Game
+  alias Codebattle.Game.Helpers
+  alias Codebattle.Game.Server
+  alias Codebattle.Playbook
+  alias Codebattle.Repo
+  alias Codebattle.Task
+  alias Codebattle.User
 
   def approve(conn, %{"game_id" => game_id}) do
     query =
@@ -17,7 +21,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
 
     if User.admin?(conn.assigns.current_user) do
       {:ok, playbook} =
-        Repo.one(query) |> Playbook.changeset(%{solution_type: "complete"}) |> Repo.update()
+        query |> Repo.one() |> Playbook.changeset(%{solution_type: "complete"}) |> Repo.update()
 
       json(conn, %{
         solution_type: playbook.solution_type
@@ -39,7 +43,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
 
     if User.admin?(conn.assigns.current_user) do
       {:ok, playbook} =
-        Repo.one(query) |> Playbook.changeset(%{solution_type: "banned"}) |> Repo.update()
+        query |> Repo.one() |> Playbook.changeset(%{solution_type: "banned"}) |> Repo.update()
 
       json(conn, %{
         solution_type: playbook.solution_type
@@ -60,7 +64,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
       )
 
     case Game.Context.get_game!(game_id) do
-      game = %Game{is_live: true} ->
+      %Game{is_live: true} = game ->
         {:ok, records} = Server.get_playbook_records(game_id)
 
         winner = Helpers.get_winner(game)

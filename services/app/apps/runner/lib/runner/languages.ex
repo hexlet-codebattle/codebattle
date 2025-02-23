@@ -398,12 +398,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "1.18.1",
+      version: "1.18.2",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
-      docker_image: "codebattle/elixir:1.18.1",
+      docker_image: "codebattle/elixir:1.18.2",
       solution_template: """
       defmodule Solution do
         def solution(<%= arguments %>) do

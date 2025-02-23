@@ -1,10 +1,12 @@
 defmodule CodebattleWeb.MainChannelTest do
   use CodebattleWeb.ChannelCase
 
-  alias CodebattleWeb.MainChannel
-  alias CodebattleWeb.UserSocket
-  alias CodebattleWeb.Presence
   alias Codebattle.Game
+  alias CodebattleWeb.MainChannel
+  alias CodebattleWeb.Presence
+  alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Message
+  alias Phoenix.Socket.Reply
 
   setup do
     creator = insert(:user)
@@ -32,7 +34,7 @@ defmodule CodebattleWeb.MainChannelTest do
 
     list = Presence.list(socket)
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "main",
       event: "presence_state",
       payload: payload
@@ -77,14 +79,14 @@ defmodule CodebattleWeb.MainChannelTest do
 
     push(socket, "user:follow", %{user_id: user.id + 1})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "main",
       payload: %{active_game_id: nil}
     }
 
     push(socket, "user:follow", %{user_id: user.id})
 
-    assert_receive %Phoenix.Socket.Reply{
+    assert_receive %Reply{
       topic: "main",
       payload: %{active_game_id: ^game_id}
     }
@@ -92,7 +94,7 @@ defmodule CodebattleWeb.MainChannelTest do
     Game.Context.create_game(%{players: [user]})
     :timer.sleep(100)
 
-    assert_receive %Phoenix.Socket.Message{
+    assert_receive %Message{
       topic: "main",
       event: "user:game_created",
       payload: %{active_game_id: _}
@@ -103,7 +105,7 @@ defmodule CodebattleWeb.MainChannelTest do
     Game.Context.create_game(%{players: [user]})
     :timer.sleep(100)
 
-    refute_receive %Phoenix.Socket.Message{
+    refute_receive %Message{
       topic: "main",
       event: "user:game_created",
       payload: %{active_game_id: _}

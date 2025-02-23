@@ -1,4 +1,5 @@
 codebattleValues: {
+	image: codebattle: pullPolicy: "Always"
 	gateway: {
 		enable:      true
 		gatewayName: "gateway"

@@ -2,6 +2,7 @@ defmodule Codebattle.Task do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
@@ -155,9 +156,7 @@ defmodule Codebattle.Task do
     __MODULE__
     |> filter_visibility(user)
     |> Repo.all()
-    |> Enum.sort_by(
-      &{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name}
-    )
+    |> Enum.sort_by(&{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name})
   end
 
   defp filter_visibility(query, user) do
@@ -221,7 +220,7 @@ defmodule Codebattle.Task do
   end
 
   @spec list_task_ids() :: list(integer())
-  def list_task_ids() do
+  def list_task_ids do
     from(task in Codebattle.Task)
     |> visible()
     |> select([x], x.id)
@@ -240,9 +239,7 @@ defmodule Codebattle.Task do
       comment: "",
       level: "elementary",
       input_signature: [],
-      output_signature: %{
-        type: %{name: "integer"}
-      },
+      output_signature: %{type: %{name: "integer"}},
       asserts: [],
       asserts_examples: [],
       tags: [],
@@ -272,7 +269,7 @@ defmodule Codebattle.Task do
   end
 
   @spec get_all_visible() :: list(t())
-  def get_all_visible() do
+  def get_all_visible do
     from(task in Codebattle.Task)
     |> visible()
     |> Repo.all()
@@ -280,8 +277,7 @@ defmodule Codebattle.Task do
 
   @spec get_played_count(integer()) :: integer()
   def get_played_count(task_id) do
-    from(game in Codebattle.Game, where: game.task_id == ^task_id)
-    |> Repo.count()
+    Repo.count(from(game in Codebattle.Game, where: game.task_id == ^task_id))
   end
 
   @spec can_see_task?(t(), User.t()) :: boolean()

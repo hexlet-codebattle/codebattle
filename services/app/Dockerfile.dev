@@ -1,27 +1,41 @@
-FROM elixir:1.18
+FROM elixir:1.18-alpine
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 20.10.9
 
+# Install Elixir dependencies as root
 RUN mix local.hex --force \
-  && mix local.rebar --force
+  && mix local.rebar --force \
+  && mix archive.install hex phx_new --force
 
-RUN apt-get update \
-  && apt-get install -y inotify-tools vim wkhtmltopdf
+# Install system dependencies
+RUN apk add --no-cache \
+  inotify-tools \
+  curl \
+  vim \
+  chromium \
+  postgresql-client \
+  build-base \
+  git
 
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-  && apt-get update \
-  && apt-get install -y nodejs \
+# Install Node.js and Yarn
+RUN apk add --no-cache nodejs npm \
   && npm install --global yarn@1.22.10
 
+# Install Docker for local development
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
+# Add non-root user
+RUN adduser -D developer
 
-# Get Rust
-RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+# Copy Hex and other Mix archives from root to developer
+RUN cp -R /root/.mix /home/developer/ && chown -R developer:developer /home/developer/.mix
 
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Switch to non-root user
+USER developer
+
+# Set working directory
+WORKDIR /app
 
 ARG GIT_HASH
-
 ENV APP_VERSION=$GIT_HASH

@@ -5,14 +5,14 @@ defmodule Codebattle.UsersRankUpdateServer do
 
   require Logger
 
-  @timeout :timer.minutes(57)
+  @timeout to_timeout(minute: 57)
 
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def update() do
+  def update do
     GenServer.cast(__MODULE__, :update)
   end
 

@@ -2,6 +2,7 @@ defmodule Codebattle.Game do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
   alias Codebattle.Game
@@ -31,7 +32,7 @@ defmodule Codebattle.Game do
              :waiting_room_name
            ]}
 
-  @default_timeout_seconds div(:timer.minutes(30), 1000)
+  @default_timeout_seconds div(to_timeout(minute: 30), 1000)
   @states ~w(initial builder waiting_opponent playing game_over timeout canceled)
   @rematch_states ~w(none in_approval rejected accepted)
 
@@ -75,7 +76,7 @@ defmodule Codebattle.Game do
   end
 
   @doc false
-  def changeset(game = %Game{}, attrs) do
+  def changeset(%Game{} = game, attrs) do
     game
     |> cast(attrs, [
       :award,

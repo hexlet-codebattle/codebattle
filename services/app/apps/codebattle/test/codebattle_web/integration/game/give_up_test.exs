@@ -37,7 +37,7 @@ defmodule CodebattleWeb.Integration.Game.GiveUpTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game!(game_id) |> Repo.preload(:playbook)
+    game = game_id |> Game.Context.get_game!() |> Repo.preload(:playbook)
 
     assert game.state == "game_over"
     assert Helpers.gave_up?(game, user1.id) == true

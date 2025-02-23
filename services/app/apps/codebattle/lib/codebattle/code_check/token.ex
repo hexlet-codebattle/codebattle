@@ -1,4 +1,5 @@
 defmodule Codebattle.CodeCheck.Checker.Token do
+  @moduledoc false
   use TypedStruct
 
   alias Codebattle.CodeCheck

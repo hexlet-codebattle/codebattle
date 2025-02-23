@@ -1,8 +1,9 @@
 defmodule Codebattle.Game.Query do
+  @moduledoc false
+  import Ecto.Query
+
   alias Codebattle.Game
   alias Codebattle.Repo
-
-  import Ecto.Query
 
   @spec fetch_score_by_game_id(Game.Context.raw_game_id()) :: map() | nil
   def fetch_score_by_game_id(id) do
@@ -77,7 +78,7 @@ defmodule Codebattle.Game.Query do
     }
   end
 
-  defp completed_games_base_query() do
+  defp completed_games_base_query do
     from(
       g in Game,
       order_by: [desc: g.id],

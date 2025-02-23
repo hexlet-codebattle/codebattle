@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.ForceRedirect do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   alias Codebattle.User
 
@@ -11,6 +12,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     ~r{^\/auth\/token\/?$},
+    ~r{^\/session\/new\/?$},
     # ~r{^\/settings\/?$},
     ~r{^\/user\/current\/?$},
     # ~r{^\/api\/v1\/settings\/?$},

@@ -1,5 +1,7 @@
 defmodule Codebattle.Tournament.Player do
+  @moduledoc false
   use Ecto.Schema
+
   import Ecto.Changeset
 
   @type t :: %__MODULE__{}
@@ -56,9 +58,9 @@ defmodule Codebattle.Tournament.Player do
   end
 
   @spec new!(params :: map()) :: t()
-  def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
+  def new!(%_{} = params), do: params |> Map.from_struct() |> new!()
 
-  def new!(params = %{}) do
+  def new!(%{} = params) do
     %__MODULE__{}
     |> cast(params, @fields)
     |> validate_required([:id, :name])

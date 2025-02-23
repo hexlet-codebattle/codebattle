@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Clans do
+  @moduledoc false
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Storage.Clans
 
