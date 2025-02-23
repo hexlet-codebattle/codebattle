@@ -5,9 +5,6 @@
 # is restricted to this project.
 import Config
 
-config :chromic_pdf, chrome_args: ["--no-sandbox", "--disable-gpu"]
-config :chromic_pdf, session_pool: [timeout: 30_000]
-
 config :codebattle, ChromicPDF, on_demand: false
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
@@ -122,6 +119,8 @@ config :phoenix_meta_tags,
   twitter: %{
     card: "summary_large_image"
   }
+
+config :porcelain, goon_warn_if_missing: false
 
 config :runner, Runner.DockerImagesPuller, timeout: to_timeout(hour: 7)
 

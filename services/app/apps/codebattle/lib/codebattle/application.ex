@@ -84,6 +84,15 @@ defmodule Codebattle.Application do
   @chromic_pdf_opts Application.compile_env!(:codebattle, ChromicPDF)
   # in milliseconds
   defp chromic_pdf_opts do
-    @chromic_pdf_opts ++ [session_pool: [size: 3, timeout: 30_000, checkout_timeout: 30_000]]
+    @chromic_pdf_opts ++
+      [
+        chrome_args: [append: "--font-render-hinting=none"],
+        no_sandbox: true,
+        session_pool: [
+          size: 5,
+          timeout: 30_000,
+          checkout_timeout: 30_000
+        ]
+      ]
   end
 end
