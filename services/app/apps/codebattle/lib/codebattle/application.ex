@@ -89,7 +89,7 @@ defmodule Codebattle.Application do
         chrome_args: [append: "--font-render-hinting=none"],
         no_sandbox: true,
         session_pool: [
-          size: 5,
+          size: 1,
           timeout: 30_000,
           checkout_timeout: 30_000
         ]

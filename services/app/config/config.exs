@@ -5,7 +5,8 @@
 # is restricted to this project.
 import Config
 
-config :codebattle, ChromicPDF, on_demand: false
+# TODO: use false on prod
+config :codebattle, ChromicPDF, on_demand: true
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
 config :codebattle, CodebattleWeb.BotEndpoint,
