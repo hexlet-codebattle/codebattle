@@ -106,6 +106,7 @@ config :codebattle, import_github_tasks: import_github_tasks
 config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
+config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
 config :codebattle, record_games: record_games
 config :codebattle, show_extension_popup: show_extension_popup
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
