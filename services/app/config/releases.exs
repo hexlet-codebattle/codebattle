@@ -1,7 +1,7 @@
 import Config
 
-port = System.get_env("CODEBATTLE_PORT", "4000")
-host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
+codebattle_port = System.get_env("CODEBATTLE_PORT", "4000")
+codebattle_host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
 
@@ -29,8 +29,8 @@ checker_executor =
     _ -> Codebattle.CodeCheck.Executor.RemoteDockerRun
   end
 
-port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
-host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
+runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
@@ -56,8 +56,8 @@ config :codebattle, CodebattleWeb.BotEndpoint,
   server: true
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: port],
-  url: [host: host, scheme: "https", port: 443],
+  http: [port: codebattle_port],
+  url: [host: codebattle_host, scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_view_salt],
@@ -148,8 +148,8 @@ config :phoenix_meta_tags,
   }
 
 config :runner, RunnerWeb.Endpoint,
-  http: [:inet6, port: port],
-  url: [host: host, port: 81],
+  http: [:inet6, port: runner_port],
+  url: [host: runner_host, port: 81],
   secret_key_base: secret_key_base,
   server: true
 
