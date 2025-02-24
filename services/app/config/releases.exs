@@ -51,7 +51,7 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, CodebattleWeb.BotEndpoint,
   http: [:inet6, port: "4002"],
-  url: [host: host, scheme: "https", port: 443],
+  url: [host: codebattle_host, scheme: "https", port: 443],
   secret_key_base: secret_key_base,
   server: true
 
@@ -100,7 +100,7 @@ config :codebattle, hide_footer: hide_footer
 config :codebattle, hide_header: hide_header
 config :codebattle, hide_invites: hide_invites
 config :codebattle, hide_user_dropdown: hide_user_dropdown
-config :codebattle, host: host
+config :codebattle, host: codebattle_host
 config :codebattle, import_github_tasks: import_github_tasks
 
 config :codebattle,
