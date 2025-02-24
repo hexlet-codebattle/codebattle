@@ -195,10 +195,11 @@ defmodule Codebattle.Task do
     !result
   end
 
-  @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t() | nil
-  def get_task_by_tags_for_user(user, tags) do
+  @spec get_task_by_tags_for_user(User.t(), list(String.t()), String.t()) :: t() | nil
+  def get_task_by_tags_for_user(user, tags, level) do
     __MODULE__
     |> filter_visibility(user)
+    |> where([t], t.level == ^level)
     |> where([t], fragment("? @> ?", t.tags, ^tags))
     |> order_by(fragment("RANDOM()"))
     |> limit(1)
