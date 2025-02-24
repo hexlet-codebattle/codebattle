@@ -324,6 +324,8 @@ defmodule Codebattle.Tournament.Helpers do
     Map.take(tournament, [
       :id,
       :clans_table,
+      :type,
+      :ranking_type,
       :matches_table,
       :players_table,
       :ranking_table,

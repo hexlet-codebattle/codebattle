@@ -228,6 +228,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
+  def handle_in("tournament:ranking:request", _params, socket) do
+    tournament_info = socket.assigns.tournament_info
+    ranking = Tournament.Ranking.get_page(tournament_info, 1)
+    {:reply, {:ok, %{ranking: ranking}}, socket}
+  end
+
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
   end

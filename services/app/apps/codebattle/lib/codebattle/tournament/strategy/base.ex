@@ -67,6 +67,19 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def join(%{state: "active", type: "swiss"} = tournament, params) do
+        player =
+          params.user
+          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:team_id, Map.get(params, :team_id))
+
+        if players_count(tournament) < tournament.players_limit do
+          add_player(tournament, player)
+        else
+          tournament
+        end
+      end
+
       def join(%{state: "active", type: "arena"} = tournament, params) do
         player =
           params.user
@@ -423,7 +436,6 @@ defmodule Codebattle.Tournament.Base do
 
         tournament
         |> maybe_pause_waiting_room()
-        |> set_ranking()
         |> finish_round_and_next_step()
       end
 
@@ -433,8 +445,9 @@ defmodule Codebattle.Tournament.Base do
           last_round_ended_at: NaiveDateTime.utc_now(:second),
           show_results: need_show_results?(tournament)
         })
-        |> calculate_round_results()
         |> Tournament.TournamentResult.upsert_results()
+        |> calculate_round_results()
+        |> set_ranking()
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> update_players_state_after_round_finished()

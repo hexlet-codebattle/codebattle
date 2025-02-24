@@ -90,9 +90,9 @@ defmodule Codebattle.Tournament.TaskProvider do
     end
   end
 
-  def get_task(%{task_strategy: "sequential"} = tournament, nil) do
+  def get_task(%{task_strategy: "sequential", current_round_position: round} = tournament, nil) do
     tournament.round_task_ids
-    |> List.first()
+    |> Enum.at(round)
     |> case do
       nil -> nil
       task_id -> Tasks.get_task(tournament, task_id)

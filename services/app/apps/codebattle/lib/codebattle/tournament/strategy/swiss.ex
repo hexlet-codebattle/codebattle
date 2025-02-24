@@ -11,19 +11,20 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    if true do
-      bots = Bot.Context.build_list(11)
-      add_players(tournament, %{users: bots})
-    else
-      tournament
-    end
+    # bots = Bot.Context.build_list(11)
+    # add_players(tournament, %{users: bots})
+    tournament
   end
 
   @impl Tournament.Base
   def reset_meta(meta), do: meta
 
   @impl Tournament.Base
-  def finish_round_after_match?(_tournament), do: false
+  def finish_round_after_match?(%{current_round_position: current_round_position} = tournament) do
+    matches = get_round_matches(tournament, current_round_position)
+
+    Enum.all?(matches, &(&1.state != "playing"))
+  end
 
   @impl Tournament.Base
   def set_ranking(tournament) do
@@ -32,39 +33,20 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def calculate_round_results(tournament) do
-    # TODO: improve  index with same score should be the same
-    # now we just use random
-
-    sorted_players_with_index =
-      tournament
-      |> get_players()
-      |> Enum.sort_by(& &1.score, :desc)
-
-    sorted_players_with_index
-    |> Enum.with_index()
-    |> Enum.each(fn {player, index} ->
-      Tournament.Players.put_player(tournament, %{player | place: index})
-    end)
-
     tournament
   end
 
   @impl Tournament.Base
   def build_round_pairs(tournament) do
-    {player_pair_ids, unmatched_player_ids, played_pair_ids} = build_player_pairs(tournament)
+    {player_pairs, unmatched_players, played_pair_ids} = build_player_pairs(tournament)
 
     opponent_bot = Tournament.Player.new!(Bot.Context.build())
 
-    unmatched =
-      Enum.map(unmatched_player_ids, fn id ->
-        [get_player(tournament, id), opponent_bot]
-      end)
+    unmatched_pairs = Enum.map(unmatched_players, fn player -> [player, opponent_bot] end)
 
     {
       update_struct(tournament, %{played_pair_ids: played_pair_ids}),
-      player_pair_ids
-      |> Enum.map(&get_players(tournament, &1))
-      |> Enum.concat(unmatched)
+      Enum.concat(player_pairs, unmatched_pairs)
     }
   end
 
@@ -75,36 +57,19 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def maybe_create_rematch(tournament, game_params) do
-    timeout_ms = Application.get_env(:codebattle, :tournament_rematch_timeout_ms)
-    wait_type = get_wait_type(tournament, timeout_ms)
-
-    if wait_type == "rematch" do
-      Process.send_after(
-        self(),
-        {:start_rematch, game_params.ref, tournament.current_round_position},
-        timeout_ms
-      )
-    end
-
     Codebattle.PubSub.broadcast("tournament:game:wait", %{
       game_id: game_params.game_id,
-      type: wait_type
+      type: get_wait_type(tournament)
     })
 
     tournament
   end
 
-  defp get_wait_type(tournament, timeout_ms) do
-    min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
-
-    if seconds_to_end_round(tournament) > min_seconds_to_rematch do
-      "rematch"
+  defp get_wait_type(tournament) do
+    if finish_tournament?(tournament) do
+      "tournament"
     else
-      if finish_tournament?(tournament) do
-        "tournament"
-      else
-        "round"
-      end
+      "round"
     end
   end
 
@@ -114,6 +79,7 @@ defmodule Codebattle.Tournament.Swiss do
     sorted_players =
       tournament
       |> get_players()
+      |> Enum.filter(&(&1.id > 0))
       |> Enum.sort_by(& &1.score, :desc)
 
     {player_pairs, unmatched_players, played_pair_ids} =
