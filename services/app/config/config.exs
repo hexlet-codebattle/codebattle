@@ -72,7 +72,6 @@ config :codebattle, import_github_tasks: false
 config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
-config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
 config :codebattle, load_dot_env_file: true
 config :codebattle, max_alive_tournaments: 15
 config :codebattle, record_games: true
