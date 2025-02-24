@@ -73,6 +73,26 @@ defmodule Codebattle.Tournament.Swiss do
     end
   end
 
+  defp build_player_pairs(%{current_round_position: 0} = tournament) do
+    played_pair_ids = MapSet.new()
+
+    player_pairs =
+      tournament
+      |> get_players()
+      |> Enum.sort_by(& &1.id)
+      |> Enum.chunk_every(2)
+
+    {player_pairs, unmatched_players} =
+      player_pairs
+      |> List.last()
+      |> case do
+        [player] -> {List.delete_at(player_pairs, -1), [player]}
+        _ -> {player_pairs, []}
+      end
+
+    {player_pairs, unmatched_players, played_pair_ids}
+  end
+
   defp build_player_pairs(tournament) do
     played_pair_ids = MapSet.new(tournament.played_pair_ids)
 

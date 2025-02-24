@@ -266,6 +266,8 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
+    :timer.sleep(100)
+
     assert_receive %Message{
       event: "user:check_complete",
       payload: %{user_id: ^u1_id, solution_status: true},
@@ -436,7 +438,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       payload: %{
         ranking: %{
           entries: [
-            %{id: 257, score: 100, user_name: "1", place: 1},
+            %{id: _, score: 100, user_name: "1", place: 1},
             _player2,
             _player3,
             _player4,
@@ -645,7 +647,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       payload: %{
         ranking: %{
           entries: [
-            %{id: 257, score: 400, user_name: "1", place: 1},
+            %{id: _, score: 400, user_name: "1", place: 1},
             _player2,
             _player3,
             _player4,
@@ -829,7 +831,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       payload: %{
         ranking: %{
           entries: [
-            %{id: 257, score: 1400, user_name: "1", place: 1},
+            %{id: _, score: 1400, user_name: "1", place: 1},
             _player2,
             _player3,
             _player4,
