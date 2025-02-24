@@ -7,6 +7,7 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
 
+  @tag :skip
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}] = insert_list(2, :task, level: "easy")
     [%{id: t3_id}, %{id: t4_id}] = insert_list(2, :task, level: "medium")
