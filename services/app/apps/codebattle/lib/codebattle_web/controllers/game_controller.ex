@@ -139,7 +139,7 @@ defmodule CodebattleWeb.GameController do
     )
   end
 
-  defp can_access_game?(game, %{subscription_type: :admin}), do: true
+  defp can_access_game?(_game, %{subscription_type: :admin}), do: true
 
   # defp can_see_game?(%{subscription_type: :premium} = user, game) do
   defp can_access_game?(game, user) do
