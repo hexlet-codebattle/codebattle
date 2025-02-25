@@ -132,8 +132,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -147,6 +145,7 @@ jobs:
       - name: Build codebattle ${{ matrix.target }}
         uses: docker/build-push-action@v6
         with:
+          context: services/app
           file: services/app/Dockerfile.codebattle
           build-args: |
             GIT_HASH=${{ github.sha }}
@@ -173,8 +172,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -188,6 +185,7 @@ jobs:
       - name: Build runner ${{ matrix.target }}
         uses: docker/build-push-action@v6
         with:
+          context: services/app
           file: services/app/Dockerfile.runner
           push: false
           target: ${{ matrix.target }}
