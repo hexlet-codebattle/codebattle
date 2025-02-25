@@ -151,12 +151,18 @@ defmodule Codebattle.Task do
     from(t in query, where: t.visibility == "public" and t.state == "active")
   end
 
+  def active(query) do
+    from(t in query, where: t.state == "active")
+  end
+
   @spec list_visible(User.t()) :: list() | list(t())
   def list_visible(user) do
     __MODULE__
     |> filter_visibility(user)
     |> Repo.all()
-    |> Enum.sort_by(&{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name})
+    |> Enum.sort_by(
+      &{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name}
+    )
   end
 
   defp filter_visibility(query, user) do
@@ -200,6 +206,16 @@ defmodule Codebattle.Task do
     __MODULE__
     |> filter_visibility(user)
     |> where([t], fragment("? @> ?", t.tags, ^tags))
+    |> order_by(fragment("RANDOM()"))
+    |> limit(1)
+    |> Repo.one()
+  end
+
+  @spec get_random_training_task() :: t() | nil
+  def get_random_training_task do
+    __MODULE__
+    |> active()
+    |> where([t], fragment("? @> ?", t.tags, ["training"]))
     |> order_by(fragment("RANDOM()"))
     |> limit(1)
     |> Repo.one()

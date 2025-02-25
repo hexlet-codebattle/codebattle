@@ -10,9 +10,12 @@ defmodule CodebattleWeb.Plugs.MaintenanceMode do
 
   @spec call(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
   def call(conn, _opts) do
-    if FunWithFlags.enabled?(:maintenance_mode) and conn.request_path not in ["/maintenance"] do
+    if FunWithFlags.enabled?(:maintenance_mode) do
       conn
-      |> redirect(to: "/maintenance")
+      |> put_status(:service_unavailable)
+      |> put_layout({CodebattleWeb.LayoutView, "landing.html"})
+      |> put_view(CodebattleWeb.RootView)
+      |> render("maintenance.html")
       |> halt()
     else
       conn

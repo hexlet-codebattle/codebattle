@@ -95,8 +95,11 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create_training(conn, _params) do
+    task = Codebattle.Task.get_random_training_task()
+
     game_params = %{
       level: "elementary",
+      task: task,
       mode: "training",
       visibility_type: "hidden",
       players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
