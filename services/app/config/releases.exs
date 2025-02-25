@@ -51,10 +51,9 @@ config :codebattle, CodebattleWeb.Endpoint,
   live_view: [signing_salt: live_view_salt],
   server: true
 
-config :codebattle, checker_executor: checker_executor
+config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 config :codebattle, :app_subtitle, app_subtitle
 config :codebattle, :app_title, app_title
-config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
@@ -70,6 +69,7 @@ config :codebattle, :oauth,
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
+config :codebattle, checker_executor: checker_executor
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
 config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")
 config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
@@ -125,8 +125,7 @@ config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") 
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
 config :runner,
-  max_parallel_containers_run:
-    "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
+  max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
 
