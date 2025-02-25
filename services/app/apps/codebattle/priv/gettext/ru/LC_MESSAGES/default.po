@@ -373,6 +373,9 @@ msgstr "Поздравляю! Вы победили!"
 msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
+msgid "Time is up. There are no winners in the game"
+msgstr "Время вышло. Никто не выйграл эту битву"
+
 msgid "Lose Game Message"
 msgstr "К сожалению, Ваш оппонент выиграл эту битву"
 
