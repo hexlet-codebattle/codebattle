@@ -88,12 +88,7 @@ config :codebattle, host: codebattle_host
 config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
-<<<<<<< Updated upstream
 config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
-config :codebattle, record_games: record_games
-config :codebattle, show_extension_popup: show_extension_popup
-=======
->>>>>>> Stashed changes
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,

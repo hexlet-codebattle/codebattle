@@ -86,11 +86,6 @@ config :fun_with_flags, :persistence,
   repo: Codebattle.Repo,
   ecto_table_name: "feature_flags"
 
-config :fun_with_flags, :persistence,
-  adapter: FunWithFlags.Store.Persistent.Ecto,
-  repo: Codebattle.Repo,
-  ecto_table_name: "feature_flags"
-
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
