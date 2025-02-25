@@ -41,6 +41,10 @@ defmodule CodebattleWeb.RootController do
     end
   end
 
+  def maintenance(conn, _) do
+    render(conn, "maintenance.html", layout: {LayoutView, "empty.html"})
+  end
+
   def feedback(conn, _) do
     render(conn, "feedback.xml")
   end

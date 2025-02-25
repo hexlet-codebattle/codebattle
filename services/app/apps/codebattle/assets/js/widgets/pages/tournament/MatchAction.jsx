@@ -2,9 +2,9 @@ import React, { memo, useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
+import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import MatchStatesCodes from '../../config/matchStates';
 import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';

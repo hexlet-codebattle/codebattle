@@ -1,0 +1,17 @@
+<div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+  <div class="p-4">
+    <% header =
+      Codebattle.Customization.get("maintenance_header") ||
+        "<center><h1>Maintenance</h1></center>" %>
+    <div class="mb-3">
+      <%= raw(header) %>
+    </div>
+
+    <% body =
+      Codebattle.Customization.get("maintenance_body") ||
+        "We are currently performing maintenance on the site. Please come back later." %>
+    <div class="mb-3">
+      <%= raw(body) %>
+    </div>
+  </div>
+</div>

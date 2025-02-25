@@ -45,18 +45,17 @@ const LangTitle = ({ slug, name, version }) => (
 );
 
 function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
-  const languages = useSelector(selectors.editorLangsSelector);
+  const langs = useSelector(selectors.editorLangsSelector);
 
-  const langs = languages;
   const [[currentLang], otherLangs] = useMemo(
     () => partition(langs, lang => lang.slug === currentLangSlug),
     [langs, currentLangSlug],
   );
   const options = useMemo(
     () => otherLangs.map(lang => ({
-        label: <LangTitle {...lang} />,
-        value: lang.name,
-      })),
+      label: <LangTitle {...lang} />,
+      value: lang.name,
+    })),
     [otherLangs],
   );
   const defaultLang = useMemo(

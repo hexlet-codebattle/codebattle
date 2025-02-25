@@ -25,6 +25,14 @@ defmodule Codebattle.Tournament.Ranking.Void do
     tournament
   end
 
+  def get_event_ranking(_tournament) do
+    []
+  end
+
+  def set_ranking_to_ets(tournament) do
+    tournament
+  end
+
   def update_player_result(tournament, _player, _score) do
     tournament
   end

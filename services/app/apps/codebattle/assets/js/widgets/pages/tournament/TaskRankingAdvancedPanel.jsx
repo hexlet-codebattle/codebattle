@@ -15,12 +15,12 @@ import {
   Tooltip,
 } from 'chart.js';
 import cn from 'classnames';
-import i18next from 'i18next';
 import { Bar } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
 
 import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
+import i18next from '../../../i18n';
 import UserInfo from '../../components/UserInfo';
 import { getResults, getTask } from '../../middlewares/TournamentAdmin';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';

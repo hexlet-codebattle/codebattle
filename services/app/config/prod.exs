@@ -22,10 +22,8 @@ config :codebattle, app_version: System.get_env("APP_VERSION", "")
 config :codebattle, dev_sign_in: false
 config :codebattle, html_debug_mode: false
 config :codebattle, html_env: :prod
-config :codebattle, import_github_tasks: true
 config :codebattle, load_dot_env_file: false
 config :codebattle, restore_tournaments: true
-config :codebattle, use_external_js: true
 config :codebattle, ws_port: 4000
 
 config :logger, level: :error

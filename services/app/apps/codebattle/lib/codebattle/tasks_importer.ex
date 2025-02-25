@@ -25,13 +25,20 @@ defmodule Codebattle.TasksImporter do
   # SERVER
   def init(state) do
     Logger.debug("Start Tasks Importer")
+
     Process.send_after(self(), :run, to_timeout(second: 17))
+
     {:ok, state}
   end
 
   def handle_info(:run, state) do
-    upsert(fetch_issues())
-    Process.send_after(self(), :run, @timeout)
+    if FunWithFlags.enabled?(:use_import_github_tasks) do
+      upsert(fetch_issues())
+      Process.send_after(self(), :run, @timeout)
+    else
+      :noop
+    end
+
     {:noreply, state}
   end
 

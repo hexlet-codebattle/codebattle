@@ -9,13 +9,14 @@ import React, {
 } from 'react';
 
 import cn from 'classnames';
-import i18next from 'i18next';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
+
+import i18next from '../../../i18n';
 
 const openNextMatch = nextMatch => {
   window.location.replace(makeGameUrl(nextMatch.gameId));
@@ -70,7 +71,7 @@ function MatchConfirmationModal({
   const handleCancel = useCallback(() => {
     setModalShowing(false);
     setRemainingTime(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -82,7 +83,7 @@ function MatchConfirmationModal({
   useEffect(() => {
     if (nextMatch?.gameId && !modalShowing && redirectImmediatly) {
       openNextMatch(nextMatch);
-      return () => {};
+      return () => { };
     }
 
     if (nextMatch?.gameId && !modalShowing) {
@@ -117,7 +118,7 @@ function MatchConfirmationModal({
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nextMatch?.gameId]);
 

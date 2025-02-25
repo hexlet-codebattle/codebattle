@@ -120,6 +120,13 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{players: players}}, socket}
   end
 
+  def handle_in("tournament:ranking:request", _params, socket) do
+    tournament_info = socket.assigns.tournament_info
+    ranking = Tournament.Ranking.get_page(tournament_info, 1)
+
+    {:reply, {:ok, %{ranking: ranking}}, socket}
+  end
+
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
     tournament_info = socket.assigns.tournament_info
     matches = Helpers.get_matches_by_players(tournament_info, [id])

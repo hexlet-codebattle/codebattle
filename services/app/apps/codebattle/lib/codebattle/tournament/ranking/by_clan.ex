@@ -65,6 +65,8 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> set_places(tournament)
   end
 
+  def set_ranking_to_ets(_tournament), do: :ok
+
   def update_player_result(tournament, player, score) do
     ranking = Ranking.get_all(tournament)
 

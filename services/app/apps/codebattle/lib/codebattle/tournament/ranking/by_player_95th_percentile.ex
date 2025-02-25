@@ -10,6 +10,8 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
     Ranking.get_first(tournament, limit)
   end
 
+  def get_event_ranking(_tournament), do: []
+
   def get_by_player(_tournament, nil), do: nil
 
   def get_by_player(tournament, player) do

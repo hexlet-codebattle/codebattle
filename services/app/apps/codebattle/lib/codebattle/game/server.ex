@@ -48,7 +48,7 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
-      is_record_games: Application.get_env(:codebattle, :record_games),
+      is_record_games: !FunWithFlags.enabled?(:skip_record_games),
       playbook_state: %{records: [], id: 0}
     }
 

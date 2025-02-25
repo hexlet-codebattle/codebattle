@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Plugs.Locale do
 
   def call(conn, _opts) do
     locale =
-      if Application.get_env(:codebattle, :force_locale) do
+      if FunWithFlags.enabled?(:enforce_default_locale) do
         Application.get_env(:codebattle, :default_locale)
       else
         conn.params["locale"] || get_session(conn, :locale) ||

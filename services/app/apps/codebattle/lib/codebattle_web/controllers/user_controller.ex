@@ -12,7 +12,7 @@ defmodule CodebattleWeb.UserController do
   end
 
   def new(conn, _params) do
-    if Application.get_env(:codebattle, :use_only_token_auth) do
+    if FunWithFlags.enabled?(:use_only_token_auth) do
       render(conn, "token_only.html")
     else
       render(conn, "new.html")

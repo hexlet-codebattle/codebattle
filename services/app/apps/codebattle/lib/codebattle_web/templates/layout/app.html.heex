@@ -47,7 +47,7 @@
 
     <title>Codebattle</title>
     <!--Google Tag Manager-->
-    <%= if Application.get_env(:codebattle, :use_external_js) do %>
+    <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
       </script>
@@ -57,7 +57,7 @@
 
   <body class="position-relative dark-bg h-100">
     <!--Google Tag Manager (noscript)-->
-    <%= if Application.get_env(:codebattle, :use_external_js) do %>
+    <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <noscript>
         <iframe
           height="0"
@@ -70,7 +70,7 @@
     <% end %>
 
     <div class="d-flex flex-column min-vh-100">
-      <%= unless Application.get_env(:codebattle, :hide_header) do %>
+      <%= unless FunWithFlags.enabled?(:hide_header) do %>
         <div class="dark-bg">
           <div class="container-lg">
             <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
@@ -82,6 +82,12 @@
                     style="height:40px"
                     src={collab_logo(@current_user)}
                   />
+                <% else %>
+                  <img
+                    alt="Logo"
+                    class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
+                    src="/assets/images/logo.svg"
+                  />
                 <% end %>
                 <%= if collab_logo_minor(@current_user) do %>
                   <img
@@ -91,14 +97,12 @@
                     src={collab_logo_minor(@current_user)}
                   />
                 <% end %>
-                <img
-                  alt="Logo"
-                  class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
-                  src="/assets/images/logo.svg"
-                />
                 <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
                   <span class="font-weight-bold">
                     <%= Application.get_env(:codebattle, :app_title) %>
+                  </span>
+                  <span class="header-txt">
+                    <%= Application.get_env(:codebattle, :app_subtitle) %>
                   </span>
                 </div>
               </a>
@@ -118,20 +122,22 @@
 
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                   <ul class="navbar-nav ml-auto">
-                    <%= unless Application.get_env(:codebattle, :hide_invites) do %>
-                      <span id="online-root" class="d-flex align-items-center text-muted">
-                        0 Online
-                      </span>
+                    <span id="online-root" class="d-flex align-items-center text-muted">
+                      0 Online
+                    </span>
+                    <%= if FunWithFlags.enabled?(:hide_invites) do %>
+                      <div id="invites-root" class="d-none"></div>
+                    <% else %>
+                      <li class="nav-item align-self-center dropdown" id="invites-root">
+                        <div class="btn btn-dark mx-2">
+                          <img
+                            alt="invites"
+                            src="/assets/images/fight.svg"
+                            style="width:46px; height:46px"
+                          />
+                        </div>
+                      </li>
                     <% end %>
-                    <li class="nav-item align-self-center dropdown" id="invites-root">
-                      <div class="btn btn-dark mx-2">
-                        <img
-                          alt="invites"
-                          src="/assets/images/fight.svg"
-                          style="width:46px; height:46px"
-                        />
-                      </div>
-                    </li>
                     <li class="nav-item dropdown">
                       <a
                         aria-expanded="false"
@@ -167,8 +173,10 @@
                           style="width:46px; height:46px"
                         />
 
-                        <%= unless Application.get_env(:codebattle, :hide_user_dropdown) do %>
-                          <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                        <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                          <%= if FunWithFlags.enabled?(:hide_user_dropdown) do %>
+                            <div></div>
+                          <% else %>
                             <a
                               class="dropdown-item"
                               href={Routes.user_path(@conn, :show, @current_user.id)}
@@ -222,12 +230,13 @@
                               <%= gettext("Tg#codebattle") %>
                             </a>
                             <div class="dropdown-divider"></div>
-                            <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
-                              <span class="fas fa-sign-out-alt mr-2"></span>
-                              <%= gettext("Sign Out") %>
-                            <% end %>
-                          </div>
-                        <% end %>
+                          <% end %>
+
+                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                            <span class="fas fa-sign-out-alt mr-2"></span>
+                            <%= gettext("Sign Out") %>
+                          <% end %>
+                        </div>
                       </a>
                     </li>
                   </ul>
@@ -286,10 +295,9 @@
           <% end %>
         </div>
       </div>
-      <%= if Application.get_env(:codebattle, :show_extension_popup) do %>
+      <%= unless FunWithFlags.enabled?(:hide_extension_popup) do %>
         <div id="extension"></div>
       <% end %>
-
       <%= if @ticker_text do %>
         <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
           <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
@@ -301,7 +309,7 @@
         <%= @inner_content %>
       </main>
       <footer>
-        <%= unless Application.get_env(:codebattle, :hide_footer) do %>
+        <%= unless FunWithFlags.enabled?(:hide_footer) do %>
           <div class="footer-container container-lg">
             <div>
               <p class="text-nowrap text-white mb-0 mr-4">
@@ -322,7 +330,7 @@
               <p class="text-white m-0">
                 <span>deployedAt UTC:&nbsp;<%= deployed_at() %></span>
               </p>
-              <%= if Application.get_env(:codebattle, :use_external_js) do %>
+              <%= if FunWithFlags.enabled?(:use_external_js) do %>
                 <a href="https://hits.seeyoufarm.com">
                   <img
                     class="mb-1"

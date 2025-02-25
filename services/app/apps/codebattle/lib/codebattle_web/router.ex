@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Router do
 
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.ForceRedirect
+  alias CodebattleWeb.Plugs.MaintenanceMode
 
   require Logger
 
@@ -27,6 +28,7 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:fetch_live_flash)
+    plug(MaintenanceMode)
     plug(AssignCurrentUser)
     plug(ForceRedirect)
     plug(:protect_from_forgery)
@@ -151,6 +153,7 @@ defmodule CodebattleWeb.Router do
     get("/feedback/rss.xml", RootController, :feedback)
 
     get("/", RootController, :index)
+    get("/maintenance", RootController, :maintenance)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/remind_password", SessionController, :remind_password)

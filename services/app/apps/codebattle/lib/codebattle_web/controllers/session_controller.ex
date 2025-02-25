@@ -5,7 +5,7 @@ defmodule CodebattleWeb.SessionController do
 
   def new(conn, _params) do
     cond do
-      Application.get_env(:codebattle, :use_only_token_auth) ->
+      FunWithFlags.enabled?(:use_only_token_auth) ->
         render(conn, "token_only.html")
 
       Application.get_env(:codebattle, :use_local_password_auth) ->

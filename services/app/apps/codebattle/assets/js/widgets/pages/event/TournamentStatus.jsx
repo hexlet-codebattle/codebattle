@@ -1,6 +1,6 @@
 import React from 'react';
 
-import i18next from 'i18next';
+import i18next from '../../../i18n';
 
 const TournamentStatus = ({
   type = 'loading',
