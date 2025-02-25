@@ -45,7 +45,7 @@
     >
     </script>
 
-    <title>Codebattle</title>
+    <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <!--Google Tag Manager-->
     <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <script>
