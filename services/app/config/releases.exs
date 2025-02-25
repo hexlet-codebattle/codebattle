@@ -92,27 +92,6 @@ config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "defau
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,
-  title: "Hexlet Codebattle • Game for programmers",
-  description:
-    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
-  url: "https://codebattle.hexlet.io",
-  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.png",
-  "og:type": "website",
-  fb: %{
-    size: %{
-      width: 100,
-      height: 200,
-      position: %{
-        x: 10,
-        y: 15
-      }
-    }
-  },
-  twitter: %{
-    card: "summary_large_image"
-  }
-
-config :phoenix_meta_tags,
   title: app_title,
   description: app_subtitle,
   url: codebattle_url,
