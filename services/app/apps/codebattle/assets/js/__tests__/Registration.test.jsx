@@ -14,6 +14,11 @@ jest.mock('axios');
 const { invalidData, validData } = getTestData('signUpData.json');
 const { data, route, headers } = validData;
 
+jest.mock('gon', () => {
+  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
+  return { getAsset: type => gonParams[type] };
+}, { virtual: true });
+
 describe('sign up', () => {
   function setup(jsx) {
     return {
