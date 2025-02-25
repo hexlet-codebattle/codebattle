@@ -160,9 +160,7 @@ defmodule Codebattle.Task do
     __MODULE__
     |> filter_visibility(user)
     |> Repo.all()
-    |> Enum.sort_by(
-      &{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name}
-    )
+    |> Enum.sort_by(&{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name})
   end
 
   defp filter_visibility(query, user) do
