@@ -26,7 +26,7 @@ runners: {
 	"golang": {
 		image:    "codebattle/golang"
 		version:  "1.22.1"
-		lang:     "go"
+		lang:     "golang"
 		replicas: 1
 	}
 }
