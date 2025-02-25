@@ -15,30 +15,12 @@ defmodule Codebattle.Application do
       config_path |> Config.Reader.read!() |> Application.put_all_env()
     end
 
-    github_tasks =
-      if Application.get_env(:codebattle, :import_github_tasks) do
-        [{Codebattle.TasksImporter, []}]
-      else
-        []
-      end
-
-    bot_games =
-      if Application.get_env(:codebattle, :create_bot_games) do
-        [{Codebattle.Bot.GameCreator, []}]
-      else
-        []
-      end
-
-    user_rank =
-      if Application.get_env(:codebattle, :user_rank_server) do
-        [{Codebattle.UsersRankUpdateServer, []}]
-      else
-        []
-      end
-
     children =
       [
         {ChromicPDF, chromic_pdf_opts()},
+        {Codebattle.TasksImporter, []},
+        {Codebattle.UsersRankUpdateServer, []},
+        {Codebattle.Bot.GameCreator, []},
         {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},
@@ -65,7 +47,7 @@ defmodule Codebattle.Application do
           id: Codebattle.Chat.Lobby,
           start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
         }
-      ] ++ github_tasks ++ bot_games ++ user_rank
+      ]
 
     Supervisor.start_link(children,
       strategy: :one_for_one,

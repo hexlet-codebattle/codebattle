@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   setup do
-    Application.put_env(:codebattle, :allow_guests, false)
+    FunWithFlags.enable(:restrict_guests_access)
 
     clan1 = insert(:clan, name: "c1", long_name: "cl1")
     clan2 = insert(:clan, name: "c2", long_name: "cl2")
@@ -11,7 +11,6 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardControllerTest do
     user3 = insert(:user, name: "u3", clan_id: clan2.id)
     event = insert(:event)
 
-    on_exit(fn -> Application.put_env(:codebattle, :allow_guests, true) end)
     %{clan1: clan1, clan2: clan2, user1: user1, user2: user2, user3: user3, event: event}
   end
 

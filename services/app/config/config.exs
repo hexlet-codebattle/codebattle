@@ -32,6 +32,7 @@ config :codebattle, CodebattleWeb.Gettext,
   default_locale: "en"
 
 config :codebattle, :api_key, "x-key"
+config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :fake_html_to_image, true
 
@@ -46,7 +47,7 @@ config :codebattle, :oauth,
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
-config :codebattle, allow_guests: true
+config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
 # config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
@@ -64,28 +65,26 @@ config :codebattle, ecto_repos: [Codebattle.Repo]
 config :codebattle, fake_html_to_image: false
 config :codebattle, force_redirect_url: ""
 config :codebattle, freeze_time: false
-config :codebattle, hide_footer: false
-config :codebattle, hide_header: false
 config :codebattle, html_debug_mode: true
-config :codebattle, import_github_tasks: false
 
 config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
 config :codebattle, load_dot_env_file: true
 config :codebattle, max_alive_tournaments: 15
-config :codebattle, record_games: true
 config :codebattle, restore_tournaments: false
-config :codebattle, show_extension_popup: true
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tournament_rematch_timeout_ms: 2000
-config :codebattle, use_external_js: false
-config :codebattle, use_only_token_auth: false
-config :codebattle, use_presence: true
 config :codebattle, user_rank_server: true
 
+config :fun_with_flags, :cache, enabled: true
 config :fun_with_flags, :cache_bust_notifications, enabled: false
+
+config :fun_with_flags, :persistence,
+  adapter: FunWithFlags.Store.Persistent.Ecto,
+  repo: Codebattle.Repo,
+  ecto_table_name: "feature_flags"
 
 config :fun_with_flags, :persistence,
   adapter: FunWithFlags.Store.Persistent.Ecto,

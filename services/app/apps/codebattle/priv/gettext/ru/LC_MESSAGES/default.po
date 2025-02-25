@@ -44,6 +44,22 @@ msgstr "Пользователи в сети"
 msgid "Logout"
 msgstr "Выход"
 
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Enter your name"
+msgstr "Введите ваше имя"
+
+msgid "Enter your password"
+msgstr "Введите ваш пароль"
+
+
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign in with %{name}"
 msgstr "Войти через %{name}"
@@ -98,6 +114,8 @@ msgstr "Игроки"
 #: lib/codebattle_web/templates/game/show.html.slim:13
 msgid "Check result"
 msgstr "Проверить результат"
+
+
 
 #: lib/codebattle_web/templates/game/show.html.slim:15
 msgid "Waiting for an opponent"

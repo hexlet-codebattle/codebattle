@@ -15,7 +15,7 @@ defmodule CodebattleWeb.MainChannel do
         topic = "main:#{current_user.id}"
         Codebattle.PubSub.subscribe(topic)
 
-        if Application.get_env(:codebattle, :use_presence) do
+        if !FunWithFlags.enabled?(:skip_presence) do
           send(self(), {:after_join, state})
         end
 

@@ -14,7 +14,16 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
     user_id = get_session(conn, :user_id)
 
     case {user_id, conn.request_path} do
-      {nil, path} when path in ["/auth/token/", "/auth/token"] ->
+      # for all guests we allow to login via token or via password
+      {nil, path}
+      when path in [
+             "/session",
+             "/session/",
+             "/session/new",
+             "/session/new/",
+             "/auth/token/",
+             "/auth/token"
+           ] ->
         assign(conn, :current_user, User.build_guest())
 
       {nil, _path} ->
@@ -36,18 +45,20 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   end
 
   defp handle_guest(conn) do
-    if Application.get_env(:codebattle, :allow_guests) do
-      assign(conn, :current_user, User.build_guest())
-    else
-      if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
-        conn
-        |> redirect(external: url)
-        |> halt()
-      else
+    if FunWithFlags.enabled?(:restrict_guests_access) do
+      url = Application.get_env(:codebattle, :guest_user_force_redirect_url)
+      # redirect to login page if there is now custom guest_auth_url
+      if url in [nil, ""] do
         conn
         |> redirect(to: Routes.session_path(conn, :new))
         |> halt()
+      else
+        conn
+        |> redirect(external: url)
+        |> halt()
       end
+    else
+      assign(conn, :current_user, User.build_guest())
     end
   end
 end
