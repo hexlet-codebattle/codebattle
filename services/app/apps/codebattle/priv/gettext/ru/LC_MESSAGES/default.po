@@ -748,6 +748,9 @@ msgstr "Ожидайте следующую игру"
 msgid "Tournament is over"
 msgstr "Турнир завершен"
 
+msgid "Round is over, wait for the next round"
+msgstr "Раунд завершен, дождитесь следующего"
+
 msgid "If you read this you've lost the game"
 msgstr "Ты заслуживаешь победы, продолжай!"
 
