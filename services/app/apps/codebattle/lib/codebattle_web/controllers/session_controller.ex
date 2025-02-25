@@ -4,11 +4,13 @@ defmodule CodebattleWeb.SessionController do
   alias Codebattle.User
 
   def new(conn, _params) do
+    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+
     cond do
       FunWithFlags.enabled?(:use_only_token_auth) ->
         render(conn, "token_only.html")
 
-      Application.get_env(:codebattle, :use_local_password_auth) ->
+      FunWithFlags.enabled?(:use_local_password_auth) ->
         render(conn, "local_password.html", layout: {CodebattleWeb.LayoutView, :empty})
 
       :default ->
