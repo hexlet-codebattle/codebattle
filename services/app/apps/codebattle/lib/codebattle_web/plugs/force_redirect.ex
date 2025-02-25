@@ -14,6 +14,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     ~r{^\/auth\/token\/?$},
     ~r{^\/maintenance\/?$},
+    ~r{^\/waiting\/?$},
     ~r{^\/session\/new\/?$},
     ~r{^\/session\/?$},
     # ~r{^\/settings\/?$},

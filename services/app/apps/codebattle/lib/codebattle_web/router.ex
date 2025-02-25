@@ -154,6 +154,7 @@ defmodule CodebattleWeb.Router do
 
     get("/", RootController, :index)
     get("/maintenance", RootController, :maintenance)
+    get("/waiting", RootController, :waiting)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/remind_password", SessionController, :remind_password)
