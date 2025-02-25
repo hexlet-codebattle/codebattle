@@ -122,61 +122,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers for codebattle
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache-codebattle
-          key: ${{ runner.os }}-buildx-codebattle-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-codebattle-
-
-      - name: Cache Docker layers for runner
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache-runner
-          key: ${{ runner.os }}-buildx-runner-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-runner-
-
       - name: Build and push codebattle image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/app
-          file: ./services/app/Dockerfile.codebattle
-          push: true
-          build-args: |
-            GIT_HASH=${{ github.sha }}
-          tags: |
-            codebattle/codebattle:assets-image
-            codebattle/codebattle:compile-image
-            codebattle/codebattle:latest
-            codebattle/nginx-assets:latest
-          target: runtime-image
-          cache-from: type=local,src=/tmp/.buildx-cache-codebattle
-          cache-to: type=local,dest=/tmp/.buildx-cache-codebattle-new
-
-      - name: Move cache
         run: |
-          rm -rf /tmp/.buildx-cache-codebattle
-          mv /tmp/.buildx-cache-codebattle-new /tmp/.buildx-cache-codebattle
+          make GIT_HASH=${{ github.sha }} docker-build-codebattle
+          make docker-push-codebattle
 
       - name: Build and push runner image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/app
-          file: ./services/app/Dockerfile.runner
-          push: true
-          tags: |
-            codebattle/runner:compile-image
-            codebattle/runner:latest
-          target: runtime-image
-          cache-from: type=local,src=/tmp/.buildx-cache-runner
-          cache-to: type=local,dest=/tmp/.buildx-cache-runner-new
-
-      - name: Move runner cache
         run: |
-          rm -rf /tmp/.buildx-cache-runner
-          mv /tmp/.buildx-cache-runner-new /tmp/.buildx-cache-runner
+          make docker-build-runner
+          make docker-push-runner
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers
