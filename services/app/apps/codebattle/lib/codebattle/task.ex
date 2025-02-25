@@ -213,7 +213,7 @@ defmodule Codebattle.Task do
   def get_random_training_task do
     __MODULE__
     |> active()
-    |> where([t], fragment("? @> ?", t.tags, ["training"]))
+    |> where([t], fragment("? @> ?::varchar[]", t.tags, ["training"]))
     |> order_by(fragment("RANDOM()"))
     |> limit(1)
     |> Repo.one()
