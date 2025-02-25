@@ -53,7 +53,6 @@ config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", "chat_bot")
 config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteDockerRun
-config :codebattle, create_bot_games: true
 config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
 
 config :codebattle,

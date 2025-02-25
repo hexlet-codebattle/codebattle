@@ -68,7 +68,6 @@ config :codebattle,
 
 config :codebattle, checker_executor: checker_executor
 config :codebattle, code_check_timeout: 35_000
-config :codebattle, create_bot_games: false
 # Print only warnings and errors during test
 # if is_nil(System.get_env("DEBUG")) do
 #   config :logger, level: :critical
