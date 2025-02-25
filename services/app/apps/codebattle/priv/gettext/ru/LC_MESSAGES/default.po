@@ -544,6 +544,18 @@ msgstr "Как устроен турнир"
 msgid "Stage %{name}"
 msgstr "Тур %{name}"
 
+msgid "Stage: "
+msgstr "Тур: "
+
+msgid "Games: "
+msgstr "Игры: "
+
+msgid "Stats: "
+msgstr "Статистика: "
+
+msgid "Games"
+msgstr "Игры"
+
 msgid "closed"
 msgstr "закрыт"
 

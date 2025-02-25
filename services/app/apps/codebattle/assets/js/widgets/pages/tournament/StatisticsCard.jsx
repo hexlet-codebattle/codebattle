@@ -108,49 +108,52 @@ function StatisticsCard({
           title={i18next.t('Your place in tournament')}
           className="p-1"
         >
-          <TournamentPlace title="Your place" place={place + 1} />
+          <TournamentPlace
+            title={i18next.t('Your place')}
+            place={place + 1}
+          />
         </h6>
       )}
       <h6
-        title="Your score"
+        title={i18next.t('Your score')}
         className="p-1"
       >
         {`${i18next.t('Your score')}: ${playerStats.score}`}
       </h6>
+      {/* <h6 */}
+      {/*   title="Your task_ids" */}
+      {/*   className="p-1" */}
+      {/* > */}
+      {/*   {`${i18next.t('taskIds')}: ${taskIds}`} */}
+      {/* </h6> */}
       <h6
-        title="Your task_ids"
+        title={i18next.t('Your game played')}
         className="p-1"
       >
-        {`taskIds: ${taskIds}`}
-      </h6>
-      <h6
-        title="Your game played"
-        className="p-1"
-      >
-        {`Games: ${matchList.length}`}
+        {`${i18next.t('Games')}: ${matchList.length}`}
       </h6>
       <h6
         title="Stats: Win games / Lost games / Canceled games"
         className="d-none d-md-block d-lg-block d-xl-block p-1"
       >
-        {'Stats: '}
+        {i18next.t('Stats: ')}
         <span className="text-success">
-          {`Win ${playerStats.winMatches.length}`}
+          {`${i18next.t('Win')} ${playerStats.winMatches.length}`}
         </span>
         {' / '}
         <span className="text-danger">
-          {`Lost ${playerStats.lostMatches.length}`}
+          {`${i18next.t('Lost')} ${playerStats.lostMatches.length}`}
         </span>
         {' / '}
         <span className="text-muted">
-          {`Timeout ${matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length}`}
+          {`${i18next.t('Timeout')} ${matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length}`}
         </span>
       </h6>
       <h6
         title="Stats: Win games / Lost games / Canceled games"
         className="d-block d-md-none p-1"
       >
-        {'Stats: '}
+        {i18next.t('Stats: ')}
         <span className="text-success">
           {playerStats.winMatches.length}
         </span>

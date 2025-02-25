@@ -80,7 +80,7 @@ function StageStatus({
     && player.avgTests === opponent.avgTests
     && player.avgDuration === opponent.avgDuration
   ) {
-    return <span className="text-secondary">Draw</span>;
+    return <span className="text-secondary">{i18next.t('Draw')}</span>;
   }
 
   if (
@@ -95,10 +95,10 @@ function StageStatus({
       && player.avgTests === opponent.avgTests
       && player.avgDuration > opponent.avgDuration)
   ) {
-    return <span className="text-success">You win</span>;
+    return <span className="text-success">{i18next.t('You win')}</span>;
   }
 
-  return <span className="text-danger">You lose</span>;
+  return <span className="text-danger">{i18next.t('You lose')}</span>;
 }
 
 function StageCard({
@@ -153,7 +153,7 @@ function StageCard({
           <div className={cardInfoClassName}>
             {type !== TournamentTypes.arena && (
               <h6 className="p-1">
-                {'Stage: '}
+                {i18next.t('Stage: ')}
                 <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
               </h6>
             )}
@@ -217,7 +217,7 @@ function StageCard({
           <div className="d-flex flex-column justify-content-center pl-0 pl-md-3 pl-lg-3 pl-xl-3">
             {type !== TournamentTypes.arena && (
               <h6 className="p-1">
-                {'Stage: '}
+                {i18next.t('Stage: ')}
                 <StageTitle stage={stage} stagesLimit={stagesLimit} hideDescription />
               </h6>
             )}
