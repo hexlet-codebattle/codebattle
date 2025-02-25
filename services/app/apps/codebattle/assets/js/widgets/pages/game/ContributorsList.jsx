@@ -4,6 +4,7 @@ import axios from 'axios';
 import uniqBy from 'lodash/uniqBy';
 import { useDispatch } from 'react-redux';
 
+import i18n from '../../../i18n';
 import { actions } from '../../slices';
 
 const renderContributorsList = contributors => (
@@ -21,7 +22,7 @@ const renderContributorsList = contributors => (
             />
           </a>
         </li>
-        ))
+      ))
       : null}
   </ul>
 );
@@ -53,9 +54,13 @@ function ContributorsList({ name }) {
       });
   }, [url, name, dispatch]);
 
+  if (!contributors || contributors.length === 0) {
+    return <></>;
+  }
+
   return (
     <div className="d-flex flex-column mb-1 align-self-end">
-      <h6 className="card-text">This users have contributed to this task:</h6>
+      <h6 className="card-text">{i18n.t('This users have contributed to this task:')}</h6>
       {renderContributorsList(contributors)}
     </div>
   );

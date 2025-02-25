@@ -1,18 +1,19 @@
 import React, {
- memo, useContext,
+  memo, useContext,
 } from 'react';
 
 import cn from 'classnames';
-import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
+import i18next from '../../../i18n';
+
 import TournamentPlace from './TournamentPlace';
 
 export function ArenaStatisticsCard({
- playerId, taskIds = [], matchList = [], clanId,
+  playerId, taskIds = [], matchList = [], clanId,
 }) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
@@ -91,7 +92,7 @@ export function ArenaStatisticsCard({
 }
 
 function StatisticsCard({
- playerId, taskIds = [], matchList = [], place,
+  playerId, taskIds = [], matchList = [], place,
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
 

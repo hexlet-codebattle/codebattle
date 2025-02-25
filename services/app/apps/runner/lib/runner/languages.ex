@@ -3,6 +3,10 @@ defmodule Runner.Languages do
 
   alias Runner.LanguageMeta
 
+  @black_list [
+    'ruby'
+  ]
+
   @type_templates %{
     boolean_true: "true",
     boolean_false: "false",

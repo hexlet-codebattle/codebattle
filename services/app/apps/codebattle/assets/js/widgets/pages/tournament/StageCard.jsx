@@ -1,15 +1,15 @@
 import React, {
- memo, useContext, useEffect,
+  memo, useContext, useEffect,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import { uploadPlayers } from '@/middlewares/Tournament';
 
+import i18next from '../../../i18n';
 import MatchStateCodes from '../../config/matchStates';
 import TournamentTypes from '../../config/tournamentTypes';
 import { getCustomEventPlayerDefaultImgUrl, tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';

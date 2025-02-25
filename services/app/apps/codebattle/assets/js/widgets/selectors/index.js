@@ -15,6 +15,7 @@ import SubscriptionTypeCodes from '../config/subscriptionTypes';
 import { taskStateCodes } from '../config/task';
 import userTypes from '../config/userTypes';
 import { replayerMachineStates } from '../machines/game';
+import { filterBlackListedLangs } from '../utils/editor';
 import { makeEditorTextKey } from '../utils/gameRoom';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
@@ -286,7 +287,7 @@ export const isTestingReady = state => (
   && state.builder.validationStatuses.argumentsGenerator[0]
 );
 
-export const editorLangsSelector = state => state.editor.langs;
+export const editorLangsSelector = state => state.editor.langs.filter(filterBlackListedLangs);
 
 export const langInputSelector = state => state.editor.langInput;
 

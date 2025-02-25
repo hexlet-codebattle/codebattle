@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import i18next from 'i18next';
 import { Dropdown } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
 
+import i18next from '../../../i18n';
 import RoomContext from '../../components/RoomContext';
 import { inTestingRoomSelector } from '../../machines/selectors';
 import {
@@ -100,7 +100,7 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
     <Dropdown.Item {...commonProps}>
       <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
         <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
-        Give up
+        {i18next.t('Give up')}
       </span>
     </Dropdown.Item>
   );
@@ -119,7 +119,7 @@ function ResetButtonDropDownItem({ onSelect, status }) {
     <Dropdown.Item {...commonProps}>
       <span>
         <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
-        Reset Solution
+        {i18next.t('Reset solution')}
       </span>
     </Dropdown.Item>
   );
@@ -167,14 +167,14 @@ function GameActionButtons({
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide}>
       <Modal.Body className="text-center">
-        Are you sure you want to give up?
+        {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
       <Modal.Footer className="mx-auto">
         <Button onClick={handleGiveUp} className="btn-danger rounded-lg">
-          Give up
+          {i18next.t('Give up')}
         </Button>
         <Button onClick={modalHide} className="btn-secondary rounded-lg">
-          Cancel
+          {i18next.t('Cancel')}
         </Button>
       </Modal.Footer>
     </Modal>
