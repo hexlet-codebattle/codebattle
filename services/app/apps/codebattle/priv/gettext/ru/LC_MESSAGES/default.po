@@ -927,3 +927,18 @@ msgstr "Вперед!"
 
 msgid "You don't have access to this game"
 msgstr "У вас нет доступа к этой игре"
+
+msgid "Total players"
+msgstr "Всего игроков"
+
+msgid "No players yet"
+msgstr "Игроков пока нет"
+
+msgid "Task Description"
+msgstr "Описание задачи"
+
+msgid "Win"
+msgstr "Победа"
+
+msgid "Lost"
+msgstr "Поражение"

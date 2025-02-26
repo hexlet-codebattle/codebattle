@@ -15,15 +15,13 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
     pushCommand({ type: pushCommandTypes.cleanBanned });
   };
 
-  const headerClassName = cn(
-    'd-flex align-items-center', {
-      'border-bottom': (showRooms || (currentUserIsAdmin && !disabled)),
-    },
-  );
+  const headerClassName = cn('d-flex align-items-center', {
+    'border-bottom': showRooms || (currentUserIsAdmin && !disabled),
+  });
 
   return (
     <div className={headerClassName}>
-      {showRooms && <Rooms disabled={disabled} />}
+      {showRooms && !disabled && <Rooms disabled={disabled} />}
       {currentUserIsAdmin && !disabled && (
         <button
           type="button"
