@@ -29,4 +29,10 @@ runners: {
 		lang:     "golang"
 		replicas: 1
 	}
+	"kotlin": {
+		image:    "codebattle/kotlin"
+		version:  "1.9.23"
+		lang:     "kotlin"
+		replicas: 1
+	}
 }
