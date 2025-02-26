@@ -1,9 +1,6 @@
 /* eslint-disable no-bitwise */
 import {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
+ useState, useEffect, useCallback, useMemo,
 } from 'react';
 
 import GameRoomModes from '../config/gameModes';
@@ -32,53 +29,10 @@ let editorClipboard = '';
  *   mute: boolean,
  *   userType: string,
  * }} props
-*/
-const useOption = (editor, {
-  userType,
-  canSendCursor,
-  wordWrap,
-  lineNumbers,
-  syntax,
-  fontSize,
-  editable,
-  loading,
-}) => {
-  const options = useMemo(() => ({
-    placeholder: defaultEditorPlaceholder,
-    wordWrap,
-    lineNumbers,
-    stickyScroll: {
-      enabled: false,
-    },
-    tabSize: getLanguageTabSize(syntax),
-    insertSpaces: shouldReplaceTabsWithSpaces(syntax),
-    lineNumbersMinChars: 3,
-    fontSize,
-    scrollBeyondLastLine: false,
-    selectOnLineNumbers: true,
-    minimap: {
-      enabled: false,
-    },
-    parameterHints: {
-      enabled: false,
-    },
-    readOnly: !editable || loading,
-    contextmenu: editable && !loading,
-    scrollbar: {
-      useShadows: false,
-      verticalHasArrows: true,
-      horizontalHasArrows: true,
-      vertical: 'visible',
-      horizontal: 'visible',
-      verticalScrollbarSize: 17,
-      horizontalScrollbarSize: 17,
-      arrowSize: 30,
-    },
-
-    // Custom options for codebattle editor callbacks
-    userType,
-    canSendCursor,
-  }), [
+ */
+const useOption = (
+  editor,
+  {
     userType,
     canSendCursor,
     wordWrap,
@@ -87,7 +41,56 @@ const useOption = (editor, {
     fontSize,
     editable,
     loading,
-  ]);
+  },
+) => {
+  const options = useMemo(
+    () => ({
+      placeholder: defaultEditorPlaceholder,
+      wordWrap,
+      lineNumbers,
+      stickyScroll: {
+        enabled: false,
+      },
+      tabSize: getLanguageTabSize(syntax),
+      insertSpaces: shouldReplaceTabsWithSpaces(syntax),
+      lineNumbersMinChars: 3,
+      fontSize,
+      scrollBeyondLastLine: false,
+      selectOnLineNumbers: true,
+      minimap: {
+        enabled: false,
+      },
+      parameterHints: {
+        enabled: false,
+      },
+      readOnly: !editable || loading,
+      contextmenu: editable && !loading,
+      scrollbar: {
+        useShadows: false,
+        verticalHasArrows: true,
+        horizontalHasArrows: true,
+        vertical: 'visible',
+        horizontal: 'visible',
+        verticalScrollbarSize: 17,
+        horizontalScrollbarSize: 17,
+        arrowSize: 30,
+      },
+
+      // Custom options for codebattle editor callbacks
+      userType,
+      canSendCursor,
+    }),
+    [
+      userType,
+      canSendCursor,
+      wordWrap,
+      lineNumbers,
+      syntax,
+      fontSize,
+      editable,
+      loading,
+    ],
+  );
 
   useEffect(() => {
     if (editor) {
@@ -113,7 +116,7 @@ const useOption = (editor, {
  *   onChangeCursorSelection: Function,
  *   onChangeCursorPosition: Function,
  * }} props
-*/
+ */
 const useEditor = props => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();
@@ -145,18 +148,15 @@ const useEditor = props => {
   //   model.forceTokenization(model.getLineCount());
   // }
 
-  const handleEditorWillMount = () => { };
+  const handleEditorWillMount = () => {};
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
     const {
-      editable,
-      roomMode,
-      checkResult,
-      toggleMuteSound,
-    } = props;
+ editable, roomMode, checkResult, toggleMuteSound,
+} = props;
 
     // Handle copy event
     // editor.onDidCopyText(event => {
@@ -168,17 +168,25 @@ const useEditor = props => {
 
     currentEditor.onKeyDown(e => {
       // Custom Copy Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === currentMonaco.KeyCode.KEY_C) {
-        const selection = currentEditor.getModel().getValueInRange(currentEditor.getSelection());
-        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
-
+      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyC') {
         e.preventDefault();
+        if (!editable) {
+          return;
+        }
+        const selection = currentEditor
+          .getModel()
+          .getValueInRange(currentEditor.getSelection());
+        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
       }
 
       // Custom Paste Event
-      if ((e.ctrlKey || e.metaKey) && e.keyCode === currentMonaco.KeyCode.KEY_V) {
+      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyV') {
+        console.log(editorClipboard);
         if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
-          const customText = editorClipboard.replace('___CUSTOM_COPIED_TEXT___', '');
+          const customText = editorClipboard.replace(
+            '___CUSTOM_COPIED_TEXT___',
+            '',
+          );
 
           currentEditor.executeEdits('custom-paste', [
             {
@@ -201,7 +209,9 @@ const useEditor = props => {
       currentEditor.addAction({
         id: 'codebattle-check-keys',
         label: 'Codebattle check start',
-        keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter],
+        keybindings: [
+          currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter,
+        ],
         run: () => {
           if (!currentEditor.getOptions().readOnly) {
             checkResult();

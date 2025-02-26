@@ -111,6 +111,7 @@ defmodule CodebattleWeb.GameController do
       level: "elementary",
       task: task,
       mode: "training",
+      use_chat: false,
       visibility_type: "hidden",
       players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
     }
@@ -138,7 +139,7 @@ defmodule CodebattleWeb.GameController do
     )
   end
 
-  defp can_access_game?(%{subscription_type: :admin}, _game), do: true
+  defp can_access_game?(_game, %{subscription_type: :admin}), do: true
 
   # defp can_see_game?(%{subscription_type: :premium} = user, game) do
   defp can_access_game?(game, user) do

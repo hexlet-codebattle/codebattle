@@ -1,14 +1,11 @@
 import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import i18next from 'i18next';
 
 import UserInfo from '../../components/UserInfo';
 
-const Players = ({
-  playersCount,
-  players,
-  showBots,
-}) => (
+const Players = ({ playersCount, players, showBots }) => (
   <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
     <div className="d-flex align-items-center flex-wrap justify-content-start">
       <h5 className="mb-2 mr-5 text-nowrap">
@@ -18,17 +15,21 @@ const Players = ({
             {`: ${playersCount}`}
           </>
         ) : (
-          <>{`Total players: ${playersCount}`}</>
+          <>{`${i18next.t('Total players')}: ${playersCount}`}</>
         )}
       </h5>
     </div>
     <div className="my-2">
       {playersCount === 0 ? (
-        <p className="test-nowrap">NO_PARTICIPANTS_YET</p>
+        <p className="text-nowrap text-muted">
+          {i18next.t('No players yet')}
+          .
+        </p>
       ) : (
         Object.values(players)
           .filter(player => (showBots ? true : !player.isBot))
-          .slice(0, 30).map(player => (
+          .slice(0, 30)
+          .map(player => (
             <div key={player.id} className="my-3 d-flex">
               <div className="ml-1">
                 <UserInfo user={player} hideOnlineIndicator />

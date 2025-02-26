@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     # ~r{^\/e\/\S+\/?$},
     ~r{^\/tournaments\/\d+\/?$},
     ~r{^\/games\/\d+\/?$},
-    ~r{^\/games\/\training\/?$},
+    ~r{^\/games\/training\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     ~r{^\/auth\/token\/?$},
     ~r{^\/maintenance\/?$},

@@ -53,7 +53,10 @@ function CustomTournamentInfoPanel({
   const handleUserSelectClick = useCallback(
     event => {
       const { userId } = event.currentTarget.dataset;
-      setPanelMode({ panel: PanelModeCodes.ratingMode, userId: Number(userId) });
+      setPanelMode({
+        panel: PanelModeCodes.ratingMode,
+        userId: Number(userId),
+      });
       setPanelHistory(items => [...items, panelMode]);
       setSearchedUser(allPlayers[Number(userId)]);
     },
@@ -62,7 +65,10 @@ function CustomTournamentInfoPanel({
   const handleTaskSelectClick = useCallback(
     event => {
       const { taskId } = event.currentTarget.dataset;
-      setPanelMode({ panel: PanelModeCodes.taskRatingAdvanced, taskId: Number(taskId) });
+      setPanelMode({
+        panel: PanelModeCodes.taskRatingAdvanced,
+        taskId: Number(taskId),
+      });
       setPanelHistory(items => [...items, panelMode]);
     },
     [panelMode, setPanelMode, setPanelHistory],
@@ -148,10 +154,7 @@ function CustomTournamentInfoPanel({
           />
         )}
         {panelMode.panel === PanelModeCodes.clansBubbleDistributionMode && (
-          <ClansChartPanel
-            type={panelMode.panel}
-            state={state}
-          />
+          <ClansChartPanel type={panelMode.panel} state={state} />
         )}
         {panelMode.panel === PanelModeCodes.taskRatingAdvanced && (
           <TaskRankingAdvancedPanel

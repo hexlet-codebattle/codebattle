@@ -5,15 +5,15 @@ const blacklistLangs = [
   'ruby',
   'ts',
   'dart',
+  'php',
+  'js',
   'elixir',
   'clojure',
   'haskell',
   'rust',
 ];
 
-export const filterBlackListedLangs = lang => (
-  !blacklistLangs.includes(lang.slug)
-);
+export const filterBlackListedLangs = lang => !blacklistLangs.includes(lang.slug);
 
 const getLanguageTabSize = language => {
   const defaultTabSize = 2;
