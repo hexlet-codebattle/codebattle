@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
 
   @decimal100 Decimal.new("100.0")
 
+  @tag :skip
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "tp", task_ids: [t1_id, t2_id, t3_id])

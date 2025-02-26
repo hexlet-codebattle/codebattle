@@ -18,9 +18,19 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    Context.get_game!(id)
+    game = Context.get_game!(id)
 
-    case Context.get_game!(id) do
+    if can_access_game?(game, user) do
+      show_game(game, user, conn)
+    else
+      conn
+      |> put_flash(:danger, gettext("You don't have access to this game"))
+      |> redirect(to: Routes.root_path(conn, :index))
+    end
+  end
+
+  def show_game(game, user, conn) do
+    case game do
       %Game{is_live: true} = game ->
         score = Context.fetch_score_by_game_id(game.id)
         game_params = GameView.render_game(game, score)
@@ -30,7 +40,7 @@ defmodule CodebattleWeb.GameController do
             jitsi_api_key: jitsi_api_key(),
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
             game: game_params,
-            game_id: id,
+            game_id: game.id,
             tournament_id: Helpers.get_tournament_id(game),
             players: present_users_for_gon(Helpers.get_players(game))
           )
@@ -50,7 +60,7 @@ defmodule CodebattleWeb.GameController do
         end
 
       game ->
-        if Playbook.Context.exists?(game.id) && can_see_history_game?(user, game) do
+        if Playbook.Context.exists?(game.id) && can_access_game?(user, game) do
           score = Context.fetch_score_by_game_id(game.id)
 
           game_params =
@@ -62,7 +72,7 @@ defmodule CodebattleWeb.GameController do
           |> put_gon(
             jitsi_api_key: jitsi_api_key(),
             is_record: true,
-            game_id: id,
+            game_id: game.id,
             game: game_params,
             tournament_id: game.tournament_id,
             langs: Languages.get_langs(),
@@ -95,9 +105,13 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create_training(conn, _params) do
+    task = Codebattle.Task.get_random_training_task()
+
     game_params = %{
       level: "elementary",
+      task: task,
       mode: "training",
+      use_chat: false,
       visibility_type: "hidden",
       players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
     }
@@ -125,11 +139,15 @@ defmodule CodebattleWeb.GameController do
     )
   end
 
-  defp can_see_history_game?(%{subscription_type: :admin}, _game), do: true
+  defp can_access_game?(_game, %{subscription_type: :admin}), do: true
 
   # defp can_see_game?(%{subscription_type: :premium} = user, game) do
-  defp can_see_history_game?(user, game) do
-    Enum.any?(game.players, &(&1.id == user.id))
+  defp can_access_game?(game, user) do
+    if FunWithFlags.enabled?(:user_only_see_own_games) do
+      Enum.any?(game.players, &(&1.id == user.id))
+    else
+      true
+    end
   end
 
   # defp can_see_history_game?(_user, _game), do: false

@@ -17,7 +17,7 @@ function TournamentInfoPanel() {
 
   switch (waitType) {
     case 'tournament': return i18n.t('Tournament is over');
-    case 'round': return 'Round is over, wait for the next round';
+    case 'round': return i18n.t('Round is over, wait for the next round');
     case 'rematch': return (
       <div className="d-flex flex-row">
         <Loading adaptive />

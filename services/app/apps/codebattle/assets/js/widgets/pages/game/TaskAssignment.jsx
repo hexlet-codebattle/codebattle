@@ -16,7 +16,7 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 
 import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
-import TaskLanguagesSelection from './TaskLanguageSelection';
+// import TaskLanguagesSelection from './TaskLanguageSelection';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -62,7 +62,9 @@ function TaskAssignment({
   fullSize = false,
 }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
-
+  console.log(handleSetLanguage);
+  console.log(avaibleLanguages);
+  console.log(displayLanguage);
   const handleTaskSizeIncrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize + 1);
   }, [taskSize, changeTaskDescriptionSizes]);
@@ -71,7 +73,9 @@ function TaskAssignment({
     changeTaskDescriptionSizes(taskSize - 1);
   }, [taskSize, changeTaskDescriptionSizes]);
   const handleOpenFullSizeTaskDescription = useCallback(() => {
-    NiceModal.show(ModalCodes.taskDescriptionModal, { pageName: PageNames.game });
+    NiceModal.show(ModalCodes.taskDescriptionModal, {
+      pageName: PageNames.game,
+    });
   }, []);
 
   if (isEmpty(task)) {
@@ -107,11 +111,11 @@ function TaskAssignment({
             <span className="ml-2 text-muted">{task.name}</span>
           </h6>
           <div className="d-flex align-items-center">
-            <TaskLanguagesSelection
+            {/* <TaskLanguagesSelection
               handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}
               displayLanguage={displayLanguage}
-            />
+            /> */}
 
             {!fullSize && (
               <button
@@ -130,10 +134,18 @@ function TaskAssignment({
                 role="group"
                 aria-label="Editor size controls"
               >
-                <button type="button" className="btn btn-sm btn-light rounded-left" onClick={handleTaskSizeDecrease}>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-light rounded-left"
+                  onClick={handleTaskSizeDecrease}
+                >
                   -
                 </button>
-                <button type="button" className="btn btn-sm mr-2 btn-light border-left rounded-right" onClick={handleTaskSizeIncrease}>
+                <button
+                  type="button"
+                  className="btn btn-sm mr-2 btn-light border-left rounded-right"
+                  onClick={handleTaskSizeIncrease}
+                >
                   +
                 </button>
               </div>

@@ -28,8 +28,8 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_session)
     plug(:fetch_flash)
     plug(:fetch_live_flash)
-    plug(MaintenanceMode)
     plug(AssignCurrentUser)
+    plug(MaintenanceMode)
     plug(ForceRedirect)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
@@ -154,6 +154,7 @@ defmodule CodebattleWeb.Router do
 
     get("/", RootController, :index)
     get("/maintenance", RootController, :maintenance)
+    get("/waiting", RootController, :waiting)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/remind_password", SessionController, :remind_password)

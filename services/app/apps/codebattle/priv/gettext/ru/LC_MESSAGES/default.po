@@ -373,6 +373,9 @@ msgstr "Поздравляю! Вы победили!"
 msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
+msgid "Time is up. There are no winners in the game"
+msgstr "Время вышло. Никто не выйграл эту битву"
+
 msgid "Lose Game Message"
 msgstr "К сожалению, Ваш оппонент выиграл эту битву"
 
@@ -540,6 +543,18 @@ msgstr "Как устроен турнир"
 
 msgid "Stage %{name}"
 msgstr "Тур %{name}"
+
+msgid "Stage: "
+msgstr "Тур: "
+
+msgid "Games: "
+msgstr "Игры: "
+
+msgid "Stats: "
+msgstr "Статистика: "
+
+msgid "Games"
+msgstr "Игры"
 
 msgid "closed"
 msgstr "закрыт"
@@ -748,6 +763,9 @@ msgstr "Ожидайте следующую игру"
 msgid "Tournament is over"
 msgstr "Турнир завершен"
 
+msgid "Round is over, wait for the next round"
+msgstr "Раунд завершен, дождитесь следующего"
+
 msgid "If you read this you've lost the game"
 msgstr "Ты заслуживаешь победы, продолжай!"
 
@@ -903,3 +921,24 @@ msgstr "Уровень сложности"
 
 msgid "Play with"
 msgstr "Играть с"
+
+msgid "Go!"
+msgstr "Вперед!"
+
+msgid "You don't have access to this game"
+msgstr "У вас нет доступа к этой игре"
+
+msgid "Total players"
+msgstr "Всего игроков"
+
+msgid "No players yet"
+msgstr "Игроков пока нет"
+
+msgid "Task Description"
+msgstr "Описание задачи"
+
+msgid "Win"
+msgstr "Победа"
+
+msgid "Lost"
+msgstr "Поражение"

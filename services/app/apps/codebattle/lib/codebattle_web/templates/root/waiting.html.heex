@@ -1,0 +1,27 @@
+<div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+  <div class="p-4">
+    <% header =
+      Codebattle.Customization.get("waiting_header") ||
+        "<center><h1>Waiting</h1></center>" %>
+    <div class="mb-3">
+      <%= raw(header) %>
+    </div>
+
+    <% body =
+      Codebattle.Customization.get("waiting_body") ||
+        "Please wait for the next tournament to start." %>
+    <div class="mb-3">
+      <%= raw(body) %>
+    </div>
+    <div>
+      <button
+        class="btn btn-outline-red text-uppercase mt-3 p-3 rounded-lg"
+        data-csrf={csrf_token()}
+        data-method="post"
+        data-to="/games/training"
+      >
+        <%= gettext("Go!") %>
+      </button>
+    </div>
+  </div>
+</div>
