@@ -128,7 +128,7 @@ jobs:
           - runtime-image
         include:
           - target: runtime-image
-            tag: codebattle
+            tag: latest
 
     steps:
       - uses: actions/checkout@v4
@@ -149,7 +149,7 @@ jobs:
           file: services/app/Dockerfile.codebattle
           build-args: |
             GIT_HASH=${{ github.sha }}
-          push: false
+          push: ${{ github.ref_name == 'master' }}
           target: ${{ matrix.target }}
           tags: codebattle/codebattle:${{ matrix.tag != '' && matrix.tag|| matrix.target }}
           cache-to: type=registry,ref=codebattle/codebattle:${{ matrix.target }}-buildcache
@@ -187,7 +187,7 @@ jobs:
         with:
           context: services/app
           file: services/app/Dockerfile.runner
-          push: false
+          push: ${{ github.ref_name == 'master' }}
           target: ${{ matrix.target }}
           tags: codebattle/runner:${{ matrix.tag != '' && matrix.tag|| matrix.target }}
           cache-to: type=registry,ref=codebattle/runner:${{ matrix.target }}-buildcache
