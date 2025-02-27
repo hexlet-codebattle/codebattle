@@ -27,7 +27,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
   @allowed_banned_paths [
     # ~r{^\/$},
     # ~r{^\/e\/\S+\/?$},
-    ~r{^\/maintenance\/?$},
+    ~r{^\/maintenance\/?$}
     # ~r{^\/api\/v1\/events\/.+$},
     # ~r{^\/auth\/token\/?$}
   ]
@@ -43,7 +43,8 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
       User.admin?(conn.assigns.current_user) ->
         conn
 
-      conn.assigns.current_user.subscription_type == :banned && !Enum.any?(@allowed_banned_paths, &Regex.match?(&1, conn.request_path)) ->
+      conn.assigns.current_user.subscription_type == :banned &&
+          !Enum.any?(@allowed_banned_paths, &Regex.match?(&1, conn.request_path)) ->
         conn
         |> redirect(to: "/maintenance")
         |> halt()
