@@ -141,8 +141,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: assets-image
           tags: codebattle/codebattle:assets-image
-          cache-to: type=registry,ref=codebattle/codebattle:assets-image-buildcache
-          cache-from: type=registry,ref=codebattle/codebattle:assets-image-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/codebattle:assets-image-buildcache
+          # cache-from: type=registry,ref=codebattle/codebattle:assets-image-buildcache,image-manifest=true
 
       - name: Build codebattle compile-image
         uses: docker/build-push-action@v6
@@ -154,8 +154,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: compile-image
           tags: codebattle/codebattle:compile-image
-          cache-to: type=registry,ref=codebattle/codebattle:compile-image-buildcache
-          cache-from: type=registry,ref=codebattle/codebattle:compile-image-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/codebattle:compile-image-buildcache
+          # cache-from: type=registry,ref=codebattle/codebattle:compile-image-buildcache,image-manifest=true
 
       - name: Build codebattle nginx-assets
         uses: docker/build-push-action@v6
@@ -167,8 +167,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: nginx-assets
           tags: codebattle/codebattle:nginx-assets
-          cache-to: type=registry,ref=codebattle/codebattle:nginx-assets-buildcache
-          cache-from: type=registry,ref=codebattle/codebattle:nginx-assets-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/codebattle:nginx-assets-buildcache
+          # cache-from: type=registry,ref=codebattle/codebattle:nginx-assets-buildcache,image-manifest=true
 
       - name: Build codebattle runtime-image
         uses: docker/build-push-action@v6
@@ -180,8 +180,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: runtime-image
           tags: codebattle/codebattle:latest
-          cache-to: type=registry,ref=codebattle/codebattle:runtime-image-buildcache
-          cache-from: type=registry,ref=codebattle/codebattle:runtime-image-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/codebattle:runtime-image-buildcache
+          # cache-from: type=registry,ref=codebattle/codebattle:runtime-image-buildcache,image-manifest=true
 
   runner-docker:
     if: github.repository == 'hexlet-codebattle/codebattle'
@@ -209,8 +209,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: compile-image
           tags: codebattle/runner:compile-image
-          cache-to: type=registry,ref=codebattle/runner:compile-image-buildcache
-          cache-from: type=registry,ref=codebattle/runner:compile-image-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/runner:compile-image-buildcache
+          # cache-from: type=registry,ref=codebattle/runner:compile-image-buildcache,image-manifest=true
 
       - name: Build runner runtime-image
         uses: docker/build-push-action@v6
@@ -220,8 +220,8 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           target: runtime-image
           tags: codebattle/runner:latest
-          cache-to: type=registry,ref=codebattle/runner:runtime-image-buildcache
-          cache-from: type=registry,ref=codebattle/runner:runtime-image-buildcache,image-manifest=true
+          # cache-to: type=registry,ref=codebattle/runner:runtime-image-buildcache
+          # cache-from: type=registry,ref=codebattle/runner:runtime-image-buildcache,image-manifest=true
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers
