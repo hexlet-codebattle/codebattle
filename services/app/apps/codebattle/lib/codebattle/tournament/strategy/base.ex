@@ -980,13 +980,12 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.each(fn player_id ->
               player = Tournament.Players.get_player(tournament, player_id)
 
-              if player do
+              player ||
                 Tournament.Players.put_player(tournament, %{
                   player
                   | score: player.score + player_results[player_id].score,
                     lang: player_results[player_id].lang
                 })
-              end
             end)
           end
         )
