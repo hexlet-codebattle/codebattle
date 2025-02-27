@@ -24,13 +24,13 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
     ~r{^\/api\/v1\/playbook\/\d+\/?$}
   ]
 
-  # @allowed_banned_paths [
-  #   ~r{^\/$},
-  #   ~r{^\/e\/\S+\/?$},
-  #   ~r{^\/maintenance\/?$},
-  #   ~r{^\/api\/v1\/events\/.+$},
-  #   ~r{^\/auth\/token\/?$}
-  # ]
+  @allowed_banned_paths [
+    # ~r{^\/$},
+    # ~r{^\/e\/\S+\/?$},
+    ~r{^\/maintenance\/?$},
+    # ~r{^\/api\/v1\/events\/.+$},
+    # ~r{^\/auth\/token\/?$}
+  ]
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -43,7 +43,7 @@ defmodule CodebattleWeb.Plugs.ForceRedirect do
       User.admin?(conn.assigns.current_user) ->
         conn
 
-      conn.assigns.current_user.subscription_type == :banned ->
+      conn.assigns.current_user.subscription_type == :banned && !Enum.any?(@allowed_banned_paths, &Regex.match?(&1, conn.request_path)) ->
         conn
         |> redirect(to: "/maintenance")
         |> halt()
