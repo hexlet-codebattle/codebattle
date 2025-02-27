@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import {
- useState, useEffect, useCallback, useMemo,
+  useState, useEffect, useCallback, useMemo,
 } from 'react';
 
 import GameRoomModes from '../config/gameModes';
@@ -64,7 +64,8 @@ const useOption = (
         enabled: false,
       },
       readOnly: !editable || loading,
-      contextmenu: editable && !loading,
+      // contextmenu: editable && !loading,
+      contextmenu: false,
       scrollbar: {
         useShadows: false,
         verticalHasArrows: true,
@@ -148,15 +149,15 @@ const useEditor = props => {
   //   model.forceTokenization(model.getLineCount());
   // }
 
-  const handleEditorWillMount = () => {};
+  const handleEditorWillMount = () => { };
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
     const {
- editable, roomMode, checkResult, toggleMuteSound,
-} = props;
+      editable, roomMode, checkResult, toggleMuteSound,
+    } = props;
 
     // Handle copy event
     // editor.onDidCopyText(event => {
