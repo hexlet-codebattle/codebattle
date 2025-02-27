@@ -60,7 +60,7 @@ defmodule CodebattleWeb.GameController do
         end
 
       game ->
-        if Playbook.Context.exists?(game.id) && can_access_game?(user, game) do
+        if Playbook.Context.exists?(game.id) && can_access_game?(game, user) do
           score = Context.fetch_score_by_game_id(game.id)
 
           game_params =
