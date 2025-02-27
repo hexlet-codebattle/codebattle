@@ -44,6 +44,7 @@ defmodule Codebattle.UsersRankUpdateServer do
   def handle_info(:work, state) do
     if FunWithFlags.enabled?(:skip_user_rank_server) do
       :noop
+      {:noreply, state}
     else
       do_work()
       Process.send_after(self(), :work, @timeout)

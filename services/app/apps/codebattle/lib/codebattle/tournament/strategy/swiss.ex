@@ -11,7 +11,7 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    # bots = Bot.Context.build_list(11)
+    # bots = Bot.Context.build_list(30)
     # add_players(tournament, %{users: bots})
     tournament
   end

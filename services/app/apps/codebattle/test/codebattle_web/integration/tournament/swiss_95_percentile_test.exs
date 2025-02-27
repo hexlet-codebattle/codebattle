@@ -183,6 +183,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
         event: "tournament:round_created",
         payload: %{
           tournament: %{
+            round_timeout_seconds: 180,
             break_state: "off",
             current_round_position: 0,
             last_round_ended_at: nil,
@@ -310,6 +311,27 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     # ----------------
+    # somebody leave
+    # ----------------
+    #
+    Phoenix.ChannelTest.push(socket6, "tournament:leave", %{})
+
+    :timer.sleep(100)
+    left_id = user6.id
+
+    Enum.each(1..10, fn _i ->
+      assert_receive %Message{
+        event: "tournament:player:left",
+        payload: %{
+          player_id: ^left_id,
+          tournament: %{players_count: 8}
+        }
+      }
+    end)
+
+    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+
+    # ----------------
     # finish 1 round
     # start 2 round
     # ----------------
@@ -318,8 +340,8 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
 
     :timer.sleep(100)
 
-    # 5 players got match timeout notification
-    Enum.each(1..5, fn _i ->
+    # 4 players got match timeout notification
+    Enum.each(1..3, fn _i ->
       assert_receive %Message{
         event: "tournament:match:upserted",
         payload: %{
@@ -328,6 +350,15 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
         }
       }
     end)
+
+    # event without left_player
+    assert_receive %Message{
+      event: "tournament:match:upserted",
+      payload: %{
+        players: [%{state: "active"}],
+        match: %{state: "timeout", task_id: ^t1_id}
+      }
+    }
 
     # 8 users got notification about round finished
     Enum.each(1..8, fn _i ->
@@ -409,7 +440,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       }
     }
 
-    Enum.each(1..7, fn _i ->
+    Enum.each(1..6, fn _i ->
       assert_receive %Message{
         event: "tournament:match:upserted",
         payload: %{
@@ -529,7 +560,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
     :timer.sleep(100)
 
     # 5 players got match timeout notification
-    Enum.each(1..6, fn _i ->
+    Enum.each(1..5, fn _i ->
       assert_receive %Message{
         event: "tournament:match:upserted",
         payload: %{
@@ -618,7 +649,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       }
     }
 
-    Enum.each(1..7, fn _i ->
+    Enum.each(1..6, fn _i ->
       assert_receive %Message{
         event: "tournament:match:upserted",
         payload: %{
@@ -655,11 +686,12 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
             _player6,
             _player7,
             _player8,
-            _player_bot
+            _player_bot1,
+            _player_bot2
           ],
           page_number: 1,
           page_size: 10,
-          total_entries: 9
+          total_entries: 10
         }
       }
     }
@@ -739,7 +771,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
     :timer.sleep(100)
 
     # 5 players got match timeout notification
-    Enum.each(1..6, fn _i ->
+    Enum.each(1..5, fn _i ->
       assert_receive %Message{
         event: "tournament:match:upserted",
         payload: %{
@@ -836,14 +868,15 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
             _player3,
             _player4,
             _player5,
-            _player6,
             _player7,
             _player8,
-            _player_bot
+            _player_bot1,
+            _player_bot2,
+            _player_bot3
           ],
           page_number: 1,
           page_size: 10,
-          total_entries: 9
+          total_entries: 11
         }
       }
     }

@@ -34,6 +34,7 @@ defmodule Codebattle.PubSub.Events do
         payload: %{
           tournament: %{
             last_round_ended_at: params.tournament.last_round_ended_at,
+            round_timeout_seconds: params.tournament.round_timeout_seconds,
             last_round_started_at: params.tournament.last_round_started_at,
             state: params.tournament.state,
             break_state: "off",
@@ -273,7 +274,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:match:created", params) do
-    players = Tournament.Helpers.get_players(params.tournament, params.match.player_ids)
+    players = params.tournament |> Tournament.Helpers.get_players(params.match.player_ids) |> Enum.reject(&is_nil/1)
 
     Enum.map(players, fn player ->
       if params.tournament.waiting_room_name do
@@ -300,6 +301,7 @@ defmodule Codebattle.PubSub.Events do
     players =
       params.tournament
       |> Tournament.Helpers.get_players(params.match.player_ids)
+      |> Enum.reject(&is_nil/1)
       |> Enum.map(&get_player_changed_fields/1)
 
     Enum.map(players, fn player ->
@@ -345,6 +347,7 @@ defmodule Codebattle.PubSub.Events do
     user_messages =
       game
       |> Game.Helpers.get_players()
+      |> Enum.reject(&is_nil/1)
       |> Enum.map(fn player ->
         %Message{
           topic: "user:#{player.id}",
