@@ -7,13 +7,17 @@ defmodule Codebattle.Utils.PopulateUsers do
     file
     |> File.stream!()
     |> NimbleCSV.RFC4180.parse_stream()
-    |> Stream.chunk_every(500)
+    |> Stream.chunk_every(100)
     |> Enum.each(&process_batch(&1, utc_now))
   end
 
   defp process_batch(users, now) do
     users = Enum.map(users, &row_to_user(&1, now))
-    Codebattle.Repo.insert_all(Codebattle.User, users)
+
+    Codebattle.Repo.insert_all(Codebattle.User, users,
+      on_conflict: {:replace, [:password_hash]},
+      conflict_target: [:name]
+    )
   end
 
   defp row_to_user([name, password], now) do
