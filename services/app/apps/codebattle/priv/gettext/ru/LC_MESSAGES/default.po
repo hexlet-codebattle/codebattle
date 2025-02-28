@@ -922,8 +922,8 @@ msgstr "Уровень сложности"
 msgid "Play with"
 msgstr "Играть с"
 
-msgid "Go!"
-msgstr "Вперед!"
+msgid "Try simple battle"
+msgstr "Попробовать простую игру"
 
 msgid "You don't have access to this game"
 msgstr "У вас нет доступа к этой игре"

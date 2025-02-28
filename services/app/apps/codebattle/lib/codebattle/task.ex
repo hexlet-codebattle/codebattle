@@ -199,11 +199,21 @@ defmodule Codebattle.Task do
     !result
   end
 
-  @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t() | nil
-  def get_task_by_tags_for_user(user, tags) do
-    __MODULE__
-    |> filter_visibility(user)
-    |> where([t], fragment("? @> ?", t.tags, ^tags))
+  @spec get_task_by_tags_for_user(User.t(), list(String.t()), String.t() | nil) :: t() | nil
+  def get_task_by_tags_for_user(user, tags, level \\ nil) do
+    query =
+      __MODULE__
+      |> filter_visibility(user)
+      |> where([t], fragment("? @> ?", t.tags, ^tags))
+
+    query =
+      if level do
+        where(query, [t], t.level == ^level)
+      else
+        query
+      end
+
+    query
     |> order_by(fragment("RANDOM()"))
     |> limit(1)
     |> Repo.one()

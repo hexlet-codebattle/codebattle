@@ -262,7 +262,7 @@ function TournamentHeader({
                         || type === 'swiss'
                       }
                       isShowLeave={
-                        type !== 'arena' || state !== TournamentStates.active
+                        type === 'arena' || state !== TournamentStates.active
                       }
                       isParticipant={!!players[currentUserId]}
                       disabled={!isOnline || !isLive}

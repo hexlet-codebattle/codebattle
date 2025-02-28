@@ -590,19 +590,19 @@ defmodule Codebattle.Tournament.Base do
 
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         task_id = get_task_id_by_params(round_params)
+        task = get_task(tournament, task_id)
+        timeout_seconds = get_game_timeout(tournament, task)
 
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(50)
-        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task_id))
+        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task, timeout_seconds))
 
-        tournament
+        update_struct(tournament, %{round_timeout_seconds: timeout_seconds})
       end
 
-      defp bulk_create_round_games_and_matches(batch, tournament, task_id) do
+      defp bulk_create_round_games_and_matches(batch, tournament, task, timeout_seconds) do
         reset_task_ids = tournament.task_provider == "task_pack_per_round"
-        task = get_task(tournament, task_id)
-        timeout_seconds = get_game_timeout(tournament, task)
 
         batch
         |> Enum.map(fn
@@ -980,11 +980,12 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.each(fn player_id ->
               player = Tournament.Players.get_player(tournament, player_id)
 
-              Tournament.Players.put_player(tournament, %{
-                player
-                | score: player.score + player_results[player_id].score,
-                  lang: player_results[player_id].lang
-              })
+              player &&
+                Tournament.Players.put_player(tournament, %{
+                  player
+                  | score: player.score + player_results[player_id].score,
+                    lang: player_results[player_id].lang
+                })
             end)
           end
         )

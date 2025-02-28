@@ -11,7 +11,7 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    # bots = Bot.Context.build_list(11)
+    # bots = Bot.Context.build_list(30)
     # add_players(tournament, %{users: bots})
     tournament
   end
@@ -144,7 +144,7 @@ defmodule Codebattle.Tournament.Swiss do
         {player, [candidate | rest_players], _played_pair_ids} ->
           {
             [player, candidate],
-            [player.id, candidate.id] |> Enum.map(& &1.id) |> Enum.sort(),
+            Enum.sort([player.id, candidate.id]),
             rest_players
           }
       end

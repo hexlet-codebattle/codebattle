@@ -62,7 +62,7 @@ defmodule Codebattle.User do
     field(:github_id, :integer)
     field(:github_name, :string)
     field(:is_bot, :boolean, default: false)
-    field(:lang, :string, default: "js")
+    field(:lang, :string, default: "python")
     field(:name, :string)
     field(:password_hash, :string)
     field(:public_id, :binary_id)
@@ -134,6 +134,7 @@ defmodule Codebattle.User do
       id: @guest_id,
       name: "John Doe",
       subscription_type: :free,
+      lang: "python",
       rating: 0,
       rank: 0,
       sound_settings: %SoundSettings{}
