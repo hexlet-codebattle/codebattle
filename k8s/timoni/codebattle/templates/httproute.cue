@@ -32,6 +32,7 @@ import (
 					value: "/assets"
 				}
 			}]
+			timeouts: request: "60s"
 			backendRefs: [{
 				name: metadata.name
 				port: 80
