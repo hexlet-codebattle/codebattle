@@ -212,9 +212,16 @@ defmodule CodebattleWeb.TournamentChannel do
   defp get_tournament_join_payload(tournament, nil) do
     ranking = Tournament.Ranking.get_page(tournament, 1)
 
+    players =
+      if tournament.players_count > 256 do
+        []
+      else
+        Helpers.get_players(tournament)
+      end
+
     %{
       matches: [],
-      players: [],
+      players: players,
       ranking: ranking,
       clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: nil,
@@ -224,7 +231,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp get_tournament_join_payload(tournament, current_player) do
     player_data =
-      if tournament.players_count > 128 do
+      if tournament.players_count > 256 do
         player_matches = Helpers.get_matches_by_players(tournament, [current_player.id])
 
         opponents =

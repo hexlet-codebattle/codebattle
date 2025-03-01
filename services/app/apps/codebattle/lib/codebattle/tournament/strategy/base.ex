@@ -788,7 +788,7 @@ defmodule Codebattle.Tournament.Base do
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
           |> then(fn tournament ->
-            Process.send_after(self(), :terminate, to_timeout(minute: 15))
+            Process.send_after(self(), :terminate, to_timeout(minute: 30))
 
             tournament
           end)
@@ -846,6 +846,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
+      # We don't want to run a timer for the swiss type, because all games already have a timeout
+      defp maybe_start_round_timer(%{staus: "active", type: "swiss"} = tournament), do: tournament
 
       defp maybe_start_round_timer(tournament) do
         Process.send_after(
