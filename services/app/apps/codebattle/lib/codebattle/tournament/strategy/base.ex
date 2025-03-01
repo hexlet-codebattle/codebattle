@@ -843,7 +843,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
       # We don't want to run a timer for the swiss type, because all games already have a timeout
-      defp maybe_start_round_timer(%{staus: "active", type: "swiss"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
 
       defp maybe_start_round_timer(tournament) do
         Process.send_after(
@@ -879,7 +879,7 @@ defmodule Codebattle.Tournament.Base do
       defp get_game_timeout(tournament, task) do
         cond do
           FunWithFlags.enabled?(:tournament_custom_timeout) ->
-            get_customer_round_timeout_seconds(tournament, task)
+            get_custom_round_timeout_seconds(tournament, task)
 
           use_waiting_room?(tournament) or tournament.type in ["squad"] ->
             min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
@@ -889,9 +889,9 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp get_customer_round_timeout_seconds(tournament, nil), do: get_round_timeout_seconds(tournament)
+      defp get_custom_round_timeout_seconds(tournament, nil), do: get_round_timeout_seconds(tournament)
 
-      defp get_customer_round_timeout_seconds(tournament, task) do
+      defp get_custom_round_timeout_seconds(tournament, task) do
         Map.get(@custom_round_tiemouts_in_sec, task.level) ||
           get_round_timeout_seconds(tournament)
       end
