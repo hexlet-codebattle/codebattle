@@ -47,16 +47,6 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
               {i18next.t('Continue')}
             </a>
-            {canModerate && !streamMode && (
-              <button
-                type="button"
-                className={gameOverBtnClassName}
-                onClick={() => sendMatchGameOver(match.id)}
-              >
-                <FontAwesomeIcon className="mr-2" icon="window-close" />
-                {i18next.t('Game Over')}
-              </button>
-            )}
           </>
         );
       }
@@ -71,16 +61,6 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
           </a>
-          {canModerate && !streamMode && (
-            <button
-              type="button"
-              className={gameOverBtnClassName}
-              onClick={() => sendMatchGameOver(match.id)}
-            >
-              <FontAwesomeIcon className="mr-2" icon="window-close" />
-              {i18next.t('Game Over')}
-            </button>
-          )}
         </>
       );
     }
