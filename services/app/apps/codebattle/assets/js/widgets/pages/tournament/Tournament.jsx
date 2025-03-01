@@ -41,11 +41,7 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId,
-  tournament,
-  playersCount,
-  hideResults,
-  canModerate,
+ currentUserId, tournament, hideResults, canModerate,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -64,7 +60,7 @@ function InfoPanel({
         <IndividualMatches
           matches={tournament.matches}
           players={tournament.players}
-          playersCount={playersCount}
+          playersCount={tournament.playersCount}
           currentUserId={currentUserId}
         />
       );
@@ -142,10 +138,6 @@ function Tournament({ waitingRoomMachine }) {
   ] = useState(false);
   const [matchConfirmationModalShowing, setMatchConfirmationModalShowing] = useState(false);
 
-  const playersCount = useMemo(
-    () => Object.values(tournament.players).filter(player => (tournament.showBots ? true : !player.isBot)).length,
-    [tournament.players, tournament.showBots],
-  );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
         tournament.state,
@@ -153,7 +145,9 @@ function Tournament({ waitingRoomMachine }) {
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
-  const hiddenSidePanel = (tournament.type === 'arena' && tournament.state !== 'waiting_participants') || streamMode;
+  const hiddenSidePanel = (tournament.type === 'arena'
+      && tournament.state !== 'waiting_participants')
+    || streamMode;
 
   const panelClassName = cn('mb-2', {
     'container-fluid': !streamMode,
@@ -180,10 +174,16 @@ function Tournament({ waitingRoomMachine }) {
   ]);
 
   useEffect(() => {
-    const tournamentChannel = connectToTournament(waitingRoomService, tournament?.id)(dispatch);
+    const tournamentChannel = connectToTournament(
+      waitingRoomService,
+      tournament?.id,
+    )(dispatch);
 
     if (canModerate) {
-      const tournamentAdminChannel = connectToTournamentAdmin(waitingRoomService, tournament?.id)(dispatch);
+      const tournamentAdminChannel = connectToTournamentAdmin(
+        waitingRoomService,
+        tournament?.id,
+      )(dispatch);
 
       return () => {
         tournamentChannel.leave();
@@ -336,7 +336,7 @@ function Tournament({ waitingRoomMachine }) {
             roundTimeoutSeconds={tournament.roundTimeoutSeconds}
             name={tournament.name}
             players={tournament.players}
-            playersCount={playersCount}
+            playersCount={tournament.playersCount}
             playersLimit={tournament.playersLimit}
             showBots={tournament.showBots}
             hideResults={hideResults}
@@ -359,7 +359,7 @@ function Tournament({ waitingRoomMachine }) {
               <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
                 <InfoPanel
                   tournament={tournament}
-                  playersCount={playersCount}
+                  playersCount={tournament.playersCount}
                   currentUserId={currentUserId}
                   hideResults={hideResults}
                   canModerate={canModerate}
@@ -369,13 +369,15 @@ function Tournament({ waitingRoomMachine }) {
             <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
               {!tournament.useClan && !hiddenSidePanel && (
                 <Players
-                  playersCount={playersCount}
+                  playersCount={tournament.playersCount}
                   players={tournament.players}
                   showBots={tournament.showBots}
                 />
               )}
               {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
-              {tournament.useClan && !hiddenSidePanel && <TournamentClanTable />}
+              {tournament.useClan && !hiddenSidePanel && (
+                <TournamentClanTable />
+              )}
             </div>
           </div>
         </div>

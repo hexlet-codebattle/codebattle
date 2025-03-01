@@ -2,17 +2,18 @@ import React, { memo, useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 
 import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import MatchStatesCodes from '../../config/matchStates';
-import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
+// import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
 
 function MatchAction({ match, canModerate, currentUserIsPlayer }) {
+  console.log(canModerate);
   const href = `/games/${match.gameId}`;
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
-  const streamMode = useSelector(state => state.gameUI.streamMode);
+  // const streamMode = useSelector(state => state.gameUI.streamMode);
 
   const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
     'btn-primary': !hasCustomEventStyles,
@@ -22,10 +23,10 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
     'btn-success text-white': !hasCustomEventStyles,
     'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
-  const gameOverBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
-    'btn-outline-danger': !hasCustomEventStyles,
-    'cb-custom-event-btn-outline-danger': hasCustomEventStyles,
-  });
+  // const gameOverBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+  //   'btn-outline-danger': !hasCustomEventStyles,
+  //   'cb-custom-event-btn-outline-danger': hasCustomEventStyles,
+  // });
 
   switch (match.state) {
     case MatchStatesCodes.pending:
@@ -47,16 +48,6 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
               {i18next.t('Continue')}
             </a>
-            {canModerate && !streamMode && (
-              <button
-                type="button"
-                className={gameOverBtnClassName}
-                onClick={() => sendMatchGameOver(match.id)}
-              >
-                <FontAwesomeIcon className="mr-2" icon="window-close" />
-                {i18next.t('Game Over')}
-              </button>
-            )}
           </>
         );
       }
@@ -71,16 +62,6 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
             <FontAwesomeIcon className="mr-2" icon="eye" />
             {i18next.t('Show')}
           </a>
-          {canModerate && !streamMode && (
-            <button
-              type="button"
-              className={gameOverBtnClassName}
-              onClick={() => sendMatchGameOver(match.id)}
-            >
-              <FontAwesomeIcon className="mr-2" icon="window-close" />
-              {i18next.t('Game Over')}
-            </button>
-          )}
         </>
       );
     }

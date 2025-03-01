@@ -92,7 +92,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
 
     assert %{
              matches: [],
-             players: [],
+             players: [_p1, _p2, _p3, _p4, _p5, _p6],
              ranking: %{
                page_size: 10,
                entries: [
@@ -110,6 +110,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
                access_type: "public",
                type: "swiss",
                state: "waiting_participants",
+               players_count: 6,
                break_state: "off",
                current_round_position: 0
              }
