@@ -483,12 +483,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def start_round_games(tournament, match_ref) do
-        finished_match = get_match(tournament, match_ref)
-        matches = get_round_matches(tournament, tournament.current_round_position)
-
-        task_index = round(2 * Enum.count(matches) / players_count(tournament))
-
-        task_id = Enum.at(tournament.round_task_ids, task_index)
+        # TODO: FIXME
+        task_id = Enum.at(tournament.round_task_ids, tournament.current_round_position)
 
         if task_id do
           build_round_matches(tournament, %{task_id: task_id})
