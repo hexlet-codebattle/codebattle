@@ -95,7 +95,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
 
     assert %{
              matches: [],
-             players: [],
+             players: [_p1, _p2, _p3, _p4, _p5, _p6],
              ranking: %{
                page_size: 10,
                entries: [
@@ -112,6 +112,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
              tournament: %{
                access_type: "public",
                type: "arena",
+               players_count: 6,
                state: "waiting_participants",
                break_state: "off",
                current_round_position: 0
