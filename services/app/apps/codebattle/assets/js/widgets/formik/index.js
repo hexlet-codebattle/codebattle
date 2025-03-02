@@ -74,6 +74,7 @@ const schemas = {
         .matches(/^\S*$/, 'Can\'t contain empty symbols')
         .min(6, 'Should be from 6 to 16 characters')
         .max(16, 'Should be from 6 to 16 characters')
+        .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Should contain at least one special character')
         .required('Password required'),
       passwordConfirmation: Yup
         .string()
