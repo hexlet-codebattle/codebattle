@@ -2,6 +2,18 @@ bundle: {
 	apiVersion: "v1alpha1"
 	name:       "codebattle"
 	instances: {
+		"gateway": {
+			module: url: "oci://ghcr.io/stefanprodan/modules/flux-helm-release"
+			namespace: "flux-system"
+			values: {
+				repository: url: "oci://registry-1.docker.io/envoyproxy"
+				chart: {
+					name:    "gateway-helm"
+					version: "v1.3.0"
+				}
+				sync: targetNamespace: "codebattle"
+			}
+		}
 		"cert-manager": {
 			module: url: "oci://ghcr.io/stefanprodan/modules/flux-helm-release"
 			namespace: "flux-system"
@@ -20,18 +32,6 @@ bundle: {
 						enableGatewayAPI: true
 					}
 				}
-			}
-		}
-		"gateway": {
-			module: url: "oci://ghcr.io/stefanprodan/modules/flux-helm-release"
-			namespace: "flux-system"
-			values: {
-				repository: url: "oci://registry-1.docker.io/envoyproxy"
-				chart: {
-					name:    "gateway-helm"
-					version: "v1.3.0"
-				}
-				sync: targetNamespace: "codebattle"
 			}
 		}
 		"codebattle": {
