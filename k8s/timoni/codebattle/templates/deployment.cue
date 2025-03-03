@@ -80,6 +80,9 @@ import (
 				if #config.affinity != _|_ {
 					affinity: #config.affinity
 				}
+				if #config.nodeSelector != _|_ {
+					nodeSelector: #config.nodeSelector
+				}
 			}
 		}
 	}

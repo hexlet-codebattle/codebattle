@@ -18,6 +18,6 @@ values: {
 			digest:     ""
 		}
 	}
-	env: {
-	}
+	env: {}
+	nodeSelector: app: "codebattle"
 }

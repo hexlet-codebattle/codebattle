@@ -57,6 +57,7 @@ import (
 	tolerations?: [...corev1.#Toleration]
 	affinity?: corev1.#Affinity
 	topologySpreadConstraints?: [...corev1.#TopologySpreadConstraint]
+	nodeSelector?: [string]: string
 
 	ingress: {
 		enable: *false | bool

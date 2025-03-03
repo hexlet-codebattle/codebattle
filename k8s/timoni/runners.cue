@@ -3,7 +3,7 @@ runners: {
 		image:    "codebattle/python"
 		version:  "3.12.2"
 		lang:     "python"
-		replicas: 1
+		replicas: 0
 	}
 	"cpp": {
 		image:    "codebattle/cpp"
