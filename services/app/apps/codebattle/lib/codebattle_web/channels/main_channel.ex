@@ -47,7 +47,7 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_in("change_presence_state", %{"state" => state}, socket) do
     Presence.update(socket, socket.assigns.current_user.id, %{
-      online_at: inspect(System.system_time(:seconds)),
+      online_at: inspect(System.system_time(:second)),
       state: state,
       user: socket.assigns.current_user,
       id: socket.assigns.current_user.id

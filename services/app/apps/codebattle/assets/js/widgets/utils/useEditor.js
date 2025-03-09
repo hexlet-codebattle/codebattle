@@ -1,33 +1,41 @@
 /* eslint-disable no-bitwise */
-import {
-  useState, useEffect, useCallback, useMemo,
-} from 'react';
+import { useState, useEffect, useCallback, useMemo } from "react";
 
-import GameRoomModes from '../config/gameModes';
-import sound from '../lib/sound';
+import GameRoomModes from "../config/gameModes";
+import sound from "../lib/sound";
 
-import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from './editor';
-import useCursorUpdates from './useCursorUpdates';
-import useEditorCursor from './useEditorCursor';
-import useResizeListener from './useResizeListener';
+import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from "./editor";
+import useCursorUpdates from "./useCursorUpdates";
+import useEditorCursor from "./useEditorCursor";
+import useResizeListener from "./useResizeListener";
 
-const defaultEditorPlaceholder = 'Please! Help me!!!';
+const defaultEditorPlaceholder = "Please! Help me!!!";
 
-let editorClipboard = '';
+/**
+ * A small helper to generate a random string for our prefix;
+ * not cryptographically secure, but enough for this example.
+ */
+function generateRandomPrefix() {
+  return `___CUSTOM_${Math.random().toString(36).slice(2)}___`;
+}
+
+/**
+ * Our in-memory clipboard storage
+ */
+let editorClipboard = "";
+let currentClipboardPrefix = "";
 
 /**
  * @param {object} editor
  * @param {{
+ *   userType: string,
  *   canSendCursor: boolean,
  *   wordWrap: string,
  *   lineNumbers: string,
+ *   syntax: string,
  *   fontSize: number,
  *   editable: boolean,
- *   roomMode: string,
- *   checkResult: Function,
- *   toggleMuteSound: Function,
- *   mute: boolean,
- *   userType: string,
+ *   loading: boolean
  * }} props
  */
 const useOption = (
@@ -48,36 +56,27 @@ const useOption = (
       placeholder: defaultEditorPlaceholder,
       wordWrap,
       lineNumbers,
-      stickyScroll: {
-        enabled: false,
-      },
+      stickyScroll: { enabled: false },
       tabSize: getLanguageTabSize(syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(syntax),
       lineNumbersMinChars: 3,
       fontSize,
       scrollBeyondLastLine: false,
       selectOnLineNumbers: true,
-      minimap: {
-        enabled: false,
-      },
-      parameterHints: {
-        enabled: false,
-      },
+      minimap: { enabled: false },
+      parameterHints: { enabled: false },
       readOnly: !editable || loading,
-      // contextmenu: editable && !loading,
       contextmenu: false,
       scrollbar: {
         useShadows: false,
         verticalHasArrows: true,
         horizontalHasArrows: true,
-        vertical: 'visible',
-        horizontal: 'visible',
+        vertical: "visible",
+        horizontal: "visible",
         verticalScrollbarSize: 17,
         horizontalScrollbarSize: 17,
         arrowSize: 30,
       },
-
-      // Custom options for codebattle editor callbacks
       userType,
       canSendCursor,
     }),
@@ -118,78 +117,89 @@ const useOption = (
  *   onChangeCursorPosition: Function,
  * }} props
  */
-const useEditor = props => {
+const useEditor = (props) => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();
-  // const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
-  // this.statusBarHeight = lineHeight = current fontSize * 1.5
-  // this.statusBarHeight = convertRemToPixels(1) * 1.5;
 
   const options = useOption(editor, props);
   useCursorUpdates(editor, monaco, props);
   useEditorCursor(editor);
   useResizeListener(editor, props);
 
-  const handleEnterCtrPlusS = useCallback(e => {
-    if (e.key === 's' && (e.metaKey || e.ctrlKey)) e.preventDefault();
+  // Prevent browser "Save Page" on Ctrl+S / Cmd+S
+  const handleEnterCtrPlusS = useCallback((e) => {
+    if (e.key === "s" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+    }
   }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleEnterCtrPlusS);
-
+    window.addEventListener("keydown", handleEnterCtrPlusS);
     return () => {
-      window.removeEventListener('keydown', handleEnterCtrPlusS);
+      window.removeEventListener("keydown", handleEnterCtrPlusS);
     };
   }, [handleEnterCtrPlusS]);
 
-  // if (editor) {
-  //   const model = editor.getModel();
-  //
-  //   // fix flickering in editor
-  //   model.forceTokenization(model.getLineCount());
-  // }
-
-  const handleEditorWillMount = () => { };
+  const handleEditorWillMount = () => {};
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
-    const {
-      editable, roomMode, checkResult, toggleMuteSound,
-    } = props;
+    const { editable, roomMode, checkResult, toggleMuteSound } = props;
 
-    // Handle copy event
-    // editor.onDidCopyText(event => {
-    //   // Custom copy logic
-    //   const customText = `Custom copied text: ${event.text}`;
-    //   navigator.clipboard.writeText(customText);
-    //   event.preventDefault();
-    // });
+    // Intercept keydown for custom Copy, Cut, and Paste logic.
+    currentEditor.onKeyDown((e) => {
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
 
-    currentEditor.onKeyDown(e => {
-      // Custom Copy Event
-      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyC') {
+      // COPY (Ctrl+C / Cmd+C)
+      if (isCtrlOrCmd && e.code === "KeyC") {
         e.preventDefault();
-        if (!editable) {
-          return;
-        }
+        if (!editable) return;
+
+        // Generate a new random prefix each time we copy
+        currentClipboardPrefix = generateRandomPrefix();
         const selection = currentEditor
           .getModel()
           .getValueInRange(currentEditor.getSelection());
-        editorClipboard = `___CUSTOM_COPIED_TEXT___${selection}`;
+        editorClipboard = currentClipboardPrefix + selection;
       }
 
-      // Custom Paste Event
-      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyV') {
-        console.log(editorClipboard);
-        if (editorClipboard.startsWith('___CUSTOM_COPIED_TEXT___')) {
-          const customText = editorClipboard.replace(
-            '___CUSTOM_COPIED_TEXT___',
-            '',
-          );
+      // CUT (Ctrl+X / Cmd+X)
+      if (isCtrlOrCmd && e.code === "KeyX") {
+        e.preventDefault();
+        if (!editable) return;
 
-          currentEditor.executeEdits('custom-paste', [
+        // Generate a new random prefix each time we cut
+        currentClipboardPrefix = generateRandomPrefix();
+        const selection = currentEditor
+          .getModel()
+          .getValueInRange(currentEditor.getSelection());
+        editorClipboard = currentClipboardPrefix + selection;
+
+        // Remove the selection from the editor
+        currentEditor.executeEdits("custom-cut", [
+          {
+            range: currentEditor.getSelection(),
+            text: "",
+            forceMoveMarkers: true,
+          },
+        ]);
+      }
+
+      // PASTE (Ctrl+V / Cmd+V)
+      if (isCtrlOrCmd && e.code === "KeyV") {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Only allow paste if it matches the exact current prefix
+        if (editorClipboard.startsWith(currentClipboardPrefix)) {
+          // Remove the prefix before inserting
+          const customText = editorClipboard.replace(
+            currentClipboardPrefix,
+            "",
+          );
+          currentEditor.executeEdits("custom-paste", [
             {
               range: currentEditor.getSelection(),
               text: customText,
@@ -197,19 +207,53 @@ const useEditor = props => {
             },
           ]);
         }
+      }
 
+      // Block Shift+Insert (paste on some systems)
+      if (e.shiftKey && e.keyCode === 45 /* Insert key */) {
         e.preventDefault();
+        e.stopPropagation();
       }
     });
 
+    // Disable the context menu (right-click) to block "Paste" from there
+    currentEditor.onContextMenu((e) => {
+      e.preventDefault();
+      return false;
+    });
+
+    // Prevent the DOM-level paste event
+    const domNode = currentEditor.getDomNode();
+    domNode.addEventListener(
+      "paste",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      },
+      true,
+    );
+
+    domNode.addEventListener(
+      "drop",
+      (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      },
+      true,
+    );
+
+    // Focus editor if it is editable and not in builder mode
     if (editable && roomMode !== GameRoomModes.builder) {
       currentEditor.focus();
     }
 
+    // Codebattle action: Check on Ctrl+Enter
     if (checkResult) {
       currentEditor.addAction({
-        id: 'codebattle-check-keys',
-        label: 'Codebattle check start',
+        id: "codebattle-check-keys",
+        label: "Codebattle check start",
         keybindings: [
           currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.Enter,
         ],
@@ -226,14 +270,14 @@ const useEditor = props => {
       );
     }
 
+    // Codebattle action: toggle sound on Ctrl+M
     currentEditor.addAction({
-      id: 'codebattle-mute-keys',
-      label: 'Codebattle mute sound',
+      id: "codebattle-mute-keys",
+      label: "Codebattle mute sound",
       keybindings: [currentMonaco.KeyMod.CtrlCmd | currentMonaco.KeyCode.KEY_M],
       run: () => {
         const { mute } = props;
         sound.toggle(mute ? undefined : 0);
-
         toggleMuteSound();
       },
     });
