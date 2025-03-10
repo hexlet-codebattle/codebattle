@@ -88,6 +88,5 @@ defmodule CodebattleWeb.Api.GameView do
         arguments_generator_template: Map.get(meta, :arguments_generator_template, "")
       }
     end)
-    |> dbg()
   end
 end

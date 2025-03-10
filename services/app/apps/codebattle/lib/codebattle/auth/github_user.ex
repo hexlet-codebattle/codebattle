@@ -17,6 +17,7 @@ defmodule Codebattle.Auth.User.GithubUser do
         params = %{
           github_id: profile.id,
           name: unique_name(github_name),
+          lang: Application.get_env(:codebattle, :default_lang_slug),
           github_name: github_name,
           email: profile.email,
           avatar_url: profile.avatar_url

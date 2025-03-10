@@ -689,12 +689,12 @@ defmodule Runner.Languages do
   }
 
   def get_lang_slugs do
-    white_list = get_default_white_list_lang_slugs() |> dbg()
+    white_list = get_default_white_list_lang_slugs()
     @meta |> Map.keys() |> Enum.filter(&(&1 in white_list))
   end
 
   def get_langs do
-    white_list = get_default_white_list_lang_slugs() |> dbg()
+    white_list = get_default_white_list_lang_slugs()
     @meta |> Map.values() |> Enum.filter(&(&1.slug in white_list))
   end
 

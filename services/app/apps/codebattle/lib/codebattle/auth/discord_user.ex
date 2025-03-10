@@ -19,6 +19,7 @@ defmodule Codebattle.Auth.User.DiscordUser do
           discord_avatar: profile.avatar,
           name: unique_name(discord_name),
           discord_name: discord_name,
+          lang: Application.get_env(:codebattle, :default_lang_slug),
           email: profile.email,
           avatar_url: get_avatar_url(profile)
         }

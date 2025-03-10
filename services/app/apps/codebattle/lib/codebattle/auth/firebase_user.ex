@@ -129,6 +129,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp create_in_db(%{name: name, email: email}, firebase_uid) do
     changeset =
       User.changeset(%User{}, %{
+        lang: Application.get_env(:codebattle, :default_lang_slug),
         avatar_url: gravatar_url(email),
         name: name,
         email: email,
