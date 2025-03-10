@@ -3,6 +3,24 @@ defmodule Runner.Languages do
 
   alias Runner.LanguageMeta
 
+  @default_white_list_lang_slugs [
+    "clojure",
+    "cpp",
+    "csharp",
+    "dart",
+    "elixir",
+    "golang",
+    "haskell",
+    "java",
+    "js",
+    "kotlin",
+    "php",
+    "python",
+    "ruby",
+    "rust",
+    "ts"
+  ]
+
   @type_templates %{
     boolean_true: "true",
     boolean_false: "false",
@@ -670,8 +688,15 @@ defmodule Runner.Languages do
     }
   }
 
-  def get_lang_slugs, do: Map.keys(@meta)
-  def get_langs, do: Map.values(@meta)
+  def get_lang_slugs do
+    white_list = get_default_white_list_lang_slugs() |> dbg()
+    @meta |> Map.keys() |> Enum.filter(&(&1 in white_list))
+  end
+
+  def get_langs do
+    white_list = get_default_white_list_lang_slugs() |> dbg()
+    @meta |> Map.values() |> Enum.filter(&(&1.slug in white_list))
+  end
 
   def get_timeout_ms(lang_meta) do
     [num, _] = String.split(lang_meta.container_run_timeout, "s")
@@ -687,6 +712,16 @@ defmodule Runner.Languages do
     case Map.get(@meta, slug) do
       nil -> raise "Unknown language #{slug}"
       meta -> meta
+    end
+  end
+
+  def get_default_white_list_lang_slugs do
+    slugs = Application.get_env(:runner, :white_list_lang_slugs)
+
+    if slugs == [] do
+      @default_white_list_lang_slugs
+    else
+      slugs
     end
   end
 end

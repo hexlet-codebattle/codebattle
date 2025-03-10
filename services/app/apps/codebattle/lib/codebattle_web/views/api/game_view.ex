@@ -77,6 +77,7 @@ defmodule CodebattleWeb.Api.GameView do
 
   def get_langs_with_templates(task) do
     Languages.meta()
+    |> Map.take(Languages.get_lang_slugs())
     |> Map.values()
     |> Enum.map(fn meta ->
       %{
@@ -87,5 +88,6 @@ defmodule CodebattleWeb.Api.GameView do
         arguments_generator_template: Map.get(meta, :arguments_generator_template, "")
       }
     end)
+    |> dbg()
   end
 end

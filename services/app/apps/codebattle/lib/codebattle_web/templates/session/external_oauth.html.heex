@@ -1,0 +1,14 @@
+<div class="container d-flex flex-column align-items-center justify-content-center vh-100">
+  <div class="p-4">
+    <%= if header = Codebattle.Customization.get("external_oauth_header") do %>
+      <div class="mb-3">
+        <%= raw(header) %>
+      </div>
+    <% end %>
+    <%= if body = Codebattle.Customization.get("external_oauth_body") do %>
+      <div class="mb-3">
+        <%= raw(body) %>
+      </div>
+    <% end %>
+  </div>
+</div>

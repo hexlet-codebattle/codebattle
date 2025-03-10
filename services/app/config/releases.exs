@@ -54,6 +54,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 config :codebattle, :app_subtitle, app_subtitle
 config :codebattle, :app_title, app_title
+config :codebattle, :default_lang_slug, System.get_env("CODEBATTLE_DEFAULT_LANG_SLUG", "js")
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
@@ -128,6 +129,7 @@ config :runner,
   max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
+config :runner, white_list_lang_slugs: "RUNNER_WHITE_LIST_LANG_SLUGS" |> System.get_env("") |> String.split(",")
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),

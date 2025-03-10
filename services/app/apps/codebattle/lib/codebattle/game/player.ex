@@ -129,8 +129,8 @@ defmodule Codebattle.Game.Player do
       rating: player.rating,
       rank: player.rank,
       avatar_url: player.avatar_url,
-      editor_lang: player.lang || "js",
-      lang: player.lang || "js"
+      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug)
     }
 
     player =
@@ -152,8 +152,8 @@ defmodule Codebattle.Game.Player do
       name: player.name,
       rating: player.rating,
       rank: player.rank,
-      editor_lang: player.lang || "js",
-      lang: player.lang || "js",
+      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
       playbook_id: player.playbook_id
     }
 
@@ -181,8 +181,8 @@ defmodule Codebattle.Game.Player do
             clan_id: user.clan_id,
             rating: user.rating,
             rank: user.rank,
-            editor_lang: user.lang || "js",
-            lang: user.lang || "js",
+            editor_lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
+            lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
             achievements: user.achievements,
             avatar_url: user.avatar_url
           }

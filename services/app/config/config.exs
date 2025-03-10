@@ -34,6 +34,7 @@ config :codebattle, CodebattleWeb.Gettext,
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
+config :codebattle, :default_lang_slug, "js"
 config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,
@@ -132,6 +133,7 @@ config :runner, max_parallel_containers_run: 16
 config :runner, pull_docker_images: false
 config :runner, runner_container_killer: false
 config :runner, runner_cpu_logger: false
+config :runner, white_list_lang_slugs: []
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -26,12 +26,12 @@ services:
       - db
 
   db:
-    image: postgres:12-alpine
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
       POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data2:/var/lib/postgresql/data
 
   # same db but forwards port to host
   db-local:
@@ -43,7 +43,7 @@ services:
       POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
     command: postgres -c 'max_connections=1000'
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data2:/var/lib/postgresql/data
 
 volumes:
-  pg_data:
+  pg_data2:

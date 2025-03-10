@@ -1,20 +1,6 @@
 import langToSpacesMapping from '../config/langToSpacesMapping';
 import languageTabSizes from '../config/languageTabSizes';
 
-const blacklistLangs = [
-  'ruby',
-  'ts',
-  'dart',
-  'php',
-  'js',
-  'elixir',
-  'clojure',
-  'haskell',
-  'rust',
-];
-
-export const filterBlackListedLangs = lang => !blacklistLangs.includes(lang.slug);
-
 const getLanguageTabSize = language => {
   const defaultTabSize = 2;
 

@@ -64,7 +64,7 @@ defmodule Codebattle.Tournament.Base do
       def join(%{state: "waiting_participants"} = tournament, params) do
         player =
           params.user
-          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:lang, params.user.lang)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
         if players_count(tournament) < tournament.players_limit do
@@ -77,7 +77,7 @@ defmodule Codebattle.Tournament.Base do
       def join(%{state: "active", type: "swiss"} = tournament, params) do
         player =
           params.user
-          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:lang, params.user.lang)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
         if players_count(tournament) < tournament.players_limit do
@@ -90,7 +90,7 @@ defmodule Codebattle.Tournament.Base do
       def join(%{state: "active", type: "arena"} = tournament, params) do
         player =
           params.user
-          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:lang, params.user.lang)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
         if players_count(tournament) < tournament.players_limit do

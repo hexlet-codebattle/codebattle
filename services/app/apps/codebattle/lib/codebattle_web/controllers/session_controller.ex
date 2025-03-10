@@ -7,6 +7,9 @@ defmodule CodebattleWeb.SessionController do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
     cond do
+      FunWithFlags.enabled?(:use_only_external_oauth) ->
+        render(conn, "external_oauth.html", layout: {CodebattleWeb.LayoutView, :empty})
+
       FunWithFlags.enabled?(:use_only_token_auth) ->
         render(conn, "token_only.html")
 

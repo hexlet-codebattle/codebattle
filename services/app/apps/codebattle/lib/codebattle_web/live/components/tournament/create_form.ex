@@ -202,11 +202,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               ) %>
               <%= error_tag(f, :players_limit) %>
             </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :default_language) %>
-              <%= select(f, :default_language, @langs, class: "custom-select") %>
-              <%= error_tag(f, :default_language) %>
-            </div>
           </div>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-md-3 mt-lg-0 mt-xl-0">
             <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
