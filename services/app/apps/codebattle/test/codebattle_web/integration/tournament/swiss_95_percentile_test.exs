@@ -715,6 +715,8 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
+    :timer.sleep(100)
+
     assert_receive %Broadcast{
       event: "user:check_complete",
       payload: %{user_id: ^u1_id, solution_status: true},
