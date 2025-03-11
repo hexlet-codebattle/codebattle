@@ -3,6 +3,7 @@ defmodule CodebattleWeb.AuthController do
   use Gettext, backend: CodebattleWeb.Gettext
 
   alias Codebattle.Auth.Discord
+  alias Codebattle.Auth.External
   alias Codebattle.Auth.Github
 
   require Logger
@@ -50,12 +51,10 @@ defmodule CodebattleWeb.AuthController do
       case provider_name do
         "github" ->
           oauth_github_url = Github.login_url(%{redirect_uri: redirect_uri})
-
           redirect(conn, external: oauth_github_url)
 
         "discord" ->
           oauth_discord_url = Discord.login_url(%{redirect_uri: redirect_uri})
-
           redirect(conn, external: oauth_discord_url)
 
         _ ->
@@ -85,6 +84,11 @@ defmodule CodebattleWeb.AuthController do
           redirect_uri = Routes.auth_url(conn, :callback, provider_name)
           {:ok, profile} = Discord.discord_auth(code, redirect_uri)
           Codebattle.Auth.User.DiscordUser.find_or_create(profile)
+
+        "external" ->
+          redirect_uri = Routes.auth_url(conn, :callback, provider_name)
+          profile = External.external_auth(code, redirect_uri)
+          Codebattle.Auth.User.ExternalUser.find_or_create(profile)
       end
 
     case case_result do

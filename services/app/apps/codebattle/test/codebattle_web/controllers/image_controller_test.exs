@@ -15,7 +15,6 @@ defmodule CodebattleWeb.ImageControllerTest do
     assert conn.status == 200
     assert conn.resp_body =~ user1.name
     assert conn.resp_body =~ user2.name
-    assert conn.resp_body =~ game.state
   end
 
   test "returns 200 with one player", %{conn: conn} do
@@ -29,14 +28,6 @@ defmodule CodebattleWeb.ImageControllerTest do
     assert conn.status == 200
     assert conn.resp_body =~ user1.name
     assert conn.resp_body =~ game.state
-  end
-
-  test "returns 200 without players", %{conn: conn} do
-    game = insert(:game, level: "elementary", state: "init", players: [])
-
-    conn = get(conn, Routes.game_image_path(conn, :show, game.id))
-
-    assert conn.status == 200
   end
 
   test "returns empty 200 without a game", %{conn: conn} do

@@ -3,7 +3,6 @@ defmodule CodebattleWeb.Game.ImageController do
   use Gettext, backend: CodebattleWeb.Gettext
 
   alias Codebattle.Game.Context
-  alias Codebattle.Game.Player
   alias CodebattleWeb.HtmlImage
 
   def show(conn, %{"game_id" => id}) do
@@ -127,7 +126,8 @@ defmodule CodebattleWeb.Game.ImageController do
     </html>
     """
   end
-  defp render_game_preview(game = %{players: [player]}) do
+
+  defp render_game_preview(%{players: [player]} = game) do
     level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
     state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
 
@@ -151,8 +151,7 @@ defmodule CodebattleWeb.Game.ImageController do
     """
   end
 
-    defp render_game_preview(game = %{players: [player1, player2 | _]}) do
-
+  defp render_game_preview(%{players: [player1, player2 | _]}) do
     """
     <!-- Player 1 -->
     <div class="player">

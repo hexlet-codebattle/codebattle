@@ -46,7 +46,12 @@ config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
-  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD"),
+  external_client_id: System.get_env("EXTERNAL_CLIENT_ID", "ASFD"),
+  external_client_secret: System.get_env("EXTERNAL_CLIENT_SECRET", "ASFD"),
+  external_auth_url: System.get_env("EXTERNAL_AUTH_URL", "ASFD"),
+  external_user_info_url: System.get_env("EXTERNAL_USER_INFO_URL", "ASFD"),
+  external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")

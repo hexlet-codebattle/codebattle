@@ -23,6 +23,7 @@ defmodule Codebattle.User do
            only: [
              :achievements,
              :avatar_url,
+             :category,
              :clan,
              :clan_id,
              :editor_mode,
@@ -49,6 +50,7 @@ defmodule Codebattle.User do
     field(:achievements, {:array, :string}, default: [])
     field(:auth_token, :string)
     field(:avatar_url, :string)
+    field(:category, :string)
     field(:clan, :string)
     field(:clan_id, :integer)
     field(:collab_logo, :string)
@@ -58,6 +60,7 @@ defmodule Codebattle.User do
     field(:editor_mode, :string)
     field(:editor_theme, :string)
     field(:email, :string)
+    field(:external_oauth_id, :string)
     field(:firebase_uid, :string)
     field(:github_id, :integer)
     field(:github_name, :string)
@@ -88,12 +91,14 @@ defmodule Codebattle.User do
       :achievements,
       :auth_token,
       :avatar_url,
+      :category,
       :discord_avatar,
       :discord_id,
       :discord_name,
       :editor_mode,
       :editor_theme,
       :email,
+      :external_oauth_id,
       :firebase_uid,
       :github_id,
       :github_name,
@@ -120,7 +125,7 @@ defmodule Codebattle.User do
 
   def token_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:auth_token, :name, :clan, :subscription_type])
+    |> cast(params, [:external_oauth_id, :category, :name, :clan, :subscription_type])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)

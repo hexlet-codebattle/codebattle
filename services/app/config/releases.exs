@@ -67,7 +67,12 @@ config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
-  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD"),
+  external_client_id: System.get_env("EXTERNAL_CLIENT_ID", "ASFD"),
+  external_client_secret: System.get_env("EXTERNAL_CLIENT_SECRET", "ASFD"),
+  external_auth_url: System.get_env("EXTERNAL_AUTH_URL", "ASDF"),
+  external_user_info_url: System.get_env("EXTERNAL_USER_INFO_URL", "ASFD"),
+  external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, checker_executor: checker_executor
@@ -129,7 +134,10 @@ config :runner,
   max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
-config :runner, white_list_lang_slugs: "RUNNER_WHITE_LIST_LANG_SLUGS" |> System.get_env("") |> String.split(",")
+
+config :runner,
+  white_list_lang_slugs:
+    "RUNNER_WHITE_LIST_LANG_SLUGS" |> System.get_env("") |> String.split(",") |> Enum.filter(&(&1 != ""))
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
