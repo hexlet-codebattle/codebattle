@@ -24,123 +24,149 @@ defmodule CodebattleWeb.Game.ImageController do
       <head>
         <meta charset="utf-8">
         <style>
+          /* Force the entire card to be 800×500 */
           html, body {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #f5f7fa;
+            width: 780px;
+            height: 441px;
+            overflow: hidden; /* No scrolling; everything must fit */
             font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(to right, #222, #444);
+            color: #fff;
+            position: relative; /* So absolute footer can pin to bottom */
           }
-          p {
-            margin: 0;
-            padding: 0;
+
+          /* The main "battle" area takes up all space above the footer */
+          .main {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 40px; /* Leaves room for the pinned footer */
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; /* player1 | logo | player2 */
+            align-items: center;
           }
-          .card {
+
+          /* Player columns fill available vertical space */
+          .player {
+            position: relative;
             width: 100%;
             height: 100%;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
           }
-          .header {
-            background: #000;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #fff;
+
+          .player img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          /* Overlay the player info at the bottom of each avatar */
+          .player-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 5px;
+            font-size: 1rem;
           }
-          .header img {
-            width: 100px;
-            margin: 15px;
-            height: auto;
-          }
-          .content {
-            flex: 1;
-            padding: 10px;
-            color: #333;
-            text-align: center;
+
+          /* Center logo gets scaled as well, so keep it within its column */
+          .center-logo {
             display: flex;
-            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
           }
+
+          .center-logo img {
+            max-width: 200px;
+            max-height: 200px;
+          }
+
+          /* Pinned footer always visible at the bottom */
           .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
             text-align: center;
-            font-size: 12px;
-            color: #fff;
-            padding: 8px;
-            background: #000;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+            line-height: 40px; /* Vertically center the text */
+          }
+
+          .heart-icon {
+            fill: #ff5252;
+            vertical-align: middle;
           }
         </style>
       </head>
       <body>
-        <div class="card">
-          <div class="header">
-            <img src="#{HtmlImage.logo_url()}" alt="Logo">
-          </div>
-          <div class="content">
-            #{render_content(game)}
-          </div>
-          <div class="footer">
-            <p>
-              Made with
-              <svg width="14" height="14" viewBox="0 0 24 24" style="fill:#ff5252; vertical-align:middle;">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42
-                         4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81
-                         14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4
-                         6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-              by Codebattle
-            </p>
-          </div>
+        <div class="main">
+          #{render_game_preview(game)}
+        </div>
+
+        <div class="footer">
+          Made with
+          <svg class="heart-icon" width="14" height="14" viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                     2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                     C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42
+                     22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          by Codebattle
         </div>
       </body>
     </html>
     """
   end
-
-  defp render_content(game) do
+  defp render_game_preview(game = %{players: [player]}) do
     level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
     state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
 
-    # If you always have exactly two players:
-    [player1, player2] =
-      case game.players do
-        [p1, p2] -> [p1, p2]
-        [p1] -> [p1, %Player{}]
-        [] -> [%Player{}, %Player{}]
-      end
+    """
+    <!-- Player 1 -->
+    <div class="player">
+      #{render_player(player)}
+    </div>
+
+    <!-- Center Logo -->
+    <div class="center-logo">
+      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
+    </div>
+
+    <!-- Game info -->
+    <center>
+    <h3>#{"Game info"}</h3>
+    <p>#{state}</p>
+    <p>#{level}</p>
+    </center>
+    """
+  end
+
+    defp render_game_preview(game = %{players: [player1, player2 | _]}) do
 
     """
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-      <div style="
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        max-width: 800px;
-        width: 100%;
-        margin: 0 auto;
-        align-items: center;
-        text-align: center;
-      ">
-        <!-- Player 1 -->
-        <div style="justify-self: end;">
-          #{render_player(player1)}
-        </div>
+    <!-- Player 1 -->
+    <div class="player">
+      #{render_player(player1)}
+    </div>
 
-        <!-- VS -->
-        <div style="justify-self: center; font-size: 42px; margin: 20px;">
-          VS
-        </div>
+    <!-- Center Logo -->
+    <div class="center-logo">
+      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
+    </div>
 
-        <!-- Player 2 -->
-        <div style="justify-self: start;">
-          #{render_player(player2)}
-        </div>
-      </div>
-      <p>#{state}</p>
-      <p>#{level}</p>
+    <!-- Player 2 -->
+    <div class="player">
+      #{render_player(player2)}
     </div>
     """
   end
@@ -149,10 +175,12 @@ defmodule CodebattleWeb.Game.ImageController do
     result = Gettext.gettext(CodebattleWeb.Gettext, "#{player.result}")
 
     """
-    <div>
-      <img src="#{player.avatar_url || HtmlImage.logo_url()}" style="width:46px; height:46px;">
-      <p>@#{player.name}(#{player.rating}) - #{player.lang}</p>
-      <p>#{result}</p>
+    <img src="#{player.avatar_url || HtmlImage.logo_url()}" alt="Player Avatar">
+    <div class="player-info">
+      @#{player.name}
+      #{if player.rating && player.rating != "N/A", do: "(#{player.rating})", else: ""}
+      #{player.lang}
+      #{if player.result != "undefined", do: "- #{result}"}
     </div>
     """
   end

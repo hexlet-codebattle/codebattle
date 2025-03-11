@@ -68,7 +68,8 @@ defmodule Codebattle.Application do
   defp chromic_pdf_opts do
     @chromic_pdf_opts ++
       [
-        chrome_args: [append: "--font-render-hinting=none"],
+        chrome_args: [append: "--disable-gpu --font-render-hinting=none"],
+        discard_stderr: false,
         no_sandbox: true,
         session_pool: [
           size: 1,
