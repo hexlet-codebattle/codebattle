@@ -238,8 +238,8 @@ defmodule Codebattle.User do
 
   def subscription_types, do: @subscription_types
 
-  defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil], do: changeset
-  defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil], do: changeset
+  defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil], do: change(changeset, %{clan: nil, clan_id: nil})
+  defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil], do: change(changeset, %{clan: nil, clan_id: nil})
 
   # nil for new token users, clan will be managed by admin
   defp assign_clan(changeset, params, nil), do: assign_clan(changeset, params, 1)
