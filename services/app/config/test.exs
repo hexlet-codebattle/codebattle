@@ -66,15 +66,16 @@ config :codebattle,
     plug: {Req.Test, Codebattle.Auth}
   ]
 
-config :codebattle, checker_executor: checker_executor
-config :codebattle, code_check_timeout: 35_000
 # Print only warnings and errors during test
 # if is_nil(System.get_env("DEBUG")) do
 #   config :logger, level: :critical
 # else
+config :codebattle, checker_executor: checker_executor
+config :codebattle, code_check_timeout: 35_000
 config :codebattle, fake_html_to_image: true
 config :codebattle, freeze_time: true
 config :codebattle, max_alive_tournaments: 700
+config :codebattle, store_playbook_async: false
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, tournament_rematch_timeout_ms: 1

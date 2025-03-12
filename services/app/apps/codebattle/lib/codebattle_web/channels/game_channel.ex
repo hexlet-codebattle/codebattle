@@ -9,7 +9,6 @@ defmodule CodebattleWeb.GameChannel do
   require Logger
 
   def join("game:" <> game_id, _payload, socket) do
-    # try do
     game = Context.get_game!(game_id)
     score = Context.fetch_score_by_game_id(game_id)
 
@@ -70,12 +69,10 @@ defmodule CodebattleWeb.GameChannel do
          game: GameView.render_game(game, score)
        }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil)}
     end
-
-    # rescue
-    #   e ->
-    #     Logger.error(inspect(e))
-    #     {:ok, %{error: "Game not found"}, socket}
-    # end
+  rescue
+    e ->
+      Logger.error(inspect(e))
+      {:ok, %{error: "Game not found"}, socket}
   end
 
   def terminate(_reason, socket) do

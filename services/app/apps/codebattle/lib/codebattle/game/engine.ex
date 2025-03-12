@@ -298,9 +298,13 @@ defmodule Codebattle.Game.Engine do
   def store_playbook_async(game) do
     {:ok, playbook_records} = Game.Server.get_playbook_records(game.id)
 
-    Task.start(fn ->
+    if Application.get_env(:codebattle, :store_playbook_async) do
+      Task.start(fn ->
+        Playbook.Context.store_playbook(playbook_records, game.id)
+      end)
+    else
       Playbook.Context.store_playbook(playbook_records, game.id)
-    end)
+    end
   end
 
   def store_result!(game) do
