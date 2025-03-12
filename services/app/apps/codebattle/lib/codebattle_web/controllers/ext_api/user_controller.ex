@@ -153,7 +153,13 @@ defmodule CodebattleWeb.ExtApi.UserController do
     cast_changeset_attribute(changeset, :name, current_name <> generate_random_postfix())
   end
 
-  defp cast_clan(attrs, %{"clan" => clan}), do: cast_attribute(attrs, :clan, clan)
+  defp cast_clan(attrs, %{"clan" => clan}) do
+    try do
+      cast_attribute(attrs, :clan, Base.decode64!(clan))
+    rescue
+      _ -> cast_attribute(attrs, :clan, clan)
+    end
+  end
   defp cast_clan(attrs, _params), do: attrs
 
   defp build_random_name do

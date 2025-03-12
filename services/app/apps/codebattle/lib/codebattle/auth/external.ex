@@ -61,6 +61,5 @@ defmodule Codebattle.Auth.External do
     |> Map.get(:body)
     |> Map.take(["default_avatar_id", "id", "is_avatar_empty"])
     |> Runner.AtomizedMap.atomize()
-    |> dbg()
   end
 end

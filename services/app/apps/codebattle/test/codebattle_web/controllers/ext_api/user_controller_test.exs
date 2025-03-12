@@ -15,11 +15,11 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     test "creates user with clan and auth token", %{conn: conn} do
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "kek", UID: "asdf", category: "cat"}))
+      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "S2xhbg==", UID: "asdf", category: "cat"}))
       |> json_response(200)
 
       user = Repo.get_by(User, name: "lol")
-      clan = Repo.get_by(Clan, name: "kek")
+      clan = Repo.get_by(Clan, name: "Klan")
       assert "cat" == user.category
       assert "asdf" == user.external_oauth_id
       assert 1 == clan.creator_id
