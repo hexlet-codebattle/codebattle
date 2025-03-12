@@ -33,6 +33,10 @@ const schemas = {
           settings.name === name || name.length <= 16
         ),
       )
+      .matches(
+        /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
+        'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
+      )
       .trim(),
     clan: Yup.string()
       .strict(),
