@@ -235,6 +235,17 @@ defmodule Codebattle.Game.Context do
     game_id |> get_game!() |> Engine.trigger_timeout()
   end
 
+  @spec terminate_tournament_games(tournament_id) :: :ok
+  def terminate_tournament_games(tournament_id) do
+    Game
+    |> where([g], g.tournament_id == ^tournament_id)
+    |> where([g], g.state == "playing")
+    |> select([g], g.id)
+    |> Repo.all()
+    |> Enum.each(fn game_id -> Engine.terminate_game(game_id) end)
+    |> dbg()
+  end
+
   @spec terminate_game(game_id | Game.t()) :: :ok
   def terminate_game(%Game{} = game) do
     Engine.terminate_game(game)

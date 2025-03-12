@@ -254,6 +254,7 @@ defmodule Codebattle.Tournament.Base do
         if can_moderate?(tournament, user) do
           new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
 
+          Game.Context.terminate_tournament_games(tournament.id)
           Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
 
           new_tournament

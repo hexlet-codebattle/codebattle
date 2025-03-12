@@ -238,6 +238,12 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  @spec terminate_game(game_id :: integer | Game.t()) :: :ok
+  def terminate_game(game_id) when is_integer(game_id) do
+    Game.GlobalSupervisor.terminate_game(game_id)
+    :ok
+  end
+
   def terminate_game(%Game{} = game) do
     if game.is_live do
       Game.GlobalSupervisor.terminate_game(game.id)
