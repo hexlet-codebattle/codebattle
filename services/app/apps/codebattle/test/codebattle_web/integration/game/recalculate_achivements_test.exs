@@ -84,6 +84,7 @@ defmodule CodebattleWeb.Integration.Game.RecalculateAchivementsTest do
     {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
     ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    :timer.sleep(100)
     Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
