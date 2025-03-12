@@ -52,5 +52,8 @@ defmodule Codebattle.TaskPackForm do
       |> Enum.map(&String.to_integer/1)
 
     put_change(changeset, :task_ids, task_ids)
+  rescue
+    _ ->
+      add_error(changeset, :task_ids, "Please provide only integers with comma separated values")
   end
 end
