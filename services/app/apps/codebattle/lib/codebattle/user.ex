@@ -119,6 +119,7 @@ defmodule Codebattle.User do
     |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
+    |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
     |> assign_clan(params, user.id)
   end

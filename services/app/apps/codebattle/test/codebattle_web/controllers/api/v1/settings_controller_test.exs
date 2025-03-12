@@ -62,6 +62,23 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.lang == "ruby"
     end
 
+    test "update with empty name doesn't work", %{conn: conn} do
+      new_settings = %{"name" => ""}
+
+      user = insert(:user)
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> patch(Routes.api_v1_settings_path(conn, :update, new_settings))
+
+      assert json_response(conn, 422) == %{"errors" => %{"name" => ["can't be blank"]}}
+
+      updated = Repo.get!(Codebattle.User, user.id)
+
+      assert updated.name == user.name
+    end
+
     test "returns validation errors", %{conn: conn} do
       new_settings = %{"name" => "evgen"}
       user = insert(:user)
