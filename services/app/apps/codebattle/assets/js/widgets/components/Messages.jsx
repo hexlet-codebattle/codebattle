@@ -1,4 +1,10 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, {
+  useRef,
+  useLayoutEffect,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 
 import cn from 'classnames';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,39 +24,77 @@ const getKey = (id, time, name, index) => {
 function Messages({ messages, displayMenu = () => {}, disabled = false }) {
   const listRef = useRef();
   const minScrollHeight = 20;
-  const [scrollHeight, setScrollHeight] = useState(0);
+  const [, setScrollHeight] = useState(0);
   const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
-  const { stayScrolled, scrollBottom } = useStayScrolled(listRef);
-  // Typically you will want to use stayScrolled or scrollBottom inside
-  // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
+  const stayScrolledData = useStayScrolled(listRef);
+  const { stayScrolled } = stayScrolledData;
+  const scrollBottom = useMemo(
+    () => stayScrolledData.scrollBottom || (() => {}),
+    [stayScrolledData.scrollBottom],
+  );
+  const [isNearBottom, setIsNearBottom] = useState(true);
+
+  // Check if we're near the bottom on message updates
   useLayoutEffect(() => {
-    if (scrollHeight > minScrollHeight) {
-      stayScrolled();
-      setIsScrollButtonVisible(true);
-    } else {
+    if (isNearBottom && scrollBottom) {
       scrollBottom();
       setIsScrollButtonVisible(false);
+    } else {
+      stayScrolled();
+      setIsScrollButtonVisible(true);
     }
-  }, [messages.length, stayScrolled, scrollBottom]);
+  }, [messages.length, stayScrolled, scrollBottom, isNearBottom]);
 
   const scrollHandler = e => {
     const chatContainer = e.target;
-    const chatScrollHeight = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
-
-    if (chatScrollHeight < minScrollHeight) {
-      setIsScrollButtonVisible(false);
-    }
+    const chatScrollHeight = chatContainer.scrollHeight
+      - chatContainer.scrollTop
+      - chatContainer.clientHeight;
 
     setScrollHeight(chatScrollHeight);
+
+    // Consider it "near bottom" if within minScrollHeight pixels
+    if (chatScrollHeight <= minScrollHeight) {
+      setIsNearBottom(true);
+      setIsScrollButtonVisible(false);
+    } else {
+      setIsNearBottom(false);
+      setIsScrollButtonVisible(true);
+    }
   };
 
-  const scrollButtonClass = cn('scroll-button', 'position-absolute', 'rounded-circle', 'bg-secondary', 'p-0', 'border-0', {
-    invisible: !isScrollButtonVisible,
-  });
+  // Initialize scroll state on mount
+  useEffect(() => {
+    if (listRef.current) {
+      const chatContainer = listRef.current;
+      const chatScrollHeight = chatContainer.scrollHeight
+        - chatContainer.scrollTop
+        - chatContainer.clientHeight;
+
+      setScrollHeight(chatScrollHeight);
+      setIsNearBottom(chatScrollHeight <= minScrollHeight);
+    }
+  }, []);
+
+  const scrollButtonClass = cn(
+    'scroll-button',
+    'position-absolute',
+    'rounded-circle',
+    'bg-secondary',
+    'p-0',
+    'border-0',
+    {
+      invisible: !isScrollButtonVisible,
+    },
+  );
 
   if (disabled) {
     return (
-      <div title="Chat is disabled" className="h-100 position-relative" ref={listRef}>
+      <div
+        title="Chat is disabled"
+        className="h-100 position-relative"
+        ref={listRef}
+      >
         {/* <span className="d-flex text-muted position-absolute h-100 w-100 justify-content-center align-items-center"> */}
         {/*   <FontAwesomeIcon className="h-25 w-25" icon="comment-slash" /> */}
         {/* </span> */}
@@ -68,8 +112,8 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
       >
         {messages.map((message, index) => {
           const {
-            id, userId, name, text, type, time, meta,
-          } = message;
+ id, userId, name, text, type, time, meta,
+} = message;
 
           const key = getKey(id, time, name, messages.length - index);
 
@@ -90,7 +134,13 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
       <button
         type="button"
         className={scrollButtonClass}
-        onClick={scrollBottom}
+        onClick={() => {
+          if (scrollBottom) {
+            scrollBottom();
+            setIsNearBottom(true);
+            setIsScrollButtonVisible(false);
+          }
+        }}
         aria-label="Scroll to bottom"
       />
     </>

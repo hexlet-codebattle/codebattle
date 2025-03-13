@@ -104,7 +104,7 @@
     "react-select": "^5.7.4",
     "react-slack-feedback": "^2.1.1",
     "react-split": "^2.0.14",
-    "react-stay-scrolled": "^8.0.1",
+    "react-stay-scrolled": "^9.0.0",
     "react-toastify": "^6.1.0",
     "react-transition-group": "^4.4.1",
     "recharts": "^2.1.16",
