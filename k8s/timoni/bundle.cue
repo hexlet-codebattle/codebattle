@@ -22,10 +22,10 @@ bundle: {
 				module: url: "file://runner"
 				namespace: "codebattle"
 				values: {
-					registry: "cr.yandex/crp5804gnefl1uhkcljn"
+					registry: "docker.io"
 					image: {
 						repository: "\(registry)/\(runner.image)"
-						tag:        "latest" //  runner.version
+						tag:        runner.version
 					}
 					replicas: runner.replicas
 				}
