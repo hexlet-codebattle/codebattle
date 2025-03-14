@@ -15,7 +15,9 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   @allowed_session_paths [
     ~r{^\/session\/new\/?$},
     ~r{^\/session\/?$},
-    ~r{^\/auth\/token\/?$}
+    ~r{^\/auth\/token\/?$},
+    ~r{^\/auth\/(?:github|discord|external)\/?$},
+    ~r{^\/auth\/(?:github|discord|external)\/callback\/?$}
   ]
 
   @allowed_mini_paths [
