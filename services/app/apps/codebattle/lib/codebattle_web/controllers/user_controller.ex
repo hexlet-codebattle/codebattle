@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.UserController do
   use CodebattleWeb, :controller
 
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :edit, :show])
+
   def index(conn, _params) do
     conn
     |> put_meta_tags(%{

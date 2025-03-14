@@ -68,7 +68,7 @@ config :codebattle, dev_sign_in: true
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
 config :codebattle, fake_html_to_image: false
-config :codebattle, force_redirect_url: ""
+config :codebattle, free_users_redirect_url: "/"
 config :codebattle, freeze_time: false
 config :codebattle, html_debug_mode: true
 

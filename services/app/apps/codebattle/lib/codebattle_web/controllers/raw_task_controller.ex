@@ -3,6 +3,8 @@ defmodule CodebattleWeb.RawTaskController do
 
   alias Codebattle.Task
 
+  plug(CodebattleWeb.Plugs.AdminOnly)
+
   def show(conn, %{"id" => id}) do
     # use only visible tasks
     task = Task.get!(id)

@@ -192,13 +192,17 @@
                               <span class="fas fa-medal mr-2"></span>
                               <%= gettext("Users rating") %>
                             </a>
+                            <a class="dropdown-item" href={tournament_path(@conn, :index)}>
+                              <span class="fas fa-trophy mr-2"></span>
+                              <%= gettext("Tournaments") %>
+                            </a>
                             <a class="dropdown-item" href={task_path(@conn, :index)}>
                               <span class="fas fa-tasks mr-2"></span>
                               <%= gettext("Tasks") %>
                             </a>
-                            <a class="dropdown-item" href={tournament_path(@conn, :index)}>
-                              <span class="fas fa-trophy mr-2"></span>
-                              <%= gettext("Tournaments") %>
+                            <a class="dropdown-item" href={clan_path(@conn, :index)}>
+                              <span class="fas fa-users mr-2"></span>
+                              <%= gettext("Clans") %>
                             </a>
                             <div class="dropdown-divider"></div>
                             <a

@@ -13,32 +13,17 @@ defmodule CodebattleWeb.AuthController do
 
     case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
-        url = Application.get_env(:codebattle, :force_redirect_url, "/")
-
-        url =
-          if url in [nil, ""] do
-            "/"
-          else
-            url
-          end
-
-        Logger.info("Redirecting to #{url}")
-
         conn
         |> put_flash(:info, gettext("Successfully authenticated"))
         |> put_session(:user_id, user.id)
-        |> redirect(to: url)
+        |> redirect(to: "/")
 
       {:error, reason} ->
-        Logger.error("Failed to authenticate user: #{inspect(reason)}")
+        Logger.error("Failed to authenticate user with token: #{inspect(reason)}")
 
-        if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
-          redirect(conn, external: url)
-        else
-          conn
-          |> put_flash(:danger, reason)
-          |> redirect(to: "/")
-        end
+        conn
+        |> put_flash(:danger, reason)
+        |> redirect(to: "/")
     end
   end
 

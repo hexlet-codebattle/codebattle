@@ -14,6 +14,8 @@ defmodule CodebattleWeb.GameController do
 
   require Logger
 
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
+
   action_fallback(CodebattleWeb.FallbackController)
 
   def show(conn, %{"id" => id}) do
@@ -29,7 +31,41 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  def show_game(game, user, conn) do
+  def join(conn, %{"id" => id}) do
+    case Context.join_game(id, conn.assigns.current_user) do
+      {:ok, _game} -> redirect(conn, to: Routes.game_path(conn, :show, id))
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+
+    case Context.cancel_game(id, user) do
+      :ok -> redirect(conn, to: Routes.root_path(conn, :index))
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def create_training(conn, _params) do
+    task = Codebattle.Task.get_random_training_task()
+
+    game_params = %{
+      level: "elementary",
+      task: task,
+      mode: "training",
+      use_chat: false,
+      visibility_type: "hidden",
+      players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
+    }
+
+    case Context.create_game(game_params) do
+      {:ok, game} -> redirect(conn, to: Routes.game_path(conn, :show, game.id))
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  defp show_game(game, user, conn) do
     case game do
       %Game{is_live: true} = game ->
         score = Context.fetch_score_by_game_id(game.id)
@@ -85,40 +121,6 @@ defmodule CodebattleWeb.GameController do
           |> put_game_meta_tags(game)
           |> render("game_result.html", %{game: game, user: user})
         end
-    end
-  end
-
-  def join(conn, %{"id" => id}) do
-    case Context.join_game(id, conn.assigns.current_user) do
-      {:ok, _game} -> redirect(conn, to: Routes.game_path(conn, :show, id))
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    user = conn.assigns.current_user
-
-    case Context.cancel_game(id, user) do
-      :ok -> redirect(conn, to: Routes.root_path(conn, :index))
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def create_training(conn, _params) do
-    task = Codebattle.Task.get_random_training_task()
-
-    game_params = %{
-      level: "elementary",
-      task: task,
-      mode: "training",
-      use_chat: false,
-      visibility_type: "hidden",
-      players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
-    }
-
-    case Context.create_game(game_params) do
-      {:ok, game} -> redirect(conn, to: Routes.game_path(conn, :show, game.id))
-      {:error, reason} -> {:error, reason}
     end
   end
 

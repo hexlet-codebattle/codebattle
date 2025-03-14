@@ -5,14 +5,23 @@
       <thead>
         <tr>
           <th>name</th>
-          <th>creator_id</th>
+          <th>long_name</th>
+          <th>creator</th>
+          <th>actions</th>
         </tr>
       </thead>
       <tbody>
         <%= for clan <- @clans do %>
           <tr>
             <td class="align-middle text"><%= clan.name %></td>
-            <td class="align-middle text"><%= clan.creator_id %></td>
+            <td class="align-middle text"><%= clan.long_name %></td>
+            <td class="align-middle text"><%= clan.creator && clan.creator.name %></td>
+            <td class="align-middle">
+              <%= link("Show",
+                to: Routes.clan_path(@conn, :show, clan.id),
+                class: "btn btn-sm btn-primary"
+              ) %>
+            </td>
           </tr>
         <% end %>
       </tbody>

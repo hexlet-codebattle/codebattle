@@ -3,8 +3,10 @@ defmodule CodebattleWeb.ClanController do
 
   alias Codebattle.Clan
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
+
   def index(conn, _params) do
-    clans = Clan.get_all()
+    clans = Clan.get_all(:creator)
 
     conn
     |> put_meta_tags(%{
@@ -15,15 +17,15 @@ defmodule CodebattleWeb.ClanController do
     |> render("index.html", %{clans: clans})
   end
 
-  def show(conn, %{"id" => name}) do
-    clan = Clan.get_by_name!(name)
+  def show(conn, %{"id" => id}) do
+    clan = Clan.get!(id, [:creator, :users])
 
     conn
     |> put_meta_tags(%{
       title: clan.name <> " • Hexlet Codebattle • Clan.",
-      description: clan.name,
+      description: clan.long_name,
       url: Routes.clan_path(conn, :show, clan)
     })
-    |> render("new.html")
+    |> render("show.html", %{clan: clan})
   end
 end

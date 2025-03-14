@@ -7,6 +7,8 @@ defmodule CodebattleWeb.TaskController do
   alias Codebattle.Task
   alias CodebattleWeb.Api.GameView
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
+
   def index(conn, _params) do
     tasks = Task.list_visible(conn.assigns.current_user)
 

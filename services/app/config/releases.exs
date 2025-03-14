@@ -83,11 +83,7 @@ config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
-config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL")
-
-config :codebattle,
-  guest_user_force_redirect_url: System.get_env("CODEBATTLE_GUEST_USER_FORCE_REDIRECT_URL")
-
+config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL")
 config :codebattle, host: codebattle_host
 
 config :codebattle,

@@ -3,6 +3,8 @@ defmodule CodebattleWeb.LiveViewTournamentController do
 
   alias Codebattle.Tournament
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
+
   def index(conn, _params) do
     current_user = conn.assigns[:current_user]
 

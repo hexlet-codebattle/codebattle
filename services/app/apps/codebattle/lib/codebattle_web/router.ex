@@ -5,8 +5,8 @@ defmodule CodebattleWeb.Router do
   import Phoenix.LiveDashboard.Router
 
   alias CodebattleWeb.Plugs.AssignCurrentUser
-  alias CodebattleWeb.Plugs.ForceRedirect
   alias CodebattleWeb.Plugs.MaintenanceMode
+  alias CodebattleWeb.Plugs.RescrictAccess
 
   require Logger
 
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_live_flash)
     plug(AssignCurrentUser)
     plug(MaintenanceMode)
-    plug(ForceRedirect)
+    plug(RescrictAccess)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(PhoenixGon.Pipeline)
@@ -38,15 +38,12 @@ defmodule CodebattleWeb.Router do
     plug(CodebattleWeb.Plugs.Locale)
   end
 
-  pipeline :empty_layout do
-    plug(:put_layout, {CodebattleWeb.LayoutView, :empty})
-  end
-
   pipeline :api do
     plug(:accepts, ["json"])
     plug(:fetch_session)
     plug(AssignCurrentUser)
-    plug(ForceRedirect)
+    plug(MaintenanceMode)
+    plug(RescrictAccess)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
   end
@@ -54,6 +51,10 @@ defmodule CodebattleWeb.Router do
   pipeline :ext_api do
     plug(:accepts, ["json"])
     plug(:put_secure_browser_headers)
+  end
+
+  pipeline :empty_layout do
+    plug(:put_layout, {CodebattleWeb.LayoutView, :empty})
   end
 
   pipeline :public_api do
@@ -118,6 +119,7 @@ defmodule CodebattleWeb.Router do
       get("/user/premium_requests", UserController, :premium_requests)
       post("/user/:id/send_premium_request", UserController, :send_premium_request)
       get("/user/current", UserController, :current)
+      resources("/users", UserController, only: [:index, :show, :create])
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
@@ -125,7 +127,6 @@ defmodule CodebattleWeb.Router do
       post("/tasks/build", TaskController, :build)
       post("/tasks/check", TaskController, :check)
       get("/tasks/:name/unique", TaskController, :unique)
-      resources("/users", UserController, only: [:index, :show, :create])
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
@@ -171,29 +172,14 @@ defmodule CodebattleWeb.Router do
       get("/:id/timer", LiveViewTournamentController, :show_timer, as: :tournament_timer)
     end
 
-    get("/clans/", ClanController, :index)
-    get("/clans/:id", ClanController, :show)
+    resources("/clans", ClanController, only: [:index, :show])
 
     resources("/events", EventController)
     get("/e/:slug", PublicEventController, :show)
 
-    resources("/users", UserController, only: [:new])
-    resources("/feedback", FeedbackController, only: [:index])
-
-    resources("/games", GameController, only: [:show]) do
-      get("/image", Game.ImageController, :show, as: :image)
-    end
-
-    scope "/games" do
-      post("/training", GameController, :create_training)
-    end
-  end
-
-  scope "/", CodebattleWeb do
-    pipe_through([:browser, :require_auth])
-
-    resources("/users", UserController, only: [:index, :show])
+    resources("/users", UserController, only: [:new, :index, :show])
     get("/settings", UserController, :edit, as: :user_setting)
+    resources("/feedback", FeedbackController, only: [:index])
 
     resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)
@@ -207,9 +193,12 @@ defmodule CodebattleWeb.Router do
       patch("/disable", TaskController, :disable, as: :disable)
     end
 
-    resources("/games", GameController, only: [:delete])
+    resources("/games", GameController, only: [:show, :delete]) do
+      get("/image", Game.ImageController, :show, as: :image)
+    end
 
     scope "/games" do
+      post("/training", GameController, :create_training)
       post("/:id/join", GameController, :join)
     end
 
@@ -223,17 +212,57 @@ defmodule CodebattleWeb.Router do
   end
 
   def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do
-    conn
-    |> put_status(:not_found)
-    |> json(%{error: "NOT_FOUND"})
-    |> halt()
+    conn = put_status(conn, :not_found)
+
+    case Enum.find(conn.req_headers, fn {header, _} -> header == "accept" end) do
+      {"accept", value} ->
+        if String.contains?(value, "json") do
+          conn
+          |> json(%{error: "NOT_FOUND"})
+          |> halt()
+        else
+          conn
+          |> put_resp_content_type("text/html")
+          |> put_view(CodebattleWeb.ErrorView)
+          |> render("404.html")
+          |> halt()
+        end
+
+      _ ->
+        # Default to HTML for browser requests if no Accept header
+        conn
+        |> put_resp_content_type("text/html")
+        |> put_view(CodebattleWeb.ErrorView)
+        |> render("404.html")
+        |> halt()
+    end
   end
 
   def handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{}}) do
-    conn
-    |> put_status(:not_found)
-    |> json(%{error: "NOT_FOUND"})
-    |> halt()
+    conn = put_status(conn, :not_found)
+
+    case Enum.find(conn.req_headers, fn {header, _} -> header == "accept" end) do
+      {"accept", value} ->
+        if String.contains?(value, "json") do
+          conn
+          |> json(%{error: "NOT_FOUND"})
+          |> halt()
+        else
+          conn
+          |> put_resp_content_type("text/html")
+          |> put_view(CodebattleWeb.ErrorView)
+          |> render("404.html")
+          |> halt()
+        end
+
+      _ ->
+        # Default to HTML for browser requests if no Accept header
+        conn
+        |> put_resp_content_type("text/html")
+        |> put_view(CodebattleWeb.ErrorView)
+        |> render("404.html")
+        |> halt()
+    end
   end
 
   def handle_errors(conn, %{kind: _kind, reason: reason}) do
