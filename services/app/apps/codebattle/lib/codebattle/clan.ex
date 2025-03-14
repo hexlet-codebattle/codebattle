@@ -79,8 +79,10 @@ defmodule Codebattle.Clan do
 
   defp changeset(clan, attrs) do
     clan
-    |> cast(attrs, [:name, :creator_id])
-    |> validate_length(:name, min: 2, max: 139)
+    |> cast(attrs, [:name, :long_name, :creator_id])
+    |> validate_required([:name])
+    |> validate_length(:name, min: 2, max: 256)
+    |> validate_length(:long_name, min: 2, max: 256)
     |> unique_constraint(:name)
   end
 end
