@@ -47,6 +47,14 @@ import (
 					}
 					resources: #config.resources
 					securityContext: privileged: true
+					volumeMounts: [{
+						name:      "tmp"
+						mountPath: "/tmp"
+					}]
+				}]
+				volumes: [{
+					name: "tmp"
+					emptyDir: medium: "Memory"
 				}]
 			}
 		}
