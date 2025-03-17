@@ -46,6 +46,7 @@ import (
 						successThreshold:    1
 					}
 					resources: #config.resources
+					securityContext: privileged: true
 				}]
 			}
 		}
