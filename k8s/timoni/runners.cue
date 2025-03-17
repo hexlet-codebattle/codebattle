@@ -9,7 +9,7 @@ runners: {
 		image:    "runner-cpp"
 		version:  "20"
 		lang:     "cpp"
-		replicas: 0
+		replicas: 1
 	}
 	"csharp": {
 		image:    "runner-csharp"
@@ -70,7 +70,7 @@ runners: {
 		image:    "runner-python"
 		version:  "3.12.2"
 		lang:     "python"
-		replicas: 0
+		replicas: 1
 	}
 	"ruby": {
 		image:    "runner-ruby"
