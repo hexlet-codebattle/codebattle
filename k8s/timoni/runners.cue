@@ -46,7 +46,7 @@ runners: {
 		image:    "codebattle/java"
 		version:  "21"
 		lang:     "java"
-		replicas: 0
+		replicas: 1
 	}
 	"js": {
 		image:    "codebattle/js"
