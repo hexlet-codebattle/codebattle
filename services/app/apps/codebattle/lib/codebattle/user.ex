@@ -2,13 +2,14 @@ defmodule Codebattle.User do
   @moduledoc """
     Represents authenticatable user
   """
+
   use Ecto.Schema
 
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.Repo
   alias Codebattle.Clan
+  alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
 
   @type t :: %__MODULE__{}
@@ -22,6 +23,7 @@ defmodule Codebattle.User do
            only: [
              :achievements,
              :avatar_url,
+             :category,
              :clan,
              :clan_id,
              :editor_mode,
@@ -48,6 +50,7 @@ defmodule Codebattle.User do
     field(:achievements, {:array, :string}, default: [])
     field(:auth_token, :string)
     field(:avatar_url, :string)
+    field(:category, :string)
     field(:clan, :string)
     field(:clan_id, :integer)
     field(:collab_logo, :string)
@@ -57,12 +60,14 @@ defmodule Codebattle.User do
     field(:editor_mode, :string)
     field(:editor_theme, :string)
     field(:email, :string)
+    field(:external_oauth_id, :string)
     field(:firebase_uid, :string)
     field(:github_id, :integer)
     field(:github_name, :string)
     field(:is_bot, :boolean, default: false)
-    field(:lang, :string, default: "js")
+    field(:lang, :string)
     field(:name, :string)
+    field(:password_hash, :string)
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
@@ -86,12 +91,14 @@ defmodule Codebattle.User do
       :achievements,
       :auth_token,
       :avatar_url,
+      :category,
       :discord_avatar,
       :discord_id,
       :discord_name,
       :editor_mode,
       :editor_theme,
       :email,
+      :external_oauth_id,
       :firebase_uid,
       :github_id,
       :github_name,
@@ -112,13 +119,14 @@ defmodule Codebattle.User do
     |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
+    |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
     |> assign_clan(params, user.id)
   end
 
   def token_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:auth_token, :name, :clan, :subscription_type])
+    |> cast(params, [:external_oauth_id, :category, :name, :clan, :subscription_type])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)
@@ -132,6 +140,7 @@ defmodule Codebattle.User do
       id: @guest_id,
       name: "John Doe",
       subscription_type: :free,
+      lang: Application.get_env(:codebattle, :default_lang_slug),
       rating: 0,
       rank: 0,
       sound_settings: %SoundSettings{}
@@ -146,7 +155,7 @@ defmodule Codebattle.User do
   def bot?(user_id) when is_integer(user_id), do: user_id < 0
 
   @spec guest_id() :: integer()
-  def guest_id(), do: @guest_id
+  def guest_id, do: @guest_id
 
   @spec get!(raw_id()) :: t() | no_return()
   def get!(user_id) do
@@ -199,19 +208,49 @@ defmodule Codebattle.User do
     |> Repo.update()
   end
 
+  def authenticate(name, password) do
+    __MODULE__
+    |> Repo.get_by(name: name)
+    |> case do
+      nil -> nil
+      user -> verify_password(user, password)
+    end
+  end
+
+  defp verify_password(_user, nil), do: nil
+
+  defp verify_password(user, password) do
+    if Bcrypt.verify_pass(password, user.password_hash) do
+      user
+    end
+  end
+
+  def create_password_hash_by_id(user_id, password) do
+    user_id
+    |> get!()
+    |> create_password_hash(password)
+  end
+
+  def create_password_hash(user, password) do
+    hashed_password = Bcrypt.hash_pwd_salt(password)
+
+    Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id), set: [password_hash: hashed_password])
+  end
+
   def subscription_types, do: @subscription_types
 
-  defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil], do: changeset
-  defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil], do: changeset
+  defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil],
+    do: change(changeset, %{clan: nil, clan_id: nil})
+
+  defp assign_clan(changeset, %{"clan" => clan}, _user_id) when clan in ["", nil],
+    do: change(changeset, %{clan: nil, clan_id: nil})
 
   # nil for new token users, clan will be managed by admin
   defp assign_clan(changeset, params, nil), do: assign_clan(changeset, params, 1)
 
-  defp assign_clan(changeset, %{clan: clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{clan: clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
-  defp assign_clan(changeset, %{"clan" => clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{"clan" => clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
   defp assign_clan(changeset, _params, _user_id), do: changeset
 

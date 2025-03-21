@@ -2,9 +2,10 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   @moduledoc """
     Basic user/password registration
   """
-  require Logger
+  alias Codebattle.Repo
+  alias Codebattle.User
 
-  alias Codebattle.{Repo, User}
+  require Logger
 
   def find(user_attrs) do
     case find_in_firebase(user_attrs) do
@@ -20,12 +21,8 @@ defmodule Codebattle.Auth.User.FirebaseUser do
 
   def create(user_attrs) do
     with :ok <- check_existed_user(user_attrs),
-         {:ok, firebase_uid} <- create_in_firebase(user_attrs),
-         {:ok, user} <- create_in_db(user_attrs, firebase_uid) do
-      {:ok, user}
-    else
-      {:error, reason} ->
-        {:error, reason}
+         {:ok, firebase_uid} <- create_in_firebase(user_attrs) do
+      create_in_db(user_attrs, firebase_uid)
     end
   end
 
@@ -33,7 +30,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
     reset_in_firebase(user_attrs)
   end
 
-  defp check_existed_user(user_attrs = %{name: name, email: email}) do
+  defp check_existed_user(%{name: name, email: email} = user_attrs) do
     existed_users =
       User
       |> User.Scope.by_email_or_name(user_attrs)
@@ -57,9 +54,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
            json: %{email: email, password: password}
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
-        firebase_uid =
-          body
-          |> Map.get("localId")
+        firebase_uid = Map.get(body, "localId")
 
         {:ok, firebase_uid}
 
@@ -85,9 +80,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
            json: %{email: email, password: password, returnSecureToken: true}
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
-        firebase_uid =
-          body
-          |> Map.get("localId")
+        firebase_uid = Map.get(body, "localId")
 
         {:ok, firebase_uid}
 
@@ -136,6 +129,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   defp create_in_db(%{name: name, email: email}, firebase_uid) do
     changeset =
       User.changeset(%User{}, %{
+        lang: Application.get_env(:codebattle, :default_lang_slug),
         avatar_url: gravatar_url(email),
         name: name,
         email: email,
@@ -160,7 +154,7 @@ defmodule Codebattle.Auth.User.FirebaseUser do
   end
 
   defp gravatar_url(email) do
-    hash = :erlang.md5(email) |> Base.encode16(case: :lower)
+    hash = email |> :erlang.md5() |> Base.encode16(case: :lower)
 
     "https://gravatar.com/avatar/#{hash}?d=identicon"
   end

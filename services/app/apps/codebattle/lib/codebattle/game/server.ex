@@ -3,10 +3,10 @@ defmodule Codebattle.Game.Server do
 
   use GenServer
 
-  require Logger
-
   alias Codebattle.Game
   alias Codebattle.Playbook
+
+  require Logger
 
   # API
   def start_link(game) do
@@ -48,7 +48,7 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
-      is_record_games: Application.get_env(:codebattle, :record_games),
+      is_record_games: !FunWithFlags.enabled?(:skip_record_games),
       playbook_state: %{records: [], id: 0}
     }
 
@@ -95,7 +95,7 @@ defmodule Codebattle.Game.Server do
       {:error, reason} ->
         {:reply, {:error, reason}, state}
 
-      {:ok, new_game = %Game{}} ->
+      {:ok, %Game{} = new_game} ->
         if is_record_games do
           {:reply, {:ok, {game.state, new_game}},
            %{

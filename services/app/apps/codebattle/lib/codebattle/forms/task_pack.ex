@@ -7,12 +7,7 @@ defmodule Codebattle.TaskPackForm do
   alias Codebattle.TaskPack
 
   def create(params, user) do
-    new_params =
-      params
-      |> Map.merge(%{
-        "state" => "draft",
-        "creator_id" => user.id
-      })
+    new_params = Map.merge(params, %{"state" => "draft", "creator_id" => user.id})
 
     %TaskPack{}
     |> changeset(new_params)
@@ -57,5 +52,8 @@ defmodule Codebattle.TaskPackForm do
       |> Enum.map(&String.to_integer/1)
 
     put_change(changeset, :task_ids, task_ids)
+  rescue
+    _ ->
+      add_error(changeset, :task_ids, "Please provide only integers with comma separated values")
   end
 end

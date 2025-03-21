@@ -1,4 +1,5 @@
 defmodule Codebattle.Chat do
+  @moduledoc false
   alias Codebattle.Chat
   alias Codebattle.User
 

@@ -1,5 +1,12 @@
-import React, { useRef, useLayoutEffect } from 'react';
+import React, {
+  useRef,
+  useLayoutEffect,
+  useState,
+  useEffect,
+  useMemo,
+} from 'react';
 
+import cn from 'classnames';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import useStayScrolled from '../utils/useStayScrolled';
@@ -16,17 +23,78 @@ const getKey = (id, time, name, index) => {
 
 function Messages({ messages, displayMenu = () => {}, disabled = false }) {
   const listRef = useRef();
+  const minScrollHeight = 20;
+  const [, setScrollHeight] = useState(0);
+  const [isScrollButtonVisible, setIsScrollButtonVisible] = useState(false);
+  const stayScrolledData = useStayScrolled(listRef);
+  const { stayScrolled } = stayScrolledData;
+  const scrollBottom = useMemo(
+    () => stayScrolledData.scrollBottom || (() => {}),
+    [stayScrolledData.scrollBottom],
+  );
+  const [isNearBottom, setIsNearBottom] = useState(true);
 
-  const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
-  // Typically you will want to use stayScrolled or scrollBottom inside
-  // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
+  // Check if we're near the bottom on message updates
   useLayoutEffect(() => {
-    stayScrolled();
-  }, [messages.length, stayScrolled]);
+    if (isNearBottom && scrollBottom) {
+      scrollBottom();
+      setIsScrollButtonVisible(false);
+    } else {
+      stayScrolled();
+      setIsScrollButtonVisible(true);
+    }
+  }, [messages.length, stayScrolled, scrollBottom, isNearBottom]);
+
+  const scrollHandler = e => {
+    const chatContainer = e.target;
+    const chatScrollHeight = chatContainer.scrollHeight
+      - chatContainer.scrollTop
+      - chatContainer.clientHeight;
+
+    setScrollHeight(chatScrollHeight);
+
+    // Consider it "near bottom" if within minScrollHeight pixels
+    if (chatScrollHeight <= minScrollHeight) {
+      setIsNearBottom(true);
+      setIsScrollButtonVisible(false);
+    } else {
+      setIsNearBottom(false);
+      setIsScrollButtonVisible(true);
+    }
+  };
+
+  // Initialize scroll state on mount
+  useEffect(() => {
+    if (listRef.current) {
+      const chatContainer = listRef.current;
+      const chatScrollHeight = chatContainer.scrollHeight
+        - chatContainer.scrollTop
+        - chatContainer.clientHeight;
+
+      setScrollHeight(chatScrollHeight);
+      setIsNearBottom(chatScrollHeight <= minScrollHeight);
+    }
+  }, []);
+
+  const scrollButtonClass = cn(
+    'scroll-button',
+    'position-absolute',
+    'rounded-circle',
+    'bg-secondary',
+    'p-0',
+    'border-0',
+    {
+      invisible: !isScrollButtonVisible,
+    },
+  );
 
   if (disabled) {
     return (
-      <div title="Chat is disabled" className="h-100 position-relative" ref={listRef}>
+      <div
+        title="Chat is disabled"
+        className="h-100 position-relative"
+        ref={listRef}
+      >
         {/* <span className="d-flex text-muted position-absolute h-100 w-100 justify-content-center align-items-center"> */}
         {/*   <FontAwesomeIcon className="h-25 w-25" icon="comment-slash" /> */}
         {/* </span> */}
@@ -40,11 +108,12 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
       <ul
         ref={listRef}
         className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
+        onScroll={scrollHandler}
       >
         {messages.map((message, index) => {
           const {
-            id, userId, name, text, type, time, meta,
-          } = message;
+ id, userId, name, text, type, time, meta,
+} = message;
 
           const key = getKey(id, time, name, messages.length - index);
 
@@ -62,6 +131,18 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
           );
         })}
       </ul>
+      <button
+        type="button"
+        className={scrollButtonClass}
+        onClick={() => {
+          if (scrollBottom) {
+            scrollBottom();
+            setIsNearBottom(true);
+            setIsScrollButtonVisible(false);
+          }
+        }}
+        aria-label="Scroll to bottom"
+      />
     </>
   );
 }

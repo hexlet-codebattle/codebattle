@@ -1,6 +1,4 @@
-import React, {
-  memo, useMemo, useState,
-} from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -29,14 +27,15 @@ const navMatchesTabsClassName = cn(
 );
 
 const tabLinkClassName = active => cn(
-  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
-  active,
-},
-);
+    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
+    {
+      active,
+    },
+  );
 
 const tabContentClassName = active => cn('tab-pane fade', {
-  'd-flex flex-column show active': active,
-});
+    'd-flex flex-column show active': active,
+  });
 
 const ArenaPlayerPanelCodes = {
   review: 'review',
@@ -53,7 +52,9 @@ const getPlayerPanelCodes = type => {
   if (type === TournamentTypes.arena) {
     return Object.values(ArenaPlayerPanelCodes);
   }
-    return Object.values(PlayerPanelCodes);
+  return Object.values(PlayerPanelCodes).filter(
+    panel => panel !== PlayerPanelCodes.stages,
+  );
 };
 
 function PlayerStatsPanel({
@@ -72,30 +73,29 @@ function PlayerStatsPanel({
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
 
-  const matchList = useMemo(() => (
-    reverse(Object.values(matches))
-      .filter(match => match.playerIds.includes(currentUserId))
-  ), [matches, currentUserId]);
-  const [
-    opponentId,
-    matchId,
-  ] = useMemo(() => {
-    const activeMatch = matchList.find(match => match.state === MatchStatesCodes.playing);
+  const matchList = useMemo(
+    () => reverse(Object.values(matches)).filter(match => match.playerIds.includes(currentUserId)),
+    [matches, currentUserId],
+  );
+  const [opponentId, matchId] = useMemo(() => {
+    const activeMatch = matchList.find(
+      match => match.state === MatchStatesCodes.playing,
+    );
     const lastMatch = matchList[0];
     const targetMatch = activeMatch || lastMatch;
 
     if (targetMatch) {
       const playerId = getOpponentId(targetMatch, currentUserId);
 
-      return [
-        playerId,
-        targetMatch.id,
-      ];
+      return [playerId, targetMatch.id];
     }
 
     return [];
   }, [matchList, currentUserId]);
-  const groupedMatchListByRound = useMemo(() => groupBy(matchList, 'roundPosition'), [matchList]);
+  const groupedMatchListByRound = useMemo(
+    () => groupBy(matchList, 'roundPosition'),
+    [matchList],
+  );
   const stages = useMemo(
     () => reverse(Object.keys(groupedMatchListByRound)).map(Number),
     [groupedMatchListByRound],
@@ -111,13 +111,12 @@ function PlayerStatsPanel({
         <div>
           <span className="text-nowrap pr-1" title={currentPlayer.name}>
             {currentPlayer.name}
-            {currentPlayer.isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
+            {currentPlayer.isBanned && (
+              <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
+            )}
           </span>
           <span title="Your place in tournament">
-            <TournamentPlace
-              place={currentPlayer.place + 1}
-              withIcon
-            />
+            <TournamentPlace place={currentPlayer.place + 1} withIcon />
           </span>
         </div>
       </div>
@@ -153,7 +152,9 @@ function PlayerStatsPanel({
           <div
             id={`player-panel-${PlayerPanelCodes.review}`}
             key={`player-panel-${PlayerPanelCodes.review}`}
-            className={tabContentClassName(playerPanel === PlayerPanelCodes.review)}
+            className={tabContentClassName(
+              playerPanel === PlayerPanelCodes.review,
+            )}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.review}`}
           >
@@ -195,64 +196,73 @@ function PlayerStatsPanel({
           <div
             id={`player-panel-${PlayerPanelCodes.stages}`}
             key={`player-panel-${PlayerPanelCodes.stages}`}
-            className={tabContentClassName(playerPanel === PlayerPanelCodes.stages)}
+            className={tabContentClassName(
+              playerPanel === PlayerPanelCodes.stages,
+            )}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.stages}`}
           >
-            {stages.length < 2 ? (<div className="d-flex justify-content-center p-1">No stages statistics</div>) : stages.map(stage => {
-              const stageFirstMatch = groupedMatchListByRound[stage][0];
-              const stageOpponentId = getOpponentId(stageFirstMatch, currentUserId);
+            {stages.length < 2 ? (
+              <div className="d-flex justify-content-center p-1">
+                No stages statistics
+              </div>
+            ) : (
+              stages.map(stage => {
+                const stageFirstMatch = groupedMatchListByRound[stage][0];
+                const stageOpponentId = getOpponentId(
+                  stageFirstMatch,
+                  currentUserId,
+                );
 
-              return (
-                <div
-                  key={`stage-${stage}-statistics`}
-                  className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom p-2"
-                >
-                  <StageCard
-                    playerId={currentUserId}
-                    opponentId={stageOpponentId}
-                    stage={stage}
-                    stagesLimit={roundsLimit}
-                    players={players}
-                    lastGameId={stageFirstMatch?.gameId}
-                    lastMatchState={stageFirstMatch?.state}
-                    matchList={groupedMatchListByRound[stage]}
-                  />
-                  {type === TournamentTypes.arena ? (
-                    <ArenaStatisticsCard
-                      type={type}
+                return (
+                  <div
+                    key={`stage-${stage}-statistics`}
+                    className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom p-2"
+                  >
+                    <StageCard
                       playerId={currentUserId}
-                      taskIds={currentPlayer.taskIds}
-                      place={currentPlayer.place}
-                      isBanned={currentPlayer.isBanned}
-                      matchList={matchList}
-                    />
-                  ) : (
-                    <StatisticsCard
-                      playerId={currentUserId}
+                      opponentId={stageOpponentId}
+                      stage={stage}
+                      stagesLimit={roundsLimit}
+                      players={players}
+                      lastGameId={stageFirstMatch?.gameId}
+                      lastMatchState={stageFirstMatch?.state}
                       matchList={groupedMatchListByRound[stage]}
                     />
-                  )}
-                </div>
-              );
-            })}
+                    {type === TournamentTypes.arena ? (
+                      <ArenaStatisticsCard
+                        type={type}
+                        playerId={currentUserId}
+                        taskIds={currentPlayer.taskIds}
+                        place={currentPlayer.place}
+                        isBanned={currentPlayer.isBanned}
+                        matchList={matchList}
+                      />
+                    ) : (
+                      <StatisticsCard
+                        playerId={currentUserId}
+                        matchList={groupedMatchListByRound[stage]}
+                      />
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
           <div
             id={`player-panel-${PlayerPanelCodes.matches}`}
             key={`player-panel-${PlayerPanelCodes.matches}`}
-            className={tabContentClassName(playerPanel === PlayerPanelCodes.matches)}
+            className={tabContentClassName(
+              playerPanel === PlayerPanelCodes.matches,
+            )}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.matches}`}
           >
             {stages.map(stage => (
               <React.Fragment key={`stage-${stage}-matches`}>
-
                 {type !== TournamentTypes.arena && (
                   <div className="d-flex justify-content-center p-2">
-                    <StageTitle
-                      stage={stage}
-                      stagesLimit={roundsLimit}
-                    />
+                    <StageTitle stage={stage} stagesLimit={roundsLimit} />
                   </div>
                 )}
                 <div className="border-top">

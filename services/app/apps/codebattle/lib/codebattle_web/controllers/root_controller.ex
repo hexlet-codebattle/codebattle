@@ -9,15 +9,25 @@ defmodule CodebattleWeb.RootController do
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
+    event_slug = Application.get_env(:codebattle, :lobby_event_slug)
 
-    if slug = Application.get_env(:codebattle, :lobby_event_slug) do
-      conn
-      |> put_view(CodebattleWeb.PublicEventView)
-      |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", slug))
-    else
-      if current_user.is_guest do
+    case {current_user.is_guest, event_slug not in [nil, ""]} do
+      # redirect use to login page if user is guest and we are in event mode
+      {true, true} ->
+        redirect(conn, to: "/session/new")
+
+      # redirect user to event page if we are in event mode
+      {false, true} ->
+        conn
+        |> put_view(CodebattleWeb.PublicEventView)
+        |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", event_slug))
+
+      # render guests landing page for normal mode
+      {true, _} ->
         render(conn, "landing.html", layout: {LayoutView, "landing.html"})
-      else
+
+      # by default render index page with lobby view
+      _ ->
         conn
         |> maybe_put_opponent(params)
         |> put_gon(
@@ -28,8 +38,15 @@ defmodule CodebattleWeb.RootController do
           leaderboard_users: []
         )
         |> render("index.html")
-      end
     end
+  end
+
+  def maintenance(conn, _) do
+    render(conn, "maintenance.html", layout: {LayoutView, "empty.html"})
+  end
+
+  def waiting(conn, _) do
+    render(conn, "waiting.html", layout: {LayoutView, "landing.html"})
   end
 
   def feedback(conn, _) do

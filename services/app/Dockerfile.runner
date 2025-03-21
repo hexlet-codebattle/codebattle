@@ -1,26 +1,30 @@
-FROM elixir:1.16-alpine AS compile-image
+FROM elixir:1.18-alpine AS compile-image
+ARG GIT_HASH
+
+ENV APP_VERSION=$GIT_HASH
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
 
-RUN mix local.hex --force \
+RUN apk update && apk add --no-cache build-base git ca-certificates make curl \
+  && mix local.hex --force \
   && mix local.rebar --force
 
 COPY mix.exs .
 COPY mix.lock .
 COPY config ./config
 COPY apps/runner/mix.exs apps/runner/mix.exs
+COPY apps/phoenix_gon/mix.exs apps/phoenix_gon/mix.exs
+COPY apps/codebattle/mix.exs apps/codebattle/mix.exs
 
-RUN apk update && apk add --no-cache ca-certificates git make curl
-
-RUN mix do deps.get --only prod, compile
+RUN mix do deps.get --only prod, deps.compile
 
 COPY ./apps/runner/ ./apps/runner/
 
 RUN mix release runner \
   && mv _build/prod/rel/runner /opt/release
 
-FROM elixir:1.16-alpine AS runtime-image
+FROM elixir:1.18-alpine AS runtime-image
 
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 24.0.9

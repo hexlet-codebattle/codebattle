@@ -13,14 +13,10 @@ defmodule CodebattleWeb.UserControllerTest do
   end
 
   test "index", %{conn: conn} do
-    conn =
-      conn
-      |> get(Routes.user_path(conn, :index))
+    conn = get(conn, Routes.user_path(conn, :index))
 
     assert redirected_to(conn, 302) ==
-             Routes.session_path(CodebattleWeb.Endpoint, :new,
-               next: Routes.user_path(conn, :index)
-             )
+             Routes.session_path(CodebattleWeb.Endpoint, :new, next: Routes.user_path(conn, :index))
   end
 
   test "new", %{conn: conn} do
@@ -47,14 +43,10 @@ defmodule CodebattleWeb.UserControllerTest do
   test "show user: not signed in", %{conn: conn} do
     user = insert(:user)
 
-    conn =
-      conn
-      |> get(Routes.user_path(conn, :show, user.id))
+    conn = get(conn, Routes.user_path(conn, :show, user.id))
 
     assert redirected_to(conn, 302) ==
-             Routes.session_path(CodebattleWeb.Endpoint, :new,
-               next: Routes.user_path(conn, :show, user.id)
-             )
+             Routes.session_path(CodebattleWeb.Endpoint, :new, next: Routes.user_path(conn, :show, user.id))
   end
 
   test "edit user", %{conn: conn} do

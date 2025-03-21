@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Tournament.AdminController do
       conn
       |> put_status(:not_found)
       |> json(%{error: "NOT_FOUND"})
-      |> halt
+      |> halt()
     end
   end
 end

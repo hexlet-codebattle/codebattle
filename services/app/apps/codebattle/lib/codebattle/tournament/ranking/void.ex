@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.Void do
+  @moduledoc false
   def get_first(_tournament, _limit \\ 0) do
     []
   end
@@ -21,6 +22,14 @@ defmodule Codebattle.Tournament.Ranking.Void do
   end
 
   def set_ranking(tournament) do
+    tournament
+  end
+
+  def get_event_ranking(_tournament) do
+    []
+  end
+
+  def set_ranking_to_ets(tournament) do
     tournament
   end
 

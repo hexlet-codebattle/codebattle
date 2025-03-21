@@ -4,11 +4,12 @@ defmodule Codebattle.Feedback do
   """
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.Repo
   alias Codebattle.Feedback
+  alias Codebattle.Repo
 
   @derive {Jason.Encoder, only: [:id, :author_name, :status, :text, :title_link, :inserted_at]}
 
@@ -22,13 +23,13 @@ defmodule Codebattle.Feedback do
   end
 
   @doc false
-  def changeset(feedback = %Feedback{}, attrs) do
+  def changeset(%Feedback{} = feedback, attrs) do
     feedback
     |> cast(attrs, [:author_name, :status, :text, :title_link])
     |> validate_required([:author_name, :status, :text, :title_link])
   end
 
-  def get_all() do
+  def get_all do
     from(
       f in Feedback,
       order_by: [desc: f.inserted_at]

@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Plugs.AssignCurrentUser do
-  import Plug.Conn
+  @moduledoc false
   import Phoenix.Controller
+  import Plug.Conn
 
   alias Codebattle.User
   alias CodebattleWeb.Router.Helpers, as: Routes
@@ -12,14 +13,11 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   def call(conn, _opts) do
     user_id = get_session(conn, :user_id)
 
-    case {user_id, conn.request_path} do
-      {nil, path} when path in ["/auth/token/", "/auth/token"] ->
-        conn |> assign(:current_user, User.build_guest())
+    case user_id do
+      nil ->
+        assign(conn, :current_user, User.build_guest())
 
-      {nil, _path} ->
-        handle_guest(conn)
-
-      {id, _path} ->
+      id ->
         case User.get(id) do
           nil ->
             conn
@@ -28,25 +26,17 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
             |> redirect(to: Routes.session_path(conn, :new))
             |> halt()
 
+          %User{subscription_type: :banned} ->
+            html = Phoenix.View.render_to_string(CodebattleWeb.LayoutView, "banned.html", conn: conn)
+
+            conn
+            |> put_resp_content_type("text/html")
+            |> send_resp(403, html)
+            |> halt()
+
           user ->
             assign(conn, :current_user, user)
         end
-    end
-  end
-
-  defp handle_guest(conn) do
-    if Application.get_env(:codebattle, :allow_guests) do
-      conn |> assign(:current_user, User.build_guest())
-    else
-      if url = Application.get_env(:codebattle, :guest_user_force_redirect_url) do
-        conn
-        |> redirect(external: url)
-        |> halt()
-      else
-        conn
-        |> redirect(to: Routes.session_path(conn, :new))
-        |> halt()
-      end
     end
   end
 end

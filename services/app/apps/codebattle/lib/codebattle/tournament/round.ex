@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.Round do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
   import Ecto.Query
 
@@ -70,12 +71,13 @@ defmodule Codebattle.Tournament.Round do
   end
 
   def disable_all_rounds(tournament_id) do
-    from(
-      r in __MODULE__,
-      where: r.tournament_id == ^tournament_id and r.state == "active",
-      update: [set: [state: "disabled"]]
+    Codebattle.Repo.update_all(
+      from(r in __MODULE__,
+        where: r.tournament_id == ^tournament_id and r.state == "active",
+        update: [set: [state: "disabled"]]
+      ),
+      []
     )
-    |> Codebattle.Repo.update_all([])
   end
 
   def states, do: @states

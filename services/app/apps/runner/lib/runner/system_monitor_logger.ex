@@ -18,7 +18,7 @@ defmodule Runner.SystemMonitorLogger do
     {:ok, state}
   end
 
-  def get_stats() do
+  def get_stats do
     send(self(), :get_stats)
   end
 

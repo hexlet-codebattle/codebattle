@@ -1,28 +1,27 @@
 import Config
 
-port = System.get_env("CODEBATTLE_PORT", "4000")
-host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
+codebattle_port = System.get_env("CODEBATTLE_PORT", "4000")
+codebattle_host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
+codebattle_url = "https://#{codebattle_host}"
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
+app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
+app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")
 
-config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: port],
-  url: [host: host, scheme: "https", port: 443],
-  cache_static_manifest: "priv/static/cache_manifest.json",
-  secret_key_base: secret_key_base,
-  live_view: [signing_salt: live_view_salt],
-  server: true
+tournament_rematch_timeout_ms =
+  "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
 
-config :codebattle, CodebattleWeb.BotEndpoint,
-  http: [:inet6, port: "4002"],
-  url: [host: host, scheme: "https", port: 443],
-  secret_key_base: secret_key_base,
-  server: true
+checker_executor =
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
+    _ -> Codebattle.CodeCheck.Executor.RemoteDockerRun
+  end
 
-config :codebattle, host: host
+runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
+runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 
-config :codebattle,
-  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
+config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -38,27 +37,68 @@ config :codebattle, Codebattle.Repo,
   pool_size: "CODEBATTLE_POOL_SIZE" |> System.get_env("10") |> String.to_integer(),
   log_level: :error
 
+config :codebattle, CodebattleWeb.BotEndpoint,
+  http: [:inet6, port: "4002"],
+  url: [host: codebattle_host, scheme: "https", port: 443],
+  secret_key_base: secret_key_base,
+  server: true
+
+config :codebattle, CodebattleWeb.Endpoint,
+  http: [port: codebattle_port],
+  url: [host: codebattle_host, scheme: "https", port: 443],
+  cache_static_manifest: "priv/static/cache_manifest.json",
+  secret_key_base: secret_key_base,
+  live_view: [signing_salt: live_view_salt],
+  server: true
+
+config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
+config :codebattle, :app_subtitle, app_subtitle
+config :codebattle, :app_title, app_title
+config :codebattle, :default_lang_slug, System.get_env("CODEBATTLE_DEFAULT_LANG_SLUG", "js")
+
+config :codebattle, :firebase,
+  sender_id: System.get_env("FIREBASE_SENDER_ID"),
+  api_key: System.get_env("FIREBASE_API_KEY"),
+  firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
+
+config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SLUG")
+
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
-  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD"),
+  external_client_id: System.get_env("EXTERNAL_CLIENT_ID", "ASFD"),
+  external_client_secret: System.get_env("EXTERNAL_CLIENT_SECRET", "ASFD"),
+  external_auth_url: System.get_env("EXTERNAL_AUTH_URL", "ASDF"),
+  external_user_info_url: System.get_env("EXTERNAL_USER_INFO_URL", "ASFD"),
+  external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
+
+config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
+config :codebattle, checker_executor: checker_executor
+config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
+config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")
+config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
+
+config :codebattle,
+  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
+
+config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL")
+config :codebattle, host: codebattle_host
+
+config :codebattle,
+  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
+
+config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
+config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,
-  title: System.get_env("CODEBATTLE_META_TITLE", "Hexlet Codebattle • Game for programmers"),
-  description:
-    System.get_env(
-      "CODEBATTLE_META_DESCRIPTION",
-      "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
-    ),
-  url:
-    System.get_env(
-      "CODEBATTLE_META_URL",
-      "https://codebattle.hexlet.io"
-    ),
+  title: app_title,
+  description: app_subtitle,
+  url: codebattle_url,
   image:
     System.get_env(
-      "CODEBATTLE_META_IMAGE",
+      "CODEBATTLE_COLLAB_LOGO",
       "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
     ),
   "og:type": "website",
@@ -76,67 +116,24 @@ config :phoenix_meta_tags,
     card: "summary_large_image"
   }
 
-import_github_tasks = System.get_env("CODEBATTLE_IMPORT_GITHUB_TASKS") == "true"
-create_bot_games = System.get_env("CODEBATTLE_CREATE_BOT_GAMES") == "true"
-use_external_js = System.get_env("CODEBATTLE_USE_EXTERNAL_JS") == "true"
-hide_header = System.get_env("CODEBATTLE_HIDE_HEADER") == "true"
-hide_footer = System.get_env("CODEBATTLE_HIDE_FOOTER") == "true"
-hide_user_dropdown = System.get_env("CODEBATTLE_HIDE_USER_DROPDOWN") == "true"
-hide_invites = System.get_env("CODEBATTLE_HIDE_INVITES") == "true"
-use_only_token_auth = System.get_env("CODEBATTLE_USE_ONLY_TOKEN_AUTH") == "true"
-show_extension_popup = System.get_env("CODEBATTLE_SHOW_EXTENSION_POPUP") == "true"
-allow_guests = System.get_env("CODEBATTLE_ALLOW_GUESTS") == "true"
-use_presence = System.get_env("CODEBATTLE_USE_PRESENCE") == "true"
-record_games = System.get_env("CODEBATTLE_RECORD_GAMES") == "true"
-use_event_rating = System.get_env("CODEBATTLE_USE_EVENT_RATING") == "true"
-use_event_rank = System.get_env("CODEBATTLE_USE_EVENT_RANK") == "true"
+config :runner, RunnerWeb.Endpoint,
+  http: [:inet6, port: runner_port],
+  url: [host: runner_host, port: 81],
+  secret_key_base: secret_key_base,
+  server: true
 
-tournament_rematch_timeout_ms =
-  "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
+config :runner, :runner_url, "http://runner.default.svc"
+config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
+config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
-config :codebattle, import_github_tasks: import_github_tasks
-config :codebattle, create_bot_games: create_bot_games
-config :codebattle, use_external_js: use_external_js
-config :codebattle, hide_header: hide_header
-config :codebattle, hide_footer: hide_footer
-config :codebattle, hide_user_dropdown: hide_user_dropdown
-config :codebattle, hide_invites: hide_invites
-config :codebattle, use_only_token_auth: use_only_token_auth
-config :codebattle, show_extension_popup: show_extension_popup
-config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
-config :codebattle, allow_guests: allow_guests
-config :codebattle, use_presence: use_presence
-config :codebattle, record_games: record_games
-config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
-config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")
-config :codebattle, force_redirect_url: System.get_env("CODEBATTLE_FORCE_REDIRECT_URL")
-config :codebattle, use_event_rating: use_event_rating
-config :codebattle, use_event_rank: use_event_rank
+config :runner,
+  max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
-config :codebattle,
-  guest_user_force_redirect_url: System.get_env("CODEBATTLE_GUEST_USER_FORCE_REDIRECT_URL")
+config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
 
-config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
-
-config :codebattle, :firebase,
-  sender_id: System.get_env("FIREBASE_SENDER_ID"),
-  api_key: System.get_env("FIREBASE_API_KEY"),
-  firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
-
-checker_executor =
-  case System.get_env("CODEBATTLE_EXECUTOR") do
-    "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
-    _ -> Codebattle.CodeCheck.Executor.RemoteDockerRun
-  end
-
-config :codebattle, checker_executor: checker_executor
-config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
-config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
-config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SLUG")
-config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
-config :codebattle, force_locale: System.get_env("CODEBATTLE_FORCE_LOCALE", "false") == "true"
-
-config :sentry_fe, dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
+config :runner,
+  white_list_lang_slugs:
+    "RUNNER_WHITE_LIST_LANG_SLUGS" |> System.get_env("") |> String.split(",") |> Enum.filter(&(&1 != ""))
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
@@ -144,24 +141,4 @@ config :sentry,
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()]
 
-port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
-host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
-secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
-
-config :codebattle,
-  deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
-
-config :runner, RunnerWeb.Endpoint,
-  http: [:inet6, port: port],
-  url: [host: host, port: 81],
-  secret_key_base: secret_key_base,
-  server: true
-
-config :runner,
-  max_parallel_containers_run:
-    System.get_env("CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN", "16") |> String.to_integer()
-
-config :runner, :runner_url, "http://runner.default.svc"
-config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
-config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
-config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
+config :sentry_fe, dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")

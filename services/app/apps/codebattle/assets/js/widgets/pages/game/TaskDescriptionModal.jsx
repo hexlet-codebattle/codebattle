@@ -6,10 +6,9 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  gameTaskSelector, taskDescriptionLanguageSelector,
-} from '@/selectors';
+import { gameTaskSelector, taskDescriptionLanguageSelector } from '@/selectors';
 
+import i18n from '../../../i18n';
 import ModalCodes from '../../config/modalCodes';
 import { actions } from '../../slices';
 
@@ -28,7 +27,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
   return (
     <Modal centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
-        <Modal.Title>Task Description</Modal.Title>
+        <Modal.Title>{i18n.t('Task Description')}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <TaskAssignment
@@ -47,7 +46,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
             className="btn btn-secondary text-white rounded-lg"
           >
             <FontAwesomeIcon icon="times" className="mr-2" />
-            Close
+            {i18n.t('Close')}
           </Button>
         </div>
       </Modal.Footer>

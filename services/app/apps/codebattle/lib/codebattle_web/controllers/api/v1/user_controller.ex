@@ -1,13 +1,13 @@
 defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
+  import Ecto.Query, warn: false
+
   alias Codebattle.Game
   alias Codebattle.PremiumRequest
   alias Codebattle.User
   alias Codebattle.User.Stats
   alias CodebattleWeb.Api.UserView
-
-  import Ecto.Query, warn: false
 
   def index(conn, params) do
     payload = UserView.render_rating(params)

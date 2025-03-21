@@ -1,10 +1,11 @@
 defmodule Codebattle.Bot.GameCreator do
-  alias Codebattle.Game
-  alias Codebattle.Bot
-
+  @moduledoc false
   use GenServer
 
-  @timeout :timer.seconds(3)
+  alias Codebattle.Bot
+  alias Codebattle.Game
+
+  @timeout Application.compile_env(:codebattle, :start_create_bot_timeout)
 
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do
@@ -14,16 +15,22 @@ defmodule Codebattle.Bot.GameCreator do
   @impl GenServer
   def init(_state) do
     Process.send_after(self(), :create_bot_if_needed, @timeout)
+
     {:ok, :noop}
   end
 
   @impl GenServer
   def handle_info(:create_bot_if_needed, state) do
-    for level <- Codebattle.Task.levels() do
-      create_game(level)
+    if FunWithFlags.enabled?(:skip_bot_games) do
+      :noop
+    else
+      for level <- Codebattle.Task.levels() do
+        create_game(level)
+      end
+
+      Process.send_after(self(), :create_bot_if_needed, @timeout)
     end
 
-    Process.send_after(self(), :create_bot_if_needed, @timeout)
     {:noreply, state}
   end
 

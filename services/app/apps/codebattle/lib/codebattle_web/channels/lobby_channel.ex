@@ -109,8 +109,7 @@ defmodule CodebattleWeb.LobbyChannel do
     game.visibility_type == "public" || Game.Helpers.player?(game, user)
   end
 
-  defp add_players(acc, %{"opponent_type" => "bot"}, user),
-    do: Map.put(acc, :players, [user, Bot.Context.build()])
+  defp add_players(acc, %{"opponent_type" => "bot"}, user), do: Map.put(acc, :players, [user, Bot.Context.build()])
 
   defp add_players(acc, _payload, user), do: Map.put(acc, :players, [user])
 
@@ -125,7 +124,9 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   defp maybe_add_task(params, %{"task_tags" => task_tags}, user) when length(task_tags) > 0 do
-    case Codebattle.Task.get_task_by_tags_for_user(user, task_tags) do
+    level = Map.get(params, :level)
+
+    case Codebattle.Task.get_task_by_tags_for_user(user, task_tags, level) do
       nil -> params
       task -> Map.put(params, :task, task)
     end

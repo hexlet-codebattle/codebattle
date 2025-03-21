@@ -1,6 +1,5 @@
 defmodule Codebattle.Game.Engine do
-  require Logger
-
+  @moduledoc false
   import Codebattle.Game.Auth
   import Codebattle.Game.Helpers
 
@@ -12,8 +11,10 @@ defmodule Codebattle.Game.Engine do
   alias Codebattle.User
   alias Codebattle.UserGame
 
-  @default_timeout div(:timer.minutes(30), 1000)
-  @max_timeout div(:timer.hours(1), 1000)
+  require Logger
+
+  @default_timeout div(to_timeout(minute: 30), 1000)
+  @max_timeout div(to_timeout(hour: 1), 1000)
 
   def create_game(params) do
     # TODO: add support for tags
@@ -64,9 +65,6 @@ defmodule Codebattle.Game.Engine do
          :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_game_created(game) do
       {:ok, game}
-    else
-      {:error, reason} ->
-        {:error, reason}
     end
   end
 
@@ -143,9 +141,6 @@ defmodule Codebattle.Game.Engine do
          :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_game_updated(game) do
       {:ok, game}
-    else
-      {:error, reason} ->
-        {:error, reason}
     end
   end
 
@@ -240,30 +235,32 @@ defmodule Codebattle.Game.Engine do
          :ok <- terminate_game(game) do
       update_game!(game, %{state: "canceled"})
       :ok
+    end
+  end
+
+  @spec terminate_game(game_id :: integer | Game.t()) :: :ok
+  def terminate_game(game_id) when is_integer(game_id) do
+    Game.GlobalSupervisor.terminate_game(game_id)
+    :ok
+  end
+
+  def terminate_game(%Game{} = game) do
+    if game.is_live do
+      Game.GlobalSupervisor.terminate_game(game.id)
+
+      if game.tournament_id do
+        :noop
+      else
+        Codebattle.PubSub.broadcast("game:terminated", %{game: game})
+      end
+
+      :ok
     else
-      {:error, reason} -> {:error, reason}
+      :ok
     end
   end
 
-  def terminate_game(game = %Game{}) do
-    case game.is_live do
-      true ->
-        Game.GlobalSupervisor.terminate_game(game.id)
-
-        if game.tournament_id do
-          :noop
-        else
-          Codebattle.PubSub.broadcast("game:terminated", %{game: game})
-        end
-
-        :ok
-
-      _ ->
-        :ok
-    end
-  end
-
-  def rematch_send_offer(game = %{is_bot: true}, _user) do
+  def rematch_send_offer(%{is_bot: true} = game, _user) do
     {:ok, new_game} = create_rematch_game(game)
     Game.GlobalSupervisor.terminate_game(game.id)
 
@@ -307,9 +304,13 @@ defmodule Codebattle.Game.Engine do
   def store_playbook_async(game) do
     {:ok, playbook_records} = Game.Server.get_playbook_records(game.id)
 
-    Task.start(fn ->
+    if Application.get_env(:codebattle, :store_playbook_async) do
+      Task.start(fn ->
+        Playbook.Context.store_playbook(playbook_records, game.id)
+      end)
+    else
       Playbook.Context.store_playbook(playbook_records, game.id)
-    end)
+    end
   end
 
   def store_result!(game) do
@@ -354,7 +355,7 @@ defmodule Codebattle.Game.Engine do
     |> Repo.update!()
   end
 
-  def update_game!(game = %Game{}) do
+  def update_game!(%Game{} = game) do
     case Repo.get(Game, game.id) do
       nil ->
         :ok
@@ -366,7 +367,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def update_game!(game = %Game{}, params) do
+  def update_game!(%Game{} = game, params) do
     case Repo.get(Game, game.id) do
       nil ->
         :ok
@@ -382,11 +383,11 @@ defmodule Codebattle.Game.Engine do
     %UserGame{} |> UserGame.changeset(params) |> Repo.insert!()
   end
 
-  def trigger_timeout(game = %Game{state: "game_over"}) do
+  def trigger_timeout(%Game{state: "game_over"} = game) do
     terminate_game_after(game, 1)
   end
 
-  def trigger_timeout(game = %Game{}) do
+  def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")
     {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
@@ -417,7 +418,7 @@ defmodule Codebattle.Game.Engine do
     :ok
   end
 
-  defp maybe_fire_playing_game_side_effects(game = %{state: "playing"}) do
+  defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do
     init_playbook(game)
     run_bots(game)
     start_timeout_timer(game)

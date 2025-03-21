@@ -5,19 +5,23 @@ defmodule Codebattle.IntegrationCase do
 
   using do
     quote do
-      alias CodebattleWeb.Router.Helpers, as: Routes
-      import Phoenix.ChannelTest
-      import CodebattleWeb.Router.Helpers
-      import CodebattleWeb.Factory
-      import Plug.Conn
-      import Phoenix.ConnTest
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 
-      alias Codebattle.{Repo, User, Game, UserGame}
+      import CodebattleWeb.Factory
+      import CodebattleWeb.Router.Helpers
+      import Phoenix.ChannelTest
+      import Phoenix.ConnTest
+      import Plug.Conn
+
+      alias Codebattle.Game
       alias Codebattle.Game.Helpers
+      alias Codebattle.Repo
+      alias Codebattle.User
+      alias Codebattle.UserGame
       alias CodebattleWeb.GameChannel
       alias CodebattleWeb.LobbyChannel
+      alias CodebattleWeb.Router.Helpers, as: Routes
       alias CodebattleWeb.TournamentAdminChannel
       alias CodebattleWeb.TournamentChannel
       alias CodebattleWeb.UserSocket

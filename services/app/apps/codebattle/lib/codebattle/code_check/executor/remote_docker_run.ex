@@ -1,11 +1,11 @@
 defmodule Codebattle.CodeCheck.Executor.RemoteDockerRun do
   @moduledoc false
 
-  require Logger
-
   alias Codebattle.CodeCheck.Checker.Token
   alias Runner.AtomizedMap
   alias Runner.Languages
+
+  require Logger
 
   @spec call(Token.t()) :: Token.t()
   def call(token) do
@@ -44,9 +44,7 @@ defmodule Codebattle.CodeCheck.Executor.RemoteDockerRun do
     |> Finch.request(CodebattleHTTP, receive_timeout: Languages.get_timeout_ms(lang_meta))
     |> case do
       {:ok, %Finch.Response{status: 200, body: body}} ->
-        Logger.error(
-          "RemoteExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
-        )
+        Logger.error("RemoteExecutor success lang: #{lang_meta.slug}, time_ms: #{:os.system_time(:millisecond) - now}}")
 
         AtomizedMap.load(body)
 

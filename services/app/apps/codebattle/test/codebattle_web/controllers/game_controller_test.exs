@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
+
   alias Codebattle.Game
 
   describe "GET games/:id" do
@@ -99,7 +100,7 @@ defmodule CodebattleWeb.GameControllerTest do
 
   describe "POST /games/training" do
     test "creates training game", %{conn: conn} do
-      insert(:task, level: "elementary")
+      insert(:task, level: "elementary", tags: ["training"])
 
       conn
       |> post(Routes.game_path(conn, :create_training))

@@ -1,4 +1,5 @@
 defmodule Codebattle.DataCase do
+  @moduledoc false
   use ExUnit.CaseTemplate
 
   alias Codebattle.Repo
@@ -6,12 +7,11 @@ defmodule Codebattle.DataCase do
 
   using do
     quote do
+      import Codebattle.DataCase
+      import CodebattleWeb.Factory
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Codebattle.DataCase
-
-      import CodebattleWeb.Factory
 
       alias Codebattle.Game
       alias Codebattle.Repo

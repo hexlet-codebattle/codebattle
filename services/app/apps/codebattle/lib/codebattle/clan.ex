@@ -23,19 +23,19 @@ defmodule Codebattle.Clan do
     timestamps()
   end
 
-  @spec get_all() :: list(t())
-  def get_all() do
-    Repo.all(__MODULE__)
+  @spec get_all(term()) :: list(t())
+  def get_all(preload \\ []) do
+    __MODULE__ |> Repo.all() |> Repo.preload(preload)
   end
 
-  @spec get(String.t()) :: t() | nil
-  def get(id) do
-    Repo.get(__MODULE__, id)
+  @spec get(String.t() | integer(), term()) :: t() | nil
+  def get(id, preload \\ []) do
+    __MODULE__ |> Repo.get(id) |> Repo.preload(preload)
   end
 
-  @spec get!(String.t()) :: t() | no_return()
-  def get!(id) do
-    Repo.get!(__MODULE__, id)
+  @spec get!(String.t() | integer(), term()) :: t() | no_return()
+  def get!(id, preload \\ []) do
+    __MODULE__ |> Repo.get!(id) |> Repo.preload(preload)
   end
 
   @spec get_by_name!(String.t()) :: t() | no_return()
@@ -79,8 +79,10 @@ defmodule Codebattle.Clan do
 
   defp changeset(clan, attrs) do
     clan
-    |> cast(attrs, [:name, :creator_id])
-    |> validate_length(:name, min: 2, max: 139)
+    |> cast(attrs, [:name, :long_name, :creator_id])
+    |> validate_required([:name])
+    |> validate_length(:name, min: 2, max: 256)
+    |> validate_length(:long_name, min: 2, max: 256)
     |> unique_constraint(:name)
   end
 end

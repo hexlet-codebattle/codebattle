@@ -16,8 +16,7 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
-    {:ok,
-     %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
+    {:ok, %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
   end
 
   test "first user gave up and send rematch offer, second user accept rematch", %{
@@ -42,7 +41,7 @@ defmodule CodebattleWeb.Integration.Game.RematchTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
     editor_text_init =
-      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
+      ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = (a, b) => {\n  return 0;\n};\n// use stdout to debug\n\nmodule.exports = solution;|
 
     game = Game.Context.get_game!(game_id)
     assert game.state == "playing"

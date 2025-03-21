@@ -50,12 +50,12 @@
       src={Routes.static_path(@conn, "/assets/landing.js")}
     >
     </script>
-    <title>Codebattle</title>
+    <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
     <script async="" defer="" src="https://buttons.github.io/buttons.js">
     </script>
     <!--Google Tag Manager-->
-    <%= if Application.get_env(:codebattle, :use_external_js) do %>
+    <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
       </script>
@@ -63,7 +63,7 @@
     <!--End Google Tag Manager-->
   </head>
   <body>
-    <%= if Application.get_env(:codebattle, :use_external_js) do %>
+    <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <noscript>
         <iframe
           height="0"

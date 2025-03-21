@@ -14,46 +14,45 @@ defmodule Codebattle.Game.Helpers do
   def get_rematch_initiator_id(game), do: game.rematch_initiator_id
   def get_players(game), do: game.players
   def get_task(game), do: game.task
-  def get_bots(game), do: game |> get_players |> Enum.filter(fn player -> player.is_bot end)
-  def get_first_player(game), do: game |> get_players |> Enum.at(0)
-  def get_second_player(game), do: game |> get_players |> Enum.at(1)
+  def get_bots(game), do: game |> get_players() |> Enum.filter(fn player -> player.is_bot end)
+  def get_first_player(game), do: game |> get_players() |> Enum.at(0)
+  def get_second_player(game), do: game |> get_players() |> Enum.at(1)
 
-  def get_first_non_bot(game),
-    do: game |> get_players |> Enum.find(fn player -> !player.is_bot end)
+  def get_first_non_bot(game), do: game |> get_players() |> Enum.find(fn player -> !player.is_bot end)
 
-  def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
+  def bot_game?(game), do: game |> get_players() |> Enum.any?(fn p -> p.is_bot end)
   def tournament_game?(game), do: get_tournament_id(game) != nil
   def training_game?(game), do: game.mode == "training"
   def active_game?(game), do: game.is_live && game.state in ["waiting_opponent", "playing"]
 
   def get_winner(game) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.find(fn player -> player.result == "won" end)
   end
 
   def get_player(game, id) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.find(fn player -> player.id == id end)
   end
 
   def player?(game, player_id) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.any?(&(&1.id == player_id))
   end
 
   def get_opponent(game, player_id) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.find(&(&1.id != player_id))
   end
 
   def get_player_results(game) do
     game
     |> get_players()
-    |> Enum.map(fn player ->
+    |> Map.new(fn player ->
       result =
         player
         |> Map.take([:id, :result, :result_percent])
@@ -61,7 +60,6 @@ defmodule Codebattle.Game.Helpers do
 
       {player.id, result}
     end)
-    |> Enum.into(%{})
   end
 
   def winner?(game, player_id), do: player_result?(game, player_id, "won")
@@ -72,9 +70,10 @@ defmodule Codebattle.Game.Helpers do
   def update_player(game, player_id, params) do
     new_players =
       Enum.map(game.players, fn player ->
-        case player.id == player_id do
-          true -> Map.merge(player, params)
-          _ -> player
+        if player.id == player_id do
+          Map.merge(player, params)
+        else
+          player
         end
       end)
 
@@ -84,9 +83,10 @@ defmodule Codebattle.Game.Helpers do
   def update_other_players(game, player_id, params) do
     new_players =
       Enum.map(game.players, fn player ->
-        case player.id != player_id do
-          true -> Map.merge(player, params)
-          _ -> player
+        if player.id == player_id do
+          player
+        else
+          Map.merge(player, params)
         end
       end)
 
@@ -105,7 +105,7 @@ defmodule Codebattle.Game.Helpers do
 
   defp player_result?(game, player_id, result) do
     game
-    |> get_players
+    |> get_players()
     |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
     |> Kernel.!()
     |> Kernel.!()

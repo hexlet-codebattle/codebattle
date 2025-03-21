@@ -4,12 +4,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportController do
   alias Codebattle.Game
   alias Codebattle.UserGameReport
 
-  def create(conn, %{
-        "game_id" => game_id,
-        "offender_id" => offender_id,
-        "reason" => reason,
-        "comment" => comment
-      }) do
+  def create(conn, %{"game_id" => game_id, "offender_id" => offender_id, "reason" => reason, "comment" => comment}) do
     reporter = conn.assigns.current_user
     game = Game.Context.get_game!(game_id)
 

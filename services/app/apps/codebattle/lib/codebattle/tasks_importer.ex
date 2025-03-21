@@ -5,7 +5,7 @@ defmodule Codebattle.TasksImporter do
 
   require Logger
 
-  @timeout :timer.hours(12)
+  @timeout to_timeout(hour: 12)
   @issues_link "https://github.com/hexlet-codebattle/battle_asserts/releases/latest/download/issues.tar.gz"
   @tmp_basedir "/tmp/codebattle-issues"
 
@@ -19,24 +19,31 @@ defmodule Codebattle.TasksImporter do
   end
 
   def run_sync do
-    fetch_issues() |> upsert()
+    upsert(fetch_issues())
   end
 
   # SERVER
   def init(state) do
     Logger.debug("Start Tasks Importer")
-    Process.send_after(self(), :run, :timer.seconds(17))
+
+    Process.send_after(self(), :run, to_timeout(second: 17))
+
     {:ok, state}
   end
 
   def handle_info(:run, state) do
-    fetch_issues() |> upsert()
-    Process.send_after(self(), :run, @timeout)
+    if FunWithFlags.enabled?(:use_import_github_tasks) do
+      upsert(fetch_issues())
+      Process.send_after(self(), :run, @timeout)
+    else
+      :noop
+    end
+
     {:noreply, state}
   end
 
   def handle_cast(:run, state) do
-    fetch_issues() |> upsert()
+    upsert(fetch_issues())
     {:noreply, state}
   end
 
@@ -58,12 +65,11 @@ defmodule Codebattle.TasksImporter do
     issue_names =
       path
       |> File.ls!()
-      |> Enum.map(fn file_name ->
+      |> MapSet.new(fn file_name ->
         file_name
         |> String.split(".")
         |> List.first()
       end)
-      |> MapSet.new()
       |> Enum.filter(fn x -> String.length(x) > 0 end)
 
     Enum.each(issue_names, fn issue_name ->
@@ -106,7 +112,7 @@ defmodule Codebattle.TasksImporter do
     }
   end
 
-  defp format_input_signature(input = %{"argument-name" => arg}) do
+  defp format_input_signature(%{"argument-name" => arg} = input) do
     input |> Map.delete("argument-name") |> Map.put("argument_name", arg)
   end
 

@@ -72,13 +72,15 @@ describe('UserSettings test cases', () => {
   });
 
   test('successfull user settings update', async () => {
-    const settingUpdaterSpy = jest.spyOn(axios, 'patch').mockResolvedValueOnce({ data: {} });
+    const settingUpdaterSpy = jest
+      .spyOn(axios, 'patch')
+      .mockResolvedValueOnce({ data: {} });
     const {
-      getByRole, getByLabelText, getByTestId, user,
-    } = setup(
-      <Provider store={store}>
-        <UserSettings />
-      </Provider>,
+ getByRole, getByLabelText, getByTestId, user,
+} = setup(
+  <Provider store={store}>
+    <UserSettings />
+  </Provider>,
     );
     const submitButton = getByLabelText('SubmitForm');
     const nameInput = getByTestId('nameInput');
@@ -90,26 +92,30 @@ describe('UserSettings test cases', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(settingUpdaterSpy).toHaveBeenCalledWith(expect.anything(), {
-        clan: '',
-        name: 'Dmitry',
-        lang: 'js',
-        sound_settings: {
-          level: 6,
-          type: 'standart',
+      expect(settingUpdaterSpy).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          clan: '',
+          name: 'Dmitry',
+          lang: 'js',
+          sound_settings: {
+            level: 6,
+            type: 'standart',
+          },
         },
-      }, expect.anything());
+        expect.anything(),
+      );
       expect(getByRole('alert')).toHaveClass('alert-success');
     });
   });
 
   test('failed user settings update', async () => {
     const {
-      getByTestId, getByLabelText, findByRole, findByText, user,
-    } = setup(
-      <Provider store={store}>
-        <UserSettings />
-      </Provider>,
+ getByTestId, getByLabelText, findByRole, findByText, user,
+} = setup(
+  <Provider store={store}>
+    <UserSettings />
+  </Provider>,
     );
     const submitButton = getByLabelText('SubmitForm');
     const nameInput = getByTestId('nameInput');
@@ -121,7 +127,11 @@ describe('UserSettings test cases', () => {
 
     await user.type(nameInput, '   ');
 
-    expect(await findByText(/name must be a trimmed string/i)).toBeInTheDocument();
+    expect(
+      await findByText(
+        /Should contain Latin letters, numbers and underscores. Only begin with latin letter/i,
+      ),
+    ).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
 
     axios.patch.mockRejectedValueOnce({
@@ -143,7 +153,10 @@ describe('UserSettings test cases', () => {
 
     expect(await findByText(/Has already been taken/i)).toBeInTheDocument();
 
-    axios.patch.mockRejectedValueOnce({ response: undefined, message: 'Network Error' });
+    axios.patch.mockRejectedValueOnce({
+      response: undefined,
+      message: 'Network Error',
+    });
 
     await user.clear(nameInput);
     await user.type(nameInput, 'CoolUserName');

@@ -1,8 +1,5 @@
 import React, {
-  useState,
-  useContext,
-  useCallback,
-  memo,
+ useState, useContext, useCallback, memo,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,7 +7,7 @@ import cn from 'classnames';
 import noop from 'lodash/noop';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ExtendedEditor from '../../components/ExtendedEditor';
+import ExtendedEditor from '../../components/Editor';
 import LanguagePickerView from '../../components/LanguagePickerView';
 import RoomContext from '../../components/RoomContext';
 import { gameRoomEditorStyles } from '../../config/editorSettings';
@@ -20,10 +17,7 @@ import {
   isTaskAssertsReadySelector,
   taskStateSelector,
 } from '../../machines/selectors';
-import {
-  getGeneratorStatus,
-  validationStatuses,
-} from '../../machines/task';
+import { getGeneratorStatus, validationStatuses } from '../../machines/task';
 import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Room';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
@@ -34,11 +28,9 @@ import DakModeButton from '../game/DarkModeButton';
 import AssertsOutput from './AssertsOutput';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
 
-const isGeneratorsError = status => (
-  status === assertsStatuses.error
-    || status === assertsStatuses.memoryLeak
-    || status === assertsStatuses.timeout
-);
+const isGeneratorsError = status => status === assertsStatuses.error
+  || status === assertsStatuses.memoryLeak
+  || status === assertsStatuses.timeout;
 
 const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
   const infoClassName = cn(
@@ -69,7 +61,9 @@ const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
           ) Generator/Solution code.
         </span>
       ) : (
-        <span className="text-center">Tests are not generated automatically. They are based only on examples</span>
+        <span className="text-center">
+          Tests are not generated automatically. They are based only on examples
+        </span>
       )}
     </div>
   );
@@ -81,7 +75,10 @@ function BuilderEditorsWidget() {
 
   const [assertsPanelShowing, setAssertsPanelShowing] = useState(false);
 
-  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
+  const taskMachineState = useMachineStateSelector(
+    taskService,
+    taskStateSelector,
+  );
   const isAssertsReady = isTaskAssertsReadySelector(taskMachineState);
   const isAssertsForming = isTaskAssertsFormingSelector(taskMachineState);
 
@@ -136,21 +133,28 @@ function BuilderEditorsWidget() {
     loading: false,
   };
 
-  const changeTaskServiceState = useCallback(() => taskService.send('CHANGES'), [taskService]);
-  const handleChanges = isAssertsReady
-    ? changeTaskServiceState
-    : noop;
+  const changeTaskServiceState = useCallback(
+    () => taskService.send('CHANGES'),
+    [taskService],
+  );
+  const handleChanges = isAssertsReady ? changeTaskServiceState : noop;
 
-  const onChangeGenerator = useCallback(value => {
-    handleChanges();
+  const onChangeGenerator = useCallback(
+    value => {
+      handleChanges();
 
-    dispatch(actions.setTaskArgumentsGenerator({ value }));
-  }, [dispatch, handleChanges]);
-  const onChangeSolution = useCallback(value => {
-    handleChanges();
+      dispatch(actions.setTaskArgumentsGenerator({ value }));
+    },
+    [dispatch, handleChanges],
+  );
+  const onChangeSolution = useCallback(
+    value => {
+      handleChanges();
 
-    dispatch(actions.setTaskSolution({ value }));
-  }, [dispatch, handleChanges]);
+      dispatch(actions.setTaskSolution({ value }));
+    },
+    [dispatch, handleChanges],
+  );
 
   const generatorParams = {
     ...params,
@@ -179,7 +183,10 @@ function BuilderEditorsWidget() {
           style={gameRoomEditorStyles}
         >
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1 mb-2" role="toolbar">
+            <div
+              className="btn-toolbar justify-content-between align-items-center m-1 mb-2"
+              role="toolbar"
+            >
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
                   <div className="py-2">
@@ -204,12 +211,13 @@ function BuilderEditorsWidget() {
                 </div>
               </div>
               <div
-                className={
-                  cn('btn-group justify-content-between align-items-center', {
+                className={cn(
+                  'btn-group justify-content-between align-items-center',
+                  {
                     'd-flex': params.edibatle,
                     'd-none': !params.editable,
-                  })
-                }
+                  },
+                )}
               >
                 <button
                   title="Reset Code"
@@ -234,14 +242,21 @@ function BuilderEditorsWidget() {
           </div>
           <ExtendedEditor {...generatorParams} />
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
+            <InfoPopup
+              editable={editable}
+              reloadGeneratorCode={reloadCode}
+              origin={origin}
+            />
           )}
         </div>
       </div>
       <div className="col-12 col-lg-6 p-1" data-editor-state="idle">
         <div className="card h-100 shadow-sm" style={gameRoomEditorStyles}>
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
+            <div
+              className="btn-toolbar justify-content-between align-items-center m-1"
+              role="toolbar"
+            >
               <div className="d-flex align-items-center p-1">
                 <div className="py-2">
                   <TaskPropStatusIcon
@@ -256,7 +271,11 @@ function BuilderEditorsWidget() {
                 </div>
                 <h5 className="pt-2">Step 4: Solution Example</h5>
                 <button
-                  title={assertsPanelShowing ? 'Open solution code' : 'Open task asserts'}
+                  title={
+                    assertsPanelShowing
+                      ? 'Open solution code'
+                      : 'Open task asserts'
+                  }
                   type="button"
                   className="btn btn-secondary ml-2 rounded-lg text-nowrap"
                   onClick={toggleAssertsPanel}
@@ -271,26 +290,39 @@ function BuilderEditorsWidget() {
                     <>
                       <FontAwesomeIcon className="mr-2" icon="tasks" />
                       Asserts
-                      {asserts.length !== 0 && <span className={assertsBadgeClassName}>{asserts.length}</span>}
-                      {asserts.length === 0 && isGeneratorsError(assertsStatus.status) && <span className={assertsBadgeClassName}>!</span>}
+                      {asserts.length !== 0 && (
+                        <span className={assertsBadgeClassName}>
+                          {asserts.length}
+                        </span>
+                      )}
+                      {asserts.length === 0
+                        && isGeneratorsError(assertsStatus.status) && (
+                          <span className={assertsBadgeClassName}>!</span>
+                        )}
                     </>
                   )}
                 </button>
               </div>
-              <LanguagePickerView
-                currentLangSlug={editorsLang}
-                isDisabled
-              />
+              <LanguagePickerView currentLangSlug={editorsLang} isDisabled />
             </div>
           </div>
           <div className={!assertsPanelShowing ? 'd-none' : ''}>
             <AssertsOutput asserts={asserts} {...assertsStatus} />
           </div>
-          <div id="editor" className={assertsPanelShowing ? 'd-none' : 'd-flex flex-column flex-grow-1'}>
+          <div
+            id="editor"
+            className={
+              assertsPanelShowing ? 'd-none' : 'd-flex flex-column flex-grow-1'
+            }
+          >
             <ExtendedEditor {...solutionParams} />
           </div>
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
+            <InfoPopup
+              editable={editable}
+              reloadGeneratorCode={reloadCode}
+              origin={origin}
+            />
           )}
         </div>
       </div>

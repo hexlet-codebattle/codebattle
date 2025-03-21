@@ -1,4 +1,5 @@
 defmodule Codebattle.WaitingRoom.State do
+  @moduledoc false
   use TypedStruct
 
   typedstruct do

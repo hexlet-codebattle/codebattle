@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import i18next from 'i18next';
 
+import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
- isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
+  isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
 }) => {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 

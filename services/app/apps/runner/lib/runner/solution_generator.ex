@@ -6,7 +6,13 @@ defmodule Runner.SolutionGenerator do
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t()) :: String.t()
   def call(task, lang_meta) do
     binding =
-      %{arguments: [], expected_type: "", return_statement: "", typespec: "lal"}
+      %{
+        arguments: [],
+        expected_type: "",
+        return_statement: "",
+        typespec: "lal",
+        comment: task.comment || "use stdout to debug"
+      }
       |> add_arguments(lang_meta, task.input_signature)
       |> add_typespec(lang_meta, task.input_signature)
       |> add_expected(lang_meta, task.output_signature)

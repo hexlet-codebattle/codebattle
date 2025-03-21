@@ -14,7 +14,7 @@ defmodule Runner.StaleContainersKiller do
     {:ok, state}
   end
 
-  def kill() do
+  def kill do
     send(self(), :check_game_containers)
   end
 
@@ -45,7 +45,7 @@ defmodule Runner.StaleContainersKiller do
     head
   end
 
-  def list_containers() do
+  def list_containers do
     {containers, _} =
       System.cmd("docker", [
         "ps",

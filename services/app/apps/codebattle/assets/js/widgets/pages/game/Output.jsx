@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 
 import { camelizeKeys } from 'humps';
-import i18next from 'i18next';
 import uniqueId from 'lodash/uniqueId';
 
+import i18next from '../../../i18n';
 import AccordeonBox from '../../components/AccordeonBox';
 import color from '../../config/statusColor';
 
@@ -87,13 +87,13 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
   }
 
   const {
- status, output, outputError, asserts, version = 0,
-} = sideOutput;
+    status, output, outputError, asserts, version = 0,
+  } = sideOutput;
 
   const uniqIndex = uniqueId('heading');
   const normalizedAsserts = version === 2
-      ? asserts || []
-      : (asserts || []).map(elem => camelizeKeys(JSON.parse(elem)));
+    ? asserts || []
+    : (asserts || []).map(elem => camelizeKeys(JSON.parse(elem)));
   const normalizedOutput = version === 2 ? outputError : output;
   const isError = [
     'error',

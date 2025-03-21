@@ -9,7 +9,6 @@ defmodule CodebattleWeb.GameChannel do
   require Logger
 
   def join("game:" <> game_id, _payload, socket) do
-    # try do
     game = Context.get_game!(game_id)
     score = Context.fetch_score_by_game_id(game_id)
 
@@ -37,7 +36,7 @@ defmodule CodebattleWeb.GameChannel do
       ranking =
         tournament
         |> Tournament.Ranking.get_first(3)
-        |> then(&Enum.concat(&1, [Tournament.Ranking.get_by_player(tournament, current_player)]))
+        |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
         |> Enum.filter(& &1)
         |> Enum.uniq_by(& &1.id)
 
@@ -70,12 +69,10 @@ defmodule CodebattleWeb.GameChannel do
          game: GameView.render_game(game, score)
        }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil)}
     end
-
-    # rescue
-    #   e ->
-    #     Logger.error(inspect(e))
-    #     {:ok, %{error: "Game not found"}, socket}
-    # end
+  rescue
+    e ->
+      Logger.error(inspect(e))
+      {:ok, %{error: "Game not found"}, socket}
   end
 
   def terminate(_reason, socket) do
@@ -266,9 +263,7 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("player:unfollow", %{"user_id" => user_id}, socket) do
     if socket.assigns.tournament_id do
-      Codebattle.PubSub.unsubscribe(
-        "tournament:#{socket.assigns.tournament_id}:player:#{user_id}"
-      )
+      Codebattle.PubSub.unsubscribe("tournament:#{socket.assigns.tournament_id}:player:#{user_id}")
     end
 
     {:noreply, assign(socket, follow_id: nil)}
@@ -342,7 +337,7 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message = %{event: "waiting_room:player" <> _rest}, socket) do
+  def handle_info(%{event: "waiting_room:player" <> _rest} = message, socket) do
     push(socket, message.event, message.payload)
 
     {:noreply, socket}

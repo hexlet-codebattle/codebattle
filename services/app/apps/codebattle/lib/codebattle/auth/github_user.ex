@@ -17,6 +17,7 @@ defmodule Codebattle.Auth.User.GithubUser do
         params = %{
           github_id: profile.id,
           name: unique_name(github_name),
+          lang: Application.get_env(:codebattle, :default_lang_slug),
           github_name: github_name,
           email: profile.email,
           avatar_url: profile.avatar_url
@@ -72,7 +73,7 @@ defmodule Codebattle.Auth.User.GithubUser do
   end
 
   defp generate_unique_name(name) do
-    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16()}"
+    new_name = "#{name}_#{2 |> :crypto.strong_rand_bytes() |> Base.encode16()}"
 
     case Repo.get_by(User, name: new_name) do
       %User{} ->

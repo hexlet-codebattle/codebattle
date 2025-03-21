@@ -48,8 +48,7 @@ defmodule Codebattle.PremiumRequest do
     |> Repo.insert()
   end
 
-  def all() do
-    __MODULE__
-    |> Repo.all()
+  def all do
+    Repo.all(__MODULE__)
   end
 end

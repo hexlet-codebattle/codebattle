@@ -21,7 +21,7 @@ function GameResult() {
     if (gameStatus.state === GameStateCodes.timeout) {
       return ({
         alertStyle: 'danger',
-        msg: 'Time is up. There are no winners in the game',
+        msg: i18n.t('Time is up. There are no winners in the game'),
       });
     }
 

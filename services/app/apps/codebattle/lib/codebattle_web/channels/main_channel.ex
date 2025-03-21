@@ -2,12 +2,12 @@ defmodule CodebattleWeb.MainChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias CodebattleWeb.Presence
   alias Codebattle.Game
+  alias CodebattleWeb.Presence
 
   require Logger
 
-  def join("main", params = %{"state" => state}, socket) do
+  def join("main", %{"state" => state} = params, socket) do
     current_user = socket.assigns.current_user
 
     active_game_id =
@@ -15,7 +15,7 @@ defmodule CodebattleWeb.MainChannel do
         topic = "main:#{current_user.id}"
         Codebattle.PubSub.subscribe(topic)
 
-        if Application.get_env(:codebattle, :use_presence) do
+        if !FunWithFlags.enabled?(:skip_presence) do
           send(self(), {:after_join, state})
         end
 
@@ -24,8 +24,6 @@ defmodule CodebattleWeb.MainChannel do
         if follow_id do
           Codebattle.PubSub.subscribe("user:#{follow_id}")
           Game.Context.get_active_game_id(follow_id)
-        else
-          nil
         end
       end
 
@@ -49,7 +47,7 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_in("change_presence_state", %{"state" => state}, socket) do
     Presence.update(socket, socket.assigns.current_user.id, %{
-      online_at: inspect(System.system_time(:seconds)),
+      online_at: inspect(System.system_time(:second)),
       state: state,
       user: socket.assigns.current_user,
       id: socket.assigns.current_user.id

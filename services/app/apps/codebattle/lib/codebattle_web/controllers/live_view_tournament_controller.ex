@@ -3,6 +3,8 @@ defmodule CodebattleWeb.LiveViewTournamentController do
 
   alias Codebattle.Tournament
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
+
   def index(conn, _params) do
     current_user = conn.assigns[:current_user]
 
@@ -50,8 +52,7 @@ defmodule CodebattleWeb.LiveViewTournamentController do
     tournament = Tournament.Context.get!(params["id"])
 
     if Tournament.Helpers.can_moderate?(tournament, current_user) do
-      conn
-      |> live_render(CodebattleWeb.Live.Tournament.EditView,
+      live_render(conn, CodebattleWeb.Live.Tournament.EditView,
         session: %{"current_user" => current_user, "tournament" => tournament}
       )
     else

@@ -3,26 +3,18 @@ defmodule Codebattle.TaskForm do
 
   import Ecto.Changeset
 
-  alias Codebattle.Repo
-  alias Codebattle.Task
   alias Codebattle.AssertsService
   alias Codebattle.AssertsService.Result
+  alias Codebattle.Repo
+  alias Codebattle.Task
 
   def create(params, user, %{"next_state" => next_state}) do
-    new_params =
-      params
-      |> Map.merge(%{
-        "origin" => "user",
-        "state" => next_state,
-        "creator_id" => user.id
-      })
+    new_params = Map.merge(params, %{"origin" => "user", "state" => next_state, "creator_id" => user.id})
 
-    changeset =
-      %Task{}
-      |> changeset(new_params)
+    changeset = changeset(%Task{}, new_params)
 
     if next_state == "draft" do
-      changeset |> Repo.insert()
+      Repo.insert(changeset)
     else
       {:ok, changeset.changes}
     end

@@ -1,11 +1,6 @@
 {
   "invalidData": [
-    [
-      "nickname validation: empty name",
-      "",
-      "Nickname required",
-      "name"
-    ],
+    ["nickname validation: empty name", "", "Nickname required", "name"],
     [
       "nickname validation: consists entirely of spaces",
       " ",
@@ -96,19 +91,14 @@
       "Should be from 6 to 16 characters",
       "password"
     ],
-    [
-      "password validation: empty",
-      "",
-      "Password required",
-      "password"
-    ]
+    ["password validation: empty", "", "Password required", "password"]
   ],
   "validData": {
     "data": {
       "name": "testName",
       "email": "valid@email.com",
-      "password": "testpassword",
-      "passwordConfirmation": "testpassword"
+      "password": "testpassword!",
+      "passwordConfirmation": "testpassword!"
     },
     "route": "/api/v1/users",
     "headers": {

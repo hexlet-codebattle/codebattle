@@ -44,6 +44,22 @@ msgstr "Пользователи в сети"
 msgid "Logout"
 msgstr "Выход"
 
+msgid "Log in"
+msgstr "Войти"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Enter your name"
+msgstr "Введите ваше имя"
+
+msgid "Enter your password"
+msgstr "Введите ваш пароль"
+
+
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign in with %{name}"
 msgstr "Войти через %{name}"
@@ -99,6 +115,8 @@ msgstr "Игроки"
 msgid "Check result"
 msgstr "Проверить результат"
 
+
+
 #: lib/codebattle_web/templates/game/show.html.slim:15
 msgid "Waiting for an opponent"
 msgstr "Ожидание соперника"
@@ -121,6 +139,14 @@ msgstr "%{index}) имя: %{name}, рейтинг: %{rating}"
 #: lib/codebattle_web/controllers/session_controller.ex:6
 msgid "You have been logged out!"
 msgstr "Вы успешно вышли из системы!"
+
+#: lib/codebattle_web/controllers/session_controller.ex:29
+msgid "Welcome to Codebattle!"
+msgstr  "Добро пожаловать в Codebattle!"
+
+#: lib/codebattle_web/controllers/session_controller.ex:24
+msgid "Invalid name or password"
+msgstr  "Неверное имя пользователя или пароль"
 
 #: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
@@ -237,6 +263,9 @@ msgstr "Задачи"
 msgid "Tournaments"
 msgstr "Турниры"
 
+msgid "Tournament"
+msgstr "Турнир"
+
 #, elixir-format
 msgid "Join Discord"
 msgstr "Чат Discord"
@@ -343,6 +372,9 @@ msgstr "Поздравляю! Вы победили!"
 
 msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
+
+msgid "Time is up. There are no winners in the game"
+msgstr "Время вышло. Никто не выйграл эту битву"
 
 msgid "Lose Game Message"
 msgstr "К сожалению, Ваш оппонент выиграл эту битву"
@@ -511,6 +543,18 @@ msgstr "Как устроен турнир"
 
 msgid "Stage %{name}"
 msgstr "Тур %{name}"
+
+msgid "Stage: "
+msgstr "Тур: "
+
+msgid "Games: "
+msgstr "Игры: "
+
+msgid "Stats: "
+msgstr "Статистика: "
+
+msgid "Games"
+msgstr "Игры"
 
 msgid "closed"
 msgstr "закрыт"
@@ -719,6 +763,9 @@ msgstr "Ожидайте следующую игру"
 msgid "Tournament is over"
 msgstr "Турнир завершен"
 
+msgid "Round is over, wait for the next round"
+msgstr "Раунд завершен, дождитесь следующего"
+
 msgid "If you read this you've lost the game"
 msgstr "Ты заслуживаешь победы, продолжай!"
 
@@ -778,3 +825,120 @@ msgstr "Связь с сервером потеряна, перезагрузи�
 
 msgid "Show full tournament table"
 msgstr "Показать полную турнирную таблицу"
+
+msgid "Type: %{type}"
+msgstr "Тип: %{type}"
+
+msgid "swiss"
+msgstr "Швейцарская система"
+
+msgid "individual"
+msgstr "Олимпийская система"
+
+msgid "team"
+msgstr "Командный турнир"
+
+msgid "arena"
+msgstr "Арена"
+
+msgid "Tournament waiting_participants"
+msgstr "Турнир скоро начнется"
+
+msgid "Tournament canceled"
+msgstr "Турнир отменен"
+
+msgid "Tournament active"
+msgstr "Турнир активен"
+
+msgid "Tournament finished"
+msgstr "Турнир завершен"
+
+msgid "Starts At"
+msgstr "Начало"
+
+msgid "Game playing"
+msgstr "Игра продолжается"
+
+msgid "Game waiting_opponent"
+msgstr "Ожидание соперника"
+
+msgid "Game state: timeout"
+msgstr "Статус: время истекло"
+
+msgid "Game state: canceled"
+msgstr "Статус: игра отменена"
+
+msgid "Game state: game_over"
+msgstr "Статус: игра окончена"
+
+msgid "Game state: initial"
+msgstr "Статус: игра создается"
+
+msgid "Game state: builder"
+msgstr "Статус: игра готовится к запуску"
+
+msgid "Game state: waiting_opponent"
+msgstr "Статус: ожидание соперника"
+
+msgid "Game state: playing"
+msgstr "Статус: игра идет"
+
+msgid "Level: elementary"
+msgstr "Уровень: элементарный"
+
+msgid "Level: easy"
+msgstr "Уровень: легкий"
+
+msgid "Level: medium"
+msgstr "Уровень: средний"
+
+msgid "Level: hard"
+msgstr "Уровень: сложный"
+
+msgid "Timeout: %{sec} seconds"
+msgstr "Время на задачу: %{sec} секунд"
+
+msgid "undefined"
+msgstr "не определено"
+
+msgid "won"
+msgstr "победа"
+
+msgid "lost"
+msgstr "поражение"
+
+msgid "gave_up"
+msgstr "сдался"
+
+msgid "timeout"
+msgstr "время вышло"
+
+msgid "Game between"
+msgstr "Игра между"
+
+msgid "Game level"
+msgstr "Уровень сложности"
+
+msgid "Play with"
+msgstr "Играть с"
+
+msgid "Try simple battle"
+msgstr "Попробовать простую игру"
+
+msgid "You don't have access to this game"
+msgstr "У вас нет доступа к этой игре"
+
+msgid "Total players"
+msgstr "Всего игроков"
+
+msgid "No players yet"
+msgstr "Игроков пока нет"
+
+msgid "Task Description"
+msgstr "Описание задачи"
+
+msgid "Win"
+msgstr "Победа"
+
+msgid "Lost"
+msgstr "Поражение"

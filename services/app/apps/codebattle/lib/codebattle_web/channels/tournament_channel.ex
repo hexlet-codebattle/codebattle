@@ -2,10 +2,10 @@ defmodule CodebattleWeb.TournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  require Logger
-
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+
+  require Logger
 
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
@@ -120,6 +120,13 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{players: players}}, socket}
   end
 
+  def handle_in("tournament:ranking:request", _params, socket) do
+    tournament_info = socket.assigns.tournament_info
+    ranking = Tournament.Ranking.get_page(tournament_info, 1)
+
+    {:reply, {:ok, %{ranking: ranking}}, socket}
+  end
+
   def handle_in("tournament:matches:request", %{"player_id" => id}, socket) do
     tournament_info = socket.assigns.tournament_info
     matches = Helpers.get_matches_by_players(tournament_info, [id])
@@ -191,7 +198,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(message = %{event: "waiting_room:player" <> _rest}, socket) do
+  def handle_info(%{event: "waiting_room:player" <> _rest} = message, socket) do
     push(socket, message.event, message.payload)
 
     {:noreply, socket}
@@ -205,9 +212,16 @@ defmodule CodebattleWeb.TournamentChannel do
   defp get_tournament_join_payload(tournament, nil) do
     ranking = Tournament.Ranking.get_page(tournament, 1)
 
+    players =
+      if tournament.players_count > 256 do
+        []
+      else
+        Helpers.get_players(tournament)
+      end
+
     %{
       matches: [],
-      players: [],
+      players: players,
       ranking: ranking,
       clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: nil,
@@ -217,7 +231,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp get_tournament_join_payload(tournament, current_player) do
     player_data =
-      if tournament.players_count > 128 do
+      if tournament.players_count > 256 do
         player_matches = Helpers.get_matches_by_players(tournament, [current_player.id])
 
         opponents =

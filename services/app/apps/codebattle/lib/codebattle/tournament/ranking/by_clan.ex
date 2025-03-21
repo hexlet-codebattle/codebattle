@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.ByClan do
+  @moduledoc false
   alias Codebattle.Event.EventClanResult
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.Storage.Ranking
@@ -63,6 +64,8 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     end)
     |> set_places(tournament)
   end
+
+  def set_ranking_to_ets(_tournament), do: :ok
 
   def update_player_result(tournament, player, score) do
     ranking = Ranking.get_all(tournament)

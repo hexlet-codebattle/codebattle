@@ -2,18 +2,19 @@ defmodule Codebattle.Game.Player do
   @moduledoc "Struct for player"
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
-  alias Runner.AtomizedMap
   alias Codebattle.CodeCheck
   alias Codebattle.Game.Player
   alias Codebattle.Tournament
   alias Codebattle.User
   alias Codebattle.UserGame
+  alias Runner.AtomizedMap
   alias Runner.Languages
 
   @primary_key false
-  @default_editor_text "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;"
+  @default_editor_text ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;|
 
   @derive {Jason.Encoder,
            only: [
@@ -62,7 +63,7 @@ defmodule Codebattle.Game.Player do
     field(:result_percent, :float, default: 0.0)
   end
 
-  def changeset(player = %Player{}, attrs) do
+  def changeset(%Player{} = player, attrs) do
     player
     |> cast(attrs, [
       :id,
@@ -89,7 +90,7 @@ defmodule Codebattle.Game.Player do
 
   def build(struct, params \\ %{})
 
-  def build(user_game = %UserGame{}, params) do
+  def build(%UserGame{} = user_game, params) do
     player =
       case user_game.user do
         nil ->
@@ -114,10 +115,10 @@ defmodule Codebattle.Game.Player do
           }
       end
 
-    Map.merge(player, Map.drop(params, [:task]))
+    Map.merge(player, Map.delete(params, :task))
   end
 
-  def build(player = %Tournament.Player{}, params) do
+  def build(%Tournament.Player{} = player, params) do
     init_player = %__MODULE__{
       id: player.id,
       is_banned: player.state == "banned",
@@ -128,8 +129,8 @@ defmodule Codebattle.Game.Player do
       rating: player.rating,
       rank: player.rank,
       avatar_url: player.avatar_url,
-      editor_lang: player.lang || "js",
-      lang: player.lang || "js"
+      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug)
     }
 
     player =
@@ -138,10 +139,10 @@ defmodule Codebattle.Game.Player do
         task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, Map.drop(params, [:task]))
+    Map.merge(player, Map.delete(params, :task))
   end
 
-  def build(player = %Player{}, params) do
+  def build(%Player{} = player, params) do
     init_player = %__MODULE__{
       id: player.id,
       is_banned: player.is_banned,
@@ -151,8 +152,8 @@ defmodule Codebattle.Game.Player do
       name: player.name,
       rating: player.rating,
       rank: player.rank,
-      editor_lang: player.lang || "js",
-      lang: player.lang || "js",
+      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
       playbook_id: player.playbook_id
     }
 
@@ -162,10 +163,10 @@ defmodule Codebattle.Game.Player do
         task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, Map.drop(params, [:task]))
+    Map.merge(player, Map.delete(params, :task))
   end
 
-  def build(user = %User{}, params) do
+  def build(%User{} = user, params) do
     init_player =
       case user.id do
         nil ->
@@ -180,8 +181,8 @@ defmodule Codebattle.Game.Player do
             clan_id: user.clan_id,
             rating: user.rating,
             rank: user.rank,
-            editor_lang: user.lang || "js",
-            lang: user.lang || "js",
+            editor_lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
+            lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
             achievements: user.achievements,
             avatar_url: user.avatar_url
           }
@@ -193,10 +194,10 @@ defmodule Codebattle.Game.Player do
         task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, Map.drop(params, [:task]))
+    Map.merge(player, Map.delete(params, :task))
   end
 
-  def setup_editor_params(player = %__MODULE__{}, task) do
+  def setup_editor_params(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
 
     editor_text = CodeCheck.generate_solution_template(task, Languages.meta(editor_lang))

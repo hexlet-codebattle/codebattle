@@ -5,6 +5,7 @@ import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
+import i18n from '../../../i18n';
 import schemas from '../../formik';
 
 const getCsrfToken = () => document
@@ -88,7 +89,7 @@ const SocialLinks = () => (
         href={getLinkWithNext('/auth/github')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        Sign in with Github
+        {i18n.t('Sign in with Github')}
       </a>
     </div>
     <div className="mt-1">
@@ -98,7 +99,7 @@ const SocialLinks = () => (
         href={getLinkWithNext('/auth/discord')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        Sign in with Discord
+        {i18n.t('Sign in with Discord')}
       </a>
     </div>
   </>
@@ -106,26 +107,26 @@ const SocialLinks = () => (
 
 const SignInInvitation = () => (
   <div className="small">
-    <span className="text-muted">If you have an account</span>
+    <span className="text-muted">{i18n.t('If you have an account')}</span>
     <a
       href={getLinkWithNext('/session/new')}
       role="button"
       className="btn-link ml-3"
     >
-      Sign In
+      {i18n.t('Sign In')}
     </a>
   </div>
 );
 
 const SignUpInvitation = () => (
   <div className="small">
-    <span className="text-muted">Have not an account?</span>
+    <span className="text-muted">{i18n.t('Have not an account?')}</span>
     <a
       href={getLinkWithNext('/users/new')}
       role="button"
       className="btn-link ml-3"
     >
-      Sign Up
+      {i18n.t('Sign Up')}
     </a>
   </div>
 );

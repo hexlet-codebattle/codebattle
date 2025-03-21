@@ -1,4 +1,5 @@
 defmodule Codebattle.Game.FakeTasksQueuesServer do
+  @moduledoc false
   alias Codebattle.Repo
 
   def get_task(level) do

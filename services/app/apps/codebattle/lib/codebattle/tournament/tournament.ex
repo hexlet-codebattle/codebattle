@@ -2,11 +2,12 @@ defmodule Codebattle.Tournament do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
-  alias Runner.AtomizedMap
   alias Codebattle.Event
   alias Codebattle.Tournament.Individual
+  alias Runner.AtomizedMap
 
   @type t :: %__MODULE__{}
 
@@ -72,7 +73,6 @@ defmodule Codebattle.Tournament do
     field(:break_state, :string, default: "off")
     field(:current_round_id, :integer)
     field(:current_round_position, :integer, default: 0)
-    field(:default_language, :string, default: "js")
     field(:description, :string)
     field(:finished_at, :naive_datetime)
     field(:labels, {:array, :string})
@@ -132,7 +132,6 @@ defmodule Codebattle.Tournament do
       :break_state,
       :current_round_id,
       :current_round_position,
-      :default_language,
       :description,
       :event_id,
       :last_round_ended_at,

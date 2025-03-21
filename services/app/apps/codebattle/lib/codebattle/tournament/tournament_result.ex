@@ -1,13 +1,14 @@
 defmodule Codebattle.Tournament.TournamentResult do
   @moduledoc false
 
+  use Ecto.Schema
+
+  import Ecto.Query
+
   alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Score.WinLoss
-
-  use Ecto.Schema
-  import Ecto.Query
 
   @type t :: %__MODULE__{}
 
@@ -52,7 +53,8 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(tournament = %{type: "arena", ranking_type: "by_player_95th_percentile"}) do
+  def upsert_results(%{type: type, ranking_type: "by_player_95th_percentile"} = tournament)
+      when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -139,7 +141,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(tournament = %{type: "arena", score_strategy: "win_loss"}) do
+  def upsert_results(%{type: type, score_strategy: "win_loss"} = tournament) when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -207,6 +209,24 @@ defmodule Codebattle.Tournament.TournamentResult do
     __MODULE__
     |> where([tr], tr.tournament_id == ^tournament_id)
     |> Repo.delete_all()
+  end
+
+  def get_user_ranking(%{use_clan: false} = tournament) do
+    query =
+      from(r in __MODULE__,
+        select: %{
+          id: r.user_id,
+          user_name: r.user_name,
+          score: sum(r.score),
+          place: over(row_number(), :overall_partition)
+        },
+        where: r.tournament_id == ^tournament.id,
+        group_by: [r.user_id, r.user_name],
+        order_by: [desc: sum(r.score)],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+      )
+
+    Repo.all(query)
   end
 
   def get_user_ranking(tournament) do
@@ -489,7 +509,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     columns = Enum.map(result.columns, &String.to_atom/1)
 
     Enum.map(result.rows, fn row ->
-      Enum.zip(columns, row) |> Enum.into(%{})
+      columns |> Enum.zip(row) |> Map.new()
     end)
   end
 end

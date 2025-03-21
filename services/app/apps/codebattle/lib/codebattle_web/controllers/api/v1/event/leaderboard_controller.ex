@@ -42,8 +42,8 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
             }
 
           %{personal_tournament_id: id} ->
-            players_limit = Map.get(params, "players_limit", 5) |> cast_int() |> min(100)
-            clans_limit = Map.get(params, "clans_limit", 40) |> cast_int() |> min(100)
+            players_limit = params |> Map.get("players_limit", 5) |> cast_int() |> min(100)
+            clans_limit = params |> Map.get("clans_limit", 40) |> cast_int() |> min(100)
 
             %{
               page_info: %{page_number: 0, page_size: 0, total_entries: 0, total_pages: 0},
@@ -90,8 +90,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
         _ ->
           default_page_number = cast_int(page_number, 1)
 
-          Scope.by_clan()
-          |> Repo.paginate(%{page: default_page_number, page_size: page_size, total: true})
+          Repo.paginate(Scope.by_clan(), %{page: default_page_number, page_size: page_size, total: true})
       end
 
     page_info = Map.take(result, [:page_number, :page_size, :total_entries, :total_pages])
@@ -114,8 +113,7 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
         _ ->
           default_page_number = cast_int(page_number, 1)
 
-          Scope.by_player()
-          |> Repo.paginate(%{page: default_page_number, page_size: page_size, total: true})
+          Repo.paginate(Scope.by_player(), %{page: default_page_number, page_size: page_size, total: true})
       end
 
     page_info = Map.take(result, [:page_number, :page_size, :total_entries, :total_pages])

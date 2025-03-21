@@ -9,7 +9,6 @@ import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import useTournamentStats from '@/utils/useTournamentStats';
 
 import CopyButton from '../../components/CopyButton';
-import GameLevelBadge from '../../components/GameLevelBadge';
 import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
 import WaitingRoomStatus from '../../components/WaitingRoomStatus';
@@ -144,7 +143,6 @@ function TournamentHeader({
   currentUserId,
   showBots = true,
   hideResults = true,
-  level,
   isOnline,
   isOver,
   canModerate,
@@ -153,46 +151,55 @@ function TournamentHeader({
   handleStartRound,
   handleOpenDetails,
 }) {
-  const { taskSolvedCount, maxPlayerTasks, activeGameId } = useTournamentStats({ type: 'tournament' });
+  const { taskSolvedCount, maxPlayerTasks, activeGameId } = useTournamentStats({
+    type: 'tournament',
+  });
   const stateBadgeTitle = useMemo(
     () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
     [state, breakState, hideResults],
   );
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const stateClassName = cn('badge mr-2', hasCustomEventStyle ? {
-    'cb-custom-event-badge-warning': state === TournamentStates.waitingParticipants,
-    'cb-custom-event-badge-success':
-      !hideResults && (breakState === 'off' || state === TournamentStates.finished),
-    'cb-custom-event-badge-light': state === TournamentStates.cancelled,
-    'cb-custom-event-badge-danger': breakState === 'on',
-    'cb-custom-event-badge-primary': hideResults && state === TournamentStates.finished,
-  } : {
-    'badge-warning': state === TournamentStates.waitingParticipants,
-    'badge-success':
-      !hideResults && (breakState === 'off' || state === TournamentStates.finished),
-    'badge-light': state === TournamentStates.cancelled,
-    'badge-danger': breakState === 'on',
-    'badge-primary': hideResults && state === TournamentStates.finished,
-  });
+  const stateClassName = cn(
+    'badge mr-2',
+    hasCustomEventStyle
+      ? {
+          'cb-custom-event-badge-warning':
+            state === TournamentStates.waitingParticipants,
+          'cb-custom-event-badge-success':
+            !hideResults
+            && (breakState === 'off' || state === TournamentStates.finished),
+          'cb-custom-event-badge-light': state === TournamentStates.cancelled,
+          'cb-custom-event-badge-danger': breakState === 'on',
+          'cb-custom-event-badge-primary':
+            hideResults && state === TournamentStates.finished,
+        }
+      : {
+          'badge-warning': state === TournamentStates.waitingParticipants,
+          'badge-success':
+            !hideResults
+            && (breakState === 'off' || state === TournamentStates.finished),
+          'badge-light': state === TournamentStates.cancelled,
+          'badge-danger': breakState === 'on',
+          'badge-primary': hideResults && state === TournamentStates.finished,
+        },
+  );
   const copyBtnClassName = cn('btn btn-sm rounded-right', {
     'btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
-    'btn-primary': !hasCustomEventStyle,
-    'cb-custom-event-btn-primary': hasCustomEventStyle,
-  });
+  // const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
+  //   'btn-primary': !hasCustomEventStyle,
+  //   'cb-custom-event-btn-primary': hasCustomEventStyle,
+  // });
 
   const canStart = isLive
     && state === TournamentStates.waitingParticipants
     && playersCount > 0;
-  const canStartRound = isLive
-    && state === TournamentStates.active
-    && breakState === 'on';
+  const canStartRound = isLive && state === TournamentStates.active && breakState === 'on';
   const canFinishRound = isLive
     && state === TournamentStates.active
-    && !(['individual', 'team'].includes(type))
+    && !['individual', 'team'].includes(type)
     && breakState === 'off';
   const canRestart = !isLive
     || state === TournamentStates.active
@@ -211,14 +218,6 @@ function TournamentHeader({
             >
               {name}
             </h2>
-            <div
-              className="text-center ml-3"
-              data-toggle="tooltip"
-              data-placement="right"
-              title="Tournament level"
-            >
-              <GameLevelBadge level={level} />
-            </div>
             <div
               title={
                 accessType === 'token'
@@ -248,20 +247,23 @@ function TournamentHeader({
           <div className="d-flex">
             {!streamMode && (
               <div className="d-flex justify-items-center pb-2">
-                {!players[currentUserId] && (
-                  <a
-                    className={backBtnClassName}
-                    href="/tournaments"
-                  >
+                {/* {!players[currentUserId] && (
+                  <a className={backBtnClassName} href="/tournaments">
                     <FontAwesomeIcon className="mr-2" icon="undo" />
-                    {i18next.t('Back to tournaments')}
+                    {i18next.t("Back to tournaments")}
                   </a>
-                )}
+                )} */}
                 {type !== 'team' && !isOver && (
                   <div className="d-flex mr-2 mr-lg-0">
                     <JoinButton
-                      isShow={state !== TournamentStates.active || type === 'arena'}
-                      isShowLeave={type !== 'arena' || state !== TournamentStates.active}
+                      isShow={
+                        state !== TournamentStates.active
+                        || type === 'arena'
+                        || type === 'swiss'
+                      }
+                      isShowLeave={
+                        type === 'arena' || state !== TournamentStates.active
+                      }
                       isParticipant={!!players[currentUserId]}
                       disabled={!isOnline || !isLive}
                     />
@@ -358,18 +360,21 @@ function TournamentHeader({
             />
           </span>
         </p>
-        {type === TournamentTypes.arena && state === TournamentStates.active && !!players[currentUserId] && breakState === 'off' && (
-          <div className="d-flex align-items-center">
-            <WaitingRoomStatus
-              page="tournament"
-              taskCount={taskSolvedCount}
-              tournamentState={state}
-              breakState={breakState}
-              maxPlayerTasks={maxPlayerTasks}
-              activeGameId={activeGameId}
-            />
-          </div>
-        )}
+        {type === TournamentTypes.arena
+          && state === TournamentStates.active
+          && !!players[currentUserId]
+          && breakState === 'off' && (
+            <div className="d-flex align-items-center">
+              <WaitingRoomStatus
+                page="tournament"
+                taskCount={taskSolvedCount}
+                tournamentState={state}
+                breakState={breakState}
+                maxPlayerTasks={maxPlayerTasks}
+                activeGameId={activeGameId}
+              />
+            </div>
+          )}
       </div>
     </>
   );

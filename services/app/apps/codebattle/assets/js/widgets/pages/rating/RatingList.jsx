@@ -170,7 +170,7 @@ function UsersRating() {
           <input
             type="text"
             className="form-control"
-            placeholder="Username"
+            placeholder="Username contains…"
             aria-label="Username"
             aria-describedby="basic-addon1"
             value={filterParams.name}

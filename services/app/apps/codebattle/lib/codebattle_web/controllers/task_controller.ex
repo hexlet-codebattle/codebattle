@@ -1,11 +1,13 @@
 defmodule CodebattleWeb.TaskController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Task
+  import PhoenixGon.Controller
+
   alias Codebattle.Game
+  alias Codebattle.Task
   alias CodebattleWeb.Api.GameView
 
-  import PhoenixGon.Controller
+  plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
     tasks = Task.list_visible(conn.assigns.current_user)
@@ -44,10 +46,8 @@ defmodule CodebattleWeb.TaskController do
     if Task.can_see_task?(task, conn.assigns.current_user) do
       # played_count = Task.get_played_count(id)
       game =
-        Game.Context.create_empty_game(
-          conn.assigns.current_user.id,
-          task
-        )
+        conn.assigns.current_user.id
+        |> Game.Context.create_empty_game(task)
         |> GameView.render_game(nil)
 
       conn

@@ -2,6 +2,7 @@ defmodule Codebattle.ChatTest do
   use Codebattle.DataCase
 
   alias Codebattle.Chat
+  alias Codebattle.Chat.Message
 
   @chat_type {:game, 198_419_841_984}
 
@@ -22,7 +23,7 @@ defmodule Codebattle.ChatTest do
              Chat.add_message(@chat_type, %{type: :text, text: "oi", user_id: user_id, name: name})
 
     assert [
-             %Codebattle.Chat.Message{
+             %Message{
                id: 1,
                name: ^name,
                text: "oi",
@@ -66,9 +67,9 @@ defmodule Codebattle.ChatTest do
       Chat.ban_user(@chat_type, %{admin_name: admin.name, user_id: user1.id, name: user1.name})
 
     assert [
-             %Codebattle.Chat.Message{id: 2, name: "bob", text: "blz", type: :text},
-             %Codebattle.Chat.Message{id: 3, name: "admin", text: "bom", type: :text},
-             %Codebattle.Chat.Message{id: 4, text: "alice has been banned by admin", type: :info}
+             %Message{id: 2, name: "bob", text: "blz", type: :text},
+             %Message{id: 3, name: "admin", text: "bom", type: :text},
+             %Message{id: 4, text: "alice has been banned by admin", type: :info}
            ] = Chat.get_messages(@chat_type)
 
     Chat.add_message(@chat_type, %{type: :text, text: "oi", user_id: user1.id, name: user1.name})

@@ -19,6 +19,7 @@ defmodule Codebattle.Auth.User.DiscordUser do
           discord_avatar: profile.avatar,
           name: unique_name(discord_name),
           discord_name: discord_name,
+          lang: Application.get_env(:codebattle, :default_lang_slug),
           email: profile.email,
           avatar_url: get_avatar_url(profile)
         }
@@ -34,7 +35,7 @@ defmodule Codebattle.Auth.User.DiscordUser do
 
   @spec bind(User.t(), map()) :: {:ok, User.t()} | {:error, :term}
   def bind(user, profile) do
-    discord_user = User |> Repo.get_by(discord_id: profile.id)
+    discord_user = Repo.get_by(User, discord_id: profile.id)
 
     if discord_user != nil && discord_user.id != user.id do
       {:error, "discord_id has been taken"}
@@ -74,7 +75,7 @@ defmodule Codebattle.Auth.User.DiscordUser do
   end
 
   defp generate_unique_name(name) do
-    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16()}"
+    new_name = "#{name}_#{2 |> :crypto.strong_rand_bytes() |> Base.encode16()}"
 
     case Repo.get_by(User, name: new_name) do
       %User{} ->

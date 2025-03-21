@@ -1,11 +1,13 @@
 defmodule Codebattle.Playbook.Context do
+  @moduledoc false
   import Ecto.Query
-  require Logger
 
   alias Codebattle.Game
   alias Codebattle.Playbook
   alias Codebattle.Repo
   alias Delta.Op
+
+  require Logger
 
   @record_types [
     :join_chat,
@@ -20,26 +22,18 @@ defmodule Codebattle.Playbook.Context do
   ]
 
   def get_random_completed_id(task_id) do
-    from(
-      p in Playbook,
-      where:
-        not is_nil(p.winner_id) and
-          p.task_id == ^task_id and
-          p.solution_type == "complete",
-      order_by: fragment("RANDOM()"),
-      select: p.id,
-      limit: 1
+    Repo.one(
+      from(p in Playbook,
+        where: not is_nil(p.winner_id) and p.task_id == ^task_id and p.solution_type == "complete",
+        order_by: fragment("RANDOM()"),
+        select: p.id,
+        limit: 1
+      )
     )
-    |> Repo.one()
   end
 
   def exists?(game_id) do
-    from(
-      p in Playbook,
-      where: p.game_id == ^game_id,
-      limit: 1
-    )
-    |> Repo.one()
+    Repo.one(from(p in Playbook, where: p.game_id == ^game_id, limit: 1))
   end
 
   def init_records(players) do
@@ -64,13 +58,7 @@ defmodule Codebattle.Playbook.Context do
   end
 
   def add_record(playbook_state, type, params) when type in @record_types do
-    record =
-      %{
-        type: type,
-        record_id: playbook_state.id,
-        time: System.system_time(:millisecond)
-      }
-      |> Map.merge(params)
+    record = Map.merge(%{type: type, record_id: playbook_state.id, time: System.system_time(:millisecond)}, params)
 
     playbook_state
     |> Map.update!(:records, &[record | &1])
@@ -95,15 +83,14 @@ defmodule Codebattle.Playbook.Context do
     task_id = Game.Helpers.get_task(game).id
     data = build_playbook_data(playbook_records)
 
-    %Playbook{
+    Repo.insert(%Playbook{
       data: data,
       task_id: task_id,
       game_id: String.to_integer(to_string(game_id)),
       winner_id: winner && winner.id,
       winner_lang: winner && winner.editor_lang,
       solution_type: get_solution_type(winner, game)
-    }
-    |> Repo.insert()
+    })
   end
 
   defp build_playbook_data(playbook_records) do
@@ -116,7 +103,7 @@ defmodule Codebattle.Playbook.Context do
     |> Map.update!(:players, &Enum.reverse/1)
   end
 
-  defp add_record_to_playbook_data(record = %{type: :init}, data) do
+  defp add_record_to_playbook_data(%{type: :init} = record, data) do
     player = Map.merge(record, %{type: :player_state, total_time_ms: 0})
 
     data
@@ -124,10 +111,7 @@ defmodule Codebattle.Playbook.Context do
     |> update_history(record)
   end
 
-  defp add_record_to_playbook_data(
-         record = %{type: :update_editor_data, record_id: record_id, id: id, time: time},
-         data
-       ) do
+  defp add_record_to_playbook_data(%{type: :update_editor_data, record_id: record_id, id: id, time: time} = record, data) do
     player_state = Enum.find(data.players, &(&1.id == id))
     diff = create_diff(player_state, record)
     new_player_state = update_editor_state(player_state, record, diff.time)
@@ -156,37 +140,27 @@ defmodule Codebattle.Playbook.Context do
         %{next_lang: editor_lang}
       end
 
-    %{
-      delta: Delta.diff(player_state_delta, new_delta),
-      time: time - player_state.time
-    }
-    |> Map.merge(lang_delta)
+    Map.merge(%{delta: Delta.diff(player_state_delta, new_delta), time: time - player_state.time}, lang_delta)
   end
 
-  defp update_players_state(data, player_state),
-    do: Map.update!(data, :players, &update_player(&1, player_state))
+  defp update_players_state(data, player_state), do: Map.update!(data, :players, &update_player(&1, player_state))
 
-  defp update_player(players, player_state = %{id: id}),
+  defp update_player(players, %{id: id} = player_state),
     do:
       Enum.map(players, fn
         %{id: ^id} -> player_state
         player -> player
       end)
 
-  defp update_editor_state(
-         player_state,
-         %{time: time, editor_text: editor_text, editor_lang: editor_lang},
-         diff_time
-       ),
-       do:
-         player_state
-         |> Map.put(:editor_text, editor_text)
-         |> Map.put(:editor_lang, editor_lang)
-         |> Map.put(:time, time)
-         |> Map.update!(:total_time_ms, &(&1 + diff_time))
+  defp update_editor_state(player_state, %{time: time, editor_text: editor_text, editor_lang: editor_lang}, diff_time),
+    do:
+      player_state
+      |> Map.put(:editor_text, editor_text)
+      |> Map.put(:editor_lang, editor_lang)
+      |> Map.put(:time, time)
+      |> Map.update!(:total_time_ms, &(&1 + diff_time))
 
-  defp update_history(data, record),
-    do: Map.update!(data, :records, &[record | &1]) |> increase_count
+  defp update_history(data, record), do: data |> Map.update!(:records, &[record | &1]) |> increase_count()
 
   defp create_delta(nil), do: Op.insert("")
   defp create_delta(text), do: Op.insert(text)

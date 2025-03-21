@@ -2367,3 +2367,18 @@ a:hover {
 .cb-scrollable-menu-dropdown-chat {
   max-height: 400px
 }
+
+.scroll-button {
+  background-image: url('../static/images/arrowDown.svg');
+  width: 45px;
+  height: 45px;
+  bottom: 65px;
+  right: 15%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.scroll-button.invisible {
+  display: none;
+}

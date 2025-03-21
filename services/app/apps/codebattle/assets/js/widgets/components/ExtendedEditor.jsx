@@ -1,10 +1,4 @@
-/* eslint-disable no-bitwise */
-// import React from 'react';
-
-// import cn from 'classnames';
-// import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
-// import PropTypes from 'prop-types';
-// import MonacoEditor from 'react-monaco-editor';
+import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -17,20 +11,19 @@ import {
 } from '../selectors/index';
 import { actions } from '../slices';
 
-class ExtendedEditor {
+class ExtendedEditor extends Component {
   static propTypes = {
     monacoTheme: PropTypes.string,
-    fontFamly: PropTypes.string || undefined,
+    fontFamily: PropTypes.string, // corrected prop name
   };
 
   static defaultProps = {
     monacoTheme: 'default',
-    fontFamly: undefined,
-  }
+    fontFamily: undefined,
+  };
 
   constructor(props) {
-    // super(props);
-
+    super(props);
     this.options = {
       fontFamily: props.fontFamily,
       ...this.options,
@@ -38,7 +31,10 @@ class ExtendedEditor {
   }
 
   async componentDidMount() {
-    super.componentDidMount();
+    // If there's a need to call the parent method, ensure it exists.
+    if (super.componentDidMount) {
+      super.componentDidMount();
+    }
 
     const { monacoTheme } = this.props;
     const { monaco } = this;
@@ -60,18 +56,22 @@ class ExtendedEditor {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    super.componentDidUpdate(prevProps, prevState);
+    if (super.componentDidUpdate) {
+      super.componentDidUpdate(prevProps, prevState);
+    }
 
     const { monacoTheme } = this.props;
     const { monaco } = this;
 
-    if (monacoTheme
+    if (
+      monacoTheme
       && monacoTheme !== prevProps.monacoTheme
       && monacoTheme === 'custom'
     ) {
       monaco.editor.defineTheme(monacoTheme, customTheme);
       monaco.editor.setTheme(monacoTheme);
-    } else if (monacoTheme
+    } else if (
+      monacoTheme
       && monacoTheme !== prevProps.monacoTheme
       && monacoTheme !== 'default'
     ) {
@@ -88,7 +88,14 @@ class ExtendedEditor {
   }
 
   componentWillUnmount() {
-    super.componentWillUnmount();
+    if (super.componentWillUnmount) {
+      super.componentWillUnmount();
+    }
+  }
+
+  render() {
+    // Implement your render method here
+    return <></>;
   }
 }
 

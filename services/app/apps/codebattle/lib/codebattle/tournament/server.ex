@@ -1,15 +1,17 @@
 defmodule Codebattle.Tournament.Server do
+  @moduledoc false
   use GenServer
-  require Logger
+
+  import Codebattle.Tournament.Helpers
 
   alias Codebattle.Clan
   alias Codebattle.Tournament
   alias Codebattle.WaitingRoom
 
-  import Tournament.Helpers
+  require Logger
 
   @type tournament_id :: pos_integer()
-  @waiting_room_timeout_ms :timer.seconds(1)
+  @waiting_room_timeout_ms to_timeout(second: 1)
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
@@ -24,79 +26,67 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def get_tournament_info(id) do
-    try do
-      GenServer.call(server_name(id), :get_tournament_info)
-    catch
-      :exit, {:noproc, _} ->
-        nil
+    GenServer.call(server_name(id), :get_tournament_info)
+  catch
+    :exit, {:noproc, _} ->
+      nil
 
-      :exit, reason ->
-        Logger.error("Error to get tournament: #{inspect(reason)}")
-        nil
-    end
+    :exit, reason ->
+      Logger.error("Error to get tournament: #{inspect(reason)}")
+      nil
   end
 
   def get_tournament(id) do
-    try do
-      GenServer.call(server_name(id), :get_tournament)
-    catch
-      :exit, {:noproc, _} ->
-        nil
+    GenServer.call(server_name(id), :get_tournament)
+  catch
+    :exit, {:noproc, _} ->
+      nil
 
-      :exit, reason ->
-        Logger.error("Error to get tournament: #{inspect(reason)}")
-        nil
-    end
+    :exit, reason ->
+      Logger.error("Error to get tournament: #{inspect(reason)}")
+      nil
   end
 
   def update_tournament(tournament) do
-    try do
-      GenServer.call(server_name(tournament.id), {:update, tournament})
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    GenServer.call(server_name(tournament.id), {:update, tournament})
+  catch
+    :exit, reason ->
+      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      {:error, :not_found}
   end
 
   @spec finish_round_after(tournament_id, non_neg_integer(), pos_integer()) ::
           :ok | {:error, :not_found}
   def finish_round_after(tournament_id, round_position, timeout_in_seconds) do
-    try do
-      GenServer.call(
-        server_name(tournament_id),
-        {:finish_round_after, round_position, timeout_in_seconds}
-      )
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    GenServer.call(
+      server_name(tournament_id),
+      {:finish_round_after, round_position, timeout_in_seconds}
+    )
+  catch
+    :exit, reason ->
+      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      {:error, :not_found}
   end
 
   @spec stop_round_break_after(tournament_id, non_neg_integer(), pos_integer()) ::
           :ok | {:error, :not_found}
   def stop_round_break_after(tournament_id, round_position, timeout_in_seconds) do
-    try do
-      GenServer.call(
-        server_name(tournament_id),
-        {:stop_round_break_after, round_position, timeout_in_seconds}
-      )
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    GenServer.call(
+      server_name(tournament_id),
+      {:stop_round_break_after, round_position, timeout_in_seconds}
+    )
+  catch
+    :exit, reason ->
+      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      {:error, :not_found}
   end
 
   def handle_event(tournament_id, event_type, params) do
-    try do
-      GenServer.call(server_name(tournament_id), {:fire_event, event_type, params})
-    catch
-      :exit, reason ->
-        Logger.error("Error to send tournament update: #{inspect(reason)}")
-        {:error, :not_found}
-    end
+    GenServer.call(server_name(tournament_id), {:fire_event, event_type, params})
+  catch
+    :exit, reason ->
+      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      {:error, :not_found}
   end
 
   # SERVER
@@ -156,7 +146,7 @@ defmodule Codebattle.Tournament.Server do
     Process.send_after(
       self(),
       {:finish_round_force, round_position},
-      :timer.seconds(timeout_in_seconds)
+      to_timeout(second: timeout_in_seconds)
     )
 
     {:reply, :ok, state}
@@ -166,7 +156,7 @@ defmodule Codebattle.Tournament.Server do
     Process.send_after(
       self(),
       {:stop_round_break, round_position},
-      :timer.seconds(timeout_in_seconds)
+      to_timeout(second: timeout_in_seconds)
     )
 
     {:reply, :ok, state}
@@ -178,8 +168,7 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_call(:get_tournament_info, _from, state) do
     {:reply,
-     state.tournament
-     |> Map.drop([
+     Map.drop(state.tournament, [
        :__struct__,
        :__meta__,
        :creator,
@@ -193,7 +182,7 @@ defmodule Codebattle.Tournament.Server do
      ]), state}
   end
 
-  def handle_call({:fire_event, event_type, params}, _from, state = %{tournament: tournament}) do
+  def handle_call({:fire_event, event_type, params}, _from, %{tournament: tournament} = state) do
     %{module: module} = tournament
 
     new_tournament =
@@ -206,7 +195,7 @@ defmodule Codebattle.Tournament.Server do
     # TODO: rethink broadcasting during applying event, maybe put inside tournament module
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
-    {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
+    {:reply, tournament, Map.put(state, :tournament, new_tournament)}
   end
 
   def handle_info({:stop_round_break, round_position}, %{tournament: tournament}) do
@@ -233,14 +222,9 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_info(
-        %{
-          topic: "game:tournament:" <> _t_id,
-          event: "game:tournament:finished",
-          payload: payload
-        },
-        %{tournament: tournament}
-      ) do
+  def handle_info(%{topic: "game:tournament:" <> _t_id, event: "game:tournament:finished", payload: payload}, %{
+        tournament: tournament
+      }) do
     match = get_match(tournament, payload.ref)
 
     if tournament.current_round_position == match.round_position and
@@ -306,18 +290,9 @@ defmodule Codebattle.Tournament.Server do
   #   {:noreply, %{tournament: new_tournament}}
   # end
 
-  def handle_info(
-        :match_waiting_room_players,
-        %{
-          tournament:
-            tournament =
-              %Tournament{
-                waiting_room_state: %WaitingRoom.State{
-                  state: "active"
-                }
-              }
-        }
-      ) do
+  def handle_info(:match_waiting_room_players, %{
+        tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "active"}} = tournament
+      }) do
     players =
       tournament
       |> Tournament.Players.get_players("matchmaking_active")
@@ -352,18 +327,9 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, %{tournament: new_tournament}}
   end
 
-  def handle_info(
-        :match_waiting_room_players,
-        %{
-          tournament:
-            tournament =
-              %Tournament{
-                waiting_room_state: %WaitingRoom.State{
-                  state: "paused"
-                }
-              }
-        }
-      ) do
+  def handle_info(:match_waiting_room_players, %{
+        tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "paused"}} = tournament
+      }) do
     Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
     {:noreply, %{tournament: tournament}}
   end
@@ -416,9 +382,7 @@ defmodule Codebattle.Tournament.Server do
     # TODO: updated
   end
 
-  defp maybe_preload_event_ranking(
-         tournament = %{use_clan: true, use_event_ranking: true, event_id: event_id}
-       )
+  defp maybe_preload_event_ranking(%{use_clan: true, use_event_ranking: true, event_id: event_id} = tournament)
        when not is_nil(event_id) do
     new_tournament = Tournament.Ranking.preload_event_ranking(tournament)
 
@@ -431,7 +395,7 @@ defmodule Codebattle.Tournament.Server do
     new_tournament
   end
 
-  defp maybe_preload_event_ranking(tournament = %{use_event_ranking: true, event_id: event_id})
+  defp maybe_preload_event_ranking(%{use_event_ranking: true, event_id: event_id} = tournament)
        when not is_nil(event_id) do
     Tournament.Ranking.preload_event_ranking(tournament)
   end

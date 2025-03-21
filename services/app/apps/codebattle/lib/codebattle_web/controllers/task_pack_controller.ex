@@ -4,6 +4,8 @@ defmodule CodebattleWeb.TaskPackController do
   alias Codebattle.TaskPack
   alias Codebattle.User
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
+
   def index(conn, _params) do
     task_packs = TaskPack.list_visible(conn.assigns.current_user)
 

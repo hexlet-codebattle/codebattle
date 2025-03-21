@@ -62,9 +62,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
     test "shows visible task", %{conn: conn} do
       task = insert(:task, visibility: "public", level: "easy")
 
-      conn =
-        conn
-        |> get(Routes.api_v1_task_path(conn, :show, task.id))
+      conn = get(conn, Routes.api_v1_task_path(conn, :show, task.id))
 
       resp_body = json_response(conn, 200)
 
@@ -116,9 +114,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
     test "returns false when task exists", %{conn: conn} do
       task = insert(:task, visibility: "public", level: "easy", name: "task_name")
 
-      conn =
-        conn
-        |> get(Routes.api_v1_task_path(conn, :unique, task.name))
+      conn = get(conn, Routes.api_v1_task_path(conn, :unique, task.name))
 
       resp_body = json_response(conn, 200)
 
@@ -126,9 +122,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
     end
 
     test "returns true when task not exists", %{conn: conn} do
-      conn =
-        conn
-        |> get(Routes.api_v1_task_path(conn, :unique, "my_unqiue_task"))
+      conn = get(conn, Routes.api_v1_task_path(conn, :unique, "my_unqiue_task"))
 
       resp_body = json_response(conn, 200)
 

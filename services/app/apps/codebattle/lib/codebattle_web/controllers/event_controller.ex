@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.EventController do
   use CodebattleWeb, :controller
 
-  plug CodebattleWeb.Plugs.AdminOnly
-
   alias Codebattle.Event
+
+  plug CodebattleWeb.Plugs.AdminOnly
 
   def index(conn, _params) do
     conn

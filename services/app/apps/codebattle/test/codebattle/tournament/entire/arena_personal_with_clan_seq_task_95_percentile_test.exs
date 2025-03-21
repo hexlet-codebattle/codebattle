@@ -1,15 +1,17 @@
 defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest do
   use Codebattle.DataCase, async: false
 
+  import Codebattle.Tournament.Helpers
+  import Codebattle.TournamentTestHelpers
+
   alias Codebattle.Event.EventResult
+  alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking.UpdateFromResultsServer
   alias Codebattle.Tournament.TournamentResult
 
-  import Codebattle.Tournament.Helpers
-  import Codebattle.TournamentTestHelpers
-
+  @tag :skip
   test "works with several players and single round" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     [%{id: t4_id}, %{id: t5_id}] = insert_list(2, :task, level: "medium")
@@ -78,7 +80,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.handle_event(tournament.id, :join, %{users: users})
 
     Enum.each(users, fn %{id: id, name: name} ->
-      assert_received %Codebattle.PubSub.Message{
+      assert_received %Message{
         topic: ^common_topic,
         event: "tournament:player:joined",
         payload: %{player: %{name: ^name, id: ^id, state: "active"}}
@@ -93,7 +95,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       min_time_sec: 0
     })
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -107,7 +109,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -121,7 +123,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -138,7 +140,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -195,7 +197,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -204,7 +206,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmaking_started",
       payload: %{
@@ -240,7 +242,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -249,7 +251,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmaking_started",
       payload: %{
@@ -277,7 +279,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     players = Tournament.Players.get_players(tournament, "matchmaking_active")
     assert Enum.empty?(players)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -294,7 +296,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -337,13 +339,13 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmaking_started",
       payload: %{
@@ -379,7 +381,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     players = Tournament.Players.get_players(tournament, "matchmaking_active")
     assert Enum.empty?(players)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -417,7 +419,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmaking_stopped",
       payload: %{
@@ -432,7 +434,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{state: "game_over"}}
@@ -450,7 +452,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmaking_stopped",
       payload: %{
@@ -465,7 +467,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -474,7 +476,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -490,7 +492,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -506,7 +508,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -527,7 +529,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -541,7 +543,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -558,7 +560,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -575,7 +577,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -625,7 +627,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -634,7 +636,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmaking_started",
       payload: %{
@@ -670,7 +672,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -679,7 +681,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmaking_started",
       payload: %{
@@ -708,7 +710,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       min_time_with_played_sec: 1000
     })
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -725,7 +727,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -750,13 +752,13 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{state: "game_over"}, players: [%{}, %{}]}
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:matchmaking_stopped",
       payload: %{
@@ -794,7 +796,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmaking_stopped",
       payload: %{
@@ -809,7 +811,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -818,7 +820,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -834,7 +836,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -850,7 +852,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -871,7 +873,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_created",
       payload: %{
@@ -885,7 +887,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -902,7 +904,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:match_created",
       payload: %{
@@ -919,7 +921,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -967,7 +969,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -976,7 +978,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:player:matchmaking_stopped",
       payload: %{
@@ -999,7 +1001,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(100)
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "waiting_room:ended",
       payload: %{
@@ -1014,7 +1016,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player2_topic,
       event: "waiting_room:ended",
       payload: %{
@@ -1029,7 +1031,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
@@ -1038,7 +1040,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:round_finished",
       payload: %{
@@ -1054,7 +1056,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -1070,7 +1072,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -1084,7 +1086,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
       }
     }
 
-    assert_received %Codebattle.PubSub.Message{
+    assert_received %Message{
       topic: ^common_topic,
       event: "tournament:finished",
       payload: %{

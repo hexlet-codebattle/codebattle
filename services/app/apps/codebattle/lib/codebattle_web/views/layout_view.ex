@@ -1,7 +1,8 @@
 defmodule CodebattleWeb.LayoutView do
   use CodebattleWeb, :view
-  import PhoenixGon.View
+
   import CodebattleWeb.Router.Helpers
+  import PhoenixGon.View
 
   @app_version Application.compile_env(:codebattle, :app_version)
   @colors [
@@ -52,21 +53,21 @@ defmodule CodebattleWeb.LayoutView do
   end
 
   def user_rank(user) do
-    if Application.get_env(:codebattle, :use_event_rank) do
-      # TODO: add user rating from event
-      0
-    else
-      user.rank
-    end
+    # if Application.get_env(:codebattle, :use_event_rank) do
+    #   # TODO: add user rating from event
+    #   0
+    # else
+    user.rank
+    # end
   end
 
   def user_rating(user) do
-    if Application.get_env(:codebattle, :use_event_rating) do
-      # TODO: add user rating from event
-      0
-    else
-      user.rating
-    end
+    # if Application.get_env(:codebattle, :use_event_rating) do
+    #   # TODO: add user rating from event
+    #   0
+    # else
+    user.rating
+    # end
   end
 
   def avatar_url(user) do

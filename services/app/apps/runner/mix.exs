@@ -41,7 +41,6 @@ defmodule Runner.MixProject do
       {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
       {:ecto, "~> 3.7"},
       {:envy, "~> 1.1.1"},
-      {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},

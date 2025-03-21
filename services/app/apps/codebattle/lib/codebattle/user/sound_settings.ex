@@ -1,7 +1,9 @@
 defmodule Codebattle.User.SoundSettings do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset
+
   @primary_key false
 
   @types ~w(cs dendy standard silent)

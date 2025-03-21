@@ -2,22 +2,21 @@ defmodule CodebattleWeb.Plugs.Locale do
   @moduledoc """
     I18n configuration
   """
-  import Plug.Conn
   import PhoenixGon.Controller
+  import Plug.Conn
 
   def init(_opts), do: nil
 
   def call(conn, _opts) do
     locale =
-      if Application.get_env(:codebattle, :force_locale) do
+      if FunWithFlags.enabled?(:enforce_default_locale) do
         Application.get_env(:codebattle, :default_locale)
       else
         conn.params["locale"] || get_session(conn, :locale) ||
           Application.get_env(:codebattle, :default_locale)
       end
 
-    conn
-    |> put_locale(locale)
+    put_locale(conn, locale)
   end
 
   defp put_locale(conn, locale) do

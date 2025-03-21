@@ -1,9 +1,12 @@
 defmodule Codebattle.Tournament.Ranking.ByPlayer do
+  @moduledoc false
   @page_size 10
 
   def get_first(_tournament, _limit \\ @page_size) do
     []
   end
+
+  def get_event_ranking(_tournament), do: []
 
   def get_by_player(_tournament, _player) do
     nil
@@ -21,6 +24,8 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer do
       entries: []
     }
   end
+
+  def set_ranking_to_ets(_tournament), do: :ok
 
   def set_ranking(tournament) do
     tournament

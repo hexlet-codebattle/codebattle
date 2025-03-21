@@ -1,10 +1,10 @@
 defmodule CodebattleWeb.Api.GameView do
   use CodebattleWeb, :view
 
-  alias Runner.Languages
-  alias Codebattle.CodeCheck
-
   import Codebattle.Game.Helpers
+
+  alias Codebattle.CodeCheck
+  alias Runner.Languages
 
   def render_game(game, score) do
     %{
@@ -77,6 +77,7 @@ defmodule CodebattleWeb.Api.GameView do
 
   def get_langs_with_templates(task) do
     Languages.meta()
+    |> Map.take(Languages.get_lang_slugs())
     |> Map.values()
     |> Enum.map(fn meta ->
       %{

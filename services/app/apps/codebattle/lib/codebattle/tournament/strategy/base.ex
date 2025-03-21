@@ -1,14 +1,13 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
-
+  @moduledoc """
+  Defines interface for tournament type
+  """
   alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias Codebattle.WaitingRoom
 
-  @moduledoc """
-  Defines interface for tournament type
-  """
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
@@ -23,14 +22,22 @@ defmodule Codebattle.Tournament.Base do
     quote location: :keep do
       @behaviour Tournament.Base
 
-      alias Codebattle.Bot
-      alias Codebattle.Tournament.Score
-      alias Codebattle.WaitingRoom
-
       import Tournament.Helpers
       import Tournament.TaskProvider
 
+      alias Codebattle.Bot
+      alias Codebattle.Tournament.Score
+      alias Codebattle.WaitingRoom
+      alias Tournament.Round.Context
+
       require Logger
+
+      @custom_round_tiemouts_in_sec %{
+        "elementary" => 3 * 60,
+        "easy" => 5 * 60,
+        "medium" => 10 * 60,
+        "hard" => 25 * 60
+      }
 
       def add_player(tournament, player) do
         tournament_player = Tournament.Player.new!(player)
@@ -49,15 +56,15 @@ defmodule Codebattle.Tournament.Base do
         Enum.reduce(users, tournament, &add_player(&2, &1))
       end
 
-      def join(tournament = %{state: "waiting_participants"}, params = %{users: users}) do
-        player_params = Map.drop(params, [:users])
+      def join(%{state: "waiting_participants"} = tournament, %{users: users} = params) do
+        player_params = Map.delete(params, :users)
         Enum.reduce(users, tournament, &join(&2, Map.put(player_params, :user, &1)))
       end
 
-      def join(tournament = %{state: "waiting_participants"}, params) do
+      def join(%{state: "waiting_participants"} = tournament, params) do
         player =
           params.user
-          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:lang, params.user.lang)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
         if players_count(tournament) < tournament.players_limit do
@@ -67,10 +74,23 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def join(tournament = %{state: "active", type: "arena"}, params) do
+      def join(%{state: "active", type: "swiss"} = tournament, params) do
         player =
           params.user
-          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:lang, params.user.lang)
+          |> Map.put(:team_id, Map.get(params, :team_id))
+
+        if players_count(tournament) < tournament.players_limit do
+          add_player(tournament, player)
+        else
+          tournament
+        end
+      end
+
+      def join(%{state: "active", type: "arena"} = tournament, params) do
+        player =
+          params.user
+          |> Map.put(:lang, params.user.lang)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
         if players_count(tournament) < tournament.players_limit do
@@ -234,6 +254,7 @@ defmodule Codebattle.Tournament.Base do
         if can_moderate?(tournament, user) do
           new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
 
+          Game.Context.terminate_tournament_games(tournament.id)
           Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
 
           new_tournament
@@ -246,8 +267,7 @@ defmodule Codebattle.Tournament.Base do
         if can_moderate?(tournament, user) do
           Tournament.Round.disable_all_rounds(tournament.id)
 
-          tournament
-          |> update_struct(%{
+          update_struct(tournament, %{
             players: %{},
             meta: reset_meta(tournament.meta),
             matches: %{},
@@ -260,7 +280,7 @@ defmodule Codebattle.Tournament.Base do
             last_round_started_at: nil,
             winner_ids: [],
             top_player_ids: [],
-            starts_at: DateTime.utc_now(:second) |> DateTime.add(5 * 60, :second),
+            starts_at: :second |> DateTime.utc_now() |> DateTime.add(5 * 60, :second),
             state: "waiting_participants"
           })
         else
@@ -270,7 +290,7 @@ defmodule Codebattle.Tournament.Base do
 
       def restart(tournament, _user), do: tournament
 
-      def start(tournament = %{state: "waiting_participants"}, params = %{user: user}) do
+      def start(%{state: "waiting_participants"} = tournament, %{user: user} = params) do
         if can_moderate?(tournament, user) do
           tournament = complete_players(tournament)
 
@@ -290,7 +310,7 @@ defmodule Codebattle.Tournament.Base do
 
       def start(tournament, _params), do: tournament
 
-      defp maybe_init_waiting_room(t = %{waiting_room_name: nil}, _params), do: t
+      defp maybe_init_waiting_room(%{waiting_room_name: nil} = t, _params), do: t
 
       defp maybe_init_waiting_room(tournament, params) do
         state =
@@ -307,11 +327,7 @@ defmodule Codebattle.Tournament.Base do
 
       def start_round_force(tournament, params \\ %{})
 
-      def start_round_force(
-            tournament = %{state: "finished"},
-            _new_round_params
-          ),
-          do: tournament
+      def start_round_force(%{state: "finished"} = tournament, _new_round_params), do: tournament
 
       def start_round_force(tournament, new_round_params) do
         tournament
@@ -401,9 +417,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      def remove_pass_code(tournament = %{meta: %{game_passwords: passwords}}, %{
-            pass_code: pass_code
-          }) do
+      def remove_pass_code(%{meta: %{game_passwords: passwords}} = tournament, %{pass_code: pass_code}) do
         if pass_code in passwords do
           update_in(tournament.meta.game_passwords, fn codes ->
             List.delete(codes, pass_code)
@@ -430,7 +444,6 @@ defmodule Codebattle.Tournament.Base do
 
         tournament
         |> maybe_pause_waiting_room()
-        |> set_ranking()
         |> finish_round_and_next_step()
       end
 
@@ -440,8 +453,9 @@ defmodule Codebattle.Tournament.Base do
           last_round_ended_at: NaiveDateTime.utc_now(:second),
           show_results: need_show_results?(tournament)
         })
-        |> calculate_round_results()
         |> Tournament.TournamentResult.upsert_results()
+        |> calculate_round_results()
+        |> set_ranking()
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> update_players_state_after_round_finished()
@@ -470,12 +484,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def start_round_games(tournament, match_ref) do
-        finished_match = get_match(tournament, match_ref)
-        matches = get_round_matches(tournament, tournament.current_round_position)
-
-        task_index = round(2 * Enum.count(matches) / players_count(tournament))
-
-        task_id = Enum.at(tournament.round_task_ids, task_index)
+        # TODO: FIXME
+        task_id = Enum.at(tournament.round_task_ids, tournament.current_round_position)
 
         if task_id do
           build_round_matches(tournament, %{task_id: task_id})
@@ -488,25 +498,22 @@ defmodule Codebattle.Tournament.Base do
         Enum.find(player_ids, &(player_results[&1] && player_results[&1].result == "won"))
       end
 
-      defp maybe_start_round_or_break_or_finish(tournament = %{state: "finished"}) do
+      defp maybe_start_round_or_break_or_finish(%{state: "finished"} = tournament) do
         tournament
       end
 
-      defp maybe_start_round_or_break_or_finish(tournament = %{use_infinite_break: true}) do
+      defp maybe_start_round_or_break_or_finish(%{use_infinite_break: true} = tournament) do
         update_struct(tournament, %{break_state: "on"})
       end
 
       defp maybe_start_round_or_break_or_finish(
-             tournament = %{
-               state: "active",
-               break_duration_seconds: break_duration_seconds
-             }
+             %{state: "active", break_duration_seconds: break_duration_seconds} = tournament
            )
            when break_duration_seconds not in [nil, 0] do
         Process.send_after(
           self(),
           {:stop_round_break, tournament.current_round_position},
-          :timer.seconds(tournament.break_duration_seconds)
+          to_timeout(second: tournament.break_duration_seconds)
         )
 
         update_struct(tournament, %{break_state: "on"})
@@ -527,8 +534,7 @@ defmodule Codebattle.Tournament.Base do
         |> update_struct(%{
           break_state: "off",
           last_round_started_at: NaiveDateTime.utc_now(:second),
-          match_timeout_seconds:
-            Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds)
+          match_timeout_seconds: Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds)
         })
         |> build_and_save_round!()
         |> maybe_preload_tasks()
@@ -541,7 +547,7 @@ defmodule Codebattle.Tournament.Base do
         |> broadcast_round_created()
       end
 
-      defp maybe_start_waiting_room(tournament = %{waiting_room_name: nil}) do
+      defp maybe_start_waiting_room(%{waiting_room_name: nil} = tournament) do
         tournament
       end
 
@@ -555,21 +561,19 @@ defmodule Codebattle.Tournament.Base do
         }
       end
 
-      defp maybe_set_round_task_ids(
-             tournament = %{task_provider: "task_pack", current_round_position: 0}
-           ) do
+      defp maybe_set_round_task_ids(%{task_provider: "task_pack", current_round_position: 0} = tournament) do
         update_struct(tournament, %{
           round_task_ids: get_round_task_ids(tournament, 0)
         })
       end
 
-      defp maybe_set_round_task_ids(tournament = %{task_provider: "task_pack_per_round"}) do
+      defp maybe_set_round_task_ids(%{task_provider: "task_pack_per_round"} = tournament) do
         update_struct(tournament, %{
           round_task_ids: get_round_task_ids(tournament, tournament.current_round_position)
         })
       end
 
-      defp maybe_set_round_task_ids(tournament = %{current_round_position: 0}) do
+      defp maybe_set_round_task_ids(%{current_round_position: 0} = tournament) do
         update_struct(tournament, %{round_task_ids: get_all_task_ids(tournament)})
       end
 
@@ -583,16 +587,18 @@ defmodule Codebattle.Tournament.Base do
 
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         task_id = get_task_id_by_params(round_params)
+        task = get_task(tournament, task_id)
+        timeout_seconds = get_game_timeout(tournament, task)
 
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(50)
-        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task_id))
+        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task, timeout_seconds))
 
-        tournament
+        update_struct(tournament, %{round_timeout_seconds: timeout_seconds})
       end
 
-      defp bulk_create_round_games_and_matches(batch, tournament, task_id) do
+      defp bulk_create_round_games_and_matches(batch, tournament, task, timeout_seconds) do
         reset_task_ids = tournament.task_provider == "task_pack_per_round"
 
         batch
@@ -607,15 +613,15 @@ defmodule Codebattle.Tournament.Base do
           #     player_ids: Enum.sort([p1.id, p2.id])
           #   })
 
-          {players = [p1, p2], match_id} ->
+          {[p1, p2] = players, match_id} ->
             %{
               players: players,
               ref: match_id,
               round_id: tournament.current_round_id,
               state: "playing",
-              task: get_task(tournament, task_id),
+              task: task,
               waiting_room_name: tournament.waiting_room_name,
-              timeout_seconds: get_game_timeout(tournament),
+              timeout_seconds: timeout_seconds,
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
@@ -648,7 +654,7 @@ defmodule Codebattle.Tournament.Base do
                 round_id: tournament.current_round_id,
                 state: "playing",
                 task: task,
-                timeout_seconds: get_game_timeout(tournament),
+                timeout_seconds: get_game_timeout(tournament, task),
                 waiting_room_name: tournament.waiting_room_name,
                 tournament_id: tournament.id,
                 type: game_type(),
@@ -681,8 +687,7 @@ defmodule Codebattle.Tournament.Base do
           Tournament.Players.put_player(tournament, %{
             player
             | matches_ids: [match.id | player.matches_ids],
-              task_ids:
-                if(reset_task_ids, do: [game.task_id], else: [game.task_id | player.task_ids])
+              task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | player.task_ids])
           })
         end)
 
@@ -701,8 +706,8 @@ defmodule Codebattle.Tournament.Base do
       def build_and_save_round!(tournament) do
         round =
           tournament
-          |> Tournament.Round.Context.build()
-          |> Tournament.Round.Context.upsert!()
+          |> Context.build()
+          |> Context.upsert!()
 
         update_struct(tournament, %{
           current_round_id: round.id
@@ -736,7 +741,7 @@ defmodule Codebattle.Tournament.Base do
 
           [id] ->
             player = get_player(tournament, id)
-            opponent_bot = Bot.Context.build() |> Tournament.Player.new!()
+            opponent_bot = Tournament.Player.new!(Bot.Context.build())
             {[player, opponent_bot], get_rematch_task(tournament, player.task_ids)}
         end)
         |> Enum.split_with(fn {player, task_id} -> is_nil(task_id) end)
@@ -752,7 +757,7 @@ defmodule Codebattle.Tournament.Base do
               round_id: tournament.current_round_id,
               state: "playing",
               task: task,
-              timeout_seconds: get_game_timeout(tournament),
+              timeout_seconds: get_game_timeout(tournament, task),
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
@@ -780,7 +785,7 @@ defmodule Codebattle.Tournament.Base do
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
           |> then(fn tournament ->
-            Process.send_after(self(), :terminate, :timer.minutes(15))
+            Process.send_after(self(), :terminate, to_timeout(minute: 30))
 
             tournament
           end)
@@ -789,9 +794,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp update_players_state_after_round_finished(
-             tournament = %{type: "arena", state: "finished"}
-           ) do
+      defp update_players_state_after_round_finished(%{type: "arena", state: "finished"} = tournament) do
         tournament
         |> get_players()
         |> Enum.each(fn player ->
@@ -810,7 +813,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp update_players_state_after_round_finished(tournament = %{type: "arena"}) do
+      defp update_players_state_after_round_finished(%{type: "arena"} = tournament) do
         tournament
         |> get_players()
         |> Enum.each(fn player ->
@@ -839,13 +842,15 @@ defmodule Codebattle.Tournament.Base do
         update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
       end
 
-      defp maybe_start_round_timer(tournament = %{round_timeout_seconds: nil}), do: tournament
+      defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
+      # We don't want to run a timer for the swiss type, because all games already have a timeout
+      defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
 
       defp maybe_start_round_timer(tournament) do
         Process.send_after(
           self(),
           {:finish_round_force, tournament.current_round_position},
-          :timer.seconds(tournament.round_timeout_seconds)
+          to_timeout(second: tournament.round_timeout_seconds)
         )
 
         tournament
@@ -872,12 +877,24 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp get_game_timeout(tournament) do
-        if use_waiting_room?(tournament) or tournament.type in ["squad", "swiss"] do
-          min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
-        else
-          get_round_timeout_seconds(tournament)
+      defp get_game_timeout(tournament, task) do
+        cond do
+          FunWithFlags.enabled?(:tournament_custom_timeout) ->
+            get_custom_round_timeout_seconds(tournament, task)
+
+          use_waiting_room?(tournament) or tournament.type in ["squad"] ->
+            min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
+
+          :default ->
+            get_round_timeout_seconds(tournament)
         end
+      end
+
+      defp get_custom_round_timeout_seconds(tournament, nil), do: get_round_timeout_seconds(tournament)
+
+      defp get_custom_round_timeout_seconds(tournament, task) do
+        Map.get(@custom_round_tiemouts_in_sec, task.level) ||
+          get_round_timeout_seconds(tournament)
       end
 
       defp seconds_to_end_round(tournament) do
@@ -899,7 +916,7 @@ defmodule Codebattle.Tournament.Base do
         Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
       end
 
-      defp maybe_preload_tasks(tournament = %{current_round_position: 0}) do
+      defp maybe_preload_tasks(%{current_round_position: 0} = tournament) do
         Tournament.Tasks.put_tasks(tournament, get_all_tasks(tournament))
 
         tournament
@@ -962,11 +979,12 @@ defmodule Codebattle.Tournament.Base do
             |> Enum.each(fn player_id ->
               player = Tournament.Players.get_player(tournament, player_id)
 
-              Tournament.Players.put_player(tournament, %{
-                player
-                | score: player.score + player_results[player_id].score,
-                  lang: player_results[player_id].lang
-              })
+              player &&
+                Tournament.Players.put_player(tournament, %{
+                  player
+                  | score: player.score + player_results[player_id].score,
+                    lang: player_results[player_id].lang
+                })
             end)
           end
         )
@@ -974,7 +992,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp improve_player_results(tournament, match, duration_sec) do
         case Game.Context.fetch_game(match.game_id) do
-          {:ok, game = %{is_live: true}} ->
+          {:ok, %{is_live: true} = game} ->
             game
             |> Game.Helpers.get_player_results()
             |> Map.new(fn {player_id, result} ->
@@ -1016,11 +1034,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp maybe_set_free_task(
-             game_params,
-             tournament = %Tournament{type: "show", task_strategy: "sequential"},
-             player
-           ) do
+      defp maybe_set_free_task(game_params, %Tournament{type: "show", task_strategy: "sequential"} = tournament, player) do
         task_id = Enum.at(tournament.round_task_ids, Enum.count(player.task_ids))
 
         Map.put(game_params, :task_id, task_id)
@@ -1031,24 +1045,22 @@ defmodule Codebattle.Tournament.Base do
         game_params
       end
 
-      defp maybe_save_event_results(tournament = %{use_clan: true, event_id: event_id})
-           when not is_nil(event_id) do
+      defp maybe_save_event_results(%{use_clan: true, event_id: event_id} = tournament) when not is_nil(event_id) do
         Event.EventClanResult.save_results(tournament)
         Event.EventResult.save_results(tournament)
         tournament
       end
 
-      defp maybe_save_event_results(tournament = %{event_id: event_id})
-           when not is_nil(event_id) do
+      defp maybe_save_event_results(%{event_id: event_id} = tournament) when not is_nil(event_id) do
         Event.EventResult.save_results(tournament)
         tournament
       end
 
       defp maybe_save_event_results(t), do: t
 
-      defp maybe_activate_players(t = %{current_round_position: 0}), do: t
+      defp maybe_activate_players(%{current_round_position: 0} = t), do: t
 
-      defp maybe_activate_players(tournament = %{type: "arena"}) do
+      defp maybe_activate_players(%{type: "arena"} = tournament) do
         tournament
         |> get_players()
         |> Enum.each(fn player ->
@@ -1062,7 +1074,7 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_activate_players(t), do: t
 
-      defp maybe_pause_waiting_room(t = %{waiting_room_name: nil}), do: t
+      defp maybe_pause_waiting_room(%{waiting_room_name: nil} = t), do: t
 
       defp maybe_pause_waiting_room(tournament) do
         %{
@@ -1074,7 +1086,7 @@ defmodule Codebattle.Tournament.Base do
         }
       end
 
-      defp maybe_finish_waiting_room(t = %{waiting_room_name: nil}), do: t
+      defp maybe_finish_waiting_room(%{waiting_room_name: nil} = t), do: t
 
       defp maybe_finish_waiting_room(tournament) do
         %{

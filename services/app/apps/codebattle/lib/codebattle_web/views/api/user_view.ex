@@ -1,10 +1,10 @@
 defmodule CodebattleWeb.Api.UserView do
   use CodebattleWeb, :view
 
-  alias Codebattle.User.Scope
-  alias Codebattle.Repo
-
   import Ecto.Query, warn: false
+
+  alias Codebattle.Repo
+  alias Codebattle.User.Scope
 
   def render_rating(params) do
     page_number =

@@ -1,9 +1,11 @@
 defmodule Codebattle.DockerExecution.TSTest do
   use Codebattle.IntegrationCase
 
-  alias CodebattleWeb.GameChannel
+  alias Codebattle.CodeCheck.Result.V2
   alias Codebattle.Game
+  alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
+  alias Phoenix.Socket.Broadcast
 
   setup do
     user1 = insert(:user)
@@ -33,11 +35,11 @@ defmodule Codebattle.DockerExecution.TSTest do
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result.V2{status: "error", success_count: 0} = check_result
+    assert %V2{status: "error", success_count: 0} = check_result
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
   end
@@ -56,18 +58,17 @@ defmodule Codebattle.DockerExecution.TSTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text:
-        "export default function solution(a: number, b: number) {\n\treturn a - b;\n};",
+      editor_text: "export default function solution(a: number, b: number) {\n\treturn a - b;\n};",
       lang_slug: "ts"
     })
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result.V2{status: "failure", success_count: 0} = check_result
+    assert %V2{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
@@ -89,14 +90,13 @@ defmodule Codebattle.DockerExecution.TSTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text:
-        "export default function solution(a: number, b: number) {\n\treturn a + b;\n};",
+      editor_text: "export default function solution(a: number, b: number) {\n\treturn a + b;\n};",
       lang_slug: "ts"
     })
 
     assert_code_check()
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Broadcast{
       payload: %{solution_status: true, state: "game_over"}
     }
 
