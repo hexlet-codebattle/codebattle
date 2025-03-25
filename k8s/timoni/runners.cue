@@ -1,7 +1,7 @@
 runners: {
 	"clojure": {
 		image:    "codebattle/clojure"
-		version:  "1.3.190"
+		version:  "1.11.2.3"
 		lang:     "clojure"
 		replicas: 1
 	}
@@ -18,9 +18,8 @@ runners: {
 		replicas: 1
 	}
 	"dart": {
-		image: "codebattle/dart"
-
-		version:  "latest"
+		image:    "codebattle/dart"
+		version:  "3.3.1"
 		lang:     "dart"
 		replicas: 1
 	}
@@ -38,7 +37,7 @@ runners: {
 	}
 	"haskell": {
 		image:    "codebattle/haskell"
-		version:  "latest"
+		version:  "9.4.7"
 		lang:     "haskell"
 		replicas: 1
 	}
