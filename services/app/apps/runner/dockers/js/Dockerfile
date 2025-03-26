@@ -13,6 +13,7 @@ ENV NODE_PATH /usr/local/lib/node_modules/
 
 WORKDIR /usr/src/app
 
+ADD check check
 ADD checker.js .
 ADD assertsRunner.js .
 ADD Makefile .
