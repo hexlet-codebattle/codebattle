@@ -213,8 +213,8 @@ const useEditor = props => {
         }
       }
 
-      // Block Shift+Insert (paste on some systems)
-      if (e.shiftKey && e.keyCode === 45 /* Insert key */) {
+      // Block Insert (paste on some systems)
+      if (e.keyCode === 45 && e.code !== 'KeyO' /* Insert key */) {
         e.preventDefault();
         e.stopPropagation();
       }
