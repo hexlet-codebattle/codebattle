@@ -157,17 +157,19 @@ function ChatContextMenu({
           />
           <span>Info</span>
         </Item>
-        <Item
-          role="menuitem"
-          aria-label="Follow"
-          onClick={handleFollow}
-        >
-          <FontAwesomeIcon
-            className="mr-2"
-            icon="binoculars"
-          />
-          <span>Follow</span>
-        </Item>
+        {!isCurrentUser && (
+          <Item
+            role="menuitem"
+            aria-label="Follow"
+            onClick={handleFollow}
+          >
+            <FontAwesomeIcon
+              className="mr-2"
+              icon="binoculars"
+            />
+            <span>Follow</span>
+          </Item>
+        )}
         {canCreatePrivateRoom ? (
           <Item
             role="menuitem"
