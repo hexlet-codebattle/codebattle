@@ -34,14 +34,16 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const [text, setText] = useState('');
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
+  const isMessageBlank = !text.trim();
+
   const handleChange = async ({ target: { value } }) => {
     if (value.length > MAX_MESSAGE_LENGTH) {
       setMaxLengthExceeded(true);
     } else {
       setMaxLengthExceeded(false);
     }
-      setText(value);
-      setTooltipVisibility(await getTooltipVisibility(value));
+    setText(value);
+    setTooltipVisibility(await getTooltipVisibility(value));
   };
 
   const handleSubmit = e => {
@@ -59,6 +61,11 @@ export default function ChatInput({ inputRef, disabled = false }) {
     if (isMaxLengthExceeded) {
       return;
     }
+
+    if (isMessageBlank) {
+      return;
+    }
+
     if (text) {
       addMessage(message);
       setText('');
@@ -108,9 +115,8 @@ export default function ChatInput({ inputRef, disabled = false }) {
       onSubmit={handleSubmit}
     >
       <input
-        className={`form-control h-auto border-gray border-right-0 rounded-left ${
-          isMaxLengthExceeded ? 'is-invalid' : ''
-        }`}
+        className={`form-control h-auto border-gray border-right-0 rounded-left ${isMaxLengthExceeded ? 'is-invalid' : ''
+          }`}
         placeholder="Be nice in chat!"
         value={text}
         onChange={handleChange}
@@ -152,7 +158,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
-          disabled={disabled || isMaxLengthExceeded}
+          disabled={disabled || isMaxLengthExceeded || isMessageBlank}
         >
           {i18next.t('Send')}
         </button>
