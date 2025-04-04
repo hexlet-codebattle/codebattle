@@ -80,26 +80,26 @@ const searchParams = new URLSearchParams(window.location.search);
 const getNextLocation = () => (searchParams.has('next') ? searchParams.get('next') : '/');
 const getLinkWithNext = link => (searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link);
 
-const SocialLinks = () => (
+const SocialLinks = ({ isSignUp }) => (
   <>
     <div className="mt-1">
       <a
         type="button"
-        aria-label="signInWithGithub"
+        aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
         href={getLinkWithNext('/auth/github')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {i18n.t('Sign in with Github')}
+        {isSignUp ? i18n.t('Sign up with Github') : i18n.t('Sign in with Github')}
       </a>
     </div>
     <div className="mt-1">
       <a
         type="button"
-        aria-label="signInWithDiscord"
+        aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
         href={getLinkWithNext('/auth/discord')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {i18n.t('Sign in with Discord')}
+        {isSignUp ? i18n.t('Sign up with Discord') : i18n.t('Sign in with Discord')}
       </a>
     </div>
   </>
@@ -183,7 +183,7 @@ function SignIn() {
             </a>
           </div>
         </Form>
-        <SocialLinks />
+        <SocialLinks isSignUp={false} />
       </Body>
       <Footer>
         <SignUpInvitation />
@@ -245,7 +245,7 @@ function SignUp() {
             formik={formik}
           />
         </Form>
-        <SocialLinks />
+        <SocialLinks isSignUp />
       </Body>
       <Footer>
         <SignInInvitation />
