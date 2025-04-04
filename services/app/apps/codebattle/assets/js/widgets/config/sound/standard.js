@@ -1,5 +1,5 @@
 export default {
-  src: '/assets/audio/audioSprites/standartSpritesAudio.wav',
+  src: '/assets/audio/audioSprites/standardSpritesAudio.wav',
   sprite: {
     check: [0, 11000],
     give_up: [12000, 486.6893424036274],

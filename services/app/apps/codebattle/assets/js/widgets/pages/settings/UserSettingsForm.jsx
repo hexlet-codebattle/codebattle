@@ -162,9 +162,9 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                 id="radioStandard"
                 type="radio"
                 name="soundSettings.type"
-                value="standart"
+                value="standard"
                 className="form-check-input"
-                onClick={() => playSound('standart', values.soundSettings.level * 0.1)}
+                onClick={() => playSound('standard', values.soundSettings.level * 0.1)}
               />
               <label className="form-check-label" htmlFor="radioStandard">Standard</label>
             </div>
