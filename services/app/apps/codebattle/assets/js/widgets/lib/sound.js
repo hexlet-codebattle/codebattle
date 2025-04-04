@@ -4,17 +4,17 @@ import isUndefined from 'lodash/isUndefined';
 
 import cs from '../config/sound/cs';
 import dendy from '../config/sound/dendy';
-import standart from '../config/sound/standart';
+import standard from '../config/sound/standard';
 
 const audioPaths = {
-  standart: '/assets/audio/audioSprites/standartSpritesAudio.wav',
+  standard: '/assets/audio/audioSprites/standardSpritesAudio.wav',
   cs: '/assets/audio/audioSprites/csSpritesAudio.wav',
   dendy: '/assets/audio/audioSprites/dendySpritesAudio.wav',
   silent: '',
 };
 
 const audioConfigs = {
-  standart,
+  standard,
   cs,
   dendy,
   silent: {},
@@ -54,7 +54,7 @@ const createSound = slug => ({
 const createPlayer = () => ({
   dendy: createSound('dendy'),
   cs: createSound('cs'),
-  standart: createSound('standart'),
+  standard: createSound('standard'),
   silent: null,
   stop: () => Howler.stop(),
 });

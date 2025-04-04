@@ -24,7 +24,7 @@ const preloadedState = {
   user: {
     settings: {
       soundSettings: {
-        type: 'standart',
+        type: 'standard',
         level: 6,
       },
       id: 11,
@@ -100,7 +100,7 @@ describe('UserSettings test cases', () => {
           lang: 'js',
           sound_settings: {
             level: 6,
-            type: 'standart',
+            type: 'standard',
           },
         },
         expect.anything(),
