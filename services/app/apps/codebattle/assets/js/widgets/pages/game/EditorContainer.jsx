@@ -1,8 +1,5 @@
 import React, {
-  useEffect,
-  useContext,
-  useCallback,
-  useRef,
+ useEffect, useContext, useCallback, useRef,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -42,21 +39,27 @@ const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
 
-  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const inTestingRoom = useMachineStateSelector(
+    mainService,
+    inTestingRoomSelector,
+  );
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
 
   useEffect(() => {
     if (isPreview) {
-      return () => { };
+      return () => {};
     }
 
     if (inTestingRoom) {
       editorService.send('load_testing_editor');
 
-      return () => { };
+      return () => {};
     }
 
-    const clearEditorListeners = GameActions.connectToEditor(editorService, player?.isBanned)(dispatch);
+    const clearEditorListeners = GameActions.connectToEditor(
+      editorService,
+      player?.isBanned,
+    )(dispatch);
 
     return clearEditorListeners;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,58 +89,89 @@ function EditorContainer({
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const currentEditorLangSlug = useSelector(selectors.userLangSelector(currentUserId));
+  const currentEditorLangSlug = useSelector(
+    selectors.userLangSelector(currentUserId),
+  );
 
-  const updateEditorValue = useCallback(data => dispatch(GameActions.updateEditorText(data)), [dispatch]);
-  const updateAndSendEditorValue = useCallback(data => {
-    dispatch(GameActions.updateEditorText(data));
-    dispatch(GameActions.sendEditorText(data));
-  }, [dispatch]);
+  const updateEditorValue = useCallback(
+    data => dispatch(GameActions.updateEditorText(data)),
+    [dispatch],
+  );
+  const updateAndSendEditorValue = useCallback(
+    data => {
+      dispatch(GameActions.updateEditorText(data));
+      dispatch(GameActions.sendEditorText(data));
+    },
+    [dispatch],
+  );
 
   const { mainService } = useContext(RoomContext);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
-  const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
-  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
-  const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
-  const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
+  const isRestricted = useMachineStateSelector(
+    mainService,
+    isRestrictedContentSelector,
+  );
+  const inTestingRoom = useMachineStateSelector(
+    mainService,
+    inTestingRoomSelector,
+  );
+  const inBuilderRoom = useMachineStateSelector(
+    mainService,
+    inBuilderRoomSelector,
+  );
+  const isActiveGame = useMachineStateSelector(
+    mainService,
+    isGameActiveSelector,
+  );
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
-  const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
+  const openedReplayer = useMachineStateSelector(
+    mainService,
+    openedReplayerSelector,
+  );
 
   const isTournamentGame = !!tournamentId;
 
   const context = { userId: id, type, subscriptionType };
 
-  const editorService = useInterpret(
-    editorMachine,
-    {
-      context,
-      devTools: true,
-      id: `editor_${id}`,
-      actions: {
-        userSendSolution: ctx => {
-          if (ctx.editorState === 'active') {
-            dispatch(GameActions.checkGameSolution());
-          }
-        },
-        handleTimeoutFailureChecking: ctx => {
-          dispatch(actions.updateExecutionOutput({
+  const editorService = useInterpret(editorMachine, {
+    context,
+    devTools: true,
+    id: `editor_${id}`,
+    actions: {
+      userSendSolution: ctx => {
+        if (ctx.editorState === 'active') {
+          dispatch(GameActions.checkGameSolution());
+        }
+      },
+      handleTimeoutFailureChecking: ctx => {
+        dispatch(
+          actions.updateExecutionOutput({
             userId: ctx.userId,
             status: 'client_timeout',
             output: '',
             result: {},
             asserts: [],
-          }));
+          }),
+        );
 
-          dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
-        },
+        dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
       },
     },
+  });
+
+  const editorCurrent = useMachineStateSelector(
+    editorService,
+    editorStateSelector,
   );
 
-  const editorCurrent = useMachineStateSelector(editorService, editorStateSelector);
-
-  const checkActiveTaskSolution = useCallback(() => editorService.send('user_check_solution'), [editorService]);
-  const checkTestTaskSolution = useCallback(() => dispatch(GameActions.checkTaskSolution(editorService)), [dispatch, editorService]);
+  const checkActiveTaskSolution = useCallback(
+    () => editorService.send('user_check_solution'),
+    [editorService],
+  );
+  const checkTestTaskSolution = useCallback(
+    () => dispatch(GameActions.checkTaskSolution(editorService)),
+    [dispatch, editorService],
+  );
 
   const checkResult = inTestingRoom
     ? checkTestTaskSolution
@@ -164,7 +198,7 @@ function EditorContainer({
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inTestingRoom]);
 
@@ -195,9 +229,13 @@ function EditorContainer({
   };
 
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
-  const editable = !openedReplayer && userSettings.editable && userSettings.editorState !== 'banned';
+  const editable = !openedReplayer
+    && userSettings.editable
+    && userSettings.editorState !== 'banned';
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
-  const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : updateAndSendEditorValue;
+  const updateEditor = editorCurrent.context.editorState === 'testing'
+      ? updateEditorValue
+      : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
 
   const editorParams = {
@@ -228,13 +266,19 @@ function EditorContainer({
     'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
   });
 
-  const gameRoomEditorStylesVersion2 = { minHeight: `calc(100vh - 92px - ${toolbarRef.current?.clientHeight || 0}px)` };
+  const gameRoomEditorStylesVersion2 = {
+    minHeight: `calc(100vh - 92px - ${toolbarRef.current?.clientHeight || 0}px)`,
+  };
 
   return (
     <div data-editor-state={editorCurrent.value} className={pannelBackground}>
       <div
         className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
-        style={orientation === 'side' ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
+        style={
+          orientation === 'side'
+            ? gameRoomEditorStylesVersion2
+            : gameRoomEditorStyles
+        }
         data-guide-id={orientation === 'left' ? 'LeftEditor' : ''}
       >
         <EditorToolbar

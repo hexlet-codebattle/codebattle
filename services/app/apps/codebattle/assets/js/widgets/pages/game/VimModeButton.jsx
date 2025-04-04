@@ -1,32 +1,42 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import cn from "classnames";
+// import { Col } from 'react-bootstrap';
+import { useDispatch, useSelector } from "react-redux";
 
-import editorModes from '../../config/editorModes';
-import { editorsModeSelector } from '../../selectors';
-import { actions } from '../../slices';
+import editorModes from "../../config/editorModes";
+import { editorsModeSelector } from "../../selectors";
+import { actions } from "../../slices";
 
 function VimModeButton() {
   const dispatch = useDispatch();
   const currentMode = useSelector(editorsModeSelector);
-
   const isVimMode = currentMode === editorModes.vim;
 
-  const mode = isVimMode ? editorModes.default : editorModes.vim;
-
-  const classNames = cn('btn btn-sm rounded-left', {
-    'btn-light': !isVimMode,
-    'btn-secondary': isVimMode,
-  });
-
   const handleToggleVimMode = () => {
-    dispatch(actions.setEditorsMode(mode));
+    dispatch(
+      actions.setEditorsMode(isVimMode ? editorModes.default : editorModes.vim),
+    );
   };
 
+  // Use meaningful text, not just color, to indicate state
+  const buttonText = isVimMode ? "Vim: ON" : "Vim: OFF";
+
+  // Keep styling if desired, but ensure text clarifies the mode
+  const classNames = cn("btn btn-sm rounded-left", {
+    "btn-light": !isVimMode,
+    "btn-secondary": isVimMode,
+  });
+
   return (
-    <button type="button" className={classNames} onClick={handleToggleVimMode}>
-      Vim
+    <button
+      type="button"
+      className={classNames}
+      onClick={handleToggleVimMode}
+      aria-pressed={isVimMode}
+      title={isVimMode ? "Disable Vim mode" : "Enable Vim mode"}
+    >
+      {buttonText}
     </button>
   );
 }
