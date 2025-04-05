@@ -70,6 +70,7 @@ defmodule CodebattleWeb.Router do
   scope "/ext_api", CodebattleWeb.ExtApi, as: :ext_api do
     pipe_through([:ext_api])
     post("/users", UserController, :create)
+    post("/tasks", TaskController, :create)
   end
 
   scope "/", CodebattleWeb do
