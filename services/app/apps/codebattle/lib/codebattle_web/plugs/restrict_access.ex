@@ -50,7 +50,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         conn
 
       # allow guests to access session new path
-      current_user.is_guest && Enum.any?(@allowed_session_paths, &Regex.match?(&1, conn.request_path)) ->
+      current_user.is_guest &&
+          Enum.any?(@allowed_session_paths, &Regex.match?(&1, conn.request_path)) ->
         conn
 
       # redirect to login page if we restrict guests access
@@ -68,8 +69,11 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         |> halt()
 
       # redirect to root if we use mini version of codebattle
-      FunWithFlags.enabled?(:codebattele_mini_version) &&
-          !Enum.any?(@allowed_mini_paths, &Regex.match?(&1, conn.request_path)) ->
+      FunWithFlags.enabled?(:codebattle_mini_version) &&
+          !Enum.any?(
+            @allowed_mini_paths ++ @allowed_session_paths,
+            &Regex.match?(&1, conn.request_path)
+          ) ->
         conn
         |> redirect(to: "/")
         |> halt()

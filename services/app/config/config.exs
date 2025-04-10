@@ -35,6 +35,17 @@ config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :default_lang_slug, "js"
+
+config :codebattle, :external,
+  app_name: System.get_env("EXTERNAL_APP_NAME", "CodebattleExternal"),
+  app_slogan: System.get_env("EXTERNAL_APP_SLOGAN", "Make codebattle great again"),
+  app_login_button: System.get_env("EXTERNAL_APP_LOGIN_INFO", "Login with GitHub"),
+  app_login_description:
+    System.get_env(
+      "EXTERNAL_APP_LOGIN_DESCRIPTION",
+      "Login with GitHub to play with your friends"
+    )
+
 config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,

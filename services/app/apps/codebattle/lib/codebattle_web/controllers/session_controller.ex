@@ -8,7 +8,7 @@ defmodule CodebattleWeb.SessionController do
 
     cond do
       FunWithFlags.enabled?(:use_only_external_oauth) ->
-        render(conn, "external_oauth.html", layout: {CodebattleWeb.LayoutView, :empty})
+        render(conn, "external_oauth.html", layout: {CodebattleWeb.LayoutView, :external})
 
       FunWithFlags.enabled?(:use_only_token_auth) ->
         render(conn, "token_only.html")
