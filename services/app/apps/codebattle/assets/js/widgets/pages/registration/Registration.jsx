@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import cn from 'classnames';
@@ -91,7 +92,8 @@ const PasswordInput = ({ id, title, formik }) => {
           className={`position-absolute end-0 top-0 h-100 ${isInvalid ? 'mr-4' : ''}`}
           onClick={togglePasswordVisibility}
         >
-          <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} />
+          {/* <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} /> */}
+          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
         </Button>
       </div>
       {isInvalid && <div className="invalid-feedback">{formik.errors[id]}</div>}
@@ -122,7 +124,9 @@ const SocialLinks = ({ isSignUp }) => (
         href={getLinkWithNext('/auth/github')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {isSignUp ? i18n.t('Sign up with Github') : i18n.t('Sign in with Github')}
+        {isSignUp
+          ? i18n.t('Sign up with Github')
+          : i18n.t('Sign in with Github')}
       </a>
     </div>
     <div className="mt-1">
@@ -132,7 +136,9 @@ const SocialLinks = ({ isSignUp }) => (
         href={getLinkWithNext('/auth/discord')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {isSignUp ? i18n.t('Sign up with Discord') : i18n.t('Sign in with Discord')}
+        {isSignUp
+          ? i18n.t('Sign up with Discord')
+          : i18n.t('Sign in with Discord')}
       </a>
     </div>
   </>
@@ -273,7 +279,11 @@ function SignUp() {
           <Input id="name" type="text" title="Nickname" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
           <PasswordInput id="password" title="Password" formik={formik} />
-          <PasswordInput id="passwordConfirmation" title="Password Confirmation" formik={formik} />
+          <PasswordInput
+            id="passwordConfirmation"
+            title="Password Confirmation"
+            formik={formik}
+          />
         </Form>
         <SocialLinks isSignUp />
       </Body>

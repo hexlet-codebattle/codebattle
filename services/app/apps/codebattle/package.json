@@ -17,6 +17,10 @@
   },
   "jest": {
     "verbose": true,
+    "testEnvironment": "jsdom",
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx|mjs)$": "babel-jest"
+    },
     "moduleNameMapper": {
       "^monaco-editor$": "<rootDir>/node_modules/@monaco-editor/react",
       "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
@@ -34,8 +38,7 @@
       "/helpers/"
     ],
     "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
-      "^.+\\.module\\.(css|sass|scss)$"
+      "/node_modules/(?!(monaco-editor|@monaco-editor|monaco-vim)/)"
     ]
   },
   "dependencies": {
