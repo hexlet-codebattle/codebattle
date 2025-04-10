@@ -285,6 +285,38 @@ const useEditor = props => {
         toggleMuteSound();
       },
     });
+
+    domNode.addEventListener(
+      'wheel',
+      e => {
+        const scrollTop = currentEditor.getScrollTop();
+        const scrollHeight = currentEditor.getScrollHeight();
+        const clientHeight = currentEditor.getLayoutInfo().height;
+
+        const { deltaY } = e;
+
+        const atTop = scrollTop <= 0;
+        const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+
+        const scrollingDown = deltaY > 0;
+        const scrollingUp = deltaY < 0;
+
+        const shouldBubble = (scrollingUp && atTop) || (scrollingDown && atBottom);
+
+        if (shouldBubble) {
+          // Prevent Monaco from swallowing the event
+          e.preventDefault();
+
+          // Forward the scroll to the window (including momentum scroll)
+          window.scrollBy({
+            top: deltaY,
+            left: 0,
+            behavior: 'auto', // "smooth" breaks momentum feel from touchpad
+          });
+        }
+      },
+      { passive: false }, // Needed so we can call preventDefault()
+    );
   };
 
   return {
