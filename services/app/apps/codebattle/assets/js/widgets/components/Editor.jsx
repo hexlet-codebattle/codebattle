@@ -40,7 +40,6 @@ function Editor(props) {
       originalEditorDidMount(editor, monaco);
     }
   }
-
   // Whenever `mode` changes, enable or disable vimMode
   useEffect(() => {
     // If we haven't mounted the editor yet, exit
@@ -54,14 +53,13 @@ function Editor(props) {
           vimStatusRef.current,
         );
       }
-    } else {
+    } else if (vimModeRef.current) {
       // If we're switching away from Vim mode, dispose it
-      if (vimModeRef.current) {
-        vimModeRef.current.dispose();
-        vimModeRef.current = null;
-      }
+      vimModeRef.current.dispose();
+      vimModeRef.current = null;
     }
-  }, [mode]);
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, [mode, editorRef.current]);
 
   return (
     <>
