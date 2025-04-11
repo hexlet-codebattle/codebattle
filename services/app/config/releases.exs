@@ -55,6 +55,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 config :codebattle, :app_subtitle, app_subtitle
 config :codebattle, :app_title, app_title
+config :codebattle, :base_user_path, System.get_env("CODEBATTLE_BASE_USER_PATH", "/")
 config :codebattle, :default_lang_slug, System.get_env("CODEBATTLE_DEFAULT_LANG_SLUG", "js")
 
 config :codebattle, :external,

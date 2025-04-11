@@ -34,6 +34,7 @@ config :codebattle, CodebattleWeb.Gettext,
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
+config :codebattle, :base_user_path, "/"
 config :codebattle, :default_lang_slug, "js"
 
 config :codebattle, :external,
