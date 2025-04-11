@@ -5,6 +5,10 @@ codebattleValues: {
 		enable:      true
 		gatewayName: "gateway"
 	}
-	certManager: enable: true
+	certManager: {
+		enable:         true
+		useLetsencrypt: false
+		useCA:          true
+	}
 	rustExecutor: true
 }

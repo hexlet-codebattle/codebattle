@@ -71,7 +71,16 @@ import (
 		host:        *"codebattle.hexlet.io" | string
 	}
 
-	certManager: enable: *false | bool
+	certManager: {
+		enable:            *false | bool
+		useLetsencrypt:    *true | bool
+		useCA:             *false | bool
+		_issuerConstraint: useLetsencrypt != useCA
+		_caSecretMeta: timoniv1.#MetaComponent & {
+			#Meta:      metadata
+			#Component: "ca"
+		}
+	}
 
 	rustExecutor: *false | bool
 }

@@ -10,16 +10,23 @@ import (
 	kind:       "Issuer"
 	metadata:   #config.metadata
 	spec: {
-		acme: {
-			server: "https://acme-v02.api.letsencrypt.org/directory"
-			privateKeySecretRef: name: "\(metadata.name)-letsencrypt"
-			solvers: [{
-				http01: gatewayHTTPRoute: {
-					parentRefs: [{
-						name: #config.gateway.gatewayName
-					}]
-				}
-			}]
+		if #config.certManager.useLetsencrypt {
+			acme: {
+				server: "https://acme-v02.api.letsencrypt.org/directory"
+				privateKeySecretRef: name: "\(metadata.name)-letsencrypt"
+				solvers: [{
+					http01: gatewayHTTPRoute: {
+						parentRefs: [{
+							name: #config.gateway.gatewayName
+						}]
+					}
+				}]
+			}
+		}
+		if #config.certManager.useCA {
+			ca: {
+				secretName: #config.certManager._caSecretMeta.name
+			}
 		}
 	}
 }
