@@ -12,11 +12,7 @@ defmodule CodebattleWeb.EventController do
   end
 
   def new(conn, _params) do
-    conn
-    |> render("new.html",
-      changeset: Codebattle.Event.changeset(%Codebattle.Event{}),
-      user: conn.assigns.current_user
-    )
+    render(conn, "new.html", changeset: Codebattle.Event.changeset(%Codebattle.Event{}), user: conn.assigns.current_user)
   end
 
   def show(conn, %{"id" => id}) do
