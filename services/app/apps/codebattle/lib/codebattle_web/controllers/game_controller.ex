@@ -168,7 +168,6 @@ defmodule CodebattleWeb.GameController do
 
   defp put_game_meta_tags(conn, game) do
     put_meta_tags(conn, %{
-      title: Application.get_env(:codebattle, :app_title),
       description: game_meta_description(game),
       url: Routes.game_url(conn, :show, game.id, level: Helpers.get_level(game)),
       image: Routes.game_image_url(conn, :show, game.id),

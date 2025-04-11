@@ -1,5 +1,5 @@
 // --------------------------------------------------
-// IMPORTS
+// IMPORTS & VARIABLES
 // --------------------------------------------------
 
 @import "fonts";
@@ -26,217 +26,62 @@ $dark-red: #b00020;
 // CUSTOM STYLES
 // --------------------------------------------------
 
-.btn:hover {
-  text-decoration: if($link-hover-decoration == underline, none, null);
+// Example custom classes for your text
+.battle-title {
+  color: $warning; // or #fffb47 if you want a brighter yellow
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.btn-outline-red:hover {
-  color: red;
-  border-color: red;
+.main-title {
+  font-size: 36px; // Adjust to match your design
+  font-weight: 800; // Adjust weight as desired
+  // You already have .text-purple in your HTML, which sets color: #a78bfa
 }
 
-.btn-outline-success:hover {
-  color: white;
+.login-description {
+  font-size: 16px;
+  line-height: 1.4;
+  color: $light; // Matches your text-light class
 }
 
-.btn-outline-red {
-  border: 2px solid $dark-red;
-  color: $dark-red;
-  font-weight: bold;
-  border-radius: 0%;
-}
-
-.btn-outline-grey {
-  border: 1px solid $gray-dark;
-  color: $gray;
-  font-weight: bold;
-  border-radius: 0%;
-}
-
-.btn-yellow {
-  background-color: #fffb47;
-  color: black;
-  font-weight: bold;
-  border-radius: 999px;
-
-  &:hover {
-    background-color: #e6e02b;
-  }
-}
-
-// --------------------------------------------------
-// BACKGROUNDS
-// --------------------------------------------------
-
-.dark-bg {
-  background: $dark;
-}
-
-.bg-codebattle {
-  background-image: url("../static/images/landing/bg-codebattle.svg");
-  background-repeat: no-repeat;
-  background-size: 70%;
-  background-position: right;
-
-  @media (max-width: $lg) {
-    background-image: none;
-  }
-}
-
-.footer {
-  background-color: rgba($dark, 0.91);
-}
-
-// --------------------------------------------------
-// TEXT COLORS & TYPOGRAPHY
-// --------------------------------------------------
-
-.text-gray {
-  color: $gray !important;
-}
-
-.text-black {
-  color: black !important;
-}
-
-.text-orange {
-  color: $orange !important;
-}
-
-h2 {
-  font-size: 50px;
-  font-weight: 400;
-
-  @media (max-width: $sm) {
-    font-size: 9vw;
-  }
-}
-
-.header-txt {
-  font-size: 18px;
-  line-height: 18px;
-}
-
-p {
-  font-family: "Montserrat", sans-serif;
-}
-
-// --------------------------------------------------
-// UTILITIES
-// --------------------------------------------------
-
-.fw-500 {
-  font-weight: 500;
-}
-
-.x-translate-xl-y-50 {
-  @media (min-width: $xl) {
-    transform: translateY(-50%) !important;
-  }
-}
-
-.x-top-0 {
-  top: 0;
-}
-
-.x-tranform-none {
-  transform: none;
-}
-
-.hr-red {
-  border: 1px solid $dark-red;
-}
-
-.hr-gray {
-  border: 1px solid $gray-dark;
-}
-
-// --------------------------------------------------
-// IMAGES & COMPONENTS
-// --------------------------------------------------
-
-.contributor-img {
-  width: 40px;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-}
-
-.factoid {
-  max-width: 308px;
-  max-height: 215px;
-}
-
-// --------------------------------------------------
-// GRIDS
-// --------------------------------------------------
-
-.lang-icons {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-row-gap: 10px;
-  grid-column-gap: 30px;
-  place-items: center;
-
-  @media (max-width: $sm) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.comments {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-row-gap: 55px;
-  place-items: center;
-
-  @media (max-width: $xl) {
-    grid-row-gap: 24px;
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
-
-.comment {
-  width: 530px;
-  height: 580px;
-
-  @media (max-width: $md) {
-    width: auto;
-    height: auto;
-    min-width: 200px;
-    max-width: 530px;
-  }
-}
-
-.auth-container {
-  background: url("https://example.com/path/to/bg-auth-ring.svg") no-repeat
-    center center;
-  background-size: cover;
-  background-color: #1a1c2e;
-  padding: 2rem;
-}
-
-.auth-card {
-  background-color: #0a0b13;
-  border-radius: 24px;
-  max-width: 480px;
-  width: 100%;
-  box-shadow: 0 0 32px rgba(0, 0, 0, 0.4);
-  color: white;
-}
-
-.text-purple {
-  color: #a78bfa;
-}
-
+// Style the button the way it appears in your mock
 .btn-yellow {
   background-color: #fffb47;
   color: black;
   border-radius: 999px;
   font-weight: bold;
+  padding: 12px 24px;
+  transition: background-color 0.3s ease;
+  border: none;
 
   &:hover {
     background-color: #e6e02b;
     color: black;
   }
+}
+
+// --------------------------------------------------
+// AUTH COMPONENT
+// --------------------------------------------------
+.auth-container {
+  background-color: #1a1c2e; // or whatever your main background is
+  background-size: cover;
+  padding: 2rem;
+}
+
+.auth-card {
+  background-color: $dark; // #0a0b13
+  border-radius: 24px;
+  max-width: 480px; // adjust to your design
+  width: 100%;
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.4);
+  color: white;
+  z-index: 2; /* Position behind the content */
+}
+
+// The .text-purple class is already defined:
+.text-purple {
+  color: $primary; // #a78bfa
 }

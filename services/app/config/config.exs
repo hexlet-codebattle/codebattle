@@ -37,14 +37,10 @@ config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :default_lang_slug, "js"
 
 config :codebattle, :external,
-  app_name: System.get_env("EXTERNAL_APP_NAME", "CodebattleExternal"),
-  app_slogan: System.get_env("EXTERNAL_APP_SLOGAN", "Make codebattle great again"),
-  app_login_button: System.get_env("EXTERNAL_APP_LOGIN_INFO", "Login with GitHub"),
-  app_login_description:
-    System.get_env(
-      "EXTERNAL_APP_LOGIN_DESCRIPTION",
-      "Login with GitHub to play with your friends"
-    )
+  app_name: "Codebattle External",
+  app_slogan: "Make codebattle<br>great again",
+  app_login_button: "Login with External ID",
+  app_login_description: "Login with External system to play with your friends"
 
 config :codebattle, :fake_html_to_image, true
 
@@ -52,6 +48,8 @@ config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
+
+config :codebattle, :logo_title, "Hexlet Codebattle"
 
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),

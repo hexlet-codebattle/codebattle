@@ -24,8 +24,6 @@ defmodule CodebattleWeb.UserController do
   def show(conn, %{"id" => user_name}) do
     conn
     |> put_meta_tags(%{
-      title: "Hexlet Codebattle Profile",
-      description: "Profile codebattle user_name",
       url: Routes.user_path(conn, :show, user_name)
     })
     |> render("show.html")
@@ -34,8 +32,6 @@ defmodule CodebattleWeb.UserController do
   def edit(conn, _params) do
     conn
     |> put_meta_tags(%{
-      title: "Hexlet Codebattle • Edit",
-      description: "Profile Settings",
       url: Routes.user_setting_path(conn, :edit)
     })
     |> render("edit.html")

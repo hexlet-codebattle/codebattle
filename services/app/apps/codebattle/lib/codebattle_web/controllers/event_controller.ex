@@ -3,7 +3,7 @@ defmodule CodebattleWeb.EventController do
 
   alias Codebattle.Event
 
-  plug CodebattleWeb.Plugs.AdminOnly
+  plug(CodebattleWeb.Plugs.AdminOnly)
 
   def index(conn, _params) do
     conn
@@ -13,7 +13,6 @@ defmodule CodebattleWeb.EventController do
 
   def new(conn, _params) do
     conn
-    |> put_meta_tags(%{title: "Codebattle Event"})
     |> render("new.html",
       changeset: Codebattle.Event.changeset(%Codebattle.Event{}),
       user: conn.assigns.current_user
