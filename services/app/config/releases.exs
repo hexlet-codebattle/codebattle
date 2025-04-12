@@ -62,6 +62,13 @@ config :codebattle, :external,
   app_name: System.get_env("EXTERNAL_APP_NAME", "Codebattle External"),
   app_slogan: System.get_env("EXTERNAL_APP_SLOGAN", "Make codebattle<br>great again"),
   app_login_button: System.get_env("EXTERNAL_APP_LOGIN_BUTTON", "Login with External ID"),
+  app_signup_description:
+    System.get_env(
+      "EXTERNAL_APP_SIGNUP_DESCRIPTION",
+      "Sign up with External system to play with your friends"
+    ),
+  app_signup_button: System.get_env("EXTERNAL_APP_SIGNUP_BUTTON", "Sign up with External ID"),
+  app_relogin_button: System.get_env("EXTERNAL_APP_RELOGIN_BUTTON", "Relogin with External ID"),
   app_login_description:
     System.get_env(
       "EXTERNAL_APP_LOGIN_DESCRIPTION",

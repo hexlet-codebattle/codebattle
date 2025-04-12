@@ -41,6 +41,9 @@ config :codebattle, :external,
   app_name: "Codebattle External",
   app_slogan: "Make codebattle<br>great again",
   app_login_button: "Login with External ID",
+  app_signup_description: "Sign up with External system to play with your friends",
+  app_signup_button: "Sign up with External ID",
+  app_relogin_button: "Relogin with External ID",
   app_login_description: "Login with External system to play with your friends"
 
 config :codebattle, :fake_html_to_image, true

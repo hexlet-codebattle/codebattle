@@ -3,11 +3,19 @@ defmodule CodebattleWeb.SessionController do
 
   alias Codebattle.User
 
+  def external_signup(conn, _params) do
+    if FunWithFlags.enabled?(:use_only_external_oauth) do
+      render(conn, "external_signup.html", layout: {CodebattleWeb.LayoutView, :external})
+    else
+      redirect(conn, to: "/session/new")
+    end
+  end
+
   def new(conn, _params) do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
     cond do
-      true || FunWithFlags.enabled?(:use_only_external_oauth) ->
+      FunWithFlags.enabled?(:use_only_external_oauth) ->
         render(conn, "external_oauth.html", layout: {CodebattleWeb.LayoutView, :external})
 
       FunWithFlags.enabled?(:use_only_token_auth) ->
