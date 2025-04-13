@@ -62,11 +62,16 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         |> halt()
 
       # redirect to custom url if we restrict don't allow free users to access the site
+
       current_user.subscription_type == :free &&
         FunWithFlags.enabled?(:redirect_free_users) &&
+        !Enum.any?(
+          @allowed_session_paths,
+          &Regex.match?(&1, conn.request_path)
+        ) &&
           FunWithFlags.enabled?(:use_only_external_oauth) ->
         conn
-        |> redirect(to: "/sessions/external/signup")
+        |> redirect(to: "/session/external/signup")
         |> halt()
 
       # redirect to root if we use mini version of codebattle
