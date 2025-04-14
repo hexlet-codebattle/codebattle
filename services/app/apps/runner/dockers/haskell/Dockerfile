@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 
 RUN cabal update
 
+ADD check check
 ADD checker.cabal .
 RUN cabal build --only-dependencies
 
