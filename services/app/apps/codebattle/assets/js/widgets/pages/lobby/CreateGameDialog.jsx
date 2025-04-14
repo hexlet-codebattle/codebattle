@@ -35,29 +35,41 @@ const unchosenTask = { id: null };
 const OpponentSelect = memo(({ setOpponent, opponent }) => {
   const dispatch = useDispatch();
   const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
 
-  const loadOptions = useCallback((inputValue, callback) => {
-    const queryParamsString = qs.stringify({
-      q: {
-        name_ilike: inputValue,
-      },
-    });
-
-    axios
-      .get(`/api/v1/users?${queryParamsString}`)
-      .then(({ data }) => {
-        const { users } = camelizeKeys(data);
-
-        const options = users
-          .filter(({ id }) => currentUserId !== id)
-          .map(user => ({ label: <UserLabel user={user} />, value: user }));
-
-        callback(options);
-      })
-      .catch(error => {
-        dispatch(actions.setError(error));
+  const loadOptions = useCallback(
+    (inputValue, callback) => {
+      const queryParamsString = qs.stringify({
+        q: {
+          name_ilike: inputValue,
+        },
       });
-  }, [currentUserId, dispatch]);
+
+      axios
+        .get(`/api/v1/users?${queryParamsString}`)
+        .then(({ data }) => {
+          const { users } = camelizeKeys(data);
+
+          const options = users
+            .filter(({ id }) => currentUserId !== id)
+            .map(user => ({
+              ...user,
+              isOnline: presenceList.some(p => p.id === user.id),
+            }))
+            .sort((a, b) => Number(b.isOnline) - Number(a.isOnline))
+            .map(user => ({
+              label: <UserLabel user={user} />,
+              value: user,
+            }));
+
+          callback(options);
+        })
+        .catch(error => {
+          dispatch(actions.setError(error));
+        });
+    },
+    [currentUserId, dispatch, presenceList],
+  );
 
   return (
     <AsyncSelect
@@ -135,7 +147,9 @@ const GameTypeButtonGroup = memo(({ value, onChange }) => {
 
 function CreateGameDialog({ hideModal }) {
   const dispatch = useDispatch();
-  const { gameOptions: givenGameOptions, opponentInfo } = useSelector(selectors.modalSelector);
+  const { gameOptions: givenGameOptions, opponentInfo } = useSelector(
+    selectors.modalSelector,
+  );
   const [opponent, setOpponent] = useState(opponentInfo);
   const [chosenTask, setChosenTask] = useState(unchosenTask);
   const [chosenTags, setChosenTags] = useState([]);
@@ -148,13 +162,19 @@ function CreateGameDialog({ hideModal }) {
   const isInvite = gameType === 'invite';
   const isTaskChosen = chosenTask.id !== null;
 
-  const handleTimeoutChange = useCallback(e => setGameTimeout(e.target.value * 60), [setGameTimeout]);
+  const handleTimeoutChange = useCallback(
+    e => setGameTimeout(e.target.value * 60),
+    [setGameTimeout],
+  );
 
-  const switchGameLevel = useCallback(level => {
-    setGameLevel(level);
-    setChosenTask(unchosenTask);
-    setChosenTags([]);
-  }, [setGameLevel, setChosenTask, setChosenTags]);
+  const switchGameLevel = useCallback(
+    level => {
+      setGameLevel(level);
+      setChosenTask(unchosenTask);
+      setChosenTags([]);
+    },
+    [setGameLevel, setChosenTask, setChosenTags],
+  );
 
   const createGame = () => {
     if (isInvite && opponent) {
