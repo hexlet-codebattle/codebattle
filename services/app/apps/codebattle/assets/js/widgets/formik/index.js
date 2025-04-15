@@ -35,7 +35,7 @@ const schemas = {
       )
       .matches(
         /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
-        'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
+        'Must consist of Latin letters, numbers and underscores. Only begin with latin letter',
       )
       .trim(),
     clan: Yup.string()
@@ -69,7 +69,7 @@ const schemas = {
         .max(16, 'Should be from 3 to 16 characters')
         .matches(
           /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
-          'Should contain Latin letters, numbers and underscores. Only begin with latin letter',
+          'Must consist of Latin letters, numbers and underscores. Only begin with latin letter',
         )
         .required('Nickname required'),
       email: emailSchema,
