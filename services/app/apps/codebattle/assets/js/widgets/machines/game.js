@@ -372,7 +372,9 @@ export const config = {
 
     // game actions
     soundWin: () => {
-      sound.play('win');
+      // sound.play('win');
+      // TODO: fixes win sound playback, THIS IS CRUTCH, use other method
+      setTimeout(() => sound.play('win'), 100);
     },
     soundGiveUp: () => {
       sound.play('give_up');
