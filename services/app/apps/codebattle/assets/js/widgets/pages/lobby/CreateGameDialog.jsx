@@ -36,7 +36,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
   const dispatch = useDispatch();
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
-  console.log('presenceList:', presenceList);
+ 
   const loadOptions = useCallback(
     (inputValue, callback) => {
       const queryParamsString = qs.stringify({
