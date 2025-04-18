@@ -129,7 +129,7 @@ describe('UserSettings test cases', () => {
 
     expect(
       await findByText(
-        /Should contain Latin letters, numbers and underscores. Only begin with latin letter/i,
+        /Must consist of Latin letters, numbers and underscores. Only begin with latin letter/i,
       ),
     ).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
