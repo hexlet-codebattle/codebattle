@@ -43,6 +43,8 @@ export default function ChatInput({ inputRef, disabled = false }) {
   badwords.add(en);
   badwords.add(ru);
   badwords.add(rl);
+  
+  const isMessageBlank = !text.trim();
 
   const handleChange = async ({ target: { value } }) => {
     if (value.length > MAX_MESSAGE_LENGTH) {
@@ -68,6 +70,9 @@ export default function ChatInput({ inputRef, disabled = false }) {
       return;
     }
     if (isMaxLengthExceeded) {
+      return;
+    }
+    if (isMessageBlank) {
       return;
     }
     if (text) {
@@ -163,7 +168,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
-          disabled={disabled || isMaxLengthExceeded}
+          disabled={disabled || isMaxLengthExceeded || isMessageBlank}
         >
           {i18next.t('Send')}
         </button>

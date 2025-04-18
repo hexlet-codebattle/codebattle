@@ -23,7 +23,6 @@ config :codebattle, dev_sign_in: false
 config :codebattle, html_debug_mode: false
 config :codebattle, html_env: :prod
 config :codebattle, load_dot_env_file: false
-config :codebattle, restore_tournaments: true
 config :codebattle, ws_port: 4000
 
 config :logger, level: :error

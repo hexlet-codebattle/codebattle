@@ -8,26 +8,37 @@ defmodule CodebattleWeb.RootController do
   alias CodebattleWeb.LayoutView
 
   def index(conn, params) do
+    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+
     current_user = conn.assigns.current_user
     event_slug = Application.get_env(:codebattle, :lobby_event_slug)
+    is_guest? = current_user.is_guest
+    is_event? = event_slug not in [nil, ""]
 
-    case {current_user.is_guest, event_slug not in [nil, ""]} do
+    cond do
+      FunWithFlags.enabled?(:redirect_from_lobby_to_base) ->
+        path = Application.get_env(:codebattle, :base_user_path)
+
+        conn
+        |> redirect(to: path)
+        |> halt()
+
       # redirect use to login page if user is guest and we are in event mode
-      {true, true} ->
+      is_guest? && is_event? ->
         redirect(conn, to: "/session/new")
 
       # redirect user to event page if we are in event mode
-      {false, true} ->
+      !is_guest? && is_event? ->
         conn
         |> put_view(CodebattleWeb.PublicEventView)
         |> CodebattleWeb.PublicEventController.show(Map.put(params, "slug", event_slug))
 
       # render guests landing page for normal mode
-      {true, _} ->
+      is_guest? ->
         render(conn, "landing.html", layout: {LayoutView, "landing.html"})
 
       # by default render index page with lobby view
-      _ ->
+      true ->
         conn
         |> maybe_put_opponent(params)
         |> put_gon(

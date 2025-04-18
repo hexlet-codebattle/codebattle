@@ -70,6 +70,7 @@ defmodule CodebattleWeb.Router do
   scope "/ext_api", CodebattleWeb.ExtApi, as: :ext_api do
     pipe_through([:ext_api])
     post("/users", UserController, :create)
+    post("/tasks", TaskController, :create)
   end
 
   scope "/", CodebattleWeb do
@@ -157,6 +158,7 @@ defmodule CodebattleWeb.Router do
     get("/waiting", RootController, :waiting)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
+    get("/session/external/signup", SessionController, :external_signup)
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show])

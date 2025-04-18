@@ -12,7 +12,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get_tournament_info(tournament_id),
-         true <- Helpers.can_access?(tournament, current_user, payload) do
+         true <- user_authorized?(tournament, current_user, payload) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
@@ -256,5 +256,13 @@ defmodule CodebattleWeb.TournamentChannel do
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
     })
+  end
+
+  def user_authorized?(tournament, current_user, payload) do
+    if FunWithFlags.enabled?(:skip_tournament_websocket_auth) do
+      true
+    else
+      Helpers.can_access?(tournament, current_user, payload)
+    end
   end
 end

@@ -12,8 +12,6 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
 
   @impl true
   def init(_) do
-    Task.start(&restore_tournaments/0)
-
     Supervisor.init([], strategy: :one_for_one)
   end
 
@@ -33,20 +31,5 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
     Supervisor.delete_child(__MODULE__, to_string(tournament_id))
   rescue
     _ -> Logger.error("tournament not found while terminating #{tournament_id}")
-  end
-
-  defp restore_tournaments do
-    if Application.get_env(:codebattle, :restore_tournaments) do
-      Enum.each(Tournament.Context.get_tournament_for_restore(), fn tournament ->
-        Supervisor.start_child(
-          __MODULE__,
-          %{
-            id: to_string(tournament.id),
-            restart: :transient,
-            start: {Tournament.Supervisor, :start_link, [tournament]}
-          }
-        )
-      end)
-    end
   end
 end

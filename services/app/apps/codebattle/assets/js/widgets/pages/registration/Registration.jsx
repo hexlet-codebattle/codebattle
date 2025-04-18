@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import cn from 'classnames';
 import { useFormik } from 'formik';
+import { Button } from 'react-bootstrap';
 import * as Yup from 'yup';
 
 import i18n from '../../../i18n';
 import schemas from '../../formik';
 
-const getCsrfToken = () => document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute('content'); // validation token
+const getCsrfToken = () => document.querySelector("meta[name='csrf-token']").getAttribute('content'); // validation token
 
 const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
 
 const getInputClassName = isInvalid => cn('form-control', {
-  'is-invalid': isInvalid,
-});
+    'is-invalid': isInvalid,
+  });
 
 const Container = ({ children }) => (
   <div className="container-fluid">
@@ -46,7 +47,7 @@ const Form = ({ onSubmit, id, children }) => (
 );
 
 const Input = ({
-  id, type, title, formik,
+ id, type, title, formik,
 }) => {
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
@@ -66,6 +67,40 @@ const Input = ({
   );
 };
 
+const PasswordInput = ({ id, title, formik }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isInvalid = isShowInvalidMessage(formik, id);
+  const inputClassName = getInputClassName(isInvalid);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prevState => !prevState);
+  };
+
+  return (
+    <div className="form-group ">
+      <span className="text-primary">{title}</span>
+      <div className="position-relative">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          id={id}
+          aria-label={id}
+          className={inputClassName}
+          {...formik.getFieldProps(id)}
+        />
+        <Button
+          variant="link"
+          className={`position-absolute end-0 top-0 h-100 ${isInvalid ? 'mr-4' : ''}`}
+          onClick={togglePasswordVisibility}
+        >
+          {/* <FontAwesomeIcon icon={showPassword ? 'eye-slash' : 'eye'} /> */}
+          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+        </Button>
+      </div>
+      {isInvalid && <div className="invalid-feedback">{formik.errors[id]}</div>}
+    </div>
+  );
+};
+
 const Body = ({ children }) => (
   <div className="card-body p-lg-4 p-xl-5">{children}</div>
 );
@@ -80,26 +115,30 @@ const searchParams = new URLSearchParams(window.location.search);
 const getNextLocation = () => (searchParams.has('next') ? searchParams.get('next') : '/');
 const getLinkWithNext = link => (searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link);
 
-const SocialLinks = () => (
+const SocialLinks = ({ isSignUp }) => (
   <>
     <div className="mt-1">
       <a
         type="button"
-        aria-label="signInWithGithub"
+        aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
         href={getLinkWithNext('/auth/github')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {i18n.t('Sign in with Github')}
+        {isSignUp
+          ? i18n.t('Sign up with Github')
+          : i18n.t('Sign in with Github')}
       </a>
     </div>
     <div className="mt-1">
       <a
         type="button"
-        aria-label="signInWithDiscord"
+        aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
         href={getLinkWithNext('/auth/discord')}
         className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
-        {i18n.t('Sign in with Discord')}
+        {isSignUp
+          ? i18n.t('Sign up with Discord')
+          : i18n.t('Sign in with Discord')}
       </a>
     </div>
   </>
@@ -156,9 +195,15 @@ function SignIn() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email === 'EMAIL_NOT_FOUND') { formik.errors.email = 'Invalid email'; }
-            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.email === 'EMAIL_NOT_FOUND') {
+              formik.errors.email = 'Invalid email';
+            }
+            if (errors.email && errors.email !== 'EMAIL_NOT_FOUND') {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },
@@ -171,19 +216,14 @@ function SignIn() {
           <Title text="Sign In" />
           <Input id="base" type="hidden" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
-          <Input
-            id="password"
-            type="password"
-            title="Password"
-            formik={formik}
-          />
+          <PasswordInput id="password" title="Password" formik={formik} />
           <div className="text-right my-3">
             <a className="text-primary" href="/remind_password">
               Forgot your password?
             </a>
           </div>
         </Form>
-        <SocialLinks />
+        <SocialLinks isSignUp={false} />
       </Body>
       <Footer>
         <SignUpInvitation />
@@ -216,9 +256,15 @@ function SignUp() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.name) { formik.setFieldError('name', errors.name); }
-            if (errors.email) { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.name) {
+              formik.setFieldError('name', errors.name);
+            }
+            if (errors.email) {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },
@@ -232,20 +278,14 @@ function SignUp() {
           <Input id="base" type="hidden" formik={formik} />
           <Input id="name" type="text" title="Nickname" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
-          <Input
-            id="password"
-            type="password"
-            title="Password"
-            formik={formik}
-          />
-          <Input
+          <PasswordInput id="password" title="Password" formik={formik} />
+          <PasswordInput
             id="passwordConfirmation"
-            type="password"
             title="Password Confirmation"
             formik={formik}
           />
         </Form>
-        <SocialLinks />
+        <SocialLinks isSignUp />
       </Body>
       <Footer>
         <SignInInvitation />
@@ -264,12 +304,16 @@ function ResetPassword() {
     validationSchema: Yup.object().shape(schemas.resetPassword),
     onSubmit: ({ email }) => {
       axios
-        .post('/api/v1/reset_password', { email }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': getCsrfToken(),
+        .post(
+          '/api/v1/reset_password',
+          { email },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'x-csrf-token': getCsrfToken(),
+            },
           },
-        })
+        )
         .then(() => {
           setIsSend(true);
         })
@@ -278,8 +322,12 @@ function ResetPassword() {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            if (errors.email) { formik.setFieldError('email', errors.email); }
-            if (errors.base) { formik.setFieldError('base', errors.base); }
+            if (errors.email) {
+              formik.setFieldError('email', errors.email);
+            }
+            if (errors.base) {
+              formik.setFieldError('base', errors.base);
+            }
           }
         });
     },

@@ -15,6 +15,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   @allowed_session_paths [
     ~r{^\/session\/new\/?$},
     ~r{^\/session\/?$},
+    ~r{^\/session\/external\/signup\/?$},
     ~r{^\/auth\/token\/?$},
     ~r{^\/auth\/(?:github|discord|external)\/?$},
     ~r{^\/auth\/(?:github|discord|external)\/callback\/?$}
@@ -50,7 +51,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         conn
 
       # allow guests to access session new path
-      current_user.is_guest && Enum.any?(@allowed_session_paths, &Regex.match?(&1, conn.request_path)) ->
+      current_user.is_guest &&
+          Enum.any?(@allowed_session_paths, &Regex.match?(&1, conn.request_path)) ->
         conn
 
       # redirect to login page if we restrict guests access
@@ -60,16 +62,24 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         |> halt()
 
       # redirect to custom url if we restrict don't allow free users to access the site
-      current_user.subscription_type == :free && FunWithFlags.enabled?(:redirect_free_users) ->
-        url = Application.get_env(:codebattle, :free_users_redirect_url)
 
+      current_user.subscription_type == :free &&
+        FunWithFlags.enabled?(:redirect_free_users) &&
+        !Enum.any?(
+          @allowed_session_paths,
+          &Regex.match?(&1, conn.request_path)
+        ) &&
+          FunWithFlags.enabled?(:use_only_external_oauth) ->
         conn
-        |> redirect(external: url)
+        |> redirect(to: "/session/external/signup")
         |> halt()
 
       # redirect to root if we use mini version of codebattle
-      FunWithFlags.enabled?(:codebattele_mini_version) &&
-          !Enum.any?(@allowed_mini_paths, &Regex.match?(&1, conn.request_path)) ->
+      FunWithFlags.enabled?(:codebattle_mini_version) &&
+          !Enum.any?(
+            @allowed_mini_paths ++ @allowed_session_paths,
+            &Regex.match?(&1, conn.request_path)
+          ) ->
         conn
         |> redirect(to: "/")
         |> halt()

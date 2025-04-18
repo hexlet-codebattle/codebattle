@@ -34,13 +34,26 @@ config :codebattle, CodebattleWeb.Gettext,
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
+config :codebattle, :base_user_path, "/"
 config :codebattle, :default_lang_slug, "js"
+
+config :codebattle, :external,
+  app_name: "Codebattle External",
+  app_slogan: "Make codebattle<br>great again",
+  app_login_button: "Login with External ID",
+  app_signup_description: "Sign up with External system to play with your friends",
+  app_signup_button: "Sign up with External ID",
+  app_relogin_button: "Relogin with External ID",
+  app_login_description: "Login with External system to play with your friends"
+
 config :codebattle, :fake_html_to_image, true
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
+
+config :codebattle, :logo_title, "Hexlet Codebattle"
 
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
@@ -77,7 +90,6 @@ config :codebattle,
 
 config :codebattle, load_dot_env_file: true
 config :codebattle, max_alive_tournaments: 15
-config :codebattle, restore_tournaments: false
 config :codebattle, store_playbook_async: true
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 config :codebattle, tournament_match_timeout: 3 * 60

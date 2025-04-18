@@ -10,17 +10,15 @@
     </h1>
 
     <div class="login-description text-light mb-4">
-      <%= Application.get_env(:codebattle, :external)[:app_login_description] %>
+      <%= Application.get_env(:codebattle, :external)[:app_signup_description] %>
     </div>
 
-    <button class="btn btn-yellow" id="externalLoginBtn">
-      <%= Application.get_env(:codebattle, :external)[:app_login_button] %>
-    </button>
+    <%= link to: Application.get_env(:codebattle, :free_users_redirect_url), class: "btn btn-yellow mb-4" do %>
+      <%= Application.get_env(:codebattle, :external)[:app_signup_button] %>
+    <% end %>
+
+    <%= link to: Routes.session_path(@conn, :delete), method: "delete", class: "btn btn-gray" do %>
+      <%= Application.get_env(:codebattle, :external)[:app_relogin_button] %>
+    <% end %>
   </div>
 </div>
-
-<%= if body = Codebattle.Customization.get("external_oauth_body") do %>
-  <div class="mb-3">
-    <%= raw(body) %>
-  </div>
-<% end %>

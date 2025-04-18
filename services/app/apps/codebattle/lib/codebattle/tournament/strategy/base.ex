@@ -33,8 +33,8 @@ defmodule Codebattle.Tournament.Base do
       require Logger
 
       @custom_round_tiemouts_in_sec %{
-        "elementary" => 3 * 60,
-        "easy" => 5 * 60,
+        "elementary" => 5 * 60,
+        "easy" => 6 * 60,
         "medium" => 10 * 60,
         "hard" => 25 * 60
       }

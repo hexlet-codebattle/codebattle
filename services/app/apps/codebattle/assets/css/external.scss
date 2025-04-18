@@ -1,0 +1,102 @@
+// --------------------------------------------------
+// IMPORTS & VARIABLES
+// --------------------------------------------------
+
+@import "fonts";
+@import "variables";
+
+$primary: #a78bfa;
+$secondary: #0a0b13;
+$success: #4cd964;
+$danger: #ff3b30;
+$warning: #ffcc00;
+$info: #5ac8fa;
+$light: #f8f9fa;
+$dark: #0a0b13;
+
+$gray: #8b8b8b;
+$gray-dark: #3e3e3e;
+$orange: #ff9500;
+$dark-red: #b00020;
+
+// Bootstrap override must come *after* variables
+@import "~bootstrap/scss/bootstrap";
+
+// --------------------------------------------------
+// CUSTOM STYLES
+// --------------------------------------------------
+
+// Example custom classes for your text
+.battle-title {
+  color: $warning; // or #fffb47 if you want a brighter yellow
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.main-title {
+  font-size: 36px; // Adjust to match your design
+  font-weight: 800; // Adjust weight as desired
+  // You already have .text-purple in your HTML, which sets color: #a78bfa
+}
+
+.login-description {
+  font-size: 16px;
+  line-height: 1.4;
+  color: $light; // Matches your text-light class
+}
+
+// Style the button the way it appears in your mock
+.btn-yellow {
+  background-color: #fffb47;
+  color: black;
+  border-radius: 999px;
+  font-weight: bold;
+  padding: 12px 24px;
+  transition: background-color 0.3s ease;
+  border: none;
+
+  &:hover {
+    background-color: #e6e02b;
+    color: black;
+  }
+}
+
+.btn-gray {
+  background-color: $gray;
+  color: white;
+  border-radius: 999px;
+  font-weight: bold;
+  padding: 12px 24px;
+  transition: background-color 0.3s ease;
+  border: none;
+
+  &:hover {
+    background-color: $gray-dark;
+    color: white;
+  }
+}
+
+// --------------------------------------------------
+// AUTH COMPONENT
+// --------------------------------------------------
+.auth-container {
+  background-color: #1a1c2e; // or whatever your main background is
+  background-size: cover;
+  padding: 2rem;
+}
+
+.auth-card {
+  background-color: $dark; // #0a0b13
+  border-radius: 24px;
+  max-width: 480px; // adjust to your design
+  width: 100%;
+  box-shadow: 0 0 32px rgba(0, 0, 0, 0.4);
+  color: white;
+  z-index: 2; /* Position behind the content */
+}
+
+// The .text-purple class is already defined:
+.text-purple {
+  color: $primary; // #a78bfa
+}

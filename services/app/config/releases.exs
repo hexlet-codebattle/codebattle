@@ -6,6 +6,7 @@ codebattle_url = "https://#{codebattle_host}"
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
 app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
+logo_title = System.get_env("CODEBATTLE_LOGO_TITLE", "Hexlet Codebattle")
 app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")
 
 tournament_rematch_timeout_ms =
@@ -54,7 +55,25 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")
 config :codebattle, :app_subtitle, app_subtitle
 config :codebattle, :app_title, app_title
+config :codebattle, :base_user_path, System.get_env("CODEBATTLE_BASE_USER_PATH", "/")
 config :codebattle, :default_lang_slug, System.get_env("CODEBATTLE_DEFAULT_LANG_SLUG", "js")
+
+config :codebattle, :external,
+  app_name: System.get_env("EXTERNAL_APP_NAME", "Codebattle External"),
+  app_slogan: System.get_env("EXTERNAL_APP_SLOGAN", "Make codebattle<br>great again"),
+  app_login_button: System.get_env("EXTERNAL_APP_LOGIN_BUTTON", "Login with External ID"),
+  app_signup_description:
+    System.get_env(
+      "EXTERNAL_APP_SIGNUP_DESCRIPTION",
+      "Sign up with External system to play with your friends"
+    ),
+  app_signup_button: System.get_env("EXTERNAL_APP_SIGNUP_BUTTON", "Sign up with External ID"),
+  app_relogin_button: System.get_env("EXTERNAL_APP_RELOGIN_BUTTON", "Relogin with External ID"),
+  app_login_description:
+    System.get_env(
+      "EXTERNAL_APP_LOGIN_DESCRIPTION",
+      "Login with External system to play with your friends"
+    )
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
@@ -62,6 +81,7 @@ config :codebattle, :firebase,
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
 config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SLUG")
+config :codebattle, :logo_title, logo_title
 
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
@@ -93,12 +113,16 @@ config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "defau
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,
-  title: app_title,
-  description: app_subtitle,
+  title: System.get_env("CODEBATTLE_OPENGRAPH_TITLE", "Hexlet Codebattle • Game for programmers"),
+  description:
+    System.get_env(
+      "CODEBATTLE_OPENGRAPH_DESCRIPTION",
+      "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
+    ),
   url: codebattle_url,
   image:
     System.get_env(
-      "CODEBATTLE_COLLAB_LOGO",
+      "CODEBATTLE_OPENGRAPH_URL",
       "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
     ),
   "og:type": "website",
@@ -133,7 +157,10 @@ config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", 
 
 config :runner,
   white_list_lang_slugs:
-    "RUNNER_WHITE_LIST_LANG_SLUGS" |> System.get_env("") |> String.split(",") |> Enum.filter(&(&1 != ""))
+    "RUNNER_WHITE_LIST_LANG_SLUGS"
+    |> System.get_env("")
+    |> String.split(",")
+    |> Enum.filter(&(&1 != ""))
 
 config :sentry,
   dsn: System.get_env("SENTRY_DNS_URL"),
