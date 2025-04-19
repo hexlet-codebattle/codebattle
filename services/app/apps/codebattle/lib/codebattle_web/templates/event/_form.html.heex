@@ -43,6 +43,29 @@
   ) %>
   <%= error_tag(f, :starts_at) %>
 </div>
+<div class="form-group">
+  <div>
+    <span>Ticker Text</span>
+  </div>
+  <%= text_input(f, :ticker_text, class: "form-control form-control-lg") %>
+  <%= error_tag(f, :ticker_text) %>
+</div>
+<div class="form-group">
+  <div>
+    <span>Personal Tournament ID</span>
+  </div>
+  <%= number_input(f, :personal_tournament_id, class: "form-control form-control-lg") %>
+  <%= error_tag(f, :personal_tournament_id) %>
+</div>
+
+<div class="mb-4">
+  <h4>Event Stages</h4>
+  <div class="alert alert-info">
+    Event stages will be set up automatically using the default configuration.
+    Includes: Qualification, Semifinal Entrance, Semifinal, Final Entrance, and Final.
+  </div>
+</div>
+
 <div class="d-flex">
   <%= submit("Save",
     phx_disable_with: "Saving...",

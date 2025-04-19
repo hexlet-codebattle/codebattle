@@ -130,6 +130,8 @@ export const editorTextHistorySelector = (state, { userId }) => state.editor.tex
 
 export const editorLangHistorySelector = (state, { userId }) => state.editor.langsHistory[userId];
 
+export const currentUserSelector = state => state.user.users[state.user.currentUserId];
+
 export const firstEditorSelector = (state, roomMachineState) => {
   const playerId = firstPlayerSelector(state)?.id;
   return editorDataSelector(playerId, roomMachineState)(state);
@@ -529,8 +531,47 @@ export const activeRoomSelector = state => state.chat.activeRoom;
 
 export const roomsSelector = state => state.chat.rooms;
 
-export const eventSelector = state => state.event;
+export const eventSelector = state => state.event.event;
 
 export const eventTopLeaderboardSelector = state => state.event.topLeaderboard;
 
 export const eventCommonLeaderboardSelector = state => state.event.commonLeaderboard;
+
+export const eventUserSelector = state => state.event.userEvent;
+
+// Participant data selector
+export const participantDataSelector = state => {
+  const event = eventSelector(state);
+  const userEvent = eventUserSelector(state);
+
+  // Map event stages to the format needed by the dashboard
+  const stages = event?.stages.map(stage => {
+    const stageState = userEvent?.state[stage.slug];
+
+    // Determine status based on event stage status and user participation
+    let { status } = stage;
+    if (stageState) {
+      if (stage.type === 'enterance' && stageState.enteranceResult === 'not_passed') {
+        status = 'failed';
+      } else if (stage.status !== 'pending' && stageState) {
+        status = 'completed';
+      }
+    }
+
+    return {
+      name: stage.name,
+      date: stage.dates,
+      status,
+      link: `/${stage.slug}`,
+      overall: stageState?.placeInTotalRank ? `#${stageState.placeInTotalRank}` : '-',
+      category: stageState?.placeInCategoryRank ? `#${stageState.placeInCategoryRank}` : '-',
+      actionButtonText: stage.actionButtonText,
+      slug: stage.slug,
+      type: stage.type,
+    };
+  }) || [];
+
+  return {
+    stages,
+  };
+};

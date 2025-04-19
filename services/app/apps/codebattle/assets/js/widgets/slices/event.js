@@ -90,22 +90,22 @@ const eventSlice = createSlice({
     }),
   },
   extraReducers: {
-    [fetchCommonLeaderboard.pending]: state => {
-      state.loading = loadingStatuses.LOADING;
-    },
-    [fetchCommonLeaderboard.fulfilled]: (state, action) => {
-      state.loading = loadingStatuses.PENDING;
-      state.commonLeaderboard = {
-        items: action.payload.items,
-        pageNumber: action.payload.pageInfo.pageNumber,
-        pageSize: action.payload.pageInfo.pageSize,
-        totalEntries: action.payload.pageInfo.totalEntries,
-      };
-    },
-    [fetchCommonLeaderboard.rejected]: state => {
-      state.loading = loadingStatuses.PENDING;
-      state.commonLeaderboard = {};
-    },
+    // [fetchCommonLeaderboard.pending]: state => {
+    //   state.loading = loadingStatuses.LOADING;
+    // },
+    // [fetchCommonLeaderboard.fulfilled]: (state, action) => {
+    //   state.loading = loadingStatuses.PENDING;
+    //   state.commonLeaderboard = {
+    //     items: action.payload.items,
+    //     pageNumber: action.payload.pageInfo.pageNumber,
+    //     pageSize: action.payload.pageInfo.pageSize,
+    //     totalEntries: action.payload.pageInfo.totalEntries,
+    //   };
+    // },
+    // [fetchCommonLeaderboard.rejected]: state => {
+    //   state.loading = loadingStatuses.PENDING;
+    //   state.commonLeaderboard = {};
+    // },
   },
 });
 

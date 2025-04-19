@@ -8,6 +8,8 @@ defmodule CodebattleWeb.DevLoginController do
 
       params = %{
         subscription_type: subscription_type,
+        clan: "Hexlet",
+        category: "Vibecoder",
         name: "#{prefix}-#{:rand.uniform(1_000_000)}",
         email: "#{prefix}@#{:rand.uniform(1_000_000)}.cb",
         avatar_url: "/assets/images/logo.svg"

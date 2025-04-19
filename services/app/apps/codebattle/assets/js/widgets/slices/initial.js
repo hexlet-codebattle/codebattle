@@ -68,12 +68,10 @@ const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : unde
 const currentUserId = currentUserParams ? currentUserParams.id : null;
 const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
 const initialEvent = eventData ? {
-  ...camelizeKeys(eventData.event),
-  tournaments: camelizeKeys(eventData.tournaments),
-  topLeaderboard: camelizeKeys(eventData.top_leaderboard),
-  loading: loadingStatuses.LOADING,
+  ...camelizeKeys(eventData),
+  loading: loadingStatuses.PENDING,
 } : {
-  loading: loadingStatuses.LOADING,
+  loading: loadingStatuses.PENDING,
 };
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
@@ -436,15 +434,21 @@ const defaultTournamentPlayerParams = {
     error: {?Object},
  * }} LeaderboardState
  * @typedef {{
- *  slug: string,
-    type: @type {import("../config/eventTypes.js").default},
-    loading: @type {import("../config/loadingStatuses.js").default},
-    tournaments: TournamentState[]
-    topLeaderboard: Object[],
-    commonLeaderboard: Object[],
-    title: string,
-    description: string,
-    startsAt: string,
+ *  event: {
+ *    slug: string,
+ *    type: @type {import("../config/eventTypes.js").default},
+ *    title: string,
+ *    description: string,
+ *    tickerText: string,
+ *    startsAt: string,
+ *    stages: Object[],
+ *  },
+ *  userEvent: {
+ *    id: number,
+ *    userId: number,
+ *    eventId: number,
+ *    state: Object,
+ *  }
  * }} EventState
  *
  * @typedef {{

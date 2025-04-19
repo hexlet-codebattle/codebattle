@@ -942,3 +942,37 @@ msgstr "Победа"
 
 msgid "Lost"
 msgstr "Поражение"
+
+# Participant Dashboard Translations
+msgid "Participant Dashboard"
+msgstr "ЛИЧНЫЙ КАБИНЕТ УЧАСТНИКА"
+
+msgid "Category"
+msgstr "Категория"
+
+msgid "Overall Standing"
+msgstr "Место в общем зачёте"
+
+msgid "Category Standing"
+msgstr "Место в категории"
+
+msgid "Qualification"
+msgstr "Квалификация"
+
+msgid "Semifinal Entrance"
+msgstr "Выход в полуфинал"
+
+msgid "Semifinal"
+msgstr "Полуфинал"
+
+msgid "Final Entrance"
+msgstr "Выход в финал"
+
+msgid "Final"
+msgstr "Финал"
+
+msgid "Failed"
+msgstr "Не прошёл"
+
+msgid "Go to"
+msgstr "Перейти"

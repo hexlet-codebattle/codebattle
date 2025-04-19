@@ -31,6 +31,16 @@
                   to: Routes.event_path(@conn, :show, event.id),
                   class: "btn btn-sm btn-info rounded-lg"
                 ) %>
+                <%= link("Edit",
+                  to: Routes.event_path(@conn, :edit, event.id),
+                  class: "btn btn-sm btn-primary rounded-lg ml-2"
+                ) %>
+                <%= link("Delete",
+                  to: Routes.event_path(@conn, :delete, event.id),
+                  method: :delete,
+                  data: [confirm: "Are you sure you want to delete this event?"],
+                  class: "btn btn-sm btn-danger rounded-lg ml-2"
+                ) %>
               </div>
             </td>
           </tr>

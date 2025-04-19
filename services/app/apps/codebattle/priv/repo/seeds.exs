@@ -1,8 +1,10 @@
 alias Codebattle.Clan
+alias Codebattle.Event
 alias Codebattle.Game
 alias Codebattle.Repo
 alias Codebattle.TaskPack
 alias Codebattle.User
+alias Codebattle.UserEvent
 alias Codebattle.UserGame
 
 levels = ["elementary", "easy", "medium", "hard"]
@@ -351,3 +353,121 @@ tokens =
 
 File.mkdir_p!("tmp")
 File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))
+
+stages =
+  [
+    %{
+      slug: "qualification",
+      name: "Qualification",
+      dates: "May 12-17",
+      action_button_text: "Go",
+      status: :active,
+      type: :tournament
+    },
+    %{
+      slug: "semifinal_entrance",
+      name: "Semifinal Entrance",
+      type: :enterance,
+      status: :pending
+    },
+    %{
+      slug: "semifinal",
+      name: "Semifinal",
+      dates: "May 31",
+      action_button_text: "Go",
+      status: :pending,
+      type: :tournament
+    },
+    %{
+      slug: "final_entrance",
+      name: "Final Entrance",
+      type: :enterance,
+      status: :pending
+    },
+    %{
+      slug: "final",
+      name: "Final",
+      dates: "June 26",
+      status: :pending,
+      type: :tournament
+    }
+  ]
+
+# Create or find event
+event_slug = "vibeCodingFest"
+
+event_params = %{
+  slug: event_slug,
+  title: "Codebattle Hexlet summer",
+  description: "Codebattle Hexlet summer",
+  starts_at: ~N[2019-08-22 19:33:08.910767],
+  finishes_at: ~N[2019-08-22 19:33:08.910767],
+  stages: stages
+}
+
+case Repo.get_by(Event, slug: event_slug) do
+  nil ->
+    %Event{}
+    |> Event.changeset(event_params)
+    |> Repo.insert!()
+
+  event ->
+    event
+    |> Event.changeset(event_params)
+    |> Repo.update!()
+end
+
+# Create user_event records for all existing users
+users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+events = Repo.all(Event)
+
+if Enum.any?(events) do
+  Enum.each(events, fn event ->
+    Enum.each(users, fn user ->
+      case UserEvent.get_by_user_id_and_event_id(user.id, event.id) do
+        nil ->
+          UserEvent.create(%{
+            user_id: user.id,
+            event_id: event.id,
+            state: %{
+              qualification: %{
+                place_in_total_rank: Enum.random(1..100),
+                place_in_category_rank: Enum.random(1..50),
+                score: Enum.random(10..100),
+                wins_count: Enum.random(0..10),
+                games_count: Enum.random(1..20),
+                time_spent_in_seconds: Enum.random(100..10_000)
+              },
+              semifinal_entrance: %{
+                enterance_result: Enum.random([:passed, :not_passed])
+              },
+              semifinal: %{
+                place_in_total_rank: Enum.random(1..50),
+                place_in_category_rank: Enum.random(1..25),
+                score: Enum.random(10..100),
+                wins_count: Enum.random(0..10),
+                games_count: Enum.random(1..15),
+                time_spent_in_seconds: Enum.random(100..8000)
+              },
+              final_entrance: %{
+                enterance_result: Enum.random([:passed, :not_passed])
+              },
+              final: %{
+                place_in_total_rank: Enum.random(1..20),
+                place_in_category_rank: Enum.random(1..10),
+                score: Enum.random(20..100),
+                wins_count: Enum.random(0..8),
+                games_count: Enum.random(1..10),
+                time_spent_in_seconds: Enum.random(100..5000)
+              }
+            }
+          })
+
+        user_event ->
+          IO.puts("User event already exists for user #{user.id} and event #{event.id}")
+      end
+    end)
+  end)
+else
+  IO.puts("No events found in the database")
+end

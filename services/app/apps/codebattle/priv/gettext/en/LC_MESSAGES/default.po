@@ -396,3 +396,43 @@ msgstr[2] "%{count} tasks left"
 
 msgid "Active match"
 msgstr "Асtive"
+
+# Participant Dashboard Translations
+msgid "Participant Dashboard"
+msgstr "Participant Dashboard"
+
+msgid "Login"
+msgstr "Login"
+
+msgid "University"
+msgstr "University"
+
+msgid "Category"
+msgstr "Category"
+
+msgid "Overall Standing"
+msgstr "Overall Standing"
+
+msgid "Category Standing"
+msgstr "Category Standing"
+
+msgid "Qualification"
+msgstr "Qualification"
+
+msgid "Semifinal Qualification"
+msgstr "Semifinal Qualification"
+
+msgid "Semifinal"
+msgstr "Semifinal"
+
+msgid "Final Qualification"
+msgstr "Final Qualification"
+
+msgid "Final"
+msgstr "Final"
+
+msgid "Failed"
+msgstr "Failed"
+
+msgid "Go to"
+msgstr "Go to"

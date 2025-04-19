@@ -41,6 +41,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :inserted_at,
       :is_bot,
       :is_guest,
+      :category,
       :lang,
       :name,
       :performance,

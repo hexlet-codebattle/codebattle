@@ -12,14 +12,15 @@ defmodule Codebattle.Event do
 
   @derive {Jason.Encoder,
            only: [
+             :description,
              :id,
+             :personal_tournament_id,
              :slug,
-             :type,
+             :stages,
+             :starts_at,
              :ticker_text,
              :title,
-             :description,
-             :personal_tournament_id,
-             :starts_at
+             :type
            ]}
 
   @types ~w(public private)
@@ -34,6 +35,8 @@ defmodule Codebattle.Event do
     field(:description, :string)
     field(:starts_at, :utc_datetime)
     field(:personal_tournament_id, :integer)
+
+    embeds_many(:stages, Codebattle.EventStage, on_replace: :delete)
 
     timestamps()
   end
@@ -76,7 +79,7 @@ defmodule Codebattle.Event do
   def update(event, params) do
     event
     |> changeset(params)
-    |> Repo.update!()
+    |> Repo.update()
   end
 
   @spec delete(t()) :: {:ok, t()} | {:error, term()}
@@ -88,6 +91,7 @@ defmodule Codebattle.Event do
   def changeset(clan, attrs \\ %{}) do
     clan
     |> cast(attrs, [:slug, :type, :ticker_text, :title, :description, :creator_id, :starts_at])
+    |> cast_embed(:stages)
     |> validate_length(:slug, min: 2, max: 57)
     |> validate_length(:description, min: 3, max: 10_000)
     |> validate_length(:title, min: 3, max: 250)

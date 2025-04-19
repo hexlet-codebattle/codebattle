@@ -5,19 +5,21 @@ defmodule CodebattleWeb.PublicEventController do
 
   alias Codebattle.Event
   alias Codebattle.Tournament
+  alias Codebattle.UserEvent
 
   def show(conn, %{"slug" => slug}) do
+    user = conn.assigns.current_user
     event = Event.get_by_slug!(slug)
-    tournaments = Tournament.Context.get_all_by_event_id!(event.id)
+    user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
+
+    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
     conn
-    |> put_meta_tags(%{title: event.title, description: event.description})
     |> assign(:ticker_text, event.ticker_text)
     |> put_gon(
       event: %{
         event: event,
-        tournaments: tournaments,
-        top_leaderboard: []
+        user_event: user_event
       }
     )
     |> render("show.html")

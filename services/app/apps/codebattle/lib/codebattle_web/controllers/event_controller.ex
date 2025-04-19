@@ -43,15 +43,15 @@ defmodule CodebattleWeb.EventController do
 
     case Codebattle.Event.update(
            event,
-           Map.put(event_params, "user_id", conn.assigns.current_user.id)
+           Map.put(event_params, "creator_id", conn.assigns.current_user.id)
          ) do
       {:ok, event} ->
         conn
         |> put_flash(:info, "Event updated successfully.")
-        |> redirect(to: Routes.event_path(conn, :edit, event.id))
+        |> redirect(to: Routes.event_path(conn, :show, event))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", event: event, changeset: changeset)
+        render(conn, "edit.html", event: event, changeset: changeset, user: conn.assigns.current_user)
     end
   end
 

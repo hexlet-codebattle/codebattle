@@ -5,7 +5,7 @@ import React, {
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
 import cn from 'classnames';
-import i18next from 'i18next';
+// import i18next from 'i18next';
 import { useSelector } from 'react-redux';
 
 // import useSearchParams from '../../utils/useSearchParams';
@@ -14,15 +14,16 @@ import Loading from '../../components/Loading';
 import loadingStatuses from '../../config/loadingStatuses';
 import ModalCodes from '../../config/modalCodes';
 import {
-  currentUserClanIdSelector,
-  currentUserIdSelector,
+  // currentUserClanIdSelector,
+  // currentUserIdSelector,
   eventSelector,
 } from '../../selectors';
 import TournamentDescriptionModal from '../tournament/TournamentDescriptionModal';
 
-import EventCalendarPanel from './EventCalendarPanel';
-import EventRatingPanel from './EventRatingPanel';
-import TopLeaderboardPanel from './TopLeaderboardPanel';
+// import EventCalendarPanel from './EventCalendarPanel';
+// import EventRatingPanel from './EventRatingPanel';
+import ParticipantDashboard from './ParticipantDashboard';
+// import TopLeaderboardPanel from './TopLeaderboardPanel';
 
 const useEventWidgetModals = () => {
   useEffect(() => {
@@ -42,14 +43,14 @@ function EventWidget() {
   useEventWidgetModals();
 
   const {
-    id,
+    // id,
     loading,
-    tournaments,
-    topLeaderboard,
-    commonLeaderboard,
+    // tournaments,
+    // topLeaderboard,
+    // commonLeaderboard,
   } = useSelector(eventSelector);
-  const currentUserId = useSelector(currentUserIdSelector);
-  const currentUserClanId = useSelector(currentUserClanIdSelector);
+  // const currentUserId = useSelector(currentUserIdSelector);
+  // const currentUserClanId = useSelector(currentUserClanIdSelector);
 
   const contentClassName = cn(
     'd-flex flex-column-reverse flex-lg-row',
@@ -66,37 +67,24 @@ function EventWidget() {
       hidden: loading !== loadingStatuses.LOADING,
     },
   );
-  const lastActiveTournament = tournaments.slice().reverse().find(tournament => tournament.state !== 'finished');
 
   return (
     <div className="d-flex flex-column position-relative container-fluid">
       <div className={contentClassName}>
-        <div className="d-flex col-12 col-lg-7  flex-column m-2 p-1 py-3">
-          {topLeaderboard.length > 0 && (
-            <TopLeaderboardPanel
-              topLeaderboard={topLeaderboard}
-              selectedId={currentUserClanId}
-            />
-          )}
+        <ParticipantDashboard />
+        {/* <div className="d-flex col-12 col-lg-7  flex-column m-2 p-1 py-3">
           <EventRatingPanel
             currentUserId={currentUserId}
             currentUserClanId={currentUserClanId}
             commonLeaderboard={commonLeaderboard}
             eventId={id}
           />
-        </div>
-        <div className="col-12 col-lg-5">
+        </div> */}
+        {/* <div className="col-12 col-lg-5">
           <div className="rounded-lg border-0 bg-white m-1 py-3">
             <EventCalendarPanel tournaments={tournaments} />
           </div>
-          <div>
-            { lastActiveTournament && (
-            <a className="btn cb-custom-event-btn-dark rounded-lg mt-2 mx-1" href={`/tournaments/${lastActiveTournament?.id}`}>
-              {i18next.t('Join the round')}
-            </a>
-)}
-          </div>
-        </div>
+        </div> */}
       </div>
       <div className={loadingClassName}>
         <Loading large />

@@ -2,13 +2,80 @@
   <h1 class="text-center">
     <span><%= @event.title %></span>
   </h1>
-  <h3 class="text-center mt-4">Params</h3>
-  <div class="d-flex flex-wrap align-items-center justify-content-around text-muted">
-    <span>Type: <%= @event.type %></span>
-    <span>Title: <%= @event.title %></span>
-    <span>Description: <%= @event.description %></span>
-    <span>Creator_id: <%= @event.creator_id %></span>
+
+  <h3 class="text-center mt-4">Event Details</h3>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p><strong>Slug:</strong> <%= @event.slug %></p>
+          <p><strong>Type:</strong> <%= @event.type %></p>
+          <p><strong>Title:</strong> <%= @event.title %></p>
+          <p><strong>Ticker Text:</strong> <%= @event.ticker_text %></p>
+        </div>
+        <div class="col-md-6">
+          <p><strong>Created By:</strong> <%= @event.creator_id %></p>
+          <p>
+            <strong>Starts At:</strong> <%= @event.starts_at && format_datetime(@event.starts_at) %>
+          </p>
+          <p><strong>Personal Tournament ID:</strong> <%= @event.personal_tournament_id %></p>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-12">
+          <p><strong>Description:</strong></p>
+          <div class="p-3 bg-light rounded">
+            <%= @event.description %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <%= link("Back", to: Routes.event_path(@conn, :index), class: "ml-auto") %>
+  <h3 class="text-center">Event Stages</h3>
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= if @event.stages && length(@event.stages) > 0 do %>
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th>Button Text</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= for stage <- @event.stages do %>
+                <tr>
+                  <td><%= stage.name %></td>
+                  <td><%= stage.slug %></td>
+                  <td><%= stage.dates %></td>
+                  <td>
+                    <span class={"badge #{if stage.status == :pending, do: "badge-warning", else: "badge-success"}"}>
+                      <%= stage.status %>
+                    </span>
+                  </td>
+                  <td><%= stage.action_button_text %></td>
+                  <td><%= stage.type %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="alert alert-info">
+          No stages configured for this event yet. Event stages will be automatically configured when needed.
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="d-flex mt-4">
+    <%= link("Edit", to: Routes.event_path(@conn, :edit, @event), class: "btn btn-primary") %>
+    <%= link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto") %>
+  </div>
 </div>
