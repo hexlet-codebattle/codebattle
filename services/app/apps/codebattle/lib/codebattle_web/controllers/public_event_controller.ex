@@ -4,7 +4,6 @@ defmodule CodebattleWeb.PublicEventController do
   import PhoenixGon.Controller
 
   alias Codebattle.Event
-  alias Codebattle.Tournament
   alias Codebattle.UserEvent
 
   def show(conn, %{"slug" => slug}) do

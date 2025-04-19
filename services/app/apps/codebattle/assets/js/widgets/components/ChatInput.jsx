@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import data from '@emoji-mart/data';
+import BadWordsNext from 'bad-words-next';
+import en from 'bad-words-next/lib/en';
+import ru from 'bad-words-next/lib/ru';
+import rl from 'bad-words-next/lib/ru_lat';
 import { SearchIndex, init } from 'emoji-mart';
 import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
@@ -13,11 +17,6 @@ import useClickAway from '../utils/useClickAway';
 
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
-
-import BadWordsNext from 'bad-words-next';
-import en from 'bad-words-next/lib/en';
-import ru from 'bad-words-next/lib/ru';
-import rl from 'bad-words-next/lib/ru_lat';
 
 const MAX_MESSAGE_LENGTH = 1024;
 
@@ -39,11 +38,11 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const [text, setText] = useState('');
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
-  const badwords = new BadWordsNext()
+  const badwords = new BadWordsNext();
   badwords.add(en);
   badwords.add(ru);
   badwords.add(rl);
-  
+
   const isMessageBlank = !text.trim();
 
   const handleChange = async ({ target: { value } }) => {
