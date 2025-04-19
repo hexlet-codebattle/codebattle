@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {
+ useState, useEffect, useCallback, useRef,
+} from 'react';
 
 import data from '@emoji-mart/data';
 import BadWordsNext from 'bad-words-next';
-import en from 'bad-words-next/lib/en';
-import ru from 'bad-words-next/lib/ru';
-import rl from 'bad-words-next/lib/ru_lat';
 import { SearchIndex, init } from 'emoji-mart';
 import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
@@ -36,12 +35,36 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
+  const [badwordsReady, setBadwordsReady] = useState(false);
   const activeRoom = useSelector(selectors.activeRoomSelector);
+  const badwordsRef = useRef(new BadWordsNext());
 
-  const badwords = new BadWordsNext();
-  badwords.add(en);
-  badwords.add(ru);
-  badwords.add(rl);
+  useEffect(() => {
+    let mounted = true;
+    async function loadBadwords() {
+      try {
+        // Import without extension to let webpack resolve the correct file
+        const enData = await import('bad-words-next/lib/en');
+        const ruData = await import('bad-words-next/lib/ru');
+        const rlData = await import('bad-words-next/lib/ru_lat');
+
+        if (mounted) {
+          badwordsRef.current.add(enData.default || enData);
+          badwordsRef.current.add(ruData.default || ruData);
+          badwordsRef.current.add(rlData.default || rlData);
+          setBadwordsReady(true);
+        }
+      } catch (error) {
+        console.error('Error loading bad words dictionaries:', error);
+      }
+    }
+
+    loadBadwords();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const isMessageBlank = !text.trim();
 
@@ -57,24 +80,30 @@ export default function ChatInput({ inputRef, disabled = false }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const filteredText = badwords.filter(text);
-    const message = {
-      filteredText,
-      meta: {
-        type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
-        targetUserId: activeRoom.targetUserId,
-      },
-    };
-    if (isTooltipVisible) {
+
+    if (isTooltipVisible || isMaxLengthExceeded || isMessageBlank) {
       return;
     }
-    if (isMaxLengthExceeded) {
-      return;
-    }
-    if (isMessageBlank) {
-      return;
-    }
+
     if (text) {
+      let filteredText = text;
+
+      if (badwordsReady) {
+        try {
+          filteredText = badwordsRef.current.filter(text);
+        } catch (error) {
+          console.error('Error filtering text:', error);
+        }
+      }
+
+      const message = {
+        text: filteredText,
+        meta: {
+          type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
+          targetUserId: activeRoom.targetUserId,
+        },
+      };
+
       addMessage(message);
       setText('');
     }
