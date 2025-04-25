@@ -19,6 +19,7 @@
           <th>origin</th>
           <th>state</th>
           <th>visibility</th>
+          <th>updated_at</th>
           <th>actions</th>
         </tr>
       </thead>
@@ -34,6 +35,7 @@
             <td class="align-middle text"><%= task.origin %></td>
             <td class="align-middle text"><%= task.state %></td>
             <td class="align-middle text"><%= task.visibility %></td>
+            <td class="align-middle text"><%= format_datetime(task.updated_at) %></td>
             <td class="align-middle text-nowrap">
               <div class="d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>

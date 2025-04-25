@@ -10,7 +10,10 @@ defmodule CodebattleWeb.TaskController do
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
-    tasks = Task.list_visible(conn.assigns.current_user)
+    tasks =
+      conn.assigns.current_user
+      |> Task.list_visible()
+      |> Enum.sort_by(& &1.updated_at, {:desc, NaiveDateTime})
 
     conn
     |> put_meta_tags(%{

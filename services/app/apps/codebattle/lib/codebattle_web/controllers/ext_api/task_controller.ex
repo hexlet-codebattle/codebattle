@@ -6,7 +6,10 @@ defmodule CodebattleWeb.ExtApi.TaskController do
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   def create(conn, params) do
-    params = for {k, v} <- params, into: %{}, do: {String.to_atom(k), v}
+    params =
+      params
+      |> Map.put("state", "active")
+      |> Runner.AtomizedMap.atomize()
 
     case Codebattle.Task.changeset(%Codebattle.Task{}, params) do
       %{valid?: true} ->
