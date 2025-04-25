@@ -136,6 +136,7 @@ defmodule Codebattle.Task do
           solution: Map.get(params, :solution, ""),
           state: params.state,
           tags: params.tags,
+          updated_at: DateTime.utc_now(),
           visibility: params.visibility
         ]
       ],
