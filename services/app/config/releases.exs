@@ -80,8 +80,8 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
-config :codebattle, :lobby_event_slug, System.get_env("CODEBATTLE_LOBBY_EVENT_SLUG")
 config :codebattle, :logo_title, logo_title
+config :codebattle, :main_event_slug, System.get_env("CODEBATTLE_MAIN_EVENT_SLUG")
 
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),

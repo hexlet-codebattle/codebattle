@@ -20,13 +20,29 @@ defmodule CodebattleWeb.ExtApi.UserController do
   @adjectives ~w(Swift Agile Robust Stealthy Precise Nimble Efficient Reliable Versatile Dynamic Resilient Tenacious Sharp Astute Ingenious Crafty Clever Adaptable Resourceful Dexterous Brilliant Smart Intuitive Systematic Logical Strategic Tactical Flexible Creative Innovative Analytical Precise Methodical Persistent Perceptive Diligent Meticulous Inventive Quick-witted Cunning Problem-solving Insightful Versatile Ambitious Tenacious Robust Adaptive Ingenious Efficient Collaborative)
 
   def create(conn, %{"UID" => external_oauth_id} = params) do
-    User
-    |> Repo.get_by(external_oauth_id: external_oauth_id)
-    |> case do
-      nil -> create_user(external_oauth_id, params)
-      user -> update_user(user, params)
+    user_result =
+      User
+      |> Repo.get_by(external_oauth_id: external_oauth_id)
+      |> case do
+        nil -> create_user(external_oauth_id, params)
+        user -> update_user(user, params)
+      end
+
+    with {:ok, user} <- user_result,
+         event_slug = Application.get_env(:codebattle, :main_event_slug),
+         true <- !is_nil(event_slug),
+         event = Codebattle.Event.get_by_slug(event_slug),
+         true <- !is_nil(event),
+         user_event = Codebattle.UserEvent.get_by_user_id_and_event_id(user.id, event.id),
+         true <- is_nil(user_event) do
+      Codebattle.UserEvent.create(%{
+        user_id: user.id,
+        event_id: event.id,
+        state: %{}
+      })
     end
-    |> case do
+
+    case user_result do
       {:ok, user} ->
         conn
         |> put_status(200)
@@ -134,9 +150,11 @@ defmodule CodebattleWeb.ExtApi.UserController do
 
   # Attributes casting helpers
   defp cast_attribute(attrs, key, value), do: Map.put(attrs, key, value)
+
   defp cast_changeset_attribute(changeset, key, value), do: Changeset.put_change(changeset, key, value)
 
   defp cast_category(attrs, %{"category" => category}), do: cast_attribute(attrs, :category, category)
+
   defp cast_category(attrs, _params), do: attrs
 
   defp cast_name(attrs, params) do

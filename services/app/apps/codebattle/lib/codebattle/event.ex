@@ -68,6 +68,11 @@ defmodule Codebattle.Event do
     Repo.get_by!(__MODULE__, slug: String.downcase(slug))
   end
 
+  @spec get_by_slug(String.t()) :: t() | nil
+  def get_by_slug(slug) do
+    Repo.get_by(__MODULE__, slug: String.downcase(slug))
+  end
+
   @spec create(map()) :: {:ok, t()} | {:error, term()}
   def create(params) do
     %__MODULE__{}

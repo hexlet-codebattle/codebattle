@@ -11,7 +11,7 @@ defmodule CodebattleWeb.RootController do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
     current_user = conn.assigns.current_user
-    event_slug = Application.get_env(:codebattle, :lobby_event_slug)
+    event_slug = Application.get_env(:codebattle, :main_event_slug)
     is_guest? = current_user.is_guest
     is_event? = event_slug not in [nil, ""]
 

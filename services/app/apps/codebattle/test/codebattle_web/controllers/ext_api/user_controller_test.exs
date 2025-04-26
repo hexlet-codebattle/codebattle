@@ -1,9 +1,10 @@
 defmodule CodebattleWeb.ExtApi.UserControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.User
+  alias Codebattle.UserEvent
 
   describe "create/2" do
     test "checks auth", %{conn: conn} do
@@ -15,7 +16,14 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     test "creates user with clan and auth token", %{conn: conn} do
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(Routes.ext_api_user_path(conn, :create, %{name: "lol", clan: "S2xhbg==", UID: "asdf", category: "cat"}))
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{
+          name: "lol",
+          clan: "S2xhbg==",
+          UID: "asdf",
+          category: "cat"
+        })
+      )
       |> json_response(200)
 
       user = Repo.get_by(User, name: "lol")
@@ -97,11 +105,25 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
 
     test "updates user by UID", %{conn: conn} do
       clan = insert(:clan, name: "Kek", long_name: "lOl_kEk")
-      user = insert(:user, name: "whatever", clan_id: nil, subscription_type: :free, external_oauth_id: "asdf")
+
+      user =
+        insert(:user,
+          name: "whatever",
+          clan_id: nil,
+          subscription_type: :free,
+          external_oauth_id: "asdf"
+        )
 
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(Routes.ext_api_user_path(conn, :create, %{category: "lol", name: "oiblz", clan: "Kek ", UID: "asdf"}))
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{
+          category: "lol",
+          name: "oiblz",
+          clan: "Kek ",
+          UID: "asdf"
+        })
+      )
       |> json_response(200)
 
       user = Repo.get(User, user.id)
@@ -113,17 +135,39 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
                category: "lol",
                external_oauth_id: "asdf",
                subscription_type: :premium
-             } == Map.take(user, [:id, :name, :clan_id, :external_oauth_id, :subscription_type, :category])
+             } ==
+               Map.take(user, [
+                 :id,
+                 :name,
+                 :clan_id,
+                 :external_oauth_id,
+                 :subscription_type,
+                 :category
+               ])
     end
 
     test "updates user with duplicated name by UID", %{conn: conn} do
       clan = insert(:clan, name: "Kek", long_name: "lOl_kEk")
       insert(:user, name: "oiblz")
-      user = insert(:user, name: "whatever", clan_id: nil, subscription_type: :free, external_oauth_id: "asdf")
+
+      user =
+        insert(:user,
+          name: "whatever",
+          clan_id: nil,
+          subscription_type: :free,
+          external_oauth_id: "asdf"
+        )
 
       conn
       |> put_req_header("x-auth-key", "x-key")
-      |> post(Routes.ext_api_user_path(conn, :create, %{category: "lol", name: "oiblz", clan: "Kek ", UID: "asdf"}))
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{
+          category: "lol",
+          name: "oiblz",
+          clan: "Kek ",
+          UID: "asdf"
+        })
+      )
       |> json_response(200)
 
       user = Repo.get(User, user.id)
@@ -135,7 +179,50 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
                external_oauth_id: "asdf",
                category: "lol",
                subscription_type: :premium
-             } == Map.take(user, [:id, :clan_id, :external_oauth_id, :subscription_type, :category])
+             } ==
+               Map.take(user, [:id, :clan_id, :external_oauth_id, :subscription_type, :category])
+    end
+
+    test "finds or creates user with user_event", %{conn: conn} do
+      Application.put_env(:codebattle, :main_event_slug, "e")
+
+      insert(:event, slug: "e")
+
+      conn
+      |> put_req_header("x-auth-key", "x-key")
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{
+          name: "lol",
+          clan: "S2xhbg==",
+          UID: "asdf",
+          category: "cat"
+        })
+      )
+      |> json_response(200)
+
+      user = Repo.get_by(User, name: "lol")
+      user_event = Repo.get_by(UserEvent, user_id: user.id)
+
+      assert user_event
+      assert user_event.state == %{}
+
+      conn
+      |> put_req_header("x-auth-key", "x-key")
+      |> post(
+        Routes.ext_api_user_path(conn, :create, %{
+          name: "lol",
+          clan: "S2xhbg==",
+          UID: "asdf",
+          category: "cat"
+        })
+      )
+      |> json_response(200)
+
+      user_event = Repo.get_by(UserEvent, user_id: user.id)
+
+      assert user_event.state == %{}
+
+      Application.delete_env(:codebattle, :main_event_slug)
     end
   end
 end
