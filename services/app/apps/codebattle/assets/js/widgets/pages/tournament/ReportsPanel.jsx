@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
@@ -122,7 +123,11 @@ function ReportsPanel() {
                     options={reportStatusOptions}
                   />
                 </td>
-                <td className={tableDataCellClassName} />
+                <td className={tableDataCellClassName}>
+                  <a href={`/games/${item.gameId}`}>
+                    <FontAwesomeIcon icon="link" />
+                  </a>
+                </td>
               </tr>
             </React.Fragment>
           ))}
