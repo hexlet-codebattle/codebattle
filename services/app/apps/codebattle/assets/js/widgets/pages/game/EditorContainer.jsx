@@ -224,6 +224,7 @@ function EditorContainer({
     tournamentId,
     mode: tournamentId ? GameModeCodes.tournament : gameMode,
     player,
+    editor: editorState,
     status: editorCurrent.value,
     isAdmin,
     actionBtnsProps,
