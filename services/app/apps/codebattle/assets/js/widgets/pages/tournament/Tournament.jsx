@@ -250,9 +250,9 @@ function Tournament({ waitingRoomMachine }) {
         <div className="d-flex flex-column justify-content-center align-items-center p-3">
           {has(tournament.players, currentUserId)
             || tournament.state !== TournamentStates.waitingParticipants ? (
-            <span className="h3">
-              {getTournamentPresentationStatus(tournament.state)}
-            </span>
+              <span className="h3">
+                {getTournamentPresentationStatus(tournament.state)}
+              </span>
           ) : (
             <>
               <span className="h3">{tournament.name}</span>

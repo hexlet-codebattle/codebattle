@@ -7,6 +7,7 @@ const modalCodes = {
   tournamentDescriptionModal: 'tournament_description_modal',
   premiumRestrictionModal: 'premium_restriction_modal',
   awardModal: 'award_modal',
+  eventStageModal: 'event_stage_modal',
 };
 
 export default modalCodes;

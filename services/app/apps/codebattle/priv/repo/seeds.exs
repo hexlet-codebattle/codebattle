@@ -14,8 +14,7 @@ Enum.each(1..30, fn x ->
     task_params = %{
       level: level,
       name: "task_#{level}_#{x}",
-      tags:
-        Enum.take_random(["math", "lol", "kek", "asdf", "strings", "hash-maps", "collections"], 3),
+      tags: Enum.take_random(["math", "lol", "kek", "asdf", "strings", "hash-maps", "collections"], 3),
       origin: "github",
       state: "active",
       visibility: "public",
@@ -362,6 +361,7 @@ stages =
       name: "Qualification",
       dates: "May 12-17",
       action_button_text: "Go",
+      confirmation_text: "Confirm that you want to suffer 1 hour",
       status: :active,
       type: :tournament,
       playing_type: :single,
@@ -387,6 +387,7 @@ stages =
       name: "Semifinal",
       dates: "May 31",
       action_button_text: "Go",
+      confirmation_text: "Confirm that you want to suffer 1 hour",
       status: :active,
       type: :tournament
     },
@@ -400,6 +401,7 @@ stages =
       slug: "final",
       name: "Final",
       action_button_text: "Go",
+      confirmation_text: "Confirm that you want to suffer 1 hour",
       dates: "June 26",
       status: :active,
       type: :tournament

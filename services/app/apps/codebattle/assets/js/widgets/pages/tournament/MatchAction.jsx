@@ -1,12 +1,12 @@
-import React, { memo, useContext } from "react";
+import React, { memo, useContext } from 'react';
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import cn from "classnames";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 // import { useSelector } from 'react-redux';
 
-import i18next from "../../../i18n";
-import CustomEventStylesContext from "../../components/CustomEventStylesContext";
-import MatchStatesCodes from "../../config/matchStates";
+import i18next from '../../../i18n';
+import CustomEventStylesContext from '../../components/CustomEventStylesContext';
+import MatchStatesCodes from '../../config/matchStates';
 // import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
 
 function MatchAction({ match, canModerate, currentUserIsPlayer }) {
@@ -14,13 +14,13 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   // const streamMode = useSelector(state => state.gameUI.streamMode);
 
-  const showBtnClassName = cn("btn btn-sm text-nowrap rounded-lg px-3", {
-    "btn-primary": !hasCustomEventStyles,
-    "cb-custom-event-btn-primary": hasCustomEventStyles,
+  const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+    'btn-primary': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
-  const continueBtnClassName = cn("btn btn-sm text-nowrap rounded-lg px-3", {
-    "btn-success text-white": !hasCustomEventStyles,
-    "cb-custom-event-btn-primary": hasCustomEventStyles,
+  const continueBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
+    'btn-success text-white': !hasCustomEventStyles,
+    'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
   // const gameOverBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
   //   'btn-outline-danger': !hasCustomEventStyles,
@@ -32,7 +32,7 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
       return (
         <a href={href} title="Show match" className={showBtnClassName} disabled>
           <FontAwesomeIcon className="mr-2" icon="eye" />
-          {i18next.t("Show")}
+          {i18next.t('Show')}
         </a>
       );
     case MatchStatesCodes.playing: {
@@ -41,11 +41,11 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
           <>
             <a
               href={href}
-              title={i18next.t("Continue match")}
+              title={i18next.t('Continue match')}
               className={continueBtnClassName}
             >
               <FontAwesomeIcon className="mr-2" icon="laptop-code" />
-              {i18next.t("Continue")}
+              {i18next.t('Continue')}
             </a>
           </>
         );
@@ -55,11 +55,11 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
         <>
           <a
             href={href}
-            title={i18next.t("Show match")}
+            title={i18next.t('Show match')}
             className={showBtnClassName}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
-            {i18next.t("Show")}
+            {i18next.t('Show')}
           </a>
         </>
       );
@@ -71,11 +71,11 @@ function MatchAction({ match, canModerate, currentUserIsPlayer }) {
         <>
           <a
             href={href}
-            title={i18next.t("Show game history")}
+            title={i18next.t('Show game history')}
             className={showBtnClassName}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
-            {i18next.t("Show")}
+            {i18next.t('Show')}
           </a>
         </>
       );

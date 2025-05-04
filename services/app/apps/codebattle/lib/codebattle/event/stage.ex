@@ -11,6 +11,7 @@ defmodule Codebattle.Event.Stage do
   @derive {Jason.Encoder,
            only: [
              :action_button_text,
+             :confirmation_text,
              :dates,
              :name,
              :slug,
@@ -24,6 +25,7 @@ defmodule Codebattle.Event.Stage do
 
   embedded_schema do
     field(:action_button_text, :string)
+    field(:confirmation_text, :string)
     field(:dates, :string)
     field(:name, :string)
     field(:slug, :string)
@@ -38,6 +40,7 @@ defmodule Codebattle.Event.Stage do
     stage
     |> cast(params, [
       :action_button_text,
+      :confirmation_text,
       :dates,
       :name,
       :slug,
