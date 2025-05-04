@@ -45,11 +45,21 @@ const tableDataCellClassName = cn(
 );
 
 const reportStatusOptions = [
-  { label: '', value: '' },
-  { label: '', value: '' },
-  { label: '', value: '' },
-  { label: '', value: '' },
+  { label: i18next.t('Pending'), value: 'pending' },
+  { label: i18next.t('Processed'), value: 'processed' },
+  { label: i18next.t('Confirmed'), value: 'confirmed' },
+  { label: i18next.t('Denied'), value: 'denied' },
 ];
+
+const getStateText = state => {
+  switch (state) {
+    case 'pending': return i18next.t('Pending');
+    case 'processed': return i18next.t('Processed');
+    case 'confirmed': return i18next.t('Confirmed');
+    case 'denied': return i18next.t('Denied');
+    default: return i18next.t('Select');
+  }
+};
 
 function ReportsPanel() {
   const dispatch = useDispatch();
@@ -76,7 +86,7 @@ function ReportsPanel() {
   }
 
   return (
-    <div className="d-flex my-2 h-100">
+    <div className="d-flex my-2">
       <table className="table table-striped cb-custom-event-table border border-secondary rounded-lg">
         <thead className="text-muted">
           <tr>
@@ -118,7 +128,7 @@ function ReportsPanel() {
                 <td className={tableDataCellClassName}>
                   <Select
                     styles={customStyle}
-                    value={item.state}
+                    value={{ label: getStateText(item.state), value: item.state }}
                     onChange={changeReportState(item.id)}
                     options={reportStatusOptions}
                   />
