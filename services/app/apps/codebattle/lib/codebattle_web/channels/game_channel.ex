@@ -191,7 +191,7 @@ defmodule CodebattleWeb.GameChannel do
     {:reply, {:ok, %{score: score}}, socket}
   end
 
-  def handle_in("game:report", %{player_id: player_id}, socket) do
+  def handle_in("game:report", %{"player_id" => player_id}, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
