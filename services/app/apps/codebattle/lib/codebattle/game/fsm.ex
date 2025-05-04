@@ -111,6 +111,18 @@ defmodule Codebattle.Game.Fsm do
     {:ok, Map.put(game, :locked, false)}
   end
 
+  def transition(:toggle_ban_player, game, %{player_id: player_id}) do
+    new_players = Enum.map(game.players, fn player ->
+      if player.id == player_id do
+        %{player | is_banned: !player.is_banned}
+      else
+        player
+      end
+    end)
+
+    {:ok, Map.put(game, :players, new_players)}
+  end
+
   def transition(transition, game, params) do
     Logger.error("Unknown transition: #{transition}, game_state: #{game.state}, params: #{inspect(params)}")
 

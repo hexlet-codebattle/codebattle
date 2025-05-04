@@ -279,6 +279,16 @@ export const sendAcceptToRematch = () => {
   channel.push(channelMethods.rematchAcceptOffer, {});
 };
 
+export const reportOnPlayer = (playerId, onSuccess, onError) => dispatch => {
+  channel.push(channelMethods.reportOnPlayer, { playerId }).receive('ok', payload => {
+    dispatch(actions.addReport(payload.report));
+    onSuccess();
+  }).receive('error', payload => {
+    console.error(payload);
+    onError();
+  });
+};
+
 export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
@@ -399,6 +409,14 @@ export const activeEditorReady = (service, isBanned) => {
   //   service.send('typing', { userId });
   // });
 
+  const handleUserBanned = data => {
+    service.send('banned_user', data);
+  };
+
+  const handleUserUnbanned = data => {
+    service.send('unbanned_user', data);
+  };
+
   const handleStartsCheck = data => {
     service.send('check_solution_received', data);
   };
@@ -408,6 +426,14 @@ export const activeEditorReady = (service, isBanned) => {
   };
 
   channel
+    .addListener(
+      channelTopics.userBanned,
+      handleUserBanned,
+    )
+    .addListener(
+      channelTopics.userUnbanned,
+      handleUserUnbanned,
+    )
     .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
     .addListener(
       channelTopics.userCheckCompleteTopic,
@@ -416,6 +442,8 @@ export const activeEditorReady = (service, isBanned) => {
 
   return () => {
     channel
+      .removeListeners(channelTopics.userBanned, listenerParams)
+      .removeListeners(channelTopics.userUnbanned, listenerParams)
       .removeListeners(channelTopics.userStartCheckTopic, listenerParams)
       .removeListeners(channelTopics.userCheckCompleteTopic, listenerParams);
   };

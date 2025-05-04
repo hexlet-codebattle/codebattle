@@ -1,5 +1,5 @@
 import React, {
- useEffect, useContext, useCallback, useRef,
+  useEffect, useContext, useCallback, useRef,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -47,13 +47,13 @@ const useEditorChannelSubscription = (mainService, editorService, player) => {
 
   useEffect(() => {
     if (isPreview) {
-      return () => {};
+      return () => { };
     }
 
     if (inTestingRoom) {
       editorService.send('load_testing_editor');
 
-      return () => {};
+      return () => { };
     }
 
     const clearEditorListeners = GameActions.connectToEditor(
@@ -84,6 +84,7 @@ function EditorContainer({
   const toolbarRef = useRef();
 
   const player = useSelector(selectors.gamePlayerSelector(id));
+  const isAdmin = useSelector(selectors.userIsAdminSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
@@ -198,7 +199,7 @@ function EditorContainer({
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inTestingRoom]);
 
@@ -220,10 +221,11 @@ function EditorContainer({
 
   const toolbarParams = {
     toolbarRef,
+    tournamentId,
     mode: tournamentId ? GameModeCodes.tournament : gameMode,
     player,
-    editor: editorState,
     status: editorCurrent.value,
+    isAdmin,
     actionBtnsProps,
     ...userSettings,
   };
@@ -234,8 +236,8 @@ function EditorContainer({
     && userSettings.editorState !== 'banned';
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing'
-      ? updateEditorValue
-      : updateAndSendEditorValue;
+    ? updateEditorValue
+    : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
 
   const editorParams = {

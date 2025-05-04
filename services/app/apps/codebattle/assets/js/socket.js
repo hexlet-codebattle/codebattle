@@ -11,6 +11,8 @@ export const channelTopics = {
   userCheckCompleteTopic: 'user:check_complete',
   userWonTopic: 'user:won',
   userGiveUpTopic: 'user:give_up',
+  userBanned: 'user:banned',
+  userUnbanned: 'user:unbanned',
 
   editorCursorPositionTopic: 'editor:cursor_position',
   editorCursorSelectionTopic: 'editor:cursor_selection',
@@ -75,6 +77,8 @@ export const channelMethods = {
   gameAcceptInvite: 'game:accept_invite',
   gameDeclineInvite: 'game:decline_invite',
   gameCancelInvite: 'game:cancel_invite',
+
+  reportOnPlayer: 'game:report',
 
   chatAddMsg: 'chat:add_msg',
   chatCommand: 'chat:command',

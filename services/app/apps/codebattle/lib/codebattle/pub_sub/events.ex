@@ -217,6 +217,13 @@ defmodule Codebattle.PubSub.Events do
 
   def get_messages("tournament:player:banned", params) do
     player = get_player_changed_fields(params.player)
+    game_messages = Enum.map(params.game_ids, fn game_id ->
+      %Message{
+        topic: "game:#{game_id}",
+        event: "user:banned",
+        payload: %{player: player}
+      }
+    end)
 
     [
       %Message{
@@ -228,12 +235,19 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
         event: "waiting_room:player:banned",
         payload: %{current_player: player}
-      }
-    ]
+      },
+    ] ++ game_messages
   end
 
   def get_messages("tournament:player:unbanned", params) do
     player = get_player_changed_fields(params.player)
+    game_messages = Enum.map(params.game_ids, fn game_id ->
+      %Message{
+        topic: "game:#{game_id}",
+        event: "user:unbanned",
+        payload: %{player: player}
+      }
+    end)
 
     [
       %Message{
@@ -245,8 +259,22 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
         event: "waiting_room:player:unbanned",
         payload: %{current_player: player}
-      }
-    ]
+      },
+    ] ++ game_messages
+  end
+
+  def get_messages("tournament:player:reported", params) do
+    case params.tournament_id do
+      nil -> []
+      _ ->
+        [
+          %Message{
+            topic: "tournament:#{params.tournament.id}",
+            event: "tournament:player:reported",
+            payload: %{report: params.report}
+          }
+        ]
+    end
   end
 
   def get_messages("tournament:player:matchmaking_paused", params) do

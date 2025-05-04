@@ -44,6 +44,7 @@ const initTournamentChannel = dispatch => {
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
+    dispatch(actions.setReports(compact(response.reports)));
   };
 
   channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
@@ -66,6 +67,14 @@ export const connectToTournament = (_machine, newTournamentId) => dispatch => {
     if (response.tasksInfo) {
       dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
     }
+  };
+
+  const handleReportPending = response => {
+    dispatch(actions.addReport(response.report));
+  };
+
+  const handleReportUpdated = response => {
+    dispatch(actions.updateReport(response.report));
   };
 
   const handleMatchesUpdate = response => {
@@ -128,6 +137,8 @@ export const connectToTournament = (_machine, newTournamentId) => dispatch => {
 
   return channel
     .addListener('tournament:update', handleUpdate)
+    .addListener('tournament:report:pending', handleReportPending)
+    .addListener('tournament:report:updated', handleReportUpdated)
     .addListener('tournament:matches:update', handleMatchesUpdate)
     .addListener('tournament:players:update', handlePlayersUpdate)
     .addListener('tournament:round_created', handleTournamentRoundCreated)
@@ -268,6 +279,18 @@ export const toggleBanUser = (userId, isBanned) => dispatch => {
   channel
     .push('tournament:ban:player', { userId })
     .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])))
+    .receive('error', error => console.error(error));
+};
+
+export const sendNewReportState = (reportId, state) => dispatch => {
+  const params = { reportId, state };
+
+  channel
+    .push('tournament:report:update', params)
+    .receive('ok', payload => {
+      const report = camelizeKeys(payload.report);
+      dispatch(actions.updateReport(report));
+    })
     .receive('error', error => console.error(error));
 };
 

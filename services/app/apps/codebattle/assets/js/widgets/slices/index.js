@@ -14,6 +14,7 @@ import invites, { actions as invitesActions } from './invites';
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
 import lobby, { actions as lobbyActions } from './lobby';
 import playbook, { actions as playbookActions } from './playbook';
+import reports, { actions as reportsActions } from './reports';
 import stairwayGame, { actions as stairwayGameActions } from './stairway';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import tournament, { actions as tournamentActions } from './tournament';
@@ -47,6 +48,7 @@ export const actions = {
   ...userActions,
   ...usersInfoActions,
   ...eventActions,
+  ...reportsActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -72,4 +74,5 @@ export default {
   user,
   usersInfo,
   event,
+  reports,
 };

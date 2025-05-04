@@ -84,6 +84,10 @@ em-emoji-picker {
   opacity: 0.6;
   color: var(--red);
   background: var(--red);
+
+  a {
+    color: red;
+  }
 }
 
 .dark-bg {

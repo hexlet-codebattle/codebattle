@@ -22,11 +22,11 @@ const mapViewerStateToWeight = {
 };
 
 const getMajorState = metas => metas.reduce(
-    (state, item) => (mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
-        ? state
-        : item.state),
-    'online',
-  );
+  (state, item) => (mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
+    ? state
+    : item.state),
+  'online',
+);
 
 const getUserStateByPath = () => {
   const { pathname } = document.location;
@@ -107,6 +107,23 @@ export const changePresenceState = state => () => {
 
 export const changePresenceUser = user => () => {
   channel.push('change_presence_user', { user });
+};
+
+export const banPlayer = (userId, tournamentId, onSuccess, onError) => () => {
+  channel.push('user:ban', { userId, tournamentId })
+    .receive('ok', onSuccess)
+    .receive('error', onError);
+};
+
+export const changeReportStatus = (reportId, status) => dispatch => {
+  channel.push('report:status:update', { reportId, status })
+    .receive('ok', payload => {
+      const report = camelizeKeys(payload.report);
+      dispatch(actions.updateReport(report));
+    })
+    .receive('error', payload => {
+      console.error(payload);
+    });
 };
 
 export const followUser = userId => (dispatch, getState) => {

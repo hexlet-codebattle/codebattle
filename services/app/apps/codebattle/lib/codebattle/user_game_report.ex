@@ -27,7 +27,7 @@ defmodule Codebattle.UserGameReport do
 
   @type t :: %__MODULE__{}
 
-  @states ~w(pending processed)a
+  @states ~w(pending processed confirmed denied)a
   @reasons ~w(cheater wrong_solution copypaste)a
 
   schema "user_game_reports" do
@@ -91,5 +91,11 @@ defmodule Codebattle.UserGameReport do
       {:ok, report} -> {:ok, Repo.preload(report, [:offender, :reporter])}
       _ -> result
     end
+  end
+
+  def update(report, params) do
+    report
+    |> changeset(params)
+    |> Repo.update!()
   end
 end

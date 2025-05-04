@@ -200,13 +200,20 @@ defmodule Codebattle.Tournament.Base do
         player = Tournament.Players.get_player(tournament, user_id)
 
         if player do
+          game_ids = get_all_players_game_ids(tournament, user_id)
+
+          Enum.each(game_ids, fn game_id ->
+            Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
+          end)
+
           new_player = %{player | state: "banned"}
 
           Tournament.Players.put_player(tournament, new_player)
 
           Codebattle.PubSub.broadcast("tournament:player:banned", %{
             tournament: tournament,
-            player: new_player
+            player: new_player,
+            game_ids: game_ids
           })
         end
 
@@ -217,18 +224,39 @@ defmodule Codebattle.Tournament.Base do
         player = Tournament.Players.get_player(tournament, user_id)
 
         if player do
-          new_player = %{player | state: "matchmaking_paused"}
+          game_ids = get_all_players_game_ids(tournament, user_id)
+
+          Enum.each(game_ids, fn game_id ->
+            Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
+          end)
+
+          new_state = if tournament.state == "finished" do
+            "finished"
+          else
+            "active"
+          end
+          new_player = %{player | state: new_state}
 
           Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
             tournament: tournament,
-            player: new_player
+            player: new_player,
+            game_ids: game_ids
           })
 
-          Tournament.Players.put_player(tournament, %{player | state: "matchmaking_paused"})
-          matchmaking_resume(tournament, %{user_id: user_id})
+          Tournament.Players.put_player(tournament, new_player)
         end
 
         tournament
+      end
+
+      def toggle_ban_player(tournament, %{user_id: user_id}) do
+        player = Tournament.Players.get_player(tournament, user_id)
+
+        if player.state == "banned" do
+          unban_player(tournament, %{user_id: user_id})
+        else
+          ban_player(tournament, %{user_id: user_id})
+        end
       end
 
       def open_up(tournament, %{user: user}) do

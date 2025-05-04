@@ -44,6 +44,7 @@ const usersRatingData = Gon.getAsset('users_rating');
 const langsData = Gon.getAsset('langs');
 const leaderboardUsersData = Gon.getAsset('leaderboard_users');
 const eventData = Gon.getAsset('event');
+const reportsData = Gon.getAsset('reports');
 
 // ******************************
 //
@@ -69,6 +70,12 @@ const currentUserId = currentUserParams ? currentUserParams.id : null;
 const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
 const initialEvent = eventData ? {
   ...camelizeKeys(eventData),
+  loading: loadingStatuses.PENDING,
+} : {
+  loading: loadingStatuses.PENDING,
+};
+const initialReports = reportsData ? {
+  ...camelizeKeys(reportsData),
   loading: loadingStatuses.PENDING,
 } : {
   loading: loadingStatuses.PENDING,
@@ -459,6 +466,10 @@ const defaultTournamentPlayerParams = {
  *   channel: ChannelState,
  * }} TournamentPlayerState
  *
+ * @typedef {{
+ *   list: Object[],
+ * }} ReportsState
+ *
  * @const {{
  *   game: GameState,
  *   event: EventState,
@@ -473,6 +484,7 @@ const defaultTournamentPlayerParams = {
  *   completedTournaments: Object,
  *   user: Object,
  *   leaderboard: LeaderboardState,
+ *   reports: ReportsState,
  * }}
  *
  */
@@ -538,4 +550,5 @@ export default {
     error: null,
   },
   event: initialEvent,
+  reports: initialReports,
 };

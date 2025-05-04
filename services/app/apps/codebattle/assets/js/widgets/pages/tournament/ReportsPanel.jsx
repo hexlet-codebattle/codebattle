@@ -1,0 +1,135 @@
+import React, { memo, useMemo } from 'react';
+
+import cn from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
+
+import UserInfo from '@/components/UserInfo';
+import { sendNewReportState } from '@/middlewares/TournamentAdmin';
+import { userIsAdminSelector } from '@/selectors';
+
+import i18next from '../../../i18n';
+
+const customStyle = {
+  control: provided => ({
+    ...provided,
+    height: '33px',
+    minHeight: '31px',
+    minWidth: '210px',
+    borderRadius: '0.3rem',
+    backgroundColor: 'hsl(0, 0%, 100%)',
+  }),
+  indicatorsContainer: provided => ({
+    ...provided,
+    height: '29px',
+  }),
+  clearIndicator: provided => ({
+    ...provided,
+    padding: '5px',
+  }),
+  dropdownIndicator: provided => ({
+    ...provided,
+    padding: '5px',
+  }),
+  input: provided => ({
+    ...provided,
+    height: '21px',
+  }),
+};
+
+const customEventTrClassName = cn('text-dark font-weight-bold cb-custom-event-tr');
+
+const tableDataCellClassName = cn(
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+);
+
+const reportStatusOptions = [
+  { label: '', value: '' },
+  { label: '', value: '' },
+  { label: '', value: '' },
+  { label: '', value: '' },
+];
+
+function ReportsPanel() {
+  const dispatch = useDispatch();
+  const reports = useSelector(state => state.reports.list);
+  const isAdmin = useSelector(userIsAdminSelector);
+
+  const sortedReports = useMemo(() => reports?.sort((r1, r2) => {
+    if (r1.state === 'pending') {
+      return 1;
+    }
+    if (r2.state === 'pending') {
+      return -1;
+    }
+
+    return 0;
+  }), [reports]);
+
+  const changeReportState = reportId => ({ value }) => {
+    dispatch(sendNewReportState(reportId, value));
+  };
+
+  if (!isAdmin || !sortedReports || sortedReports.length === 0) {
+    return <></>;
+  }
+
+  return (
+    <div className="d-flex my-2 h-100">
+      <table className="table table-striped cb-custom-event-table border border-secondary rounded-lg">
+        <thead className="text-muted">
+          <tr>
+            <th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Offender')}
+            </th>
+            <th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Reporter')}
+            </th>
+            <th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('State')}
+            </th>
+            <th className="p-1 pl-4 font-weight-light border-0">
+              {i18next.t('Link')}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedReports?.map(item => (
+            <React.Fragment
+              key={`report-${item.id}`}
+            >
+              <tr className="cb-custom-event-empty-space-tr" />
+              <tr className={customEventTrClassName}>
+                <td className={tableDataCellClassName}>
+                  <UserInfo
+                    user={item.offender}
+                    hideOnlineIndicator
+                    hideLink
+                  />
+                </td>
+                <td className={tableDataCellClassName}>
+                  <UserInfo
+                    user={item.reporter}
+                    hideOnlineIndicator
+                    hideLink
+                  />
+                </td>
+                <td className={tableDataCellClassName}>
+                  <Select
+                    styles={customStyle}
+                    value={item.state}
+                    onChange={changeReportState(item.id)}
+                    options={reportStatusOptions}
+                  />
+                </td>
+                <td className={tableDataCellClassName} />
+              </tr>
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default memo(ReportsPanel);

@@ -1,11 +1,10 @@
 import React, {
- memo, useState, useCallback, useRef,
+  memo, useState, useCallback, useRef,
 } from 'react';
 
 import { useSelector } from 'react-redux';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
-
 import TournamentTypes from '../../config/tournamentTypes';
 import { tournamentPlayersSelector } from '../../selectors';
 
@@ -14,6 +13,7 @@ import ControlPanel, { PanelModeCodes } from './ControlPanel';
 import PlayerStatsPanel from './PlayerStatsPanel';
 import RatingClansPanel from './RatingClansPanel';
 import RatingPanel from './RatingPanel';
+import ReportsPanel from './ReportsPanel';
 import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
 import TaskRankingPanel from './TaskRankingPanel';
 import TournamentGameCreatePanel from './TournamentGameCreatePanel';
@@ -163,6 +163,9 @@ function CustomTournamentInfoPanel({
             handleUserSelectClick={handleUserSelectClick}
           />
         )}
+      </div>
+      <div>
+        <ReportsPanel />
       </div>
       {/*   </CSSTransition> */}
       {/* </SwitchTransition> */}

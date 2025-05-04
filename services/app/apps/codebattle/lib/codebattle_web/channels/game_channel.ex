@@ -191,6 +191,20 @@ defmodule CodebattleWeb.GameChannel do
     {:reply, {:ok, %{score: score}}, socket}
   end
 
+  def handle_in("game:report", %{player_id: player_id}, socket) do
+    game_id = socket.assigns.game_id
+    user = socket.assigns.current_user
+
+    case Context.report_on_player(game_id, player_id, user.id) do
+      {:ok, report} ->
+        {:reply, {:ok, %{report: report}}, socket}
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+      _ ->
+        {:reply, {:error, %{reason: "failure"}}, socket}
+    end
+  end
+
   def handle_in("rematch:send_offer", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
@@ -297,6 +311,16 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in(type, params, socket) do
     Logger.warning("Unexpected message: #{inspect(type)}, params: #{inspect(params)}")
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "user:banned", payload: %{player: player}}, socket) do
+    push(socket, "user:banned", %{user_id: player.id})
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "user:unbanned", payload: %{player: player}}, socket) do
+    push(socket, "user:unbanned", %{user_id: player.id})
     {:noreply, socket}
   end
 

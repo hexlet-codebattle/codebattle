@@ -3,6 +3,7 @@ defmodule CodebattleWeb.MainChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game
+  alias Codebattle.Tournament
   alias CodebattleWeb.Presence
 
   require Logger
@@ -37,6 +38,15 @@ defmodule CodebattleWeb.MainChannel do
       Codebattle.PubSub.subscribe("user:#{user_id}")
       active_game_id = Game.Context.get_active_game_id(user_id)
       {:reply, {:ok, %{active_game_id: active_game_id, follow_id: user_id}}, socket}
+    end
+  end
+
+  def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
+    try do
+      Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
+      {:reply, {:ok, %{}}, socket}
+    rescue
+      _ -> {:reply, {:error, %{}}, socket}
     end
   end
 

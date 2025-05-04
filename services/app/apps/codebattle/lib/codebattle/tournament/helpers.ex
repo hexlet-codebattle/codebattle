@@ -248,6 +248,13 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
+  def get_all_players_game_ids(tournament, player_id) do
+    tournament
+    |> get_matches()
+    |> Enum.filter(fn match -> player_id in match.player_ids end)
+    |> Enum.map(fn match -> match.game_id end)
+  end
+
   def get_stats(_tournament) do
     # Enum.reduce(get_matches(tournament), %{}, fn match, acc ->
     # Map.put(acc, to_id(match.id), match)

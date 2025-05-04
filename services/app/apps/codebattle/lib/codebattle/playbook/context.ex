@@ -12,6 +12,7 @@ defmodule Codebattle.Playbook.Context do
   @record_types [
     :join_chat,
     :leave_chat,
+    :toggle_ban_player,
     :chat_message,
     :init,
     :give_up,

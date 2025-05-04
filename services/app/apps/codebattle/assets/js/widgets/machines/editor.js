@@ -110,7 +110,10 @@ const editor = {
           cond: 'isUserEvent',
         },
         unload_editor: 'loading',
-        banned_user: 'banned',
+        banned_user: {
+          target: 'banned',
+          cond: 'isUserEvent',
+        },
       },
     },
     idle: {
@@ -126,7 +129,10 @@ const editor = {
           cond: 'isUserEvent',
         },
         unload_editor: 'loading',
-        banned_user: 'banned',
+        banned_user: {
+          target: 'banned',
+          cond: 'isUserEvent',
+        },
       },
     },
     checking: {
@@ -158,10 +164,21 @@ const editor = {
           },
         ],
         unload_editor: 'loading',
-        banned_user: 'banned',
+        banned_user: {
+          target: 'banned',
+          cond: 'isUserEvent',
+        },
       },
     },
-    banned: {},
+    banned: {
+      entry: initContextByState('banned'),
+      on: {
+        unbanned_user: {
+          target: 'idle',
+          cond: 'isUserEvent',
+        },
+      },
+    },
   },
 };
 
@@ -170,7 +187,7 @@ const canSkipCharging = type => type !== SubscriptionTypeCodes.free;
 export const config = {
   actions: {
     userSendSolution: () => { },
-    handleTimeoutFailureChecking: () => {},
+    handleTimeoutFailureChecking: () => { },
     openCheckResultOutput: ctx => {
       const leftOutputNode = document.getElementById('leftOutput-tab');
       if (ctx.type === editorUserTypes.currentUser && leftOutputNode) {

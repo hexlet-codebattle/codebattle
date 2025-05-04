@@ -234,7 +234,33 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:reply, {:ok, %{ranking: ranking}}, socket}
   end
 
+  def handle_in("tournament:report:update", %{"report_id" => report_id, "state" => state}, socket) do
+    try do
+      report = UserGameReport.get!(report_id)
+
+      case UserGameReport.update(report, %{state: state}) do
+        {:ok, report} -> {:reply, {:ok, %{report: report}}, socket}
+        {:error, reason} -> {:reply, {:error, reason}, socket}
+        _ -> {:reply, {:error, :failure}, socket}
+      end
+    rescue
+      _ -> {:reply, {:error, :failure}, socket}
+    end
+  end
+
   def handle_in(_topic, _payload, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:player:reported", payload: payload}, socket) do
+    push(socket, "tournament:report:pending", %{report: payload.report})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:report:updated", payload: payload}, socket) do
+    push(socket, "tournament:report:updated", %{report: payload.report})
+
     {:noreply, socket}
   end
 
@@ -344,6 +370,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     %{
       tasks_info: tasks_info,
+      reports: UserGameReport.list_by_tournament(tournament.id),
       tournament: Helpers.prepare_to_json(tournament),
       ranking: Tournament.Ranking.get_page(tournament, 1),
       players: Helpers.get_players(tournament),

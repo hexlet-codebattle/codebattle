@@ -11,6 +11,7 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Bot
   alias Codebattle.CodeCheck
   alias Codebattle.Game
+  alias Codebattle.UserGameReport
   alias Codebattle.Game.Engine
   alias Codebattle.Game.Player
   alias Codebattle.Repo
@@ -270,6 +271,37 @@ defmodule Codebattle.Game.Context do
     |> case do
       [%Game{id: id} | _] -> id
       _ -> nil
+    end
+  end
+
+  def report_on_player(game_id, offender_id, reporter_id) do
+    game = get_game!(game_id)
+    old_report = UserGameReport.get_by!(%{game_id: game_id, offender_id: offender_id, reporter_id: reporter_id})
+
+    case {old_report, game} do
+      {_, nil} -> {:error, :game_not_fouded}
+      {nil, game} ->
+        case UserGameReport.create(%{
+          comment: "",
+          game_id: game_id,
+          tournament_id: game.tournament_id,
+          offender_id: offender_id,
+          reporter_id: reporter_id,
+          reason: "cheater",
+          state: "pending"
+        }) do
+          {:ok, report} ->
+            Codebattle.PubSub.broadcast("tournament:player:reported", %{
+              tournament_id: game.tournament_id,
+              report: report,
+            })
+
+            {:ok, report}
+          reason ->
+            {:error, reason}
+        end
+      _ ->
+        {:error, :already_have_report}
     end
   end
 

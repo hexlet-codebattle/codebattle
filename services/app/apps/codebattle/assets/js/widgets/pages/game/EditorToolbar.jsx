@@ -8,6 +8,8 @@ import Placements from '../../config/placements';
 import DarkModeButton from './DarkModeButton';
 import EditorResultIcon from './EditorResultIcon';
 import GameActionButtons from './GameActionButtons';
+import GameBanPlayerButton from './GameBanPlayerButton';
+import GameReportButton from './GameReportButton';
 import GameResultIcon from './GameResultIcon';
 import TournamentUserGameScore from './TournamentUserGameScore';
 import UserGameScore from './UserGameScore';
@@ -28,7 +30,10 @@ const EditorToolbar = ({
   toolbarRef,
   type,
   mode,
+  status,
   player,
+  editorState,
+  tournamentId,
   editor,
   toolbarClassNames,
   editorSettingClassNames,
@@ -36,6 +41,7 @@ const EditorToolbar = ({
   langPickerStatus,
   actionBtnsProps,
   showControlBtns,
+  isAdmin = false,
   isHistory = false,
 }) => (
   <>
@@ -53,9 +59,17 @@ const EditorToolbar = ({
         </div>
 
         <div className="d-flex justify-content-between">
-          {showControlBtns && !isHistory && (
+          {showControlBtns && !isHistory && editorState !== 'banned' && (
             <GameActionButtons {...actionBtnsProps} />
           )}
+          <div
+            className="btn-group btn-group-sm py-2 mx-2"
+            role="group"
+            aria-label="Report actions"
+          >
+            {!showControlBtns && <GameReportButton userId={player.id} />}
+            {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
+          </div>
           <div
             className={userInfoClassNames}
             role="group"
