@@ -1,3 +1,6 @@
 <div class="cb-custom-event-bg">
   <div id="event-widget"></div>
 </div>
+<script>
+  window.csrf_token = "<%= Plug.CSRFProtection.get_csrf_token() %>"
+</script>

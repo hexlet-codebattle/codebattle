@@ -195,11 +195,13 @@ defmodule CodebattleWeb.GameChannel do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
-    case Context.report_on_player(game_id, player_id, user.id) do
+    case Context.report_on_player(game_id, user, player_id) do
       {:ok, report} ->
-        {:reply, {:ok, %{report: report}}, socket}
+        {:reply, {:ok, %{report: %{id: report.id, inserted_at: report.inserted_at}}}, socket}
+
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+
       _ ->
         {:reply, {:error, %{reason: "failure"}}, socket}
     end

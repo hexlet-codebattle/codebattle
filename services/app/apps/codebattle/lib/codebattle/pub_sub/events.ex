@@ -217,13 +217,15 @@ defmodule Codebattle.PubSub.Events do
 
   def get_messages("tournament:player:banned", params) do
     player = get_player_changed_fields(params.player)
-    game_messages = Enum.map(params.game_ids, fn game_id ->
-      %Message{
-        topic: "game:#{game_id}",
-        event: "user:banned",
-        payload: %{player: player}
-      }
-    end)
+
+    game_messages =
+      Enum.map(params.game_ids, fn game_id ->
+        %Message{
+          topic: "game:#{game_id}",
+          event: "user:banned",
+          payload: %{player: player}
+        }
+      end)
 
     [
       %Message{
@@ -235,19 +237,21 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
         event: "waiting_room:player:banned",
         payload: %{current_player: player}
-      },
+      }
     ] ++ game_messages
   end
 
   def get_messages("tournament:player:unbanned", params) do
     player = get_player_changed_fields(params.player)
-    game_messages = Enum.map(params.game_ids, fn game_id ->
-      %Message{
-        topic: "game:#{game_id}",
-        event: "user:unbanned",
-        payload: %{player: player}
-      }
-    end)
+
+    game_messages =
+      Enum.map(params.game_ids, fn game_id ->
+        %Message{
+          topic: "game:#{game_id}",
+          event: "user:unbanned",
+          payload: %{player: player}
+        }
+      end)
 
     [
       %Message{
@@ -259,13 +263,15 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
         event: "waiting_room:player:unbanned",
         payload: %{current_player: player}
-      },
+      }
     ] ++ game_messages
   end
 
   def get_messages("tournament:player:reported", params) do
     case params.tournament_id do
-      nil -> []
+      nil ->
+        []
+
       _ ->
         [
           %Message{
@@ -302,7 +308,10 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:match:created", params) do
-    players = params.tournament |> Tournament.Helpers.get_players(params.match.player_ids) |> Enum.reject(&is_nil/1)
+    players =
+      params.tournament
+      |> Tournament.Helpers.get_players(params.match.player_ids)
+      |> Enum.reject(&is_nil/1)
 
     Enum.map(players, fn player ->
       if params.tournament.waiting_room_name do
@@ -423,6 +432,9 @@ defmodule Codebattle.PubSub.Events do
 
   def get_messages("game:finished", %{game: game}) do
     if game.tournament_id do
+      dbg(11_111_111)
+      dbg(game.duration_sec)
+
       [
         %Message{
           topic: "game:#{game.id}",

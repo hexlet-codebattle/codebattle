@@ -1,12 +1,12 @@
-import Gon from 'gon';
-import { camelizeKeys } from 'humps';
+import Gon from "gon";
+import { camelizeKeys } from "humps";
 
-import GameRoomModes from '../config/gameModes';
-import GameStateCodes from '../config/gameStateCodes';
-import loadingStatuses from '../config/loadingStatuses';
-import periodTypes from '../config/periodTypes';
-import { taskStateCodes, taskVisibilityCodes } from '../config/task';
-import userTypes from '../config/userTypes';
+import GameRoomModes from "../config/gameModes";
+import GameStateCodes from "../config/gameStateCodes";
+import loadingStatuses from "../config/loadingStatuses";
+import periodTypes from "../config/periodTypes";
+import { taskStateCodes, taskVisibilityCodes } from "../config/task";
+import userTypes from "../config/userTypes";
 import {
   validateTaskName,
   validateInputSignatures,
@@ -14,7 +14,7 @@ import {
   taskTemplatesStates,
   labelTaskParamsWithIds,
   getTaskTemplates,
-} from '../utils/builder';
+} from "../utils/builder";
 import {
   getGamePlayers,
   getGameStatus,
@@ -22,7 +22,7 @@ import {
   getPlayersText,
   makeEditorTextKey,
   setPlayerToSliceState,
-} from '../utils/gameRoom';
+} from "../utils/gameRoom";
 
 // ******************************
 //
@@ -30,21 +30,21 @@ import {
 //
 // ******************************
 
-const activeGamesData = Gon.getAsset('active_games');
-const completedGamesData = Gon.getAsset('completed_games');
-const currentUserData = Gon.getAsset('current_user');
-const gameData = Gon.getAsset('game');
-const isRecord = Gon.getAsset('is_record') || false;
-const playerId = Gon.getAsset('player_id');
-const taskData = Gon.getAsset('task');
-const tournamentData = Gon.getAsset('tournament');
-const tournamentId = Gon.getAsset('tournament_id');
-const tournamentsData = Gon.getAsset('tournaments');
-const usersRatingData = Gon.getAsset('users_rating');
-const langsData = Gon.getAsset('langs');
-const leaderboardUsersData = Gon.getAsset('leaderboard_users');
-const eventData = Gon.getAsset('event');
-const reportsData = Gon.getAsset('reports');
+const activeGamesData = Gon.getAsset("active_games");
+const completedGamesData = Gon.getAsset("completed_games");
+const currentUserData = Gon.getAsset("current_user");
+const gameData = Gon.getAsset("game");
+const isRecord = Gon.getAsset("is_record") || false;
+const playerId = Gon.getAsset("player_id");
+const taskData = Gon.getAsset("task");
+const tournamentData = Gon.getAsset("tournament");
+const tournamentId = Gon.getAsset("tournament_id");
+const tournamentsData = Gon.getAsset("tournaments");
+const usersRatingData = Gon.getAsset("users_rating");
+const langsData = Gon.getAsset("langs");
+const leaderboardUsersData = Gon.getAsset("leaderboard_users");
+const eventData = Gon.getAsset("event");
+const reportsData = Gon.getAsset("reports");
 
 // ******************************
 //
@@ -65,30 +65,40 @@ const initialActiveGames = activeGamesData ? camelizeKeys(activeGamesData) : [];
 const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
 const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const langsParams = langsData ? camelizeKeys(langsData) : [];
-const currentUserParams = currentUserData ? camelizeKeys(currentUserData) : undefined;
+const currentUserParams = currentUserData
+  ? camelizeKeys(currentUserData)
+  : undefined;
 const currentUserId = currentUserParams ? currentUserParams.id : null;
-const initialLeaderboardUsers = leaderboardUsersData ? camelizeKeys(leaderboardUsersData) : [];
-const initialEvent = eventData ? {
-  ...camelizeKeys(eventData),
-  loading: loadingStatuses.PENDING,
-} : {
-  loading: loadingStatuses.PENDING,
-};
-const initialReports = reportsData ? {
-  ...camelizeKeys(reportsData),
-  loading: loadingStatuses.PENDING,
-} : {
-  loading: loadingStatuses.PENDING,
-};
+const initialLeaderboardUsers = leaderboardUsersData
+  ? camelizeKeys(leaderboardUsersData)
+  : [];
+const initialEvent = eventData
+  ? {
+      ...camelizeKeys(eventData),
+      loading: loadingStatuses.PENDING,
+    }
+  : {
+      loading: loadingStatuses.PENDING,
+    };
+const initialReports = reportsData
+  ? {
+      list: [],
+      ...camelizeKeys(reportsData),
+      loading: loadingStatuses.PENDING,
+    }
+  : {
+      list: [],
+      loading: loadingStatuses.PENDING,
+    };
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
-    [currentUserParams.id]: {
-      ...currentUserParams,
-      type: userTypes.spectator,
-    },
-  }
+      [currentUserParams.id]: {
+        ...currentUserParams,
+        type: userTypes.spectator,
+      },
+    }
   : {};
 
 // ******************************
@@ -99,7 +109,7 @@ const initialUsers = currentUserParams
 
 export const defaultGameStatusState = {
   state: GameStateCodes.initial,
-  msg: '',
+  msg: "",
   type: null,
   mode: GameRoomModes.none,
   startsAt: null,
@@ -113,9 +123,9 @@ export const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-    ...defaultGameStatusState,
-    ...getGameStatus(gameParams),
-  }
+      ...defaultGameStatusState,
+      ...getGameStatus(gameParams),
+    }
   : defaultGameStatusState;
 
 const initialGameAward = gameParams ? gameParams.award : null;
@@ -156,21 +166,22 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersMetaToSliseState, {})
+      .map(getPlayersText)
+      .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersTextToSliseState, {})
+      .map(getPlayersText)
+      .reduce(setPlayersTextToSliseState, {})
   : {};
 
-const initialLangsHistory = gameParams && isRecord
-  ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersLangToSliseState, {})
-  : {};
+const initialLangsHistory =
+  gameParams && isRecord
+    ? gameParams.players
+        .map(getPlayersText)
+        .reduce(setPlayersLangToSliseState, {})
+    : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -179,24 +190,24 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-    .map(getPlayersExecutionData)
-    .reduce(setPlayersResultsToSliceState, {})
+      .map(getPlayersExecutionData)
+      .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = {
-  name: '',
-  level: 'elementary',
+  name: "",
+  level: "elementary",
   state: taskStateCodes.none,
-  descriptionEn: '',
-  descriptionRu: '',
+  descriptionEn: "",
+  descriptionRu: "",
   inputSignature: [],
-  outputSignature: { type: { name: 'integer' } },
+  outputSignature: { type: { name: "integer" } },
   assertsExamples: [],
   asserts: [],
-  examples: '',
-  solution: '',
-  argumentsGenerator: '',
-  generatorLang: 'js',
+  examples: "",
+  solution: "",
+  argumentsGenerator: "",
+  generatorLang: "js",
   visibility: taskVisibilityCodes.hidden,
 };
 
@@ -207,8 +218,8 @@ const defaultTaskTemplates = {
 };
 
 const defaultTaskAssertsStatus = {
-  status: 'none',
-  output: '',
+  status: "none",
+  output: "",
 };
 
 const defaultValidationStatuses = {
@@ -221,7 +232,7 @@ const defaultValidationStatuses = {
   assertsExamples: [false],
 };
 
-const getTaskValidationStatuses = task => ({
+const getTaskValidationStatuses = (task) => ({
   ...defaultValidationStatuses,
   name: validateTaskName(task.name),
   description: validateTaskName(task.descriptionEn),
@@ -237,9 +248,9 @@ const initialTemplates = taskParams
   : defaultTaskTemplates;
 const initialAssertsStatus = taskParams
   ? {
-    status: taskParams.asserts.length > 0 ? 'ok' : 'none',
-    output: '',
-  }
+      status: taskParams.asserts.length > 0 ? "ok" : "none",
+      output: "",
+    }
   : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
@@ -253,20 +264,20 @@ const defaultTournamentParams = {
   gameResults: {},
   insertedAt: null,
   isLive: false,
-  level: 'elementary',
+  level: "elementary",
   matches: {},
-  name: '',
+  name: "",
   players: {},
   playersCount: 0,
   playersLimit: 128,
   ranking: { entries: [] },
   startsAt: null,
-  state: 'loading',
+  state: "loading",
   type: null,
   meta: {
     roundsToWin: 3,
     roundsLimit: 3,
-    roundsConfigType: 'all',
+    roundsConfigType: "all",
     roundsConfig: [
       {
         roundTimeoutSeconds: 60,
@@ -277,19 +288,19 @@ const defaultTournamentParams = {
     teams: [],
   },
 
-  accessType: 'token',
+  accessType: "token",
   accessToken: null,
   currentRoundPosition: null,
-  defaultLanguage: 'js',
+  defaultLanguage: "js",
   lastRoundStartedAt: null,
   matchTimeoutSeconds: 0,
   playedPairIds: [],
 
-  breakState: 'off',
+  breakState: "off",
   breakDurationSeconds: 60,
 
-  taskStrategy: 'game',
-  taskProvider: 'level',
+  taskStrategy: "game",
+  taskProvider: "level",
   taskPackName: null,
 
   playersPageNumber: 1,
@@ -306,14 +317,14 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-    ...defaultTournamentParams,
-    ...tournamentParams,
-    channel: { online: !tournamentParams.isLive },
-  }
+      ...defaultTournamentParams,
+      ...tournamentParams,
+      channel: { online: !tournamentParams.isLive },
+    }
   : defaultTournamentParams;
 
-const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
-const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
+const initialLiveTournaments = tournamentsParams.filter((x) => x.isLive);
+const initialCompletedTournaments = tournamentsParams.filter((x) => !x.isLive);
 
 const defaultTournamentPlayerParams = {
   tournamentId,
@@ -492,7 +503,7 @@ export default {
   game: {
     gameStatus: initialGameStatus,
     award: initialGameAward,
-    awardStatus: 'idle',
+    awardStatus: "idle",
     locked: initialGameLocked,
     task: initialGameTask,
     players: initialPlayers,
@@ -539,8 +550,10 @@ export default {
     },
     settings: {
       ...(currentUserParams || {}),
-      mute: JSON.parse(localStorage.getItem('ui_mute_sound') || false),
-      alreadySendPremiumRequest: JSON.parse(localStorage.getItem('already_send_premium_request') || false),
+      mute: JSON.parse(localStorage.getItem("ui_mute_sound") || false),
+      alreadySendPremiumRequest: JSON.parse(
+        localStorage.getItem("already_send_premium_request") || false,
+      ),
     },
   },
   leaderboard: {

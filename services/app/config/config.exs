@@ -89,7 +89,6 @@ config :codebattle,
   jitsi_api_key: System.get_env("JITSI_API_KEY", "")
 
 config :codebattle, load_dot_env_file: true
-config :codebattle, max_alive_tournaments: 15
 config :codebattle, store_playbook_async: true
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 config :codebattle, tournament_match_timeout: 3 * 60

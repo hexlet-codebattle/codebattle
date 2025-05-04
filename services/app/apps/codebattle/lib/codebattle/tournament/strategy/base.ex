@@ -3,9 +3,12 @@ defmodule Codebattle.Tournament.Base do
   @moduledoc """
   Defines interface for tournament type
   """
+
   alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Tournament
+  alias Codebattle.UserEvent
+  alias Codebattle.UserGameReport
   alias Codebattle.WaitingRoom
 
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
@@ -202,6 +205,7 @@ defmodule Codebattle.Tournament.Base do
         if player do
           game_ids = get_all_players_game_ids(tournament, user_id)
 
+          # TODO: move to game context
           Enum.each(game_ids, fn game_id ->
             Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
           end)
@@ -209,6 +213,7 @@ defmodule Codebattle.Tournament.Base do
           new_player = %{player | state: "banned"}
 
           Tournament.Players.put_player(tournament, new_player)
+          UserGameReport.mark_as_confirmed(tournament.id, player.id)
 
           Codebattle.PubSub.broadcast("tournament:player:banned", %{
             tournament: tournament,
@@ -226,15 +231,18 @@ defmodule Codebattle.Tournament.Base do
         if player do
           game_ids = get_all_players_game_ids(tournament, user_id)
 
+          # TODO: move to game context
           Enum.each(game_ids, fn game_id ->
             Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
           end)
 
-          new_state = if tournament.state == "finished" do
-            "finished"
-          else
-            "active"
-          end
+          new_state =
+            if tournament.state == "finished" do
+              "finished"
+            else
+              "active"
+            end
+
           new_player = %{player | state: new_state}
 
           Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
@@ -320,20 +328,25 @@ defmodule Codebattle.Tournament.Base do
 
       def start(%{state: "waiting_participants"} = tournament, %{user: user} = params) do
         if can_moderate?(tournament, user) do
-          tournament = complete_players(tournament)
-
-          tournament
-          |> update_struct(%{
-            players_count: players_count(tournament),
-            state: "active"
-          })
-          |> maybe_init_waiting_room(params)
-          |> set_ranking()
-          |> broadcast_tournament_started()
-          |> start_round()
+          start(tournament, Map.delete(params, :user))
         else
           tournament
         end
+      end
+
+      def start(%{state: "waiting_participants"} = tournament, params) do
+        tournament
+        |> complete_players()
+        |> update_struct(%{
+          players_count: players_count(tournament),
+          started_at: DateTime.utc_now(:second),
+          state: "active"
+        })
+        |> dbg()
+        |> maybe_init_waiting_room(params)
+        |> set_ranking()
+        |> broadcast_tournament_started()
+        |> start_round()
       end
 
       def start(tournament, _params), do: tournament
@@ -420,7 +433,7 @@ defmodule Codebattle.Tournament.Base do
             winner_id: winner_id,
             duration_sec: params.duration_sec,
             player_results: player_results,
-            finished_at: TimeHelper.utc_now()
+            finished_at: DateTime.utc_now(:second)
         }
 
         Tournament.Matches.put_match(tournament, new_match)
@@ -804,7 +817,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
           tournament
-          |> update_struct(%{state: "finished", finished_at: TimeHelper.utc_now()})
+          |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
           |> maybe_finish_waiting_room()
           |> set_stats()
           |> set_winner_ids()
@@ -977,12 +990,12 @@ defmodule Codebattle.Tournament.Base do
 
       defp finish_all_playing_matches(tournament) do
         matches_to_finish = get_matches(tournament, "playing")
-        finished_at = TimeHelper.utc_now()
+        finished_at = DateTime.utc_now(:second)
 
         Enum.each(
           matches_to_finish,
           fn match ->
-            duration_sec = NaiveDateTime.diff(match.started_at, finished_at)
+            duration_sec = NaiveDateTime.diff(finished_at, match.started_at)
 
             player_results = improve_player_results(tournament, match, duration_sec)
             Game.Context.trigger_timeout(match.game_id)
@@ -1080,7 +1093,24 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_save_event_results(%{event_id: event_id} = tournament) when not is_nil(event_id) do
-        Event.EventResult.save_results(tournament)
+        tournament
+        |> get_players()
+        |> Enum.each(fn player ->
+          if !player.is_bot do
+            UserEvent.mark_stage_as_completed(event_id, player.id, %{
+              id: tournament.id,
+              wins_count: player.wins_count,
+              games_count: Enum.count(player.matches_ids),
+              time_spent_in_seconds:
+                tournament
+                |> get_matches(player.matches_ids)
+                |> Enum.map(&(&1.duration_sec || 0))
+                |> Enum.sum()
+                |> dbg()
+            })
+          end
+        end)
+
         tournament
       end
 

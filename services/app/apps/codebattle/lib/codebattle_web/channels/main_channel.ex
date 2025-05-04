@@ -42,12 +42,10 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
-    try do
-      Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
-      {:reply, {:ok, %{}}, socket}
-    rescue
-      _ -> {:reply, {:error, %{}}, socket}
-    end
+    Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
+    {:reply, {:ok, %{}}, socket}
+  rescue
+    _ -> {:reply, {:error, %{}}, socket}
   end
 
   def handle_in("user:unfollow", %{"user_id" => user_id}, socket) do

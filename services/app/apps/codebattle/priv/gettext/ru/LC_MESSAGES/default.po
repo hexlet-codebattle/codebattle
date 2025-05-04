@@ -976,3 +976,6 @@ msgstr "Не прошёл"
 
 msgid "Go to"
 msgstr "Перейти"
+
+msgid "You already passed this stage"
+msgstr "Вы уже прошли этот этап"

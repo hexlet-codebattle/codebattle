@@ -36,9 +36,14 @@ defmodule Codebattle.Event do
     field(:starts_at, :utc_datetime)
     field(:personal_tournament_id, :integer)
 
-    embeds_many(:stages, Codebattle.EventStage, on_replace: :delete)
+    embeds_many(:stages, Codebattle.Event.Stage, on_replace: :delete)
 
     timestamps()
+  end
+
+  @spec get_stage(t(), String.t()) :: __MODULE__.Stage.t() | nil
+  def get_stage(%__MODULE__{stages: stages}, slug) when is_binary(slug) do
+    Enum.find(stages, fn stage -> stage.slug == slug end)
   end
 
   @spec get_all() :: list(t())

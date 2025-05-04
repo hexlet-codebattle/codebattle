@@ -36,6 +36,7 @@ defmodule Codebattle.Tournament do
              :players_limit,
              :players_count,
              :score_strategy,
+             :started_at,
              :starts_at,
              :state,
              :stats,
@@ -74,7 +75,7 @@ defmodule Codebattle.Tournament do
     field(:current_round_id, :integer)
     field(:current_round_position, :integer, default: 0)
     field(:description, :string)
-    field(:finished_at, :naive_datetime)
+    field(:finished_at, :utc_datetime)
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
@@ -89,6 +90,7 @@ defmodule Codebattle.Tournament do
     field(:round_timeout_seconds, :integer)
     field(:score_strategy, :string, default: "time_and_tests")
     field(:show_results, :boolean, default: true)
+    field(:started_at, :utc_datetime)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
     field(:stats, AtomizedMap, default: %{})
@@ -150,6 +152,7 @@ defmodule Codebattle.Tournament do
       :score_strategy,
       :show_results,
       :starts_at,
+      :started_at,
       :state,
       :task_pack_name,
       :task_pack_name,

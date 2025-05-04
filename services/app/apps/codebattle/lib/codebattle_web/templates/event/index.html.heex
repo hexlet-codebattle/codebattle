@@ -27,6 +27,10 @@
             </td>
             <td class="align-middle text-nowrap">
               <div class="d-flex">
+                <%= link("Preview",
+                  to: "/e/#{event.slug}",
+                  class: "btn btn-sm btn-info rounded-lg"
+                ) %>
                 <%= link("Show",
                   to: Routes.event_path(@conn, :show, event.id),
                   class: "btn btn-sm btn-info rounded-lg"

@@ -238,6 +238,10 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Event{}
   end
 
+  def user_event_factory do
+    %Codebattle.UserEvent{state: %Codebattle.UserEvent.State{}}
+  end
+
   def clan_factory do
     %Codebattle.Clan{
       name: unique("c"),

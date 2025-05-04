@@ -4,7 +4,12 @@ defmodule CodebattleWeb.PublicEventController do
   import PhoenixGon.Controller
 
   alias Codebattle.Event
+  alias Codebattle.Tournament
   alias Codebattle.UserEvent
+
+  require Logger
+
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:show, :create_action])
 
   def show(conn, %{"slug" => slug}) do
     user = conn.assigns.current_user
@@ -22,5 +27,21 @@ defmodule CodebattleWeb.PublicEventController do
       }
     )
     |> render("show.html")
+  end
+
+  def stage(conn, %{"slug" => slug, "stage_slug" => stage_slug}) do
+    user = conn.assigns.current_user
+
+    case Event.Context.start_stage_for_user(user, slug, stage_slug) do
+      {:ok, %Tournament{} = tournament} ->
+        redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
+
+      {:error, error} ->
+        Logger.error("Error starting stage: #{inspect(error)}")
+
+        conn
+        |> put_flash(:error, error)
+        |> redirect(to: Routes.public_event_path(conn, :show, slug))
+    end
   end
 end

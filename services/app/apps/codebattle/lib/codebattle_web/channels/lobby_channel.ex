@@ -11,36 +11,46 @@ defmodule CodebattleWeb.LobbyChannel do
 
     params = LobbyView.render_lobby_params(current_user)
 
-    Codebattle.PubSub.subscribe("games")
-    Codebattle.PubSub.subscribe("tournaments")
+    if !FunWithFlags.enabled?(:codebattle_mini_version) do
+      Codebattle.PubSub.subscribe("games")
+      Codebattle.PubSub.subscribe("tournaments")
+    end
 
     {:ok, params, socket}
   end
 
   def handle_in("game:cancel", payload, socket) do
-    game_id = Map.get(payload, "game_id")
+    if FunWithFlags.enabled?(:codebattle_mini_version) do
+      {:reply, {:error, %{reason: "Feature not available"}}, socket}
+    else
+      game_id = Map.get(payload, "game_id")
 
-    Game.Context.cancel_game(game_id, socket.assigns.current_user)
-    {:noreply, socket}
+      Game.Context.cancel_game(game_id, socket.assigns.current_user)
+      {:noreply, socket}
+    end
   end
 
   def handle_in("game:create", payload, socket) do
-    user = socket.assigns.current_user
+    if FunWithFlags.enabled?(:codebattle_mini_version) do
+      {:reply, {:error, %{reason: "Feature not available"}}, socket}
+    else
+      user = socket.assigns.current_user
 
-    game_params =
-      %{
-        level: payload["level"],
-        timeout_seconds: payload["timeout_seconds"]
-      }
-      |> add_players(payload, user)
-      |> maybe_add_task(payload, user)
+      game_params =
+        %{
+          level: payload["level"],
+          timeout_seconds: payload["timeout_seconds"]
+        }
+        |> add_players(payload, user)
+        |> maybe_add_task(payload, user)
 
-    case Game.Context.create_game(game_params) do
-      {:ok, game} ->
-        {:reply, {:ok, %{game_id: game.id}}, socket}
+      case Game.Context.create_game(game_params) do
+        {:ok, game} ->
+          {:reply, {:ok, %{game_id: game.id}}, socket}
 
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
+        {:error, reason} ->
+          {:reply, {:error, %{reason: reason}}, socket}
+      end
     end
   end
 

@@ -235,17 +235,15 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_in("tournament:report:update", %{"report_id" => report_id, "state" => state}, socket) do
-    try do
-      report = UserGameReport.get!(report_id)
+    report = UserGameReport.get!(report_id)
 
-      case UserGameReport.update(report, %{state: state}) do
-        {:ok, report} -> {:reply, {:ok, %{report: report}}, socket}
-        {:error, reason} -> {:reply, {:error, reason}, socket}
-        _ -> {:reply, {:error, :failure}, socket}
-      end
-    rescue
+    case UserGameReport.update(report, %{state: state}) do
+      {:ok, report} -> {:reply, {:ok, %{report: report}}, socket}
+      {:error, reason} -> {:reply, {:error, reason}, socket}
       _ -> {:reply, {:error, :failure}, socket}
     end
+  rescue
+    _ -> {:reply, {:error, :failure}, socket}
   end
 
   def handle_in(_topic, _payload, socket) do

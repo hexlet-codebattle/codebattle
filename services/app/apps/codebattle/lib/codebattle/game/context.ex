@@ -11,12 +11,12 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Bot
   alias Codebattle.CodeCheck
   alias Codebattle.Game
-  alias Codebattle.UserGameReport
   alias Codebattle.Game.Engine
   alias Codebattle.Game.Player
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
+  alias Codebattle.UserGameReport
 
   require Logger
 
@@ -244,7 +244,6 @@ defmodule Codebattle.Game.Context do
     |> select([g], g.id)
     |> Repo.all()
     |> Enum.each(fn game_id -> Engine.terminate_game(game_id) end)
-    |> dbg()
   end
 
   @spec terminate_game(game_id | Game.t()) :: :ok
@@ -274,34 +273,43 @@ defmodule Codebattle.Game.Context do
     end
   end
 
-  def report_on_player(game_id, offender_id, reporter_id) do
+  def report_on_player(game_id, reporter, offender_id) do
     game = get_game!(game_id)
-    old_report = UserGameReport.get_by!(%{game_id: game_id, offender_id: offender_id, reporter_id: reporter_id})
 
-    case {old_report, game} do
-      {_, nil} -> {:error, :game_not_fouded}
-      {nil, game} ->
-        case UserGameReport.create(%{
-          comment: "",
-          game_id: game_id,
-          tournament_id: game.tournament_id,
-          offender_id: offender_id,
-          reporter_id: reporter_id,
-          reason: "cheater",
-          state: "pending"
-        }) do
-          {:ok, report} ->
-            Codebattle.PubSub.broadcast("tournament:player:reported", %{
-              tournament_id: game.tournament_id,
-              report: report,
-            })
+    with true <- User.admin?(reporter) || player?(game, reporter.id),
+         true <- player?(game, offender_id),
+         nil <-
+           UserGameReport.get_by(%{
+             game_id: game_id,
+             offender_id: offender_id,
+             reporter_id: reporter.id
+           }),
+         {:ok, report} <-
+           UserGameReport.create(%{
+             # TODO: add this to the FE if we want to user specific message
+             comment: "Player found a cheater",
+             game_id: game_id,
+             tournament_id: game.tournament_id,
+             offender_id: offender_id,
+             reporter_id: reporter.id,
+             reason: "cheater",
+             state: "pending"
+           }) do
+      Codebattle.PubSub.broadcast("tournament:player:reported", %{
+        tournament_id: game.tournament_id,
+        report: report
+      })
 
-            {:ok, report}
-          reason ->
-            {:error, reason}
-        end
-      _ ->
+      {:ok, report}
+    else
+      {:error, reason} ->
+        {:error, reason}
+
+      %UserGameReport{} ->
         {:error, :already_have_report}
+
+      _ ->
+        {:error, :cannot_report}
     end
   end
 

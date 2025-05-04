@@ -7,6 +7,7 @@ defmodule Codebattle.Repo.Migrations.CreateUserEvents do
       add(:user_id, references(:users, on_delete: :delete_all))
       add(:event_id, references(:events, on_delete: :delete_all))
       add(:state, :map)
+      add(:stages, :map)
 
       timestamps()
     end

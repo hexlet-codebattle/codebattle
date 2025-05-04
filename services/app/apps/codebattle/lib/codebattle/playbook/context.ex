@@ -22,6 +22,8 @@ defmodule Codebattle.Playbook.Context do
     :game_over
   ]
 
+  def get_random_completed_id(nil), do: nil
+
   def get_random_completed_id(task_id) do
     Repo.one(
       from(p in Playbook,
@@ -59,7 +61,11 @@ defmodule Codebattle.Playbook.Context do
   end
 
   def add_record(playbook_state, type, params) when type in @record_types do
-    record = Map.merge(%{type: type, record_id: playbook_state.id, time: System.system_time(:millisecond)}, params)
+    record =
+      Map.merge(
+        %{type: type, record_id: playbook_state.id, time: System.system_time(:millisecond)},
+        params
+      )
 
     playbook_state
     |> Map.update!(:records, &[record | &1])
@@ -141,7 +147,10 @@ defmodule Codebattle.Playbook.Context do
         %{next_lang: editor_lang}
       end
 
-    Map.merge(%{delta: Delta.diff(player_state_delta, new_delta), time: time - player_state.time}, lang_delta)
+    Map.merge(
+      %{delta: Delta.diff(player_state_delta, new_delta), time: time - player_state.time},
+      lang_delta
+    )
   end
 
   defp update_players_state(data, player_state), do: Map.update!(data, :players, &update_player(&1, player_state))

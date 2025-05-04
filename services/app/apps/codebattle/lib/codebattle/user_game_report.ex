@@ -21,6 +21,7 @@ defmodule Codebattle.UserGameReport do
              :reason,
              :reporter_id,
              :reporter,
+             :inserted_at,
              :state,
              :tournament_id
            ]}
@@ -48,6 +49,7 @@ defmodule Codebattle.UserGameReport do
     |> cast(params, [
       :comment,
       :game_id,
+      :state,
       :offender_id,
       :reason,
       :reporter_id,
@@ -94,8 +96,21 @@ defmodule Codebattle.UserGameReport do
   end
 
   def update(report, params) do
-    report
-    |> changeset(params)
-    |> Repo.update!()
+    result =
+      report
+      |> changeset(params)
+      |> Repo.update()
+      |> dbg()
+
+    case result do
+      {:ok, report} -> {:ok, Repo.preload(report, [:offender, :reporter])}
+      _ -> result
+    end
+  end
+
+  def mark_as_confirmed(tournament_id, offender_id) do
+    __MODULE__
+    |> where([ugr], ugr.tournament_id == ^tournament_id and ugr.offender_id == ^offender_id)
+    |> Repo.update_all(set: [state: :confirmed])
   end
 end
