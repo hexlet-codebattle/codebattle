@@ -55,7 +55,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     "hard" => to_timeout(minute: 17)
   }
 
-  def init(%{game: game, bot_id: bot_id}) do
+  def init(%{game: game, bot_id: bot_id} = params) do
     bot = Game.Helpers.get_player(game, bot_id)
 
     case bot.playbook_id && Playbook.get(bot.playbook_id) do
@@ -65,7 +65,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
       %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
-        bot_time_ms = get_bot_time_ms(game)
+        bot_time_ms = params[:custom_time_ms] || get_bot_time_ms(game)
 
         step_coefficient = round(bot_time_ms / (playbook_winner_meta.total_time_ms + 1))
 

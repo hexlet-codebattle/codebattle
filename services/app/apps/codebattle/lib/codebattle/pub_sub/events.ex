@@ -432,9 +432,6 @@ defmodule Codebattle.PubSub.Events do
 
   def get_messages("game:finished", %{game: game}) do
     if game.tournament_id do
-      dbg(11_111_111)
-      dbg(game.duration_sec)
-
       [
         %Message{
           topic: "game:#{game.id}",

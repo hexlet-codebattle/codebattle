@@ -342,7 +342,6 @@ defmodule Codebattle.Tournament.Base do
           started_at: DateTime.utc_now(:second),
           state: "active"
         })
-        |> dbg()
         |> maybe_init_waiting_room(params)
         |> set_ranking()
         |> broadcast_tournament_started()
@@ -1106,7 +1105,6 @@ defmodule Codebattle.Tournament.Base do
                 |> get_matches(player.matches_ids)
                 |> Enum.map(&(&1.duration_sec || 0))
                 |> Enum.sum()
-                |> dbg()
             })
           end
         end)

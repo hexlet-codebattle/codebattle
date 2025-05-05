@@ -100,7 +100,6 @@ defmodule Codebattle.UserGameReport do
       report
       |> changeset(params)
       |> Repo.update()
-      |> dbg()
 
     case result do
       {:ok, report} -> {:ok, Repo.preload(report, [:offender, :reporter])}

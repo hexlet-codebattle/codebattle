@@ -42,7 +42,7 @@ defmodule Codebattle.TaskPack do
       :visibility,
       :creator_id
     ])
-    |> validate_required([:name, :task_ids, :state, :visibility, :creator_id])
+    |> validate_required([:name, :task_ids, :state, :visibility])
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:visibility, @visibility_types)
     |> unique_constraint(:name)
@@ -95,7 +95,9 @@ defmodule Codebattle.TaskPack do
   defp retrieve_tasks_from_task_pack(task_pack) do
     tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
 
-    Enum.map(task_pack.task_ids, fn task_id -> Enum.find(tasks, fn task -> task.id == task_id end) end)
+    Enum.map(task_pack.task_ids, fn task_id ->
+      Enum.find(tasks, fn task -> task.id == task_id end)
+    end)
   end
 
   def list_visible(user) do

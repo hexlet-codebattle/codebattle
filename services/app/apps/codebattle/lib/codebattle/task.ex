@@ -182,6 +182,13 @@ defmodule Codebattle.Task do
     end
   end
 
+  @spec get_by_names(list(String.t())) :: list(t())
+  def get_by_names(names) do
+    __MODULE__
+    |> where([t], t.name in ^names)
+    |> Repo.all()
+  end
+
   @spec get_by_ids(list(pos_integer())) :: list(t())
   def get_by_ids(task_ids) do
     __MODULE__
