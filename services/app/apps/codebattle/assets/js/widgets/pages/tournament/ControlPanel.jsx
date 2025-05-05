@@ -1,5 +1,5 @@
 import React, {
- memo, useCallback, useContext,
+  memo, useCallback, useContext,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,11 +14,11 @@ import {
   tournamentPlayersSelector,
 } from '../../selectors';
 
-        // %{"type" => "top_users_by_clan_ranking"} ->
-        // %{"type" => "tasks_ranking"} ->
-        // %{"type" => "task_duration_distribution", "task_id" => task_id} ->
-        // %{"type" => "clans_bubble_distribution"} ->
-        // %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
+// %{"type" => "top_users_by_clan_ranking"} ->
+// %{"type" => "tasks_ranking"} ->
+// %{"type" => "task_duration_distribution", "task_id" => task_id} ->
+// %{"type" => "clans_bubble_distribution"} ->
+// %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
 //
 export const PanelModeCodes = {
   ratingMode: 'ratingMode',
@@ -150,14 +150,14 @@ function ControlPanel({
               PanelModeCodes.taskDurationDistributionMode,
               PanelModeCodes.topUserByTasksMode,
             ].includes(mode) || mode === panelMode.panel) && (
-            <option
-              key={mode}
-              value={mode}
-              disabled={mode === PanelModeCodes.playerMode && !isPlayer}
-            >
-              {mapPanelModeToTitle[mode]}
-            </option>
-          )))}
+              <option
+                key={mode}
+                value={mode}
+                disabled={mode === PanelModeCodes.playerMode && !isPlayer}
+              >
+                {mapPanelModeToTitle[mode]}
+              </option>
+            )))}
         </select>
       </div>
     </div>

@@ -3,6 +3,7 @@ defmodule CodebattleWeb.MainChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game
+  alias Codebattle.User
   alias Codebattle.Tournament
   alias CodebattleWeb.Presence
 
@@ -42,10 +43,16 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
-    Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
-    {:reply, {:ok, %{}}, socket}
-  rescue
-    _ -> {:reply, {:error, %{}}, socket}
+    try do
+      if User.admin?(socket.assings.current_user) do
+        Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
+        {:reply, {:ok, %{}}, socket}
+      else
+        {:reply, {:error, :no_admin}, socket}
+      end
+    rescue
+      _ -> {:reply, {:error, %{}}, socket}
+    end
   end
 
   def handle_in("user:unfollow", %{"user_id" => user_id}, socket) do

@@ -945,7 +945,7 @@ msgstr "Поражение"
 
 # Participant Dashboard Translations
 msgid "Participant Dashboard"
-msgstr "ЛИЧНЫЙ КАБИНЕТ УЧАСТНИКА"
+msgstr "Личный кабинет участника"
 
 msgid "Category"
 msgstr "Категория"
@@ -976,6 +976,21 @@ msgstr "Не прошёл"
 
 msgid "Go to"
 msgstr "Перейти"
+
+msgid "Report"
+msgstr "Пожаловаться"
+
+msgid "Ban"
+msgstr "Забанить"
+
+msgid "Place in total"
+msgstr "Место в общем зачете"
+
+msgid "Place in category"
+msgstr "Место в категории"
+
+msgid "Time spent"
+msgstr "Время на этап"
 
 msgid "You already passed this stage"
 msgstr "Вы уже прошли этот этап"

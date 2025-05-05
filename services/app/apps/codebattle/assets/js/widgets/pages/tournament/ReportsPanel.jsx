@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -8,7 +8,7 @@ import Select from 'react-select';
 
 import UserInfo from '@/components/UserInfo';
 import { sendNewReportState } from '@/middlewares/TournamentAdmin';
-import { userIsAdminSelector } from '@/selectors';
+import { reportsSelector, userIsAdminSelector } from '@/selectors';
 
 import i18next from '../../../i18n';
 
@@ -40,7 +40,7 @@ const customStyle = {
 };
 
 const customEventTrClassName = cn(
-  'text-dark font-weight-bold cb-custom-event-tr',
+  'text-dark cb-custom-event-tr',
 );
 
 const tableDataCellClassName = cn(
@@ -71,33 +71,14 @@ const getStateText = state => {
 
 function ReportsPanel() {
   const dispatch = useDispatch();
-  const reports = useSelector(state => state.reports.list);
+  const reports = useSelector(reportsSelector);
   const isAdmin = useSelector(userIsAdminSelector);
 
-  const sortedReports = useMemo(
-    () =>
-      // Create a new array before sorting to avoid mutating the original array
-      // The error occurs because the array is frozen in strict mode and sort() mutates the array
-      [...(reports || [])].sort((r1, r2) => {
-        if (r1.state === 'pending' && r2.state === 'pending') {
-          return moment(r1.insertedAt).diff(moment(r2.insertedAt));
-        }
-        if (r1.state === 'pending') {
-          return -1;
-        }
-        if (r2.state === 'pending') {
-          return 1;
-        }
-        return 0;
-      }),
-    [reports],
-  );
-
   const changeReportState = reportId => ({ value }) => {
-      dispatch(sendNewReportState(reportId, value));
-    };
+    dispatch(sendNewReportState(reportId, value));
+  };
 
-  if (!isAdmin || !sortedReports || sortedReports.length === 0) {
+  if (!isAdmin || !reports.length === 0) {
     return <></>;
   }
 
@@ -119,12 +100,12 @@ function ReportsPanel() {
               {i18next.t('Inserted At')}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Link')}
+              {i18next.t('Actions')}
             </th>
           </tr>
         </thead>
         <tbody>
-          {sortedReports?.map(item => (
+          {reports.map(item => (
             <React.Fragment key={`report-${item.id}`}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr className={customEventTrClassName}>

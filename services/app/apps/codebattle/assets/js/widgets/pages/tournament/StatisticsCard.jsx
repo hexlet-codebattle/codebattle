@@ -83,7 +83,7 @@ export function ArenaStatisticsCard({
 }
 
 function StatisticsCard({
- playerId, taskIds = [], matchList = [], place,
+  playerId, matchList = [], place,
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
 

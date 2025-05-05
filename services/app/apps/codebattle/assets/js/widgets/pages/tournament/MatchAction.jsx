@@ -9,7 +9,7 @@ import CustomEventStylesContext from '../../components/CustomEventStylesContext'
 import MatchStatesCodes from '../../config/matchStates';
 // import { sendMatchGameOver } from '../../middlewares/TournamentAdmin';
 
-function MatchAction({ match, canModerate, currentUserIsPlayer }) {
+function MatchAction({ match, currentUserIsPlayer }) {
   const href = `/games/${match.gameId}`;
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
   // const streamMode = useSelector(state => state.gameUI.streamMode);

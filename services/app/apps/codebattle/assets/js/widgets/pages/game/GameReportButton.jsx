@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
 import cn from 'classnames';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { reportOnPlayer } from '@/middlewares/Room';
+import { userIsAdminSelector, userIsGamePlayerSelector } from '@/selectors';
 
 import i18n from '../../../i18n';
 
@@ -28,6 +29,9 @@ const GameReportButton = ({ userId }) => {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
+  const isAdmin = useSelector(userIsAdminSelector);
+  const isPlayer = useSelector(userIsGamePlayerSelector);
+
   const onSuccess = () => setState(states.success);
   const onError = () => setState(states.error);
 
@@ -44,6 +48,10 @@ const GameReportButton = ({ userId }) => {
     setState(states.loading);
     dispatch(reportOnPlayer(userId, onSuccess, onError));
   };
+
+  if (!isAdmin && !isPlayer) {
+    return <></>;
+  }
 
   return (
     <button

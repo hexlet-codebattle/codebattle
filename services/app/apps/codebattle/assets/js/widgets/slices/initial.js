@@ -74,31 +74,22 @@ const initialLeaderboardUsers = leaderboardUsersData
   : [];
 const initialEvent = eventData
   ? {
-      ...camelizeKeys(eventData),
-      loading: loadingStatuses.PENDING,
-    }
+    ...camelizeKeys(eventData),
+    loading: loadingStatuses.PENDING,
+  }
   : {
-      loading: loadingStatuses.PENDING,
-    };
-const initialReports = reportsData
-  ? {
-      list: [],
-      ...camelizeKeys(reportsData),
-      loading: loadingStatuses.PENDING,
-    }
-  : {
-      list: [],
-      loading: loadingStatuses.PENDING,
-    };
+    loading: loadingStatuses.PENDING,
+  };
+const reportsParams = reportsData ? camelizeKeys(reportsData) : {};
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
-      [currentUserParams.id]: {
-        ...currentUserParams,
-        type: userTypes.spectator,
-      },
-    }
+    [currentUserParams.id]: {
+      ...currentUserParams,
+      type: userTypes.spectator,
+    },
+  }
   : {};
 
 // ******************************
@@ -123,9 +114,9 @@ export const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-      ...defaultGameStatusState,
-      ...getGameStatus(gameParams),
-    }
+    ...defaultGameStatusState,
+    ...getGameStatus(gameParams),
+  }
   : defaultGameStatusState;
 
 const initialGameAward = gameParams ? gameParams.award : null;
@@ -166,21 +157,21 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersMetaToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersTextToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersTextToSliseState, {})
   : {};
 
 const initialLangsHistory = gameParams && isRecord
-    ? gameParams.players
-        .map(getPlayersText)
-        .reduce(setPlayersLangToSliseState, {})
-    : {};
+  ? gameParams.players
+    .map(getPlayersText)
+    .reduce(setPlayersLangToSliseState, {})
+  : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -189,8 +180,8 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-      .map(getPlayersExecutionData)
-      .reduce(setPlayersResultsToSliceState, {})
+    .map(getPlayersExecutionData)
+    .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = {
@@ -247,13 +238,21 @@ const initialTemplates = taskParams
   : defaultTaskTemplates;
 const initialAssertsStatus = taskParams
   ? {
-      status: taskParams.asserts.length > 0 ? 'ok' : 'none',
-      output: '',
-    }
+    status: taskParams.asserts.length > 0 ? 'ok' : 'none',
+    output: '',
+  }
   : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
   : defaultValidationStatuses;
+
+const defaultReportsParams = {
+  list: [],
+  showOnlyPendingReports: true,
+  loading: loadingStatuses.PENDING,
+};
+
+const initialReports = { ...defaultReportsParams, ...reportsParams };
 
 const defaultTournamentParams = {
   id: undefined,
@@ -316,10 +315,10 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-      ...defaultTournamentParams,
-      ...tournamentParams,
-      channel: { online: !tournamentParams.isLive },
-    }
+    ...defaultTournamentParams,
+    ...tournamentParams,
+    channel: { online: !tournamentParams.isLive },
+  }
   : defaultTournamentParams;
 
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
