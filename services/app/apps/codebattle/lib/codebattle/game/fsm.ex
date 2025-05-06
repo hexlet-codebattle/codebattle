@@ -155,12 +155,10 @@ defmodule Codebattle.Game.Fsm do
 
   defp finished_game_with_state(game, state) do
     finishes_at = TimeHelper.utc_now()
-    dbg(finishes_at)
-    dbg(game.starts_at)
 
     game
     |> Map.put(:state, state)
     |> Map.put(:finishes_at, finishes_at)
-    |> Map.put(:duration_sec, finishes_at |> NaiveDateTime.diff(game.starts_at) |> dbg())
+    |> Map.put(:duration_sec, NaiveDateTime.diff(finishes_at, game.starts_at))
   end
 end

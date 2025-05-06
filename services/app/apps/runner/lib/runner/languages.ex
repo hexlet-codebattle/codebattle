@@ -4,20 +4,32 @@ defmodule Runner.Languages do
   alias Runner.LanguageMeta
 
   @default_white_list_lang_slugs [
+    # +
     "clojure",
     "cpp",
+    # +
     "csharp",
+    # +
     "dart",
     "elixir",
     "golang",
+    # +
     "haskell",
+    # +
     "java",
+    # +
     "js",
+    # +
     "kotlin",
+    # +
     "php",
+    # +
     "python",
+    # +
     "ruby",
+    # +
     "rust",
+    # +
     "ts"
   ]
 
@@ -38,20 +50,20 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.3.0",
+      version: "3.4.3",
       container_run_timeout: "15s",
       check_dir: "check",
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
-      docker_image: "codebattle/ruby:3.3.0",
+      docker_image: "codebattle/ruby:3.4.3",
       solution_template: """
       def solution(<%= arguments %>)
-        <%= return_statement %>
+        ans = <%= default_value %>
+        return ans
       end
       # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -72,25 +84,26 @@ defmodule Runner.Languages do
       generate_checker?: false,
       name: "Node.js",
       slug: "js",
-      version: "20.11.1",
+      version: "22.15.0",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      docker_image: "codebattle/js:20.11.1",
+      docker_image: "codebattle/js:22.15.0",
       solution_template: """
       const _ = require("lodash");
       const R = require("rambda");
 
       const solution = (<%= arguments %>) => {
-        <%= return_statement %>
+        let ans = <%= default_value %>;
+
+        return ans;
       };
       // <%= comment %>
 
       module.exports = solution;
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "return <%= default_value %>;",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -118,18 +131,19 @@ defmodule Runner.Languages do
       generate_checker?: false,
       name: "typescript",
       slug: "ts",
-      version: "5.4.2",
+      version: "5.8.3",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      docker_image: "codebattle/js:20.11.1",
+      docker_image: "codebattle/js:22.15.0",
       solution_template: """
       import * as _ from "lodash";
       import * as R from "rambda";
 
       function solution(<%= arguments %>)<%= expected %>{
-
+        let ans = <%= default_value %>;
+        return ans;
       };
 
       // <%= comment %>
@@ -137,6 +151,14 @@ defmodule Runner.Languages do
       export default solution;
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "true",
+        "hash" => "{ key: <%= value %> }"
+      },
       expected_template: ": <%= type %> ",
       types: %{
         "integer" => "number",
@@ -157,19 +179,28 @@ defmodule Runner.Languages do
       name: "Dart",
       slug: "dart",
       output_version: 2,
-      version: "3.3.1",
+      version: "3.7.3",
       check_dir: "lib",
       container_run_timeout: "20s",
       solution_file_name: "solution.dart",
       checker_file_name: "checker.dart",
-      docker_image: "codebattle/dart:3.3.1",
+      docker_image: "codebattle/dart:3.7.3",
       solution_template: """
       <%= expected %>solution(<%= arguments %>) {
-
+        <%= expected %>ans = <%= default_value %>;
+        return ans;
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "true",
+        "hash" => "{\"key\": <%= value %>}"
+      },
       expected_template: "<%= type %> ",
       types: %{
         "integer" => "int",
@@ -189,24 +220,24 @@ defmodule Runner.Languages do
       name: "C++",
       slug: "cpp",
       output_version: 2,
-      version: "g++std=c++20",
+      version: "g++std=c++23",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.cpp",
       checker_file_name: "checker.cpp",
-      docker_image: "codebattle/cpp:20",
+      docker_image: "codebattle/cpp:23",
       solution_template: """
       #include <bits/stdc++.h>
 
       using namespace std;
 
       <%= expected %> solution(<%= arguments %>) {
-        <%= return_statement %>
+        <%= expected %> ans = <%= default_value %>;
+        return ans;
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
-      return_template: "return <%= default_value %>;",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -239,12 +270,12 @@ defmodule Runner.Languages do
       name: "Java",
       slug: "java",
       output_version: 2,
-      version: "21",
+      version: "24",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "Solution.java",
       checker_file_name: "Checker.java",
-      docker_image: "codebattle/java:21",
+      docker_image: "codebattle/java:24",
       solution_template: """
       package solution;
 
@@ -253,12 +284,21 @@ defmodule Runner.Languages do
 
       public class Solution {
         public <%= expected %>solution(<%= arguments %>) {
-
+          <%= expected %>ans = <%= default_value %>;
+          return ans;
         }
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "List.of(<%= value %>)",
+        "boolean" => "true",
+        "hash" => "Map.of(\"key\", <%= value %>)"
+      },
       expected_template: "<%= type %> ",
       types: %{
         "integer" => "Integer",
@@ -284,24 +324,33 @@ defmodule Runner.Languages do
     "kotlin" => %LanguageMeta{
       name: "Kotlin",
       slug: "kotlin",
-      version: "1.9.23",
+      version: "2.1.20",
       output_version: 2,
       check_dir: "check",
       container_run_timeout: "25s",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
-      docker_image: "codebattle/kotlin:1.9.23",
+      docker_image: "codebattle/kotlin:2.1.20",
       solution_template: """
       package solution
 
       import kotlin.collections.*
 
       fun solution(<%= arguments %>):<%= expected %> {
-
+        val ans: <%= expected %> = <%= default_value %>
+        return ans
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "listOf(<%= value %>)",
+        "boolean" => "true",
+        "hash" => "mapOf(\"key\" to <%= value %>)"
+      },
       expected_template: " <%= type %>",
       types: %{
         "integer" => "Int",
@@ -328,12 +377,12 @@ defmodule Runner.Languages do
       name: "C#",
       slug: "csharp",
       output_version: 2,
-      version: "8.0.201",
+      version: "9.0.203",
       check_dir: "check",
       container_run_timeout: "25s",
       solution_file_name: "solution.cs",
       checker_file_name: "checker.cs",
-      docker_image: "codebattle/csharp:8.0.201",
+      docker_image: "codebattle/csharp:9.0.203",
       solution_template: """
       using System;
       using System.Collections.Generic;
@@ -344,13 +393,22 @@ defmodule Runner.Languages do
         {
           public<%= expected %> solution(<%= arguments %>)
           {
-
+           <%= expected %> ans = <%= default_value %>;
+            return ans;
           }
         }
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "new List<<%= value %>>()",
+        "boolean" => "true",
+        "hash" => "new Dictionary<string, <%= value %>>(){ {\"key\", <%= value %>} }"
+      },
       expected_template: " <%= type %>",
       types: %{
         "integer" => "int",
@@ -378,22 +436,31 @@ defmodule Runner.Languages do
       name: "golang",
       slug: "golang",
       output_version: 2,
-      version: "1.22.1",
+      version: "1.24.2",
       container_run_timeout: "20s",
       check_dir: "check",
       solution_file_name: "solution.go",
       checker_file_name: "checker.go",
-      docker_image: "codebattle/golang:1.22.1",
+      docker_image: "codebattle/golang:1.24.2",
       solution_template: """
       package main
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
-
+        <%= expected %> ans := <%= default_value %>
+        return ans
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[]<%= value %>{}",
+        "boolean" => "true",
+        "hash" => "map[string]<%= value %>{\"key\": <%= value %>}"
+      },
       expected_template: " <%= type %>",
       types: %{
         "integer" => "int64",
@@ -416,22 +483,22 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "1.18.2",
+      version: "1.18.3",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
-      docker_image: "codebattle/elixir:1.18.2",
+      docker_image: "codebattle/elixir:1.18.3",
       solution_template: """
       defmodule Solution do
         def solution(<%= arguments %>) do
-          <%= return_statement %>
+          ans = <%= default_value %>
+          ans
         end
       end
       # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -452,22 +519,22 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.12.2",
+      version: "3.13.3",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
-      docker_image: "codebattle/python:3.12.2",
+      docker_image: "codebattle/python:3.13.3",
       solution_template: """
       from typing import List, Dict
 
       def solution(<%= arguments %>)<%= expected %>:
-        <%= return_statement %>
+        ans = <%= default_value %>
+        return ans
       # <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
-      return_template: "return <%= default_value %>;",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -493,7 +560,7 @@ defmodule Runner.Languages do
     "php" => %LanguageMeta{
       name: "php",
       slug: "php",
-      version: "8.3.3",
+      version: "8.3.20",
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
@@ -501,16 +568,16 @@ defmodule Runner.Languages do
       container_run_timeout: "15s",
       solution_file_name: "solution.php",
       checker_file_name: "checker.php",
-      docker_image: "codebattle/php:8.3.3",
+      docker_image: "codebattle/php:8.3.20",
       solution_template: """
       <?php
 
       function solution(<%= arguments %>) {
-        <%= return_statement %>
+        $ans = <%= default_value %>;
+        return $ans;
       }
       // <%= comment %>
       """,
-      return_template: "return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
       default_values: %{
         "integer" => "0",
@@ -554,12 +621,11 @@ defmodule Runner.Languages do
       docker_image: "codebattle/clojure:1.11.2.3",
       solution_template: """
       (defn solution [<%= arguments %>]
-        <%= return_statement %>
+        <%= default_value %>
       )
       ; <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
-      return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -623,6 +689,14 @@ defmodule Runner.Languages do
       typespec_template: %{argument: "<%= type %>", delimiter: " -> "},
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       expected_template: " -> <%= type %>",
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "True",
+        "hash" => "fromList [(\"key\" :: String, <%= value %>)]"
+      },
       types: %{
         "integer" => "Int",
         "float" => "Double",
@@ -649,21 +723,30 @@ defmodule Runner.Languages do
       name: "rust",
       slug: "rust",
       output_version: 2,
-      version: "1.76.0",
+      version: "1.86.0",
       container_run_timeout: "20s",
       solution_file_name: "solution.rs",
       checker_file_name: "checker.rs",
       check_dir: "check",
-      docker_image: "codebattle/rust:1.76.0",
+      docker_image: "codebattle/rust:1.86.0",
       solution_template: """
       use std::collections::HashMap;
 
       pub fn solution(<%= arguments %>) -> <%= expected %> {
-
+        let mut ans: <%= expected %> = <%= default_value %>;
+        return ans;
       }
       // <%= comment %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "String::from(\"value\")",
+        "array" => "vec![<%= value %>]",
+        "boolean" => "true",
+        "hash" => "HashMap::from([(String::from(\"key\"), <%= value %>)])"
+      },
       expected_template: "<%= type %>",
       types: %{
         "integer" => "i64",

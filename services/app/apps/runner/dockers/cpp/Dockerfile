@@ -1,17 +1,18 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM alpine:3.19
+FROM alpine:3.21
 
-RUN apk add --update --no-cache make git openssh-client g++ cmake ninja python3 wget
+# Install build tools and dependencies with a single RUN to reduce layers
+RUN apk add --update --no-cache make git openssh-client g++ cmake ninja python3 wget ccache
 
 WORKDIR /usr/src/app
 
-RUN wget https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp
-RUN wget https://raw.githubusercontent.com/nlohmann/fifo_map/master/src/fifo_map.hpp
+# Download dependencies to the correct location
+RUN wget -O json.hpp https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp && \
+    wget -O fifo_map.hpp https://raw.githubusercontent.com/nlohmann/fifo_map/master/src/fifo_map.hpp
 
+# Add check directory and Makefile
 ADD check ./check
-RUN g++ -std=c++20 check/checker.hpp
-
 ADD Makefile .
 
 EXPOSE 8000

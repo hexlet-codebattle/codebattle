@@ -1,39 +1,39 @@
 package solution
 
-import kotlin.collections.*
-import java.io.*
-import java.util.*
-import com.google.gson.Gson;
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+import java.util.ArrayList
+import com.google.gson.Gson
 
 fun main(args: Array<String>) {
-  var oldOut_: PrintStream = System.out
-  var executionResults_: ArrayList<AssertResult> = ArrayList<AssertResult>()
+  var oldOut: PrintStream = System.out
+  var executionResults: ArrayList<AssertResult> = ArrayList()
 
   try {
-    var baos_: ByteArrayOutputStream = ByteArrayOutputStream()
-    var newOut_: PrintStream = PrintStream(baos_)
-    System.setOut(newOut_)
+    var baos: ByteArrayOutputStream = ByteArrayOutputStream()
+    var newOut: PrintStream = PrintStream(baos)
+    System.setOut(newOut)
 
-    var start_: Long
-    var executionTime_: Double
-    var output_: String
-    var time_: String
+    var start: Long
+    var executionTime: Double
+    var output: String
+    var time: String
 
     <%= for %{arguments: arguments, index: i} <- checks do %>
       <%= for %{defining: defining, value: value} <- arguments.info do %>
     var <%= defining %> = <%= value %>;
       <% end %>
-    start_ = System.nanoTime()
-    var result<%= i %>_: Any = solution(<%= arguments.expression %>)
-    executionTime_ = (System.nanoTime() - start_) / 1_000_000_000.0
-    time_ = String.format("%.7f", executionTime_)
-    output_ = getOutputAndResetIO(baos_)
-    executionResults_.add(getResultMessage(result<%= i %>_, output_, time_))
+    start = System.nanoTime()
+    var result<%= i %>: Any = solution(<%= arguments.expression %>)
+    executionTime = (System.nanoTime() - start) / 1_000_000_000.0
+    time = String.format("%.7f", executionTime)
+    output = getOutputAndResetIO(baos)
+    executionResults.add(getResultMessage(result<%= i %>, output, time))
     <% end %>
-    System.setOut(oldOut_)
-    printResults(executionResults_)
+    System.setOut(oldOut)
+    printResults(executionResults)
   } catch (e: Exception) {
-    System.setOut(oldOut_)
+    System.setOut(oldOut)
     var errMessage: ErrorMessage = getErrorMessage(e.toString())
     println(errMessage);
   }
@@ -47,7 +47,7 @@ fun getOutputAndResetIO(baos: ByteArrayOutputStream): String {
 }
 
 fun getResultMessage(result: Any, output: String, executionTime: String): AssertResult {
- return AssertResult(result, output, executionTime)
+  return AssertResult(result, output, executionTime)
 }
 
 fun getErrorMessage(message: String): ErrorMessage {
@@ -55,7 +55,7 @@ fun getErrorMessage(message: String): ErrorMessage {
 }
 
 private fun printResults(executionResults: List<AssertResult>) {
-    executionResults.forEach { message -> println(message) }
+  executionResults.forEach { message -> println(message) }
 }
 
 data class AssertResult(val value: Any?, val output: String, val time: String) {

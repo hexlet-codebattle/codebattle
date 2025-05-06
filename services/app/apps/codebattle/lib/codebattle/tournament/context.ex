@@ -1,3 +1,4 @@
+# credo:disable-for-this-file
 defmodule Codebattle.Tournament.Context do
   @moduledoc false
   import Ecto.Query

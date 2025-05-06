@@ -76,13 +76,15 @@ defmodule Runner.SolutionGenerator do
 
   defp add_return_statement(
          binding,
-         %{return_template: return_template} = meta,
+         meta,
          output_signature
-       )
-       when is_binary(return_template) do
+       ) do
     value = get_default_value(meta.default_values, output_signature.type)
-    return_statement = EEx.eval_string(return_template, default_value: value)
-    Map.put(binding, :return_statement, return_statement)
+    # return_statement = EEx.eval_string(return_template, default_value: value)
+
+    binding
+    # |> Map.put(:return_statement, return_statement)
+    |> Map.put(:default_value, value)
   end
 
   defp add_return_statement(binding, _meta, _), do: binding

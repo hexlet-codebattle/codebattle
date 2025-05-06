@@ -108,23 +108,16 @@ defmodule Runner.Executor do
       hostname = System.get_env("HOSTNAME", "unknown")
       Logger.info("Start docker execution: #{inspect(cmd_opts)}")
 
-      {execution_time, result} =
-        :timer.tc(fn -> Porcelain.exec(cmd, cmd_opts, err: :string) end)
+      {execution_time, {output, status}} =
+        :timer.tc(fn ->
+          System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        end)
 
       Logger.error(
         "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
       )
 
-      case result do
-        %Porcelain.Result{status: status, out: out, err: err} ->
-          Logger.debug("Execution status: #{status}")
-          Logger.debug("Execution output: #{out}")
-          Logger.debug("Execution error: #{err}")
-          {out, err, status}
-
-        error ->
-          {"", inspect(error), 2}
-      end
+      {output, "", status}
     end
   end
 

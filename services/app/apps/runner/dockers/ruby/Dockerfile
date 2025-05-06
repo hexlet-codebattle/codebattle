@@ -1,6 +1,6 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM ruby:3.3.0-alpine
+FROM ruby:3.4.3-alpine
 
 RUN apk add --update --no-cache make
 

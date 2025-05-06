@@ -1,6 +1,6 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM python:3.12.2-alpine
+FROM python:3.13.3-alpine
 
 RUN apk add --update --no-cache make
 

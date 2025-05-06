@@ -1,6 +1,6 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM rust:1.76.0-alpine3.18
+FROM rust:1.86.0-alpine3.21
 
 RUN apk add --update --no-cache make libc-dev
 

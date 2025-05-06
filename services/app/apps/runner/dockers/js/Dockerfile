@@ -1,15 +1,15 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM node:20.11.1-alpine
+FROM node:22.15.0-alpine
 
 RUN apk add --update --no-cache make
 
 ADD package.json .
-ADD package-lock.json .
+# package-lock.json is not required for the build
 
 RUN npm install
 
-ENV NODE_PATH /usr/local/lib/node_modules/
+ENV NODE_PATH=/usr/local/lib/node_modules/
 
 WORKDIR /usr/src/app
 

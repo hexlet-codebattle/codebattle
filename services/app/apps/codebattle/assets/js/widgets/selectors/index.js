@@ -44,7 +44,7 @@ export const userIsGamePlayerSelector = state => {
   const players = gamePlayersSelector(state);
   const currentUserId = currentUserIdSelector(state);
 
-  return players?.some(item => item.id === currentUserId);
+  return Object.values(players || {}).some(item => item.id === currentUserId);
 };
 
 export const singleBattlePlayerSelector = state => {

@@ -1,9 +1,13 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM alpine:3.19
+FROM alpine:3.21
 
 RUN echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
-RUN apk add --update --no-cache make dart@edge ca-certificates curl
+RUN echo "@edgecommunity http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN echo "@edgemain http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+RUN apk add --update --no-cache make ca-certificates curl \
+    icu-libs@edgemain icu-data-full@edgecommunity \
+    dart@edge
 
 WORKDIR /usr/src/app
 

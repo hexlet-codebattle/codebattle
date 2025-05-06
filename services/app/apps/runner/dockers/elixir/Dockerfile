@@ -1,6 +1,6 @@
 FROM codebattle/runner-rs:latest AS runner
 
-FROM elixir:1.18.2-alpine
+FROM elixir:1.18.3-alpine
 
 ENV ERL_MAX_PORTS 1024
 

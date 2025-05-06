@@ -3,10 +3,6 @@
 
 using namespace std;
 
-template<class K, class V, class dummy_compare, class A>
-using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
-using json = nlohmann::basic_json<fifo_map>;
-
 template <typename T1, typename T2>
 json BuildAssertMessage(string status, T1 result, T2 expected, string output, string args, double executionTime) {
   json j;
@@ -63,9 +59,9 @@ int main() {
 
       int expected1 = 2;
 
-      auto start1_ = std::chrono::system_clock::now();
+      auto start1_ = std::chrono::high_resolution_clock::now();
       auto result1_ = solution(a1, b1);
-      auto executionTime1_ = (std::chrono::system_clock::now() - start1_).count();
+      auto executionTime1_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start1_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result1_, expected1, output_, "1, 1", executionTime1_, finalResults_, success_);
@@ -77,9 +73,9 @@ int main() {
 
       int expected2 = 4;
 
-      auto start2_ = std::chrono::system_clock::now();
+      auto start2_ = std::chrono::high_resolution_clock::now();
       auto result2_ = solution(a2, b2);
-      auto executionTime2_ = (std::chrono::system_clock::now() - start2_).count();
+      auto executionTime2_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start2_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result2_, expected2, output_, "2, 2", executionTime2_, finalResults_, success_);
@@ -91,9 +87,9 @@ int main() {
 
       int expected3 = 3;
 
-      auto start3_ = std::chrono::system_clock::now();
+      auto start3_ = std::chrono::high_resolution_clock::now();
       auto result3_ = solution(a3, b3);
-      auto executionTime3_ = (std::chrono::system_clock::now() - start3_).count();
+      auto executionTime3_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start3_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result3_, expected3, output_, "1, 2", executionTime3_, finalResults_, success_);
@@ -105,9 +101,9 @@ int main() {
 
       int expected4 = 5;
 
-      auto start4_ = std::chrono::system_clock::now();
+      auto start4_ = std::chrono::high_resolution_clock::now();
       auto result4_ = solution(a4, b4);
-      auto executionTime4_ = (std::chrono::system_clock::now() - start4_).count();
+      auto executionTime4_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start4_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result4_, expected4, output_, "3, 2", executionTime4_, finalResults_, success_);
@@ -119,9 +115,9 @@ int main() {
 
       int expected5 = 6;
 
-      auto start5_ = std::chrono::system_clock::now();
+      auto start5_ = std::chrono::high_resolution_clock::now();
       auto result5_ = solution(a5, b5);
-      auto executionTime5_ = (std::chrono::system_clock::now() - start5_).count();
+      auto executionTime5_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start5_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result5_, expected5, output_, "5, 1", executionTime5_, finalResults_, success_);
@@ -133,9 +129,9 @@ int main() {
 
       int expected6 = 2;
 
-      auto start6_ = std::chrono::system_clock::now();
+      auto start6_ = std::chrono::high_resolution_clock::now();
       auto result6_ = solution(a6, b6);
-      auto executionTime6_ = (std::chrono::system_clock::now() - start6_).count();
+      auto executionTime6_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start6_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result6_, expected6, output_, "1, 1", executionTime6_, finalResults_, success_);
@@ -147,9 +143,9 @@ int main() {
 
       int expected7 = 4;
 
-      auto start7_ = std::chrono::system_clock::now();
+      auto start7_ = std::chrono::high_resolution_clock::now();
       auto result7_ = solution(a7, b7);
-      auto executionTime7_ = (std::chrono::system_clock::now() - start7_).count();
+      auto executionTime7_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start7_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result7_, expected7, output_, "2, 2", executionTime7_, finalResults_, success_);
@@ -161,9 +157,9 @@ int main() {
 
       int expected8 = 3;
 
-      auto start8_ = std::chrono::system_clock::now();
+      auto start8_ = std::chrono::high_resolution_clock::now();
       auto result8_ = solution(a8, b8);
-      auto executionTime8_ = (std::chrono::system_clock::now() - start8_).count();
+      auto executionTime8_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start8_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result8_, expected8, output_, "1, 2", executionTime8_, finalResults_, success_);
@@ -175,9 +171,9 @@ int main() {
 
       int expected9 = 5;
 
-      auto start9_ = std::chrono::system_clock::now();
+      auto start9_ = std::chrono::high_resolution_clock::now();
       auto result9_ = solution(a9, b9);
-      auto executionTime9_ = (std::chrono::system_clock::now() - start9_).count();
+      auto executionTime9_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start9_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result9_, expected9, output_, "3, 2", executionTime9_, finalResults_, success_);
@@ -189,9 +185,9 @@ int main() {
 
       int expected10 = 6;
 
-      auto start10_ = std::chrono::system_clock::now();
+      auto start10_ = std::chrono::high_resolution_clock::now();
       auto result10_ = solution(a10, b10);
-      auto executionTime10_ = (std::chrono::system_clock::now() - start10_).count();
+      auto executionTime10_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start10_).count();
       output_ = buffer_.str();
       buffer_.str("");
       success_ = AssertSolution(result10_, expected10, output_, "5, 1", executionTime10_, finalResults_, success_);

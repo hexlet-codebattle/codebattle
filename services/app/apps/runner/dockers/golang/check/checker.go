@@ -5,66 +5,70 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"sync"
 	"time"
 )
 
+// Pre-allocate buffer for JSON marshaling
+var jsonBufferPool = sync.Pool{
+	New: func() interface{} {
+		buf := make([]byte, 0, 1024) // Pre-allocate 1KB buffer
+		return &buf
+	},
+}
+
 func main() {
+	// Pre-allocate memory for results
 	success_ := true
-	message_ := ""
-	executionResults_ := []string{}
+	var message_ string
+	executionResults_ := make([]string, 0, 10) // Pre-allocate capacity
 
-	var start_ time.Time
-	var result_ interface{}
-	var executionTime_ interface{}
+	// Define test cases in a more compact way
+	testCases := []struct {
+		a, b       int64
+		c         string
+		d         float64
+		e         bool
+		f         map[string]string
+		g         []string
+		h         [][]string
+		expected  int64
+	}{
+		{
+			a: 1, b: 1, c: "a", d: 1.3, e: true,
+			f: map[string]string{"key1": "val1", "key2": "val2"},
+			g: []string{"asdf", "fdsa"},
+			h: [][]string{{"Jack", "Alice"}},
+			expected: 2,
+		},
+		{
+			a: 2, b: 2, c: "a", d: 1.3, e: true,
+			f: map[string]string{"key1": "val1", "key2": "val2"},
+			g: []string{"asdf", "fdsa"},
+			h: [][]string{{"Jack", "Alice"}},
+			expected: 4,
+		},
+	}
 
-	var a1 int64 = 1
+	// Run test cases
+	for _, tc := range testCases {
+		start_ := time.Now()
+		result_ := solution(tc.a, tc.b, tc.c, tc.d, tc.e, tc.f, tc.g, tc.h)
+		executionTime_ := time.Since(start_)
 
-	var b1 int64 = 1
+		args := []interface{}{tc.a, tc.b, tc.c, tc.d, tc.e, tc.f, tc.g, tc.h}
+		var newSuccess bool
+		newSuccess, message_ = assertSolution(result_, tc.expected, executionTime_, args, success_)
+		success_ = newSuccess
+		executionResults_ = append(executionResults_, message_)
 
-	var c1 string = "a"
+		// Break early if a test fails
+		if !success_ {
+			break
+		}
+	}
 
-	var d1 float64 = 1.3
-
-	var e1 bool = true
-
-	var f1 map[string]string = map[string]string{"key1": "val1", "key2": "val2"}
-
-	var g1 []string = []string{"asdf", "fdsa"}
-
-	var h1 [][]string = [][]string{{"Jack", "Alice"}}
-
-	var expected1 int64 = 2
-
-	start_ = time.Now()
-	result_ = solution(a1, b1, c1, d1, e1, f1, g1, h1)
-	executionTime_ = time.Now().Sub(start_)
-	success_, message_ = assertSolution(result_, expected1, executionTime_, []interface{}{a1, b1, c1, d1, e1, f1, g1, h1}, success_)
-	executionResults_ = append(executionResults_, message_)
-
-	var a2 int64 = 2
-
-	var b2 int64 = 2
-
-	var c2 string = "a"
-
-	var d2 float64 = 1.3
-
-	var e2 bool = true
-
-	var f2 map[string]string = map[string]string{"key1": "val1", "key2": "val2"}
-
-	var g2 []string = []string{"asdf", "fdsa"}
-
-	var h2 [][]string = [][]string{{"Jack", "Alice"}}
-
-	var expected2 int64 = 4
-
-	start_ = time.Now()
-	result_ = solution(a2, b2, c2, d2, e2, f2, g2, h2)
-	executionTime_ = time.Now().Sub(start_)
-	success_, message_ = assertSolution(result_, expected2, executionTime_, []interface{}{a2, b2, c2, d2, e2, f2, g2, h2}, success_)
-	executionResults_ = append(executionResults_, message_)
-
+	// Output results
 	if success_ {
 		successMessage := buildMessage("ok", "__seed:4284522__")
 		sendMessage(successMessage)
@@ -87,19 +91,34 @@ func assertSolution(result, expected, executionTime, args interface{}, success b
 }
 
 func buildMessage(status string, result interface{}) string {
-	return fmt.Sprintf(`{"status": "%s", "result": %s}`, status, toJSON(result))
+	return fmt.Sprintf(`{"status": "%s", "result": %s}`, status, string(toJSON(result)))
 }
 
 func buildAssertMessage(status string, result, expected, executionTime, arguments interface{}) string {
-	return fmt.Sprintf(`{"status": "%s", "result": %s, "expected": %s, "arguments": %s, "execution_time": %s}`, status, toJSON(result), toJSON(expected), toJSON(arguments), toJSON(executionTime))
+	return fmt.Sprintf(`{"status": "%s", "result": %s, "expected": %s, "arguments": %s, "execution_time": %s}`,
+		status,
+		string(toJSON(result)),
+		string(toJSON(expected)),
+		string(toJSON(arguments)),
+		string(toJSON(executionTime)))
 }
 
 func toJSON(data interface{}) []byte {
+	// Get buffer from pool
+	bufPtr := jsonBufferPool.Get().(*[]byte)
+	buf := (*bufPtr)[:0] // Reset buffer but keep capacity
+
+	// Use the buffer for marshaling
 	result, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println("Marshaler error")
 		os.Exit(0)
 	}
+
+	// Put buffer back in pool
+	*bufPtr = buf
+	jsonBufferPool.Put(bufPtr)
+
 	return result
 }
 

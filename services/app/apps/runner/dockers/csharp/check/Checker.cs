@@ -36,7 +36,7 @@ namespace app
         int expected1_ = 3;
         IList<object> arguments1_ = new List<object>(){ a1, b1 };
         output = GetOutputAndResetIO(sb);
-        success = AssertSolution(result1_, expected1_, arguments1_, output, executionTime, executionResults, success);
+        success = AssertSolution(result1_, expected1_, arguments1_, output, executionTime, executionResults, compareLogic, success);
 
         int a2 = 3;
         int b2 = 5;
@@ -46,7 +46,7 @@ namespace app
         int expected2_ = 8;
         IList<object> arguments2_ = new List<object>(){ a2, b2 };
         output = GetOutputAndResetIO(sb);
-        success = AssertSolution(result2_, expected2_, arguments2_, output, executionTime, executionResults, success);
+        success = AssertSolution(result2_, expected2_, arguments2_, output, executionTime, executionResults, compareLogic, success);
 
         Console.SetOut(oldOut);
         if (success) {
@@ -104,11 +104,11 @@ namespace app
 
     class AssertResult
     {
-      public string status { get; set; }
-      public object result { get; set; }
-      public object expected { get; set; }
-      public IList<object> arguments { get; set; }
-      public string output { get; set; }
+      public string status { get; set; } = "";
+      public object result { get; set; } = null!;
+      public object expected { get; set; } = null!;
+      public IList<object> arguments { get; set; } = new List<object>();
+      public string output { get; set; } = "";
       public double executionTime { get; set; }
 
       public override string ToString()
@@ -119,8 +119,8 @@ namespace app
 
     class StatusMessage
     {
-      public string status { get; set; }
-      public string result { get; set; }
+      public string status { get; set; } = "";
+      public string result { get; set; } = "";
 
       public override string ToString()
       {
