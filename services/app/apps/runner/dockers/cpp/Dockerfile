@@ -35,12 +35,10 @@ ADD check ./check
 ADD Makefile .
 ADD precompiled.hpp .
 
-# Precompile the header and checker.cpp file
+# Precompile only the header file
 RUN ccache -z && \
     # Precompile the header file
     ccache g++ -std=c++23 -O0 -x c++-header -o precompiled.hpp.gch precompiled.hpp && \
-    # Precompile the checker.cpp file
-    ccache g++ -std=c++23 -O0 -include precompiled.hpp -c check/checker.cpp -o check/checker.o && \
     # Show cache statistics
     ccache -s
 

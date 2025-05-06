@@ -20,19 +20,17 @@ SOLUTION_OBJ = $(CHECK_DIR)/solution.o
 # Default target
 test: test-runtime
 
-# Ultra-fast runtime compilation using precompiled checker.o
-test-runtime: $(CHECK_DIR)/solution.cpp
-	# Compile only the solution file with precompiled bits/stdc++.h
-	$(CXX) $(CXXFLAGS) -include $(SYS_PCH) -c $(CHECK_DIR)/solution.cpp -o $(SOLUTION_OBJ)
-	# Link with the precompiled checker.o
-	$(CXX) $(CXXFLAGS) -o checker $(CHECKER_OBJ) $(SOLUTION_OBJ) -lm && ./checker
+# Fast runtime compilation using precompiled header
+test-runtime: $(CHECK_DIR)/solution.cpp $(CHECK_DIR)/checker.cpp
+	# Compile checker.cpp with precompiled bits/stdc++.h (it will include solution.cpp)
+	$(CXX) $(CXXFLAGS) -include $(SYS_PCH) -o checker $(CHECK_DIR)/checker.cpp -lm && ./checker
 
 # Test compile only
-test-compile: $(CHECK_DIR)/solution.cpp
-	$(CXX) $(CXXFLAGS) -include $(SYS_PCH) -c $(CHECK_DIR)/solution.cpp -o $(SOLUTION_OBJ)
+test-compile: $(CHECK_DIR)/solution.cpp $(CHECK_DIR)/checker.cpp
+	$(CXX) $(CXXFLAGS) -include $(SYS_PCH) -c $(CHECK_DIR)/checker.cpp -o $(CHECKER_OBJ)
 
 # Clean target
 clean:
-	rm -f checker $(SOLUTION_OBJ)
+	rm -f checker $(CHECKER_OBJ)
 
 .PHONY: test test-runtime test-compile clean

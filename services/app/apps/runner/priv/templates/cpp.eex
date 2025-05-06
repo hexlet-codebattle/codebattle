@@ -1,8 +1,5 @@
 #include "../precompiled.hpp"
-
-// Forward declare the solution function instead of including solution.cpp
-// This allows us to compile solution.cpp separately and link it later
-int solution(<%= arguments_expression %>);
+#include "solution.cpp"
 
 using namespace std;
 
@@ -19,22 +16,19 @@ int main() {
         <%= defining %> = <%= value %>;
       <% end %>
 
-      int expected<%= i %> = <%= expected %>;
-
       auto start<%= i %>_ = std::chrono::high_resolution_clock::now();
       auto result<%= i %>_ = solution(<%= arguments.expression %>);
-      auto executionTime<%= i %>_ = std::chrono::duration<double>(std::chrono::high_resolution_clock::now() - start<%= i %>_).count();
+      std::chrono::duration<double> executionTime<%= i %>_ = std::chrono::high_resolution_clock::now() - start<%= i %>_;
+      char buffer<%= i %>_[20];
+      std::sprintf(buffer<%= i %>_, "%.7f", executionTime<%= i %>_.count());
+      auto time<%= i %>_ = std::string(buffer<%= i %>_);
       output_ = buffer_.str();
       buffer_.str("");
-      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, "<%= arguments.expression %>", executionTime<%= i %>_, finalResults_, success_);
+      finalResults_.push_back(BuildResultMessage("result", result<%= i %>_, output_,  time<%= i %>_));
     <% end %>
 
-    if (success_) {
-      json message = BuildMessage("ok", "__seed:<%= seed %>__");
-      finalResults_.push_back(message);
-    }
   } catch (const std::exception& e) {
-    json message = BuildMessage("error", e.what());
+    json message = BuildErrorMessage("error", e.what());
     finalResults_.push_back(message);
   }
 

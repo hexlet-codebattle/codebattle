@@ -41,12 +41,12 @@
     <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
 
-      <%= if @ticker_text do %>
-        <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
-          <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
-          <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
-        </div>
-      <% end %>
+    <%= if @ticker_text do %>
+      <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
+        <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
+        <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
+      </div>
+    <% end %>
     <link
       phx-track-static
       rel="stylesheet"
@@ -61,9 +61,8 @@
     </script>
   </head>
   <body>
-
     <div class="d-flex flex-column min-vh-100">
-            <%= if assigns[:show_header] do %>
+      <%= if assigns[:show_header] do %>
         <div class="bg-dark">
           <div class="container-lg">
             <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
@@ -142,7 +141,7 @@
                             <%= gettext("Sign Out") %>
                           <% end %>
                         </div>
-                        </a>
+                      </a>
                     </li>
                   </ul>
                 </div>
@@ -169,9 +168,9 @@
           </div>
         </div>
       <% end %>
-      
-        <%= @inner_content %>
-      </div>
+
+      <%= @inner_content %>
+    </div>
     <%= render_gon_script(@conn) %>
   </body>
 </html>
