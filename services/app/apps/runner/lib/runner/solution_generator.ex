@@ -16,7 +16,7 @@ defmodule Runner.SolutionGenerator do
       |> add_arguments(lang_meta, task.input_signature)
       |> add_typespec(lang_meta, task.input_signature)
       |> add_expected(lang_meta, task.output_signature)
-      |> add_return_statement(lang_meta, task.output_signature)
+      |> add_default_value(lang_meta, task.output_signature)
       |> Map.to_list()
 
     lang_meta.solution_template
@@ -74,20 +74,15 @@ defmodule Runner.SolutionGenerator do
 
   defp add_expected(binding, _meta, _output_signature), do: binding
 
-  defp add_return_statement(
+  defp add_default_value(
          binding,
          meta,
          output_signature
        ) do
     value = get_default_value(meta.default_values, output_signature.type)
-    # return_statement = EEx.eval_string(return_template, default_value: value)
 
-    binding
-    # |> Map.put(:return_statement, return_statement)
-    |> Map.put(:default_value, value)
+    Map.put(binding, :default_value, value)
   end
-
-  defp add_return_statement(binding, _meta, _), do: binding
 
   defp get_default_value(default_values, %{name: name, nested: nested}) do
     default = Map.get(default_values, name)

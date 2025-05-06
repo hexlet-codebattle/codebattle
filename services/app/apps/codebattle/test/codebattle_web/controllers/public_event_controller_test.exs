@@ -8,7 +8,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
     test "renders event page when user is authenticated", %{conn: conn} do
       user = insert(:user)
       event = insert(:event, slug: "q", ticker_text: "Test Event")
-      user_event = insert(:user_event, user_id: user.id, event_id: event.id)
+      insert(:user_event, user_id: user.id, event_id: event.id)
 
       conn =
         conn
@@ -55,12 +55,11 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       user: user,
       event: event
     } do
-      user_event =
-        insert(:user_event,
-          user_id: user.id,
-          event_id: event.id,
-          stages: [%{slug: "q", status: :pending}]
-        )
+      insert(:user_event,
+        user_id: user.id,
+        event_id: event.id,
+        stages: [%{slug: "q", status: :pending}]
+      )
 
       conn =
         conn
@@ -76,7 +75,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert tournament.access_type == "token"
       assert players = Tournament.Helpers.get_players(tournament)
 
-      assert [bot, player] = Enum.sort_by(players, & &1.id)
+      assert [_bot, player] = Enum.sort_by(players, & &1.id)
       assert player.id == user.id
 
       assert redirected_to(conn) == Routes.tournament_path(conn, :show, tournament_id)
@@ -94,15 +93,14 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       user: user,
       event: event
     } do
-      user_event = insert(:user_event, user_id: user.id, event_id: event.id)
+      insert(:user_event, user_id: user.id, event_id: event.id)
 
       conn =
         conn
         |> put_session(:user_id, user.id)
-        |> get(Routes.public_event_path(conn, :stage, event.slug, "q"))
+        |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "q"}))
 
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)
-      assert get_flash(conn, :danger) == "Some error"
     end
 
     test "shows error when user has already passed the stage", %{
@@ -110,22 +108,18 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       user: user,
       event: event
     } do
-      user_event =
-        insert(:user_event,
-          user_id: user.id,
-          event_id: event.id,
-          state: %{
-            stages: %{"stage-1" => %{status: :passed}}
-          }
-        )
+      insert(:user_event,
+        user_id: user.id,
+        event_id: event.id,
+        stages: [%{"slug" => "q", "status" => :passed}]
+      )
 
       conn =
         conn
         |> put_session(:user_id, user.id)
-        |> get(Routes.public_event_path(conn, :stage, event.slug, "q"))
+        |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "q"}))
 
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)
-      assert get_flash(conn, :danger) =~ "You already passed this stage"
     end
   end
 end

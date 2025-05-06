@@ -2,14 +2,14 @@ FROM codebattle/runner-rs:latest AS runner
 
 FROM elixir:1.18.3-alpine
 
-ENV ERL_MAX_PORTS 1024
+ENV ERL_MAX_PORTS=1024
 
 RUN apk add --update --no-cache make
 
 RUN mix local.hex --force
 RUN mix local.rebar --force
 
-ENV MIX_ENV test
+ENV MIX_ENV=test
 
 WORKDIR /usr/src/app
 
@@ -20,7 +20,7 @@ RUN mix deps.get
 ADD check check
 ADD checker.ex checker.ex
 
-RUN mix compile
+RUN ERL_FLAGS="+JMsingle true" mix compile
 RUN mix run.checker
 
 ADD Makefile .

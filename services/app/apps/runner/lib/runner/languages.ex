@@ -4,32 +4,20 @@ defmodule Runner.Languages do
   alias Runner.LanguageMeta
 
   @default_white_list_lang_slugs [
-    # +
     "clojure",
     "cpp",
-    # +
     "csharp",
-    # +
     "dart",
     "elixir",
     "golang",
-    # +
     "haskell",
-    # +
     "java",
-    # +
     "js",
-    # +
     "kotlin",
-    # +
     "php",
-    # +
     "python",
-    # +
     "ruby",
-    # +
     "rust",
-    # +
     "ts"
   ]
 

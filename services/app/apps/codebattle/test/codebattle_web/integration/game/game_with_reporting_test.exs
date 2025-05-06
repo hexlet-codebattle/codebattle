@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Integration.Game.StandardGameTest do
+defmodule CodebattleWeb.Integration.Game.GameWithReportingTest do
   use Codebattle.IntegrationCase
 
   setup %{conn: conn} do

@@ -7,7 +7,7 @@ defmodule Solution do
     res
   rescue
     e ->
-      IO.puts("don't do it" <> "  " <> e.message)
+      IO.puts("don't do it" <> "  " <> Exception.message(e))
       raise "AAAAAAAAA"
   end
 end

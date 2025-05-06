@@ -16,11 +16,11 @@ defmodule Runner.SolutionGeneratorTest do
   using namespace std;
 
   vector<string> solution(int a, string text, double b, bool c, map<string,string> nested_hash_of_string, vector<string> nested_array_of_string, vector<vector<string>> nested_array_of_array_of_strings) {
-    return {"value"};
+    vector<string> ans = {"value"};
+    return ans;
   }
   // use stdout to debug
   """
-
   @csharp_expected """
   using System;
   using System.Collections.Generic;
@@ -31,7 +31,8 @@ defmodule Runner.SolutionGeneratorTest do
     {
       public List<string> solution(int a, string text, double b, bool c, Dictionary<string, string> nested_hash_of_string, List<string> nested_array_of_string, List<List<string>> nested_array_of_array_of_strings)
       {
-
+        List<string> ans = new List<"value">();
+        return ans;
       }
     }
   }
@@ -40,7 +41,8 @@ defmodule Runner.SolutionGeneratorTest do
 
   @dart_expected """
   List<String> solution(int a, String text, double b, bool c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
-
+    List<String> ans = ["value"];
+    return ans;
   }
   // use stdout to debug
   """
@@ -48,7 +50,8 @@ defmodule Runner.SolutionGeneratorTest do
   @elixir_expected """
   defmodule Solution do
     def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) do
-      ["value"]
+      ans = ["value"]
+      ans
     end
   end
   # use stdout to debug
@@ -59,7 +62,8 @@ defmodule Runner.SolutionGeneratorTest do
   // import "fmt"
 
   func solution(a int64, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
-
+     []string ans := []"value"{}
+    return ans
   }
   // use stdout to debug
   """
@@ -109,7 +113,8 @@ defmodule Runner.SolutionGeneratorTest do
 
   public class Solution {
     public List<String> solution(Integer a, String text, Double b, Boolean c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
-
+      List<String> ans = List.of("value");
+      return ans;
     }
   }
   // use stdout to debug
@@ -120,7 +125,9 @@ defmodule Runner.SolutionGeneratorTest do
   const R = require("rambda");
 
   const solution = (a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) => {
-    return ["value"];
+    let ans = ["value"];
+
+    return ans;
   };
   // use stdout to debug
 
@@ -133,7 +140,8 @@ defmodule Runner.SolutionGeneratorTest do
   import kotlin.collections.*
 
   fun solution(a: Int, text: String, b: Double, c: Boolean, nested_hash_of_string: Map<String, String>, nested_array_of_string: List<String>, nested_array_of_array_of_strings: List<List<String>>): List<String> {
-
+    val ans:  List<String> = listOf("value")
+    return ans
   }
   // use stdout to debug
   """
@@ -142,7 +150,8 @@ defmodule Runner.SolutionGeneratorTest do
   <?php
 
   function solution(int $a, string $text, float $b, bool $c, array $nested_hash_of_string, array $nested_array_of_string, array $nested_array_of_array_of_strings) {
-    return ["value"];
+    $ans = ["value"];
+    return $ans;
   }
   // use stdout to debug
   """
@@ -151,13 +160,15 @@ defmodule Runner.SolutionGeneratorTest do
   from typing import List, Dict
 
   def solution(a: int, text: str, b: float, c: bool, nested_hash_of_string: Dict[str, str], nested_array_of_string: List[str], nested_array_of_array_of_strings: List[List[str]]) -> List[str]:
-    return ["value"];
+    ans = ["value"]
+    return ans
   # use stdout to debug
   """
 
   @ruby_expected """
   def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)
-    ["value"]
+    ans = ["value"]
+    return ans
   end
   # use stdout to debug
   """
@@ -166,7 +177,8 @@ defmodule Runner.SolutionGeneratorTest do
   use std::collections::HashMap;
 
   pub fn solution(a: i64, text: String, b: f64, c: bool, nested_hash_of_string: HashMap<String, String>, nested_array_of_string: Vec<String>, nested_array_of_array_of_strings: Vec<Vec<String>>) -> Vec<String> {
-
+    let mut ans: Vec<String> = vec![String::from("value")];
+    return ans;
   }
   // use stdout to debug
   """
@@ -175,7 +187,8 @@ defmodule Runner.SolutionGeneratorTest do
   import * as R from "rambda";
 
   function solution(a: number, text: string, b: number, c: boolean, nested_hash_of_string: any, nested_array_of_string: Array<string>, nested_array_of_array_of_strings: Array<Array<string>>): Array<string> {
-
+    let ans = ["value"];
+    return ans;
   };
 
   // use stdout to debug

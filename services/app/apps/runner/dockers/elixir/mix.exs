@@ -29,7 +29,7 @@ defmodule Checker.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.4.0"}
+      {:jason, "~> 1.4.4"}
       # Add other dependencies as needed
     ]
   end

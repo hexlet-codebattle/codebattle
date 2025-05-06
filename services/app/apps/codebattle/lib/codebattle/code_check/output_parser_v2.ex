@@ -55,6 +55,10 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
         end)
         |> Enum.filter(&Function.identity/1)
         |> case do
+          [values = [_value | _]] -> values
+          values -> values
+        end
+        |> case do
           [] ->
             [
               %{
