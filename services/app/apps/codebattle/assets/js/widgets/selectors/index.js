@@ -548,8 +548,8 @@ export const eventCommonLeaderboardSelector = state => state.event.commonLeaderb
 export const eventUserSelector = state => state.event.userEvent;
 
 export const reportsSelector = createDraftSafeSelector(
-  state => state.report.list,
-  state => state.report.showOnlyPendingReports,
+  state => state.reports.list,
+  state => state.reports.showOnlyPendingReports,
   ([list, showOnlyPendingReports]) => {
     const sortedList = [...list].sort((r1, r2) => {
       if (r1.state === 'pending' && r2.state === 'pending') {
