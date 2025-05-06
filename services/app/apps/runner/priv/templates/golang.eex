@@ -36,6 +36,7 @@ func main() {
     reader_ *os.File
     writer_ *os.File
     err_    error
+    elapsed_ time.Duration
 
     stdout_ = os.Stdout
     encoder_ = json.NewEncoder(os.Stdout)
@@ -62,7 +63,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(<%= arguments.expression %>)
-    elapsed_ := time.Since(start_)
+    elapsed_ = time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -70,7 +71,8 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      outBytes_, err_ := io.ReadAll(reader_)
+      var outBytes_ []byte
+      outBytes_, err_ = io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }

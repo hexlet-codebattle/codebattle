@@ -1,9 +1,11 @@
-#include <bits/stdc++.h>
+  #include <bits/stdc++.h>
 
 using namespace std;
 
 int solution(int a, int b) {
-  // Use stdout for debugging
-  // cout << "Debug: a=" << a << ", b=" << b << endl;
-  return a + b;
+    int ans;
+    ans = a + b;
+    return ans;
 }
+
+// use stdout to debug

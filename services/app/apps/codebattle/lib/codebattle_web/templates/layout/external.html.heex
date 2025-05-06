@@ -40,6 +40,13 @@
     <meta name="csrf-token" content={csrf_token_value()} />
     <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+
+      <%= if @ticker_text do %>
+        <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
+          <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
+          <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
+        </div>
+      <% end %>
     <link
       phx-track-static
       rel="stylesheet"
@@ -54,7 +61,117 @@
     </script>
   </head>
   <body>
-    <%= @inner_content %>
+
+    <div class="d-flex flex-column min-vh-100">
+            <%= if assigns[:show_header] do %>
+        <div class="bg-dark">
+          <div class="container-lg">
+            <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
+              <a class="navbar-brand d-flex align-items-end" href="/">
+                <%= if collab_logo(@current_user) do %>
+                  <img
+                    alt="collab icon"
+                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    style="height:40px"
+                    src={collab_logo(@current_user)}
+                  />
+                <% else %>
+                  <img
+                    alt="Logo"
+                    class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
+                    src="/assets/images/logo.svg"
+                  />
+                <% end %>
+                <%= if collab_logo_minor(@current_user) do %>
+                  <img
+                    alt="collab icon"
+                    class="my-auto mx-2 pl-2 pl-md-0 pl-lg-0"
+                    style="height:40px"
+                    src={collab_logo_minor(@current_user)}
+                  />
+                <% end %>
+                <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
+                  <span class="font-weight-bold">
+                    <%= Application.get_env(:codebattle, :logo_title) %>
+                  </span>
+                  <span class="header-txt">
+                    <%= Application.get_env(:codebattle, :app_subtitle) %>
+                  </span>
+                </div>
+              </a>
+              <%= unless @current_user.is_guest do %>
+                <button
+                  aria-controls="navbarResponsive"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                  class="navbar-toggler position-relative"
+                  data-target="#navbarResponsive"
+                  data-toggle="collapse"
+                  type="button"
+                >
+                  <span class="navbar-toggler-icon"></span>
+                  <span id="invites-counter-id"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                  <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                      <a
+                        aria-expanded="false"
+                        aria-haspopup="true"
+                        class="nav-link noborder d-flex justify-content-center px-0"
+                        data-toggle="dropdown"
+                        href="#"
+                      >
+                        <div class="d-flex flex-column mr-2">
+                          <h5 class="text-white text-right mb-0 text-break">
+                            <%= @current_user.name %>
+                          </h5>
+                        </div>
+
+                        <img
+                          alt="avatar"
+                          class="attachment ml-1"
+                          src={avatar_url(@current_user)}
+                          style="width:46px; height:46px"
+                        />
+
+                        <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                            <span class="fas fa-sign-out-alt mr-2"></span>
+                            <%= gettext("Sign Out") %>
+                          <% end %>
+                        </div>
+                        </a>
+                    </li>
+                  </ul>
+                </div>
+              <% else %>
+                <ul class="navbar-nav">
+                  <li class="nav-item mx-1">
+                    <a
+                      class="mr-2"
+                      href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
+                    >
+                      <button class="btn btn-outline-success rounded-lg">
+                        <%= gettext("Sign in") %>
+                      </button>
+                    </a>
+                    <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+                      <button class="btn btn-outline-success rounded-lg">
+                        <%= gettext("Sign up") %>
+                      </button>
+                    </a>
+                  </li>
+                </ul>
+              <% end %>
+            </nav>
+          </div>
+        </div>
+      <% end %>
+      
+        <%= @inner_content %>
+      </div>
     <%= render_gon_script(@conn) %>
   </body>
 </html>

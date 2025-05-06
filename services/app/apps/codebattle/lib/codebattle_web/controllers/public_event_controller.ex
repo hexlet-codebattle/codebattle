@@ -20,13 +20,14 @@ defmodule CodebattleWeb.PublicEventController do
 
     conn
     |> assign(:ticker_text, event.ticker_text)
+    |> assign(:show_header, true)
     |> put_gon(
       event: %{
         event: event,
         user_event: user_event
       }
     )
-    |> render("show.html")
+    |> render("show.html", layout: {CodebattleWeb.LayoutView, :external})
   end
 
   def stage(conn, %{"slug" => slug, "stage_slug" => stage_slug}) do

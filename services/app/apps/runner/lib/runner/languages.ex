@@ -208,7 +208,7 @@ defmodule Runner.Languages do
       name: "C++",
       slug: "cpp",
       output_version: 2,
-      version: "g++std=c++23",
+      version: "g++23",
       check_dir: "check",
       container_run_timeout: "20s",
       solution_file_name: "solution.cpp",
@@ -220,7 +220,8 @@ defmodule Runner.Languages do
       using namespace std;
 
       <%= expected %> solution(<%= arguments %>) {
-        <%= expected %> ans = <%= default_value %>;
+        <%= expected %> ans;
+        ans = <%= default_value %>;
         return ans;
       }
       // <%= comment %>
@@ -435,8 +436,9 @@ defmodule Runner.Languages do
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
-        <%= expected %> ans := <%= default_value %>
-        return ans
+       var ans <%= expected %>
+       ans = <%= default_value %>
+       return ans
       }
       // <%= comment %>
       """,

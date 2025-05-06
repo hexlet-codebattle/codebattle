@@ -36,7 +36,6 @@ func main() {
     reader_ *os.File
     writer_ *os.File
     err_    error
-    elapsed_ time.Duration
 
     stdout_ = os.Stdout
     encoder_ = json.NewEncoder(os.Stdout)
@@ -65,7 +64,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a1, b1)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -73,8 +72,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -101,7 +99,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a2, b2)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -109,8 +107,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -137,7 +134,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a3, b3)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -145,8 +142,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -173,7 +169,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a4, b4)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -181,8 +177,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -209,7 +204,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a5, b5)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -217,8 +212,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -245,7 +239,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a6, b6)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -253,8 +247,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -281,7 +274,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a7, b7)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -289,8 +282,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -317,7 +309,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a8, b8)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -325,8 +317,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -353,7 +344,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a9, b9)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -361,8 +352,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }
@@ -389,7 +379,7 @@ func main() {
     // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(a10, b10)
-    elapsed_ = time.Since(start_)
+    elapsed_ := time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
     // Clean up pipe and capture output
@@ -397,8 +387,7 @@ func main() {
       writer_.Close()
     }
     if reader_ != nil {
-      var outBytes_ []byte
-      outBytes_, err_ = io.ReadAll(reader_)
+      outBytes_, err_ := io.ReadAll(reader_)
       if err_ == nil {
         result_.Output = string(outBytes_)
       }

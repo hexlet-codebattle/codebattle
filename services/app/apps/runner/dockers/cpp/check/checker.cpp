@@ -1,47 +1,7 @@
-#include "checker.hpp"
+#include "../precompiled.hpp"
 #include "solution.cpp"
 
 using namespace std;
-
-template <typename T1, typename T2>
-json BuildAssertMessage(string status, T1 result, T2 expected, string output, string args, double executionTime) {
-  json j;
-  j["status"] = status;
-  j["result"] = result;
-  j["expected"] = expected;
-  j["output"] = output;
-  j["arguments"] = args;
-  j["execution_time"] = executionTime;
-
-  return j;
-}
-
-template <typename T1, typename T2>
-bool AssertSolution(T1 result, T2 expected, string output, string args, double executionTime, vector<json> &finalResults, bool success) {
-  bool status = result == expected;
-  if (status == false) {
-    json message = BuildAssertMessage("failure", result, expected, output, args, executionTime);
-    finalResults.push_back(message);
-    return false;
-  }
-
-  json message = BuildAssertMessage("success", result, expected, output, args, executionTime);
-  finalResults.push_back(message);
-  return success;
-}
-
-template <typename T>
-json BuildMessage(string status, T result) {
-  json j;
-  j["status"] = status;
-  j["result"] = result;
-
-  return j;
-}
-
-void SendMessage(json j) {
-  cout << j << "\n";
-}
 
 int main() {
   std::stringstream buffer_;
