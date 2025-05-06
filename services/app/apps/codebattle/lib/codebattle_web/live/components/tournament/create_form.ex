@@ -73,6 +73,10 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
               required: true,
+              min:
+                DateTime.now!(@user_timezone)
+                |> DateTime.truncate(:second)
+                |> Timex.format!("%Y-%m-%dT%H:%M", :strftime),
               value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user_timezone), 5, :minute)
             ) %>
             <%= error_tag(f, :starts_at) %>
