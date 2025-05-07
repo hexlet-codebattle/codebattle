@@ -75,7 +75,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -88,7 +90,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -119,7 +123,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -147,7 +153,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -224,7 +232,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -237,7 +247,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -268,7 +280,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 
@@ -296,7 +310,9 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
              const R = require("rambda");
 
              const solution = (a, b) => {
-               return 0;
+               let ans = 0;
+
+               return ans;
              };
              // use stdout to debug
 

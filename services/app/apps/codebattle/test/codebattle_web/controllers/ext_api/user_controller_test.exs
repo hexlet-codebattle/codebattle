@@ -204,7 +204,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       user_event = Repo.get_by(UserEvent, user_id: user.id)
 
       assert user_event
-      assert user_event.state == %{}
+      assert user_event.stages == []
 
       conn
       |> put_req_header("x-auth-key", "x-key")
@@ -220,7 +220,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
 
       user_event = Repo.get_by(UserEvent, user_id: user.id)
 
-      assert user_event.state == %{}
+      assert user_event.stages == []
 
       Application.delete_env(:codebattle, :main_event_slug)
     end

@@ -38,7 +38,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
       Codebattle.UserEvent.create(%{
         user_id: user.id,
         event_id: event.id,
-        state: %{}
+        stages: []
       })
     end
 
