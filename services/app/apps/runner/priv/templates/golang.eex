@@ -5,17 +5,8 @@ import (
   "fmt"
   "io"
   "os"
-  "sync"
   "time"
 )
-
-// Pre-allocate buffer for JSON marshaling
-var jsonBufferPool = sync.Pool{
-  New: func() interface{} {
-    buf := make([]byte, 0, 4096) // Pre-allocate 4KB buffer
-    return &buf
-  },
-}
 
 type result struct {
   Type          string        `json:"type"`
@@ -25,11 +16,6 @@ type result struct {
 }
 
 func main() {
-  // Disable GC during execution for better performance
-  // debug.SetGCPercent(-1)
-  // defer debug.SetGCPercent(100)
-
-  // Pre-allocate all needed variables
   var (
     start_  time.Time
     result_ result
@@ -40,11 +26,9 @@ func main() {
 
     stdout_ = os.Stdout
     encoder_ = json.NewEncoder(os.Stdout)
-    // Pre-allocate results slice with exact capacity needed
     results_ = make([]result, 0, <%= length(checks) %>)
   )
 
-  // Set result type once
   result_.Type = "result"
 
   <%= for %{arguments: arguments} <- checks do %>
@@ -52,21 +36,17 @@ func main() {
       var <%= defining %> = <%= value %>
     <% end %>
 
-    // Create pipe for capturing stdout
     reader_, writer_, err_ = os.Pipe()
     if err_ != nil {
       fmt.Fprintf(os.Stderr, "Error creating pipe: %v", err_)
     } else {
       os.Stdout = writer_
     }
-
-    // Measure execution time with high precision
     start_ = time.Now()
     result_.Value = solution(<%= arguments.expression %>)
     elapsed_ = time.Since(start_)
     result_.Time = fmt.Sprintf("%.7f", float64(elapsed_.Nanoseconds()) / float64(time.Second))
 
-    // Clean up pipe and capture output
     if writer_ != nil {
       writer_.Close()
     }
@@ -78,13 +58,8 @@ func main() {
       }
       reader_.Close()
     }
-
-    // Add result to results slice
     results_ = append(results_, result_)
   <% end %>
-
-  // Reset stdout and encode results
-  os.Stdout = stdout_
   if err_ = encoder_.Encode(results_); err_ != nil {
     fmt.Fprintln(stdout_, "Marshaler error")
   }

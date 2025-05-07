@@ -1,7 +1,39 @@
-#include "../precompiled.hpp"
+#include <bits/stdc++.h>
+#include "../json.hpp"
+#include "../fifo_map.hpp"
+
 #include "solution.cpp"
 
 using namespace std;
+
+template<class K, class V, class dummy_compare, class A>
+using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
+using json = nlohmann::basic_json<fifo_map>;
+
+template <typename T1>
+json BuildResultMessage(string status, T1 result, string output, string executionTime) {
+  json j;
+  j["type"] = status;
+  j["value"] = result;
+  j["output"] = output;
+  j["time"] = executionTime;
+
+  return j;
+}
+
+
+void SendMessage(json j) {
+  cout << j << "\n";
+}
+
+template <typename T>
+json BuildErrorMessage(string status, T result) {
+  json j;
+  j["type"] = status;
+  j["value"] = result;
+
+  return j;
+}
 
 int main() {
   std::stringstream buffer_;

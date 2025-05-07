@@ -16,7 +16,8 @@ defmodule Runner.SolutionGeneratorTest do
   using namespace std;
 
   vector<string> solution(int a, string text, double b, bool c, map<string,string> nested_hash_of_string, vector<string> nested_array_of_string, vector<vector<string>> nested_array_of_array_of_strings) {
-    vector<string> ans = {"value"};
+    vector<string> ans;
+    ans = {"value"};
     return ans;
   }
   // use stdout to debug
@@ -62,8 +63,9 @@ defmodule Runner.SolutionGeneratorTest do
   // import "fmt"
 
   func solution(a int64, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
-     []string ans := []"value"{}
-    return ans
+   var ans  []string
+   ans = []"value"{}
+   return ans
   }
   // use stdout to debug
   """

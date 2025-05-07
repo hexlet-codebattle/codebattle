@@ -219,7 +219,7 @@ defmodule Codebattle.Tournament.Context do
       params
       |> Map.delete("creator")
       |> AtomizedMap.atomize()
-      |> Map.put(:creator, params[:creator] || %{})
+      |> Map.put(:creator, params["creator"] || %{})
 
     cond_result =
       if params[:starts_at] do
