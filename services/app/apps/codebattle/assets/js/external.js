@@ -5,8 +5,6 @@
 // import '@fortawesome/fontawesome-free/js/all';
 // import 'bootstrap';
 
-
-
 // Import local files
 //
 // Local files can be imported directly using relative
@@ -15,8 +13,7 @@
 import 'core-js/stable';
 import 'bootstrap';
 import 'phoenix_html';
-import { renderEventPage, } from './widgets';
-
+import { renderEventPage } from './widgets';
 
 const eventWidgetRoot = document.getElementById('event-widget');
 
