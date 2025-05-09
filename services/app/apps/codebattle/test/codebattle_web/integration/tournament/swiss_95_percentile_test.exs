@@ -268,7 +268,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     assert_receive %Message{
       event: "user:check_complete",
@@ -307,7 +307,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
@@ -317,7 +317,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
     #
     Phoenix.ChannelTest.push(socket6, "tournament:leave", %{})
 
-    :timer.sleep(100)
+    :timer.sleep(200)
     left_id = user6.id
 
     Enum.each(1..10, fn _i ->
@@ -431,7 +431,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^tournament_admin_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
     # 8 players got notification about new match
     assert_receive %Message{
       event: "tournament:match:upserted",
@@ -547,7 +547,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
@@ -558,7 +558,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
 
     Phoenix.ChannelTest.push(admin_socket, "tournament:finish_round", %{})
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     # 5 players got match timeout notification
     Enum.each(1..5, fn _i ->
@@ -714,7 +714,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     assert_receive %Broadcast{
       event: "user:check_complete",
@@ -759,7 +759,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
       topic: ^game_topic
     }
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
@@ -770,7 +770,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
 
     Phoenix.ChannelTest.push(admin_socket, "tournament:finish_round", %{})
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     # 5 players got match timeout notification
     Enum.each(1..5, fn _i ->
