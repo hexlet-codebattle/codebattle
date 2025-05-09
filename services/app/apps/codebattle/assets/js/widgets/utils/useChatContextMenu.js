@@ -29,7 +29,7 @@ const useChatContextMenu = ({
     const request = {
       user: {
         name: user?.name || userName,
-        isBot: user?.isBot || Number(userId) < 0,
+        isBot: user?.isBot,
         userId: user?.id || Number(userId),
         canInvite: user ? canInvite : false,
       },

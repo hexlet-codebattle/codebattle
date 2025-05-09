@@ -55,8 +55,9 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     "hard" => to_timeout(minute: 17)
   }
 
-  def init(%{game: game, bot_id: bot_id} = params) do
+  def init(%{game: game, bot_id: bot_id}) do
     bot = Game.Helpers.get_player(game, bot_id)
+    task = Game.Helpers.get_task(game)
 
     case bot.playbook_id && Playbook.get(bot.playbook_id) do
       nil ->
@@ -65,7 +66,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
       %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
-        bot_time_ms = params[:custom_time_ms] || get_bot_time_ms(game)
+        bot_time_ms = get_bot_time_ms(task, game)
 
         step_coefficient = round(bot_time_ms / (playbook_winner_meta.total_time_ms + 1))
 
@@ -152,7 +153,9 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   # based on the hyperbolic dependence of time on the rating
   # y = k/(x + b);
   # y: time, x: rating;
-  defp get_bot_time_ms(game) do
+  defp get_bot_time_ms(%{time_to_solve_sec: time}, _game) when is_number(time), do: time * 1000
+
+  defp get_bot_time_ms(%{level: level}, game) do
     player_rating =
       case Game.Helpers.get_first_non_bot(game) do
         nil -> 1200
@@ -162,8 +165,8 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     x1 = @pro_rating
     x2 = @junior_rating
 
-    y1 = @pro_time_ms[game.level]
-    y2 = @junior_time_ms[game.level]
+    y1 = @pro_time_ms[level]
+    y2 = @junior_time_ms[level]
 
     k = y1 * (x1 * y2 - x2 * y2) / (y2 - y1)
     b = (x1 * y1 - x2 * y2) / (y2 - y1)

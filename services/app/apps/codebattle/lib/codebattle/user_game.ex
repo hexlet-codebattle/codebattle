@@ -15,6 +15,7 @@ defmodule Codebattle.UserGame do
     field(:rating, :integer)
     field(:rating_diff, :integer)
     field(:lang, :string)
+    field(:is_bot, :boolean)
 
     timestamps()
 
@@ -29,6 +30,7 @@ defmodule Codebattle.UserGame do
     |> cast(attrs, [
       :user_id,
       :game_id,
+      :is_bot,
       :playbook_id,
       :result,
       :creator,

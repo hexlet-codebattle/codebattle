@@ -151,9 +151,6 @@ defmodule Codebattle.User do
   def admin?(%__MODULE__{subscription_type: :admin}), do: true
   def admin?(_user), do: false
 
-  @spec bot?(integer()) :: boolean()
-  def bot?(user_id) when is_integer(user_id), do: user_id < 0
-
   @spec guest_id() :: integer()
   def guest_id, do: @guest_id
 

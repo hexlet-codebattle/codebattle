@@ -14,6 +14,7 @@ defmodule Codebattle.Playbook do
     field(:winner_id, :integer)
     field(:winner_lang, :string)
     field(:solution_type, :string)
+    field(:approved, :boolean)
 
     belongs_to(:task, Codebattle.Task)
     belongs_to(:game, Codebattle.Game)
@@ -30,7 +31,7 @@ defmodule Codebattle.Playbook do
   @doc false
   def changeset(%__MODULE__{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id])
+    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id, :approved])
     |> validate_required([
       :game_id,
       :winner_id,

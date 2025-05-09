@@ -4,7 +4,6 @@ defmodule CodebattleWeb.InviteChannel do
 
   alias Codebattle.Invite
   alias Codebattle.PubSub.Message
-  alias Codebattle.User
 
   def join("invites", _payload, socket) do
     current_user = socket.assigns.current_user
@@ -33,7 +32,7 @@ defmodule CodebattleWeb.InviteChannel do
     creator_id = socket.assigns.current_user.id
     recipient_id = payload["recipient_id"] || raise "recipient is absent!"
 
-    if creator_id == recipient_id || User.bot?(recipient_id) do
+    if creator_id == recipient_id do
       raise "Incorrect user for invite!"
     end
 

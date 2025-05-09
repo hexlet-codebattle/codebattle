@@ -32,6 +32,7 @@ defmodule Codebattle.Task do
              :solution,
              :state,
              :tags,
+             :time_to_solve_sec,
              :visibility
            ]}
 
@@ -80,6 +81,7 @@ defmodule Codebattle.Task do
     field(:solution, :string, default: "")
     field(:arguments_generator, :string, default: "")
     field(:generator_lang, :string, default: "js")
+    field(:time_to_solve_sec, :integer)
 
     timestamps()
   end
@@ -104,6 +106,7 @@ defmodule Codebattle.Task do
       :solution,
       :state,
       :tags,
+      :time_to_solve_sec,
       :visibility
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])
@@ -131,6 +134,7 @@ defmodule Codebattle.Task do
           generator_lang: Map.get(params, :generator_lang, "js"),
           input_signature: params.input_signature,
           level: params.level,
+          time_to_solve_sec: params.time_to_solve_sec,
           origin: params.origin,
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),

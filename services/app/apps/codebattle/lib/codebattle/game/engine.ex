@@ -318,6 +318,7 @@ defmodule Codebattle.Game.Engine do
       Enum.each(game.players, fn player ->
         create_user_game!(%{
           game_id: game.id,
+          is_bot: player.is_bot,
           user_id: player.id,
           result: player.result,
           creator: player.creator,
