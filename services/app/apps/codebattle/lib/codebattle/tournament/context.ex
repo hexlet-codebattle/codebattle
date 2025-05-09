@@ -138,9 +138,6 @@ defmodule Codebattle.Tournament.Context do
   def create(params) do
     changeset = Tournament.changeset(%Tournament{}, prepare_tournament_params(params))
 
-    dbg(changeset)
-    dbg(prepare_tournament_params(params))
-
     changeset
     |> Repo.insert()
     |> case do

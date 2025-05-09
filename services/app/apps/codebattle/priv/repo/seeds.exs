@@ -432,7 +432,6 @@ case Repo.get_by(Event, slug: event_slug) do
   event ->
     event
     |> Event.changeset(event_params)
-    |> dbg()
     |> Repo.update!()
 end
 
