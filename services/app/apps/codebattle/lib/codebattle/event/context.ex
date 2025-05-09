@@ -52,11 +52,13 @@ defmodule Codebattle.Event.Context do
                access_type: "token",
                score_strategy: "win_loss",
                state: "waiting_participants",
-               break_duration_seconds: 0,
-               player_limit: 128,
-               ranking_type: "void",
-               task_providers: "task_pack",
-               task_strategy: "sequential",
+               break_duration_seconds: 5,
+               tournament_timeout_seconds: event_stage.tournament_meta.tournament_timeout_seconds,
+               players_limit: event_stage.tournament_meta.players_limit,
+               ranking_type: event_stage.tournament_meta.ranking_type,
+               task_provider: event_stage.tournament_meta.task_provider,
+               task_strategy: event_stage.tournament_meta.task_strategy,
+               task_pack_name: event_stage.tournament_meta.task_pack_name,
                name: event_stage.name,
                meta: event_stage.tournament_meta
              }) do

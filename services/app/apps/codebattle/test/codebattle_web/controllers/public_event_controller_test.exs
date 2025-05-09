@@ -48,7 +48,19 @@ defmodule CodebattleWeb.PublicEventControllerTest do
               status: :active,
               type: :tournament,
               playing_type: :single,
-              tournament_meta: %{}
+              tournament_meta: %{
+                type: :swiss,
+                rounds_limit: 7,
+                access_type: "token",
+                score_strategy: "win_loss",
+                state: :waiting_participants,
+                task_pack_name: "7_elementary",
+                tournament_timeout_seconds: 75 * 60,
+                players_limit: 128,
+                ranking_type: "void",
+                task_provider: "task_pack",
+                task_strategy: "sequential"
+              }
             }
           ]
         )
@@ -67,6 +79,8 @@ defmodule CodebattleWeb.PublicEventControllerTest do
         stages: [%{slug: "q", status: :pending}]
       )
 
+      insert(:task_pack, name: "7_elementary")
+
       conn =
         conn
         |> put_session(:user_id, user.id)
@@ -80,6 +94,12 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert tournament.type == "swiss"
       assert tournament.access_type == "token"
       assert players = Tournament.Helpers.get_players(tournament)
+      assert tournament.tournament_timeout_seconds == 75 * 60
+      assert tournament.players_limit == 128
+      assert tournament.ranking_type == "void"
+      assert tournament.task_provider == "task_pack"
+      assert tournament.task_strategy == "sequential"
+      assert tournament.task_pack_name == "7_elementary"
 
       assert [_bot, player] = Enum.sort_by(players, & &1.id)
       assert player.id == user.id

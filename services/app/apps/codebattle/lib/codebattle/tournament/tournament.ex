@@ -40,6 +40,7 @@ defmodule Codebattle.Tournament do
              :starts_at,
              :state,
              :stats,
+             :tournament_timeout_seconds,
              :task_pack_name,
              :task_provider,
              :task_strategy,
@@ -97,6 +98,7 @@ defmodule Codebattle.Tournament do
     field(:task_pack_name, :string)
     field(:task_provider, :string, default: "level")
     field(:task_strategy, :string, default: "random_per_game")
+    field(:tournament_timeout_seconds, :integer)
     field(:type, :string, default: "individual")
     field(:use_chat, :boolean, default: true)
     field(:use_clan, :boolean, default: false)
@@ -155,9 +157,9 @@ defmodule Codebattle.Tournament do
       :started_at,
       :state,
       :task_pack_name,
-      :task_pack_name,
       :task_provider,
       :task_strategy,
+      :tournament_timeout_seconds,
       :type,
       :use_chat,
       :use_clan,

@@ -366,14 +366,17 @@ stages =
       type: :tournament,
       playing_type: :single,
       tournament_meta: %{
-        type: :swiss,
-        access_type: :token,
-        score_strategy: :win_loss,
-        state: :waiting_participants,
-        player_limit: 128,
-        ranking_type: :void,
-        task_providers: :task_pack,
-        task_strategy: :sequential
+        type: "swiss",
+        rounds_limit: 7,
+        access_type: "token",
+        score_strategy: "win_loss",
+        state: "waiting_participants",
+        task_pack_name: "7_elementary",
+        tournament_timeout_seconds: 75 * 60,
+        players_limit: 128,
+        ranking_type: "void",
+        task_provider: "task_pack",
+        task_strategy: "sequential"
       }
     },
     %{
@@ -496,50 +499,50 @@ else
   IO.puts("No events found in the database")
 end
 
-# Repo.delete_all(UserEvent)
+Repo.delete_all(UserEvent)
 
-# UserEvent.create(%{
-#   user_id: 110,
-#   event_id: 2,
-#   stages: [
-#     %{
-#       slug: "qualification",
-#       status: :pending,
-#       place_in_total_rank: nil,
-#       place_in_category_rank: nil,
-#       score: nil,
-#       wins_count: Enum.random(0..10),
-#       games_count: Enum.random(1..20),
-#       time_spent_in_seconds: Enum.random(100..10_000)
-#     },
-#     %{
-#       slug: "semifinal_entrance",
-#       entrance_result: :passed
-#     },
-#     %{
-#       slug: "semifinal",
-#       tournament_type: :global,
-#       status: :pending,
-#       place_in_total_rank: Enum.random(1..50),
-#       place_in_category_rank: Enum.random(1..25),
-#       score: Enum.random(10..100),
-#       wins_count: Enum.random(0..10),
-#       games_count: Enum.random(1..15),
-#       time_spent_in_seconds: Enum.random(100..8000)
-#     },
-#     %{
-#       slug: "final_entrance",
-#       entrance_result: :not_passed
-#     },
-#     %{
-#       slug: "final",
-#       status: :pending,
-#       place_in_total_rank: Enum.random(1..20),
-#       place_in_category_rank: Enum.random(1..10),
-#       score: Enum.random(20..100),
-#       wins_count: Enum.random(0..8),
-#       games_count: Enum.random(1..10),
-#       time_spent_in_seconds: Enum.random(100..5000)
-#     }
-#   ]
-# })
+UserEvent.create(%{
+  user_id: 245,
+  event_id: 2,
+  stages: [
+    %{
+      slug: "qualification",
+      status: :pending,
+      place_in_total_rank: nil,
+      place_in_category_rank: nil,
+      score: nil,
+      wins_count: nil,
+      games_count: nil,
+      time_spent_in_seconds: nil
+    }
+    # %{
+    #   slug: "semifinal_entrance",
+    #   entrance_result: :passed
+    # },
+    # %{
+    #   slug: "semifinal",
+    #   tournament_type: :global,
+    #   status: :pending,
+    #   place_in_total_rank: Enum.random(1..50),
+    #   place_in_category_rank: Enum.random(1..25),
+    #   score: Enum.random(10..100),
+    #   wins_count: Enum.random(0..10),
+    #   games_count: Enum.random(1..15),
+    #   time_spent_in_seconds: Enum.random(100..8000)
+    # },
+    # %{
+    #   slug: "final_entrance",
+    #   entrance_result: :not_passed
+    # },
+    # %{
+    #   slug: "final",
+    #   status: :pending,
+    #   place_in_total_rank: Enum.random(1..20),
+    #   place_in_category_rank: Enum.random(1..10),
+    #   score: Enum.random(20..100),
+    #   wins_count: Enum.random(0..8),
+    #   games_count: Enum.random(1..10),
+    #   time_spent_in_seconds: Enum.random(100..5000)
+    # }
+  ]
+})
