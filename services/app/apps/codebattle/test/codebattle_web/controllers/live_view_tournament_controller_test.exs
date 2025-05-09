@@ -58,16 +58,15 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
     assert new_conn.status == 200
 
     new_conn =
-      get(
-        conn,
-        Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
-      )
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token))
 
     assert new_conn.status == 200
 
     new_conn = get(conn, Routes.tournament_path(conn, :show, tournament.id))
 
-    assert new_conn.status == 404
+    assert new_conn.status == 302
   end
 
   test "renders not found", %{conn: conn} do

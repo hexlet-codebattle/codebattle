@@ -42,7 +42,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       |> post(Routes.ext_api_user_path(conn, :create, %{UID: "asdf"}))
       |> json_response(200)
 
-      user = User |> Repo.all() |> Enum.find(&(&1.id > 0))
+      user = Repo.get_by(User, external_oauth_id: "asdf")
 
       assert user.name
       assert user.external_oauth_id
@@ -61,7 +61,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       |> json_response(200)
 
       %{id: clan_id} = Repo.get_by(Clan, name: "kek")
-      users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+      users = User |> Repo.all() |> Enum.filter(&(&1.clan == "kek"))
 
       assert [
                %{name: "lol", clan: "kek", external_oauth_id: "uid1", clan_id: ^clan_id},
@@ -79,7 +79,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       |> post(Routes.ext_api_user_path(conn, :create, %{name: "oiblz", clan: "Kek ", UID: "asdf"}))
       |> json_response(200)
 
-      users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+      users = User |> Repo.all() |> Enum.filter(&(&1.clan == "Kek"))
       assert [clan.id] == Enum.map(users, & &1.clan_id)
       assert ["Kek"] == Enum.map(users, & &1.clan)
     end
@@ -98,7 +98,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       )
       |> json_response(200)
 
-      users = User |> Repo.all() |> Enum.filter(&(&1.id > 0))
+      users = User |> Repo.all() |> Enum.filter(&(&1.clan == "kEk"))
       assert [clan.id] == Enum.map(users, & &1.clan_id)
       assert ["kEk"] == Enum.map(users, & &1.clan)
     end

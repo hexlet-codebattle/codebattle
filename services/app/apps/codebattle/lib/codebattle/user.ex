@@ -11,10 +11,6 @@ defmodule Codebattle.User do
   alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
 
-  defimpl FunWithFlags.Actor, for: Codebattle.User do
-    def id(%{name: name}), do: "user:#{name}"
-  end
-
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()
 
@@ -275,4 +271,8 @@ defmodule Codebattle.User do
   defp generate_new_token do
     42 |> :crypto.strong_rand_bytes() |> Base.encode64()
   end
+end
+
+defimpl FunWithFlags.Actor, for: Codebattle.User do
+  def id(%{name: name}), do: "user:#{name}"
 end

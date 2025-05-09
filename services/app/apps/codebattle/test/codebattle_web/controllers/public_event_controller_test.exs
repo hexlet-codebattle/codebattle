@@ -5,6 +5,11 @@ defmodule CodebattleWeb.PublicEventControllerTest do
   alias Codebattle.UserEvent
 
   describe ".show" do
+    setup do
+      FunWithFlags.enable(:allow_event_page)
+      :ok
+    end
+
     test "renders event page when user is authenticated", %{conn: conn} do
       user = insert(:user)
       event = insert(:event, slug: "q", ticker_text: "Test Event")
@@ -29,6 +34,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
   describe ".stage" do
     setup do
+      FunWithFlags.enable(:allow_event_page)
       user = insert(:user)
 
       event =

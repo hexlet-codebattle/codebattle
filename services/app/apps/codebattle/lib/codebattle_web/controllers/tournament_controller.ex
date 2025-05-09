@@ -48,7 +48,7 @@ defmodule CodebattleWeb.TournamentController do
         image: Routes.tournament_image_url(conn, :show, tournament.id),
         url: Routes.tournament_url(conn, :show, tournament.id)
       })
-      |> put_gon(tournament_id: params["id"])
+      |> put_gon(tournament_id: tournament.id)
       |> put_gon(event_id: tournament.event_id)
       |> render("show.html")
     end

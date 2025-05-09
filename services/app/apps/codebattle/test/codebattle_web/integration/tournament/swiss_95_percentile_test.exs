@@ -687,12 +687,11 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
             _player6,
             _player7,
             _player8,
-            _player_bot1,
-            _player_bot2
+            _bot
           ],
           page_number: 1,
           page_size: 10,
-          total_entries: 10
+          total_entries: 9
         }
       }
     }
@@ -871,15 +870,14 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
             _player3,
             _player4,
             _player5,
+            _player6,
             _player7,
             _player8,
-            _player_bot1,
-            _player_bot2,
-            _player_bot3
+            _bot
           ],
           page_number: 1,
           page_size: 10,
-          total_entries: 11
+          total_entries: 9
         }
       }
     }
