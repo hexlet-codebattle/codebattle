@@ -598,6 +598,12 @@ msgstr "На главную"
 msgid "Back to event"
 msgstr "Вернуться в ЛК"    
 
+msgid "Star us on GitHub"
+msgstr "Поддержать нас на GitHub"
+
+msgid "Star us"
+msgstr "Поддержать нас"
+
 msgid "Restart searching"
 msgstr "Вернуться к поиску"
 
