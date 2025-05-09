@@ -2,7 +2,6 @@ defmodule Codebattle.User do
   @moduledoc """
     Represents authenticatable user
   """
-
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -11,6 +10,10 @@ defmodule Codebattle.User do
   alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.User.SoundSettings
+
+  defimpl FunWithFlags.Actor, for: Codebattle.User do
+    def id(%{name: name}), do: "user:#{name}"
+  end
 
   @type t :: %__MODULE__{}
   @type raw_id :: String.t() | integer()

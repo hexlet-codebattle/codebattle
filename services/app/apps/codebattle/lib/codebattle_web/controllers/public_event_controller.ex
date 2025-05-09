@@ -9,40 +9,48 @@ defmodule CodebattleWeb.PublicEventController do
 
   require Logger
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:show, :create_action])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:show, :stage])
 
   def show(conn, %{"slug" => slug}) do
-    user = conn.assigns.current_user
-    event = Event.get_by_slug!(slug)
-    user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
+    if FunWithFlags.enabled?(:event, for_actor: conn.assigns.current_user) do
+      user = conn.assigns.current_user
+      event = Event.get_by_slug!(slug)
+      user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
 
-    conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
+      conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
-    conn
-    |> assign(:ticker_text, event.ticker_text)
-    |> assign(:show_header, true)
-    |> put_gon(
-      event: %{
-        event: event,
-        user_event: user_event
-      }
-    )
-    |> render("show.html", layout: {CodebattleWeb.LayoutView, :external})
+      conn
+      |> assign(:ticker_text, event.ticker_text)
+      |> assign(:show_header, true)
+      |> put_gon(
+        event: %{
+          event: event,
+          user_event: user_event
+        }
+      )
+      |> render("show.html", layout: {CodebattleWeb.LayoutView, :external})
+    else
+      redirect(conn, to: Routes.root_path(conn, :index))
+    end
   end
 
   def stage(conn, %{"slug" => slug, "stage_slug" => stage_slug}) do
-    user = conn.assigns.current_user
+    if FunWithFlags.enabled?(:event, for_actor: conn.assigns.current_user) do
+      user = conn.assigns.current_user
 
-    case Event.Context.start_stage_for_user(user, slug, stage_slug) do
-      {:ok, %Tournament{} = tournament} ->
-        redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
+      case Event.Context.start_stage_for_user(user, slug, stage_slug) do
+        {:ok, %Tournament{} = tournament} ->
+          redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
 
-      {:error, error} ->
-        Logger.error("Error starting stage: #{inspect(error)}")
+        {:error, error} ->
+          Logger.error("Error starting stage: #{inspect(error)}")
 
-        conn
-        |> put_flash(:error, error)
-        |> redirect(to: Routes.public_event_path(conn, :show, slug))
+          conn
+          |> put_flash(:error, error)
+          |> redirect(to: Routes.public_event_path(conn, :show, slug))
+      end
+    else
+      redirect(conn, to: Routes.root_path(conn, :index))
     end
   end
 end

@@ -15,6 +15,15 @@ defmodule Codebattle.Tournament.Context do
 
   @states_from_restore ["waiting_participants"]
 
+  def get_user_latest_game_id(tournament, user_id) do
+    player = Tournament.Players.get_player(tournament, user_id)
+
+    if player and player.matches_ids != [] do
+      match_id = Enum.max(player.matches_ids)
+      tournament |> Tournament.Matches.get_match(match_id) |> Map.get(:game_id)
+    end
+  end
+
   @spec get_tournament_info(tournament_id()) :: Tournament.t() | map()
   def get_tournament_info(tournament_id) do
     case Tournament.Server.get_tournament_info(tournament_id) do

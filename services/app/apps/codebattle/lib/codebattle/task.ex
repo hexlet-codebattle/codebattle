@@ -134,7 +134,7 @@ defmodule Codebattle.Task do
           generator_lang: Map.get(params, :generator_lang, "js"),
           input_signature: params.input_signature,
           level: params.level,
-          time_to_solve_sec: params.time_to_solve_sec,
+          time_to_solve_sec: Map.get(params, :time_to_solve_sec, nil),
           origin: params.origin,
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),
