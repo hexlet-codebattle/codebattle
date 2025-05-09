@@ -74,7 +74,10 @@ const ParticipantDashboard = () => {
             <div className="d-flex cb-custom-event-staget-header text-white w-100">
               <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
               <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
-              <div style={{ minWidth: '15%', maxWidth: '60%' }} className="d-none d-lg-flex d-md-flex d-sm-flex justify-content-center align-items-center py-3">
+              <div
+                style={{ minWidth: '15%', maxWidth: '60%' }}
+                className="d-none d-lg-flex d-md-flex d-sm-flex justify-content-center align-items-center py-3"
+              >
                 {i18n.t('Place in total')}
               </div>
               <div style={{ minWidth: '15%' }} className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3">
