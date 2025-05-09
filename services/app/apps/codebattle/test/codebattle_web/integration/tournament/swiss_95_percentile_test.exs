@@ -339,7 +339,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
 
     Phoenix.ChannelTest.push(admin_socket, "tournament:finish_round", %{})
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     # 4 players got match timeout notification
     Enum.each(1..3, fn _i ->
