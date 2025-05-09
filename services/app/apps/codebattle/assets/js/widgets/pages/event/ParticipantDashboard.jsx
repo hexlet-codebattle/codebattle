@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
+import cn from 'classnames';
 import upperCase from 'lodash/upperCase';
 import { useSelector } from 'react-redux';
 
@@ -73,16 +74,16 @@ const ParticipantDashboard = () => {
             <div className="d-flex cb-custom-event-staget-header text-white w-100">
               <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
               <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
-              <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center py-3">
+              <div style={{ minWidth: '15%', maxWidth: '60%' }} className="d-none d-lg-flex d-md-flex d-sm-flex justify-content-center align-items-center py-3">
                 {i18n.t('Place in total')}
               </div>
-              <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center py-3">
+              <div style={{ minWidth: '15%' }} className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3">
                 {i18n.t('Place in category')}
               </div>
-              <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center py-3">
+              <div style={{ minWidth: '15%' }} className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3">
                 {i18n.t('Wins count')}
               </div>
-              <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center py-3">
+              <div style={{ minWidth: '15%' }} className="d-none d-lg-flex justify-content-center align-items-center py-3">
                 {i18n.t('Time spent')}
               </div>
             </div>
@@ -90,7 +91,7 @@ const ParticipantDashboard = () => {
           {participantData.stages.map(stage => (
             <div key={stage.slug} className="col-12 cb-custom-event-stage-section">
               <div className="text-white">
-                <div className="d-flex justify-content-between align-items-center py-3">
+                <div className="d-flex py-3">
                   <div style={{ width: '20%' }} className="d-flex">
                     <div className="me-3" style={{ minWidth: '200px' }}>
                       <div>{stage.name}</div>
@@ -128,18 +129,30 @@ const ParticipantDashboard = () => {
                   </div>
                   {stage.type === 'tournament' && (
                     <>
-                      <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center text-center me-5">
+                      <div
+                        style={{ minWidth: '15%' }}
+                        className={cn('d-none d-lg-flex d-md-flex d-sm-flex', 'justify-content-center align-items-center text-center me-5')}
+                      >
                         {stage.placeInTotalRank}
                       </div>
-                      <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center text-center me-5">
+                      <div
+                        style={{ minWidth: '15%' }}
+                        className={cn('d-none d-lg-flex d-md-flex', 'justify-content-center align-items-center text-center me-5')}
+                      >
                         {stage.placeInCategoryRank}
                       </div>
-                      <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center text-center me-5">
+                      <div
+                        style={{ minWidth: '15%' }}
+                        className={cn('d-none d-lg-flex d-md-flex', 'justify-content-center align-items-center text-center me-5')}
+                      >
                         {stage.winsCount}
                         /
                         {stage.gamesCount}
                       </div>
-                      <div style={{ width: '15%' }} className="d-flex justify-content-center align-items-center text-center me-5">
+                      <div
+                        style={{ minWidth: '15%' }}
+                        className={cn('d-none d-lg-flex', 'justify-content-center align-items-center text-center me-5')}
+                      >
                         {stage.timeSpent}
                       </div>
                     </>

@@ -551,7 +551,7 @@ export const reportsSelector = createDraftSafeSelector(
   state => state.reports.list,
   state => state.reports.showOnlyPendingReports,
   ([list, showOnlyPendingReports]) => {
-    const sortedList = [...list].sort((r1, r2) => {
+    const sortedList = [...(list || [])].sort((r1, r2) => {
       if (r1.state === 'pending' && r2.state === 'pending') {
         return moment(r1.insertedAt).diff(moment(r2.insertedAt));
       }

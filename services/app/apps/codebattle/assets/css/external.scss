@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'External';
-  src: url('https://yastatic.net/s3/distribution/lpc/fonts/YangoHeadline/YangoHeadline-Black.woff') format('woff');
+  src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -37,6 +37,7 @@ $dark-red: #b00020;
 .bg-dark {
   background-color: $dark;
 }
+
 // Example custom classes for your text
 .battle-title {
   color: $warning; // or #fffb47 if you want a brighter yellow
@@ -109,7 +110,8 @@ $dark-red: #b00020;
   width: 100%;
   box-shadow: 0 0 32px rgba(0, 0, 0, 0.4);
   color: white;
-  z-index: 2; /* Position behind the content */
+  z-index: 2;
+  /* Position behind the content */
 }
 
 // The .text-purple class is already defined:
@@ -305,6 +307,8 @@ $dark-red: #b00020;
   font-size: 74px;
   line-height: 100%;
   letter-spacing: -1%;
+
+  max-width: 740px;
 }
 
 .cb-custom-event-profile-data {
@@ -523,6 +527,7 @@ $dark-red: #b00020;
 .cb-custom-event-lose-status {
   background-color: #FF621E;
 }
+
 .cb-custom-event-btn-primary,
 .cb-custom-event-btn-secondary {
   color: #ffffff;

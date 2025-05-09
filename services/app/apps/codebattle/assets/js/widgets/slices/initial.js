@@ -80,7 +80,7 @@ const initialEvent = eventData
   : {
     loading: loadingStatuses.PENDING,
   };
-const reportsParams = reportsData ? camelizeKeys(reportsData) : {};
+const reportsParams = reportsData ? { list: camelizeKeys(reportsData) } : {};
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams

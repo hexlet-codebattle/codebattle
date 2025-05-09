@@ -122,7 +122,7 @@
                         data-toggle="dropdown"
                         href="#"
                       >
-                        <div class="d-flex flex-column mr-2">
+                        <div class="d-flex flex-column justify-content-center mr-2">
                           <h5 class="text-white text-right mb-0 text-break">
                             <%= @current_user.name %>
                           </h5>
@@ -134,14 +134,13 @@
                           src={avatar_url(@current_user)}
                           style="width:46px; height:46px"
                         />
-
-                        <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
-                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
-                            <span class="fas fa-sign-out-alt mr-2"></span>
-                            <%= gettext("Sign Out") %>
-                          <% end %>
-                        </div>
                       </a>
+                      <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                        <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                          <span class="fas fa-sign-out-alt mr-2"></span>
+                          <%= gettext("Sign Out") %>
+                        <% end %>
+                      </div>
                     </li>
                   </ul>
                 </div>

@@ -78,7 +78,7 @@ function ReportsPanel() {
     dispatch(sendNewReportState(reportId, value));
   };
 
-  if (!isAdmin || !reports.length === 0) {
+  if (!isAdmin || reports.length === 0) {
     return <></>;
   }
 
