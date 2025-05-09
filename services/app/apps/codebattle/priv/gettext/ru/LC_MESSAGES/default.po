@@ -595,6 +595,9 @@ msgstr "Назад в турнир"
 msgid "Back to tournaments"
 msgstr "На главную"
 
+msgid "Back to event"
+msgstr "Вернуться в ЛК"    
+
 msgid "Restart searching"
 msgstr "Вернуться к поиску"
 

@@ -104,9 +104,17 @@ const ParticipantDashboard = () => {
                     </div>
                   </div>
                   <div style={{ width: '20%' }} className="d-flex justify-content-center">
-                    {stage.isStageAvailableForUser
-                      && stage.type === 'tournament' && (
-                        <div className="action-button">
+                    {stage.isStageAvailableForUser && stage.type === 'tournament' && (
+                      <div className="action-button">
+                        {stage.userStatus === 'started' && stage.tournamentId ? (
+                          <a
+                            type="button"
+                            className="btn btn-success rounded-pill px-4"
+                            href={`/tournaments/${stage.tournamentId}`}
+                          >
+                            {i18n.t(stage.actionButtonText)}
+                          </a>
+                        ) : (
                           <button
                             type="button"
                             className="btn btn-warning rounded-pill px-4"
@@ -121,8 +129,9 @@ const ParticipantDashboard = () => {
                           >
                             {i18n.t(stage.actionButtonText)}
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                    )}
                     {stage.isStageAvailableForUser
                       && stage.type === 'entrance' && (
                         <div className="action-button">

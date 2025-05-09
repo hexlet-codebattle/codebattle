@@ -46,6 +46,7 @@ defmodule Codebattle.Event.Stage do
       :slug,
       :status,
       :tournament_id,
+      :tournament_meta,
       :playing_type,
       :type
     ])

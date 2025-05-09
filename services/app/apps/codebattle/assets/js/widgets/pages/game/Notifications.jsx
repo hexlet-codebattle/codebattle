@@ -12,6 +12,7 @@ import BackToTaskBuilderButton from '../builder/BackToTaskBuilderButton';
 
 import ActionsAfterGame from './ActionsAfterGame';
 import ApprovePlaybookButtons from './ApprovePlaybookButtons';
+import BackToEventButton from './BackToEventButton';
 import BackToHomeButton from './BackToHomeButton';
 import BackToTournamentButton from './BackToTournamentButton';
 import GameResult from './GameResult';
@@ -28,9 +29,11 @@ function Notifications() {
   const players = useSelector(selectors.gamePlayersSelector);
   const playbookSolutionType = useSelector(state => state.playbook.solutionType);
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
+  const tournament = useSelector(selectors.tournamentSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isCurrentUserPlayer = hasIn(players, currentUserId);
   const isTournamentGame = !!tournamentId;
+  const isEventTournament = !!tournament?.eventId;
   const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';
 
   return (
@@ -55,7 +58,8 @@ function Notifications() {
       )}
       {isTournamentGame && isActiveTournament
         && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} />}
-      {isTournamentGame && <BackToTournamentButton />}
+      {isTournamentGame && !isEventTournament && <BackToTournamentButton />}
+      {isTournamentGame && isEventTournament && <BackToEventButton eventId={tournament?.eventId} />}
       {!isTournamentGame && !roomMachineState.matches({ room: roomMachineStates.testing })
         && <BackToHomeButton />}
     </>

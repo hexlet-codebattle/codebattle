@@ -919,6 +919,9 @@ defmodule Codebattle.Tournament.Base do
 
       defp get_game_timeout(tournament, task) do
         cond do
+          tournament.tournament_timeout_seconds ->
+            max(tournament.tournament_timeout_seconds - DateTime.diff(DateTime.utc_now(), tournament.started_at), 10)
+
           FunWithFlags.enabled?(:tournament_custom_timeout) ->
             get_custom_round_timeout_seconds(tournament, task)
 

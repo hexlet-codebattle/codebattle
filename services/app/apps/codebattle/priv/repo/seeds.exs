@@ -432,6 +432,7 @@ case Repo.get_by(Event, slug: event_slug) do
   event ->
     event
     |> Event.changeset(event_params)
+    |> dbg()
     |> Repo.update!()
 end
 
@@ -502,8 +503,8 @@ end
 Repo.delete_all(UserEvent)
 
 UserEvent.create(%{
-  user_id: 245,
-  event_id: 2,
+  user_id: 138,
+  event_id: 1,
   stages: [
     %{
       slug: "qualification",

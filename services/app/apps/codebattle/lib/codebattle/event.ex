@@ -6,6 +6,7 @@ defmodule Codebattle.Event do
   import Ecto.Changeset
   import Ecto.Query
 
+  alias Codebattle.Event.Stage
   alias Codebattle.Repo
 
   @type t :: %__MODULE__{}
@@ -36,7 +37,7 @@ defmodule Codebattle.Event do
     field(:starts_at, :utc_datetime)
     field(:personal_tournament_id, :integer)
 
-    embeds_many(:stages, Codebattle.Event.Stage, on_replace: :delete)
+    embeds_many(:stages, Stage, on_replace: :delete)
 
     timestamps()
   end
@@ -101,7 +102,7 @@ defmodule Codebattle.Event do
   def changeset(clan, attrs \\ %{}) do
     clan
     |> cast(attrs, [:slug, :type, :ticker_text, :title, :description, :creator_id, :starts_at])
-    |> cast_embed(:stages)
+    |> cast_embed(:stages, with: &Stage.changeset/2)
     |> validate_length(:slug, min: 2, max: 57)
     |> validate_length(:description, min: 3, max: 10_000)
     |> validate_length(:title, min: 3, max: 250)

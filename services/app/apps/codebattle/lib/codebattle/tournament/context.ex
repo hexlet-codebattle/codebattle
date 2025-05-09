@@ -18,7 +18,7 @@ defmodule Codebattle.Tournament.Context do
   def get_user_latest_game_id(tournament, user_id) do
     player = Tournament.Players.get_player(tournament, user_id)
 
-    if player and player.matches_ids != [] do
+    if player && player.matches_ids != [] do
       match_id = Enum.max(player.matches_ids)
       tournament |> Tournament.Matches.get_match(match_id) |> Map.get(:game_id)
     end
@@ -137,6 +137,9 @@ defmodule Codebattle.Tournament.Context do
   @spec create(map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
     changeset = Tournament.changeset(%Tournament{}, prepare_tournament_params(params))
+
+    dbg(changeset)
+    dbg(prepare_tournament_params(params))
 
     changeset
     |> Repo.insert()

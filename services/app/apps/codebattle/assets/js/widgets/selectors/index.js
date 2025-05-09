@@ -588,6 +588,9 @@ export const participantDataSelector = state => {
       && ['pending', 'started', null].includes(userStage?.status));
 
     return {
+      status: eventStage.status,
+      userStatus: userStage?.status,
+      tournamentId: userStage?.tournamentId,
       name: eventStage.name,
       dates: eventStage.dates,
       isStageAvailableForUser,

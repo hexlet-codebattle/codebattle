@@ -14,7 +14,7 @@ defmodule Codebattle.Game.Engine do
   require Logger
 
   @default_timeout div(to_timeout(minute: 30), 1000)
-  @max_timeout div(to_timeout(hour: 1), 1000)
+  @max_timeout div(to_timeout(hour: 2), 1000)
 
   def create_game(params) do
     # TODO: add support for tags

@@ -35,9 +35,9 @@ defmodule CodebattleWeb.TournamentController do
       latest_game_id = Tournament.Context.get_user_latest_game_id(tournament, current_user.id)
 
       if latest_game_id do
-        redirect(conn, to: Routes.game_url(conn, :show, latest_game_id))
+        redirect(conn, to: Routes.game_path(conn, :show, latest_game_id))
       else
-        redirect(conn, to: Routes.tournament_url(conn, :show, tournament.id))
+        redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
       end
     else
       conn
