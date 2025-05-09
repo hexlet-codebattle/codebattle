@@ -23,6 +23,7 @@
           <th>tags</th>
           <th>origin</th>
           <th>state</th>
+          <th>time</th>
           <th>visibility</th>
         </tr>
       </thead>
@@ -42,6 +43,7 @@
               <td class="align-middle text"><%= Enum.join(task.tags, ", ") %></td>
               <td class="align-middle text"><%= task.origin %></td>
               <td class="align-middle text"><%= task.state %></td>
+              <td class="align-middle text"><%= task.time_to_solve_sec %></td>
               <td class="align-middle text"><%= task.visibility %></td>
             </tr>
           <% else %>

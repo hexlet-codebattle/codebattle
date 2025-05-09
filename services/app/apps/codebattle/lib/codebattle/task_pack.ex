@@ -55,7 +55,8 @@ defmodule Codebattle.TaskPack do
 
   def get_tasks(%__MODULE__{} = task_pack) do
     query = from(t in Task, where: t.id in ^task_pack.task_ids)
-    Repo.all(query)
+    tasks = Repo.all(query)
+    Enum.map(task_pack.task_ids, fn task_id -> Enum.find(tasks, &(&1.id == task_id)) end)
   end
 
   def can_see_task_pack?(%{visibility: "public"}, _user), do: true
