@@ -60,9 +60,33 @@
 
 <div class="mb-4">
   <h4>Event Stages</h4>
-  <div class="alert alert-info">
-    Event stages will be set up automatically using the default configuration.
-    Includes: Qualification, Semifinal Entrance, Semifinal, Final Entrance, and Final.
+  <div class="form-group">
+    <div>
+      <span>Stages (JSON format)</span>
+    </div>
+    <%= textarea(f, :stages_json,
+      class: "form-control form-control-lg",
+      value: Jason.encode_to_iodata!(@changeset.data.stages || [], pretty: true),
+      rows: 15
+    ) %>
+    <%= error_tag(f, :stages_json) %>
+    <div class="alert alert-info mt-2">
+      <p>Edit stages in JSON format. Each stage should include:</p>
+      <ul>
+        <li><code>slug</code>: Unique identifier for the stage</li>
+        <li><code>name</code>: Display name</li>
+        <li>
+          <code>status</code>: One of <code>pending</code>, <code>passed</code>,
+          <code>active</code>
+        </li>
+        <li><code>type</code>: One of <code>tournament</code>, <code>entrance</code></li>
+        <li><code>playing_type</code>: One of <code>single</code>, <code>global</code></li>
+        <li>
+          Optional: <code>action_button_text</code>, <code>confirmation_text</code>, <code>dates</code>,
+          <code>tournament_id</code>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
 

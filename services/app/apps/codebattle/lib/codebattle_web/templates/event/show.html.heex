@@ -37,15 +37,18 @@
     <div class="card-body">
       <%= if @event.stages && length(@event.stages) > 0 do %>
         <div class="table-responsive">
-          <table class="table table-bordered">
+          <table class="table table-bordered table-sm">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Slug</th>
                 <th>Dates</th>
                 <th>Status</th>
-                <th>Button Text</th>
                 <th>Type</th>
+                <th>Playing Type</th>
+                <th>Button Text</th>
+                <th>Confirmation Text</th>
+                <th>Tournament ID</th>
               </tr>
             </thead>
             <tbody>
@@ -55,12 +58,35 @@
                   <td><%= stage.slug %></td>
                   <td><%= stage.dates %></td>
                   <td>
-                    <span class={"badge #{if stage.status == :pending, do: "badge-warning", else: "badge-success"}"}>
+                    <span class={"badge #{case stage.status do
+                      :pending -> "badge-warning"
+                      :active -> "badge-success"
+                      :passed -> "badge-secondary"
+                      _ -> "badge-light"
+                    end}"}>
                       <%= stage.status %>
                     </span>
                   </td>
+                  <td>
+                    <span class={"badge #{if stage.type == :tournament, do: "badge-primary", else: "badge-info"}"}>
+                      <%= stage.type %>
+                    </span>
+                  </td>
+                  <td>
+                    <span class={"badge #{if stage.playing_type == :single, do: "badge-dark", else: "badge-secondary"}"}>
+                      <%= stage.playing_type %>
+                    </span>
+                  </td>
                   <td><%= stage.action_button_text %></td>
-                  <td><%= stage.type %></td>
+                  <td>
+                    <%= if stage.confirmation_text && String.length(stage.confirmation_text) > 200 do %>
+                      <%= String.slice(stage.confirmation_text, 0, 200) %>
+                      <span class="text-muted">...</span>
+                    <% else %>
+                      <%= stage.confirmation_text %>
+                    <% end %>
+                  </td>
+                  <td><%= stage.tournament_id %></td>
                 </tr>
               <% end %>
             </tbody>

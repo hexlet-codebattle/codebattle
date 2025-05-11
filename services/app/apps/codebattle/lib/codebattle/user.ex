@@ -153,14 +153,14 @@ defmodule Codebattle.User do
   @spec guest_id() :: integer()
   def guest_id, do: @guest_id
 
-  @spec get!(raw_id()) :: t() | no_return()
-  def get!(user_id) do
-    Repo.get!(__MODULE__, user_id)
+  @spec get!(raw_id(), preload :: term()) :: t() | no_return()
+  def get!(user_id, preload \\ []) do
+    Repo.get!(__MODULE__, user_id, preload: preload)
   end
 
-  @spec get(raw_id()) :: t() | nil
-  def get(user_id) do
-    get!(user_id)
+  @spec get(raw_id(), preload :: term()) :: t() | nil
+  def get(user_id, preload \\ []) do
+    get!(user_id, preload)
   rescue
     _e -> nil
   end
@@ -194,6 +194,13 @@ defmodule Codebattle.User do
     user_id
     |> get!()
     |> changeset(%{auth_token: generate_new_token()})
+    |> Repo.update()
+  end
+
+  def delete_auth_token(user_id) do
+    user_id
+    |> get!()
+    |> changeset(%{auth_token: nil})
     |> Repo.update()
   end
 
@@ -253,14 +260,6 @@ defmodule Codebattle.User do
   def find_or_create_by_clan(changeset, clan_name, user_id) do
     case Clan.find_or_create_by_clan(clan_name, user_id) do
       {:ok, clan} ->
-        # TODO: drop me in 3 weeks. Sorry for the mess
-        clan =
-          if clan.id in [379, 4373] do
-            Clan.get!(4375)
-          else
-            clan
-          end
-
         change(changeset, %{clan: clan.name, clan_id: clan.id})
 
       {:error, reason} ->

@@ -158,6 +158,14 @@ defmodule Codebattle.UserEvent do
     |> Repo.update!()
   end
 
+  @spec upsert_stages(t(), list(map())) :: {:ok, t()} | {:error, term()}
+  def upsert_stages(user_event, stages_params) do
+    # Update the user_event with the new stages directly
+    user_event
+    |> changeset(%{stages: stages_params})
+    |> Repo.update()
+  end
+
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(user_event, attrs \\ %{}) do
     user_event

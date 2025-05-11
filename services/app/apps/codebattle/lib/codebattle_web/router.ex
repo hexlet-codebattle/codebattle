@@ -82,6 +82,7 @@ defmodule CodebattleWeb.Router do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
+    live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
   end
 
   scope "/auth", CodebattleWeb do

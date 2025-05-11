@@ -90,7 +90,14 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
             <tr>
               <td><%= index %></td>
               <td><%= user.id %></td>
-              <td><%= user.name %></td>
+              <td>
+                <a
+                  href={Routes.admin_user_show_view_path(@socket, :show, user.id)}
+                  class="text-primary"
+                >
+                  <%= user.name %>
+                </a>
+              </td>
               <td><%= user.clan && String.slice(user.clan, 0, 20) %></td>
               <td>
                 <%= CodebattleWeb.Router.Helpers.auth_url(CodebattleWeb.Endpoint, :token,
