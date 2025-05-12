@@ -794,3 +794,15 @@ $dark-red: #b00020;
 .cb-custom-event-lose-status {
   background-color: #FF621E;
 }
+
+.cup {
+  position: absolute;
+  background-image: url(https://avatars.mds.yandex.net/get-lpc/9736426/457f402a-5ab5-439a-bd13-2c0d18bce25b/orig?width=1066&height=1397);
+  background-size: 600px 745px;
+  background-repeat: no-repeat;
+  width: 600px;
+  height: 745px;
+  transform: rotate(8deg);
+  bottom: -15%;
+  right: -5%;
+}
