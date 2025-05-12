@@ -4,10 +4,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0.203-alpine3.21
 
 WORKDIR /usr/src/app
 
-RUN apk add --update --no-cache make curl 
-
-COPY app.csproj .
-RUN dotnet add package CompareNETObjects
+RUN apk add --update --no-cache make curl && dotnet new console && dotnet add package CompareNETObjects
 
 COPY Program.cs .
 COPY check check

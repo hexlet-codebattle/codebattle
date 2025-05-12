@@ -1,5 +1,5 @@
 test-runtime:
-    dotnet run --no-restore
+	dotnet run
 
 test-compile:
 	dotnet build --nologo

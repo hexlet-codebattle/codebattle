@@ -36,8 +36,8 @@ COPY --from=pch-builder /pch/all.hpp            /pch/all.hpp
 # working dir for mounted code
 WORKDIR /usr/src/app
 
-ADD check .
-ADD Makefile .
+COPY check ./check
+COPY Makefile ./
 
 # keep your inherited runner binary
 COPY --from=codebattle/runner-rs:latest /app/codebattle_runner /runner/codebattle_runner
