@@ -68,8 +68,6 @@ $dark-red: #b00020;
   border-radius: 999px;
   font-weight: bold;
   font-size: 24px;
-  width: 319px;
-  height: 88px;
   padding: 12px 24px;
   transition: background-color 0.3s ease;
   border: none;
@@ -785,11 +783,23 @@ $dark-red: #b00020;
 .cup {
   position: absolute;
   background-image: url(https://avatars.mds.yandex.net/get-lpc/9736426/457f402a-5ab5-439a-bd13-2c0d18bce25b/orig?width=1066&height=1397);
-  background-size: 600px 745px;
   background-repeat: no-repeat;
+  transform: rotate(8deg);
+  background-size: 700px 845px;
+  width: 700px;
+  height: 845px;
+
+  @media (max-width: $md) {
+    & {
+      display: none;
+    }
+  }
+}
+
+.cup-aside {
+  background-size: 600px 745px;
   width: 600px;
   height: 745px;
-  transform: rotate(8deg);
   bottom: -15%;
   right: -5%;
 }

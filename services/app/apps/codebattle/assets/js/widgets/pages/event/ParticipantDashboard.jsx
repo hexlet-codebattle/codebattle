@@ -48,7 +48,7 @@ const ParticipantDashboard = () => {
 
   return (
     <div className="container-fluid position-relative">
-      <div className="cup" />
+      <div className="cup cup-aside" />
       <div className="d-flex flex-column">
         <div className="row my-5">
           <div className="col-12 col-lg-9 col-md-8 col-sm-12">

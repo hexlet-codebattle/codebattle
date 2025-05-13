@@ -2,8 +2,8 @@ import React from 'react';
 
 import i18next from 'i18next';
 
-function BackToEventButton({ eventId }) {
-  const eventUrl = `/e/${eventId}`;
+function BackToEventButton() {
+  const eventUrl = '/';
 
   return (
     <a className="btn btn-secondary btn-block rounded-lg" href={eventUrl}>
