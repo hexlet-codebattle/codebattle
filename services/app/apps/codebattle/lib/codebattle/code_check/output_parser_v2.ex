@@ -153,13 +153,10 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
     check_result =
       token.task.asserts
-      |> Enum.zip(
-        Enum.filter(token.solution_results, fn item -> item["type"] != "output" end)
-      )
+      |> Enum.zip(Enum.filter(token.solution_results, fn item -> item["type"] != "output" end))
       |> Enum.reduce(
         %Result.V2{output_error: output_error},
         fn {assert_item, solution_result}, acc ->
-
           assert_result = %Result.V2.AssertResult{
             output: solution_result["output"],
             execution_time: solution_result["time"],
