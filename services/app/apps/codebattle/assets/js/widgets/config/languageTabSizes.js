@@ -10,7 +10,7 @@ export default {
   js: 2,
   kotlin: 4,
   php: 2,
-  python: 4,
+  python: 2,
   ruby: 2,
   rust: 2,
   ts: 2,
