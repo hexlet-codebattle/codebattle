@@ -210,6 +210,15 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def handle_info(:finish_tournament_force, %{tournament: tournament}) do
+    if finished?(tournament) do
+      {:noreply, %{tournament: tournament}}
+    else
+      new_tournament = tournament.module.finish_tournament(tournament)
+      {:noreply, %{tournament: new_tournament}}
+    end
+  end
+
   def handle_info({:finish_round_force, round_position}, %{tournament: tournament}) do
     if tournament.current_round_position == round_position and
          not in_break?(tournament) and

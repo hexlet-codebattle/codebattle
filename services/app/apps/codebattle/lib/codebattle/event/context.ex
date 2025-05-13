@@ -50,6 +50,8 @@ defmodule Codebattle.Event.Context do
                type: "swiss",
                event_id: event.id,
                access_type: "token",
+               use_chat: false,
+               use_clan: false,
                score_strategy: "win_loss",
                state: "waiting_participants",
                break_duration_seconds: 5,

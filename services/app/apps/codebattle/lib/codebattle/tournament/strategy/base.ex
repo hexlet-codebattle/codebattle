@@ -344,6 +344,7 @@ defmodule Codebattle.Tournament.Base do
         })
         |> maybe_init_waiting_room(params)
         |> set_ranking()
+        |> maybe_start_global_timer()
         |> broadcast_tournament_started()
         |> start_round()
       end
@@ -815,23 +816,27 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
-          tournament
-          |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
-          |> maybe_finish_waiting_room()
-          |> set_stats()
-          |> set_winner_ids()
-          # |> db_save!()
-          |> maybe_save_event_results()
-          |> db_save!(:with_ets)
-          |> broadcast_tournament_finished()
-          |> then(fn tournament ->
-            Process.send_after(self(), :terminate, to_timeout(minute: 30))
-
-            tournament
-          end)
+          finish_tournament(tournament)
         else
           tournament
         end
+      end
+
+      defp finish_tournament(tournament) do
+        tournament
+        |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
+        |> maybe_finish_waiting_room()
+        |> set_stats()
+        |> set_winner_ids()
+        # |> db_save!()
+        |> maybe_save_event_results()
+        |> db_save!(:with_ets)
+        |> broadcast_tournament_finished()
+        |> then(fn tournament ->
+          Process.send_after(self(), :terminate, to_timeout(minute: 30))
+
+          tournament
+        end)
       end
 
       defp update_players_state_after_round_finished(%{type: "arena", state: "finished"} = tournament) do
@@ -881,6 +886,18 @@ defmodule Codebattle.Tournament.Base do
       defp set_winner_ids(tournament) do
         update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
       end
+
+      defp maybe_start_global_timer(%{tournament_timeout_seconds: timer} = tournament) when is_integer(timer) do
+        Process.send_after(
+          self(),
+          :finish_tournament_force,
+          to_timeout(second: timer)
+        )
+
+        tournament
+      end
+
+      defp maybe_start_global_timer(tournament), do: tournament
 
       defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
       # We don't want to run a timer for the swiss type, because all games already have a timeout
