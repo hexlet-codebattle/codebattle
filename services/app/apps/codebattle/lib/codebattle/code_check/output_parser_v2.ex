@@ -4,51 +4,6 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   alias Codebattle.CodeCheck.Result
   alias Runner.AtomizedMap
 
-  @doc """
-  Encodes any data structure into a pretty-formatted string for UI display.
-  Handles various Elixir data types including lists, maps, tuples, atoms, etc.
-  """
-  def safe_encode(data) do
-    case data do
-      # Handle basic types directly
-      data when is_binary(data) ->
-        data
-
-      data when is_number(data) ->
-        to_string(data)
-
-      data when is_atom(data) ->
-        to_string(data)
-
-      data when is_boolean(data) ->
-        to_string(data)
-
-      nil ->
-        "nil"
-
-      # Handle collections with pretty formatting
-      data when is_list(data) ->
-        formatted_items = Enum.map_join(data, ", ", &safe_encode/1)
-        "[#{formatted_items}]"
-
-      data when is_map(data) ->
-        formatted_pairs =
-          Enum.map_join(data, ", ", fn {k, v} ->
-            "#{safe_encode(k)}: #{safe_encode(v)}"
-          end)
-
-        "{#{formatted_pairs}}"
-
-      data when is_tuple(data) ->
-        formatted_items = data |> Tuple.to_list() |> Enum.map_join(", ", &safe_encode/1)
-        "{#{formatted_items}}"
-
-      # Fallback for any other type
-      _ ->
-        inspect(data, pretty: true, width: 80)
-    end
-  end
-
   def call(%{execution_error: :timeout}) do
     %Result.V2{status: "service_timeout"}
   end
@@ -248,5 +203,58 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
             status: status
         }
     }
+  end
+
+  @doc """
+  Encodes any data structure into a pretty-formatted string for UI display.
+  Handles various Elixir data types including lists, maps, tuples, atoms, etc.
+  """
+  def safe_encode(data) do
+    cond do
+      simple_type?(data) -> encode_simple_type(data)
+      collection?(data) -> encode_collection(data)
+      true -> encode_fallback(data)
+    end
+  end
+
+  # Helper functions to reduce cyclomatic complexity
+  defp simple_type?(data) do
+    is_binary(data) || is_number(data) || is_atom(data) || is_boolean(data) || is_nil(data)
+  end
+
+  defp collection?(data) do
+    is_list(data) || is_map(data) || is_tuple(data)
+  end
+
+  defp encode_simple_type(data) do
+    cond do
+      is_binary(data) -> "\"#{data}\""
+      is_nil(data) -> "null"
+      true -> to_string(data)
+    end
+  end
+
+  defp encode_collection(data) do
+    cond do
+      is_list(data) ->
+        formatted_items = Enum.map_join(data, ", ", &safe_encode/1)
+        "[#{formatted_items}]"
+
+      is_map(data) ->
+        formatted_pairs =
+          Enum.map_join(data, ", ", fn {k, v} ->
+            "#{safe_encode(k)}: #{safe_encode(v)}"
+          end)
+
+        "{#{formatted_pairs}}"
+
+      is_tuple(data) ->
+        formatted_items = data |> Tuple.to_list() |> Enum.map_join(", ", &safe_encode/1)
+        "{#{formatted_items}}"
+    end
+  end
+
+  defp encode_fallback(data) do
+    inspect(data, pretty: true, width: 80)
   end
 end

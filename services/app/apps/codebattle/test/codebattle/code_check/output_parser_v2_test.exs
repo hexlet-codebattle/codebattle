@@ -38,27 +38,27 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     output_error: "pre_output",
     asserts: [
       %AssertResult{
-        arguments: [1, 3],
-        expected: 4,
+        arguments: "[1, 3]",
+        expected: "4",
         output: "Output",
-        result: "ErrorMessage",
+        result: "\"ErrorMessage\"",
         execution_time: 0.1406,
         status: "failure"
       },
       %AssertResult{
         status: "success",
         execution_time: 0.0076,
-        result: 1,
-        expected: 1,
-        arguments: [1, 1],
+        result: "1",
+        expected: "1",
+        arguments: "[1, 1]",
         output: "asdf"
       },
       %AssertResult{
         status: "success",
         execution_time: 0.1234,
-        result: 2,
-        expected: 2,
-        arguments: [2, 2],
+        result: "2",
+        expected: "2",
+        arguments: "[2, 2]",
         output: "fdsa"
       }
     ]
@@ -71,17 +71,17 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     success_count: 2,
     asserts: [
       %AssertResult{
-        arguments: [1, 1],
+        arguments: "[1, 1]",
         execution_time: 0.0076,
-        expected: 1,
+        expected: "1",
         output: "asdf",
-        result: 1,
+        result: "1",
         status: "success"
       },
       %AssertResult{
-        arguments: [2, 1],
-        expected: 2,
-        result: 2,
+        arguments: "[2, 1]",
+        expected: "2",
+        result: "2",
         output: "asdf",
         execution_time: 0.0076,
         status: "success"
@@ -98,9 +98,9 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
       %AssertResult{
         status: "success",
         execution_time: 0.0076,
-        result: 1,
-        expected: 1,
-        arguments: [1, 1],
+        result: "1",
+        expected: "1",
+        arguments: "[1, 1]",
         output: "asdf"
       }
     ]
