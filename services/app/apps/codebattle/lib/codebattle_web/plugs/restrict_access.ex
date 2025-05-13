@@ -24,6 +24,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   @allowed_mini_paths [
     ~r{^\/$},
     ~r{^\/tournaments\/\d+\/?$},
+    ~r{^\/e\/\w+\/?$},
     ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
