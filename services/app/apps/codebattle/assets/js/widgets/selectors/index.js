@@ -587,6 +587,10 @@ export const participantDataSelector = state => {
     const isStageAvailableForUser = !!(eventStage.status === 'active'
       && ['pending', 'started', null].includes(userStage?.status));
 
+    const gamesCount = userStage?.gamesCount ? userStage.gamesCount : '-';
+    const zeroWinsCount = gamesCount === '-' ? '-' : '0';
+    const winsCount = userStage?.winsCount ? userStage.winsCount : zeroWinsCount;
+
     return {
       status: eventStage.status,
       userStatus: userStage?.status,
@@ -601,8 +605,8 @@ export const participantDataSelector = state => {
       placeInCategoryRank: userStage?.placeInCategoryRank
         ? userStage.placeInCategoryRank
         : '-',
-      gamesCount: userStage?.gamesCount ? userStage.gamesCount : '-',
-      winsCount: userStage?.winsCount ? userStage.winsCount : '-',
+      gamesCount,
+      winsCount,
       timeSpent: userStage?.timeSpentInSeconds
         ? moment.utc(userStage.timeSpentInSeconds * 1000).format('mm:ss')
         : '-',
