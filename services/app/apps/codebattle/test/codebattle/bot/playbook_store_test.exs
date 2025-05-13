@@ -197,27 +197,27 @@ defmodule Codebattle.PlaybookStoreTest do
                    check_result: %{
                      asserts: [
                        %{
-                         arguments: [1, 1],
+                         arguments: "[1, 1]",
                          execution_time: 0.001,
-                         expected: 2,
+                         expected: "2",
                          output: "",
-                         result: 2,
+                         result: "2",
                          status: "success"
                        },
                        %{
-                         arguments: [2, 1],
+                         arguments: "[2, 1]",
                          execution_time: "0.002",
-                         expected: 3,
+                         expected: "3",
                          output: "lol",
-                         result: 3,
+                         result: "3",
                          status: "success"
                        },
                        %{
-                         arguments: [3, 2],
+                         arguments: "[3, 2]",
                          execution_time: 0.003,
-                         expected: 5,
+                         expected: "5",
                          output: "kek",
-                         result: 5,
+                         result: "5",
                          status: "success"
                        }
                      ],
