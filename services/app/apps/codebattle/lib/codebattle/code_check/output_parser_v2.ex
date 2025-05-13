@@ -4,6 +4,51 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   alias Codebattle.CodeCheck.Result
   alias Runner.AtomizedMap
 
+  @doc """
+  Encodes any data structure into a pretty-formatted string for UI display.
+  Handles various Elixir data types including lists, maps, tuples, atoms, etc.
+  """
+  def safe_encode(data) do
+    case data do
+      # Handle basic types directly
+      data when is_binary(data) ->
+        data
+
+      data when is_number(data) ->
+        to_string(data)
+
+      data when is_atom(data) ->
+        to_string(data)
+
+      data when is_boolean(data) ->
+        to_string(data)
+
+      nil ->
+        "nil"
+
+      # Handle collections with pretty formatting
+      data when is_list(data) ->
+        formatted_items = Enum.map_join(data, ", ", &safe_encode/1)
+        "[#{formatted_items}]"
+
+      data when is_map(data) ->
+        formatted_pairs =
+          Enum.map_join(data, ", ", fn {k, v} ->
+            "#{safe_encode(k)}: #{safe_encode(v)}"
+          end)
+
+        "{#{formatted_pairs}}"
+
+      data when is_tuple(data) ->
+        formatted_items = data |> Tuple.to_list() |> Enum.map_join(", ", &safe_encode/1)
+        "{#{formatted_items}}"
+
+      # Fallback for any other type
+      _ ->
+        inspect(data, pretty: true, width: 80)
+    end
+  end
+
   def call(%{execution_error: :timeout}) do
     %Result.V2{status: "service_timeout"}
   end
@@ -160,7 +205,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
           assert_result = %Result.V2.AssertResult{
             output: solution_result["output"],
             execution_time: solution_result["time"],
-            result: solution_result["value"],
+            result: safe_encode(solution_result["value"]),
             status:
               if solution_result["type"] == "result" and
                    AtomizedMap.atomize(solution_result["value"]) == AtomizedMap.atomize(assert_item.expected) do
@@ -168,8 +213,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
               else
                 "failure"
               end,
-            expected: assert_item.expected,
-            arguments: assert_item.arguments
+            expected: safe_encode(assert_item.expected),
+            arguments: safe_encode(assert_item.arguments)
           }
 
           Map.put(acc, :asserts, acc.asserts ++ [assert_result])
