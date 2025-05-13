@@ -1003,3 +1003,6 @@ msgstr "Время на этап"
 
 msgid "You already passed this stage"
 msgstr "Вы уже прошли этот этап"
+
+msgid "Stage confirmation"
+msgstr "Подтверждение этапа"

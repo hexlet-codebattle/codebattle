@@ -9,6 +9,12 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import i18n from '../../i18n';
 import color from '../config/statusColor';
 
+// Custom JSON stringify function that preserves original key formats
+const safeJsonStringify = obj => {
+  if (obj === undefined || obj === null) return '???';
+  return JSON.stringify(obj, null, 0);
+};
+
 const getMessage = status => {
   switch (status) {
     case 'error':
@@ -158,13 +164,13 @@ function SubMenu({
         </div>
         <pre className="my-1">
           <span className={assertClassName}>
-            {`${i18n.t('Receive:')} ${result === undefined ? '???' : JSON.stringify(result)}`}
+            {`${i18n.t('Receive:')} ${safeJsonStringify(result)}`}
           </span>
           <span className={assertClassName}>
-            {`${i18n.t('Expected:')} ${assert.expected === undefined ? '???' : JSON.stringify(assert.expected)}`}
+            {`${i18n.t('Expected:')} ${safeJsonStringify(assert.expected)}`}
           </span>
           <span className={assertClassName}>
-            {`${i18n.t('Arguments:')} ${assert.arguments === undefined ? '???' : JSON.stringify(assert.arguments)}`}
+            {`${i18n.t('Arguments:')} ${safeJsonStringify(assert.arguments)}`}
           </span>
         </pre>
         {hasOutput && (

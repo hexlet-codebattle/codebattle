@@ -325,35 +325,6 @@ $dark-red: #b00020;
   padding-bottom: 16px;
 }
 
-.cb-ticker-line-wrap {
-  white-space: pre;
-  overflow: hidden;
-
-  background: url('../static/images/eventStripesPink.svg');
-  background-size: 200px 43px;
-  background-position: bottom 0px right 25%;
-  background-repeat: no-repeat;
-  background-color: #8C64FF;
-}
-
-.cb-ticker-line {
-  display: inline-block;
-  font-size: 18px;
-  color: white;
-  white-space: pre;
-  white-space-collapse: collapse;
-}
-
-.cb-ticker-line-head {
-  animation: ticker_1 70s linear infinite;
-  padding-left: 15px;
-  animation-delay: -70s;
-}
-
-.cb-ticker-line-tail {
-  animation: ticker_2 70s linear infinite;
-  animation-delay: -35s;
-}
 
 .cb-custom-event-text-success {
   color: #2ae881;
@@ -805,4 +776,40 @@ $dark-red: #b00020;
   transform: rotate(8deg);
   bottom: -15%;
   right: -5%;
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.cb-ticker-line-wrap {
+  overflow: hidden;
+  width: 100%;
+  background: url('../static/images/eventStripesPink.svg');
+  background-size: 200px 43px;
+  background-position: bottom 0px right 25%;
+  background-repeat: no-repeat;
+  background-color: #8C64FF;
+  padding: 10px 0;
+}
+
+.cb-ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 60s linear infinite;
+  will-change: transform;
+  width: 200%;
+}
+
+.cb-ticker-line {
+  display: inline-block;
+  font-size: 18px;
+  color: white;
+  padding-right: 25px;
 }

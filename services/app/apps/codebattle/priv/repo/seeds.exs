@@ -371,7 +371,7 @@ stages =
         access_type: "token",
         score_strategy: "win_loss",
         state: "waiting_participants",
-        task_pack_name: "7_elementary",
+        task_pack_name: "qualification",
         tournament_timeout_seconds: 75 * 60,
         players_limit: 128,
         ranking_type: "void",

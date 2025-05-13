@@ -253,9 +253,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </li>
                 <li class="list-group-item">
                   <strong>Clan:</strong>
-                  <%= if @user.clan do %>
+                  <%= if @user.clan_id do %>
                     <div>
-                      <span class="badge bg-secondary"><%= @user.clan %></span>
+                      <span class="badge bg-secondary"><%= @user.clan_id %></span>
                       <% clan = Clan.get(@user.clan_id) %>
                       <%= if clan do %>
                         <div class="mt-2 small">

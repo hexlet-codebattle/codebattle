@@ -152,19 +152,21 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
       end
 
     check_result =
-      token.solution_results
-      |> Enum.filter(fn item -> item["type"] != "output" end)
-      |> Enum.zip(token.task.asserts)
+      token.task.asserts
+      |> Enum.zip(
+        Enum.filter(token.solution_results, fn item -> item["type"] != "output" end)
+      )
       |> Enum.reduce(
         %Result.V2{output_error: output_error},
-        fn {solution_result, assert_item}, acc ->
+        fn {assert_item, solution_result}, acc ->
+
           assert_result = %Result.V2.AssertResult{
             output: solution_result["output"],
             execution_time: solution_result["time"],
             result: solution_result["value"],
             status:
               if solution_result["type"] == "result" and
-                   AtomizedMap.atomize(solution_result["value"]) == assert_item.expected do
+                   AtomizedMap.atomize(solution_result["value"]) == AtomizedMap.atomize(assert_item.expected) do
                 "success"
               else
                 "failure"

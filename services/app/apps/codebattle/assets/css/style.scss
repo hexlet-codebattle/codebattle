@@ -1446,26 +1446,6 @@ a {
     transform 200ms;
 }
 
-@keyframes ticker_1 {
-  0% {
-    transform: translateX(100%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-@keyframes ticker_2 {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-200%);
-  }
-}
-
 @keyframes scale {
   0% {
     transform: scale(0.5);

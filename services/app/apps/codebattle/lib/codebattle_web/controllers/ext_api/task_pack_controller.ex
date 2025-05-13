@@ -15,7 +15,17 @@ defmodule CodebattleWeb.ExtApi.TaskPackController do
 
     task_names = Map.get(params, :task_names, [])
     tasks = Task.get_by_names(task_names)
-    task_ids = Enum.map(task_names, fn name -> tasks |> Enum.find(fn task -> task.name == name end) |> Map.get(:id) end)
+
+    task_ids =
+      task_names
+      |> Enum.map(fn name ->
+        task = Enum.find(tasks, fn task -> task.name == name end)
+
+        if task do
+          task.id
+        end
+      end)
+      |> Enum.filter(& &1)
 
     params = Map.put(params, :task_ids, task_ids)
 

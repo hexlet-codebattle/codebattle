@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-dark">
   <head>
     <meta charset="utf-8" />
     <meta content="IE=edge" http-equiv="X-UA-Compatible" />
@@ -41,12 +41,6 @@
     <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
 
-    <%= if @ticker_text do %>
-      <div class="d-flex cb-ticker-line-wrap p-2 vw-100">
-        <span class="cb-ticker-line cb-ticker-line-head"><%= @ticker_text %></span>
-        <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
-      </div>
-    <% end %>
     <link
       phx-track-static
       rel="stylesheet"
@@ -61,7 +55,7 @@
     </script>
   </head>
   <body>
-    <div class="d-flex flex-column min-vh-100">
+    <div class="d-flex flex-column min-vh-100 bg-dark">
       <%= if assigns[:show_header] do %>
         <div class="bg-dark">
           <div class="container-lg">
@@ -89,7 +83,7 @@
                     src={collab_logo_minor(@current_user)}
                   />
                 <% end %>
-                <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb-1">
+                <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb">
                   <span class="font-weight-bold">
                     <%= Application.get_env(:codebattle, :logo_title) %>
                   </span>
@@ -167,9 +161,19 @@
           </div>
         </div>
       <% end %>
+      <%= if @ticker_text do %>
+        <div class="cb-ticker-line-wrap">
+          <div class="cb-ticker-content">
+            <%= for _ <- 1..20 do %>
+              <span class="cb-ticker-line"><%= @ticker_text %></span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
 
       <%= @inner_content %>
     </div>
+
     <%= render_gon_script(@conn) %>
   </body>
 </html>
