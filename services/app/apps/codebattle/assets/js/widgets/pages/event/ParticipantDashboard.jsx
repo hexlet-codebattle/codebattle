@@ -60,7 +60,7 @@ const ParticipantDashboard = () => {
             <div className="user-info d-flex flex-column align-items-center w-100">
               <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
                 {i18n.t('Clan')}
-                <span className="cb-custom-event-profile-data ms-2">{user.clan}</span>
+                <span title={user.clan} className="cb-custom-event-profile-data ms-2">{user.clan}</span>
               </div>
               <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
                 {i18n.t('Category')}
@@ -74,10 +74,10 @@ const ParticipantDashboard = () => {
           <div className="col-12 cb-custom-event-stage-header cb-custom-event-stage-section">
             <div className="d-flex cb-custom-event-staget-header text-white w-100">
               <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
-              <div style={{ width: '20%' }} className="d-flex justify-content-center align-items-center py-3" />
+              <div className="d-flex justify-content-center align-items-center py-3 cb-custom-event-table-action-button" />
               <div
                 style={{ minWidth: '15%', maxWidth: '60%' }}
-                className="d-none d-lg-flex d-md-flex d-sm-flex justify-content-center align-items-center py-3"
+                className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3"
               >
                 {i18n.t('Place in total')}
               </div>
@@ -104,7 +104,7 @@ const ParticipantDashboard = () => {
                       )}
                     </div>
                   </div>
-                  <div style={{ width: '20%' }} className="d-flex justify-content-center">
+                  <div className="d-flex justify-content-center cb-custom-event-table-action-button">
                     {stage.isStageAvailableForUser && stage.type === 'tournament' && (
                       <div className="action-button">
                         {stage.userStatus === 'started' && stage.tournamentId ? (
@@ -144,7 +144,7 @@ const ParticipantDashboard = () => {
                     <>
                       <div
                         style={{ minWidth: '15%' }}
-                        className={cn('d-none d-lg-flex d-md-flex d-sm-flex', 'justify-content-center align-items-center text-center me-5')}
+                        className={cn('d-none d-lg-flex d-md-flex', 'justify-content-center align-items-center text-center me-5')}
                       >
                         {stage.placeInTotalRank}
                       </div>

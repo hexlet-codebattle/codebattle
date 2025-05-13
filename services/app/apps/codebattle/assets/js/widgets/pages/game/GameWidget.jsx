@@ -26,7 +26,7 @@ function RightSide({ output, children }) {
   const [showTab, setShowTab] = useState('editor');
   const isShowOutput = output && output.status;
   const content = showTab === 'editor' ? (
-    <EditorWrapper id="editor" className="d-flex flex-column flex-grow-1 position-relative">
+    <EditorWrapper id="editor" className="d-flex flex-column flex-grow-1 position-relative cb-editor-height">
       {children}
     </EditorWrapper>
   ) : (
@@ -92,7 +92,7 @@ function GameWidget({ viewMode, editorMachine }) {
             {...editors[0]}
           >
             {params => (
-              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
+              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative cb-editor-height">
                 <ExtendedEditor {...params} />
               </EditorWrapper>
             )}

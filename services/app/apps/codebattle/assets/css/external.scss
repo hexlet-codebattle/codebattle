@@ -28,6 +28,7 @@ $dark-red: #b00020;
 
 // Bootstrap override must come *after* variables
 
+@import 'variables';
 @import "~bootstrap/scss/bootstrap";
 
 // --------------------------------------------------
@@ -35,7 +36,7 @@ $dark-red: #b00020;
 // --------------------------------------------------
 
 .bg-dark {
-  background-color: $dark;
+  background-color: #0C0F1E !important;
 }
 
 // Example custom classes for your text
@@ -313,6 +314,21 @@ $dark-red: #b00020;
 
 .cb-custom-event-profile-data {
   color: #F7F717;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 70%;
+}
+
+.cb-custom-event-table-action-button {
+  width: 20%;
+
+  @media (max-width: $md) {
+    & {
+      width: 80%;
+    }
+  }
 }
 
 .cb-custom-event-profile {
