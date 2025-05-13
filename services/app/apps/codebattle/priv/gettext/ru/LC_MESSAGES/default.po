@@ -596,7 +596,7 @@ msgid "Back to tournaments"
 msgstr "На главную"
 
 msgid "Back to event"
-msgstr "Вернуться в ЛК"    
+msgstr "Вернуться в ЛК"
 
 msgid "Star us on GitHub"
 msgstr "Поддержать нас на GitHub"
@@ -773,7 +773,7 @@ msgid "Tournament is over"
 msgstr "Турнир завершен"
 
 msgid "Round is over, wait for the next round"
-msgstr "Раунд завершен, дождитесь следующего"
+msgstr "Задача решена, дождись следующую"
 
 msgid "If you read this you've lost the game"
 msgstr "Ты заслуживаешь победы, продолжай!"

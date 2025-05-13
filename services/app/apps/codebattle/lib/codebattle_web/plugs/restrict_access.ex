@@ -25,6 +25,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     ~r{^\/$},
     ~r{^\/tournaments\/\d+\/?$},
     ~r{^\/e\/\w+\/?$},
+    ~r{^\/e\/\w+\/stage\/?$},
     ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
