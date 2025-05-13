@@ -62,14 +62,16 @@ const EditorToolbar = ({
           {showControlBtns && !isHistory && editorState !== 'banned' && (
             <GameActionButtons {...actionBtnsProps} />
           )}
-          <div
-            className="btn-group btn-group-sm py-2 mx-2"
-            role="group"
-            aria-label="Report actions"
-          >
-            {!showControlBtns && <GameReportButton userId={player.id} />}
-            {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
-          </div>
+          {isAdmin && (
+            <div
+              className="btn-group btn-group-sm py-2 mx-2"
+              role="group"
+              aria-label="Report actions"
+            >
+              {!showControlBtns && <GameReportButton userId={player.id} />}
+              {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
+            </div>
+          )}
           <div
             className={userInfoClassNames}
             role="group"

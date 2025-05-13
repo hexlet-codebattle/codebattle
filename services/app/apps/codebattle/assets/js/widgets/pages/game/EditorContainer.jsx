@@ -84,7 +84,7 @@ function EditorContainer({
   const toolbarRef = useRef();
 
   const player = useSelector(selectors.gamePlayerSelector(id));
-  const isAdmin = useSelector(selectors.userIsAdminSelector);
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
