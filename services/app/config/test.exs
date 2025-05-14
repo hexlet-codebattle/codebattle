@@ -76,6 +76,7 @@ config :codebattle, fake_html_to_image: true
 config :codebattle, freeze_time: true
 config :codebattle, store_playbook_async: false
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
+config :codebattle, tournament_finish_timeout_ms: 0
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, tournament_rematch_timeout_ms: 1
 config :codebattle, user_rank_server: false

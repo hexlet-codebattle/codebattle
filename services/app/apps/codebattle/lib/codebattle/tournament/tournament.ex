@@ -56,7 +56,7 @@ defmodule Codebattle.Tournament do
   @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
   @score_strategies ~w(time_and_tests win_loss one_zero)
-  @states ~w(waiting_participants canceled active finished)
+  @states ~w(waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
   @ranking_types ~w(void by_player by_clan by_player_95th_percentile)

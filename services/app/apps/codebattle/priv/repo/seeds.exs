@@ -502,18 +502,18 @@ end
 Repo.delete_all(UserEvent)
 
 UserEvent.create(%{
-  user_id: 246,
+  user_id: 356,
   event_id: 1,
   stages: [
     %{
       slug: "qualification",
       status: :pending,
-      place_in_total_rank: 12,
-      place_in_category_rank: 12,
-      score: 32,
-      wins_count: 32,
-      games_count: 32,
-      time_spent_in_seconds: 32
+      place_in_total_rank: nil,
+      place_in_category_rank: nil,
+      score: nil,
+      wins_count: nil,
+      games_count: nil,
+      time_spent_in_seconds: nil
     },
     %{
       slug: "semifinal_entrance",

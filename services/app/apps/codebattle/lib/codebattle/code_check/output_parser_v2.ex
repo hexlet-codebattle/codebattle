@@ -135,7 +135,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
       exit_code: token.exit_code,
       status: "error",
       output_error: """
-      STDERR:\n#{item["value"] <> to_string(container_stderr)}
+      STDERR:\n#{to_string(item["value"]) <> to_string(container_stderr)}
       """
     }
 

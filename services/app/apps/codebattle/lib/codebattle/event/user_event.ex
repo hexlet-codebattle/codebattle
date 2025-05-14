@@ -135,27 +135,29 @@ defmodule Codebattle.UserEvent do
   def mark_stage_as_completed(event_id, user_id, tournament_info) do
     user_event = Repo.one(from(ue in __MODULE__, where: ue.event_id == ^event_id and ue.user_id == ^user_id, limit: 1))
 
-    stages =
-      user_event.stages
-      |> Enum.map(fn stage ->
-        if stage.tournament_id == tournament_info.id do
-          %{
+    if user_event do
+      stages =
+        user_event.stages
+        |> Enum.map(fn stage ->
+          if stage.tournament_id == tournament_info.id do
+            %{
+              stage
+              | status: :completed,
+                games_count: tournament_info.games_count,
+                wins_count: tournament_info.wins_count,
+                time_spent_in_seconds: tournament_info.time_spent_in_seconds,
+                finished_at: DateTime.utc_now()
+            }
+          else
             stage
-            | status: :completed,
-              games_count: tournament_info.games_count,
-              wins_count: tournament_info.wins_count,
-              time_spent_in_seconds: tournament_info.time_spent_in_seconds,
-              finished_at: DateTime.utc_now()
-          }
-        else
-          stage
-        end
-      end)
-      |> Enum.map(&Map.from_struct/1)
+          end
+        end)
+        |> Enum.map(&Map.from_struct/1)
 
-    user_event
-    |> changeset(%{stages: stages})
-    |> Repo.update!()
+      user_event
+      |> changeset(%{stages: stages})
+      |> Repo.update!()
+    end
   end
 
   @spec upsert_stages(t(), list(map())) :: {:ok, t()} | {:error, term()}

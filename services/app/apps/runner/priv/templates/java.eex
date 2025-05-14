@@ -39,12 +39,20 @@ public class Checker {
 
         System.setOut(_oldOut);
         printResults(executionResults_);
-        } catch (Exception e) {
-            System.setOut(_oldOut);
-            String errMessage = e.getMessage();
-            var errorMessage = new ErrorMessage(errMessage);
-            System.out.println(errorMessage);
-        }
+      } catch (Exception e) {
+          System.setOut(_oldOut);
+
+          // Print full stack trace to stdout
+          e.printStackTrace(System.out);
+
+          // Also print JSON-formatted error message
+          StringWriter sw = new StringWriter();
+          e.printStackTrace(new PrintWriter(sw));
+          String errMessage = sw.toString();
+
+          var errorMessage = new ErrorMessage(errMessage);
+          System.out.println(errorMessage);
+      }
     }
 
     private static String getOutputAndResetIO(ByteArrayOutputStream baos) {
@@ -92,4 +100,3 @@ class ErrorMessage {
     return new Gson().toJson(this);
   }
 }
-

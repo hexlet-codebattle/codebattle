@@ -339,4 +339,10 @@ defmodule Codebattle.Tournament.Helpers do
       :tasks_table
     ])
   end
+
+  def get_players_total_games_count(%{task_provider: "task_pack", task_strategy: "sequential"} = t, _player) do
+    t |> Tournament.Tasks.get_task_ids() |> Enum.count()
+  end
+
+  def get_players_total_games_count(_tournament, player), do: Enum.count(player.matches_ids)
 end

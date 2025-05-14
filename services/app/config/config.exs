@@ -91,6 +91,7 @@ config :codebattle,
 config :codebattle, load_dot_env_file: true
 config :codebattle, store_playbook_async: true
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
+config :codebattle, tournament_finish_timeout_ms: 3000
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tournament_rematch_timeout_ms: 2000
 config :codebattle, user_rank_server: true
@@ -126,6 +127,9 @@ config :phoenix_meta_tags,
         y: 15
       }
     }
+
+    # Import environment specific config. This must remain at the bottom
+    # of this file so it overrides the configuration defined above.
   },
   twitter: %{
     card: "summary_large_image"
@@ -152,6 +156,4 @@ config :runner, runner_container_killer: false
 config :runner, runner_cpu_logger: false
 config :runner, white_list_lang_slugs: []
 
-# Import environment specific config. This must remain at the bottom
-# of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

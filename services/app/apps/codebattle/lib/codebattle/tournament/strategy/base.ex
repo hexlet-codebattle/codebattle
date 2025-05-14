@@ -376,6 +376,10 @@ defmodule Codebattle.Tournament.Base do
         |> start_round(new_round_params)
       end
 
+      def finish_match(%{state: "timeout"} = tournament, params) do
+        handle_game_result(tournament, params)
+      end
+
       def finish_match(tournament, params) do
         tournament
         |> handle_game_result(params)
@@ -438,10 +442,12 @@ defmodule Codebattle.Tournament.Base do
 
         Tournament.Matches.put_match(tournament, new_match)
 
-        Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-          tournament: tournament,
-          match: new_match
-        })
+        if tournament.state != "timeout" do
+          Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+            tournament: tournament,
+            match: new_match
+          })
+        end
 
         tournament
       end
@@ -822,21 +828,30 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp finish_tournament(tournament) do
-        tournament
-        |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
-        |> maybe_finish_waiting_room()
-        |> set_stats()
-        |> set_winner_ids()
-        # |> db_save!()
-        |> maybe_save_event_results()
-        |> db_save!(:with_ets)
-        |> broadcast_tournament_finished()
-        |> then(fn tournament ->
-          Process.send_after(self(), :terminate, to_timeout(minute: 30))
-
+      def finish_tournament(tournament) do
+        if get_matches(tournament, "playing") == [] do
           tournament
-        end)
+          |> update_struct(%{state: "finished", finished_at: DateTime.utc_now(:second)})
+          |> Tournament.TournamentResult.upsert_results()
+          |> maybe_finish_waiting_room()
+          |> set_stats()
+          |> set_winner_ids()
+          # |> db_save!()
+          |> maybe_save_event_results()
+          |> db_save!(:with_ets)
+          |> broadcast_tournament_finished()
+          |> then(fn tournament ->
+            Process.send_after(self(), :terminate, to_timeout(minute: 30))
+
+            tournament
+          end)
+        else
+          finish_all_playing_matches(tournament)
+          timeout_ms = Application.get_env(:codebattle, :tournament_finish_timeout_ms)
+          Process.send_after(self(), :finish_tournament_force, timeout_ms)
+
+          update_struct(tournament, %{state: "timeout", finished_at: DateTime.utc_now(:second)})
+        end
       end
 
       defp update_players_state_after_round_finished(%{type: "arena", state: "finished"} = tournament) do
@@ -1119,7 +1134,7 @@ defmodule Codebattle.Tournament.Base do
             UserEvent.mark_stage_as_completed(event_id, player.id, %{
               id: tournament.id,
               wins_count: player.wins_count,
-              games_count: Enum.count(player.matches_ids),
+              games_count: get_players_total_games_count(tournament, player),
               time_spent_in_seconds:
                 tournament
                 |> get_matches(player.matches_ids)
