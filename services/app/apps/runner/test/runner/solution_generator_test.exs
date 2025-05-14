@@ -197,6 +197,15 @@ defmodule Runner.SolutionGeneratorTest do
 
   export default solution;
   """
+  @swift_expected """
+  import Foundation
+
+  func solution(_ a: Int, _ text: String, _ b: Double, _ c: Bool, _ nested_hash_of_string: [String: String], _ nested_array_of_string: [String], _ nested_array_of_array_of_strings: [[String]]) -> [String] {
+    let ans: [String] = ["value"]
+    return ans
+  }
+  // use stdout to debug
+  """
 
   setup do
     task = %Runner.Task{
@@ -262,6 +271,7 @@ defmodule Runner.SolutionGeneratorTest do
     assert_solution(@python_expected, "python", task)
     assert_solution(@ruby_expected, "ruby", task)
     assert_solution(@rust_expected, "rust", task)
+    assert_solution(@swift_expected, "swift", task)
     assert_solution(@ts_expected, "ts", task)
   end
 

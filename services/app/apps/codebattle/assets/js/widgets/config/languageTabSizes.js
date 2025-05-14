@@ -7,6 +7,7 @@ export default {
   golang: 4,
   haskell: 2,
   java: 4,
+  swift: 2,
   js: 2,
   kotlin: 4,
   php: 2,

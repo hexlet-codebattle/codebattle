@@ -12,6 +12,7 @@ import LessOriginalIcon from 'react-devicons/less/plain-wordmark';
 import NodejsPlainIcon from 'react-devicons/nodejs/plain';
 import SassOriginalIcon from 'react-devicons/sass/original';
 import StylusOriginalIcon from 'react-devicons/stylus/original';
+import SwiftOriginalIcon from 'react-devicons/swift/original';
 import TypescriptOriginalIcon from 'react-devicons/typescript/original';
 
 import ElixirOriginalIcon from './icons/ElixirOriginalIcon';
@@ -25,6 +26,7 @@ const iconRenderers = {
   clojure: className => <ClojureOriginalIcon className={className} size="1.125em" />,
   cpp: className => <CppOriginalIcon className={className} size="1.25em" />,
   csharp: className => <CsharpOriginalIcon className={className} size="1.25em" />,
+  swift: className => <SwiftOriginalIcon className={className} size="1.25em" />,
   dart: className => <DartOriginalIcon className={className} size="1.125em" />,
   elixir: className => <ElixirOriginalIcon className={className} size="1.25em" />,
   golang: className => <GolangOriginalIcon className={className} size="1.25em" />,

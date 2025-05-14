@@ -18,6 +18,7 @@ defmodule Runner.Languages do
     "python",
     "ruby",
     "rust",
+    "swift",
     "ts"
   ]
 
@@ -754,6 +755,56 @@ defmodule Runner.Languages do
             hash_empty: "HashMap::new()",
             hash_value: "HashMap::from([<%= entries %>])",
             hash_inners: "(String::from(\"<%= key %>\"), <%= value %>)"
+        },
+        defining_variable_template: "<%= name %>: <%= type %>",
+        nested_value_expression_template: "<%= value %>"
+      }
+    },
+    "swift" => %LanguageMeta{
+      name: "Swift",
+      slug: "swift",
+      output_version: 2,
+      version: "6.1.0",
+      container_run_timeout: "20s",
+      solution_file_name: "solution.swift",
+      checker_file_name: "checker.swift",
+      check_dir: "check",
+      docker_image: "codebattle/swift:6.1.0",
+      solution_template: """
+      import Foundation
+
+      func solution(<%= arguments %>) -> <%= expected %> {
+        let ans: <%= expected %> = <%= default_value %>
+        return ans
+      }
+      // <%= comment %>
+      """,
+      arguments_template: %{argument: "_ <%= name %>: <%= type %>", delimiter: ", "},
+      default_values: %{
+        "integer" => "0",
+        "float" => "0.1",
+        "string" => "\"value\"",
+        "array" => "[<%= value %>]",
+        "boolean" => "true",
+        "hash" => "[\"key\": <%= value %>]"
+      },
+      expected_template: "<%= type %>",
+      types: %{
+        "integer" => "Int",
+        "float" => "Double",
+        "string" => "String",
+        "array" => "[<%= inner_type %>]",
+        "boolean" => "Bool",
+        "hash" => "[String: <%= inner_type %>]"
+      },
+      checker_meta: %{
+        version: :static,
+        type_templates: %{
+          @type_templates
+          | array: "[<%= entries %>]",
+            hash_empty: "[String: Any]()",
+            hash_value: "[<%= entries %>]",
+            hash_inners: "\"<%= key %>\": <%= value %>"
         },
         defining_variable_template: "<%= name %>: <%= type %>",
         nested_value_expression_template: "<%= value %>"

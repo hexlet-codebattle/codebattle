@@ -1,0 +1,74 @@
+import Foundation
+import Glibc        // dup, dup2, Pipe on Linux
+
+// ---------- Any-encodable wrapper so we can JSON-encode “any” value
+struct AnyEncodable: Encodable {
+    private let _encode: (Encoder) throws -> Void
+    init<T: Encodable>(_ wrapped: T) { _encode = wrapped.encode }
+    func encode(to encoder: Encoder) throws { try _encode(encoder) }
+}
+
+// ---------- Result DTO identical to other languages
+struct Result: Encodable {
+    let type : String           // "result"
+    let value: AnyEncodable
+    let time : String           // seconds with 7 frac digits
+    let output: String?
+}
+
+// ---------- helper that runs one test
+private func runTest(_ args: () -> (output: String, elapsed: UInt64, value: AnyEncodable)) -> Result {
+    let (out, ns, value) = args()
+    return Result(
+        type : "result",
+        value: value,
+        time : String(format: "%.7f", Double(ns) / 1_000_000_000),
+        output: out.isEmpty ? nil : out
+    )
+}
+
+// ---------- Entry point
+@main
+struct Checker {
+    static func main() {
+        var results = [Result]()
+        let realStdout = dup(STDOUT_FILENO)
+
+<%= for %{arguments: arguments, index: i} <- checks do %>
+        // ----------- check <%= i + 1 %> -----------------------------------
+        results.append(
+            runTest {
+<%= for %{defining: defining, value: value} <- arguments.info do %>
+                let <%= defining %> = <%= value %>
+<% end %>
+
+                // redirect STDOUT to capture solution prints
+                let pipe = Pipe()
+                dup2(pipe.fileHandleForWriting.fileDescriptor, STDOUT_FILENO)
+
+                // run user solution
+                let t0 = DispatchTime.now()
+                let v  = solution(<%= arguments.expression %>)     // ⚠️ solution must use `_` labels
+                let dt = DispatchTime.now().uptimeNanoseconds - t0.uptimeNanoseconds
+
+                fflush(stdout)
+                pipe.fileHandleForWriting.closeFile()
+                dup2(realStdout, STDOUT_FILENO)
+
+                let captured = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(),
+                                      as: UTF8.self)
+                pipe.fileHandleForReading.closeFile()
+
+                return (captured, dt, AnyEncodable(v))
+            })
+<% end %>
+
+        // ----------- dump JSON --------------------------------------------
+        if let data = try? JSONEncoder().encode(results),
+           let str  = String(data: data, encoding: .utf8) {
+            print(str)
+        } else {
+            fputs("Encoding error\n", stderr)
+        }
+    }
+}

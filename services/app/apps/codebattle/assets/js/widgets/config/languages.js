@@ -2,6 +2,7 @@ const languages = {
   clojure: 'clojure',
   cpp: 'cpp',
   csharp: 'csharp',
+  swift: 'swift',
   dart: 'dart',
   elixir: 'elixir',
   golang: 'go',
