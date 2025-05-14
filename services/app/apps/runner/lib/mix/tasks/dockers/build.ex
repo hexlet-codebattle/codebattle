@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Dockers.Build do
 
   defp build(meta) do
     command =
-      "docker build -t #{meta.docker_image} --file #{root()}/apps/runner/dockers/#{meta.slug}/Dockerfile #{root()}/apps/runner/dockers/#{meta.slug}/"
+      "docker build --platform linux/amd64 -t #{meta.docker_image} --file #{root()}/apps/runner/dockers/#{meta.slug}/Dockerfile #{root()}/apps/runner/dockers/#{meta.slug}/"
 
     IO.puts("Start building image for #{meta.slug}")
     result = Porcelain.shell(command, err: :string)
