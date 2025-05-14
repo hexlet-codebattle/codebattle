@@ -1,3 +1,4 @@
+# credo:disable-for-this-file
 defmodule Codebattle.UserEvent do
   @moduledoc false
 
