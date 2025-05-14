@@ -38,7 +38,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
       Codebattle.UserEvent.create(%{
         user_id: user.id,
         event_id: event.id,
-        stages: []
+        stages: get_user_event_stages()
       })
     end
 
@@ -181,5 +181,24 @@ defmodule CodebattleWeb.ExtApi.UserController do
 
   defp build_random_name do
     "#{Enum.random(@adjectives)}#{Enum.random(@names)}"
+  end
+
+  defp get_user_event_stages do
+    if FunWithFlags.enabled?(:create_user_event_qualification_ext_api) do
+      [
+        %{
+          slug: "qualification",
+          status: :pending,
+          place_in_total_rank: nil,
+          place_in_category_rank: nil,
+          score: nil,
+          wins_count: nil,
+          games_count: nil,
+          time_spent_in_seconds: nil
+        }
+      ]
+    else
+      []
+    end
   end
 end
