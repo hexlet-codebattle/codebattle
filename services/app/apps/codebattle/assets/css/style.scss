@@ -774,6 +774,33 @@ main {
   width: 250px;
   min-width: 250px;
 }
+@media screen and (min-width: $md) {
+  .main-nav {
+    padding-left: clamp(0.25rem, 1vw, 0.5rem);
+    padding-right: clamp(0.25rem, 1vw, 0.5rem);
+  }
+
+  .main-nav .btn {
+    padding: clamp(0.2rem, 0.5vw, 0.5rem) clamp(0.4rem, 1vw, 0.75rem);
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+  }
+
+  .main-nav img[src*="shields.io"] {
+    max-width: 100%;
+    width: clamp(60px, 10vw, 80px);
+    height: auto;
+  }
+
+  .navbar-brand img {
+    max-height: clamp(28px, 5vw, 36px);
+    height: auto;
+    width: auto;
+  }
+
+  .navbar-brand span {
+    font-size: clamp(13px, 1.5vw, 18px);
+  }
+}
 
 @media (max-width: $xl) {
   .cb-heading {
