@@ -412,10 +412,10 @@ defmodule Runner.Languages do
         version: :static,
         type_templates: %{
           @type_templates
-          | array: "{<%= entries %>}",
+          | array: "new() {<%= entries %>}",
             array_of_array: "{new List<<%= type %>> {<%= entries %>}}",
-            hash_empty: "{}",
-            hash_value: "{<%= entries %>}",
+            hash_empty: "new()",
+            hash_value: "new() {<%= entries %>}",
             hash_inners: "{\"<%= key %>\", <%= value %>}"
         },
         defining_variable_template: "<%= type %> <%= name %>",
@@ -463,7 +463,11 @@ defmodule Runner.Languages do
       },
       checker_meta: %{
         version: :static,
-        type_templates: %{@type_templates | array: "{<%= entries %>}"},
+        type_templates: %{
+          @type_templates
+          | array: "[]<%= inner_type %>{<%= entries %>}",
+            hash_value: "map[string]<%= inner_type %>{<%= entries %>}"
+        },
         defining_variable_template: "<%= name %> <%= type %>",
         nested_value_expression_template: "<%= type_name %><%= value %>"
       }
