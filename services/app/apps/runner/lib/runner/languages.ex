@@ -395,9 +395,9 @@ defmodule Runner.Languages do
         "integer" => "0",
         "float" => "0.1",
         "string" => "\"value\"",
-        "array" => "new List<<%= value %>>()",
+        "array" => "new()",
         "boolean" => "true",
-        "hash" => "new Dictionary<string, <%= value %>>(){ {\"key\", <%= value %>} }"
+        "hash" => "new()"
       },
       expected_template: " <%= type %>",
       types: %{
