@@ -39,8 +39,8 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 
   # Test for integer input and output
@@ -78,8 +78,8 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 
   # Test for array of string input and output
@@ -117,8 +117,8 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 
   # Test for hash of string input and output
@@ -156,8 +156,8 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 
   # Test for nested array input and output
@@ -195,8 +195,8 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 
   # Test for complex nested type
@@ -211,11 +211,23 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
       input_signature: [
         %{
           argument_name: "inputComplex",
-          type: %{name: "array", nested: %{name: "hash", nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}}}
+          type: %{
+            name: "array",
+            nested: %{
+              name: "hash",
+              nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}
+            }
+          }
         }
       ],
       output_signature: %{
-        type: %{name: "array", nested: %{name: "hash", nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}}}
+        type: %{
+          name: "array",
+          nested: %{
+            name: "hash",
+            nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}
+          }
+        }
       }
     }
 
@@ -234,7 +246,7 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     // use stdout to debug
     """
 
-    assert String.trim_trailing(expected, "\n") == 
-      SolutionGenerator.call(task, Languages.meta("java"))
+    assert String.trim_trailing(expected, "\n") ==
+             SolutionGenerator.call(task, Languages.meta("java"))
   end
 end

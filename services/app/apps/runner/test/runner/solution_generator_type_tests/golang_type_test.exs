@@ -36,7 +36,7 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 
   # Test for integer input and output
@@ -71,7 +71,7 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 
   # Test for array of string input and output
@@ -106,7 +106,7 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 
   # Test for hash of string input and output
@@ -141,7 +141,7 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 
   # Test for nested array input and output
@@ -176,7 +176,7 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 
   # Test for complex nested type
@@ -191,11 +191,23 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
       input_signature: [
         %{
           argument_name: "inputComplex",
-          type: %{name: "array", nested: %{name: "hash", nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}}}
+          type: %{
+            name: "array",
+            nested: %{
+              name: "hash",
+              nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}
+            }
+          }
         }
       ],
       output_signature: %{
-        type: %{name: "array", nested: %{name: "hash", nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}}}
+        type: %{
+          name: "array",
+          nested: %{
+            name: "hash",
+            nested: %{name: "hash", nested: %{name: "array", nested: %{name: "string"}}}
+          }
+        }
       }
     }
 
@@ -211,6 +223,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     """
 
     assert String.trim_trailing(expected, "\n") ==
-      SolutionGenerator.call(task, Languages.meta("golang"))
+             SolutionGenerator.call(task, Languages.meta("golang"))
   end
 end
