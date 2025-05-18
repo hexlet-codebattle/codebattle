@@ -37,8 +37,10 @@ defmodule Codebattle.Tournament.TaskProvider do
       when not is_nil(tp_name) do
     tp_name
     |> get_task_pack_names()
-    |> Enum.map(&TaskPack.get_by!(name: &1))
     |> Enum.at(round)
+    |> then(fn name ->
+      TaskPack.get_by!(name: name)
+    end)
     |> Map.get(:task_ids)
   end
 

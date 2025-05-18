@@ -24,6 +24,10 @@ defmodule Codebattle.TournamentTestHelpers do
     "tournament:#{tournament_id}:common"
   end
 
+  def tournament_translation_topic(tournament_id) do
+    "tournament:#{tournament_id}:translation"
+  end
+
   def tournament_player_topic(tournament_id, player_id) do
     "tournament:#{tournament_id}:player:#{player_id}"
   end

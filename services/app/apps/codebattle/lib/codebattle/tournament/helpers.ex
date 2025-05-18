@@ -101,6 +101,17 @@ defmodule Codebattle.Tournament.Helpers do
 
   def matches_count(t), do: Tournament.Matches.count(t)
 
+  def get_top_game_id(tournament) do
+    tournament
+    |> get_matches("playing")
+    |> Enum.sort_by(& &1.id, :asc)
+    |> Enum.at(0)
+    |> case do
+      %{game_id: game_id} when not is_nil(game_id) -> game_id
+      _ -> nil
+    end
+  end
+
   def get_current_round_matches(tournament) do
     tournament
     |> get_matches()

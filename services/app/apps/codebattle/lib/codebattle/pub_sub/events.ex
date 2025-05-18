@@ -27,6 +27,8 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_created", params) do
+    translation_events = get_translation_events(params.tournament)
+
     [
       %Message{
         topic: "tournament:#{params.tournament.id}:common",
@@ -48,6 +50,7 @@ defmodule Codebattle.PubSub.Events do
         event: "tournament:updated",
         payload: %{tournament: Tournament.Helpers.prepare_to_json(params.tournament)}
       }
+      | translation_events
     ]
   end
 
@@ -445,6 +448,7 @@ defmodule Codebattle.PubSub.Events do
           event: "game:tournament:finished",
           payload: %{
             game_id: game.id,
+            task_id: game.task_id,
             ref: game.ref,
             game_state: game.state,
             game_level: game.level,
@@ -609,4 +613,24 @@ defmodule Codebattle.PubSub.Events do
   defp get_player_changed_fields(player) do
     Map.take(player, [:id, :state, :task_ids, :score, :place, :wins_count])
   end
+
+  defp get_translation_events(%{type: "top200"} = tournament) do
+    top_game_id = Tournament.Helpers.get_top_game_id(tournament)
+
+    if top_game_id do
+      [
+        %Message{
+          topic: "tournament:#{tournament.id}:translation",
+          event: "tournament:top_game_changed",
+          payload: %{game_id: top_game_id}
+        }
+      ]
+    else
+      []
+    end
+  end
+
+  # now we want to have translation only for top200
+  # maybe later we can think about all tournaments
+  defp get_translation_events(_tournament), do: []
 end
