@@ -32,7 +32,7 @@ defmodule Runner.SolutionGeneratorTest do
     {
       public List<string> solution(int a, string text, double b, bool c, Dictionary<string, string> nested_hash_of_string, List<string> nested_array_of_string, List<List<string>> nested_array_of_array_of_strings)
       {
-        List<string> ans = new List<"value">();
+        List<string> ans = new();
         return ans;
       }
     }
@@ -63,9 +63,8 @@ defmodule Runner.SolutionGeneratorTest do
   // import "fmt"
 
   func solution(a int64, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
-   var ans  []string
-   ans = []"value"{}
-   return ans
+    var ans  []string
+    return ans
   }
   // use stdout to debug
   """

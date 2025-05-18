@@ -437,9 +437,8 @@ defmodule Runner.Languages do
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
-       var ans <%= expected %>
-       ans = <%= default_value %>
-       return ans
+        var ans <%= expected %>
+        return ans
       }
       // <%= comment %>
       """,
