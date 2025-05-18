@@ -101,21 +101,6 @@ defmodule Runner.CheckerGenerator do
     )
   end
 
-  defp get_value_expression(
-         signature = %{type: %{nested: _nested}},
-         value,
-         lang_meta = %{checker_meta: checker_meta}
-       ) do
-    type_name = TypesGenerator.call(signature.type, lang_meta)
-    type = extract_type(signature)
-    value = get_value({type, value}, lang_meta)
-
-    EEx.eval_string(checker_meta.nested_value_expression_template,
-      value: value,
-      type_name: type_name
-    )
-  end
-
   defp get_value_expression(signature, value, lang_meta) do
     type = extract_type(signature)
     get_value({type, value}, lang_meta)
@@ -130,21 +115,6 @@ defmodule Runner.CheckerGenerator do
   defp get_value({%{name: "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
 
-  # Special case for CSharp list of lists
-  defp get_value(
-         {%{name: "array", nested: %{name: "array", nested: nested}}, [value]},
-         lang_meta = %{slug: "csharp", checker_meta: checker_meta}
-       ) do
-    inner_type = TypesGenerator.call(nested, lang_meta)
-    array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, lang_meta))
-
-    EEx.eval_string(checker_meta.type_templates.array_of_array,
-      type: inner_type,
-      entries: array_values,
-      inner_type: inner_type
-    )
-  end
-
   defp get_value(
          {%{name: "array", nested: nested}, value},
          lang_meta = %{checker_meta: checker_meta}
@@ -158,8 +128,12 @@ defmodule Runner.CheckerGenerator do
     )
   end
 
-  defp get_value({signature = %{name: "hash"}, value}, lang_meta = %{checker_meta: checker_meta}) do
+  defp get_value(
+         {signature = %{name: "hash", nested: nested}, value},
+         lang_meta = %{checker_meta: checker_meta}
+       ) do
     list = Map.to_list(value)
+    inner_type = TypesGenerator.call(nested, lang_meta)
 
     if Enum.empty?(list) do
       checker_meta.type_templates.hash_empty
@@ -167,7 +141,10 @@ defmodule Runner.CheckerGenerator do
       hash_entries =
         Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, lang_meta) end)
 
-      EEx.eval_string(checker_meta.type_templates.hash_value, entries: hash_entries)
+      EEx.eval_string(checker_meta.type_templates.hash_value,
+        entries: hash_entries,
+        inner_type: inner_type
+      )
     end
   end
 
