@@ -233,7 +233,7 @@ msgstr "Рейтинг пользователей"
 #, elixir-format
 #: lib/codebattle_web/controllers/game_controller.ex:28
 msgid "You are in a different game"
-msgstr "Вы уже учавствуете в другой игре"
+msgstr "Вы уже участвуете в другой игре"
 
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:57
@@ -305,10 +305,10 @@ msgid "Lost:"
 msgstr "Поражений:"
 
 msgid "GaveUp:"
-msgstr "Cдался:"
+msgstr "Сдался:"
 
 msgid "Task"
-msgstr "Зaдача"
+msgstr "Задача"
 
 msgid "Editor"
 msgstr "Редактор"
@@ -335,7 +335,7 @@ msgid "Show guide"
 msgstr "Гайд"
 
 msgid "Reset solution"
-msgstr "Cбросить решение"
+msgstr "Сбросить решение"
 
 msgid "Check solution"
 msgstr "Проверить решение"
@@ -374,7 +374,7 @@ msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
 msgid "Time is up. There are no winners in the game"
-msgstr "Время вышло. Никто не выйграл эту битву"
+msgstr "Время вышло. Никто не выиграл эту битву"
 
 msgid "Lose Game Message"
 msgstr "К сожалению, Ваш оппонент выиграл эту битву"
@@ -383,7 +383,7 @@ msgid "Press Check solution or press Give up"
 msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
 
 msgid "Give up"
-msgstr "Cдаться"
+msgstr "Сдаться"
 
 msgid "Сheck"
 msgstr "Отправить решение"
@@ -408,7 +408,7 @@ msgid "Oops"
 msgstr "Упс!"
 
 msgid "Sort by:"
-msgstr "Cортировать по:"
+msgstr "Сортировать по:"
 
 msgid "Rank"
 msgstr "Ранг"
@@ -572,7 +572,7 @@ msgid "Tournament description"
 msgstr "Описание тура"
 
 msgid "Open"
-msgstr "Oткрыть"
+msgstr "Открыть"
 
 msgid "Cancel"
 msgstr "Отменить"
@@ -641,7 +641,7 @@ msgid "Your opponent is waiting: %{name}"
 msgstr "Ваш следующий оппонент: %{name}"
 
 msgid "Next match will be opened. Show now?"
-msgstr "Cледующая битва началась. Открыть сейчас?"
+msgstr "Следующая битва началась. Открыть сейчас?"
 
 msgid "review"
 msgstr "общее"
@@ -656,7 +656,7 @@ msgid "Opponent clan"
 msgstr "Вуз соперника"
 
 msgid "Status"
-msgstr "Cтатус задачи"
+msgstr "Статус задачи"
 
 msgid "Open match"
 msgstr "Перейти к задаче"
@@ -695,7 +695,7 @@ msgid "Round ends in "
 msgstr "Игры этапа завершатся через "
 
 msgid "Next round will start in "
-msgstr "Cледующие игры начнутся через "
+msgstr "Следующие игры начнутся через "
 
 msgid "Draw"
 msgstr "Последняя задача в ничью"
@@ -740,7 +740,7 @@ msgid "Show match"
 msgstr "Показать игру"
 
 msgid "Show match history"
-msgstr "Показать исторую игры"
+msgstr "Показать историю игры"
 
 msgid "Continue match"
 msgstr "Продолжить игру"
@@ -749,7 +749,7 @@ msgid "History"
 msgstr "История"
 
 msgid "stored"
-msgstr "Cохранена"
+msgstr "Сохранена"
 
 msgid "game_over"
 msgstr "Игра завершена"
@@ -788,7 +788,7 @@ msgid "STDOUT"
 msgstr "ВЫВОД"
 
 msgid "Next game"
-msgstr "Cледующая задача"
+msgstr "Следующая задача"
 
 msgid "Award"
 msgstr "Награда"
@@ -821,7 +821,7 @@ msgid "Clans bubble distribution"
 msgstr "График распределения лучших вузов"
 
 msgid "Duration distribution and top users by task"
-msgstr "Cтатистика по задаче"
+msgstr "Статистика по задаче"
 
 msgid "Back"
 msgstr "Назад"
