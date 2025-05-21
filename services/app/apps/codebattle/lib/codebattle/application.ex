@@ -46,7 +46,8 @@ defmodule Codebattle.Application do
         %{
           id: Codebattle.Chat.Lobby,
           start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
-        }
+        },
+        {Task.Supervisor, name: Codebattle.CheckerTaskSupervisor}
       ]
 
     Supervisor.start_link(children,

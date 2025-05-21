@@ -128,4 +128,23 @@ defmodule Runner.Executor do
       to_string(:rand.uniform(10_000_000))
     end
   end
+
+  defp cleanup_temp_directory(path, retries \\ 3) do
+    try
+      # Using rm_rf! to ensure an exception is raised on failure, which the catch block will handle.
+      File.rm_rf!(path)
+      # Optional: Logger.debug("Successfully cleaned up temporary directory: #{path}")
+    catch
+      kind, reason ->
+        # Log with a clear indication of which attempt failed.
+        Logger.error("Failed to clean up temporary directory: #{path}, attempt ##{4 - retries}, reason: #{kind} - #{inspect(reason)}")
+        if retries > 0 do
+          :timer.sleep(500) # Wait 500ms before retrying.
+          cleanup_temp_directory(path, retries - 1)
+        else
+          Logger.error("Giving up on cleaning temporary directory after multiple retries: #{path}.")
+          # Consider if further action like notifying an external system is needed on persistent failure.
+        end
+    end
+  end
 end

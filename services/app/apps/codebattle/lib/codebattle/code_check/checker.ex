@@ -7,8 +7,9 @@ defmodule Codebattle.CodeCheck.Checker do
 
   require Logger
 
-  @spec call(Codebattle.Task.t(), String.t(), String.t()) :: CodeCheck.check_result()
-  def call(task, solution_text, lang_slug) do
+  @spec execute_check_synchronously(Codebattle.Task.t(), String.t(), String.t()) ::
+          CodeCheck.check_result()
+  def execute_check_synchronously(task, solution_text, lang_slug) do
     lang_meta = Languages.meta(lang_slug)
 
     token =
@@ -19,13 +20,51 @@ defmodule Codebattle.CodeCheck.Checker do
         lang_meta: lang_meta,
         executor: get_executor()
       })
-      |> execute()
-      |> parse_output()
+      |> do_execute_token()
+      |> do_parse_output()
 
     token.result
   end
 
-  defp execute(token) do
+  def check_solution(
+        caller_pid,
+        task,
+        solution_text,
+        lang_slug,
+        original_user_for_callback,
+        original_editor_text_for_callback,
+        original_editor_lang_for_callback
+      ) do
+    Task.Supervisor.async_nolink(Codebattle.CheckerTaskSupervisor, fn ->
+      try
+        lang_meta = Languages.meta(lang_slug)
+
+        token_result =
+          Token
+          |> struct(%{
+            task: task,
+            solution_text: solution_text,
+            lang_meta: lang_meta,
+            executor: get_executor()
+          })
+          |> do_execute_token()
+          |> do_parse_output()
+
+        send(caller_pid, {:code_check_result, token_result.result, original_user_for_callback, original_editor_text_for_callback, original_editor_lang_for_callback})
+      catch
+        kind, reason ->
+          stacktrace = __STACKTRACE__
+
+          Logger.error(
+            "Async check solution failed: #{kind} - #{inspect(reason)} - #{inspect(stacktrace)}"
+          )
+
+          send(caller_pid, {:code_check_error, {kind, reason, stacktrace}, original_user_for_callback, original_editor_text_for_callback, original_editor_lang_for_callback})
+      end
+    end)
+  end
+
+  defp do_execute_token(token) do
     {execution_time, new_token} = :timer.tc(fn -> token.executor.call(token) end)
     execution_time_msec = div(execution_time, 1_000)
 
@@ -36,7 +75,7 @@ defmodule Codebattle.CodeCheck.Checker do
     %{new_token | execution_time_msec: execution_time_msec}
   end
 
-  defp parse_output(token) do
+  defp do_parse_output(token) do
     %{token | result: OutputParser.call(token)}
   end
 

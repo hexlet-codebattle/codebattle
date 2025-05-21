@@ -144,6 +144,8 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  alias Codebattle.CodeCheck.Checker
+
   def check_result(game, params) do
     %{user: user, editor_text: editor_text, editor_lang: editor_lang} = params
 
@@ -159,61 +161,20 @@ defmodule Codebattle.Game.Engine do
       user_id: user.id
     })
 
-    check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
+    game_server_pid_meta = Codebattle.Game.Server.server_name(game.id)
 
-    # TODO: maybe drop editor_text here
-    Codebattle.PubSub.broadcast("game:check_completed", %{
-      game: game,
-      user_id: user.id,
-      check_result: check_result
-    })
+    :ok =
+      Checker.check_solution(
+        game_server_pid_meta,
+        game.task,
+        editor_text,
+        editor_lang,
+        user,
+        editor_text,
+        editor_lang
+      )
 
-    Game.Server.update_playbook(game.id, :check_complete, %{
-      id: user.id,
-      check_result: check_result,
-      editor_text: editor_text,
-      editor_lang: editor_lang
-    })
-
-    case check_result.status do
-      "ok" ->
-        {:ok, {old_game_state, new_game}} =
-          fire_transition(game.id, :check_success, %{
-            id: user.id,
-            check_result: check_result,
-            editor_text: editor_text,
-            editor_lang: editor_lang
-          })
-
-        case {old_game_state, new_game.state} do
-          {"playing", "game_over"} ->
-            Game.Server.update_playbook(game.id, :game_over, %{
-              id: user.id,
-              lang: editor_lang
-            })
-
-            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-
-            {:ok, _game} = store_result!(new_game)
-            store_playbook_async(new_game)
-
-            {:ok, new_game, %{check_result: check_result, solution_status: true}}
-
-          _ ->
-            {:ok, new_game, %{check_result: check_result, solution_status: false}}
-        end
-
-      _ ->
-        {:ok, {_old_game_state, new_game}} =
-          fire_transition(game.id, :check_failure, %{
-            id: user.id,
-            check_result: check_result,
-            editor_text: editor_text,
-            editor_lang: editor_lang
-          })
-
-        {:ok, new_game, %{check_result: check_result, solution_status: false}}
-    end
+    :ok
   end
 
   def give_up(game, user) do

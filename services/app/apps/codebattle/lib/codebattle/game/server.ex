@@ -4,6 +4,7 @@ defmodule Codebattle.Game.Server do
   use GenServer
 
   alias Codebattle.Game
+  alias Codebattle.Game.Engine
   alias Codebattle.Playbook
 
   require Logger
@@ -110,4 +111,73 @@ defmodule Codebattle.Game.Server do
   end
 
   defp server_name(game_id), do: {:via, Registry, {Codebattle.Registry, "game_srv:#{game_id}"}}
+
+  @impl GenServer
+  def handle_info({:code_check_result, check_result, user, editor_text, editor_lang}, state) do
+    %{game: game} = state
+
+    Codebattle.PubSub.broadcast("game:check_completed", %{
+      game: game,
+      user_id: user.id,
+      check_result: check_result
+    })
+
+    # Update playbook for the check completion
+    GenServer.cast(self(), {:update_playbook, :check_complete, %{
+      id: user.id,
+      check_result: check_result,
+      editor_text: editor_text, # Consider if editor_text is needed here
+      editor_lang: editor_lang
+    }})
+
+    case check_result.status do
+      "ok" ->
+        case GenServer.call(self(), {:transition, :check_success, %{id: user.id, check_result: check_result, editor_text: editor_text, editor_lang: editor_lang}}) do
+          {:ok, {old_game_state, new_game_from_transition}} ->
+            new_state = %{state | game: new_game_from_transition}
+
+            case {old_game_state, new_game_from_transition.state} do
+              {"playing", "game_over"} ->
+                GenServer.cast(self(), {:update_playbook, :game_over, %{id: user.id, lang: editor_lang}})
+                Codebattle.PubSub.broadcast("game:finished", %{game: new_game_from_transition})
+                Engine.store_result!(new_game_from_transition)
+                Engine.store_playbook_async(new_game_from_transition)
+                {:noreply, new_state}
+
+              _ ->
+                {:noreply, new_state}
+            end
+          {:error, reason} ->
+            Logger.error("Failed to transition game state on check_success: #{inspect(reason)}")
+            {:noreply, state}
+        end
+
+      _ -> # Any other status is a failure
+        case GenServer.call(self(), {:transition, :check_failure, %{id: user.id, check_result: check_result, editor_text: editor_text, editor_lang: editor_lang}}) do
+          {:ok, {_old_game_state, new_game_from_transition}} ->
+             new_state = %{state | game: new_game_from_transition}
+            {:noreply, new_state}
+          {:error, reason} ->
+            Logger.error("Failed to transition game state on check_failure: #{inspect(reason)}")
+            {:noreply, state}
+        end
+    end
+  end
+
+  @impl GenServer
+  def handle_info({:code_check_error, error_details, user, _editor_text, _editor_lang}, state) do
+    %{game: game} = state
+
+    Logger.error("Code check failed for game #{game.id}, user #{user.id}: #{inspect(error_details)}")
+
+    Codebattle.PubSub.broadcast("game:check_failed", %{
+      game: game,
+      user_id: user.id,
+      error: :internal_error # Or more specific error if available
+    })
+
+    # Potentially transition game to an error state or allow user to retry
+    # For now, just log and broadcast
+    {:noreply, state}
+  end
 end
