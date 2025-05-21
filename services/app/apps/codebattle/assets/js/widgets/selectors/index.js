@@ -608,7 +608,7 @@ export const participantDataSelector = state => {
       gamesCount,
       winsCount,
       timeSpent: userStage?.timeSpentInSeconds
-        ? moment.utc(userStage.timeSpentInSeconds * 1000).format('mm:ss')
+        ? moment.utc(userStage.timeSpentInSeconds * 1000).format('HH:mm:ss')
         : '-',
       actionButtonText: eventStage.actionButtonText,
       confirmationText: eventStage.confirmationText,
