@@ -1006,3 +1006,9 @@ msgstr "Вы уже прошли этот этап"
 
 msgid "Stage confirmation"
 msgstr "Подтверждение этапа"
+
+msgid "Passed"
+msgstr "Прошёл"
+
+msgid "Not passed"
+msgstr "Не прошёл"
