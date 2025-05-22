@@ -80,6 +80,33 @@ docker-build-codebattle:
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:latest services/app
 
+docker-build-arm:
+	docker build --platform linux/arm64 \
+				--target assets-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:assets-image-arm services/app
+	docker build --platform linux/arm64 \
+				--target compile-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:compile-image-arm services/app
+	docker build --platform linux/arm64 \
+				--target nginx-assets \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/nginx-assets:arm services/app
+	docker build --platform linux/arm64 \
+				--target runtime-image \
+				--file services/app/Dockerfile.codebattle \
+				--build-arg GIT_HASH=$(GIT_HASH) \
+				--tag codebattle/codebattle:arm services/app
+
+docker-push-codeabttle-arm:
+	docker push codebattle/codebattle:assets-image-arm
+	docker push codebattle/codebattle:compile-image-arm
+	docker push codebattle/codebattle:arm
+	docker push codebattle/nginx-assets:arm
+
 docker-push-codebattle:
 	docker push codebattle/codebattle:assets-image
 	docker push codebattle/codebattle:compile-image
