@@ -66,8 +66,8 @@ defmodule Codebattle.Tournament do
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
   schema "tournaments" do
-    belongs_to(:creator, Codebattle.User)
-    belongs_to(:event, Codebattle.Event)
+    belongs_to(:creator, Codebattle.User, on_replace: :update)
+    belongs_to(:event, Codebattle.Event, on_replace: :update)
 
     field(:access_token, :string)
     field(:access_type, :string, default: "public")

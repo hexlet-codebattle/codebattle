@@ -214,16 +214,20 @@ defmodule Codebattle.Tournament.TournamentResult do
   def get_user_ranking(%{use_clan: false} = tournament) do
     query =
       from(r in __MODULE__,
+        join: c in Clan,
+        on: r.clan_id == c.id,
         select: %{
           id: r.user_id,
-          user_name: r.user_name,
+          name: r.user_name,
+          clan_id: c.id,
+          clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name],
-        order_by: [desc: sum(r.score)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+        group_by: [r.user_id, r.user_name, c.id],
+        order_by: [asc_nulls_first: sum(r.score)],
+        windows: [overall_partition: [order_by: [asc_nulls_first: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
     Repo.all(query)
@@ -236,9 +240,9 @@ defmodule Codebattle.Tournament.TournamentResult do
         on: r.clan_id == c.id,
         select: %{
           id: r.user_id,
+          name: r.user_name,
           clan_id: c.id,
-          clan_name: c.name,
-          user_name: r.user_name,
+          clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },

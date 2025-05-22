@@ -960,17 +960,18 @@ a:hover {
 
 .cb-gold-place-bg {
   background-color: #fce300 !important;
+  border-radius: 0.50rem;
 }
 
 .cb-silver-place-bg {
   background-color: #c3c2bc !important;
+  border-radius: 0.50rem;
 }
 
 .cb-bronze-place-bg {
   background-color: #ff9c41 !important;
+  border-radius: 0.50rem;
 }
-
-
 
 div.cb-dropdown-menu {
   transform: translate3d(-100%, 0, 0);
@@ -1773,4 +1774,14 @@ a:hover {
 
 #main-editor.cb-editor-height {
   height: 410px;
+}
+
+.cb-custom-event-tr-border {
+  outline: 0.5px solid $gray;
+  border-radius: 0.50rem;
+}
+
+.cb-custom-event-tr-brown-border {
+  outline: 0.5px solid #FF621E;
+  border-radius: 0.50rem;
 }

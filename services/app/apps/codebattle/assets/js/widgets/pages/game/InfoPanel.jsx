@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useSelector } from 'react-redux';
 
 import i18next from 'i18next';
 
@@ -6,9 +7,10 @@ import RoomContext from '../../components/RoomContext';
 import {
   isWaitingRoomNoneSelector,
 } from '../../machines/selectors';
+import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-import ArenaInfoWidget from './ArenaInfoWidget';
+import TournamentCurrentPlayerRankingPanel from './TournamentCurrentPlayerRankingPanel';
 import ChatWidget from './ChatWidget';
 import Output from './Output';
 import OutputTab from './OutputTab';
@@ -22,9 +24,8 @@ const InfoPanel = ({
   timerProps,
   taskPanelProps,
 }) => {
-  const { waitingRoomService } = useContext(RoomContext);
-
-  const isWaitingRoomNone = useMachineStateSelector(waitingRoomService, isWaitingRoomNoneSelector);
+  const { tournamentId } = useSelector(selectors.gameStatusSelector);
+  const isTournamentGame = !!tournamentId;
 
   return (
     <>
@@ -95,12 +96,13 @@ const InfoPanel = ({
         </div>
       </div>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        {isWaitingRoomNone ? (
-          <ChatWidget />
+        {isTournamentGame ? (
+          <TournamentCurrentPlayerRankingPanel />
         ) : (
-          <ArenaInfoWidget />
+          <ChatWidget />
         )}
       </div>
+
     </>
   );
 };

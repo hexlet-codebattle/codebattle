@@ -35,10 +35,11 @@ defmodule CodebattleWeb.GameChannel do
 
       ranking =
         tournament
-        |> Tournament.Ranking.get_first(3)
+        |> Tournament.Ranking.get_first(6)
         |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
         |> Enum.filter(& &1)
         |> Enum.uniq_by(& &1.id)
+
 
       {:ok,
        %{
@@ -49,7 +50,7 @@ defmodule CodebattleWeb.GameChannel do
            event_id: tournament.event_id,
            tournament_id: game.tournament_id,
            ranking: ranking,
-           clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
+          #  clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
            state: tournament.state,
            type: tournament.type,
            meta: tournament.meta,

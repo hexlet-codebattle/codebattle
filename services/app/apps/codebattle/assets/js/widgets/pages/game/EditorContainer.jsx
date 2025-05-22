@@ -85,6 +85,7 @@ function EditorContainer({
 
   const player = useSelector(selectors.gamePlayerSelector(id));
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
@@ -227,6 +228,7 @@ function EditorContainer({
     editor: editorState,
     status: editorCurrent.value,
     isAdmin,
+    isPremium,
     actionBtnsProps,
     ...userSettings,
   };

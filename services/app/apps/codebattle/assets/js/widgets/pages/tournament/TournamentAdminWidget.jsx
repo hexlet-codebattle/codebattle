@@ -314,7 +314,7 @@ function TournamentAdminWidget({ waitingRoomMachine }) {
           <div className={sidePanelClassName}>
             <Players
               playersCount={tournament.playersCount}
-              players={tournament.players}
+              players={tournament.ranking}
               showBots={tournament.showBots}
             />
             {tournament.useChat && <TournamentChat />}

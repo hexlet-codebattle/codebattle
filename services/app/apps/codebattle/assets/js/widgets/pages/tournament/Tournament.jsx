@@ -370,7 +370,7 @@ function Tournament({ waitingRoomMachine }) {
               {!tournament.useClan && !hiddenSidePanel && (
                 <Players
                   playersCount={tournament.playersCount}
-                  players={tournament.players}
+                  players={tournament.ranking}
                   showBots={tournament.showBots}
                 />
               )}

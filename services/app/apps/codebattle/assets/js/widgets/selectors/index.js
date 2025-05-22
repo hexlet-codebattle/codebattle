@@ -23,6 +23,7 @@ export const currentUserIdSelector = state => state.user.currentUserId;
 export const currentUserClanIdSelector = state => state.user.users[state.user.currentUserId].clanId;
 
 export const currentUserIsAdminSelector = state => !!state.user.users[state.user.currentUserId].isAdmin;
+export const currentUserIsPremiumSelector = state => state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.premium
 
 export const currentUserIsGuestSelector = state => !!state.user.users[state.user.currentUserId].isGuest;
 
@@ -550,7 +551,7 @@ export const eventUserSelector = state => state.event.userEvent;
 export const reportsSelector = createDraftSafeSelector(
   state => state.reports.list,
   state => state.reports.showOnlyPendingReports,
-  ([list, showOnlyPendingReports]) => {
+  (list, showOnlyPendingReports) => {
     const sortedList = [...(list || [])].sort((r1, r2) => {
       if (r1.state === 'pending' && r2.state === 'pending') {
         return moment(r1.insertedAt).diff(moment(r2.insertedAt));

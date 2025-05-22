@@ -26,9 +26,7 @@ const Players = ({ playersCount, players, showBots }) => (
           .
         </p>
       ) : (
-        Object.values(players)
-          .filter(player => (showBots ? true : !player.isBot))
-          .slice(0, 30)
+        players?.entries
           .map(player => (
             <div key={player.id} className="my-3 d-flex">
               <div className="ml-1">

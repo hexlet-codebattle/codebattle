@@ -47,6 +47,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :performance,
       :rank,
       :rating,
+      :subscription_type,
       :sound_settings
     ])
     |> Map.put(:is_admin, Codebattle.User.admin?(user))

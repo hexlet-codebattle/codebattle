@@ -43,7 +43,7 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
-    if User.admin?(socket.assings.current_user) do
+    if User.admin?(socket.assigns.current_user) do
       Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
       {:reply, {:ok, %{}}, socket}
     else

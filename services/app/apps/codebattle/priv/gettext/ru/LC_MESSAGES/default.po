@@ -1012,3 +1012,6 @@ msgstr "Прошёл"
 
 msgid "Not passed"
 msgstr "Не прошёл"
+
+msgid "Ranking"
+msgstr "Рейтинг"
