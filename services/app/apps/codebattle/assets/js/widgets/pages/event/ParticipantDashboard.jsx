@@ -121,7 +121,7 @@ const ParticipantDashboard = () => {
               className="col-12 cb-custom-event-stage-section"
             >
               <div className="text-white">
-                <div className="d-flex py-3">
+                <div className="d-flex flex-column flex-md-row py-3">
                   <div style={{ width: '20%' }} className="d-flex">
                     <div className="me-3" style={{ minWidth: '200px' }}>
                       <div>{stage.name}</div>
@@ -181,28 +181,40 @@ const ParticipantDashboard = () => {
                       <div
                         style={{ minWidth: '15%' }}
                         className={cn(
-                          'd-none d-lg-flex d-md-flex',
+                          'd-flex d-sm-flex',
                           'justify-content-center align-items-center text-center me-5',
                         )}
                       >
+                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                          {i18n.t('Place in total')}
+                          :
+                        </div>
                         {stage.placeInTotalRank}
                       </div>
                       <div
                         style={{ minWidth: '15%' }}
                         className={cn(
-                          'd-none d-lg-flex d-md-flex',
+                          'd-flex d-sm-flex',
                           'justify-content-center align-items-center text-center me-5',
                         )}
                       >
+                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                          {i18n.t('Place in category')}
+                          :
+                        </div>
                         {stage.placeInCategoryRank}
                       </div>
                       <div
                         style={{ minWidth: '15%' }}
                         className={cn(
-                          'd-none d-lg-flex d-md-flex',
+                          'd-flex d-sm-flex',
                           'justify-content-center align-items-center text-center me-5',
                         )}
                       >
+                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                          {i18n.t('Wins count')}
+                          :
+                        </div>
                         {stage.winsCount}
                         /
                         {stage.gamesCount}
@@ -210,10 +222,14 @@ const ParticipantDashboard = () => {
                       <div
                         style={{ minWidth: '15%' }}
                         className={cn(
-                          'd-none d-lg-flex',
+                          'd-flex d-sm-flex',
                           'justify-content-center align-items-center text-center me-5',
                         )}
                       >
+                        <div className="d-block d-lg-none me-2 font-weight-bold">
+                          {i18n.t('Time spent')}
+                          :
+                        </div>
                         {stage.timeSpent}
                       </div>
                     </>
