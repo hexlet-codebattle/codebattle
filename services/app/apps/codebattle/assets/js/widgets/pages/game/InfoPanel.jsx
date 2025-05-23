@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
 
 import i18next from 'i18next';
+import { useSelector } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
 import {
@@ -10,12 +10,12 @@ import {
 import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-import TournamentCurrentPlayerRankingPanel from './TournamentCurrentPlayerRankingPanel';
 import ChatWidget from './ChatWidget';
 import Output from './Output';
 import OutputTab from './OutputTab';
 import TaskAssignment from './TaskAssignment';
 import TimerContainer from './TimerContainer';
+import TournamentCurrentPlayerRankingPanel from './TournamentCurrentPlayerRankingPanel';
 
 const InfoPanel = ({
   idOutput = 'leftOutput',
