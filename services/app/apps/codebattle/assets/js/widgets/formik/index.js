@@ -49,41 +49,41 @@ const schemas = {
     password: Yup.string().required('Password required'),
   },
   signUp: {
-      name: Yup
-        .string()
-        .test(
-          'start-or-end-with-empty-symbols',
-          'Can\'t start or end with empty symbols',
-          value => {
-            if (!value) {
-              return true;
-            }
-            const invalidSymbolIndex = invalidSymbols.findIndex(invalidSymbol => (
-              value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
-            ));
+    name: Yup
+      .string()
+      .test(
+        'start-or-end-with-empty-symbols',
+        'Can\'t start or end with empty symbols',
+        value => {
+          if (!value) {
+            return true;
+          }
+          const invalidSymbolIndex = invalidSymbols.findIndex(invalidSymbol => (
+            value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
+          ));
 
-            return invalidSymbolIndex === -1;
-          },
-        )
-        .min(3, 'Should be from 3 to 16 characters')
-        .max(16, 'Should be from 3 to 16 characters')
-        .matches(
-          /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
-          'Must consist of Latin letters, numbers and underscores. Only begin with latin letter',
-        )
-        .required('Nickname required'),
-      email: emailSchema,
-      password: Yup
-        .string()
-        .matches(/^\S*$/, 'Can\'t contain empty symbols')
-        .min(6, 'Should be from 6 to 16 characters')
-        .max(16, 'Should be from 6 to 16 characters')
-        .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Should contain at least one special character')
-        .required('Password required'),
-      passwordConfirmation: Yup
-        .string()
-        .required('Confirmation required')
-        .oneOf([Yup.ref('password')], 'Passwords must match'),
+          return invalidSymbolIndex === -1;
+        },
+      )
+      .min(3, 'Should be from 3 to 16 characters')
+      .max(16, 'Should be from 3 to 16 characters')
+      .matches(
+        /^[a-zA-Z]+[a-zA-Z0-9_-\s{1}][a-zA-Z0-9_]+$/i,
+        'Must consist of Latin letters, numbers and underscores. Only begin with latin letter',
+      )
+      .required('Nickname required'),
+    email: emailSchema,
+    password: Yup
+      .string()
+      .matches(/^\S*$/, 'Can\'t contain empty symbols')
+      .min(6, 'Should be from 6 to 16 characters')
+      .max(16, 'Should be from 6 to 16 characters')
+      .matches(/[!@#$%^&*(),.?":{}|<>/\\]/, 'Should contain at least one special character')
+      .required('Password required'),
+    passwordConfirmation: Yup
+      .string()
+      .required('Confirmation required')
+      .oneOf([Yup.ref('password')], 'Passwords must match'),
   },
 };
 

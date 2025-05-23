@@ -29,7 +29,7 @@ const tableDataCellClassName = cn(
 const TournamentRankingTable = () => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const { ranking } = useSelector(tournamentSelector);
-  console.log(ranking)
+  console.log(ranking);
 
   return (
     <div
@@ -79,7 +79,9 @@ const TournamentRankingTable = () => {
                     <div
                       title={item?.name}
                       className="cb-custom-event-name"
-                      style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch' }}
+                      style={{
+ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
+}}
                     >
                       {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
                     </div>
@@ -88,7 +90,9 @@ const TournamentRankingTable = () => {
                     <div
                       title={console.log(item) || item?.clan}
                       className="cb-custom-event-name"
-                      style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch' }}
+                      style={{
+ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
+}}
                     >
                       {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
                     </div>
