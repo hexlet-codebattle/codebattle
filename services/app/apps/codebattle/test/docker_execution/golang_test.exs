@@ -59,7 +59,7 @@ defmodule Codebattle.DockerExecution.GolangTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "package main\n\nfunc solution(a int64, b int64) int64 {\n\treturn a - b\n}",
+      editor_text: "package main\n\nfunc solution(a int, b int) int {\n\treturn a - b\n}",
       lang_slug: "golang"
     })
 
@@ -91,7 +91,7 @@ defmodule Codebattle.DockerExecution.GolangTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "package main\n\nfunc solution(a int64, b int64) int64 {\n\treturn a + b\n}",
+      editor_text: "package main\n\nfunc solution(a int, b int) int {\n\treturn a + b\n}",
       lang_slug: "golang"
     })
 

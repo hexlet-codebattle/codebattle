@@ -63,8 +63,8 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     package main
     // import "fmt"
 
-    func solution(inputInteger int64) int64 {
-      var ans  int64
+    func solution(inputInteger int) int {
+      var ans  int
       return ans
     }
     // use stdout to debug

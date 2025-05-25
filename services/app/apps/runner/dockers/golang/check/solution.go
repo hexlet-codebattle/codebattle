@@ -1,5 +1,5 @@
 package main
 
-func solution(a int64, b int64) int64 {
+func solution(a int, b int) int {
 	return a * b
 }

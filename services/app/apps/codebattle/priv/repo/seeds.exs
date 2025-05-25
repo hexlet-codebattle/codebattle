@@ -271,6 +271,7 @@ for level <- levels do
     Codebattle.Task
     |> Repo.all()
     |> Enum.filter(&(&1.level == level))
+    |> Enum.filter(&String.starts_with?(&1.name, "task_#{level}"))
     |> Enum.map(& &1.id)
 
   name = "all_#{level}"
@@ -298,6 +299,7 @@ for level <- levels do
     }
     |> TaskPack.changeset()
     |> Repo.insert!()
+  end
 
   name = "10_#{level}"
 
@@ -319,7 +321,7 @@ Enum.each(1..100, fn id ->
 end)
 
 tokens =
-  Enum.map(1..100, fn id ->
+  Enum.map(1..2000, fn id ->
     t = DateTime.utc_now()
 
     clan_id =
@@ -331,13 +333,13 @@ tokens =
       |> to_string()
 
     params = %{
-      name: "neBot_#{id}_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+      name: "rBot_#{id}_",
       clan: "clan_#{clan_id}",
       clan_id: clan_id,
       is_bot: false,
       rating: 1200,
       email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user#{id}",
-      lang: "rust",
+      lang: "python",
       inserted_at: TimeHelper.utc_now(),
       updated_at: TimeHelper.utc_now()
     }
@@ -348,7 +350,7 @@ tokens =
       |> Repo.insert()
 
     token = Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
-    "#{user.id}:#{token}:js"
+    "#{user.id}:#{token}:python"
   end)
 
 File.mkdir_p!("tmp")

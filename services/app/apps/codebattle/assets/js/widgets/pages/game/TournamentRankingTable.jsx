@@ -29,7 +29,6 @@ const tableDataCellClassName = cn(
 const TournamentRankingTable = () => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const { ranking } = useSelector(tournamentSelector);
-  console.log(ranking)
 
   return (
     <div

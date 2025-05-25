@@ -20,7 +20,7 @@ import CustomTournamentInfoPanel from './CustomTournamentInfoPanel';
 import DetailsModal from './DetailsModal';
 import IndividualMatches from './IndividualMatches';
 import MatchConfirmationModal from './MatchConfirmationModal';
-import Players from './PlayersPanel';
+import Players from './PlayersRankingPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';

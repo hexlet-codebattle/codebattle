@@ -453,7 +453,7 @@ defmodule Runner.Languages do
       },
       expected_template: " <%= type %>",
       types: %{
-        "integer" => "int64",
+        "integer" => "int",
         "float" => "float64",
         "string" => "string",
         "array" => "[]<%= inner_type %>",

@@ -31,9 +31,9 @@ func main() {
 
 	result_.Type = "result"
 
-	var a1 int64 = 1
+	var a1 int = 1
 
-	var b1 int64 = 1
+	var b1 int = 1
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -59,9 +59,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a2 int64 = 2
+	var a2 int = 2
 
-	var b2 int64 = 2
+	var b2 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -87,9 +87,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a3 int64 = 1
+	var a3 int = 1
 
-	var b3 int64 = 2
+	var b3 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -115,9 +115,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a4 int64 = 3
+	var a4 int = 3
 
-	var b4 int64 = 2
+	var b4 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -143,9 +143,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a5 int64 = 5
+	var a5 int = 5
 
-	var b5 int64 = 1
+	var b5 int = 1
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -171,9 +171,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a6 int64 = 10
+	var a6 int = 10
 
-	var b6 int64 = 0
+	var b6 int = 0
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -199,9 +199,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a7 int64 = 20
+	var a7 int = 20
 
-	var b7 int64 = 2
+	var b7 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -227,9 +227,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a8 int64 = 10
+	var a8 int = 10
 
-	var b8 int64 = 2
+	var b8 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -255,9 +255,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a9 int64 = 30
+	var a9 int = 30
 
-	var b9 int64 = 2
+	var b9 int = 2
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {
@@ -283,9 +283,9 @@ func main() {
 	}
 	results_ = append(results_, result_)
 
-	var a10 int64 = 50
+	var a10 int = 50
 
-	var b10 int64 = 1
+	var b10 int = 1
 
 	reader_, writer_, err_ = os.Pipe()
 	if err_ != nil {

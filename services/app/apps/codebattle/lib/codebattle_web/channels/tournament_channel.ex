@@ -223,7 +223,7 @@ defmodule CodebattleWeb.TournamentChannel do
       matches: [],
       players: players,
       ranking: ranking,
-      clans: Helpers.get_clans_by_ranking(tournament, ranking),
+      # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: nil,
       tournament: Helpers.prepare_to_json(tournament)
     }
@@ -248,11 +248,12 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
+      # TODO: add here top 3 and your page
     ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, current_player)
 
     Map.merge(player_data, %{
       ranking: ranking,
-      clans: Helpers.get_clans_by_ranking(tournament, ranking),
+      # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
     })

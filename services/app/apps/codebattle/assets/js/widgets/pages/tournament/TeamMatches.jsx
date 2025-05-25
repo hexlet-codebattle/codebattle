@@ -8,7 +8,7 @@ import UserInfo from '../../components/UserInfo';
 import TournamentStates from '../../config/tournament';
 
 import JoinButton from './JoinButton';
-import Players from './PlayersPanel';
+import Players from './PlayersRankingPanel';
 
 const calcRoundResult = matches => matches.reduce(
     (acc, match) => {

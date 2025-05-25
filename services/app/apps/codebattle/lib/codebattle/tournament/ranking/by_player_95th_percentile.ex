@@ -59,7 +59,7 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
     :ok
   end
 
-  def add_new_player(%{state: "waiting_participants"} = tournament, player) do
+  def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
     place = Ranking.count(tournament) + 1
 
     Ranking.put_single_record(tournament, place, %{

@@ -24,7 +24,7 @@ import DetailsModal from './DetailsModal';
 import IndividualMatches from './IndividualMatches';
 import JoinButton from './JoinButton';
 import MatchConfirmationModal from './MatchConfirmationModal';
-import Players from './PlayersPanel';
+import PlayersRankingPanel from './PlayersRankingPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
@@ -368,10 +368,9 @@ function Tournament({ waitingRoomMachine }) {
             </div>
             <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
               {!tournament.useClan && !hiddenSidePanel && (
-                <Players
+                <PlayersRankingPanel
                   playersCount={tournament.playersCount}
-                  players={tournament.ranking}
-                  showBots={tournament.showBots}
+                  ranking={tournament.ranking}
                 />
               )}
               {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
