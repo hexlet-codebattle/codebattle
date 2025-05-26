@@ -46,18 +46,18 @@ config :codebattle, CodebattleWeb.BotEndpoint,
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [
-    port: codebattle_port,
-    transport_options: [
-      # more acceptor processes
-      num_acceptors: 100,
-      # allow many sockets
-      max_connections: 16_384,
-      socket_opts: [
-        backlog: 1024,
-        recbuf: 65_536,
-        sndbuf: 65_536
-      ]
-    ]
+    port: codebattle_port
+    # transport_options: [
+    #   # more acceptor processes
+    #   num_acceptors: 100,
+    #   # allow many sockets
+    #   max_connections: 16_384,
+    #   socket_opts: [
+    #     backlog: 1024,
+    #     recbuf: 65_536,
+    #     sndbuf: 65_536
+    #   ]
+    # ]
   ],
   url: [host: codebattle_host, scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
@@ -164,7 +164,8 @@ config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") 
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
 config :runner,
-  max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
+  max_parallel_containers_run:
+    "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
 config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
 
