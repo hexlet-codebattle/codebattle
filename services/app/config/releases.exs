@@ -45,7 +45,20 @@ config :codebattle, CodebattleWeb.BotEndpoint,
   server: true
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: codebattle_port],
+  http: [
+    port: codebattle_port,
+    transport_options: [
+      # more acceptor processes
+      num_acceptors: 100,
+      # allow many sockets
+      max_connections: 16_384,
+      socket_opts: [
+        backlog: 1024,
+        recbuf: 65_536,
+        sndbuf: 65_536
+      ]
+    ]
+  ],
   url: [host: codebattle_host, scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: secret_key_base,

@@ -97,7 +97,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClanTest do
              matches: [],
              players: [_p1, _p2, _p3, _p4, _p5, _p6],
              ranking: %{
-               page_size: 10,
+               page_size: 42,
                entries: [
                  %{id: _, score: 0, players_count: 2, place: 1},
                  %{id: _, score: 0, players_count: 2, place: 2},

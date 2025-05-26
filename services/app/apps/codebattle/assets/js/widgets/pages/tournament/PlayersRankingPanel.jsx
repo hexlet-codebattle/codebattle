@@ -30,21 +30,16 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
 
   return (
     <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
-      <div className="d-flex align-items-center flex-wrap justify-content-start">
-        <h5 className="mb-2 mr-5 text-nowrap">
-          {`${i18next.t('Total players')}: ${playersCount}`}
-        </h5>
-      </div>
       <div className="my-2">
         {playersCount === 0 ? (
           <p className="text-nowrap text-muted">
-            {i18next.t('No players yet')}.
+            {i18next.t('No players yet')}
+            .
           </p>
         ) : (
           <div
             className={cn(
               'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
-              'cb-game-chat-container cb-messages-container',
             )}
           >
             <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
@@ -88,7 +83,9 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
                           <div
                             title={item?.name}
                             className="cb-custom-event-name"
-                            style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch' }}
+                            style={{
+ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
+}}
                           >
                             {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
                           </div>
@@ -97,7 +94,9 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
                           <div
                             title={item?.clan}
                             className="cb-custom-event-name"
-                            style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch' }}
+                            style={{
+ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
+}}
                           >
                             {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
                           </div>
@@ -117,6 +116,11 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
             </div>
           </div>
         )}
+      </div>
+      <div className="d-flex align-items-center flex-wrap justify-content-start">
+        <h6 className="mb-2 mr-5 text-nowrap">
+          {`${i18next.t('Total players')}: ${playersCount}`}
+        </h6>
       </div>
     </div>
   );

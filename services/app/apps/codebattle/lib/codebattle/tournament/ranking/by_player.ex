@@ -16,11 +16,11 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer do
     []
   end
 
-  def get_page(_tournament, _page) do
+  def get_page(_tournament, _page, page_size) do
     %{
       total_entries: 0,
       page_number: 0,
-      page_size: @page_size,
+      page_size: page_size,
       entries: []
     }
   end

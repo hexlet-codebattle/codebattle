@@ -23,7 +23,8 @@ export const currentUserIdSelector = state => state.user.currentUserId;
 export const currentUserClanIdSelector = state => state.user.users[state.user.currentUserId].clanId;
 
 export const currentUserIsAdminSelector = state => !!state.user.users[state.user.currentUserId].isAdmin;
-export const currentUserIsPremiumSelector = state => state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.premium
+export const currentUserIsPremiumSelector = state => state.user.users[state.user.currentUserId].subscriptionType
+  === SubscriptionTypeCodes.premium;
 
 export const currentUserIsGuestSelector = state => !!state.user.users[state.user.currentUserId].isGuest;
 

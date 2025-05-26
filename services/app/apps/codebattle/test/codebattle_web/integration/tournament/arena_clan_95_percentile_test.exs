@@ -151,7 +151,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
              matches: [],
              players: [%{}, %{}, %{}, %{}, %{}, %{}, %{}],
              ranking: %{
-               page_size: 10,
+               page_size: 42,
                entries: [
                  %{clan: "c1", clan_id: _, id: _, place: 1, score: 0, name: "1"},
                  %{clan: "c1", clan_id: _, id: _, place: 2, score: 0, name: "2"},

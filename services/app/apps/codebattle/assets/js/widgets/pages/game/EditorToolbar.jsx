@@ -68,7 +68,6 @@ const EditorToolbar = ({
             role="group"
             aria-label="Report actions"
           >
-            {console.log(isPremium, isAdmin)}
             {(isAdmin || isPremium) && !showControlBtns && <GameReportButton userId={player.id} />}
             {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
           </div>

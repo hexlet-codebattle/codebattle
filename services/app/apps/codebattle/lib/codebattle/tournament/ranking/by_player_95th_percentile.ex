@@ -19,7 +19,7 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
   end
 
   def get_nearest_page_by_player(tournament, nil) do
-    get_page(tournament, 1)
+    get_page(tournament, 1, @page_size)
   end
 
   def get_nearest_page_by_player(tournament, player) do
@@ -29,19 +29,19 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
       nil -> 0
       %{place: place} -> div(place, @page_size) + 1
     end
-    |> then(&get_page(tournament, &1))
+    |> then(&get_page(tournament, &1, @page_size))
   end
 
-  def get_page(tournament, page) do
+  def get_page(tournament, page, page_size) do
     total_entries = Ranking.count(tournament)
 
-    start_index = (page - 1) * @page_size + 1
-    end_index = start_index + @page_size - 1
+    start_index = (page - 1) * page_size + 1
+    end_index = start_index + page_size - 1
 
     %{
       total_entries: total_entries,
       page_number: page,
-      page_size: @page_size,
+      page_size: page_size,
       entries: Ranking.get_slice(tournament, start_index, end_index)
     }
   end

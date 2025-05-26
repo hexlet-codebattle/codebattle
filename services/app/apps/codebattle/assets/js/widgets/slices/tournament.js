@@ -52,6 +52,9 @@ const tournament = createSlice({
         ...payload,
       };
     },
+    updateTournamentRanking: (state, { payload }) => {
+      state.ranking = payload;
+    },
     updateTournamentPlayers: (state, { payload }) => {
       const newPlayers = payload.reduce((acc, player) => ({
         ...acc,

@@ -9,6 +9,8 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   require Logger
 
+  @default_ranking_size 42
+
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 
@@ -230,7 +232,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:ranking:request", _params, socket) do
     tournament_info = socket.assigns.tournament_info
-    ranking = Tournament.Ranking.get_page(tournament_info, 1)
+    ranking = Tournament.Ranking.get_page(tournament_info, 1, @default_ranking_size)
     {:reply, {:ok, %{ranking: ranking}}, socket}
   end
 
@@ -366,13 +368,20 @@ defmodule CodebattleWeb.TournamentAdminChannel do
         %{}
       end
 
+    matches =
+      if tournament.type in ["swiss", "arena"] do
+        []
+      else
+        Helpers.get_matches(tournament)
+      end
+
     %{
       tasks_info: tasks_info,
       reports: UserGameReport.list_by_tournament(tournament.id),
       tournament: Helpers.prepare_to_json(tournament),
-      ranking: Tournament.Ranking.get_page(tournament, 1),
+      ranking: Tournament.Ranking.get_page(tournament, 1, @default_ranking_size),
       players: Helpers.get_players(tournament),
-      matches: Helpers.get_matches(tournament),
+      matches: matches,
       clans: clans
     }
   end

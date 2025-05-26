@@ -35,12 +35,11 @@ const initTournamentChannel = dispatch => {
     //     clans: response.clans || {},
     //     players: {},
     //     showBots: response.tournament.type !== TournamentTypes.show,
-    //     channel: { online: true },
-    //     playersPageNumber: 1,
     //     playersPageSize: 20,
     //   }),
     // );
 
+    dispatch(actions.updateTournamentRanking((response.ranking)));
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
@@ -64,6 +63,9 @@ export const connectToTournament = (_machine, newTournamentId) => dispatch => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
     dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
+    if (response.ranking) {
+      dispatch(actions.updateTournamentRanking((response.ranking)));
+    }
     if (response.tasksInfo) {
       dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
     }

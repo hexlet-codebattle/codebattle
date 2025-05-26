@@ -248,11 +248,25 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
-      # TODO: add here top 3 and your page
-    ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, current_player)
+    # TODO: add here top 3 and your page
+    top_3_ranking = Tournament.Ranking.get_page(tournament, 1, 3)
+    nearest_ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, current_player)
+
+    # Create a map of player IDs to player data from top 3
+    top_3_players_map = Map.new(top_3_ranking.entries, &{&1.id, &1})
+
+    # Filter out players from nearest_ranking that are already in top 3
+    filtered_nearest_players =
+      Enum.reject(nearest_ranking.entries, fn player -> Map.has_key?(top_3_players_map, player.id) end)
+
+    # Combine top 3 with filtered nearest players
+    combined_entries = top_3_ranking.entries ++ filtered_nearest_players
+
+    # Create a combined ranking with the merged entries
+    combined_ranking = Map.put(top_3_ranking, :entries, combined_entries)
 
     Map.merge(player_data, %{
-      ranking: ranking,
+      ranking: combined_ranking,
       # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)

@@ -353,7 +353,7 @@ function Tournament({ waitingRoomMachine }) {
           <div className="row flex-lg-row-reverse">
             <div
               className={cn('col-12  mb-2 mb-lg-0', {
-                'col-lg-9': !hiddenSidePanel,
+                'col-lg-8': !hiddenSidePanel,
               })}
             >
               <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
@@ -366,7 +366,7 @@ function Tournament({ waitingRoomMachine }) {
                 />
               </div>
             </div>
-            <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
+            <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-4 h-100">
               {!tournament.useClan && !hiddenSidePanel && (
                 <PlayersRankingPanel
                   playersCount={tournament.playersCount}

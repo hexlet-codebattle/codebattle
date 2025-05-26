@@ -9,7 +9,7 @@ alias Codebattle.UserGame
 
 levels = ["elementary", "easy", "medium", "hard"]
 
-Enum.each(1..30, fn x ->
+Enum.each(1..10, fn x ->
   for level <- levels do
     task_params = %{
       level: level,
@@ -274,19 +274,6 @@ for level <- levels do
     |> Enum.filter(&String.starts_with?(&1.name, "task_#{level}"))
     |> Enum.map(& &1.id)
 
-  name = "all_#{level}"
-
-  Repo.get_by(TaskPack, name: name) ||
-    %TaskPack{
-      creator_id: 1,
-      name: name,
-      visibility: "public",
-      state: "active",
-      task_ids: task_ids
-    }
-    |> TaskPack.changeset()
-    |> Repo.insert!()
-
   name = "7_#{level}"
 
   Repo.get_by(TaskPack, name: name) ||
@@ -299,7 +286,6 @@ for level <- levels do
     }
     |> TaskPack.changeset()
     |> Repo.insert!()
-  end
 
   name = "10_#{level}"
 

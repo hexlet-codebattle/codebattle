@@ -32,11 +32,14 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_nearest_page_by_player(tournament, player)
   end
 
-  @spec get_page(tournament :: Tournament.t(), page :: pos_integer()) :: map()
-  def get_page(%{ranking_table: nil}, _page), do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+  @spec get_page(tournament :: Tournament.t(), page :: pos_integer(), page_size :: pos_integer()) :: map()
+  def get_page(tournament, page, page_size \\ 10)
 
-  def get_page(tournament, page) do
-    get_module(tournament).get_page(tournament, page)
+  def get_page(%{ranking_table: nil}, _page, _page_size),
+    do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+
+  def get_page(tournament, page, page_size) do
+    get_module(tournament).get_page(tournament, page, page_size)
   end
 
   @spec add_new_player(Tournament.t(), Tournament.Player.t()) :: Tournament.t()

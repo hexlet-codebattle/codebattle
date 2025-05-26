@@ -12,7 +12,7 @@ defmodule Codebattle.Tournament.Ranking.Void do
     []
   end
 
-  def get_page(_tournament, _page) do
+  def get_page(_tournament, _page, _page_size) do
     %{
       total_entries: 0,
       page_number: 0,
