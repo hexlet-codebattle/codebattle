@@ -141,7 +141,7 @@ defmodule Runner.SolutionGeneratorTest do
   import kotlin.collections.*
 
   fun solution(a: Int, text: String, b: Double, c: Boolean, nested_hash_of_string: Map<String, String>, nested_array_of_string: List<String>, nested_array_of_array_of_strings: List<List<String>>): List<String> {
-    val ans:  List<String> = listOf("value")
+    var ans = mutableListOf("value")
     return ans
   }
   // use stdout to debug

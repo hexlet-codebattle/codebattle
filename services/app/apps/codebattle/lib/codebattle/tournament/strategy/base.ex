@@ -577,19 +577,33 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp start_round(tournament, round_params \\ %{}) do
+        # Perform initial updates in a single operation
+        tournament =
+          update_struct(tournament, %{
+            break_state: "off",
+            last_round_started_at: NaiveDateTime.utc_now(:second),
+            match_timeout_seconds: Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds)
+          })
+
+        # Build and save round first - this is a critical operation
+        tournament = build_and_save_round!(tournament)
+
+        # Perform these operations in sequence as they depend on each other
+        tournament =
+          tournament
+          |> maybe_preload_tasks()
+          |> maybe_set_round_task_ids()
+          |> maybe_start_round_timer()
+          |> maybe_activate_players()
+
+        # Build matches - this is the most time-consuming part
+        tournament = build_round_matches(tournament, round_params)
+
+        # Save to database
+        tournament = db_save!(tournament)
+
+        # These operations can be done after the critical path
         tournament
-        |> update_struct(%{
-          break_state: "off",
-          last_round_started_at: NaiveDateTime.utc_now(:second),
-          match_timeout_seconds: Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds)
-        })
-        |> build_and_save_round!()
-        |> maybe_preload_tasks()
-        |> maybe_set_round_task_ids()
-        |> maybe_start_round_timer()
-        |> maybe_activate_players()
-        |> build_round_matches(round_params)
-        |> db_save!()
         |> maybe_start_waiting_room()
         |> broadcast_round_created()
       end
@@ -648,40 +662,51 @@ defmodule Codebattle.Tournament.Base do
       defp bulk_create_round_games_and_matches(batch, tournament, task, timeout_seconds) do
         reset_task_ids = tournament.task_provider == "task_pack_per_round"
 
-        batch
-        |> Enum.map(fn
-          # TODO: skip bots game
-          # {[p1 = %{is_bot: true}, p2 = %{is_bot: true}], match_id} ->
-          #   Tournament.Matches.put_match(tournament, %Tournament.Match{
-          #     id: match_id,
-          #     state: "canceled",
-          #     round_id: tournament.current_round_id,
-          #     round_position: tournament.current_round_position,
-          #     player_ids: Enum.sort([p1.id, p2.id])
-          #   })
+        # Prepare game creation parameters in a single pass
+        game_params =
+          Enum.map(batch, fn
+            {[p1, p2] = players, match_id} ->
+              base_params = %{
+                players: players,
+                ref: match_id,
+                round_id: tournament.current_round_id,
+                state: "playing",
+                task: task,
+                waiting_room_name: tournament.waiting_room_name,
+                timeout_seconds: timeout_seconds,
+                tournament_id: tournament.id,
+                type: game_type(),
+                use_chat: tournament.use_chat,
+                use_timer: tournament.use_timer
+              }
 
-          {[p1, p2] = players, match_id} ->
-            %{
-              players: players,
-              ref: match_id,
-              round_id: tournament.current_round_id,
-              state: "playing",
-              task: task,
-              waiting_room_name: tournament.waiting_room_name,
-              timeout_seconds: timeout_seconds,
-              tournament_id: tournament.id,
-              type: game_type(),
-              use_chat: tournament.use_chat,
-              use_timer: tournament.use_timer
-            }
-            |> maybe_set_free_task(tournament, p1)
-            |> maybe_add_award(tournament)
-        end)
-        |> Game.Context.bulk_create_games()
-        |> Enum.zip(batch)
-        |> Enum.each(fn {game, {players, _match_id}} ->
-          build_and_run_match(tournament, players, game, reset_task_ids)
-        end)
+              # Apply transformations
+              params =
+                base_params
+                |> maybe_set_free_task(tournament, p1)
+                |> maybe_add_award(tournament)
+
+              {params, players, match_id}
+          end)
+
+        # Extract just the game parameters for bulk creation
+        game_creation_params = Enum.map(game_params, fn {params, _players, _match_id} -> params end)
+
+        # Create games in bulk
+        created_games = Game.Context.bulk_create_games(game_creation_params)
+
+        # Process matches in parallel using Task.async_stream with controlled concurrency
+        created_games
+        |> Enum.zip(game_params)
+        |> Task.async_stream(
+          fn {game, {_params, players, _match_id}} ->
+            build_and_run_match(tournament, players, game, reset_task_ids)
+          end,
+          max_concurrency: System.schedulers_online(),
+          ordered: false,
+          timeout: 30_000
+        )
+        |> Stream.run()
       end
 
       defp create_rematch_game(tournament, players, ref) do
@@ -1026,43 +1051,77 @@ defmodule Codebattle.Tournament.Base do
         matches_to_finish = get_matches(tournament, "playing")
         finished_at = DateTime.utc_now(:second)
 
-        Enum.each(
-          matches_to_finish,
-          fn match ->
-            duration_sec = NaiveDateTime.diff(finished_at, match.started_at)
+        # Early return if no matches to finish
+        if matches_to_finish == [] do
+          tournament
+        else
+          # Process matches in parallel with Task.async_stream
+          match_results =
+            matches_to_finish
+            |> Task.async_stream(
+              fn match ->
+                duration_sec = NaiveDateTime.diff(finished_at, match.started_at)
 
-            player_results = improve_player_results(tournament, match, duration_sec)
-            Game.Context.trigger_timeout(match.game_id)
+                # Get player results and trigger timeout
+                player_results = improve_player_results(tournament, match, duration_sec)
+                Game.Context.trigger_timeout(match.game_id)
 
-            new_match = %{
-              match
-              | state: "timeout",
-                player_results: player_results,
-                duration_sec: duration_sec,
-                finished_at: finished_at
-            }
+                # Create new match with timeout state
+                new_match = %{
+                  match
+                  | state: "timeout",
+                    player_results: player_results,
+                    duration_sec: duration_sec,
+                    finished_at: finished_at
+                }
 
-            Tournament.Matches.put_match(tournament, new_match)
+                # Return match and player data for batch processing
+                {new_match, player_results}
+              end,
+              max_concurrency: System.schedulers_online() * 2,
+              timeout: 10_000
+            )
+            |> Enum.to_list()
 
-            Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-              tournament: tournament,
-              match: new_match
-            })
+          # Batch update matches and collect player updates
+          player_updates =
+            Enum.reduce(match_results, %{}, fn {:ok, {new_match, player_results}}, acc ->
+              # Update match in tournament
+              Tournament.Matches.put_match(tournament, new_match)
 
-            player_results
-            |> Map.keys()
-            |> Enum.each(fn player_id ->
-              player = Tournament.Players.get_player(tournament, player_id)
+              # Broadcast match update
+              Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+                tournament: tournament,
+                match: new_match
+              })
 
-              player &&
-                Tournament.Players.put_player(tournament, %{
-                  player
-                  | score: player.score + player_results[player_id].score,
-                    lang: player_results[player_id].lang
-                })
+              # Collect player updates
+              Enum.reduce(player_results, acc, fn {player_id, result}, player_acc ->
+                player_score = result.score
+                player_lang = result.lang
+
+                # credo:disable-for-next-line Credo.Check.Refactor.Nesting
+                Map.update(player_acc, player_id, %{score: player_score, lang: player_lang}, fn existing ->
+                  %{score: existing.score + player_score, lang: player_lang}
+                end)
+              end)
             end)
-          end
-        )
+
+          # Batch update player scores
+          Enum.each(player_updates, fn {player_id, updates} ->
+            player = Tournament.Players.get_player(tournament, player_id)
+
+            if player do
+              Tournament.Players.put_player(tournament, %{
+                player
+                | score: player.score + updates.score,
+                  lang: updates.lang
+              })
+            end
+          end)
+
+          tournament
+        end
       end
 
       defp improve_player_results(tournament, match, duration_sec) do

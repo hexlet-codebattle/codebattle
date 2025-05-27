@@ -11,6 +11,7 @@ defmodule Codebattle.Tournament.Server do
   require Logger
 
   @type tournament_id :: pos_integer()
+  @tournament_info_table :tournament_info_cache
   @waiting_room_timeout_ms to_timeout(second: 1)
   # API
   def start_link(tournament_id) do
@@ -26,7 +27,15 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def get_tournament_info(id) do
-    GenServer.call(server_name(id), :get_tournament_info)
+    # Try to get from ETS cache first
+    case :ets.lookup(@tournament_info_table, id) do
+      [{^id, tournament_info}] ->
+        tournament_info
+
+      [] ->
+        # Fall back to GenServer call if not in cache
+        GenServer.call(server_name(id), :get_tournament_info, 20_000)
+    end
   catch
     :exit, {:noproc, _} ->
       nil
@@ -37,7 +46,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def get_tournament(id) do
-    GenServer.call(server_name(id), :get_tournament)
+    GenServer.call(server_name(id), :get_tournament, 20_000)
   catch
     :exit, {:noproc, _} ->
       nil
@@ -60,7 +69,8 @@ defmodule Codebattle.Tournament.Server do
   def finish_round_after(tournament_id, round_position, timeout_in_seconds) do
     GenServer.call(
       server_name(tournament_id),
-      {:finish_round_after, round_position, timeout_in_seconds}
+      {:finish_round_after, round_position, timeout_in_seconds},
+      30_000
     )
   catch
     :exit, reason ->
@@ -82,7 +92,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_event(tournament_id, event_type, params) do
-    GenServer.call(server_name(tournament_id), {:fire_event, event_type, params})
+    GenServer.call(server_name(tournament_id), {:fire_event, event_type, params}, 20_000)
   catch
     :exit, reason ->
       Logger.error("Error to send tournament update: #{inspect(reason)}")
@@ -91,6 +101,11 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
+    # Create tournament_info_cache table if it doesn't exist
+    if :ets.whereis(@tournament_info_table) == :undefined do
+      :ets.new(@tournament_info_table, [:named_table, :set, :public, read_concurrency: true])
+    end
+
     players_table = Tournament.Players.create_table(tournament_id)
     matches_table = Tournament.Matches.create_table(tournament_id)
     tasks_table = Tournament.Tasks.create_table(tournament_id)
@@ -138,6 +153,23 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call({:update, new_tournament}, _from, state) do
+    # Update the tournament_info cache when tournament is updated
+    tournament_info =
+      Map.drop(new_tournament, [
+        :__struct__,
+        :__meta__,
+        :creator,
+        :event,
+        :matches,
+        :players,
+        :waiting_room_state,
+        :stats,
+        :played_pair_ids,
+        :round_tasks
+      ])
+
+    :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
+
     broadcast_tournament_update(new_tournament)
     {:reply, :ok, %{state | tournament: new_tournament}}
   end
@@ -167,19 +199,24 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call(:get_tournament_info, _from, state) do
-    {:reply,
-     Map.drop(state.tournament, [
-       :__struct__,
-       :__meta__,
-       :creator,
-       :event,
-       :matches,
-       :players,
-       :waiting_room_state,
-       :stats,
-       :played_pair_ids,
-       :round_tasks
-     ]), state}
+    tournament_info =
+      Map.drop(state.tournament, [
+        :__struct__,
+        :__meta__,
+        :creator,
+        :event,
+        :matches,
+        :players,
+        :waiting_room_state,
+        :stats,
+        :played_pair_ids,
+        :round_tasks
+      ])
+
+    # Update the cache
+    :ets.insert(@tournament_info_table, {state.tournament.id, tournament_info})
+
+    {:reply, tournament_info, state}
   end
 
   def handle_call({:fire_event, event_type, params}, _from, %{tournament: tournament} = state) do
@@ -191,6 +228,23 @@ defmodule Codebattle.Tournament.Server do
       else
         apply(module, event_type, [tournament, params])
       end
+
+    # Update the tournament_info cache when firing events
+    tournament_info =
+      Map.drop(new_tournament, [
+        :__struct__,
+        :__meta__,
+        :creator,
+        :event,
+        :matches,
+        :players,
+        :waiting_room_state,
+        :stats,
+        :played_pair_ids,
+        :round_tasks
+      ])
+
+    :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
 
     # TODO: rethink broadcasting during applying event, maybe put inside tournament module
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
