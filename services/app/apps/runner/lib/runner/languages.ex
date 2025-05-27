@@ -327,7 +327,7 @@ defmodule Runner.Languages do
       import kotlin.collections.*
 
       fun solution(<%= arguments %>):<%= expected %> {
-        val ans: <%= expected %> = <%= default_value %>
+        var ans = <%= default_value %>
         return ans
       }
       // <%= comment %>
@@ -337,9 +337,9 @@ defmodule Runner.Languages do
         "integer" => "0",
         "float" => "0.1",
         "string" => "\"value\"",
-        "array" => "listOf(<%= value %>)",
+        "array" => "mutableListOf(<%= value %>)",
         "boolean" => "true",
-        "hash" => "mapOf(\"key\" to <%= value %>)"
+        "hash" => "mutableMapOf(\"key\" to <%= value %>)"
       },
       expected_template: " <%= type %>",
       types: %{
