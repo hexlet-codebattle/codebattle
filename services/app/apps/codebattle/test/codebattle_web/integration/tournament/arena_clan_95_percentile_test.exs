@@ -278,7 +278,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
           id: ^u1_id,
           state: "matchmaking_active",
           task_ids: [^t1_id],
-          score: 3,
+          score: 0,
           place: 0,
           wins_count: 1
         }
@@ -298,7 +298,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
           id: ^u1_id,
           state: "matchmaking_active",
           task_ids: [^t1_id],
-          score: 3,
+          score: 0,
           place: 0,
           wins_count: 1
         }
@@ -312,7 +312,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
         current_player: %{
           state: "matchmaking_active",
           task_ids: [^t1_id],
-          score: 1,
+          score: 0,
           place: 0,
           wins_count: 0
         }

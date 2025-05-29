@@ -391,21 +391,6 @@ defmodule Codebattle.Tournament.Base do
         match = get_match(tournament, params.ref)
         winner_id = pick_game_winner_id(match.player_ids, params.player_results)
 
-        player_results =
-          Map.new(params.player_results, fn {player_id, result} ->
-            {player_id,
-             Map.put(
-               result,
-               :score,
-               get_score(
-                 tournament.score_strategy,
-                 match.level,
-                 result.result_percent,
-                 params.duration_sec
-               )
-             )}
-          end)
-
         params.player_results
         |> Map.keys()
         |> Enum.each(fn player_id ->
@@ -414,20 +399,13 @@ defmodule Codebattle.Tournament.Base do
           if player do
             player = %{
               player
-              | score: player.score + player_results[player_id].score,
-                lang: params.player_results[player_id].lang,
+              | lang: params.player_results[player_id].lang,
                 wins_count:
                   player.wins_count +
-                    if(player_results[player_id].result == "won", do: 1, else: 0)
+                    if(params.player_results[player_id].result == "won", do: 1, else: 0)
             }
 
             Tournament.Players.put_player(tournament, player)
-
-            Tournament.Ranking.update_player_result(
-              tournament,
-              player,
-              player_results[player_id].score
-            )
           end
         end)
 
@@ -436,7 +414,7 @@ defmodule Codebattle.Tournament.Base do
           | state: params.game_state,
             winner_id: winner_id,
             duration_sec: params.duration_sec,
-            player_results: player_results,
+            player_results: params.player_results,
             finished_at: DateTime.utc_now(:second)
         }
 
@@ -861,7 +839,6 @@ defmodule Codebattle.Tournament.Base do
           |> maybe_finish_waiting_room()
           |> set_stats()
           |> set_winner_ids()
-          # |> db_save!()
           |> maybe_save_event_results()
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
@@ -1056,37 +1033,22 @@ defmodule Codebattle.Tournament.Base do
           tournament
         else
           # Process matches in parallel with Task.async_stream
-          match_results =
-            matches_to_finish
-            |> Task.async_stream(
-              fn match ->
-                duration_sec = NaiveDateTime.diff(finished_at, match.started_at)
+          matches_to_finish
+          |> Task.async_stream(
+            fn match ->
+              # trigger game timeout and set player results
+              {:ok, game} = Game.Context.trigger_timeout(match.game_id)
 
-                # Get player results and trigger timeout
-                player_results = improve_player_results(tournament, match, duration_sec)
-                Game.Context.trigger_timeout(match.game_id)
+              # Create new match with timeout state
+              new_match = %{
+                match
+                | state: "timeout",
+                  player_results: Game.Helpers.get_player_results(game),
+                  duration_sec: game.duration_sec,
+                  finished_at: finished_at
+              }
 
-                # Create new match with timeout state
-                new_match = %{
-                  match
-                  | state: "timeout",
-                    player_results: player_results,
-                    duration_sec: duration_sec,
-                    finished_at: finished_at
-                }
-
-                # Return match and player data for batch processing
-                {new_match, player_results}
-              end,
-              max_concurrency: System.schedulers_online() * 2,
-              timeout: 10_000
-            )
-            |> Enum.to_list()
-
-          # Batch update matches and collect player updates
-          player_updates =
-            Enum.reduce(match_results, %{}, fn {:ok, {new_match, player_results}}, acc ->
-              # Update match in tournament
+              # Return match and player data for batch processing
               Tournament.Matches.put_match(tournament, new_match)
 
               # Broadcast match update
@@ -1094,61 +1056,17 @@ defmodule Codebattle.Tournament.Base do
                 tournament: tournament,
                 match: new_match
               })
-
-              # Collect player updates
-              Enum.reduce(player_results, acc, fn {player_id, result}, player_acc ->
-                player_score = result.score
-                player_lang = result.lang
-
-                # credo:disable-for-next-line Credo.Check.Refactor.Nesting
-                Map.update(player_acc, player_id, %{score: player_score, lang: player_lang}, fn existing ->
-                  %{score: existing.score + player_score, lang: player_lang}
-                end)
-              end)
-            end)
-
-          # Batch update player scores
-          Enum.each(player_updates, fn {player_id, updates} ->
-            player = Tournament.Players.get_player(tournament, player_id)
-
-            if player do
-              Tournament.Players.put_player(tournament, %{
-                player
-                | score: player.score + updates.score,
-                  lang: updates.lang
-              })
-            end
-          end)
+            end,
+            max_concurrency: System.schedulers_online() * 2,
+            timeout: 10_000
+          )
+          |> Stream.run()
 
           tournament
         end
       end
 
-      defp improve_player_results(tournament, match, duration_sec) do
-        case Game.Context.fetch_game(match.game_id) do
-          {:ok, %{is_live: true} = game} ->
-            game
-            |> Game.Helpers.get_player_results()
-            |> Map.new(fn {player_id, result} ->
-              {player_id,
-               Map.put(
-                 result,
-                 :score,
-                 get_score(
-                   tournament.score_strategy,
-                   match.level,
-                   result.result_percent,
-                   duration_sec
-                 )
-               )}
-            end)
-
-          {:error, _reason} ->
-            %{}
-        end
-      end
-
-      defp maybe_add_award(game_params, tournament) do
+      defp maybe_add_award(game_params, %{type: "show"} = tournament) do
         tournament.meta
         |> Map.get(:rounds_config)
         |> case do
@@ -1167,6 +1085,8 @@ defmodule Codebattle.Tournament.Base do
             end
         end
       end
+
+      defp maybe_add_award(game_params, _tournament), do: game_params
 
       defp maybe_set_free_task(game_params, %Tournament{type: "show", task_strategy: "sequential"} = tournament, player) do
         task_id = Enum.at(tournament.round_task_ids, Enum.count(player.task_ids))

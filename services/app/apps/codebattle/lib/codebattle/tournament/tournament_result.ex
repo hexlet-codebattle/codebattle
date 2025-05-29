@@ -64,10 +64,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       task_id,
       count(*),
       case
-        when level = 'elementary' THEN 30.0
+        when level = 'elementary' THEN 50.0
         when level = 'easy' THEN 100.0
-        when level = 'medium' THEN 300.0
-        when level = 'hard' THEN 1000.0
+        when level = 'medium' THEN 150.0
+        when level = 'hard' THEN 200.0
       end AS base_score,
       array_agg(duration_sec),
       max(duration_sec) as max_duration,
@@ -226,8 +226,8 @@ defmodule Codebattle.Tournament.TournamentResult do
         },
         where: r.tournament_id == ^tournament.id,
         group_by: [r.user_id, r.user_name, c.id],
-        order_by: [asc_nulls_first: sum(r.score)],
-        windows: [overall_partition: [order_by: [asc_nulls_first: sum(r.score), asc: sum(r.duration_sec)]]]
+        order_by: [desc: sum(r.score)],
+        windows: [overall_partition: [order_by: [desc_nulls_last: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
     Repo.all(query)

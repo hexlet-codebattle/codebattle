@@ -25,6 +25,7 @@ defmodule CodebattleWeb.GameChannel do
 
           active_game_id = Tournament.Helpers.get_active_game_id(tournament, user_id)
 
+          # TODO: think about active_game_id
           {user_id, active_game_id}
         else
           {nil, nil}

@@ -27,7 +27,7 @@ defmodule Codebattle.Game.ContextTest do
       game_topic = "game:#{game_id}"
       Codebattle.PubSub.subscribe(game_topic)
 
-      :ok = Game.Context.trigger_timeout(game_id)
+      {:ok, _new_game} = Game.Context.trigger_timeout(game_id)
 
       assert_received %Message{
         event: "game:finished",

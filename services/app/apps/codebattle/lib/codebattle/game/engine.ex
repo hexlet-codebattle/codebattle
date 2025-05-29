@@ -356,10 +356,12 @@ defmodule Codebattle.Game.Engine do
     |> Repo.update!()
   end
 
+  @spec update_game!(Game.t()) :: Game.t()
+  @spec update_game!(Game.t(), map()) :: Game.t()
   def update_game!(%Game{} = game) do
     case Repo.get(Game, game.id) do
       nil ->
-        :ok
+        game
 
       game ->
         game
@@ -371,7 +373,7 @@ defmodule Codebattle.Game.Engine do
   def update_game!(%Game{} = game, params) do
     case Repo.get(Game, game.id) do
       nil ->
-        :ok
+        game
 
       game ->
         game
@@ -386,37 +388,40 @@ defmodule Codebattle.Game.Engine do
 
   def trigger_timeout(%Game{state: "game_over"} = game) do
     terminate_game_after(game, 1)
+    {:ok, game}
   end
 
   def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")
     {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
-    case {old_game_state, new_game.state} do
-      {old_state, "timeout"}
-      when old_state in ["waiting_opponent", "playing"] ->
-        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+    new_game =
+      case {old_game_state, new_game.state} do
+        {old_state, "timeout"}
+        when old_state in ["waiting_opponent", "playing"] ->
+          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
-        update_game!(new_game, %{
-          state: get_state(new_game),
-          players: get_game_players(new_game),
-          duration_sec: new_game.duration_sec,
-          finishes_at: new_game.finishes_at
-        })
+          update_game!(new_game, %{
+            state: get_state(new_game),
+            players: get_game_players(new_game),
+            duration_sec: new_game.duration_sec,
+            finishes_at: new_game.finishes_at
+          })
 
-        if game.tournament_id do
-          terminate_game_after(game, 1)
-        else
-          terminate_game_after(game, 15)
-        end
+          if game.tournament_id do
+            terminate_game_after(game, 1)
+          else
+            terminate_game_after(game, 15)
+          end
 
-        store_playbook_async(game)
+          store_playbook_async(game)
+          new_game
 
-      _ ->
-        :noop
-    end
+        _ ->
+          new_game
+      end
 
-    :ok
+    {:ok, new_game}
   end
 
   defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do

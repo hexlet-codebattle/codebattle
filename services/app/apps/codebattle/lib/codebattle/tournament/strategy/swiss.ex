@@ -20,10 +20,14 @@ defmodule Codebattle.Tournament.Swiss do
   def reset_meta(meta), do: meta
 
   @impl Tournament.Base
-  def finish_round_after_match?(%{current_round_position: current_round_position} = tournament) do
-    matches = get_round_matches(tournament, current_round_position)
+  def finish_round_after_match?(tournament) do
+    if tournament.players_count < 128 do
+      matches = get_round_matches(tournament, tournament.current_round_position)
 
-    Enum.all?(matches, &(&1.state != "playing"))
+      Enum.all?(matches, &(&1.state != "playing"))
+    else
+      false
+    end
   end
 
   @impl Tournament.Base

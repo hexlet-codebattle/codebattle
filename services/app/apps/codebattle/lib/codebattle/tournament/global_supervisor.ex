@@ -6,12 +6,18 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
 
   require Logger
 
+  @tournament_info_table :tournament_info_cache
+
   def start_link(_) do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
   def init(_) do
+    if :ets.whereis(@tournament_info_table) == :undefined do
+      :ets.new(@tournament_info_table, [:named_table, :set, :public, read_concurrency: true])
+    end
+
     Supervisor.init([], strategy: :one_for_one)
   end
 

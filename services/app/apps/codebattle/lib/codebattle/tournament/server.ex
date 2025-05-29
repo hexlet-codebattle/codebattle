@@ -102,9 +102,6 @@ defmodule Codebattle.Tournament.Server do
   # SERVER
   def init(tournament_id) do
     # Create tournament_info_cache table if it doesn't exist
-    if :ets.whereis(@tournament_info_table) == :undefined do
-      :ets.new(@tournament_info_table, [:named_table, :set, :public, read_concurrency: true])
-    end
 
     players_table = Tournament.Players.create_table(tournament_id)
     matches_table = Tournament.Matches.create_table(tournament_id)
