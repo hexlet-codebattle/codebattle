@@ -13,7 +13,7 @@ defmodule Codebattle.Tournament.Ranking.ByPlayer do
   end
 
   def get_nearest_page_by_player(_tournament, _player) do
-    %{ entries: [] }
+    %{entries: []}
   end
 
   def get_page(_tournament, _page, page_size) do
