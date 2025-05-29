@@ -14,6 +14,8 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_players(tournament, ids), do: Tournament.Players.get_players(tournament, ids)
 
+  def get_unbanned_players(tournament), do: tournament |> get_players() |> Enum.filter(&unbanned_player?(&1))
+
   def get_tasks(%{tasks_table: nil} = _tournament), do: []
   def get_tasks(tournament), do: Tournament.Tasks.get_tasks(tournament)
 
@@ -349,4 +351,6 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def get_players_total_games_count(_tournament, player), do: Enum.count(player.matches_ids)
+
+  defp unbanned_player?(player), do: player.state != "banned"
 end

@@ -82,7 +82,7 @@ defmodule Codebattle.Tournament.Swiss do
 
     player_pairs =
       tournament
-      |> get_players()
+      |> get_unbanned_players()
       |> Enum.sort_by(& &1.id)
       |> Enum.chunk_every(2)
 
@@ -102,7 +102,7 @@ defmodule Codebattle.Tournament.Swiss do
 
     sorted_players =
       tournament
-      |> get_players()
+      |> get_unbanned_players()
       |> Enum.filter(&(&1.id > 0))
       |> Enum.sort_by(& &1.score, :desc)
 
