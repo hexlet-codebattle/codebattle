@@ -174,6 +174,10 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     round(k / (player_rating + b))
   end
 
+  defp get_bot_time_ms(_, _) do
+    1000 * 120
+  end
+
   def stringify_keys(list) when is_list(list) do
     Enum.map(list, &stringify_keys/1)
   end

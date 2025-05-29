@@ -28,6 +28,8 @@ const tableDataCellClassName = cn(
 const PlayersRankingPanel = ({ playersCount, ranking }) => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
 
+  const rankingItems = ranking?.entries || [];
+
   return (
     <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
       <div className="my-2">
@@ -37,85 +39,86 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
             .
           </p>
         ) : (
-          <div
-            className={cn(
-              'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
-            )}
-          >
-            <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
-              <span className="font-weight-bold">{i18next.t('Ranking')}</span>
-            </div>
-            <div className="d-flex cb-overflow-x-auto">
-              <table className="table table-striped cb-custom-event-table m-1">
-                <thead>
-                  <tr>
-                    <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('User')}
-                    </th>
-                    <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Clan')}
-                    </th>
-                    <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Score')}
-                    </th>
-                    <th className="p-1 pl-4 font-weight-light border-0">
-                      {i18next.t('Place')}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ranking?.entries?.map(item => (
-                    <React.Fragment key={item.id}>
-                      {item.place > 3 ? (
-                        <>
+          rankingItems.length !== 0 && (
+            <div
+              className={cn(
+                'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
+              )}
+            >
+              <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
+                <span className="font-weight-bold">{i18next.t('Ranking')}</span>
+              </div>
+              <div className="d-flex cb-overflow-x-auto">
+                <table className="table table-striped cb-custom-event-table m-1">
+                  <thead>
+                    <tr>
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('User')}
+                      </th>
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('Clan')}
+                      </th>
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('Score')}
+                      </th>
+                      <th className="p-1 pl-4 font-weight-light border-0">
+                        {i18next.t('Place')}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rankingItems.map(item => (
+                      <React.Fragment key={item.id}>
+                        {item.place > 3 ? (
+                          <>
+                            <tr className="cb-custom-event-empty-space-tr" />
+                            <tr className="cb-custom-event-empty-space-tr" />
+                            <tr className="cb-custom-event-dots-space-tr" />
+                          </>
+                        ) : (
                           <tr className="cb-custom-event-empty-space-tr" />
-                          <tr className="cb-custom-event-empty-space-tr" />
-                          <tr className="cb-custom-event-dots-space-tr" />
-                        </>
-                      ) : (
-                        <tr className="cb-custom-event-empty-space-tr" />
-                      )}
-                      <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
-                        <td
-                          style={{ borderTopLeftRadius: '0.5rem', borderBottomLeftRadius: '0.5rem' }}
-                          className={tableDataCellClassName}
-                        >
-                          <div
-                            title={item?.name}
-                            className="cb-custom-event-name"
-                            style={{
- textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
-}}
+                        )}
+                        <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
+                          <td
+                            style={{ borderTopLeftRadius: '0.5rem', borderBottomLeftRadius: '0.5rem' }}
+                            className={tableDataCellClassName}
                           >
-                            {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
-                          </div>
-                        </td>
-                        <td className={tableDataCellClassName}>
-                          <div
-                            title={item?.clan}
-                            className="cb-custom-event-name"
-                            style={{
- textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
-}}
+                            <div
+                              title={item?.name}
+                              className="cb-custom-event-name"
+                              style={{
+                                textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
+                              }}
+                            >
+                              {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
+                            </div>
+                          </td>
+                          <td className={tableDataCellClassName}>
+                            <div
+                              title={item?.clan}
+                              className="cb-custom-event-name"
+                              style={{
+                                textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
+                              }}
+                            >
+                              {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
+                            </div>
+                          </td>
+                          <td className={tableDataCellClassName}>{item.score}</td>
+                          <td
+                            style={{ borderTopRightRadius: '0.5rem', borderBottomRightRadius: '0.5rem' }}
+                            className={tableDataCellClassName}
                           >
-                            {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
-                          </div>
-                        </td>
-                        <td className={tableDataCellClassName}>{item.score}</td>
-                        <td
-                          style={{ borderTopRightRadius: '0.5rem', borderBottomRightRadius: '0.5rem' }}
-                          className={tableDataCellClassName}
-                        >
-                          {item.place}
-                        </td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              </table>
+                            {item.place}
+                          </td>
+                        </tr>
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          ))}
       </div>
       <div className="d-flex align-items-center flex-wrap justify-content-start">
         <h6 className="mb-2 mr-5 text-nowrap">
