@@ -239,12 +239,16 @@ defmodule Codebattle.Tournament.Helpers do
   # end
 
   def get_active_game_id(tournament, player_id) do
-    tournament
-    |> get_matches("playing")
-    |> Enum.find(fn match -> player_id in match.player_ids end)
-    |> case do
-      nil -> nil
-      match -> match.game_id
+    player = get_player(tournament, player_id)
+    match_id = List.last(player.matches_ids)
+
+    if match_id do
+      tournament
+      |> get_match(match_id)
+      |> case do
+        %{state: "playing"} -> match_id
+        _ -> nil
+      end
     end
   end
 

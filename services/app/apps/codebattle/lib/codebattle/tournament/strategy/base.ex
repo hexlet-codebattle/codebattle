@@ -35,13 +35,6 @@ defmodule Codebattle.Tournament.Base do
 
       require Logger
 
-      @custom_round_tiemouts_in_sec %{
-        "elementary" => 5 * 60,
-        "easy" => 6 * 60,
-        "medium" => 10 * 60,
-        "hard" => 25 * 60
-      }
-
       def add_player(tournament, player) do
         tournament_player = Tournament.Player.new!(player)
         Tournament.Players.put_player(tournament, tournament_player)
@@ -967,11 +960,8 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp get_custom_round_timeout_seconds(tournament, nil), do: get_round_timeout_seconds(tournament)
-
       defp get_custom_round_timeout_seconds(tournament, task) do
-        Map.get(@custom_round_tiemouts_in_sec, task.level) ||
-          get_round_timeout_seconds(tournament)
+        (task && task.time_to_solve_sec) || get_round_timeout_seconds(tournament)
       end
 
       defp seconds_to_end_round(tournament) do
