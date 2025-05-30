@@ -42,8 +42,9 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_in("tournament:ban:list_reports", _params, socket) do
+    # TODO: for pagination
     tournament_id = socket.assigns.tournament_info.id
-    reports = UserGameReport.list_by_tournament(tournament_id)
+    reports = UserGameReport.list_by_tournament(tournament_id, limit: 300)
 
     {:reply, {:ok, %{reports: reports}}, socket}
   end
@@ -377,7 +378,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     %{
       tasks_info: tasks_info,
-      reports: UserGameReport.list_by_tournament(tournament.id),
+      reports: UserGameReport.list_by_tournament(tournament.id, limit: 300),
       tournament: Helpers.prepare_to_json(tournament),
       ranking: Tournament.Ranking.get_page(tournament, 1, @default_ranking_size),
       players: Helpers.get_players(tournament),

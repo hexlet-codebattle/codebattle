@@ -25,14 +25,14 @@ defmodule Codebattle.Event.Context do
          true <- not is_nil(user_event_stage),
          true <- event_stage.status in [:active],
          true <- user_event_stage.status in [:pending],
-         {:ok, %Tournament{} = tournament} <-
+         {:ok, result} <-
            start_stage(
              event,
              user,
              user_event,
              event_stage
            ) do
-      {:ok, tournament}
+      {:ok, result}
     else
       _ ->
         {:error, Gettext.gettext(CodebattleWeb.Gettext, "You already passed this stage")}
@@ -80,6 +80,22 @@ defmodule Codebattle.Event.Context do
             Logger.error("Error starting tournament: #{inspect(reason)}")
             {:error, reason}
         end
+
+      %Event.Stage{
+        type: :tournament,
+        tournament_id: tournament_id,
+        status: :active,
+        playing_type: :global
+      } = event_stage ->
+        Server.handle_event(tournament_id, :join, %{user: user})
+
+        UserEvent.mark_stage_as_started(
+          user_event,
+          event_stage.slug,
+          tournament_id
+        )
+
+        {:ok, tournament_id}
 
       %Event.Stage{} ->
         {:error, "Invalid event stage type"}

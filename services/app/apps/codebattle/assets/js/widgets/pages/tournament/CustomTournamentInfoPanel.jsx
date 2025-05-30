@@ -163,9 +163,9 @@ function CustomTournamentInfoPanel({
             handleUserSelectClick={handleUserSelectClick}
           />
         )}
-      </div>
-      <div>
-        <ReportsPanel />
+        {panelMode.panel === PanelModeCodes.reportsMode && (
+          <ReportsPanel />
+        )}
       </div>
       {/*   </CSSTransition> */}
       {/* </SwitchTransition> */}

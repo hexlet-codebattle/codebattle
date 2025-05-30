@@ -43,6 +43,9 @@ defmodule CodebattleWeb.PublicEventController do
         {:ok, %Tournament{} = tournament} ->
           redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
 
+        {:ok, tournament_id} when is_integer(tournament_id) ->
+          redirect(conn, to: Routes.tournament_path(conn, :show, tournament_id))
+
         {:error, error} ->
           Logger.error("Error starting stage: #{inspect(error)}")
 

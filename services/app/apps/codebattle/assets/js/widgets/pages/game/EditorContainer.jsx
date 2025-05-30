@@ -86,6 +86,7 @@ function EditorContainer({
   const player = useSelector(selectors.gamePlayerSelector(id));
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
+  const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
@@ -222,6 +223,7 @@ function EditorContainer({
 
   const toolbarParams = {
     toolbarRef,
+    gameId,
     tournamentId,
     mode: tournamentId ? GameModeCodes.tournament : gameMode,
     player,

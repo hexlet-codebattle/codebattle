@@ -8,7 +8,7 @@ import Select from 'react-select';
 
 import UserInfo from '@/components/UserInfo';
 import { sendNewReportState } from '@/middlewares/TournamentAdmin';
-import { reportsSelector, userIsAdminSelector } from '@/selectors';
+import { tournamentPlayersSelector, reportsSelector, userIsAdminSelector } from '@/selectors';
 
 import i18next from '../../../i18n';
 
@@ -72,6 +72,7 @@ const getStateText = state => {
 function ReportsPanel() {
   const dispatch = useDispatch();
   const reports = useSelector(reportsSelector);
+  const players = useSelector(tournamentPlayersSelector);
   const isAdmin = useSelector(userIsAdminSelector);
 
   const changeReportState = reportId => ({ value }) => {
@@ -105,43 +106,47 @@ function ReportsPanel() {
           </tr>
         </thead>
         <tbody>
-          {reports.map(item => (
-            <React.Fragment key={`report-${item.id}`}>
-              <tr className="cb-custom-event-empty-space-tr" />
-              <tr className={customEventTrClassName}>
-                <td className={tableDataCellClassName}>
-                  <UserInfo user={item.offender} hideOnlineIndicator hideLink />
-                </td>
-                <td className={tableDataCellClassName}>
-                  <UserInfo user={item.reporter} hideOnlineIndicator hideLink />
-                </td>
-                <td className={tableDataCellClassName}>
-                  <Select
-                    styles={customStyle}
-                    value={{
+          {reports.map(item => {
+            const offender = players[item.offenderId];
+            const reporter = players[item.reporterId];
+            return (
+              <React.Fragment key={`report-${item.id}`}>
+                <tr className="cb-custom-event-empty-space-tr" />
+                <tr className={customEventTrClassName}>
+                  <td className={tableDataCellClassName}>
+                    <UserInfo user={offender} banned={offender?.state === 'banned'} hideOnlineIndicator hideLink />
+                  </td>
+                  <td className={tableDataCellClassName}>
+                    <UserInfo user={reporter} hideOnlineIndicator hideLink />
+                  </td>
+                  <td className={tableDataCellClassName}>
+                    <Select
+                      styles={customStyle}
+                      value={{
                       label: getStateText(item.state),
                       value: item.state,
                     }}
-                    onChange={changeReportState(item.id)}
-                    options={reportStatusOptions}
-                  />
-                </td>
-                <td className={tableDataCellClassName}>
-                  <p>
-                    {moment
+                      onChange={changeReportState(item.id)}
+                      options={reportStatusOptions}
+                    />
+                  </td>
+                  <td className={tableDataCellClassName}>
+                    <p>
+                      {moment
                       .utc(item.insertedAt)
                       .local()
                       .format('YYYY-MM-DD HH:mm:ss')}
-                  </p>
-                </td>
-                <td className={tableDataCellClassName}>
-                  <a href={`/games/${item.gameId}`}>
-                    <FontAwesomeIcon icon="link" />
-                  </a>
-                </td>
-              </tr>
-            </React.Fragment>
-          ))}
+                    </p>
+                  </td>
+                  <td className={tableDataCellClassName}>
+                    <a href={`/games/${item.gameId}`}>
+                      <FontAwesomeIcon icon="link" />
+                    </a>
+                  </td>
+                </tr>
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
     </div>

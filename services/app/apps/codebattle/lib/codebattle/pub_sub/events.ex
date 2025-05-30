@@ -35,6 +35,7 @@ defmodule Codebattle.PubSub.Events do
           tournament: %{
             last_round_ended_at: params.tournament.last_round_ended_at,
             round_timeout_seconds: params.tournament.round_timeout_seconds,
+            break_duration_seconds: params.tournament.break_duration_seconds,
             last_round_started_at: params.tournament.last_round_started_at,
             state: params.tournament.state,
             break_state: "off",
@@ -60,6 +61,7 @@ defmodule Codebattle.PubSub.Events do
             type: params.tournament.type,
             state: params.tournament.state,
             show_results: params.tournament.show_results,
+            break_duration_seconds: params.tournament.break_duration_seconds,
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
             current_round_position: params.tournament.current_round_position,

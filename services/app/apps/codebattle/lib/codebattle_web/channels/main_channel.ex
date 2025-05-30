@@ -42,9 +42,25 @@ defmodule CodebattleWeb.MainChannel do
     end
   end
 
+  def handle_in("game:report", %{"player_id" => player_id, "game_id" => game_id}, socket) do
+    user = socket.assigns.current_user
+
+    case Game.Context.report_on_player(game_id, user, player_id) do
+      {:ok, report} ->
+        {:reply, {:ok, %{report: %{id: report.id, inserted_at: report.inserted_at}}}, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: "failure"}}, socket}
+    end
+  end
+
   def handle_in("user:ban", %{"user_id" => user_id, "tournament_id" => tournament_id}, socket) do
     if User.admin?(socket.assigns.current_user) do
       # User.toggle_ban_user(user_id)
+
       Tournament.Context.handle_event(tournament_id, :toggle_ban_player, %{user_id: user_id})
       {:reply, {:ok, %{}}, socket}
     else

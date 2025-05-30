@@ -36,6 +36,7 @@ defmodule CodebattleWeb.Integration.Game.GameWithReportingTest do
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, MainChannel, "main", %{"state" => "online"})
 
     game = Game.Context.get_game!(game_id)
 
@@ -53,18 +54,18 @@ defmodule CodebattleWeb.Integration.Game.GameWithReportingTest do
     assert Helpers.get_second_player(game).name == "second"
 
     # report_works
-    Phoenix.ChannelTest.push(socket1, "game:report", %{player_id: user2.id})
+    Phoenix.ChannelTest.push(socket1, "game:report", %{player_id: user2.id, game_id: game_id})
 
     assert_receive(
-      %{payload: %{report: %{id: _, inserted_at: _}}},
+      %{payload: %{report: %{id: report_id, inserted_at: _}}},
       5000
     )
 
     # can't report twice
-    Phoenix.ChannelTest.push(socket1, "game:report", %{player_id: user2.id})
+    Phoenix.ChannelTest.push(socket1, "game:report", %{player_id: user2.id, game_id: game_id})
 
     assert_receive(
-      %{payload: %{reason: :already_have_report}},
+      %{payload: %{report: %{id: ^report_id, inserted_at: _}}},
       5000
     )
   end

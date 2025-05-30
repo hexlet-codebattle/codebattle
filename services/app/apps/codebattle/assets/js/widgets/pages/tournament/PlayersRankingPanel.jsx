@@ -90,7 +90,7 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
                                 textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
                               }}
                             >
-                              {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
+                              {item?.name.slice(0, 9) + (item?.name.length > 11 ? '...' : '')}
                             </div>
                           </td>
                           <td className={tableDataCellClassName}>
@@ -101,7 +101,7 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
                                 textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
                               }}
                             >
-                              {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
+                              {item?.clan?.slice(0, 9) + (item?.clan?.length > 11 ? '...' : '')}
                             </div>
                           </td>
                           <td className={tableDataCellClassName}>{item.score}</td>

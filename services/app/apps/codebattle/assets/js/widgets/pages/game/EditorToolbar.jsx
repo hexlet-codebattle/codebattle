@@ -26,6 +26,7 @@ const ModeButtons = ({ player }) => (
 );
 
 const EditorToolbar = ({
+  gameId,
   toolbarRef,
   type,
   mode,
@@ -67,7 +68,7 @@ const EditorToolbar = ({
             role="group"
             aria-label="Report actions"
           >
-            {(isAdmin || isPremium) && !showControlBtns && <GameReportButton userId={player.id} />}
+            {(isAdmin || isPremium) && !showControlBtns && <GameReportButton userId={player.id} gameId={gameId} />}
             {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
           </div>
           <div

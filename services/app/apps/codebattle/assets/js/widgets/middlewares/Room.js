@@ -300,20 +300,6 @@ export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
     });
 };
 
-export const reportOnPlayer = (playerId, onSuccess, onError) => dispatch => {
-  if (isRecord) {
-    dispatch(sendReportOnUser(playerId, onSuccess, onError));
-  } else {
-    channel.push(channelMethods.reportOnPlayer, { playerId }).receive('ok', payload => {
-      dispatch(actions.addReport(payload.report));
-      onSuccess();
-    }).receive('error', payload => {
-      console.error(payload);
-      onError();
-    });
-  }
-};
-
 export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
@@ -631,7 +617,7 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
 
   const handleTournamentRoundFinished = response => {
     dispatch(actions.updateTournamentData(response.tournament));
-    dispatch(actions.updateTournamentMatches(response.matches));
+    dispatch(actions.updateTournamentMatches(response.matches || []));
     gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
       payload: response.tournament,
     });

@@ -512,13 +512,17 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_start_round_or_break_or_finish(
-             %{state: "active", break_duration_seconds: break_duration_seconds} = tournament
+             %{
+               state: "active",
+               break_duration_seconds: break_duration_seconds,
+               current_round_position: current_round_position
+             } = tournament
            )
-           when break_duration_seconds not in [nil, 0] do
+           when break_duration_seconds not in [nil, 0] and current_round_position in [6, 13] do
         Process.send_after(
           self(),
           {:stop_round_break, tournament.current_round_position},
-          to_timeout(second: tournament.break_duration_seconds)
+          to_timeout(second: break_duration_seconds)
         )
 
         update_struct(tournament, %{break_state: "on"})

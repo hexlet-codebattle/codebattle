@@ -3,6 +3,7 @@ import { camelizeKeys } from 'humps';
 
 import { makeGameUrl } from '@/utils/urlBuilders';
 
+import { channelMethods } from '../../socket';
 import { actions } from '../slices';
 
 import Channel from './Channel';
@@ -147,6 +148,16 @@ export const followUser = userId => (dispatch, getState) => {
 export const unfollowUser = userId => dispatch => {
   channel.push('user:unfollow', { userId });
   camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
+};
+
+export const reportOnPlayer = (playerId, gameId, onSuccess, onError) => dispatch => {
+  channel.push(channelMethods.reportOnPlayer, { playerId, gameId }).receive('ok', payload => {
+    dispatch(actions.addReport(payload.report));
+    onSuccess();
+  }).receive('error', payload => {
+    console.error(payload);
+    onError();
+  });
 };
 
 export default initPresence;

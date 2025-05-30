@@ -313,8 +313,8 @@ defmodule Codebattle.Game.Context do
       {:error, reason} ->
         {:error, reason}
 
-      %UserGameReport{} ->
-        {:error, :already_have_report}
+      %UserGameReport{} = report ->
+        {:ok, report}
 
       _ ->
         {:error, :cannot_report}

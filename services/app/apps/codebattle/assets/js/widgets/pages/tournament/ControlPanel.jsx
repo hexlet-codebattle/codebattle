@@ -22,6 +22,7 @@ import {
 //
 export const PanelModeCodes = {
   ratingMode: 'ratingMode',
+  reportsMode: 'reportsMode',
   playerMode: 'playerMode',
   topUserByClansMode: 'top_users_by_clan_ranking',
   taskRatingMode: 'tasks_ranking',
@@ -33,6 +34,7 @@ export const PanelModeCodes = {
 
 export const mapPanelModeToTitle = {
   [PanelModeCodes.ratingMode]: i18next.t('Rating Panel'),
+  [PanelModeCodes.reportsMode]: i18next.t('Reports Panel'),
   [PanelModeCodes.playerMode]: i18next.t('Player Panel'),
   [PanelModeCodes.topUserByClansMode]: i18next.t('Top users by clan ranking'),
   [PanelModeCodes.taskRatingMode]: i18next.t('Tasks ranking'),

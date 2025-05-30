@@ -90,7 +90,6 @@ function StatisticsCard({
   const [playerStats] = useMatchesStatistics(playerId, matchList);
   const playerRanking = useSelector(userRankingSelector(playerId));
 
-  console.log(playerRanking);
   const cardClassName = cn(
     'd-flex flex-column justify-content-center p-2 w-100',
     'align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline',

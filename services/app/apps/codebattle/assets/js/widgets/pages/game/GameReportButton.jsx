@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { reportOnPlayer } from '@/middlewares/Room';
+import { reportOnPlayer } from '@/middlewares/Main';
 import { userIsAdminSelector, userIsGamePlayerSelector } from '@/selectors';
 
 import i18n from '../../../i18n';
@@ -25,7 +25,7 @@ const getText = state => {
   }
 };
 
-const GameReportButton = ({ userId }) => {
+const GameReportButton = ({ userId, gameId }) => {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
@@ -46,7 +46,7 @@ const GameReportButton = ({ userId }) => {
     if (disabled) return;
 
     setState(states.loading);
-    dispatch(reportOnPlayer(userId, onSuccess, onError));
+    dispatch(reportOnPlayer(userId, gameId, onSuccess, onError));
   };
 
   if (!isAdmin && !isPlayer) {

@@ -21,6 +21,7 @@ defmodule Codebattle.IntegrationCase do
       alias Codebattle.UserGame
       alias CodebattleWeb.GameChannel
       alias CodebattleWeb.LobbyChannel
+      alias CodebattleWeb.MainChannel
       alias CodebattleWeb.Router.Helpers, as: Routes
       alias CodebattleWeb.TournamentAdminChannel
       alias CodebattleWeb.TournamentChannel

@@ -67,7 +67,7 @@ function TournamentTimer({ startsAt, isOnline }) {
   );
 }
 
-function TournamentRemainingTimer({ startsAt, duration }) {
+export function TournamentRemainingTimer({ startsAt, duration }) {
   const endsAt = useMemo(
     () => moment.utc(startsAt).add(duration, 'seconds'),
     [startsAt, duration],

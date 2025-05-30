@@ -57,6 +57,10 @@ defmodule CodebattleWeb.GameChannel do
            type: tournament.type,
            meta: tournament.meta,
            break_state: tournament.break_state,
+           last_round_started_at: tournament.last_round_started_at,
+           last_round_ended_at: tournament.last_round_ended_at,
+           break_duration_seconds: tournament.break_duration_seconds,
+           round_timeout_seconds: tournament.round_timeout_seconds,
            round_task_ids: tournament.round_task_ids,
            current_round_position: tournament.current_round_position
          }
@@ -194,22 +198,6 @@ defmodule CodebattleWeb.GameChannel do
     score = Context.fetch_score_by_game_id(game_id)
 
     {:reply, {:ok, %{score: score}}, socket}
-  end
-
-  def handle_in("game:report", %{"player_id" => player_id}, socket) do
-    game_id = socket.assigns.game_id
-    user = socket.assigns.current_user
-
-    case Context.report_on_player(game_id, user, player_id) do
-      {:ok, report} ->
-        {:reply, {:ok, %{report: %{id: report.id, inserted_at: report.inserted_at}}}, socket}
-
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
-
-      _ ->
-        {:reply, {:error, %{reason: "failure"}}, socket}
-    end
   end
 
   def handle_in("rematch:send_offer", _, socket) do
@@ -368,6 +356,18 @@ defmodule CodebattleWeb.GameChannel do
     if payload.match.state == "playing" do
       push(socket, "tournament:game:created", %{game_id: payload.match.game_id})
     end
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_created", %{tournament: payload.tournament})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
+    push(socket, "tournament:round_finished", %{tournament: payload.tournament})
 
     {:noreply, socket}
   end

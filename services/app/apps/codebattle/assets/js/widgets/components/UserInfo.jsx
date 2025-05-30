@@ -47,6 +47,7 @@ function UserPopoverContent({ user }) {
 function UserInfo({
   className,
   user,
+  banned = false,
   lang,
   hovered = false,
   hideLink = false,
@@ -71,6 +72,7 @@ function UserInfo({
   const isOnline = presenceList.some(({ id }) => id === user?.id);
   const userClassName = cn(className, {
     'cb-opacity-50': loading,
+    'text-danger': banned,
   });
 
   if (hideInfo) {

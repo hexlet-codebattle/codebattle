@@ -17,10 +17,8 @@ defmodule Codebattle.UserGameReport do
              :game_id,
              :id,
              :offender_id,
-             :offender,
              :reason,
              :reporter_id,
-             :reporter,
              :inserted_at,
              :state,
              :tournament_id
@@ -76,12 +74,26 @@ defmodule Codebattle.UserGameReport do
     |> Repo.preload([:offender, :reporter])
   end
 
-  def list_by_tournament(tournament_id) do
+  def list_by_tournament(tournament_id, opts \\ []) do
     __MODULE__
     |> where([ugr], ugr.tournament_id == ^tournament_id)
+    |> apply_filters(opts)
     |> Repo.all()
-    |> Repo.preload([:offender, :reporter])
   end
+
+  def apply_filters(query, [:limit, limit] = opts) do
+    query
+    |> limit(^limit)
+    |> apply_filters(Keyword.delete(opts, :limit))
+  end
+
+  def apply_filters(query, [:offset, offset] = opts) do
+    query
+    |> offset(^offset)
+    |> apply_filters(Keyword.delete(opts, :offset))
+  end
+
+  def apply_filters(query, _opts), do: query
 
   def create(params) do
     result =

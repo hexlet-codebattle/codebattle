@@ -7,7 +7,11 @@ import { useSelector } from 'react-redux';
 import {
   currentUserClanIdSelector,
   tournamentSelector,
+  gameStatusSelector,
 } from '@/selectors';
+
+import GameStateCodes from '../../config/gameStateCodes';
+import { TournamentRemainingTimer } from '../tournament/TournamentHeader';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
   'text-dark font-weight-bold cb-custom-event-tr-border',
@@ -28,7 +32,18 @@ const tableDataCellClassName = cn(
 
 const TournamentRankingTable = () => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
-  const { ranking, currentRoundPosition, roundTaskIds } = useSelector(tournamentSelector);
+  const gameStatus = useSelector(gameStatusSelector);
+  const {
+    breakDurationSeconds,
+    breakState,
+    currentRoundPosition,
+    lastRoundEndedAt,
+    lastRoundStartedAt,
+    matchTimeoutSeconds,
+    ranking,
+    roundTaskIds,
+    roundTimeoutSeconds,
+  } = useSelector(tournamentSelector);
 
   return (
     <div
@@ -82,7 +97,7 @@ const TournamentRankingTable = () => {
  textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
 }}
                     >
-                      {item?.name.slice(0, 11) + (item?.name.length > 11 ? '...' : '')}
+                      {item?.name.slice(0, 9) + (item?.name.length > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>
@@ -93,7 +108,7 @@ const TournamentRankingTable = () => {
  textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
 }}
                     >
-                      {item?.clan?.slice(0, 11) + (item?.clan?.length > 11 ? '...' : '')}
+                      {item?.clan?.slice(0, 9) + (item?.clan?.length > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>{item.score}</td>
@@ -109,18 +124,42 @@ const TournamentRankingTable = () => {
           </tbody>
         </table>
       </div>
-      {roundTaskIds?.length > 0 && (
-      <div className="d-flex justify-content-center align-items-center mt-2 mb-2">
-        <span className="font-weight-bold">
-          {i18next.t('Task')}
-          :
-          {currentRoundPosition + 1}
-          {' '}
-          /
-          {roundTaskIds.length}
-        </span>
-      </div>
+
+      <div className="d-flex justify-content-around align-items-center mt-1">
+        {(gameStatus.state !== GameStateCodes.playing && breakState === 'off') && (
+          <span className="font-weight-bold me-3">
+            {i18next.t('Round ends in ')}
+            <TournamentRemainingTimer
+              key={lastRoundStartedAt}
+              startsAt={lastRoundStartedAt}
+              duration={roundTimeoutSeconds || matchTimeoutSeconds}
+            />
+          </span>
         )}
+
+        {(gameStatus.state !== GameStateCodes.playing && breakState === 'on') && (
+          <span className="font-weight-bold me-3">
+            {i18next.t('Next round will start in ')}
+            <TournamentRemainingTimer
+              key={lastRoundEndedAt}
+              startsAt={lastRoundEndedAt}
+              duration={breakDurationSeconds}
+            />
+          </span>
+        )}
+      </div>
+
+      <div className="d-flex justify-content-around align-items-center mt-1">
+        {roundTaskIds?.length > 0 && (
+          <span className="font-weight-bold">
+            {i18next.t('Task')}
+            {': '}
+            {currentRoundPosition + 1}
+            /
+            {roundTaskIds.length}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
