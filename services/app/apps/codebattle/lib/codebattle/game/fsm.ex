@@ -111,7 +111,7 @@ defmodule Codebattle.Game.Fsm do
     {:ok, Map.put(game, :locked, false)}
   end
 
-  def transition(:toggle_ban_player, game, %{player_id: player_id}) do
+  def transition(:toggle_ban_player, game, %{id: player_id}) do
     new_players =
       Enum.map(game.players, fn player ->
         if player.id == player_id do

@@ -388,7 +388,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def toggle_ban_player(%Game{} = game, player_id) do
-    {:ok, {_old_game_state, new_game}} = fire_transition(game.id, :toggle_ban_player, %{player_id: player_id})
+    {:ok, {_old_game_state, new_game}} = fire_transition(game.id, :toggle_ban_player, %{id: player_id})
     {:ok, new_game}
   end
 

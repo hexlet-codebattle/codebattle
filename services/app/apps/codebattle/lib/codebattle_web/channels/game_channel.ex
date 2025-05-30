@@ -35,7 +35,7 @@ defmodule CodebattleWeb.GameChannel do
 
       ranking =
         tournament
-        |> Tournament.Ranking.get_first(6)
+        |> Tournament.Ranking.get_first(5)
         |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
         |> Enum.filter(& &1)
         |> Enum.uniq_by(& &1.id)
@@ -324,9 +324,12 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(%{event: "user:banned", payload: %{player: player}}, socket) do
     user_id = socket.assigns.current_user.id
 
-    if user_id == player.id do
-      socket = assign(socket, banned?: true)
-    end
+    socket =
+      if user_id == player.id do
+        assign(socket, banned?: true)
+      else
+        socket
+      end
 
     push(socket, "user:banned", %{user_id: player.id})
     {:noreply, socket}
@@ -335,9 +338,12 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(%{event: "user:unbanned", payload: %{player: player}}, socket) do
     user_id = socket.assigns.current_user.id
 
-    if user_id == player.id do
-      socket = assign(socket, banned?: false)
-    end
+    socket =
+      if user_id == player.id do
+        assign(socket, banned?: false)
+      else
+        socket
+      end
 
     push(socket, "user:unbanned", %{user_id: player.id})
     {:noreply, socket}

@@ -28,7 +28,7 @@ const tableDataCellClassName = cn(
 
 const TournamentRankingTable = () => {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
-  const { ranking } = useSelector(tournamentSelector);
+  const { ranking, currentRoundPosition, roundTaskIds } = useSelector(tournamentSelector);
 
   return (
     <div
@@ -109,6 +109,13 @@ const TournamentRankingTable = () => {
           </tbody>
         </table>
       </div>
+        {roundTaskIds?.length > 0 && (
+          <div className="d-flex justify-content-center align-items-center mt-2 mb-2">
+            <span className="font-weight-bold">
+              {i18next.t('Task')}: {currentRoundPosition + 1} / {roundTaskIds.length}
+            </span>
+          </div>
+        )}  
     </div>
   );
 };
