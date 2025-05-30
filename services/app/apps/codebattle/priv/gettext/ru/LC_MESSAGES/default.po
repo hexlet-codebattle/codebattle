@@ -641,7 +641,7 @@ msgid "Your opponent is waiting: %{name}"
 msgstr "Ваш следующий оппонент: %{name}"
 
 msgid "Next match will be opened. Show now?"
-msgstr "Следующая битва началась. Открыть сейчас?"
+msgstr "Баттл начался! Открыть сейчас?"
 
 msgid "review"
 msgstr "общее"

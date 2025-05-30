@@ -126,7 +126,10 @@ const TournamentRankingTable = () => {
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">
-        {(gameStatus.state !== GameStateCodes.playing && breakState === 'off') && (
+        {
+        (currentRoundPosition + 1 !== (roundTaskIds?.length || 0)
+         && gameStatus.state !== GameStateCodes.playing
+          && breakState === 'off') && (
           <span className="font-weight-bold me-3">
             {i18next.t('Round ends in ')}
             <TournamentRemainingTimer
@@ -135,7 +138,8 @@ const TournamentRankingTable = () => {
               duration={roundTimeoutSeconds || matchTimeoutSeconds}
             />
           </span>
-        )}
+        )
+}
 
         {(gameStatus.state !== GameStateCodes.playing && breakState === 'on') && (
           <span className="font-weight-bold me-3">
