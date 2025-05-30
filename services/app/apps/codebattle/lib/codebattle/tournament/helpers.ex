@@ -242,14 +242,17 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_active_game_id(tournament, player_id) do
     player = get_player(tournament, player_id)
-    match_id = List.last(player.matches_ids)
 
-    if match_id do
-      tournament
-      |> get_match(match_id)
-      |> case do
-        %{state: "playing"} -> match_id
-        _ -> nil
+    if player do
+      match_id = List.last(player.matches_ids)
+
+      if match_id do
+        tournament
+        |> get_match(match_id)
+        |> case do
+          %{state: "playing"} -> match_id
+        _   -> nil
+        end
       end
     end
   end
@@ -350,6 +353,7 @@ defmodule Codebattle.Tournament.Helpers do
     t |> Tournament.Tasks.get_task_ids() |> Enum.count()
   end
 
+  def get_players_total_games_count(_tournament, nil), do: 0
   def get_players_total_games_count(_tournament, player), do: Enum.count(player.matches_ids)
 
   defp unbanned_player?(player), do: player.state != "banned"
