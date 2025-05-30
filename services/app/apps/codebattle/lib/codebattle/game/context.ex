@@ -214,6 +214,14 @@ defmodule Codebattle.Game.Context do
     end
   end
 
+  @spec toggle_ban_player(game_id(), %{player_id: pos_integer()}) :: {:ok, Game.t()} | {:error, atom}
+  def toggle_ban_player(game_id, %{player_id: player_id}) do
+    case get_game!(game_id) do
+      %{is_live: true} = game -> Engine.toggle_ban_player(game, player_id)
+      _ -> {:error, :game_is_dead}
+    end
+  end
+
   @spec unlock_game(game_id, String.t()) :: :ok | {:error, term()}
   def unlock_game(game_id, pass_code) do
     case get_game!(game_id) do

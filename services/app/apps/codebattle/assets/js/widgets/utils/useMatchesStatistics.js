@@ -7,7 +7,6 @@ const emptyStats = {
   matchesCount: 0,
   winMatches: [],
   lostMatches: [],
-  score: 0,
   avgTests: 0,
   avgDuration: 0,
 };
@@ -15,7 +14,7 @@ const emptyStats = {
 /**
  * return tournament matches statistics for player
  *
- * @typedef {{result: string, score: number, resultPercent: number, durationSec: number}} PlayerResult
+ * @typedef {{result: string, resultPercent: number, durationSec: number}} PlayerResult
  * @typedef {Object.<number, PlayerResult>} PlayerResults
  * @typedef {{playerIds: array, winnerId: number, playerResults: [PlayerResults]}} Match
  * @typedef {{
@@ -23,7 +22,6 @@ const emptyStats = {
  *  matchesCount: number,
  *  winMatches: Match[],
  *  lostMatches: Match[],
- *  score: number,
  *  avgTests: number,
  *  avgDuration: number,
  * }} PlayerStatistics
@@ -62,15 +60,6 @@ function useMatchesStatistics(playerId, matches) {
         && match.playerIds.some(id => id === match.winnerId),
     );
 
-    const playerScore = sum(
-      finishedMatches.map(match => match.playerResults[playerId]?.score || 0),
-    );
-    const opponentScore = sum(
-      finishedMatches.map(
-        match => match.playerResults[opponentId]?.score || 0,
-      ),
-    );
-
     const playerAvgTests = matchesCount !== 0
         ? sum(
             finishedMatches.map(
@@ -106,7 +95,6 @@ function useMatchesStatistics(playerId, matches) {
       matchesCount: matches.length,
       winMatches: playerWinMatches,
       lostMatches: playerLostMatches,
-      score: playerScore,
       avgTests: playerAvgTests,
       avgDuration: playerAvgDuration,
     };
@@ -115,7 +103,6 @@ function useMatchesStatistics(playerId, matches) {
       matchesCount: matches.length,
       winMatches: opponentWinMatches,
       lostMatches: opponentLostMatches,
-      score: opponentScore,
       avgTests: opponentAvgTests,
       avgDuration: opponentAvgDuration,
     };

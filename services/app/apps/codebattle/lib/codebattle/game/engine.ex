@@ -192,9 +192,11 @@ defmodule Codebattle.Game.Engine do
               lang: editor_lang
             })
 
-            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
             {:ok, _game} = store_result!(new_game)
+
+            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+
             store_playbook_async(new_game)
 
             {:ok, new_game, %{check_result: check_result, solution_status: true}}
@@ -386,10 +388,16 @@ defmodule Codebattle.Game.Engine do
     %UserGame{} |> UserGame.changeset(params) |> Repo.insert!()
   end
 
+  def toggle_ban_player(%Game{} = game, player_id) do
+   {:ok, {_old_game_state, new_game}} =  fire_transition(game.id, :toggle_ban_player, %{player_id: player_id})
+    {:ok, new_game}
+  end
+
   def trigger_timeout(%Game{state: "game_over"} = game) do
     terminate_game_after(game, 1)
     {:ok, game}
   end
+
 
   def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")

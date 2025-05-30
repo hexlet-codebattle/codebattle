@@ -74,7 +74,6 @@ const TournamentStatisticsModal = NiceModal.create(() => {
         <div className="d-flex justify-content-between">
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">{firstPlayer?.name}</span>
-            <span className="h4 mb-2">{player.score}</span>
             <span className="h4 mb-2">{player.winMatches.length}</span>
             <span className="h4 mb-2">
               {Math.ceil(player.avgTests)}
@@ -87,14 +86,12 @@ const TournamentStatisticsModal = NiceModal.create(() => {
           </div>
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">Player</span>
-            <span className="h4 mb-2">Score</span>
             <span className="h4 mb-2">Wins</span>
             <span className="h4 mb-2">AVG Tests</span>
             <span className="h4 mb-2 text-nowrap">AVG Solving speed</span>
           </div>
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">{secondPlayer?.name}</span>
-            <span className="h4 mb-2">{opponent.score}</span>
             <span className="h4 mb-2">{opponent.winMatches.length}</span>
             <span className="h4 mb-2">
               {Math.ceil(opponent.avgTests)}

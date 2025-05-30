@@ -75,6 +75,7 @@ defmodule CodebattleWeb.GameChannel do
   rescue
     e ->
       Logger.error(inspect(e))
+      Logger.error(Exception.format_stacktrace(__STACKTRACE__))
       {:ok, %{error: "Game not found"}, socket}
   end
 
