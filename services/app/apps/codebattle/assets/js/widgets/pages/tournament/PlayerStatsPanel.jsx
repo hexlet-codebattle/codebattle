@@ -17,7 +17,6 @@ import { getOpponentId } from '../../utils/matches';
 import StageCard from './StageCard';
 import StageTitle from './StageTitle';
 import StatisticsCard, { ArenaStatisticsCard } from './StatisticsCard';
-import TournamentPlace from './TournamentPlace';
 import UsersMatchList from './UsersMatchList';
 
 const navMatchesTabsClassName = cn(

@@ -4,12 +4,12 @@ import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
+import { userRankingSelector } from '@/selectors';
 import useMatchesStatistics from '@/utils/useMatchesStatistics';
 
 import i18next from '../../../i18n';
 
 import TournamentPlace from './TournamentPlace';
-import { userRankingSelector } from '@/selectors';
 
 export function ArenaStatisticsCard({
   playerId,
@@ -85,12 +85,12 @@ export function ArenaStatisticsCard({
 }
 
 function StatisticsCard({
-  playerId, matchList = []
+  playerId, matchList = [],
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
   const playerRanking = useSelector(userRankingSelector(playerId));
 
-  console.log(playerRanking)
+  console.log(playerRanking);
   const cardClassName = cn(
     'd-flex flex-column justify-content-center p-2 w-100',
     'align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline',
