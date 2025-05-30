@@ -43,8 +43,6 @@ defmodule CodebattleWeb.GameChannel do
           %{entries: ranking}
         end)
 
-      banned? = current_player.state == 'banned'
-
       {:ok,
        %{
          active_game_id: active_game_id,
@@ -65,7 +63,7 @@ defmodule CodebattleWeb.GameChannel do
        },
        assign(socket,
          tournament_id: game.tournament_id,
-         banned?: banned?,
+         banned?: current_player.state == "banned",
          game_id: game_id,
          follow_id: follow_id
        )}
@@ -326,7 +324,7 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(%{event: "user:banned", payload: %{player: player}}, socket) do
     user_id = socket.assigns.current_user.id
 
-    if (user_id == player.id) do
+    if user_id == player.id do
       socket = assign(socket, banned?: true)
     end
 
@@ -337,7 +335,7 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(%{event: "user:unbanned", payload: %{player: player}}, socket) do
     user_id = socket.assigns.current_user.id
 
-    if (user_id == player.id) do
+    if user_id == player.id do
       socket = assign(socket, banned?: false)
     end
 

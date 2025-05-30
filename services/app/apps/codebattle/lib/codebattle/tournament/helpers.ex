@@ -238,33 +238,20 @@ defmodule Codebattle.Tournament.Helpers do
   #   end
   # end
 
-  def get_active_game_id(tournament, player_id) do
-    player = get_player(tournament, player_id)
-
-    if player do
-      match_id = List.last(player.matches_ids)
-
-      if match_id do
-        tournament
-        |> get_match(match_id)
-        |> case do
-          %{state: "playing"} -> match_id
-        _   -> nil
-        end
-      end
+  def get_player_latest_match(tournament, player_id) do
+    with player when not is_nil(player) <- get_player(tournament, player_id),
+         true <- player.matches_ids != [],
+         match_id when not is_nil(match_id) <- Enum.max(player.matches_ids) do
+      get_match(tournament, match_id)
+    else
+      _ -> nil
     end
   end
 
-  def get_active_player_game_id(_tournament, nil), do: nil
-
-  def get_active_player_game_id(tournament, player) do
-    match_id = List.last(player.matches_ids)
-    if match_id do
-      get_match(tournament, match_id)
-      |> case do
-        %{game_id: game_id} -> game_id
-        _ -> nil
-      end
+  def get_active_game_id(tournament, player_id) do
+    case get_player_latest_match(tournament, player_id) do
+      %{state: "playing", game_id: game_id} -> game_id
+      _ -> nil
     end
   end
 

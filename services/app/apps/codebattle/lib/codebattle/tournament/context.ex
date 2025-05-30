@@ -16,11 +16,11 @@ defmodule Codebattle.Tournament.Context do
   @states_from_restore ["waiting_participants"]
 
   def get_user_latest_game_id(tournament, user_id) do
-    player = Tournament.Players.get_player(tournament, user_id)
-
-    if player && player.matches_ids != [] do
-      match_id = Enum.max(player.matches_ids)
-      tournament |> Tournament.Matches.get_match(match_id) |> Map.get(:game_id)
+    tournament
+    |> Tournament.Helpers.get_player_latest_match(user_id)
+    |> case do
+      %{game_id: game_id} -> game_id
+      _ -> nil
     end
   end
 

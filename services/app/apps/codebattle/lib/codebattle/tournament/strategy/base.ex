@@ -210,30 +210,31 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def unban_player(tournament, player, game_ids) do
-          new_state =
-            if tournament.state == "finished" do
-              "finished"
-            else
-              "active"
-            end
+        new_state =
+          if tournament.state == "finished" do
+            "finished"
+          else
+            "active"
+          end
 
-          new_player = %{player | state: new_state}
-          Tournament.Players.put_player(tournament, new_player)
+        new_player = %{player | state: new_state}
+        Tournament.Players.put_player(tournament, new_player)
 
-          Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
-            tournament: tournament,
-            player: new_player,
-            game_ids: game_ids
-          })
-
+        Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
+          tournament: tournament,
+          player: new_player,
+          game_ids: game_ids
+        })
       end
 
       def toggle_ban_player(tournament, %{user_id: user_id}) do
         player = Tournament.Players.get_player(tournament, user_id)
+
         if player do
-          game_id = get_active_player_game_id(tournament, player)
+          game_id = get_active_game_id(tournament, user_id)
+
           if game_id do
-            Game.Context.toggle_ban_player(game_id, %{player_id: player.id})
+            Game.Context.toggle_ban_player(game_id, %{player_id: user_id})
           end
 
           if player.state == "banned" do
@@ -242,6 +243,7 @@ defmodule Codebattle.Tournament.Base do
             ban_player(tournament, player, [game_id])
           end
         end
+
         tournament
       end
 
