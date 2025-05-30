@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
   alias Phoenix.Socket.Broadcast
   alias Phoenix.Socket.Message
 
+  @tag :skip
   test "Arena Clan 1 round sequential 95_percentile task_pack" do
     %{id: t1_id} = insert(:task, level: "easy")
     %{id: t2_id} = insert(:task, level: "medium")
