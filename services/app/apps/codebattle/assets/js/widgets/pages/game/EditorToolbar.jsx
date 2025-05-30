@@ -11,7 +11,6 @@ import GameActionButtons from './GameActionButtons';
 import GameBanPlayerButton from './GameBanPlayerButton';
 import GameReportButton from './GameReportButton';
 import GameResultIcon from './GameResultIcon';
-import TournamentUserGameScore from './TournamentUserGameScore';
 import UserGameScore from './UserGameScore';
 import VimModeButton from './VimModeButton';
 
@@ -79,9 +78,6 @@ const EditorToolbar = ({
             <UserInfo user={player} placement={Placements.bottomEnd} />
             {mode === GameRoomModes.standard && (
               <UserGameScore userId={player.id} />
-            )}
-            {mode === GameRoomModes.tournament && (
-              <TournamentUserGameScore userId={player.id} />
             )}
           </div>
         </div>

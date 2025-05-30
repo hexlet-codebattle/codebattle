@@ -13,7 +13,7 @@ import {
   tournamentHideResultsSelector,
 } from '@/selectors';
 
-function TourrnamentPlace({
+function TournamentPlace({
   place,
   title = '',
   withIcon = false,
@@ -44,4 +44,4 @@ function TourrnamentPlace({
   );
 }
 
-export default memo(TourrnamentPlace);
+export default memo(TournamentPlace);

@@ -9,6 +9,7 @@ import useMatchesStatistics from '@/utils/useMatchesStatistics';
 import i18next from '../../../i18n';
 
 import TournamentPlace from './TournamentPlace';
+import { userRankingSelector } from '@/selectors';
 
 export function ArenaStatisticsCard({
   playerId,
@@ -19,6 +20,7 @@ export function ArenaStatisticsCard({
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const [playerStats] = useMatchesStatistics(playerId, matchList);
+  const playerRanking = useSelector(userRankingSelector(playerId));
   const clanStats = useSelector(state => {
     if (Array.isArray(state.tournament.ranking)) {
       return state.tournament.ranking.find(({ id }) => id === clanId);
@@ -43,12 +45,12 @@ export function ArenaStatisticsCard({
       <div className="d-flex w-100 justify-content-between">
         <div className={cardColumnClassName}>
           <span className="p-1">{`${i18next.t('Your clan place')}: ${clanStats?.place || '?'}`}</span>
-          {/* <span className="p-1">{`${i18next.t('Your place')}: ${playerStats.place || '?'}`}</span> */}
+          <span className="p-1">{`${i18next.t('Your place')}: ${playerRanking.place}`}</span>
           <span className="p-1">{`${i18next.t('Task')}: ${playerStats.matchesCount}/${taskIds.length}`}</span>
         </div>
         <div className={cardColumnClassName}>
           <span className="p-1">{`${i18next.t('Your clan score')}: ${clanStats?.score || '?'}`}</span>
-          <span className="p-1">{`${i18next.t('Your score')}: ${playerStats.score || '?'}`}</span>
+          <span className="p-1">{`${i18next.t('Your score')}: ${playerRanking?.score}`}</span>
         </div>
       </div>
       <div className="d-flex flex-column w-100">
@@ -83,10 +85,12 @@ export function ArenaStatisticsCard({
 }
 
 function StatisticsCard({
-  playerId, matchList = [], place,
+  playerId, matchList = []
 }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
+  const playerRanking = useSelector(userRankingSelector(playerId));
 
+  console.log(playerRanking)
   const cardClassName = cn(
     'd-flex flex-column justify-content-center p-2 w-100',
     'align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline',
@@ -94,13 +98,13 @@ function StatisticsCard({
 
   return (
     <div className={cardClassName}>
-      {place !== undefined && (
+      {playerRanking?.place !== undefined && (
         <h6 title={i18next.t('Your place in tournament')} className="p-1">
-          <TournamentPlace title={i18next.t('Your place')} place={place + 1} />
+          <TournamentPlace title={i18next.t('Your place')} place={playerRanking?.place} />
         </h6>
       )}
       <h6 title={i18next.t('Your score')} className="p-1">
-        {`${i18next.t('Your score')}: ${playerStats.score}`}
+        {`${i18next.t('Your score')}: ${playerRanking?.score}`}
       </h6>
       {/* <h6 */}
       {/*   title="Your task_ids" */}

@@ -115,9 +115,6 @@ function PlayerStatsPanel({
               <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
             )}
           </span>
-          <span title="Your place in tournament">
-            <TournamentPlace place={currentPlayer.place + 1} withIcon />
-          </span>
         </div>
       </div>
       <nav>
@@ -177,7 +174,6 @@ function PlayerStatsPanel({
                   playerId={currentUserId}
                   clanId={currentUserClanId}
                   taskIds={roundTaskIds}
-                  place={currentPlayer.place}
                   isBanned={currentPlayer.isBanned}
                   matchList={matchList}
                 />
@@ -186,7 +182,6 @@ function PlayerStatsPanel({
                   type={type}
                   playerId={currentUserId}
                   taskIds={currentPlayer.taskIds}
-                  place={currentPlayer.place}
                   isBanned={currentPlayer.isBanned}
                   matchList={matchList}
                 />
@@ -234,7 +229,6 @@ function PlayerStatsPanel({
                         type={type}
                         playerId={currentUserId}
                         taskIds={currentPlayer.taskIds}
-                        place={currentPlayer.place}
                         isBanned={currentPlayer.isBanned}
                         matchList={matchList}
                       />

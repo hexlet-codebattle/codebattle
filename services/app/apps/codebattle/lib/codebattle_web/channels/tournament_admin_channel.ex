@@ -9,7 +9,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   require Logger
 
-  @default_ranking_size 42
+  @default_ranking_size 142
 
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user

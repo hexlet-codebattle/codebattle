@@ -426,6 +426,7 @@ export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => state
     throw new Error('Invalid view mode for battle room');
   };
 
+export const userRankingSelector = userId => state => (state.tournament.ranking?.entries || []).find(({ id }) => id === userId);
 export const tournamentIdSelector = state => state.tournament.id;
 
 export const tournamentSelector = state => state.tournament;

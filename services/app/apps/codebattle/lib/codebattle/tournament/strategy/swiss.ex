@@ -11,8 +11,8 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    # bots = Bot.Context.build_list(100)
-    # add_players(tournament, %{users: bots})
+    # users = Codebattle.User |> Codebattle.Repo.all() |> Enum.filter(&(&1.is_bot == false)) |> Enum.take(127)
+    # add_players(tournament, %{users: users})
     tournament
   end
 
@@ -82,7 +82,7 @@ defmodule Codebattle.Tournament.Swiss do
 
     player_pairs =
       tournament
-      |> get_unbanned_players()
+      |> get_players()
       |> Enum.sort_by(& &1.id)
       |> Enum.chunk_every(2)
 
@@ -102,8 +102,8 @@ defmodule Codebattle.Tournament.Swiss do
 
     sorted_players =
       tournament
-      |> get_unbanned_players()
-      |> Enum.filter(&(&1.id > 0))
+      |> get_players()
+      |> Enum.filter(&(&1.is_bot == false and &1.state != "banned"))
       |> Enum.sort_by(& &1.score, :desc)
 
     {player_pairs, unmatched_players, played_pair_ids} =

@@ -192,17 +192,8 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      def ban_player(tournament, %{user_id: user_id}) do
-        player = Tournament.Players.get_player(tournament, user_id)
-
+      def ban_player(tournament, player, game_ids) do
         if player do
-          game_ids = get_all_players_game_ids(tournament, user_id)
-
-          # TODO: move to game context
-          Enum.each(game_ids, fn game_id ->
-            Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
-          end)
-
           new_player = %{player | state: "banned"}
 
           Tournament.Players.put_player(tournament, new_player)
@@ -218,17 +209,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      def unban_player(tournament, %{user_id: user_id}) do
-        player = Tournament.Players.get_player(tournament, user_id)
-
-        if player do
-          game_ids = get_all_players_game_ids(tournament, user_id)
-
-          # TODO: move to game context
-          Enum.each(game_ids, fn game_id ->
-            Game.Server.fire_transition(game_id, :toggle_ban_player, %{player_id: player.id})
-          end)
-
+      def unban_player(tournament, player, game_ids) do
           new_state =
             if tournament.state == "finished" do
               "finished"
@@ -237,6 +218,7 @@ defmodule Codebattle.Tournament.Base do
             end
 
           new_player = %{player | state: new_state}
+          Tournament.Players.put_player(tournament, new_player)
 
           Codebattle.PubSub.broadcast("tournament:player:unbanned", %{
             tournament: tournament,
@@ -244,20 +226,23 @@ defmodule Codebattle.Tournament.Base do
             game_ids: game_ids
           })
 
-          Tournament.Players.put_player(tournament, new_player)
-        end
-
-        tournament
       end
 
       def toggle_ban_player(tournament, %{user_id: user_id}) do
         player = Tournament.Players.get_player(tournament, user_id)
+        if player do
+          game_id = get_active_player_game_id(tournament, player)
+          if game_id do
+            Game.Context.toggle_ban_player(game_id, %{player_id: player.id})
+          end
 
-        if player.state == "banned" do
-          unban_player(tournament, %{user_id: user_id})
-        else
-          ban_player(tournament, %{user_id: user_id})
+          if player.state == "banned" do
+            unban_player(tournament, player, [game_id])
+          else
+            ban_player(tournament, player, [game_id])
+          end
         end
+        tournament
       end
 
       def open_up(tournament, %{user: user}) do
@@ -667,17 +652,18 @@ defmodule Codebattle.Tournament.Base do
         created_games = Game.Context.bulk_create_games(game_creation_params)
 
         # Process matches in parallel using Task.async_stream with controlled concurrency
-        created_games
-        |> Enum.zip(game_params)
-        |> Task.async_stream(
-          fn {game, {_params, players, _match_id}} ->
-            build_and_run_match(tournament, players, game, reset_task_ids)
-          end,
-          max_concurrency: System.schedulers_online(),
-          ordered: false,
-          timeout: 30_000
-        )
-        |> Stream.run()
+        _ =
+          created_games
+          |> Enum.zip(game_params)
+          |> Task.async_stream(
+            fn {game, {_params, players, _match_id}} ->
+              build_and_run_match(tournament, players, game, reset_task_ids)
+            end,
+            max_concurrency: System.schedulers_online(),
+            ordered: false,
+            timeout: 30_000
+          )
+          |> Enum.to_list()
       end
 
       defp create_rematch_game(tournament, players, ref) do
@@ -1023,34 +1009,36 @@ defmodule Codebattle.Tournament.Base do
           tournament
         else
           # Process matches in parallel with Task.async_stream
-          matches_to_finish
-          |> Task.async_stream(
-            fn match ->
-              # trigger game timeout and set player results
-              {:ok, game} = Game.Context.trigger_timeout(match.game_id)
+          # Process all matches and await completion
+          _ =
+            matches_to_finish
+            |> Task.async_stream(
+              fn match ->
+                # trigger game timeout and set player results
+                {:ok, game} = Game.Context.trigger_timeout(match.game_id)
 
-              # Create new match with timeout state
-              new_match = %{
-                match
-                | state: "timeout",
-                  player_results: Game.Helpers.get_player_results(game),
-                  duration_sec: game.duration_sec,
-                  finished_at: finished_at
-              }
+                # Create new match with timeout state
+                new_match = %{
+                  match
+                  | state: "timeout",
+                    player_results: Game.Helpers.get_player_results(game),
+                    duration_sec: game.duration_sec,
+                    finished_at: finished_at
+                }
 
-              # Return match and player data for batch processing
-              Tournament.Matches.put_match(tournament, new_match)
+                # Return match and player data for batch processing
+                Tournament.Matches.put_match(tournament, new_match)
 
-              # Broadcast match update
-              Codebattle.PubSub.broadcast("tournament:match:upserted", %{
-                tournament: tournament,
-                match: new_match
-              })
-            end,
-            max_concurrency: System.schedulers_online() * 2,
-            timeout: 10_000
-          )
-          |> Stream.run()
+                # Broadcast match update
+                Codebattle.PubSub.broadcast("tournament:match:upserted", %{
+                  tournament: tournament,
+                  match: new_match
+                })
+              end,
+              max_concurrency: System.schedulers_online() * 2,
+              timeout: 10_000
+            )
+            |> Enum.to_list()
 
           tournament
         end

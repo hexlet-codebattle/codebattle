@@ -64,10 +64,6 @@ function UsersMatchList({
             {player.winMatches.length}
           </span>
           <span className="ml-1 pl-1 border-left border-dark">
-            {'Round Score: '}
-            {Math.ceil(player.score)}
-          </span>
-          <span className="ml-1 pl-1 border-left border-dark">
             {'AVG Tests: '}
             {Math.ceil(player.avgTests)}
             %
@@ -135,13 +131,6 @@ function UsersMatchList({
                 <div
                   className="d-flex align-items-center justify-content-center w-100 p-0 p-sm-1"
                 >
-                  <span
-                    title="Match score"
-                    className="text-nowrap mx-2"
-                  >
-                    <FontAwesomeIcon className="text-secondary mr-2" icon="trophy" />
-                    {matchResult.score}
-                  </span>
                   <span
                     title="Match success tests percent"
                     className="text-nowrap mx-2"
