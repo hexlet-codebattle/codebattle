@@ -1,5 +1,7 @@
 defmodule Codebattle.Tournament.Storage.Ranking do
   @moduledoc false
+  require Logger
+
   def create_table(id) do
     :ets.new(
       :"t_#{id}_ranking",
@@ -20,7 +22,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
         :ets.insert(tournament.ranking_table, records)
       rescue
         _e ->
-          IO.inspect(records, label: "Error inserting ranking records")
+          Logger.error("Error inserting ranking records: #{inspect(records)}")
           []
       end
     end)
@@ -30,7 +32,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     :ets.insert(tournament.ranking_table, {place, record.id, record})
   rescue
     _e ->
-      IO.inspect({place, record.id, record}, label: "Error inserting single ranking record")
+      Logger.error("Error inserting single ranking record: #{inspect({place, record.id, record})}")
   end
 
   def drop_player(tournament, player_id) do
@@ -40,7 +42,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
       :ets.select_delete(tournament.ranking_table, match_spec)
     rescue
       _e ->
-        IO.inspect({player_id, tournament}, label: "Error dropping player from ranking")
+        Logger.error("Error dropping player from ranking: #{inspect({player_id, tournament})}")
     end
   end
 
@@ -50,7 +52,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     ])
   rescue
     _e ->
-      IO.inspect({tournament, limit}, label: "Error getting first ranking records")
+      Logger.error("Error getting first ranking records: #{inspect({tournament, limit})}")
       []
   end
 
@@ -58,7 +60,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     :ets.select(tournament.ranking_table, [{{:_, :_, :"$3"}, [], [:"$3"]}])
   rescue
     _e ->
-      IO.inspect(tournament, label: "Error getting all ranking records")
+      Logger.error("Error getting all ranking records: #{inspect(tournament)}")
       []
   end
 
@@ -69,7 +71,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     end
   rescue
     _e ->
-      IO.inspect({tournament, id}, label: "Error getting ranking record by id")
+      Logger.error("Error getting ranking record by id: #{inspect({tournament, id})}")
       nil
   end
 
@@ -77,7 +79,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     :ets.select_count(tournament.ranking_table, [{:_, [], [true]}])
   rescue
     _e ->
-      IO.inspect(tournament, label: "Error counting ranking records")
+      Logger.error("Error counting ranking records: #{inspect(tournament)}")
       0
   end
 
@@ -87,7 +89,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     ])
   rescue
     _e ->
-      IO.inspect({tournament, start_place, end_place}, label: "Error getting slice of ranking records")
+      Logger.error("Error getting slice of ranking records: #{inspect({tournament, start_place, end_place})}")
       []
   end
 end
