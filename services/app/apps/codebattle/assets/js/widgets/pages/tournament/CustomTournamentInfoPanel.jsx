@@ -1,5 +1,5 @@
 import React, {
-  memo, useState, useCallback, useRef,
+  memo, useState, useEffect, useCallback, useRef,
 } from 'react';
 
 import { useSelector } from 'react-redux';
@@ -47,6 +47,16 @@ function CustomTournamentInfoPanel({
         ? { panel: PanelModeCodes.topUserByClansMode }
         : { panel: PanelModeCodes.ratingMode },
   );
+
+  useEffect(() => {
+    if (players[currentUserId]) {
+      setPanelMode({
+        panel: PanelModeCodes.playerMode,
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, players[currentUserId]?.id);
 
   const allPlayers = useSelector(tournamentPlayersSelector);
 
@@ -136,7 +146,7 @@ function CustomTournamentInfoPanel({
             pageNumber={pageNumber}
             pageSize={pageSize}
             hideBots={hideBots}
-            hideResults={hideResults && !canModerate}
+            hideResults={(hideResults && !canModerate) || (!players[currentUserId] && !canModerate)}
           />
         )}
         {panelMode.panel === PanelModeCodes.topUserByClansMode && (

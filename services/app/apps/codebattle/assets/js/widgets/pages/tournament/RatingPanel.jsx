@@ -10,6 +10,7 @@ import range from 'lodash/range';
 import reverse from 'lodash/reverse';
 import { useDispatch } from 'react-redux';
 
+import i18n from '../../../i18n';
 import mapStagesToTitle from '../../config/mapStagesToTitle';
 import { uploadPlayersMatches } from '../../middlewares/Tournament';
 import { actions } from '../../slices';
@@ -26,15 +27,15 @@ const navPlayerTabsClassName = cn(
 );
 
 const tabLinkClassName = (active, isCurrent = false) => cn(
-    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
-      active,
-      'text-primary': isCurrent,
-    },
-  );
+  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
+  active,
+  'text-primary': isCurrent,
+},
+);
 
 const tabContentClassName = active => cn('tab-pane fade', {
-    'd-flex flex-column show active': active,
-  });
+  'd-flex flex-column show active': active,
+});
 
 const PlayersList = memo(
   ({
@@ -44,27 +45,27 @@ const PlayersList = memo(
     searchedUserId,
     hideBots,
   }) => players.map(player => {
-      if (player.id === searchedUserId) {
-        return <></>;
-      }
+    if (player.id === searchedUserId) {
+      return <></>;
+    }
 
-      const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
+    const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
 
-      return (
-        <TournamentUserPanel
-          key={`user-panel-${player.id}`}
-          matches={userMatches}
-          currentUserId={currentUserId}
-          userId={player.id}
-          name={player.name}
-          score={player.score}
-          place={player.place}
-          isBanned={player.isBanned}
-          searchedUserId={searchedUserId}
-          hideBots={hideBots}
-        />
-      );
-    }),
+    return (
+      <TournamentUserPanel
+        key={`user-panel-${player.id}`}
+        matches={userMatches}
+        currentUserId={currentUserId}
+        userId={player.id}
+        name={player.name}
+        score={player.score}
+        place={player.place}
+        isBanned={player.isBanned}
+        searchedUserId={searchedUserId}
+        hideBots={hideBots}
+      />
+    );
+  }),
 );
 
 const SearchedUserPanel = memo(({
@@ -111,20 +112,20 @@ function RatingPanel({
 
   const playersList = useMemo(
     () => Object.values(players)
-        .sort((a, b) => b.score - a.score)
-        .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
-        .reduce((acc, player) => {
-          if (player.isBot && hideBots) {
-            return acc;
-          }
-
-          if (player.id === currentUserId) {
-            return [player, ...acc];
-          }
-
-          acc.push(player);
+      .sort((a, b) => b.score - a.score)
+      .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
+      .reduce((acc, player) => {
+        if (player.isBot && hideBots) {
           return acc;
-        }, []),
+        }
+
+        if (player.id === currentUserId) {
+          return [player, ...acc];
+        }
+
+        acc.push(player);
+        return acc;
+      }, []),
     [players, currentUserId, pageSize, pageNumber, hideBots],
   );
   const topPlayersList = useMemo(
@@ -178,7 +179,7 @@ function RatingPanel({
           'text-uppercase font-weight-bold pt-2',
         )}
       >
-        Wait reviling results
+        {i18n.t('Wait reviling results')}
       </div>
     );
   }
