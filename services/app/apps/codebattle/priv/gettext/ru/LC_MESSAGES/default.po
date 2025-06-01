@@ -730,7 +730,7 @@ msgstr "Побед"
 msgid "Wins count"
 msgstr "Количество побед"
 
-msgid "Score"
+msgid "Score/Total"
 msgstr "Количество баллов"
 
 msgid "Loses"
