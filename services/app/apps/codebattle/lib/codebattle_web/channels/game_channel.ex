@@ -67,7 +67,7 @@ defmodule CodebattleWeb.GameChannel do
        },
        assign(socket,
          tournament_id: game.tournament_id,
-         banned?: current_player.state == "banned",
+         banned?: current_player_banned?(current_player),
          game_id: game_id,
          follow_id: follow_id
        )}
@@ -423,4 +423,7 @@ defmodule CodebattleWeb.GameChannel do
       Logger.error("GameChannel.handle_in:matchmaking:event: unexpected state")
     end
   end
+
+  defp current_player_banned?(nil), do: false
+  defp current_player_banned?(tournament_player), do: tournament_player.state == "banned"
 end
