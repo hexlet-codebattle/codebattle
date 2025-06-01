@@ -105,7 +105,7 @@ const ParticipantDashboard = () => {
                 style={{ minWidth: '15%' }}
                 className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3"
               >
-                {i18n.t('Wins count')}
+                {i18n.t('Score')}
               </div>
               <div
                 style={{ minWidth: '15%' }}
@@ -212,7 +212,7 @@ const ParticipantDashboard = () => {
                         )}
                       >
                         <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
-                          {i18n.t('Wins count')}
+                          {i18n.t('Score')}
                           :
                         </div>
                         {stage.winsCount}

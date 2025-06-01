@@ -23,16 +23,16 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
 
   @allowed_mini_paths [
     ~r{^\/$},
-    ~r{^\/tournaments\/\d+\/?$},
+    # ~r{^\/tournaments\/\d+\/?$},
     ~r{^\/e\/\w+\/?$},
     ~r{^\/e\/\w+\/stage\/?$},
-    ~r{^\/games\/\d+\/?$},
+    # ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
     ~r{^\/user\/current\/?$},
     # ~r{^\/api\/v1\/settings\/?$},
     # ~r{^\/api\/v1\/events\/.+$},
-    ~r{^\/api\/v1\/playbook\/\d+\/?$}
+    # ~r{^\/api\/v1\/playbook\/\d+\/?$}
   ]
 
   @spec init(Keyword.t()) :: Keyword.t()
