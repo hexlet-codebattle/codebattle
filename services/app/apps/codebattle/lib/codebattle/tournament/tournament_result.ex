@@ -214,7 +214,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   def get_user_ranking(%{use_clan: false} = tournament) do
     query =
       from(r in __MODULE__,
-        join: c in Clan,
+        left_join: c in Clan,
         on: r.clan_id == c.id,
         select: %{
           id: r.user_id,
@@ -236,7 +236,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   def get_user_ranking(tournament) do
     query =
       from(r in __MODULE__,
-        join: c in Clan,
+        left_join: c in Clan,
         on: r.clan_id == c.id,
         select: %{
           id: r.user_id,
