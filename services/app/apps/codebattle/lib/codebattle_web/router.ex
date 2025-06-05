@@ -130,6 +130,8 @@ defmodule CodebattleWeb.Router do
       post("/tasks/build", TaskController, :build)
       post("/tasks/check", TaskController, :check)
       get("/tasks/:name/unique", TaskController, :unique)
+      get("/stream_configs", StreamConfigController, :index)
+      put("/stream_configs", StreamConfigController, :put_all)
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
