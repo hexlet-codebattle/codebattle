@@ -19,15 +19,15 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
       # Create some test configs
       config1 = %{name: "config1", user_id: user.id, config: %{"key" => "value1"}}
       config2 = %{name: "config2", user_id: user.id, config: %{"key" => "value2"}}
-      
+
       %StreamConfig{} |> StreamConfig.changeset(config1) |> Repo.insert!()
       %StreamConfig{} |> StreamConfig.changeset(config2) |> Repo.insert!()
 
       conn = get(conn, Routes.v1_stream_config_path(conn, :index))
-      
+
       response = json_response(conn, 200)
       assert length(response["items"]) == 2
-      
+
       # Check that configs are returned in alphabetical order by name
       assert Enum.at(response["items"], 0)["name"] == "config1"
       assert Enum.at(response["items"], 1)["name"] == "config2"
@@ -42,10 +42,10 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
       ]
 
       conn = put(conn, Routes.v1_stream_config_path(conn, :put_all), %{configs: configs})
-      
+
       response = json_response(conn, 200)
       assert length(response["items"]) == 2
-      
+
       # Verify configs were created with correct values
       assert Enum.at(response["items"], 0)["name"] == "config1"
       assert Enum.at(response["items"], 0)["config"]["key"] == "value1"
@@ -64,7 +64,7 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
       ]
 
       conn = put(conn, Routes.v1_stream_config_path(conn, :put_all), %{configs: updated_configs})
-      
+
       response = json_response(conn, 200)
       assert length(response["items"]) == 1
       assert Enum.at(response["items"], 0)["name"] == "config1"
@@ -75,7 +75,7 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
       # Create initial configs
       config1 = %{name: "config1", user_id: user.id, config: %{"key" => "value1"}}
       config2 = %{name: "config2", user_id: user.id, config: %{"key" => "value2"}}
-      
+
       %StreamConfig{} |> StreamConfig.changeset(config1) |> Repo.insert!()
       %StreamConfig{} |> StreamConfig.changeset(config2) |> Repo.insert!()
 
@@ -85,12 +85,12 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
       ]
 
       conn = put(conn, Routes.v1_stream_config_path(conn, :put_all), %{configs: updated_configs})
-      
+
       response = json_response(conn, 200)
       assert length(response["items"]) == 1
       assert Enum.at(response["items"], 0)["name"] == "config1"
       assert Enum.at(response["items"], 0)["config"]["key"] == "updated_value"
-      
+
       # Verify config2 was deleted
       assert Repo.get_by(StreamConfig, name: "config2", user_id: user.id) == nil
     end
@@ -102,10 +102,10 @@ defmodule CodebattleWeb.Api.V1.StreamConfigControllerTest do
 
       # Send empty configs list (should delete all configs)
       conn = put(conn, Routes.v1_stream_config_path(conn, :put_all), %{configs: []})
-      
+
       response = json_response(conn, 200)
       assert response["items"] == []
-      
+
       # Verify all configs were deleted
       assert Repo.all(StreamConfig) == []
     end

@@ -38,7 +38,7 @@ defmodule Codebattle.StreamConfig do
   def get_all(user_id) do
     __MODULE__
     |> where([sc], sc.user_id == ^user_id)
-    |> order_by([sc], [asc: sc.name])
+    |> order_by([sc], asc: sc.name)
     |> Repo.all()
   end
 
@@ -51,22 +51,19 @@ defmodule Codebattle.StreamConfig do
   """
   def upsert(user_id, configs) do
     # Get existing config names for this user
-    existing_names = 
+    existing_names =
       __MODULE__
       |> where([sc], sc.user_id == ^user_id)
       |> select([sc], sc.name)
       |> Repo.all()
       |> MapSet.new()
-    
+
     # Get names from the configs we're upserting
-    new_names = 
-      configs
-      |> Enum.map(& &1["name"])
-      |> MapSet.new()
-    
+    new_names = MapSet.new(configs, & &1["name"])
+
     # Names to delete (in existing but not in new)
     names_to_delete = MapSet.difference(existing_names, new_names)
-    
+
     # Delete configs that are not in the provided list
     if MapSet.size(names_to_delete) > 0 do
       __MODULE__
@@ -77,14 +74,14 @@ defmodule Codebattle.StreamConfig do
     # Upsert each config
     Enum.each(configs, fn config ->
       name = config["name"]
-      
+
       case Repo.get_by(__MODULE__, name: name, user_id: user_id) do
         nil ->
           # Create new config
           %__MODULE__{}
           |> changeset(%{name: name, user_id: user_id, config: config})
           |> Repo.insert!()
-          
+
         existing_config ->
           # Update existing config
           existing_config
@@ -92,7 +89,7 @@ defmodule Codebattle.StreamConfig do
           |> Repo.update!()
       end
     end)
-    
+
     # Return the updated list of configs
     get_all(user_id)
   end
