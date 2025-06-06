@@ -7,14 +7,22 @@ defmodule CodebattleWeb.Plugs.TokenAuth do
 
   def call(conn, _) do
     key = Application.get_env(:codebattle, :api_key)
+    user_key = get_key(conn)
 
-    if key && key == List.first(get_req_header(conn, "x-auth-key")) do
+    if key && key == user_key do
       conn
     else
       conn
       |> put_status(:unauthorized)
       |> json(%{error: "oiblz"})
       |> halt()
+    end
+  end
+
+  defp get_key(conn) do
+    case List.first(get_req_header(conn, "x-auth-key")) do
+      nil -> conn.params["auth-key"]
+      header_key -> header_key
     end
   end
 end
