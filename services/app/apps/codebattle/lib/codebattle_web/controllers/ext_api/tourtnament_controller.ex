@@ -5,46 +5,51 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
 
   plug(CodebattleWeb.Plugs.TokenAuth)
 
-  # Define the JSON file paths
-  @json_files [
-    "/json/tournament_state_round1.json",
-    "/json/tournament_state_round2.json",
-    "/json/tournament_state_round3.json",
-    "/json/tournament_state_round4.json",
-    "/json/tournament_state_round5.json",
-    "/json/tournament_state_round6.json",
-    "/json/tournament_state_round7.json"
-  ]
+  @json_files ~w(
+    /json/tournament_state_round1.json
+    /json/tournament_state_round2.json
+    /json/tournament_state_round3.json
+    /json/tournament_state_round4.json
+    /json/tournament_state_round5.json
+    /json/tournament_state_round6.json
+    /json/tournament_state_round7.json
+  )
 
-  # Use an Agent to store the current index
-  def start_link do
-    Agent.start_link(fn -> 0 end, name: __MODULE__)
-  end
+  # -------------------------------------------------
+  # Simple in-memory index so every call rotates file
+  # -------------------------------------------------
+  def start_link, do: Agent.start_link(fn -> 0 end, name: __MODULE__)
+  defp ensure_agent_started, do: Process.whereis(__MODULE__) || start_link()
 
-  # Initialize the Agent when the application starts
-  def init do
-    if !Process.whereis(__MODULE__), do: start_link()
-  end
+  # ---------------
+  # GET /ext_api...
+  # ---------------
+  def show(conn, %{"base_url" => base_url}) do
+    ensure_agent_started()
 
-  def show(conn, %{"base_url" => base_url} = _params) do
-    # Initialize the agent if it doesn't exist
-    init()
-
-    # Get current index and update it for the next request
-    current_index =
-      Agent.get_and_update(__MODULE__, fn index ->
-        next_index = rem(index + 1, length(@json_files))
-        {index, next_index}
+    idx =
+      Agent.get_and_update(__MODULE__, fn i ->
+        {i, rem(i + 1, length(@json_files))}
       end)
 
-    # Get the current JSON file path
-    json_path = Enum.at(@json_files, current_index)
+    url = base_url <> Enum.at(@json_files, idx)
 
-    # Construct the full URL
-    redirect_url = "#{base_url}#{json_path}"
+    case Req.get(url, decode_body: false) do
+      {:ok, %{status: 200, body: body}} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, body)
 
-    # Redirect to the S3 bucket URL
-    redirect(conn, external: redirect_url)
+      {:ok, %{status: status}} ->
+        conn
+        |> put_status(:bad_gateway)
+        |> json(%{error: "Failed to retrieve JSON", status: status})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Error fetching JSON: #{inspect(reason)}"})
+    end
   end
 
   def show(conn, _params) do
