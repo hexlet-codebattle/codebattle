@@ -72,7 +72,7 @@ defmodule CodebattleWeb.Router do
     post("/users", UserController, :create)
     post("/tasks", TaskController, :create)
     post("/task_packs", TaskPackController, :create)
-    get("tournaments/:id", TournamentController, :show)
+    get("/tournaments/:id", TournamentController, :show)
   end
 
   scope "/", CodebattleWeb do

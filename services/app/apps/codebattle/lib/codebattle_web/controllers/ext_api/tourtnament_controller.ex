@@ -7,13 +7,13 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
 
   # Define the JSON file paths
   @json_files [
-    "/json/tournament1.json",
-    "/json/tournament2.json",
-    "/json/tournament3.json",
-    "/json/tournament4.json",
-    "/json/tournament5.json",
-    "/json/tournament6.json",
-    "/json/tournament7.json"
+    "/json/tournament_state_round1.json",
+    "/json/tournament_state_round2.json",
+    "/json/tournament_state_round3.json",
+    "/json/tournament_state_round4.json",
+    "/json/tournament_state_round5.json",
+    "/json/tournament_state_round6.json",
+    "/json/tournament_state_round7.json"
   ]
 
   # Use an Agent to store the current index
