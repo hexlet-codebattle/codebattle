@@ -1,4 +1,21 @@
-<div class="container-lg bg-light" id="stream-root"></div>
-<script>
-  window.csrf_token = "<%= csrf_token() %>"
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <%= csrf_meta_tag() %>
+    <title>Stream Viewer</title>
+  </head>
+  <link
+    rel="stylesheet"
+    href="http://localhost:8080/assets/stream.css"
+  />
+  <body>
+    <div id="stream-root"></div>
+
+    <script>
+  window.STREAM_CONFIGS = <%= raw(@stream_configs |> Jason.encode!()) %>
 </script>
+
+    <script defer src="/assets/stream.js"></script>
+  </body>
+</html>

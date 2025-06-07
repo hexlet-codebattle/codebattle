@@ -1,0 +1,9 @@
+<div id="broadcast-editor-root"></div>
+<link
+    rel="stylesheet"
+    href="http://localhost:8080/assets/broadcast_editor.css"
+  />
+<script defer type="text/javascript"
+
+        src="<%= Routes.static_path(@conn, "/assets/broadcast_editor.js") %>">
+</script>
