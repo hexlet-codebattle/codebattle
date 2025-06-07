@@ -1,0 +1,107 @@
+.block-code {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 0; 
+  margin: 0;
+}
+
+
+.block-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px;
+  background-color: #111;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+
+  
+  --glow: #3b82f6;
+}
+
+.block-code-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: var(--glow);
+  box-shadow: 0 0 4px var(--glow), 0 0 8px var(--glow);
+  border-radius: 4px;
+}
+
+.block-code-nick {
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+
+.block-code-select {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+  outline: none;
+  height: 24px;
+  margin-left: 8px;
+  z-index: 2;
+}
+
+.block-code-select:hover {
+  background-color: #e0e0e0;
+}
+
+.block-code-select:focus {
+  border-color: #888;
+}
+
+
+.rnd-container .block-code .react-syntax-highlighter {
+  margin: 0;
+  padding: 0;
+}
+
+.block-code .react-syntax-highlighter pre {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.3 !important;
+  font-size: 14px !important;
+  border: none !important;
+}
+
+.block-code .react-syntax-highlighter pre code {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block;
+  line-height: 1.3 !important;
+  font-size: 14px !important;
+  border: none !important;
+}
+
+.theme-controls {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.theme-filter-select {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  padding: 2px 4px;
+  height: 24px;
+  cursor: pointer;
+}

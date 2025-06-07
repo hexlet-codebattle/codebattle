@@ -114,6 +114,7 @@ defmodule CodebattleWeb.Router do
         get("/completed", GameController, :completed)
       end
 
+
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
@@ -152,6 +153,7 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     # Use the default browser stack
     pipe_through(:browser)
+    get("/broadcast-editor", BroadcastEditorController, :index)
 
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
@@ -168,6 +170,7 @@ defmodule CodebattleWeb.Router do
     resources("/tournaments", TournamentController, only: [:index, :show])
 
     get("/stream", StreamController, :index)
+    get("/stream/preset", StreamController, :stream_preset)
 
     scope "/tournaments" do
       get("/:id/admin", Tournament.AdminController, :show)
@@ -205,6 +208,7 @@ defmodule CodebattleWeb.Router do
     resources("/games", GameController, only: [:show, :delete]) do
       get("/image", Game.ImageController, :show, as: :image)
     end
+
 
     scope "/games" do
       post("/training", GameController, :create_training)
