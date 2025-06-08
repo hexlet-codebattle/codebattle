@@ -137,6 +137,7 @@ module.exports = {
       "@/utils": path.resolve(__dirname, "../assets/js/widgets/utils"),
     },
     fallback: {
+      'process/browser': require.resolve('process/browser'),
       path: require.resolve("path-browserify"),
     },
     extensions: [".js", ".jsx"],
