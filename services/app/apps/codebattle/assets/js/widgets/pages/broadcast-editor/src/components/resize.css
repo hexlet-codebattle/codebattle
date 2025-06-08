@@ -1,0 +1,13 @@
+.resize-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #3b82f6;
+  border-radius: 2px;
+  position: absolute;
+  z-index: 999;
+}
+
+.resize-dot.tl { top: -4px; left: -4px; cursor: nwse-resize; }
+.resize-dot.tr { top: -4px; right: -4px; cursor: nesw-resize; }
+.resize-dot.bl { bottom: -4px; left: -4px; cursor: nesw-resize; }
+.resize-dot.br { bottom: -4px; right: -4px; cursor: nwse-resize; }
