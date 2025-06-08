@@ -687,6 +687,7 @@ defmodule Codebattle.Tournament.Base do
                 players: players,
                 ref: ref,
                 round_id: tournament.current_round_id,
+                round_position: tournament.current_round_position,
                 state: "playing",
                 task: task,
                 timeout_seconds: get_game_timeout(tournament, task),
@@ -706,6 +707,7 @@ defmodule Codebattle.Tournament.Base do
       defp build_and_run_match(tournament, players, game, reset_task_ids) do
         match = %Tournament.Match{
           game_id: game.id,
+          rematch: true,
           task_id: game.task_id,
           id: game.ref,
           level: game.level,
@@ -790,6 +792,7 @@ defmodule Codebattle.Tournament.Base do
               players: players,
               ref: match_id,
               round_id: tournament.current_round_id,
+              round_position: tournament.current_round_position,
               state: "playing",
               task: task,
               timeout_seconds: get_game_timeout(tournament, task),
@@ -904,6 +907,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
       # We don't want to run a timer for the swiss type, because all games already have a timeout
       defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{state: "active", type: "top200"} = tournament), do: tournament
 
       defp maybe_start_round_timer(tournament) do
         Process.send_after(

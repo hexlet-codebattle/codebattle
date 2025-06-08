@@ -49,14 +49,15 @@ defmodule Codebattle.Game do
     has_one(:playbook, Codebattle.Playbook)
     embeds_many(:players, Player, on_replace: :delete)
 
-    field(:player_ids, {:array, :integer}, default: [])
     field(:duration_sec, :integer)
     field(:finishes_at, :naive_datetime)
     field(:level, :string)
     field(:mode, :string, default: "standard")
+    field(:player_ids, {:array, :integer}, default: [])
     field(:ref, :integer)
     field(:rematch_initiator_id, :integer)
     field(:rematch_state, :string, default: "none")
+    field(:round_position, :integer)
     field(:starts_at, :naive_datetime)
     field(:state, :string)
     field(:timeout_seconds, :integer, default: @default_timeout_seconds)
@@ -65,6 +66,7 @@ defmodule Codebattle.Game do
     field(:use_timer, :boolean, default: true)
     field(:visibility_type, :string, default: "public")
     field(:waiting_room_name, :string)
+    field(:was_cheated, :boolean, default: false)
 
     field(:award, :string, virtual: true)
     field(:is_bot, :boolean, default: false, virtual: true)
@@ -89,6 +91,7 @@ defmodule Codebattle.Game do
       :rematch_initiator_id,
       :rematch_state,
       :round_id,
+      :round_position,
       :starts_at,
       :state,
       :player_ids,
@@ -99,7 +102,8 @@ defmodule Codebattle.Game do
       :type,
       :use_chat,
       :use_timer,
-      :visibility_type
+      :visibility_type,
+      :was_cheated
     ])
     |> validate_required([:state, :level, :type, :mode])
     |> validate_inclusion(:type, @types)

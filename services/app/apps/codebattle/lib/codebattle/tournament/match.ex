@@ -14,6 +14,7 @@ defmodule Codebattle.Tournament.Match do
   embedded_schema do
     field(:duration_sec, :integer)
     field(:finished_at, :naive_datetime)
+    field(:rematch, :boolean, default: false)
     field(:game_id, :integer)
     field(:id, :integer)
     field(:level, :string)
@@ -33,15 +34,16 @@ defmodule Codebattle.Tournament.Match do
       :duration_sec,
       :finished_at,
       :game_id,
-      :task_id,
       :id,
       :integer,
       :level,
       :player_ids,
+      :rematch,
       :round_id,
       :round_position,
       :started_at,
       :state,
+      :task_id,
       :winner_id
     ])
     |> validate_inclusion(:state, @states)

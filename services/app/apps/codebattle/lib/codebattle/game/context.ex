@@ -33,6 +33,7 @@ defmodule Codebattle.Game.Context do
           optional(:timeout_seconds) => non_neg_integer(),
           optional(:type) => String.t(),
           optional(:round_id) => pos_integer(),
+          optional(:round_position) => non_neg_integer(),
           optional(:mode) => String.t(),
           optional(:visibility_type) => String.t(),
           optional(:use_chat) => boolean(),

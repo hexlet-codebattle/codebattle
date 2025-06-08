@@ -80,7 +80,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_event = UserEvent.get!(user_event_id)
     stages_json = Jason.encode_to_iodata!(user_event.stages, pretty: true)
 
-    {:noreply, assign(socket, show_modal: true, current_user_event: user_event, stages_json: stages_json)}
+    {:noreply,
+     assign(socket, show_modal: true, current_user_event: user_event, stages_json: stages_json)}
   end
 
   def handle_event("close_modal", _, socket) do
@@ -99,11 +100,21 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
             {:noreply,
              socket
-             |> assign(user_events: user_events, show_modal: false, current_user_event: nil, stages_json: "")
+             |> assign(
+               user_events: user_events,
+               show_modal: false,
+               current_user_event: nil,
+               stages_json: ""
+             )
              |> put_flash(:info, "User event stages updated successfully")}
 
           {:error, changeset} ->
-            {:noreply, put_flash(socket, :error, "Error updating user event stages: #{inspect(changeset.errors)}")}
+            {:noreply,
+             put_flash(
+               socket,
+               :error,
+               "Error updating user event stages: #{inspect(changeset.errors)}"
+             )}
         end
 
       {:error, error} ->
@@ -553,6 +564,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <tr>
                         <th>#</th>
                         <th>Date</th>
+                        <th>Finished</th>
                         <th>Task</th>
                         <th>Status</th>
                         <th>Result</th>
@@ -564,6 +576,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         <tr>
                           <td><%= g.id %></td>
                           <td><%= g.inserted_at %></td>
+                          <td><%= g.finishes_at %></td>
                           <td><%= g.task_name %></td>
                           <td>
                             <span class={"badge " <> case g.state do

@@ -13,16 +13,18 @@ defmodule Codebattle.Tournament.TournamentResult do
   @type t :: %__MODULE__{}
 
   schema "tournament_results" do
-    field(:tournament_id, :integer)
+    field(:clan_id, :integer)
+    field(:duration_sec, :integer)
     field(:game_id, :integer)
+    field(:was_cheated, :boolean, default: false)
+    field(:level, :string)
+    field(:result_percent, :decimal)
+    field(:round_position, :integer)
+    field(:score, :integer)
+    field(:task_id, :integer)
+    field(:tournament_id, :integer)
     field(:user_id, :integer)
     field(:user_name, :string)
-    field(:clan_id, :integer)
-    field(:task_id, :integer)
-    field(:score, :integer)
-    field(:level, :string)
-    field(:duration_sec, :integer)
-    field(:result_percent, :decimal)
   end
 
   def get_by(tournament_id) do
@@ -92,6 +94,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.duration_sec,
       g.tournament_id,
       g.id as game_id,
+      g.round_position,
+      g.was_cheated,
       dt.percentile_95,
       dt.percentile_5,
       dt.base_score,
@@ -122,7 +126,9 @@ defmodule Codebattle.Tournament.TournamentResult do
       score,
       level,
       duration_sec,
-      result_percent
+      result_percent,
+      round_position,
+      was_cheated
       )
       select
       tournament_id,
@@ -134,7 +140,9 @@ defmodule Codebattle.Tournament.TournamentResult do
       COALESCE(result_percent * score / 100.0, 0) as score,
       level,
       duration_sec,
-      result_percent
+      result_percent,
+      round_position,
+      was_cheated
       from stats
     """)
 
@@ -156,6 +164,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.tournament_id,
       g.task_id,
       g.id as game_id,
+      g.round_position,
+      g.was_cheated,
       CASE
       WHEN (p.player_info->'result_percent')::numeric = 100.0 THEN
         CASE
@@ -184,7 +194,9 @@ defmodule Codebattle.Tournament.TournamentResult do
       score,
       level,
       duration_sec,
-      result_percent
+      result_percent,
+      round_position,
+      was_cheated
       )
       select
       tournament_id,
@@ -196,7 +208,9 @@ defmodule Codebattle.Tournament.TournamentResult do
       score,
       level,
       duration_sec,
-      result_percent
+      result_percent,
+      round_position,
+      was_cheated
       from stats
     """)
 
@@ -225,12 +239,32 @@ defmodule Codebattle.Tournament.TournamentResult do
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name, c.id],
-        order_by: [desc: sum(r.score)],
-        windows: [overall_partition: [order_by: [desc_nulls_last: sum(r.score), asc: sum(r.duration_sec)]]]
+        group_by: [r.user_id, r.user_name],
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
     Repo.all(query)
+  end
+
+  def get_user_ranking_for_round(tournament, round_position) do
+    query =
+      from(r in __MODULE__,
+        select: %{
+          id: r.user_id,
+          score: sum(r.score),
+          place: over(row_number(), :overall_partition)
+        },
+        where: r.tournament_id == ^tournament.id,
+        where: r.round_position == ^round_position,
+        group_by: [r.user_id],
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+      )
+
+    query |> Repo.all() |> Enum.reduce(%{}, fn value = %{id: id}, acc ->
+      Map.put(acc, id, value)
+    end)
   end
 
   def get_user_ranking(tournament) do
@@ -248,7 +282,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         },
         where: r.tournament_id == ^tournament.id,
         group_by: [r.user_id, r.user_name, c.id],
-        order_by: [desc: sum(r.score)],
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
