@@ -489,42 +489,42 @@ end
 
 Repo.delete_all(UserEvent)
 
-UserEvent.create(%{
-  user_id: 2185,
-  event_id: 1,
-  stages: [
-    %{
-      slug: "qualification",
-      status: :completed,
-      place_in_total_rank: nil,
-      place_in_category_rank: nil,
-      score: nil,
-      wins_count: nil,
-      games_count: nil,
-      time_spent_in_seconds: nil
-    },
-    %{
-      slug: "semifinal_entrance",
-      entrance_result: :passed
-    },
-    %{
-      slug: "semifinal",
-      tournament_type: :global,
-      status: :pending
-    }
-    # %{
-    #   slug: "final_entrance",
-    #   entrance_result: :not_passed
-    # },
-    # %{
-    #   slug: "final",
-    #   status: :pending,
-    #   place_in_total_rank: Enum.random(1..20),
-    #   place_in_category_rank: Enum.random(1..10),
-    #   score: Enum.random(20..100),
-    #   wins_count: Enum.random(0..8),
-    #   games_count: Enum.random(1..10),
-    #   time_spent_in_seconds: Enum.random(100..5000)
-    # }
-  ]
-})
+# UserEvent.create(%{
+#   user_id: 2185,
+#   event_id: 1,
+#   stages: [
+#     %{
+#       slug: "qualification",
+#       status: :completed,
+#       place_in_total_rank: nil,
+#       place_in_category_rank: nil,
+#       score: nil,
+#       wins_count: nil,
+#       games_count: nil,
+#       time_spent_in_seconds: nil
+#     },
+#     %{
+#       slug: "semifinal_entrance",
+#       entrance_result: :passed
+#     },
+#     %{
+#       slug: "semifinal",
+#       tournament_type: :global,
+#       status: :pending
+#     }
+# %{
+#   slug: "final_entrance",
+#   entrance_result: :not_passed
+# },
+# %{
+#   slug: "final",
+#   status: :pending,
+#   place_in_total_rank: Enum.random(1..20),
+#   place_in_category_rank: Enum.random(1..10),
+#   score: Enum.random(20..100),
+#   wins_count: Enum.random(0..8),
+#   games_count: Enum.random(1..10),
+#   time_spent_in_seconds: Enum.random(100..5000)
+# }
+# ]
+# })
