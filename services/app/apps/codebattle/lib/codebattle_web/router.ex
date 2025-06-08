@@ -115,7 +115,6 @@ defmodule CodebattleWeb.Router do
         get("/completed", GameController, :completed)
       end
 
-
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
@@ -209,7 +208,6 @@ defmodule CodebattleWeb.Router do
     resources("/games", GameController, only: [:show, :delete]) do
       get("/image", Game.ImageController, :show, as: :image)
     end
-
 
     scope "/games" do
       post("/training", GameController, :create_training)

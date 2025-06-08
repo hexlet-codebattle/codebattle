@@ -34,28 +34,29 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   @doc """
-    Here we calculate the score for each player based on the tasks that all players solved.
-    1. Obtain the 95th percentile for each task based on the winners game time.
-    2. Calculate the `time_coefficient` for each player based on their game time:
-      - `time_coefficient` equals 100% if their time is less than the 95th percentile.
-      - `time_coefficient` equals 30% for the slowest time among all winners.
-      - `time_coefficient` linearly decreases from 100% to 30% based on the line
-         from the 95th percentile time to the slowest time.
-    3. Each task level has a `base_score`:
-      - Elementary: 30
-      - Easy: 100
-      - Medium: 300
-      - Hard: 1000
-    4. Each player has a `test_result_percent` ranging from 100% to 0%, where the winner always has 100%.
-    5. The final score is calculated as `base_score` * `time_coefficient` * `test_result_percent`.
+  Calculates the score for each player based on the tasks that all players solved.
 
-    Example:
-    Task level is hard, so the base score = 1000
-    95th Percentile = 104.0 seconds
+  1. Obtain the 25th percentile for each task based on the winners game time, it will be the base_score
+  2. Then we scale from 1 to 2 base_score for each winner.
+     - min time winner gets 2 base_score
+     - max time winner gets 1 base_score
+     - intermediate gets linearly between 1 and 2 base_score based on their game time
 
+  3. Each player has a tests `result_percent` ranging from 100% to 0%, where the winner always has 100%.
+  4. For players that lost the game we take duration_sec and scale it from 1 to 2 base_score * (result_percent/2).
+
+  Example:
+    - winner_times in seconds: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    - 25 percentile: 30 seconds = base_score
+    - player with time 10 gets 2 base_score (10 is 100% between min and max)
+    - player with time 20 gets 1.75 base_score (20 is 75% between min and max)
+    - player with time 90 gets 1.05 base_score (90 is 5% between min and max)
+    - player with time 100 gets 1 base_score (100 is 0% between min and max)
+    - player that lost with time 20 and result_percent 80 gets 0.88 * 1.75 base_score
+    - player with time 160 and result_percent 20 gets (0.2 * 0.5 base_score)
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: type, ranking_type: "by_player_95th_percentile"} = tournament)
+  def upsert_results(%{type: type, ranking_type: "by_percentile"} = tournament)
       when type in ["swiss", "arena", "top200"] do
     clean_results(tournament.id)
 
@@ -239,32 +240,12 @@ defmodule Codebattle.Tournament.TournamentResult do
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name],
+        group_by: [r.user_id, r.user_name, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
     Repo.all(query)
-  end
-
-  def get_user_ranking_for_round(tournament, round_position) do
-    query =
-      from(r in __MODULE__,
-        select: %{
-          id: r.user_id,
-          score: sum(r.score),
-          place: over(row_number(), :overall_partition)
-        },
-        where: r.tournament_id == ^tournament.id,
-        where: r.round_position == ^round_position,
-        group_by: [r.user_id],
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
-      )
-
-    query |> Repo.all() |> Enum.reduce(%{}, fn value = %{id: id}, acc ->
-      Map.put(acc, id, value)
-    end)
   end
 
   def get_user_ranking(tournament) do
@@ -287,6 +268,28 @@ defmodule Codebattle.Tournament.TournamentResult do
       )
 
     Repo.all(query)
+  end
+
+  def get_user_ranking_for_round(tournament, round_position) do
+    query =
+      from(r in __MODULE__,
+        select: %{
+          id: r.user_id,
+          score: sum(r.score),
+          place: over(row_number(), :overall_partition)
+        },
+        where: r.tournament_id == ^tournament.id,
+        where: r.round_position == ^round_position,
+        group_by: [r.user_id],
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+      )
+
+    query
+    |> Repo.all()
+    |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
+      Map.put(acc, id, value)
+    end)
   end
 
   def get_top_users_by_clan_ranking(tournament, players_limit \\ 5, clans_limit \\ 7) do

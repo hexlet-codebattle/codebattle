@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
         "score_strategy" => "win_loss",
         "task_provider" => "task_pack_per_round",
         "task_strategy" => "sequential",
-        "ranking_type" => "by_player_95th_percentile",
+        "ranking_type" => "by_percentile",
         "type" => "arena",
         "state" => "waiting_participants",
         "use_clan" => "true",

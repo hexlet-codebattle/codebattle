@@ -4,7 +4,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
   alias Codebattle.Tournament.TournamentResult
 
   describe "get_player_results" do
-    test "calculates results correctly by_player_95th_percentile" do
+    test "calculates results correctly by_percentile" do
       [clan1, clan2, clan3, clan4, clan5, clan6, clan7, clan8] =
         Enum.map(1..8, fn i -> insert(:clan, name: "c#{i}", long_name: "l#{i}") end)
 
@@ -34,7 +34,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       user71 = insert(:user, name: "u71", clan_id: clan7.id)
       user81 = insert(:user, name: "u81", clan_id: clan8.id)
 
-      tournament = insert(:tournament, type: "swiss", ranking_type: "by_player_95th_percentile", use_clan: false)
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_percentile", use_clan: false)
 
       insert_game(task4, tournament, user11, user21, 100, 100.0, 70.0)
       insert_game(task4, tournament, user12, user22, 200, 100.0, 60.0)

@@ -1,21 +1,19 @@
-defmodule CodebattleWeb.TournamentTranslationChannel do
+defmodule CodebattleWeb.TournamentStreamChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
-  alias Codebattle.Tournament.TournamentResult
-  alias Codebattle.UserGameReport
 
   require Logger
 
-  def join("tournament_translation:" <> tournament_id, _payload, socket) do
+  def join("tournament_stream:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get!(tournament_id),
          true <- Helpers.can_moderate?(tournament, current_user) do
-      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:translation")
+      Codebattle.PubSub.subscribe("tournament:#{tournament.id}:stream")
 
       {
         :ok,
@@ -70,7 +68,7 @@ defmodule CodebattleWeb.TournamentTranslationChannel do
   end
 
   def handle_info(message, socket) do
-    Logger.debug("Skip in translation message: " <> inspect(message))
+    Logger.debug("Skip in stream message: " <> inspect(message))
     {:noreply, socket}
   end
 

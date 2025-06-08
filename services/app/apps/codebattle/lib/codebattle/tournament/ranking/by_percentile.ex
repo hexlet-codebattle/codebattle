@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Ranking.ByPlayer95thPercentile do
+defmodule Codebattle.Tournament.Ranking.ByPercentile do
   @moduledoc false
   alias Codebattle.Tournament.Players
   alias Codebattle.Tournament.Storage.Ranking

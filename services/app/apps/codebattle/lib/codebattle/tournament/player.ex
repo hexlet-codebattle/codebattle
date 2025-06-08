@@ -25,7 +25,6 @@ defmodule Codebattle.Tournament.Player do
     :score,
     :team_id,
     :wr_joined_at,
-    :seeded,
     :wins_count
   ]
 
@@ -56,7 +55,6 @@ defmodule Codebattle.Tournament.Player do
     field(:team_id, :integer)
     field(:wins_count, :integer, default: 0)
     field(:wr_joined_at, :integer)
-    field(:seeded, :boolean)
   end
 
   @spec new!(params :: map()) :: t()

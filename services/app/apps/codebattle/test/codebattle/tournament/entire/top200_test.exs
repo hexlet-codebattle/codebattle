@@ -51,7 +51,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
         "score_strategy" => "win_loss",
         "task_strategy" => "sequential",
         "round_timeout_seconds" => 100,
-        "ranking_type" => "by_player_95th_percentile",
+        "ranking_type" => "by_percentile",
         "type" => "top200",
         "state" => "waiting_participants",
         "rounds_limit" => "7",

@@ -5,17 +5,15 @@
     <%= csrf_meta_tag() %>
     <title>Stream Viewer</title>
   </head>
-  <link
-    rel="stylesheet"
-    href="http://localhost:8080/assets/stream.css"
-  />
+  <link rel="stylesheet" href="http://localhost:8080/assets/stream.css" />
   <body>
     <div id="stream-root"></div>
 
     <script>
-  window.STREAM_CONFIGS = <%= raw(@stream_configs |> Jason.encode!()) %>
-</script>
+      window.STREAM_CONFIGS = <%= raw(@stream_configs |> Jason.encode!()) %>
+    </script>
 
-    <script defer src="/assets/stream.js"></script>
+    <script defer src="/assets/stream.js">
+    </script>
   </body>
 </html>

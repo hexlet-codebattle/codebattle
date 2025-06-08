@@ -28,7 +28,7 @@ defmodule CodebattleWeb.Integration.Tournament.SwissClan95PercentileTest do
         "score_strategy" => "win_loss",
         "task_provider" => "task_pack",
         "task_strategy" => "sequential",
-        "ranking_type" => "by_player_95th_percentile",
+        "ranking_type" => "by_percentile",
         "type" => "swiss",
         "state" => "waiting_participants",
         "use_clan" => "false",

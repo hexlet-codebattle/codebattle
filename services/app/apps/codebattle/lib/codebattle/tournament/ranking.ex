@@ -3,8 +3,7 @@ defmodule Codebattle.Tournament.Ranking do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking.ByClan
-  alias Codebattle.Tournament.Ranking.ByPlayer
-  alias Codebattle.Tournament.Ranking.ByPlayer95thPercentile
+  alias Codebattle.Tournament.Ranking.ByPercentile
   alias Codebattle.Tournament.Ranking.Void
   alias Codebattle.Tournament.Storage.Ranking
 
@@ -51,7 +50,7 @@ defmodule Codebattle.Tournament.Ranking do
 
   @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: Tournament.t()
   def drop_player(tournament, player_id) do
-    if get_module(tournament) == ByPlayer95thPercentile do
+    if get_module(tournament) == ByPercentile do
       Ranking.drop_player(tournament, player_id)
     end
   end
@@ -93,8 +92,7 @@ defmodule Codebattle.Tournament.Ranking do
   end
 
   defp get_module(%{ranking_type: "by_clan"}), do: ByClan
-  defp get_module(%{ranking_type: "by_player_95th_percentile"}), do: ByPlayer95thPercentile
-  defp get_module(%{ranking_type: "by_player"}), do: ByPlayer
+  defp get_module(%{ranking_type: "by_percentile"}), do: ByPercentile
   defp get_module(%{ranking_type: "void"}), do: Void
-  defp get_module(_tournament), do: ByPlayer
+  defp get_module(_tournament), do: ByPercentile
 end

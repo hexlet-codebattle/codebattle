@@ -9,6 +9,7 @@ defmodule Codebattle.StreamConfig do
 
   alias Codebattle.Repo
   alias Codebattle.User
+  alias Runner.AtomizedMap
 
   @type t :: %__MODULE__{}
 
@@ -16,7 +17,7 @@ defmodule Codebattle.StreamConfig do
 
   schema "stream_configs" do
     field(:name, :string)
-    field(:config, :map)
+    field(:config, AtomizedMap)
     belongs_to(:user, User)
 
     timestamps()

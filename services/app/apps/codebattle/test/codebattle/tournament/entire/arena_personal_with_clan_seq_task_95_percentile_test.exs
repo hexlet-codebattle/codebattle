@@ -57,7 +57,7 @@ defmodule Codebattle.Tournament.Entire.ArenaPersonalWithClanSeqTask95PercentTest
         "task_provider" => "task_pack_per_round",
         "score_strategy" => "win_loss",
         "task_strategy" => "sequential",
-        "ranking_type" => "by_player_95th_percentile",
+        "ranking_type" => "by_percentile",
         "type" => "arena",
         "state" => "waiting_participants",
         "use_clan" => "true",

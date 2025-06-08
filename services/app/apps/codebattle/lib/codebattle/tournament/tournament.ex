@@ -59,7 +59,7 @@ defmodule Codebattle.Tournament do
   @states ~w(waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
-  @ranking_types ~w(void by_player by_clan by_player_95th_percentile)
+  @ranking_types ~w(void by_player by_clan by_percentile)
   @types ~w(individual team show swiss arena versus squad top200)
   @public_types ~w(individual team swiss arena versus)
 

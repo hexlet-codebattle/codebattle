@@ -80,8 +80,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_event = UserEvent.get!(user_event_id)
     stages_json = Jason.encode_to_iodata!(user_event.stages, pretty: true)
 
-    {:noreply,
-     assign(socket, show_modal: true, current_user_event: user_event, stages_json: stages_json)}
+    {:noreply, assign(socket, show_modal: true, current_user_event: user_event, stages_json: stages_json)}
   end
 
   def handle_event("close_modal", _, socket) do
