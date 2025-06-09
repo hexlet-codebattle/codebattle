@@ -33,7 +33,6 @@ defmodule Codebattle.Tournament.Entire.SquadSeqTaskOneZeroTest do
         "creator" => creator,
         "break_duration_seconds" => "100",
         "task_provider" => "task_pack_per_round",
-        "score_strategy" => "one_zero",
         "task_strategy" => "sequential",
         "ranking_type" => "void",
         "type" => "squad",

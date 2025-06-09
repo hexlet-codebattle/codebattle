@@ -52,7 +52,6 @@ defmodule CodebattleWeb.PublicEventControllerTest do
                 type: :swiss,
                 rounds_limit: 7,
                 access_type: "token",
-                score_strategy: "win_loss",
                 state: :waiting_participants,
                 task_pack_name: "7_elementary",
                 tournament_timeout_seconds: 75 * 60,

@@ -52,7 +52,6 @@ defmodule Codebattle.Event.Context do
                access_type: "token",
                use_chat: false,
                use_clan: false,
-               score_strategy: "win_loss",
                state: "waiting_participants",
                break_duration_seconds: 5,
                tournament_timeout_seconds: event_stage.tournament_meta.tournament_timeout_seconds,

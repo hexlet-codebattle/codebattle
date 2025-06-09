@@ -13,6 +13,13 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
     /json/tournament_state_round5.json
     /json/tournament_state_round6.json
     /json/tournament_state_round7.json
+    /json/tournament_state_round8.json
+    /json/tournament_state_round9.json
+    /json/tournament_state_round10.json
+    /json/tournament_state_round11.json
+    /json/tournament_state_round12.json
+    /json/tournament_state_round13.json
+    /json/tournament_state_round14.json
   )
 
   # -------------------------------------------------

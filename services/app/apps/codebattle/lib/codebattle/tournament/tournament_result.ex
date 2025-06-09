@@ -8,7 +8,9 @@ defmodule Codebattle.Tournament.TournamentResult do
   alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Score.WinLoss
+
+  @loss_score 1
+  @game_level_score %{elementary: 2, easy: 3, medium: 5, hard: 8}
 
   @type t :: %__MODULE__{}
 
@@ -65,17 +67,12 @@ defmodule Codebattle.Tournament.TournamentResult do
       as (
       SELECT
       task_id,
-      count(*),
-      case
-        when level = 'elementary' THEN 50.0
-        when level = 'easy' THEN 100.0
-        when level = 'medium' THEN 150.0
-        when level = 'hard' THEN 200.0
-      end AS base_score,
-      array_agg(duration_sec),
-      max(duration_sec) as max_duration,
-      PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_95,
-      PERCENTILE_CONT(0.05) WITHIN GROUP (ORDER BY duration_sec ASC) AS percentile_5
+      CASE
+        WHEN COUNT(*) = 0 THEN 0
+        ELSE PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY duration_sec ASC)
+      END AS base_score,
+      min(duration_sec) as min_duration,
+      max(duration_sec) as max_duration
       FROM
       games g
       where tournament_id = #{tournament.id}
@@ -97,13 +94,17 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.id as game_id,
       g.round_position,
       g.was_cheated,
-      dt.percentile_95,
-      dt.percentile_5,
+      dt.min_duration,
+      dt.max_duration,
       dt.base_score,
       CASE
-      WHEN g.duration_sec <= dt.percentile_5 THEN base_score
-      WHEN g.duration_sec >= dt.percentile_95 THEN base_score * 0.3
-      ELSE base_score - (base_score * 0.7 * (g.duration_sec - dt.percentile_5) / (dt.percentile_95 - dt.percentile_5))
+      -- Handle timeout case where both players lost
+      WHEN g.state = 'timeout' THEN
+        0.5 * dt.base_score * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+      ELSE
+        dt.base_score * (
+          2 - ((g.duration_sec - dt.min_duration)::numeric / GREATEST(dt.max_duration - dt.min_duration, 1))
+        ) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
       END AS score,
       g.level,
       g.task_id,
@@ -138,7 +139,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       user_name,
       clan_id,
       task_id,
-      COALESCE(result_percent * score / 100.0, 0) as score,
+      score,
       level,
       duration_sec,
       result_percent,
@@ -150,7 +151,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, score_strategy: "win_loss"} = tournament) when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -170,13 +171,13 @@ defmodule Codebattle.Tournament.TournamentResult do
       CASE
       WHEN (p.player_info->'result_percent')::numeric = 100.0 THEN
         CASE
-          WHEN g.level = 'elementary' THEN #{WinLoss.game_level_score("elementary")}
-          WHEN g.level = 'easy' THEN #{WinLoss.game_level_score("easy")}
-          WHEN g.level = 'medium' THEN #{WinLoss.game_level_score("medium")}
-          WHEN g.level = 'hard' THEN #{WinLoss.game_level_score("hard")}
+          WHEN g.level = 'elementary' THEN #{@game_level_score[:elementary]}
+          WHEN g.level = 'easy' THEN #{@game_level_score[:easy]}
+          WHEN g.level = 'medium' THEN #{@game_level_score[:medium]}
+          WHEN g.level = 'hard' THEN #{@game_level_score[:hard]}
           ELSE 0
         END
-      ELSE #{WinLoss.loss_score()}
+      ELSE #{@loss_score}
       END AS score
       FROM games g
       CROSS JOIN LATERAL
@@ -388,7 +389,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     WITH tasks_data AS (
     SELECT
         ROUND(MIN(duration_sec)::numeric, 2) AS min,
-        ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p5,
+        ROUND(PERCENTILE_CONT(0.05) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p5,
         ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p25,
         ROUND(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p50,
         ROUND(PERCENTILE_CONT(0.85) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p75,

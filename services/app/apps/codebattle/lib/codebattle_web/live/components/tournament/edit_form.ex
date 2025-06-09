@@ -215,13 +215,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               ) %>
               <%= error_tag(f, :ranking_type) %>
             </div>
-            <div class="d-flex flex-column justify-content-between w-auto">
-              <%= label(f, :score_strategy) %>
-              <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
-                class: "custom-select"
-              ) %>
-              <%= error_tag(f, :score_strategy) %>
-            </div>
           </div>
         </div>
 

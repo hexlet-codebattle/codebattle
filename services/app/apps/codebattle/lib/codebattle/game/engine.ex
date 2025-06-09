@@ -194,7 +194,7 @@ defmodule Codebattle.Game.Engine do
               lang: editor_lang
             })
 
-            {:ok, _game} = store_result!(new_game)
+            {:ok, _game} = store_result!(new_game, params)
 
             Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
@@ -316,7 +316,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def store_result!(game) do
+  def store_result!(game, params \\ %{}) do
     Repo.transaction(fn ->
       Enum.each(game.players, fn player ->
         create_user_game!(%{
@@ -337,7 +337,7 @@ defmodule Codebattle.Game.Engine do
       update_game!(game, %{
         state: get_state(game),
         players: get_game_players(game),
-        duration_sec: game.duration_sec,
+        duration_sec: params[:duration_sec] || game.duration_sec,
         finishes_at: game.finishes_at
       })
     end)

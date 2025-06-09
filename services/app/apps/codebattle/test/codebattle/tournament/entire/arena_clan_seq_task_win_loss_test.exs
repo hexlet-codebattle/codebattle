@@ -40,7 +40,6 @@ defmodule Codebattle.Tournament.Entire.ArenaClanSeqTaskWinLossTest do
         "creator" => creator,
         "break_duration_seconds" => 0,
         "task_provider" => "task_pack_per_round",
-        "score_strategy" => "win_loss",
         "task_strategy" => "sequential",
         "ranking_type" => "by_clan",
         "type" => "arena",

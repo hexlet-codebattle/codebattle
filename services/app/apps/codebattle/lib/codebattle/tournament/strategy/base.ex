@@ -29,7 +29,6 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.TaskProvider
 
       alias Codebattle.Bot
-      alias Codebattle.Tournament.Score
       alias Codebattle.WaitingRoom
       alias Tournament.Round.Context
 
@@ -518,7 +517,7 @@ defmodule Codebattle.Tournament.Base do
                current_round_position: current_round_position
              } = tournament
            )
-           when break_duration_seconds not in [nil, 0] and current_round_position in [6, 13] do
+           when break_duration_seconds not in [nil, 0] do
         Process.send_after(
           self(),
           {:stop_round_break, tournament.current_round_position},
@@ -632,6 +631,7 @@ defmodule Codebattle.Tournament.Base do
                 players: players,
                 ref: match_id,
                 round_id: tournament.current_round_id,
+                round_position: tournament.current_round_position,
                 state: "playing",
                 task: task,
                 waiting_room_name: tournament.waiting_room_name,
@@ -990,18 +990,6 @@ defmodule Codebattle.Tournament.Base do
       # defp need_show_results?(tournament = %{type: "arena"}), do: !finish_tournament?(tournament)
       # defp need_show_results?(tournament = %{type: "swiss"}), do: !finish_tournament?(tournament)
       defp need_show_results?(tournament), do: true
-
-      defp get_score("time_and_tests", level, result_percent, duration_sec) do
-        Score.TimeAndTests.get_score(level, result_percent, duration_sec)
-      end
-
-      defp get_score("win_loss", level, player_result, _duration_sec) do
-        Score.WinLoss.get_score(level, player_result)
-      end
-
-      defp get_score("one_zero", level, player_result, _duration_sec) do
-        Score.OneZero.get_score(level, player_result)
-      end
 
       defp get_task_id_by_params(%{task_id: task_id}), do: task_id
       defp get_task_id_by_params(_round_params), do: nil

@@ -35,7 +35,6 @@ defmodule Codebattle.Tournament do
              :players,
              :players_limit,
              :players_count,
-             :score_strategy,
              :started_at,
              :starts_at,
              :state,
@@ -55,13 +54,12 @@ defmodule Codebattle.Tournament do
   @access_types ~w(public token)
   @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
-  @score_strategies ~w(time_and_tests win_loss one_zero)
   @states ~w(waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_game random_per_round sequential)
-  @ranking_types ~w(void by_player by_clan by_percentile)
-  @types ~w(individual team show swiss arena versus squad top200)
-  @public_types ~w(individual team swiss arena versus)
+  @ranking_types ~w(void by_clan by_percentile by_win_loss)
+  @types ~w(individual show swiss arena versus squad top200)
+  @public_types ~w(individual top200 swiss arena versus)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -89,7 +87,6 @@ defmodule Codebattle.Tournament do
     field(:players_limit, :integer)
     field(:ranking_type, :string, default: "by_player")
     field(:round_timeout_seconds, :integer)
-    field(:score_strategy, :string, default: "time_and_tests")
     field(:show_results, :boolean, default: true)
     field(:started_at, :utc_datetime)
     field(:starts_at, :utc_datetime)
@@ -151,7 +148,6 @@ defmodule Codebattle.Tournament do
       :players_limit,
       :ranking_type,
       :round_timeout_seconds,
-      :score_strategy,
       :show_results,
       :starts_at,
       :started_at,
@@ -171,7 +167,6 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
     |> validate_inclusion(:level, @levels)
-    |> validate_inclusion(:score_strategy, @score_strategies)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
@@ -201,7 +196,6 @@ defmodule Codebattle.Tournament do
 
   def access_types, do: @access_types
   def levels, do: @levels
-  def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
   def ranking_types, do: @ranking_types

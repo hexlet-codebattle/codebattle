@@ -174,6 +174,7 @@ defmodule CodebattleWeb.Router do
 
     scope "/tournaments" do
       get("/:id/admin", Tournament.AdminController, :show)
+      get("/:id/stream", Tournament.StreamController, :show)
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)
     end

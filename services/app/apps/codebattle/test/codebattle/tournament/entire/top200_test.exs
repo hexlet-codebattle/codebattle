@@ -9,7 +9,6 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Ranking.UpdateFromResultsServer
   alias Codebattle.Tournament.TournamentResult
 
   test "works with top200" do
@@ -25,6 +24,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     %{id: t10_id} = insert(:task, level: "easy", name: "t10")
     %{id: t11_id} = insert(:task, level: "easy", name: "t11")
     %{id: t12_id} = insert(:task, level: "easy", name: "t12")
+    %{id: t13_id} = insert(:task, level: "easy", name: "t13")
+    %{id: t14_id} = insert(:task, level: "easy", name: "t14")
 
     insert(:task_pack, name: "tp1", task_ids: [t1_id, t2_id])
     insert(:task_pack, name: "tp2", task_ids: [t3_id, t4_id])
@@ -32,11 +33,16 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     insert(:task_pack, name: "tp4", task_ids: [t7_id, t8_id])
     insert(:task_pack, name: "tp5", task_ids: [t9_id, t10_id])
     insert(:task_pack, name: "tp6", task_ids: [t11_id, t12_id])
+    insert(:task_pack, name: "tp7", task_ids: [t13_id, t14_id])
 
     creator = insert(:user)
     user1 = %{id: u1_id} = insert(:user, %{clan: "c1", name: "u1", subscription_type: :premium})
     user2 = %{id: u2_id} = insert(:user, %{clan: "c2", name: "u2", subscription_type: :premium})
-    rest_users = insert_list(198, :user, clan: "c", subscription_type: :premium)
+    user3 = %{id: u3_id} = insert(:user, %{clan: "c3", name: "u3", subscription_type: :premium})
+    user4 = %{id: u4_id} = insert(:user, %{clan: "c4", name: "u4", subscription_type: :premium})
+    user5 = %{id: u5_id} = insert(:user, %{clan: "c5", name: "u5", subscription_type: :premium})
+    user6 = %{id: u6_id} = insert(:user, %{clan: "c6", name: "u6", subscription_type: :premium})
+    rest_users = insert_list(194, :user, clan: "c", subscription_type: :premium)
 
     {:ok, tournament} =
       Tournament.Context.create(%{
@@ -46,9 +52,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
         "level" => "easy",
         "task_pack_name" => "tp1,tp2,tp3,tp4,tp5,tp6",
         "creator" => creator,
-        "break_duration_seconds" => 10,
+        "break_duration_seconds" => 100,
         "task_provider" => "task_pack_per_round",
-        "score_strategy" => "win_loss",
         "task_strategy" => "sequential",
         "round_timeout_seconds" => 100,
         "ranking_type" => "by_percentile",
@@ -59,19 +64,34 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
         "players_limit" => 200
       })
 
-    users = [%{id: u1_id} = user1, %{id: u2_id} = user2] ++ rest_users
+    users =
+      [
+        %{id: u1_id} = user1,
+        %{id: u2_id} = user2,
+        %{id: u3_id} = user3,
+        %{id: u4_id} = user4,
+        %{id: u5_id} = user5,
+        %{id: u6_id} = user6
+      ] ++
+        rest_users
 
     admin_topic = tournament_admin_topic(tournament.id)
     common_topic = tournament_common_topic(tournament.id)
-    translation_topic = tournament_translation_topic(tournament.id)
     player1_topic = tournament_player_topic(tournament.id, u1_id)
     player2_topic = tournament_player_topic(tournament.id, u2_id)
+    player3_topic = tournament_player_topic(tournament.id, u3_id)
+    player4_topic = tournament_player_topic(tournament.id, u4_id)
+    player5_topic = tournament_player_topic(tournament.id, u5_id)
+    player6_topic = tournament_player_topic(tournament.id, u6_id)
 
     Codebattle.PubSub.subscribe(admin_topic)
     Codebattle.PubSub.subscribe(common_topic)
-    Codebattle.PubSub.subscribe(translation_topic)
     Codebattle.PubSub.subscribe(player1_topic)
     Codebattle.PubSub.subscribe(player2_topic)
+    Codebattle.PubSub.subscribe(player3_topic)
+    Codebattle.PubSub.subscribe(player4_topic)
+    Codebattle.PubSub.subscribe(player5_topic)
+    Codebattle.PubSub.subscribe(player6_topic)
 
     ## JOIN USERS ##
     Tournament.Server.handle_event(tournament.id, :join, %{users: users})
@@ -120,28 +140,45 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       }
     }
 
-    [%{id: game_id}, %{id: game_id2}] =
+    [%{id: game_id1}, %{id: game_id2}, %{id: game_id3}, %{id: game_id4}, %{id: game_id5}, %{id: game_id6} | _] =
       Game
       |> Repo.all()
-      |> Enum.filter(&(u1_id in &1.player_ids or u2_id in &1.player_ids))
       |> Enum.sort_by(& &1.id, :asc)
-
-    assert_received %Message{
-      topic: ^translation_topic,
-      event: "tournament:top_game_changed",
-      payload: %{game_id: ^game_id}
-    }
 
     assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
-      payload: %{match: %{game_id: ^game_id, task_id: ^t1_id}}
+      payload: %{match: %{game_id: ^game_id1, task_id: ^t1_id}}
     }
 
     assert_received %Message{
       topic: ^player2_topic,
       event: "tournament:match:upserted",
       payload: %{match: %{game_id: ^game_id2, task_id: ^t1_id}}
+    }
+
+    assert_received %Message{
+      topic: ^player3_topic,
+      event: "tournament:match:upserted",
+      payload: %{match: %{game_id: ^game_id3, task_id: ^t1_id}}
+    }
+
+    assert_received %Message{
+      topic: ^player4_topic,
+      event: "tournament:match:upserted",
+      payload: %{match: %{game_id: ^game_id4, task_id: ^t1_id}}
+    }
+
+    assert_received %Message{
+      topic: ^player5_topic,
+      event: "tournament:match:upserted",
+      payload: %{match: %{game_id: ^game_id5, task_id: ^t1_id}}
+    }
+
+    assert_received %Message{
+      topic: ^player6_topic,
+      event: "tournament:match:upserted",
+      payload: %{match: %{game_id: ^game_id6, task_id: ^t1_id}}
     }
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
@@ -154,22 +191,38 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     assert %{
              entries: [
-               %{id: ^u1_id, name: _, score: 0, clan: _, place: 1, clan_id: _},
-               %{id: ^u2_id, name: _, score: 0, clan: _, place: 2, clan_id: _} | _rest
+               %{id: ^u1_id, score: 0, place: 1},
+               %{id: ^u2_id, score: 0, place: 2},
+               %{id: ^u3_id, score: 0, place: 3},
+               %{id: ^u4_id, score: 0, place: 4},
+               %{id: ^u5_id, score: 0, place: 5},
+               %{id: ^u6_id, score: 0, place: 6} | _rest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
-    ##### user1 wins 1 round, 1 game
-    win_active_match(tournament, user1, %{opponent_percent: 33})
+    ##### user1, user2, user3, user4, user5 win 1 round, 1 game
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 10})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 90})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 140})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 200})
 
-    :timer.sleep(100)
-    UpdateFromResultsServer.update(tournament)
-    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(200)
 
     assert %{
              entries: [
-               %{id: ^u1_id, place: 1, score: 100},
-               %{place: 2, score: 33} | _rest
+               %{place: 1, score: 180, name: "u1"},
+               %{place: 2, score: 142, name: "u2"},
+               %{place: 3, score: 137, name: "u3"},
+               %{place: 4, score: 118, name: "u4"},
+               %{place: 5, score: 90, name: "u5"},
+               %{place: 6, score: 60},
+               %{place: 7, score: 47},
+               %{place: 8, score: 46},
+               %{place: 9, score: 39},
+               %{place: 10, score: 30} | _rest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -177,7 +230,43 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
-        match: %{game_id: ^game_id, state: "game_over", task_id: ^t1_id},
+        match: %{game_id: ^game_id1, state: "game_over", task_id: ^t1_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player2_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id2, state: "game_over", task_id: ^t1_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player3_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id3, state: "game_over", task_id: ^t1_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player4_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id4, state: "game_over", task_id: ^t1_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player5_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id5, state: "game_over", task_id: ^t1_id},
         players: [%{}, %{}]
       }
     }
@@ -185,40 +274,103 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     ### should be rematch with same user
     :timer.sleep(100)
 
-    [%{id: game_id} | _rest] =
+    [%{id: game_id1} | _rest] =
       Game |> Repo.all() |> Enum.filter(&(u1_id in &1.player_ids)) |> Enum.sort_by(& &1.id, :desc)
+
+    [%{id: game_id2} | _rest] =
+      Game |> Repo.all() |> Enum.filter(&(u2_id in &1.player_ids)) |> Enum.sort_by(& &1.id, :desc)
+
+    [%{id: game_id3} | _rest] =
+      Game |> Repo.all() |> Enum.filter(&(u3_id in &1.player_ids)) |> Enum.sort_by(& &1.id, :desc)
+
+    [%{id: game_id4} | _rest] =
+      Game |> Repo.all() |> Enum.filter(&(u4_id in &1.player_ids)) |> Enum.sort_by(& &1.id, :desc)
+
+    [%{id: game_id5} | _rest] =
+      Game |> Repo.all() |> Enum.filter(&(u5_id in &1.player_ids)) |> Enum.sort_by(& &1.id, :desc)
 
     assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
-        match: %{game_id: ^game_id, state: "playing", task_id: ^t2_id},
+        match: %{game_id: ^game_id1, state: "playing", task_id: ^t2_id},
         players: [%{}, %{}]
       }
     }
 
     assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
+      topic: ^player2_topic,
+      event: "tournament:match:upserted",
       payload: %{
-        tournament: %{}
+        match: %{game_id: ^game_id2, state: "playing", task_id: ^t2_id},
+        players: [%{}, %{}]
       }
     }
+
+    assert_received %Message{
+      topic: ^player3_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id3, state: "playing", task_id: ^t2_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player4_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id4, state: "playing", task_id: ^t2_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player5_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id5, state: "playing", task_id: ^t2_id},
+        players: [%{}, %{}]
+      }
+    }
+
+    for _ <- 1..5 do
+      assert_received %Message{
+        topic: ^admin_topic,
+        event: "tournament:updated",
+        payload: %{
+          tournament: %{}
+        }
+      }
+    end
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     ##### user1 wins 1 round, 2 game
     tournament = Tournament.Context.get(tournament.id)
-    win_active_match(tournament, user1, %{opponent_percent: 33})
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
     :timer.sleep(100)
-    UpdateFromResultsServer.update(tournament)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
     :timer.sleep(100)
 
     assert %{
              entries: [
-               %{id: ^u1_id, place: 1, score: 200},
-               %{place: 2, score: 66} | _rest
+               %{place: 1, score: 580, name: "u1"},
+               %{place: 2, score: 492, name: "u2"},
+               %{place: 3, score: 437, name: "u3"},
+               %{place: 4, score: 368, name: "u4"},
+               %{place: 5, score: 290, name: "u5"},
+               %{place: 6, score: 193, name: _},
+               %{place: 7, score: 164, name: _},
+               %{place: 8, score: 146, name: _},
+               %{place: 9, score: 122, name: _},
+               %{place: 10, score: 97, name: _} | _rest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
@@ -226,7 +378,43 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       topic: ^player1_topic,
       event: "tournament:match:upserted",
       payload: %{
-        match: %{game_id: ^game_id, state: "game_over"},
+        match: %{game_id: ^game_id1, state: "game_over"},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player2_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id2, state: "game_over"},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player3_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id3, state: "game_over"},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player4_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id4, state: "game_over"},
+        players: [%{}, %{}]
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player5_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{game_id: ^game_id5, state: "game_over"},
         players: [%{}, %{}]
       }
     }
@@ -238,15 +426,6 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     ###### Finish 1 round
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(1000)
-
-    assert_received %Message{
-      topic: ^player2_topic,
-      event: "tournament:match:upserted",
-      payload: %{
-        match: %{state: "timeout"},
-        players: [%{}, %{}]
-      }
-    }
 
     assert_received %Message{
       topic: ^common_topic,
@@ -277,6 +456,15 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
           last_round_started_at: _,
           show_results: true
         }
+      }
+    }
+
+    assert_received %Message{
+      topic: ^player6_topic,
+      event: "tournament:match:upserted",
+      payload: %{
+        match: %{state: "timeout"},
+        players: [%{}, %{}]
       }
     }
 
@@ -318,40 +506,6 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     }
 
     assert_received %Message{
-      topic: ^player1_topic,
-      event: "waiting_room:player:match_created",
-      payload: %{
-        current_player: %{
-          id: ^u1_id,
-          state: "active",
-          task_ids: [^t4_id],
-          score: 300,
-          wins_count: 3,
-          place: 1
-        },
-        match: %{state: "playing"},
-        players: [%{}, %{}]
-      }
-    }
-
-    assert_received %Message{
-      topic: ^player2_topic,
-      event: "waiting_room:player:match_created",
-      payload: %{
-        current_player: %{
-          id: ^u2_id,
-          state: "active",
-          task_ids: [^t4_id],
-          score: 100,
-          wins_count: 1,
-          place: 2
-        },
-        match: %{state: "playing"},
-        players: [%{}, %{}]
-      }
-    }
-
-    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -365,547 +519,392 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       }
     }
 
+    for _ <- 1..6 do
+      assert_received %Message{
+        topic: _,
+        event: "tournament:match:upserted",
+        payload: %{
+          match: %{
+            state: "playing",
+            round_position: 1,
+            game_id: _,
+            task_id: _,
+            player_ids: _
+          }
+        }
+      }
+    end
+
     assert %{
              entries: [
-               %{place: 1, score: 300},
-               %{place: 2, score: 100},
-               %{place: 3, score: 67},
-               %{place: 4, score: 33},
-               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 5},
-               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 6},
-               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 7},
-               %{id: _, name: _, score: 0, clan: _, clan_id: _, place: 8}
+               %{place: 1, score: 580, name: "u1"},
+               %{place: 2, score: 492, name: "u2"},
+               %{place: 3, score: 437, name: "u3"},
+               %{place: 4, score: 368, name: "u4"},
+               %{place: 5, score: 290, name: "u5"},
+               %{place: 6, score: 193, name: _},
+               %{place: 7, score: 164, name: _},
+               %{place: 8, score: 146, name: _},
+               %{place: 9, score: 122, name: _},
+               %{place: 10, score: 97, name: _} | _rest
              ]
            } = Tournament.Ranking.get_page(tournament, 1)
 
+    ##### Finish 2 round
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
+
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 1,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
+
+    assert_received %Message{
+      topic: ^admin_topic,
+      event: "tournament:updated",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 1,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
+
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
-    #   tournament = Tournament.Context.get(tournament.id)
+    ##### Start 3 round
+    tournament = Tournament.Context.get(tournament.id)
+    Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   ##### user1 win 2 round 1 game
-    #   win_active_match(tournament, user1, %{opponent_percent: 0})
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_created",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 2,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   :timer.sleep(100)
-    #   UpdateFromResultsServer.update(tournament)
+    assert_received %Message{
+      topic: ^admin_topic,
+      event: "tournament:updated",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 2,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   assert %{
-    #            entries: [
-    #              %{id: ^u1_id, place: 1, score: 600},
-    #              %{place: 2, score: 100},
-    #              %{place: 3, score: 67},
-    #              %{place: 4, score: 33},
-    #              %{place: 5, score: 0},
-    #              %{place: 6, score: 0},
-    #              %{place: 7, score: 0},
-    #              %{place: 8, score: 0}
-    #            ]
-    #          } = Tournament.Ranking.get_page(tournament, 1)
+    for _ <- 1..6 do
+      assert_received %Message{
+        topic: _,
+        event: "tournament:match:upserted",
+        payload: %{
+          match: %{
+            state: "playing",
+            round_position: 2,
+            game_id: _,
+            task_id: _,
+            player_ids: _
+          }
+        }
+      }
+    end
 
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{
-    #       match: %{state: "game_over"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
+    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "waiting_room:player:matchmaking_started",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p1_id,
-    #         state: "matchmaking_active",
-    #         task_ids: [^t4_id],
-    #         score: 305,
-    #         wins_count: 4,
-    #         place: 1
-    #       }
-    #     }
-    #   }
+    ##### Round 3 - Win matches
+    tournament = Tournament.Context.get(tournament.id)
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(100)
 
-    #   ##### user2 win 2 round 1 game
-    #   win_active_match(tournament, user2)
-    #   :timer.sleep(100)
+    assert %{
+             entries: [
+               %{place: 1, score: _, name: "u1"},
+               %{place: 2, score: _, name: "u2"},
+               %{place: 3, score: _, name: "u3"},
+               %{place: 4, score: _, name: "u4"},
+               %{place: 5, score: _, name: "u5"} | _rest
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
-    #   UpdateFromResultsServer.update(tournament)
+    ##### Finish 3 round
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   assert %{
-    #            entries: [
-    #              %{id: ^u1_id, place: 1, score: 600},
-    #              %{id: ^u2_id, place: 2, score: 400},
-    #              %{place: 3, score: 67},
-    #              %{place: 4, score: 33},
-    #              %{place: 5, score: 0},
-    #              %{place: 6, score: 0},
-    #              %{place: 7, score: 0},
-    #              %{place: 8, score: 0}
-    #            ]
-    #          } = Tournament.Ranking.get_page(tournament, 1)
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 2,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{
-    #       match: %{state: "game_over"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
+    ##### Start 4 round
+    tournament = Tournament.Context.get(tournament.id)
+    Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:player:matchmaking_started",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "matchmaking_active",
-    #         task_ids: [^t4_id],
-    #         score: 105,
-    #         wins_count: 2,
-    #         place: 2
-    #       }
-    #     }
-    #   }
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_created",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 3,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    ##### Round 4 - Win matches
+    tournament = Tournament.Context.get(tournament.id)
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    #   ##### match players
-    #   Tournament.Server.update_waiting_room_state(tournament.id, %{
-    #     min_time_with_played_sec: 0
-    #   })
+    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(100)
 
-    #   Tournament.Server.match_waiting_room_players(tournament.id)
-    #   :timer.sleep(100)
+    ##### Finish 4 round
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   Tournament.Server.update_waiting_room_state(tournament.id, %{
-    #     min_time_with_played_sec: 1000
-    #   })
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 3,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "waiting_room:player:match_created",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p1_id,
-    #         state: "active",
-    #         task_ids: [^t5_id, ^t4_id],
-    #         score: 305,
-    #         wins_count: 4,
-    #         place: 1
-    #       },
-    #       match: %{state: "playing"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
+    ##### Start 5 round
+    tournament = Tournament.Context.get(tournament.id)
+    Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:player:match_created",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "active",
-    #         task_ids: [^t5_id, ^t4_id],
-    #         place: 2,
-    #         wins_count: 2,
-    #         score: 105
-    #       },
-    #       match: %{state: "playing"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_created",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 4,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    ##### Round 5 - Win matches
+    tournament = Tournament.Context.get(tournament.id)
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    #   assert Enum.empty?(players)
+    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(100)
 
-    #   ##### user1 win 2 round 2 game
-    #   win_active_match(tournament, user1)
-    #   :timer.sleep(100)
+    ##### Finish 5 round
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{match: %{state: "game_over"}, players: [%{}, %{}]}
-    #   }
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 4,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "waiting_room:player:matchmaking_stopped",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p1_id,
-    #         state: "finished_round",
-    #         task_ids: [^t5_id, ^t4_id],
-    #         score: 310,
-    #         wins_count: 5,
-    #         place: 1
-    #       }
-    #     }
-    #   }
+    ##### Start 6 round
+    tournament = Tournament.Context.get(tournament.id)
+    Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   UpdateFromResultsServer.update(tournament)
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_created",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 5,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   assert %{
-    #            entries: [
-    #              %{place: 1, score: 900, id: ^u1_id},
-    #              %{place: 2, score: 400, id: ^u2_id},
-    #              %{place: 3, score: 67},
-    #              %{place: 4, score: 33},
-    #              %{place: 5, score: 0},
-    #              %{place: 6, score: 0},
-    #              %{place: 7, score: 0},
-    #              %{place: 8, score: 0}
-    #            ]
-    #          } = Tournament.Ranking.get_page(tournament, 1)
+    ##### Round 6 - Win matches
+    tournament = Tournament.Context.get(tournament.id)
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(100)
 
-    #   tournament = Tournament.Context.get(tournament.id)
+    ##### Finish 6 round
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   ##### Finish 2 round
-    #   Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
-    #   :timer.sleep(100)
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 5,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:player:matchmaking_stopped",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "finished_round",
-    #         task_ids: [^t5_id, ^t4_id],
-    #         score: 400,
-    #         wins_count: 2,
-    #         place: 2
-    #       }
-    #     }
-    #   }
+    ##### Start 7 round
+    tournament = Tournament.Context.get(tournament.id)
+    Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{
-    #       match: %{state: "timeout"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_created",
+      payload: %{
+        tournament: %{
+          state: "active",
+          current_round_position: 6,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^common_topic,
-    #     event: "tournament:round_finished",
-    #     payload: %{
-    #       tournament: %{
-    #         type: "arena",
-    #         state: "active",
-    #         current_round_position: 1,
-    #         break_state: "on",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _,
-    #         show_results: true
-    #       }
-    #     }
-    #   }
+    ##### Round 7 - Win matches
+    tournament = Tournament.Context.get(tournament.id)
+    win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
+    win_active_match(tournament, user2, %{opponent_percent: 33, duration_sec: 200})
+    win_active_match(tournament, user3, %{opponent_percent: 33, duration_sec: 300})
+    win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
+    win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    #   assert_received %Message{
-    #     topic: ^admin_topic,
-    #     event: "tournament:updated",
-    #     payload: %{
-    #       tournament: %{
-    #         type: "arena",
-    #         state: "active",
-    #         current_round_position: 1,
-    #         break_state: "on",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _,
-    #         show_results: true
-    #       }
-    #     }
-    #   }
+    :timer.sleep(100)
+    TournamentResult.upsert_results(tournament)
+    Tournament.Ranking.set_ranking(tournament)
+    :timer.sleep(100)
 
-    #   assert_received %Message{
-    #     topic: ^admin_topic,
-    #     event: "tournament:updated",
-    #     payload: %{
-    #       tournament: %{
-    #         state: "active",
-    #         current_round_position: 1,
-    #         break_state: "on",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _
-    #       }
-    #     }
-    #   }
+    # Verify final tournament ranking
+    assert %{
+             entries: [
+               %{place: 1, score: _, name: "u1"},
+               %{place: 2, score: _, name: "u2"},
+               %{place: 3, score: _, name: "u3"},
+               %{place: 4, score: _, name: "u4"},
+               %{place: 5, score: _, name: "u5"} | _rest
+             ]
+           } = Tournament.Ranking.get_page(tournament, 1)
 
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+    ##### Finish 7 round - Tournament should be completed
+    Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
+    :timer.sleep(1000)
 
-    #   ##### Finish 2 round break/Start 3 round
-    #   tournament = Tournament.Context.get(tournament.id)
-    #   Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
-    #   :timer.sleep(100)
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "finished",
+          current_round_position: 6,
+          break_state: "off",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
 
-    #   assert_received %Message{
-    #     topic: ^common_topic,
-    #     event: "tournament:round_created",
-    #     payload: %{
-    #       tournament: %{
-    #         state: "active",
-    #         current_round_position: 2,
-    #         break_state: "off",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "waiting_room:player:match_created",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p1_id,
-    #         state: "active",
-    #         task_ids: [^t6_id],
-    #         score: 900,
-    #         wins_count: 5,
-    #         place: 1
-    #       },
-    #       match: %{state: "playing"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:player:match_created",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "active",
-    #         task_ids: [^t6_id],
-    #         score: 400,
-    #         wins_count: 2,
-    #         place: 2
-    #       },
-    #       match: %{state: "playing"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^admin_topic,
-    #     event: "tournament:updated",
-    #     payload: %{
-    #       tournament: %{
-    #         state: "active",
-    #         current_round_position: 2,
-    #         break_state: "off",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _
-    #       }
-    #     }
-    #   }
-
-    #   assert %{
-    #            entries: [
-    #              %{place: 1, score: 900},
-    #              %{place: 2, score: 400},
-    #              %{place: 3, score: 67},
-    #              %{place: 4, score: 33},
-    #              %{place: 5, score: 0},
-    #              %{place: 6, score: 0},
-    #              %{place: 7, score: 0},
-    #              %{place: 8, score: 0}
-    #            ]
-    #          } = Tournament.Ranking.get_page(tournament, 1)
-
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-
-    #   ##### user2 win 3 round 1 game
-    #   win_active_match(tournament, user2, %{opponent_percent: 33})
-
-    #   :timer.sleep(100)
-    #   UpdateFromResultsServer.update(tournament)
-
-    #   assert %{
-    #            entries: [
-    #              %{id: ^u2_id, place: 1, score: 1400},
-    #              %{id: ^u1_id, place: 2, score: 900},
-    #              %{place: 3, score: 366},
-    #              %{place: 4, score: 67},
-    #              %{place: 5, score: 0},
-    #              %{place: 6, score: 0},
-    #              %{place: 7, score: 0},
-    #              %{place: 8, score: 0}
-    #            ]
-    #          } = Tournament.Ranking.get_page(tournament, 1)
-
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{
-    #       match: %{state: "game_over"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:player:matchmaking_stopped",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "finished_round",
-    #         task_ids: [^t6_id],
-    #         score: 408,
-    #         wins_count: 3,
-    #         place: 2
-    #       }
-    #     }
-    #   }
-
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-
-    #   ##### Finish 3 round
-
-    #   tournament = Tournament.Context.get(tournament.id)
-    #   Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
-    #   :timer.sleep(100)
-
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "waiting_room:ended",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p1_id,
-    #         state: "finished",
-    #         task_ids: [^t6_id],
-    #         score: 900,
-    #         wins_count: 5,
-    #         place: 2
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^player2_topic,
-    #     event: "waiting_room:ended",
-    #     payload: %{
-    #       current_player: %{
-    #         id: ^p2_id,
-    #         state: "finished",
-    #         task_ids: [^t6_id],
-    #         score: 1400,
-    #         wins_count: 3,
-    #         place: 1
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^player1_topic,
-    #     event: "tournament:match:upserted",
-    #     payload: %{
-    #       match: %{state: "timeout"},
-    #       players: [%{}, %{}]
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^common_topic,
-    #     event: "tournament:round_finished",
-    #     payload: %{
-    #       tournament: %{
-    #         type: "arena",
-    #         state: "active",
-    #         current_round_position: 2,
-    #         break_state: "on",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _,
-    #         show_results: true
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^admin_topic,
-    #     event: "tournament:updated",
-    #     payload: %{
-    #       tournament: %{
-    #         type: "arena",
-    #         state: "active",
-    #         current_round_position: 2,
-    #         break_state: "on",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _,
-    #         show_results: true
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^admin_topic,
-    #     event: "tournament:updated",
-    #     payload: %{
-    #       tournament: %{
-    #         state: "finished",
-    #         current_round_position: 2,
-    #         break_state: "off",
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _
-    #       }
-    #     }
-    #   }
-
-    #   assert_received %Message{
-    #     topic: ^common_topic,
-    #     event: "tournament:finished",
-    #     payload: %{
-    #       tournament: %{
-    #         break_state: "off",
-    #         current_round_position: 2,
-    #         last_round_ended_at: _,
-    #         last_round_started_at: _,
-    #         show_results: true,
-    #         state: "finished",
-    #         type: "arena"
-    #       }
-    #     }
-    #   }
-
-    #   assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-
-    #   assert 34 == Repo.count(TournamentResult)
-
-    #   assert [
-    #            %{
-    #              id: _,
-    #              event_id: ^e_id,
-    #              clan_id: ^c1_id,
-    #              user_id: ^u2_id,
-    #              user_name: "2",
-    #              place: 1,
-    #              score: 1400
-    #            },
-    #            %{
-    #              id: _,
-    #              event_id: ^e_id,
-    #              clan_id: ^c1_id,
-    #              user_id: ^u1_id,
-    #              user_name: "1",
-    #              place: 2,
-    #              score: 900
-    #            },
-    #            %{place: 3, event_id: ^e_id, score: 366},
-    #            %{place: 4, event_id: ^e_id, score: 67},
-    #            %{place: 5, event_id: ^e_id, score: 0},
-    #            %{place: 6, event_id: ^e_id, score: 0},
-    #            %{place: 7, event_id: ^e_id, score: 0},
-    #            %{place: 8, event_id: ^e_id, score: 0}
-    #          ] = EventResult |> Repo.all() |> Enum.sort_by(&{&1.place})
-    # end
+    # Verify tournament is in finished state
+    tournament = Tournament.Context.get(tournament.id)
+    assert tournament.state == "finished"
+    assert tournament.current_round_position == 6
+    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
   end
 end

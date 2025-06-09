@@ -23,7 +23,6 @@ defmodule CodebattleWeb.Integration.Tournament.ArenaClan95PercentileTest do
         "task_pack_name" => "tp",
         "creator" => admin,
         "break_duration_seconds" => 0,
-        "score_strategy" => "win_loss",
         "task_provider" => "task_pack_per_round",
         "task_strategy" => "sequential",
         "ranking_type" => "by_percentile",

@@ -19,25 +19,25 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
   return channel;
 };
 
-const initTournamentChannel = dispatch => {
+const initTournamentChannel = (dispatch, isAdminWidged = false) => {
   const onJoinFailure = err => {
     console.error(err);
     // window.location.reload();
   };
 
   const onJoinSuccess = response => {
-    // dispatch(
-    //   actions.setTournamentData({
-    //     ...response.tournament,
-    //     topPlayerIds: response.topPlayerIds || [],
-    //     matches: {},
-    //     ranking: response.ranking || { entries: [] },
-    //     clans: response.clans || {},
-    //     players: {},
-    //     showBots: response.tournament.type !== TournamentTypes.show,
-    //     playersPageSize: 20,
-    //   }),
-    // );
+    if (isAdminWidged) {
+      dispatch(
+        actions.setTournamentData({
+          ...response.tournament,
+          topPlayerIds: response.topPlayerIds || [],
+          matches: {},
+          ranking: response.ranking || { entries: [] },
+          players: {},
+          playersPageSize: 20,
+        }),
+      );
+    }
 
     dispatch(actions.updateTournamentRanking((response.ranking)));
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
@@ -55,9 +55,9 @@ const initTournamentChannel = dispatch => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (_machine, newTournamentId) => dispatch => {
+export const connectToTournament = (_machine, newTournamentId, isAdminWidged = false) => dispatch => {
   setTournamentChannel(newTournamentId);
-  initTournamentChannel(dispatch);
+  initTournamentChannel(dispatch, isAdminWidged);
 
   const handleUpdate = response => {
     dispatch(actions.updateTournamentData(response.tournament));
@@ -180,6 +180,15 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
       })
       .catch(error => console.error(error));
   }
+};
+
+export const requestMatchesForRound = () => dispatch => {
+  channel
+    .push('tournament:matches:request_for_round', {})
+    .receive('ok', data => {
+      dispatch(actions.updateTournamentMatches(data.matches));
+    })
+    .receive('error', error => console.error(error));
 };
 
 export const requestMatchesByPlayerId = userId => dispatch => {
