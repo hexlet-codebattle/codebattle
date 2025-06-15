@@ -407,14 +407,14 @@ defmodule Codebattle.Game.Engine do
       case {old_game_state, new_game.state} do
         {old_state, "timeout"}
         when old_state in ["waiting_opponent", "playing"] ->
-          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-
           update_game!(new_game, %{
             state: get_state(new_game),
             players: get_game_players(new_game),
             duration_sec: new_game.duration_sec,
             finishes_at: new_game.finishes_at
           })
+
+          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
           if game.tournament_id do
             terminate_game_after(game, 1)

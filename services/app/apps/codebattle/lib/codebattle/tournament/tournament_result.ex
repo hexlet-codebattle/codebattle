@@ -94,16 +94,16 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.id as game_id,
       g.round_position,
       g.was_cheated,
-      dt.min_duration,
-      dt.max_duration,
-      dt.base_score,
+      COALESCE(dt.base_score, 0) AS base_score,
+      COALESCE(dt.min_duration, 0) AS min_duration,
+      COALESCE(dt.max_duration, 0) AS max_duration,
       CASE
       -- Handle timeout case where both players lost
       WHEN g.state = 'timeout' THEN
-        0.5 * dt.base_score * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+        0.5 * COALESCE(dt.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
       ELSE
-        dt.base_score * (
-          2 - ((g.duration_sec - dt.min_duration)::numeric / GREATEST(dt.max_duration - dt.min_duration, 1))
+        COALESCE(dt.base_score, 0) * (
+          2 - ((g.duration_sec - COALESCE(dt.min_duration, 0))::numeric / GREATEST(COALESCE(dt.max_duration - COALESCE(dt.min_duration, 0), 1), 1))
         ) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
       END AS score,
       g.level,
@@ -112,7 +112,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       from games g
       CROSS JOIN LATERAL
       jsonb_array_elements(g.players) AS p(player_info)
-      inner join duration_percentile_for_tasks dt
+      left join duration_percentile_for_tasks dt
       on dt.task_id = g.task_id
       where g.tournament_id = #{tournament.id}
       and state in ('game_over', 'timeout')

@@ -8,14 +8,14 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    users =
-      Codebattle.User
-      |> Codebattle.Repo.all()
-      |> Enum.filter(&(&1.is_bot == false and &1.subscription_type != :admin))
-      |> Enum.take(199)
+    # users =
+    #   Codebattle.User
+    #   |> Codebattle.Repo.all()
+    #   |> Enum.filter(&(&1.is_bot == false and &1.subscription_type != :admin))
+    #   |> Enum.take(199)
 
-    add_players(tournament, %{users: users})
-    # tournament
+    # add_players(tournament, %{users: users})
+    tournament
   end
 
   @impl Tournament.Base
@@ -221,7 +221,7 @@ defmodule Codebattle.Tournament.Top200 do
     total_ranking = TournamentResult.get_user_ranking(tournament)
 
     # Get winners from first 8 matches
-    top_match_winner_ids =
+    top_8_winner_ids =
       tournament
       |> get_round_matches(3)
       |> Enum.sort_by(& &1.id)
@@ -232,16 +232,7 @@ defmodule Codebattle.Tournament.Top200 do
         (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
       end)
 
-    # Take top 8 winners based on ranking
-    top_8_winner_ids =
-      ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id in top_match_winner_ids))
-      |> Enum.sort_by(&{-&1.score, &1.id})
-      |> Enum.map(& &1.id)
-      |> Enum.take(8)
-
-    # Pick top 6 from the 8 winners
+    # Take top 6 winners based on ranking
     top_6_winner_ids =
       ranking
       |> Map.values()
@@ -250,14 +241,10 @@ defmodule Codebattle.Tournament.Top200 do
       |> Enum.map(& &1.id)
       |> Enum.take(6)
 
-    # Get all remaining players
-    remaining_ids = ranking |> Map.values() |> Enum.map(& &1.id) |> Kernel.--(top_8_winner_ids)
-
     # Pick top 2 from remaining players
     top_2_remaining_ids =
       total_ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id in remaining_ids))
+      |> Enum.filter(&(&1.id not in top_6_winner_ids))
       |> Enum.sort_by(&{-&1.score, &1.id})
       |> Enum.map(& &1.id)
       |> Enum.take(2)
@@ -265,8 +252,11 @@ defmodule Codebattle.Tournament.Top200 do
     # Combine top 6 winners with top 2 remaining players
     top_8_ids = top_6_winner_ids ++ top_2_remaining_ids
 
+    # Get all remaining players
+    remaining_ids = ranking |> Map.values() |> Enum.map(& &1.id) |> Kernel.--(top_8_ids)
+
     # Create 4 pairs from top 8 players
-    top_pair_ids = Enum.chunk_every(Enum.shuffle(top_8_ids), 2)
+    top_pair_ids = top_8_ids |> Enum.shuffle() |> Enum.chunk_every(2)
 
     # Shuffle and pair the rest of the players
     remaining_pair_ids = remaining_ids |> Enum.shuffle() |> Enum.chunk_every(2)
