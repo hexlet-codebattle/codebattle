@@ -62,7 +62,6 @@ defmodule Codebattle.Auth.Discord do
     @discord_token_url
     |> Req.post!(opts)
     |> Map.get(:body)
-    |> URI.decode_query()
     |> check_authenticated()
   end
 
