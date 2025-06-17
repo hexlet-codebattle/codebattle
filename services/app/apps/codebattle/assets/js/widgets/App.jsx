@@ -71,7 +71,7 @@ const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
-const TournamentStream = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
+const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
 const EventWidget = React.lazy(() => import('./pages/event'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
 
@@ -228,6 +228,16 @@ export const TournamentPlayerPage = () => (
             waitingRoomMachine={waitingRoomMachine}
           />
         </NiceModal.Provider>
+      </Suspense>
+    </PersistGate>
+  </Provider>
+);
+
+export const StreamPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Suspense>
+        <Stream />
       </Suspense>
     </PersistGate>
   </Provider>

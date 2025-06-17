@@ -588,6 +588,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:stream:active_game", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament_id}:stream",
+        event: "tournament:stream:active_game",
+        payload: %{game_id: params.game_id}
+      }
+    ]
+  end
+
   defp chat_topic(:lobby), do: "chat:lobby"
   defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
   defp chat_topic({:game, id}), do: "chat:game:#{id}"

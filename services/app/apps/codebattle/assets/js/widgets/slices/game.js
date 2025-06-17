@@ -11,6 +11,9 @@ const game = createSlice({
   name: 'game',
   initialState,
   reducers: {
+    setGameId: (state, { payload: { id } }) => {
+      state.id = id;
+    },
     clearGameStatus: state => {
       state.gameStatus = defaultGameStatusState;
     },

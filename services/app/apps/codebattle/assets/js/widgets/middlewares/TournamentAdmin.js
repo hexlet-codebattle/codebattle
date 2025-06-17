@@ -329,3 +329,9 @@ export const getTask = (taskId, onSuccess) => () => {
       onSuccess(data.descriptionRu);
     });
 };
+
+export const pushActiveMatchToStream = (gameId) => () => {
+  channel
+    .push('tournament:stream:active_game', { gameId })
+    .receive('error', error => console.error(error));
+};

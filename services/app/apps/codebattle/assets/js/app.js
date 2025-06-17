@@ -46,6 +46,7 @@ import {
   renderEventPage,
   renderTournamentPlayerPage,
   renderUserPage,
+  renderStreamPage,
   renderUsersRating,
 } from './widgets';
 
@@ -94,6 +95,7 @@ const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const onlineRoot = document.getElementById('online-root');
 const invitesRoot = document.getElementById('invites-root');
+const streamRoot = document.getElementById('stream-classic-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
 const registrationRoot = document.getElementById('registration');
@@ -164,3 +166,8 @@ if (onlineRoot) {
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);
 }
+
+if (streamRoot) {
+  renderStreamPage(streamRoot);
+}
+

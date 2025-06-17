@@ -24,6 +24,7 @@ defmodule Codebattle.Tournament.Player do
     :rating,
     :score,
     :team_id,
+    :in_main_draw,
     :wr_joined_at,
     :wins_count
   ]
@@ -43,6 +44,7 @@ defmodule Codebattle.Tournament.Player do
     field(:clan_id, :integer)
     field(:id, :integer)
     field(:is_bot, :boolean)
+    field(:in_main_draw, :boolean, default: true)
     field(:lang, :string)
     field(:matches_ids, {:array, :integer}, default: [])
     field(:name, :string)

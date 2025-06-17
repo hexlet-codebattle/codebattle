@@ -66,6 +66,8 @@ export const channelTopics = {
   waitingRoomPlayerMatchmakingStoppedTopic: 'waiting_room:player:matchmaking_stopped',
   waitingRoomPlayerMatchmakingPausedTopic: 'waiting_room:player:matchmaking_paused',
   waitingRoomPlayerMatchCreatedTopic: 'waiting_room:player:match_created',
+
+  streamActiveGameSelectedTopic: 'stream:active_game_selected',
 };
 
 export const channelMethods = {
@@ -104,6 +106,7 @@ export const channelMethods = {
   matchmakingPause: 'matchmaking:pause',
   matchmakingResume: 'matchmaking:resume',
   matchmakingRestart: 'matchmaking:restart',
+
 };
 
 socket.connect();

@@ -9,7 +9,7 @@ defmodule CodebattleWeb.StreamController do
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :stream_preset])
 
-  def index(conn, _params) do
+  def index(conn, %{"modern" => _}) do
     stream_configs =
       conn.assigns.current_user.id
       |> StreamConfig.get_all()
@@ -20,6 +20,14 @@ defmodule CodebattleWeb.StreamController do
     |> render("index.html",
       layout: {CodebattleWeb.LayoutView, :external},
       stream_configs: stream_configs
+    )
+  end
+
+  def index(conn, params) do
+    conn
+    |> put_gon(tournament_id: params["tournament_id"])
+    |> render("index_classic.html",
+      layout: {CodebattleWeb.LayoutView, :empty}
     )
   end
 

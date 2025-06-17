@@ -45,4 +45,13 @@ defmodule Codebattle.Tournament.Players do
       get_player(tournament, player_id)
     end)
   end
+
+  def move_players_from_main_draw(tournament, player_ids) do
+    Enum.each(player_ids, fn player_id ->
+      tournament
+      |> get_player(player_id)
+      |> Map.put(:in_main_draw, false)
+      |> then(&put_player(tournament, &1))
+    end)
+  end
 end

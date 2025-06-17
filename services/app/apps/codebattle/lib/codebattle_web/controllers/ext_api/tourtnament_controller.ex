@@ -3,6 +3,8 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
 
   import Plug.Conn
 
+  alias Codebattle.Tournament
+
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   @json_files ~w(
@@ -59,9 +61,13 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
     end
   end
 
-  def show(conn, _params) do
+  def show(conn, %{"id" => id}) do
+    tournament = Tournament.Context.get(id)
+
+    stats = Tournament.Helpers.get_player_ranking_stats(tournament)
+
     conn
-    |> put_status(:bad_request)
-    |> json(%{error: "Missing base_url parameter"})
+    |> put_resp_content_type("application/json")
+    |> json(stats)
   end
 end

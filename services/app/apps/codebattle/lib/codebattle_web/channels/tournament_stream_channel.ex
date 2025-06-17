@@ -7,7 +7,8 @@ defmodule CodebattleWeb.TournamentStreamChannel do
 
   require Logger
 
-  def join("tournament_stream:" <> tournament_id, _payload, socket) do
+
+  def join("stream:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 
     with tournament when not is_nil(tournament) <-
@@ -26,46 +27,17 @@ defmodule CodebattleWeb.TournamentStreamChannel do
     end
   end
 
+
   # skip all messages from the FE
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:match:upserted", payload: payload}, socket) do
-    push(socket, "tournament:match:upserted", %{match: payload.match, players: payload.players})
-
+  def handle_info(%{event: "tournament:stream:active_game", payload: payload}, socket) do
+    push(socket, "stream:active_game_selected", %{id: payload.game_id})
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", %{
-      tournament: payload.tournament
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:round_finished", payload: payload}, socket) do
-    push(socket, "tournament:round_finished", %{
-      tournament: payload.tournament
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:finished", payload: payload}, socket) do
-    push(socket, "tournament:finished", %{
-      tournament: payload.tournament
-    })
-
-    {:noreply, socket}
-  end
-
-  def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
-    push(socket, "tournament:player:joined", payload)
-
-    {:noreply, socket}
-  end
 
   def handle_info(message, socket) do
     Logger.debug("Skip in stream message: " <> inspect(message))

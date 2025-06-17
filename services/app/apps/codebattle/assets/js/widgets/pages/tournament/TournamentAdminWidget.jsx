@@ -5,6 +5,7 @@ import Gon from 'gon';
 
 import { connectToTournament, requestMatchesForRound} from '../../middlewares/TournamentAdmin';
 import * as selectors from '../../selectors';
+import { pushActiveMatchToStream } from '../../middlewares/TournamentAdmin';
 
 function TournamentAdminWidget() {
   const tournamentId = Gon.getAsset('tournament_id');
@@ -106,6 +107,7 @@ function TournamentAdminWidget() {
           return (
             <button 
               key={match.id} 
+              onClick={() => dispatch(pushActiveMatchToStream(match.gameId))}
               className={`btn ${buttonClass} btn-sm me-1 mb-1`}
               title={`Match ID: ${match.id}, State: ${match.state}, Started: ${new Date(match.startedAt).toLocaleTimeString()}`}
             >

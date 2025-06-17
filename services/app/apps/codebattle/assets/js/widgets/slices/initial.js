@@ -499,6 +499,7 @@ const defaultTournamentPlayerParams = {
  */
 export default {
   game: {
+    id: null,
     gameStatus: initialGameStatus,
     award: initialGameAward,
     awardStatus: 'idle',
