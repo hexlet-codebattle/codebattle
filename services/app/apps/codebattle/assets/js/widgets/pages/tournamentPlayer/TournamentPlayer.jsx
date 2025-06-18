@@ -233,7 +233,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       };
     }
 
-    return () => {};
+    return () => { };
   }, [playerId, dispatch]);
 
   useEffect(() => {
@@ -245,7 +245,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       };
     }
 
-    return () => {};
+    return () => { };
   }, [tournament.id, waitingRoomService, dispatch]);
 
   useEffect(() => {
@@ -257,15 +257,17 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
       connectToGame(spectatorService, waitingRoomService, options)(dispatch);
       connectToEditor(spectatorService, options)(dispatch);
+
+      return () => {
+        if (channel) {
+          channel.leave();
+        }
+      };
     }
 
-    const clearChannel = () => {
-      if (channel) {
-        channel.leave();
-      }
-    };
+    return () => {
 
-    return clearChannel;
+    };
   }, [gameId, spectatorService, waitingRoomService, dispatch]);
 
   const spectatorDisplayClassName = cn(
@@ -273,7 +275,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     'vh-100', {
     // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
     // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
-    },
+  },
   );
 
   const spectatorGameStatusClassName = cn(
@@ -315,13 +317,13 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
         {/* </div> */}
       </div>
     </>
-    ) : (
-      <div className="card border-0 w-100">
-        <div className="d-flex justify-content-center align-items-center w-100">
-          {spectatorStatus}
-        </div>
+  ) : (
+    <div className="card border-0 w-100">
+      <div className="d-flex justify-content-center align-items-center w-100">
+        {spectatorStatus}
       </div>
-    ));
+    </div>
+  ));
 
   // const MatchesPannel = () => {
   //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');

@@ -237,7 +237,12 @@ export const StreamPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <Stream />
+        <Stream
+          mainMachine={mainMachine}
+          waitingRoomMachine={waitingRoomMachine}
+          taskMachine={taskMachine}
+          editorMachine={editorMachine}
+        />
       </Suspense>
     </PersistGate>
   </Provider>

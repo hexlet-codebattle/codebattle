@@ -2494,3 +2494,81 @@ a:hover {
   color: white;
   padding-right: 25px;
 }
+
+.cb-stream-tasks-stats {
+  background-color: #FAFF0F;
+  padding: 20px 16px;
+  border-radius: 25px;
+}
+
+.cb-stream-output-title {
+  background-color: #FAFF0F;
+  width: 151px;
+  height: 69px;
+
+  min-width: 151px;
+  padding: 10px 16px;
+  border-radius: 25px;
+}
+
+.cb-stream-editor-panel {
+  border: 4px solid #3C4168;
+}
+
+.cb-stream-editor-left {
+  border-top-left-radius: 25px;
+  border-right: 0px;
+  border-bottom: 0px;
+}
+
+.cb-stream-editor-right {
+  border-top-right-radius: 25px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
+
+.cb-stream-name {
+  width: 118px;
+  color: #FAFF0F;
+}
+
+.cb-stream-output {
+  min-width: 450px;
+  border: 4px solid #3C4168;
+  border-radius: 25px;
+}
+
+.cb-stream-task-description {
+  color: #B6A4FF;
+}
+
+.cb-stream-widget {
+  background-color: #000000;
+}
+
+.cb-stream-output-data {
+  color: #B6A4FF;
+  overflow: hidden;
+}
+
+.cb-stream-full-video {
+  border: 4px solid #3C4168;
+  border-radius: 25px;
+}
+
+.cb-stream-full-editor {
+  border: 4px solid #3C4168;
+  border-radius: 25px;
+}
+
+.editor-left {
+  border-top-left-radius: 25px;
+  border-right: 0px;
+  border-bottom: 0px;
+}
+
+.editor-right {
+  border-top-right-radius: 25px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
