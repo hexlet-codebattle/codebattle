@@ -360,5 +360,28 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_player_ranking_stats(tournament) do
     players = get_players(tournament)
+    total_ranking = Tournament.TournamentResult.get_user_ranking(tournament)
+
+    %{
+      "tournament_id" => tournament.id,
+      "current_round" => tournament.current_round_position + 1,
+      "players" =>
+        players
+        |> Enum.map(fn player ->
+          %{
+            "id" => to_string(player.id),
+            "name" => player.name,
+            "clan_id" => player.clan_id && to_string(player.clan_id),
+            "total_score" => player.score,
+            "total_tasks" => Enum.count(player.matches_ids),
+            "won_tasks" => player.wins_count,
+            "rank" => player.rank,
+            "win_prob" => "42",
+            "active" => if(player.in_main_draw, do: 1, else: 0),
+            "history" => []
+          }
+        end)
+        |> Enum.sort_by(& &1["rank"])
+    }
   end
 end
