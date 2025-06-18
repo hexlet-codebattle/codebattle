@@ -631,10 +631,7 @@ defmodule Codebattle.Tournament.Top200 do
     end
   end
 
-  defp has_more_games_in_round?(
-         %{task_provider: "task_pack_per_round", round_task_ids: round_task_ids},
-         game_params
-       ) do
+  defp has_more_games_in_round?(%{task_provider: "task_pack_per_round", round_task_ids: round_task_ids}, game_params) do
     game_params.task_id != List.last(round_task_ids)
   end
 

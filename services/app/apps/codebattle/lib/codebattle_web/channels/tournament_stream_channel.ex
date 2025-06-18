@@ -7,7 +7,6 @@ defmodule CodebattleWeb.TournamentStreamChannel do
 
   require Logger
 
-
   def join("stream:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 
@@ -27,7 +26,6 @@ defmodule CodebattleWeb.TournamentStreamChannel do
     end
   end
 
-
   # skip all messages from the FE
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
@@ -37,7 +35,6 @@ defmodule CodebattleWeb.TournamentStreamChannel do
     push(socket, "stream:active_game_selected", %{id: payload.game_id})
     {:noreply, socket}
   end
-
 
   def handle_info(message, socket) do
     Logger.debug("Skip in stream message: " <> inspect(message))

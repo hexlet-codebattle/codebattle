@@ -258,7 +258,12 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:stream:active_game", payload, socket) do
     tournament_id = socket.assigns.tournament_info.id
-    Codebattle.PubSub.broadcast("tournament:stream:active_game", %{game_id: payload["game_id"], tournament_id: tournament_id})
+
+    Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
+      game_id: payload["game_id"],
+      tournament_id: tournament_id
+    })
+
     {:noreply, socket}
   rescue
     _ -> {:reply, {:error, :failure}, socket}
