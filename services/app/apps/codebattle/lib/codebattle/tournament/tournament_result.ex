@@ -151,8 +151,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament)
-      when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -229,33 +228,32 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def get_users_history(tournament, user_ids) do
-    Repo.all(
-      from(tr in __MODULE__,
-        where: tr.tournament_id == ^tournament.id,
-        where: tr.user_id in ^user_ids,
-        inner_join: tr2 in __MODULE__,
-        on: tr.game_id == tr2.game_id and tr2.user_id != tr.user_id,
-        group_by: [tr.round_position, tr.user_id, tr2.user_id],
-        select: %{
-          user_id: tr.user_id,
-          user_name: max(tr.user_name),
-          opponent_id: tr2.user_id,
-          round_position: tr.round_position,
-          score: coalesce(sum(tr.score), 0),
-          opponent_score: coalesce(sum(tr2.score), 0),
-          game_details:
-            fragment(
-              "array_agg(json_build_object('task_id', ?, 'game_id', ?, 'result_percent', ?, 'opponent_result_percent', ?))",
-              tr.task_id,
-              tr.game_id,
-              tr.result_percent,
-              tr2.result_percent
-            ),
-          opponent_name: max(tr2.user_name),
-          opponent_clan_id: max(tr2.clan_id)
-        }
-      )
+    from(tr in __MODULE__,
+      where: tr.tournament_id == ^tournament.id,
+      where: tr.user_id in ^user_ids,
+      inner_join: tr2 in __MODULE__,
+      on: tr.game_id == tr2.game_id and tr2.user_id != tr.user_id,
+      group_by: [tr.round_position, tr.user_id, tr2.user_id],
+      select: %{
+        user_id: tr.user_id,
+        user_name: max(tr.user_name),
+        opponent_id: tr2.user_id,
+        round_position: tr.round_position,
+        score: coalesce(sum(tr.score), 0),
+        opponent_score: coalesce(sum(tr2.score), 0),
+        game_details:
+          fragment(
+            "array_agg(json_build_object('task_id', ?, 'game_id', ?, 'result_percent', ?, 'opponent_result_percent', ?))",
+            tr.task_id,
+            tr.game_id,
+            tr.result_percent,
+            tr2.result_percent
+          ),
+        opponent_name: max(tr2.user_name),
+        opponent_clan_id: max(tr2.clan_id)
+      }
     )
+    |> Repo.all()
     |> Enum.reduce(%{}, fn result, acc ->
       task_history = %{
         score: result.score,
