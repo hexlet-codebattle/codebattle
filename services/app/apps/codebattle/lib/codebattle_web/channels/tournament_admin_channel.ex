@@ -389,12 +389,13 @@ defmodule CodebattleWeb.TournamentAdminChannel do
         %{}
       end
 
+    # if tournament.type in ["swiss", "arena"] do
+    #   []
+    # else
     matches =
-      if tournament.type in ["swiss", "arena"] do
-        []
-      else
-        Helpers.get_matches(tournament)
-      end
+      Helpers.get_matches(tournament)
+
+    # end
 
     %{
       tasks_info: tasks_info,
@@ -412,7 +413,8 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   defp cast_game_params(%{"task_level" => level}), do: %{task_level: level}
 
-  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}), do: %{task_id: id, timeout_seconds: seconds}
+  defp cast_game_params(%{"task_id" => id, "timeout_seconds" => seconds}),
+    do: %{task_id: id, timeout_seconds: seconds}
 
   defp cast_game_params(%{"task_id" => id}), do: %{task_id: id}
   defp cast_game_params(_params), do: %{}

@@ -47,7 +47,8 @@ defmodule Codebattle.Tournament.Ranking.ByPercentile do
   end
 
   def set_ranking(tournament) do
-    ranking = TournamentResult.get_user_ranking(tournament)
+    ranking = tournament |> TournamentResult.get_user_ranking() |> Map.values()
+
     set_places_with_score(tournament, ranking)
     Ranking.put_ranking(tournament, ranking)
     tournament
@@ -59,7 +60,8 @@ defmodule Codebattle.Tournament.Ranking.ByPercentile do
     :ok
   end
 
-  def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
+  def add_new_player(%{state: state} = tournament, player)
+      when state in ["waiting_participants", "active"] do
     place = Ranking.count(tournament) + 1
 
     Ranking.put_single_record(tournament, place, %{
@@ -78,8 +80,13 @@ defmodule Codebattle.Tournament.Ranking.ByPercentile do
 
   def update_player_result(tournament, _player, _score), do: tournament
 
+  def set_places_with_score(%{type: "top200"} = _tournament, _ranking) do
+    :ok
+  end
+
   def set_places_with_score(tournament, ranking) do
-    Enum.each(ranking, fn %{id: id, place: place, score: score} ->
+    ranking
+    |> Enum.each(fn %{id: id, place: place, score: score} ->
       tournament
       |> Players.get_player(id)
       |> case do

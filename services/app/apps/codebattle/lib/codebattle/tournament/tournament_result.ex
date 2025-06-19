@@ -151,7 +151,8 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament)
+      when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -227,102 +228,56 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> Repo.delete_all()
   end
 
-  def get_users_tournament_history(tournament, user_ids) do
-    user_results =
-      Repo.all(
-        from(tr in __MODULE__,
-          where: tr.tournament_id == ^tournament.id,
-          where: tr.user_id in ^user_ids,
-          inner_join: tr2 in __MODULE__,
-          on: tr.game_id == tr2.game_id and tr2.user_id != tr.user_id,
-          select: %{
-            user_id: tr.user_id,
-            round_position: tr.round_position,
-            task_id: tr.task_id,
-            game_id: tr.game_id,
-            score: tr.score,
-            result_percent: tr.result_percent,
-            opponent_id: tr2.user_id,
-            opponent_name: tr2.user_name,
-            opponent_clan_id: tr2.clan_id,
-            opponent_result_percent: tr2.result_percent
-          }
-        )
-      )
-
-    # Group results by game_id to find opponents in the same game
-    games_by_id =
+  def get_users_history(tournament, user_ids) do
+    Repo.all(
       from(tr in __MODULE__,
         where: tr.tournament_id == ^tournament.id,
-        where: tr.game_id in ^Enum.map(user_results, & &1.game_id),
+        where: tr.user_id in ^user_ids,
+        inner_join: tr2 in __MODULE__,
+        on: tr.game_id == tr2.game_id and tr2.user_id != tr.user_id,
+        group_by: [tr.round_position, tr.user_id, tr2.user_id],
         select: %{
-          game_id: tr.game_id,
           user_id: tr.user_id,
-          clan_id: tr.clan_id,
+          user_name: max(tr.user_name),
+          opponent_id: tr2.user_id,
           round_position: tr.round_position,
-          result_percent: tr.result_percent
+          score: coalesce(sum(tr.score), 0),
+          opponent_score: coalesce(sum(tr2.score), 0),
+          game_details:
+            fragment(
+              "array_agg(json_build_object('task_id', ?, 'game_id', ?, 'result_percent', ?, 'opponent_result_percent', ?))",
+              tr.task_id,
+              tr.game_id,
+              tr.result_percent,
+              tr2.result_percent
+            ),
+          opponent_name: max(tr2.user_name),
+          opponent_clan_id: max(tr2.clan_id)
         }
       )
-      |> Repo.all()
-      |> Enum.group_by(& &1.game_id)
+    )
+    |> Enum.reduce(%{}, fn result, acc ->
+      task_history = %{
+        score: result.score,
+        round: result.round_position + 1,
+        opponent_id: result.opponent_id,
+        opponent_clan_id: result.opponent_clan_id,
+        player_win_status:
+          (result.score == result.opponent_score && result.user_id < result.opponent_id) ||
+            result.score > result.opponent_score,
+        solved_tasks:
+          result.game_details
+          |> Enum.sort_by(& &1["game_id"])
+          |> Enum.map(fn game_result ->
+            cond do
+              game_result["result_percent"] == 100.0 -> "won"
+              game_result["opponent_result_percent"] == 100.0 -> "lost"
+              :default -> "timeout"
+            end
+          end)
+      }
 
-    # Process each user's results to build their history
-    Map.new(user_ids, fn user_id ->
-      # Get all results for this user
-      user_games = Enum.filter(user_results, &(&1.user_id == user_id))
-      # Group by round position
-      rounds = Enum.group_by(user_games, & &1.round_position)
-      # Build history for each round
-      history =
-        rounds
-        |> Enum.map(fn {round_position, games} ->
-          # For each game in this round
-          games_data =
-            Enum.map(games, fn game ->
-              # Find opponent in this game
-              game_data = games_by_id[game.game_id] || []
-              opponent = Enum.find(game_data, &(&1.user_id != user_id))
-              # Determine win status
-              player_win_status =
-                if game.result_percent == Decimal.new(100) do
-                  1
-                else
-                  0
-                end
-
-              # Determine task result
-              task_result =
-                cond do
-                  game.result_percent == Decimal.new(100) -> "won"
-                  game.result_percent > Decimal.new(0) -> "lost"
-                  true -> "lost"
-                end
-
-              %{
-                opponent_id: opponent && opponent.user_id,
-                opponent_clan_id: opponent && opponent.clan_id,
-                player_win_status: player_win_status,
-                task_result: task_result,
-                score: game.score
-              }
-            end)
-
-          # Combine all games in this round into one history entry
-          opponent = Enum.find_value(games_data, & &1.opponent_id)
-          opponent_clan = Enum.find_value(games_data, & &1.opponent_clan_id)
-
-          %{
-            "round" => round_position,
-            "opponent_id" => opponent && to_string(opponent),
-            "opponent_clan_id" => opponent_clan && to_string(opponent_clan),
-            "player_win_status" => Enum.find_value(games_data, 0, & &1.player_win_status),
-            "solved_tasks" => Enum.map(games_data, & &1.task_result),
-            "score" => Enum.sum(Enum.map(games_data, & &1.score))
-          }
-        end)
-        |> Enum.sort_by(& &1["round"])
-
-      {user_id, history}
+      Map.update(acc, result.user_id, [task_history], &[task_history | &1])
     end)
   end
 
@@ -345,7 +300,11 @@ defmodule Codebattle.Tournament.TournamentResult do
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
-    Repo.all(query)
+    query
+    |> Repo.all()
+    |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
+      Map.put(acc, id, value)
+    end)
   end
 
   def get_user_ranking(tournament) do
@@ -367,7 +326,11 @@ defmodule Codebattle.Tournament.TournamentResult do
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
 
-    Repo.all(query)
+    query
+    |> Repo.all()
+    |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
+      Map.put(acc, id, value)
+    end)
   end
 
   def get_user_ranking_for_round(tournament, round_position) do

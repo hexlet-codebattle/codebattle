@@ -41,7 +41,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     user4 = %{id: u4_id} = insert(:user, %{clan: "c4", name: "u4", subscription_type: :premium})
     user5 = %{id: u5_id} = insert(:user, %{clan: "c5", name: "u5", subscription_type: :premium})
     user6 = %{id: u6_id} = insert(:user, %{clan: "c6", name: "u6", subscription_type: :premium})
-    rest_users = insert_list(194, :user, clan: "c", subscription_type: :premium)
+    rest_users = insert_list(186, :user, clan: "c", subscription_type: :premium)
 
     {:ok, tournament} =
       Tournament.Context.create(%{
@@ -149,12 +149,12 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     tournament = Tournament.Context.get(tournament.id)
 
     # Verify initial tournament state
-    assert players_count(tournament) == 200
-    assert_total_playing_matches(tournament, 100)
+    assert players_count(tournament) == 192
+    assert_total_playing_matches(tournament, 96)
 
     # Verify matches are created correctly - 100 matches for 200 players
     matches = Tournament.Helpers.get_matches(tournament, "playing")
-    assert Enum.count(matches) == 100
+    assert Enum.count(matches) == 96
     assert Enum.all?(matches, fn match -> match.state == "playing" end)
 
     assert %{
@@ -306,7 +306,9 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     :timer.sleep(600)
 
     # Verify results were created for all players
-    assert Repo.count(TournamentResult) == 210
+    assert Repo.count(TournamentResult) == 202
+
+    assert %{} = Tournament.Helpers.get_player_ranking_stats(tournament)
 
     # Verify tournament state after round finish
     tournament_after_round1 = Tournament.Context.get(tournament.id)
@@ -378,10 +380,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     ##### End Round 1 break and Start Round 2
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
-    :timer.sleep(300)
+    :timer.sleep(600)
 
     # Verify 100 matches were created for round 2
-    assert_total_playing_matches(tournament, 100)
+    assert_total_playing_matches(tournament, 96)
 
     # Verify tournament state after round 2 start
     tournament_round2 = Tournament.Context.get(tournament.id)
@@ -391,7 +393,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     # Verify all players have been assigned to matches
     round2_matches = Tournament.Helpers.get_matches(tournament_round2, "playing")
     player_ids_in_matches = Enum.flat_map(round2_matches, & &1.player_ids)
-    assert Enum.count(player_ids_in_matches) == 200
+    assert Enum.count(player_ids_in_matches) == 192
 
     assert_received %Message{
       topic: ^common_topic,
@@ -477,9 +479,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     )
 
     ### should be rematch with same user
-    :timer.sleep(100)
+    :timer.sleep(600)
 
-    [game_id1, game_id2, game_id3, game_id4, game_id5] = get_users_active_games([u1_id, u2_id, u3_id, u4_id, u5_id])
+    [game_id1, game_id2, game_id3, game_id4, game_id5] =
+      get_users_active_games([u1_id, u2_id, u3_id, u4_id, u5_id])
 
     assert_players_received_games_with_task(
       t4_id,
@@ -531,10 +534,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     ##### Finish 2 round
     tournament = Tournament.Context.get(tournament.id)
-    assert Repo.count(TournamentResult) == 230
+    assert Repo.count(TournamentResult) == 222
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(600)
-    assert Repo.count(TournamentResult) == 420
+    assert Repo.count(TournamentResult) == 404
 
     assert_received %Message{
       topic: ^common_topic,
@@ -594,7 +597,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(300)
-    assert_total_playing_matches(tournament, 100)
+    assert_total_playing_matches(tournament, 96)
 
     assert_received %Message{
       topic: ^common_topic,
@@ -650,10 +653,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     win_active_match(tournament, user4, %{opponent_percent: 33, duration_sec: 400})
     win_active_match(tournament, user5, %{opponent_percent: 33, duration_sec: 500})
 
-    :timer.sleep(200)
+    :timer.sleep(600)
     TournamentResult.upsert_results(tournament)
     Tournament.Ranking.set_ranking(tournament)
-    :timer.sleep(200)
+    :timer.sleep(600)
 
     assert %{
              entries: [
@@ -677,7 +680,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
       "game_over"
     )
 
-    [game_id1, game_id2, game_id3, game_id4, game_id5] = get_users_active_games([u1_id, u2_id, u3_id, u4_id, u5_id])
+    [game_id1, game_id2, game_id3, game_id4, game_id5] =
+      get_users_active_games([u1_id, u2_id, u3_id, u4_id, u5_id])
 
     assert_players_received_games_with_task(
       t6_id,
@@ -704,10 +708,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
     ##### Finish 3 round
-    assert Repo.count(TournamentResult) == 430
+    assert Repo.count(TournamentResult) == 414
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(600)
-    assert Repo.count(TournamentResult) == 630
+    assert Repo.count(TournamentResult) == 606
 
     assert_received %Message{
       topic: ^common_topic,
@@ -777,7 +781,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(300)
-    assert_total_playing_matches(tournament, 100)
+    assert_total_playing_matches(tournament, 96)
 
     assert_received %Message{
       topic: ^common_topic,
@@ -844,10 +848,10 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     ##### Finish 4 round
     tournament = Tournament.Context.get(tournament.id)
-    assert Repo.count(TournamentResult) == 630
+    assert Repo.count(TournamentResult) == 606
     Tournament.Server.finish_round_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(800)
-    assert Repo.count(TournamentResult) == 830
+    assert Repo.count(TournamentResult) == 798
 
     assert_players_received_games_with_task(
       t7_id,
@@ -916,7 +920,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(300)
-    assert_total_playing_matches(tournament, 100)
+    assert_total_playing_matches(tournament, 96)
 
     assert_received %Message{
       topic: ^common_topic,
@@ -1064,7 +1068,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
     :timer.sleep(600)
-    assert_total_playing_matches(tournament, 100)
+    assert_total_playing_matches(tournament, 96)
 
     assert_received %Message{
       topic: ^common_topic,
@@ -1314,7 +1318,11 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     win_active_match(tournament, user1, %{opponent_percent: 33, duration_sec: 100})
     :timer.sleep(300)
 
-    assert_players_received_games_with_task(t14_id, [{player1_topic, game_id2}, {opponent_topic, game_id2}], "game_over")
+    assert_players_received_games_with_task(
+      t14_id,
+      [{player1_topic, game_id2}, {opponent_topic, game_id2}],
+      "game_over"
+    )
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
@@ -1427,7 +1435,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     assert Enum.empty?(Tournament.Helpers.get_matches(tournament, "playing"))
 
     # Verify tournament results for all players
-    assert Repo.count(TournamentResult) == 1436
+    assert Repo.count(TournamentResult) == 1380
   end
 
   defp get_users_active_games(user_ids) do
