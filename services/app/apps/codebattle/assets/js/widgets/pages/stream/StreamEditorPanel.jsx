@@ -7,7 +7,7 @@ import { leftEditorSelector, rightEditorSelector } from '@/selectors';
 import ExtendedEditor from '../../components/Editor';
 import editorThemes from '../../config/editorThemes';
 
-function StreamEditorPanel({ orientation, roomMachineState }) {
+function StreamEditorPanel({ orientation, roomMachineState, fontSize }) {
   const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
 
   const editor = useSelector(editorSelector(roomMachineState));
@@ -18,6 +18,7 @@ function StreamEditorPanel({ orientation, roomMachineState }) {
     mute: true,
     loading: false,
     value: editor?.text,
+    fontSize,
     lineNumbers: false,
     wordWrap: 'on',
   };

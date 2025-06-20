@@ -63,7 +63,7 @@ function StreamFullPanel({ game, roomMachineState }) {
             <ExtendedEditor {...editorLeftParams} />
           </div>
         </div>
-        <div className="col-4 cb-stream-full-video px-2">stream</div>
+        <div className="col-4 w-100 px-2">stream</div>
         <div className="col-4 cb-stream-full-editor editor-right">
           <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100">
             <ExtendedEditor {...editorRightParams} />

@@ -14,6 +14,14 @@ $gold: #daa520;
 @import 'gamePreview';
 @import '~react-contexify/dist/ReactContexify.css';
 
+@font-face {
+  font-family: 'External';
+  src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 $fa-font-path: '/fonts';
 
 @import 'fonts';
@@ -2571,4 +2579,9 @@ a:hover {
   border-top-right-radius: 25px;
   border-left: 0px;
   border-bottom: 0px;
+}
+
+.cb-stream-widget-text {
+  font-family: 'External';
+  font-weight: 700;
 }
