@@ -2586,12 +2586,14 @@ a:hover {
 }
 
 .cb-stream-widget-header-img-left {
+  background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/back-stripes.svg);
   fill: #FAFF0F;
 }
 
 .cb-stream-widget-header-img-right {
+  background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/stripes.svg);
   fill: #FAFF0F;

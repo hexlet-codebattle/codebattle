@@ -24,10 +24,17 @@ function StreamFullPanel({
     theme: editorThemes.dark,
     mute: true,
     loading: false,
-    value: leftEditor?.text,
+    value: leftEditor?.text || '',
     fontSize: codeFontSize,
     lineNumbers: false,
     wordWrap: 'on',
+    // Add required props
+    onChange: () => {},
+    mode: 'default',
+    roomMode: 'spectator',
+    checkResult: () => {},
+    userType: 'spectator',
+    userId: 0,
   };
   const editorRightParams = {
     editable: false,
@@ -35,10 +42,17 @@ function StreamFullPanel({
     theme: editorThemes.dark,
     mute: true,
     loading: false,
-    value: rightEditor?.text,
+    value: rightEditor?.text || '',
     fontSize: codeFontSize,
     lineNumbers: false,
     wordWrap: 'on',
+    // Add required props
+    onChange: () => {},
+    mode: 'default',
+    roomMode: 'spectator',
+    checkResult: () => {},
+    userType: 'spectator',
+    userId: 0,
   };
 
   return (

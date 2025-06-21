@@ -49,7 +49,7 @@ function StreamWidget({
 
   useEffect(() => {
     dispatch(connectToStream());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!game.id) {
@@ -71,18 +71,18 @@ function StreamWidget({
   }, [game.id, mainService, waitingRoomService, dispatch]);
 
   if (!game.id) {
-    return <div className="vh-100 cb-stream-widget" />;
+    return <div className="vh-100 overflow-hidden cb-stream-widget" />;
   }
 
   return (
-    <div className="vh-100 p-2 cb-stream-widget">
+    <div className="vh-100 overflow-hidden cb-stream-widget">
       <div className="d-flex flex-column w-100 h-100">
-        <div className="cb-stream-widget-header cb-stream-widget-text" style={headerFontSize}>
-          <div className="cb-stream-widget-header-img-left" />
-          <div className="cb-stream-widget-header-title text-center p-4">Баттл Вузов</div>
-          <div className="cb-stream-widget-header-img-right" />
+        <div className="cb-stream-widget-header cb-stream-widget-text d-flex" style={{ fontSize: `${headerFontSize}px` }}>
+          <div className="cb-stream-widget-header-img-left"/>
+          <div className="cb-stream-widget-header-title text-center p-2 ">Баттл Вузов</div>
+          <div className="cb-stream-widget-header-img-right"/>
         </div>
-        <div className="p-2">
+        <div className="flex-grow-1 d-flex flex-column h-100">
           {orientations.NONE === orientation && (
             <StreamFullPanel
               game={game}
@@ -91,7 +91,7 @@ function StreamWidget({
               codeFontSize={codeFontSize}
             />
           )}
-          <div className="d-flex w-100 h-100" styles={{ fontSize }}>
+          <div className="d-flex w-100 flex-grow-1 h-100" style={{ fontSize: `${fontSize}px` }}>
             {orientations.LEFT === orientation && (
               <>
                 <StreamTaskInfoPanel

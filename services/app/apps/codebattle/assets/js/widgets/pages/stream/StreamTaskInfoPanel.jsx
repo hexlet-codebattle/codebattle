@@ -43,8 +43,8 @@ function StreamTaskInfoPanel({
         {/*   <span>3 / 8 Задача</span> */}
         {/* </div> */}
         <div className="d-flex flex-column align-items-center cb-stream-name cb-stream-widget-text">
-          {(player?.name || 'Фамилия Имя').split(' ').map(str => (
-            <div style={{ fontSize }}>{upperCase(str || 'Test')}</div>
+          {(player?.name || 'Фамилия Имя').split(' ').map((str, index) => (
+            <div key={index} style={{ fontSize }}>{upperCase(str || 'Test')}</div>
           ))}
         </div>
       </div>
