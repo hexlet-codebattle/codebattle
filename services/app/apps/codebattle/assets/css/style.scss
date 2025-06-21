@@ -2511,11 +2511,8 @@ a:hover {
 
 .cb-stream-output-title {
   background-color: #FAFF0F;
-  width: 151px;
-  height: 69px;
 
-  min-width: 151px;
-  padding: 10px 16px;
+  padding: 16px 20px;
   border-radius: 25px;
 }
 
@@ -2541,7 +2538,7 @@ a:hover {
 }
 
 .cb-stream-output {
-  min-width: 450px;
+  width: 100%;
   border: 4px solid #3C4168;
   border-radius: 25px;
 }
@@ -2556,7 +2553,9 @@ a:hover {
 
 .cb-stream-output-data {
   color: #B6A4FF;
+  display: inline-block;
   overflow: hidden;
+  white-space: nowrap;
 }
 
 .cb-stream-full-video {
@@ -2584,4 +2583,27 @@ a:hover {
 .cb-stream-widget-text {
   font-family: 'External';
   font-weight: 700;
+}
+
+.cb-stream-widget-header-img-left {
+  width: 20%;
+  background-image: url(../static/images/stream/back-stripes.svg);
+  fill: #FAFF0F;
+}
+
+.cb-stream-widget-header-img-right {
+  width: 20%;
+  background-image: url(../static/images/stream/stripes.svg);
+  fill: #FAFF0F;
+}
+
+.cb-stream-widget-header-title {
+  width: 60%;
+  background-color: #FAFF0F;
+}
+
+.cb-stream-player-number {
+  background-color: #FAFF0F;
+  padding: 20px 16px;
+  border-radius: 25px;
 }

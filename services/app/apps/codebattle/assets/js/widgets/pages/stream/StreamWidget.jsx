@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -30,8 +30,11 @@ function StreamWidget({
   const searchParams = useSearchParams();
   const orientation = searchParams.has('orientation') ? searchParams.get('orientation') : orientations.NONE;
 
-  const [fontSize, setFontSize] = useState(16);
-  const [codeFontSize, setCodeFontSize] = useState(16);
+  const fontSize = searchParams.has('fontSize') ? searchParams.get('fontSize') : 16;
+  const codeFontSize = searchParams.has('codeFontSize') ? searchParams.get('codeFontSize') : 16;
+  const headerFontSize = searchParams.has('headerFontSize') ? searchParams.get('headerFontSize') : 16;
+  const widthInfoPanelPercentage = searchParams.has('widthInfoPanel') ? searchParams.get('widthInfoPanel') : 40;
+  const widthEditorPanelPercentage = searchParams.has('widthEditorPanel') ? searchParams.get('widthEditorPanel') : 60;
 
   const { mainService, waitingRoomService } = useGameRoomMachine({
     mainMachine,
@@ -73,44 +76,60 @@ function StreamWidget({
 
   return (
     <div className="vh-100 p-2 cb-stream-widget">
-      {orientations.NONE === orientation && (
-        <StreamFullPanel
-          game={game}
-          roomMachineState={roomMachineState}
-          fontSize={fontSize}
-          codeFontSize={codeFontSize}
-          setFontSize={setFontSize}
-          setCodeFontSize={setCodeFontSize}
-        />
-      )}
-      {orientations.LEFT === orientation && (
-        <div className="d-flex w-100 h-100" styles={{ fontSize }}>
-          <StreamTaskInfoPanel
-            game={game}
-            orientation={orientation}
-            roomMachineState={roomMachineState}
-            fontSize={fontSize}
-            codeFontSize={codeFontSize}
-            setFontSize={setFontSize}
-            setCodeFontSize={setCodeFontSize}
-          />
-          <StreamEditorPanel orientation={orientation} roomMachineState={roomMachineState} fontSize={codeFontSize} />
+      <div className="w-100 h-100">
+        <div className="cb-stream-widget-header cb-stream-widget-text" style={headerFontSize}>
+          <div className="cb-stream-widget-header-img-left" />
+          <div className="cb-stream-widget-header-title text-center p-4">Баттл Вузов</div>
+          <div className="cb-stream-widget-header-img-right" />
         </div>
-      )}
-      {orientations.RIGHT === orientation && (
-        <div className="d-flex w-100 h-100" styles={{ fontSize }}>
-          <StreamEditorPanel orientation={orientation} roomMachineState={roomMachineState} fontSize={codeFontSize} />
-          <StreamTaskInfoPanel
-            game={game}
-            orientation={orientation}
-            roomMachineState={roomMachineState}
-            fontSize={fontSize}
-            codeFontSize={codeFontSize}
-            setFontSize={setFontSize}
-            setCodeFontSize={setCodeFontSize}
-          />
+        <div className="p-2">
+          {orientations.NONE === orientation && (
+            <StreamFullPanel
+              game={game}
+              roomMachineState={roomMachineState}
+              fontSize={fontSize}
+              codeFontSize={codeFontSize}
+            />
+          )}
+          <div className="d-flex w-100 h-100" styles={{ fontSize }}>
+            {orientations.LEFT === orientation && (
+              <>
+                <StreamTaskInfoPanel
+                  game={game}
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={fontSize}
+                  width={`${widthInfoPanelPercentage}%`}
+                />
+                <StreamEditorPanel
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={codeFontSize}
+                  width={`${widthEditorPanelPercentage}%`}
+                />
+
+              </>
+            )}
+            {orientations.RIGHT === orientation && (
+              <>
+                <StreamEditorPanel
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={codeFontSize}
+                  width={`${widthEditorPanelPercentage}%`}
+                />
+                <StreamTaskInfoPanel
+                  game={game}
+                  orientation={orientation}
+                  roomMachineState={roomMachineState}
+                  fontSize={fontSize}
+                  width={`${widthInfoPanelPercentage}%`}
+                />
+              </>
+            )}
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -7,7 +7,9 @@ import { leftEditorSelector, rightEditorSelector } from '@/selectors';
 import ExtendedEditor from '../../components/Editor';
 import editorThemes from '../../config/editorThemes';
 
-function StreamEditorPanel({ orientation, roomMachineState, fontSize }) {
+function StreamEditorPanel({
+  orientation, roomMachineState, fontSize, width = '60%',
+}) {
   const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
 
   const editor = useSelector(editorSelector(roomMachineState));
@@ -24,7 +26,10 @@ function StreamEditorPanel({ orientation, roomMachineState, fontSize }) {
   };
 
   return (
-    <div className={`col-8 cb-stream-editor-panel p-4 cb-stream-editor-${orientation}`}>
+    <div
+      className={`cb-stream-editor-panel p-4 cb-stream-editor-${orientation}`}
+    // style={{ width, maxWidth: width, minWidth: width }}
+    >
       <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100">
         <ExtendedEditor {...editorParams} />
       </div>
