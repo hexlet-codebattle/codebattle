@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { Rnd } from 'react-rnd'
-import './BlockBase.css'
-import '../resize.css'
+import React, { useState } from 'react';
+
+import { Rnd } from 'react-rnd';
+import './BlockBase.css';
+import '../resize.css';
 
 function BlockBase({
 	id,
@@ -16,43 +17,43 @@ function BlockBase({
 	onContextMenu,
 	onStopResize,
 }) {
-	const [tempSize, setTempSize] = useState({ width, height })
+	const [tempSize, setTempSize] = useState({ width, height });
 
-	const snap = (val, grid = 20) => Math.round(val / grid) * grid
+	const snap = (val, grid = 20) => Math.round(val / grid) * grid;
 
 	return (
-		<Rnd
-			size={{ width, height }}
-			position={{ x, y }}
-			onDragStop={(e, d) => {
-				onMove(d.x, d.y)
+  <Rnd
+    size={{ width, height }}
+    position={{ x, y }}
+    onDragStop={(e, d) => {
+				onMove(d.x, d.y);
 			}}
-			onResize={(e, dir, ref, delta, pos) => {
-				const newWidth = snap(ref.offsetWidth)
-				const newHeight = snap(ref.offsetHeight)
-				setTempSize({ width: newWidth, height: newHeight })
-				onResize(newWidth, newHeight)
+    onResize={(e, dir, ref, delta, pos) => {
+				const newWidth = snap(ref.offsetWidth);
+				const newHeight = snap(ref.offsetHeight);
+				setTempSize({ width: newWidth, height: newHeight });
+				onResize(newWidth, newHeight);
 			}}
-			onResizeStop={(e, dir, ref, delta, pos) => {
-				const snappedWidth = snap(ref.offsetWidth)
-				const snappedHeight = snap(ref.offsetHeight)
-				const snappedX = snap(pos.x)
-				const snappedY = snap(pos.y)
+    onResizeStop={(e, dir, ref, delta, pos) => {
+				const snappedWidth = snap(ref.offsetWidth);
+				const snappedHeight = snap(ref.offsetHeight);
+				const snappedX = snap(pos.x);
+				const snappedY = snap(pos.y);
 
-				onResize(snappedWidth, snappedHeight)
-				onMove(snappedX, snappedY)
+				onResize(snappedWidth, snappedHeight);
+				onMove(snappedX, snappedY);
 
-				if (onStopResize) onStopResize()
+				if (onStopResize) onStopResize();
 			}}
-			enableResizing={isResizable}
-			bounds="parent"
-			style={{ zIndex: isResizable ? 10 : 1 }}
+    enableResizing={isResizable}
+    bounds="parent"
+    style={{ zIndex: isResizable ? 10 : 1 }}
 		>
-			<div
-				onContextMenu={onContextMenu}
-				className="block-wrapper"
-				data-id={id} 
-				style={{
+    <div
+      onContextMenu={onContextMenu}
+      className="block-wrapper"
+      data-id={id}
+      style={{
 					width: '100%',
 					height: '100%',
 					boxSizing: 'border-box',
@@ -61,16 +62,16 @@ function BlockBase({
 					borderRadius: 6,
 					transition: 'border 0.2s ease',
 				}}
-			>
-				{children}
+    >
+      {children}
 
-				{isResizable && (
-					<>
-						{['tl', 'tr', 'bl', 'br'].map(pos => (
-							<div key={pos} className={`resize-dot ${pos}`} />
+      {isResizable && (
+      <>
+        {['tl', 'tr', 'bl', 'br'].map(pos => (
+          <div key={pos} className={`resize-dot ${pos}`} />
 						))}
-						<div
-							style={{
+        <div
+          style={{
 								position: 'absolute',
 								bottom: -26,
 								left: '50%',
@@ -84,14 +85,17 @@ function BlockBase({
 								fontFamily: 'JetBrains Mono, monospace',
 								pointerEvents: 'none',
 							}}
-						>
-							{tempSize.width} × {tempSize.height}
-						</div>
-					</>
+        >
+          {tempSize.width}
+          {' '}
+          ×
+          {tempSize.height}
+        </div>
+      </>
 				)}
-			</div>
-		</Rnd>
-	)
+    </div>
+  </Rnd>
+	);
 }
 
-export default BlockBase
+export default BlockBase;

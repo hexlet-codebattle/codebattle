@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import Canvas from './components/Canvas/Canvas'
-import './index.css'
-import './App.css'
+import React, { useEffect, useState } from 'react';
+
+import Canvas from './components/Canvas/Canvas';
+import './index.css';
+import './App.css';
 
 const defaultBlocks = [
   {
@@ -73,90 +74,89 @@ const defaultBlocks = [
     width: 256,
     height: 96,
   },
-]
+];
 
 export default function App() {
-  const [presets, setPresets] = useState({})
-  const [currentPreset, setCurrentPreset] = useState('default')
-  const [showSaveField, setShowSaveField] = useState(false)
-  const [saveName, setSaveName] = useState('')
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [canvasKey, setCanvasKey] = useState(0)
+  const [presets, setPresets] = useState({});
+  const [currentPreset, setCurrentPreset] = useState('default');
+  const [showSaveField, setShowSaveField] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [canvasKey, setCanvasKey] = useState(0);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('presets') || '{}')
+    const stored = JSON.parse(localStorage.getItem('presets') || '{}');
 
     if (!stored.default) {
-      stored.default = defaultBlocks
+      stored.default = defaultBlocks;
     }
 
     if (!stored.current || !stored[stored.current]) {
-      stored.current = 'default'
+      stored.current = 'default';
     }
 
-    localStorage.setItem('presets', JSON.stringify(stored))
-    setPresets(stored)
-    setCurrentPreset(stored.current)
-    setTimeout(() => setIsLoaded(true), 60)
-  }, [])
+    localStorage.setItem('presets', JSON.stringify(stored));
+    setPresets(stored);
+    setCurrentPreset(stored.current);
+    setTimeout(() => setIsLoaded(true), 60);
+  }, []);
 
   const handlePresetChange = e => {
-    const name = e.target.value
-    const updated = { ...presets, current: name }
-    setPresets(updated)
-    setCurrentPreset(name)
-    localStorage.setItem('presets', JSON.stringify(updated))
-  }
+    const name = e.target.value;
+    const updated = { ...presets, current: name };
+    setPresets(updated);
+    setCurrentPreset(name);
+    localStorage.setItem('presets', JSON.stringify(updated));
+  };
 
   const handleDeletePreset = () => {
     if (currentPreset === 'default') {
-      alert('Нельзя удалить пресет default')
-      return
+      alert('Нельзя удалить пресет default');
+      return;
     }
 
-    const updated = { ...presets }
-    delete updated[currentPreset]
-    updated.current = 'default'
+    const updated = { ...presets };
+    delete updated[currentPreset];
+    updated.current = 'default';
 
-    setPresets(updated)
-    setCurrentPreset('default')
-    setCanvasKey(prev => prev + 1)
-    localStorage.setItem('presets', JSON.stringify(updated))
-  }
+    setPresets(updated);
+    setCurrentPreset('default');
+    setCanvasKey(prev => prev + 1);
+    localStorage.setItem('presets', JSON.stringify(updated));
+  };
 
   const handleSaveClick = () => {
-    setShowSaveField(true)
-    setSaveName('')
-  }
+    setShowSaveField(true);
+    setSaveName('');
+  };
 
   const handleSaveConfirm = () => {
-    if (!saveName.trim()) return
+    if (!saveName.trim()) return;
     const updated = {
       ...presets,
       [saveName]: presets[currentPreset] || [],
       current: saveName,
-    }
-    setPresets(updated)
-    setCurrentPreset(saveName)
-    localStorage.setItem('presets', JSON.stringify(updated))
-    setShowSaveField(false)
-    setSaveName('')
-  }
+    };
+    setPresets(updated);
+    setCurrentPreset(saveName);
+    localStorage.setItem('presets', JSON.stringify(updated));
+    setShowSaveField(false);
+    setSaveName('');
+  };
 
   const handleBlocksChange = newBlocks => {
-    if (currentPreset === 'default') return
+    if (currentPreset === 'default') return;
     const updated = {
       ...presets,
       [currentPreset]: newBlocks,
       current: currentPreset,
-    }
-    setPresets(updated)
-    localStorage.setItem('presets', JSON.stringify(updated))
-  }
+    };
+    setPresets(updated);
+    localStorage.setItem('presets', JSON.stringify(updated));
+  };
 
   return (
     <>
-
 
       <div className="preset-bar">
         <select
@@ -199,12 +199,12 @@ export default function App() {
       {isLoaded && (
         <div className="fade-in">
           <Canvas
-           initialBlocks={presets[currentPreset] || []}
-           onBlocksChange={() => {}}
-           readOnly={true}
-         />
+            initialBlocks={presets[currentPreset] || []}
+            onBlocksChange={() => {}}
+            readOnly
+          />
         </div>
       )}
     </>
-  )
+  );
 }

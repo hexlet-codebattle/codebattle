@@ -1,13 +1,14 @@
-import React from 'react'
-import BlockBase from '../BlockBase/BlockBase'
-import './BlockTimer.css'
+import React from 'react';
+
+import BlockBase from '../BlockBase/BlockBase';
+import './BlockTimer.css';
 
 function BlockTimer({ time, ...props }) {
 	return (
-		<BlockBase {...props}>
-			<div
-				className="block-timer"
-				style={{
+  <BlockBase {...props}>
+    <div
+      className="block-timer"
+      style={{
 					fontSize: '20px',
 					fontWeight: '600',
 					textAlign: 'center',
@@ -17,11 +18,11 @@ function BlockTimer({ time, ...props }) {
 					alignItems: 'center',
 					justifyContent: 'center',
 				}}
-			>
-				{time}
-			</div>
-		</BlockBase>
-	)
+    >
+      {time}
+    </div>
+  </BlockBase>
+	);
 }
 
-export default BlockTimer
+export default BlockTimer;

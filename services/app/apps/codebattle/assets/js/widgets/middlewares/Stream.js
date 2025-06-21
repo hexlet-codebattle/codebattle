@@ -12,12 +12,23 @@ const channel = new Channel();
 const establishStream = dispatch => {
   const getDispatchActionHandler = actionCreator => data => dispatch(actionCreator(data));
 
-  channel.join().receive('ok', () => {});
+const onJoinSuccess = response => {
+  if (response.activeGameId) {
+    dispatch(actions.setGameId({ id: response.activeGameId }));
+  }
+};
+
+const onJoinFailure = err => {
+  console.error(err);
+  // window.location.reload();
+  };
+
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   const handleActiveGame = getDispatchActionHandler(actions.setGameId);
 
   return channel
-    .addListener(channelTopics.streamActiveGameSelectedTopic, handleActiveGame)
+    .addListener(channelTopics.streamActiveGameSelectedTopic, handleActiveGame);
 };
 
 export const connectToStream = () => dispatch => {

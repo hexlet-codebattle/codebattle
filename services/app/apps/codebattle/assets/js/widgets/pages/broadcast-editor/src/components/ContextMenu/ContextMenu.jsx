@@ -1,5 +1,5 @@
-import React from 'react'
-import './ContextMenu.css'
+import React from 'react';
+import './ContextMenu.css';
 
 function ContextMenu({
 	x,
@@ -13,15 +13,15 @@ function ContextMenu({
 	blocks,
 }) {
 	const handleAddClick = e => {
-		e.stopPropagation()
-		setShowAddMenu(prev => !prev)
-	}
+		e.stopPropagation();
+		setShowAddMenu(prev => !prev);
+	};
 
 	const handleAddType = type => {
-		const found = items.find(item => item.type === type)
-		if (found) onAddBlock(found.mapId)
-	}
-	const blockExists = blockId => blocks.some(b => b.id === blockId)
+		const found = items.find(item => item.type === type);
+		if (found) onAddBlock(found.mapId);
+	};
+	const blockExists = blockId => blocks.some(b => b.id === blockId);
 
 	const items = [
 		{ label: '🧠 code-1', type: 'code-1', mapId: 'code-1' },
@@ -31,12 +31,12 @@ function ContextMenu({
 		{ label: '💬 Чат', type: 'text-3', mapId: 'text-3' },
 		{ label: '✅ Tests', type: 'text-2', mapId: 'text-2' },
 		{ label: '✅ Tests 2', type: 'text-4', mapId: 'text-4' },
-	]
+	];
 
 	return (
-		<div
-			className="context-menu"
-			style={{
+  <div
+    className="context-menu"
+    style={{
 				position: 'absolute',
 				top: y,
 				left: x,
@@ -48,58 +48,58 @@ function ContextMenu({
 				zIndex: 9999,
 				minWidth: '160px',
 			}}
-			onClick={e => e.stopPropagation()}
+    onClick={e => e.stopPropagation()}
 		>
-			<button
-				className="context-button"
-				onClick={e => {
-					e.stopPropagation()
-					onResize()
+    <button
+      className="context-button"
+      onClick={e => {
+					e.stopPropagation();
+					onResize();
 				}}
-			>
-				✏️ Изменить размер
-			</button>
+    >
+      ✏️ Изменить размер
+    </button>
 
-			<button
-				className="context-button delete"
-				onClick={e => {
-					e.stopPropagation()
-					onDelete()
+    <button
+      className="context-button delete"
+      onClick={e => {
+					e.stopPropagation();
+					onDelete();
 				}}
-			>
-				🗑️ Удалить блок
-			</button>
-			<div style={{ position: 'relative' }}>
-				<button className="context-button" onClick={handleAddClick}>
-					➕ Добавить блок
-				</button>
+    >
+      🗑️ Удалить блок
+    </button>
+    <div style={{ position: 'relative' }}>
+      <button className="context-button" onClick={handleAddClick}>
+        ➕ Добавить блок
+      </button>
 
-				{showAddMenu && (
-					<div className="submenu" onClick={e => e.stopPropagation()}>
-						{items.map(({ label, type, mapId }) => {
-							const disabled = blockExists(mapId)
+      {showAddMenu && (
+      <div className="submenu" onClick={e => e.stopPropagation()}>
+        {items.map(({ label, type, mapId }) => {
+							const disabled = blockExists(mapId);
 							return (
-								<button
-									key={type}
-									className="context-button"
-									onClick={e => {
-										e.stopPropagation()
+  <button
+    key={type}
+    className="context-button"
+    onClick={e => {
+										e.stopPropagation();
 										if (!disabled) {
-											handleAddType(type)
+											handleAddType(type);
 										}
 									}}
-									disabled={disabled}
-									title={disabled ? 'Этот блок уже добавлен' : ''}
-								>
-									{label}
-								</button>
-							)
+    disabled={disabled}
+    title={disabled ? 'Этот блок уже добавлен' : ''}
+  >
+    {label}
+  </button>
+							);
 						})}
-					</div>
+      </div>
 				)}
-			</div>
-		</div>
-	)
+    </div>
+  </div>
+	);
 }
 
-export default ContextMenu
+export default ContextMenu;

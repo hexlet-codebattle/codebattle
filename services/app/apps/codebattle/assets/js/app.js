@@ -170,4 +170,3 @@ if (invitesRoot) {
 if (streamRoot) {
   renderStreamPage(streamRoot);
 }
-

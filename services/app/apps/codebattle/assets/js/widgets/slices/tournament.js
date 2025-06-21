@@ -93,10 +93,9 @@ const tournament = createSlice({
       if (state.type === TournamentTypes.show) {
         state.showBots = !state.showBots;
       }
-   }
-}
-}
-);
+   },
+},
+});
 
 const { actions, reducer } = tournament;
 
