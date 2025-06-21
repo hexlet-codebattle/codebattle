@@ -652,7 +652,8 @@ defmodule Codebattle.Tournament.Base do
           end)
 
         # Extract just the game parameters for bulk creation
-        game_creation_params = Enum.map(game_params, fn {params, _players, _match_id} -> params end)
+        game_creation_params =
+          Enum.map(game_params, fn {params, _players, _match_id} -> params end)
 
         # Create games in bulk
         created_games = Game.Context.bulk_create_games(game_creation_params)
@@ -907,6 +908,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
       # We don't want to run a timer for the swiss type, because all games already have a timeout
       defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
+
       defp maybe_start_round_timer(%{state: "active", type: "top200"} = tournament), do: tournament
 
       defp maybe_start_round_timer(tournament) do
@@ -943,12 +945,16 @@ defmodule Codebattle.Tournament.Base do
       defp get_game_timeout(tournament, task) do
         cond do
           tournament.tournament_timeout_seconds ->
-            max(tournament.tournament_timeout_seconds - DateTime.diff(DateTime.utc_now(), tournament.started_at), 10)
+            max(
+              tournament.tournament_timeout_seconds -
+                DateTime.diff(DateTime.utc_now(), tournament.started_at),
+              10
+            )
 
           FunWithFlags.enabled?(:tournament_custom_timeout) ->
             get_custom_round_timeout_seconds(tournament, task)
 
-          use_waiting_room?(tournament) or tournament.type in ["squad"] ->
+          use_waiting_room?(tournament) or tournament.type in ["top200"] ->
             min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
 
           :default ->

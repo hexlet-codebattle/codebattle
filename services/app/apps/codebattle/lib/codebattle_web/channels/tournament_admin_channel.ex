@@ -11,6 +11,36 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   @default_ranking_size 200
 
+  # Agent for storing tournament_id to active_game_id mapping
+  def start_games_agent do
+    Agent.start(fn -> %{} end, name: __MODULE__.GamesAgent)
+  end
+
+  # Store active_game_id for a specific tournament_id in the Agent
+  def store_active_game(tournament_id, game_id) do
+    # Ensure agent is started
+    if Process.whereis(__MODULE__.GamesAgent) == nil do
+      start_games_agent()
+    end
+
+    Agent.update(__MODULE__.GamesAgent, fn games_map ->
+      Map.put(games_map, tournament_id, game_id)
+    end)
+  end
+
+  # Get the active_game_id for a specific tournament_id from the Agent
+  def get_active_game(tournament_id) do
+    # Ensure agent is started
+    if Process.whereis(__MODULE__.GamesAgent) == nil do
+      start_games_agent()
+    end
+
+    Agent.get(__MODULE__.GamesAgent, fn games_map ->
+      dbg(games_map)
+      Map.get(games_map, tournament_id)
+    end)
+  end
+
   def join("tournament_admin:" <> tournament_id, _payload, socket) do
     current_user = socket.assigns.current_user
 
@@ -241,6 +271,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   def handle_in("tournament:ranking:request", _params, socket) do
     tournament_info = socket.assigns.tournament_info
     ranking = Tournament.Ranking.get_page(tournament_info, 1, @default_ranking_size)
+
     {:reply, {:ok, %{ranking: ranking}}, socket}
   end
 
@@ -258,6 +289,11 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   def handle_in("tournament:stream:active_game", payload, socket) do
     tournament_id = socket.assigns.tournament_info.id
+
+    # Store game_id in Agent when streaming active game
+    if payload["game_id"] do
+      store_active_game(tournament_id, payload["game_id"])
+    end
 
     Codebattle.PubSub.broadcast("tournament:stream:active_game", %{
       game_id: payload["game_id"],
@@ -286,12 +322,13 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
+    # if payload.tournament.type in ["swiss", "arena"] do
+    #   []
+    # else
     matches =
-      if payload.tournament.type in ["swiss", "arena"] do
-        []
-      else
-        Helpers.get_matches(socket.assigns.tournament_info)
-      end
+      Helpers.get_matches(socket.assigns.tournament_info)
+
+    # end
 
     players =
       if payload.tournament.type in ["swiss", "arena"] do
@@ -397,8 +434,11 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     # end
 
+    active_game_id = tournament.id |> get_active_game() |> dbg()
+
     %{
       tasks_info: tasks_info,
+      active_game_id: active_game_id,
       reports: UserGameReport.list_by_tournament(tournament.id, limit: 300),
       tournament: Helpers.prepare_to_json(tournament),
       ranking: Tournament.Ranking.get_page(tournament, 1, @default_ranking_size),

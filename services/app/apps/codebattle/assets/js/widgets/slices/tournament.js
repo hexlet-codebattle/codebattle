@@ -76,7 +76,9 @@ const tournament = createSlice({
       state.playersPageNumber = payload;
     },
     updateTournamentChannelState: (state, { payload }) => {
-      state.channel.online = payload;
+      if (state.channel) {
+        state.channel.online = payload;
+      }
     },
     setTournamentPlayers: (state, { payload }) => {
       state.players = payload;
@@ -91,9 +93,10 @@ const tournament = createSlice({
       if (state.type === TournamentTypes.show) {
         state.showBots = !state.showBots;
       }
-    },
-  },
-});
+   }
+}
+}
+);
 
 const { actions, reducer } = tournament;
 

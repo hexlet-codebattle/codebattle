@@ -430,6 +430,7 @@ export const userRankingSelector = userId => state => (state.tournament.ranking?
 export const tournamentIdSelector = state => state.tournament.id;
 
 export const tournamentSelector = state => state.tournament;
+export const tournamentAdminSelector = state => state.tournamentAdmin;
 
 export const currentUserIsTournamentOwnerSelector = state => state.tournament.creatorId === state.user.currentUserId;
 

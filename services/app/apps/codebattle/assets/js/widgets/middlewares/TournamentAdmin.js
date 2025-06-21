@@ -26,7 +26,12 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
   };
 
   const onJoinSuccess = response => {
+    console.log(response)
     if (isAdminWidged) {
+    // Handle active_game_id if it exists in the response
+    if (response.activeGameId) {
+      dispatch(actions.setAdminActiveGameId(response.activeGameId));
+    }
       dispatch(
         actions.setTournamentData({
           ...response.tournament,
@@ -44,6 +49,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
     dispatch(actions.setReports(compact(response.reports)));
+    
   };
 
   channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
@@ -330,7 +336,11 @@ export const getTask = (taskId, onSuccess) => () => {
     });
 };
 
-export const pushActiveMatchToStream = (gameId) => () => {
+export const pushActiveMatchToStream = (gameId) => (dispatch) => {
+  // Update the Redux state immediately for instant UI feedback
+  dispatch(actions.setAdminActiveGameId(gameId));
+  
+  // Send the update to the server
   channel
     .push('tournament:stream:active_game', { gameId })
     .receive('error', error => console.error(error));

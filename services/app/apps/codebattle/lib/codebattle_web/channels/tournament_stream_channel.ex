@@ -4,6 +4,7 @@ defmodule CodebattleWeb.TournamentStreamChannel do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias CodebattleWeb.TournamentAdminChannel
 
   require Logger
 
@@ -42,9 +43,12 @@ defmodule CodebattleWeb.TournamentStreamChannel do
   end
 
   defp get_tournament_join_payload(tournament) do
+    # Get the active game for this tournament from the TournamentAdminChannel agent
+    active_game_id = TournamentAdminChannel.get_active_game(tournament.id)
+
     %{
       tournament: Helpers.prepare_to_json(tournament),
-      active_game_id: 1
+      active_game_id: active_game_id
     }
   end
 end

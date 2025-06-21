@@ -512,6 +512,9 @@ export default {
     alerts: {},
   },
   tournament: initialTournament,
+  tournamentAdmin: {
+    activeGameId: null,
+  },
   tournamentPlayer: defaultTournamentPlayerParams,
   editor: {
     meta: initialMeta,

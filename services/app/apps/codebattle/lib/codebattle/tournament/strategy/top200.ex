@@ -8,14 +8,14 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    # users =
-    #   Codebattle.User
-    #   |> Codebattle.Repo.all()
-    #   |> Enum.filter(&(&1.is_bot == false and &1.subscription_type != :admin))
-    #   |> Enum.take(199)
+    users =
+      Codebattle.User
+      |> Codebattle.Repo.all()
+      |> Enum.filter(&(&1.is_bot == false and &1.subscription_type != :admin))
+      |> Enum.take(199)
 
-    # add_players(tournament, %{users: users})
-    tournament
+    add_players(tournament, %{users: users})
+    # tournament
   end
 
   @impl Tournament.Base

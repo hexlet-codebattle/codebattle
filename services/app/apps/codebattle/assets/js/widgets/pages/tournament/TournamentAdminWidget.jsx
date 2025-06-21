@@ -7,11 +7,48 @@ import { connectToTournament, requestMatchesForRound} from '../../middlewares/To
 import * as selectors from '../../selectors';
 import { pushActiveMatchToStream } from '../../middlewares/TournamentAdmin';
 
+// Define CSS for active game animation
+const activeGameStyles = `
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+  }
+  
+  .active-game {
+    position: relative;
+    animation: pulse 1.5s infinite;
+    border: 2px solid #ffc107 !important;
+  }
+  
+  .active-game-indicator {
+    display: inline-block;
+    margin-left: 3px;
+    animation: rotate 1.5s linear infinite;
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+`;
+
 function TournamentAdminWidget() {
+  // Add style element for animations
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = activeGameStyles;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
   const tournamentId = Gon.getAsset('tournament_id');
   const dispatch = useDispatch();
   
   const tournament = useSelector(selectors.tournamentSelector);
+  const tournamentAdmin = useSelector(selectors.tournamentAdminSelector);
   const [playerMatches, setPlayerMatches] = useState({});
 
   useEffect(() => {
@@ -85,15 +122,16 @@ function TournamentAdminWidget() {
 
   // Render match buttons for a specific player
   const renderPlayerMatchButtons = (playerId) => {
-    const matches = playerMatches[playerId] || [];
+    const allMatches = playerMatches[playerId] || [];
     
-    if (matches.length === 0) {
+    if (allMatches.length === 0) {
       return <span className="text-muted">No matches</span>;
     }
     
+    
     return (
       <div className="d-flex flex-wrap gap-1">
-        {matches.map(match => {
+        {allMatches.map(match => {
           // Determine button color based on match state
           let buttonClass = 'btn-outline-secondary';
           if (match.state === 'finished') {
@@ -104,14 +142,20 @@ function TournamentAdminWidget() {
             buttonClass = 'btn-warning';
           }
           
+          // Check if this is the active game
+          const isActiveGame = tournamentAdmin.activeGameId && match.gameId === tournamentAdmin.activeGameId;
+          // No need for inline styles as we're using CSS animations
+          const buttonStyle = {};
+          
           return (
             <button 
               key={match.id} 
               onClick={() => dispatch(pushActiveMatchToStream(match.gameId))}
-              className={`btn ${buttonClass} btn-sm me-1 mb-1`}
-              title={`Match ID: ${match.id}, State: ${match.state}, Started: ${new Date(match.startedAt).toLocaleTimeString()}`}
+              className={`btn ${buttonClass} btn-sm me-1 mb-1 ${isActiveGame ? 'active-game' : ''}`}
+              title={`${isActiveGame ? '⭐ ACTIVE GAME - ' : ''}Match ID: ${match.id}, State: ${match.state}, Started: ${new Date(match.startedAt).toLocaleTimeString()}`}
+              style={buttonStyle}
             >
-              #{match.gameId}
+              #{match.gameId}{isActiveGame ? <span className="active-game-indicator">🔄</span> : ''}
             </button>
           );
         })}

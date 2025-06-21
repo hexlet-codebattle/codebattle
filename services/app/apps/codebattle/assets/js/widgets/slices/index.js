@@ -18,6 +18,7 @@ import reports, { actions as reportsActions } from './reports';
 import stairwayGame, { actions as stairwayGameActions } from './stairway';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import tournament, { actions as tournamentActions } from './tournament';
+import tournamentAdmin, { actions as tournamentAdminActions } from './tournamentAdmin';
 import tournamentPlayer, { actions as tournamentPlayerActions } from './tournamentPlayer';
 import user, { actions as userActions } from './user';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
@@ -44,6 +45,7 @@ export const actions = {
   ...stairwayGameActions,
   ...storeLoadedActions,
   ...tournamentActions,
+  ...tournamentAdminActions,
   ...tournamentPlayerActions,
   ...userActions,
   ...usersInfoActions,
@@ -70,6 +72,7 @@ export default {
   stairwayGame,
   storeLoaded,
   tournament,
+  tournamentAdmin,
   tournamentPlayer,
   user,
   usersInfo,
