@@ -76,7 +76,7 @@ function StreamWidget({
 
   return (
     <div className="vh-100 p-2 cb-stream-widget">
-      <div className="w-100 h-100">
+      <div className="d-flex flex-column w-100 h-100">
         <div className="cb-stream-widget-header cb-stream-widget-text" style={headerFontSize}>
           <div className="cb-stream-widget-header-img-left" />
           <div className="cb-stream-widget-header-title text-center p-4">Баттл Вузов</div>
