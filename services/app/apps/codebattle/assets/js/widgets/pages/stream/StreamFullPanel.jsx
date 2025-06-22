@@ -29,6 +29,7 @@ function StreamFullPanel({
     lineNumbers: false,
     wordWrap: 'on',
     showVimStatusBar: false,
+    scrollbarStatus: 'hidden',
     // Add required props
     onChange: () => { },
     mode: 'default',
@@ -48,6 +49,7 @@ function StreamFullPanel({
     lineNumbers: false,
     wordWrap: 'on',
     showVimStatusBar: false,
+    scrollbarStatus: 'hidden',
     // Add required props
     onChange: () => { },
     mode: 'default',

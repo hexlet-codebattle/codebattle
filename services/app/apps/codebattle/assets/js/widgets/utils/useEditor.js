@@ -37,6 +37,7 @@ const currentClipboardPrefix = '';
  *   syntax: string,
  *   fontSize: number,
  *   editable: boolean,
+ *   scrollbarStatus: string,
  *   loading: boolean
  * }} props
  */
@@ -50,6 +51,7 @@ const useOption = (
     syntax,
     fontSize,
     editable,
+    scrollbarStatus,
     loading,
   },
 ) => {
@@ -64,7 +66,7 @@ const useOption = (
       lineNumbersMinChars: 3,
       fontSize,
       scrollBeyondLastLine: false,
-      selectOnLineNumbers: true,
+      selectOnLineNumbers: false,
       minimap: { enabled: false },
       parameterHints: { enabled: false },
       readOnly: !editable || loading,
@@ -73,8 +75,8 @@ const useOption = (
         useShadows: false,
         verticalHasArrows: true,
         horizontalHasArrows: true,
-        vertical: 'visible',
-        horizontal: 'visible',
+        vertical: scrollbarStatus,
+        horizontal: scrollbarStatus,
         verticalScrollbarSize: 17,
         horizontalScrollbarSize: 17,
         arrowSize: 30,
@@ -87,6 +89,7 @@ const useOption = (
       canSendCursor,
       wordWrap,
       lineNumbers,
+      scrollbarStatus,
       syntax,
       fontSize,
       editable,

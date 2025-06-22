@@ -2500,13 +2500,13 @@ a:hover {
   display: inline-block;
   font-size: 18px;
   color: white;
-  padding-right: 25px;
+  padding-right: 20px;
 }
 
 .cb-stream-tasks-stats {
   background-color: #FAFF0F;
   padding: 10px 16px;
-  border-radius: 25px;
+  border-radius: 50px;
 
   font-weight: 900;
 
@@ -2519,11 +2519,11 @@ a:hover {
 .cb-stream-output-title {
   background-color: #FAFF0F;
 
+  margin: -3px;
   padding: 10px 20px;
-  border-radius: 25px;
 
-  width: 35%;
-  min-width: 35%;
+  border: 3px solid #FAFF0F;
+  border-radius: 25px;
 
   font-weight: 700;
 
@@ -2538,13 +2538,13 @@ a:hover {
 }
 
 .cb-stream-editor-left {
-  border-top-left-radius: 25px;
+  border-top-left-radius: 50px;
   border-right: 0px;
   border-bottom: 0px;
 }
 
 .cb-stream-editor-right {
-  border-top-right-radius: 25px;
+  border-top-right-radius: 50px;
   border-left: 0px;
   border-bottom: 0px;
 }
@@ -2560,7 +2560,7 @@ a:hover {
 
 .cb-stream-output {
   width: 100%;
-  border: 4px solid #3C4168;
+  border: 3px solid #3C4168;
   border-radius: 25px;
 }
 
@@ -2577,26 +2577,29 @@ a:hover {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
+  background: rgba(0, 0, 0, 0);
+
+  margin-left: 0.7em;
 }
 
 .cb-stream-full-video {
   border: 4px solid #3C4168;
-  border-radius: 25px;
+  border-radius: 50px;
 }
 
 .cb-stream-full-editor {
   border: 4px solid #3C4168;
-  border-radius: 25px;
+  border-radius: 50px;
 }
 
 .editor-left {
-  border-top-left-radius: 25px;
+  border-top-left-radius: 50px;
   border-right: 0px;
   border-bottom: 0px;
 }
 
 .editor-right {
-  border-top-right-radius: 25px;
+  border-top-right-radius: 50px;
   border-left: 0px;
   border-bottom: 0px;
 }
@@ -2604,6 +2607,8 @@ a:hover {
 .cb-stream-widget-text {
   font-family: 'External';
   font-weight: 700;
+
+  vertical-align: -1px;
 
   &.italic {
     font-style: italic;
@@ -2646,9 +2651,7 @@ a:hover {
 
 .cb-stream-player-number {
   background-color: #FAFF0F;
-  padding: 10px 16px;
-  border: 3px solid outline;
-  border-radius: 50px;
+  border-radius: 50%;
 
   font-weight: 900;
 
@@ -2659,7 +2662,8 @@ a:hover {
 }
 
 .cb-stream-number-text {
-  margin-left: -6px;
+  padding: 10px 10px;
+  border: 3px solid outline;
 }
 
 .cb-stream-player-clan {

@@ -24,6 +24,7 @@ function StreamEditorPanel({
     lineNumbers: 'off',
     wordWrap: 'on',
     showVimStatusBar: false,
+    scrollbarStatus: 'hidden',
     // Add required props
     onChange: () => { },
     mode: 'default',

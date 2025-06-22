@@ -109,6 +109,7 @@ Editor.propTypes = {
   userType: PropTypes.string.isRequired,
   userId: PropTypes.number.isRequired,
   showVimStatusBar: PropTypes.bool,
+  scrollbarStatus: PropTypes.string,
 };
 
 Editor.defaultProps = {
@@ -119,6 +120,7 @@ Editor.defaultProps = {
   editable: false,
   loading: false,
   showVimStatusBar: true,
+  scrollbarStatus: 'visible',
 };
 
 export default memo(Editor);
