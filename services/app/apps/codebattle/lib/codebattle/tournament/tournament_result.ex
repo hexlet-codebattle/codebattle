@@ -342,8 +342,8 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         where: r.round_position == ^round_position,
         group_by: [r.user_id],
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
+        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]]]
       )
 
     query
