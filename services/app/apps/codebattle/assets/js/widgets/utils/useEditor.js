@@ -226,6 +226,16 @@ const useEditor = props => {
       return false;
     });
 
+    currentMonaco.editor.defineTheme('my-theme', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#000000',
+      },
+    });
+    currentMonaco.editor.setTheme('my-theme');
+
     // Prevent the DOM-level paste event
     const domNode = currentEditor.getDomNode();
     domNode.addEventListener(

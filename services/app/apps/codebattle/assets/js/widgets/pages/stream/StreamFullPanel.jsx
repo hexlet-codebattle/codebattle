@@ -21,38 +21,40 @@ function StreamFullPanel({
   const editorLeftParams = {
     editable: false,
     syntax: leftEditor?.currentLangSlug,
-    theme: editorThemes.dark,
+    theme: editorThemes.custom,
     mute: true,
     loading: false,
     value: leftEditor?.text || '',
     fontSize: codeFontSize,
     lineNumbers: false,
     wordWrap: 'on',
+    showVimStatusBar: false,
     // Add required props
-    onChange: () => {},
+    onChange: () => { },
     mode: 'default',
     roomMode: 'spectator',
-    checkResult: () => {},
+    checkResult: () => { },
     userType: 'spectator',
-    userId: 0,
+    userId: leftEditor?.playerId,
   };
   const editorRightParams = {
     editable: false,
     syntax: rightEditor?.currentLangSlug,
-    theme: editorThemes.dark,
+    theme: editorThemes.custom,
     mute: true,
     loading: false,
     value: rightEditor?.text || '',
     fontSize: codeFontSize,
     lineNumbers: false,
     wordWrap: 'on',
+    showVimStatusBar: false,
     // Add required props
-    onChange: () => {},
+    onChange: () => { },
     mode: 'default',
     roomMode: 'spectator',
-    checkResult: () => {},
+    checkResult: () => { },
     userType: 'spectator',
-    userId: 0,
+    userId: rightEditor?.playerId,
   };
 
   return (

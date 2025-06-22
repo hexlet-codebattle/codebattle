@@ -2505,15 +2505,32 @@ a:hover {
 
 .cb-stream-tasks-stats {
   background-color: #FAFF0F;
-  padding: 20px 16px;
+  padding: 10px 16px;
   border-radius: 25px;
+
+  font-weight: 900;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
 }
 
 .cb-stream-output-title {
   background-color: #FAFF0F;
 
-  padding: 16px 20px;
+  padding: 10px 20px;
   border-radius: 25px;
+
+  width: 35%;
+  min-width: 35%;
+
+  font-weight: 700;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
 }
 
 .cb-stream-editor-panel {
@@ -2535,6 +2552,10 @@ a:hover {
 .cb-stream-name {
   width: 118px;
   color: #FAFF0F;
+
+  .winner & {
+    color: #7642E8;
+  }
 }
 
 .cb-stream-output {
@@ -2583,29 +2604,66 @@ a:hover {
 .cb-stream-widget-text {
   font-family: 'External';
   font-weight: 700;
+
+  &.italic {
+    font-style: italic;
+  }
 }
+
 
 .cb-stream-widget-header-img-left {
   background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/back-stripes.svg);
-  fill: #FAFF0F;
+
+  .winner & {
+    background-image: url(../static/images/stream/back-stripes-winner.svg);
+  }
 }
 
 .cb-stream-widget-header-img-right {
   background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/stripes.svg);
-  fill: #FAFF0F;
+
+  .winner & {
+    background-image: url(../static/images/stream/stripes-winner.svg);
+  }
 }
 
 .cb-stream-widget-header-title {
   width: 60%;
+  max-width: 60%;
+  min-width: 60%;
+
   background-color: #FAFF0F;
+  font-weight: 900;
+
+  .winner & {
+    background-color: #7642E8;
+  }
 }
 
 .cb-stream-player-number {
   background-color: #FAFF0F;
-  padding: 20px 16px;
-  border-radius: 25px;
+  padding: 10px 16px;
+  border: 3px solid outline;
+  border-radius: 50px;
+
+  font-weight: 900;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
+}
+
+.cb-stream-number-text {
+  margin-left: -6px;
+}
+
+.cb-stream-player-clan {
+  border: 3px solid black;
+  border-radius: 50%;
+  margin-left: -10px;
 }

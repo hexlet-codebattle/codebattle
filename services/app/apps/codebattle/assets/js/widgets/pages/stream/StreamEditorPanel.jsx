@@ -16,25 +16,26 @@ function StreamEditorPanel({
   const editorParams = {
     editable: false,
     syntax: editor?.currentLangSlug,
-    theme: editorThemes.dark,
+    theme: editorThemes.custom,
     mute: true,
     loading: false,
     value: editor?.text || '',
     fontSize,
     lineNumbers: 'off',
     wordWrap: 'on',
+    showVimStatusBar: false,
     // Add required props
-    onChange: () => {},
+    onChange: () => { },
     mode: 'default',
     roomMode: 'spectator',
-    checkResult: () => {},
+    checkResult: () => { },
     userType: 'spectator',
-    userId: 0,
+    userId: editor?.playerId,
   };
 
   return (
     <div
-      className={`cb-stream-editor-panel p-4 cb-stream-editor-${orientation}`}
+      className={`cb-stream-editor-panel p-2 mt-4 cb-stream-editor-${orientation}`}
       style={{ width, maxWidth: width, minWidth: width }}
     >
       <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100">

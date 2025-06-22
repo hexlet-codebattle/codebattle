@@ -31,8 +31,12 @@ function StreamWidget({
   const orientation = searchParams.has('orientation') ? searchParams.get('orientation') : orientations.NONE;
 
   const fontSize = searchParams.has('fontSize') ? searchParams.get('fontSize') : 16;
+  const outputDataFontSize = searchParams.has('outputDataFontSize') ? searchParams.get('outputDataFontSize') : fontSize;
   const codeFontSize = searchParams.has('codeFontSize') ? searchParams.get('codeFontSize') : 16;
   const headerFontSize = searchParams.has('headerFontSize') ? searchParams.get('headerFontSize') : 16;
+  const testBarFontSize = searchParams.has('testBarFontSize') ? searchParams.get('testBarFontSize') : 16;
+  const nameLineHeight = searchParams.has('nameLineHeight') ? searchParams.get('nameLineHeight') : 10;
+  const imgSize = searchParams.has('imgSize') ? searchParams.get('imgSize') : 10;
   const widthInfoPanelPercentage = searchParams.has('widthInfoPanel') ? searchParams.get('widthInfoPanel') : 40;
   const widthEditorPanelPercentage = searchParams.has('widthEditorPanel') ? searchParams.get('widthEditorPanel') : 60;
 
@@ -77,10 +81,10 @@ function StreamWidget({
   return (
     <div className="vh-100 overflow-hidden cb-stream-widget">
       <div className="d-flex flex-column w-100 h-100">
-        <div className="cb-stream-widget-header cb-stream-widget-text d-flex" style={{ fontSize: `${headerFontSize}px` }}>
-          <div className="cb-stream-widget-header-img-left"/>
-          <div className="cb-stream-widget-header-title text-center p-2 ">Баттл Вузов</div>
-          <div className="cb-stream-widget-header-img-right"/>
+        <div className="cb-stream-widget-header cb-stream-widget-text italic d-flex" style={{ fontSize: `${headerFontSize}px` }}>
+          <div className="cb-stream-widget-header-img-left" />
+          <div className="cb-stream-widget-header-title text-center p-1">Баттл Вузов</div>
+          <div className="cb-stream-widget-header-img-right" />
         </div>
         <div className="flex-grow-1 d-flex flex-column h-100">
           {orientations.NONE === orientation && (
@@ -89,6 +93,7 @@ function StreamWidget({
               roomMachineState={roomMachineState}
               fontSize={fontSize}
               codeFontSize={codeFontSize}
+              testBarFornSize={testBarFontSize}
             />
           )}
           <div className="d-flex w-100 flex-grow-1 h-100" style={{ fontSize: `${fontSize}px` }}>
@@ -98,16 +103,19 @@ function StreamWidget({
                   game={game}
                   orientation={orientation}
                   roomMachineState={roomMachineState}
+                  nameLineHeight={nameLineHeight}
                   fontSize={fontSize}
+                  outputDataFontSize={outputDataFontSize}
+                  imgStyle={{ width: `${imgSize}px`, height: `${imgSize}px` }}
                   width={`${widthInfoPanelPercentage}%`}
                 />
                 <StreamEditorPanel
                   orientation={orientation}
                   roomMachineState={roomMachineState}
                   fontSize={codeFontSize}
+                  testBarFornSize={testBarFontSize}
                   width={`${widthEditorPanelPercentage}%`}
                 />
-
               </>
             )}
             {orientations.RIGHT === orientation && (
@@ -116,13 +124,17 @@ function StreamWidget({
                   orientation={orientation}
                   roomMachineState={roomMachineState}
                   fontSize={codeFontSize}
+                  testBarFornSize={testBarFontSize}
                   width={`${widthEditorPanelPercentage}%`}
                 />
                 <StreamTaskInfoPanel
                   game={game}
                   orientation={orientation}
                   roomMachineState={roomMachineState}
+                  nameLineHeight={nameLineHeight}
                   fontSize={fontSize}
+                  outputDataFontSize={outputDataFontSize}
+                  imgStyle={{ width: `${imgSize}px`, height: `${imgSize}px` }}
                   width={`${widthInfoPanelPercentage}%`}
                 />
               </>

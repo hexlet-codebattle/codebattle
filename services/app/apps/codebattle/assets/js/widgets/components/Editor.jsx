@@ -12,8 +12,8 @@ import EditorLoading from './EditorLoading';
 
 function Editor(props) {
   const {
- value, syntax, onChange, theme, loading = false, mode,
-} = props;
+    value, syntax, onChange, theme, loading = false, mode, showVimStatusBar,
+  } = props;
 
   // Map your custom language key to an actual Monaco recognized language
   const mappedSyntax = languages[syntax];
@@ -61,6 +61,12 @@ function Editor(props) {
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [mode, editorRef.current]);
 
+  const vimStatusBarStyle = showVimStatusBar ? {
+    padding: '4px 8px',
+    fontFamily: 'monospace',
+    borderTop: '1px solid #eaeaea',
+  } : { display: 'none' };
+
   return (
     <>
       <MonacoEditor
@@ -79,11 +85,7 @@ function Editor(props) {
       {/* This is for displaying normal/insert mode status in Vim */}
       <div
         ref={vimStatusRef}
-        style={{
-          padding: '4px 8px',
-          fontFamily: 'monospace',
-          borderTop: '1px solid #eaeaea',
-        }}
+        style={vimStatusBarStyle}
       />
 
       <EditorLoading loading={loading} />
@@ -106,6 +108,7 @@ Editor.propTypes = {
   checkResult: PropTypes.func.isRequired,
   userType: PropTypes.string.isRequired,
   userId: PropTypes.number.isRequired,
+  showVimStatusBar: PropTypes.bool,
 };
 
 Editor.defaultProps = {
@@ -115,6 +118,7 @@ Editor.defaultProps = {
   fontSize: 16,
   editable: false,
   loading: false,
+  showVimStatusBar: true,
 };
 
 export default memo(Editor);
