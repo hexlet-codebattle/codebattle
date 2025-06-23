@@ -13,8 +13,8 @@ defmodule Codebattle.Tournament.Top200 do
     #   |> Codebattle.Repo.all()
     #   |> Enum.filter(&(&1.is_bot == false and &1.subscription_type != :admin))
     #   |> Enum.take(199)
-
     # add_players(tournament, %{users: users})
+
     tournament
   end
 
