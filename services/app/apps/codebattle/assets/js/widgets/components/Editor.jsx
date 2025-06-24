@@ -110,6 +110,10 @@ Editor.propTypes = {
   userId: PropTypes.number.isRequired,
   showVimStatusBar: PropTypes.bool,
   scrollbarStatus: PropTypes.string,
+  lineDecorationsWidth: PropTypes.number,
+  lineNumbersMinChars: PropTypes.number,
+  glyphMargin: PropTypes.bool,
+  folding: PropTypes.bool,
 };
 
 Editor.defaultProps = {
@@ -121,6 +125,10 @@ Editor.defaultProps = {
   loading: false,
   showVimStatusBar: true,
   scrollbarStatus: 'visible',
+  lineDecorationsWidth: 0,
+  lineNumbersMinChars: 3,
+  glyphMargin: true,
+  folding: true,
 };
 
 export default memo(Editor);

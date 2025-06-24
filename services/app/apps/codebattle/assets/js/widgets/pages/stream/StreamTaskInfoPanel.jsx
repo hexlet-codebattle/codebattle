@@ -9,8 +9,12 @@ import {
 
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-const renderPlayerId = id => (
-  <span style={{ marginLeft: '-0.2em' }}>{id}</span>
+const renderImg = (_id, imgStyle) => (
+  <img style={imgStyle} src="/assets/images/clans/1.png" alt="И" />
+);
+
+const renderPlayerId = (id, verticalAlign) => (
+  <span style={{ marginLeft: '-0.2em', verticalAlign }}>{id}</span>
 );
 
 function StreamTaskInfoPanel({
@@ -44,7 +48,7 @@ function StreamTaskInfoPanel({
   const id = player?.id || 0;
 
   return (
-    <div className="d-flex cb-stream-widget flex-column justify-content-between px-3" style={{ width, maxWidth: width, minWidth: width }}>
+    <div className="d-flex cb-stream-widget flex-column justify-content-between px-4" style={{ width, maxWidth: width, minWidth: width }}>
       <div className="d-flex pt-4" style={{ fontSize: taskHeaderFontSize }}>
         <div>
           <div
@@ -59,11 +63,11 @@ function StreamTaskInfoPanel({
               className="d-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic"
               style={imgStyle}
             >
-              {renderPlayerId(id)}
+              {renderPlayerId(id, headerVerticalAlign)}
             </div>
             <div className="cb-stream-player-clan h-100 position-relative">
               {/* {player?.clanId && ( */}
-              <img style={imgStyle} src="/assets/images/clans/1.png" alt="И" />
+              {renderImg(id, imgStyle)}
               {/* )} */}
             </div>
           </div>
@@ -73,6 +77,7 @@ function StreamTaskInfoPanel({
         {/* </div> */}
         <div
           className="d-flex flex-column cb-stream-name cb-stream-widget-text"
+          style={{ verticalAlign: headerVerticalAlign }}
         >
           {('Фамилия Имя').split(' ').map(str => (
             <div
@@ -89,7 +94,7 @@ function StreamTaskInfoPanel({
       </div>
       <div className="d-flex flex-column">
         <div className="d-flex flex-column pb-4" style={{ fontSize: outputTitleFontSize }}>
-          <div className="d-flex cb-stream-output mt-2 mb-1">
+          <div className="d-flex cb-stream-output my-2">
             <div
               className="d-flex flex-column cb-stream-output-title"
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
@@ -97,9 +102,9 @@ function StreamTaskInfoPanel({
               <div>Входные</div>
               <div>данные</div>
             </div>
-            <div className="cb-stream-output-data align-content-around" style={{ fontSize: outputDataFontSize }}>{args}</div>
+            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{args}</div>
           </div>
-          <div className="d-flex cb-stream-output mb-1">
+          <div className="d-flex cb-stream-output my-2">
             <div
               className="d-flex flex-column cb-stream-output-title"
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
@@ -107,9 +112,9 @@ function StreamTaskInfoPanel({
               <div>Ожидаемый</div>
               <div>результат</div>
             </div>
-            <div className="cb-stream-output-data align-content-around" style={{ fontSize: outputDataFontSize }}>{expected}</div>
+            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{expected}</div>
           </div>
-          <div className="d-flex cb-stream-output mt-1 mb-2">
+          <div className="d-flex cb-stream-output my-2">
             <div
               className="d-flex flex-column cb-stream-output-title"
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
@@ -117,7 +122,7 @@ function StreamTaskInfoPanel({
               <div>Полученный</div>
               <div>результат</div>
             </div>
-            <div className="cb-stream-output-data align-content-around" style={{ fontSize: outputDataFontSize }}>{result}</div>
+            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{result}</div>
           </div>
         </div>
       </div>

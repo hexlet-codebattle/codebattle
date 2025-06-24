@@ -39,7 +39,7 @@ function StreamEditorPanel({
       className={`cb-stream-editor-panel p-2 mt-4 cb-stream-editor-${orientation}`}
       style={{ width, maxWidth: width, minWidth: width }}
     >
-      <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100">
+      <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100 px-2 pt-2">
         <ExtendedEditor {...editorParams} />
       </div>
     </div>
