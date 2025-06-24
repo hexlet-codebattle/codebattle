@@ -48,6 +48,7 @@ function StreamTaskInfoPanel({
   const result = JSON.stringify(assert?.result || assert?.value);
 
   const id = player?.id || 0;
+  const clanId = player?.clanId;
   const isWinner = output?.status === 'ok';
 
   return (
@@ -92,7 +93,7 @@ function StreamTaskInfoPanel({
                 )
               }
             >
-              {renderImg(id, imgStyle)}
+              {renderImg(clanId, imgStyle)}
             </div>
           </div>
         </div>

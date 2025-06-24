@@ -11,6 +11,7 @@ import useSearchParams from '@/utils/useSearchParams';
 
 import * as machineSelectors from '../../machines/selectors';
 import { connectToStream } from '../../middlewares/Stream';
+import { actions } from '../../slices';
 
 import StreamEditorPanel from './StreamEditorPanel';
 import StreamFullPanel from './StreamFullPanel';
@@ -66,11 +67,16 @@ function StreamWidget({
   const widthInfoPanelPercentage = toPrcStr(searchParams.has('widthInfoPanel') ? searchParams.get('widthInfoPanel') : 40);
   const widthEditorPanelPercentage = toPrcStr(searchParams.has('widthEditorPanel') ? searchParams.get('widthEditorPanel') : 60);
   const outputTitleWidth = toPrcStr(searchParams.has('outputTitleWidth') ? searchParams.get('outputTitleWidth') : 25);
+  const progressGifSize = toPxlStr(searchParams.has('progressGifSize') ? searchParams.get('progressGifSize') : 100);
+  const winGifSize = toPxlStr(searchParams.has('winGifSize') ? searchParams.get('winGifSize') : 100);
 
   const { mainService, waitingRoomService } = useGameRoomMachine({
     mainMachine,
     taskMachine,
     waitingRoomMachine,
+    options: {
+      withoutModals: false,
+    },
   });
 
   const roomMachineState = useMachineStateSelector(
@@ -90,6 +96,7 @@ function StreamWidget({
     const channel = setGameChannel(game.id);
 
     const options = { cancelRedirect: true };
+    dispatch(actions.clearGamePlayers());
     connectToGame(mainService, waitingRoomService, options)(dispatch);
 
     const clearChannel = () => {
@@ -140,6 +147,8 @@ function StreamWidget({
               testBarHeight={testBarHeight}
               testBarWinGifTop={testBarWinGifTop}
               testBarProgressGifTop={testBarProgressGifTop}
+              progressGifSize={progressGifSize}
+              winGifSize={winGifSize}
             />
           )}
           {orientations.LEFT === orientation && (
@@ -168,6 +177,8 @@ function StreamWidget({
                 testBarProgressGifTop={testBarProgressGifTop}
                 width={widthEditorPanelPercentage}
                 taskHeaderFontSize={taskHeaderFontSize}
+                progressGifSize={progressGifSize}
+                winGifSize={winGifSize}
               />
             </div>
           )}
@@ -183,6 +194,8 @@ function StreamWidget({
                 testBarProgressGifTop={testBarProgressGifTop}
                 width={widthEditorPanelPercentage}
                 taskHeaderFontSize={taskHeaderFontSize}
+                progressGifSize={progressGifSize}
+                winGifSize={winGifSize}
               />
               <StreamTaskInfoPanel
                 game={game}
