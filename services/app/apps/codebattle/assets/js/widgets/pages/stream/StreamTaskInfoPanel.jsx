@@ -1,5 +1,6 @@
 import React from 'react';
 
+import cn from 'classnames';
 import upperCase from 'lodash/upperCase';
 import { useSelector } from 'react-redux';
 
@@ -9,8 +10,8 @@ import {
 
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-const renderImg = (_id, imgStyle) => (
-  <img style={imgStyle} src="/assets/images/clans/1.png" alt="И" />
+const renderImg = (id, imgStyle) => (
+  id ? <img style={imgStyle} src={`/assets/images/clans/${id || 1}.png`} alt="И" /> : <></>
 );
 
 const renderPlayerId = (id, verticalAlign) => (
@@ -37,38 +38,61 @@ function StreamTaskInfoPanel({
   const output = useSelector(outputSelector(roomMachineState));
   const player = useSelector(playerSelector);
 
+  const taskAssert = game?.task?.asserts ? game.task.asserts[0] : {};
   const assert = output?.asserts ? output.asserts[0] : {};
 
   const defaultData = '';
 
-  const args = assert?.arguments || defaultData;
-  const expected = assert?.expected || defaultData;
-  const result = assert?.result || assert?.value || defaultData;
+  const args = JSON.stringify(assert?.arguments || taskAssert.arguments || defaultData);
+  const expected = JSON.stringify(assert?.expected || taskAssert.expected || defaultData);
+  const result = JSON.stringify(assert?.result || assert?.value);
 
   const id = player?.id || 0;
+  const isWinner = output?.status === 'ok';
 
   return (
-    <div className="d-flex cb-stream-widget flex-column justify-content-between px-4" style={{ width, maxWidth: width, minWidth: width }}>
+    <div
+      className={cn(
+        'd-flex cb-stream-widget flex-column justify-content-between px-4',
+        { winner: isWinner },
+      )}
+      style={{ width, maxWidth: width, minWidth: width }}
+    >
       <div className="d-flex pt-4" style={{ fontSize: taskHeaderFontSize }}>
         <div>
           <div
-            className="cb-stream-tasks-stats cb-stream-widget-text italic"
+            className={
+              cn(
+                'cb-stream-tasks-stats cb-stream-widget-text italic',
+                { winner: isWinner },
+              )
+            }
           >
-            <span style={{ verticalAlign: headerVerticalAlign }}>3/8 ЗАДАЧ</span>
+            <span style={{ verticalAlign: headerVerticalAlign }}>
+              {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
+            </span>
           </div>
         </div>
         <div>
           <div className="d-flex flex-row align-items-center w-auto h-100 px-3">
             <div
-              className="d-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic"
+              className={cn(
+                'd-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic',
+                { winner: isWinner },
+              )}
               style={imgStyle}
             >
               {renderPlayerId(id, headerVerticalAlign)}
             </div>
-            <div className="cb-stream-player-clan h-100 position-relative">
-              {/* {player?.clanId && ( */}
+            <div
+              className={
+                cn(
+                  'cb-stream-player-clan h-100 position-relative',
+                  { winner: isWinner },
+                )
+              }
+            >
               {renderImg(id, imgStyle)}
-              {/* )} */}
             </div>
           </div>
         </div>
@@ -76,10 +100,15 @@ function StreamTaskInfoPanel({
         {/*   <span>3 / 8 Задача</span> */}
         {/* </div> */}
         <div
-          className="d-flex flex-column cb-stream-name cb-stream-widget-text"
+          className={
+            cn(
+              'd-flex flex-column cb-stream-name cb-stream-widget-text',
+              { winner: isWinner },
+            )
+          }
           style={{ verticalAlign: headerVerticalAlign }}
         >
-          {('Фамилия Имя').split(' ').map(str => (
+          {(player?.name || 'Фамилия Имя').split(' ').map(str => (
             <div
               key={str}
               style={{ lineHeight: nameLineHeight }}
@@ -96,33 +125,42 @@ function StreamTaskInfoPanel({
         <div className="d-flex flex-column pb-4" style={{ fontSize: outputTitleFontSize }}>
           <div className="d-flex cb-stream-output my-2">
             <div
-              className="d-flex flex-column cb-stream-output-title"
+              className={cn(
+                'd-flex flex-column cb-stream-output-title',
+                { winner: isWinner },
+              )}
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
             >
               <div>Входные</div>
               <div>данные</div>
             </div>
-            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{args}</div>
+            <div className="d-flex cb-stream-output-data align-items-center pl-3" style={{ fontSize: outputDataFontSize }}>{args}</div>
           </div>
           <div className="d-flex cb-stream-output my-2">
             <div
-              className="d-flex flex-column cb-stream-output-title"
+              className={cn(
+                'd-flex flex-column cb-stream-output-title',
+                { winner: isWinner },
+              )}
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
             >
               <div>Ожидаемый</div>
               <div>результат</div>
             </div>
-            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{expected}</div>
+            <div className="d-flex cb-stream-output-data align-items-center pl-3" style={{ fontSize: outputDataFontSize }}>{expected}</div>
           </div>
           <div className="d-flex cb-stream-output my-2">
             <div
-              className="d-flex flex-column cb-stream-output-title"
+              className={cn(
+                'd-flex flex-column cb-stream-output-title',
+                { winner: isWinner },
+              )}
               style={{ width: outputTitleWidth, minWidth: outputTitleWidth, maxWidth: outputTitleWidth }}
             >
               <div>Полученный</div>
               <div>результат</div>
             </div>
-            <div className="d-flex cb-stream-output-data align-items-center" style={{ fontSize: outputDataFontSize }}>{result}</div>
+            <div className="d-flex cb-stream-output-data align-items-center pl-3" style={{ fontSize: outputDataFontSize }}>{result}</div>
           </div>
         </div>
       </div>

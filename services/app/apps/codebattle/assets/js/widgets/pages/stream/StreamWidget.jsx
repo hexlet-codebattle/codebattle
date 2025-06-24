@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 
+import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { connectToGame, setGameChannel } from '@/middlewares/Room';
+import { leftEditorSelector, executionOutputSelector, rightEditorSelector } from '@/selectors';
 import useGameRoomMachine from '@/utils/useGameRoomMachine';
 import useMachineStateSelector from '@/utils/useMachineStateSelector';
 import useSearchParams from '@/utils/useSearchParams';
@@ -23,6 +25,19 @@ const orientations = {
 const toPxlStr = number => `${number}px`;
 const toPrcStr = number => `${number}%`;
 
+const useWinnerHeader = (orientation, roomMachineState) => {
+  const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
+
+  const editor = useSelector(editorSelector(roomMachineState));
+  const output = useSelector(executionOutputSelector(editor?.playerId, roomMachineState));
+
+  if (orientation === orientations.NONE) {
+    return false;
+  }
+
+  return output?.status === 'ok';
+};
+
 function StreamWidget({
   mainMachine,
   waitingRoomMachine,
@@ -41,8 +56,11 @@ function StreamWidget({
   const outputDataFontSize = toPxlStr(searchParams.has('outputDataFontSize') ? searchParams.get('outputDataFontSize') : 16);
   const codeFontSize = toPxlStr(searchParams.has('codeFontSize') ? searchParams.get('codeFontSize') : 16);
   const headerFontSize = toPxlStr(searchParams.has('headerFontSize') ? searchParams.get('headerFontSize') : 16);
-  const testBarFontSize = toPxlStr(searchParams.has('testBarFontSize') ? searchParams.get('testBarFontSize') : 16);
-  const testBarHeight = toPrcStr(searchParams.has('testBarHeight') ? searchParams.get('testBarHeight') : 25);
+  const testBarMarginBottom = toPrcStr(searchParams.has('testBarMarginBottom') ? searchParams.get('testBarMarginBottom') : 10);
+  const testBarFontSize = toPxlStr(searchParams.has('testBarFontSize') ? searchParams.get('testBarFontSize') : 40);
+  const testBarHeight = toPrcStr(searchParams.has('testBarHeight') ? searchParams.get('testBarHeight') : 10);
+  const testBarWinGifTop = toPxlStr(searchParams.has('testBarWinGifTop') ? searchParams.get('testBarWinGifTop') : -200);
+  const testBarProgressGifTop = toPxlStr(searchParams.has('testBarProgressGifTop') ? searchParams.get('testBarProgressGifTop') : -100);
   const nameLineHeight = toPxlStr(searchParams.has('nameLineHeight') ? searchParams.get('nameLineHeight') : 10);
   const imgSize = toPxlStr(searchParams.has('imgSize') ? searchParams.get('imgSize') : 10);
   const widthInfoPanelPercentage = toPrcStr(searchParams.has('widthInfoPanel') ? searchParams.get('widthInfoPanel') : 40);
@@ -83,6 +101,8 @@ function StreamWidget({
     return clearChannel;
   }, [game.id, mainService, waitingRoomService, dispatch]);
 
+  const isWinnerHeader = useWinnerHeader(orientation, roomMachineState);
+
   if (!game.id) {
     return <div className="vh-100 overflow-hidden cb-stream-widget" />;
   }
@@ -91,13 +111,17 @@ function StreamWidget({
 
   return (
     <div className="vh-100 overflow-hidden cb-stream-widget">
-      <div className="d-flex flex-column w-100 h-100">
+      <div className={cn(
+        'd-flex flex-column w-100 h-100',
+        { winner: isWinnerHeader },
+      )}
+      >
         <div className="cb-stream-widget-header cb-stream-widget-text italic d-flex" style={{ fontSize: headerFontSize }}>
           <div className={`${headerTitleClassName} text-center p-1`}>
             <span style={{ verticalAlign: headerVerticalAlign }}>Баттл Вузов</span>
           </div>
         </div>
-        <div className="flex-grow-1 d-flex flex-column h-100">
+        <div className="d-flex flex-column h-100">
           {orientations.NONE === orientation && (
             <StreamFullPanel
               game={game}
@@ -111,64 +135,71 @@ function StreamWidget({
               outputTitleWidth={outputTitleWidth}
               headerVerticalAlign={statusVerticalAlign}
               codeFontSize={codeFontSize}
-              testBarFornSize={testBarFontSize}
+              testBarMarginBottom={testBarMarginBottom}
+              testBarFontSize={testBarFontSize}
               testBarHeight={testBarHeight}
+              testBarWinGifTop={testBarWinGifTop}
+              testBarProgressGifTop={testBarProgressGifTop}
             />
           )}
-          <div className="d-flex w-100 flex-grow-1 h-100">
-            {orientations.LEFT === orientation && (
-              <>
-                <StreamTaskInfoPanel
-                  game={game}
-                  orientation={orientation}
-                  roomMachineState={roomMachineState}
-                  nameLineHeight={nameLineHeight}
-                  taskHeaderFontSize={taskHeaderFontSize}
-                  descriptionFontSize={descriptionFontSize}
-                  outputTitleFontSize={outputTitleFontSize}
-                  outputDataFontSize={outputDataFontSize}
-                  headerVerticalAlign={statusVerticalAlign}
-                  outputTitleWidth={outputTitleWidth}
-                  imgStyle={{ width: imgSize, height: imgSize }}
-                  width={widthInfoPanelPercentage}
-                />
-                <StreamEditorPanel
-                  orientation={orientation}
-                  roomMachineState={roomMachineState}
-                  fontSize={codeFontSize}
-                  testBarFornSize={testBarFontSize}
-                  testBarHeight={testBarHeight}
-                  width={widthEditorPanelPercentage}
-                />
-              </>
-            )}
-            {orientations.RIGHT === orientation && (
-              <>
-                <StreamEditorPanel
-                  orientation={orientation}
-                  roomMachineState={roomMachineState}
-                  fontSize={codeFontSize}
-                  testBarFornSize={testBarFontSize}
-                  testBarHeight={testBarHeight}
-                  width={widthEditorPanelPercentage}
-                />
-                <StreamTaskInfoPanel
-                  game={game}
-                  orientation={orientation}
-                  roomMachineState={roomMachineState}
-                  nameLineHeight={nameLineHeight}
-                  taskHeaderFontSize={taskHeaderFontSize}
-                  descriptionFontSize={descriptionFontSize}
-                  outputTitleFontSize={outputTitleFontSize}
-                  outputDataFontSize={outputDataFontSize}
-                  headerVerticalAlign={statusVerticalAlign}
-                  outputTitleWidth={outputTitleWidth}
-                  imgStyle={{ width: imgSize, height: imgSize }}
-                  width={widthInfoPanelPercentage}
-                />
-              </>
-            )}
-          </div>
+          {orientations.LEFT === orientation && (
+            <div className="d-flex w-100 flex-grow-1 h-100">
+              <StreamTaskInfoPanel
+                game={game}
+                orientation={orientation}
+                roomMachineState={roomMachineState}
+                nameLineHeight={nameLineHeight}
+                taskHeaderFontSize={taskHeaderFontSize}
+                descriptionFontSize={descriptionFontSize}
+                outputTitleFontSize={outputTitleFontSize}
+                outputDataFontSize={outputDataFontSize}
+                headerVerticalAlign={statusVerticalAlign}
+                outputTitleWidth={outputTitleWidth}
+                imgStyle={{ width: imgSize, height: imgSize }}
+                width={widthInfoPanelPercentage}
+              />
+              <StreamEditorPanel
+                orientation={orientation}
+                roomMachineState={roomMachineState}
+                fontSize={codeFontSize}
+                testBarFontSize={testBarFontSize}
+                testBarHeight={testBarHeight}
+                testBarWinGifTop={testBarWinGifTop}
+                testBarProgressGifTop={testBarProgressGifTop}
+                width={widthEditorPanelPercentage}
+                taskHeaderFontSize={taskHeaderFontSize}
+              />
+            </div>
+          )}
+          {orientations.RIGHT === orientation && (
+            <div className="d-flex w-100 flex-grow-1 h-100">
+              <StreamEditorPanel
+                orientation={orientation}
+                roomMachineState={roomMachineState}
+                fontSize={codeFontSize}
+                testBarFontSize={testBarFontSize}
+                testBarHeight={testBarHeight}
+                testBarWinGifTop={testBarWinGifTop}
+                testBarProgressGifTop={testBarProgressGifTop}
+                width={widthEditorPanelPercentage}
+                taskHeaderFontSize={taskHeaderFontSize}
+              />
+              <StreamTaskInfoPanel
+                game={game}
+                orientation={orientation}
+                roomMachineState={roomMachineState}
+                nameLineHeight={nameLineHeight}
+                taskHeaderFontSize={taskHeaderFontSize}
+                descriptionFontSize={descriptionFontSize}
+                outputTitleFontSize={outputTitleFontSize}
+                outputDataFontSize={outputDataFontSize}
+                headerVerticalAlign={statusVerticalAlign}
+                outputTitleWidth={outputTitleWidth}
+                imgStyle={{ width: imgSize, height: imgSize }}
+                width={widthInfoPanelPercentage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

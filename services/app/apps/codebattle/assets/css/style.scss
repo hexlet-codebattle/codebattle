@@ -2546,6 +2546,7 @@ a:hover {
   .winner & {
     color: white;
     background-color: #7642E8;
+    border-color: #7642E8;
   }
 }
 
@@ -2697,6 +2698,31 @@ a:hover {
   height: 10%;
   width: 100%;
   background-color: #FAFF0F;
-  bottom: 34%;
-  margin-left: -10px;
+  bottom: 0%;
+
+  .winner & {
+    background-color: #7642E8;
+  }
+}
+
+
+.inverted-bar::before,
+.inverted-bar::after {
+  /* Двойник! */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.inverted-bar::before {
+  /* Светлый оттенок текста */
+  mix-blend-mode: screen;
+  /* для светлых фонов */
+}
+
+.inverted-bar::after {
+  /* Темный оттенок текста */
+  mix-blend-mode: difference;
+  /* для темных фонов */
 }

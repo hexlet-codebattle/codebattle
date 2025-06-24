@@ -1,18 +1,28 @@
 import React from 'react';
 
+import cn from 'classnames';
 import { useSelector } from 'react-redux';
 
-import { leftEditorSelector, rightEditorSelector } from '@/selectors';
+import { executionOutputSelector, leftEditorSelector, rightEditorSelector } from '@/selectors';
 
 import ExtendedEditor from '../../components/Editor';
 import editorThemes from '../../config/editorThemes';
 
 function StreamEditorPanel({
-  orientation, roomMachineState, fontSize, width = '60%',
+  orientation,
+  roomMachineState,
+  fontSize,
+  width = '60%',
+  taskHeaderFontSize,
+  testBarHeight,
+  testBarWinGifTop,
+  testBarProgressGifTop,
 }) {
   const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
 
   const editor = useSelector(editorSelector(roomMachineState));
+  const output = useSelector(executionOutputSelector(editor?.playerId, roomMachineState));
+
   const editorParams = {
     editable: false,
     syntax: editor?.currentLangSlug,
@@ -34,14 +44,40 @@ function StreamEditorPanel({
     userId: editor?.playerId,
   };
 
+  const isWinner = output?.status === 'ok';
+
   return (
     <div
-      className={`cb-stream-editor-panel p-2 mt-4 cb-stream-editor-${orientation}`}
+      className={cn(
+        `position-relative cb-stream-editor-panel p-2 mt-4 cb-stream-editor-${orientation}`,
+        { winner: isWinner },
+      )}
       style={{ width, maxWidth: width, minWidth: width }}
     >
+
       <div className="d-flex flex-column flex-grow-1 position-relative cb-editor-height h-100 px-2 pt-2">
         <ExtendedEditor {...editorParams} />
       </div>
+      {output && (
+        <div style={{ marginLeft: '-10px', height: testBarHeight }} className="d-flex cb-stream-full-solution-bar position-absolute">
+          <div className="d-flex w-100">
+            <div className="d-flex w-100 justify-content-end">
+              <div
+                style={{ fontSize: taskHeaderFontSize }}
+                className="d-flex align-items-center cb-stream-widget-text italic mr-2"
+              >
+                {`${Math.round(output.successCount / output.assertsCount)}/100`}
+              </div>
+            </div>
+            <img
+              alt="И"
+              src={isWinner ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
+              className="position-absolute"
+              style={{ top: (isWinner ? testBarWinGifTop : testBarProgressGifTop) }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

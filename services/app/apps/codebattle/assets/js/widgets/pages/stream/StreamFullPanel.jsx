@@ -1,5 +1,6 @@
 import React from 'react';
 
+import cn from 'classnames';
 import upperCase from 'lodash/upperCase';
 import { useSelector } from 'react-redux';
 
@@ -19,8 +20,8 @@ const renderPlayerId = (id, verticalAlign) => (
   <span style={{ marginLeft: '-0.2em', verticalAlign }}>{id}</span>
 );
 
-const renderImg = (_id, imgStyle) => (
-  <img style={imgStyle} src="/assets/images/clans/1.png" alt="И" />
+const renderImg = (id, imgStyle) => (
+  id ? <img style={imgStyle} src={`/assets/images/clans/${id || 1}.png`} alt="И" /> : <></>
 );
 
 function StreamFullPanel({
@@ -34,6 +35,11 @@ function StreamFullPanel({
   outputDataFontSize,
   nameLineHeight,
   headerVerticalAlign,
+  testBarMarginBottom,
+  testBarFontSize,
+  testBarHeight,
+  testBarWinGifTop,
+  testBarProgressGifTop,
 }) {
   const leftEditor = useSelector(leftEditorSelector(roomMachineState));
   const rightEditor = useSelector(rightEditorSelector(roomMachineState));
@@ -95,14 +101,17 @@ function StreamFullPanel({
   const args = assert ? JSON.stringify(assert.arguments) : '';
   const expected = assert ? JSON.stringify(assert.expected) : '';
 
-  console.log(leftOutput, rightOutput);
+  const isWinnerLeft = leftOutput?.status === 'ok';
+  const isWinnerRight = rightOutput?.status === 'ok';
 
   return (
     <div className="d-flexflex-column w-100 h-100 cb-stream-full-info">
       <div className="d-flex w-100 justify-content-between py-3 px-4" style={{ height: '25%', minHeight: '25%', maxHeight: '25%' }}>
         <div>
           <div className="cb-stream-tasks-stats cb-stream-full-task-stats cb-stream-widget-text italic">
-            <span style={{ verticalAlign: headerVerticalAlign, fontSize: taskHeaderFontSize }}>3/8 Задача</span>
+            <span style={{ verticalAlign: headerVerticalAlign, fontSize: taskHeaderFontSize }}>
+              {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
+            </span>
           </div>
         </div>
         <div style={{ fontSize: descriptionFontSize }} className="cb-stream-task-description h-100 w-100 px-4">
@@ -114,7 +123,7 @@ function StreamFullPanel({
               <span>Входные</span>
               <span>данные</span>
             </div>
-            <div className="d-flex align-items-center pl-2 cb-stream-output-data" style={{ fontSize: outputDataFontSize }}>
+            <div className="d-flex align-items-center pl-3 cb-stream-output-data" style={{ fontSize: outputDataFontSize }}>
               {args}
             </div>
           </div>
@@ -123,31 +132,46 @@ function StreamFullPanel({
               <span>Ожидаемые</span>
               <span>данные</span>
             </div>
-            <div className="d-flex align-items-center pl-2 cb-stream-output-data" style={{ fontSize: outputDataFontSize }}>
+            <div className="d-flex align-items-center pl-3 cb-stream-output-data" style={{ fontSize: outputDataFontSize }}>
               {expected}
             </div>
           </div>
         </div>
       </div>
-      <div className="d-flex w-100 h-100 cb-stream-full-editors">
-        <div className="cb-stream-full-editor position-relative editor-left p-2" style={{ width: '35%' }}>
+      <div className="d-flex w-100 cb-stream-full-editors" style={{ height: '75%', minHeight: '75%', maxHeight: '75%' }}>
+        <div
+          className={
+            cn(
+              'cb-stream-full-editor position-relative editor-left p-2',
+              { winner: isWinnerLeft },
+            )
+          }
+          style={{ width: '35%' }}
+        >
           <div className="d-flex align-items-center p-2" style={{ fontSize: taskHeaderFontSize }}>
             <div
-              className="d-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic"
+              className={
+                cn(
+                  'd-flex position-relative align-items-center justify-content-center',
+                  'cb-stream-player-number cb-stream-widget-text italic',
+                )
+              }
               style={imgStyle}
             >
               {renderPlayerId(leftEditor?.playerId, headerVerticalAlign)}
             </div>
             <div className="cb-stream-player-clan h-100 position-relative mr-3">
               {/* {player?.clanId && ( */}
-              {renderImg(leftPlayer?.clanId, imgStyle)}
+              {renderImg(leftPlayer?.clanId, imgStyle, isWinnerLeft)}
               {/* )} */}
             </div>
             <div
-              className="d-flex flex-column cb-stream-name cb-stream-widget-text"
+              className={cn(
+                'd-flex flex-column cb-stream-name cb-stream-widget-text',
+              )}
               style={{ verticalAlign: headerVerticalAlign }}
             >
-              {('Фамилия Имя').split(' ').map(str => (
+              {(leftPlayer?.name || 'Фамилия Имя').split(' ').map(str => (
                 <div
                   key={str}
                   style={{ lineHeight: nameLineHeight }}
@@ -161,38 +185,63 @@ function StreamFullPanel({
             <ExtendedEditor {...editorLeftParams} />
           </div>
           {leftOutput && (
-            <div style={{ marginRight: '-10px' }} className="d-flex cb-stream-full-solution-bar position-absolute">
-              <div className="d-flex w-100 justify-content-between">
-                <div />
-                <div
-                  style={{ fontSize: taskHeaderFontSize }}
-                  className="d-flex align-items-center cb-stream-widget-text italic mr-2"
-                >
-                  {`${leftOutput.successCount}/${leftOutput.assertsCount || 100}`}
+            <div
+              style={{ bottom: '12%', marginLeft: '-0.3em', height: testBarHeight }}
+              className={cn('d-flex cb-stream-full-solution-bar position-absolute')}
+            >
+              <div className="d-flex w-100 position-relative">
+                <div className="d-flex w-100 justify-content-end">
+                  <div
+                    style={{ fontSize: testBarFontSize }}
+                    className="d-flex align-items-center cb-stream-widget-text italic mr-2 inverted-bar"
+                  >
+                    {`${Math.round((leftOutput.successCount || 0) / (leftOutput.assertsCount / 1))}/100`}
+                  </div>
                 </div>
+                <img
+                  alt="И"
+                  src={isWinnerLeft ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
+                  className="position-absolute"
+                  style={{ top: (isWinnerLeft ? testBarWinGifTop : testBarProgressGifTop), left: '-30px' }}
+                />
               </div>
             </div>
           )}
         </div>
         <div className="px-2" style={{ width: '30%' }} />
-        <div className="cb-stream-full-editor position-relative editor-right p-2" style={{ width: '35%' }}>
+        <div
+          className={cn(
+            'cb-stream-full-editor position-relative editor-right p-2',
+            { winner: isWinnerRight },
+          )}
+          style={{ width: '35%' }}
+        >
           <div className="d-flex align-items-center p-2" style={{ fontSize: taskHeaderFontSize }}>
             <div
-              className="d-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic"
+              className={
+                cn(
+                  'd-flex position-relative align-items-center justify-content-center',
+                  'cb-stream-player-number cb-stream-widget-text italic',
+                )
+              }
               style={imgStyle}
             >
               {renderPlayerId(rightEditor?.playerId, headerVerticalAlign)}
             </div>
             <div className="cb-stream-player-clan h-100 position-relative mr-3">
               {/* {player?.clanId && ( */}
-              {renderImg(rightPlayer?.clanId, imgStyle)}
+              {renderImg(rightPlayer?.clanId, imgStyle, isWinnerRight)}
               {/* )} */}
             </div>
             <div
-              className="d-flex flex-column cb-stream-name cb-stream-widget-text"
+              className={
+                cn(
+                  'd-flex flex-column cb-stream-name cb-stream-widget-text',
+                )
+              }
               style={{ verticalAlign: headerVerticalAlign }}
             >
-              {('Фамилия Имя').split(' ').map(str => (
+              {(rightPlayer?.name || 'Фамилия Имя').split(' ').map(str => (
                 <div
                   key={str}
                   style={{ lineHeight: nameLineHeight }}
@@ -206,15 +255,25 @@ function StreamFullPanel({
             <ExtendedEditor {...editorRightParams} />
           </div>
           {rightOutput && (
-            <div style={{ marginLeft: '-10px' }} className="d-flex cb-stream-full-solution-bar position-absolute">
-              <div className="d-flex w-100 justify-content-between">
-                <div />
-                <div
-                  style={{ fontSize: taskHeaderFontSize }}
-                  className="d-flex align-items-center cb-stream-widget-text italic mr-2"
-                >
-                  {`${rightOutput.successCount}/${rightOutput.assertsCount || 100}`}
+            <div
+              style={{ bottom: '12%', marginLeft: '-0.7em', height: testBarHeight }}
+              className={cn('d-flex cb-stream-full-solution-bar position-absolute')}
+            >
+              <div className="d-flex w-100 position-relative">
+                <div className="d-flex w-100 justify-content-end">
+                  <div
+                    style={{ fontSize: testBarFontSize }}
+                    className="d-flex align-items-center cb-stream-widget-text italic inverted-bar mr-2"
+                  >
+                    {`${Math.round((rightOutput.successCount || 0) / (rightOutput.assertsCount || 1))}/100`}
+                  </div>
                 </div>
+                <img
+                  alt="И"
+                  src={isWinnerRight ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
+                  className="position-absolute"
+                  style={{ top: (isWinnerRight ? testBarWinGifTop : testBarProgressGifTop), left: '-30px' }}
+                />
               </div>
             </div>
           )}
