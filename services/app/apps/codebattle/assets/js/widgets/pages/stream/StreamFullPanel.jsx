@@ -186,7 +186,7 @@ function StreamFullPanel({
           </div>
           {leftOutput && (
             <div
-              style={{ bottom: '12%', marginLeft: '-0.3em', height: testBarHeight }}
+              style={{ bottom: testBarMarginBottom, marginLeft: '-0.3em', height: testBarHeight }}
               className={cn('d-flex cb-stream-full-solution-bar position-absolute')}
             >
               <div className="d-flex w-100 position-relative">
@@ -256,7 +256,7 @@ function StreamFullPanel({
           </div>
           {rightOutput && (
             <div
-              style={{ bottom: '12%', marginLeft: '-0.7em', height: testBarHeight }}
+              style={{ bottom: testBarMarginBottom, marginLeft: '-0.7em', height: testBarHeight }}
               className={cn('d-flex cb-stream-full-solution-bar position-absolute')}
             >
               <div className="d-flex w-100 position-relative">
