@@ -117,7 +117,15 @@ function StreamWidget({
   const headerTitleClassName = orientation === orientations.NONE ? 'cb-stream-full-widget-header-title' : 'cb-stream-widget-header-title';
 
   return (
-    <div className="vh-100 overflow-hidden cb-stream-widget">
+    <div className={cn(
+      'vh-100 overflow-hidden cb-stream-widget',
+      {
+        'cb-stream-full-bg': orientation === orientations.NONE,
+        'cb-stream-left-bg': orientation === orientations.LEFT,
+        'cb-stream-right-bg': orientation === orientations.RIGHT,
+      },
+    )}
+    >
       <div className={cn(
         'd-flex flex-column w-100 h-100',
         { winner: isWinnerHeader },
@@ -140,7 +148,7 @@ function StreamWidget({
               outputTitleFontSize={outputTitleFontSize}
               outputDataFontSize={outputDataFontSize}
               outputTitleWidth={outputTitleWidth}
-              headerVerticalAlign={statusVerticalAlign}
+              statusVerticalAlign={statusVerticalAlign}
               codeFontSize={codeFontSize}
               testBarMarginBottom={testBarMarginBottom}
               testBarFontSize={testBarFontSize}

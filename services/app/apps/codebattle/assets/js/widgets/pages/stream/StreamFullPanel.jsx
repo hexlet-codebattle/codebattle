@@ -16,12 +16,16 @@ import {
 import editorThemes from '../../config/editorThemes';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
+const getUrl = (id, isWinner) => (
+  isWinner ? `/${id}-win.png` : `/${id}.png`
+);
+
 const renderPlayerId = (id, verticalAlign) => (
   <span style={{ marginLeft: '-0.2em', verticalAlign }}>{id}</span>
 );
 
-const renderImg = (id, imgStyle) => (
-  id ? <img style={imgStyle} src={`/assets/images/clans/${id || 1}.png`} alt="И" /> : <></>
+const renderImg = (id, imgStyle, isWinner = false) => (
+  id ? <img style={imgStyle} src={`/assets/images/clans/${getUrl(id || 1, isWinner)}`} alt="И" /> : <></>
 );
 
 function StreamFullPanel({
@@ -33,8 +37,9 @@ function StreamFullPanel({
   descriptionFontSize,
   outputTitleFontSize,
   outputDataFontSize,
+  outputTitleWidth,
   nameLineHeight,
-  headerVerticalAlign,
+  statusVerticalAlign,
   testBarMarginBottom,
   testBarFontSize,
   testBarHeight,
@@ -110,8 +115,8 @@ function StreamFullPanel({
     <div className="d-flexflex-column w-100 h-100 cb-stream-full-info">
       <div className="d-flex w-100 justify-content-between py-3 px-4" style={{ height: '25%', minHeight: '25%', maxHeight: '25%' }}>
         <div>
-          <div className="cb-stream-tasks-stats cb-stream-full-task-stats cb-stream-widget-text italic">
-            <span style={{ verticalAlign: headerVerticalAlign, fontSize: taskHeaderFontSize }}>
+          <div className="cb-stream-tasks-stats cb-stream-full-task-stats cb-stream-widget-text">
+            <span style={{ verticalAlign: statusVerticalAlign, fontSize: taskHeaderFontSize }}>
               {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
             </span>
           </div>
@@ -121,7 +126,7 @@ function StreamFullPanel({
         </div>
         <div className="d-flex flex-column pb-4 pl-3" style={{ width: '35%', minWidth: '35%', maxWidth: '35%' }}>
           <div className="d-flex cb-stream-full-output mt-2 mb-1">
-            <div className="d-flex flex-column cb-stream-output-title" style={{ width: '33%', fontSize: outputTitleFontSize }}>
+            <div className="d-flex flex-column cb-stream-output-title" style={{ width: outputTitleWidth, fontSize: outputTitleFontSize }}>
               <span>Входные</span>
               <span>данные</span>
             </div>
@@ -130,7 +135,7 @@ function StreamFullPanel({
             </div>
           </div>
           <div className="d-flex cb-stream-full-output mt-2 mb-1">
-            <div className="d-flex flex-column cb-stream-output-title" style={{ width: '33%', fontSize: outputTitleFontSize }}>
+            <div className="d-flex flex-column cb-stream-output-title" style={{ width: outputTitleWidth, fontSize: outputTitleFontSize }}>
               <span>Ожидаемые</span>
               <span>данные</span>
             </div>
@@ -155,12 +160,12 @@ function StreamFullPanel({
               className={
                 cn(
                   'd-flex position-relative align-items-center justify-content-center',
-                  'cb-stream-player-number cb-stream-widget-text italic',
+                  'cb-stream-player-number cb-stream-widget-text',
                 )
               }
               style={imgStyle}
             >
-              {renderPlayerId(leftEditor?.playerId, headerVerticalAlign)}
+              {renderPlayerId(leftEditor?.playerId, statusVerticalAlign)}
             </div>
             <div className="cb-stream-player-clan h-100 position-relative mr-3">
               {/* {player?.clanId && ( */}
@@ -171,7 +176,7 @@ function StreamFullPanel({
               className={cn(
                 'd-flex flex-column cb-stream-name cb-stream-widget-text',
               )}
-              style={{ verticalAlign: headerVerticalAlign }}
+              style={{ verticalAlign: statusVerticalAlign }}
             >
               {(leftPlayer?.name || 'Фамилия Имя').split(' ').map(str => (
                 <div
@@ -228,12 +233,12 @@ function StreamFullPanel({
               className={
                 cn(
                   'd-flex position-relative align-items-center justify-content-center',
-                  'cb-stream-player-number cb-stream-widget-text italic',
+                  'cb-stream-player-number cb-stream-widget-text',
                 )
               }
               style={imgStyle}
             >
-              {renderPlayerId(rightEditor?.playerId, headerVerticalAlign)}
+              {renderPlayerId(rightEditor?.playerId, statusVerticalAlign)}
             </div>
             <div className="cb-stream-player-clan h-100 position-relative mr-3">
               {/* {player?.clanId && ( */}
@@ -246,7 +251,7 @@ function StreamFullPanel({
                   'd-flex flex-column cb-stream-name cb-stream-widget-text',
                 )
               }
-              style={{ verticalAlign: headerVerticalAlign }}
+              style={{ verticalAlign: statusVerticalAlign }}
             >
               {(rightPlayer?.name || 'Фамилия Имя').split(' ').map(str => (
                 <div

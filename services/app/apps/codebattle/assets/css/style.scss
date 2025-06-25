@@ -2560,6 +2560,7 @@ a:hover {
 
 .cb-stream-editor-panel {
   border: 4px solid #3C4168;
+  background-color: black;
 }
 
 .cb-stream-editor-left {
@@ -2587,10 +2588,14 @@ a:hover {
   width: 100%;
   border: 3px solid #3C4168;
   border-radius: 25px;
+  background-color: black;
 }
 
 .cb-stream-full-output {
   width: 100%;
+  border: 3px solid black;
+  border-radius: 25px;
+  background-color: black;
 }
 
 .cb-stream-task-description {
@@ -2600,8 +2605,23 @@ a:hover {
 
 .cb-stream-widget {
   font-family: 'ExternalPlaneBold';
-  background-color: #000000;
 }
+
+.cb-stream-left-bg {
+  background-image: url('../static/images/stream/left-bg.png');
+  background-color: rgba(0, 0, 0, 0.96);
+}
+
+.cb-stream-right-bg {
+  background-image: url('../static/images/stream/right-bg.png');
+  background-color: rgba(0, 0, 0, 0.96);
+}
+
+.cb-stream-full-bg {
+  background-image: url('../static/images/stream/full-bg.png');
+  background-color: rgba(0, 0, 0, 0.96);
+}
+
 
 .cb-stream-widget .view-line {
   background-color: #000000;
@@ -2624,6 +2644,7 @@ a:hover {
 }
 
 .cb-stream-full-editor {
+  background-color: black;
   border: 4px solid #3C4168;
 }
 
@@ -2656,6 +2677,7 @@ a:hover {
   width: 100%;
   font-weight: 900;
   background-image: url(../static/images/stream/header.svg);
+  background-color: black;
 
   .winner & {
     background-image: url(../static/images/stream/header-winner.svg);
@@ -2664,6 +2686,7 @@ a:hover {
 
 .cb-stream-full-widget-header-title {
   background-size: cover;
+  background-color: black;
   width: 100%;
   font-weight: 900;
   background-image: url(../static/images/stream/header-mini.svg);

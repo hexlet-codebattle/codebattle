@@ -64,7 +64,7 @@ function StreamTaskInfoPanel({
           <div
             className={
               cn(
-                'cb-stream-tasks-stats cb-stream-widget-text italic',
+                'cb-stream-tasks-stats cb-stream-widget-text',
                 { winner: isWinner },
               )
             }
@@ -78,7 +78,7 @@ function StreamTaskInfoPanel({
           <div className="d-flex flex-row align-items-center w-auto h-100 px-3">
             <div
               className={cn(
-                'd-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text italic',
+                'd-flex position-relative align-items-center justify-content-center cb-stream-player-number cb-stream-widget-text',
                 { winner: isWinner },
               )}
               style={imgStyle}
