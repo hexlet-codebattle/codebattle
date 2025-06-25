@@ -32,7 +32,15 @@ $gold: #daa520;
 
 @font-face {
   font-family: 'ExternalPlane';
-  src: url('https://yastatic.net/s3/home/fonts/ys/4/text-geo-regular.woff') format('truetype');
+  src: url('../static/fonts/ygt.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ExternalPlaneBold';
+  src: url('../static/fonts/ygb.ttf') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -2591,7 +2599,7 @@ a:hover {
 }
 
 .cb-stream-widget {
-  font-family: 'ExternalPlane';
+  font-family: 'ExternalPlaneBold';
   background-color: #000000;
 }
 
@@ -2600,6 +2608,7 @@ a:hover {
 }
 
 .cb-stream-output-data {
+  font-family: 'ExternalPlane';
   color: #B6A4FF;
   display: inline-block;
   overflow: hidden;
