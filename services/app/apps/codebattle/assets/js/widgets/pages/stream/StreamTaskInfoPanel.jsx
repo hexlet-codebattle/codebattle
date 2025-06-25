@@ -18,8 +18,8 @@ const renderImg = (id, imgStyle, isWinner) => (
   id ? <img style={imgStyle} src={getUrl(id, isWinner)} alt="" /> : <></>
 );
 
-const renderPlayerId = (id, verticalAlign) => (
-  <span style={{ marginLeft: '-0.2em', verticalAlign }}>{id}</span>
+const renderPlayerId = (id, verticalAlign, marginBottom) => (
+  <span style={{ marginLeft: '-0.2em', verticalAlign, marginBottom }}>{id}</span>
 );
 
 function StreamTaskInfoPanel({
@@ -35,6 +35,7 @@ function StreamTaskInfoPanel({
   width = '40%',
   outputTitleWidth = '24%',
   headerVerticalAlign = '-1px',
+  numberMarginBottom,
 }) {
   const outputSelector = orientation === 'left' ? leftExecutionOutputSelector : rightExecutionOutputSelector;
   const playerSelector = orientation === 'left' ? firstPlayerSelector : secondPlayerSelector;
@@ -73,7 +74,7 @@ function StreamTaskInfoPanel({
               )
             }
           >
-            <span style={{ verticalAlign: headerVerticalAlign }}>
+            <span style={{ verticalAlign: headerVerticalAlign, numberMargin: numberMarginBottom }}>
               {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
             </span>
           </div>
@@ -87,7 +88,7 @@ function StreamTaskInfoPanel({
               )}
               style={imgStyle}
             >
-              {renderPlayerId(id, headerVerticalAlign)}
+              {renderPlayerId(id, headerVerticalAlign, numberMarginBottom)}
             </div>
             <div
               className={

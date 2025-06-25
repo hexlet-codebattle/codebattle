@@ -20,8 +20,8 @@ const getUrl = (id, isWinner) => (
   isWinner ? `/${id}-win.png` : `/${id}.png`
 );
 
-const renderPlayerId = (id, verticalAlign) => (
-  <span style={{ marginLeft: '-0.2em', verticalAlign }}>{id}</span>
+const renderPlayerId = (id, verticalAlign, marginBottom) => (
+  <span style={{ marginLeft: '-0.2em', verticalAlign, marginBottom }}>{id}</span>
 );
 
 const renderImg = (id, imgStyle, isWinner = false) => (
@@ -45,6 +45,7 @@ function StreamFullPanel({
   testBarHeight,
   testBarWinGifTop,
   testBarProgressGifTop,
+  numberMarginBottom,
   progressGifSize,
   winGifSize,
 }) {
@@ -116,7 +117,7 @@ function StreamFullPanel({
       <div className="d-flex w-100 justify-content-between py-3 px-4" style={{ height: '25%', minHeight: '25%', maxHeight: '25%' }}>
         <div>
           <div className="cb-stream-tasks-stats cb-stream-full-task-stats cb-stream-widget-text">
-            <span style={{ verticalAlign: statusVerticalAlign, fontSize: taskHeaderFontSize }}>
+            <span style={{ verticalAlign: statusVerticalAlign, fontSize: taskHeaderFontSize, marginBottom: numberMarginBottom }}>
               {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
             </span>
           </div>
@@ -165,7 +166,7 @@ function StreamFullPanel({
               }
               style={imgStyle}
             >
-              {renderPlayerId(leftEditor?.playerId, statusVerticalAlign)}
+              {renderPlayerId(leftEditor?.playerId, statusVerticalAlign, numberMarginBottom)}
             </div>
             {leftPlayer?.clanId && (
               <div className="cb-stream-player-clan h-100 position-relative mr-3">
@@ -238,7 +239,7 @@ function StreamFullPanel({
               }
               style={imgStyle}
             >
-              {renderPlayerId(rightEditor?.playerId, statusVerticalAlign)}
+              {renderPlayerId(rightEditor?.playerId, statusVerticalAlign, numberMarginBottom)}
             </div>
             {rightPlayer?.clanId && (
               <div className="cb-stream-player-clan h-100 position-relative mr-3">

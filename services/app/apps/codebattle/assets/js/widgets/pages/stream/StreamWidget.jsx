@@ -25,6 +25,7 @@ const orientations = {
 
 const toPxlStr = number => `${number}px`;
 const toPrcStr = number => `${number}%`;
+const toEmStr = number => `${number}em`;
 
 const useWinnerHeader = (orientation, roomMachineState) => {
   const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
@@ -69,6 +70,7 @@ function StreamWidget({
   const outputTitleWidth = toPrcStr(searchParams.has('outputTitleWidth') ? searchParams.get('outputTitleWidth') : 25);
   const progressGifSize = toPxlStr(searchParams.has('progressGifSize') ? searchParams.get('progressGifSize') : 100);
   const winGifSize = toPxlStr(searchParams.has('winGifSize') ? searchParams.get('winGifSize') : 100);
+  const numberMarginBottom = toEmStr(searchParams.has('numberMarginBottom') ? searchParams.get('numberMarginBottom') : -0.09);
 
   const { mainService, waitingRoomService } = useGameRoomMachine({
     mainMachine,
@@ -157,6 +159,7 @@ function StreamWidget({
               testBarProgressGifTop={testBarProgressGifTop}
               progressGifSize={progressGifSize}
               winGifSize={winGifSize}
+              numberMarginBottom={numberMarginBottom}
             />
           )}
           {orientations.LEFT === orientation && (
@@ -174,6 +177,7 @@ function StreamWidget({
                 outputTitleWidth={outputTitleWidth}
                 imgStyle={{ width: imgSize, height: imgSize }}
                 width={widthInfoPanelPercentage}
+                numberMarginBottom={numberMarginBottom}
               />
               <StreamEditorPanel
                 orientation={orientation}
@@ -218,6 +222,7 @@ function StreamWidget({
                 outputTitleWidth={outputTitleWidth}
                 imgStyle={{ width: imgSize, height: imgSize }}
                 width={widthInfoPanelPercentage}
+                numberMarginBottom={numberMarginBottom}
               />
             </div>
           )}

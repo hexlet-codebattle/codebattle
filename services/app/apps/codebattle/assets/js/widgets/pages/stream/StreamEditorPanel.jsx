@@ -66,7 +66,7 @@ function StreamEditorPanel({
             <div className="d-flex w-100 justify-content-end">
               <div
                 style={{ fontSize: testBarFontSize }}
-                className="d-flex align-items-center cb-stream-widget-text italic mr-2"
+                className="d-flex align-items-center cb-stream-widget-text italic mr-2 pr-2"
               >
                 {`${Math.round(((output.successCount || 0) * 100) / (output.assertsCount || 1))}/100`}
               </div>

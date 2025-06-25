@@ -46,6 +46,14 @@ $gold: #daa520;
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'ExternalPlaneHugh';
+  src: url('../static/fonts/ygh.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 $fa-font-path: '/fonts';
 
 @import 'fonts';
@@ -2541,6 +2549,7 @@ a:hover {
 }
 
 .cb-stream-output-title {
+  font-family: 'ExternalPlaneHugh';
   background-color: #FAFF0F;
 
   margin: -3px;
@@ -2548,8 +2557,6 @@ a:hover {
 
   border: 3px solid #FAFF0F;
   border-radius: 25px;
-
-  font-weight: 700;
 
   .winner & {
     color: white;
@@ -2634,7 +2641,6 @@ a:hover {
 }
 
 .cb-stream-output-data {
-  font-family: 'ExternalPlane';
   color: #B6A4FF;
   display: inline-block;
   overflow: hidden;
@@ -2642,6 +2648,7 @@ a:hover {
   background: rgba(0, 0, 0, 0);
 
   margin-left: 0.7em;
+  font-family: 'ExternalPlaneBold';
 }
 
 .cb-stream-full-video {
