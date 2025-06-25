@@ -1,16 +1,42 @@
 defmodule Codebattle.User.Stats do
   @moduledoc """
-    Find user game statistic
+  Find user game statistics, using cached aggregated stats if available,
+  otherwise falls back to calculating from raw game data.
   """
 
   import Ecto.Query
 
   alias Codebattle.Repo
   alias Codebattle.UserGame
+  alias Codebattle.UserGameStatistics.Context, as: StatsContext
 
   @default_game_stats %{"won" => 0, "lost" => 0, "gave_up" => 0}
 
+  @doc """
+  Returns user statistics map in shape:
+  %{
+    games: %{"won" => int, "lost" => int, "gave_up" => int},
+    all: list of raw aggregated results by lang (only in fallback)
+  }
+  """
   def get_game_stats(user_id) do
+    case StatsContext.get_user_stats(user_id) do
+      {:ok, stats} ->
+        %{
+          games: %{
+            "won" => stats.total_wins,
+            "lost" => stats.total_losses,
+            "gave_up" => Map.get(stats, :total_giveups, 0)
+          },
+          all: []
+        }
+
+      :error ->
+        get_game_stats_fallback(user_id)
+    end
+  end
+
+  defp get_game_stats_fallback(user_id) do
     user_games_stats =
       Repo.all(
         from(ug in UserGame,

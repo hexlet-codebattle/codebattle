@@ -7,6 +7,7 @@ defmodule Codebattle.Repo.Migrations.AddUserGameStatistics do
       add :total_games, :integer, default: 0
       add :total_wins, :integer, default: 0
       add :total_losses, :integer, default: 0
+      add :total_giveups, :integer, default: 0
       add :versus_bot_games, :integer, default: 0
       add :versus_human_games, :integer, default: 0
       timestamps(updated_at: :updated_at)

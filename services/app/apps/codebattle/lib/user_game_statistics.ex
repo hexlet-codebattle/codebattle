@@ -6,6 +6,7 @@ defmodule Codebattle.UserGameStatistics do
     field :total_games, :integer
     field :total_wins, :integer
     field :total_losses, :integer
+    field :total_giveups, :integer, default: 0
     field :versus_bot_games, :integer
     field :versus_human_games, :integer
 
@@ -21,6 +22,7 @@ defmodule Codebattle.UserGameStatistics do
       :total_games,
       :total_wins,
       :total_losses,
+      :total_giveups,
       :versus_bot_games,
       :versus_human_games
     ])
