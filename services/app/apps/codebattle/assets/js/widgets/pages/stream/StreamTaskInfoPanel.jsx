@@ -74,9 +74,11 @@ function StreamTaskInfoPanel({
               )
             }
           >
-            <span style={{ verticalAlign: headerVerticalAlign, numberMargin: numberMarginBottom }}>
-              {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
-            </span>
+            <div style={{ marginBottom: numberMarginBottom }}>
+              <span style={{ verticalAlign: headerVerticalAlign }}>
+                {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
+              </span>
+            </div>
           </div>
         </div>
         <div>

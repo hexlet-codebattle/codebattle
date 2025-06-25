@@ -117,9 +117,11 @@ function StreamFullPanel({
       <div className="d-flex w-100 justify-content-between py-3 px-4" style={{ height: '25%', minHeight: '25%', maxHeight: '25%' }}>
         <div>
           <div className="cb-stream-tasks-stats cb-stream-full-task-stats cb-stream-widget-text">
-            <span style={{ verticalAlign: statusVerticalAlign, fontSize: taskHeaderFontSize, marginBottom: numberMarginBottom }}>
-              {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
-            </span>
+            <div style={{ marginBottom: numberMarginBottom }}>
+              <span style={{ verticalAlign: statusVerticalAlign, fontSize: taskHeaderFontSize }}>
+                {`${(game?.task?.id || 1) % 21}/21 ЗАДАЧ`}
+              </span>
+            </div>
           </div>
         </div>
         <div style={{ fontSize: descriptionFontSize }} className="cb-stream-task-description h-100 w-100 px-4">
