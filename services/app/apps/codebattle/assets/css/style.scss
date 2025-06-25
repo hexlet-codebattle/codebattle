@@ -2629,6 +2629,10 @@ a:hover {
   background-color: #000000;
 }
 
+.cb-stream-widget .decorationsOverviewRuler {
+  display: none !important;
+}
+
 .cb-stream-output-data {
   font-family: 'ExternalPlane';
   color: #B6A4FF;
