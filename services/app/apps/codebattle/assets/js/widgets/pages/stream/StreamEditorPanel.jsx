@@ -17,6 +17,8 @@ function StreamEditorPanel({
   testBarHeight,
   testBarWinGifTop,
   testBarProgressGifTop,
+  progressGifSize,
+  winGifSize,
 }) {
   const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
 
@@ -66,14 +68,18 @@ function StreamEditorPanel({
                 style={{ fontSize: taskHeaderFontSize }}
                 className="d-flex align-items-center cb-stream-widget-text italic mr-2"
               >
-                {`${Math.round(output.successCount / output.assertsCount)}/100`}
+                {`${Math.round(((output.successCount || 0) * 100) / (output.assertsCount || 1))}/100`}
               </div>
             </div>
             <img
               alt="И"
               src={isWinner ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
               className="position-absolute"
-              style={{ top: (isWinner ? testBarWinGifTop : testBarProgressGifTop) }}
+              style={{
+                top: (isWinner ? testBarWinGifTop : testBarProgressGifTop),
+                width: (isWinner ? winGifSize : progressGifSize),
+                height: (isWinner ? winGifSize : progressGifSize),
+              }}
             />
           </div>
         </div>

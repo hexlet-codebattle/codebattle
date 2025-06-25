@@ -40,6 +40,8 @@ function StreamFullPanel({
   testBarHeight,
   testBarWinGifTop,
   testBarProgressGifTop,
+  progressGifSize,
+  winGifSize,
 }) {
   const leftEditor = useSelector(leftEditorSelector(roomMachineState));
   const rightEditor = useSelector(rightEditorSelector(roomMachineState));
@@ -195,14 +197,19 @@ function StreamFullPanel({
                     style={{ fontSize: testBarFontSize }}
                     className="d-flex align-items-center cb-stream-widget-text italic mr-2 inverted-bar"
                   >
-                    {`${Math.round((leftOutput.successCount || 0) / (leftOutput.assertsCount / 1))}/100`}
+                    {`${Math.round(((leftOutput.successCount || 0) * 100) / (leftOutput.assertsCount / 1))}/100`}
                   </div>
                 </div>
                 <img
                   alt="И"
                   src={isWinnerLeft ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
                   className="position-absolute"
-                  style={{ top: (isWinnerLeft ? testBarWinGifTop : testBarProgressGifTop), left: '-30px' }}
+                  style={{
+                    top: (isWinnerLeft ? testBarWinGifTop : testBarProgressGifTop),
+                    left: '-30px',
+                    width: (isWinnerLeft ? winGifSize : progressGifSize),
+                    height: (isWinnerLeft ? winGifSize : progressGifSize),
+                  }}
                 />
               </div>
             </div>
@@ -265,14 +272,19 @@ function StreamFullPanel({
                     style={{ fontSize: testBarFontSize }}
                     className="d-flex align-items-center cb-stream-widget-text italic inverted-bar mr-2"
                   >
-                    {`${Math.round((rightOutput.successCount || 0) / (rightOutput.assertsCount || 1))}/100`}
+                    {`${Math.round(((rightOutput.successCount || 0) * 100) / (rightOutput.assertsCount || 1))}/100`}
                   </div>
                 </div>
                 <img
                   alt="И"
                   src={isWinnerRight ? '/assets/images/stream/win_bv.png' : '/assets/images/stream/progress.png'}
                   className="position-absolute"
-                  style={{ top: (isWinnerRight ? testBarWinGifTop : testBarProgressGifTop), left: '-30px' }}
+                  style={{
+                    top: (isWinnerRight ? testBarWinGifTop : testBarProgressGifTop),
+                    left: '-30px',
+                    width: (isWinnerRight ? winGifSize : progressGifSize),
+                    height: (isWinnerRight ? winGifSize : progressGifSize),
+                  }}
                 />
               </div>
             </div>
