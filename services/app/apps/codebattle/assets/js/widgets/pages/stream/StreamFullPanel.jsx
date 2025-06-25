@@ -25,7 +25,7 @@ const renderPlayerId = (id, verticalAlign) => (
 );
 
 const renderImg = (id, imgStyle, isWinner = false) => (
-  id ? <img style={imgStyle} src={`/assets/images/clans/${getUrl(id || 1, isWinner)}`} alt="И" /> : <></>
+  id ? <img style={imgStyle} src={`/assets/images/clans/${getUrl(id || 1, isWinner)}`} alt="" /> : <></>
 );
 
 function StreamFullPanel({
@@ -167,14 +167,14 @@ function StreamFullPanel({
             >
               {renderPlayerId(leftEditor?.playerId, statusVerticalAlign)}
             </div>
-            <div className="cb-stream-player-clan h-100 position-relative mr-3">
-              {/* {player?.clanId && ( */}
-              {renderImg(leftPlayer?.clanId, imgStyle, isWinnerLeft)}
-              {/* )} */}
-            </div>
+            {leftPlayer?.clanId && (
+              <div className="cb-stream-player-clan h-100 position-relative mr-3">
+                {renderImg(leftPlayer?.clanId, imgStyle, isWinnerLeft)}
+              </div>
+            )}
             <div
               className={cn(
-                'd-flex flex-column cb-stream-name cb-stream-widget-text',
+                'd-flex flex-column cb-stream-name cb-stream-widget-text ml-1',
               )}
               style={{ verticalAlign: statusVerticalAlign }}
             >
@@ -240,15 +240,15 @@ function StreamFullPanel({
             >
               {renderPlayerId(rightEditor?.playerId, statusVerticalAlign)}
             </div>
-            <div className="cb-stream-player-clan h-100 position-relative mr-3">
-              {/* {player?.clanId && ( */}
-              {renderImg(rightPlayer?.clanId, imgStyle, isWinnerRight)}
-              {/* )} */}
-            </div>
+            {rightPlayer?.clanId && (
+              <div className="cb-stream-player-clan h-100 position-relative mr-3">
+                {renderImg(rightPlayer?.clanId, imgStyle, isWinnerRight)}
+              </div>
+            )}
             <div
               className={
                 cn(
-                  'd-flex flex-column cb-stream-name cb-stream-widget-text',
+                  'd-flex flex-column cb-stream-name cb-stream-widget-text ml-1',
                 )
               }
               style={{ verticalAlign: statusVerticalAlign }}

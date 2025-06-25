@@ -2608,12 +2608,14 @@ a:hover {
 }
 
 .cb-stream-left-bg {
-  background-image: url('../static/images/stream/left-bg.png');
+  // background-image: url('../static/images/stream/left-bg.png');
+  background-image: url('../static/images/stream/full-bg.png');
   background-color: rgba(0, 0, 0, 0.96);
 }
 
 .cb-stream-right-bg {
-  background-image: url('../static/images/stream/right-bg.png');
+  // background-image: url('../static/images/stream/right-bg.png');
+  background-image: url('../static/images/stream/full-bg.png');
   background-color: rgba(0, 0, 0, 0.96);
 }
 

@@ -10,8 +10,12 @@ import {
 
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
-const renderImg = (id, imgStyle) => (
-  id ? <img style={imgStyle} src={`/assets/images/clans/${id || 1}.png`} alt="И" /> : <></>
+const getUrl = (id, isWinner) => (
+  isWinner ? `/assets/images/clans/${id}-win.png` : `/assets/images/clans/${id}.png`
+);
+
+const renderImg = (id, imgStyle, isWinner) => (
+  id ? <img style={imgStyle} src={getUrl(id, isWinner)} alt="" /> : <></>
 );
 
 const renderPlayerId = (id, verticalAlign) => (
@@ -93,7 +97,7 @@ function StreamTaskInfoPanel({
                 )
               }
             >
-              {renderImg(clanId, imgStyle)}
+              {renderImg(clanId, imgStyle, isWinner)}
             </div>
           </div>
         </div>
