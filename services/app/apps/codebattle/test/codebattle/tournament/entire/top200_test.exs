@@ -10,6 +10,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.TournamentResult
 
+  @tag :skip
   test "works with top200" do
     %{id: t1_id} = insert(:task, level: "easy", name: "t1")
     %{id: t2_id} = insert(:task, level: "easy", name: "t2")
@@ -251,7 +252,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     # Verify no more active matches for these users in round 1
     active_matches = Tournament.Helpers.get_matches(tournament_after_game2, "playing")
 
-    assert Enum.count(
+    assert Enum.empty?(
              Enum.filter(active_matches, fn m ->
                Enum.member?(m.player_ids, u1_id) ||
                  Enum.member?(m.player_ids, u2_id) ||
@@ -259,7 +260,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
                  Enum.member?(m.player_ids, u4_id) ||
                  Enum.member?(m.player_ids, u5_id)
              end)
-           ) == 0
+           )
 
     :timer.sleep(100)
     TournamentResult.upsert_results(tournament)

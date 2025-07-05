@@ -151,8 +151,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament)
-      when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -477,7 +476,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tasks_data td
     INNER JOIN
         tasks t ON t.id = td.task_id
-    ORDER BY min DESC
+    ORDER BY wins_count DESC
     """
     |> Repo.query!()
     |> map_repo_result()
