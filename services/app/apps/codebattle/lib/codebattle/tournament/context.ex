@@ -104,7 +104,8 @@ defmodule Codebattle.Tournament.Context do
     Repo.all(
       from(t in Tournament,
         order_by: t.starts_at,
-        where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
+        where:
+          t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
       )
     )
   end
@@ -284,20 +285,6 @@ defmodule Codebattle.Tournament.Context do
 
   defp get_meta_from_params(params) do
     case params[:type] do
-      "team" ->
-        team_1_name = Utils.presence(params[:team_1_name]) || "Backend"
-        team_2_name = Utils.presence(params[:team_2_name]) || "Frontend"
-        rounds_to_win = params |> Map.get(:rounds_to_win, "3") |> String.to_integer()
-
-        %{
-          rounds_to_win: rounds_to_win,
-          round_results: %{},
-          teams: %{
-            Tournament.Helpers.to_id(0) => %{id: 0, title: team_1_name, score: 0.0},
-            Tournament.Helpers.to_id(1) => %{id: 1, title: team_2_name, score: 0.0}
-          }
-        }
-
       "show" ->
         rounds_config =
           params
@@ -348,7 +335,6 @@ defmodule Codebattle.Tournament.Context do
   defp get_module(%{type: "individual"}), do: Tournament.Individual
   defp get_module(%{type: "show"}), do: Tournament.Show
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
-  defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(%{type: "versus"}), do: Tournament.Versus
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))

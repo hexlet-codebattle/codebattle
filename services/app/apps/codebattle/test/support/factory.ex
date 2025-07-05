@@ -184,25 +184,6 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def team_tournament_factory do
-    %Codebattle.Tournament{
-      type: "team",
-      break_duration_seconds: 0,
-      name: "name",
-      current_round_position: 0,
-      players_limit: 16,
-      players_count: 16,
-      starts_at:
-        DateTime.utc_now()
-        |> Timex.shift(minutes: 30)
-        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
-      creator_id: 1,
-      players: %{},
-      matches: %{},
-      meta: %{teams: %{"0": %{id: 0, title: "fe"}, "1": %{id: 1, title: "be"}}}
-    }
-  end
-
   def token_tournament_factory do
     %Codebattle.Tournament{
       type: "individual",

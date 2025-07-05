@@ -43,7 +43,7 @@ defmodule Codebattle.OauthTestHelpers do
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do
         %{request_path: "/api/v10/oauth2/token", method: "POST", host: "discord.com"} ->
-          Req.Test.text(req, URI.encode_query(%{access_token: "asfd"}))
+          Req.Test.json(req, %{"access_token" => "asfd"})
 
         %{request_path: "/api/users/@me", method: "GET", host: "discord.com"} ->
           Req.Test.json(req, @valid_discord_body)

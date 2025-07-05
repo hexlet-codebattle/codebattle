@@ -850,9 +850,6 @@ msgstr "Швейцарская система"
 msgid "individual"
 msgstr "Олимпийская система"
 
-msgid "team"
-msgstr "Командный турнир"
-
 msgid "arena"
 msgstr "Арена"
 

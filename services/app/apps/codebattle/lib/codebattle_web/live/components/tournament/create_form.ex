@@ -224,34 +224,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         </div>
-        <%= if f.params["type"] == "team" do %>
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
-            <div class="d-flex flex-column justify-content-between w-auto">
-              <%= label(f, :team_1_name) %>
-              <%= text_input(f, :team_1_name,
-                maxlength: "17",
-                class: "form-control",
-                value: f.params["team_1_name"] || "Backend"
-              ) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :team_2_name) %>
-              <%= text_input(f, :team_2_name,
-                maxlength: "17",
-                class: "form-control",
-                value: f.params["team_2_name"] || "Frontend"
-              ) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :rounds_to_win) %>
-              <%= select(f, :rounds_to_win, [1, 2, 3, 4, 5],
-                value: f.params["rounds_to_win"] || 3,
-                class: "custom-select"
-              ) %>
-              <%= error_tag(f, :rounds_to_win) %>
-            </div>
-          </div>
-        <% end %>
         <%= if f.params["type"] in ["arena", "swiss", "top200"] do %>
           <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between mt-3">
             <div class="d-flex flex-column justify-content-between w-auto">
