@@ -67,63 +67,62 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       TournamentResult.upsert_results(tournament)
 
       assert [
-               %{id: _, name: "u11", score: 500, clan: "c1", clan_id: _, place: 1},
-               %{id: _, name: "u12", score: 419, clan: "c1", clan_id: _, place: 2},
-               %{id: _, name: "u21", score: 370, clan: "c2", clan_id: _, place: 3},
-               %{id: _, name: "u13", score: 363, clan: "c1", clan_id: _, place: 4},
-               %{id: _, name: "u22", score: 298, clan: "c2", clan_id: _, place: 5},
-               %{id: _, name: "u14", score: 247, clan: "c1", clan_id: _, place: 6},
-               %{id: _, name: "u23", score: 221, clan: "c2", clan_id: _, place: 7},
-               %{id: _, name: "u24", score: 121, clan: "c2", clan_id: _, place: 8},
-               %{id: _, name: "u15", score: 107, clan: "c1", clan_id: _, place: 9},
-               %{id: _, name: "u31", score: 98, clan: "c3", clan_id: _, place: 10},
-               %{id: _, name: "u32", score: 83, clan: "c3", clan_id: _, place: 11},
-               %{id: _, name: "u16", score: 79, clan: "c1", clan_id: _, place: 12},
-               %{id: _, name: "u33", score: 68, clan: "c3", clan_id: _, place: 13},
-               %{id: _, name: "u17", score: 60, clan: "c1", clan_id: _, place: 14},
-               %{id: _, name: "u51", score: 57, clan: "c5", clan_id: _, place: 15},
-               %{id: _, name: "u71", score: 56, clan: "c7", clan_id: _, place: 16},
-               %{id: _, name: "u34", score: 54, clan: "c3", clan_id: _, place: 17},
-               %{id: _, name: "u41", score: 49, clan: "c4", clan_id: _, place: 18},
-               %{id: _, name: "u35", score: 45, clan: "c3", clan_id: _, place: 19},
-               %{id: _, name: "u52", score: 42, clan: "c5", clan_id: _, place: 20},
-               %{id: _, name: "u61", score: 34, clan: "c6", clan_id: _, place: 21},
-               %{id: _, name: "u42", score: 33, clan: "c4", clan_id: _, place: 22},
-               %{id: _, name: "u25", score: 32, clan: "c2", clan_id: _, place: 23},
-               %{id: _, name: "u53", score: 30, clan: "c5", clan_id: _, place: 24},
-               %{id: _, name: "u62", score: 21, clan: "c6", clan_id: _, place: 25},
-               %{id: _, name: "u43", score: 20, clan: "c4", clan_id: _, place: 26},
-               %{id: _, name: "u26", score: 16, clan: "c2", clan_id: _, place: 27},
-               %{id: _, name: "u44", score: 11, clan: "c4", clan_id: _, place: 28},
-               %{id: _, name: "u81", score: 8, clan: "c8", clan_id: _, place: 29}
-             ] = TournamentResult.get_user_ranking(tournament)
+               %{clan: "c1", name: "u11", place: 1, score: 1105},
+               %{clan: "c1", name: "u12", place: 2, score: 857},
+               %{clan: "c1", name: "u13", place: 3, score: 783},
+               %{clan: "c2", name: "u21", place: 4, score: 714},
+               %{clan: "c1", name: "u14", place: 5, score: 692},
+               %{clan: "c2", name: "u22", place: 6, score: 572},
+               %{clan: "c2", name: "u23", place: 7, score: 445},
+               %{clan: "c1", name: "u15", place: 8, score: 409},
+               %{clan: "c1", name: "u16", place: 9, score: 355},
+               %{clan: "c2", name: "u24", place: 10, score: 321},
+               %{clan: "c1", name: "u17", place: 11, score: 300},
+               %{clan: "c3", name: "u31", place: 12, score: 210},
+               %{clan: "c3", name: "u32", place: 13, score: 192},
+               %{clan: "c3", name: "u33", place: 14, score: 175},
+               %{clan: "c3", name: "u34", place: 15, score: 158},
+               %{clan: "c3", name: "u35", place: 16, score: 140},
+               %{clan: "c2", name: "u25", place: 17, score: 123},
+               %{clan: "c4", name: "u41", place: 18, score: 105},
+               %{clan: "c4", name: "u42", place: 19, score: 77},
+               %{clan: "c2", name: "u26", place: 20, score: 71},
+               %{clan: "c7", name: "u71", place: 21, score: 59},
+               %{clan: "c4", name: "u43", place: 22, score: 52},
+               %{clan: "c4", name: "u44", place: 23, score: 32},
+               %{clan: "c8", name: "u81", place: 24, score: 32},
+               %{clan: "c5", name: "u51", place: 25, score: 18},
+               %{clan: "c5", name: "u52", place: 26, score: 15},
+               %{clan: "c5", name: "u53", place: 27, score: 12},
+               %{clan: "c6", name: "u61", place: 28, score: 10},
+               %{clan: "c6", name: "u62", place: 29, score: 8}
+             ] = tournament |> TournamentResult.get_user_ranking() |> Map.values() |> Enum.sort_by(& &1.place)
 
       assert [
-               %{clan_rank: 1, total_duration_sec: 310, total_score: 500, user_name: "u11", wins_count: 4},
-               %{clan_rank: 1, total_duration_sec: 332, total_score: 419, user_name: "u12", wins_count: 3},
-               %{clan_rank: 1, total_duration_sec: 554, total_score: 363, user_name: "u13", wins_count: 3},
-               %{clan_rank: 1, total_duration_sec: 760, total_score: 247, user_name: "u14", wins_count: 2},
-               %{clan_rank: 1, total_duration_sec: 800, total_score: 107, user_name: "u15", wins_count: 1},
-               %{clan_rank: 2, total_duration_sec: 310, total_score: 370, user_name: "u21", wins_count: 0},
-               %{clan_rank: 2, total_duration_sec: 332, total_score: 298, user_name: "u22", wins_count: 0},
-               %{clan_rank: 2, total_duration_sec: 554, total_score: 221, user_name: "u23", wins_count: 0},
-               %{clan_rank: 2, total_duration_sec: 760, total_score: 121, user_name: "u24", wins_count: 0},
-               %{clan_rank: 2, total_duration_sec: 800, total_score: 32, user_name: "u25", wins_count: 0},
-               %{clan_rank: 3, total_duration_sec: 180, total_score: 98, user_name: "u31", wins_count: 1},
-               %{clan_rank: 3, total_duration_sec: 200, total_score: 83, user_name: "u32", wins_count: 1},
-               %{clan_rank: 3, total_duration_sec: 220, total_score: 68, user_name: "u33", wins_count: 1},
-               %{clan_rank: 3, total_duration_sec: 240, total_score: 54, user_name: "u34", wins_count: 1},
-               %{clan_rank: 3, total_duration_sec: 260, total_score: 45, user_name: "u35", wins_count: 1},
-               %{clan_rank: 4, total_duration_sec: 16, total_score: 57, user_name: "u51", wins_count: 1},
-               %{clan_rank: 4, total_duration_sec: 18, total_score: 42, user_name: "u52", wins_count: 1},
-               %{clan_rank: 4, total_duration_sec: 20, total_score: 30, user_name: "u53", wins_count: 1},
-               %{clan_rank: 5, total_duration_sec: 180, total_score: 49, user_name: "u41", wins_count: 0},
-               %{clan_rank: 5, total_duration_sec: 200, total_score: 33, user_name: "u42", wins_count: 0},
-               %{clan_rank: 5, total_duration_sec: 220, total_score: 20, user_name: "u43", wins_count: 0},
-               %{clan_rank: 5, total_duration_sec: 240, total_score: 11, user_name: "u44", wins_count: 0},
-               %{clan_rank: 6, total_duration_sec: 290, total_score: 56, user_name: "u71", wins_count: 0},
-               %{clan_rank: 7, total_duration_sec: 16, total_score: 34, user_name: "u61", wins_count: 0},
-               %{clan_rank: 7, total_duration_sec: 18, total_score: 21, user_name: "u62", wins_count: 0}
+               %{clan_rank: 1, total_duration_sec: 310, total_score: 1105, user_name: "u11", wins_count: 4},
+               %{clan_rank: 1, total_duration_sec: 332, total_score: 857, user_name: "u12", wins_count: 3},
+               %{clan_rank: 1, total_duration_sec: 554, total_score: 783, user_name: "u13", wins_count: 3},
+               %{clan_rank: 1, total_duration_sec: 760, total_score: 692, user_name: "u14", wins_count: 2},
+               %{clan_rank: 1, total_duration_sec: 800, total_score: 409, user_name: "u15", wins_count: 1},
+               %{clan_rank: 2, total_duration_sec: 310, total_score: 714, user_name: "u21", wins_count: 0},
+               %{clan_rank: 2, total_duration_sec: 332, total_score: 572, user_name: "u22", wins_count: 0},
+               %{clan_rank: 2, total_duration_sec: 554, total_score: 445, user_name: "u23", wins_count: 0},
+               %{clan_rank: 2, total_duration_sec: 760, total_score: 321, user_name: "u24", wins_count: 0},
+               %{clan_rank: 2, total_duration_sec: 800, total_score: 123, user_name: "u25", wins_count: 0},
+               %{clan_rank: 3, total_duration_sec: 180, total_score: 210, user_name: "u31", wins_count: 1},
+               %{clan_rank: 3, total_duration_sec: 200, total_score: 192, user_name: "u32", wins_count: 1},
+               %{clan_rank: 3, total_duration_sec: 220, total_score: 175, user_name: "u33", wins_count: 1},
+               %{clan_rank: 3, total_duration_sec: 240, total_score: 158, user_name: "u34", wins_count: 1},
+               %{clan_rank: 3, total_duration_sec: 260, total_score: 140, user_name: "u35", wins_count: 1},
+               %{clan_rank: 4, total_duration_sec: 180, total_score: 105, user_name: "u41", wins_count: 0},
+               %{clan_rank: 4, total_duration_sec: 200, total_score: 77, user_name: "u42", wins_count: 0},
+               %{clan_rank: 4, total_duration_sec: 220, total_score: 52, user_name: "u43", wins_count: 0},
+               %{clan_rank: 4, total_duration_sec: 240, total_score: 32, user_name: "u44", wins_count: 0},
+               %{clan_rank: 5, total_duration_sec: 290, total_score: 59, user_name: "u71", wins_count: 0},
+               %{clan_rank: 6, total_duration_sec: 16, total_score: 18, user_name: "u51", wins_count: 1},
+               %{clan_rank: 6, total_duration_sec: 18, total_score: 15, user_name: "u52", wins_count: 1},
+               %{clan_rank: 6, total_duration_sec: 20, total_score: 12, user_name: "u53", wins_count: 1},
+               %{clan_rank: 7, total_duration_sec: 1210, total_score: 32, user_name: "u81", wins_count: 0}
              ] = TournamentResult.get_top_users_by_clan_ranking(tournament)
 
       assert [
@@ -134,7 +133,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                  level: "hard",
                  task_id: task4.id,
                  wins_count: 7,
-                 p5: Decimal.new("250.00"),
+                 p5: Decimal.new("100.00"),
                  p25: Decimal.new("250.00"),
                  p50: Decimal.new("600.00"),
                  p75: Decimal.new("1010.00"),
@@ -147,7 +146,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                  level: "medium",
                  task_id: task3.id,
                  wins_count: 9,
-                 p5: Decimal.new("140.00"),
+                 p5: Decimal.new("100.00"),
                  p25: Decimal.new("140.00"),
                  p50: Decimal.new("180.00"),
                  p75: Decimal.new("240.00"),
@@ -160,7 +159,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                  level: "easy",
                  task_id: task2.id,
                  wins_count: 6,
-                 p5: Decimal.new("12.00"),
+                 p5: Decimal.new("10.00"),
                  p25: Decimal.new("12.00"),
                  p50: Decimal.new("15.00"),
                  p75: Decimal.new("18.70"),
@@ -182,38 +181,38 @@ defmodule Codebattle.Tournament.TournamenResultTest do
              ] == TournamentResult.get_tasks_ranking(tournament)
 
       assert [
-               %{clan_name: "c1", game_id: _, score: 200, user_id: _, user_name: "u11"},
-               %{clan_name: "c1", game_id: _, score: 190, user_id: _, user_name: "u12"},
-               %{clan_name: "c1", game_id: _, score: 163, user_id: _, user_name: "u13"},
-               %{clan_name: "c1", game_id: _, score: 135, user_id: _, user_name: "u14"},
-               %{clan_name: "c1", game_id: _, score: 107, user_id: _, user_name: "u15"},
-               %{clan_name: "c1", game_id: _, score: 79, user_id: _, user_name: "u16"},
-               %{clan_name: "c1", game_id: _, score: 60, user_id: _, user_name: "u17"}
+               %{clan_name: "c1", game_id: _, score: 600, user_id: _, user_name: "u11"},
+               %{clan_name: "c1", game_id: _, score: 573, user_id: _, user_name: "u12"},
+               %{clan_name: "c1", game_id: _, score: 518, user_id: _, user_name: "u13"},
+               %{clan_name: "c1", game_id: _, score: 464, user_id: _, user_name: "u14"},
+               %{clan_name: "c1", game_id: _, score: 409, user_id: _, user_name: "u15"},
+               %{clan_name: "c1", game_id: _, score: 355, user_id: _, user_name: "u16"},
+               %{clan_name: "c1", game_id: _, score: 300, user_id: _, user_name: "u17"}
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task4.id)
 
       assert [
-               %{user_name: "u11", score: 150, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u12", score: 141, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u13", score: 127, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u14", score: 112, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u31", score: 98, clan_id: _, clan_name: "c3", game_id: _},
-               %{user_name: "u32", score: 83, clan_id: _, clan_name: "c3", game_id: _},
-               %{user_name: "u33", score: 68, clan_id: _, clan_name: "c3", game_id: _},
-               %{user_name: "u34", score: 54, clan_id: _, clan_name: "c3", game_id: _},
-               %{user_name: "u35", user_id: _, score: 45, clan_id: _, clan_name: "c3", game_id: _}
+               %{user_name: "u11", score: 280, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u12", score: 262, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u13", score: 245, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u14", score: 228, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u31", score: 210, clan_id: _, clan_name: "c3", game_id: _},
+               %{user_name: "u32", score: 192, clan_id: _, clan_name: "c3", game_id: _},
+               %{user_name: "u33", score: 175, clan_id: _, clan_name: "c3", game_id: _},
+               %{user_name: "u34", score: 158, clan_id: _, clan_name: "c3", game_id: _},
+               %{user_name: "u35", score: 140, clan_id: _, clan_name: "c3", game_id: _, user_id: _}
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task3.id)
 
       assert [
-               %{user_name: "u11", score: 100, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u12", score: 88, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u13", score: 73, clan_id: _, clan_name: "c1", game_id: _},
-               %{user_name: "u51", score: 57, clan_id: _, clan_name: "c5", game_id: _},
-               %{user_name: "u52", score: 42, clan_id: _, clan_name: "c5", game_id: _},
-               %{user_name: "u53", score: 30, clan_id: _, clan_name: "c5", game_id: _}
+               %{user_name: "u11", score: 25, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u12", score: 22, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u13", score: 20, clan_id: _, clan_name: "c1", game_id: _},
+               %{user_name: "u51", score: 18, clan_id: _, clan_name: "c5", game_id: _},
+               %{user_name: "u52", score: 15, clan_id: _, clan_name: "c5", game_id: _},
+               %{user_name: "u53", score: 12, clan_id: _, clan_name: "c5", game_id: _}
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task2.id)
 
       assert [
-               %{user_name: "u11", user_id: _, score: 50, clan_id: _, clan_name: "c1", game_id: _, clan_long_name: "l1"}
+               %{user_name: "u11", user_id: _, score: 200, clan_id: _, clan_name: "c1", game_id: _, clan_long_name: "l1"}
              ] = TournamentResult.get_top_user_by_task_ranking(tournament, task1.id)
 
       assert [%{start: 100, end: 100, wins_count: 0}] ==
@@ -277,14 +276,14 @@ defmodule Codebattle.Tournament.TournamenResultTest do
              ] == TournamentResult.get_task_duration_distribution(tournament, task4.id)
 
       assert [
-               %{clan_name: "c1", performance: 253, player_count: 7, radius: 7, total_score: 1775},
-               %{clan_name: "c2", performance: 176, player_count: 6, radius: 6, total_score: 1058},
-               %{clan_name: "c3", performance: 69, player_count: 5, radius: 5, total_score: 348},
-               %{clan_name: "c5", performance: 43, player_count: 3, radius: 3, total_score: 129},
-               %{radius: 4, total_score: 113, clan_name: "c4", performance: 28, player_count: 4},
-               %{radius: 1, total_score: 56, clan_name: "c7", performance: 56, player_count: 1},
-               %{clan_name: "c6", performance: 27, player_count: 2, radius: 2, total_score: 55},
-               %{clan_name: "c8", performance: 8, player_count: 1, radius: 1, total_score: 8}
+               %{clan_name: "c1", performance: 643, player_count: 7, radius: 7, total_score: 4501},
+               %{clan_name: "c2", performance: 374, player_count: 6, radius: 6, total_score: 2246},
+               %{clan_name: "c3", performance: 175, player_count: 5, radius: 5, total_score: 875},
+               %{clan_name: "c4", performance: 66, player_count: 4, radius: 4, total_score: 266},
+               %{clan_name: "c7", performance: 59, player_count: 1, radius: 1, total_score: 59},
+               %{clan_name: "c5", performance: 15, player_count: 3, radius: 3, total_score: 45},
+               %{clan_name: "c8", performance: 32, player_count: 1, radius: 1, total_score: 32},
+               %{clan_name: "c6", performance: 9, player_count: 2, radius: 2, total_score: 18}
              ] = TournamentResult.get_clans_bubble_distribution(tournament)
     end
 

@@ -369,6 +369,7 @@ defmodule Codebattle.Tournament.Helpers do
 
     top_8_ids = total_ranking |> Enum.take(8) |> Enum.map(& &1.id)
     user_history = Tournament.TournamentResult.get_users_history(tournament, top_8_ids)
+    max_draw_index = players |> Enum.map(& &1.draw_index) |> Enum.max()
 
     %{
       "tournament_id" => tournament.id,
@@ -383,10 +384,11 @@ defmodule Codebattle.Tournament.Helpers do
             "total_score" => player.score,
             "total_tasks" => Enum.count(player.matches_ids),
             "won_tasks" => player.wins_count,
-            "rank" => player.rank,
+            "rank" => player.place,
             # TODO: do win_prob based on the top 8 people
             "win_prob" => "42",
-            "active" => if(player.in_main_draw, do: 1, else: 0),
+            "returned" => if(player.returned, do: 1, else: 0),
+            "active" => if(player.draw_index == max_draw_index, do: 1, else: 0),
             "history" => user_history[player.id] || []
           }
         end)

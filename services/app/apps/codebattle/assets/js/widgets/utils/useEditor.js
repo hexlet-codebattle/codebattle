@@ -37,6 +37,7 @@ const currentClipboardPrefix = '';
  *   syntax: string,
  *   fontSize: number,
  *   editable: boolean,
+ *   scrollbarStatus: string,
  *   loading: boolean
  * }} props
  */
@@ -47,9 +48,14 @@ const useOption = (
     canSendCursor,
     wordWrap,
     lineNumbers,
+    lineDecorationsWidth,
+    lineNumbersMinChars,
+    glyphMargin,
+    folding,
     syntax,
     fontSize,
     editable,
+    scrollbarStatus,
     loading,
   },
 ) => {
@@ -61,10 +67,18 @@ const useOption = (
       stickyScroll: { enabled: false },
       tabSize: getLanguageTabSize(syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(syntax),
-      lineNumbersMinChars: 3,
+
+      // lineNumbers: 'off',
+      glyphMargin,
+      folding,
+      // Undocumented see https://github.com/Microsoft/vscode/issues/30795#issuecomment-410998882
+      lineDecorationsWidth,
+      lineNumbersMinChars,
+      // lineNumbersMinChars: 3,
+
       fontSize,
       scrollBeyondLastLine: false,
-      selectOnLineNumbers: true,
+      selectOnLineNumbers: false,
       minimap: { enabled: false },
       parameterHints: { enabled: false },
       readOnly: !editable || loading,
@@ -73,8 +87,8 @@ const useOption = (
         useShadows: false,
         verticalHasArrows: true,
         horizontalHasArrows: true,
-        vertical: 'visible',
-        horizontal: 'visible',
+        vertical: scrollbarStatus,
+        horizontal: scrollbarStatus,
         verticalScrollbarSize: 17,
         horizontalScrollbarSize: 17,
         arrowSize: 30,
@@ -87,9 +101,14 @@ const useOption = (
       canSendCursor,
       wordWrap,
       lineNumbers,
+      lineDecorationsWidth,
+      lineNumbersMinChars,
+      glyphMargin,
+      folding,
       syntax,
       fontSize,
       editable,
+      scrollbarStatus,
       loading,
     ],
   );
@@ -225,6 +244,16 @@ const useEditor = props => {
       e.preventDefault();
       return false;
     });
+
+    currentMonaco.editor.defineTheme('my-theme', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#000000',
+      },
+    });
+    currentMonaco.editor.setTheme('my-theme');
 
     // Prevent the DOM-level paste event
     const domNode = currentEditor.getDomNode();

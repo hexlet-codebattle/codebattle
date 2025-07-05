@@ -332,6 +332,10 @@ defmodule Codebattle.Game.Engine do
         })
 
         update_user!(player)
+
+        unless player.is_bot or player.is_guest do
+          Codebattle.UserGameStatistics.Context.update_user_stats(player.id)
+        end
       end)
 
       update_game!(game, %{

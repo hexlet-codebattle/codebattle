@@ -14,9 +14,25 @@ $gold: #daa520;
 @import 'gamePreview';
 @import '~react-contexify/dist/ReactContexify.css';
 
+// @font-face {
+//   font-family: 'External';
+//   src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
+//   font-weight: 900;
+//   font-style: normal;
+//   font-display: swap;
+// }
+
 @font-face {
   font-family: 'External';
-  src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
+  src: url('../static/fonts/External.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ExternalPlane';
+  src: url('https://yastatic.net/s3/home/fonts/ys/4/text-geo-regular.woff') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -2500,20 +2516,37 @@ a:hover {
   display: inline-block;
   font-size: 18px;
   color: white;
-  padding-right: 25px;
+  padding-right: 20px;
 }
 
 .cb-stream-tasks-stats {
   background-color: #FAFF0F;
-  padding: 20px 16px;
-  border-radius: 25px;
+  padding: 10px 16px;
+  border-radius: 50px;
+
+  font-weight: 900;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
 }
 
 .cb-stream-output-title {
   background-color: #FAFF0F;
 
-  padding: 16px 20px;
+  margin: -3px;
+  padding: 10px 20px;
+
+  border: 3px solid #FAFF0F;
   border-radius: 25px;
+
+  font-weight: 700;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
 }
 
 .cb-stream-editor-panel {
@@ -2521,13 +2554,13 @@ a:hover {
 }
 
 .cb-stream-editor-left {
-  border-top-left-radius: 25px;
+  border-top-left-radius: 50px;
   border-right: 0px;
   border-bottom: 0px;
 }
 
 .cb-stream-editor-right {
-  border-top-right-radius: 25px;
+  border-top-right-radius: 50px;
   border-left: 0px;
   border-bottom: 0px;
 }
@@ -2535,19 +2568,33 @@ a:hover {
 .cb-stream-name {
   width: 118px;
   color: #FAFF0F;
+
+  .winner & {
+    color: #7642E8;
+  }
 }
 
 .cb-stream-output {
   width: 100%;
-  border: 4px solid #3C4168;
+  border: 3px solid #3C4168;
   border-radius: 25px;
 }
 
+.cb-stream-full-output {
+  width: 100%;
+}
+
 .cb-stream-task-description {
+  font-family: 'ExternalPlane';
   color: #B6A4FF;
 }
 
 .cb-stream-widget {
+  font-family: 'ExternalPlane';
+  background-color: #000000;
+}
+
+.cb-stream-widget .view-line {
   background-color: #000000;
 }
 
@@ -2556,56 +2603,100 @@ a:hover {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
+  background: rgba(0, 0, 0, 0);
+
+  margin-left: 0.7em;
 }
 
 .cb-stream-full-video {
   border: 4px solid #3C4168;
-  border-radius: 25px;
+  border-radius: 50px;
 }
 
 .cb-stream-full-editor {
   border: 4px solid #3C4168;
-  border-radius: 25px;
 }
 
 .editor-left {
-  border-top-left-radius: 25px;
-  border-right: 0px;
+  border-top-right-radius: 50px;
+  border-left: 0px;
   border-bottom: 0px;
 }
 
 .editor-right {
-  border-top-right-radius: 25px;
-  border-left: 0px;
+  border-top-left-radius: 50px;
+  border-right: 0px;
   border-bottom: 0px;
 }
 
 .cb-stream-widget-text {
   font-family: 'External';
   font-weight: 700;
+
+  vertical-align: -1px;
+
+  &.italic {
+    font-style: italic;
+  }
 }
 
-.cb-stream-widget-header-img-left {
-  background-size: cover;
-  width: 20%;
-  background-image: url(../static/images/stream/back-stripes.svg);
-  fill: #FAFF0F;
-}
-
-.cb-stream-widget-header-img-right {
-  background-size: cover;
-  width: 20%;
-  background-image: url(../static/images/stream/stripes.svg);
-  fill: #FAFF0F;
-}
 
 .cb-stream-widget-header-title {
-  width: 60%;
-  background-color: #FAFF0F;
+  background-size: cover;
+  width: 100%;
+  font-weight: 900;
+  background-image: url(../static/images/stream/header.svg);
+
+  .winner & {
+    background-image: url(../static/images/stream/header-winner.svg);
+  }
+}
+
+.cb-stream-full-widget-header-title {
+  background-size: cover;
+  width: 100%;
+  font-weight: 900;
+  background-image: url(../static/images/stream/header-mini.svg);
+
+  .winner & {
+    background-image: url(../static/images/stream/header-mini-winner.svg);
+  }
 }
 
 .cb-stream-player-number {
   background-color: #FAFF0F;
-  padding: 20px 16px;
-  border-radius: 25px;
+  border-radius: 50%;
+
+  font-weight: 900;
+
+  .winner & {
+    color: white;
+    background-color: #7642E8;
+  }
+}
+
+.cb-stream-number-text {
+  padding: 10px 10px;
+  border: 3px solid outline;
+}
+
+.cb-stream-player-clan {
+  border: 3px solid black;
+  border-radius: 50%;
+  margin-left: -10px;
+}
+
+.cb-stream-full-task-stats {
+  clear: both;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.cb-stream-full-solution-bar {
+  height: 10%;
+  width: 100%;
+  background-color: #FAFF0F;
+  bottom: 34%;
+  margin-left: -10px;
 }
