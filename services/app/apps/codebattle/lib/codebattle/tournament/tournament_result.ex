@@ -151,7 +151,8 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament)
+      when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -254,6 +255,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       }
     )
     |> Repo.all()
+    |> Enum.sort_by(&(-&1.round_position))
     |> Enum.reduce(%{}, fn result, acc ->
       task_history = %{
         score: result.score,
@@ -342,8 +344,12 @@ defmodule Codebattle.Tournament.TournamentResult do
         where: r.tournament_id == ^tournament.id,
         where: r.round_position == ^round_position,
         group_by: [r.user_id],
-        order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
-        windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
+        order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
+        windows: [
+          overall_partition: [
+            order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]
+          ]
+        ]
       )
 
     query
@@ -461,7 +467,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tournament_results tr
     WHERE
         tr.tournament_id = #{tournament.id}
-        and score > 0
+        and result_percent = 100.0
     GROUP BY
         tr.task_id
     )
@@ -471,14 +477,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tasks_data td
     INNER JOIN
         tasks t ON t.id = td.task_id
-    ORDER BY
-        CASE
-          WHEN t.level = 'hard' THEN 1
-          WHEN t.level = 'medium' THEN 2
-          WHEN t.level = 'easy' THEN 3
-          ELSE 4
-        END,
-        min DESC
+    ORDER BY min DESC
     """
     |> Repo.query!()
     |> map_repo_result()
