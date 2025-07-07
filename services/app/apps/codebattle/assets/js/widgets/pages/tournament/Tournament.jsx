@@ -1,5 +1,5 @@
 import React, {
-  useState, useCallback, useEffect, useMemo,
+ useState, useCallback, useEffect, useMemo,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -26,7 +26,6 @@ import JoinButton from './JoinButton';
 import MatchConfirmationModal from './MatchConfirmationModal';
 import PlayersRankingPanel from './PlayersRankingPanel';
 import StartRoundConfirmationModal from './StartRoundConfirmationModal';
-import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentClanTable from './TournamentClanTable';
 import TournamentHeader from './TournamentHeader';
@@ -41,7 +40,7 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId, tournament, hideResults, canModerate,
+ currentUserId, tournament, hideResults, canModerate,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -61,16 +60,6 @@ function InfoPanel({
           matches={tournament.matches}
           players={tournament.players}
           playersCount={tournament.playersCount}
-          currentUserId={currentUserId}
-        />
-      );
-    case 'team':
-      return (
-        <TeamMatches
-          state={tournament.state}
-          players={tournament.players}
-          teams={tournament.meta.teams}
-          matches={tournament.matches}
           currentUserId={currentUserId}
         />
       );
@@ -140,13 +129,13 @@ function Tournament({ waitingRoomMachine }) {
 
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
-      tournament.state,
-    ),
+        tournament.state,
+      ),
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
   const hiddenSidePanel = (tournament.type === 'arena'
-    && tournament.state !== 'waiting_participants')
+      && tournament.state !== 'waiting_participants')
     || streamMode;
 
   const panelClassName = cn('mb-2', {
@@ -208,7 +197,7 @@ function Tournament({ waitingRoomMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -249,10 +238,10 @@ function Tournament({ waitingRoomMachine }) {
         />
         <div className="d-flex flex-column justify-content-center align-items-center p-3">
           {has(tournament.players, currentUserId)
-            || tournament.state !== TournamentStates.waitingParticipants ? (
-              <span className="h3">
-                {getTournamentPresentationStatus(tournament.state)}
-              </span>
+          || tournament.state !== TournamentStates.waitingParticipants ? (
+            <span className="h3">
+              {getTournamentPresentationStatus(tournament.state)}
+            </span>
           ) : (
             <>
               <span className="h3">{tournament.name}</span>

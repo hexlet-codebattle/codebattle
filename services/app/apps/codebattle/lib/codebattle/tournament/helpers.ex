@@ -320,20 +320,44 @@ defmodule Codebattle.Tournament.Helpers do
   def get_player_ranking_stats(tournament) do
     players = get_players(tournament)
 
-    total_ranking =
-      tournament
-      |> Tournament.TournamentResult.get_user_ranking()
-      |> Map.values()
-      |> Enum.sort_by(& &1.place)
+    max_draw_index = get_max_draw_index(players)
 
-    top_8_ids = total_ranking |> Enum.take(8) |> Enum.map(& &1.id)
+    top_8_ids =
+      players
+      |> Enum.filter(&(&1.draw_index == max_draw_index))
+      |> Enum.sort_by(& &1.place)
+      |> Enum.take(8)
+      |> Enum.map(& &1.id)
+
     user_history = Tournament.TournamentResult.get_users_history(tournament, top_8_ids)
+
+    current_round =
+      if tournament.state == "waiting_participants" do
+        0
+      else
+        tournament.current_round_position + 1
+      end
+
+    top_8_ids = Map.keys(user_history)
+    top_8_players = Enum.filter(players, &(&1.id in top_8_ids))
+    total_top_8_score = top_8_players |> Enum.map(& &1.score) |> Enum.sum()
+
+    win_probs =
+      if tournament.current_round_position >= 3 do
+        Enum.reduce(top_8_players, %{}, fn player, acc ->
+          win_prob = round((player.score || 0) * 100.0 / (total_top_8_score * 1.0))
+          Map.put(acc, player.id, win_prob)
+        end)
+      else
+        %{}
+      end
 
     %{
       "tournament_id" => tournament.id,
-      "current_round" => tournament.current_round_position + 1,
+      "current_round" => current_round,
       "players" =>
         players
+        |> Enum.sort_by(& &1.id)
         |> Enum.map(fn player ->
           %{
             "id" => to_string(player.id),
@@ -343,13 +367,19 @@ defmodule Codebattle.Tournament.Helpers do
             "total_tasks" => Enum.count(player.matches_ids),
             "won_tasks" => player.wins_count,
             "rank" => player.rank,
-            # TODO: do win_prob based on the top 8 people
-            "win_prob" => "42",
-            "active" => if(player.in_main_draw, do: 1, else: 0),
+            "win_prob" => to_string(win_probs[player.id]),
+            "returned" => if(player.returned, do: 1, else: 0),
+            "active" => if(player.draw_index == max_draw_index, do: 1, else: 0),
             "history" => user_history[player.id] || []
           }
         end)
-        |> Enum.sort_by(& &1["rank"])
     }
+  end
+
+  def get_max_draw_index(players) do
+    case players do
+      [%{max_draw_index: i} | _] -> i
+      [] -> 0
+    end
   end
 end

@@ -60,6 +60,9 @@ const gameUI = createSlice({
     setVideoMuted: (state, { payload }) => {
       state.videoMuted = payload;
     },
+    setInMainDraw: (state, { payload }) => {
+      state.inMainDraw = payload;
+    },
     setAudioAvailable: (state, { payload }) => {
       state.audioAvailable = payload;
     },

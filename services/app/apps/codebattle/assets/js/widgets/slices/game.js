@@ -26,6 +26,11 @@ const game = createSlice({
     updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },
+    clearGamePlayers: state => {
+      if (state.players) {
+        state.players = {};
+      }
+    },
     updateGamePlayers: (state, { payload: { players: playersList } }) => {
       const newPlayersState = playersList.reduce(
         setPlayerToSliceState,

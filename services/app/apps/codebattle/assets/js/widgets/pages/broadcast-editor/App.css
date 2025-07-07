@@ -1,0 +1,122 @@
+/* Убираем ограничения с корня */
+#root {
+  padding: 0;
+  margin: 0;
+  text-align: unset;
+  max-width: unset;
+}
+
+/* Можно отдельно задать стили для канваса, если нужно */
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.preset-bar {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.preset-select {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: #1f1f1f;
+  color: white;
+  font-family: "JetBrains Mono", monospace;
+  cursor: pointer;
+  transition: border 0.2s ease;
+}
+.preset-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.preset-input {
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: #2a2a2a;
+  color: white;
+  font-family: "JetBrains Mono", monospace;
+  width: 160px;
+}
+
+.preset-save-button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "JetBrains Mono", monospace;
+}
+.preset-save-button:hover {
+  opacity: 0.9;
+}
+
+.preset-delete-button {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background-color: #ef4444;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "JetBrains Mono", monospace;
+}
+.preset-delete-button:hover {
+  opacity: 0.9;
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

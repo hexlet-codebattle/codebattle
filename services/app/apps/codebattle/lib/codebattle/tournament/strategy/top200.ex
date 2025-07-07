@@ -3,7 +3,7 @@ defmodule Codebattle.Tournament.Top200 do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.TournamentResult
+  # alias Codebattle.Tournament.TournamentResult
 
   @impl Tournament.Base
   def complete_players(tournament) do
@@ -26,243 +26,352 @@ defmodule Codebattle.Tournament.Top200 do
 
   @impl Tournament.Base
   def calculate_round_results(%{current_round_position: 0} = tournament) do
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 0)
-    players = get_players(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 0)
+    # players = get_players(tournament)
 
-    {winner_ids, loser_ids} =
-      tournament
-      |> get_round_matches(0)
-      |> Enum.uniq_by(& &1.player_ids)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
+    # {winner_ids, loser_ids} =
+    #   tournament
+    #   |> get_round_matches(0)
+    #   |> Enum.uniq_by(& &1.player_ids)
+    #   |> Enum.map(fn match ->
+    #     [p1_id, p2_id] = match.player_ids
 
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && {p1_id, p2_id}) ||
-          {p2_id, p1_id}
-      end)
-      |> Enum.unzip()
+    #     (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && {p1_id, p2_id}) ||
+    #       {p2_id, p1_id}
+    #   end)
+    #   |> Enum.unzip()
 
-    # Get top 28 players from ranking who are not winners
-    {rest_top_ids, _consolation_draw_ids} =
-      ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id in loser_ids))
-      |> Enum.sort_by(&{-&1.score, &1.id})
-      |> Enum.map(& &1.id)
-      |> Enum.split(28)
+    # # Get top 28 players from ranking who are not winners
+    # {rest_top_ids, _consolation_draw_ids} =
+    #   ranking
+    #   |> Map.values()
+    #   |> Enum.filter(&(&1.id in loser_ids))
+    #   |> Enum.sort_by(&{-&1.score, &1.id})
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.split(28)
 
-    main_draw_ids = winner_ids ++ rest_top_ids
+    # main_draw_ids = winner_ids ++ rest_top_ids
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in main_draw_ids,
-          score: get_in(ranking, [player.id, :score]) || 0,
-          place: get_in(ranking, [player.id, :place]) || 0
-      })
-    end)
+    # Enum.each(players, fn player ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: if(player.id in main_draw_ids, do: 1, else: 0),
+    #       max_draw_index: 1,
+    #       score: get_in(ranking, [player.id, :score]) || 0,
+    #       place: get_in(ranking, [player.id, :place]) || 0
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 1} = tournament) do
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 1)
-    players = get_players(tournament)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 1)
+    # players = get_players(tournament)
 
-    # Get winners from first 64 matches
-    winner_ids =
-      tournament
-      |> get_round_matches(1)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 64 matches
-      |> Enum.take(64)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # players_map =
+    #   Enum.reduce(players, %{}, fn %{id: id} = value, acc ->
+    #     Map.put(acc, id, value)
+    #   end)
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in winner_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # {main_draw, low_bottom_draw} = Enum.split_with(players, &(&1.draw_index > 0))
+    # main_draw_ids = Enum.map(main_draw, & &1.id)
+    # low_bottom_draw_ids = Enum.map(low_bottom_draw, & &1.id)
+
+    # {main_draw_ids, bottom_draw_ids} =
+    #   ranking
+    #   |> Map.take(main_draw_ids)
+    #   |> Map.values()
+    #   |> Enum.sort_by(& &1.place)
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.split(64)
+
+    # low_bottom_draw_ids =
+    #   ranking
+    #   |> Map.take(low_bottom_draw_ids)
+    #   |> Map.values()
+    #   |> Enum.sort_by(& &1.place)
+    #   |> Enum.map(& &1.id)
+
+    # top_players = Enum.map(main_draw_ids, &Map.get(players_map, &1))
+    # bottom_players = Enum.map(bottom_draw_ids ++ low_bottom_draw_ids, &Map.get(players_map, &1))
+
+    # top_players
+    # |> Enum.with_index(1)
+    # |> Enum.each(fn {player, index} ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: 1,
+    #       max_draw_index: 1,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: index
+    #   })
+    # end)
+
+    # bottom_players
+    # |> Enum.with_index(65)
+    # |> Enum.each(fn {player, index} ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: 0,
+    #       max_draw_index: 1,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: index
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 2} = tournament) do
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 2)
-    players = Tournament.Players.get_players(tournament)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 2)
+    # players = Tournament.Players.get_players(tournament)
 
-    # Get winners from first 32 matches
-    top_winner_ids =
-      tournament
-      |> get_round_matches(2)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 32 matches
-      |> Enum.take(32)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # players_map =
+    #   Enum.reduce(players, %{}, fn %{id: id} = value, acc ->
+    #     Map.put(acc, id, value)
+    #   end)
 
-    # Take top 16 winners based on ranking
-    top_16_winner_ids =
-      ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id in top_winner_ids))
-      |> Enum.sort_by(&{-&1.score, &1.id})
-      |> Enum.map(& &1.id)
-      |> Enum.take(16)
+    # {main_draw, low_bottom_draw} = Enum.split_with(players, &(&1.draw_index > 0))
+    # main_draw_ids = Enum.map(main_draw, & &1.id)
+    # low_bottom_draw_ids = Enum.map(low_bottom_draw, & &1.id)
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in top_16_winner_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # {main_draw_ids, bottom_draw_ids} =
+    #   ranking
+    #   |> Map.take(main_draw_ids)
+    #   |> Map.values()
+    #   |> Enum.sort_by(& &1.place)
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.split(32)
+
+    # low_bottom_draw_ids =
+    #   ranking
+    #   |> Map.take(low_bottom_draw_ids)
+    #   |> Map.values()
+    #   |> Enum.sort_by(& &1.place)
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.take(16)
+
+    # top_players = Enum.map(main_draw_ids, &Map.get(players_map, &1))
+    # bottom_players = Enum.map(bottom_draw_ids ++ low_bottom_draw_ids, &Map.get(players_map, &1))
+
+    # top_players
+    # |> Enum.with_index(1)
+    # |> Enum.each(fn {player, index} ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: 1,
+    #       max_draw_index: 1,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: index
+    #   })
+    # end)
+
+    # bottom_players
+    # |> Enum.with_index(33)
+    # |> Enum.each(fn {player, index} ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: 0,
+    #       max_draw_index: 1,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: index
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 3} = tournament) do
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 3)
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    players = get_players(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 3)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # players = get_players(tournament)
 
     # Get winners from first 8 matches
-    top_8_winner_ids =
-      tournament
-      |> get_round_matches(3)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 8 matches
-      |> Enum.take(8)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # top_8_winner_ids =
+    #   tournament
+    #   |> get_round_matches(3)
+    #   |> Enum.sort_by(& &1.id)
+    #   # Take only first 8 matches
+    #   |> Enum.take(8)
+    #   |> Enum.map(fn match ->
+    #     [p1_id, p2_id] = match.player_ids
+    #     (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
+    #   end)
 
     # Take top 6 winners based on ranking
-    top_6_winner_ids =
-      ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id in top_8_winner_ids))
-      |> Enum.sort_by(&{-&1.score, &1.id})
-      |> Enum.map(& &1.id)
-      |> Enum.take(6)
+    # top_6_winner_ids =
+    #   ranking
+    #   |> Map.values()
+    #   |> Enum.filter(&(&1.id in top_8_winner_ids))
+    #   |> Enum.sort_by(&{-&1.score, &1.id})
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.take(6)
 
     # Pick top 2 from remaining players
-    top_2_remaining_ids =
-      total_ranking
-      |> Map.values()
-      |> Enum.filter(&(&1.id not in top_6_winner_ids))
-      |> Enum.sort_by(&{-&1.score, &1.id})
-      |> Enum.map(& &1.id)
-      |> Enum.take(2)
+    # top_2_remaining_ids =
+    #   total_ranking
+    #   |> Map.values()
+    #   |> Enum.filter(&(&1.id not in top_6_winner_ids))
+    #   |> Enum.sort_by(&{-&1.score, &1.id})
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.take(2)
 
     # Combine top 6 winners with top 2 remaining players
-    top_8_ids = top_6_winner_ids ++ top_2_remaining_ids
+    # top_8_ids = top_6_winner_ids ++ top_2_remaining_ids
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in top_8_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # Enum.each(players, fn player ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index: if(player.id in main_draw_ids, do: 1, else: 0),
+    #       max_draw_index: 1,
+    #       returned: player.id in underdog_ids,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: get_in(total_ranking, [player.id, :place]) || 0
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 4} = tournament) do
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 4)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 4)
 
     # Get winners from first 4 matches
-    top_4_winner_ids =
-      tournament
-      |> get_round_matches(4)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 4 matches
-      |> Enum.take(4)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # top_4_winner_ids =
+    #   tournament
+    #   |> get_round_matches(4)
+    #   |> Enum.sort_by(& &1.id)
+    #   # Take only first 4 matches
+    #   |> Enum.take(4)
+    #   |> Enum.map(fn match ->
+    #     [p1_id, p2_id] = match.player_ids
+    #     (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
+    #   end)
 
-    Enum.each(Tournament.Players.get_players(tournament), fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in top_4_winner_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # Enum.each(Tournament.Players.get_players(tournament), fn player ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index:
+    #         cond do
+    #           player.id in top_1_2_3_4_ids -> 2
+    #           player.id in top_5_6_7_8_ids -> 1
+    #           true -> player.draw_index
+    #         end,
+    #       max_draw_index: 2,
+    #       returned: false,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: get_in(total_ranking, [player.id, :place]) || 0
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 5} = tournament) do
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 5)
-    players = get_players(tournament)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 5)
+    # players = get_players(tournament)
 
     # Get winners from first 2 matches
-    top_2_winner_ids =
-      tournament
-      |> get_round_matches(5)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 2 matches
-      |> Enum.take(2)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # top_2_winner_ids =
+    #   tournament
+    #   |> get_round_matches(5)
+    #   |> Enum.sort_by(& &1.id)
+    #   # Take only first 2 matches
+    #   |> Enum.take(2)
+    #   |> Enum.map(fn match ->
+    #     [p1_id, p2_id] = match.player_ids
+    #     (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
+    #   end)
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in top_2_winner_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # Enum.each(players, fn player ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index:
+    #         cond do
+    #           player.id in top_1_2_ids -> 4
+    #           player.id in top_3_4_ids -> 3
+    #           player.id in top_5_6_ids -> 2
+    #           player.id in top_7_8_ids -> 1
+    #           true -> 0
+    #         end,
+    #       max_draw_index: 4,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place: get_in(total_ranking, [player.id, :place]) || 0
+    #   })
+    # end)
 
     tournament
   end
 
   def calculate_round_results(%{current_round_position: 6} = tournament) do
-    ranking = TournamentResult.get_user_ranking_for_round(tournament, 6)
-    total_ranking = TournamentResult.get_user_ranking(tournament)
-    players = get_players(tournament)
+    # ranking = TournamentResult.get_user_ranking_for_round(tournament, 6)
+    # total_ranking = TournamentResult.get_user_ranking(tournament)
+    # players = get_players(tournament)
 
     # Get winners from first 2 matches
-    top_1_winner_ids =
-      tournament
-      |> get_round_matches(5)
-      |> Enum.sort_by(& &1.id)
-      # Take only first 2 matches
-      |> Enum.take(1)
-      |> Enum.map(fn match ->
-        [p1_id, p2_id] = match.player_ids
-        (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
-      end)
+    # top_1_winner_ids =
+    #   tournament
+    #   |> get_round_matches(5)
+    #   |> Enum.sort_by(& &1.id)
+    #   # Take only first 2 matches
+    #   |> Enum.take(1)
+    #   |> Enum.map(fn match ->
+    #     [p1_id, p2_id] = match.player_ids
+    #     (get_in(ranking, [p1_id, :score]) >= get_in(ranking, [p2_id, :score]) && p1_id) || p2_id
+    #   end)
 
-    Enum.each(players, fn player ->
-      Tournament.Players.put_player(tournament, %{
-        player
-        | in_main_draw: player.id in top_1_winner_ids,
-          score: get_in(total_ranking, [player.id, :score]) || 0,
-          place: get_in(total_ranking, [player.id, :place]) || 0
-      })
-    end)
+    # players_map =
+    #   Enum.reduce(players, %{}, fn %{id: id} = value, acc ->
+    #     Map.put(acc, id, value)
+    #   end)
+
+    # bottom_draw_places =
+    #   total_ranking
+    #   |> Map.values()
+    #   |> Enum.reject(&(&1.id in [p1_id, p2_id, p3_id, p4_id, p5_id, p6_id, p7_id, p8_id]))
+    #   |> Enum.sort_by(& &1.place)
+    #   |> Enum.map(& &1.id)
+    #   |> Enum.with_index(9)
+    #   |> Enum.reduce(%{}, fn {id, index}, acc ->
+    #     Map.put(acc, id, index)
+    #   end)
+
+    # Enum.each(players, fn player ->
+    #   Tournament.Players.put_player(tournament, %{
+    #     player
+    #     | draw_index:
+    #         cond do
+    #           player.id == top1_id -> 8
+    #           player.id == top2_id -> 7
+    #           player.id == top3_id -> 6
+    #           player.id == top4_id -> 5
+    #           player.id == top5_id -> 4
+    #           player.id == top6_id -> 3
+    #           player.id == top7_id -> 2
+    #           player.id == top8_id -> 1
+    #           true -> player.draw_index
+    #         end,
+    #       max_draw_index: 8,
+    #       score: get_in(total_ranking, [player.id, :score]) || 0,
+    #       place:
+    #         cond do
+    #           player.id == top1_id -> 1
+    #           player.id == top2_id -> 2
+    #           player.id == top3_id -> 3
+    #           player.id == top4_id -> 4
+    #           player.id == top5_id -> 5
+    #           player.id == top6_id -> 6
+    #           player.id == top7_id -> 7
+    #           player.id == top8_id -> 8
+    #           true -> Map.get(bottom_draw_places, player.id, 0)
+    #         end
+    #   })
+    # end)
 
     tournament
   end

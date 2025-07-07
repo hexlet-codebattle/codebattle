@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import {
-  useState, useEffect, useCallback, useMemo,
+ useState, useEffect, useCallback, useMemo,
 } from 'react';
 
 import GameRoomModes from '../config/gameModes';
@@ -24,8 +24,9 @@ function generateRandomPrefix() {
 /**
  * Our in-memory clipboard storage
  */
-const editorClipboard = '';
-const currentClipboardPrefix = '';
+let editorClipboard = '';
+let currentClipboardPrefix = '';
+let selection = '';
 
 /**
  * @param {object} editor
@@ -142,83 +143,83 @@ const useEditor = props => {
     };
   }, [handleEnterCtrPlusS]);
 
-  const handleEditorWillMount = () => { };
+  const handleEditorWillMount = () => {};
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
     const {
-      editable, roomMode, checkResult, toggleMuteSound,
-    } = props;
+ editable, roomMode, checkResult, toggleMuteSound,
+} = props;
 
     // Intercept keydown for custom Copy, Cut, and Paste logic.
-    // currentEditor.onKeyDown(e => {
-    //   const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-    //
-    //   // COPY (Ctrl+C / Cmd+C)
-    //   if (isCtrlOrCmd && e.code === 'KeyC') {
-    //     e.preventDefault();
-    //     if (!editable) return;
-    //
-    //     // Generate a new random prefix each time we copy
-    //     currentClipboardPrefix = generateRandomPrefix();
-    //     const selection = currentEditor
-    //       .getModel()
-    //       .getValueInRange(currentEditor.getSelection());
-    //     editorClipboard = currentClipboardPrefix + selection;
-    //   }
-    //
-    //   // CUT (Ctrl+X / Cmd+X)
-    //   if (isCtrlOrCmd && e.code === 'KeyX') {
-    //     e.preventDefault();
-    //     if (!editable) return;
-    //
-    //     // Generate a new random prefix each time we cut
-    //     currentClipboardPrefix = generateRandomPrefix();
-    //     const selection = currentEditor
-    //       .getModel()
-    //       .getValueInRange(currentEditor.getSelection());
-    //     editorClipboard = currentClipboardPrefix + selection;
-    //
-    //     // Remove the selection from the editor
-    //     currentEditor.executeEdits('custom-cut', [
-    //       {
-    //         range: currentEditor.getSelection(),
-    //         text: '',
-    //         forceMoveMarkers: true,
-    //       },
-    //     ]);
-    //   }
-    //
-    //   // PASTE (Ctrl+V / Cmd+V)
-    //   if (isCtrlOrCmd && e.code === 'KeyV') {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-    //
-    //     // Only allow paste if it matches the exact current prefix
-    //     if (editorClipboard.startsWith(currentClipboardPrefix)) {
-    //       // Remove the prefix before inserting
-    //       const customText = editorClipboard.replace(
-    //         currentClipboardPrefix,
-    //         '',
-    //       );
-    //       currentEditor.executeEdits('custom-paste', [
-    //         {
-    //           range: currentEditor.getSelection(),
-    //           text: customText,
-    //           forceMoveMarkers: true,
-    //         },
-    //       ]);
-    //     }
-    //   }
-    //
-    //   // Block Insert (paste on some systems)
-    //   if (e.keyCode === 45 && e.code !== 'KeyO' /* Insert key */) {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-    //   }
-    // });
+    currentEditor.onKeyDown(e => {
+      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+
+      // COPY (Ctrl+C / Cmd+C)
+      if (isCtrlOrCmd && e.code === 'KeyC') {
+        e.preventDefault();
+        if (!editable) return;
+
+        // Generate a new random prefix each time we copy
+        currentClipboardPrefix = generateRandomPrefix();
+        selection = currentEditor
+          .getModel()
+          .getValueInRange(currentEditor.getSelection());
+        editorClipboard = currentClipboardPrefix + selection;
+      }
+
+      // CUT (Ctrl+X / Cmd+X)
+      if (isCtrlOrCmd && e.code === 'KeyX') {
+        e.preventDefault();
+        if (!editable) return;
+
+        // Generate a new random prefix each time we cut
+        currentClipboardPrefix = generateRandomPrefix();
+        selection = currentEditor
+          .getModel()
+          .getValueInRange(currentEditor.getSelection());
+        editorClipboard = currentClipboardPrefix + selection;
+
+        // Remove the selection from the editor
+        currentEditor.executeEdits('custom-cut', [
+          {
+            range: currentEditor.getSelection(),
+            text: '',
+            forceMoveMarkers: true,
+          },
+        ]);
+      }
+
+      // PASTE (Ctrl+V / Cmd+V)
+      if (isCtrlOrCmd && e.code === 'KeyV') {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Only allow paste if it matches the exact current prefix
+        if (editorClipboard.startsWith(currentClipboardPrefix)) {
+          // Remove the prefix before inserting
+          const customText = editorClipboard.replace(
+            currentClipboardPrefix,
+            '',
+          );
+          currentEditor.executeEdits('custom-paste', [
+            {
+              range: currentEditor.getSelection(),
+              text: customText,
+              forceMoveMarkers: true,
+            },
+          ]);
+        }
+      }
+
+      // Block Insert (paste on some systems)
+      // if (e.keyCode === 45 && e.code !== 'KeyO' /* Insert key */) {
+      //   e.preventDefault();
+      //   e.stopPropagation();
+      // }
+    });
 
     // Disable the context menu (right-click) to block "Paste" from there
     currentEditor.onContextMenu(e => {

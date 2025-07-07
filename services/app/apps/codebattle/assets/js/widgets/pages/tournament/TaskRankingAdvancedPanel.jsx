@@ -1,8 +1,5 @@
 import React, {
-  memo,
-  useState,
-  useCallback,
-  useEffect,
+ memo, useState, useCallback, useEffect,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,13 +24,7 @@ import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
 import useTournamentPanel from './useTournamentPanel';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip);
 
 const options = {
   responsive: true,
@@ -56,16 +47,21 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
   const dispatch = useDispatch();
 
   const [mode, setMode] = useState(false);
-  const [description, setDescription] = useState('');
+  const [task, setTask] = useState({});
   const [users, setUsers] = useState([]);
   const [taskItems, setTaskItems] = useState([]);
 
-  const handleChangeMode = useCallback(event => {
-    setMode(event.target.checked);
-  }, [setMode]);
+  const handleChangeMode = useCallback(
+    event => {
+      setMode(event.target.checked);
+    },
+    [setMode],
+  );
 
   const fetchData = useCallback(() => {
-    dispatch(getResults(PanelModeCodes.topUserByTasksMode, { taskId }, setUsers));
+    dispatch(
+      getResults(PanelModeCodes.topUserByTasksMode, { taskId }, setUsers),
+    );
     dispatch(
       getResults(
         PanelModeCodes.taskDurationDistributionMode,
@@ -76,8 +72,8 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
   }, [setUsers, setTaskItems, dispatch, taskId]);
 
   useEffect(() => {
-    dispatch(getTask(taskId, setDescription));
-  }, [taskId, setDescription, dispatch]);
+    dispatch(getTask(taskId, setTask));
+  }, [taskId, setTask, dispatch]);
 
   useTournamentPanel(fetchData, state);
 
@@ -113,9 +109,11 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
             {i18next.t('Show task description')}
           </label>
         </div>
+        <p>{task.name}</p>
         {mode ? (
           <div className="cb-overflow-y-auto">
-            <TaskDescriptionMarkdown description={description} />
+            <TaskDescriptionMarkdown description={task.descriptionEn} />
+            <TaskDescriptionMarkdown description={task.descriptionRu} />
           </div>
         ) : (
           <table className="table table-striped cb-custom-event-table">
@@ -133,9 +131,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                 <th className="p-1 pl-4 font-weight-light border-0">
                   {i18next.t('Duration (sec)')}
                 </th>
-                <th className="p-1 pl-4 font-weight-light border-0">
-                  {' '}
-                </th>
+                <th className="p-1 pl-4 font-weight-light border-0"> </th>
               </tr>
             </thead>
             <tbody>
@@ -180,7 +176,10 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                       {item.durationSec}
                     </td>
                     <td className={tableDataCellClassName}>
-                      <a className="text-primary" href={`/games/${item.gameId}`}>
+                      <a
+                        className="text-primary"
+                        href={`/games/${item.gameId}`}
+                      >
                         <FontAwesomeIcon icon="link" className="mr-1" />
                       </a>
                     </td>

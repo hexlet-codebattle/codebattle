@@ -64,6 +64,8 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
         "players_limit" => 200
       })
 
+    t_id = tournament.id
+
     users = [user1, user2, user3, user4, user5, user6] ++ rest_users
     admin_topic = tournament_admin_topic(tournament.id)
     common_topic = tournament_common_topic(tournament.id)
@@ -309,7 +311,72 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     # Verify results were created for all players
     assert Repo.count(TournamentResult) == 202
 
-    assert %{} = Tournament.Helpers.get_player_ranking_stats(tournament)
+    assert %{
+             "current_round" => 1,
+             "players" => [p1, p2, p3, p4, p5, p6, p7, p8, p9 | _] = players,
+             "tournament_id" => ^t_id
+           } = Tournament.Helpers.get_player_ranking_stats(tournament)
+
+    {active, bottom} = Enum.split_with(players, &(&1["active"] == 1))
+    assert Enum.count(active) == 128
+    assert Enum.count(bottom) == 64
+
+    assert %{"active" => 0, "total_score" => 0, "won_tasks" => 0, "rank" => 192} =
+             List.last(players)
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{
+                 round: 1,
+                 score: 605,
+                 opponent_id: _,
+                 opponent_clan_id: _,
+                 player_win_status: true,
+                 solved_tasks: ["won", "won"]
+               }
+             ],
+             "id" => _,
+             "name" => "u1",
+             "rank" => 1,
+             "returned" => 0,
+             "total_score" => 605,
+             "total_tasks" => 2,
+             "win_prob" => _,
+             "won_tasks" => 2
+           } = p1
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{
+                 round: 1,
+                 score: 563,
+                 opponent_id: _,
+                 opponent_clan_id: _,
+                 player_win_status: true,
+                 solved_tasks: ["won", "won"]
+               }
+             ],
+             "id" => _,
+             "name" => "u2",
+             "rank" => 2,
+             "returned" => 0,
+             "total_score" => 563,
+             "total_tasks" => 2,
+             "win_prob" => _,
+             "won_tasks" => 2
+           } = p2
+
+    assert %{"active" => 1, "rank" => 3, "total_score" => 520} = p3
+    assert %{"active" => 1, "rank" => 4, "total_score" => 478} = p4
+    assert %{"active" => 1, "rank" => 5, "total_score" => 436} = p5
+    assert %{"active" => 1, "rank" => 6, "total_score" => 394} = p6
+    assert %{"active" => 1, "rank" => 7, "total_score" => 351} = p7
+    assert %{"active" => 1, "rank" => 8, "total_score" => 303, "history" => [_]} = p8
+    # assert %{"active" => 1, "rank" => 9, "history" => [], "won_tasks" => 0} = p9
 
     # Verify tournament state after round finish
     tournament_after_round1 = Tournament.Context.get(tournament.id)
@@ -541,22 +608,6 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     assert Repo.count(TournamentResult) == 404
 
     assert_received %Message{
-      topic: ^common_topic,
-      event: "tournament:round_finished",
-      payload: %{
-        tournament: %{
-          type: "top200",
-          state: "active",
-          current_round_position: 1,
-          break_state: "on",
-          last_round_ended_at: _,
-          last_round_started_at: _,
-          show_results: true
-        }
-      }
-    }
-
-    assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
       payload: %{
@@ -579,6 +630,22 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     assert_received %Message{
       topic: ^admin_topic,
       event: "tournament:updated",
+      payload: %{
+        tournament: %{
+          type: "top200",
+          state: "active",
+          current_round_position: 1,
+          break_state: "on",
+          last_round_ended_at: _,
+          last_round_started_at: _,
+          show_results: true
+        }
+      }
+    }
+
+    assert_received %Message{
+      topic: ^common_topic,
+      event: "tournament:round_finished",
       payload: %{
         tournament: %{
           type: "top200",
@@ -917,6 +984,170 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
+    assert %{
+             "current_round" => 4,
+             "players" => [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 | _] = players,
+             "tournament_id" => ^t_id
+           } = Tournament.Helpers.get_player_ranking_stats(tournament)
+
+    assert 2 == Enum.count(players, &(&1["returned"] == 1))
+
+    {active, bottom} = Enum.split_with(players, &(&1["active"] == 1))
+    assert Enum.count(active) == 8
+    assert Enum.count(bottom) == 184
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{round: 1, score: 605, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 950, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 400, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 501, player_win_status: true, solved_tasks: ["won", "timeout"]}
+             ],
+             "id" => _,
+             "name" => "u1",
+             "rank" => 1,
+             "returned" => 0,
+             "total_score" => 2456,
+             "total_tasks" => 8,
+             "win_prob" => "23",
+             "won_tasks" => 6
+           } = p1
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{round: 1, score: 563, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 861, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 350, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+             ],
+             "id" => _,
+             "name" => "u2",
+             "rank" => 2,
+             "returned" => 0,
+             "total_score" => 1774,
+             "total_tasks" => 7,
+             "win_prob" => _,
+             "won_tasks" => 5
+           } = p2
+
+    assert %{
+             "active" => 1,
+             "rank" => 3,
+             "total_score" => 1591,
+             "history" => [
+               %{round: 1, score: 520, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 771, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 300, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+             ],
+             "win_prob" => _,
+             "total_tasks" => 7,
+             "won_tasks" => 5
+           } = p3
+
+    assert %{
+             "active" => 1,
+             "rank" => 4,
+             "total_score" => 1410,
+             "history" => [
+               %{round: 1, score: 478, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 682, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 250, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+             ],
+             "name" => "u4",
+             "returned" => 0,
+             "total_tasks" => 7,
+             "win_prob" => "13",
+             "won_tasks" => 5
+           } = p4
+
+    assert %{
+             "active" => 1,
+             "rank" => 5,
+             "total_score" => 1229,
+             "history" => [
+               %{round: 1, score: 436, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 593, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+             ],
+             "name" => "u5",
+             "returned" => 0,
+             "total_tasks" => 7,
+             "win_prob" => "11",
+             "won_tasks" => 5
+           } = p5
+
+    # assert %{
+    #          "active" => 1,
+    #          "rank" => 6,
+    #          "history" => [
+    #            %{player_win_status: false, round: 1, score: 0, solved_tasks: ["timeout"]},
+    #            %{player_win_status: false, round: 2, score: 0, solved_tasks: ["timeout"]},
+    #            %{player_win_status: false, round: 3, score: 0, solved_tasks: ["timeout"]},
+    #            %{player_win_status: true, round: 4, score: 1002, solved_tasks: ["won", "timeout"]}
+    #          ],
+    #          "name" => "u9",
+    #          "returned" => 1,
+    #          "total_score" => 1002,
+    #          "total_tasks" => 5,
+    #          "win_prob" => "42",
+    #          "won_tasks" => 1
+    #        } = p6
+
+    # assert %{
+    #          "active" => 1,
+    #          "rank" => 7,
+    #          "total_score" => 748,
+    #          "history" => [
+    #            %{round: 1, score: 394, player_win_status: true, solved_tasks: ["won", "won"]},
+    #            %{round: 2, score: 354, player_win_status: true, solved_tasks: ["won", "timeout"]},
+    #            %{round: 3, score: 0, player_win_status: true, solved_tasks: ["timeout"]},
+    #            %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+    #          ],
+    #          "name" => "u6",
+    #          "returned" => 0,
+    #          "total_tasks" => 6,
+    #          "win_prob" => "42",
+    #          "won_tasks" => 3
+    #        } = p7
+
+    # assert %{
+    #          "active" => 1,
+    #          "rank" => 8,
+    #          "total_score" => 665,
+    #          "history" => [
+    #            %{round: 1, score: 351, player_win_status: true, solved_tasks: ["won", "won"]},
+    #            %{round: 2, score: 314, player_win_status: true, solved_tasks: ["won", "timeout"]},
+    #            %{round: 3, score: 0, player_win_status: true, solved_tasks: ["timeout"]},
+    #            %{round: 4, score: 0, player_win_status: true, solved_tasks: ["timeout"]}
+    #          ],
+    #          "name" => "u7",
+    #          "returned" => 1,
+    #          "total_tasks" => 6,
+    #          "win_prob" => "42",
+    #          "won_tasks" => 3
+    #        } = p8
+
+    # assert %{
+    #          "active" => 0,
+    #          "rank" => 9,
+    #          "history" => [],
+    #          "total_score" => 578,
+    #          "name" => "u8",
+    #          "returned" => 0,
+    #          "total_tasks" => 6,
+    #          "win_prob" => "42",
+    #          "won_tasks" => 3
+    #        } = p9
+
+    # assert %{"active" => 0, "rank" => 10, "history" => [], "won_tasks" => 0} = p10
+
     ##### Start 5 round
     tournament = Tournament.Context.get(tournament.id)
     Tournament.Server.stop_round_break_after(tournament.id, tournament.current_round_position, 0)
@@ -1064,6 +1295,38 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     end
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+
+    assert %{
+             "current_round" => 5,
+             "players" => [p1 | _] = players,
+             "tournament_id" => ^t_id
+           } = Tournament.Helpers.get_player_ranking_stats(tournament)
+
+    refute Enum.any?(players, &(&1["returned"] == 1))
+
+    {active, bottom} = Enum.split_with(players, &(&1["active"] == 1))
+    assert Enum.count(active) == 4
+    assert Enum.count(bottom) == 188
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{round: 1, score: 605, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 950, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 400, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 501, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 5, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]}
+             ],
+             "id" => _,
+             "name" => "u1",
+             "rank" => 1,
+             "returned" => 0,
+             "total_score" => 2656,
+             "total_tasks" => 10,
+             "win_prob" => _,
+             "won_tasks" => 7
+           } = p1
 
     ##### Start 6 round
     tournament = Tournament.Context.get(tournament.id)
@@ -1218,6 +1481,37 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
            } = Tournament.Ranking.get_page(tournament, 1)
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
+
+    assert %{
+             "current_round" => 6,
+             "players" => [p1 | _] = players,
+             "tournament_id" => ^t_id
+           } = Tournament.Helpers.get_player_ranking_stats(tournament)
+
+    {active, bottom} = Enum.split_with(players, &(&1["active"] == 1))
+    assert Enum.count(active) == 2
+    assert Enum.count(bottom) == 190
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{round: 1, score: 605, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 950, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 400, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 501, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 5, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 6, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]}
+             ],
+             "id" => _,
+             "name" => "u1",
+             "rank" => 1,
+             "returned" => 0,
+             "total_score" => 2856,
+             "total_tasks" => 12,
+             "win_prob" => _,
+             "won_tasks" => 8
+           } = p1
 
     ##### Start 7 round
     tournament = Tournament.Context.get(tournament.id)
@@ -1436,7 +1730,39 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
     assert Enum.empty?(Tournament.Helpers.get_matches(tournament, "playing"))
 
     # Verify tournament results for all players
-    assert Repo.count(TournamentResult) == 1380
+    assert Repo.count(TournamentResult) == 1396
+
+    assert %{
+             "current_round" => 7,
+             "players" => [p1 | _] = players,
+             "tournament_id" => ^t_id
+           } = Tournament.Helpers.get_player_ranking_stats(tournament)
+
+    {active, bottom} = Enum.split_with(players, &(&1["active"] == 1))
+    assert Enum.count(active) == 1
+    assert Enum.count(bottom) == 191
+
+    assert %{
+             "active" => 1,
+             "clan_id" => _,
+             "history" => [
+               %{round: 1, score: 605, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 2, score: 950, player_win_status: true, solved_tasks: ["won", "won"]},
+               %{round: 3, score: 400, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 4, score: 501, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 5, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 6, score: 200, player_win_status: true, solved_tasks: ["won", "timeout"]},
+               %{round: 7, score: 400, player_win_status: true, solved_tasks: ["won", "won"]}
+             ],
+             "id" => _,
+             "name" => "u1",
+             "rank" => 1,
+             "returned" => 0,
+             "total_score" => 3256,
+             "total_tasks" => 14,
+             "win_prob" => _,
+             "won_tasks" => 10
+           } = p1
   end
 
   defp get_users_active_games(user_ids) do

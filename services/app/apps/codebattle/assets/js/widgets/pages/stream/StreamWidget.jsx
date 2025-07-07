@@ -8,7 +8,7 @@ import useMachineStateSelector from '@/utils/useMachineStateSelector';
 import useSearchParams from '@/utils/useSearchParams';
 
 import * as machineSelectors from '../../machines/selectors';
-import { connectToStream } from '../../middlewares/Stream';
+import connectToStream from '../../middlewares/Stream';
 
 import StreamEditorPanel from './StreamEditorPanel';
 import StreamFullPanel from './StreamFullPanel';
@@ -20,21 +20,29 @@ const orientations = {
   RIGHT: 'right',
 };
 
-function StreamWidget({
-  mainMachine,
-  waitingRoomMachine,
-  taskMachine,
-}) {
+function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
   const dispatch = useDispatch();
   const game = useSelector(state => state.game);
   const searchParams = useSearchParams();
-  const orientation = searchParams.has('orientation') ? searchParams.get('orientation') : orientations.NONE;
+  const orientation = searchParams.has('orientation')
+    ? searchParams.get('orientation')
+    : orientations.NONE;
 
-  const fontSize = searchParams.has('fontSize') ? searchParams.get('fontSize') : 16;
-  const codeFontSize = searchParams.has('codeFontSize') ? searchParams.get('codeFontSize') : 16;
-  const headerFontSize = searchParams.has('headerFontSize') ? searchParams.get('headerFontSize') : 16;
-  const widthInfoPanelPercentage = searchParams.has('widthInfoPanel') ? searchParams.get('widthInfoPanel') : 40;
-  const widthEditorPanelPercentage = searchParams.has('widthEditorPanel') ? searchParams.get('widthEditorPanel') : 60;
+  const fontSize = searchParams.has('fontSize')
+    ? searchParams.get('fontSize')
+    : 16;
+  const codeFontSize = searchParams.has('codeFontSize')
+    ? searchParams.get('codeFontSize')
+    : 16;
+  const headerFontSize = searchParams.has('headerFontSize')
+    ? searchParams.get('headerFontSize')
+    : 16;
+  const widthInfoPanelPercentage = searchParams.has('widthInfoPanel')
+    ? searchParams.get('widthInfoPanel')
+    : 40;
+  const widthEditorPanelPercentage = searchParams.has('widthEditorPanel')
+    ? searchParams.get('widthEditorPanel')
+    : 60;
 
   const { mainService, waitingRoomService } = useGameRoomMachine({
     mainMachine,
@@ -53,7 +61,7 @@ function StreamWidget({
 
   useEffect(() => {
     if (!game.id) {
-      return () => { };
+      return () => {};
     }
 
     const channel = setGameChannel(game.id);
@@ -77,10 +85,15 @@ function StreamWidget({
   return (
     <div className="vh-100 overflow-hidden cb-stream-widget">
       <div className="d-flex flex-column w-100 h-100">
-        <div className="cb-stream-widget-header cb-stream-widget-text d-flex" style={{ fontSize: `${headerFontSize}px` }}>
-          <div className="cb-stream-widget-header-img-left"/>
-          <div className="cb-stream-widget-header-title text-center p-2 ">Баттл Вузов</div>
-          <div className="cb-stream-widget-header-img-right"/>
+        <div
+          className="cb-stream-widget-header cb-stream-widget-text d-flex"
+          style={{ fontSize: `${headerFontSize}px` }}
+        >
+          <div className="cb-stream-widget-header-img-left" />
+          <div className="cb-stream-widget-header-title text-center p-2 ">
+            Баттл Вузов
+          </div>
+          <div className="cb-stream-widget-header-img-right" />
         </div>
         <div className="flex-grow-1 d-flex flex-column h-100">
           {orientations.NONE === orientation && (
@@ -91,7 +104,10 @@ function StreamWidget({
               codeFontSize={codeFontSize}
             />
           )}
-          <div className="d-flex w-100 flex-grow-1 h-100" style={{ fontSize: `${fontSize}px` }}>
+          <div
+            className="d-flex w-100 flex-grow-1 h-100"
+            style={{ fontSize: `${fontSize}px` }}
+          >
             {orientations.LEFT === orientation && (
               <>
                 <StreamTaskInfoPanel
@@ -107,7 +123,6 @@ function StreamWidget({
                   fontSize={codeFontSize}
                   width={`${widthEditorPanelPercentage}%`}
                 />
-
               </>
             )}
             {orientations.RIGHT === orientation && (

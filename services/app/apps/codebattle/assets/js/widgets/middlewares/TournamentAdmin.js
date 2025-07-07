@@ -27,10 +27,10 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
 
   const onJoinSuccess = response => {
     if (isAdminWidged) {
-    // Handle active_game_id if it exists in the response
-    if (response.activeGameId) {
-      dispatch(actions.setAdminActiveGameId(response.activeGameId));
-    }
+      // Handle active_game_id if it exists in the response
+      if (response.activeGameId) {
+        dispatch(actions.setAdminActiveGameId(response.activeGameId));
+      }
       dispatch(
         actions.setTournamentData({
           ...response.tournament,
@@ -43,7 +43,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
       );
     }
 
-    dispatch(actions.updateTournamentRanking((response.ranking)));
+    dispatch(actions.updateTournamentRanking(response.ranking));
     dispatch(actions.updateTournamentPlayers(compact(response.players)));
     dispatch(actions.updateTournamentMatches(compact(response.matches)));
     dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
@@ -60,101 +60,105 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
 // export const soundNotification = notification();
 
 export const connectToTournament = (_machine, newTournamentId, isAdminWidged = false) => dispatch => {
-  setTournamentChannel(newTournamentId);
-  initTournamentChannel(dispatch, isAdminWidged);
+    setTournamentChannel(newTournamentId);
+    initTournamentChannel(dispatch, isAdminWidged);
 
-  const handleUpdate = response => {
-    dispatch(actions.updateTournamentData(response.tournament));
-    dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
-    dispatch(actions.updateTournamentMatches(compact(response.matches || [])));
-    if (response.ranking) {
-      dispatch(actions.updateTournamentRanking((response.ranking)));
-    }
-    if (response.tasksInfo) {
-      dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
-    }
+    const handleUpdate = response => {
+      dispatch(actions.updateTournamentData(response.tournament));
+      dispatch(
+        actions.updateTournamentPlayers(compact(response.players || [])),
+      );
+      dispatch(
+        actions.updateTournamentMatches(compact(response.matches || [])),
+      );
+      if (response.ranking) {
+        dispatch(actions.updateTournamentRanking(response.ranking));
+      }
+      if (response.tasksInfo) {
+        dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
+      }
+    };
+
+    const handleReportPending = response => {
+      dispatch(actions.addReport(response.report));
+    };
+
+    const handleReportUpdated = response => {
+      dispatch(actions.updateReport(response.report));
+    };
+
+    const handleMatchesUpdate = response => {
+      dispatch(actions.updateTournamentMatches(compact(response.matches)));
+    };
+
+    const handlePlayersUpdate = response => {
+      dispatch(actions.updateTournamentPlayers(compact(response.players)));
+    };
+
+    const handleTournamentRoundCreated = response => {
+      dispatch(actions.updateTournamentData(response.tournament));
+    };
+
+    const handleRoundFinished = response => {
+      dispatch(
+        actions.updateTournamentData({
+          ...response.tournament,
+          topPlayerIds: response.topPlayerIds,
+          playersPageNumber: 1,
+          playersPageSize: 20,
+        }),
+      );
+
+      dispatch(actions.updateTournamentPlayers(compact(response.players)));
+      dispatch(actions.updateTopPlayers(compact(response.players)));
+    };
+
+    const handleTournamentRestarted = response => {
+      dispatch(
+        actions.setTournamentData({
+          ...response.tournament,
+          channel: { online: true },
+          playersPageNumber: 1,
+          playersPageSize: 20,
+          matches: {},
+          players: {},
+        }),
+      );
+    };
+
+    const handlePlayerJoined = response => {
+      dispatch(actions.addTournamentPlayer(response));
+      dispatch(actions.updateTournamentData(response.tournament));
+    };
+
+    const handlePlayerLeft = response => {
+      dispatch(actions.removeTournamentPlayer(response));
+      dispatch(actions.updateTournamentData(response.tournament));
+    };
+
+    const handleMatchUpserted = response => {
+      dispatch(actions.updateTournamentMatches(compact([response.match])));
+      dispatch(actions.updateTournamentPlayers(compact(response.players)));
+    };
+
+    const handleTournamentFinished = response => {
+      dispatch(actions.updateTournamentData(response.tournament));
+    };
+
+    return channel
+      .addListener('tournament:update', handleUpdate)
+      .addListener('tournament:report:pending', handleReportPending)
+      .addListener('tournament:report:updated', handleReportUpdated)
+      .addListener('tournament:matches:update', handleMatchesUpdate)
+      .addListener('tournament:players:update', handlePlayersUpdate)
+      .addListener('tournament:round_created', handleTournamentRoundCreated)
+      .addListener('tournament:round_finished', handleRoundFinished)
+      .addListener('tournament:player:joined', handlePlayerJoined)
+      .addListener('tournament:player:left', handlePlayerLeft)
+      .addListener('tournament:match:upserted', handleMatchUpserted)
+      .addListener('tournament:restarted', handleTournamentRestarted)
+      .addListener('tournament:finished', handleTournamentFinished);
   };
-
-  const handleReportPending = response => {
-    dispatch(actions.addReport(response.report));
-  };
-
-  const handleReportUpdated = response => {
-    dispatch(actions.updateReport(response.report));
-  };
-
-  const handleMatchesUpdate = response => {
-    dispatch(actions.updateTournamentMatches(compact(response.matches)));
-  };
-
-  const handlePlayersUpdate = response => {
-    dispatch(actions.updateTournamentPlayers(compact(response.players)));
-  };
-
-  const handleTournamentRoundCreated = response => {
-    dispatch(actions.updateTournamentData(response.tournament));
-  };
-
-  const handleRoundFinished = response => {
-    dispatch(
-      actions.updateTournamentData({
-        ...response.tournament,
-        topPlayerIds: response.topPlayerIds,
-        playersPageNumber: 1,
-        playersPageSize: 20,
-      }),
-    );
-
-    dispatch(actions.updateTournamentPlayers(compact(response.players)));
-    dispatch(actions.updateTopPlayers(compact(response.players)));
-  };
-
-  const handleTournamentRestarted = response => {
-    dispatch(
-      actions.setTournamentData({
-        ...response.tournament,
-        channel: { online: true },
-        playersPageNumber: 1,
-        playersPageSize: 20,
-        matches: {},
-        players: {},
-      }),
-    );
-  };
-
-  const handlePlayerJoined = response => {
-    dispatch(actions.addTournamentPlayer(response));
-    dispatch(actions.updateTournamentData(response.tournament));
-  };
-
-  const handlePlayerLeft = response => {
-    dispatch(actions.removeTournamentPlayer(response));
-    dispatch(actions.updateTournamentData(response.tournament));
-  };
-
-  const handleMatchUpserted = response => {
-    dispatch(actions.updateTournamentMatches(compact([response.match])));
-    dispatch(actions.updateTournamentPlayers(compact(response.players)));
-  };
-
-  const handleTournamentFinished = response => {
-    dispatch(actions.updateTournamentData(response.tournament));
-  };
-
-  return channel
-    .addListener('tournament:update', handleUpdate)
-    .addListener('tournament:report:pending', handleReportPending)
-    .addListener('tournament:report:updated', handleReportUpdated)
-    .addListener('tournament:matches:update', handleMatchesUpdate)
-    .addListener('tournament:players:update', handlePlayersUpdate)
-    .addListener('tournament:round_created', handleTournamentRoundCreated)
-    .addListener('tournament:round_finished', handleRoundFinished)
-    .addListener('tournament:player:joined', handlePlayerJoined)
-    .addListener('tournament:player:left', handlePlayerLeft)
-    .addListener('tournament:match:upserted', handleMatchUpserted)
-    .addListener('tournament:restarted', handleTournamentRestarted)
-    .addListener('tournament:finished', handleTournamentFinished);
-};
 
 // TODO (tournaments): request matches by searched player id
 export const uploadPlayers = playerIds => (dispatch, getState) => {
@@ -316,7 +320,9 @@ export const getResults = (type, params, onSuccess) => () => {
       const data = camelizeKeys(payload);
 
       if (type === PanelModeCodes.topUserByClansMode) {
-        const result = Object.values(groupBy(data.results, item => item.clanRank));
+        const result = Object.values(
+          groupBy(data.results, item => item.clanRank),
+        );
         onSuccess(result);
       } else {
         onSuccess(data.results);
@@ -325,13 +331,11 @@ export const getResults = (type, params, onSuccess) => () => {
 };
 
 export const getTask = (taskId, onSuccess) => () => {
-  channel
-    .push('tournament:get_task', { taskId })
-    .receive('ok', payload => {
-      const data = camelizeKeys(payload);
+  channel.push('tournament:get_task', { taskId }).receive('ok', payload => {
+    const data = camelizeKeys(payload);
 
-      onSuccess(data.descriptionRu);
-    });
+    onSuccess(data);
+  });
 };
 
 export const pushActiveMatchToStream = gameId => dispatch => {
