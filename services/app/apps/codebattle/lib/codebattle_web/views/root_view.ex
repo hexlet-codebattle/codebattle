@@ -5,6 +5,7 @@ defmodule CodebattleWeb.RootView do
 
   alias Codebattle.Feedback
 
+  @app_version Application.compile_env(:codebattle, :app_version)
   def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end
@@ -18,6 +19,20 @@ defmodule CodebattleWeb.RootView do
 
   def feedback do
     Enum.map(Feedback.get_all(), &item/1)
+  end
+
+  def app_short_version do
+    case @app_version do
+      "" -> "undefined"
+      version -> String.slice(version, 0, 7)
+    end
+  end
+
+  def github_commit_link do
+    case @app_version do
+      "" -> "/"
+      version -> "https://github.com/hexlet-codebattle/codebattle/commit/#{version}"
+    end
   end
 
   defp item(%{title: title, description: description, pubDate: pub_date, link: link, guid: guid}) do
