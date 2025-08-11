@@ -31,7 +31,17 @@ ENV DOCKER_VERSION 24.0.9
 ENV NERDCTL_VERSION 2.1.3
 ENV GOON_VERSION v1.1.1
 
-RUN apk update && apk add --no-cache ca-certificates git make curl vim
+RUN apk update && apk add --no-cache \
+    podman \
+    iptables \
+    fuse-overlayfs \
+    shadow \
+    slirp4netns \
+    ca-certificates \
+    git \
+    make \
+    curl \
+    vim
 
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker

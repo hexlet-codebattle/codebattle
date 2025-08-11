@@ -155,5 +155,6 @@ config :runner, pull_docker_images: false
 config :runner, runner_container_killer: false
 config :runner, runner_cpu_logger: false
 config :runner, white_list_lang_slugs: []
+config :runner, container_runtime: "docker"
 
 import_config "#{Mix.env()}.exs"
