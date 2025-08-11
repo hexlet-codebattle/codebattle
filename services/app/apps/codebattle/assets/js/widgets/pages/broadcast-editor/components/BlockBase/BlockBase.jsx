@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Rnd } from 'react-rnd';
 import './BlockBase.css';
-import '../resize.css';
+import '../../resize.css';
 
 function BlockBase({
   id,
