@@ -98,10 +98,10 @@ defmodule Runner.Executor do
     Logger.info("Docker volume: #{inspect(volume)}")
 
     cmd_template =
-      if Application.get_env(:runner, :container_runtime) == "containerd" do
-        @nerdctl_cmd_template
-      else
+      if Application.get_env(:runner, :container_runtime) == "docker" do
         @docker_cmd_template
+      else
+        @nerdctl_cmd_template
       end
 
     cmd_template
