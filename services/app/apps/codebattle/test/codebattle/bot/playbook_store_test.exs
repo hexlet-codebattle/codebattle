@@ -111,7 +111,7 @@ defmodule Codebattle.PlaybookStoreTest do
     user1_id = user1.id
     user2_id = user2.id
 
-    assert %Codebattle.Playbook{
+    assert %Playbook{
              data: %Codebattle.Playbook.Data{
                count: 10,
                players: [

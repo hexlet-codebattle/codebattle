@@ -313,7 +313,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     assert %{
              "current_round" => 1,
-             "players" => [p1, p2, p3, p4, p5, p6, p7, p8, p9 | _] = players,
+             "players" => [p1, p2, p3, p4, p5, p6, p7, p8, _p9 | _] = players,
              "tournament_id" => ^t_id
            } = Tournament.Helpers.get_player_ranking_stats(tournament)
 
@@ -986,7 +986,7 @@ defmodule Codebattle.Tournament.Entire.Top200Test do
 
     assert %{
              "current_round" => 4,
-             "players" => [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10 | _] = players,
+             "players" => [p1, p2, p3, p4, p5, _p6, _p7, _p8, _p9, _p10 | _] = players,
              "tournament_id" => ^t_id
            } = Tournament.Helpers.get_player_ranking_stats(tournament)
 

@@ -25,7 +25,7 @@ defmodule CodebattleWeb.TaskPackController do
       description: "Create your own task pack",
       url: Routes.task_pack_path(conn, :new)
     })
-    |> render("new.html", changeset: Codebattle.TaskPack.changeset(%Codebattle.TaskPack{}))
+    |> render("new.html", changeset: TaskPack.changeset(%TaskPack{}))
   end
 
   def show(conn, %{"id" => id}) do
@@ -89,7 +89,7 @@ defmodule CodebattleWeb.TaskPackController do
     task_pack = TaskPack.get!(id)
 
     if TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) do
-      changeset = Codebattle.TaskPack.changeset(task_pack)
+      changeset = TaskPack.changeset(task_pack)
       render(conn, "edit.html", task_pack: task_pack, changeset: changeset)
     else
       conn
@@ -103,7 +103,7 @@ defmodule CodebattleWeb.TaskPackController do
     task_pack = TaskPack.get!(id)
 
     if TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) do
-      Codebattle.TaskPack.delete(task_pack)
+      TaskPack.delete(task_pack)
 
       conn
       |> put_flash(:info, gettext("Task pack deleted!"))
@@ -120,7 +120,7 @@ defmodule CodebattleWeb.TaskPackController do
     task_pack = TaskPack.get!(id)
 
     if User.admin?(conn.assigns.current_user) do
-      Codebattle.TaskPack.change_state(task_pack, "active")
+      TaskPack.change_state(task_pack, "active")
 
       conn
       |> put_flash(:info, "TaskPack updated successfully.")
@@ -137,7 +137,7 @@ defmodule CodebattleWeb.TaskPackController do
     task_pack = TaskPack.get!(id)
 
     if User.admin?(conn.assigns.current_user) do
-      Codebattle.TaskPack.change_state(task_pack, "disabled")
+      TaskPack.change_state(task_pack, "disabled")
 
       conn
       |> put_flash(:info, "TaskPack updated successfully.")

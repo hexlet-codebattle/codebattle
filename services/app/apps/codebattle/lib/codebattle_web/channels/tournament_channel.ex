@@ -181,7 +181,7 @@ defmodule CodebattleWeb.TournamentChannel do
       tournament = socket.assigns.tournament_info
       user = socket.assigns.current_user
       ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, user)
-      clans = Tournament.Helpers.get_clans_by_ranking(tournament, ranking)
+      clans = Helpers.get_clans_by_ranking(tournament, ranking)
 
       push(socket, "tournament:player:joined", payload)
       push(socket, "tournament:ranking_update", %{ranking: ranking, clans: clans})

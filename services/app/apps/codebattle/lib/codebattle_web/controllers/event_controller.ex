@@ -12,7 +12,7 @@ defmodule CodebattleWeb.EventController do
   end
 
   def new(conn, _params) do
-    render(conn, "new.html", changeset: Codebattle.Event.changeset(%Codebattle.Event{}), user: conn.assigns.current_user)
+    render(conn, "new.html", changeset: Event.changeset(%Event{}), user: conn.assigns.current_user)
   end
 
   def show(conn, %{"id" => id}) do
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.EventController do
     # Handle stages JSON if present
     params = process_stages_json(params)
 
-    case Codebattle.Event.create(params) do
+    case Event.create(params) do
       {:ok, event} ->
         conn
         |> put_flash(:info, "Event created successfully.")
@@ -47,7 +47,7 @@ defmodule CodebattleWeb.EventController do
     # Handle stages JSON if present
     event_params = process_stages_json(event_params)
 
-    case Codebattle.Event.update(
+    case Event.update(
            event,
            Map.put(event_params, "creator_id", conn.assigns.current_user.id)
          ) do
@@ -64,7 +64,7 @@ defmodule CodebattleWeb.EventController do
   def edit(conn, %{"id" => id}) do
     event = Event.get!(id)
 
-    changeset = Codebattle.Event.changeset(event)
+    changeset = Event.changeset(event)
     render(conn, "edit.html", event: event, changeset: changeset, user: conn.assigns.current_user)
   end
 

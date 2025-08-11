@@ -120,7 +120,7 @@ defmodule Codebattle.Task do
   def upsert!(params) do
     %__MODULE__{}
     |> changeset(params)
-    |> Codebattle.Repo.insert!(
+    |> Repo.insert!(
       on_conflict: [
         set: [
           arguments_generator: Map.get(params, :arguments_generator, ""),
@@ -176,7 +176,7 @@ defmodule Codebattle.Task do
   end
 
   defp filter_visibility(query, user) do
-    if Codebattle.User.admin?(user) do
+    if User.admin?(user) do
       Function.identity(query)
     else
       from(t in query,
@@ -329,12 +329,12 @@ defmodule Codebattle.Task do
 
   @spec can_access_task?(Codebattle.Task.t(), User.t()) :: boolean()
   def can_access_task?(task, user) do
-    task.creator_id == user.id || Codebattle.User.admin?(user)
+    task.creator_id == user.id || User.admin?(user)
   end
 
   @spec can_delete_task?(Codebattle.Task.t(), User.t()) :: boolean()
   def can_delete_task?(task, user) do
-    (task.creator_id == user.id || Codebattle.User.admin?(user)) && task.origin == "user"
+    (task.creator_id == user.id || User.admin?(user)) && task.origin == "user"
   end
 
   def change_state(task, state) do

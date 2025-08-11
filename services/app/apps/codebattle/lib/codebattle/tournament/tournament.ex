@@ -65,7 +65,7 @@ defmodule Codebattle.Tournament do
 
   schema "tournaments" do
     belongs_to(:creator, Codebattle.User, on_replace: :update)
-    belongs_to(:event, Codebattle.Event, on_replace: :update)
+    belongs_to(:event, Event, on_replace: :update)
 
     field(:access_token, :string)
     field(:access_type, :string, default: "public")

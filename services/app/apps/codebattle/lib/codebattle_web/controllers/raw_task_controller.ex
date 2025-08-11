@@ -64,7 +64,7 @@ defmodule CodebattleWeb.RawTaskController do
     task = Task.get!(id)
 
     if Task.can_access_task?(task, conn.assigns.current_user) do
-      changeset = Codebattle.Task.changeset(task)
+      changeset = Task.changeset(task)
       render(conn, "edit.html", task: task, changeset: changeset)
     else
       conn

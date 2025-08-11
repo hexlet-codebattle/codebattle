@@ -67,7 +67,7 @@ defmodule Codebattle.TaskPack do
     task_pack.creator_id == user.id || User.admin?(user)
   end
 
-  @spec get_tasks_by_pack_id(pos_integer()) :: [Codebattle.Task.t()]
+  @spec get_tasks_by_pack_id(pos_integer()) :: [Task.t()]
   def get_tasks_by_pack_id(task_pack_id) do
     task_pack_id
     |> get()
@@ -80,7 +80,7 @@ defmodule Codebattle.TaskPack do
     end
   end
 
-  @spec get_tasks_by_pack_name(String.t()) :: [Codebattle.Task.t()]
+  @spec get_tasks_by_pack_name(String.t()) :: [Task.t()]
   def get_tasks_by_pack_name(name) do
     Codebattle.TaskPack
     |> Repo.get_by(name: name)
@@ -94,7 +94,7 @@ defmodule Codebattle.TaskPack do
   end
 
   defp retrieve_tasks_from_task_pack(task_pack) do
-    tasks = Codebattle.Task.get_by_ids(task_pack.task_ids)
+    tasks = Task.get_by_ids(task_pack.task_ids)
 
     Enum.map(task_pack.task_ids, fn task_id ->
       Enum.find(tasks, fn task -> task.id == task_id end)

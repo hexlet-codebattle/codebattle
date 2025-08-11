@@ -108,7 +108,7 @@ defmodule CodebattleWeb.TaskController do
     task = Task.get!(id)
 
     if Task.can_access_task?(task, conn.assigns.current_user) do
-      changeset = Codebattle.Task.changeset(task)
+      changeset = Task.changeset(task)
       render(conn, "edit.html", task: task, changeset: changeset)
     else
       conn
@@ -139,7 +139,7 @@ defmodule CodebattleWeb.TaskController do
     task = Task.get!(id)
 
     if Codebattle.User.admin?(conn.assigns.current_user) do
-      Codebattle.Task.change_state(task, "active")
+      Task.change_state(task, "active")
 
       conn
       |> put_flash(:info, "Task updated successfully.")
@@ -156,7 +156,7 @@ defmodule CodebattleWeb.TaskController do
     task = Task.get!(id)
 
     if Codebattle.User.admin?(conn.assigns.current_user) do
-      Codebattle.Task.change_state(task, "disabled")
+      Task.change_state(task, "disabled")
 
       conn
       |> put_flash(:info, "Task updated successfully.")

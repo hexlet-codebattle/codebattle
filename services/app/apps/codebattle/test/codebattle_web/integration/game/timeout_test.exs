@@ -39,9 +39,9 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :timer.sleep(70)
 
-    Game.Context.trigger_timeout(game_id)
+    Context.trigger_timeout(game_id)
 
-    assert %{state: "timeout"} = Game.Context.get_game!(game_id)
+    assert %{state: "timeout"} = Context.get_game!(game_id)
   end
 
   test "After timeout user can create games", %{conn2: conn2, socket1: socket1} do
@@ -65,7 +65,7 @@ defmodule CodebattleWeb.Integration.Game.TimeoutTest do
     ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
     Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
-    game = Game.Context.get_game!(game_id)
+    game = Context.get_game!(game_id)
 
     assert game.state == "waiting_opponent"
   end

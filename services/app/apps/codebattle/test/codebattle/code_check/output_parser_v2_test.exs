@@ -30,7 +30,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   {"type":"error","time":0.1406,"value":"ErrorMessage","output":"Output"}
   """
 
-  @failure_expected %Result.V2{
+  @failure_expected %V2{
     success_count: 2,
     version: 2,
     asserts_count: 3,
@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     ]
   }
 
-  @success_expected %Result.V2{
+  @success_expected %V2{
     asserts_count: 2,
     output_error: "",
     status: "ok",
@@ -89,7 +89,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     ]
   }
 
-  @success_with_warning_expected %Result.V2{
+  @success_with_warning_expected %V2{
     asserts_count: 1,
     output_error: "",
     status: "ok",

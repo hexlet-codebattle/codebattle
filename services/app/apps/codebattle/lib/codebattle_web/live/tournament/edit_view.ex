@@ -20,7 +20,7 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
        user_timezone: user_timezone,
        tournament: tournament,
        changeset:
-         Codebattle.Tournament.changeset(tournament, %{
+         Tournament.changeset(tournament, %{
            type: tournament.type,
            task_provider: tournament.task_provider,
            starts_at: tournament.starts_at |> DateTime.shift_zone!(user_timezone) |> to_string(),

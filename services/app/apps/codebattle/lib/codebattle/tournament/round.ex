@@ -43,7 +43,7 @@ defmodule Codebattle.Tournament.Round do
 
     field(:task_pack_id, :integer)
 
-    belongs_to(:tournament, Codebattle.Tournament)
+    belongs_to(:tournament, Tournament)
     timestamps()
   end
 

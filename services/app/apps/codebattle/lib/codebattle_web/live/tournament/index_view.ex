@@ -21,7 +21,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
        user_timezone: user_timezone,
        tournaments: session["tournaments"],
        langs: Runner.Languages.get_lang_slugs(),
-       changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
+       changeset: Tournament.changeset(%Tournament{})
      )}
   end
 

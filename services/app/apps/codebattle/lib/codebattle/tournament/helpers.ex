@@ -368,7 +368,7 @@ defmodule Codebattle.Tournament.Helpers do
             "won_tasks" => player.wins_count,
             "rank" => player.rank,
             "win_prob" => to_string(win_probs[player.id]),
-            "returned" => if(player.returned, do: 1, else: 0),
+            # "returned" => if(player.returned, do: 1, else: 0),
             "active" => if(player.draw_index == max_draw_index, do: 1, else: 0),
             "history" => user_history[player.id] || []
           }
