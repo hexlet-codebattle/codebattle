@@ -148,6 +148,7 @@ config :runner, RunnerWeb.Endpoint,
   pubsub_server: Runner.PubSub
 
 config :runner, :runner_url, "http://localhost:4001"
+config :runner, container_runtime: "docker"
 config :runner, fake_docker_run: false
 config :runner, load_dot_env_file: true
 config :runner, max_parallel_containers_run: 16
@@ -155,6 +156,5 @@ config :runner, pull_docker_images: false
 config :runner, runner_container_killer: false
 config :runner, runner_cpu_logger: false
 config :runner, white_list_lang_slugs: []
-config :runner, container_runtime: "docker"
 
 import_config "#{Mix.env()}.exs"
