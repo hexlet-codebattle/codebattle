@@ -24,6 +24,9 @@ spec:
         - name: docker-sock
           hostPath:
             path: /var/run/docker.sock
+        - name: containerd-sock
+          hostPath:
+            path: /run/containerd/containerd.sock
       containers:
         - name: runner
           securityContext:
@@ -47,6 +50,8 @@ spec:
               name: users-code-path
             - mountPath: /var/run/docker.sock
               name: docker-sock
+            - mountPath: /run/containerd/containerd.sock
+              name: containerd-sock
           envFrom:
             - secretRef:
                 name: codebattle-secrets

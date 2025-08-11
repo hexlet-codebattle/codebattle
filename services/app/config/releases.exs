@@ -161,6 +161,7 @@ config :runner, RunnerWeb.Endpoint,
 
 config :runner, :runner_url, "http://runner.default.svc"
 config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
+config :runner, container_runtime: System.get_env("RUNNER_CONTAINER_RUNTIME", "docker")
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
 config :runner,

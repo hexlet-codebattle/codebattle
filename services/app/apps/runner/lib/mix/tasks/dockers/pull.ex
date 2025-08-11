@@ -20,7 +20,10 @@ defmodule Mix.Tasks.Dockers.Pull do
 
   defp pull(meta) do
     IO.puts("Start pulling image for #{meta.slug}")
-    result = Porcelain.shell("docker pull #{meta.docker_image}", err: :string)
+
+    cmd = "#{Application.get_env(:runner, :container_runtime)} pull #{meta.docker_image}"
+    result = Porcelain.shell(cmd, err: :string)
+
     IO.puts(result.out)
   end
 end

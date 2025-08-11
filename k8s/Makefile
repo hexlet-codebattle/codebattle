@@ -8,7 +8,7 @@ kb-get-pods:
 	kubectl get pod -w -o wide
 
 kb-get-nodes:
-	kubectl get nodes
+	kubectl get nodes -o wide
 
 kb-get-services:
 	kubectl get services

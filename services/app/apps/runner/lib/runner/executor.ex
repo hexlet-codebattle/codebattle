@@ -8,6 +8,8 @@ defmodule Runner.Executor do
 
   @tmp_basedir "/tmp/codebattle-runner"
   @docker_cmd_template "docker run --rm --init --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+  @nerdctl_cmd_template "nerdctl run --rm --runtime=io.containerd.runc.v2 --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+
   @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
@@ -95,7 +97,14 @@ defmodule Runner.Executor do
 
     Logger.info("Docker volume: #{inspect(volume)}")
 
-    @docker_cmd_template
+    cmd_template =
+      if Application.get_env(:runner, :container_runtime) == "containerd" do
+        @nerdctl_cmd_template
+      else
+        @docker_cmd_template
+      end
+
+    cmd_template
     |> :io_lib.format([volume, lang_meta.docker_image, lang_meta.container_run_timeout])
     |> to_string
     |> String.split()
