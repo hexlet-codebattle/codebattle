@@ -38,7 +38,7 @@ defmodule Runner.MixProject do
   defp deps do
     [
       {:bandit, "~> 1.0"},
-      {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
+      {:diff_match_patch, "~> 0.3.0"},
       {:ecto, "~> 3.7"},
       {:envy, "~> 1.1.1"},
       {:jason, "~> 1.2"},

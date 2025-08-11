@@ -45,7 +45,7 @@ defmodule Codebattle.MixProject do
       {:bcrypt_elixir, "~> 2.0"},
       {:cowboy, "~> 2.8"},
       {:delta, github: "slab/delta-elixir"},
-      {:diff_match_patch, github: "vtm9/diff_match_patch", override: true},
+      {:diff_match_patch, "~> 0.3.0"},
       {:earmark, "~> 1.4"},
       {:ecto_psql_extras, "~> 0.2"},
       {:ecto_sql, "~> 3.6"},

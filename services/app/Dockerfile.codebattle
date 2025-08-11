@@ -13,7 +13,7 @@ COPY apps/codebattle/priv/gettext ./priv/gettext
 
 RUN yarn build
 
-FROM elixir:1.18-alpine AS compile-image
+FROM elixir:1.18.4-otp-27-alpine AS compile-image
 ARG GIT_HASH
 
 ENV APP_VERSION=$GIT_HASH
@@ -50,7 +50,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ /var/www/assets
 
-FROM elixir:1.18-alpine AS runtime-image
+FROM elixir:1.18.4-otp-27-alpine AS runtime-image
 
 RUN apk add --no-cache ca-certificates chromium git make curl vim
 
