@@ -1,19 +1,75 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, {
+ useState, useCallback, useRef, useEffect,
+} from 'react';
 
+import BadWordsNext from 'bad-words-next';
+
+import messageTypes from '../../config/messageTypes';
 import { addMessage } from '../../middlewares/Chat';
 
 export default function TournamentChatInput({ disabled }) {
   const [message, setMessage] = useState('');
-  const inputRef = useRef(null);
-  const handleChange = useCallback(({ target: { value } }) => {
-    setMessage(value);
-  }, [setMessage]);
+  const [badwordsReady, setBadwordsReady] = useState(false);
 
-  const handleSubmit = useCallback(e => {
-    e.preventDefault();
-    addMessage(message);
-    setMessage('');
-  }, [message]);
+  const inputRef = useRef(null);
+  const badwordsRef = useRef(new BadWordsNext());
+  const handleChange = useCallback(
+    ({ target: { value } }) => {
+      setMessage(value);
+    },
+    [setMessage],
+  );
+
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      let filteredText = message;
+
+      if (badwordsReady) {
+        try {
+          filteredText = badwordsRef.current.filter(filteredText);
+        } catch (error) {
+          console.error('Error filtering text:', error);
+        }
+      }
+
+      const msg = {
+        text: filteredText,
+        meta: { type: messageTypes.general },
+      };
+
+      addMessage(msg);
+      setMessage('');
+    },
+    [message, badwordsReady],
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadBadwords() {
+      try {
+        // Import without extension to let webpack resolve the correct file
+        const enData = await import('bad-words-next/lib/en');
+        const ruData = await import('bad-words-next/lib/ru');
+        const rlData = await import('bad-words-next/lib/ru_lat');
+
+        if (mounted) {
+          badwordsRef.current.add(enData.default || enData);
+          badwordsRef.current.add(ruData.default || ruData);
+          badwordsRef.current.add(rlData.default || rlData);
+          setBadwordsReady(true);
+        }
+      } catch (error) {
+        console.error('Error loading bad words dictionaries:', error);
+      }
+    }
+
+    loadBadwords();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <form className="m-0" onSubmit={handleSubmit}>

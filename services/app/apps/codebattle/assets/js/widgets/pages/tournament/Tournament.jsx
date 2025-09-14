@@ -189,7 +189,6 @@ function Tournament({ waitingRoomMachine }) {
   useEffect(() => {
     if (tournament.isLive) {
       const channel = connectToChat(tournament.useChat, 'channel')(dispatch);
-
       return () => {
         if (channel) {
           channel.leave();
@@ -199,7 +198,7 @@ function Tournament({ waitingRoomMachine }) {
 
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [tournament.isLive]);
 
   useEffect(() => {
     if (matchConfirmationModalShowing) {

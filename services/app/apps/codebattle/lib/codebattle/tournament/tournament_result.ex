@@ -271,7 +271,7 @@ defmodule Codebattle.Tournament.TournamentResult do
             cond do
               game_result["result_percent"] == 100.0 -> "won"
               game_result["opponent_result_percent"] == 100.0 -> "lost"
-              :default -> "timeout"
+              true -> "timeout"
             end
           end)
       }

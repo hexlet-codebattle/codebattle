@@ -24,7 +24,7 @@ defmodule CodebattleWeb.Plugs.MaintenanceMode do
         |> render("maintenance.html")
         |> halt()
 
-      :default ->
+      true ->
         conn
     end
   end

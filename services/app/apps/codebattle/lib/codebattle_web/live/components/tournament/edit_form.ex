@@ -13,10 +13,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
   def render(assigns) do
     ~H"""
     <div class="container-xl bg-white shadow-sm rounded py-4">
-      <h2 class="text-center">Edit tournament</h2>
-      <h3 class="text-center">
+      <h2 class="text-center mb-2">Edit Tournament</h2>
+      <h3 class="text-center mb-4">
         Creator:
-        <a href={Routes.user_path(@socket, :show, @tournament.creator.id)}>
+        <a href={Routes.user_path(@socket, :show, @tournament.creator.id)} class="text-decoration-none">
           <%= @tournament.creator.name %>
         </a>
       </h3>
@@ -26,219 +26,231 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         for={@changeset}
         phx-change="validate"
         phx-submit="update"
-        class="col-12 col-md-8 col-lg-8 col-xl-8 offset-md-2 offset-lg-2 offset-xl-2"
+        class="col-12 col-md-10 col-lg-8 offset-md-1 offset-lg-2"
       >
         <%= hidden_input(f, :tournament_id, value: @tournament.id) %>
+
         <div class="form-group">
           <%= render_base_errors(@changeset.errors[:base]) %>
         </div>
-        <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-          <div class="d-flex flex-column justify-content-between w-100">
-            <%= label(f, :name) %>
-            <%= text_input(f, :name,
-              class: "form-control",
-              maxlength: "42",
-              required: true
-            ) %>
-            <%= error_tag(f, :name) %>
-          </div>
-          <div class="d-flex flex-column justify-content-between w-100 ml-md-3 ml-lg-3 ml-xl-3">
-            <%= label(f, :type) %>
-            <%= select(f, :type, Codebattle.Tournament.public_types(), class: "custom-select") %>
-            <%= error_tag(f, :type) %>
-          </div>
-        </div>
-        <div class="mt-3">
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <%= label(f, :description) %>
-            <%= textarea(f, :description,
-              class: "form-control",
-              maxlength: "7531",
-              rows: 20,
-              cols: 50,
-              required: true
-            ) %>
-            <%= error_tag(f, :description) %>
-          </div>
-        </div>
-        <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <label>Starts at (<%= @user_timezone %>)</label>
-            <%= datetime_local_input(f, :starts_at,
-              class: "form-control",
-              value:
-                DateTime.from_naive!(
-                  Timex.parse!(f.params["starts_at"], "{ISO:Extended}"),
-                  @user_timezone
-                ),
-              required: true
-            ) %>
-            <%= error_tag(f, :starts_at) %>
-          </div>
-          <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-            <%= label(f, :access_type) %>
-            <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "custom-select") %>
-            <%= error_tag(f, :access_type) %>
-          </div>
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <%= label(f, :task_strategy) %>
-            <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(),
-              class: "custom-select"
-            ) %>
-            <%= error_tag(f, :task_strategy) %>
-          </div>
-        </div>
-        <div class="d-flex mt-3">
-          <div class="form-check">
-            <%= checkbox(f, :use_chat, class: "form-check-input") %>
-            <%= label(f, :use_chat, class: "form-check-label") %>
-            <%= error_tag(f, :use_chat) %>
-          </div>
-          <div class="form-check">
-            <%= checkbox(f, :use_clan, class: "form-check-input") %>
-            <%= label(f, :use_clan, class: "form-check-label") %>
-            <%= error_tag(f, :use_clan) %>
-          </div>
-          <div class="form-check">
-            <%= checkbox(f, :use_event_ranking, class: "form-check-input") %>
-            <%= label(f, :use_event_ranking, class: "form-check-label") %>
-            <%= error_tag(f, :use_event_ranking) %>
-          </div>
-          <div class="form-check ml-3">
-            <%= checkbox(f, :use_timer, class: "form-check-input") %>
-            <%= label(f, :use_timer, class: "form-check-label") %>
-            <%= error_tag(f, :use_timer) %>
-          </div>
-        </div>
-        <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-3">
-          <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-            <%= label(f, :task_provider) %>
-            <%= select(f, :task_provider, Codebattle.Tournament.task_providers(),
-              class: "custom-select"
-            ) %>
-            <%= error_tag(f, :task_provider) %>
-          </div>
-          <%= if (f.params["task_provider"] == "level") do %>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :level) %>
-              <%= select(f, :level, Codebattle.Tournament.levels(), class: "custom-select") %>
-              <%= error_tag(f, :level) %>
-            </div>
-          <% end %>
-          <%= if (f.params["task_provider"] == "task_pack") do %>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :task_pack_name) %>
-              <%= select(f, :task_pack_name, @task_pack_names,
-                class: "custom-select",
-                value: f.params["task_pack_name"] || f.data.task_pack_name
-              ) %>
-              <%= error_tag(f, :task_pack_name) %>
-            </div>
-          <% end %>
-          <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :task_pack_name) %>
-              <%= text_input(f, :task_pack_name,
-                class: "form-control",
-                placeholder: "all_easy,all_medium"
-              ) %>
-              <%= error_tag(f, :task_pack_names) %>
-            </div>
-          <% end %>
-        </div>
 
-        <div class="d-flex flex-column flex-lg-row flex-xl-row mt-3">
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row">
-            <div class="d-flex flex-column justify-content-between w-auto">
-              <%= label(f, :players_limit) %>
-              <%= select(
-                f,
-                :players_limit,
-                [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384],
-                class: "custom-select"
-              ) %>
-              <%= error_tag(f, :players_limit) %>
-            </div>
+        <!-- Basic Information Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Basic Information</h5>
           </div>
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-md-3 mt-lg-0 mt-xl-0">
-            <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
-              <%= label(f, :match_timeout_seconds) %>
-              <%= number_input(
-                f,
-                :match_timeout_seconds,
-                class: "form-control",
-                min: "7",
-                max: "10000"
-              ) %>
-              <%= error_tag(f, :break_duration_seconds) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
-              <%= label(f, :round_timeout_seconds) %>
-              <%= number_input(
-                f,
-                :round_timeout_seconds,
-                class: "form-control",
-                max: "10000"
-              ) %>
-              <%= error_tag(f, :break_duration_seconds) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-lg-2 ml-xl-2">
-              <%= label(f, :event_id) %>
-              <%= number_input(
-                f,
-                :event_id,
-                class: "form-control",
-                max: "10000"
-              ) %>
-              <%= error_tag(f, :event_id) %>
-            </div>
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :break_duration_seconds) %>
-              <%= number_input(
-                f,
-                :break_duration_seconds,
-                class: "form-control",
-                min: "0",
-                max: "1957"
-              ) %>
-              <%= error_tag(f, :break_duration_seconds) %>
-            </div>
-          </div>
-        </div>
-        <div class="d-flex flex-column flex-lg-row flex-xl-row mt-3">
-          <div class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row mt-md-3 mt-lg-0 mt-xl-0">
-            <div class="d-flex flex-column justify-content-between w-auto ml-md-2 ml-lg-2 ml-xl-2">
-              <%= label(f, :ranking_type) %>
-              <%= select(f, :ranking_type, Codebattle.Tournament.ranking_types(),
-                class: "custom-select",
-                value: f.params["ranking_type"] || f.data.ranking_type
-              ) %>
-              <%= error_tag(f, :ranking_type) %>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 mb-3">
+                <%= label(f, :name, class: "form-label") %>
+                <%= text_input(f, :name,
+                  class: "form-control",
+                  maxlength: "42",
+                  required: true
+                ) %>
+                <%= error_tag(f, :name) %>
+              </div>
+              <div class="col-12">
+                <%= label(f, :description, class: "form-label") %>
+                <%= textarea(f, :description,
+                  class: "form-control",
+                  maxlength: "7531",
+                  rows: 8,
+                  required: true
+                ) %>
+                <%= error_tag(f, :description) %>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="mt-3">
-          <div class="d-flex flex-column justify-content-between w-auto">
-            <%= label(f, :meta_json) %>
-            <%= textarea(f, :meta_json,
-              class: "form-control",
-              value: f.params["meta_json"] || "{}"
-            ) %>
-            <%= error_tag(f, :meta_json) %>
+        <!-- Tournament Settings Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Tournament Settings</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Starts at (<%= @user_timezone %>)</label>
+                <%= datetime_local_input(f, :starts_at,
+                  class: "form-control",
+                  value:
+                    DateTime.from_naive!(
+                      Timex.parse!(f.params["starts_at"], "{ISO:Extended}"),
+                      @user_timezone
+                    ),
+                  required: true
+                ) %>
+                <%= error_tag(f, :starts_at) %>
+              </div>
+              <div class="col-md-4 mb-3">
+                <%= label(f, :access_type, class: "form-label") %>
+                <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-select") %>
+                <%= error_tag(f, :access_type) %>
+              </div>
+              <div class="col-md-4 mb-3">
+                <%= label(f, :task_strategy, class: "form-label") %>
+                <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(), class: "form-select") %>
+                <%= error_tag(f, :task_strategy) %>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-12 mb-3">
+                <label class="form-label">Tournament Features</label>
+                <div class="d-flex gap-4">
+                  <div class="form-check">
+                    <%= checkbox(f, :use_chat, class: "form-check-input") %>
+                    <%= label(f, :use_chat, class: "form-check-label") %>
+                    <%= error_tag(f, :use_chat) %>
+                  </div>
+                  <div class="form-check">
+                    <%= checkbox(f, :use_clan, class: "form-check-input") %>
+                    <%= label(f, :use_clan, class: "form-check-label") %>
+                    <%= error_tag(f, :use_clan) %>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <%= submit("Update",
-          phx_disable_with: "Updating...",
-          class: "btn btn-primary rounded-lg my-4"
-        ) %>
-        <a
-          class="btn btn-info text-white rounded-lg ml-2"
-          href={Routes.tournament_path(@socket, :show, @tournament.id)}
-        >
-          Back to tournament
-        </a>
+        <!-- Task Configuration Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Task Configuration</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <%= label(f, :task_provider, class: "form-label") %>
+                <%= select(f, :task_provider, Codebattle.Tournament.task_providers(), class: "form-select") %>
+                <%= error_tag(f, :task_provider) %>
+              </div>
+              <%= if (f.params["task_provider"] == "level") do %>
+                <div class="col-md-4 mb-3">
+                  <%= label(f, :level, class: "form-label") %>
+                  <%= select(f, :level, Codebattle.Tournament.levels(), class: "form-select") %>
+                  <%= error_tag(f, :level) %>
+                </div>
+              <% end %>
+              <%= if (f.params["task_provider"] == "task_pack") do %>
+                <div class="col-md-4 mb-3">
+                  <%= label(f, :task_pack_name, class: "form-label") %>
+                  <%= select(f, :task_pack_name, @task_pack_names,
+                    class: "form-select",
+                    value: f.params["task_pack_name"] || f.data.task_pack_name
+                  ) %>
+                  <%= error_tag(f, :task_pack_name) %>
+                </div>
+              <% end %>
+              <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
+                <div class="col-md-4 mb-3">
+                  <%= label(f, :task_pack_name, class: "form-label") %>
+                  <%= text_input(f, :task_pack_name,
+                    class: "form-control",
+                    placeholder: "all_easy,all_medium"
+                  ) %>
+                  <%= error_tag(f, :task_pack_names) %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tournament Limits Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Tournament Limits & Timing</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <%= label(f, :rounds_limit, class: "form-label") %>
+                <%= select(f, :rounds_limit, Enum.to_list(1..42), class: "form-select") %>
+                <%= error_tag(f, :rounds_limit) %>
+              </div>
+              <div class="col-md-3 mb-3">
+                <%= label(f, :players_limit, class: "form-label") %>
+                <%= select(
+                  f,
+                  :players_limit,
+                  [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384],
+                  class: "form-select"
+                ) %>
+                <%= error_tag(f, :players_limit) %>
+              </div>
+              <div class="col-md-3 mb-3">
+                <%= label(f, :round_timeout_seconds, class: "form-label") %>
+                <%= number_input(
+                  f,
+                  :round_timeout_seconds,
+                  class: "form-control",
+                  max: "10000"
+                ) %>
+                <%= error_tag(f, :round_timeout_seconds) %>
+              </div>
+              <div class="col-md-3 mb-3">
+                <%= label(f, :break_duration_seconds, class: "form-label") %>
+                <%= number_input(
+                  f,
+                  :break_duration_seconds,
+                  class: "form-control",
+                  min: "0",
+                  max: "1957"
+                ) %>
+                <%= error_tag(f, :break_duration_seconds) %>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <%= label(f, :ranking_type, class: "form-label") %>
+                <%= select(f, :ranking_type, Codebattle.Tournament.ranking_types(),
+                  class: "form-select",
+                  value: f.params["ranking_type"] || f.data.ranking_type
+                ) %>
+                <%= error_tag(f, :ranking_type) %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Settings Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Advanced Settings</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <%= label(f, :meta_json, class: "form-label") %>
+                <%= textarea(f, :meta_json,
+                  class: "form-control",
+                  rows: 4,
+                  value: f.params["meta_json"] || "{}"
+                ) %>
+                <%= error_tag(f, :meta_json) %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <a
+            class="btn btn-outline-secondary"
+            href={Routes.tournament_path(@socket, :show, @tournament.id)}
+          >
+            <i class="fas fa-arrow-left me-1"></i>
+            Back to Tournament
+          </a>
+          <%= submit("Update Tournament",
+            phx_disable_with: "Updating...",
+            class: "btn btn-primary px-4"
+          ) %>
+        </div>
       </.form>
     </div>
     """

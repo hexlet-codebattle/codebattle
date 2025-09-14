@@ -104,7 +104,8 @@ defmodule Codebattle.Tournament.Context do
     Repo.all(
       from(t in Tournament,
         order_by: t.starts_at,
-        where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
+        where:
+          t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
       )
     )
   end
@@ -252,65 +253,15 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
-    event_id =
-      case params[:event_id] do
-        nil -> nil
-        "" -> nil
-        str when is_binary(str) -> String.to_integer(str)
-        int -> int
-      end
-
     show_results = params[:show_results] || true
 
     Map.merge(params, %{
       access_token: access_token,
       match_timeout_seconds: match_timeout_seconds,
       starts_at: starts_at,
-      meta: get_meta_from_params(params),
-      event_id: event_id,
+      meta: %{},
       show_results: show_results
     })
-  end
-
-  defp get_meta_from_params(%{meta: %{} = meta}) do
-    meta
-  end
-
-  defp get_meta_from_params(%{meta_json: meta_json}) do
-    meta_json
-    |> Jason.decode!()
-    |> AtomizedMap.atomize()
-  end
-
-  defp get_meta_from_params(params) do
-    case params[:type] do
-      "show" ->
-        rounds_config =
-          params
-          |> Map.get(:rounds_config_json)
-          |> cast_json_value()
-
-        game_passwords =
-          params
-          |> Map.get(:game_passwords_json)
-          |> cast_json_value()
-
-        %{
-          game_passwords: game_passwords,
-          rounds_config: rounds_config
-        }
-
-      "versus" ->
-        %{rounds_limit: 1000}
-
-      type when type in ["arena", "swiss", "squad", "top200"] ->
-        rounds_limit = params |> Map.get(:rounds_limit, "3") |> String.to_integer()
-
-        %{rounds_limit: rounds_limit}
-
-      _ ->
-        %{}
-    end
   end
 
   def get_tournament_for_restore do
@@ -340,13 +291,5 @@ defmodule Codebattle.Tournament.Context do
 
   defp generate_access_token do
     17 |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, 17)
-  end
-
-  defp cast_json_value(value) do
-    case value do
-      nil -> nil
-      "" -> nil
-      value -> value |> Jason.decode!() |> AtomizedMap.atomize()
-    end
   end
 end

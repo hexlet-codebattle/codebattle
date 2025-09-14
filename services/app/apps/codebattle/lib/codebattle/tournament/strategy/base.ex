@@ -957,7 +957,7 @@ defmodule Codebattle.Tournament.Base do
           use_waiting_room?(tournament) or tournament.type in ["top200"] ->
             min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
 
-          :default ->
+          true ->
             get_round_timeout_seconds(tournament)
         end
       end

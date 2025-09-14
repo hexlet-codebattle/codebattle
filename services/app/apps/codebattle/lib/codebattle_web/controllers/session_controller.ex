@@ -26,7 +26,7 @@ defmodule CodebattleWeb.SessionController do
       FunWithFlags.enabled?(:use_local_password_auth) ->
         render(conn, "local_password.html", layout: {CodebattleWeb.LayoutView, :empty})
 
-      :default ->
+      true ->
         render(conn, "index.html")
     end
   end

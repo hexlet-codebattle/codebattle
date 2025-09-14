@@ -6,7 +6,7 @@ defmodule Codebattle.Tournament do
   import Ecto.Changeset
 
   alias Codebattle.Event
-  alias Codebattle.Tournament.Individual
+  alias Codebattle.Tournament.Swiss
   alias Runner.AtomizedMap
 
   @type t :: %__MODULE__{}
@@ -56,10 +56,10 @@ defmodule Codebattle.Tournament do
   @levels ~w(elementary easy medium hard)
   @states ~w(waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
-  @task_strategies ~w(random_per_game random_per_round sequential)
+  @task_strategies ~w(random_per_round sequential)
   @ranking_types ~w(void by_clan by_percentile by_win_loss)
-  @types ~w(individual show swiss arena versus squad top200)
-  @public_types ~w(individual top200 swiss arena versus)
+  @types ~w(swiss)
+  @public_types ~w(swiss)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -87,6 +87,7 @@ defmodule Codebattle.Tournament do
     field(:players_limit, :integer)
     field(:ranking_type, :string, default: "by_player")
     field(:round_timeout_seconds, :integer)
+    field(:rounds_limit, :integer)
     field(:show_results, :boolean, default: true)
     field(:started_at, :utc_datetime)
     field(:starts_at, :utc_datetime)
@@ -94,9 +95,9 @@ defmodule Codebattle.Tournament do
     field(:stats, AtomizedMap, default: %{})
     field(:task_pack_name, :string)
     field(:task_provider, :string, default: "level")
-    field(:task_strategy, :string, default: "random_per_game")
+    field(:task_strategy, :string, default: "random_per_round")
     field(:tournament_timeout_seconds, :integer)
-    field(:type, :string, default: "individual")
+    field(:type, :string, default: "swiss")
     field(:use_chat, :boolean, default: true)
     field(:use_clan, :boolean, default: false)
     field(:use_event_ranking, :boolean, default: false)
@@ -112,7 +113,7 @@ defmodule Codebattle.Tournament do
     field(:tasks_table, :string, virtual: true)
 
     field(:is_live, :boolean, virtual: true, default: false)
-    field(:module, :any, virtual: true, default: Individual)
+    field(:module, :any, virtual: true, default: Swiss)
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
