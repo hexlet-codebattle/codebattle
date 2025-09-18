@@ -58,7 +58,8 @@ defmodule Codebattle.Tournament.TournamentResult do
     - player with time 160 and result_percent 20 gets (0.2 * 0.5 base_score)
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: type, ranking_type: "by_user"} = tournament) when type in ["swiss", "arena", "top200"] do
+  def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
+      when type in ["swiss", "arena", "top200"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -151,7 +152,8 @@ defmodule Codebattle.Tournament.TournamentResult do
     tournament
   end
 
-  def upsert_results(%{type: type, ranking_type: "by_win_loss"} = tournament) when type in ["swiss", "arena"] do
+  def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "win_loss"} = tournament)
+      when type in ["swiss", "arena"] do
     clean_results(tournament.id)
 
     Repo.query!("""
