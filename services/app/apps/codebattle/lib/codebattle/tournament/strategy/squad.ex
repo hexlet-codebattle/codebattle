@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Squad do
 
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    tournament.meta.rounds_limit - 1 == tournament.current_round_position
+    tournament.rounds_limit - 1 == tournament.current_round_position
   end
 
   @impl Tournament.Base
@@ -67,7 +67,4 @@ defmodule Codebattle.Tournament.Squad do
     !Enum.any?(matches, &(&1.state == "playing")) and
       task_index == Enum.count(round_task_ids)
   end
-
-  @impl Tournament.Base
-  def set_ranking(t), do: t
 end

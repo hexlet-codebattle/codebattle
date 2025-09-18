@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Ranking.ByPercentile do
+defmodule Codebattle.Tournament.Ranking.ByUser do
   @moduledoc false
   alias Codebattle.Tournament.Players
   alias Codebattle.Tournament.Storage.Ranking
@@ -9,8 +9,6 @@ defmodule Codebattle.Tournament.Ranking.ByPercentile do
   def get_first(tournament, limit \\ @page_size) do
     Ranking.get_first(tournament, limit)
   end
-
-  def get_event_ranking(_tournament), do: []
 
   def get_by_player(_tournament, nil), do: nil
 

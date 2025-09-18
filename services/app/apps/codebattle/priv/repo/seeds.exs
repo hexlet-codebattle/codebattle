@@ -361,7 +361,7 @@ stages =
         task_pack_name: "qualification",
         tournament_timeout_seconds: 75 * 60,
         players_limit: 128,
-        ranking_type: "void",
+        ranking_type: "by_user",
         task_provider: "task_pack",
         task_strategy: "sequential"
       }

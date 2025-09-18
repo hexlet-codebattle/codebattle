@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament.Supervisor do
     ]
 
     children =
-      if tournament.ranking_type == "by_percentile" and tournament.type == "arena" do
+      if tournament.ranking_type == "by_user" and tournament.type == "arena" do
         children ++
           [
             %{

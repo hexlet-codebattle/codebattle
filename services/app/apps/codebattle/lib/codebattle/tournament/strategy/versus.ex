@@ -31,9 +31,6 @@ defmodule Codebattle.Tournament.Versus do
   def calculate_round_results(tournament), do: tournament
 
   @impl Tournament.Base
-  def set_ranking(t), do: t
-
-  @impl Tournament.Base
   def build_round_pairs(tournament) do
     player_pairs =
       tournament
@@ -46,7 +43,7 @@ defmodule Codebattle.Tournament.Versus do
 
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    tournament.meta.rounds_limit - 1 == tournament.current_round_position
+    tournament.rounds_limit - 1 == tournament.current_round_position
   end
 
   @impl Tournament.Base

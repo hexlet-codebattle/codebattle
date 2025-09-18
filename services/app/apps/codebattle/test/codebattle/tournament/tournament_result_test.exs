@@ -35,7 +35,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       user81 = insert(:user, name: "u81", clan_id: clan8.id)
 
       tournament =
-        insert(:tournament, type: "swiss", ranking_type: "by_percentile", use_clan: false)
+        insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
 
       insert_game(task4, tournament, user11, user21, 100, 100.0, 70.0)
       insert_game(task4, tournament, user12, user22, 200, 100.0, 60.0)

@@ -11,13 +11,11 @@ defmodule Codebattle.Tournament.TaskProvider do
     level |> Codebattle.Task.get_tasks_by_level() |> Enum.shuffle()
   end
 
-  def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name})
-      when not is_nil(tp_name) do
+  def get_all_tasks(%{task_provider: "task_pack", task_pack_name: tp_name}) when not is_nil(tp_name) do
     TaskPack.get_tasks_by_pack_name(tp_name)
   end
 
-  def get_all_tasks(%{task_provider: "task_pack_per_round", task_pack_name: tp_name})
-      when not is_nil(tp_name) do
+  def get_all_tasks(%{task_provider: "task_pack_per_round", task_pack_name: tp_name}) when not is_nil(tp_name) do
     tp_name
     |> get_task_pack_names()
     |> Enum.map(&TaskPack.get_tasks_by_pack_name/1)
@@ -25,10 +23,7 @@ defmodule Codebattle.Tournament.TaskProvider do
     |> Map.new()
   end
 
-  def get_round_task_ids(
-        %{task_provider: "task_pack", task_strategy: "sequential", task_pack_name: tp_name},
-        _round
-      )
+  def get_round_task_ids(%{task_provider: "task_pack", task_strategy: "sequential", task_pack_name: tp_name}, _round)
       when not is_nil(tp_name) do
     [name: tp_name]
     |> TaskPack.get_by!()
@@ -36,11 +31,7 @@ defmodule Codebattle.Tournament.TaskProvider do
   end
 
   def get_round_task_ids(
-        %{
-          task_provider: "task_pack_per_round",
-          task_strategy: "sequential",
-          task_pack_name: tp_name
-        },
+        %{task_provider: "task_pack_per_round", task_strategy: "sequential", task_pack_name: tp_name},
         round
       )
       when not is_nil(tp_name) do
@@ -99,10 +90,7 @@ defmodule Codebattle.Tournament.TaskProvider do
     end
   end
 
-  def get_task(
-        %{task_provider: "task_pack_per_round", task_strategy: "sequential"} = tournament,
-        nil
-      ) do
+  def get_task(%{task_provider: "task_pack_per_round", task_strategy: "sequential"} = tournament, nil) do
     tournament.round_task_ids
     |> Enum.at(0)
     |> case do

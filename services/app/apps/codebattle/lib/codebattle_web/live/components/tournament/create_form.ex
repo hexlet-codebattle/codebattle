@@ -27,21 +27,13 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         <div class="col-12 col-md-10 col-lg-8">
           <h2 class="text-center mb-4 font-weight-bold text-dark">Create a New Tournament</h2>
 
-          <.form
-            :let={f}
-            for={@changeset}
-            phx-change="validate"
-            phx-submit="create"
-            class="w-100"
-          >
+          <.form :let={f} for={@changeset} phx-change="validate" phx-submit="create" class="w-100">
             <!-- Base Errors -->
             <div class="form-group mb-4">
               <%= render_base_errors(@changeset.errors[:base]) %>
             </div>
-
             <!-- Basic Information -->
             <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2">Basic Information</h4>
-
             <!-- Tournament Name-->
             <div class="row mb-4">
               <div class="col-12 col-12">
@@ -57,35 +49,40 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             </div>
-
             <!-- Description -->
             <div class="form-group mb-4">
               <%= label(f, :description, class: "form-label font-weight-semibold") %>
               <%= textarea(f, :description,
                 class: "form-control",
-                value: f.params["description"] || "Markdown description. [stream_link](https://codebattle.hexlet.io)",
+                value:
+                  f.params["description"] ||
+                    "Markdown description. [stream_link](https://codebattle.hexlet.io)",
                 maxlength: "7531",
                 rows: 8,
                 required: true
               ) %>
               <%= error_tag(f, :description) %>
             </div>
-
             <!-- Schedule & Access -->
-            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">Schedule & Access</h4>
-
+            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">
+              Schedule & Access
+            </h4>
             <!-- Start Date & Access Type -->
             <div class="row mb-4">
               <div class="col-12 col-md-6">
                 <div class="form-group">
-                  <label class="form-label font-weight-semibold">Starts at (<%= @user_timezone %>)</label>
+                  <label class="form-label font-weight-semibold">
+                    Starts at (<%= @user_timezone %>)
+                  </label>
                   <%= datetime_local_input(f, :starts_at,
                     class: "form-control form-control-lg",
                     required: true,
-                    min: DateTime.now!(@user_timezone)
-                         |> DateTime.truncate(:second)
-                         |> Timex.format!("%Y-%m-%dT%H:%M", :strftime),
-                    value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user_timezone), 5, :minute)
+                    min:
+                      DateTime.now!(@user_timezone)
+                      |> DateTime.truncate(:second)
+                      |> Timex.format!("%Y-%m-%dT%H:%M", :strftime),
+                    value:
+                      f.params["starts_at"] || DateTime.add(DateTime.now!(@user_timezone), 5, :minute)
                   ) %>
                   <%= error_tag(f, :starts_at) %>
                 </div>
@@ -93,15 +90,17 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               <div class="col-12 col-md-6">
                 <div class="form-group">
                   <%= label(f, :access_type, class: "form-label font-weight-semibold") %>
-                  <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-control form-control-lg custom-select") %>
+                  <%= select(f, :access_type, Codebattle.Tournament.access_types(),
+                    class: "form-control form-control-lg custom-select"
+                  ) %>
                   <%= error_tag(f, :access_type) %>
                 </div>
               </div>
             </div>
-
             <!-- Features -->
-            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">Tournament Features</h4>
-
+            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">
+              Tournament Features
+            </h4>
             <!-- Checkboxes -->
             <div class="row mb-4">
               <div class="col-12">
@@ -119,10 +118,10 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             </div>
-
             <!-- Task Configuration -->
-            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">Task Configuration</h4>
-
+            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">
+              Task Configuration
+            </h4>
             <!-- Task Configuration -->
             <div class="row mb-4">
               <div class="col-12 col-md-6">
@@ -146,7 +145,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             </div>
-
             <!-- Dynamic Task Provider Fields -->
             <div class="row mb-4">
               <%= if (f.params["task_provider"] == "level" || is_nil(f.params["task_provider"])) do %>
@@ -199,7 +197,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               <% end %>
             </div>
-
             <!-- Tags Field -->
             <%= if (f.params["task_provider"] == "tags") do %>
               <div class="row mb-4">
@@ -216,10 +213,10 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             <% end %>
-
             <!-- Tournament Settings -->
-            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">Tournament Settings</h4>
-
+            <h4 class="mb-3 font-weight-semibold text-dark border-bottom pb-2 mt-5">
+              Tournament Settings
+            </h4>
             <!-- Players & Timeouts -->
             <div class="row mb-4">
               <div class="col-12 col-md-4">
@@ -245,8 +242,17 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                   <%= error_tag(f, :ranking_type) %>
                 </div>
               </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <%= label(f, :score_strategy, class: "form-label font-weight-semibold") %>
+                  <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
+                    class: "form-control form-control-lg custom-select",
+                    value: f.params["score_strategy"] || f.data.score_strategy
+                  ) %>
+                  <%= error_tag(f, :score_strategy) %>
+                </div>
+              </div>
             </div>
-
             <!-- Rounds-->
             <div class="row mb-4">
               <div class="col-12 col-md-4">
@@ -254,7 +260,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                   <%= label(f, :rounds_limit, class: "form-label font-weight-semibold") %>
                   <%= select(f, :rounds_limit, Enum.to_list(1..42),
                     class: "form-control form-control-lg custom-select",
-                    value: f.params["rounds_limit"] || f.data.rounds_limit
+                    value: f.params["rounds_limit"] || f.data.rounds_limit || "7"
                   ) %>
                   <%= error_tag(f, :rounds_limit) %>
                 </div>
@@ -288,7 +294,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             </div>
-
             <!-- Submit Button -->
             <div class="text-center mt-5">
               <%= submit("Create Tournament",

@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
+defmodule Codebattle.Tournament.Entire.SwissTimeoutTest do
   use Codebattle.DataCase, async: false
 
   import Codebattle.Tournament.Helpers
@@ -11,9 +11,10 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
   alias Codebattle.UserEvent
 
   @decimal100 Decimal.new("100.0")
+  @decimal0 Decimal.new("0.0")
 
   @tag :skip
-  test "works with player who solved all tasks" do
+  test "works with single player and timeout" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "tp", task_ids: [t1_id, t2_id, t3_id])
 
@@ -145,6 +146,7 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
     assert players_count(tournament) == 2
     assert Enum.count(matches) == 1
 
+    # win first game
     win_active_match(tournament, user1)
     :timer.sleep(100)
 
@@ -214,79 +216,13 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
 
     assert Enum.count(matches) == 2
 
-    win_active_match(tournament, user1)
-    :timer.sleep(200)
+    Tournament.Server.handle_event(tournament.id, :finish_tournament, %{})
+    :timer.sleep(300)
 
     assert_received %Message{
       topic: ^player1_topic,
       event: "tournament:match:upserted",
-      payload: %{match: %{state: "game_over"}, players: [%{}, %{}]}
-    }
-
-    assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^common_topic,
-      event: "tournament:round_finished",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^common_topic,
-      event: "tournament:round_created",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^player1_topic,
-      event: "tournament:match:upserted",
-      payload: %{}
-    }
-
-    assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
-
-    tournament = Tournament.Context.get(tournament.id)
-    win_active_match(tournament, user1)
-    :timer.sleep(200)
-
-    assert_received %Message{
-      topic: ^player1_topic,
-      event: "tournament:match:upserted",
-      payload: %{match: %{state: "game_over"}}
-    }
-
-    assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^admin_topic,
-      event: "tournament:updated",
-      payload: %{}
-    }
-
-    assert_received %Message{
-      topic: ^common_topic,
-      event: "tournament:round_finished",
-      payload: %{}
+      payload: %{match: %{state: "timeout"}}
     }
 
     assert_received %Message{
@@ -296,7 +232,7 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
         tournament: %{
           type: "swiss",
           state: "finished",
-          current_round_position: 2,
+          current_round_position: 1,
           break_state: "off",
           last_round_ended_at: _,
           last_round_started_at: _
@@ -309,9 +245,9 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
     tournament = %{id: tournament_id} = Tournament.Context.get(tournament.id)
     matches = get_matches(tournament)
 
-    assert Enum.count(matches) == 3
+    assert Enum.count(matches) == 2
 
-    assert tournament.current_round_position == 2
+    assert tournament.current_round_position == 1
 
     assert [
              %{
@@ -328,27 +264,14 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
                user_name: "1"
              },
              %{
-               score: 3,
+               score: 1,
                clan_id: 1,
                duration_sec: 0,
                game_id: _,
                id: _,
                level: "easy",
-               result_percent: @decimal100,
+               result_percent: @decimal0,
                task_id: ^t2_id,
-               tournament_id: ^tournament_id,
-               user_id: ^u1_id,
-               user_name: "1"
-             },
-             %{
-               score: 3,
-               clan_id: 1,
-               duration_sec: 0,
-               game_id: _,
-               id: _,
-               level: "easy",
-               result_percent: @decimal100,
-               task_id: ^t3_id,
                tournament_id: ^tournament_id,
                user_id: ^u1_id,
                user_name: "1"
@@ -368,7 +291,7 @@ defmodule Codebattle.Tournament.Entire.SwissQualificationTest do
                  status: :completed,
                  time_spent_in_seconds: 0,
                  tournament_id: ^tournament_id,
-                 wins_count: 3
+                 wins_count: 1
                }
              ]
            } = Repo.one(UserEvent)

@@ -28,7 +28,6 @@ defmodule CodebattleWeb.ChatChannel do
   end
 
   def handle_in("chat:add_msg", payload, socket) do
-    dbg(payload)
     text = payload["text"]
     user = socket.assigns.current_user
     chat_type = get_chat_type(socket)
@@ -151,6 +150,5 @@ defmodule CodebattleWeb.ChatChannel do
     Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
 
-  defp users_private_message?(message, user_id),
-    do: user_id in [message.user_id, message.meta["target_user_id"]]
+  defp users_private_message?(message, user_id), do: user_id in [message.user_id, message.meta["target_user_id"]]
 end

@@ -3,8 +3,7 @@ defmodule Codebattle.Tournament.Ranking do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Ranking.ByClan
-  alias Codebattle.Tournament.Ranking.ByPercentile
-  alias Codebattle.Tournament.Ranking.Void
+  alias Codebattle.Tournament.Ranking.ByUser
   alias Codebattle.Tournament.Storage.Ranking
 
   @spec get_first(tournament :: Tournament.t(), limit :: pos_integer()) :: list(map())
@@ -31,7 +30,8 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_nearest_page_by_player(tournament, player)
   end
 
-  @spec get_page(tournament :: Tournament.t(), page :: pos_integer(), page_size :: pos_integer()) :: map()
+  @spec get_page(tournament :: Tournament.t(), page :: pos_integer(), page_size :: pos_integer()) ::
+          map()
   def get_page(tournament, page, page_size \\ 10)
 
   def get_page(%{ranking_table: nil}, _page, _page_size),
@@ -50,7 +50,7 @@ defmodule Codebattle.Tournament.Ranking do
 
   @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: Tournament.t()
   def drop_player(tournament, player_id) do
-    if get_module(tournament) == ByPercentile do
+    if get_module(tournament) == ByUser do
       Ranking.drop_player(tournament, player_id)
     end
   end
@@ -74,25 +74,11 @@ defmodule Codebattle.Tournament.Ranking do
     tournament
   end
 
-  @spec preload_event_ranking(Tournament.t()) :: Tournament.t()
-  def preload_event_ranking(%{use_event_ranking: true, event_id: event_id} = tournament) when not is_nil(event_id) do
-    ranking = get_module(tournament).get_event_ranking(tournament)
-
-    Ranking.put_ranking(tournament, ranking)
-
-    event_ranking = Map.new(ranking, fn %{id: id} = item -> {id, item} end)
-    Map.put(tournament, :event_ranking, event_ranking)
-  end
-
-  def preload_event_ranking(t), do: t
-
   @spec create_table(pos_integer()) :: term()
   def create_table(tournament_id) do
     Ranking.create_table(tournament_id)
   end
 
   defp get_module(%{ranking_type: "by_clan"}), do: ByClan
-  defp get_module(%{ranking_type: "by_percentile"}), do: ByPercentile
-  defp get_module(%{ranking_type: "void"}), do: Void
-  defp get_module(_tournament), do: ByPercentile
+  defp get_module(%{ranking_type: "by_user"}), do: ByUser
 end

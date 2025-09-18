@@ -36,7 +36,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     end
 
     Agent.get(__MODULE__.GamesAgent, fn games_map ->
-      dbg(games_map)
       Map.get(games_map, tournament_id)
     end)
   end

@@ -15,40 +15,42 @@ defmodule Codebattle.Tournament do
            only: [
              :access_token,
              :access_type,
-             :last_round_ended_at,
-             :last_round_started_at,
              :break_duration_seconds,
-             :match_timeout_seconds,
-             :round_timeout_seconds,
              :break_state,
              :creator_id,
-             :event_id,
              :current_round_id,
              :current_round_position,
              :description,
+             :event_id,
              :id,
              :is_live,
+             :last_round_ended_at,
+             :last_round_started_at,
              :level,
+             :match_timeout_seconds,
              :matches,
              :meta,
              :name,
              :players,
-             :players_limit,
              :players_count,
+             :players_limit,
+             :ranking_type,
+             :round_timeout_seconds,
+             :score_strategy,
              :started_at,
              :starts_at,
              :state,
              :stats,
-             :tournament_timeout_seconds,
              :task_pack_name,
              :task_provider,
              :task_strategy,
+             :tournament_timeout_seconds,
              :type,
              :use_chat,
              :use_clan,
              :use_event_ranking,
-             :use_timer,
-             :use_infinite_break
+             :use_infinite_break,
+             :use_timer
            ]}
 
   @access_types ~w(public token)
@@ -57,7 +59,8 @@ defmodule Codebattle.Tournament do
   @states ~w(waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack task_pack_per_round all)
   @task_strategies ~w(random_per_round sequential)
-  @ranking_types ~w(void by_clan by_percentile by_win_loss)
+  @ranking_types ~w(by_clan by_user)
+  @score_strategies ~w(75_percentile win_loss)
   @types ~w(swiss)
   @public_types ~w(swiss)
 
@@ -85,7 +88,8 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
-    field(:ranking_type, :string, default: "by_player")
+    field(:ranking_type, :string, default: "by_user")
+    field(:score_strategy, :string, default: "75_percentile")
     field(:round_timeout_seconds, :integer)
     field(:rounds_limit, :integer)
     field(:show_results, :boolean, default: true)
@@ -149,9 +153,11 @@ defmodule Codebattle.Tournament do
       :players_limit,
       :ranking_type,
       :round_timeout_seconds,
+      :rounds_limit,
+      :score_strategy,
       :show_results,
-      :starts_at,
       :started_at,
+      :starts_at,
       :state,
       :task_pack_name,
       :task_provider,
@@ -172,6 +178,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
     |> validate_inclusion(:ranking_type, @ranking_types)
+    |> validate_inclusion(:score_strategy, @score_strategies)
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
@@ -197,9 +204,10 @@ defmodule Codebattle.Tournament do
 
   def access_types, do: @access_types
   def levels, do: @levels
+  def public_types, do: @public_types
+  def ranking_types, do: @ranking_types
+  def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
-  def ranking_types, do: @ranking_types
   def types, do: @types
-  def public_types, do: @public_types
 end

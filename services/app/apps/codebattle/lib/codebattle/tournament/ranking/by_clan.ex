@@ -1,6 +1,5 @@
 defmodule Codebattle.Tournament.Ranking.ByClan do
   @moduledoc false
-  alias Codebattle.Event.EventClanResult
   alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.Storage.Ranking
 
@@ -42,25 +41,14 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     }
   end
 
-  def get_event_ranking(tournament) do
-    tournament.event_id
-    |> EventClanResult.get_by_event_id()
-    |> Enum.map(fn item ->
-      %{id: item.clan_id, score: item.score, place: item.place, players_count: 0}
-    end)
-  end
-
   def set_ranking(tournament) do
-    event_ranking = tournament.event_ranking
-
     tournament
     |> Helpers.get_players()
     |> Enum.reject(& &1.is_bot)
     |> Enum.group_by(&get_clan_id(&1))
     |> Enum.map(fn {clan_id, players} ->
       score = players |> Enum.map(& &1.score) |> Enum.sum()
-      event_score = get_in(event_ranking, [clan_id, :score]) || 0
-      %{id: clan_id, score: event_score + score, place: 0, players_count: Enum.count(players)}
+      %{id: clan_id, score: score, place: 0, players_count: Enum.count(players)}
     end)
     |> set_places(tournament)
   end
@@ -73,10 +61,7 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     index = Enum.find_index(ranking, &(&1.id == get_clan_id(player)))
 
     ranking
-    |> List.update_at(
-      index,
-      &%{&1 | score: &1.score + score}
-    )
+    |> List.update_at(index, &%{&1 | score: &1.score + score})
     |> set_places(tournament)
   end
 

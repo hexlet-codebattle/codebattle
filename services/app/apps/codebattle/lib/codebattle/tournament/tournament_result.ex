@@ -58,8 +58,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     - player with time 160 and result_percent 20 gets (0.2 * 0.5 base_score)
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: type, ranking_type: "by_percentile"} = tournament)
-      when type in ["swiss", "arena", "top200"] do
+  def upsert_results(%{type: type, ranking_type: "by_user"} = tournament) when type in ["swiss", "arena", "top200"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -115,6 +114,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       left join duration_percentile_for_tasks dt
       on dt.task_id = g.task_id
       where g.tournament_id = #{tournament.id}
+      and (p.player_info->>'is_bot')::boolean = 'f'
       and state in ('game_over', 'timeout')
       )
       insert into tournament_results

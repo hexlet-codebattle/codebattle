@@ -29,7 +29,7 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
         "access_type" => "token",
         "access_token" => "access_token",
         "break_duration_seconds" => 0,
-        "type" => "arena",
+        "type" => "swiss",
         "state" => "waiting_participants",
         "players_limit" => 200
       })

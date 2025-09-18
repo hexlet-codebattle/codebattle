@@ -14,7 +14,6 @@ defmodule Codebattle.Tournament.Base do
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
-  @callback set_ranking(Tournament.t()) :: Tournament.t()
   @callback maybe_create_rematch(Tournament.t(), map()) :: Tournament.t()
   @callback finish_tournament?(Tournament.t()) :: boolean()
   @callback finish_round_after_match?(Tournament.t()) :: boolean()
@@ -57,10 +56,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def join(%{state: "waiting_participants"} = tournament, params) do
-        player =
-          params.user
-          |> Map.put(:lang, params.user.lang)
-          |> Map.put(:team_id, Map.get(params, :team_id))
+        player = Map.put(params.user, :lang, params.user.lang)
 
         if players_count(tournament) < tournament.players_limit do
           add_player(tournament, player)
@@ -70,10 +66,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def join(%{state: "active", type: "swiss"} = tournament, params) do
-        player =
-          params.user
-          |> Map.put(:lang, params.user.lang)
-          |> Map.put(:team_id, Map.get(params, :team_id))
+        player = Map.put(params.user, :lang, params.user.lang)
 
         if players_count(tournament) < tournament.players_limit do
           add_player(tournament, player)
@@ -322,7 +315,7 @@ defmodule Codebattle.Tournament.Base do
           state: "active"
         })
         |> maybe_init_waiting_room(params)
-        |> set_ranking()
+        |> Tournament.Ranking.set_ranking()
         |> maybe_start_global_timer()
         |> broadcast_tournament_started()
         |> start_round()
@@ -459,7 +452,7 @@ defmodule Codebattle.Tournament.Base do
         })
         |> Tournament.TournamentResult.upsert_results()
         |> calculate_round_results()
-        |> set_ranking()
+        |> Tournament.Ranking.set_ranking()
         |> broadcast_round_finished()
         |> maybe_finish_tournament()
         |> update_players_state_after_round_finished()

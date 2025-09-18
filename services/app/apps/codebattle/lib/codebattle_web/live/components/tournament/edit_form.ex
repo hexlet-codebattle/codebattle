@@ -16,7 +16,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
       <h2 class="text-center mb-2">Edit Tournament</h2>
       <h3 class="text-center mb-4">
         Creator:
-        <a href={Routes.user_path(@socket, :show, @tournament.creator.id)} class="text-decoration-none">
+        <a
+          href={Routes.user_path(@socket, :show, @tournament.creator.id)}
+          class="text-decoration-none"
+        >
           <%= @tournament.creator.name %>
         </a>
       </h3>
@@ -33,7 +36,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         <div class="form-group">
           <%= render_base_errors(@changeset.errors[:base]) %>
         </div>
-
         <!-- Basic Information Section -->
         <div class="card mb-4">
           <div class="card-header">
@@ -63,7 +65,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         </div>
-
         <!-- Tournament Settings Section -->
         <div class="card mb-4">
           <div class="card-header">
@@ -86,12 +87,16 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               </div>
               <div class="col-md-4 mb-3">
                 <%= label(f, :access_type, class: "form-label") %>
-                <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-select") %>
+                <%= select(f, :access_type, Codebattle.Tournament.access_types(),
+                  class: "form-select"
+                ) %>
                 <%= error_tag(f, :access_type) %>
               </div>
               <div class="col-md-4 mb-3">
                 <%= label(f, :task_strategy, class: "form-label") %>
-                <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(), class: "form-select") %>
+                <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(),
+                  class: "form-select"
+                ) %>
                 <%= error_tag(f, :task_strategy) %>
               </div>
             </div>
@@ -115,7 +120,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         </div>
-
         <!-- Task Configuration Section -->
         <div class="card mb-4">
           <div class="card-header">
@@ -125,7 +129,9 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             <div class="row">
               <div class="col-md-4 mb-3">
                 <%= label(f, :task_provider, class: "form-label") %>
-                <%= select(f, :task_provider, Codebattle.Tournament.task_providers(), class: "form-select") %>
+                <%= select(f, :task_provider, Codebattle.Tournament.task_providers(),
+                  class: "form-select"
+                ) %>
                 <%= error_tag(f, :task_provider) %>
               </div>
               <%= if (f.params["task_provider"] == "level") do %>
@@ -158,7 +164,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         </div>
-
         <!-- Tournament Limits Section -->
         <div class="card mb-4">
           <div class="card-header">
@@ -213,10 +218,17 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
                 ) %>
                 <%= error_tag(f, :ranking_type) %>
               </div>
+              <div class="col-md-4 mb-3">
+                <%= label(f, :score_strategy, class: "form-label") %>
+                <%= select(f, :score_strategy, Codebattle.Tournament.score_strategies(),
+                  class: "form-select",
+                  value: f.params["score_strategy"] || f.data.score_strategy
+                ) %>
+                <%= error_tag(f, :score_strategy) %>
+              </div>
             </div>
           </div>
         </div>
-
         <!-- Advanced Settings Section -->
         <div class="card mb-4">
           <div class="card-header">
@@ -236,15 +248,13 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         </div>
-
         <!-- Action Buttons -->
         <div class="d-flex justify-content-between align-items-center mt-4">
           <a
             class="btn btn-outline-secondary"
             href={Routes.tournament_path(@socket, :show, @tournament.id)}
           >
-            <i class="fas fa-arrow-left me-1"></i>
-            Back to Tournament
+            <i class="fas fa-arrow-left me-1"></i> Back to Tournament
           </a>
           <%= submit("Update Tournament",
             phx_disable_with: "Updating...",

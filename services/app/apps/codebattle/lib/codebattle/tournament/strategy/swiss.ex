@@ -31,11 +31,6 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   @impl Tournament.Base
-  def set_ranking(tournament) do
-    Tournament.Ranking.set_ranking(tournament)
-  end
-
-  @impl Tournament.Base
   def calculate_round_results(tournament) do
     tournament
   end
@@ -56,7 +51,7 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def finish_tournament?(tournament) do
-    tournament.meta.rounds_limit - 1 == tournament.current_round_position
+    tournament.rounds_limit - 1 == tournament.current_round_position
   end
 
   @impl Tournament.Base

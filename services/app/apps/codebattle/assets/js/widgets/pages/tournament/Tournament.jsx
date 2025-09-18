@@ -77,7 +77,7 @@ function InfoPanel({
           matches={tournament.matches}
           tournamentId={tournament.id}
           currentUserId={currentUserId}
-          roundsLimit={tournament.meta?.roundsLimit}
+          roundsLimit={tournament.roundsLimit}
           currentRoundPosition={tournament.currentRoundPosition}
           pageNumber={tournament.playersPageNumber}
           pageSize={tournament.playersPageSize}
@@ -286,8 +286,6 @@ function Tournament({ waitingRoomMachine }) {
           setModalShowing={setDetailsModalShowing}
         />
         <StartRoundConfirmationModal
-          meta={tournament.meta}
-          currentRoundPosition={tournament.currentRoundPosition}
           level={tournament.level}
           matchTimeoutSeconds={tournament.matchTimeoutSeconds}
           taskPackName={tournament.taskPackName}

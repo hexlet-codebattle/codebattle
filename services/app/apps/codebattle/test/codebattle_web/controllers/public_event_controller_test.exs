@@ -56,7 +56,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
                 task_pack_name: "7_elementary",
                 tournament_timeout_seconds: 75 * 60,
                 players_limit: 128,
-                ranking_type: "void",
+                ranking_type: "by_user",
                 task_provider: "task_pack",
                 task_strategy: "sequential"
               }
@@ -95,7 +95,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert players = Tournament.Helpers.get_players(tournament)
       assert tournament.tournament_timeout_seconds == 75 * 60
       assert tournament.players_limit == 128
-      assert tournament.ranking_type == "void"
+      assert tournament.ranking_type == "by_user"
       assert tournament.task_provider == "task_pack"
       assert tournament.task_strategy == "sequential"
       assert tournament.task_pack_name == "7_elementary"

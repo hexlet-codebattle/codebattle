@@ -104,8 +104,7 @@ defmodule Codebattle.Tournament.Context do
     Repo.all(
       from(t in Tournament,
         order_by: t.starts_at,
-        where:
-          t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
+        where: t.event_id == ^event_id and t.state in ["waiting_participants", "active", "finished"]
       )
     )
   end
