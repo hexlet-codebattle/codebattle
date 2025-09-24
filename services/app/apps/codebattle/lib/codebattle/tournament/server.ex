@@ -159,8 +159,7 @@ defmodule Codebattle.Tournament.Server do
         :players,
         :waiting_room_state,
         :stats,
-        :played_pair_ids,
-        :round_tasks
+        :played_pair_ids
       ])
 
     :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
@@ -204,8 +203,7 @@ defmodule Codebattle.Tournament.Server do
         :players,
         :waiting_room_state,
         :stats,
-        :played_pair_ids,
-        :round_tasks
+        :played_pair_ids
       ])
 
     # Update the cache
@@ -235,8 +233,7 @@ defmodule Codebattle.Tournament.Server do
         :players,
         :waiting_room_state,
         :stats,
-        :played_pair_ids,
-        :round_tasks
+        :played_pair_ids
       ])
 
     :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
@@ -302,21 +299,6 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not finished?(tournament) do
       new_tournament = tournament.module.start_rematch(tournament, match_ref)
-
-      broadcast_tournament_update(new_tournament)
-
-      {:noreply, %{tournament: new_tournament}}
-    else
-      {:noreply, %{tournament: tournament}}
-    end
-  end
-
-  # only for squad tournament starts new games for all pairs
-  def handle_info({:start_round_games, match_ref, round_position}, %{tournament: tournament}) do
-    if tournament.current_round_position == round_position and
-         not in_break?(tournament) and
-         not finished?(tournament) do
-      new_tournament = tournament.module.start_round_games(tournament, match_ref)
 
       broadcast_tournament_update(new_tournament)
 

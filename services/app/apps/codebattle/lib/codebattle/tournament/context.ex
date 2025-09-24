@@ -279,7 +279,6 @@ defmodule Codebattle.Tournament.Context do
   def get_waiting_room_name(_tournament), do: nil
 
   defp get_module(%{type: "arena"}), do: Tournament.Arena
-  defp get_module(%{type: "squad"}), do: Tournament.Squad
   defp get_module(%{type: "top200"}), do: Tournament.Top200
   defp get_module(%{type: "individual"}), do: Tournament.Individual
   defp get_module(%{type: "show"}), do: Tournament.Show

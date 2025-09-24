@@ -21,7 +21,7 @@ defmodule Codebattle.Tournament.HelperTest do
         "task_pack_name" => "tp",
         "creator" => user1,
         "break_duration_seconds" => 0,
-        "task_provider" => "task_pack_per_round",
+        "task_provider" => "task_pack",
         "task_strategy" => "sequential",
         "ranking_type" => "by_clan",
         "type" => "swiss",

@@ -56,13 +56,13 @@ defmodule Codebattle.Tournament do
   @access_types ~w(public token)
   @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
-  @states ~w(waiting_participants canceled active timeout finished)
-  @task_providers ~w(level task_pack task_pack_per_round all)
-  @task_strategies ~w(random_per_round sequential)
+  @public_types ~w(swiss)
   @ranking_types ~w(by_clan by_user)
   @score_strategies ~w(75_percentile win_loss)
+  @states ~w(waiting_participants canceled active timeout finished)
+  @task_providers ~w(level task_pack all)
+  @task_strategies ~w(random sequential)
   @types ~w(swiss)
-  @public_types ~w(swiss)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -91,7 +91,7 @@ defmodule Codebattle.Tournament do
     field(:ranking_type, :string, default: "by_user")
     field(:score_strategy, :string, default: "75_percentile")
     field(:round_timeout_seconds, :integer)
-    field(:rounds_limit, :integer)
+    field(:rounds_limit, :integer, default: 1)
     field(:show_results, :boolean, default: true)
     field(:started_at, :utc_datetime)
     field(:starts_at, :utc_datetime)
@@ -99,7 +99,7 @@ defmodule Codebattle.Tournament do
     field(:stats, AtomizedMap, default: %{})
     field(:task_pack_name, :string)
     field(:task_provider, :string, default: "level")
-    field(:task_strategy, :string, default: "random_per_round")
+    field(:task_strategy, :string, default: "random")
     field(:tournament_timeout_seconds, :integer)
     field(:type, :string, default: "swiss")
     field(:use_chat, :boolean, default: true)
@@ -121,8 +121,7 @@ defmodule Codebattle.Tournament do
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
-    field(:round_task_ids, {:array, :integer}, virtual: true, default: [])
-    field(:round_tasks, :map, virtual: true, default: %{})
+    field(:task_ids, {:array, :integer}, virtual: true, default: [])
     field(:waiting_room_name, :string, virtual: true)
     field(:waiting_room_state, :map, virtual: true, default: %{})
 
@@ -159,6 +158,7 @@ defmodule Codebattle.Tournament do
       :started_at,
       :starts_at,
       :state,
+      :task_ids,
       :task_pack_name,
       :task_provider,
       :task_strategy,

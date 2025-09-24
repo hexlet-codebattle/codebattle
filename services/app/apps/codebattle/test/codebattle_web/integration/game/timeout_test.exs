@@ -1,7 +1,6 @@
 defmodule CodebattleWeb.Integration.Game.TimeoutTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game
   alias Codebattle.Game.Context
   alias CodebattleWeb.UserSocket
 

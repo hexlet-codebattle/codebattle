@@ -497,7 +497,7 @@ msgid "Duration (sec)"
 msgstr "Время (сек)"
 
 msgid "Clan"
-msgstr "Вуз"
+msgstr "Клан"
 
 msgid "Count of solutions"
 msgstr "Количество успешных решений"
@@ -524,13 +524,13 @@ msgid "Event rating"
 msgstr "Таблица Участников"
 
 msgid "Clans rating"
-msgstr "Рейтинг вузов"
+msgstr "Рейтинг кланов"
 
 msgid "Players rating"
 msgstr "Рейтинг участников"
 
 msgid "Clan players rating"
-msgstr "Рейтинг участников вуза"
+msgstr "Рейтинг участников клана"
 
 msgid "Clan players_count/registrations"
 msgstr "Участники/Регистрации"
@@ -653,7 +653,7 @@ msgid "Opponent"
 msgstr "Соперник"
 
 msgid "Opponent clan"
-msgstr "Вуз соперника"
+msgstr "Клан соперника"
 
 msgid "Status"
 msgstr "Статус задачи"
@@ -716,10 +716,10 @@ msgid "Your score"
 msgstr "Твой балл"
 
 msgid "Your clan place"
-msgstr "Место твоего вуза"
+msgstr "Место твоего клана"
 
 msgid "Your clan score"
-msgstr "Балл твоего вуза"
+msgstr "Балл твоего клана"
 
 msgid "Statistics"
 msgstr "Статистика"
@@ -818,13 +818,13 @@ msgid "Player Panel"
 msgstr "Панель участника"
 
 msgid "Top users by clan ranking"
-msgstr "Лучшие игроки в рейтинге вузов"
+msgstr "Лучшие игроки в рейтинге кланов"
 
 msgid "Tasks ranking"
 msgstr "Рейтинг задач"
 
 msgid "Clans bubble distribution"
-msgstr "График распределения лучших вузов"
+msgstr "График распределения лучших кланов"
 
 msgid "Duration distribution and top users by task"
 msgstr "Статистика по задаче"

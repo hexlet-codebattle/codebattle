@@ -66,7 +66,7 @@ function PlayerStatsPanel({
   hideBots,
   canModerate,
 }) {
-  const { roundTaskIds } = useSelector(tournamentSelector);
+  const { taskIds } = useSelector(tournamentSelector);
   const currentUserClanId = useSelector(currentUserClanIdSelector);
 
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
@@ -172,7 +172,7 @@ function PlayerStatsPanel({
                   type={type}
                   playerId={currentUserId}
                   clanId={currentUserClanId}
-                  taskIds={roundTaskIds}
+                  taskIds={taskIds}
                   isBanned={currentPlayer.isBanned}
                   matchList={matchList}
                 />

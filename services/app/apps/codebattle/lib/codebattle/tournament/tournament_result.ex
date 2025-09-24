@@ -9,8 +9,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   alias Codebattle.Repo
   alias Codebattle.Tournament
 
-  @loss_score 1
-  @game_level_score %{elementary: 2, easy: 3, medium: 5, hard: 8}
+  @loss_score 0
+  @win_score 1
 
   @type t :: %__MODULE__{}
 
@@ -170,16 +170,9 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.id as game_id,
       g.round_position,
       g.was_cheated,
-      CASE
-      WHEN (p.player_info->'result_percent')::numeric = 100.0 THEN
-        CASE
-          WHEN g.level = 'elementary' THEN #{@game_level_score[:elementary]}
-          WHEN g.level = 'easy' THEN #{@game_level_score[:easy]}
-          WHEN g.level = 'medium' THEN #{@game_level_score[:medium]}
-          WHEN g.level = 'hard' THEN #{@game_level_score[:hard]}
-          ELSE 0
-        END
-      ELSE #{@loss_score}
+      CASE WHEN (p.player_info->'result_percent')::numeric = 100.0
+        THEN #{@win_score}
+        ELSE #{@loss_score}
       END AS score
       FROM games g
       CROSS JOIN LATERAL
@@ -308,7 +301,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     end)
   end
 
-  def get_user_ranking(tournament) do
+  def get_user_ranking(%{use_clan: true} = tournament) do
     query =
       from(r in __MODULE__,
         left_join: c in Clan,

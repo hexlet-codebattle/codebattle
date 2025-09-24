@@ -17,7 +17,7 @@ defmodule Codebattle.User do
   @guest_id 0
 
   @subscription_types ~w(banned free premium admin)a
-
+  @valid_locales ~w(en ru)
   @derive {Jason.Encoder,
            only: [
              :achievements,
@@ -35,6 +35,7 @@ defmodule Codebattle.User do
              :is_bot,
              :is_guest,
              :lang,
+             :locale,
              :name,
              :rank,
              :rating,
@@ -65,6 +66,7 @@ defmodule Codebattle.User do
     field(:github_name, :string)
     field(:is_bot, :boolean, default: false)
     field(:lang, :string)
+    field(:locale, :string)
     field(:name, :string)
     field(:password_hash, :string)
     field(:public_id, :binary_id)
@@ -102,6 +104,7 @@ defmodule Codebattle.User do
       :github_id,
       :github_name,
       :lang,
+      :locale,
       :name,
       :rating,
       :subscription_type
@@ -110,16 +113,18 @@ defmodule Codebattle.User do
     |> cast_embed(:sound_settings)
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
+    |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, 1)
   end
 
   def settings_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:name, :lang])
+    |> cast(params, [:name, :lang, :locale])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_required([:name])
     |> validate_length(:name, min: 2, max: 39)
+    |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, user.id)
   end
 
@@ -141,6 +146,7 @@ defmodule Codebattle.User do
       subscription_type: :free,
       lang: Application.get_env(:codebattle, :default_lang_slug),
       rating: 0,
+      locale: "en",
       rank: 0,
       sound_settings: %SoundSettings{}
     }
@@ -237,7 +243,9 @@ defmodule Codebattle.User do
   def create_password_hash(user, password) do
     hashed_password = Bcrypt.hash_pwd_salt(password)
 
-    Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id), set: [password_hash: hashed_password])
+    Repo.update_all(from(u in __MODULE__, where: u.id == ^user.id),
+      set: [password_hash: hashed_password]
+    )
   end
 
   def subscription_types, do: @subscription_types

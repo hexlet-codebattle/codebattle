@@ -493,21 +493,9 @@ defmodule Codebattle.Tournament.Top200 do
     tournament
   end
 
+  # TODO: implement different logic later
   @impl Tournament.Base
-  def finish_round_after_match?(
-        %{
-          task_provider: "task_pack_per_round",
-          round_task_ids: round_task_ids,
-          current_round_position: current_round_position
-        } = tournament
-      ) do
-    matches = get_round_matches(tournament, current_round_position)
-
-    task_index = round(2 * Enum.count(matches) / players_count(tournament))
-
-    !Enum.any?(matches, &(&1.state == "playing")) and
-      task_index == Enum.count(round_task_ids)
-  end
+  def finish_round_after_match?(_tournament), do: true
 
   defp get_wait_type(tournament, game_params) do
     # min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
@@ -523,9 +511,6 @@ defmodule Codebattle.Tournament.Top200 do
     end
   end
 
-  defp has_more_games_in_round?(%{task_provider: "task_pack_per_round", round_task_ids: round_task_ids}, game_params) do
-    game_params.task_id != List.last(round_task_ids)
-  end
-
+  # TODO: implement different logic later
   defp has_more_games_in_round?(_tournament, _game_params), do: false
 end

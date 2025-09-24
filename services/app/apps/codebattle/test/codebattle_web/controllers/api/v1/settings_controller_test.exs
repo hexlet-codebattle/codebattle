@@ -24,6 +24,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert json_response(conn, 200) == %{
                "name" => "first",
                "lang" => "dart",
+               "locale" => "en",
                "clan" => "abc",
                "sound_settings" => %{"level" => 7, "type" => "dendy"},
                "github_id" => 1,
@@ -39,6 +40,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       new_settings = %{
         "name" => "evgen",
         "clan" => "  Bca  ",
+        "locale" => "ru",
         "sound_settings" => %{"level" => 3, "type" => "cs"},
         "lang" => "ruby"
       }
@@ -60,6 +62,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.clan_id == clan.id
       assert updated.name == "evgen"
       assert updated.lang == "ruby"
+      assert updated.locale == "ru"
     end
 
     test "update with empty name doesn't work", %{conn: conn} do

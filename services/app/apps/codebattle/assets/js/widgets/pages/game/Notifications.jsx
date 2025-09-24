@@ -18,16 +18,20 @@ import BackToTournamentButton from './BackToTournamentButton';
 import GameResult from './GameResult';
 import GoToNextGame from './GoToNextGame';
 import ReplayerControlButton from './ReplayerControlButton';
-import VideoConferenceButton from './VideoConferenceButton';
 
 function Notifications() {
   const { mainService } = useContext(RoomContext);
-  const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
+  const roomMachineState = useMachineStateSelector(
+    mainService,
+    roomStateSelector,
+  );
 
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
-  const playbookSolutionType = useSelector(state => state.playbook.solutionType);
+  const playbookSolutionType = useSelector(
+    state => state.playbook.solutionType,
+  );
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
   const tournament = useSelector(selectors.tournamentSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
@@ -38,30 +42,39 @@ function Notifications() {
 
   return (
     <>
-      {roomMachineState.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
-      {(isAdmin
-        && !roomMachineState.matches({ replayer: replayerMachineStates.off })
-        && !roomMachineState.matches({ room: roomMachineStates.testing })
-      ) && <VideoConferenceButton />}
+      {roomMachineState.matches({ room: roomMachineStates.testing }) && (
+        <BackToTaskBuilderButton />
+      )}
       <ReplayerControlButton />
-      {(isCurrentUserPlayer && roomMachineState.matches({ room: roomMachineStates.gameOver }))
-        && (
+      {isCurrentUserPlayer
+        && roomMachineState.matches({ room: roomMachineStates.gameOver }) && (
           <>
             <GameResult />
             <ActionsAfterGame />
           </>
         )}
-      {(isAdmin && !roomMachineState.matches({ replayer: replayerMachineStates.off })) && (
-        <>
-          <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
-        </>
+      {isAdmin
+        && !roomMachineState.matches({ replayer: replayerMachineStates.off }) && (
+          <>
+            <ApprovePlaybookButtons
+              playbookSolutionType={playbookSolutionType}
+            />
+          </>
+        )}
+      {isTournamentGame && isActiveTournament && (
+        <GoToNextGame
+          tournamentsInfo={tournamentsInfo}
+          currentUserId={currentUserId}
+        />
       )}
-      {isTournamentGame && isActiveTournament
-        && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} />}
       {isTournamentGame && !isEventTournament && <BackToTournamentButton />}
-      {isTournamentGame && isEventTournament && <BackToEventButton eventId={tournament?.eventId} />}
-      {!isTournamentGame && !roomMachineState.matches({ room: roomMachineStates.testing })
-        && <BackToHomeButton />}
+      {isTournamentGame && isEventTournament && (
+        <BackToEventButton eventId={tournament?.eventId} />
+      )}
+      {!isTournamentGame
+        && !roomMachineState.matches({ room: roomMachineStates.testing }) && (
+          <BackToHomeButton />
+        )}
     </>
   );
 }

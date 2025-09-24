@@ -55,33 +55,31 @@ defmodule Codebattle.Tournament.Arena do
     Enum.each(
       players,
       fn player ->
-        cond do
-          player.state == "active" && player_finished_round?(tournament, player) ->
-            new_player = %{player | state: "finished_round"}
+        if player.state == "active" do
+          new_player = %{player | state: "finished_round"}
 
-            Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
-              tournament: tournament,
-              player: new_player
-            })
+          Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
+            tournament: tournament,
+            player: new_player
+          })
 
-            Tournament.Players.put_player(tournament, new_player)
+          Tournament.Players.put_player(tournament, new_player)
+        else
+          # player.state == "active" ->
+          #   new_player = %{
+          #     player
+          #     | state: "matchmaking_active",
+          #       wr_joined_at: :os.system_time(:second)
+          #   }
 
-          player.state == "active" ->
-            new_player = %{
-              player
-              | state: "matchmaking_active",
-                wr_joined_at: :os.system_time(:second)
-            }
+          #   Tournament.Players.put_player(tournament, new_player)
 
-            Tournament.Players.put_player(tournament, new_player)
+          #   Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
+          #     tournament: tournament,
+          #     player: new_player
+          #   })
 
-            Codebattle.PubSub.broadcast("tournament:player:matchmaking_started", %{
-              tournament: tournament,
-              player: new_player
-            })
-
-          true ->
-            :noop
+          :noop
         end
       end
     )

@@ -4,7 +4,6 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   import CodebattleWeb.Factory
 
   alias Codebattle.CodeCheck.OutputParser
-  alias Codebattle.CodeCheck.Result
   alias Codebattle.CodeCheck.Result.V2
   alias Codebattle.CodeCheck.Result.V2.AssertResult
 

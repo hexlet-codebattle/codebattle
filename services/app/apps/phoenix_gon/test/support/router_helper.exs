@@ -8,7 +8,8 @@ defmodule RouterHelper do
 
   defmacro __using__(_) do
     quote do
-      use Plug.Test
+      import Plug.Test
+      import Plug.Conn
       import RouterHelper
     end
   end

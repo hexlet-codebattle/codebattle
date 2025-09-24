@@ -171,19 +171,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                   </div>
                 </div>
               <% end %>
-              <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
-                <div class="col-12 col-md-4">
-                  <div class="form-group">
-                    <%= label(f, :task_pack_name, class: "form-label font-weight-semibold") %>
-                    <%= text_input(f, :task_pack_name,
-                      class: "form-control form-control-lg",
-                      value: f.params["task_pack_name"] || f.data.task_pack_name,
-                      placeholder: "all_easy,all_medium"
-                    ) %>
-                    <%= error_tag(f, :task_pack_names) %>
-                  </div>
-                </div>
-              <% end %>
               <%= if (f.params["task_provider"] == "tags") do %>
                 <div class="col-12 col-md-4">
                   <div class="form-group">

@@ -71,12 +71,8 @@ defmodule Codebattle.Tournament.Show do
   #   Enum.count(player.task_ids) == Enum.count(round_task_ids)
   # end
 
-  defp final_round?(%{
-         task_provider: "task_pack",
-         round_task_ids: round_task_ids,
-         current_round_position: current_round_position
-       }) do
-    current_round_position === Enum.count(round_task_ids) - 1
+  defp final_round?(%{task_provider: "task_pack", task_ids: task_ids, current_round_position: current_round_position}) do
+    current_round_position === Enum.count(task_ids) - 1
   end
 
   defp final_round?(_t), do: false

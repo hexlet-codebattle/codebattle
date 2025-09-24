@@ -14,17 +14,17 @@ import GameStateCodes from '../../config/gameStateCodes';
 import { TournamentRemainingTimer } from '../tournament/TournamentHeader';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
-  'text-dark font-weight-bold cb-custom-event-tr-border',
-  {
-    'cb-gold-place-bg': item?.place === 1,
-    'cb-silver-place-bg': item?.place === 2,
-    'cb-bronze-place-bg': item?.place === 3,
-    'bg-white': !item?.place || item?.place > 3,
-  },
-  {
-    'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
-  },
-);
+    'text-dark font-weight-bold cb-custom-event-tr-border',
+    {
+      'cb-gold-place-bg': item?.place === 1,
+      'cb-silver-place-bg': item?.place === 2,
+      'cb-bronze-place-bg': item?.place === 3,
+      'bg-white': !item?.place || item?.place > 3,
+    },
+    {
+      'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
+    },
+  );
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -41,7 +41,7 @@ const TournamentRankingTable = () => {
     lastRoundStartedAt,
     matchTimeoutSeconds,
     ranking,
-    roundTaskIds,
+    taskIds,
     roundTimeoutSeconds,
   } = useSelector(tournamentSelector);
 
@@ -85,19 +85,28 @@ const TournamentRankingTable = () => {
                 ) : (
                   <tr className="cb-custom-event-empty-space-tr" />
                 )}
-                <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
+                <tr
+                  className={getCustomEventTrClassName(item, currentUserClanId)}
+                >
                   <td
-                    style={{ borderTopLeftRadius: '0.5rem', borderBottomLeftRadius: '0.5rem' }}
+                    style={{
+                      borderTopLeftRadius: '0.5rem',
+                      borderBottomLeftRadius: '0.5rem',
+                    }}
                     className={tableDataCellClassName}
                   >
                     <div
                       title={item?.name}
                       className="cb-custom-event-name"
                       style={{
- textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '13ch',
-}}
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '13ch',
+                      }}
                     >
-                      {item?.name.slice(0, 9) + (item?.name.length > 11 ? '...' : '')}
+                      {item?.name.slice(0, 9)
+                        + (item?.name.length > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>
@@ -105,15 +114,22 @@ const TournamentRankingTable = () => {
                       title={item?.clan}
                       className="cb-custom-event-name"
                       style={{
- textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '15ch',
-}}
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        maxWidth: '15ch',
+                      }}
                     >
-                      {item?.clan?.slice(0, 9) + (item?.clan?.length > 11 ? '...' : '')}
+                      {item?.clan?.slice(0, 9)
+                        + (item?.clan?.length > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>{item.score}</td>
                   <td
-                    style={{ borderTopRightRadius: '0.5rem', borderBottomRightRadius: '0.5rem' }}
+                    style={{
+                      borderTopRightRadius: '0.5rem',
+                      borderBottomRightRadius: '0.5rem',
+                    }}
                     className={tableDataCellClassName}
                   >
                     {item.place}
@@ -126,22 +142,20 @@ const TournamentRankingTable = () => {
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">
-        {
-        (currentRoundPosition + 1 !== (roundTaskIds?.length || 0)
-         && gameStatus.state !== GameStateCodes.playing
-          && breakState === 'off') && (
-          <span className="font-weight-bold me-3">
-            {i18next.t('Round ends in ')}
-            <TournamentRemainingTimer
-              key={lastRoundStartedAt}
-              startsAt={lastRoundStartedAt}
-              duration={roundTimeoutSeconds || matchTimeoutSeconds}
-            />
-          </span>
-        )
-}
+        {currentRoundPosition + 1 !== (taskIds?.length || 0)
+          && gameStatus.state !== GameStateCodes.playing
+          && breakState === 'off' && (
+            <span className="font-weight-bold me-3">
+              {i18next.t('Round ends in ')}
+              <TournamentRemainingTimer
+                key={lastRoundStartedAt}
+                startsAt={lastRoundStartedAt}
+                duration={roundTimeoutSeconds || matchTimeoutSeconds}
+              />
+            </span>
+          )}
 
-        {(gameStatus.state !== GameStateCodes.playing && breakState === 'on') && (
+        {gameStatus.state !== GameStateCodes.playing && breakState === 'on' && (
           <span className="font-weight-bold me-3">
             {i18next.t('Next round will start in ')}
             <TournamentRemainingTimer
@@ -154,13 +168,13 @@ const TournamentRankingTable = () => {
       </div>
 
       <div className="d-flex justify-content-around align-items-center mt-1">
-        {roundTaskIds?.length > 0 && (
+        {taskIds?.length > 0 && (
           <span className="font-weight-bold">
             {i18next.t('Task')}
             {': '}
             {currentRoundPosition + 1}
             /
-            {roundTaskIds.length}
+            {taskIds.length}
           </span>
         )}
       </div>

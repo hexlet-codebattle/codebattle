@@ -8,18 +8,8 @@ defmodule CodebattleWeb.Plugs.Locale do
   def init(_opts), do: nil
 
   def call(conn, _opts) do
-    locale =
-      if FunWithFlags.enabled?(:enforce_default_locale) do
-        Application.get_env(:codebattle, :default_locale)
-      else
-        conn.params["locale"] || get_session(conn, :locale) ||
-          Application.get_env(:codebattle, :default_locale)
-      end
+    locale = conn.assigns.current_user.locale
 
-    put_locale(conn, locale)
-  end
-
-  defp put_locale(conn, locale) do
     Gettext.put_locale(CodebattleWeb.Gettext, locale)
 
     conn

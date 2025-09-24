@@ -47,7 +47,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   def set_ranking(tournament) do
     ranking = tournament |> TournamentResult.get_user_ranking() |> Map.values()
 
-    set_places_with_score(tournament, ranking)
+    set_places_with_score_to_players(tournament, ranking)
     Ranking.put_ranking(tournament, ranking)
     tournament
   end
@@ -77,11 +77,11 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
 
   def update_player_result(tournament, _player, _score), do: tournament
 
-  def set_places_with_score(%{type: "top200"} = _tournament, _ranking) do
+  def set_places_with_score_to_players(%{type: "top200"} = _tournament, _ranking) do
     :ok
   end
 
-  def set_places_with_score(tournament, ranking) do
+  def set_places_with_score_to_players(tournament, ranking) do
     Enum.each(ranking, fn %{id: id, place: place, score: score} ->
       tournament
       |> Players.get_player(id)

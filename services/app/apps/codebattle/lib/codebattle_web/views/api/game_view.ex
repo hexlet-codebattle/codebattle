@@ -61,6 +61,7 @@ defmodule CodebattleWeb.Api.GameView do
     |> Enum.map(fn player ->
       player
       |> Map.take([
+        :creator,
         :id,
         :is_bot,
         :is_guest,
@@ -68,12 +69,13 @@ defmodule CodebattleWeb.Api.GameView do
         :rank,
         :rating,
         :rating_diff,
-        :result,
-        :creator
+        :result
       ])
       |> Map.put(:lang, player.editor_lang)
     end)
   end
+
+  def get_langs_with_templates(nil), do: []
 
   def get_langs_with_templates(task) do
     Languages.meta()

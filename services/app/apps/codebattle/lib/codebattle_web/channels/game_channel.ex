@@ -62,7 +62,7 @@ defmodule CodebattleWeb.GameChannel do
            last_round_ended_at: tournament.last_round_ended_at,
            break_duration_seconds: tournament.break_duration_seconds,
            round_timeout_seconds: tournament.round_timeout_seconds,
-           round_task_ids: tournament.round_task_ids,
+           task_ids: tournament.task_ids,
            current_round_position: tournament.current_round_position
          }
        },

@@ -151,16 +151,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
                   <%= error_tag(f, :task_pack_name) %>
                 </div>
               <% end %>
-              <%= if (f.params["task_provider"] == "task_pack_per_round") do %>
-                <div class="col-md-4 mb-3">
-                  <%= label(f, :task_pack_name, class: "form-label") %>
-                  <%= text_input(f, :task_pack_name,
-                    class: "form-control",
-                    placeholder: "all_easy,all_medium"
-                  ) %>
-                  <%= error_tag(f, :task_pack_names) %>
-                </div>
-              <% end %>
             </div>
           </div>
         </div>

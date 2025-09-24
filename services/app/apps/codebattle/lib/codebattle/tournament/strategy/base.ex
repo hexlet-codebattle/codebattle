@@ -148,41 +148,41 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      def matchmaking_resume(tournament, %{user_id: user_id}) do
-        player = Tournament.Players.get_player(tournament, user_id)
+      # def matchmaking_resume(tournament, %{user_id: user_id}) do
+      #   player = Tournament.Players.get_player(tournament, user_id)
 
-        cond do
-          player.state == "matchmaking_paused" &&
-            tournament.break_state == "off" &&
-              !player_finished_round?(tournament, player) ->
-            new_player = %{
-              player
-              | state: "matchmaking_active",
-                wr_joined_at: :os.system_time(:second)
-            }
+      #   cond do
+      #     player.state == "matchmaking_paused" &&
+      #       tournament.break_state == "off" &&
+      #         !player_finished_round?(tournament, player) ->
+      #       new_player = %{
+      #         player
+      #         | state: "matchmaking_active",
+      #           wr_joined_at: :os.system_time(:second)
+      #       }
 
-            Tournament.Players.put_player(tournament, new_player)
+      #       Tournament.Players.put_player(tournament, new_player)
 
-            Codebattle.PubSub.broadcast("tournament:player:matchmaking_resumed", %{
-              tournament: tournament,
-              player: new_player
-            })
+      #       Codebattle.PubSub.broadcast("tournament:player:matchmaking_resumed", %{
+      #         tournament: tournament,
+      #         player: new_player
+      #       })
 
-          player.state == "matchmaking_paused" ->
-            new_player = %{player | state: "finished_round"}
-            Tournament.Players.put_player(tournament, new_player)
+      #     player.state == "matchmaking_paused" ->
+      #       new_player = %{player | state: "finished_round"}
+      #       Tournament.Players.put_player(tournament, new_player)
 
-            Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
-              tournament: tournament,
-              player: new_player
-            })
+      #       Codebattle.PubSub.broadcast("tournament:player:finished_round", %{
+      #         tournament: tournament,
+      #         player: new_player
+      #       })
 
-          true ->
-            :noop
-        end
+      #     true ->
+      #       :noop
+      #   end
 
-        tournament
-      end
+      #   tournament
+      # end
 
       def ban_player(tournament, player, game_ids) do
         if player do
@@ -474,18 +474,7 @@ defmodule Codebattle.Tournament.Base do
             nil
 
           game ->
-            build_and_run_match(tournament, players, game, false)
-        end
-
-        tournament
-      end
-
-      def start_round_games(tournament, match_ref) do
-        # TODO: FIXME
-        task_id = Enum.at(tournament.round_task_ids, tournament.current_round_position)
-
-        if task_id do
-          build_round_matches(tournament, %{task_id: task_id})
+            build_and_run_match(tournament, players, game)
         end
 
         tournament
@@ -546,14 +535,14 @@ defmodule Codebattle.Tournament.Base do
         tournament =
           tournament
           |> maybe_preload_tasks()
-          |> maybe_set_round_task_ids()
+          |> maybe_set_task_ids()
           |> maybe_start_round_timer()
           |> maybe_activate_players()
 
         # Build matches - this is the most time-consuming part
         tournament = build_round_matches(tournament, round_params)
 
-        # Save to database
+        # TODO: Save to database, rething cause big timeout
         tournament = db_save!(tournament)
 
         # These operations can be done after the critical path
@@ -576,23 +565,11 @@ defmodule Codebattle.Tournament.Base do
         }
       end
 
-      defp maybe_set_round_task_ids(%{task_provider: "task_pack", current_round_position: 0} = tournament) do
-        update_struct(tournament, %{
-          round_task_ids: get_round_task_ids(tournament, 0)
-        })
+      defp maybe_set_task_ids(%{current_round_position: 0} = tournament) do
+        update_struct(tournament, %{task_ids: get_task_ids(tournament)})
       end
 
-      defp maybe_set_round_task_ids(%{task_provider: "task_pack_per_round"} = tournament) do
-        update_struct(tournament, %{
-          round_task_ids: get_round_task_ids(tournament, tournament.current_round_position)
-        })
-      end
-
-      defp maybe_set_round_task_ids(%{current_round_position: 0} = tournament) do
-        update_struct(tournament, %{round_task_ids: get_all_task_ids(tournament)})
-      end
-
-      defp maybe_set_round_task_ids(tournament), do: tournament
+      defp maybe_set_task_ids(tournament), do: tournament
 
       defp build_round_matches(tournament, round_params) do
         tournament
@@ -614,8 +591,6 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp bulk_create_round_games_and_matches(batch, tournament, task, timeout_seconds) do
-        reset_task_ids = tournament.task_provider == "task_pack_per_round"
-
         # Prepare game creation parameters in a single pass
         game_params =
           Enum.map(batch, fn
@@ -657,7 +632,7 @@ defmodule Codebattle.Tournament.Base do
           |> Enum.zip(game_params)
           |> Task.async_stream(
             fn {game, {_params, players, _match_id}} ->
-              build_and_run_match(tournament, players, game, reset_task_ids)
+              build_and_run_match(tournament, players, game)
             end,
             max_concurrency: System.schedulers_online(),
             ordered: false,
@@ -698,7 +673,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      defp build_and_run_match(tournament, players, game, reset_task_ids) do
+      defp build_and_run_match(tournament, players, game) do
         match = %Tournament.Match{
           game_id: game.id,
           rematch: true,
@@ -718,7 +693,7 @@ defmodule Codebattle.Tournament.Base do
           Tournament.Players.put_player(tournament, %{
             player
             | matches_ids: [match.id | player.matches_ids],
-              task_ids: if(reset_task_ids, do: [game.task_id], else: [game.task_id | player.task_ids])
+              task_ids: [game.task_id | player.task_ids]
           })
         end)
 
@@ -800,7 +775,7 @@ defmodule Codebattle.Tournament.Base do
           |> Game.Context.bulk_create_games()
           |> Enum.zip(players_to_play)
           |> Enum.each(fn {game, {players, _task}} ->
-            build_and_run_match(tournament, players, game, false)
+            build_and_run_match(tournament, players, game)
           end)
         end)
       end
@@ -898,9 +873,10 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_start_global_timer(tournament), do: tournament
 
-      defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
       # We don't want to run a timer for the swiss type, because all games already have a timeout
       defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
+
+      defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
 
       defp maybe_start_round_timer(%{state: "active", type: "top200"} = tournament), do: tournament
 
@@ -993,10 +969,6 @@ defmodule Codebattle.Tournament.Base do
       defp get_task_id_by_params(%{task_id: task_id}), do: task_id
       defp get_task_id_by_params(_round_params), do: nil
 
-      defp player_finished_round?(tournament, player) do
-        Enum.count(player.task_ids) == Enum.count(tournament.round_task_ids)
-      end
-
       defp finish_all_playing_matches(tournament) do
         matches_to_finish = get_matches(tournament, "playing")
         finished_at = DateTime.utc_now(:second)
@@ -1064,7 +1036,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_add_award(game_params, _tournament), do: game_params
 
       defp maybe_set_free_task(game_params, %Tournament{type: "show", task_strategy: "sequential"} = tournament, player) do
-        task_id = Enum.at(tournament.round_task_ids, Enum.count(player.task_ids))
+        task_id = Enum.at(tournament.task_ids, Enum.count(player.task_ids))
 
         Map.put(game_params, :task_id, task_id)
         Map.put(game_params, :task, get_task(tournament, task_id))
