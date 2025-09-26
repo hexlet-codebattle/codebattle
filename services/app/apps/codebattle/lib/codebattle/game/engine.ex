@@ -336,7 +336,7 @@ defmodule Codebattle.Game.Engine do
 
       update_game!(game, %{
         state: get_state(game),
-        players: get_game_players(game),
+        players: get_players(game),
         duration_sec: params[:duration_sec] || game.duration_sec,
         finishes_at: game.finishes_at
       })
@@ -359,21 +359,15 @@ defmodule Codebattle.Game.Engine do
     |> Repo.update!()
   end
 
-  @spec update_game!(Game.t()) :: Game.t()
   @spec update_game!(Game.t(), map()) :: Game.t()
-  def update_game!(%Game{} = game) do
-    case Repo.get(Game, game.id) do
-      nil ->
-        game
-
-      game ->
-        game
-        |> Game.changeset(Map.from_struct(game))
-        |> Repo.update!()
-    end
-  end
-
   def update_game!(%Game{} = game, params) do
+    params =
+      if Map.has_key?(params, :players) do
+        Map.put(params, :players, sanitize_players(params.players))
+      else
+        params
+      end
+
     case Repo.get(Game, game.id) do
       nil ->
         game
@@ -390,7 +384,9 @@ defmodule Codebattle.Game.Engine do
   end
 
   def toggle_ban_player(%Game{} = game, player_id) do
-    {:ok, {_old_game_state, new_game}} = fire_transition(game.id, :toggle_ban_player, %{id: player_id})
+    {:ok, {_old_game_state, new_game}} =
+      fire_transition(game.id, :toggle_ban_player, %{id: player_id})
+
     {:ok, new_game}
   end
 
@@ -409,7 +405,7 @@ defmodule Codebattle.Game.Engine do
         when old_state in ["waiting_opponent", "playing"] ->
           update_game!(new_game, %{
             state: get_state(new_game),
-            players: get_game_players(new_game),
+            players: get_players(new_game),
             duration_sec: new_game.duration_sec,
             finishes_at: new_game.finishes_at
           })
@@ -518,10 +514,8 @@ defmodule Codebattle.Game.Engine do
     end)
   end
 
-  defp get_game_players(game) do
-    game
-    |> get_players()
-    |> Enum.map(fn player ->
+  defp sanitize_players(players) do
+    Enum.map(players, fn player ->
       editor_text = Utils.sanitize_jsonb(player.editor_text)
 
       player

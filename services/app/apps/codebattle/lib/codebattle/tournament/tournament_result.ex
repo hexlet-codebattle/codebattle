@@ -77,10 +77,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       games g
       where tournament_id = #{tournament.id}
       and state = 'game_over'
-      and id not in (
-        select distinct g.id from user_games ug inner join games g on g.id = ug.game_id
-        where ug.is_bot = 't' and ug.result = 'won' and g.tournament_id = #{tournament.id}
-      )
+      and bot_won = FALSE
       GROUP BY
       task_id, level),
       stats as (

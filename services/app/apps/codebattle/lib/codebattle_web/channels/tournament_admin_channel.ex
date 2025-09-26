@@ -433,7 +433,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     # end
 
-    active_game_id = tournament.id |> get_active_game() |> dbg()
+    active_game_id = get_active_game(tournament.id)
 
     %{
       tasks_info: tasks_info,
