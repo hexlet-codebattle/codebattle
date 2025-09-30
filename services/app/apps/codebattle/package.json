@@ -59,7 +59,7 @@
     "@xstate/inspect": "^0.8.0",
     "@xstate/react": "^3.2.2",
     "@xstate/test": "^1.0.0-alpha.1",
-    "axios": "^1.6.0",
+    "axios": "^1.12.0",
     "bad-words-next": "^3.1.1",
     "bootstrap": "^4.6.2",
     "calcite-react": "^0.56.2",
