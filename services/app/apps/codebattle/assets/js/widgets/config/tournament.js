@@ -1,7 +1,8 @@
 export default {
-   loading: 'loading',
-   active: 'active',
-   waitingParticipants: 'waiting_participants',
-   cancelled: 'canceled',
-   finished: 'finished',
+  loading: 'loading',
+  active: 'active',
+  waitingParticipants: 'waiting_participants',
+  canceled: 'canceled',
+  finished: 'finished',
+  upcoming: 'upcoming',
 };

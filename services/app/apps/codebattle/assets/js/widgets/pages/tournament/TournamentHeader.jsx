@@ -31,8 +31,8 @@ const getBadgeTitle = (state, breakState, hideResults) => {
       return breakState === 'off' ? 'Active' : 'Round break';
     case TournamentStates.waitingParticipants:
       return 'Waiting Participants';
-    case TournamentStates.cancelled:
-      return 'Cancelled';
+    case TournamentStates.canceled:
+      return 'Canceled';
     case TournamentStates.finished:
       return 'Finished';
     default:
@@ -42,8 +42,8 @@ const getBadgeTitle = (state, breakState, hideResults) => {
 
 const getDescriptionByState = state => {
   switch (state) {
-    case TournamentStates.cancelled:
-      return i18next.t('The tournament is cancelled');
+    case TournamentStates.canceled:
+      return i18next.t('The tournament is canceled');
     case TournamentStates.finished:
       return i18next.t('The tournament is finished');
     default:
@@ -164,25 +164,25 @@ function TournamentHeader({
     'badge mr-2',
     hasCustomEventStyle
       ? {
-          'cb-custom-event-badge-warning':
-            state === TournamentStates.waitingParticipants,
-          'cb-custom-event-badge-success':
-            !hideResults
-            && (breakState === 'off' || state === TournamentStates.finished),
-          'cb-custom-event-badge-light': state === TournamentStates.cancelled,
-          'cb-custom-event-badge-danger': breakState === 'on',
-          'cb-custom-event-badge-primary':
-            hideResults && state === TournamentStates.finished,
-        }
+        'cb-custom-event-badge-warning':
+          state === TournamentStates.waitingParticipants,
+        'cb-custom-event-badge-success':
+          !hideResults
+          && (breakState === 'off' || state === TournamentStates.finished),
+        'cb-custom-event-badge-light': state === TournamentStates.canceled,
+        'cb-custom-event-badge-danger': breakState === 'on',
+        'cb-custom-event-badge-primary':
+          hideResults && state === TournamentStates.finished,
+      }
       : {
-          'badge-warning': state === TournamentStates.waitingParticipants,
-          'badge-success':
-            !hideResults
-            && (breakState === 'off' || state === TournamentStates.finished),
-          'badge-light': state === TournamentStates.cancelled,
-          'badge-danger': breakState === 'on',
-          'badge-primary': hideResults && state === TournamentStates.finished,
-        },
+        'badge-warning': state === TournamentStates.waitingParticipants,
+        'badge-success':
+          !hideResults
+          && (breakState === 'off' || state === TournamentStates.finished),
+        'badge-light': state === TournamentStates.canceled,
+        'badge-danger': breakState === 'on',
+        'badge-primary': hideResults && state === TournamentStates.finished,
+      },
   );
   const copyBtnClassName = cn('btn btn-sm rounded-right', {
     'btn-secondary': !hasCustomEventStyle,
@@ -204,7 +204,7 @@ function TournamentHeader({
   const canRestart = !isLive
     || state === TournamentStates.active
     || state === TournamentStates.finished
-    || state === TournamentStates.cancelled;
+    || state === TournamentStates.canceled;
   const canToggleShowBots = type === TournamentTypes.show;
 
   return (

@@ -4,7 +4,9 @@ import useHover from '../utils/useHover';
 
 import UserInfo from './UserInfo';
 
-function ChatUserInfo({ user, displayMenu, className = '' }) {
+function ChatUserInfo({
+ user, displayMenu, className = '', mode,
+}) {
   const [ref, hovered] = useHover();
 
   return (
@@ -21,7 +23,7 @@ function ChatUserInfo({ user, displayMenu, className = '' }) {
       onClick={displayMenu}
       onKeyPress={displayMenu}
     >
-      <UserInfo user={user} hovered={hovered} hideInfo hideOnlineIndicator />
+      <UserInfo user={user} mode={mode} hovered={hovered} hideInfo hideOnlineIndicator />
     </div>
   );
 }

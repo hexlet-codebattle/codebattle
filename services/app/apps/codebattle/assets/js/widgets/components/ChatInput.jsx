@@ -1,9 +1,10 @@
 import React, {
- useState, useEffect, useCallback, useRef,
+  useState, useEffect, useCallback, useRef,
 } from 'react';
 
 import data from '@emoji-mart/data';
 import BadWordsNext from 'bad-words-next';
+import cn from 'classnames';
 import { SearchIndex, init } from 'emoji-mart';
 import i18next from 'i18next';
 import isEmpty from 'lodash/isEmpty';
@@ -30,7 +31,7 @@ const getTooltipVisibility = async msg => {
   return !isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput({ inputRef, disabled = false }) {
+export default function ChatInput({ inputRef, mode, disabled = false }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
@@ -38,6 +39,16 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const [badwordsReady, setBadwordsReady] = useState(false);
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
+
+  const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
+    'bg-dark cb-border-color text-white': mode === 'dark',
+    'border-gray': mode !== 'dark',
+    'is-invalid': isMaxLengthExceeded,
+  });
+  const emojiBtnClassName = cn('btn border-left-0 border-right-0 px-2 py-0', {
+    'bg-white border-gray': mode !== 'dark',
+    'cb-border-color border': mode === 'dark',
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -74,8 +85,8 @@ export default function ChatInput({ inputRef, disabled = false }) {
     } else {
       setMaxLengthExceeded(false);
     }
-      setText(value);
-      setTooltipVisibility(await getTooltipVisibility(value));
+    setText(value);
+    setTooltipVisibility(await getTooltipVisibility(value));
   };
 
   const handleSubmit = e => {
@@ -148,13 +159,11 @@ export default function ChatInput({ inputRef, disabled = false }) {
 
   return (
     <form
-      className="border-top input-group mb-0 p-2"
+      className="border-top border-dark input-group mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input
-        className={`form-control h-auto border-gray border-right-0 rounded-left ${
-          isMaxLengthExceeded ? 'is-invalid' : ''
-        }`}
+        className={inputClassName}
         placeholder="Be nice in chat!"
         value={text}
         onChange={handleChange}
@@ -187,7 +196,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
       <div className="input-group-append border-left rounded-right">
         <button
           type="button"
-          className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
+          className={emojiBtnClassName}
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />

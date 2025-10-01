@@ -2,14 +2,21 @@ import { createSlice } from '@reduxjs/toolkit';
 import find from 'lodash/find';
 import reject from 'lodash/reject';
 
+import tournamentStates from '../config/tournament';
+
 import initial from './initial';
 
 const initialState = {
   activeGames: initial.activeGames,
+  upcomingTournaments: initial.upcomingTournaments,
   liveTournaments: initial.liveTournaments,
   completedTournaments: initial.completedTournaments,
+  seasonProfile: initial.seasonProfile,
   presenceList: [],
   newGame: { timeoutSeconds: null },
+  joinGameModal: {
+    show: false,
+  },
   createGameModal: {
     show: false,
     gameOptions: {},
@@ -33,6 +40,7 @@ const lobby = createSlice({
     ) => ({
       ...state,
       activeGames,
+      upcomingTournaments: tournaments.filter(x => x.state === tournamentStates.upcoming),
       liveTournaments: tournaments.filter(x => x.isLive),
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
@@ -56,8 +64,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, checkResult: payload.checkResult }
-              : player));
+            ? { ...player, checkResult: payload.checkResult }
+            : player));
 
           return { ...game, players: newPlayers };
         }
@@ -90,6 +98,12 @@ const lobby = createSlice({
       state.createGameModal.show = true;
       state.createGameModal.gameOptions = {};
       state.createGameModal.opponentInfo = null;
+    },
+    showJoinGameModal: state => {
+      state.joinGameModal.show = true;
+    },
+    closeJoinGameModal: state => {
+      state.joinGameModal.show = false;
     },
     closeCreateGameModal: state => {
       state.createGameModal.show = false;

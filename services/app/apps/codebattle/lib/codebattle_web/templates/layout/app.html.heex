@@ -178,24 +178,10 @@
                         class="nav-link noborder d-flex justify-content-center px-0"
                         href={Routes.user_path(@conn, :show, @current_user.id)}
                       >
-                        <div class="d-flex flex-column mr-2">
+                        <div class="d-flex flex-column justify-content-center text-nowrap mr-2">
                           <h5 class="text-white text-right mb-0 text-break">
                             <%= @current_user.name %>
                           </h5>
-                          <div class="d-flex justify-content-between align-items-baseline">
-                            <div class="d-flex align-items-baseline">
-                              <img alt="rank" src="/assets/images/cup.svg" title="rank" />
-                              <span class="ml-1">
-                                <%= user_rank(@current_user) %>
-                              </span>
-                            </div>
-                            <div class="d-flex align-items-baseline">
-                              <img alt="rating" src="/assets/images/rating.svg" title="rating" />
-                              <span class="ml-1">
-                                <%= user_rating(@current_user) %>
-                              </span>
-                            </div>
-                          </div>
                         </div>
 
                         <img
@@ -340,8 +326,8 @@
           <span class="cb-ticker-line cb-ticker-line-tail"><%= @ticker_text %></span>
         </div>
       <% end %>
-      <div class="content bg-light py-1"></div>
-      <main class="d-lg-flex bg-light">
+      <div class="content bg-light"></div>
+      <main class="d-lg-flex">
         <%= @inner_content %>
       </main>
       <footer>

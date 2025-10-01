@@ -1,5 +1,6 @@
 import React from 'react';
 
+import cn from 'classnames';
 import i18next from 'i18next';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -8,11 +9,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-export default function Rooms({ disabled }) {
+export default function Rooms({ disabled, mode }) {
   const dispatch = useDispatch();
 
   const rooms = useSelector(selectors.roomsSelector);
   const activeRoom = useSelector(selectors.activeRoomSelector);
+
+  const dropdownClassName = cn('h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat', {
+    'cb-bg-highlight-panel': mode === 'dark',
+  });
 
   return (
     <>
@@ -21,11 +26,12 @@ export default function Rooms({ disabled }) {
           <span className="mr-2">{i18next.t(activeRoom.name)}</span>
         </Dropdown.Toggle>
 
-        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat">
+        <Dropdown.Menu className={dropdownClassName}>
           {
             rooms.map(room => (
               <Dropdown.Item
                 href="#"
+                className={mode === 'dark' ? 'cb-text' : ''}
                 key={room.targetUserId || room.name}
                 onSelect={() => dispatch(actions.setActiveRoom(room))}
               >

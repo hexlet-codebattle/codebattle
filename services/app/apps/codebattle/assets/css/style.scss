@@ -307,7 +307,14 @@ a {
 }
 
 .cb-user-offline {
-  color: var(--white) !important;
+  color: var(--white);
+  border: 0.2rem solid transparent;
+  border-color: var(--gray);
+  border-radius: 0.5rem;
+}
+
+.cb-user-dark-offline {
+  color: var(--dark);
   border: 0.2rem solid transparent;
   border-color: var(--gray);
   border-radius: 0.5rem;
@@ -782,6 +789,7 @@ main {
   width: 250px;
   min-width: 250px;
 }
+
 @media screen and (min-width: $md) {
   .main-nav {
     padding-left: clamp(0.25rem, 1vw, 0.5rem);
@@ -1520,6 +1528,27 @@ a {
     color: var(--black);
     opacity: 1;
     background: var(--light);
+  }
+
+  .nav-item.cb-nav-item.active {
+    color: var(--white);
+  }
+
+  .nav-item.cb-nav-item.active,
+  .nav-item.cb-nav-item:hover {
+    background-color: #1c1c24;
+    // border-top: 1px solid black;
+    // border-right: 1px solid black;
+    // border-left: 1px solid black;
+  }
+
+  .nav-item.cb-nav-item:not(.active) {
+    color: var(--black);
+  }
+
+  .nav-item.cb-nav-item:not(.active):hover {
+    color: var(--black);
+    background: var(--gray);
   }
 }
 
@@ -2635,4 +2664,84 @@ a:hover {
   background-color: #FAFF0F;
   padding: 20px 16px;
   border-radius: 25px;
+}
+
+.clan-title {
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.clan-tag {
+  font-size: 24px;
+  display: block;
+}
+
+/* Stats Grid - The main data display */
+.stats-grid {}
+
+.stat-item {
+  text-align: center;
+  border-right: 1px solid #3a3a45;
+  /* Vertical dividers */
+  padding: 0 5px;
+}
+
+.stat-item:last-child {
+  border-right: none;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  /* Accent color for key numbers */
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 11px;
+}
+
+.cb-font-size-small {
+  font-size: 12px;
+}
+
+.cb-rounded {
+  border-radius: 8px;
+}
+
+.cb-bg-panel {
+  background-color: #2a2a35;
+}
+
+.cb-bg-highlight-panel {
+  background-color: #1c1c24;
+}
+
+.cb-border-color {
+  border-color: #4c4c5a !important;
+}
+
+.cb-text {
+  color: #999;
+  font-family: 'Arial', sans-serif;
+}
+
+.cb-text-success {
+  color: #4CAF50;
+}
+
+.cb-text-danger {
+  color: #f04c5c;
+}
+
+.cb-btn-success {
+  background-color: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.cb-level-badge {
+  width: auto;
+  height: auto;
 }

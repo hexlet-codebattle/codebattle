@@ -631,7 +631,7 @@ msgstr "Тур начнется через: %{duration}"
 msgid "The tournament will start soon"
 msgstr "Тур скоро начнется"
 
-msgid "The tournament is cancelled"
+msgid "The tournament is canceled"
 msgstr "Игры тура отменены"
 
 msgid "The tournament is finished"

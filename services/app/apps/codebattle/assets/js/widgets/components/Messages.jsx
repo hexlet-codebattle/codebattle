@@ -21,7 +21,9 @@ const getKey = (id, time, name, index) => {
   return `${id}-${time}-${name}-${index}`;
 };
 
-function Messages({ messages, displayMenu = () => {}, disabled = false }) {
+function Messages({
+  messages, displayMenu = () => { }, disabled = false, className = '',
+}) {
   const listRef = useRef();
   const minScrollHeight = 20;
   const [, setScrollHeight] = useState(0);
@@ -29,7 +31,7 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
   const stayScrolledData = useStayScrolled(listRef);
   const { stayScrolled } = stayScrolledData;
   const scrollBottom = useMemo(
-    () => stayScrolledData.scrollBottom || (() => {}),
+    () => stayScrolledData.scrollBottom || (() => { }),
     [stayScrolledData.scrollBottom],
   );
   const [isNearBottom, setIsNearBottom] = useState(true);
@@ -88,6 +90,12 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
     },
   );
 
+  const messageClassName = cn(
+    className,
+    'overflow-auto pt-0 pl-3 pr-2',
+    'position-relative cb-messages-list flex-grow-1',
+  );
+
   if (disabled) {
     return (
       <div
@@ -107,13 +115,13 @@ function Messages({ messages, displayMenu = () => {}, disabled = false }) {
     <>
       <ul
         ref={listRef}
-        className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
+        className={messageClassName}
         onScroll={scrollHandler}
       >
         {messages.map((message, index) => {
           const {
- id, userId, name, text, type, time, meta,
-} = message;
+            id, userId, name, text, type, time, meta,
+          } = message;
 
           const key = getKey(id, time, name, messages.length - index);
 

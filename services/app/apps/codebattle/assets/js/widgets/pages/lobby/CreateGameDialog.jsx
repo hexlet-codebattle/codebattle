@@ -117,7 +117,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
 const LevelButtonGroup = memo(({ value, onChange }) => {
   const getLevelClassName = level => {
     const isLevelActive = level === value;
-    return cn('btn border-0 mb-2 rounded-lg', {
+    return cn('btn border-0 mb-2 bg-gray rounded-lg', {
       'bg-orange': isLevelActive,
       'btn-outline-orange': !isLevelActive,
     });
@@ -267,7 +267,7 @@ function CreateGameDialog({ hideModal }) {
       />
       <button
         type="button"
-        className="btn btn-success d-block mt-4 ml-auto text-white font-weight-bold rounded-lg"
+        className="btn btn-success cb-btn-success d-block mt-4 ml-auto text-white font-weight-bold rounded-lg"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >

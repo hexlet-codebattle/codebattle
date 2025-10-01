@@ -23,12 +23,15 @@ import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
 
-function UsersList({ list, title, displayMenu }) {
+function UsersList({
+  list, title, displayMenu, mode,
+}) {
   return (
     <>
       {list.length !== 0 && <div>{`${title}: `}</div>}
       {list.map(player => (
         <ChatUserInfo
+          mode={mode}
           key={player.id}
           user={player.user}
           displayMenu={displayMenu}
@@ -39,7 +42,7 @@ function UsersList({ list, title, displayMenu }) {
   );
 }
 
-function ChatGroupedPlayersList({ players, displayMenu }) {
+function ChatGroupedPlayersList({ players, displayMenu, mode }) {
   const {
     watching: watchingList = [],
     online: onlineList = [],
@@ -50,21 +53,22 @@ function ChatGroupedPlayersList({ players, displayMenu }) {
 
   return (
     <>
-      <UsersList title="Watching" list={watchingList} displayMenu={displayMenu} />
-      <UsersList title="Playing" list={playingList} displayMenu={displayMenu} />
-      <UsersList title="Lobby" list={lobbyList} displayMenu={displayMenu} />
-      <UsersList title="Online" list={onlineList} displayMenu={displayMenu} />
-      <UsersList title="Edit task" list={builderList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title="Watching" list={watchingList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title="Playing" list={playingList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title="Lobby" list={lobbyList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title="Online" list={onlineList} displayMenu={displayMenu} />
+      <UsersList mode={mode} title="Edit task" list={builderList} displayMenu={displayMenu} />
     </>
   );
 }
 
 const chatHeaderClassName = cn(
   'col-lg-8 col-md-8 d-flex flex-column position-relative',
-  'p-0 bg-light rounded-left h-sm-100 cb-lobby-widget-container w-100',
+  'p-0 cb-bg-panel rounded-left h-sm-100 cb-lobby-widget-container w-100',
 );
 
 function LobbyChat({
+  mode = 'dark',
   presenceList,
   setOpenActionModalShowing,
   inputRef,
@@ -119,11 +123,17 @@ function LobbyChat({
         <div
           className={chatHeaderClassName}
         >
-          <ChatHeader disabled={!isOnline} showRooms />
-          <Messages displayMenu={displayMenu} messages={filteredMessages} />
-          <ChatInput disabled={!isOnline} inputRef={inputRef} />
+          <ChatHeader mode={mode} disabled={!isOnline} showRooms />
+          <Messages className="text-white" displayMenu={displayMenu} messages={filteredMessages} />
+          <ChatInput mode={mode} disabled={!isOnline} inputRef={inputRef} />
         </div>
-        <div className="col-lg-4 col-md-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">
+        <div className={
+          cn(
+            'col-lg-4 col-md-4 p-0 pb-3 pb-sm-4 cb-bg-panel cb-players-container',
+            'border-left cb-border-color rounded-right',
+          )
+        }
+        >
           <div className="d-flex flex-column h-100">
             <div className="d-flex justify-content-between">
               {isOnline ? (
@@ -144,7 +154,7 @@ function LobbyChat({
                 >
                   <FontAwesomeIcon
                     title="Send message"
-                    className="text-dark"
+                    className="text-white"
                     icon={faEnvelope}
                   />
                 </button>
@@ -158,13 +168,14 @@ function LobbyChat({
                     title="Send fight invite"
                     alt="fight"
                     style={{ width: '16px', height: '16px' }}
-                    src="/assets/images/fight-black.png"
+                    src="/assets/images/fight.svg"
                   />
                 </button>
               </div>
             </div>
             <div className="d-flex px-3 flex-column align-items-start overflow-auto">
               <ChatGroupedPlayersList
+                mode={mode}
                 players={presenceList}
                 displayMenu={displayMenu}
               />

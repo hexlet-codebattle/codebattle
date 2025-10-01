@@ -53,10 +53,10 @@ function Leaderboard() {
   }, [period]);
 
   return (
-    <Table striped className="border rounded shadow-sm m-0">
+    <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
       <thead>
         <tr>
-          <th scope="col" className="text-uppercase p-1" colSpan="2">
+          <th scope="col" className="text-uppercase py-1 px-0 text-white cb-border-color" colSpan="2">
             <div className="d-flex flex-column align-items-center flex-nowrap">
               <div className="d-flex align-items-center">
                 <img
@@ -78,7 +78,7 @@ function Leaderboard() {
                     data-toggle="tab"
                     data-period={periodTypes.WEEKLY}
                     ref={anchorWeekRef}
-                    className="nav-item nav-link border-0 text-center w-100 active"
+                    className="nav-item cb-nav-item nav-link border-0 text-center w-100 active"
                     onClick={handlePeriodClick}
                   >
                     {periodTypes.WEEKLY}
@@ -89,7 +89,7 @@ function Leaderboard() {
                     data-toggle="tab"
                     data-period={periodTypes.MONTHLY}
                     ref={anchorMonthRef}
-                    className="nav-item nav-link border-0 text-center w-100"
+                    className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
                     {periodTypes.MONTHLY}
@@ -100,7 +100,7 @@ function Leaderboard() {
                     data-toggle="tab"
                     data-period={periodTypes.ALL}
                     ref={anchorAllRef}
-                    className="nav-item nav-link border-0 text-center w-100"
+                    className="nav-item cb-nav-item nav-link border-0 text-center w-100"
                     onClick={handlePeriodClick}
                   >
                     {periodTypes.ALL}
@@ -115,22 +115,22 @@ function Leaderboard() {
         {rating && rating.length > 0 ? (
           rating
             .map(item => (
-              <tr key={item.name}>
-                <td className="pr-0">
+              <tr key={item.name} className="cb-border-color">
+                <td className="cb-border-color pr-0">
                   <div className="d-flex">
-                    <UserInfo user={item} truncate />
+                    <UserInfo user={item} mode="dark" truncate />
                   </div>
                 </td>
-                <td className="text-right pl-0">{item.rating}</td>
+                <td className="border-bottom cb-border-color text-right pl-0">{item.rating}</td>
               </tr>
             ))
         ) : (
-          <tr className="text-center">
-            <td>No rating</td>
+          <tr className="text-center cb-border-color">
+            <td className="cb-border-color">No rating</td>
           </tr>
         )}
-        <tr className="bg-light text-center">
-          <td>
+        <tr className="cb-bg-panel text-center cb-border-color">
+          <td className="cb-border-color">
             <a className="btn-link text-primary" href="/users">
               Top list
             </a>

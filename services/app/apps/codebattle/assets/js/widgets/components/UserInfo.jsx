@@ -47,6 +47,7 @@ function UserPopoverContent({ user }) {
 function UserInfo({
   className,
   user,
+  mode,
   banned = false,
   lang,
   hovered = false,
@@ -74,11 +75,17 @@ function UserInfo({
     'cb-opacity-50': loading,
     'text-danger': banned,
   });
+  const linkClassName = cn(className, {
+    'text-white': !banned && mode === 'dark',
+    'text-danger': banned,
+  });
 
   if (hideInfo) {
     return (
       <UserName
         className={userClassName}
+        linkClassName={linkClassName}
+        mode={mode}
         hovered={hovered}
         user={user}
         lang={lang}
@@ -100,6 +107,8 @@ function UserInfo({
       <div>
         <UserName
           className={userClassName}
+          linkClassName={linkClassName}
+          mode={mode}
           hovered={hovered}
           user={user}
           lang={lang}

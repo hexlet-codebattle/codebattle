@@ -93,6 +93,68 @@ function TaskSelect({ value, onChange, options }) {
 
   return (
     <Select
+      styles={{
+        menu: base => ({
+          ...base,
+          backgroundColor: '#1c1c24',
+        }),
+        container: base => ({
+          ...base,
+          backgroundColor: '#1c1c24',
+          color: 'white',
+          borderColor: '#dc3545',
+          ':hover': {
+            ...base[':hover'],
+            cursor: 'pointer',
+            borderColor: '#e04d5b',
+          },
+        }),
+        indicatorSeparator: base => ({
+          ...base,
+          backgroundColor: '#dc3545',
+          ':hover': {
+            ...base[':hover'],
+            cursor: 'pointer',
+            backgroundColor: '#e04d5b',
+          },
+        }),
+        dropdownIndicator: base => ({
+          ...base,
+          color: '#dc3545',
+          ':hover': {
+            ...base[':hover'],
+            cursor: 'pointer',
+            color: '#e04d5b',
+          },
+        }),
+        control: base => ({
+          ...base,
+          backgroundColor: '#1c1c24',
+          color: 'white',
+          borderColor: '#dc3545',
+          ':hover': {
+            ...base[':hover'],
+            cursor: 'pointer',
+            borderColor: '#e04d5b',
+          },
+        }),
+        singleValue: base => ({
+          ...base,
+          backgroundColor: '#1c1c24',
+          color: 'white',
+        }),
+        option: base => ({
+          ...base,
+          backgroundColor: '#1c1c24',
+          color: 'white',
+          ':hover': {
+            ...base[':hover'],
+            cursor: 'pointer',
+            color: '#eaffff',
+            backgroundColor: '#2a2a35',
+          },
+        }),
+      }}
       className="w-100"
       value={value}
       onChange={onChange}
@@ -121,7 +183,7 @@ function TagButtonGroup({
   };
 
   return (
-    <div className="d-flex flex-wrap border pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
+    <div className="d-flex flex-wrap border border-danger pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
       {tags.map(tag => (
         <button
           key={tag}
@@ -177,8 +239,8 @@ const TaskChoice = memo(({
       <div className="px-sm-3 px-md-5 mt-3">
         <TaskSelect value={taskSelectValue} onChange={setChosenTask} options={taskOptions} />
       </div>
+      <h6 className="mt-3">{i18n.t('Tags')}</h6>
       <div className="px-sm-3 px-md-5 mt-3">
-        <h6>{i18n.t('Tags')}</h6>
         <TagButtonGroup
           tags={tasksByLevel.tags}
           value={tagGroupValue}

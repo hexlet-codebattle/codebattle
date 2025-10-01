@@ -123,8 +123,8 @@ const getSpectatorStatus = (state, task, gameId) => {
       return 'Tournament is finished';
     case TournamentStates.waitingParticipants:
       return 'Tournament is waiting to start';
-    case TournamentStates.cancelled:
-      return 'Tournament is cancelled';
+    case TournamentStates.canceled:
+      return 'Tournament is canceled';
     default:
       break;
   }

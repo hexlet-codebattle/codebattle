@@ -6,6 +6,7 @@ import GameStateCodes from '../config/gameStateCodes';
 import loadingStatuses from '../config/loadingStatuses';
 import periodTypes from '../config/periodTypes';
 import { taskStateCodes, taskVisibilityCodes } from '../config/task';
+import tournamentStates from '../config/tournament';
 import userTypes from '../config/userTypes';
 import {
   validateTaskName,
@@ -45,6 +46,7 @@ const langsData = Gon.getAsset('langs');
 const leaderboardUsersData = Gon.getAsset('leaderboard_users');
 const eventData = Gon.getAsset('event');
 const reportsData = Gon.getAsset('reports');
+const seasonProfileData = Gon.getAsset('season_profile');
 
 // ******************************
 //
@@ -74,23 +76,28 @@ const initialLeaderboardUsers = leaderboardUsersData
   : [];
 const initialEvent = eventData
   ? {
-      ...camelizeKeys(eventData),
-      loading: loadingStatuses.PENDING,
-    }
+    ...camelizeKeys(eventData),
+    loading: loadingStatuses.PENDING,
+  }
   : {
-      loading: loadingStatuses.PENDING,
-    };
+    loading: loadingStatuses.PENDING,
+  };
 const reportsParams = reportsData ? { list: camelizeKeys(reportsData) } : {};
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
-      [currentUserParams.id]: {
-        ...currentUserParams,
-        type: userTypes.spectator,
-      },
-    }
+    [currentUserParams.id]: {
+      ...currentUserParams,
+      type: userTypes.spectator,
+    },
+  }
   : {};
+const seasonProfileParams = seasonProfileData
+  ? {
+    ...seasonProfileData,
+  }
+  : { score: 0, place: 0, rating: 1200 };
 
 // ******************************
 //
@@ -114,9 +121,9 @@ export const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-      ...defaultGameStatusState,
-      ...getGameStatus(gameParams),
-    }
+    ...defaultGameStatusState,
+    ...getGameStatus(gameParams),
+  }
   : defaultGameStatusState;
 
 const initialGameAward = gameParams ? gameParams.award : null;
@@ -157,21 +164,21 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersMetaToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersTextToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersTextToSliseState, {})
   : {};
 
 const initialLangsHistory = gameParams && isRecord
-    ? gameParams.players
-        .map(getPlayersText)
-        .reduce(setPlayersLangToSliseState, {})
-    : {};
+  ? gameParams.players
+    .map(getPlayersText)
+    .reduce(setPlayersLangToSliseState, {})
+  : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -180,8 +187,8 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-      .map(getPlayersExecutionData)
-      .reduce(setPlayersResultsToSliceState, {})
+    .map(getPlayersExecutionData)
+    .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = {
@@ -238,9 +245,9 @@ const initialTemplates = taskParams
   : defaultTaskTemplates;
 const initialAssertsStatus = taskParams
   ? {
-      status: taskParams.asserts.length > 0 ? 'ok' : 'none',
-      output: '',
-    }
+    status: taskParams.asserts.length > 0 ? 'ok' : 'none',
+    output: '',
+  }
   : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
@@ -302,12 +309,13 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-      ...defaultTournamentParams,
-      ...tournamentParams,
-      channel: { online: !tournamentParams.isLive },
-    }
+    ...defaultTournamentParams,
+    ...tournamentParams,
+    channel: { online: !tournamentParams.isLive },
+  }
   : defaultTournamentParams;
 
+const initialUpcomingTournaments = tournamentsParams.filter(x => x.state === tournamentStates.upcoming);
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
 const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
 
@@ -466,6 +474,12 @@ const defaultTournamentPlayerParams = {
  *   list: Object[],
  * }} ReportsState
  *
+ * @typedef {{
+ *   place: {?number},
+ *   score: {?number},
+ *   rating: {?number},
+ * }} SeasonProfileState
+ *
  * @const {{
  *   game: GameState,
  *   event: EventState,
@@ -481,6 +495,7 @@ const defaultTournamentPlayerParams = {
  *   user: Object,
  *   leaderboard: LeaderboardState,
  *   reports: ReportsState,
+ *   seasonProfile: SeasonProfileState,
  * }}
  *
  */
@@ -526,6 +541,7 @@ export default {
   activeGames: initialActiveGames,
   completedGames: completedGamesParams,
   liveTournaments: initialLiveTournaments,
+  upcomingTournaments: initialUpcomingTournaments,
   completedTournaments: initialCompletedTournaments,
   user: {
     currentUserId,
@@ -553,4 +569,5 @@ export default {
   },
   event: initialEvent,
   reports: initialReports,
+  seasonProfile: seasonProfileParams,
 };
