@@ -137,7 +137,7 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
               <%= if (f.params["task_provider"] == "level") do %>
                 <div class="col-md-4 mb-3">
                   <%= label(f, :level, class: "form-label") %>
-                  <%= select(f, :level, Codebattle.Tournament.levels(), class: "form-select") %>
+                  <%= select(f, :level, Codebattle.Task.levels(), class: "form-select") %>
                   <%= error_tag(f, :level) %>
                 </div>
               <% end %>

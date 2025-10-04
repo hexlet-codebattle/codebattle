@@ -21,6 +21,7 @@ defmodule Codebattle.Application do
         {Codebattle.TasksImporter, []},
         {Codebattle.UsersRankUpdateServer, []},
         {Codebattle.Bot.GameCreator, []},
+        {Codebattle.Tournament.UpcomingRunner, []},
         {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},

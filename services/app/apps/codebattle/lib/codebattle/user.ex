@@ -37,6 +37,7 @@ defmodule Codebattle.User do
              :lang,
              :locale,
              :name,
+             :points,
              :rank,
              :rating,
              :sound_settings,
@@ -69,6 +70,7 @@ defmodule Codebattle.User do
     field(:locale, :string)
     field(:name, :string)
     field(:password_hash, :string)
+    field(:points, :integer, default: 0)
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
@@ -147,6 +149,7 @@ defmodule Codebattle.User do
       lang: Application.get_env(:codebattle, :default_lang_slug),
       rating: 0,
       locale: "en",
+      points: 0,
       rank: 0,
       sound_settings: %SoundSettings{}
     }

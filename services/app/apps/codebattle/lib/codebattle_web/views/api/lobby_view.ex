@@ -6,7 +6,13 @@ defmodule CodebattleWeb.Api.LobbyView do
   alias CodebattleWeb.Api.GameView
 
   def render_lobby_params(current_user) do
-    tournaments = Tournament.Context.list_live_and_finished(current_user)
+    live_tournaments = Tournament.Context.get_live_tournaments_for_user(current_user)
+
+    upcoming_tournaments =
+      Tournament.Context.get_upcoming_tournaments(%{
+        date_from: DateTime.utc_now(),
+        date_to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60)
+      })
 
     %{games: games} =
       Game.Context.get_completed_games(
@@ -18,7 +24,9 @@ defmodule CodebattleWeb.Api.LobbyView do
 
     %{
       active_games: render_active_games(current_user),
-      tournaments: tournaments,
+      tournaments: [],
+      live_tournaments: live_tournaments,
+      upcoming_tournaments: upcoming_tournaments,
       completed_games: completed_games
     }
   end

@@ -258,6 +258,8 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def cancel(tournament, params \\ %{})
+
       def cancel(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
           new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
@@ -269,6 +271,15 @@ defmodule Codebattle.Tournament.Base do
         else
           tournament
         end
+      end
+
+      def cancel(tournament, _params) do
+        new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
+
+        Game.Context.terminate_tournament_games(tournament.id)
+        Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+
+        new_tournament
       end
 
       def restart(tournament, %{user: user}) do
@@ -297,6 +308,8 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def restart(tournament, _user), do: tournament
+
+      def start(tournament, params \\ %{})
 
       def start(%{state: "waiting_participants"} = tournament, %{user: user} = params) do
         if can_moderate?(tournament, user) do

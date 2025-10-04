@@ -46,6 +46,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :locale,
       :name,
       :performance,
+      :points,
       :rank,
       :rating,
       :subscription_type,

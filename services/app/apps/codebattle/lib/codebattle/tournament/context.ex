@@ -109,6 +109,63 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
+  @spec get_waiting_participants_to_start_candidates() :: list(Tournament.t())
+  def get_waiting_participants_to_start_candidates do
+    Enum.filter(get_live_tournaments(), fn tournament ->
+      tournament.state == "waiting_participants" &&
+        tournament.grade != "open" &&
+        tournament.starts_at
+
+      # &&
+      # DateTime.compare(tournament.starts_at, DateTime.utc_now()) == :lt
+    end)
+  end
+
+  @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
+  def get_upcoming_to_live_candidate(starts_at_delay_mins) do
+    delay_time = DateTime.add(DateTime.utc_now(), starts_at_delay_mins, :minute)
+
+    Repo.one(
+      from(t in Tournament,
+        limit: 1,
+        order_by: t.id,
+        where:
+          t.state == "upcoming" and
+            t.starts_at < ^delay_time
+      )
+    )
+  end
+
+  @spec get_upcoming_tournaments(%{
+          date_from: DateTime.t(),
+          date_to: DateTime.t()
+        }) :: list(Tournament.t())
+  def get_upcoming_tournaments(filter) do
+    %{date_from: date_from, date_to: date_to} = filter
+
+    Repo.all(
+      from(t in Tournament,
+        order_by: t.id,
+        where:
+          t.starts_at > ^date_from and
+            t.starts_at < ^date_to and
+            t.grade != "open" and
+            t.state == "upcoming"
+      )
+    )
+  end
+
+  @spec get_live_tournaments_for_user(User.t()) :: list(Tournament.t())
+  def get_live_tournaments_for_user(user) do
+    get_live_tournaments()
+    |> Enum.filter(fn tournament ->
+      tournament.grade != "open" ||
+        Tournament.Helpers.can_access?(tournament, user, %{})
+    end)
+    |> Enum.uniq_by(& &1.id)
+    |> Enum.sort_by(& &1.id, :desc)
+  end
+
   @spec get_live_tournaments() :: list(Tournament.t())
   def get_live_tournaments do
     Tournament.GlobalSupervisor
@@ -120,7 +177,7 @@ defmodule Codebattle.Tournament.Context do
     |> Enum.map(fn {id, _, _, _} -> Tournament.Context.get(id) end)
     |> Enum.filter(fn
       nil -> false
-      tournament -> tournament.state in ["waiting_participants", "active"]
+      tournament -> tournament.state in ["waiting_participants", "active", "finished"]
     end)
   end
 
@@ -164,6 +221,11 @@ defmodule Codebattle.Tournament.Context do
 
   def handle_event(tournament_id, event_type, params) do
     Tournament.Server.handle_event(tournament_id, event_type, params)
+  end
+
+  @spec get_live_tournament_players(Tournament.t()) :: [Tournament.Player.t()]
+  def get_live_tournament_players(tournament) do
+    Tournament.Players.get_players(tournament)
   end
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
@@ -219,6 +281,18 @@ defmodule Codebattle.Tournament.Context do
     :timer.sleep(59)
 
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    Tournament.GlobalSupervisor.start_tournament(tournament)
+    :ok
+  end
+
+  @spec move_upcoming_to_live(Tournament.t()) :: :ok
+  def move_upcoming_to_live(tournament) do
+    tournament
+    |> Tournament.changeset(%{state: "waiting_participants"})
+    |> Repo.update!()
+
+    :timer.sleep(1000)
+
     Tournament.GlobalSupervisor.start_tournament(tournament)
     :ok
   end

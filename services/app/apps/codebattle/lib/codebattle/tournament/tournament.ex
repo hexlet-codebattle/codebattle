@@ -22,11 +22,11 @@ defmodule Codebattle.Tournament do
              :current_round_position,
              :description,
              :event_id,
+             :grade,
              :id,
              :is_live,
              :last_round_ended_at,
              :last_round_started_at,
-             :level,
              :match_timeout_seconds,
              :matches,
              :meta,
@@ -55,14 +55,59 @@ defmodule Codebattle.Tournament do
 
   @access_types ~w(public token)
   @break_states ~w(on off)
+  @grades ~w(open rookie challenger pro elite masters grand_slam)
   @levels ~w(elementary easy medium hard)
   @public_types ~w(swiss)
   @ranking_types ~w(by_clan by_user)
   @score_strategies ~w(75_percentile win_loss)
-  @states ~w(waiting_participants canceled active timeout finished)
+  @states ~w(upcoming waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack all)
   @task_strategies ~w(random sequential)
   @types ~w(swiss)
+
+  @grade_points %{
+    # Open tournaments
+    # All tasks are existing
+    # Casual/unranked mode, no points awarded
+    # Tasks: free play, any level, not ranked, created by user
+    "open" => [],
+
+    # Rookie — every 1 hours
+    # All tasks are existing
+    # Tasks: 5 existing easy tasks
+    # Designed for frequent play and grinding
+    "rookie" => [8, 4, 2],
+
+    # Challenger — daily
+    # All tasks are existing
+    # Tasks: 3 existing easy tasks + 1 existing medium task
+    # Daily backbone tournaments for steady point growth
+    "challenger" => [64, 32, 16, 8, 4, 2],
+
+    # Pro — weekly
+    # All tasks are existing
+    # Tasks: 4 existing easy tasks + 2 existing medium tasks
+    # Mid-level weekly tournaments with more challenges
+    "pro" => [128, 64, 32, 16, 8, 4, 2],
+
+    # Elite — every two weeks
+    # All tasks are existing
+    # Tasks: 5 existing easy tasks + 3 existing medium tasks
+    # Advanced difficulty and higher prestige
+    "elite" => [256, 128, 64, 32, 16, 8, 4, 2],
+
+    # Masters — once per month on the 21st (evening, two per day)
+    # All tasks are new
+    # Tasks: 5 easy tasks + 2 medium tasks
+    # Monthly major tournaments with fresh content
+    "masters" => [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2],
+
+    # Grand Slam — four times per year (21 Mar, 21 Jun, 21 Sep, 21 Dec)
+    # All tasks are new
+    # Tasks: 5 easy tasks + 3 medium tasks + 1 hard task
+    # Seasonal finals, always ends the season
+    "grand_slam" => [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2]
+  }
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -78,6 +123,7 @@ defmodule Codebattle.Tournament do
     field(:current_round_position, :integer, default: 0)
     field(:description, :string)
     field(:finished_at, :utc_datetime)
+    field(:grade, :string, default: "open")
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
@@ -89,9 +135,9 @@ defmodule Codebattle.Tournament do
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
     field(:ranking_type, :string, default: "by_user")
-    field(:score_strategy, :string, default: "75_percentile")
     field(:round_timeout_seconds, :integer)
     field(:rounds_limit, :integer, default: 1)
+    field(:score_strategy, :string, default: "75_percentile")
     field(:show_results, :boolean, default: true)
     field(:started_at, :utc_datetime)
     field(:starts_at, :utc_datetime)
@@ -139,6 +185,7 @@ defmodule Codebattle.Tournament do
       :current_round_position,
       :description,
       :event_id,
+      :grade,
       :last_round_ended_at,
       :last_round_started_at,
       :level,
@@ -173,12 +220,13 @@ defmodule Codebattle.Tournament do
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
+    |> validate_inclusion(:grade, @grades)
     |> validate_inclusion(:level, @levels)
+    |> validate_inclusion(:ranking_type, @ranking_types)
+    |> validate_inclusion(:score_strategy, @score_strategies)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
-    |> validate_inclusion(:ranking_type, @ranking_types)
-    |> validate_inclusion(:score_strategy, @score_strategies)
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
@@ -203,11 +251,11 @@ defmodule Codebattle.Tournament do
   end
 
   def access_types, do: @access_types
-  def levels, do: @levels
   def public_types, do: @public_types
   def ranking_types, do: @ranking_types
   def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
   def types, do: @types
+  def grade_points, do: @grade_points
 end

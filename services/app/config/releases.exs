@@ -20,7 +20,6 @@ checker_executor =
 
 runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
 runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
-secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
@@ -107,6 +106,7 @@ config :codebattle, :oauth,
   external_user_info_url: System.get_env("EXTERNAL_USER_INFO_URL", "ASFD"),
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
+config :codebattle, :tournament_run_upcoming, true
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, checker_executor: checker_executor
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")

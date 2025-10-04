@@ -151,7 +151,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 <div class="col-12 col-md-4">
                   <div class="form-group">
                     <%= label(f, :level, class: "form-label font-weight-semibold") %>
-                    <%= select(f, :level, Codebattle.Tournament.levels(),
+                    <%= select(f, :level, Codebattle.Task.levels(),
                       class: "form-control form-control-lg custom-select",
                       value: f.params["level"] || f.data.level
                     ) %>
@@ -175,7 +175,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 <div class="col-12 col-md-4">
                   <div class="form-group">
                     <%= label(f, :level, class: "form-label font-weight-semibold") %>
-                    <%= select(f, :level, Codebattle.Tournament.levels(),
+                    <%= select(f, :level, Codebattle.Task.levels(),
                       class: "form-control form-control-lg custom-select",
                       value: f.params["level"] || f.data.level
                     ) %>

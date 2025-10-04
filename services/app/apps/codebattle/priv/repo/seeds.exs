@@ -7,6 +7,8 @@ alias Codebattle.User
 alias Codebattle.UserEvent
 alias Codebattle.UserGame
 
+require Logger
+
 levels = ["elementary", "easy", "medium", "hard"]
 
 Enum.each(1..10, fn x ->
@@ -168,16 +170,22 @@ creator = %{
   |> User.changeset(creator)
   |> Repo.insert()
 
-%Codebattle.Tournament{}
-|> Codebattle.Tournament.changeset(%{
-  name: "Codebattle Hexlet summer tournament 2019",
-  state: "finished",
-  creator: creator,
-  players_limit: 16,
-  difficulty: "elementary",
-  starts_at: ~N[2019-08-22 19:33:08.910767]
-})
-|> Repo.insert!()
+grades = ~w(open rookie challenger pro elite masters grand_slam)
+
+Enum.each(grades, fn grade ->
+  %Codebattle.Tournament{}
+  |> Codebattle.Tournament.changeset(%{
+    name: "Codebattle Grade: #{grade}",
+    state: "upcoming",
+    grade: grade,
+    creator: creator,
+    players_limit: 16,
+    type: "swiss",
+    level: "easy",
+    starts_at: DateTime.add(DateTime.utc_now(), Enum.random(1..14), :day)
+  })
+  |> Repo.insert!()
+end)
 
 now = DateTime.utc_now()
 one_month_ago = Timex.shift(now, months: -1)
@@ -306,41 +314,46 @@ Enum.each(1..100, fn id ->
   Clan.find_or_create_by_clan("clan_#{id}", 1)
 end)
 
-tokens =
-  Enum.map(1..2000, fn id ->
-    t = DateTime.utc_now()
+try do
+  tokens =
+    Enum.map(1..2000, fn id ->
+      t = DateTime.utc_now()
 
-    clan_id =
-      50
-      |> Statistics.Distributions.Normal.rand(7)
-      |> round()
-      |> min(100)
-      |> max(1)
-      |> to_string()
+      clan_id =
+        50
+        |> Statistics.Distributions.Normal.rand(7)
+        |> round()
+        |> min(100)
+        |> max(1)
+        |> to_string()
 
-    params = %{
-      name: "rBot_#{id}_",
-      clan: "clan_#{clan_id}",
-      clan_id: clan_id,
-      is_bot: false,
-      rating: 1200,
-      email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user#{id}",
-      lang: "python",
-      inserted_at: TimeHelper.utc_now(),
-      updated_at: TimeHelper.utc_now()
-    }
+      params = %{
+        name: "rBot_#{id}_",
+        clan: "clan_#{clan_id}",
+        clan_id: clan_id,
+        is_bot: false,
+        rating: 1200,
+        email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user#{id}",
+        lang: "python",
+        inserted_at: TimeHelper.utc_now(),
+        updated_at: TimeHelper.utc_now()
+      }
 
-    {:ok, user} =
-      %User{}
-      |> User.changeset(params)
-      |> Repo.insert()
+      {:ok, user} =
+        %User{}
+        |> User.changeset(params)
+        |> Repo.insert()
 
-    token = Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
-    "#{user.id}:#{token}:python"
-  end)
+      token = Phoenix.Token.sign(CodebattleWeb.Endpoint, "user_token", user.id)
+      "#{user.id}:#{token}:python"
+    end)
 
-File.mkdir_p!("tmp")
-File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))
+  File.mkdir_p!("tmp")
+  File.write!("tmp/tokens.txt", Enum.join(tokens, "\n"))
+rescue
+  e ->
+    Logger.error("Error seeding tokens: #{inspect(e)}")
+end
 
 stages =
   [

@@ -67,6 +67,7 @@ config :codebattle, :oauth,
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
+config :codebattle, :tournament_run_upcoming, false
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
 # config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
