@@ -62,7 +62,7 @@ defmodule Codebattle.Tournament.Round do
       :module,
       :task_pack_id
     ])
-    |> validate_inclusion(:level, Tournament.levels())
+    |> validate_inclusion(:level, Tournament.Task.levels())
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, Tournament.task_providers())
     |> validate_inclusion(:task_strategy, Tournament.task_strategies())
