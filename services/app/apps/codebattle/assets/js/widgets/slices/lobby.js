@@ -36,12 +36,16 @@ const lobby = createSlice({
   reducers: {
     initGameList: (
       state,
-      { payload: { activeGames, tournaments } },
+      {
+        payload: {
+          activeGames, tournaments, liveTournaments, upcomingTournaments,
+        },
+      },
     ) => ({
       ...state,
       activeGames,
-      upcomingTournaments: tournaments.filter(x => x.state === tournamentStates.upcoming),
-      liveTournaments: tournaments.filter(x => x.isLive),
+      upcomingTournaments,
+      liveTournaments,
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
     }),

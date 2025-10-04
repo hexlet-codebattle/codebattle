@@ -22,7 +22,7 @@ export default function Rooms({ disabled, mode }) {
   return (
     <>
       <Dropdown as={ButtonGroup} title="" disabled={disabled}>
-        <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
+        <Dropdown.Toggle className="rounded-top cb-btn-secondary" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
           <span className="mr-2">{i18next.t(activeRoom.name)}</span>
         </Dropdown.Toggle>
 

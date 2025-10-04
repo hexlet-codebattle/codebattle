@@ -1,5 +1,7 @@
 import React from 'react';
 
+import i18n from '../../../i18n';
+
 import TournamentListItem, { activeIcon, upcomingIcon } from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 14 - Dec 21';
@@ -41,9 +43,9 @@ const SeasonProfilePanel = ({
           )
           : <div className="pt-2 mt-2">Competition not started yet</div>}
         <div className="d-flex w-100 pt-2 mt-2">
-          <a href="_blank" type="button" className="btn btn-secondary mx-2 w-100 rounded">Contests History</a>
-          <a href="_blank" type="button" className="btn btn-secondary mx-2 w-100 rounded">My Tournaments</a>
-          <a href="_blank" type="button" className="btn btn-secondary mx-2 w-100 rounded">Create Tournament</a>
+          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('Contests History')}</a>
+          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('My Tournaments')}</a>
+          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('Create a Tournament')}</a>
         </div>
       </div>
     </div>

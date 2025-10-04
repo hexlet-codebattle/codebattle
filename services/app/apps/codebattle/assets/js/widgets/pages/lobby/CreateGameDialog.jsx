@@ -267,7 +267,7 @@ function CreateGameDialog({ hideModal }) {
       />
       <button
         type="button"
-        className="btn btn-success cb-btn-success d-block mt-4 ml-auto text-white font-weight-bold rounded-lg"
+        className="btn btn-secondary cb-btn-secondary d-block mt-4 ml-auto rounded-lg"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >

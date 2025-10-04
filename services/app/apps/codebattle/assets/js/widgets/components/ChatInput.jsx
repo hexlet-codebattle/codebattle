@@ -40,6 +40,9 @@ export default function ChatInput({ inputRef, mode, disabled = false }) {
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
 
+  const sendBtnClassName = cn('btn btn-secondary cb-btn-secondary border-gray border-left rounded-right', {
+    'cb-border-color': mode === 'dark',
+  });
   const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
     'bg-dark cb-border-color text-white': mode === 'dark',
     'border-gray': mode !== 'dark',
@@ -202,7 +205,7 @@ export default function ChatInput({ inputRef, mode, disabled = false }) {
           <em-emoji id="grinning" size={20} />
         </button>
         <button
-          className="btn btn-secondary border-gray border-left rounded-right"
+          className={sendBtnClassName}
           type="button"
           onClick={handleSubmit}
           disabled={disabled || isMaxLengthExceeded || isMessageBlank}

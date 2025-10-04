@@ -23,23 +23,22 @@ import LobbyChat from './LobbyChat';
 import SeasonProfilePanel from './SeasonProfilePanel';
 
 const createBtnClassName = cn(
-  'btn border-0 rounded-lg',
-  'text-uppercase font-weight-bold py-3',
+  'btn rounded-lg',
 );
 
 const createBasicGameBtnClassName = cn(
   createBtnClassName,
-  'btn-success cb-btn-success w-100 mr-2',
+  'btn-secondary cb-btn-secondary w-100 mr-2',
 );
 
 const joinGameBtnClassName = cn(
   createBtnClassName,
-  'btn-success cb-btn-success w-100',
+  'btn-secondary cb-btn-secondary w-100',
 );
 
 const createCssGameBtnClassName = cn(
   createBtnClassName,
-  'btn-secondary mt-2 pl-2',
+  'btn-secondary cb-btn-secondary mt-2 pl-2',
 );
 
 const CreateCssGameButton = ({ onClick, isOnline }) => (

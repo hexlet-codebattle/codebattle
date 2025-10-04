@@ -1,5 +1,7 @@
 $body-bg: #e5e5e5;
 $success: #82b792;
+$cb-success: #32CD32;
+$cb-hovered-success: #28a428;
 $secondary: #477591;
 $link-color: black;
 $error: #dc3545;
@@ -2708,7 +2710,7 @@ a:hover {
 }
 
 .cb-rounded {
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .cb-bg-panel {
@@ -2729,19 +2731,61 @@ a:hover {
 }
 
 .cb-text-success {
-  color: #4CAF50;
+  color: $cb-success;
 }
 
 .cb-text-danger {
   color: #f04c5c;
 }
 
+.cb-btn-secondary {
+  background-color: #3a3f50;
+  border-color: #282c38;
+
+  &.show,
+  &.active,
+  &:focus-visible {
+    background-color: #3a3f50;
+    border-color: #a4b2d6;
+  }
+
+  &:hover {
+    background-color: #4c5369;
+    border-color: #7d89a6;
+  }
+
+  &:focus {
+    background-color: #3a3f50;
+    border-color: #a4b2d6;
+  }
+
+  &:active {
+    background-color: #2c303d;
+    border-color: #1c1e27;
+  }
+
+  &:disabled,
+  &.disabled {
+    background-color: #21242e;
+    border-color: #13151b;
+  }
+}
+
 .cb-btn-success {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
+  background-color: $cb-success;
+  border-color: $cb-success;
+
+  &:hover {
+    background-color: $cb-hovered-success;
+    border-color: $cb-hovered-success;
+  }
 }
 
 .cb-level-badge {
   width: auto;
   height: auto;
+}
+
+body {
+  background-image: url('../static/images/main_background.png');
 }
