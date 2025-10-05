@@ -170,6 +170,7 @@ defmodule CodebattleWeb.Router do
     resources("/tournaments", TournamentController, only: [:index, :show])
 
     get("/stream", StreamController, :index)
+    get("/schedule", TournamentsScheduleController, :index)
     get("/stream/preset", StreamController, :stream_preset)
 
     scope "/tournaments" do

@@ -66,6 +66,7 @@ const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'
 const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
 const RatingList = React.lazy(() => import('./pages/rating'));
+const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
@@ -138,6 +139,16 @@ export const UsersRating = () => (
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
         <RatingList />
+      </Suspense>
+    </PersistGate>
+  </Provider>
+);
+
+export const TournamentsSchedulePage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Suspense>
+        <TournamentsSchedule />
       </Suspense>
     </PersistGate>
   </Provider>

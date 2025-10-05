@@ -23,7 +23,7 @@ import LobbyChat from './LobbyChat';
 import SeasonProfilePanel from './SeasonProfilePanel';
 
 const createBtnClassName = cn(
-  'btn rounded-lg',
+  'btn cb-rounded',
 );
 
 const createBasicGameBtnClassName = cn(
@@ -93,7 +93,6 @@ const LobbyWidget = () => {
     activeGames,
     liveTournaments,
     upcomingTournaments,
-    seasonProfile,
     // completedTournaments,
     presenceList,
     channel: { online },
@@ -184,7 +183,6 @@ const LobbyWidget = () => {
       <SeasonProfilePanel
         liveTournaments={liveTournaments}
         upcomingTournaments={upcomingTournaments}
-        seasonProfile={seasonProfile}
         user={currentUser}
         controls={(
           <div className="d-flex flex-column mt-2">

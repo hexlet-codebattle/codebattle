@@ -17,6 +17,7 @@ import {
   TournamentPlayerPage,
   UserPage,
   UsersRating,
+  TournamentsSchedulePage,
   StreamPage,
 } from './App';
 
@@ -37,4 +38,5 @@ export const renderEventPage = domElement => createRoot(domElement).render(<Even
 export const renderTournamentPlayerPage = domElement => createRoot(domElement).render(<TournamentPlayerPage />);
 export const renderUserPage = domElement => createRoot(domElement).render(<UserPage />);
 export const renderUsersRating = domElement => createRoot(domElement).render(<UsersRating />);
+export const renderTournamentsSchedule = domElement => createRoot(domElement).render(<TournamentsSchedulePage />);
 export const renderStreamPage = domElement => createRoot(domElement).render(<StreamPage />);

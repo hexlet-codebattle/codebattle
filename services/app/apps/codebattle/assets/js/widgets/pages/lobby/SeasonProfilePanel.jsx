@@ -7,7 +7,7 @@ import TournamentListItem, { activeIcon, upcomingIcon } from './TournamentListIt
 const contestDatesText = 'Season: Oct 14 - Dec 21';
 
 const SeasonProfilePanel = ({
-  upcomingTournaments = [], liveTournaments = [], seasonProfile, user, controls,
+  upcomingTournaments = [], liveTournaments = [], user, controls,
 }) => (
   <div className="d-flex flex-column flex-lg-row flex-md-row my-0 my-lg-2 my-md-2">
     <div className="col-12 col-lg-8 col-md-8 my-2 my-lg-0 my-md-0">
@@ -42,10 +42,28 @@ const SeasonProfilePanel = ({
             </div>
           )
           : <div className="pt-2 mt-2">Competition not started yet</div>}
-        <div className="d-flex w-100 pt-2 mt-2">
-          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('Contests History')}</a>
-          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('My Tournaments')}</a>
-          <a href="_blank" type="button" className="btn btn-secondary cb-btn-secondary mx-2 w-100 rounded">{i18n.t('Create a Tournament')}</a>
+        <div className="d-flex flex-column flex-lg-row flex-md-row w-100 pt-2 mt-2">
+          <a
+            href="/schedule#contest"
+            type="button"
+            className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+          >
+            {i18n.t('Contests History')}
+          </a>
+          <a
+            href="/schedule#my"
+            type="button"
+            className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+          >
+            {i18n.t('My Tournaments')}
+          </a>
+          <a
+            href="/tournaments"
+            type="button"
+            className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
+          >
+            {i18n.t('Create a Tournament')}
+          </a>
         </div>
       </div>
     </div>
@@ -63,18 +81,18 @@ const SeasonProfilePanel = ({
 
         <div className="cb-bg-highlight-panel d-flex py-2 px-1">
           <div className="stat-item py-1 w-100">
-            <span className="stat-value d-block cb-text-danger">1200</span>
+            <span className="stat-value d-block cb-text-danger">{user.rating}</span>
             <span className="stat-label text-uppercase">(Elo Rating)</span>
           </div>
           <div className="stat-item py-1 w-100">
             <span className="stat-value d-block cb-text-success">
               #
-              {seasonProfile.place}
+              {user.rank}
             </span>
             <span className="stat-label text-uppercase">Place</span>
           </div>
           <div className="stat-item py-1 w-100">
-            <span className="stat-value d-block cb-text-danger">{seasonProfile.score}</span>
+            <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
             <span className="stat-label text-uppercase">Points</span>
           </div>
         </div>

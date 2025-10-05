@@ -48,6 +48,7 @@ import {
   renderUserPage,
   renderStreamPage,
   renderUsersRating,
+  renderTournamentsSchedule,
 } from './widgets';
 
 if (process.env.NODE_ENV === 'development') {
@@ -106,6 +107,7 @@ const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
+const tournamentsScheduleRoot = document.getElementById('tournaments-schedule-root');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -169,4 +171,8 @@ if (invitesRoot) {
 
 if (streamRoot) {
   renderStreamPage(streamRoot);
+}
+
+if (tournamentsScheduleRoot) {
+  renderTournamentsSchedule(tournamentsScheduleRoot);
 }
