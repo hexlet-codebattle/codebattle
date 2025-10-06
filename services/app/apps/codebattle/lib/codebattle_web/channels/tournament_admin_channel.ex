@@ -97,11 +97,9 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     tournament = Tournament.Context.get!(tournament_id)
 
-    if tournament do
-      broadcast!(socket, "tournament:restarted", %{
-        tournament: Helpers.prepare_to_json(tournament)
-      })
-    end
+    broadcast!(socket, "tournament:restarted", %{
+      tournament: Helpers.prepare_to_json(tournament)
+    })
 
     {:noreply, socket}
   end

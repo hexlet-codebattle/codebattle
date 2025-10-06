@@ -1,5 +1,8 @@
 defmodule Codebattle.Tournament.Players do
   @moduledoc false
+
+  alias Codebattle.Tournament
+
   def create_table(id) do
     :ets.new(
       :"t_#{id}_players",
@@ -25,6 +28,8 @@ defmodule Codebattle.Tournament.Players do
     player
   end
 
+  @spec get_player(tournament :: Tournament.t(), id :: String.t() | non_neg_integer()) ::
+          Tournament.Player.t() | nil
   def get_player(tournament, player_id) do
     :ets.lookup_element(tournament.players_table, player_id, 3)
   rescue

@@ -51,9 +51,6 @@ defmodule CodebattleWeb.MainChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
-
-      _ ->
-        {:reply, {:error, %{reason: "failure"}}, socket}
     end
   end
 

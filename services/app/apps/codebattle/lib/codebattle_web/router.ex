@@ -54,7 +54,7 @@ defmodule CodebattleWeb.Router do
   end
 
   pipeline :empty_layout do
-    plug(:put_layout, {CodebattleWeb.LayoutView, :empty})
+    plug(:put_layout, html: {CodebattleWeb.LayoutView, :empty})
   end
 
   pipeline :public_api do
@@ -128,6 +128,7 @@ defmodule CodebattleWeb.Router do
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController)
+      get("/tournaments", TournamentController, :index)
       post("/tasks/build", TaskController, :build)
       post("/tasks/check", TaskController, :check)
       get("/tasks/:name/unique", TaskController, :unique)

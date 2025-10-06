@@ -64,7 +64,7 @@ defmodule Codebattle.UserEvent do
     timestamps()
   end
 
-  @spec get_stage(t(), String.t()) :: __MODULE__.Stage.t() | nil
+  @spec get_stage(t(), String.t()) :: map() | nil
   def get_stage(%{stages: stages}, slug) when is_list(stages) do
     Enum.find(stages, fn stage -> stage.slug == slug end)
   end
@@ -134,7 +134,13 @@ defmodule Codebattle.UserEvent do
   end
 
   def mark_stage_as_completed(event_id, user_id, tournament_info) do
-    user_event = Repo.one(from(ue in __MODULE__, where: ue.event_id == ^event_id and ue.user_id == ^user_id, limit: 1))
+    user_event =
+      Repo.one(
+        from(ue in __MODULE__,
+          where: ue.event_id == ^event_id and ue.user_id == ^user_id,
+          limit: 1
+        )
+      )
 
     if user_event do
       stages =

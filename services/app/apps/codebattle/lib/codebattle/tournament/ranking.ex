@@ -48,7 +48,7 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).add_new_player(tournament, player)
   end
 
-  @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: Tournament.t()
+  @spec drop_player(Tournament.t(), player_id :: pos_integer()) :: nil | :ok | non_neg_integer()
   def drop_player(tournament, player_id) do
     if get_module(tournament) == ByUser do
       Ranking.drop_player(tournament, player_id)

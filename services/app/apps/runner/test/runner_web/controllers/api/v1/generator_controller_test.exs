@@ -37,7 +37,12 @@ defmodule RunnerWeb.Api.V1.GeneratorControllerTest do
         |> post(Routes.api_v1_generator_path(conn, :generate), params)
         |> json_response(200)
 
-      assert resp == %{"container_output" => "oi", "exit_code" => 0, "seed" => "blz"}
+      assert resp == %{
+               "container_output" => "oi",
+               "exit_code" => 0,
+               "seed" => "blz",
+               "container_stderr" => ""
+             }
     end
   end
 end

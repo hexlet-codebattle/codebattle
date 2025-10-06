@@ -3,6 +3,8 @@ defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.Tournament
   alias Codebattle.User
 
+  @spec get_player(tournament :: Tournament.t(), id :: String.t() | non_neg_integer()) ::
+          Tournament.Player.t() | nil
   def get_player(%{players_table: nil} = tournament, id), do: Map.get(tournament.players, to_id(id))
 
   def get_player(tournament, id), do: Tournament.Players.get_player(tournament, id)

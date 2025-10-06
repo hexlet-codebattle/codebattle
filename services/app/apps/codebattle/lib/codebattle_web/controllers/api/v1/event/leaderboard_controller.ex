@@ -90,7 +90,11 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
         _ ->
           default_page_number = cast_int(page_number, 1)
 
-          Repo.paginate(Scope.by_clan(), %{page: default_page_number, page_size: page_size, total: true})
+          Repo.paginate(Scope.by_clan(), %{
+            page: default_page_number,
+            page_size: page_size,
+            total: true
+          })
       end
 
     page_info = Map.take(result, [:page_number, :page_size, :total_entries, :total_pages])
@@ -113,7 +117,11 @@ defmodule CodebattleWeb.Api.V1.Event.LeaderboardController do
         _ ->
           default_page_number = cast_int(page_number, 1)
 
-          Repo.paginate(Scope.by_player(), %{page: default_page_number, page_size: page_size, total: true})
+          Repo.paginate(Scope.by_player(), %{
+            page: default_page_number,
+            page_size: page_size,
+            total: true
+          })
       end
 
     page_info = Map.take(result, [:page_number, :page_size, :total_entries, :total_pages])

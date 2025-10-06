@@ -3,7 +3,7 @@ defmodule CodebattleWeb.BroadcastEditorController do
 
   def index(conn, _params) do
     conn
-    |> put_layout("empty.html")
+    |> put_layout(html: {CodebattleWeb.LayoutView, :empty})
     |> render("index.html")
   end
 end

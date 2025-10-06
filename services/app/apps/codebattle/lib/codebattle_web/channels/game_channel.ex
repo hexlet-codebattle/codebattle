@@ -48,7 +48,7 @@ defmodule CodebattleWeb.GameChannel do
          active_game_id: active_game_id,
          game: GameView.render_game(game, score),
          current_player: current_player,
-         in_main_draw: current_player && current_player.draw_index == current_player.max_draw_index,
+         in_main_draw: current_player != nil && current_player.draw_index == current_player.max_draw_index,
          tournament: %{
            event_id: tournament.event_id,
            tournament_id: game.tournament_id,
@@ -68,7 +68,7 @@ defmodule CodebattleWeb.GameChannel do
        },
        assign(socket,
          tournament_id: game.tournament_id,
-         banned?: current_player_banned?(current_player),
+         banned?: current_player != nil && current_player.state == "banned",
          game_id: game_id,
          follow_id: follow_id
        )}
@@ -424,7 +424,4 @@ defmodule CodebattleWeb.GameChannel do
       Logger.error("GameChannel.handle_in:matchmaking:event: unexpected state")
     end
   end
-
-  defp current_player_banned?(nil), do: false
-  defp current_player_banned?(tournament_player), do: tournament_player.state == "banned"
 end

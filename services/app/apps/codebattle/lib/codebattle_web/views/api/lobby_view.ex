@@ -10,8 +10,16 @@ defmodule CodebattleWeb.Api.LobbyView do
 
     upcoming_tournaments =
       Tournament.Context.get_upcoming_tournaments(%{
-        date_from: DateTime.utc_now(),
-        date_to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60)
+        from: DateTime.utc_now(),
+        to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60),
+        user_id: current_user.id
+      })
+
+    user_tournaments =
+      Tournament.Context.get_user_tournaments(%{
+        from: DateTime.utc_now(),
+        to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60),
+        user_id: current_user.id
       })
 
     %{games: games} =
@@ -26,6 +34,7 @@ defmodule CodebattleWeb.Api.LobbyView do
       active_games: render_active_games(current_user),
       tournaments: [],
       live_tournaments: live_tournaments,
+      user_tournaments: user_tournaments,
       upcoming_tournaments: upcoming_tournaments,
       completed_games: completed_games
     }

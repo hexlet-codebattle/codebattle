@@ -63,9 +63,6 @@ defmodule Codebattle.Tournament.UpcomingRunner do
         )
 
         :ok
-
-      _ ->
-        :noop
     end
   end
 end

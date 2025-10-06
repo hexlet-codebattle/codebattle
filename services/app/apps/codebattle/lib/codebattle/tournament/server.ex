@@ -5,13 +5,12 @@ defmodule Codebattle.Tournament.Server do
   import Codebattle.Tournament.Helpers
 
   alias Codebattle.Tournament
-  alias Codebattle.WaitingRoom
 
   require Logger
 
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
-  @waiting_room_timeout_ms to_timeout(second: 1)
+  # @waiting_room_timeout_ms to_timeout(second: 1)
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
@@ -330,53 +329,53 @@ defmodule Codebattle.Tournament.Server do
   #   {:noreply, %{tournament: new_tournament}}
   # end
 
-  def handle_info(:match_waiting_room_players, %{
-        tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "active"}} = tournament
-      }) do
-    players =
-      tournament
-      |> Tournament.Players.get_players("matchmaking_active")
-      |> Enum.map(&prepare_wr_player/1)
+  # def handle_info(:match_waiting_room_players, %{
+  #       tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "active"}} = tournament
+  #     }) do
+  #   players =
+  #     tournament
+  #     |> Tournament.Players.get_players("matchmaking_active")
+  #     |> Enum.map(&prepare_wr_player/1)
 
-    played_pair_ids = tournament.played_pair_ids
+  #   played_pair_ids = tournament.played_pair_ids
 
-    wr_new_state =
-      WaitingRoom.Engine.call(%{
-        tournament.waiting_room_state
-        | players: players,
-          played_pair_ids: played_pair_ids
-      })
+  #   wr_new_state =
+  #     WaitingRoom.Engine.call(%{
+  #       tournament.waiting_room_state
+  #       | players: players,
+  #         played_pair_ids: played_pair_ids
+  #     })
 
-    tournament.module.create_games_for_waiting_room_pairs(
-      tournament,
-      wr_new_state.pairs,
-      wr_new_state.matched_with_bot
-    )
+  #   tournament.module.create_games_for_waiting_room_pairs(
+  #     tournament,
+  #     wr_new_state.pairs,
+  #     wr_new_state.matched_with_bot
+  #   )
 
-    new_tournament = %{
-      tournament
-      | played_pair_ids: wr_new_state.played_pair_ids,
-        waiting_room_state: %{
-          wr_new_state
-          | pairs: [],
-            matched_with_bot: []
-        }
-    }
+  #   new_tournament = %{
+  #     tournament
+  #     | played_pair_ids: wr_new_state.played_pair_ids,
+  #       waiting_room_state: %{
+  #         wr_new_state
+  #         | pairs: [],
+  #           matched_with_bot: []
+  #       }
+  #   }
 
-    Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
-    {:noreply, %{tournament: new_tournament}}
-  end
+  #   Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
+  #   {:noreply, %{tournament: new_tournament}}
+  # end
 
-  def handle_info(:match_waiting_room_players, %{
-        tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "paused"}} = tournament
-      }) do
-    Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
-    {:noreply, %{tournament: tournament}}
-  end
+  # def handle_info(:match_waiting_room_players, %{
+  #       tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "paused"}} = tournament
+  #     }) do
+  #   Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
+  #   {:noreply, %{tournament: tournament}}
+  # end
 
-  def handle_info(:match_waiting_room_players, state) do
-    {:noreply, state}
-  end
+  # def handle_info(:match_waiting_room_players, state) do
+  #   {:noreply, state}
+  # end
 
   def handle_info(_message, state) do
     {:noreply, state}
@@ -424,9 +423,9 @@ defmodule Codebattle.Tournament.Server do
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}
 
-  defp prepare_wr_player(player) do
-    player
-    |> Map.take([:id, :clan_id, :score, :wr_joined_at])
-    |> Map.put(:tasks, Enum.count(player.task_ids))
-  end
+  # defp prepare_wr_player(player) do
+  #   player
+  #   |> Map.take([:id, :clan_id, :score, :wr_joined_at])
+  #   |> Map.put(:tasks, Enum.count(player.task_ids))
+  # end
 end

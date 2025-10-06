@@ -26,7 +26,7 @@ defmodule Runner.AssertsExecutor do
 
     Task.start(File, :rm_rf, [tmp_dir_path])
 
-    %{container_output: output, exit_code: exit_code, seed: seed}
+    %{container_output: output, container_stderr: "", exit_code: exit_code, seed: seed}
   end
 
   defp prepare_tmp_dir!(

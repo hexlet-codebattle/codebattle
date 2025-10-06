@@ -25,7 +25,7 @@ defmodule Codebattle.Tournament.Clans do
   def put_clans(%{clans_table: nil}, _clans), do: :ok
   def put_clans(tournament, clans), do: Clans.put_clans(tournament, clans)
 
-  @spec get_all(tournament :: Tournament.t()) :: list(map())
+  @spec get_all(tournament :: Tournament.t()) :: map()
   def get_all(%{clans_table: nil}), do: %{}
   def get_all(tournament), do: Clans.get_all(tournament)
 

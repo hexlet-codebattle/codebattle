@@ -1,23 +1,28 @@
 defmodule CodebattleWeb.Api.V1.TournamentController do
   use CodebattleWeb, :controller
 
-  import Ecto.Query, warn: false
-
   alias Codebattle.Tournament
 
-  def get_matches(conn, %{"tournament_id" => tournament_id, "player_id" => player_id}) do
-    matches =
-      tournament_id
-      |> Tournament.Context.get!()
-      |> Tournament.Helpers.get_matches_by_players([String.to_integer(player_id)])
+  def index(conn, params) do
+    current_user = conn.assigns.current_user
 
-    json(conn, %{matches: matches})
+    filter = %{
+      from: get_datetime(params["from"]) || DateTime.utc_now(),
+      to: get_datetime(params["to"]) || DateTime.add(DateTime.utc_now(), 30, :day),
+      user_id: if(current_user.is_guest, do: nil, else: current_user.id)
+    }
+
+    upcoming_tournaments = Tournament.Context.get_upcoming_tournaments(filter)
+    user_tournaments = Tournament.Context.get_user_tournaments(filter)
+    json(conn, %{upcoming_tournaments: upcoming_tournaments, user_tournaments: user_tournaments})
   end
 
-  # def get_tournaments(conn, params) do
-  #   tournaments
-  #     |> Tournament.Context.get_by_params!()
-  #
-  #   json(conn, %)
-  # end
+  defp get_datetime(nil), do: nil
+
+  defp get_datetime(iso_datetime) do
+    case DateTime.from_iso8601(iso_datetime) do
+      {:ok, datetime, _} -> datetime
+      {:error, _} -> nil
+    end
+  end
 end

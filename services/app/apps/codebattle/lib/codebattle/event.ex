@@ -66,7 +66,7 @@ defmodule Codebattle.Event do
     timestamps()
   end
 
-  @spec get_stage(t(), String.t()) :: __MODULE__.Stage.t() | nil
+  @spec get_stage(t(), String.t()) :: map() | nil
   def get_stage(%__MODULE__{stages: stages}, slug) when is_binary(slug) do
     Enum.find(stages, fn stage -> stage.slug == slug end)
   end
@@ -83,12 +83,12 @@ defmodule Codebattle.Event do
     |> Repo.all()
   end
 
-  @spec get!(String.t()) :: t() | no_return()
+  @spec get!(String.t() | non_neg_integer()) :: t() | no_return()
   def get!(id) do
     Repo.get!(__MODULE__, id)
   end
 
-  @spec get(String.t()) :: t() | no_return()
+  @spec get(String.t() | non_neg_integer()) :: t() | nil
   def get(id) do
     Repo.get(__MODULE__, id)
   end

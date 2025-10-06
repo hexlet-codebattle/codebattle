@@ -36,7 +36,7 @@ defmodule Codebattle.Tournament.Round.Context do
     )
   end
 
-  @spec upsert_all(list(Round.t())) :: list(Round.t())
+  @spec upsert_all(list(Round.t())) :: {non_neg_integer(), nil | [any()]}
   def upsert_all(rounds) do
     rounds = Enum.map(rounds, &Map.put(&1, :updated_at, TimeHelper.utc_now()))
 

@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Plugs.MaintenanceMode do
       FunWithFlags.enabled?(:maintenance_mode) ->
         conn
         |> put_status(:service_unavailable)
-        |> put_layout({CodebattleWeb.LayoutView, "landing.html"})
+        |> put_layout(html: {CodebattleWeb.LayoutView, :landing})
         |> put_view(CodebattleWeb.RootView)
         |> render("maintenance.html")
         |> halt()

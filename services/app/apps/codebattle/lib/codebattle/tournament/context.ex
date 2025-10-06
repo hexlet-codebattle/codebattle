@@ -137,20 +137,43 @@ defmodule Codebattle.Tournament.Context do
   end
 
   @spec get_upcoming_tournaments(%{
-          date_from: DateTime.t(),
-          date_to: DateTime.t()
+          from: DateTime.t(),
+          to: DateTime.t(),
+          user_id: non_neg_integer() | nil
         }) :: list(Tournament.t())
   def get_upcoming_tournaments(filter) do
-    %{date_from: date_from, date_to: date_to} = filter
+    %{from: datetime_from, to: datetime_to} = filter
 
     Repo.all(
       from(t in Tournament,
         order_by: t.id,
         where:
-          t.starts_at > ^date_from and
-            t.starts_at < ^date_to and
+          t.starts_at >= ^datetime_from and
+            t.starts_at <= ^datetime_to and
             t.grade != "open" and
             t.state == "upcoming"
+      )
+    )
+  end
+
+  @spec get_user_tournaments(%{
+          from: DateTime.t(),
+          to: DateTime.t(),
+          user_id: non_neg_integer() | nil
+        }) :: list(Tournament.t())
+  def get_user_tournaments(%{user_id: nil}), do: []
+
+  def get_user_tournaments(filter) do
+    %{from: datetime_from, to: datetime_to, user_id: user_id} = filter
+
+    Repo.all(
+      from(t in Tournament,
+        order_by: t.id,
+        where:
+          t.starts_at >= ^datetime_from and
+            t.starts_at <= ^datetime_to and
+            t.grade == "open" and
+            (t.creator_id == ^user_id or fragment("? = ANY(?)", ^user_id, t.winner_ids))
       )
     )
   end
