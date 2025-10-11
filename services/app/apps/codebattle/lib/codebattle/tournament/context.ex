@@ -139,7 +139,7 @@ defmodule Codebattle.Tournament.Context do
   @spec get_upcoming_tournaments(%{
           from: DateTime.t(),
           to: DateTime.t(),
-          user_id: non_neg_integer() | nil
+          user: User.t() | nil
         }) :: list(Tournament.t())
   def get_upcoming_tournaments(filter) do
     %{from: datetime_from, to: datetime_to} = filter
@@ -156,26 +156,53 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
-  @spec get_user_tournaments(%{
-          from: DateTime.t(),
-          to: DateTime.t(),
-          user_id: non_neg_integer() | nil
-        }) :: list(Tournament.t())
-  def get_user_tournaments(%{user_id: nil}), do: []
-
-  def get_user_tournaments(filter) do
-    %{from: datetime_from, to: datetime_to, user_id: user_id} = filter
+  @spec get_one_upcoming_tournament_for_each_grade() :: list(Tournament.t())
+  def get_one_upcoming_tournament_for_each_grade do
+    cte_query =
+      from(t in Tournament,
+        where: t.state == "upcoming" and t.grade != "open",
+        group_by: t.grade,
+        select: %{grade: t.grade, min_id: min(t.id)}
+      )
 
     Repo.all(
       from(t in Tournament,
-        order_by: t.id,
-        where:
-          t.starts_at >= ^datetime_from and
-            t.starts_at <= ^datetime_to and
-            t.grade == "open" and
-            (t.creator_id == ^user_id or fragment("? = ANY(?)", ^user_id, t.winner_ids))
+        join: cte in subquery(cte_query),
+        on: t.grade == cte.grade and t.id == cte.min_id,
+        where: t.state == "upcoming" and t.grade != "open",
+        order_by: [t.grade, t.starts_at]
       )
     )
+  end
+
+  @spec get_user_tournaments(%{
+          from: DateTime.t(),
+          to: DateTime.t(),
+          user: User.t() | nil
+        }) :: list(Tournament.t())
+  def get_user_tournaments(%{user: %{is_guest: true}}), do: []
+
+  def get_user_tournaments(filter) do
+    %{from: datetime_from, to: datetime_to, user: %{id: user_id} = user} = filter
+
+    if User.admin?(user) do
+      Repo.all(
+        from(t in Tournament,
+          order_by: t.id,
+          where: t.starts_at >= ^datetime_from and t.starts_at <= ^datetime_to
+        )
+      )
+    else
+      Repo.all(
+        from(t in Tournament,
+          order_by: t.id,
+          where:
+            t.starts_at >= ^datetime_from and
+              t.starts_at <= ^datetime_to and
+              (t.creator_id == ^user_id or fragment("? = ANY(?)", ^user_id, t.winner_ids))
+        )
+      )
+    end
   end
 
   @spec get_live_tournaments_for_user(User.t()) :: list(Tournament.t())

@@ -8,17 +8,12 @@ defmodule CodebattleWeb.Api.LobbyView do
   def render_lobby_params(current_user) do
     live_tournaments = Tournament.Context.get_live_tournaments_for_user(current_user)
 
-    upcoming_tournaments =
-      Tournament.Context.get_upcoming_tournaments(%{
-        from: DateTime.utc_now(),
-        to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60),
-        user_id: current_user.id
-      })
+    upcoming_tournaments = Tournament.Context.get_one_upcoming_tournament_for_each_grade()
 
     user_tournaments =
       Tournament.Context.get_user_tournaments(%{
         from: DateTime.utc_now(),
-        to: DateTime.add(DateTime.utc_now(), 14 * 24 * 60 * 60),
+        to: DateTime.add(DateTime.utc_now(), 1 * 24 * 60 * 60),
         user_id: current_user.id
       })
 

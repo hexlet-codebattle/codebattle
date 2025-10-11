@@ -111,7 +111,10 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "tournaments",
         event: "tournament:finished",
-        payload: %{id: params.tournament.id}
+        payload: %{
+          id: params.tournament.id,
+          grade: params.tournament.grade
+        }
       },
       %Message{
         topic: "tournament:#{params.tournament.id}:common",
