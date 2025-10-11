@@ -160,6 +160,19 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => disp
     .addListener('tournament:ranking_update', handleTournamentRankingUpdate);
 };
 
+export const uploadTournamentsByFilter = (from, to) => axios
+  .get(`api/v1/tournaments?from=${from}&to=${to}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': window.csrf_token,
+    },
+  })
+  .then(response => {
+    const data = camelizeKeys(response.data);
+
+    return [data.upcomingTournaments, data.userTournaments];
+  });
+
 // TODO (tournaments): request matches by searched player id
 export const uploadPlayers = playerIds => (dispatch, getState) => {
   const state = getState();

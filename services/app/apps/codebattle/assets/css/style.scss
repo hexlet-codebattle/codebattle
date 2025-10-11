@@ -5,6 +5,7 @@ $cb-hovered-success: #28a428;
 $secondary: #477591;
 $link-color: black;
 $error: #dc3545;
+$bg-orange: rgba(238, 55, 55);
 $orange: rgba(238, 55, 55, 0.76);
 $link-hover-color: $orange;
 $border-radius-sm: 0%;
@@ -15,6 +16,7 @@ $gold: #daa520;
 @import '~nprogress/nprogress.css';
 @import 'gamePreview';
 @import '~react-contexify/dist/ReactContexify.css';
+@import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 @font-face {
   font-family: 'External';
@@ -2743,7 +2745,7 @@ a:hover {
   border-color: #282c38;
 
   &.show,
-  &.active,
+  &.cb-active,
   &:focus-visible {
     background-color: #3a3f50;
     border-color: #a4b2d6;
@@ -2759,13 +2761,13 @@ a:hover {
     border-color: #a4b2d6;
   }
 
-  &:active {
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active {
     background-color: #2c303d;
     border-color: #1c1e27;
   }
 
-  &:disabled,
-  &.disabled {
+  &:disabled:not(.active) {
     background-color: #21242e;
     border-color: #13151b;
   }
@@ -2785,3 +2787,143 @@ a:hover {
   width: auto;
   height: auto;
 }
+
+.cb-separator {
+  width: 100%;
+  border: 2px solid gray;
+}
+
+// react big calendar for tournaments
+
+.cb-rbc-calendar {
+  background-color: #2a2a35;
+}
+
+.cb-rbc-calendar,
+.cb-rbc-calendar * {
+  color: #E0E0E0;
+}
+
+.cb-rbc-calendar .rbc-btn-group button {
+  color: #E0E0E0;
+  background-color: #383845;
+  border-color: #444;
+}
+
+.cb-rbc-calendar .rbc-btn-group button:hover {
+  color: white;
+  background-color: #454552;
+}
+
+.cb-rbc-calendar .rbc-btn-group button:active,
+.cb-rbc-calendar .rbc-btn-group button.rbc-active {
+  color: white;
+  background-image: none;
+  background-color: #555566 !important;
+  box-shadow: none;
+  border-color: #555566;
+}
+
+.cb-rbc-calendar .rbc-toolbar-label {
+  color: #FFF;
+  font-weight: bold;
+}
+
+.cb-rbc-calendar .rbc-header {
+  background-color: #2a2a35;
+  padding: 8px 0;
+}
+
+.cb-rbc-calendar .rbc-row-bg {
+  background-color: #2a2a35;
+}
+
+
+.cb-rbc-calendar .rbc-date-cell {
+  color: #E0E0E0;
+}
+
+.cb-rbc-calendar .rbc-off-range-bg {
+  background-color: #222228;
+}
+
+.cb-rbc-calendar .rbc-off-range .rbc-date-cell {
+  color: #888;
+}
+
+.rbc-overlay {
+  color: white;
+  background-color: #2a2a35;
+  border-radius: 0.5rem;
+}
+
+.cb-rbc-calendar .rbc-today {
+  background-color: #383845;
+  /* Slightly lighter background for "today" */
+}
+
+/* Event background (default is usually blue) */
+.cb-rbc-calendar .rbc-event {
+  background-color: #5a7b97;
+  /* A visible event color */
+  color: white;
+  /* Event text is white */
+}
+
+.rbc-agenda-empty {
+  height: 100%;
+  text-align: center;
+  align-content: center;
+}
+
+.rbc-agenda-time-cell {
+  border: 1px solid #dee2e6;
+}
+
+.rbc-overlay .cb-rbc-event,
+.rbc-row .cb-rbc-event,
+.rbc-events-container .cb-rbc-event {
+  cursor: pointer;
+
+  &.cb-rbc-live-event {
+    background-color: $cb-success;
+  }
+
+  &.cb-rbc-canceled-event {
+    background-color: var(--gray);
+  }
+
+  &.cb-rbc-upcoming-event {
+    background-color: var(--gray);
+  }
+
+  &.cb-rbc-finished-event {
+    background-color: $bg-orange;
+  }
+}
+
+.cb-rbc-event {
+  &.cb-rbc-live-event .rbc-agenda-event-cell {
+    background-color: $cb-success;
+  }
+
+  &.cb-rbc-canceled-event .rbc-agenda-event-cell {
+    background-color: var(--gray);
+  }
+
+  &.cb-rbc-upcoming-event .rbc-agenda-event-cell {
+    background-color: var(--gray);
+  }
+
+  &.cb-rbc-finished-event .rbc-agenda-event-cell {
+    background-color: $bg-orange;
+  }
+
+  & .rbc-agenda-event-cell {
+    cursor: pointer;
+  }
+}
+
+// &:hover {
+//   background-color: rgba(90, 123, 151, 0.2);
+// }

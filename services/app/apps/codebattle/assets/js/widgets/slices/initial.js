@@ -265,6 +265,7 @@ const defaultTournamentParams = {
   id: undefined,
   clans: {},
   creator: {},
+  grade: '',
   creatorId: null,
   roundsLimit: 3,
   gameResults: {},
