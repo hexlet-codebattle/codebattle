@@ -42,7 +42,11 @@ const TournamentAction = ({ tournament }) => {
   const text = getActionText(tournament);
 
   return (
-    <a type="button" className={className} href={getTournamentUrl(tournament.id)}>{text}</a>
+    <div className="align-content-center">
+      <div className="d-flex p-3">
+        <a type="button" className={className} href={getTournamentUrl(tournament.id)}>{text}</a>
+      </div>
+    </div>
   );
 };
 
@@ -50,54 +54,58 @@ export const activeIcon = <FontAwesomeIcon style={{ width: '60px', height: '60px
 export const upcomingIcon = <FontAwesomeIcon style={{ width: '60px', height: '60px' }} icon="clock" className="text-gray" />;
 
 const TournamentListItem = ({ tournament, icon }) => (
-  <div className="d-flex w-100 cb-bg-panel mt-1">
-    <div className="d-none d-lg-block d-md-block p-3">
-      {icon || getIconForGrade(tournament.grade)}
-    </div>
-    <div className="d-flex flex-column w-100 p-3 align-content-center align-items-baseline justify-content-between">
-      <span
-        title={tournament.name}
-        className="h5 font-weight-bold text-white text-truncate d-inline-block"
-        style={{ maxWidth: '400px', minWidth: '100px' }}
-      >
-        {tournament.name}
-      </span>
-      <span className="cb-font-size-small text-nowrap">
-        {tournament.state !== 'upcoming' && (
-          <span className="pr-2">
-            <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
-            {mapTournamentTitleByState[tournament.state]}
-          </span>
-        )}
-        {tournamentStates.canceled !== tournament.state && tournament.state !== 'upcoming' && (
-          <>
+  <div className="d-flex flex-column flex-lg-row flex-md-row flex-sm-row w-100 cb-bg-panel mt-1">
+    <div className="d-flex w-100">
+      <div className="d-none d-lg-block d-md-block p-3">
+        {icon || getIconForGrade(tournament.grade)}
+      </div>
+      <div className="d-flex flex-column w-100 p-3 align-content-center align-items-baseline justify-content-between">
+        <span
+          title={tournament.name}
+          className="h5 font-weight-bold text-white text-truncate d-inline-block"
+          style={{ maxWidth: '400px', minWidth: '100px' }}
+        >
+          {tournament.name}
+        </span>
+        <span className="cb-font-size-small text-nowrap">
+          {tournament.state !== 'upcoming' && (
             <span className="pr-2">
-              <FontAwesomeIcon icon="user" className="mr-1" />
-              {tournament.playersCount}
+              <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
+              {mapTournamentTitleByState[tournament.state]}
             </span>
-          </>
-        )}
-        {[tournamentStates.active, tournamentStates.waitingParticipants, tournamentStates.upcoming].includes(tournament.state) && (
-          <>
-            <span className="pr-2">
-              <FontAwesomeIcon icon="clock" className="mr-1" />
-              {dayjs(tournament.startsAt).format('MMMM D, YYYY [at] h:mma')}
-            </span>
-          </>
-        )}
-        {tournament.state === tournamentStates.finished && (
-          <>
-            <span className="pr-2">
-              <FontAwesomeIcon icon="clock" className="mr-1" />
-              {dayjs(tournament.lastRoundEndedAt).format('MMMM D, YYYY [at] h:mma')}
-            </span>
-          </>
-        )}
-      </span>
+          )}
+          {tournamentStates.canceled !== tournament.state && tournament.state !== 'upcoming' && (
+            <>
+              <span className="pr-2">
+                <FontAwesomeIcon icon="user" className="mr-1" />
+                {tournament.playersCount}
+              </span>
+            </>
+          )}
+          {[tournamentStates.active, tournamentStates.waitingParticipants, tournamentStates.upcoming].includes(tournament.state) && (
+            <>
+              <span
+                className={
+                  cn('pr-2', { 'd-none d-lg-inline d-md-inline d-sm-inline': tournament.state !== tournamentStates.upcoming })
+                }
+              >
+                <FontAwesomeIcon icon="clock" className="mr-1" />
+                {dayjs(tournament.startsAt).format('MMMM D, YYYY [at] h:mma')}
+              </span>
+            </>
+          )}
+          {tournament.state === tournamentStates.finished && (
+            <>
+              <span className="d-none d-lg-inline d-md-inline d-sm-inline pr-2">
+                <FontAwesomeIcon icon="clock" className="mr-1" />
+                {dayjs(tournament.lastRoundEndedAt).format('MMMM D, YYYY [at] h:mma')}
+              </span>
+            </>
+          )}
+        </span>
+      </div>
     </div>
-    <div className="p-3 align-content-center">
-      <TournamentAction tournament={tournament} />
-    </div>
+    <TournamentAction tournament={tournament} />
   </div>
 );
 

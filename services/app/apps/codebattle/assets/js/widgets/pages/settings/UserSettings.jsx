@@ -109,7 +109,7 @@ function UserSettings() {
   }, [dispatch]);
 
   return (
-    <div className="container cb-bg-panel cb-text shadow-sm py-4">
+    <div className="container cb-bg-panel cb-text cb-rounded shadow-sm py-4">
       <Notification notification={notification} onClose={setNotification} />
       <h2 className="font-weight-normal">Settings</h2>
       <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />

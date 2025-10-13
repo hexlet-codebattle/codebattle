@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import dayjs from 'dayjs';
 import find from 'lodash/find';
 import reject from 'lodash/reject';
 
@@ -42,8 +43,8 @@ const lobby = createSlice({
     ) => ({
       ...state,
       activeGames,
-      upcomingTournaments,
-      liveTournaments,
+      upcomingTournaments: upcomingTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
+      liveTournaments: liveTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
     }),

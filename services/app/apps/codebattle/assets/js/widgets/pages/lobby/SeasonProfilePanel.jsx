@@ -9,7 +9,7 @@ const contestDatesText = 'Season: Oct 14 - Dec 21';
 const SeasonProfilePanel = ({
   upcomingTournaments = [], liveTournaments = [], user, controls,
 }) => (
-  <div className="d-flex flex-column flex-lg-row flex-md-row my-0 my-lg-2 my-md-2">
+  <div className="d-flex flex-column-reverse flex-lg-row flex-md-row my-0 my-lg-2 my-md-2">
     <div className="col-12 col-lg-8 col-md-8 my-2 my-lg-0 my-md-0">
       <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center">
         <h2 className="text-white">Codebattle Season Competition</h2>
@@ -88,7 +88,7 @@ const SeasonProfilePanel = ({
           <span className="h1 clan-title m-0 text-white text-uppercase">
             Clan
             {': '}
-            {user.clanId ? user.clan : <a href="/settings" className="">bla-bla</a>}
+            {user.clanId ? user.clan : <a href="/settings" className="text-lowercase text-primary"><small>add clan</small></a>}
           </span>
         </div>
 

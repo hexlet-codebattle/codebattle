@@ -26,7 +26,9 @@ const getPlaceholder = ({ disabled, placeholder }) => {
 
 const TextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
-  const { name, disabled } = props;
+  const {
+    name, disabled, hint, hintHref = '',
+  } = props;
 
   const labelClassName = cn('h6', {
     'text-muted': disabled,
@@ -36,6 +38,7 @@ const TextInput = ({ label, ...props }) => {
     <div className="form-group mb-3">
       <label className={labelClassName} htmlFor={name}>
         {label}
+        {hint && (<a className="text-primary pl-2" href={hintHref}><small>{hint}</small></a>)}
       </label>
       <input
         {...field}
@@ -127,6 +130,8 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                   id="clan"
                   name="clan"
                   type="text"
+                  hint="clan list"
+                  hintHref="/clans"
                   placeholder="Enter your clan"
                 />
               </div>

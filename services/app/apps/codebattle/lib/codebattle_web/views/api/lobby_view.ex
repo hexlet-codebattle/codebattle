@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Api.LobbyView do
       Tournament.Context.get_user_tournaments(%{
         from: DateTime.utc_now(),
         to: DateTime.add(DateTime.utc_now(), 1 * 24 * 60 * 60),
-        user_id: current_user.id
+        user: current_user
       })
 
     %{games: games} =
