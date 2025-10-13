@@ -3,6 +3,7 @@ alias Codebattle.Event
 alias Codebattle.Game
 alias Codebattle.Repo
 alias Codebattle.TaskPack
+alias Codebattle.Tournament.SeasonTournamentGeneratorRunner
 alias Codebattle.User
 alias Codebattle.UserEvent
 alias Codebattle.UserGame
@@ -165,28 +166,6 @@ creator = %{
   updated_at: TimeHelper.utc_now()
 }
 
-{:ok, creator} =
-  %User{}
-  |> User.changeset(creator)
-  |> Repo.insert()
-
-grades = ~w(open rookie challenger pro elite masters grand_slam)
-
-Enum.each(grades, fn grade ->
-  %Codebattle.Tournament{}
-  |> Codebattle.Tournament.changeset(%{
-    name: "Codebattle Grade: #{grade}",
-    state: "upcoming",
-    grade: grade,
-    creator: creator,
-    players_limit: 16,
-    type: "swiss",
-    level: "easy",
-    starts_at: DateTime.add(DateTime.utc_now(), Enum.random(1..14), :day)
-  })
-  |> Repo.insert!()
-end)
-
 now = DateTime.utc_now()
 one_month_ago = Timex.shift(now, months: -1)
 two_weeks_ago = Timex.shift(now, weeks: -2)
@@ -313,6 +292,11 @@ end
 Enum.each(1..100, fn id ->
   Clan.find_or_create_by_clan("clan_#{id}", 1)
 end)
+
+SeasonTournamentGeneratorRunner.generate_season(0, 2025)
+SeasonTournamentGeneratorRunner.generate_season(1, 2026)
+SeasonTournamentGeneratorRunner.generate_season(2, 2026)
+SeasonTournamentGeneratorRunner.generate_season(3, 2026)
 
 try do
   tokens =
