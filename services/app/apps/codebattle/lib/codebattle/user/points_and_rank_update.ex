@@ -1,4 +1,5 @@
 defmodule Codebattle.User.PointsAndRankUpdate do
+  # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   @moduledoc """
   Module for recalculation and update in db users graded tournaments points and ranking for all users.
 

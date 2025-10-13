@@ -1,4 +1,5 @@
 defmodule Codebattle.User.PointsAndRankUpdateTest do
+  # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   use Codebattle.DataCase, async: false
 
   alias Codebattle.Repo
