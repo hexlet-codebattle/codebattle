@@ -36,6 +36,7 @@ defmodule Codebattle.Tournament do
              :players_limit,
              :ranking_type,
              :round_timeout_seconds,
+             :rounds_limit,
              :score_strategy,
              :started_at,
              :starts_at,

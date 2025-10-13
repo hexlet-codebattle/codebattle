@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         |> put_session(:user_id, user.id)
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
-      assert json_response(conn, 200) == %{"upcoming_tournaments" => [], "user_tournaments" => []}
+      assert json_response(conn, 200) == %{"season_tournaments" => [], "user_tournaments" => []}
     end
 
     test "shows some tournaments", %{conn: conn} do
@@ -44,7 +44,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => user_tournaments
              } = json_response(conn, 200)
 
@@ -52,7 +52,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       user_tournament_id = user_tournament.id
       winner_tournament_id = winner_tournament.id
 
-      assert [%{"id" => ^upcoming_tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^upcoming_tournament_id}] = season_tournaments
       assert [%{"id" => ^user_tournament_id}, %{"id" => ^winner_tournament_id}] = user_tournaments
     end
 
@@ -84,12 +84,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"from" => from_date})
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       new_tournament_id = new_tournament.id
-      assert [%{"id" => ^new_tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^new_tournament_id}] = season_tournaments
     end
 
     test "filters tournaments by date_to parameter", %{conn: conn} do
@@ -120,12 +120,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         |> get(Routes.api_v1_tournament_path(conn, :index), %{"to" => to_date})
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       old_tournament_id = old_tournament.id
-      assert [%{"id" => ^old_tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^old_tournament_id}] = season_tournaments
     end
 
     test "filters tournaments by both date_from and date_to parameters", %{conn: conn} do
@@ -168,12 +168,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         })
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       in_range_tournament_id = in_range_tournament.id
-      assert [%{"id" => ^in_range_tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^in_range_tournament_id}] = season_tournaments
     end
 
     test "filters user tournaments by date range", %{conn: conn} do
@@ -225,7 +225,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         })
 
       assert %{
-               "upcoming_tournaments" => [],
+               "season_tournaments" => [],
                "user_tournaments" => user_tournaments
              } = json_response(conn, 200)
 
@@ -255,12 +255,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       # Should fall back to default behavior (current time as from date)
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       tournament_id = tournament.id
-      assert [%{"id" => ^tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^tournament_id}] = season_tournaments
     end
 
     test "handles invalid date_to parameter gracefully", %{conn: conn} do
@@ -280,12 +280,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       # Should fall back to default behavior (30 days from now as to date)
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       tournament_id = tournament.id
-      assert [%{"id" => ^tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^tournament_id}] = season_tournaments
     end
 
     test "handles edge case where from date equals to date", %{conn: conn} do
@@ -311,12 +311,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         })
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       tournament_id = tournament.id
-      assert [%{"id" => ^tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^tournament_id}] = season_tournaments
     end
 
     test "returns empty result when date range excludes all tournaments", %{conn: conn} do
@@ -342,7 +342,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
           "to" => to_date
         })
 
-      assert json_response(conn, 200) == %{"upcoming_tournaments" => [], "user_tournaments" => []}
+      assert json_response(conn, 200) == %{"season_tournaments" => [], "user_tournaments" => []}
     end
 
     test "guest user gets no user tournaments regardless of date filters", %{conn: conn} do
@@ -368,67 +368,19 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         })
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       upcoming_tournament_id = upcoming_tournament.id
-      assert [%{"id" => ^upcoming_tournament_id}] = upcoming_tournaments
-    end
-
-    test "respects tournament state filter for upcoming tournaments", %{conn: conn} do
-      user = insert(:user)
-      now = DateTime.utc_now()
-
-      # Only upcoming state tournaments should appear in upcoming_tournaments
-      upcoming_tournament =
-        insert(:tournament,
-          state: "upcoming",
-          grade: "masters",
-          starts_at: DateTime.add(now, 1, :day)
-        )
-
-      # Finished tournament should not appear in upcoming_tournaments
-      _finished_tournament =
-        insert(:tournament,
-          state: "finished",
-          grade: "masters",
-          starts_at: DateTime.add(now, 1, :day)
-        )
-
-      # Active tournament should not appear in upcoming_tournaments
-      _active_tournament =
-        insert(:tournament,
-          state: "active",
-          grade: "masters",
-          starts_at: DateTime.add(now, 1, :day)
-        )
-
-      from_date = now |> DateTime.add(1, :day) |> DateTime.to_iso8601()
-      to_date = now |> DateTime.add(2, :day) |> DateTime.to_iso8601()
-
-      conn =
-        conn
-        |> put_session(:user_id, user.id)
-        |> get(Routes.api_v1_tournament_path(conn, :index), %{
-          "from" => from_date,
-          "to" => to_date
-        })
-
-      assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
-               "user_tournaments" => []
-             } = json_response(conn, 200)
-
-      upcoming_tournament_id = upcoming_tournament.id
-      assert [%{"id" => ^upcoming_tournament_id}] = upcoming_tournaments
+      assert [%{"id" => ^upcoming_tournament_id}] = season_tournaments
     end
 
     test "respects tournament grade filter for upcoming vs user tournaments", %{conn: conn} do
       user = insert(:user)
       now = DateTime.utc_now()
 
-      # Non-open grade tournaments go to upcoming_tournaments
+      # Non-open grade tournaments go to season_tournaments
       masters_tournament =
         insert(:tournament,
           state: "upcoming",
@@ -463,7 +415,7 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         })
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => user_tournaments
              } = json_response(conn, 200)
 
@@ -471,13 +423,13 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
       elementary_tournament_id = elementary_tournament.id
       user_open_tournament_id = user_open_tournament.id
 
-      upcoming_ids = Enum.map(upcoming_tournaments, & &1["id"])
+      upcoming_ids = Enum.map(season_tournaments, & &1["id"])
       user_ids = Enum.map(user_tournaments, & &1["id"])
 
       assert masters_tournament_id in upcoming_ids
       assert elementary_tournament_id in upcoming_ids
       assert user_open_tournament_id in user_ids
-      assert length(upcoming_tournaments) == 2
+      assert length(season_tournaments) == 2
       assert length(user_tournaments) == 1
     end
 
@@ -507,12 +459,12 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
         |> get(Routes.api_v1_tournament_path(conn, :index))
 
       assert %{
-               "upcoming_tournaments" => upcoming_tournaments,
+               "season_tournaments" => season_tournaments,
                "user_tournaments" => []
              } = json_response(conn, 200)
 
       within_default_range_id = within_default_range.id
-      assert [%{"id" => ^within_default_range_id}] = upcoming_tournaments
+      assert [%{"id" => ^within_default_range_id}] = season_tournaments
     end
   end
 end

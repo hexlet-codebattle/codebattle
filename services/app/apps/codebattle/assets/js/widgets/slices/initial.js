@@ -76,27 +76,27 @@ const initialLeaderboardUsers = leaderboardUsersData
   : [];
 const initialEvent = eventData
   ? {
-    ...camelizeKeys(eventData),
-    loading: loadingStatuses.PENDING,
-  }
+      ...camelizeKeys(eventData),
+      loading: loadingStatuses.PENDING,
+    }
   : {
-    loading: loadingStatuses.PENDING,
-  };
+      loading: loadingStatuses.PENDING,
+    };
 const reportsParams = reportsData ? { list: camelizeKeys(reportsData) } : {};
 
 // TODO: camelizeKeys initialUsers and refactor all selectors/reducers/components
 const initialUsers = currentUserParams
   ? {
-    [currentUserParams.id]: {
-      ...currentUserParams,
-      type: userTypes.spectator,
-    },
-  }
+      [currentUserParams.id]: {
+        ...currentUserParams,
+        type: userTypes.spectator,
+      },
+    }
   : {};
 const seasonProfileParams = seasonProfileData
   ? {
-    ...seasonProfileData,
-  }
+      ...seasonProfileData,
+    }
   : { score: 0, place: 0, rating: 1200 };
 
 // ******************************
@@ -121,9 +121,9 @@ export const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-    ...defaultGameStatusState,
-    ...getGameStatus(gameParams),
-  }
+      ...defaultGameStatusState,
+      ...getGameStatus(gameParams),
+    }
   : defaultGameStatusState;
 
 const initialGameAward = gameParams ? gameParams.award : null;
@@ -164,21 +164,21 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersMetaToSliseState, {})
+      .map(getPlayersText)
+      .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersTextToSliseState, {})
+      .map(getPlayersText)
+      .reduce(setPlayersTextToSliseState, {})
   : {};
 
 const initialLangsHistory = gameParams && isRecord
-  ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersLangToSliseState, {})
-  : {};
+    ? gameParams.players
+        .map(getPlayersText)
+        .reduce(setPlayersLangToSliseState, {})
+    : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -187,8 +187,8 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-    .map(getPlayersExecutionData)
-    .reduce(setPlayersResultsToSliceState, {})
+      .map(getPlayersExecutionData)
+      .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = {
@@ -245,9 +245,9 @@ const initialTemplates = taskParams
   : defaultTaskTemplates;
 const initialAssertsStatus = taskParams
   ? {
-    status: taskParams.asserts.length > 0 ? 'ok' : 'none',
-    output: '',
-  }
+      status: taskParams.asserts.length > 0 ? 'ok' : 'none',
+      output: '',
+    }
   : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
@@ -310,13 +310,15 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-    ...defaultTournamentParams,
-    ...tournamentParams,
-    channel: { online: !tournamentParams.isLive },
-  }
+      ...defaultTournamentParams,
+      ...tournamentParams,
+      channel: { online: !tournamentParams.isLive },
+    }
   : defaultTournamentParams;
 
-const initialUpcomingTournaments = tournamentsParams.filter(x => x.state === tournamentStates.upcoming);
+const initialseasonTournaments = tournamentsParams.filter(
+  x => x.state === tournamentStates.upcoming,
+);
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
 const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
 
@@ -542,7 +544,7 @@ export default {
   activeGames: initialActiveGames,
   completedGames: completedGamesParams,
   liveTournaments: initialLiveTournaments,
-  upcomingTournaments: initialUpcomingTournaments,
+  seasonTournaments: initialseasonTournaments,
   completedTournaments: initialCompletedTournaments,
   user: {
     currentUserId,

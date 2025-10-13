@@ -56,7 +56,9 @@ const getEndOffsetParams = t => {
 const getEventFromTournamentData = t => ({
   title: t.name,
   start: dayjs(t.startsAt).toDate(),
-  end: dayjs(t.startsAt).add(...getEndOffsetParams(t)).toDate(),
+  end: dayjs(t.startsAt)
+    .add(...getEndOffsetParams(t))
+    .toDate(),
   resourse: {
     id: t.id,
     state: t.state,
@@ -100,7 +102,11 @@ const checkNeedLoading = (oldData, newDate) => {
 const TournamentSchedule = () => {
   const [event, setSelectedEvent] = useState(null);
   const [context, setContext] = useState(getStateFromHash);
-  const [hash, setHash] = useState({ upcomingTournaments: [], userTournaments: [], loading: true });
+  const [hash, setHash] = useState({
+    seasonTournaments: [],
+    userTournaments: [],
+    loading: true,
+  });
   const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
   const [date, setDate] = useState(dayjs().format());
@@ -108,7 +114,9 @@ const TournamentSchedule = () => {
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const currentUserId = useSelector(currentUserIdSelector);
 
-  const sectionBtnClassName = cn('btn btn-secondary border-0 cb-btn-secondary cb-rounded mx-2');
+  const sectionBtnClassName = cn(
+    'btn btn-secondary border-0 cb-btn-secondary cb-rounded mx-2',
+  );
 
   const codebattleLocalizer = dayjsLocalizer(dayjs);
 
@@ -116,19 +124,25 @@ const TournamentSchedule = () => {
     const beginMonth = dayjs(newDate).startOf('month').toISOString();
     const endMonth = dayjs(newDate).endOf('month').toISOString();
 
-    const [upcomingTournaments, userTournaments] = await uploadTournamentsByFilter(beginMonth, endMonth);
-    setHash({ upcomingTournaments, userTournaments, loading: false });
+    const [seasonTournaments, userTournaments] = await uploadTournamentsByFilter(beginMonth, endMonth);
+    setHash({ seasonTournaments, userTournaments, loading: false });
   };
 
-  const onView = useCallback(v => {
-    setView(v);
-  }, [setView]);
+  const onView = useCallback(
+    v => {
+      setView(v);
+    },
+    [setView],
+  );
 
   const onChangeContext = e => {
     e.preventDefault();
 
     try {
-      if (e.currentTarget.dataset.context && stateList.includes(e.currentTarget.dataset.context)) {
+      if (
+        e.currentTarget.dataset.context
+        && stateList.includes(e.currentTarget.dataset.context)
+      ) {
         const { context: newContext } = e.currentTarget.dataset;
         window.location.hash = newContext;
         setContext(newContext);
@@ -166,12 +180,20 @@ const TournamentSchedule = () => {
     }
 
     if (context === states.contest) {
-      const newTournaments = [...hash.upcomingTournaments, ...hash.userTournaments.filter(haveSeasonGrade)];
+      const newTournaments = [
+        ...hash.seasonTournaments,
+        ...hash.userTournaments.filter(haveSeasonGrade),
+      ];
       setTournaments(newTournaments);
     } else if (context === states.my) {
-      setTournaments(hash.userTournaments.filter(filterMyTournaments(currentUserId)));
+      setTournaments(
+        hash.userTournaments.filter(filterMyTournaments(currentUserId)),
+      );
     } else if (context === states.all) {
-      const newTournaments = [...hash.upcomingTournaments, ...hash.userTournaments];
+      const newTournaments = [
+        ...hash.seasonTournaments,
+        ...hash.userTournaments,
+      ];
       setTournaments(newTournaments);
     }
   }, [context, hash, setTournaments, currentUserId, isAdmin]);
@@ -183,7 +205,10 @@ const TournamentSchedule = () => {
   }, [tournaments]);
 
   useEffect(() => {
-    if (event?.resourse && event?.resourse?.state !== tournamentStates.upcoming) {
+    if (
+      event?.resourse
+      && event?.resourse?.state !== tournamentStates.upcoming
+    ) {
       window.location.href = `/tournaments/${event.resourse.id}`;
     }
   }, [event]);
@@ -198,7 +223,9 @@ const TournamentSchedule = () => {
       <div className="d-flex btn-group align-items-center justify-content-center p-1 pb-4">
         <button
           type="button"
-          className={cn(sectionBtnClassName, { active: context === states.contest })}
+          className={cn(sectionBtnClassName, {
+            active: context === states.contest,
+          })}
           data-context={states.contest}
           onClick={onChangeContext}
           disabled={hash.loading}
@@ -217,7 +244,9 @@ const TournamentSchedule = () => {
         {isAdmin && (
           <button
             type="button"
-            className={cn(sectionBtnClassName, { active: context === states.all })}
+            className={cn(sectionBtnClassName, {
+              active: context === states.all,
+            })}
             data-context={states.all}
             onClick={onChangeContext}
             disabled={hash.loading}

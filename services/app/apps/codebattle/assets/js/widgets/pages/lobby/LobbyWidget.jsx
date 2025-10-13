@@ -1,8 +1,5 @@
 import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
+ useState, useRef, useEffect, useCallback,
 } from 'react';
 
 import cn from 'classnames';
@@ -22,9 +19,7 @@ import CreateGameDialog from './CreateGameDialog';
 import LobbyChat from './LobbyChat';
 import SeasonProfilePanel from './SeasonProfilePanel';
 
-const createBtnClassName = cn(
-  'btn cb-rounded',
-);
+const createBtnClassName = cn('btn cb-rounded');
 
 const createBasicGameBtnClassName = cn(
   createBtnClassName,
@@ -53,11 +48,7 @@ const CreateCssGameButton = ({ onClick, isOnline }) => (
 );
 
 const JoinGameButton = ({ onClick }) => (
-  <button
-    type="button"
-    className={joinGameBtnClassName}
-    onClick={onClick}
-  >
+  <button type="button" className={joinGameBtnClassName} onClick={onClick}>
     Join a battle
   </button>
 );
@@ -80,7 +71,9 @@ const LobbyWidget = () => {
 
   const chatInputRef = useRef(null);
 
-  const [actionModalShowing, setActionModalShowing] = useState({ opened: false });
+  const [actionModalShowing, setActionModalShowing] = useState({
+    opened: false,
+  });
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const currentUser = useSelector(selectors.currentUserSelector);
@@ -92,7 +85,7 @@ const LobbyWidget = () => {
   const {
     activeGames,
     liveTournaments,
-    upcomingTournaments,
+    seasonTournaments,
     // completedTournaments,
     presenceList,
     channel: { online },
@@ -190,15 +183,24 @@ const LobbyWidget = () => {
       />
       <SeasonProfilePanel
         liveTournaments={liveTournaments}
-        upcomingTournaments={upcomingTournaments}
+        seasonTournaments={seasonTournaments}
         user={currentUser}
         controls={(
           <div className="d-flex flex-column mt-2">
             <div className="d-flex w-100">
-              <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
+              <CreateGameButton
+                onClick={handleCreateGameBtnClick}
+                isOnline={online}
+                isContinue={!!activeGame}
+              />
               <JoinGameButton onClick={handleJoinGameBtnClick} />
             </div>
-            {showCssGameButton && <CreateCssGameButton onClick={handleCreateCssGameBtnClick} isOnline={online} />}
+            {showCssGameButton && (
+              <CreateCssGameButton
+                onClick={handleCreateCssGameBtnClick}
+                isOnline={online}
+              />
+            )}
           </div>
         )}
       />

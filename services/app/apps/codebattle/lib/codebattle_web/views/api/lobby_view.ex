@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Api.LobbyView do
   def render_lobby_params(current_user) do
     live_tournaments = Tournament.Context.get_live_tournaments_for_user(current_user)
 
-    upcoming_tournaments = Tournament.Context.get_one_upcoming_tournament_for_each_grade()
+    season_tournaments = Tournament.Context.get_one_upcoming_tournament_for_each_grade()
 
     user_tournaments =
       Tournament.Context.get_user_tournaments(%{
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Api.LobbyView do
       tournaments: [],
       live_tournaments: live_tournaments,
       user_tournaments: user_tournaments,
-      upcoming_tournaments: upcoming_tournaments,
+      season_tournaments: season_tournaments,
       completed_games: completed_games
     }
   end

@@ -7,7 +7,7 @@ import initial from './initial';
 
 const initialState = {
   activeGames: initial.activeGames,
-  upcomingTournaments: initial.upcomingTournaments,
+  seasonTournaments: initial.seasonTournaments,
   liveTournaments: initial.liveTournaments,
   completedTournaments: initial.completedTournaments,
   seasonProfile: initial.seasonProfile,
@@ -37,13 +37,16 @@ const lobby = createSlice({
       state,
       {
         payload: {
-          activeGames, tournaments, liveTournaments, upcomingTournaments,
+          activeGames,
+          tournaments,
+          liveTournaments,
+          seasonTournaments,
         },
       },
     ) => ({
       ...state,
       activeGames,
-      upcomingTournaments: upcomingTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
+      seasonTournaments: seasonTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
       liveTournaments: liveTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
@@ -51,11 +54,9 @@ const lobby = createSlice({
     updateEditorLang: (state, { payload }) => {
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
-          const newPlayers = game.players.map(player => (
-            player.id === payload.userId
+          const newPlayers = game.players.map(player => (player.id === payload.userId
               ? { ...player, editorLang: payload.editorLang }
-              : player
-          ));
+              : player));
 
           return { ...game, players: newPlayers };
         }
@@ -67,8 +68,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-            ? { ...player, checkResult: payload.checkResult }
-            : player));
+              ? { ...player, checkResult: payload.checkResult }
+              : player));
 
           return { ...game, players: newPlayers };
         }

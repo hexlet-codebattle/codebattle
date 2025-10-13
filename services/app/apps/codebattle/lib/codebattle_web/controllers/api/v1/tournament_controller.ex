@@ -12,9 +12,9 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
       user: current_user
     }
 
-    upcoming_tournaments = Tournament.Context.get_upcoming_tournaments(filter)
+    season_tournaments = Tournament.Context.get_season_tournaments(filter)
     user_tournaments = Tournament.Context.get_user_tournaments(filter)
-    json(conn, %{upcoming_tournaments: upcoming_tournaments, user_tournaments: user_tournaments})
+    json(conn, %{season_tournaments: season_tournaments, user_tournaments: user_tournaments})
   end
 
   defp get_datetime(nil), do: nil

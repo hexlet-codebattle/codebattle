@@ -136,12 +136,12 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
-  @spec get_upcoming_tournaments(%{
+  @spec get_season_tournaments(%{
           from: DateTime.t(),
           to: DateTime.t(),
           user: User.t() | nil
         }) :: list(Tournament.t())
-  def get_upcoming_tournaments(filter) do
+  def get_season_tournaments(filter) do
     %{from: datetime_from, to: datetime_to} = filter
 
     Repo.all(
@@ -150,8 +150,7 @@ defmodule Codebattle.Tournament.Context do
         where:
           t.starts_at >= ^datetime_from and
             t.starts_at <= ^datetime_to and
-            t.grade != "open" and
-            t.state == "upcoming"
+            t.grade != "open"
       )
     )
   end
@@ -189,7 +188,9 @@ defmodule Codebattle.Tournament.Context do
       Repo.all(
         from(t in Tournament,
           order_by: t.id,
-          where: t.starts_at >= ^datetime_from and t.starts_at <= ^datetime_to
+          where:
+            t.starts_at >= ^datetime_from and t.starts_at <= ^datetime_to and
+              t.state != "upcoming"
         )
       )
     else
