@@ -14,7 +14,7 @@ import {
   editorBtnStatuses as EditorBtnStatuses,
   editorSettingsByUserType,
 } from '../../config/editorSettingsByUserType';
-import editorThemes from '../../config/editorThemes';
+// import editorThemes from '../../config/editorThemes';
 import editorUserTypes from '../../config/editorUserTypes';
 import GameModeCodes from '../../config/gameModes';
 import {
@@ -280,7 +280,8 @@ function EditorContainer({
   return (
     <div data-editor-state={editorCurrent.value} className={pannelBackground}>
       <div
-        className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
+        // className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
+        className={cardClassName}
         style={
           orientation === 'side'
             ? gameRoomEditorStylesVersion2

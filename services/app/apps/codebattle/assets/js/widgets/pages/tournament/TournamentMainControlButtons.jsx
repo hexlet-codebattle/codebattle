@@ -131,16 +131,21 @@ const TournamentMainControlButtons = ({
           variant={canRestart ? 'info' : 'success'}
           disabled={disabled}
         />
-        <Dropdown.Menu className="dropdown-menu-end">
+        <Dropdown.Menu className="cb-dropdown-menu cb-bg-panel dropdown-menu-end">
           <Dropdown.Item
             disabled={disabled}
             key="edit"
             href={`/live_view_tournaments/${tournamentId}/edit`}
+            className="text-white"
           >
             <FontAwesomeIcon className="mr-2" icon="edit" />
             Edit
           </Dropdown.Item>
-          <Dropdown.Item key="tournaments" href="/tournaments">
+          <Dropdown.Item
+            key="tournaments"
+            href="/tournaments"
+            className="text-white"
+          >
             <FontAwesomeIcon className="mr-2" icon="trophy" />
             Tournaments
           </Dropdown.Item>
@@ -148,6 +153,7 @@ const TournamentMainControlButtons = ({
             disabled={disabled || !hideResults}
             key="showResults"
             onSelect={handleShowResults}
+            className="text-white"
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
             Show Results
@@ -155,6 +161,7 @@ const TournamentMainControlButtons = ({
           <Dropdown.Item
             disabled={disabled}
             key="streamMode"
+            className="text-white"
             onSelect={toggleStreamMode}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
@@ -163,6 +170,7 @@ const TournamentMainControlButtons = ({
           <Dropdown.Item
             disabled={disabled || !canToggleShowBots}
             key="showResults"
+            className="text-white"
             onSelect={toggleShowBots}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
@@ -170,6 +178,7 @@ const TournamentMainControlButtons = ({
           </Dropdown.Item>
           <Dropdown.Item
             key="tournamentDetails"
+            className="text-white"
             onSelect={handleOpenDetails}
           >
             <FontAwesomeIcon className="mr-2" icon="cog" />
@@ -178,6 +187,7 @@ const TournamentMainControlButtons = ({
           <Dropdown.Item
             disabled={disabled}
             key="cancel"
+            className="text-white"
             onSelect={handleCancelTournament}
           >
             <FontAwesomeIcon className="mr-2" icon="trash" />
@@ -185,10 +195,11 @@ const TournamentMainControlButtons = ({
           </Dropdown.Item>
           {accessType === 'token' && (
             <>
-              <Dropdown.Divider />
+              <Dropdown.Divider className="cb-border-color" />
               <Dropdown.Item
                 disabled={disabled}
                 key="openUp"
+                className="text-white"
                 onSelect={handleOpenUpTournament}
               >
                 <FontAwesomeIcon className="mr-2" icon="unlock" />

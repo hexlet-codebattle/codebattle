@@ -209,7 +209,7 @@ class CodebattlePlayer extends Component {
         <div className="py-5" />
         <div className="container-fluid fixed-bottom">
           <div className="px-1">
-            <div className="border bg-light">
+            <div className="cb-bg-highlight-panel cb-rounded">
               <div className="d-flex align-items-center justify-content-center">
                 <ControlPanel
                   nextRecordId={nextRecordId}

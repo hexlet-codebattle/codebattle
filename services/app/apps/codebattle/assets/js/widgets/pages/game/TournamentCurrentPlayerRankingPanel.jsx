@@ -5,7 +5,7 @@ import TournamentRankingTable from './TournamentRankingTable';
 
 const TournamentCurrentPlayerRankingPanel = () => (
   <div
-    className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 rounded-lg bg-white"
+    className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-rounded"
   >
     <TournamentRankingTable />
     <div className="flex-shrink-1 p-0 border-left rounded-right cb-game-control-container">
@@ -16,6 +16,6 @@ const TournamentCurrentPlayerRankingPanel = () => (
       </div>
     </div>
   </div>
-  );
+);
 
 export default memo(TournamentCurrentPlayerRankingPanel);

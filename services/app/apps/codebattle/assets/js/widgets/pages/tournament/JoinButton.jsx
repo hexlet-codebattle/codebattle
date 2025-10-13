@@ -30,7 +30,7 @@ const JoinButton = ({
         }}
         className={cn('btn text-nowrap rounded-lg', {
           'btn-outline-danger': isParticipant && !hasCustomEventStyles,
-          'btn-outline-secondary': !isParticipant && !hasCustomEventStyles,
+          'btn-outline-secondary cb-btn-outline-secondary': !isParticipant && !hasCustomEventStyles,
           'cb-custom-event-btn-outline-danger': isParticipant && hasCustomEventStyles,
           'cb-custom-event-btn-outline-secondary': !isParticipant && hasCustomEventStyles,
           'd-none': !isShow,

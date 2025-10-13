@@ -63,7 +63,7 @@ const TaskConfigurationModal = NiceModal.create(() => {
   }, [task.visibility]);
 
   return (
-    <Modal show={modal.visible} onHide={modal.hide}>
+    <Modal contentClassName="cb-bg-panel cb-text" show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>Details</Modal.Title>
       </Modal.Header>

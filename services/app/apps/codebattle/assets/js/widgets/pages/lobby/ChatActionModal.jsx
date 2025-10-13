@@ -55,11 +55,11 @@ function ChatActionModal({
     : createBattleInvite;
 
   return (
-    <Modal contentClassName="h-75" show={modalShowing.opened} onHide={handleCloseModal}>
-      <Modal.Header closeButton>
+    <Modal contentClassName="cb-bg-panel cb-text h-75" show={modalShowing.opened} onHide={handleCloseModal}>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body className="bg-light overflow-auto">
+      <Modal.Body className="overflow-auto">
         {modalShowing.action && (
           <div className="d-flex flex-column">
             {presenceList.map(presenceUser => (
@@ -67,7 +67,7 @@ function ChatActionModal({
                 <div
                   role="button"
                   tabIndex={0}
-                  className="btn btn-light mb-2 p-3"
+                  className="btn btn-secondary cb-btn-secondary cb-rounded mb-2 p-3"
                   key={presenceUser.id}
                   data-user-id={presenceUser.id}
                   data-user-name={presenceUser.user.name}

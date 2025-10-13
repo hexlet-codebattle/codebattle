@@ -105,8 +105,8 @@ function PlayerStatsPanel({
   }
 
   return (
-    <div className="d-flex flex-column border border-success rounded-lg shadow-sm">
-      <div className="d-flex border-bottom p-2">
+    <div className="d-flex flex-column border border-success cb-rounded shadow-sm">
+      <div className="d-flex border-bottom cb-border-color p-2">
         <div>
           <span className="text-nowrap pr-1" title={currentPlayer.name}>
             {currentPlayer.name}
@@ -154,7 +154,7 @@ function PlayerStatsPanel({
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.review}`}
           >
-            <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom p-2">
+            <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom cb-border-color p-2">
               <StageCard
                 type={type}
                 playerId={currentUserId}
@@ -211,7 +211,7 @@ function PlayerStatsPanel({
                 return (
                   <div
                     key={`stage-${stage}-statistics`}
-                    className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom p-2"
+                    className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row border-bottom cb-border-color p-2"
                   >
                     <StageCard
                       playerId={currentUserId}
@@ -258,7 +258,7 @@ function PlayerStatsPanel({
                     <StageTitle stage={stage} stagesLimit={roundsLimit} />
                   </div>
                 )}
-                <div className="border-top">
+                <div className="border-top cb-border-color">
                   <UsersMatchList
                     currentUserId={currentUserId}
                     playerId={currentUserId}

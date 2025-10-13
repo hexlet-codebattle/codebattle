@@ -16,7 +16,7 @@ const NewGameButton = props => {
   return (
     <button
       type="button"
-      className="btn btn-secondary btn-block rounded-lg"
+      className="btn btn-secondary btn-block cb-rounded"
       data-method="post"
       data-csrf={window.csrf_token}
       data-to={gameUrl}

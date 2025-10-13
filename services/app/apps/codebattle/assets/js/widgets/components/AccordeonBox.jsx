@@ -23,7 +23,7 @@ const getMessage = status => {
 };
 
 const AccordeonBox = ({ children }) => (
-  <div className="accordion border-top" id="accordionExample">
+  <div className="accordion border-top cb-border-color" id="accordionExample">
     {children}
   </div>
 );
@@ -35,7 +35,7 @@ const renderFirstAssert = firstAssert => (
 );
 
 function Menu({
- children, firstAssert, resultData, assertsCount, successCount,
+  children, firstAssert, resultData, assertsCount, successCount,
 }) {
   const [show, setShow] = useState(true);
   const isSyntaxError = resultData.status === 'error';
@@ -58,7 +58,7 @@ function Menu({
   }, [isSyntaxError]);
 
   return (
-    <div className="card border-0 rounded-0">
+    <div className="card cb-card border-0 rounded-0">
       {statusColor === 'warning' || statusColor === 'danger' ? (
         <>
           <div className="card-header" id={`heading${uniqIndex} `}>
@@ -115,7 +115,7 @@ function SubMenu({
   const assertClassName = cn('d-block', fontClassName);
 
   return (
-    <div className="list-group-item border-left-0 gorder-right-0">
+    <div className="list-group-item border-left-0 cb-border-color border-right-0 cb-bg-highlight-panel text-white">
       <div id={`heading${uniqIndex}`}>
         <div>
           <div className="d-flex align-items-center">
@@ -193,7 +193,7 @@ const Item = ({ output, fontSize }) => {
   });
 
   return (
-    <div className={`alert alert-secondary mb-0 ${fontClassName}`}>
+    <div className={`alert text-white mb-0 ${fontClassName}`}>
       <pre>
         {output}
       </pre>

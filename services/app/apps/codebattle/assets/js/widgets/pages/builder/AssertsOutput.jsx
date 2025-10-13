@@ -12,8 +12,8 @@ const AssertsOutput = memo(({ asserts, status, output }) => {
   return (
     <div className="overflow-auto" style={{ maxHeight: '412px' }}>
       {(status === assertsStatuses.error && asserts.length === 0)
-      || [assertsStatuses.memoryLeak, assertsStatuses.timeout].includes(status) ? (
-        <AccordeonBox.Item output={output} />
+        || [assertsStatuses.memoryLeak, assertsStatuses.timeout].includes(status) ? (
+          <AccordeonBox.Item output={output} />
       ) : (
         asserts
         && asserts.map((assert, index) => (
@@ -29,7 +29,7 @@ const AssertsOutput = memo(({ asserts, status, output }) => {
             hasOutput={assert.output || assert.message}
             uniqIndex={uniqIndex}
           >
-            <div className="alert alert-secondary mb-0 pb-0">
+            <div className="alert text-white mb-0 pb-0">
               <pre>{assert.output}</pre>
             </div>
           </AccordeonBox.SubMenu>

@@ -51,16 +51,16 @@ function TournamentUserPanel({
     'cb-custom-event-badge-success': hasCustomEventStyles,
   });
   const panelClassName = cn(
-    'd-flex flex-column border shadow-sm rounded-lg mb-2 overflow-auto',
+    'd-flex flex-column border cb-border-color shadow-sm rounded-lg mb-2 overflow-auto',
     hasCustomEventStyles
       ? {
-          'cb-custom-event-border-success': userId === currentUserId,
-          'cb-custom-event-border-info': userId === searchedUserId,
-        }
+        'cb-custom-event-border-success': userId === currentUserId,
+        'cb-custom-event-border-info': userId === searchedUserId,
+      }
       : {
-          'border-success': userId === currentUserId,
-          'border-primary': userId === searchedUserId,
-        },
+        'border-success': userId === currentUserId,
+        'border-primary': userId === searchedUserId,
+      },
   );
 
   const titleClassName = cn(
@@ -142,12 +142,12 @@ function TournamentUserPanel({
         </div>
         <div className="d-flex ml-1">
           <button type="button" className="btn" onClick={handleOpenMatches}>
-            <FontAwesomeIcon icon={open ? 'chevron-up' : 'chevron-down'} />
+            <FontAwesomeIcon className="cb-text" icon={open ? 'chevron-up' : 'chevron-down'} />
           </button>
         </div>
       </div>
       <Collapse in={open}>
-        <div id="collapse-matches-one" className="border-top">
+        <div id="collapse-matches-one" className="border-top cb-border-color">
           <UsersMatchList
             currentUserId={currentUserId}
             playerId={userId}

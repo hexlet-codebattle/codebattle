@@ -287,7 +287,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
   const GamePanel = () => (!spectatorStatus ? (
     <>
-      <div className="card border-0 shadow-sm">
+      <div className="card cb-card border-0 shadow-sm">
         <TaskAssignment
           task={task}
           taskSize={taskSize}
@@ -301,7 +301,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
         />
       </div>
       <div
-        className="card border-0 shadow-sm mt-1 cb-overflow-y-auto"
+        className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto"
       >
         <div className={spectatorGameStatusClassName}>
           {/* {GameStateCodes.playing !== gameState && <h3>Game Over</h3>} */}
@@ -318,7 +318,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       </div>
     </>
   ) : (
-    <div className="card border-0 w-100">
+    <div className="card cb-card border-0 w-100">
       <div className="d-flex justify-content-center align-items-center w-100">
         {spectatorStatus}
       </div>
@@ -333,7 +333,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   //
   //   if (!lastRound || !groupedMatches[lastRound]) {
   //     return (
-  //       <div className="card bg-white rounded-lg flex justify-content-center align-items-center w-100 h-100">
+  //       <div className="card cb-card rounded-lg flex justify-content-center align-items-center w-100 h-100">
   //         No statistics
   //       </div>
   //     );

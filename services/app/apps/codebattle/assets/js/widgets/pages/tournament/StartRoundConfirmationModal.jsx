@@ -47,12 +47,12 @@ function StartRoundConfirmationModal({
 
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
-  const cancelBtnClassName = cn('btn rounded-lg', {
-    'btn-secondary': !hasCustomEventStyle,
+  const cancelBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
-  const confirmBtnClassName = cn('btn text-white rounded-lg', {
-    'btn-success': !hasCustomEventStyle,
+  const confirmBtnClassName = cn('btn text-white cb-rounded', {
+    'btn-success cb-btn-success': !hasCustomEventStyle,
     'cb-custom-event-btn-success': hasCustomEventStyle,
   });
 
@@ -78,11 +78,15 @@ function StartRoundConfirmationModal({
   const text = getModalText(modalShowing);
 
   return (
-    <Modal show={!!modalShowing} onHide={onClose}>
-      <Modal.Header closeButton>
+    <Modal
+      show={!!modalShowing}
+      onHide={onClose}
+      contentClassName="cb-bg-panel cb-text"
+    >
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="cb-border-color">
         <div className="d-flex flex-column justify-content-between align-items-center">
           <h4 className="mb-4">{text}</h4>
           <div className="d-flex flex-column justify-content-center">
@@ -108,7 +112,7 @@ function StartRoundConfirmationModal({
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
           <Button onClick={onClose} className={cancelBtnClassName}>
             Cancel

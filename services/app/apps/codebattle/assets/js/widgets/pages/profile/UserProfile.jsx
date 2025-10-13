@@ -45,7 +45,7 @@ function UserProfile() {
   const gamesCount = sum(Object.values(stats.games));
 
   return (
-    <div className="row">
+    <div className="row cb-bg-panel cb-rounded py-4">
       <div className="col-12 col-md-3 my-4">
         <div className="pl-md-2 text-center">
           <div className="mb-2 mb-sm-4">
@@ -57,7 +57,7 @@ function UserProfile() {
           </div>
           <div>
             <h1 className="cb-heading text-break font-weight-bold">{user.name}</h1>
-            <hr />
+            <hr className="cb-border-color" />
             <h3 className="cb-heading">
               <span>Lang:</span>
               <img
@@ -68,7 +68,7 @@ function UserProfile() {
                 height="30"
               />
             </h3>
-            <hr />
+            <hr className="cb-border-color" />
             <p className="mb-2 small text-monospace text-muted">{`joined at ${userInsertedAt}`}</p>
             {user.githubName && (
               <h3 className="h1">
@@ -99,7 +99,7 @@ function UserProfile() {
             <div
               id="nav-tab"
               role="tablist"
-              className="nav nav-tabs justify-content-around border-bottom"
+              className="nav nav-tabs justify-content-around border-bottom cb-border-color"
             >
               <a
                 className="nav-item nav-link active text-uppercase border-0 text-center font-weight-bold rounded-0 w-50 p-3"
@@ -125,7 +125,7 @@ function UserProfile() {
               </a>
             </div>
           </nav>
-          <div className="tab-content border border-top-0 rounded-bottom flex-grow-1 basis-0" id="nav-tabContent">
+          <div className="tab-content border cb-border-color border-top-0 rounded-bottom flex-grow-1 basis-0" id="nav-tabContent">
             <div
               className="tab-pane fade show active"
               id="statistics"

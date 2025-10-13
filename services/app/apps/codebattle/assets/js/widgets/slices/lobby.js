@@ -2,8 +2,6 @@ import { createSlice } from '@reduxjs/toolkit';
 import find from 'lodash/find';
 import reject from 'lodash/reject';
 
-import tournamentStates from '../config/tournament';
-
 import initial from './initial';
 
 const initialState = {

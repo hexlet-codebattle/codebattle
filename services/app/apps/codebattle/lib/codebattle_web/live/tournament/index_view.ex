@@ -28,36 +28,47 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+    <div class="container-xl cb-bg-panel cb-text shadow-sm cb-rounded py-4 mb-3">
       <h1 class="text-center">Tournaments</h1>
       <div class="table-responsive mt-4">
         <table class="table table-sm">
-          <thead>
+          <thead class="cb-text">
             <tr>
-              <th>name</th>
-              <th>type</th>
-              <th>level</th>
-              <th>state</th>
-              <th>starts_at</th>
-              <th>actions</th>
+              <th class="cb-border-color border-bottom-0">name</th>
+              <th class="cb-border-color border-bottom-0">type</th>
+              <th class="cb-border-color border-bottom-0">level</th>
+              <th class="cb-border-color border-bottom-0">state</th>
+              <th class="cb-border-color border-bottom-0">starts_at</th>
+              <th class="cb-border-color border-bottom-0">actions</th>
             </tr>
           </thead>
           <tbody>
             <%= for tournament <- @tournaments do %>
               <tr>
-                <td class="align-middle"><%= tournament.name %></td>
-                <td class="align-middle text-nowrap"><%= tournament.type %></td>
-                <td class="align-middle text-nowrap">
-                  <img alt={tournament.level} src={"/assets/images/levels/#{tournament.level}.svg"} />
+                <td class="align-middle text-white cb-border-color"><%= tournament.name %></td>
+                <td class="align-middle text-nowrap text-white cb-border-color">
+                  <%= tournament.type %>
                 </td>
-                <td class="align-middle text-nowrap"><%= tournament.state %></td>
-                <td class="align-middle text-nowrap">
+                <td class="align-middle text-nowrap cb-border-color">
+                  <div class="d-flex">
+                    <div class="bg-gray p-1 m-1 cb-rounded">
+                      <img
+                        alt={tournament.level}
+                        src={"/assets/images/levels/#{tournament.level}.svg"}
+                      />
+                    </div>
+                  </div>
+                </td>
+                <td class="align-middle text-nowrap text-white cb-border-color">
+                  <%= tournament.state %>
+                </td>
+                <td class="align-middle text-nowrap text-white cb-border-color">
                   <%= format_datetime(tournament.starts_at, @user_timezone) %>
                 </td>
-                <td class="align-middle text-nowrap">
+                <td class="align-middle text-nowrap text-white cb-border-color">
                   <%= link("Show",
                     to: Routes.tournament_path(@socket, :show, tournament.id),
-                    class: "btn btn-success text-white rounded-lg mt-2"
+                    class: "btn btn-success cb-btn-success cb-rounded mt-2"
                   ) %>
                 </td>
               </tr>

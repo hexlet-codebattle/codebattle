@@ -135,17 +135,17 @@ function MatchConfirmationModal({
   }, [openMatch]);
 
   const title = i18next.t('Next match will be opened. Show now?');
-  const closeBtnClassName = cn('btn rounded-lg', {
-    'btn-secondary': !hasCustomEventStyles,
+  const closeBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-info': hasCustomEventStyles,
   });
-  const openBtnClassName = cn('btn text-white rounded-lg', {
-    'btn-primary': !hasCustomEventStyles,
+  const openBtnClassName = cn('btn cb-rounded', {
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
 
   return (
-    <Modal show={modalShowing} onHide={handleCancel}>
+    <Modal className="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>

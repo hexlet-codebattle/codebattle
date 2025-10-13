@@ -25,12 +25,12 @@ const TaskLanguagesSelection = ({
     <Dropdown className="d-flex">
       <Dropdown.Toggle
         id="tasklang-dropdown-toggle"
-        className="shadow-none rounded-lg p-1 btn-sm"
-        variant="outline-secondary"
+        className="shadow-none cb-rounded p-1 btn btn-sm btn-outline-secondary cb-btn-outline-secondary"
+        variant="none"
       >
         {displayLanguage.toUpperCase()}
       </Dropdown.Toggle>
-      <Dropdown.Menu id="tasklang-dropdown-menu">
+      <Dropdown.Menu id="tasklang-dropdown-menu" className="cb-bg-highlight-panel cb-border-color text-white">
         {avaibleLanguages.map(renderLanguage)}
       </Dropdown.Menu>
     </Dropdown>

@@ -11,7 +11,7 @@ const GoToNextGame = ({ currentUserId, tournamentsInfo: { playerGames } }) => {
     <>
       {
         nextGame && (
-          <a className="btn btn-success btn-block" href={`/games/${nextGame.gameId}`}>
+          <a className="btn btn-success cb-btn-success btn-block" href={`/games/${nextGame.gameId}`}>
             Go to next game
           </a>
         )

@@ -1,5 +1,5 @@
 import React, {
- useState, useCallback, useEffect, useMemo,
+  useState, useCallback, useEffect, useMemo,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,8 +29,8 @@ function TournamentGameCreatePanel({
     const activeMatches = Object.values(matches)
       .filter(match => (
         match.roundPosition === currentRoundPosition
-          && match.playerIds.includes(selectedPlayer.id)
-          && match.state === MatchStates.playing
+        && match.playerIds.includes(selectedPlayer.id)
+        && match.state === MatchStates.playing
       ));
 
     if (activeMatches.length === 0) {
@@ -80,17 +80,17 @@ function TournamentGameCreatePanel({
   }, [players, selectedPlayer]);
 
   return (
-    <div className="d-flex justify-content-between w-100 flex-row border rounded-lg p-3 mb-2">
+    <div className="d-flex justify-content-between w-100 flex-row border cb-rounded cb-border-color p-3 mb-2">
       {!selectedPlayer && (
         <>
           <img
             alt="Waiting opponent avatar"
             src={tournamentEmptyPlayerUrl}
-            className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray rounded p-3"
+            className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar bg-gray cb-rounded p-3"
           />
           <div className="d-flex justify-content-between align-items-center flex-column">
             <select
-              className="form-control custom-select rounded-lg m-1"
+              className="form-control custom-select cb-rounded m-1"
               onChange={e => setSelectedPlayer(players[e.target.value])}
             >
               <option disabled selected value>
@@ -124,7 +124,7 @@ function TournamentGameCreatePanel({
             <div className="d-flex justify-content-begin flex-column flex-sm-row w-auto w-sm-50 button-group">
               <button
                 type="button"
-                className="btn btn-sm btn-primary py-1 m-1 rounded-lg"
+                className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
                 onClick={() => setSelectedTaskLevel('elementary')}
                 disabled={availableTasks.elementary.length < 1}
               >
@@ -136,7 +136,7 @@ function TournamentGameCreatePanel({
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-secondary py-1 m-1 rounded-lg"
+                className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
                 onClick={() => setSelectedTaskLevel('easy')}
                 disabled={availableTasks.easy.length < 1}
               >
@@ -146,7 +146,7 @@ function TournamentGameCreatePanel({
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-warning py-1 m-1 rounded-lg"
+                className="btn btn-sm btn-warning py-1 m-1 cb-rounded"
                 onClick={() => setSelectedTaskLevel('medium')}
                 disabled={availableTasks.medium.length < 1}
               >
@@ -156,7 +156,7 @@ function TournamentGameCreatePanel({
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-danger py-1 m-1 rounded-lg"
+                className="btn btn-sm btn-danger py-1 m-1 cb-rounded"
                 onClick={() => setSelectedTaskLevel('hard')}
                 disabled={availableTasks.hard.length < 1}
               >
@@ -180,7 +180,7 @@ function TournamentGameCreatePanel({
               <img
                 alt={`${selectedPlayer.name} avatar`}
                 src={selectedPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(selectedPlayer)}
-                className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+                className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar cb-rounded p-2"
               />
               {
                 opponentPlayer && (

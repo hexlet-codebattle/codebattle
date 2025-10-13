@@ -1,5 +1,5 @@
 import React, {
- useState, useContext, useCallback, memo,
+  useState, useContext, useCallback, memo,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -35,7 +35,7 @@ const isGeneratorsError = status => status === assertsStatuses.error
 const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
   const infoClassName = cn(
     'd-flex align-items-center justify-content-around position-absolute w-100 h-100 p-3',
-    'bg-gray text-black  cb-opacity-75',
+    'bg-gray cb-opacity-75',
   );
   if (origin === 'github') {
     return (
@@ -179,7 +179,7 @@ function BuilderEditorsWidget() {
     <>
       <div className="col-12 col-lg-6 p-1" data-editor-state="idle">
         <div
-          className="card h-100 shadow-sm position-relative"
+          className="card cb-card h-100 shadow-sm position-relative"
           style={gameRoomEditorStyles}
         >
           <div className="rounded-top" data-player-type="current_user">

@@ -91,7 +91,7 @@ function RoomWidget({
               },
               )}
             >
-              <div className="row no-gutter cb-game">
+              <div className="row no-gutter cb-game px-1">
                 {showTaskBuilder && (
                   <>
                     <BuilderSettingsWidget />
@@ -105,7 +105,7 @@ function RoomWidget({
                   </>
                 )}
                 {mute && (
-                  <div className="rounded p-2 bg-dark cb-mute-icon">
+                  <div className="cb-rounded p-2 bg-dark cb-mute-icon">
                     <FontAwesomeIcon
                       size="lg"
                       color="white"

@@ -21,7 +21,7 @@ function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
     type: 'button',
-    className: 'btn btn-outline-success btn-check rounded-lg',
+    className: 'btn btn-sm btn-outline-success cb-btn-outline-success btn-check cb-rounded',
     title: `${i18next.t('Check solution')}&#013;Ctrl + Enter`,
     'data-toggle': 'tooltip',
     'data-guide-id': 'CheckResultButton',
@@ -94,6 +94,7 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
     title: i18next.t('Give Up'),
     onSelect,
     disabled: status === 'disabled',
+    className: 'cb-dropdown-item',
   };
 
   return (
@@ -113,11 +114,12 @@ function ResetButtonDropDownItem({ onSelect, status }) {
     title: i18next.t('Reset solution'),
     onSelect,
     disabled: status === 'disabled',
+    className: 'cb-dropdown-item',
   };
 
   return (
     <Dropdown.Item {...commonProps}>
-      <span>
+      <span className="text-white">
         <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
         {i18next.t('Reset solution')}
       </span>
@@ -165,15 +167,19 @@ function GameActionButtons({
   };
 
   const renderModal = () => (
-    <Modal show={modalShowing} onHide={modalHide}>
-      <Modal.Body className="text-center">
+    <Modal
+      show={modalShowing}
+      onHide={modalHide}
+      contentClassName="cb-bg-panel cb-text"
+    >
+      <Modal.Body className="text-center cb-bg-panel">
         {i18next.t('Are you sure you want to give up?')}
       </Modal.Body>
-      <Modal.Footer className="mx-auto">
-        <Button onClick={handleGiveUp} className="btn-danger rounded-lg">
+      <Modal.Footer className="mx-auto border-0">
+        <Button onClick={handleGiveUp} className="btn-danger cb-rounded">
           {i18next.t('Give up')}
         </Button>
-        <Button onClick={modalHide} className="btn-secondary rounded-lg">
+        <Button onClick={modalHide} className="btn-secondary cb-btn-secondary cb-rounded">
           {i18next.t('Cancel')}
         </Button>
       </Modal.Footer>
@@ -182,7 +188,7 @@ function GameActionButtons({
 
   return (
     <div
-      className="btn-group btn-group-sm py-2 mr-2"
+      className="d-flex py-2 mr-2"
       role="group"
       aria-label="Game actions"
     >
@@ -190,15 +196,14 @@ function GameActionButtons({
       <Dropdown title="Other actions">
         <Dropdown.Toggle
           as={CustomToggle}
-          className="btn btm-sm btn-primary rounded mx-1"
+          className="btn btm-sm btn-secondary cb-btn-secondary cb-rounded mx-1"
           split
-          variant="primary"
           id="dropdown-actions"
         >
           <FontAwesomeIcon icon="ellipsis-v" className="mr-1" />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat">
+        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat bg-dark">
           <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
           {showGiveUpBtn && <GiveUpButtonDropdownItem onSelect={modalShow} status={giveUpBtnStatus} />}
         </Dropdown.Menu>

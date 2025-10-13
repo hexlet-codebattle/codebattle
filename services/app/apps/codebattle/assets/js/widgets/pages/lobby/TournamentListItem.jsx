@@ -2,7 +2,9 @@ import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import dayjs from 'dayjs';
 
+import getIconForGrade from '@/components/icons/Grades';
 import { getTournamentUrl } from '@/utils/urlBuilders';
 
 import tournamentStates from '../../config/tournament';
@@ -34,8 +36,8 @@ const TournamentAction = ({ tournament }) => {
   }
 
   const className = cn('btn text-nowrap rounded', {
-    'btn-secondary': [tournamentStates.finished, tournamentStates.canceled].includes(tournament.state),
-    'cb-btn-success': [tournamentStates.active, tournamentStates.waitingParticipants].includes(tournament.state),
+    'btn-secondary cb-btn-secondary': [tournamentStates.finished, tournamentStates.canceled].includes(tournament.state),
+    'btn-success cb-btn-success': [tournamentStates.active, tournamentStates.waitingParticipants].includes(tournament.state),
   });
   const text = getActionText(tournament);
 
@@ -50,7 +52,7 @@ export const upcomingIcon = <FontAwesomeIcon style={{ width: '60px', height: '60
 const TournamentListItem = ({ tournament, icon }) => (
   <div className="d-flex w-100 cb-bg-panel mt-1">
     <div className="d-none d-lg-block d-md-block p-3">
-      {icon}
+      {icon || getIconForGrade(tournament.grade)}
     </div>
     <div className="d-flex flex-column w-100 p-3 align-content-center align-items-baseline justify-content-between">
       <span
@@ -61,13 +63,15 @@ const TournamentListItem = ({ tournament, icon }) => (
         {tournament.name}
       </span>
       <span className="cb-font-size-small text-nowrap">
-        <span>
-          <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
-          {mapTournamentTitleByState[tournament.state]}
-        </span>
-        {tournamentStates.canceled !== tournament.state && (
+        {tournament.state !== 'upcoming' && (
+          <span className="pr-2">
+            <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
+            {mapTournamentTitleByState[tournament.state]}
+          </span>
+        )}
+        {tournamentStates.canceled !== tournament.state && tournament.state !== 'upcoming' && (
           <>
-            <span className="pl-2">
+            <span className="pr-2">
               <FontAwesomeIcon icon="user" className="mr-1" />
               {tournament.playersCount}
             </span>
@@ -75,17 +79,17 @@ const TournamentListItem = ({ tournament, icon }) => (
         )}
         {[tournamentStates.active, tournamentStates.waitingParticipants, tournamentStates.upcoming].includes(tournament.state) && (
           <>
-            <span className="pl-2">
+            <span className="pr-2">
               <FontAwesomeIcon icon="clock" className="mr-1" />
-              {tournament.startsAt}
+              {dayjs(tournament.startsAt).format('MMMM D, YYYY [at] h:mma')}
             </span>
           </>
         )}
         {tournament.state === tournamentStates.finished && (
           <>
-            <span className="pl-2">
+            <span className="pr-2">
               <FontAwesomeIcon icon="clock" className="mr-1" />
-              {tournament.lastRoundEndedAt}
+              {dayjs(tournament.lastRoundEndedAt).format('MMMM D, YYYY [at] h:mma')}
             </span>
           </>
         )}

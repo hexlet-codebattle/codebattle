@@ -1,7 +1,11 @@
 $body-bg: #e5e5e5;
 $success: #82b792;
+$cb-text-color: #999;
+$cb-border-color: #4c4c5a;
 $cb-success: #32CD32;
 $cb-hovered-success: #28a428;
+$cb-bg-panel: #2a2a35;
+$cb-bg-highlight-panel: #1c1c24;
 $secondary: #477591;
 $link-color: black;
 $error: #dc3545;
@@ -11,6 +15,14 @@ $link-hover-color: $orange;
 $border-radius-sm: 0%;
 $btn-border-width: 2px;
 $gold: #daa520;
+
+$cb-rookie-bg: rgba(50, 205, 50, 1.0);
+$cb-challenger-bg: rgba(87, 187, 61, 1.0);
+$cb-pro-bg: rgba(125, 169, 72, 1.0);
+$cb-masters-bg: rgba(162, 137, 83, 1.0);
+$cb-elite-bg: rgba(200, 99, 69, 1.0);
+$cb-grand-slam-bg: rgba(238, 55, 55, 1.0);
+
 @import 'variables';
 @import '~bootstrap/scss/bootstrap';
 @import '~nprogress/nprogress.css';
@@ -31,6 +43,7 @@ $fa-font-path: '/fonts';
 @import 'fonts';
 @import 'tournaments';
 @import 'taskComponent';
+@import 'grades';
 
 .katex .rlap>.inner {
   position: relative !important;
@@ -102,6 +115,38 @@ em-emoji-picker {
   }
 }
 
+input[type="range"] {
+  -webkit-appearance: none;
+  /* For WebKit browsers (Chrome, Safari, Edge) */
+  appearance: none;
+  background: transparent;
+  /* Remove default background */
+  cursor: pointer;
+  border: none;
+  /* Remove default border */
+
+  &::-webkit-slider-runnable-track,
+  &::-moz-range-track {
+    height: 8px;
+    background: $cb-bg-panel;
+    border-radius: 16px;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::-webkit-slider-runnable-track {
+    outline-offset: 15px;
+    outline: 1px solid #c56fff;
+  }
+
+  &:focus-visible::-moz-range-track {
+    outline-offset: 15px;
+    outline: 1px solid #c56fff;
+  }
+}
+
 .dark-bg {
   background: $dark;
 }
@@ -111,8 +156,8 @@ em-emoji-picker {
 }
 
 [data-player-type] {
-  --flag-color: var(--white);
-  background: linear-gradient(to top, var(--flag-color), var(--white) 15%);
+  --flag-color: $cb-bg-panel;
+  background: linear-gradient(to top, var(--flag-color), $cb-bg-panel 15%);
 }
 
 [data-player-type='current_user'] {
@@ -235,6 +280,11 @@ em-emoji-picker {
   }
 }
 
+tr.game-item th,
+tr.game-item td {
+  border-color: $cb-border-color;
+}
+
 .game-item:hover .btn-hover {
   visibility: visible;
 }
@@ -243,37 +293,55 @@ a {
   transition: color ease-in 0.1s;
 }
 
+.cb-heatmap-background {
+  background-color: $cb-bg-panel;
+}
+
 .react-calendar-heatmap {
+  & .react-calendar-heatmap-month-label {
+    color: #999;
+    fill: #999;
+  }
+
+  & .react-calendar-heatmap-weekday-label {
+    color: #999;
+    fill: #999;
+  }
+
   .color-huge {
-    fill: #1e6823;
+    background-color: $cb-bg-highlight-panel;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-huge:hover {
-    fill: #0e5813;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-large {
-    fill: #44a340;
+    background-color: $cb-bg-highlight-panel;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-large:hover {
-    fill: #349330;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-small {
-    fill: #d6e685;
+    background-color: $cb-bg-highlight-panel;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-small:hover {
-    fill: #c6d675;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-empty {
-    fill: #eee;
+    background-color: $cb-bg-highlight-panel;
+    fill: $cb-bg-highlight-panel;
   }
 
   .color-empty:hover {
-    fill: #ccc;
+    fill: $cb-bg-highlight-panel;
   }
 }
 
@@ -310,15 +378,7 @@ a {
   color: var(--green) !important;
 }
 
-.cb-user-offline {
-  color: var(--white);
-  border: 0.2rem solid transparent;
-  border-color: var(--gray);
-  border-radius: 0.5rem;
-}
-
 .cb-user-dark-offline {
-  color: var(--dark);
   border: 0.2rem solid transparent;
   border-color: var(--gray);
   border-radius: 0.5rem;
@@ -624,6 +684,14 @@ a {
   border: 0;
   background: none;
 
+  &:disabled {
+    color: gray;
+  }
+
+  &:not([disabled]) {
+    color: $primary;
+  }
+
   &:hover:not([disabled]) {
     color: $orange;
     text-decoration: none;
@@ -716,32 +784,6 @@ a {
 .animate {
   animation-name: scale;
   animation-duration: 0.7s;
-}
-
-.nav-tabs {
-  border-bottom: 1px solid black;
-
-  .nav-item.active {
-    color: var(--black);
-  }
-
-  .nav-item.active,
-  .nav-item:hover {
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
-  }
-
-  .nav-item:not(.active) {
-    color: var(--gray);
-    opacity: 0.6;
-  }
-
-  .nav-item:not(.active):hover {
-    color: var(--black);
-    opacity: 1;
-    background: var(--light);
-  }
 }
 
 .popover {
@@ -846,6 +888,10 @@ main {
   .modal-dialog {
     min-width: 700px;
     /* New width for default modal */
+
+    & button.close {
+      color: white;
+    }
   }
 }
 
@@ -1020,76 +1066,16 @@ a:hover {
   border-radius: 0.50rem;
 }
 
+.dropdown-item.cb-dropdown-item {
+  &:hover {
+    background-color: $cb-bg-panel;
+  }
+}
+
 div.cb-dropdown-menu {
   transform: translate3d(-100%, 0, 0);
 }
 
-
-
-.btn-check:hover {
-  color: #ffffff;
-}
-
-.btn-hover {
-  visibility: hidden;
-}
-
-@media (max-width: $sm) {
-  .btn-hover {
-    visibility: visible;
-  }
-}
-
-.game-item:hover .btn-hover {
-  visibility: visible;
-}
-
-a {
-  transition: color ease-in 0.1s;
-}
-
-.react-calendar-heatmap {
-  .color-huge {
-    fill: #1e6823;
-  }
-
-  .color-huge:hover {
-    fill: #0e5813;
-  }
-
-  .color-large {
-    fill: #44a340;
-  }
-
-  .color-large:hover {
-    fill: #349330;
-  }
-
-  .color-small {
-    fill: #d6e685;
-  }
-
-  .color-small:hover {
-    fill: #c6d675;
-  }
-
-  .color-empty {
-    fill: #eee;
-  }
-
-  .color-empty:hover {
-    fill: #ccc;
-  }
-}
-
-.react-calendar-heatmap rect:hover {
-  stroke: #555;
-  stroke-width: 1px;
-}
-
-.react-calendar-heatmap {
-  font-size: 8px;
-}
 
 .cb-builder-argument-input {
   min-width: 150px;
@@ -1204,7 +1190,7 @@ a {
 .cb-check-result-bar {
   width: 72px;
   height: 4px;
-  background: white;
+  background-color: white;
   position: relative;
   border-radius: 0.25rem;
 
@@ -1336,13 +1322,20 @@ a {
   height: 300px;
 
   .nav-link.active {
-    color: black;
+    color: white;
     border-bottom: 1px;
-    background-color: white;
+    background-color: #4c5369;
   }
 
   .nav-link:hover {
-    color: #b60314;
+    color: white;
+    background-color: #4c5369;
+  }
+
+  .nav-link:not(.active):hover {
+    color: white;
+    background-color: #4c5369;
+    border-bottom: 1px;
   }
 
   @media (max-width: $sm) {
@@ -1510,48 +1503,62 @@ a {
 }
 
 .nav-tabs {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid $cb-border-color;
+
+  & .bg-danger {
+    color: white;
+  }
+
+  & .bg-info {
+    color: white;
+  }
 
   .nav-item.active {
-    color: var(--black);
+    color: white;
   }
 
   .nav-item.active,
   .nav-item:hover {
-    border-top: 1px solid black;
-    border-right: 1px solid black;
-    border-left: 1px solid black;
+    background-color: #4c5369;
+    border-color: $cb-border-color;
+    border-top: 1px solid $cb-border-color;
+    border-right: 1px solid $cb-border-color;
+    border-left: 1px solid $cb-border-color;
   }
 
   .nav-item:not(.active) {
     color: var(--gray);
     opacity: 0.6;
+    background-color: #21242e;
+    border-color: #13151b;
   }
 
   .nav-item:not(.active):hover {
-    color: var(--black);
+    color: white;
     opacity: 1;
-    background: var(--light);
+    background-color: #4c5369;
   }
 
   .nav-item.cb-nav-item.active {
     color: var(--white);
+    border-color: $cb-border-color;
   }
 
   .nav-item.cb-nav-item.active,
   .nav-item.cb-nav-item:hover {
-    background-color: #1c1c24;
+    background-color: #4c5369;
+    border-bottom: 1px solid $cb-border-color;
     // border-top: 1px solid black;
     // border-right: 1px solid black;
     // border-left: 1px solid black;
   }
 
   .nav-item.cb-nav-item:not(.active) {
-    color: var(--black);
+    color: white;
   }
 
   .nav-item.cb-nav-item:not(.active):hover {
-    color: var(--black);
+    color: white;
     background: var(--gray);
   }
 }
@@ -1635,6 +1642,11 @@ main {
 @media screen and (min-width: $md) {
   .modal-dialog {
     min-width: 700px;
+    /* New width for default modal */
+  }
+
+  .cb-join-game-modal .modal-dialog {
+    min-width: 900px;
     /* New width for default modal */
   }
 }
@@ -1823,10 +1835,10 @@ a:hover {
 
 .scroll-button {
   background-image: url('../static/images/arrowDown.svg');
-  width: 45px;
-  height: 45px;
-  bottom: 65px;
-  right: 15%;
+  width: 25px;
+  height: 25px;
+  bottom: 25px;
+  right: 5%;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -2716,20 +2728,34 @@ a:hover {
 }
 
 .cb-bg-panel {
-  background-color: #2a2a35;
+  background-color: $cb-bg-panel;
+
+  &.form-control:hover,
+  &.form-control:focus {
+    background-color: $cb-bg-panel;
+  }
+
+  &.custom-select {
+    background-color: $cb-bg-panel;
+    transition: none;
+  }
 }
 
 .cb-bg-highlight-panel {
-  background-color: #1c1c24;
+  background-color: $cb-bg-highlight-panel;
 }
 
 .cb-border-color {
-  border-color: #4c4c5a !important;
+  border-color: $cb-border-color !important;
 }
 
 .cb-text {
-  color: #999;
+  color: $cb-text-color;
   font-family: 'Arial', sans-serif;
+}
+
+a.cb-text:hover {
+  color: white;
 }
 
 .cb-text-success {
@@ -2740,9 +2766,13 @@ a:hover {
   color: #f04c5c;
 }
 
+.cb-bg-secondary {
+  background-color: #3a3f50;
+}
+
 .cb-btn-secondary {
   background-color: #3a3f50;
-  border-color: #282c38;
+  border-color: #3a3f50;
 
   &.show,
   &.cb-active,
@@ -2771,10 +2801,74 @@ a:hover {
     background-color: #21242e;
     border-color: #13151b;
   }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show>&.dropdown-toggle {
+    color: $cb-text-color;
+    background-color: #3a3f50;
+    border-color: #282c38;
+  }
+}
+
+
+.cb-btn-outline-secondary {
+  color: $cb-text-color;
+  border-color: #3a3f50;
+
+  &.show,
+  &.cb-active,
+  &:focus-visible {
+    color: white;
+    background-color: #3a3f50;
+    border-color: #a4b2d6;
+  }
+
+  &:hover {
+    color: white;
+    background-color: #4c5369;
+    border-color: #7d89a6;
+  }
+
+  &:focus {
+    color: white;
+    background-color: #3a3f50;
+    border-color: #a4b2d6;
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active {
+    color: white;
+    background-color: #2c303d;
+    border-color: #1c1e27;
+  }
+
+  &:disabled:not(.active) {
+    color: white;
+    background-color: #21242e;
+    border-color: #13151b;
+  }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show>&.dropdown-toggle {
+    color: $cb-text-color;
+    background-color: #3a3f50;
+    border-color: #282c38;
+  }
 }
 
 .cb-btn-success {
   background-color: $cb-success;
+  border-color: $cb-success;
+
+  &:hover {
+    background-color: $cb-hovered-success;
+    border-color: $cb-hovered-success;
+  }
+}
+
+.cb-btn-outline-success {
   border-color: $cb-success;
 
   &:hover {
@@ -2797,74 +2891,115 @@ a:hover {
 
 .cb-rbc-calendar {
   background-color: #2a2a35;
+  border-color: $cb-border-color;
+
+  & .rbc-day-bg {
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-btn-group button {
+    color: #E0E0E0;
+    background-color: #383845;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-btn-group button:hover {
+    color: white;
+    background-color: #454552;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-btn-group button:active,
+  & .rbc-btn-group button.rbc-active {
+    color: white;
+    background-image: none;
+    background-color: #555566 !important;
+    box-shadow: none;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-toolbar-label {
+    color: #FFF;
+    font-weight: bold;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-header {
+    background-color: #2a2a35;
+    padding: 8px 0;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-row {
+    background-color: transparent;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-month-row {
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-date-cell {
+    color: #E0E0E0;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-off-range-bg {
+    background-color: #222228;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-off-range .rbc-date-cell {
+    color: #888;
+    border-color: $cb-border-color;
+  }
+
+  & .rbc-now,
+  & .rbc-today {
+    background-color: #383845;
+    border-color: $cb-border-color;
+    /* Slightly lighter background for "today" */
+  }
+
+  & .rbc-current-time-indicator {
+    height: 4px;
+  }
+}
+
+.rbc-time-header,
+.rbc-time-header-content,
+.rbc-time-slot {
+  border-color: $cb-border-color !important;
+}
+
+.rbc-agenda-table {
+  border-color: $cb-border-color !important;
+
+  & .rbc-agenda-time-cell,
+  & .rbc-agenda-date-cell,
+  & thead,
+  & tr,
+  & th {
+    border-color: $cb-border-color !important;
+  }
 }
 
 .cb-rbc-calendar,
 .cb-rbc-calendar * {
   color: #E0E0E0;
-}
-
-.cb-rbc-calendar .rbc-btn-group button {
-  color: #E0E0E0;
-  background-color: #383845;
-  border-color: #444;
-}
-
-.cb-rbc-calendar .rbc-btn-group button:hover {
-  color: white;
-  background-color: #454552;
-}
-
-.cb-rbc-calendar .rbc-btn-group button:active,
-.cb-rbc-calendar .rbc-btn-group button.rbc-active {
-  color: white;
-  background-image: none;
-  background-color: #555566 !important;
-  box-shadow: none;
-  border-color: #555566;
-}
-
-.cb-rbc-calendar .rbc-toolbar-label {
-  color: #FFF;
-  font-weight: bold;
-}
-
-.cb-rbc-calendar .rbc-header {
-  background-color: #2a2a35;
-  padding: 8px 0;
-}
-
-.cb-rbc-calendar .rbc-row-bg {
-  background-color: #2a2a35;
-}
-
-
-.cb-rbc-calendar .rbc-date-cell {
-  color: #E0E0E0;
-}
-
-.cb-rbc-calendar .rbc-off-range-bg {
-  background-color: #222228;
-}
-
-.cb-rbc-calendar .rbc-off-range .rbc-date-cell {
-  color: #888;
+  border-color: $cb-border-color;
 }
 
 .rbc-overlay {
   color: white;
-  background-color: #2a2a35;
+  border-color: $cb-border-color;
   border-radius: 0.5rem;
-}
-
-.cb-rbc-calendar .rbc-today {
-  background-color: #383845;
-  /* Slightly lighter background for "today" */
 }
 
 /* Event background (default is usually blue) */
 .cb-rbc-calendar .rbc-event {
   background-color: #5a7b97;
+  border-color: $cb-border-color;
   /* A visible event color */
   color: white;
   /* Event text is white */
@@ -2877,53 +3012,148 @@ a:hover {
 }
 
 .rbc-agenda-time-cell {
-  border: 1px solid #dee2e6;
+  border: 1px solid $cb-border-color;
 }
 
 .rbc-overlay .cb-rbc-event,
 .rbc-row .cb-rbc-event,
 .rbc-events-container .cb-rbc-event {
   cursor: pointer;
+  border-color: $cb-border-color;
 
-  &.cb-rbc-live-event {
-    background-color: $cb-success;
+  &.cb-rbc-rookie-event {
+    background-color: $cb-rookie-bg;
   }
 
-  &.cb-rbc-canceled-event {
-    background-color: var(--gray);
+  &.cb-rbc-challenger-event {
+    background-color: $cb-challenger-bg;
   }
 
-  &.cb-rbc-upcoming-event {
-    background-color: var(--gray);
+  &.cb-rbc-pro-event {
+    background-color: $cb-pro-bg;
   }
 
-  &.cb-rbc-finished-event {
-    background-color: $bg-orange;
+  &.cb-rbc-masters-event {
+    background-color: $cb-masters-bg;
+  }
+
+  &.cb-rbc-elite-event {
+    background-color: $cb-elite-bg;
+  }
+
+  &.cb-rbc-grand-slam-event {
+    background-color: $cb-grand-slam-bg;
+  }
+
+  &:hover {
+    background-color: rgba(90, 123, 151, 0.2);
   }
 }
 
+
 .cb-rbc-event {
-  &.cb-rbc-live-event .rbc-agenda-event-cell {
-    background-color: $cb-success;
-  }
-
-  &.cb-rbc-canceled-event .rbc-agenda-event-cell {
-    background-color: var(--gray);
-  }
-
-  &.cb-rbc-upcoming-event .rbc-agenda-event-cell {
-    background-color: var(--gray);
-  }
-
-  &.cb-rbc-finished-event .rbc-agenda-event-cell {
-    background-color: $bg-orange;
-  }
+  border-color: $cb-border-color;
 
   & .rbc-agenda-event-cell {
     cursor: pointer;
+    border-color: $cb-border-color;
+
+    &:hover {
+      background-color: rgba(90, 123, 151, 0.2);
+    }
+  }
+
+  &.cb-rbc-rookie-event .rbc-agenda-event-cell {
+    background-color: $cb-rookie-bg;
+  }
+
+  &.cb-rbc-challenger-event .rbc-agenda-event-cell {
+    background-color: $cb-challenger-bg;
+  }
+
+  &.cb-rbc-pro-event .rbc-agenda-event-cell {
+    background-color: $cb-pro-bg;
+  }
+
+  &.cb-rbc-masters-event .rbc-agenda-event-cell {
+    background-color: $cb-masters-bg;
+  }
+
+  &.cb-rbc-elite-event .rbc-agenda-event-cell {
+    background-color: $cb-elite-bg;
+  }
+
+  &.cb-rbc-grand-slam-event .rbc-agenda-event-cell {
+    background-color: $cb-grand-slam-bg;
+  }
+}
+
+.card.cb-card {
+  background-color: $cb-bg-panel;
+  border-color: $cb-border-color;
+
+  & .card-header {
+    color: white;
+    font-family: 'Arial', sans-serif;
+    background-color: $cb-bg-highlight-panel;
+    border-color: $cb-border-color;
+  }
+
+  & .card-text {
+    color: white;
+    font-family: 'Arial', sans-serif;
+  }
+
+  & code {
+    color: white;
+  }
+}
+
+.text-white {
+  fill: white;
+
+  & pre {
+    color: white;
+    fill: white;
+  }
+
+  & code {
+    color: white;
+    fill: white;
+  }
+}
+
+.nav-pills .nav-link {
+  color: white;
+
+  &:hover:not(.active) {
+    color: var(--danger);
+  }
+}
+
+.pagination {
+
+  & .page-item.disabled .page-link,
+  & .page-link {
+    color: white;
+    background-color: $cb-bg-highlight-panel;
+    border-color: $cb-bg-highlight-panel;
+  }
+
+  & .page-item.active .page-link {
+    color: white;
+    background-color: $cb-bg-panel;
+    border-color: $cb-bg-highlight-panel;
+  }
+
+  & .page-link:hover {
+    color: var(--danger);
+    background-color: $cb-bg-panel;
+    border-color: $cb-bg-highlight-panel;
   }
 }
 
 // &:hover {
 //   background-color: rgba(90, 123, 151, 0.2);
 // }
+//

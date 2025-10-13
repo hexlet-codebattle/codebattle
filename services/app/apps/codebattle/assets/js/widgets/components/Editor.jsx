@@ -12,8 +12,8 @@ import EditorLoading from './EditorLoading';
 
 function Editor(props) {
   const {
- value, syntax, onChange, theme, loading = false, mode,
-} = props;
+    value, syntax, onChange, theme, loading = false, mode,
+  } = props;
 
   // Map your custom language key to an actual Monaco recognized language
   const mappedSyntax = languages[syntax];
@@ -78,11 +78,12 @@ function Editor(props) {
 
       {/* This is for displaying normal/insert mode status in Vim */}
       <div
+        className="bg-dark"
         ref={vimStatusRef}
         style={{
           padding: '4px 8px',
           fontFamily: 'monospace',
-          borderTop: '1px solid #eaeaea',
+          borderTop: '1px solid #4c4c5a',
         }}
       />
 

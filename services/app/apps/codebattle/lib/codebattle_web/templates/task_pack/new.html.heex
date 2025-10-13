@@ -1,5 +1,7 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Create your own task pack</h1>
-  <p class="text-center">Use it for tournaments to play with tasks that you really want</p>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
+  <h1 class="text-center text-white">Create your own task pack</h1>
+  <p class="text-center text-white">
+    Use it for tournaments to play with tasks that you really want
+  </p>
   <%= render("_form.html", Map.put(assigns, :action, Routes.task_pack_path(@conn, :create))) %>
 </div>

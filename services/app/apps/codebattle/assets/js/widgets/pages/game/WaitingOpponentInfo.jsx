@@ -6,7 +6,7 @@ import CopyButton from '../../components/CopyButton';
 
 function WaitingOpponentInfo({ gameUrl }) {
   return (
-    <div className="jumbotron container text-center bg-white shadow-sm">
+    <div className="jumbotron container text-center shadow-sm">
       <div className="col-xl-8 col-lg-10 col-12 m-auto">
         <h2 className="h2 font-weight-normal">
           {i18n.t('Waiting for an opponent')}

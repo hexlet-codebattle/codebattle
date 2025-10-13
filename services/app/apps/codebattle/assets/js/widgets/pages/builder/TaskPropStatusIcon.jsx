@@ -20,7 +20,6 @@ const getStatusClassName = status => cn('mx-2', {
   'text-success': status === validationStatuses.valid,
   'text-danger': status === validationStatuses.invalid,
   'text-warning cb-loading-icon': status === validationStatuses.validation,
-  'text-black-50': status === validationStatuses.none || status === validationStatuses.edited,
 });
 
 const Icon = ({ status }) => (

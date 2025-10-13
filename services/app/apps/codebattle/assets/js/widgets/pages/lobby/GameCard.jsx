@@ -54,7 +54,7 @@ function UserSimpleStats({
       {state === 'loading' && (
         <button
           type="button"
-          className="btn btn-sm btn-secondary rounded-lg"
+          className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
           disabled
         >
           Loading...
@@ -63,7 +63,7 @@ function UserSimpleStats({
       {state === 'closed' && (
         <button
           type="button"
-          className="btn btn-sm btn-success cb-btn-success text-nowrap text-white rounded-lg"
+          className="btn btn-sm btn-success cb-btn-success cb-btn-success text-nowrap text-white cb-rounded"
           onClick={load}
         >
           Show stats
@@ -75,7 +75,7 @@ function UserSimpleStats({
       {state === 'error' && (
         <button
           type="button"
-          className="btn btn-sm btn-danger rounded-lg"
+          className="btn btn-sm btn-danger cb-rounded"
           onClick={load}
         >
           Reload
@@ -97,7 +97,7 @@ function GameCard({
   return (
     <div
       key={`card-${game.id}`}
-      className="d-flex flex-column game-item cb-bg-panel shadow-sm p-2 mx-2 border cb-border-color rounded-lg"
+      className="d-flex flex-column game-item cb-bg-panel shadow-sm p-2 mx-2 border cb-border-color cb-rounded"
     >
       <div className="d-flex mb-2 h-100">
         <div className="d-flex flex-column justify-content-around mr-2 bg-gray p-2 cb-rounded">
@@ -147,7 +147,7 @@ function GameCard({
         />
       )}
       {type === 'completed' && (
-        <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
+        <a type="button" className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded" href={`/games/${game.id}`}>
           Show
         </a>
       )}

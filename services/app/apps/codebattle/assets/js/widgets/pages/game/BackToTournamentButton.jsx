@@ -10,7 +10,7 @@ function BackToTournamentButton() {
   const tournamentUrl = `/tournaments/${tournamentId}`;
 
   return (
-    <a className="btn btn-secondary btn-block rounded-lg" href={tournamentUrl}>
+    <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={tournamentUrl}>
       {i18next.t('Back to tournament')}
     </a>
   );

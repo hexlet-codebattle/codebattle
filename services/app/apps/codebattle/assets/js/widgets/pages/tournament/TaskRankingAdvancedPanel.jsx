@@ -37,7 +37,7 @@ const options = {
   },
 };
 
-const getCustomEventTrClassName = () => cn('text-dark font-weight-bold cb-custom-event-tr bg-white');
+const getCustomEventTrClassName = () => cn('cb-text font-weight-bold cb-custom-event-tr cb-bg-panel');
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-custom-event-bg-purple',
@@ -96,7 +96,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
       <div className="w-50 p-2">
         <Bar options={options} data={taskChartData} />
       </div>
-      <div className="w-50 p-2 my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+      <div className="w-50 p-2 my-2 px-1 mt-lg-0 cb-rounded position-relative cb-overflow-x-auto cb-overflow-y-auto">
         <div className="m-1 custom-control custom-switch">
           <input
             id="task-params-view"

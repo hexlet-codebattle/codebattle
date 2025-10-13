@@ -44,7 +44,7 @@ function RightSide({ output, children }) {
         <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
           <a
             className={cn(
-              'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
+              'nav-item nav-link flex-grow-1 rounded-0 px-5',
               { active: showTab === 'editor' },
             )}
             href="#Editor"
@@ -57,7 +57,7 @@ function RightSide({ output, children }) {
           </a>
           <a
             className={cn(
-              'nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block',
+              'nav-item nav-link flex-grow-1 rounded-0 p-2 block',
               { active: showTab === 'output' },
             )}
             href="#Output"
@@ -86,7 +86,7 @@ function GameWidget({ viewMode, editorMachine }) {
         <>
           <EditorContainer
             orientation="left"
-            cardClassName="card h-100 shadow-sm position-relative border-0"
+            cardClassName="card cb-card h-100 shadow-sm position-relative border-0"
             editorContainerClassName="col-12 col-lg-6 p-1"
             editorMachine={editorMachine}
             {...editors[0]}
@@ -99,7 +99,7 @@ function GameWidget({ viewMode, editorMachine }) {
           </EditorContainer>
           <EditorContainer
             orientation="right"
-            cardClassName="card h-100 shadow-sm border-0"
+            cardClassName="card cb-card h-100 shadow-sm border-0"
             editorContainerClassName="col-12 col-lg-6 p-1"
             editorMachine={editorMachine}
             {...editors[1]}
@@ -119,7 +119,7 @@ function GameWidget({ viewMode, editorMachine }) {
         >
           <EditorContainer
             orientation="side"
-            cardClassName="card h-100 shadow-sm"
+            cardClassName="card cb-card h-100 shadow-sm"
             editorContainerClassName="col-12 p-1"
             editorMachine={editorMachine}
             {...editors[0]}

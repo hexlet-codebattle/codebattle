@@ -27,7 +27,7 @@ function VideoConferenceButton() {
       <button
         type="button"
         onClick={toggleVideoConference}
-        className="btn btn-secondary btn-block rounded-lg"
+        className="btn btn-secondary btn-block cb-rounded"
         aria-label={
           showVideoConferencePanel
             ? 'Open Text Chat'

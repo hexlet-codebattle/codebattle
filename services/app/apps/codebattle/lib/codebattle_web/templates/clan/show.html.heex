@@ -1,35 +1,40 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Clan</h1>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
+  <h1 class="text-center text-white">Clan</h1>
   <div class="mt-4">
-    <div class="row mb-3">
+    <div class="row mb-3 text-white">
       <div class="col-md-6">
         <h4>Clan Details</h4>
-        <p><strong>Name:</strong> <%= @clan.name %></p>
+        <p><strong>Name:</strong> <span class="cb-text"><%= @clan.name %></span></p>
         <%= if @clan.long_name && @clan.long_name != "" do %>
-          <p><strong>Long Name:</strong> <%= @clan.long_name %></p>
+          <p><strong>Long Name:</strong> <span class="cb-text"><%= @clan.long_name %></span></p>
         <% end %>
-        <p><strong>Creation Date:</strong> <%= NaiveDateTime.to_date(@clan.inserted_at) %></p>
+        <p>
+          <strong>Creation Date:</strong>
+          <span class="cb-text"><%= NaiveDateTime.to_date(@clan.inserted_at) %></span>
+        </p>
       </div>
       <div class="col-md-6">
         <h4>Creator</h4>
-        <p><strong>Name:</strong> <%= @clan.creator.name %></p>
+        <p><strong>Name:</strong> <span class="cb-text"><%= @clan.creator.name %></span></p>
       </div>
     </div>
 
-    <h4 class="mt-4">Clan Members</h4>
+    <h4 class="mt-4 text-white">Clan Members</h4>
     <div class="table-responsive">
       <table class="table table-sm">
-        <thead>
+        <thead class="cb-text">
           <tr>
-            <th>Name</th>
-            <th>Joined Date</th>
+            <th class="cb-border-color border-bottom-0">Name</th>
+            <th class="cb-border-color border-bottom-0">Joined Date</th>
           </tr>
         </thead>
         <tbody>
           <%= for user <- Enum.sort_by(@clan.users, & &1.id) do %>
             <tr>
-              <td class="align-middle"><%= user.name %></td>
-              <td class="align-middle"><%= NaiveDateTime.to_date(user.inserted_at) %></td>
+              <td class="align-middle cb-border-color text-white"><%= user.name %></td>
+              <td class="align-middle cb-border-color text-white">
+                <%= NaiveDateTime.to_date(user.inserted_at) %>
+              </td>
             </tr>
           <% end %>
         </tbody>

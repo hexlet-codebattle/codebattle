@@ -148,7 +148,7 @@ function LobbyChat({
               <div className="d-flex justify-items-center p-2">
                 <button
                   type="button"
-                  className="btn btn-sm p-0 rounded-lg mr-1"
+                  className="btn btn-sm p-0 cb-rounded mr-1"
                   onClick={openSendMessageModal}
                   disabled={!isOnline || presenceList.length <= 1}
                 >
@@ -160,7 +160,7 @@ function LobbyChat({
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm p-0 rounded-lg"
+                  className="btn btn-sm p-0 cb-rounded"
                   onClick={openSendInviteModal}
                   disabled={!isOnline || presenceList.length <= 1}
                 >

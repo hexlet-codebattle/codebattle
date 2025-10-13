@@ -1,69 +1,77 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Tasks</h1>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
+  <h1 class="text-center text-white">Tasks</h1>
   <%= link("Create new task",
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :new),
-    class: "btn btn-success text-white mt-2 rounded-lg"
+    class: "btn btn-success cb-btn-success mt-2 cb-rounded"
   ) %>
   <%= link("Task packs",
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index),
-    class: "btn btn-info mt-2 ml-2 rounded-lg"
+    class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"
   ) %>
   <div class="table-responsive mt-4">
     <table class="table table-sm">
-      <thead>
+      <thead class="cb-text">
         <tr>
-          <th>id</th>
-          <th>name</th>
-          <th>level</th>
-          <th>tags</th>
-          <th>origin</th>
-          <th>state</th>
-          <th>visibility</th>
-          <th>updated_at</th>
-          <th>actions</th>
+          <th class="cb-border-color border-bottom">id</th>
+          <th class="cb-border-color border-bottom">name</th>
+          <th class="cb-border-color border-bottom">level</th>
+          <th class="cb-border-color border-bottom">tags</th>
+          <th class="cb-border-color border-bottom">origin</th>
+          <th class="cb-border-color border-bottom">state</th>
+          <th class="cb-border-color border-bottom">visibility</th>
+          <th class="cb-border-color border-bottom">updated_at</th>
+          <th class="cb-border-color border-bottom">actions</th>
         </tr>
       </thead>
       <tbody>
         <%= for task <- @tasks do %>
           <tr>
-            <td class="align-middle text"><%= task.id %></td>
-            <td class="align-middle text"><%= task.name %></td>
-            <td class="align-middle text-nowrap">
-              <img alt={task.level} src={"/assets/images/levels/#{task.level}.svg"} />
+            <td class="align-middle text text-white cb-border-color"><%= task.id %></td>
+            <td class="align-middle text text-white cb-border-color"><%= task.name %></td>
+            <td class="align-middle text-nowrap text-white cb-border-color">
+              <div class="d-flex">
+                <div class="p-1 m-1 bg-gray cb-rounded">
+                  <img alt={task.level} src={"/assets/images/levels/#{task.level}.svg"} />
+                </div>
+              </div>
             </td>
-            <td class="align-middle text"><%= Enum.join(task.tags, ", ") %></td>
-            <td class="align-middle text"><%= task.origin %></td>
-            <td class="align-middle text"><%= task.state %></td>
-            <td class="align-middle text"><%= task.visibility %></td>
-            <td class="align-middle text"><%= format_datetime(task.updated_at) %></td>
-            <td class="align-middle text-nowrap">
+            <td class="align-middle text text-white cb-border-color">
+              <%= Enum.join(task.tags, ", ") %>
+            </td>
+            <td class="align-middle text text-white cb-border-color"><%= task.origin %></td>
+            <td class="align-middle text text-white cb-border-color"><%= task.state %></td>
+            <td class="align-middle text text-white cb-border-color"><%= task.visibility %></td>
+            <td class="align-middle text text-white cb-border-color">
+              <%= format_datetime(task.updated_at) %>
+            </td>
+            <td class="align-middle text-nowrap text-white cb-border-color">
               <div class="d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>
                   <%= link("Show",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
-                    class: "btn btn-sm btn-info rounded-lg"
+                    class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   ) %>
                 <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
                   <%= link("Show",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
-                    class: "btn btn-sm btn-info rounded-left"
+                    class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
                   ) %>
                   <%= button("Activate",
                     to:
                       CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id),
                     method: "patch",
-                    class: "btn btn-sm btn-success text-white"
+                    class: "btn btn-sm btn-success cb-btn-success cb-rounded"
                   ) %>
                   <%= button("Disable",
                     to: CodebattleWeb.Router.Helpers.task_disable_path(@conn, :disable, task.id),
                     method: "patch",
-                    class: "btn btn-sm btn-danger rounded-right"
+                    class: "btn btn-sm btn-danger cb-rounded"
                   ) %>
                   <%= button("Delete",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :delete, task.id),
                     method: "delete",
-                    class: "btn btn-sm btn-danger rounded-right"
+                    class: "btn btn-sm btn-danger cb-rounded"
                   ) %>
                 <% end %>
               </div>

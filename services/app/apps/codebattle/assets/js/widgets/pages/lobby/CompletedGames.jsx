@@ -57,7 +57,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
     <>
       <div ref={tableRef} className={className} data-testid="scroll">
         <table className={tableClassName}>
-          <thead className="sticky-top bg-white">
+          <thead className="sticky-top">
             <tr>
               <th className="p-3 border-0">Level</th>
               <th className="px-1 py-3 border-0 text-center" colSpan={2}>Players</th>
@@ -95,8 +95,8 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
                     </a>
                   </td>
                 </tr>
-            );
-          })}
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -130,7 +130,7 @@ function CompletedGames({ className, tableClassName = '' }) {
         tableClassName={cn(commonTableClassName, tableClassName)}
         games={completedGames}
       />
-      <div className="mt-auto border-top py-2 px-5 font-weight-bold bg-white rounded-bottom">
+      <div className="mt-auto border-top cb-border-color py-2 px-5 font-weight-bold rounded-bottom">
         {`Total games: ${totalGames}`}
       </div>
     </>

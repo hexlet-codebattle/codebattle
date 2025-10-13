@@ -25,7 +25,7 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert alert-secondary mb-0 pb-0">
+        <div className="alert text-white mb-0 pb-0">
           <pre>{assert.output}</pre>
         </div>
       </AccordeonBox.SubMenu>
@@ -37,7 +37,7 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert alert-secondary mb-0 pb-0">
+        <div className="alert text-white mb-0 pb-0">
           <pre>{assert.output}</pre>
         </div>
       </AccordeonBox.SubMenu>
@@ -49,7 +49,7 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert alert-secondary mb-0 pb-0">
+        <div className="alert text-white mb-0 pb-0">
           <pre>{assert.output}</pre>
         </div>
       </AccordeonBox.SubMenu>
@@ -61,7 +61,7 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert alert-secondary mb-0 pb-0">
+        <div className="alert text-white mb-0 pb-0">
           <pre>{assert.output}</pre>
         </div>
       </AccordeonBox.SubMenu>
@@ -73,7 +73,7 @@ const EmptyOutput = memo(
         uniqIndex={uniqIndex}
         fontSize={fontSize}
       >
-        <div className="alert alert-secondary mb-0 pb-0">
+        <div className="alert text-white mb-0 pb-0">
           <pre>{assert.output}</pre>
         </div>
       </AccordeonBox.SubMenu>
@@ -104,7 +104,7 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
 
   if (['client_timeout', 'service_timeout'].includes(status)) {
     return (
-      <div className="alert alert-secondary pb-2">
+      <div className="alert text-white pb-2">
         <pre>
           <span className="font-weight-bold d-block">Output:</span>
           <div>{i18next.t('We could not verify your solution')}</div>
@@ -141,7 +141,7 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
             hasOutput={assert.output}
             uniqIndex={uniqIndex}
           >
-            <div className="alert alert-secondary mb-0 pb-0">
+            <div className="alert text-white mb-0 pb-0">
               <pre>{assert.output}</pre>
             </div>
           </AccordeonBox.SubMenu>

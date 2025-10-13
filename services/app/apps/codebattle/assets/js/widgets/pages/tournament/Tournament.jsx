@@ -338,11 +338,11 @@ function Tournament({ waitingRoomMachine }) {
         <div className={panelClassName}>
           <div className="row flex-lg-row-reverse">
             <div
-              className={cn('col-12  mb-2 mb-lg-0', {
+              className={cn('col-12 mb-2 mb-lg-0', {
                 'col-lg-8': !hiddenSidePanel,
               })}
             >
-              <div className="bg-white h-100 shadow-sm rounded-lg p-3 overflow-auto">
+              <div className="cb-bg-panel h-100 shadow-sm cb-rounded p-3 overflow-auto">
                 <InfoPanel
                   tournament={tournament}
                   playersCount={tournament.playersCount}

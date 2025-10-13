@@ -10,7 +10,7 @@ function BackToTaskBuilderButton() {
   return (
     <button
       type="button"
-      className="btn btn-secondary btn-block rounded-lg"
+      className="btn btn-secondary cb-btn-secondary btn-block rounded-lg"
       onClick={handleOpenTaskBuilder}
     >
       Back to task

@@ -6,7 +6,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
 const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
-const sliderBarClassnames = 'cb-slider-bar position-absolute rounded';
+const sliderBarClassnames = 'cb-slider-bar position-absolute cb-rounded';
 
 function SliderBar({ value, className }) {
   return (
@@ -74,7 +74,7 @@ function CodebattleSliderBar({
 }) {
   return (
     <>
-      <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
+      <div className="cb-slider-timeline position-absolute cb-rounded w-100 cb-bg-panel">
         <SliderBar
           className={
             cn(sliderBarClassnames, {
@@ -88,7 +88,7 @@ function CodebattleSliderBar({
       {mainEvents.map(event => (
         <SliderAction
           value={event.recordId / recordsCount}
-          className="cb-slider-action position-absolute bg-warning rounded"
+          className="cb-slider-action position-absolute bg-warning cb-rounded"
           key={event.recordId}
           event={event}
           setGameState={setGameState}

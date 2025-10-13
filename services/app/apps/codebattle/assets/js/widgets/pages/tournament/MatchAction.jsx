@@ -15,11 +15,11 @@ function MatchAction({ match, currentUserIsPlayer }) {
   // const streamMode = useSelector(state => state.gameUI.streamMode);
 
   const showBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
-    'btn-primary': !hasCustomEventStyles,
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
   const continueBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {
-    'btn-success text-white': !hasCustomEventStyles,
+    'btn-success cb-btn-success text-white': !hasCustomEventStyles,
     'cb-custom-event-btn-primary': hasCustomEventStyles,
   });
   // const gameOverBtnClassName = cn('btn btn-sm text-nowrap rounded-lg px-3', {

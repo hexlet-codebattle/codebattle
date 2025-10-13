@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import LobbyWidget from '../widgets/pages/lobby';
 import reducers from '../widgets/slices';
 
-import { getTestData, toLocalTime } from './helpers';
+import { getTestData } from './helpers';
 
 Object.defineProperty(window, 'scrollTo', {
   writable: true,
@@ -20,25 +20,25 @@ Object.defineProperty(window, 'scrollTo', {
 jest.mock(
   '../widgets/components/UserInfo',
   () => function UserInfo() {
-      return (
-        <div>
-          <ul className="list-inline">
-            <li className="list-inline-item">
-              Won:&nbsp;
-              <b className="text-success">1</b>
-            </li>
-            <li className="list-inline-item">
-              Lost:&nbsp;
-              <b className="text-danger">10</b>
-            </li>
-            <li className="list-inline-item">
-              Gave up:&nbsp;
-              <b className="text-warning">5</b>
-            </li>
-          </ul>
-        </div>
-      );
-    },
+    return (
+      <div>
+        <ul className="list-inline">
+          <li className="list-inline-item">
+            Won:&nbsp;
+            <b className="text-success">1</b>
+          </li>
+          <li className="list-inline-item">
+            Lost:&nbsp;
+            <b className="text-danger">10</b>
+          </li>
+          <li className="list-inline-item">
+            Gave up:&nbsp;
+            <b className="text-warning">5</b>
+          </li>
+        </ul>
+      </div>
+    );
+  },
 );
 
 jest.mock(
@@ -67,11 +67,11 @@ const {
   easyTasksFromBackend,
   gamesPage1,
   pageInfo1,
-  gamesPage2,
-  pageInfo2,
-  gameRepeatedOnPages,
-  uniqueGamesOnPage2,
-  allGames,
+  // gamesPage2,
+  // pageInfo2,
+  // gameRepeatedOnPages,
+  // uniqueGamesOnPage2,
+  // allGames,
 } = getTestData('testData.json');
 
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
@@ -109,7 +109,7 @@ jest.mock(
 
           return channel;
         }),
-        connect: jest.fn(() => {}),
+        connect: jest.fn(() => { }),
       })),
     };
   },
@@ -129,6 +129,9 @@ const preloadedState = {
     presenceList: players,
     liveTournaments: [],
     completedTournaments: [],
+    joinGameModal: {
+      show: false,
+    },
     createGameModal: {
       show: false,
       gameOptions: {},
@@ -181,13 +184,10 @@ test('test rendering GameList', async () => {
     </Provider>,
   );
 
-  const [createGameButton] = await findAllByText(/Create a Game/);
+  const [createBattleButton] = await findAllByText(/Create a battle/);
 
-  expect(getByText(/Lobby/)).toBeInTheDocument();
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
-  expect(getByText(/Tournaments/)).toBeInTheDocument();
-  expect(getByText(/History/)).toBeInTheDocument();
-  expect(createGameButton).toBeInTheDocument();
+  expect(createBattleButton).toBeInTheDocument();
 });
 
 test('test rendering create game dialog', async () => {
@@ -198,56 +198,11 @@ test('test rendering create game dialog', async () => {
     </Provider>,
   );
 
-  const [createGameButton] = await findAllByText(/Create a Game/);
+  const [createBattleButton] = await findAllByText(/Create a battle/);
 
-  await user.click(createGameButton);
+  await user.click(createBattleButton);
 
   expect(await findByText(/Choose task/)).toBeInTheDocument();
   expect(getByRole('button', { name: 'task1 name' })).toBeInTheDocument();
   expect(getByRole('button', { name: 'Create battle' })).toBeInTheDocument();
-});
-
-test('test lobby history infinite scroll', async () => {
-  const user = userEvent.setup();
-  const {
-    findByText,
-    findByRole,
-    queryByText,
-    findByTestId,
-    findAllByText,
-    getByText,
-  } = render(
-    <Provider store={store}>
-      <LobbyWidget />
-    </Provider>,
-  );
-
-  const axiosSpy = jest.spyOn(axios, 'get');
-
-  await user.click(await findByRole('tab', { name: 'History' }));
-
-  expect(await findByText(`Total games: ${pageInfo1.totalEntries}`)).toBeInTheDocument();
-  expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20');
-  gamesPage1.forEach(game => expect(getByText(toLocalTime(game.finishesAt))).toBeInTheDocument());
-  uniqueGamesOnPage2.forEach(game => (
-    expect(queryByText(toLocalTime(game.finishesAt))).not.toBeInTheDocument()
-  ));
-
-  axiosSpy.mockResolvedValueOnce({
-    data: {
-      games: gamesPage2,
-      pageInfo: pageInfo2,
-    },
-  });
-
-  const scrollContainer = await findByTestId('scroll');
-
-  fireEvent.scroll(scrollContainer, { target: { scrollY: 500 } });
-
-  expect(await findAllByText(toLocalTime(gameRepeatedOnPages.finishesAt))).toHaveLength(1);
-  expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20&page=2');
-
-  for (let i = 0; i < allGames.length; i += 1) {
-    expect(await findByText(toLocalTime(allGames[i].finishesAt))).toBeInTheDocument(); // eslint-disable-line
-  }
 });

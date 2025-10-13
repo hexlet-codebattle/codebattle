@@ -43,7 +43,12 @@ const TournamentAwardModal = NiceModal.create(params => {
   }, [modal.visible, onlyShowAward]);
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide}>
+    <Modal
+      centered
+      show={modal.visible}
+      onHide={modal.hide}
+      contentClassName="cb-bg-panel cb-text"
+    >
       <Modal.Header closeButton>
         <Modal.Title>{i18next.t('Award')}</Modal.Title>
       </Modal.Header>
@@ -69,7 +74,7 @@ const TournamentAwardModal = NiceModal.create(params => {
           <div className="d-flex justify-content-end w-100">
             <Button
               ref={submitBtnRef}
-              className="btn btn-primary rounded-lg"
+              className="btn btn-primary cb-rounded"
               onClick={modal.hide}
             >
               {waitType === 'tournament'

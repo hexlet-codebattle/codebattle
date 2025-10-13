@@ -1,22 +1,22 @@
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
-const webpack = require("webpack");
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
 // const { WebpackPluginServe } = require('webpack-plugin-serve');
-const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const { merge } = require("webpack-merge");
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { merge } = require('webpack-merge');
 
-const baseWebpackConfig = require("./webpack.base.config");
+const baseWebpackConfig = require('./webpack.base.config');
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-  mode: "development",
-  devtool: "eval-cheap-module-source-map",
+  mode: 'development',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
-    host: "0.0.0.0", // allows external connections
+    host: '0.0.0.0', // allows external connections
     port: 8080, // Choose your preferred port
     headers: {
-      "Access-Control-Allow-Origin": "*",
+      'Access-Control-Allow-Origin': '*',
     },
     static: {
-      directory: "/assets",
+      directory: '/assets',
     },
     devMiddleware: {
       writeToDisk: true,
@@ -45,7 +45,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   // },
   plugins: [
     new webpack.SourceMapDevToolPlugin({
-      filename: "[file].map",
+      filename: '[file].map',
     }),
     new webpack.HotModuleReplacementPlugin(),
     new ReactRefreshWebpackPlugin(),
@@ -53,6 +53,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   ],
 });
 
-module.exports = new Promise((resolve) => {
+module.exports = new Promise(resolve => {
   resolve(devWebpackConfig);
 });

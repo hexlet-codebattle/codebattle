@@ -1,25 +1,27 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Clans</h1>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
+  <h1 class="text-center text-white">Clans</h1>
   <div class="table-responsive mt-4">
     <table class="table table-sm">
-      <thead>
+      <thead class="cb-text">
         <tr>
-          <th>name</th>
-          <th>long_name</th>
-          <th>creator</th>
-          <th>actions</th>
+          <th class="cb-border-color border-bottom-0">name</th>
+          <th class="cb-border-color border-bottom-0">long_name</th>
+          <th class="cb-border-color border-bottom-0">creator</th>
+          <th class="cb-border-color border-bottom-0">actions</th>
         </tr>
       </thead>
       <tbody>
         <%= for clan <- @clans do %>
           <tr>
-            <td class="align-middle text"><%= clan.name %></td>
-            <td class="align-middle text"><%= clan.long_name %></td>
-            <td class="align-middle text"><%= clan.creator && clan.creator.name %></td>
-            <td class="align-middle">
+            <td class="align-middle text text-white cb-border-color"><%= clan.name %></td>
+            <td class="align-middle text text-white cb-border-color"><%= clan.long_name %></td>
+            <td class="align-middle text text-white cb-border-color">
+              <%= clan.creator && clan.creator.name %>
+            </td>
+            <td class="align-middle cb-border-color">
               <%= link("Show",
                 to: Routes.clan_path(@conn, :show, clan.id),
-                class: "btn btn-sm btn-primary"
+                class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
               ) %>
             </td>
           </tr>

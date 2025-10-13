@@ -23,9 +23,9 @@ function VimModeButton() {
   const buttonText = isVimMode ? 'Vim' : 'Vim';
 
   // Keep styling if desired, but ensure text clarifies the mode
-  const classNames = cn('btn btn-sm rounded-left', {
-    'btn-light': !isVimMode,
-    'btn-secondary': isVimMode,
+  const classNames = cn('btn btn-sm cb-rounded', {
+    'btn-outline-secondary cb-btn-outline-secondary': !isVimMode,
+    'btn-secondary cb-btn-secondary': isVimMode,
   });
 
   return (

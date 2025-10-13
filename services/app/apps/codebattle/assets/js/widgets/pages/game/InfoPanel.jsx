@@ -25,10 +25,10 @@ const InfoPanel = ({
   return (
     <>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <div className="d-flex shadow-sm flex-column h-100">
+        <div className="d-flex shadow-sm flex-column h-100 cb-bg-panel">
           <nav>
             <div
-              className="nav nav-tabs text-uppercase font-weight-bold text-center"
+              className="nav nav-tabs cb-border-color text-uppercase font-weight-bold text-center"
               id="nav-tab"
               role="tablist"
             >
@@ -55,7 +55,7 @@ const InfoPanel = ({
                 {i18next.t('Output')}
               </a>
               <div
-                className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"
+                className="rounded-0 text-center border-left cb-border-color col-6 text-white px-1 py-2"
               >
                 <TimerContainer
                   {...timerProps}
@@ -63,7 +63,7 @@ const InfoPanel = ({
               </div>
             </div>
           </nav>
-          <div className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto " id="nav-tabContent">
+          <div className="tab-content flex-grow-1 rounded-bottom overflow-auto " id="nav-tabContent">
             <div
               className="tab-pane fade show active h-100"
               id="task"

@@ -56,14 +56,18 @@ const AnimationModal = NiceModal.create(() => {
   }, [modal.visible]);
 
   return (
-    <Modal show={modal.visible} onHide={modal.hide}>
+    <Modal
+      show={modal.visible}
+      onHide={modal.hide}
+      contentClassName="cb-bg-panel cb-text"
+    >
       <Modal.Header closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex justify-content-center">
           <img
-            className="w-100 rounded-lg"
+            className="w-100 cb-rounded"
             style={{ maxWidth: '400px' }}
             src={gifs[result]}
             alt="animation"
@@ -81,12 +85,12 @@ const AnimationModal = NiceModal.create(() => {
         {/* {tournamentId && ( */}
         {/*   <a */}
         {/*     href={`/tournaments/${tournamentId}`} */}
-        {/*     className="btn-link pr-2 rounded-lg" */}
+        {/*     className="btn-link pr-2 cb-rounded" */}
         {/*   > */}
         {/*     Back to tournament */}
         {/*   </a> */}
         {/* )} */}
-        <Button onClick={modal.hide} className="btn btn-secondary rounded-lg">
+        <Button onClick={modal.hide} className="btn btn-secondary cb-rounded">
           {buttonText}
         </Button>
       </Modal.Footer>

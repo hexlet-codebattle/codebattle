@@ -37,7 +37,7 @@ const GameReportButton = ({ userId, gameId }) => {
 
   const text = getText(state);
   const disabled = state !== states.idle;
-  const className = cn('btn btn-sm mx-1 rounded-lg', {
+  const className = cn('btn btn-sm mx-1 cb-rounded', {
     'btn-danger': state !== states.success,
     'btn-success': state === states.success,
   });

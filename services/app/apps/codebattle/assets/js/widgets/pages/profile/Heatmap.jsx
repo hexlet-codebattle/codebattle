@@ -42,19 +42,19 @@ function Heatmap() {
   }
 
   return (
-    <div className="card rounded">
-      <div className="card-header py-1 font-weight-bold text-center">
+    <div className="card cb-card">
+      <div className="card-header py-1 cb-bg-highlight-panel font-weight-bold text-center">
         Activity
       </div>
-      <div className="card-body pt-3 pr-3 pb-0 pl-2">
+      <div className="card-body pt-3 pr-3 pb-0 pl-2 cb-heatmap-background">
         <CalendarHeatmap
           showWeekdayLabels
           values={activities}
           classForValue={value => {
             if (!value) {
-              return 'color-empty';
+              return 'color-empty text-white';
             }
-            return getColorScale(value.count);
+            return `${getColorScale(value.count)} text-white`;
           }}
           titleForValue={value => {
             if (!value) {

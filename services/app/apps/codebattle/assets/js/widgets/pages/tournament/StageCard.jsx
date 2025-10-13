@@ -129,7 +129,7 @@ function StageCard({
     'cb-custom-event-btn-danger': hasCustomEventStyle,
   });
   const openBtnClassName = cn('btn rounded-lg m-1 px-4', {
-    'btn-primary': !hasCustomEventStyle,
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-primary': hasCustomEventStyle,
   });
 

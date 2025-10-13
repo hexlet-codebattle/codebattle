@@ -14,7 +14,7 @@ const getCustomEventTrClassName = (item, selectedId) => cn(
     'cb-gold-place-bg': item?.place === 1,
     'cb-silver-place-bg': item?.place === 2,
     'cb-bronze-place-bg': item?.place === 3,
-    'bg-white': !item?.place || item?.place > 3,
+    'cb-bg-panel text-white': !item?.place || item?.place > 3,
   },
   {
     'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
@@ -31,7 +31,7 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
   const rankingItems = ranking?.entries || [];
 
   return (
-    <div className="bg-white shadow-sm p-3 rounded-lg overflow-auto">
+    <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
       <div className="my-2">
         {playersCount === 0 ? (
           <p className="text-nowrap text-muted">
@@ -45,11 +45,11 @@ const PlayersRankingPanel = ({ playersCount, ranking }) => {
                 'd-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left',
               )}
             >
-              <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
+              <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
                 <span className="font-weight-bold">{i18next.t('Ranking')}</span>
               </div>
               <div className="d-flex cb-overflow-x-auto">
-                <table className="table table-striped cb-custom-event-table m-1">
+                <table className="table cb-text table-striped cb-custom-event-table m-1">
                   <thead>
                     <tr>
                       <th className="p-1 pl-4 font-weight-light border-0">

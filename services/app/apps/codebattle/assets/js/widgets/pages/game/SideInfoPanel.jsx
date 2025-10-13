@@ -17,7 +17,7 @@ const SideInfoPanel = ({
       <TaskAssignment {...taskPanelProps} />
     </div>
     <div
-      className="card border-0 shadow-sm mt-1 cb-overflow-y-auto"
+      className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto"
     >
       <div
         className="d-flex justify-content-around align-items-center w-100 p-2"

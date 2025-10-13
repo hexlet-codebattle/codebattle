@@ -6,7 +6,7 @@ function BackToEventButton() {
   const eventUrl = '/';
 
   return (
-    <a className="btn btn-secondary btn-block rounded-lg" href={eventUrl}>
+    <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={eventUrl}>
       {i18next.t('Back to event')}
     </a>
   );

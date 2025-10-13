@@ -191,52 +191,74 @@
                           style="width:46px; height:46px"
                         />
 
-                        <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
+                        <div
+                          class="dropdown-menu dropdown-menu-right cb-bg-highlight-panel cb-rounded"
+                          style="z-index:1030"
+                        >
                           <%= if FunWithFlags.enabled?(:hide_user_dropdown) do %>
                             <div></div>
                           <% else %>
                             <a
-                              class="dropdown-item"
+                              class="dropdown-item cb-dropdown-item text-white"
                               href={Routes.user_path(@conn, :show, @current_user.id)}
                             >
                               <span class="fas fa-user mr-2"></span>
                               <%= gettext("My Profile") %>
                             </a>
-                            <a class="dropdown-item" href={Routes.user_setting_path(@conn, :edit)}>
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href={Routes.user_setting_path(@conn, :edit)}
+                            >
                               <span class="fas fa-cog mr-2"></span>
                               <%= gettext("Settings") %>
                             </a>
-                            <a class="dropdown-item" href={user_path(@conn, :index)}>
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href={user_path(@conn, :index)}
+                            >
                               <span class="fas fa-medal mr-2"></span>
                               <%= gettext("Users rating") %>
                             </a>
-                            <a class="dropdown-item" href={tournament_path(@conn, :index)}>
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href={Routes.tournaments_schedule_path(@conn, :index)}
+                            >
                               <span class="fas fa-trophy mr-2"></span>
                               <%= gettext("Tournaments") %>
                             </a>
-                            <a class="dropdown-item" href={task_path(@conn, :index)}>
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href={task_path(@conn, :index)}
+                            >
                               <span class="fas fa-tasks mr-2"></span>
                               <%= gettext("Tasks") %>
                             </a>
-                            <a class="dropdown-item" href={clan_path(@conn, :index)}>
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href={clan_path(@conn, :index)}
+                            >
                               <span class="fas fa-users mr-2"></span>
                               <%= gettext("Clans") %>
                             </a>
-                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider cb-border-color"></div>
                             <a
-                              class="dropdown-item"
+                              class="dropdown-item cb-dropdown-item text-white"
                               href="https://github.com/hexlet-codebattle/codebattle"
                               target="_blank"
                             >
                               <span class="fab fa-github mr-2"></span>
                               <%= gettext("SourceCode") %>
                             </a>
-                            <a class="dropdown-item" href="https://hexlet.io" target="_blank">
+                            <a
+                              class="dropdown-item cb-dropdown-item text-white"
+                              href="https://hexlet.io"
+                              target="_blank"
+                            >
                               <span class="fa fa-university mr-2"></span>
                               <%= gettext("Hexlet") %>
                             </a>
                             <a
-                              class="dropdown-item"
+                              class="dropdown-item cb-dropdown-item text-white"
                               href="https://discord.gg/dTpFXrYU3v"
                               target="_blank"
                             >
@@ -244,17 +266,17 @@
                               <%= gettext("Join Discord") %>
                             </a>
                             <a
-                              class="dropdown-item"
+                              class="dropdown-item cb-dropdown-item text-white"
                               href="https://t.me/hexletcommunity/5"
                               target="_blank"
                             >
                               <span class="fab fa-telegram mr-2"></span>
                               <%= gettext("Tg#codebattle") %>
                             </a>
-                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-divider cb-border-color"></div>
                           <% end %>
 
-                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item cb-dropdown-item text-white" do %>
                             <span class="fas fa-sign-out-alt mr-2"></span>
                             <%= gettext("Sign Out") %>
                           <% end %>

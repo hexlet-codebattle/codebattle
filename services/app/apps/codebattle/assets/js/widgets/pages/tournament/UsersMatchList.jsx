@@ -17,7 +17,7 @@ export const toLocalTime = time => moment.utc(time).local().format('HH:mm:ss');
 
 const matchClassName = cn(
   'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
-  'justify-content-between border-bottom p-2',
+  'justify-content-between border-bottom cb-border-color p-2',
 );
 const matchInfoClassName = cn(
   'd-flex',
@@ -58,17 +58,17 @@ function UsersMatchList({
   return (
     <div className="d-flex flex-column">
       {!hideStats && matches.length > 0 && (
-        <div className="d-flex py-2 border-bottom align-items-center overflow-auto">
+        <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
           <span className="ml-2">
             {'Wins: '}
             {player.winMatches.length}
           </span>
-          <span className="ml-1 pl-1 border-left border-dark">
+          <span className="ml-1 pl-1 border-left cb-border-color">
             {'AVG Tests: '}
             {Math.ceil(player.avgTests)}
             %
           </span>
-          <span className="ml-1 pl-1 border-left border-dark">
+          <span className="ml-1 pl-1 border-left cb-border-color">
             {'AVG Duration: '}
             {Math.ceil(player.avgDuration)}
             {' sec'}

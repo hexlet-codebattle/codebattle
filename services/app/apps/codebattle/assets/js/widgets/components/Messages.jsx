@@ -82,7 +82,7 @@ function Messages({
     'scroll-button',
     'position-absolute',
     'rounded-circle',
-    'bg-secondary',
+    'cb-bg-secondary',
     'p-0',
     'border-0',
     {

@@ -9,15 +9,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-export default function Rooms({ disabled, mode }) {
+export default function Rooms({ disabled }) {
   const dispatch = useDispatch();
 
   const rooms = useSelector(selectors.roomsSelector);
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
-  const dropdownClassName = cn('h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat', {
-    'cb-bg-highlight-panel': mode === 'dark',
-  });
+  const dropdownClassName = cn('h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel');
 
   return (
     <>
@@ -31,7 +29,7 @@ export default function Rooms({ disabled, mode }) {
             rooms.map(room => (
               <Dropdown.Item
                 href="#"
-                className={mode === 'dark' ? 'cb-text' : ''}
+                className="cb-text"
                 key={room.targetUserId || room.name}
                 onSelect={() => dispatch(actions.setActiveRoom(room))}
               >

@@ -38,7 +38,7 @@ function OutputSignatureEditPanel({
         <div className="d-flex flex-column ml-2 overflow-auto">
           <h6 className="pl-1">Output type: </h6>
           <div className="d-flex">
-            <div key={suggest.id} className="btn-group m-1 border-gray border-warning rounded-lg" role="group">
+            <div key={suggest.id} className="btn-group m-1 border-gray border-warning cb-rounded" role="group">
               <div
                 title="New Output"
                 className={itemActionClassName}

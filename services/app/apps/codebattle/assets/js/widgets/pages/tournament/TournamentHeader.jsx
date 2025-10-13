@@ -209,7 +209,7 @@ function TournamentHeader({
 
   return (
     <>
-      <div className="col bg-white shadow-sm rounded-lg p-2">
+      <div className="col cb-bg-panel shadow-sm cb-rounded p-2">
         <div className="d-flex flex-column flex-lg-row justify-content-between">
           <div className="d-flex align-items-center pb-2">
             <h2
@@ -295,7 +295,14 @@ function TournamentHeader({
           </div>
         </div>
         {canModerate && !streamMode && (
-          <div className="d-flex align-items-center small text-nowrap text-muted mt-1 cb-grid-divider overflow-auto border-top">
+          <div
+            className={
+              cn(
+                'd-flex align-items-center small text-nowrap text-muted mt-1',
+                'cb-grid-divider overflow-auto border-top cb-border-color',
+              )
+            }
+          >
             <div title={type} className="d-flex align-items-center">
               Mode:
               <span className="ml-2">
@@ -338,7 +345,7 @@ function TournamentHeader({
       </div>
       <div
         className={cn(
-          'col bg-white shadow-sm rounded-lg p-2 mt-2 overflow-auto',
+          'col cb-bg-panel shadow-sm cb-rounded p-2 mt-2 overflow-auto',
           'd-flex align-items-center justify-content-between',
         )}
       >

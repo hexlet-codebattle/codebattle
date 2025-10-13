@@ -16,14 +16,14 @@ const getCsrfToken = () => document.querySelector("meta[name='csrf-token']").get
 const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
 
 const getInputClassName = isInvalid => cn('form-control', {
-    'is-invalid': isInvalid,
-  });
+  'is-invalid': isInvalid,
+});
 
 const Container = ({ children }) => (
   <div className="container-fluid">
     <div className="row justify-content-center">
       <div className="col-lg-5 col-md-5 col-sm-5 px-md-4">
-        <div className="card border-light shadow-sm">{children}</div>
+        <div className="card cb-card border-light shadow-sm">{children}</div>
       </div>
     </div>
   </div>
@@ -47,7 +47,7 @@ const Form = ({ onSubmit, id, children }) => (
 );
 
 const Input = ({
- id, type, title, formik,
+  id, type, title, formik,
 }) => {
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);

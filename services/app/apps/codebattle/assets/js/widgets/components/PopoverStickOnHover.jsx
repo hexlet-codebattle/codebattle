@@ -18,10 +18,10 @@ function PopoverStickOnHover({
   let setTimeoutConst = null;
 
   useEffect(() => () => {
-      if (setTimeoutConst) {
-        clearTimeout(setTimeoutConst);
-      }
-    });
+    if (setTimeoutConst) {
+      clearTimeout(setTimeoutConst);
+    }
+  });
 
   const handleMouseEnter = () => {
     setTimeoutConst = setTimeout(() => {
@@ -36,16 +36,16 @@ function PopoverStickOnHover({
   };
 
   const displayChild = React.Children.map(children, child => React.cloneElement(child, {
-      onMouseEnter: handleMouseEnter,
-      onMouseLeave: handleMouseLeave,
-      ref: node => {
-        childNode.current = node;
-        const { ref } = child;
-        if (typeof ref === 'function') {
-          ref(node);
-        }
-      },
-    }))[0];
+    onMouseEnter: handleMouseEnter,
+    onMouseLeave: handleMouseLeave,
+    ref: node => {
+      childNode.current = node;
+      const { ref } = child;
+      if (typeof ref === 'function') {
+        ref(node);
+      }
+    },
+  }))[0];
 
   return (
     <>
@@ -57,6 +57,7 @@ function PopoverStickOnHover({
         shouldUpdatePosition
       >
         <Popover
+          className="cb-bg-panel cb-text cb-rounded"
           trigger="click"
           onMouseEnter={() => {
             setShowPopover(true);
@@ -82,7 +83,7 @@ PopoverStickOnHover.propTypes = {
 
 PopoverStickOnHover.defaultProps = {
   delay: 0,
-  onMouseEnter: () => {},
+  onMouseEnter: () => { },
 };
 
 export default PopoverStickOnHover;

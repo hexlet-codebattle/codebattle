@@ -42,7 +42,7 @@ const UserStats = ({ data, user: userInfo }) => {
         <div className="col d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <img
-              className="img-fluid rounded-lg"
+              className="img-fluid cb-rounded"
               style={{ maxHeight: '40px', width: '40px' }}
               src={avatarUrl}
               alt="User avatar"
@@ -58,7 +58,7 @@ const UserStats = ({ data, user: userInfo }) => {
                     type="button"
                     title="play active game"
                     className={cn(
-                      'btn btn-sm text-primary border-0 rounded-lg',
+                      'btn btn-sm text-primary border-0 cb-rounded',
                       {
                         'text-primary': !!activeGameId,
                         'text-muted': !activeGameId,
@@ -73,7 +73,7 @@ const UserStats = ({ data, user: userInfo }) => {
                     type="button"
                     title="follow user"
                     className={cn(
-                      'btn btn-sm border-0 rounded-lg',
+                      'btn btn-sm border-0 cb-rounded',
                       {
                         'text-primary': followId !== userInfo.id,
                         'text-danger': followId === userInfo.id,

@@ -12,11 +12,17 @@ import LanguageIcon from './LanguageIcon';
 const customStyle = {
   control: provided => ({
     ...provided,
+    color: 'white',
     height: '33px',
     minHeight: '31px',
     minWidth: '210px',
     borderRadius: '0.3rem',
-    backgroundColor: 'hsl(0, 0%, 100%)',
+    backgroundColor: '#2a2a35',
+    borderColor: '#3a3f50',
+
+    ':hover': {
+      borderColor: '#4c4c5a',
+    },
   }),
   indicatorsContainer: provided => ({
     ...provided,
@@ -28,19 +34,37 @@ const customStyle = {
   }),
   dropdownIndicator: provided => ({
     ...provided,
+    color: 'white',
     padding: '5px',
   }),
   input: provided => ({
     ...provided,
     height: '21px',
   }),
+  menu: provided => ({
+    ...provided,
+    backgroundColor: '#2a2a35',
+  }),
+  option: provided => ({
+    ...provided,
+    backgroundColor: '#2a2a35',
+    ':hover': {
+      backgroundColor: '#3a3f50',
+    },
+    ':focus': {
+      backgroundColor: '#3a3f50',
+    },
+    ':active': {
+      backgroundColor: '#3a3f50',
+    },
+  }),
 };
 
 const LangTitle = ({ slug, name, version }) => (
   <div translate="no" className="d-inline-flex align-items-center text-nowrap">
     <LanguageIcon lang={slug} className="ml-1" />
-    <span className="mx-1">{capitalize(name)}</span>
-    <span>{version}</span>
+    <span className="text-white mx-1">{capitalize(name)}</span>
+    <span className="text-white">{version}</span>
   </div>
 );
 

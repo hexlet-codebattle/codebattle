@@ -53,7 +53,7 @@ function StairwayGameContainer() {
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <div className="col-12 col-lg-6 p-1 vh-100">
-    {/*
+            {/*
               TODO: fixme, pls
             <StairwayRounds
               players={players}
@@ -62,7 +62,7 @@ function StairwayGameContainer() {
               setActiveRoundId={setActiveRoundId}
             />
       */}
-            <StairwayEditorToolbar players={players} setActivePlayerId={() => {}} activePlayer={activePlayer} />
+            <StairwayEditorToolbar players={players} setActivePlayerId={() => { }} activePlayer={activePlayer} />
             <StairwayEditorContainer playerId={activePlayerId} />
           </div>
           <div className="col-12 col-lg-6 p-1 vh-100">
@@ -91,7 +91,7 @@ function StairwayGameContainer() {
                   >
                     Output
                   </a>
-                  <div className="rounded-0 text-center bg-white col-6 text-black px-1 py-2">
+                  <div className="rounded-0 text-center bg-white col-6 px-1 py-2">
                     00:00
                     {/* <TimerContainer
                     time={game.startsAt}

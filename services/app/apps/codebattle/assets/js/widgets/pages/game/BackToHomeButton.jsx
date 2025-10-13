@@ -9,7 +9,7 @@ export default function BackToHomeButton() {
   };
 
   return (
-    <button className="btn btn-secondary btn-block rounded-lg" onClick={handleClick} type="button">
+    <button className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" onClick={handleClick} type="button">
       {title}
     </button>
   );

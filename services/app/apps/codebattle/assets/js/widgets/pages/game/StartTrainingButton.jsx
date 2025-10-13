@@ -17,7 +17,7 @@ function StartTrainingButton() {
   return (
     <button
       type="button"
-      className="btn btn-primary btn-block rounded-lg"
+      className="btn btn-secondary cb-btn-secondary btn-block rounded-lg"
       data-method="post"
       data-csrf={window.csrf_token}
       data-to={getCreateTrainingGameUrl()}

@@ -16,12 +16,12 @@ const TournamentDescriptionModal = NiceModal.create(({ description }) => {
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
 
   const closeBtnClassName = cn('btn text-white rounded-lg', {
-    'btn-secondary': !hasCustomEventStyle,
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide}>
+    <Modal className="cb-bg-panel cb-text" centered show={modal.visible} onHide={modal.hide}>
       <Modal.Header closeButton>
         <Modal.Title>{i18next.t('Tournament description')}</Modal.Title>
       </Modal.Header>

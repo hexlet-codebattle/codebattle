@@ -14,19 +14,19 @@ import { actions } from '../../slices';
 import LeaderboardPagination from './LeaderboardPagination';
 
 const getCustomEventTrClassNamePersonal = (type, muted, isUser) => cn('text-dark font-weight-bold cb-custom-event-tr', {
-    'cb-custom-event-bg-success': type === 'clan' && !muted,
-    'cb-custom-event-bg-muted-success': type === 'clan' && muted,
-    'cb-custom-event-bg-purple': type === 'user' && !muted,
-    'cb-custom-event-bg-muted-purple': type === 'user' && muted,
-    'cb-custom-event-tr-brown-border': isUser,
-  });
+  'cb-custom-event-bg-success': type === 'clan' && !muted,
+  'cb-custom-event-bg-muted-success': type === 'clan' && muted,
+  'cb-custom-event-bg-purple': type === 'user' && !muted,
+  'cb-custom-event-bg-muted-purple': type === 'user' && muted,
+  'cb-custom-event-tr-brown-border': isUser,
+});
 
 const tableDataCellClassNamePersonal = hideSeparator => cn(
-    'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
-    {
-      'hide-separator': hideSeparator,
-    },
-  );
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  {
+    'hide-separator': hideSeparator,
+  },
+);
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -38,29 +38,29 @@ const navTabsClassName = cn(
 );
 
 const getTabLinkClassName = isActive => cn(
-    'nav-item nav-link cb-custom-event-nav-item position-relative',
-    'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
-    {
-      active: isActive,
-      'cb-custom-event-common-leaderboard-bg text-dark font-weight-bold':
-        isActive,
-    },
-  );
+  'nav-item nav-link cb-custom-event-nav-item position-relative',
+  'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
+  {
+    active: isActive,
+    'cb-custom-event-common-leaderboard-bg text-dark font-weight-bold':
+      isActive,
+  },
+);
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
-    'text-dark font-weight-bold cb-custom-event-tr',
-    {
-      'cb-gold-place-bg': item?.place === 1,
-      'cb-silver-place-bg': item?.place === 2,
-      'cb-bronze-place-bg': item?.place === 3,
-      'bg-white': !item?.place || item.place > 3,
-    },
-    {
-      'cb-custom-event-tr-brown-border': item.userId
-        ? item.userId === selectedId
-        : item.clanId === selectedId,
-    },
-  );
+  'text-dark font-weight-bold cb-custom-event-tr',
+  {
+    'cb-gold-place-bg': item?.place === 1,
+    'cb-silver-place-bg': item?.place === 2,
+    'cb-bronze-place-bg': item?.place === 3,
+    'bg-white': !item?.place || item.place > 3,
+  },
+  {
+    'cb-custom-event-tr-brown-border': item.userId
+      ? item.userId === selectedId
+      : item.clanId === selectedId,
+  },
+);
 
 const commonRatingTypes = {
   personal: 'personal',
@@ -242,7 +242,7 @@ const EventRatingPanel = ({
         <div className="d-flex w-100 justify-content-starts border-bottom border-dark pb-2">
           <span className="font-weight-bold">{i18next.t('Event rating')}</span>
         </div>
-        <div className="d-flex flex-column w-100 mt-3 cb-custom-event-common-leaderboard-bg rounded-lg">
+        <div className="d-flex flex-column w-100 mt-3 cb-custom-event-common-leaderboard-bg cb-rounded">
           <nav className="pb-2">
             <div id="nav-tab" className={navTabsClassName} role="tablist">
               <button

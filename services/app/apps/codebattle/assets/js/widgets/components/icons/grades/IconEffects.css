@@ -1,0 +1,123 @@
+/* --- ANIMATION KEYFRAMES --- */
+
+/* 1. Flicker (Rookie) */
+@keyframes flicker {
+
+  0%,
+  19%,
+  21%,
+  23%,
+  25%,
+  54%,
+  56%,
+  100% {
+    opacity: 1;
+  }
+
+  20%,
+  24%,
+  55% {
+    opacity: 0.2;
+  }
+}
+
+.flicker-animation {
+  animation: flicker 2s step-end infinite;
+}
+
+/* 2. Rotate (Challenger) */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-animation {
+  transform-origin: 50% 50%;
+  animation: rotate 3s linear infinite;
+}
+
+/* 3. Blink (Pro) - Applied to individual lines */
+@keyframes line-blink {
+
+  0%,
+  100% {
+    stroke-opacity: 1;
+  }
+
+  50% {
+    stroke-opacity: 0.3;
+  }
+}
+
+.blink-line-1 {
+  animation: line-blink 1.5s step-end infinite;
+}
+
+.blink-line-2 {
+  animation: line-blink 1.5s step-end infinite 0.5s;
+}
+
+.blink-line-3 {
+  animation: line-blink 1.5s step-end infinite 1s;
+}
+
+/* 4. Glow (Elite) & 6. Aura (Grand Slam) */
+@keyframes aura {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+
+  50% {
+    filter: drop-shadow(0 0 15px currentColor) drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+  }
+}
+
+.aura-animation {
+  animation: aura 3s ease-in-out infinite;
+}
+
+/* 5. Pulsating (Masters) */
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.pulse-animation {
+  transform-origin: 50% 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Base Container Styling */
+.rank-icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 15px;
+}
+
+.rank-caption {
+  font-size: 0.7em;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.rank-svg-icon {
+  overflow: visible;
+  transition: filter 0.3s;
+}

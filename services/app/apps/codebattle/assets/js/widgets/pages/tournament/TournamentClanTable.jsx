@@ -12,7 +12,7 @@ const getCustomEventTrClassName = (item, selectedId) => cn(
       'cb-gold-place-bg': item?.place === 1,
       'cb-silver-place-bg': item?.place === 2,
       'cb-bronze-place-bg': item?.place === 3,
-      'bg-white': !item?.place || item.place > 3,
+      'cb-bg-panel text-white': !item?.place || item.place > 3,
     },
     {
       'cb-custom-event-tr-brown-border': item.id === selectedId,

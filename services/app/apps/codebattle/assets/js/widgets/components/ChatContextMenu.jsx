@@ -44,7 +44,7 @@ function ChatContextMenu({
 }) {
   const dispatch = useDispatch();
 
-  const [swordIconSrc, setSwordIconSrc] = useState(blackSwordSrc);
+  const [, setSwordIconSrc] = useState(blackSwordSrc);
 
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const currentUserId = useSelector(currentUserIdSelector);
@@ -134,17 +134,17 @@ function ChatContextMenu({
   return (
     <>
       {children}
-      <Menu role="menu" id={menuId}>
+      <Menu className="cb-bg-panel cb-border-color cb-rounded text-white" role="menu" id={menuId}>
         <Item
           role="menuitem"
           aria-label="Copy Name"
           onClick={handleCopy}
         >
           <FontAwesomeIcon
-            className="mr-2"
+            className="mr-2 text-white"
             icon="copy"
           />
-          <span>Copy Name</span>
+          <span className="text-white">Copy Name</span>
         </Item>
         <Item
           role="menuitem"
@@ -152,10 +152,10 @@ function ChatContextMenu({
           onClick={handleShowInfo}
         >
           <FontAwesomeIcon
-            className="mr-2"
+            className="mr-2 text-white"
             icon="user"
           />
-          <span>Info</span>
+          <span className="text-white">Info</span>
         </Item>
         {!isCurrentUser && (
           <Item
@@ -164,10 +164,10 @@ function ChatContextMenu({
             onClick={handleFollow}
           >
             <FontAwesomeIcon
-              className="mr-2"
+              className="mr-2 text-white"
               icon="binoculars"
             />
-            <span>Follow</span>
+            <span className="text-white">Follow</span>
           </Item>
         )}
         {canCreatePrivateRoom ? (
@@ -178,10 +178,10 @@ function ChatContextMenu({
             disabled={!canCreatePrivateRoom}
           >
             <FontAwesomeIcon
-              className="mr-2"
+              className="mr-2 text-white"
               icon="comment-alt"
             />
-            <span>Direct message</span>
+            <span className="text-white">Direct message</span>
           </Item>
         ) : null}
         {canInvite && (
@@ -197,13 +197,13 @@ function ChatContextMenu({
           >
             <img
               alt="invite"
-              src={swordIconSrc}
+              src={whiteSwordSrc}
               style={{ width: 14, height: 16 }}
               className={cn('mr-2', {
                 'text-muted': !inviteSendDisabled,
               })}
             />
-            <span>Send an invite</span>
+            <span className="text-white">Send an invite</span>
           </Item>
         )}
         {currentUserIsAdmin ? (
@@ -215,10 +215,10 @@ function ChatContextMenu({
               disabled={isBot}
             >
               <FontAwesomeIcon
-                className="mr-2"
+                className="mr-2 text-white"
                 icon="ban"
               />
-              <span>Ban</span>
+              <span className="text-white">Ban</span>
             </Item>
           </>
         ) : null}

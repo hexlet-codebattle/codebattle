@@ -2,7 +2,7 @@ import React from 'react';
 
 import i18n from '../../../i18n';
 
-import TournamentListItem, { activeIcon, upcomingIcon } from './TournamentListItem';
+import TournamentListItem, { activeIcon } from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 14 - Dec 21';
 
@@ -28,7 +28,13 @@ const SeasonProfilePanel = ({
                   <div className="d-flex justify-content-center align-items-center pt-2 cb-bg-panel">
                     <span className="text-white text-uppercase h4">Live Tournaments</span>
                   </div>
-                  {liveTournaments.map(tournament => (<TournamentListItem tournament={tournament} icon={activeIcon} />))}
+                  {liveTournaments.map(tournament => (
+                    <TournamentListItem
+                      key={tournament.id}
+                      tournament={tournament}
+                      icon={activeIcon}
+                    />
+                  ))}
                 </>
               )}
               {upcomingTournaments?.length !== 0 && (
@@ -36,7 +42,14 @@ const SeasonProfilePanel = ({
                   <div className="d-flex justify-content-center pt-2 cb-bg-panel">
                     <span className="text-white text-uppercase h4">Upcoming Tournaments</span>
                   </div>
-                  {upcomingTournaments.map(tournament => (<TournamentListItem tournament={tournament} icon={upcomingIcon} />))}
+                  <div className="d-flex flex-column cb-overflow-y-scroll position-relative" style={{ maxHeight: '280px' }}>
+                    {upcomingTournaments.map(tournament => (
+                      <TournamentListItem
+                        key={tournament.id}
+                        tournament={tournament}
+                      />
+                    ))}
+                  </div>
                 </>
               )}
             </div>
@@ -85,10 +98,16 @@ const SeasonProfilePanel = ({
             <span className="stat-label text-uppercase">(Elo Rating)</span>
           </div>
           <div className="stat-item py-1 w-100">
-            <span className="stat-value d-block cb-text-success">
-              #
-              {user.rank}
-            </span>
+            {user.points ? (
+              <span className="stat-value d-block cb-text-success">
+                #
+                {user.rank}
+              </span>
+            ) : (
+              <span className="stat-value d-block cb-text-danger">
+                #0
+              </span>
+            )}
             <span className="stat-label text-uppercase">Place</span>
           </div>
           <div className="stat-item py-1 w-100">
@@ -99,9 +118,6 @@ const SeasonProfilePanel = ({
 
         <div className="d-flex justify-content-center cb-font-size-small py-2 px-3 text-white">
           <span className="d-block">{contestDatesText}</span>
-          <div>
-            <span className="badge badge-primary align-content-center ml-1">Soon</span>
-          </div>
         </div>
       </div>
       {controls}

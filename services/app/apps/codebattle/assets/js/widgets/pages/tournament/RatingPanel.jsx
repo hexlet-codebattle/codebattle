@@ -21,7 +21,7 @@ import TournamentPlayersPagination from './TournamentPlayersPagination';
 import TournamentUserPanel from './TournamentUserPanel';
 
 const navPlayerTabsClassName = cn(
-  'nav nav-tabs flex-nowrap text-center border-top border-bottom-0',
+  'nav nav-tabs flex-nowrap text-center border-top border-bottom-0 cb-border-color',
   'text-uppercase font-weight-bold',
   'cb-overflow-x-auto cb-overflow-y-hidden',
 );
@@ -175,7 +175,7 @@ function RatingPanel({
     return (
       <div
         className={cn(
-          'flex text-center border-top border-bottom-0',
+          'flex text-center border-top border-bottom-0 cb-border-color',
           'text-uppercase font-weight-bold pt-2',
         )}
       >

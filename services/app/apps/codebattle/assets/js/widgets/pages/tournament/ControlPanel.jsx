@@ -44,6 +44,54 @@ export const mapPanelModeToTitle = {
   [PanelModeCodes.topUserByTasksMode]: i18next.t('Top user by task ranking'),
 };
 
+const customStyle = {
+  control: provided => ({
+    ...provided,
+    color: 'white',
+    borderRadius: '0.3rem',
+    backgroundColor: '#2a2a35',
+    borderColor: '#3a3f50',
+
+    ':hover': {
+      borderColor: '#4c4c5a',
+    },
+  }),
+  indicatorsContainer: provided => ({
+    ...provided,
+  }),
+  indicatorSeparator: provided => ({
+    ...provided,
+    backgroundColor: '#999',
+  }),
+  clearIndicator: provided => ({
+    ...provided,
+  }),
+  dropdownIndicator: provided => ({
+    ...provided,
+    color: '#999',
+  }),
+  input: provided => ({
+    ...provided,
+  }),
+  menu: provided => ({
+    ...provided,
+    backgroundColor: '#2a2a35',
+  }),
+  option: provided => ({
+    ...provided,
+    backgroundColor: '#2a2a35',
+    ':hover': {
+      backgroundColor: '#3a3f50',
+    },
+    ':focus': {
+      backgroundColor: '#3a3f50',
+    },
+    ':active': {
+      backgroundColor: '#3a3f50',
+    },
+  }),
+};
+
 function ControlPanel({
   isPlayer,
   searchOption,
@@ -94,7 +142,7 @@ function ControlPanel({
     [allPlayers],
   );
 
-  const backBtnClassName = cn('btn text-nowrap rounded-lg mr-1 mb-2', {
+  const backBtnClassName = cn('btn text-nowrap cb-rounded mr-1 mb-2', {
     'btn-outline-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-outline-secondary': hasCustomEventStyles,
   });
@@ -112,13 +160,14 @@ function ControlPanel({
           {i18next.t('Back')}
         </button>
         {panelMode.panel === PanelModeCodes.ratingMode && !disabledSearch ? (
-          <div className="input-group flex-nowrap mb-2">
+          <div className="input-group cb-bg-panel flex-nowrap mb-2">
             <div className="input-group-prepend">
-              <span className="input-group-text" id="search-icon">
+              <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text" id="search-icon">
                 <FontAwesomeIcon icon="search" />
               </span>
             </div>
             <AsyncSelect
+              styles={customStyle}
               value={
                 searchOption && {
                   label: <UserLabel user={searchOption} />,
@@ -141,7 +190,7 @@ function ControlPanel({
       >
         <select
           key="select_panel_mode"
-          className="form-control custom-select rounded-lg"
+          className="form-control custom-select cb-bg-panel cb-border-color text-white cb-rounded"
           value={panelMode.panel}
           onChange={onChangePanelMode}
           disabled={disabledPanelModeControl}
@@ -155,6 +204,7 @@ function ControlPanel({
               <option
                 key={mode}
                 value={mode}
+                className="cb-bg-panel text-white"
                 disabled={mode === PanelModeCodes.playerMode && !isPlayer}
               >
                 {mapPanelModeToTitle[mode]}

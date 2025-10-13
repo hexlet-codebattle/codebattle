@@ -73,20 +73,20 @@ export default function TournamentChatInput({ disabled }) {
 
   return (
     <form className="m-0" onSubmit={handleSubmit}>
-      <div className="d-flex input-group shadow-sm rounded-bottom border-top">
+      <div className="d-flex input-group shadow-sm rounded-bottom border-top cb-border-color">
         <input
           type="text"
           ref={inputRef}
-          className="form-control rounded-0 border-0 border-top x-rounded-bottom-left"
+          className="form-control bg-dark rounded-0 border-0 border-top cb-border-color x-rounded-bottom-left"
           value={message}
           onChange={handleChange}
           placeholder="Write message..."
           disabled={disabled}
         />
-        <div className="input-group-append">
+        <div className="input-group-append cb-border-color">
           <button
             type="submit"
-            className="btn btn-secondary x-rounded-bottom-right border-0 rounded-0"
+            className="btn btn-secondary cb-btn-secondary x-rounded-bottom-right border-0 rounded-0"
             disabled={disabled}
           >
             Send

@@ -51,7 +51,7 @@ function DetailsModal({
   );
 
   return (
-    <Modal show={modalShowing} onHide={handleCancel}>
+    <Modal className="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
       <Modal.Header closeButton>
         <Modal.Title>Tournament details</Modal.Title>
       </Modal.Header>

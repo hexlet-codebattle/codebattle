@@ -49,8 +49,8 @@ function TournamentChat() {
 
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
-      <div className="my-2 mt-lg-0 sticky-top bg-white rounded-lg position-relative d-flex flex-column" style={{ height: '450px' }}>
-        <div className="d-flex border-bottom align-items-center p-2">
+      <div className="my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column" style={{ height: '450px' }}>
+        <div className="d-flex border-bottom align-items-center cb-border-color">
           <Rooms disabled={!isOnline} />
           {currentUserIsAdmin && (
             <button
@@ -76,7 +76,7 @@ function TournamentChat() {
             <Messages displayMenu={displayMenu} messages={messages} />
           </div>
         </div>
-        <div className="border-top p-2">
+        <div className="border-top cb-border-color p-2">
           <TournamentChatInput disabled={!isOnline} />
         </div>
       </div>

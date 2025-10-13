@@ -1,5 +1,5 @@
 import React, {
- useState, useCallback, memo, useMemo, useEffect, useRef,
+  useState, useCallback, memo, useMemo, useEffect, useRef,
 } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
@@ -232,14 +232,14 @@ const TaskParamsModal = NiceModal.create(({
       size="lg"
       show={modal.visible}
       onHide={handleCancel}
-      contentClassName="overflow-auto h-75"
+      contentClassName="cb-bg-panel cb-text overflow-auto h-75"
     >
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body className="overflow-auto">
         {error && (
-          <Alert className="mt-2 mx-3 rounded-lg" variant="danger">
+          <Alert className="mt-2 mx-3 cb-rounded" variant="danger">
             <div className="overflow-auto h-25">
               {error.message}
               {error.request && (
@@ -278,7 +278,7 @@ const TaskParamsModal = NiceModal.create(({
           </label>
           <textarea
             ref={taskParamsRef}
-            className="form-control bg-light w-100 rounded-lg"
+            className="form-control bg-light w-100 cb-rounded"
             id="newTaskUpload"
             rows={15}
             onChange={handleChange}
@@ -288,7 +288,7 @@ const TaskParamsModal = NiceModal.create(({
           <label className="" htmlFor="newTaskCopy">
             Check task parameters in json model
           </label>
-          <pre id="newTaskCopy" className="bg-light rounded-lg p-3">
+          <pre id="newTaskCopy" className="bg-light cb-rounded p-3">
             {taskParamsJSON}
           </pre>
         </div>
@@ -328,13 +328,13 @@ const TaskParamsModal = NiceModal.create(({
               <div className="d-flex flex-column my-2">
                 <h6>Solution: </h6>
                 <pre>
-                  <code>{taskParams.solution}</code>
+                  <code className="text-white">{taskParams.solution}</code>
                 </pre>
               </div>
               <div className="d-flex flex-column">
                 <h6>Arguments Generator: </h6>
                 <pre>
-                  <code>{taskParams.argumentsGenerator}</code>
+                  <code className="text-white">{taskParams.argumentsGenerator}</code>
                 </pre>
               </div>
             </>
@@ -345,7 +345,7 @@ const TaskParamsModal = NiceModal.create(({
         <div className="d-flex justify-content-end w-100">
           <Button
             ref={submitBtnRef}
-            className="btn btn-success text-white rounded-lg"
+            className="btn btn-success cb-btn-success text-white cb-rounded"
             onClick={handleSubmit}
             disabled={state === LoadingStatusCodes.LOADING}
           >

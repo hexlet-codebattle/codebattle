@@ -7,13 +7,12 @@ import cn from 'classnames';
 import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
-  className = '', linkClassName = '', user, mode, lang = user.lang, truncate, isOnline, hovered, hideOnlineIndicator, hideLink, hideRank,
+  className = '', linkClassName = '', user, lang = user.lang, truncate, isOnline, hovered, hideOnlineIndicator, hideLink, hideRank,
 }) => {
   const commonClassName = 'd-flex align-items-center';
   const onlineIndicatorClassName = cn('mr-1', {
     'cb-user-online': isOnline,
-    'cb-user-offline': !isOnline && mode !== 'dark',
-    'cb-user-dark-offline': !isOnline && mode === 'dark',
+    'cb-user-dark-offline': !isOnline,
   });
   const userClassName = cn('text-truncate', {
     'x-username-truncated': truncate,
@@ -21,8 +20,7 @@ const UserName = ({
   const userNameClassName = cn(linkClassName, {
     'text-primary': hovered,
   });
-  const botImgClassName = cn('mr-1', {
-    'cb-text': mode === 'dark',
+  const botImgClassName = cn('mr-1 cb-text', {
   });
 
   return (

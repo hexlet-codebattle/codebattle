@@ -43,7 +43,7 @@ function GameRoomLockPanel() {
         />
         <button
           type="button"
-          className="btn btn-sm btn-success rounded-lg text-white"
+          className="btn btn-sm btn-success cb-btn-success cb-rounded text-white"
           onClick={onSubmitCode}
         >
           Submit

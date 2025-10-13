@@ -153,19 +153,27 @@ const LobbyWidget = () => {
 
   return (
     <div>
-      <Modal show={showCreateGameModal} onHide={handleCloseCreateGameModal}>
-        <Modal.Header className="cb-bg-highlight-panel cb-border-color text-white" closeButton>
+      <Modal
+        show={showCreateGameModal}
+        onHide={handleCloseCreateGameModal}
+        contentClassName="cb-bg-highlight-panel"
+      >
+        <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>Create a game</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-bg-highlight-panel text-white">
+        <Modal.Body className="text-white">
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />
         </Modal.Body>
       </Modal>
-      <Modal show={showJoinGameModal} onHide={handleCloseJoinGameModal}>
-        <Modal.Header className="cb-bg-highlight-panel cb-border-color text-white" closeButton>
+      <Modal
+        show={showJoinGameModal}
+        onHide={handleCloseJoinGameModal}
+        contentClassName="cb-bg-highlight-panel cb-join-game-modal"
+      >
+        <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>Join a game</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="cb-bg-highlight-panel text-white">
+        <Modal.Body className="text-white">
           <ActiveGames
             games={activeGames}
             currentUserId={currentUserId}

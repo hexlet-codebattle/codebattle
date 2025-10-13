@@ -2,17 +2,40 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import cn from 'classnames';
 import dayjs from 'dayjs';
-import uniqBy from 'lodash/uniqBy';
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar';
 import { useSelector } from 'react-redux';
 
 import { uploadTournamentsByFilter } from '@/middlewares/Tournament';
-import { currentUserIsAdminSelector } from '@/selectors';
+import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
 
 import tournamentStates from '../../config/tournament';
 
+const grades = {
+  open: 'open',
+  rookie: 'rookie',
+  challenger: 'challenger',
+  pro: 'pro',
+  elite: 'elite',
+  masters: 'masters',
+  grandSlam: 'grand_slam',
+};
+
+const states = {
+  contest: '#contest',
+  my: '#my',
+  all: '#all',
+};
+
+const views = {
+  month: 'month',
+  week: 'week',
+  day: 'day',
+  agenda: 'agenda',
+};
+
 // const filterRookieGrade = e => !(e.resourse.grade === 'rookie' && e.resourse.state === tournamentStates.upcoming);
-const haveGrade = t => !!t.grade;
+const haveSeasonGrade = t => t.grade !== grades.open;
+const filterMyTournaments = userId => t => t.ownerId === userId;
 
 const getEndOffsetParams = t => {
   if (t.finished && t.lastRoundEndedAt) {
@@ -41,19 +64,6 @@ const getEventFromTournamentData = t => ({
   },
 });
 
-const states = {
-  contest: '#contest',
-  my: '#my',
-  all: '#all',
-};
-
-const views = {
-  month: 'month',
-  week: 'week',
-  day: 'day',
-  agenda: 'agenda',
-};
-
 const stateList = Object.values(states);
 
 const getStateFromHash = () => {
@@ -66,16 +76,16 @@ const getStateFromHash = () => {
   return states.contest;
 };
 
-const eventPropGetter = (event, _start, _end, _isSelected) => ({
+// const eventPropGetter = (event, _start, _end, _isSelected) => ({
+const eventPropGetter = event => ({
   className: cn('cb-rbc-event', {
-    'cb-rbc-live-event': [
-      tournamentStates.active,
-      tournamentStates.waitingParticipants,
-      tournamentStates.loading,
-    ].includes(event?.resourse?.state),
-    'cb-rbc-upcoming-event': event?.resourse?.state === tournamentStates.upcoming,
-    'cb-rbc-canceled-event': event?.resourse?.state === tournamentStates.canceled,
-    'cb-rbc-finished-event': event?.resourse?.state === tournamentStates.finished,
+    'cb-rbc-open-event': event?.resourse?.grade === grades.open,
+    'cb-rbc-rookie-event': event?.resourse?.grade === grades.rookie,
+    'cb-rbc-challenger-event': event?.resourse?.grade === grades.challenger,
+    'cb-rbc-pro-event': event?.resourse?.grade === grades.pro,
+    'cb-rbc-masters-event': event?.resourse?.grade === grades.masters,
+    'cb-rbc-elite-event': event?.resourse?.grade === grades.elite,
+    'cb-rbc-grand-slam-event': event?.resourse?.grade === grades.grandSlam,
   }),
 });
 
@@ -90,13 +100,15 @@ const checkNeedLoading = (oldData, newDate) => {
 const TournamentSchedule = () => {
   const [event, setSelectedEvent] = useState(null);
   const [context, setContext] = useState(getStateFromHash);
+  const [hash, setHash] = useState({ upcomingTournaments: [], userTournaments: [], loading: true });
   const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
   const [date, setDate] = useState(dayjs().format());
   const [view, setView] = useState(views.month);
   const isAdmin = useSelector(currentUserIsAdminSelector);
+  const currentUserId = useSelector(currentUserIdSelector);
 
-  const sectionBtnClassName = cn('btn btn-secondary border-0 cb-btn-secondary cb-rounded');
+  const sectionBtnClassName = cn('btn btn-secondary border-0 cb-btn-secondary cb-rounded mx-2');
 
   const codebattleLocalizer = dayjsLocalizer(dayjs);
 
@@ -104,24 +116,8 @@ const TournamentSchedule = () => {
     const beginMonth = dayjs(newDate).startOf('month').toISOString();
     const endMonth = dayjs(newDate).endOf('month').toISOString();
 
-    if (context === states.contest) {
-      uploadTournamentsByFilter(beginMonth, endMonth)
-        .then(([upcomingTournaments, userTournaments]) => {
-          const newTournaments = [...upcomingTournaments, ...userTournaments.filter(haveGrade)];
-          setTournaments(uniqBy(newTournaments, 'id'));
-        });
-    } else if (context === states.my) {
-      uploadTournamentsByFilter(beginMonth, endMonth)
-        .then(([, userTournaments]) => {
-          setTournaments(userTournaments);
-        });
-    } else if (context === states.all) {
-      uploadTournamentsByFilter(beginMonth, endMonth)
-        .then(([upcomingTournaments, userTournaments]) => {
-          const newTournaments = [...upcomingTournaments, ...userTournaments.filter(haveGrade)];
-          setTournaments(uniqBy(newTournaments, 'id'));
-        });
-    }
+    const [upcomingTournaments, userTournaments] = await uploadTournamentsByFilter(beginMonth, endMonth);
+    setHash({ upcomingTournaments, userTournaments, loading: false });
   };
 
   const onView = useCallback(v => {
@@ -145,25 +141,40 @@ const TournamentSchedule = () => {
   const onNavigate = newDate => {
     if (checkNeedLoading(date, newDate)) {
       const abortController = new AbortController();
-      loadTournaments(abortController, newDate);
+      setHash(state => ({ ...state, loading: true }));
+      setEvents([]);
+      loadTournaments(abortController, newDate).catch(e => {
+        console.error(e);
+        setDate(date);
+      });
     }
 
     setDate(newDate);
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
+    loadTournaments(abortController);
+    /* eslint-disable-next-line */
+  }, []);
+
+  useEffect(() => {
     if (!isAdmin && context === states.all) {
       setContext(states.contest);
       window.location.hash = states.contest;
-      return () => { };
+      return;
     }
 
-    const abortController = new AbortController();
-
-    loadTournaments(abortController);
-
-    return () => abortController.abort();
-  }, [context]);
+    if (context === states.contest) {
+      const newTournaments = [...hash.upcomingTournaments, ...hash.userTournaments.filter(haveSeasonGrade)];
+      setTournaments(newTournaments);
+    } else if (context === states.my) {
+      setTournaments(hash.userTournaments.filter(filterMyTournaments(currentUserId)));
+    } else if (context === states.all) {
+      const newTournaments = [...hash.upcomingTournaments, ...hash.userTournaments];
+      setTournaments(newTournaments);
+    }
+  }, [context, hash, setTournaments, currentUserId, isAdmin]);
 
   useEffect(() => {
     if (tournaments) {
@@ -190,6 +201,7 @@ const TournamentSchedule = () => {
           className={cn(sectionBtnClassName, { active: context === states.contest })}
           data-context={states.contest}
           onClick={onChangeContext}
+          disabled={hash.loading}
         >
           Contests History
         </button>
@@ -198,6 +210,7 @@ const TournamentSchedule = () => {
           className={cn(sectionBtnClassName, { active: context === states.my })}
           data-context={states.my}
           onClick={onChangeContext}
+          disabled={hash.loading}
         >
           My Tournaments
         </button>
@@ -207,6 +220,7 @@ const TournamentSchedule = () => {
             className={cn(sectionBtnClassName, { active: context === states.all })}
             data-context={states.all}
             onClick={onChangeContext}
+            disabled={hash.loading}
           >
             All Tournaments
           </button>

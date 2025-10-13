@@ -14,7 +14,7 @@ const renderContributorsList = contributors => (
         <li key={avatarLink}>
           <a href={link}>
             <img
-              className="img-fluid mr-3 rounded-lg"
+              className="img-fluid mr-3 cb-rounded"
               width="40"
               height="40"
               src={avatarLink}

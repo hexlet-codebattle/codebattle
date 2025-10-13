@@ -66,7 +66,12 @@ const TournamentStatisticsModal = NiceModal.create(() => {
     : 'Tournament round statistics';
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide}>
+    <Modal
+      centered
+      show={modal.visible}
+      onHide={modal.hide}
+      contentClassName="cb-bg-panel cb-text"
+    >
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -108,7 +113,7 @@ const TournamentStatisticsModal = NiceModal.create(() => {
         <div className="d-flex justify-content-end w-100">
           <Button
             onClick={toggleStatisticsMode}
-            className="btn btn-success text-white rounded-lg"
+            className="btn btn-success text-white cb-rounded"
           >
             <FontAwesomeIcon icon={showFullStatistics ? 'toggle-on' : 'toggle-off'} className="mr-2" />
             {showFullStatistics ? 'Open current round' : 'Open full statistics'}

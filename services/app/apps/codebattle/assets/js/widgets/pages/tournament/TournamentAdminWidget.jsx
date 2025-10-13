@@ -163,7 +163,7 @@ function TournamentAdminWidget() {
                 <td>{rankingPlayer.id}</td>
                 <td>
                   {tournament.players[rankingPlayer.id]?.drawIndex
-                  === tournament.players[rankingPlayer.id]?.maxDrawIndex
+                    === tournament.players[rankingPlayer.id]?.maxDrawIndex
                     ? 'Active'
                     : 'InActive'}
                 </td>
@@ -204,7 +204,7 @@ function TournamentAdminWidget() {
             {tournament?.name}
           </h2>
 
-          <div className="card shadow-sm mt-4">
+          <div className="card cb-card shadow-sm mt-4">
             <div className="card-header bg-primary text-white">
               <h4 className="mb-0">Player Rankings & Matches</h4>
             </div>

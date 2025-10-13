@@ -37,7 +37,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
   useTournamentPanel(fetchData, state);
 
   return (
-    <div className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+    <div className="my-2 px-1 mt-lg-0 cb-rounded position-relative cb-overflow-x-auto cb-overflow-y-auto">
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>

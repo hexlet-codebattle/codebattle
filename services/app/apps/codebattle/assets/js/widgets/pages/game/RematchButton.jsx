@@ -39,7 +39,7 @@ const RematchButton = ({
   const renderBtnAfterSendOffer = () => {
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
     const classNames = cn('btn btn-block', {
-      'btn-secondary': isOpponentInGame,
+      'btn-secondary cb-btn-secondary': isOpponentInGame,
       'btn-warning': !isOpponentInGame,
     });
     return (
@@ -58,7 +58,7 @@ const RematchButton = ({
       <div className="flex-grow-1 border py-1 px-2 text-center">Rematch?</div>
       <div className="d-flex">
         <button
-          className="btn btn-outline-secondary mr-1"
+          className="btn btn-outline-secondary cb-btn-outline-secondary mr-1"
           type="button"
           onClick={sendAcceptToRematch}
           title="Accept"
@@ -68,7 +68,7 @@ const RematchButton = ({
           />
         </button>
         <button
-          className="btn btn-outline-secondary"
+          className="btn btn-outline-secondary cb-btn-outline-secondary"
           type="button"
           onClick={sendRejectToRematch}
           title="Decline"
@@ -84,7 +84,7 @@ const RematchButton = ({
   const renderBtnByDefault = () => (
     <button
       type="button"
-      className="btn btn-secondary btn-block rounded-lg"
+      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
       onClick={sendOfferToRematch}
       disabled={disabled}
     >

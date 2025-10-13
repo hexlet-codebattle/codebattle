@@ -5,7 +5,7 @@ import UserInfo from '../../components/UserInfo';
 import GameRoomModes from '../../config/gameModes';
 import Placements from '../../config/placements';
 
-import DarkModeButton from './DarkModeButton';
+// import DarkModeButton from './DarkModeButton';
 import EditorResultIcon from './EditorResultIcon';
 import GameActionButtons from './GameActionButtons';
 import GameBanPlayerButton from './GameBanPlayerButton';
@@ -21,7 +21,7 @@ const ModeButtons = ({ player }) => (
     aria-label="Editor mode"
   >
     <VimModeButton playerId={player.id} />
-    <DarkModeButton playerId={player.id} />
+    {/* <DarkModeButton playerId={player.id} /> */}
   </div>
 );
 
@@ -46,7 +46,7 @@ const EditorToolbar = ({
   isHistory = false,
 }) => (
   <>
-    <div ref={toolbarRef} className="rounded-top" data-player-type={type}>
+    <div ref={toolbarRef} className="cb-bg-panel cb-border-color rounded-top" data-player-type={type}>
       <div className={toolbarClassNames} role="toolbar">
         <div className="d-flex justify-content-between">
           <div
@@ -76,7 +76,7 @@ const EditorToolbar = ({
             role="group"
             aria-label="User info"
           >
-            <UserInfo user={player} placement={Placements.bottomEnd} />
+            <UserInfo mode="dark" user={player} placement={Placements.bottomEnd} />
             {mode === GameRoomModes.standard && (
               <UserGameScore userId={player.id} />
             )}

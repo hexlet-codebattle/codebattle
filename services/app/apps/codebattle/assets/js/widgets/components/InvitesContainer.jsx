@@ -72,13 +72,13 @@ function InvitesContainer() {
         key="codebattle-invites"
         placement={invites.length === 0 ? 'bottom-end' : 'bottom'}
         overlay={(
-          <Popover id="popover-invites" show={invites.length !== 0}>
+          <Popover id="popover-invites" className="cb-bg-panel cb-border-color cb-text cb-rounded" show={invites.length !== 0}>
             {followId && (
               <div className="d-flex justify-content-center align-items-center p-2">
                 {i18n.t('You are following ID: %{followId}', { followId })}
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-secondary rounded-lg mx-1"
+                  className="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mx-1"
                   onClick={togglePausedfollowClick}
                 >
                   <FontAwesomeIcon
@@ -89,7 +89,7 @@ function InvitesContainer() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-danger rounded-lg mx-1"
+                  className="btn btn-sm btn-outline-danger cb-rounded mx-1"
                   onClick={handleUnfollowClick}
                 >
                   <FontAwesomeIcon icon="binoculars" className="mr-1" />

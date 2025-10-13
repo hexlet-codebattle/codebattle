@@ -42,7 +42,7 @@ const GameBanPlayerButton = ({
     status === 'banned' ? i18n.t('Release') : i18n.t('Ban'),
   );
   const disabled = state === states.error;
-  const className = cn('btn btn-sm btn-danger rounded-lg mx-1');
+  const className = cn('btn btn-sm btn-danger cb-rounded mx-1');
 
   const handleToggleBan = () => {
     if (disabled) return;

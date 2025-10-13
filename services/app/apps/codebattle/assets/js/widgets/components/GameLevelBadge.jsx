@@ -2,7 +2,7 @@ import React from 'react';
 
 const GameLevelBadge = ({ level }) => (
   <div
-    className="text-center"
+    className="bg-gray cb-rounded p-1 text-center"
     data-toggle="tooltip"
     data-placement="right"
     title={level}

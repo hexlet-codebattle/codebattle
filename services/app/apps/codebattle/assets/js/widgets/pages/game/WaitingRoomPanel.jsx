@@ -34,7 +34,7 @@ const WaitingRoomPanel = ({ children }) => {
             {activeGameId && gameId !== activeGameId && (
               <a
                 type="button"
-                className="btn btn-secondary rounded-lg mb-1"
+                className="btn btn-secondary cb-rounded mb-1"
                 href={`/games/${activeGameId}`}
               >
                 {i18next.t('Go to active game')}

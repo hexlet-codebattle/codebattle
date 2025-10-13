@@ -25,11 +25,11 @@ const TaskDescriptionModal = NiceModal.create(() => {
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide}>
-      <Modal.Header closeButton>
+    <Modal contentClassName="cb-bg-panel cb-text" centered show={modal.visible} onHide={modal.hide}>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{i18n.t('Task Description')}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="card cb-card border-0 cb-border-color">
         <TaskAssignment
           task={task}
           taskLanguage={taskLanguage}
@@ -39,11 +39,11 @@ const TaskDescriptionModal = NiceModal.create(() => {
           fullSize
         />
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-end w-100">
           <Button
             onClick={modal.hide}
-            className="btn btn-secondary text-white rounded-lg"
+            className="btn btn-secondary cb-btn-secondary cb-rounded"
           >
             <FontAwesomeIcon icon="times" className="mr-2" />
             {i18n.t('Close')}

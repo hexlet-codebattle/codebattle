@@ -31,7 +31,7 @@ const getTooltipVisibility = async msg => {
   return !isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput({ inputRef, mode, disabled = false }) {
+export default function ChatInput({ inputRef, disabled = false }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
@@ -41,16 +41,14 @@ export default function ChatInput({ inputRef, mode, disabled = false }) {
   const badwordsRef = useRef(new BadWordsNext());
 
   const sendBtnClassName = cn('btn btn-secondary cb-btn-secondary border-gray border-left rounded-right', {
-    'cb-border-color': mode === 'dark',
+    'cb-border-color': true,
   });
   const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
-    'bg-dark cb-border-color text-white': mode === 'dark',
-    'border-gray': mode !== 'dark',
+    'bg-dark cb-border-color text-white': true,
     'is-invalid': isMaxLengthExceeded,
   });
   const emojiBtnClassName = cn('btn border-left-0 border-right-0 px-2 py-0', {
-    'bg-white border-gray': mode !== 'dark',
-    'cb-border-color border': mode === 'dark',
+    'cb-border-color border': true,
   });
 
   useEffect(() => {
@@ -162,7 +160,7 @@ export default function ChatInput({ inputRef, mode, disabled = false }) {
 
   return (
     <form
-      className="border-top border-dark input-group mb-0 p-2"
+      className="border-top cb-border-color input-group mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input

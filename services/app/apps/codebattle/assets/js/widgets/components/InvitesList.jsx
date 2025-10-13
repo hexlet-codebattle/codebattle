@@ -40,14 +40,14 @@ function InvitesList({ list, followId, currentUserId }) {
             </span>
             <button
               type="submit"
-              className="btn btn-outline-danger rounded-lg small px-1 mx-1"
+              className="btn btn-outline-danger cb-rounded small px-1 mx-1"
               onClick={() => dispatch(acceptInvite(id, creator.name))}
             >
               Accept
             </button>
             <button
               type="submit"
-              className="btn btn-outline-primary rounded-lg small px-1 mx-1"
+              className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded small px-1 mx-1"
               onClick={() => dispatch(declineInvite(id, creator.name))}
             >
               Decline
@@ -62,7 +62,7 @@ function InvitesList({ list, followId, currentUserId }) {
             </span>
             <button
               type="submit"
-              className="btn btn-outline-primary rounded-lg small mx-1 px-1"
+              className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded small mx-1 px-1"
               onClick={() => dispatch(cancelInvite(id, recipient.name))}
             >
               Cancel

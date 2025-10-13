@@ -117,7 +117,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
 const LevelButtonGroup = memo(({ value, onChange }) => {
   const getLevelClassName = level => {
     const isLevelActive = level === value;
-    return cn('btn border-0 mb-2 bg-gray rounded-lg', {
+    return cn('btn border-0 mb-2 bg-gray cb-rounded', {
       'bg-orange': isLevelActive,
       'btn-outline-orange': !isLevelActive,
     });
@@ -150,7 +150,7 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
 const GameTypeButtonGroup = memo(({ value, onChange }) => {
   const getGameTypeClassName = gameType => {
     const isGameTypeActive = gameType === value;
-    return cn('btn mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
+    return cn('btn mr-1 mb-1 mb-sm-0 cb-rounded text-nowrap', {
       'bg-orange text-white': isGameTypeActive,
       'btn-outline-orange': !isGameTypeActive,
     });
@@ -267,7 +267,7 @@ function CreateGameDialog({ hideModal }) {
       />
       <button
         type="button"
-        className="btn btn-secondary cb-btn-secondary d-block mt-4 ml-auto rounded-lg"
+        className="btn btn-secondary cb-btn-secondary d-block mt-4 ml-auto cb-rounded"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >

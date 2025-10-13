@@ -14,17 +14,16 @@ import GameStateCodes from '../../config/gameStateCodes';
 import { TournamentRemainingTimer } from '../tournament/TournamentHeader';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
-    'text-dark font-weight-bold cb-custom-event-tr-border',
-    {
-      'cb-gold-place-bg': item?.place === 1,
-      'cb-silver-place-bg': item?.place === 2,
-      'cb-bronze-place-bg': item?.place === 3,
-      'bg-white': !item?.place || item?.place > 3,
-    },
-    {
-      'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
-    },
-  );
+  'font-weight-bold cb-custom-event-tr-border',
+  {
+    'cb-gold-place-bg': item?.place === 1,
+    'cb-silver-place-bg': item?.place === 2,
+    'cb-bronze-place-bg': item?.place === 3,
+  },
+  {
+    'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
+  },
+);
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -52,7 +51,7 @@ const TournamentRankingTable = () => {
         'cb-game-chat-container cb-messages-container',
       )}
     >
-      <div className="d-flex justify-content-between border-bottom border-dark pb-2 px-3">
+      <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
         <span className="font-weight-bold">{i18next.t('Ranking')}</span>
       </div>
       <div className="d-flex cb-overflow-x-auto">

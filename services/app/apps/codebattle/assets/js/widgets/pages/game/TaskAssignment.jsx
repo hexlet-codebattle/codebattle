@@ -22,7 +22,7 @@ const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
 
   return (
-    <a href={link} className="d-inline-block">
+    <a href={link} className="cb-text d-inline-block">
       <span className="fab fa-github mr-1" />
       link
     </a>
@@ -38,7 +38,7 @@ function ShowGuideButton() {
   return (
     <button
       type="button"
-      className="btn btn-outline-secondary btn-sm mx-2 text-nowrap rounded-lg"
+      className="btn btn-outline-secondary cb-btn-outline-secondary btn-sm mx-2 text-nowrap cb-rounded"
       onClick={guideShow}
       data-toggle="tooltip"
       data-placement="top"
@@ -80,7 +80,7 @@ function TaskAssignment({
   }
 
   const cardClassName = cn({
-    'card border-0': !fullSize,
+    'card cb-card border-0': !fullSize,
     h5: taskSize === 1,
     h4: taskSize === 2,
     h3: taskSize === 3,
@@ -117,7 +117,7 @@ function TaskAssignment({
             {!fullSize && (
               <button
                 type="button"
-                className="btn btn-outline-secondary text-nowrap btn-sm rounded-lg ml-2"
+                className="btn btn-outline-secondary cb-btn-outline-secondary text-nowrap btn-sm cb-rounded ml-2"
                 onClick={handleOpenFullSizeTaskDescription}
               >
                 <FontAwesomeIcon className="mr-2" icon="expand" />
@@ -158,7 +158,7 @@ function TaskAssignment({
           <>
             <ContributorsList name={task.name} />
             <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
-              <h6 className="card-text small font-italic text-black-50">
+              <h6 className="card-text small font-italic">
                 <span className="mr-2">
                   {i18n.t(
                     'Found a mistake? Have something to add? Pull Requests are welcome: ',
