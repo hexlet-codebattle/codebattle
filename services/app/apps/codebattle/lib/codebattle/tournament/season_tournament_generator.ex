@@ -73,16 +73,6 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
 
   # Rookie tournaments - once per 4 hours at specific times: 3 7 11 15 19 23 UTC
   defp add_rookie_tournaments(tournaments, {start_date, end_date}, season) do
-    num =
-      case hour do
-        3 -> 0
-        7 -> 1
-        11 -> 2
-        15 -> 3
-        19 -> 4
-        23 -> 5
-      end
-
     rookie_tournaments =
       start_date
       |> generate_daily_tournaments(end_date, fn date ->
@@ -94,7 +84,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
             %Tournament{},
             Map.merge(
               %{
-                name: "Rookie S:#{season} #{num} #{format_date(date)}",
+                name: "Rookie S:#{season} #{get_rookie_hour_num(hour)} #{format_date(date)}",
                 description: "Rookie tournament - easy tasks, grind-friendly",
                 grade: "rookie",
                 starts_at: starts_at,
@@ -514,4 +504,15 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
   end
 
   defp year_from_date_range(start_date, _end_date), do: start_date.year
+
+  defp get_rookie_hour_num(hour) do
+    case hour do
+      3 -> 0
+      7 -> 1
+      11 -> 2
+      15 -> 3
+      19 -> 4
+      23 -> 5
+    end
+  end
 end
