@@ -5,7 +5,7 @@ import TournamentRankingTable from './TournamentRankingTable';
 
 const TournamentCurrentPlayerRankingPanel = () => (
   <div
-    className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-color text-white cb-rounded"
+    className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-panel text-white cb-rounded"
   >
     <TournamentRankingTable />
     <div className="flex-shrink-1 p-0 border-left rounded-right cb-border-color cb-game-control-container">
