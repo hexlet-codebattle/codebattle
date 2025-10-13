@@ -56,7 +56,7 @@ const TournamentRankingTable = () => {
       </div>
       <div className="d-flex cb-overflow-x-auto">
         <table className="table table-striped cb-custom-event-table m-1">
-          <thead>
+          <thead className="cb-text">
             <tr>
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('User')}
