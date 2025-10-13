@@ -64,7 +64,7 @@ function UserStatCharts({ stats }) {
   return (
     <div className="row justify-content-center pb-4">
       <div className="col-12 col-lg-7 mb-sm-n5 mb-lg-0">
-        <ResponsiveContainer aspect={1}>
+        <ResponsiveContainer className="text-white" aspect={1}>
           <RadarChart
             cx="50%"
             cy="50%"

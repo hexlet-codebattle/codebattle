@@ -57,7 +57,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
     <>
       <div ref={tableRef} className={className} data-testid="scroll">
         <table className={tableClassName}>
-          <thead className="sticky-top">
+          <thead className="cb-text sticky-top">
             <tr>
               <th className="p-3 border-0">Level</th>
               <th className="px-1 py-3 border-0 text-center" colSpan={2}>Players</th>
@@ -71,25 +71,25 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
 
               return (
                 <tr key={game.id}>
-                  <td className="p-3 align-middle text-nowrap">
+                  <td className="p-3 align-middle text-nowrap cb-border-color">
                     <GameLevelBadge level={game.level} />
                   </td>
-                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
+                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate cb-border-color">
                     <div className="d-flex align-items-center">
                       <ResultIcon icon={player1.icon} />
                       <UserInfo className={cn({ 'pl-4': !player1.icon })} user={player1.data} truncate="true" />
                     </div>
                   </td>
-                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
+                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate cb-border-color">
                     <div className="d-flex align-items-center">
                       <ResultIcon icon={player2.icon} />
                       <UserInfo className={cn({ 'pl-4': !player2.icon })} user={player2.data} truncate="true" />
                     </div>
                   </td>
-                  <td className="px-1 py-3 align-middle text-nowrap">
+                  <td className="px-1 py-3 align-middle text-nowrap text-white cb-border-color">
                     {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
                   </td>
-                  <td className="px-1 py-3 align-middle">
+                  <td className="px-1 py-3 align-middle cb-border-color">
                     <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
                       Show
                     </a>

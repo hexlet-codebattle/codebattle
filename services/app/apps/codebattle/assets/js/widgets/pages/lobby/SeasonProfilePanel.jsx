@@ -1,10 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+import axios from 'axios';
+import { camelizeKeys } from 'humps';
 
 import i18n from '../../../i18n';
 
 import TournamentListItem, { activeIcon } from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 14 - Dec 21';
+
+const UserLogo = ({ user, size = '40px' }) => {
+  const [userInfo, setUserInfo] = useState();
+  const avatarUrl = user.avatarUrl || userInfo?.avatarUrl || '/assets/images/logo.svg';
+
+  useEffect(() => {
+    const userId = user.id;
+    const controller = new AbortController();
+
+    axios
+      .get(`/api/v1/user/${userId}/stats`, {
+        signal: controller.signal,
+      })
+      .then(response => {
+        if (!controller.signal.aborted) {
+          setUserInfo(camelizeKeys(response.data.user));
+        }
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [setUserInfo, user.id]);
+
+  return (
+    <img
+      style={{ width: size, height: size }}
+      alt="Avatar Logo"
+      src={avatarUrl}
+    />
+  );
+};
 
 const SeasonProfilePanel = ({
   upcomingTournaments = [], liveTournaments = [], user, controls,
@@ -83,8 +118,8 @@ const SeasonProfilePanel = ({
     <div className="col-12 col-lg-4 col-md-4 d-flex flex-column my-2 my-lg-0 my-md-0">
       <div className="cb-bg-panel cb-rounded">
         <div className="text-center p-2 py-3">
-          <img style={{ width: '32px', height: '32px' }} alt="Avatar Logo" src={user.avatarUrl || '/assets/images/logo.svg'} />
-          <span className="clan-tag mt-2">F-445633</span>
+          <UserLogo user={user} />
+          <span className="clan-tag mt-2">{user.name}</span>
           <span className="h1 clan-title m-0 text-white text-uppercase">
             Clan
             {': '}

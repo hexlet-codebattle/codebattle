@@ -2,6 +2,7 @@ $body-bg: #e5e5e5;
 $success: #82b792;
 $cb-text-color: #999;
 $cb-border-color: #4c4c5a;
+$cb-border-radius: 0.5rem;
 $cb-success: #32CD32;
 $cb-hovered-success: #28a428;
 $cb-bg-panel: #2a2a35;
@@ -381,7 +382,7 @@ a {
 .cb-user-dark-offline {
   border: 0.2rem solid transparent;
   border-color: var(--gray);
-  border-radius: 0.5rem;
+  border-radius: $cb-border-radius;
 }
 
 .cb-timer-progress {
@@ -1099,13 +1100,6 @@ div.cb-dropdown-menu {
 
 .cb-user-online {
   color: var(--green) !important;
-}
-
-.cb-user-offline {
-  color: var(--white) !important;
-  border: 0.2rem solid transparent;
-  border-color: var(--gray);
-  border-radius: 0.5rem;
 }
 
 .cb-timer-progress {
@@ -2992,8 +2986,15 @@ a.cb-text:hover {
 
 .rbc-overlay {
   color: white;
+  background-color: $cb-bg-panel;
   border-color: $cb-border-color;
-  border-radius: 0.5rem;
+  border-radius: $cb-border-radius;
+}
+
+.rbc-overlay-header {
+  background-color: $cb-bg-highlight-panel;
+  border-top-left-radius: $cb-border-radius;
+  border-top-right-radius: $cb-border-radius;
 }
 
 /* Event background (default is usually blue) */
