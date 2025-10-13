@@ -51,14 +51,14 @@ function DetailsModal({
   );
 
   return (
-    <Modal className="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
-      <Modal.Header closeButton>
+    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>Tournament details</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <pre className="bg-light rounded-lg p-3">{tournamentDetailsStr}</pre>
+        <pre className="cb-bg-highlight-panel cb-rounded p-3 text-white">{tournamentDetailsStr}</pre>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         <Button
           onClick={handleCancel}
           className={closeBtnClassName}

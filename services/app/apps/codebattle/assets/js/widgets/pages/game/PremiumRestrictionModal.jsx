@@ -39,7 +39,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
       onHide={modal.hide}
       contentClassName="cb-bg-panel cb-text"
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>Restricted Content</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -61,7 +61,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                   <span className="mr-2">Want subscribe?</span>
                   <div className="btn-group">
                     {sended ? (
-                      <div className="btn btn-sm btn-secondary cb-rounded disabled">
+                      <div className="btn btn-sm btn-secondary cb-btn-secondary cb-rounded disabled">
                         Sending...
                       </div>
                     ) : (
@@ -70,7 +70,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                           type="button"
                           data-premium-request="yes"
                           data-user-id={currentUserId}
-                          className="btn btn-sm btn-secondary rounded-left"
+                          className="btn btn-sm btn-secondary cb-btn-secondary rounded-left"
                           onClick={handleSendRequest}
                         >
                           <FontAwesomeIcon className="mr-2" icon="check" />
@@ -80,7 +80,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
                           type="button"
                           data-premium-request="no"
                           data-user-id={currentUserId}
-                          className="btn btn-sm btn-secondary rounded-right"
+                          className="btn btn-sm btn-secondary cb-btn-secondary rounded-right"
                           onClick={handleSendRequest}
                         >
                           <FontAwesomeIcon className="mr-2" icon="times" />
@@ -95,11 +95,11 @@ const PremiumRestrictionModal = NiceModal.create(() => {
           </div>
         </div>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-end w-100">
           <Button
             onClick={modal.hide}
-            className="btn btn-secondary text-white cb-rounded"
+            className="btn btn-secondary cb-btn-secondary cb-rounded"
           >
             <FontAwesomeIcon icon="times" className="mr-2" />
             Close

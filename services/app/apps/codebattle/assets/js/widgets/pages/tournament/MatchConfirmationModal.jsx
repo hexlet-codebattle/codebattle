@@ -145,8 +145,8 @@ function MatchConfirmationModal({
   });
 
   return (
-    <Modal className="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
-      <Modal.Header closeButton>
+    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -172,7 +172,7 @@ function MatchConfirmationModal({
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-between w-100">
           <Button
             onClick={handleCancel}

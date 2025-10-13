@@ -15,7 +15,7 @@ const getCsrfToken = () => document.querySelector("meta[name='csrf-token']").get
 
 const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
 
-const getInputClassName = isInvalid => cn('form-control', {
+const getInputClassName = isInvalid => cn('form-control custom-control cb-bg-panel cb-border-color text-white', {
   'is-invalid': isInvalid,
 });
 
@@ -23,13 +23,13 @@ const Container = ({ children }) => (
   <div className="container-fluid">
     <div className="row justify-content-center">
       <div className="col-lg-5 col-md-5 col-sm-5 px-md-4">
-        <div className="card cb-card border-light shadow-sm">{children}</div>
+        <div className="card cb-card border cb-border-color cb-rounded shadow-sm">{children}</div>
       </div>
     </div>
   </div>
 );
 
-const Title = ({ text }) => <h3 className="text-center">{text}</h3>;
+const Title = ({ text }) => <h3 className="text-center text-white">{text}</h3>;
 
 const Form = ({ onSubmit, id, children }) => (
   <form onSubmit={onSubmit} noValidate>
@@ -40,7 +40,7 @@ const Form = ({ onSubmit, id, children }) => (
       id={`${id}-submit`}
       value="Submit"
       aria-label="SubmitForm"
-      className="btn btn-primary btn-block rounded-lg"
+      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
       data-disable-with="Submit"
     />
   </form>
@@ -54,7 +54,7 @@ const Input = ({
 
   return (
     <div className="form-group">
-      <span className="text-primary">{title}</span>
+      <span className="text-white">{title}</span>
       <input
         type={type}
         id={id}
@@ -77,8 +77,8 @@ const PasswordInput = ({ id, title, formik }) => {
   };
 
   return (
-    <div className="form-group ">
-      <span className="text-primary">{title}</span>
+    <div className="form-group">
+      <span className="text-white">{title}</span>
       <div className="position-relative">
         <input
           type={showPassword ? 'text' : 'password'}
@@ -122,7 +122,7 @@ const SocialLinks = ({ isSignUp }) => (
         type="button"
         aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
         href={getLinkWithNext('/auth/github')}
-        className="btn w-100 px-2 btn-outline-dark rounded-lg"
+        className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
       >
         {isSignUp
           ? i18n.t('Sign up with Github')
@@ -134,7 +134,7 @@ const SocialLinks = ({ isSignUp }) => (
         type="button"
         aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
         href={getLinkWithNext('/auth/discord')}
-        className="btn w-100 px-2 btn-outline-dark rounded-lg"
+        className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
       >
         {isSignUp
           ? i18n.t('Sign up with Discord')
@@ -146,11 +146,11 @@ const SocialLinks = ({ isSignUp }) => (
 
 const SignInInvitation = () => (
   <div className="small">
-    <span className="text-muted">{i18n.t('If you have an account')}</span>
+    <span className="cb-text">{i18n.t('If you have an account')}</span>
     <a
       href={getLinkWithNext('/session/new')}
       role="button"
-      className="btn-link ml-3"
+      className="btn-link text-white ml-3"
     >
       {i18n.t('Sign In')}
     </a>
@@ -159,11 +159,11 @@ const SignInInvitation = () => (
 
 const SignUpInvitation = () => (
   <div className="small">
-    <span className="text-muted">{i18n.t('Have not an account?')}</span>
+    <span className="cb-text">{i18n.t('Have not an account?')}</span>
     <a
       href={getLinkWithNext('/users/new')}
       role="button"
-      className="btn-link ml-3"
+      className="btn-link text-primary ml-3"
     >
       {i18n.t('Sign Up')}
     </a>

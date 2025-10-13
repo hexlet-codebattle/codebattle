@@ -61,7 +61,7 @@ const AnimationModal = NiceModal.create(() => {
       onHide={modal.hide}
       contentClassName="cb-bg-panel cb-text"
     >
-      <Modal.Header closeButton>
+      <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -74,14 +74,14 @@ const AnimationModal = NiceModal.create(() => {
           />
         </div>
         {tournamentId && (
-          <div className="d-flex text-center justify-content-center">
+          <div className="d-flex text-center text-white justify-content-center">
             <span className="py-2 h4">
               <TournamentInfoPanel />
             </span>
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="cb-border-color">
         {/* {tournamentId && ( */}
         {/*   <a */}
         {/*     href={`/tournaments/${tournamentId}`} */}
@@ -90,7 +90,7 @@ const AnimationModal = NiceModal.create(() => {
         {/*     Back to tournament */}
         {/*   </a> */}
         {/* )} */}
-        <Button onClick={modal.hide} className="btn btn-secondary cb-rounded">
+        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
           {buttonText}
         </Button>
       </Modal.Footer>

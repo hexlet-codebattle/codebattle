@@ -3099,6 +3099,13 @@ a.cb-text:hover {
     border-color: $cb-border-color;
   }
 
+  & .card-footer {
+    color: white;
+    font-family: 'Arial', sans-serif;
+    background-color: $cb-bg-highlight-panel;
+    border-color: $cb-border-color;
+  }
+
   & .card-text {
     color: white;
     font-family: 'Arial', sans-serif;
