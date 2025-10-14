@@ -7,7 +7,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   alias Codebattle.Tournament
 
   @tournament_run_upcoming Application.compile_env(:codebattle, :tournament_run_upcoming)
-  @worker_timeout :timer.seconds(30)
+  @worker_timeout to_timeout(second: 30)
 
   @upcoming_time_before_live_mins 5
 
