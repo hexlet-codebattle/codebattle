@@ -2,7 +2,7 @@ Tournament Scheduling & Preemption
 
 Daily/Hourly Rules (UTC)
 
-Rookie: every hour except 16:00.
+Rookie: every 4 hours except 16:00.
 
 Challenger: daily at 16:00, unless preempted by a higher grade that day/week.
 
