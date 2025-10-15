@@ -16,6 +16,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:activated", params) do
+    [
+      %Message{
+        topic: "season",
+        event: "tournament:activated",
+        payload: %{tournament: params.tournament}
+      }
+    ]
+  end
+
   def get_messages("tournament:updated", params) do
     [
       %Message{

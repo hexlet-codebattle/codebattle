@@ -345,6 +345,7 @@ defmodule Codebattle.Tournament.Context do
     :timer.sleep(1000)
 
     Tournament.GlobalSupervisor.start_tournament(tournament)
+    Codebattle.PubSub.broadcast("tournament:activated", %{tournament: tournament})
     :ok
   end
 

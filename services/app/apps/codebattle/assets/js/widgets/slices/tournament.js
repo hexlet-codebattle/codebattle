@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createSlice } from '@reduxjs/toolkit';
 import omit from 'lodash/omit';
 
 import TournamentTypes from '../config/tournamentTypes';
@@ -6,6 +6,8 @@ import TournamentTypes from '../config/tournamentTypes';
 import initial from './initial';
 
 const initialState = initial.tournament;
+
+export const updateTournamentStateAction = createAction('updateTournamentState');
 
 const tournament = createSlice({
   name: 'tournament',
@@ -93,8 +95,13 @@ const tournament = createSlice({
       if (state.type === TournamentTypes.show) {
         state.showBots = !state.showBots;
       }
-   },
-},
+    },
+    changeTournamentState: (state, { payload }) => {
+      if (payload.id === state.id) {
+        state.state = payload.state;
+      }
+    },
+  },
 });
 
 const { actions, reducer } = tournament;

@@ -1,6 +1,6 @@
 /* eslint-disable no-bitwise */
 import {
- useState, useEffect, useCallback, useMemo,
+  useState, useEffect, useCallback, useMemo,
 } from 'react';
 
 import GameRoomModes from '../config/gameModes';
@@ -143,15 +143,35 @@ const useEditor = props => {
     };
   }, [handleEnterCtrPlusS]);
 
-  const handleEditorWillMount = () => {};
+  const handleEditorWillMount = () => { };
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
     setMonaco(currentMonaco);
 
+    currentMonaco.editor.defineTheme('code-theme-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      colors: {
+        'editor.background': '#1f1313',
+      },
+      rules: [],
+    });
+    currentMonaco.editor.defineTheme('db-theme-dark', {
+      base: 'vs-dark',
+      inherit: true,
+      colors: {
+        'editor.background': '#13181f',
+      },
+      rules: [],
+    });
+
+    // currentMonaco.editor.setTheme('db-theme-dark');
+    // currentMonaco.editor.setTheme('code-theme-dark');
+
     const {
- editable, roomMode, checkResult, toggleMuteSound,
-} = props;
+      editable, roomMode, checkResult, toggleMuteSound,
+    } = props;
 
     // Intercept keydown for custom Copy, Cut, and Paste logic.
     currentEditor.onKeyDown(e => {

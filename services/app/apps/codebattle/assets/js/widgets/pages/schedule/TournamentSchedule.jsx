@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import cn from 'classnames';
 import dayjs from 'dayjs';
+import uniqBy from 'lodash/uniqBy';
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar';
 import { useSelector } from 'react-redux';
 
@@ -180,20 +181,22 @@ const TournamentSchedule = () => {
     }
 
     if (context === states.contest) {
-      const newTournaments = [
+      const newTournaments = uniqBy([
         ...hash.seasonTournaments,
         ...hash.userTournaments.filter(haveSeasonGrade),
-      ];
+      ], 'id');
+
       setTournaments(newTournaments);
     } else if (context === states.my) {
       setTournaments(
         hash.userTournaments.filter(filterMyTournaments(currentUserId)),
       );
     } else if (context === states.all) {
-      const newTournaments = [
+      const newTournaments = uniqBy([
         ...hash.seasonTournaments,
         ...hash.userTournaments,
-      ];
+      ], 'id');
+
       setTournaments(newTournaments);
     }
   }, [context, hash, setTournaments, currentUserId, isAdmin]);

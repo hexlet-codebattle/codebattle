@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { selectDefaultAvatarUrl } from '@/selectors';
+
 import i18next from '../../i18n';
 import { followUser, unfollowUser } from '../middlewares/Main';
 import { redirectToNewGame } from '../slices';
@@ -14,9 +16,10 @@ import UserAchievements from './UserAchievements';
 
 const UserStats = ({ data, user: userInfo }) => {
   const dispatch = useDispatch();
+  const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
 
   const activeGameId = data?.activeGameId;
-  const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || '/assets/images/logo.svg';
+  const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || defaultAvatarUrl;
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
 

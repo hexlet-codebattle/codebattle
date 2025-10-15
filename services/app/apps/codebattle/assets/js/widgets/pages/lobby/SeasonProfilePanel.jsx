@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
+import { useSelector } from 'react-redux';
+
+import { selectDefaultAvatarUrl } from '@/selectors';
 
 import i18n from '../../../i18n';
 
 import TournamentListItem, { activeIcon } from './TournamentListItem';
 
-const contestDatesText = 'Season: Oct 14 - Dec 21';
+const contestDatesText = 'Season: Oct 16 - Dec 21';
 
-const UserLogo = ({ user, size = '40px' }) => {
+const UserLogo = ({ user, size = '70px' }) => {
   const [userInfo, setUserInfo] = useState();
-  const avatarUrl = user.avatarUrl || userInfo?.avatarUrl || '/assets/images/logo.svg';
+  const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
+  const avatarUrl = user.avatarUrl || userInfo?.avatarUrl || defaultAvatarUrl;
 
   useEffect(() => {
     const userId = user.id;
@@ -36,6 +40,7 @@ const UserLogo = ({ user, size = '40px' }) => {
     <img
       style={{ width: size, height: size }}
       alt="Avatar Logo"
+      className="rounded-circle"
       src={avatarUrl}
     />
   );

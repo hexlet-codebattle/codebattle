@@ -576,6 +576,8 @@ export const reportsSelector = createDraftSafeSelector(
   },
 );
 
+export const selectDefaultAvatarUrl = () => '/assets/images/logo.svg';
+
 // Participant data selector
 export const participantDataSelector = state => {
   const event = eventSelector(state);

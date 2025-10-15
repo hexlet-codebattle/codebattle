@@ -3,7 +3,7 @@ import { camelizeKeys } from 'humps';
 
 import { makeGameUrl } from '@/utils/urlBuilders';
 
-import { channelMethods } from '../../socket';
+import { channelMethods, channelTopics } from '../../socket';
 import { actions } from '../slices';
 
 import Channel from './Channel';
@@ -98,6 +98,11 @@ const initPresence = followId => dispatch => {
       data => {
         camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
         dispatch(redirectToNewGame(camelizeKeys(data)));
+      },
+    ).addListener(
+      channelTopics.tournamentActivated,
+      data => {
+        camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
       },
     );
 };

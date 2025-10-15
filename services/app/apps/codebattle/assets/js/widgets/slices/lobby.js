@@ -4,6 +4,9 @@ import find from 'lodash/find';
 import reject from 'lodash/reject';
 
 import initial from './initial';
+import { actions as tournamentActions } from './tournament';
+
+const sortByStartsAt = (a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond');
 
 const initialState = {
   activeGames: initial.activeGames,
@@ -46,8 +49,8 @@ const lobby = createSlice({
     ) => ({
       ...state,
       activeGames,
-      seasonTournaments: seasonTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
-      liveTournaments: liveTournaments.sort((a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond')),
+      seasonTournaments: seasonTournaments.sort(sortByStartsAt),
+      liveTournaments: liveTournaments.sort(sortByStartsAt),
       completedTournaments: tournaments.filter(x => !x.isLive),
       channel: { online: true },
     }),
@@ -55,8 +58,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, editorLang: payload.editorLang }
-              : player));
+            ? { ...player, editorLang: payload.editorLang }
+            : player));
 
           return { ...game, players: newPlayers };
         }
@@ -68,8 +71,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, checkResult: payload.checkResult }
-              : player));
+            ? { ...player, checkResult: payload.checkResult }
+            : player));
 
           return { ...game, players: newPlayers };
         }
@@ -124,6 +127,21 @@ const lobby = createSlice({
     },
     updateMainChannelState: (state, { payload }) => {
       state.mainChannel.online = payload;
+    },
+  },
+  extraReducers: {
+    [tournamentActions.changeTournamentState]: (state, { payload }) => {
+      const seasonTournament = state.seasonTournaments.find(t => t.id === payload.id);
+      const liveTournament = state.liveTournaments.find(t => t.id === payload.id);
+
+      if (seasonTournament) {
+        state.upcomingTournaments = state.upcomingTournaments.filter(t => t.id !== payload.id);
+        state.liveTournaments = [...state.liveTournaments, seasonTournament].sort(sortByStartsAt);
+      }
+
+      if (liveTournament) {
+        state.liveTournaments = state.liveTournaments.map(t => (t.id === payload.id ? ({ ...t, state: payload.state }) : t));
+      }
     },
   },
 });

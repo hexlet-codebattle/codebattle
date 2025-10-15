@@ -16,6 +16,7 @@ defmodule CodebattleWeb.MainChannel do
       if !current_user.is_guest do
         topic = "main:#{current_user.id}"
         Codebattle.PubSub.subscribe(topic)
+        Codebattle.PubSub.subscribe("season")
 
         if !FunWithFlags.enabled?(:skip_presence) do
           send(self(), {:after_join, state})
@@ -96,6 +97,18 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_info(%{event: "user:game_created", payload: payload}, socket) do
     push(socket, "user:game_created", %{active_game_id: payload.active_game_id})
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:activated", payload: %{tournament: tournament}}, socket) do
+    push(socket, "tournament:activated", %{
+      id: tournament.id,
+      state: tournament.state,
+      grade: tournament.grade,
+      starts_at: tournament.starts_at,
+      description: tournament.description
+    })
 
     {:noreply, socket}
   end

@@ -54,6 +54,7 @@ export const channelTopics = {
   tournamentGameWaitTopic: 'tournament:game:wait',
   tournamentPlayerFinishedRoundTopic: 'tournament:player:finished_round',
   tournamentPlayerFinishedTopic: 'tournament:player:finished',
+  tournamentActivated: 'tournament:activated',
 
   roundCreatedTopic: 'round:created',
 
