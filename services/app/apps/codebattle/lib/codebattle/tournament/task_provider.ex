@@ -73,7 +73,6 @@ defmodule Codebattle.Tournament.TaskProvider do
     Tasks.get_task(tournament, task_id)
   end
 
-  defp safe_random(nil), do: nil
   defp safe_random([]), do: nil
   defp safe_random(list), do: Enum.random(list)
 end
