@@ -5,7 +5,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
 
   require Logger
 
-  @timeout to_timeout(day: 1)
+  @work_timeout to_timeout(day: 1)
 
   # API
   def start_link(_) do
@@ -18,8 +18,8 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
 
   # SERVER
   def init(_) do
-    Process.send_after(self(), :work, @timeout)
-    Process.send_after(self(), :subscribe, @timeout)
+    Process.send_after(self(), :subscribe, to_timeout(second: 15))
+    Process.send_after(self(), :work, @work_timeout)
 
     Logger.debug("Start UsersPointsServer")
 
@@ -47,7 +47,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
       {:noreply, state}
     else
       do_work()
-      Process.send_after(self(), :work, @timeout)
+      Process.send_after(self(), :work, @work_timeout)
       {:noreply, state}
     end
   end
@@ -55,6 +55,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
   # Recalculate user points when a non-open tournament finishes
   # Open tournaments are excluded from point recalculation as they don't affect user ratings
   def handle_info(%{event: "tournament:finished", payload: %{grade: grade}}, state) when grade != "open" do
+    :timer.sleep(300)
     do_work()
     {:noreply, state}
   end

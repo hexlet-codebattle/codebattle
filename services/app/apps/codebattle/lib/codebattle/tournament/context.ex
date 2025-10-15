@@ -159,7 +159,7 @@ defmodule Codebattle.Tournament.Context do
   def get_one_upcoming_tournament_for_each_grade do
     cte_query =
       from(t in Tournament,
-        where: t.state == "upcoming" and t.grade != "open",
+        where: t.state == "upcoming" and t.grade != "open" and t.starts_at > ^DateTime.utc_now(),
         group_by: t.grade,
         select: %{grade: t.grade, min_id: min(t.id)}
       )

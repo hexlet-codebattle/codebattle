@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   @tournament_run_upcoming Application.compile_env(:codebattle, :tournament_run_upcoming)
   @worker_timeout to_timeout(second: 30)
 
-  @upcoming_time_before_live_mins 5
+  @upcoming_time_before_live_mins 7
 
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do

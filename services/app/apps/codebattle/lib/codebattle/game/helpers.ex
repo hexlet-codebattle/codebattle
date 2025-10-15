@@ -55,7 +55,7 @@ defmodule Codebattle.Game.Helpers do
     |> Map.new(fn player ->
       result =
         player
-        |> Map.take([:id, :result, :result_percent])
+        |> Map.take([:id, :result, :result_percent, :rating])
         |> Map.put(:lang, player.editor_lang)
 
       {player.id, result}
