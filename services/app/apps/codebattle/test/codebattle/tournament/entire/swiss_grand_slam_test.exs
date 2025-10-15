@@ -410,7 +410,7 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
              }
            ] = TournamentUserResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
 
-    :timer.sleep(:timer.seconds(2))
+    :timer.sleep(to_timeout(second: 2))
     assert %{rating: 1023, rank: 1, points: 2048} = Repo.get(User, u1_id)
     assert %{rating: 977, rank: 2, points: 1024} = Repo.get(User, u2_id)
   end

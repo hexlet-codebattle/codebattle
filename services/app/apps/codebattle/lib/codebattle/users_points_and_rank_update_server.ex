@@ -54,9 +54,8 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
 
   # Recalculate user points when a non-open tournament finishes
   # Open tournaments are excluded from point recalculation as they don't affect user ratings
-  def handle_info(%{event: "tournament:finished", payload: %{grade: grade}}, state)
-      when grade != "open" do
-    :timer.sleep(:timer.seconds(0.5))
+  def handle_info(%{event: "tournament:finished", payload: %{grade: grade}}, state) when grade != "open" do
+    :timer.sleep(to_timeout(second: 0.5))
     do_work()
     {:noreply, state}
   end
