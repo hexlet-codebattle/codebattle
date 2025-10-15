@@ -60,19 +60,13 @@ defmodule Codebattle.Tournament.TaskProvider do
     end
   end
 
-  def get_task(%{task_strategy: "sequential", current_round_position: round} = tournament, nil) do
+  def get_task(%{current_round_position: round} = tournament, nil) do
     tournament.task_ids
     |> Enum.at(round)
     |> case do
       nil -> nil
       task_id -> Tasks.get_task(tournament, task_id)
     end
-  end
-
-  def get_task(tournament, nil) do
-    tournament.task_ids
-    |> safe_random()
-    |> then(&Tasks.get_task(tournament, &1))
   end
 
   def get_task(tournament, task_id) do
