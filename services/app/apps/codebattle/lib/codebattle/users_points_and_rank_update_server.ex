@@ -18,7 +18,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
 
   # SERVER
   def init(_) do
-    Process.send_after(self(), :subscribe, to_timeout(second: 15))
+    Process.send_after(self(), :subscribe, 0)
     Process.send_after(self(), :work, to_timeout(minute: 5))
 
     Logger.debug("Start UsersPointsServer")
@@ -32,12 +32,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
   end
 
   def handle_info(:subscribe, state) do
-    if FunWithFlags.enabled?(:skip_user_points_server) do
-      :noop
-    else
-      Codebattle.PubSub.subscribe("tournaments")
-    end
-
+    Codebattle.PubSub.subscribe("tournaments")
     {:noreply, state}
   end
 

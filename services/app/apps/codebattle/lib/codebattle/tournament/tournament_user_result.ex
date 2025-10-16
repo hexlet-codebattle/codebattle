@@ -11,18 +11,19 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   @type t :: %__MODULE__{}
 
   schema "tournament_user_results" do
-    field(:user_id, :integer)
-    field(:clan_id, :integer)
-    field(:user_name, :string)
-    field(:score, :integer, default: 0)
-    field(:tournament_id, :integer)
-    field(:points, :integer, default: 0)
-    field(:place, :integer, default: 0)
-    field(:games_count, :integer, default: 0)
-    field(:wins_count, :integer, default: 0)
-    field(:total_time, :integer, default: 0)
-    field(:is_cheater, :boolean, default: false)
     field(:avg_result_percent, :decimal)
+    field(:clan_id, :integer)
+    field(:games_count, :integer, default: 0)
+    field(:is_cheater, :boolean, default: false)
+    field(:place, :integer, default: 0)
+    field(:points, :integer, default: 0)
+    field(:score, :integer, default: 0)
+    field(:total_time, :integer, default: 0)
+    field(:tournament_id, :integer)
+    field(:user_id, :integer)
+    field(:user_name, :string)
+    field(:user_lang, :string)
+    field(:wins_count, :integer, default: 0)
 
     timestamps(updated_at: false)
   end
@@ -58,6 +59,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           tr.user_id,
           tr.clan_id,
           tr.user_name,
+          tr.user_lang,
           SUM(tr.score)::integer AS score,
           COUNT(*)::integer AS games_count,
           SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END)::integer AS wins_count,
@@ -66,7 +68,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           AVG(tr.result_percent)::numeric(5,1) AS avg_result_percent
         FROM tournament_results tr
         WHERE tr.tournament_id = #{tournament.id}
-        GROUP BY tr.tournament_id, tr.user_id, tr.clan_id, tr.user_name
+        GROUP BY tr.tournament_id, tr.user_id, tr.clan_id, tr.user_name, tr.user_lang
       ),
       ranked_results AS (
         SELECT
@@ -74,6 +76,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           ar.user_id,
           ar.clan_id,
           ar.user_name,
+          ar.user_lang,
           ar.score,
           ar.games_count,
           ar.wins_count,
@@ -91,6 +94,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           rr.user_id,
           rr.clan_id,
           rr.user_name,
+          rr.user_lang,
           rr.score,
           rr.place,
           rr.games_count,
@@ -107,6 +111,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
         user_id,
         clan_id,
         user_name,
+        user_lang,
         score,
         points,
         place,
@@ -122,6 +127,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
         user_id,
         clan_id,
         user_name,
+        user_lang,
         score,
         points,
         place,
@@ -135,6 +141,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
       ON CONFLICT (tournament_id, user_id)
       DO UPDATE SET
         user_name = EXCLUDED.user_name,
+        user_lang = EXCLUDED.user_lang,
         score = EXCLUDED.score,
         points = EXCLUDED.points,
         place = EXCLUDED.place,
