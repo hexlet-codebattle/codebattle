@@ -58,7 +58,7 @@ defmodule Codebattle.Tournament.Server do
     GenServer.call(server_name(tournament.id), {:update, tournament})
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.Server do
     )
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -85,7 +85,7 @@ defmodule Codebattle.Tournament.Server do
     )
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -93,7 +93,7 @@ defmodule Codebattle.Tournament.Server do
     GenServer.call(server_name(tournament_id), {:fire_event, event_type, params}, 20_000)
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 

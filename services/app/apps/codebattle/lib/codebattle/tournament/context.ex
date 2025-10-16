@@ -123,7 +123,8 @@ defmodule Codebattle.Tournament.Context do
 
   @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
   def get_upcoming_to_live_candidate(starts_at_delay_mins) do
-    delay_time = DateTime.add(DateTime.utc_now(), starts_at_delay_mins, :minute)
+    now = DateTime.utc_now()
+    delay_time = DateTime.add(now, starts_at_delay_mins, :minute)
 
     Repo.one(
       from(t in Tournament,
@@ -131,6 +132,8 @@ defmodule Codebattle.Tournament.Context do
         order_by: t.id,
         where:
           t.state == "upcoming" and
+            t.grade != "open" and
+            t.starts_at > ^now and
             t.starts_at < ^delay_time
       )
     )
