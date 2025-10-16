@@ -13,7 +13,6 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
   @decimal100 Decimal.new("100.0")
   @decimal0 Decimal.new("0.0")
 
-  @tag :skip
   test "works with player who solved all tasks" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "tp", task_ids: [t1_id, t2_id, t3_id])
@@ -290,7 +289,11 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
 
     assert Process.info(self(), :message_queue_len) == {:message_queue_len, 0}
 
+    :timer.sleep(100)
     tournament = %{id: tournament_id} = Tournament.Context.get(tournament.id)
+
+    assert tournament.state == "finished"
+
     matches = get_matches(tournament)
 
     assert Enum.count(matches) == 3
@@ -309,6 +312,7 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
                task_id: ^t1_id,
                tournament_id: ^tournament_id,
                user_id: ^u1_id,
+               user_lang: "js",
                user_name: "1"
              },
              %{
@@ -374,7 +378,8 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
                task_id: ^t3_id,
                tournament_id: ^tournament_id,
                user_id: ^u2_id,
-               user_name: "2"
+               user_name: "2",
+               user_lang: "js"
              }
            ] = TournamentResult |> Repo.all() |> Enum.sort_by(&{&1.user_id, &1.task_id})
 
@@ -392,6 +397,7 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
                tournament_id: ^tournament_id,
                user_id: ^u1_id,
                user_name: "1",
+               user_lang: "js",
                wins_count: 3
              },
              %{
@@ -407,11 +413,12 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
                tournament_id: ^tournament_id,
                user_id: ^u2_id,
                user_name: "2",
+               user_lang: "js",
                wins_count: 0
              }
            ] = TournamentUserResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
 
-    :timer.sleep(to_timeout(second: 2))
+    :timer.sleep(to_timeout(second: 5))
     assert %{rating: 1023, rank: 1, points: 2048} = Repo.get(User, u1_id)
     assert %{rating: 977, rank: 2, points: 1024} = Repo.get(User, u2_id)
   end
