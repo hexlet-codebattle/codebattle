@@ -6,6 +6,8 @@ defmodule Codebattle.Tournament.UpcomingRunner do
 
   alias Codebattle.Tournament
 
+  require Logger
+
   @tournament_run_upcoming Application.compile_env(:codebattle, :tournament_run_upcoming)
   @worker_timeout to_timeout(second: 30)
 
@@ -41,6 +43,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
     case Tournament.Context.get_upcoming_to_live_candidate(@upcoming_time_before_live_mins) do
       %Tournament{} = tournament ->
         Tournament.Context.move_upcoming_to_live(tournament)
+        Logger.info("Tournament #{tournament.name}  moved to live from upcoming")
         :ok
 
       _ ->
