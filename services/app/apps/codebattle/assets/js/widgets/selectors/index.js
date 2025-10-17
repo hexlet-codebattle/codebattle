@@ -33,8 +33,8 @@ export const userByIdSelector = userId => state => state.user.users[userId];
 export const userIsAdminSelector = userId => state => !!state.user.users[userId]?.isAdmin;
 
 export const subscriptionTypeSelector = state => (currentUserIsAdminSelector(state)
-  ? SubscriptionTypeCodes.admin
-  : SubscriptionTypeCodes.premium);
+    ? SubscriptionTypeCodes.admin
+    : SubscriptionTypeCodes.premium);
 
 export const isShowGuideSelector = state => !!state.gameUI.isShowGuide;
 
@@ -114,15 +114,15 @@ export const editorDataSelector = (playerId, roomMachineState) => state => {
   }
   const text = roomMachineState
     && roomMachineState.matches({ replayer: replayerMachineStates.on })
-    ? editorTextsHistory[playerId]
-    : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
+      ? editorTextsHistory[playerId]
+      : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
 
   const currentLangSlug = roomMachineState
     && roomMachineState.matches({
       replayer: replayerMachineStates.on,
     })
-    ? meta.historyCurrentLangSlug
-    : meta.currentLangSlug;
+      ? meta.historyCurrentLangSlug
+      : meta.currentLangSlug;
 
   return {
     ...meta,
@@ -153,28 +153,28 @@ export const secondEditorSelector = (state, roomMachineState) => {
 };
 
 export const leftEditorSelector = roomMachineState => createDraftSafeSelector(
-  state => state,
-  state => {
-    const currentUserId = currentUserIdSelector(state);
-    const player = get(gamePlayersSelector(state), currentUserId, false);
-    const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? secondEditorSelector
-      : firstEditorSelector;
-    return editorSelector(state, roomMachineState);
-  },
-);
+    state => state,
+    state => {
+      const currentUserId = currentUserIdSelector(state);
+      const player = get(gamePlayersSelector(state), currentUserId, false);
+      const editorSelector = !!player && player.type === userTypes.secondPlayer
+          ? secondEditorSelector
+          : firstEditorSelector;
+      return editorSelector(state, roomMachineState);
+    },
+  );
 
 export const rightEditorSelector = roomMachineState => createDraftSafeSelector(
-  state => state,
-  state => {
-    const currentUserId = currentUserIdSelector(state);
-    const player = get(gamePlayersSelector(state), currentUserId, false);
-    const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? firstEditorSelector
-      : secondEditorSelector;
-    return editorSelector(state, roomMachineState);
-  },
-);
+    state => state,
+    state => {
+      const currentUserId = currentUserIdSelector(state);
+      const player = get(gamePlayersSelector(state), currentUserId, false);
+      const editorSelector = !!player && player.type === userTypes.secondPlayer
+          ? firstEditorSelector
+          : secondEditorSelector;
+      return editorSelector(state, roomMachineState);
+    },
+  );
 
 export const currentPlayerTextByLangSelector = lang => state => {
   const userId = currentUserIdSelector(state);
@@ -219,7 +219,7 @@ export const isTaskOwner = state => currentUserIdSelector(state) === state.build
   || currentUserIdSelector(state) === state.task?.creatorId;
 
 export const canEditTaskGenerator = state => (currentUserIdSelector(state) === state.builder.task.creatorId
-  && state.builder.task.state !== taskStateCodes.moderation)
+    && state.builder.task.state !== taskStateCodes.moderation)
   || (currentUserIsAdminSelector(state)
     && state.builder.task.state !== taskStateCodes.moderation);
 
@@ -246,36 +246,36 @@ export const taskTextSolutionSelector = state => state.builder.textSolution[stat
 export const taskTextArgumentsGeneratorSelector = state => state.builder.textArgumentsGenerator[state.builder.generatorLang];
 
 export const taskParamsSelector = (params = { normalize: true }) => createDraftSafeSelector(
-  state => state.builder.task,
-  state => state.builder.task.inputSignature,
-  state => state.builder.task.outputSignature,
-  state => state.builder.task.asserts,
-  state => state.builder.task.assertsExamples,
-  state => state.builder.generatorLang,
-  state => state.builder.textSolution,
-  state => state.builder.textArgumentsGenerator,
-  (
-    task,
-    inputSignature,
-    outputSignature,
-    asserts,
-    assertsExamples,
-    generatorLang,
-    textSolution,
-    textArgumentsGenerator,
-  ) => ({
-    ...task,
-    inputSignature: inputSignature.map(item => (params.normalize ? pick(item, ['argumentName', 'type']) : item)),
-    outputSignature: params.normalize
-      ? pick(outputSignature, ['type'])
-      : outputSignature,
-    asserts: asserts.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
-    assertsExamples: assertsExamples.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
-    generatorLang,
-    solution: textSolution[generatorLang],
-    argumentsGenerator: textArgumentsGenerator[generatorLang],
-  }),
-);
+    state => state.builder.task,
+    state => state.builder.task.inputSignature,
+    state => state.builder.task.outputSignature,
+    state => state.builder.task.asserts,
+    state => state.builder.task.assertsExamples,
+    state => state.builder.generatorLang,
+    state => state.builder.textSolution,
+    state => state.builder.textArgumentsGenerator,
+    (
+      task,
+      inputSignature,
+      outputSignature,
+      asserts,
+      assertsExamples,
+      generatorLang,
+      textSolution,
+      textArgumentsGenerator,
+    ) => ({
+      ...task,
+      inputSignature: inputSignature.map(item => (params.normalize ? pick(item, ['argumentName', 'type']) : item)),
+      outputSignature: params.normalize
+        ? pick(outputSignature, ['type'])
+        : outputSignature,
+      asserts: asserts.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
+      assertsExamples: assertsExamples.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
+      generatorLang,
+      solution: textSolution[generatorLang],
+      argumentsGenerator: textArgumentsGenerator[generatorLang],
+    }),
+  );
 
 export const taskParamsTemplatesStateSelector = state => state.builder.templates.state;
 
@@ -294,9 +294,9 @@ export const editorLangsSelector = state => state.editor.langs;
 export const langInputSelector = state => state.editor.langInput;
 
 export const executionOutputSelector = (playerId, roomMachineState) => state => (roomMachineState
-  && roomMachineState.matches({ replayer: replayerMachineStates.on })
-  ? state.executionOutput.historyResults[playerId]
-  : state.executionOutput.results[playerId]);
+    && roomMachineState.matches({ replayer: replayerMachineStates.on })
+      ? state.executionOutput.historyResults[playerId]
+      : state.executionOutput.results[playerId]);
 
 export const firstExecutionOutputSelector = roomMachineState => state => {
   const playerId = firstPlayerSelector(state)?.id;
@@ -313,8 +313,8 @@ export const leftExecutionOutputSelector = roomMachineState => state => {
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = player.type === userTypes.secondPlayer
-    ? secondExecutionOutputSelector
-    : firstExecutionOutputSelector;
+      ? secondExecutionOutputSelector
+      : firstExecutionOutputSelector;
   return outputSelector(roomMachineState)(state);
 };
 
@@ -323,108 +323,108 @@ export const rightExecutionOutputSelector = roomMachineState => state => {
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = !!player && player.type === userTypes.secondPlayer
-    ? firstExecutionOutputSelector
-    : secondExecutionOutputSelector;
+      ? firstExecutionOutputSelector
+      : secondExecutionOutputSelector;
   return outputSelector(roomMachineState)(state);
 };
 
 export const singlePlayerExecutionOutputSelector = roomMachineState => state => {
-  const player = singleBattlePlayerSelector(state);
-
-  return player
-    ? executionOutputSelector(player.id, roomMachineState)(state)
-    : {};
-};
-
-export const infoPanelExecutionOutputSelector = (viewMode, roomMachineState) => state => {
-  if (viewMode === BattleRoomViewModes.duel) {
-    return leftExecutionOutputSelector(roomMachineState)(state);
-  }
-
-  if (viewMode === BattleRoomViewModes.single) {
-    return singlePlayerExecutionOutputSelector(roomMachineState)(state);
-  }
-
-  throw new Error('Invalid view mode for battle room');
-};
-
-export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => state => {
-  const currentUserId = currentUserIdSelector(state);
-  const editorsMode = editorsModeSelector(state);
-  const theme = editorsThemeSelector(state);
-
-  if (viewMode === BattleRoomViewModes.duel) {
-    const leftEditor = leftEditorSelector(roomMachineState)(state);
-    const rightEditor = rightEditorSelector(roomMachineState)(state);
-    const leftUserId = leftEditor?.userId;
-    const rightUserId = rightEditor?.userId;
-
-    const leftUserType = currentUserId === leftUserId
-      ? editorUserTypes.currentUser
-      : editorUserTypes.player;
-    const rightUserType = leftUserType === editorUserTypes.currentUser
-      ? editorUserTypes.opponent
-      : editorUserTypes.player;
-    const leftEditorHeight = editorHeightSelector(
-      roomMachineState,
-      leftUserId,
-    )(state);
-    const rightEditorHeight = editorHeightSelector(
-      roomMachineState,
-      rightUserId,
-    )(state);
-    const rightOutput = rightExecutionOutputSelector(roomMachineState)(state);
-
-    const leftEditorParams = {
-      id: leftUserId,
-      type: leftUserType,
-      editorState: leftEditor,
-      editorHeight: leftEditorHeight,
-      theme,
-      editorMode: editorsMode,
-    };
-    const rightEditorParams = {
-      id: rightUserId,
-      type: rightUserType,
-      editorState: rightEditor,
-      editorHeight: rightEditorHeight,
-      theme,
-      editorMode: editorModes.default,
-      output: rightOutput,
-    };
-
-    return [leftEditorParams, rightEditorParams];
-  }
-
-  if (viewMode === BattleRoomViewModes.single) {
     const player = singleBattlePlayerSelector(state);
 
-    if (!player) return [];
+    return player
+      ? executionOutputSelector(player.id, roomMachineState)(state)
+      : {};
+  };
 
-    const { id: userId } = player;
-    const userType = currentUserId === userId
-      ? editorUserTypes.currentUser
-      : editorUserTypes.player;
-    const editorState = editorDataSelector(userId, roomMachineState)(state);
-    const editorHeight = editorHeightSelector(
-      roomMachineState,
-      userId,
-    )(state);
+export const infoPanelExecutionOutputSelector = (viewMode, roomMachineState) => state => {
+    if (viewMode === BattleRoomViewModes.duel) {
+      return leftExecutionOutputSelector(roomMachineState)(state);
+    }
 
-    const editorParams = {
-      id: userId,
-      type: userType,
-      editorState,
-      editorHeight,
-      theme,
-      editorMode: editorsMode,
-    };
+    if (viewMode === BattleRoomViewModes.single) {
+      return singlePlayerExecutionOutputSelector(roomMachineState)(state);
+    }
 
-    return [editorParams];
-  }
+    throw new Error('Invalid view mode for battle room');
+  };
 
-  throw new Error('Invalid view mode for battle room');
-};
+export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => state => {
+    const currentUserId = currentUserIdSelector(state);
+    const editorsMode = editorsModeSelector(state);
+    const theme = editorsThemeSelector(state);
+
+    if (viewMode === BattleRoomViewModes.duel) {
+      const leftEditor = leftEditorSelector(roomMachineState)(state);
+      const rightEditor = rightEditorSelector(roomMachineState)(state);
+      const leftUserId = leftEditor?.userId;
+      const rightUserId = rightEditor?.userId;
+
+      const leftUserType = currentUserId === leftUserId
+          ? editorUserTypes.currentUser
+          : editorUserTypes.player;
+      const rightUserType = leftUserType === editorUserTypes.currentUser
+          ? editorUserTypes.opponent
+          : editorUserTypes.player;
+      const leftEditorHeight = editorHeightSelector(
+        roomMachineState,
+        leftUserId,
+      )(state);
+      const rightEditorHeight = editorHeightSelector(
+        roomMachineState,
+        rightUserId,
+      )(state);
+      const rightOutput = rightExecutionOutputSelector(roomMachineState)(state);
+
+      const leftEditorParams = {
+        id: leftUserId,
+        type: leftUserType,
+        editorState: leftEditor,
+        editorHeight: leftEditorHeight,
+        theme,
+        editorMode: editorsMode,
+      };
+      const rightEditorParams = {
+        id: rightUserId,
+        type: rightUserType,
+        editorState: rightEditor,
+        editorHeight: rightEditorHeight,
+        theme,
+        editorMode: editorModes.default,
+        output: rightOutput,
+      };
+
+      return [leftEditorParams, rightEditorParams];
+    }
+
+    if (viewMode === BattleRoomViewModes.single) {
+      const player = singleBattlePlayerSelector(state);
+
+      if (!player) return [];
+
+      const { id: userId } = player;
+      const userType = currentUserId === userId
+          ? editorUserTypes.currentUser
+          : editorUserTypes.player;
+      const editorState = editorDataSelector(userId, roomMachineState)(state);
+      const editorHeight = editorHeightSelector(
+        roomMachineState,
+        userId,
+      )(state);
+
+      const editorParams = {
+        id: userId,
+        type: userType,
+        editorState,
+        editorHeight,
+        theme,
+        editorMode: editorsMode,
+      };
+
+      return [editorParams];
+    }
+
+    throw new Error('Invalid view mode for battle room');
+  };
 
 export const userRankingSelector = userId => state => (state.tournament.ranking?.entries || []).find(({ id }) => id === userId);
 export const tournamentIdSelector = state => state.tournament.id;
@@ -467,26 +467,6 @@ export const currentChatUserSelector = state => {
 };
 
 export const taskDescriptionLanguageSelector = state => state.gameUI.taskDescriptionLanguage;
-
-export const videoConferenceMediaAvailableSelector = createDraftSafeSelector(
-  state => state.gameUI.audioAvailable,
-  state => state.gameUI.videoAvailable,
-  (audioAvailable, videoAvailable) => ({
-    audioAvailable,
-    videoAvailable,
-  }),
-);
-
-export const videoConferenceSettingsSelector = createDraftSafeSelector(
-  state => state.gameUI.audioMuted,
-  state => state.gameUI.videoMuted,
-  (audioMuted, videoMuted) => ({
-    audioMuted,
-    videoMuted,
-  }),
-);
-
-export const showVideoConferencePanelSelector = state => state.gameUI.showVideoConferencePanel;
 
 export const playbookStatusSelector = state => state.playbook.state;
 
@@ -585,47 +565,47 @@ export const participantDataSelector = state => {
 
   // Map event stages to the format needed by the dashboard
   const stages = event?.stages.map(eventStage => {
-    const userStage = userEvent?.stages.find(
-      stage => stage.slug === eventStage.slug,
-    );
+      const userStage = userEvent?.stages.find(
+        stage => stage.slug === eventStage.slug,
+      );
 
-    // Determine status based on event stage status and user participation
-    const isStageAvailableForUser = !!(
-      eventStage.status === 'active'
-      && ['pending', 'started', null].includes(userStage?.status)
-    );
-    const isUserPassedStage = userStage?.entranceResult === 'passed';
-    const gamesCount = userStage?.gamesCount ? userStage.gamesCount : '-';
-    const zeroWinsCount = gamesCount === '-' ? '-' : '0';
-    const winsCount = userStage?.winsCount
-      ? userStage.winsCount
-      : zeroWinsCount;
+      // Determine status based on event stage status and user participation
+      const isStageAvailableForUser = !!(
+        eventStage.status === 'active'
+        && ['pending', 'started', null].includes(userStage?.status)
+      );
+      const isUserPassedStage = userStage?.entranceResult === 'passed';
+      const gamesCount = userStage?.gamesCount ? userStage.gamesCount : '-';
+      const zeroWinsCount = gamesCount === '-' ? '-' : '0';
+      const winsCount = userStage?.winsCount
+        ? userStage.winsCount
+        : zeroWinsCount;
 
-    return {
-      status: eventStage.status,
-      userStatus: userStage?.status,
-      tournamentId: userStage?.tournamentId,
-      name: eventStage.name,
-      dates: eventStage.dates,
-      isStageAvailableForUser,
-      isUserPassedStage,
-      slug: eventStage.slug,
-      placeInTotalRank: userStage?.placeInTotalRank
-        ? userStage.placeInTotalRank
-        : '-',
-      placeInCategoryRank: userStage?.placeInCategoryRank
-        ? userStage.placeInCategoryRank
-        : '-',
-      gamesCount,
-      winsCount,
-      timeSpent: userStage?.timeSpentInSeconds
-        ? moment.utc(userStage.timeSpentInSeconds * 1000).format('HH:mm:ss')
-        : '-',
-      actionButtonText: eventStage.actionButtonText,
-      confirmationText: eventStage.confirmationText,
-      type: eventStage.type,
-    };
-  }) || [];
+      return {
+        status: eventStage.status,
+        userStatus: userStage?.status,
+        tournamentId: userStage?.tournamentId,
+        name: eventStage.name,
+        dates: eventStage.dates,
+        isStageAvailableForUser,
+        isUserPassedStage,
+        slug: eventStage.slug,
+        placeInTotalRank: userStage?.placeInTotalRank
+          ? userStage.placeInTotalRank
+          : '-',
+        placeInCategoryRank: userStage?.placeInCategoryRank
+          ? userStage.placeInCategoryRank
+          : '-',
+        gamesCount,
+        winsCount,
+        timeSpent: userStage?.timeSpentInSeconds
+          ? moment.utc(userStage.timeSpentInSeconds * 1000).format('HH:mm:ss')
+          : '-',
+        actionButtonText: eventStage.actionButtonText,
+        confirmationText: eventStage.confirmationText,
+        type: eventStage.type,
+      };
+    }) || [];
 
   return {
     stages,

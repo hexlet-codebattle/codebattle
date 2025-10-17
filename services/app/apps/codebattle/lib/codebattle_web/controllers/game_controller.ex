@@ -73,7 +73,6 @@ defmodule CodebattleWeb.GameController do
 
         conn =
           put_gon(conn,
-            jitsi_api_key: jitsi_api_key(),
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
             game: game_params,
             game_id: game.id,
@@ -106,7 +105,6 @@ defmodule CodebattleWeb.GameController do
 
           conn
           |> put_gon(
-            jitsi_api_key: jitsi_api_key(),
             is_record: true,
             game_id: game.id,
             game: game_params,
@@ -160,10 +158,6 @@ defmodule CodebattleWeb.GameController do
     else
       []
     end
-  end
-
-  defp jitsi_api_key do
-    Application.get_env(:codebattle, :jitsi_api_key)
   end
 
   defp put_game_meta_tags(conn, game) do

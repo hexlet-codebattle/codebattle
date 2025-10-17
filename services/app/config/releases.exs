@@ -118,10 +118,6 @@ config :codebattle,
 
 config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL")
 config :codebattle, host: codebattle_host
-
-config :codebattle,
-  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
-
 config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 

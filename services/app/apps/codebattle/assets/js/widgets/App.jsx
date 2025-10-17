@@ -1,10 +1,7 @@
 import React, { Suspense } from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
-import {
-  configureStore,
-  combineReducers,
-} from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -29,7 +26,6 @@ const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 const gameUIPersistWhitelist = [
   'audioMuted',
   'videoMuted',
-  'showVideoConferencePanel',
   'editorMode',
   'editorTheme',
   'streamMode',
@@ -55,14 +51,18 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 const store = configureStore({
   reducer: rootReducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware({
-    serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
-  }).concat(rollbarRedux),
+      serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
+    }).concat(rollbarRedux),
 });
 
 const persistor = persistStore(store);
 
-const OnlineContainer = React.lazy(() => import('./components/OnlineContainer'));
-const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
+const OnlineContainer = React.lazy(
+  () => import('./components/OnlineContainer'),
+);
+const InvitesContainer = React.lazy(
+  () => import('./components/InvitesContainer'),
+);
 const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
 const RatingList = React.lazy(() => import('./pages/rating'));
@@ -71,7 +71,9 @@ const UserSettings = React.lazy(() => import('./pages/settings'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
-const TournamentAdmin = React.lazy(() => import('./pages/tournament/TournamentAdminWidget'));
+const TournamentAdmin = React.lazy(
+  () => import('./pages/tournament/TournamentAdminWidget'),
+);
 const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
 const EventWidget = React.lazy(() => import('./pages/event'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
@@ -187,9 +189,7 @@ export const RegistrationPage = () => (
 export const StairwayGamePage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        {/* <Stairway /> */}
-      </Suspense>
+      <Suspense>{/* <Stairway /> */}</Suspense>
     </PersistGate>
   </Provider>
 );
@@ -198,9 +198,7 @@ export const TournamentPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <Tournament
-          waitingRoomMachine={waitingRoomMachine}
-        />
+        <Tournament waitingRoomMachine={waitingRoomMachine} />
       </Suspense>
     </PersistGate>
   </Provider>
@@ -209,9 +207,7 @@ export const TournamentAdminPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <TournamentAdmin
-          waitingRoomMachine={waitingRoomMachine}
-        />
+        <TournamentAdmin waitingRoomMachine={waitingRoomMachine} />
       </Suspense>
     </PersistGate>
   </Provider>
