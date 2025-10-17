@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.Repo
 
