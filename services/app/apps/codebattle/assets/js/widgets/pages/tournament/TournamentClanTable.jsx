@@ -7,17 +7,17 @@ import { useSelector } from 'react-redux';
 import { currentUserClanIdSelector, tournamentSelector } from '@/selectors';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
-    'text-dark font-weight-bold cb-custom-event-tr',
-    {
-      'cb-gold-place-bg': item?.place === 1,
-      'cb-silver-place-bg': item?.place === 2,
-      'cb-bronze-place-bg': item?.place === 3,
-      'cb-bg-panel text-white': !item?.place || item.place > 3,
-    },
-    {
-      'cb-custom-event-tr-brown-border': item.id === selectedId,
-    },
-  );
+  'font-weight-bold cb-custom-event-tr',
+  {
+    'text-dark cb-gold-place-bg': item?.place === 1,
+    'text-dark cb-silver-place-bg': item?.place === 2,
+    'text-dark cb-bronze-place-bg': item?.place === 3,
+    'cb-bg-panel': !item?.place || item.place > 3,
+  },
+  {
+    'cb-custom-event-tr-brown-border': item.id === selectedId,
+  },
+);
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',

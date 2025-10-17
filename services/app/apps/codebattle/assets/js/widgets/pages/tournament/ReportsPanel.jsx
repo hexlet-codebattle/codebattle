@@ -123,9 +123,9 @@ function ReportsPanel() {
                     <Select
                       styles={customStyle}
                       value={{
-                      label: getStateText(item.state),
-                      value: item.state,
-                    }}
+                        label: getStateText(item.state),
+                        value: item.state,
+                      }}
                       onChange={changeReportState(item.id)}
                       options={reportStatusOptions}
                     />
@@ -133,9 +133,9 @@ function ReportsPanel() {
                   <td className={tableDataCellClassName}>
                     <p>
                       {moment
-                      .utc(item.insertedAt)
-                      .local()
-                      .format('YYYY-MM-DD HH:mm:ss')}
+                        .utc(item.insertedAt)
+                        .local()
+                        .format('YYYY-MM-DD HH:mm:ss')}
                     </p>
                   </td>
                   <td className={tableDataCellClassName}>

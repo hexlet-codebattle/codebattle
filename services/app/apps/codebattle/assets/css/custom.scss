@@ -8,7 +8,6 @@
   border-radius: 0.50rem;
 }
 
-
 .cb-custom-event-table .cb-custom-event-td:first-child {
   border-top-left-radius: 0.6rem;
   border-bottom-left-radius: 0.6rem;
@@ -56,7 +55,7 @@
 }
 
 .cb-custom-event-td:not(:last-child)::after {
-  background-color: black;
+  background-color: gray;
   right: 0;
   top: 8px;
 }
@@ -133,7 +132,7 @@
   display: block;
   margin-left: -1px;
   line-height: 1.25;
-  color: black;
+  color: white;
 }
 
 .cb-custom-event-pagination-page-item:first-child .cb-custom-event-pagination-page-link,
