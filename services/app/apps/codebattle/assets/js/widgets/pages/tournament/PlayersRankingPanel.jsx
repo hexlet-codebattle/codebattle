@@ -9,12 +9,12 @@ import {
 } from '@/selectors';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
-  'text-dark font-weight-bold cb-custom-event-tr-border',
+  'font-weight-bold cb-custom-event-tr-border',
   {
-    'cb-gold-place-bg': item?.place === 1,
-    'cb-silver-place-bg': item?.place === 2,
-    'cb-bronze-place-bg': item?.place === 3,
-    'cb-bg-panel text-white': !item?.place || item?.place > 3,
+    'text-dark cb-gold-place-bg': item?.place === 1,
+    'text-dark cb-silver-place-bg': item?.place === 2,
+    'text-dark cb-bronze-place-bg': item?.place === 3,
+    'cb-bg-panel': !item?.place || item?.place > 3,
   },
   {
     'cb-custom-event-tr-brown-border': item?.clanId === selectedId,
