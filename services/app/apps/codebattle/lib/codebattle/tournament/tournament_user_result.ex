@@ -43,7 +43,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
       WITH grade_points AS (
         SELECT 'rookie' as grade, UNNEST(ARRAY[8, 4, 2]) as points, GENERATE_SERIES(1, 3) as position
         UNION ALL
-        SELECT 'challenger' as grade, UNNEST(ARRAY[64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 6) as position
+        SELECT 'challenger' as grade, UNNEST(ARRAY[16, 8, 4, 2]) as points, GENERATE_SERIES(1, 6) as position
         UNION ALL
         SELECT 'pro' as grade, UNNEST(ARRAY[128, 64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 7) as position
         UNION ALL
