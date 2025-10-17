@@ -33,7 +33,7 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       # Create a tournament that starts in 8 minutes (outside the 7-minute threshold)
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(8, :minute)
+        |> DateTime.add(11, :minute)
         |> DateTime.truncate(:second)
         |> Calendar.strftime("%Y-%m-%d %H:%M")
 
@@ -56,7 +56,7 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
       # Create a tournament that starts in 10 minutes
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(10, :minute)
+        |> DateTime.add(11, :minute)
         |> DateTime.truncate(:second)
         |> Calendar.strftime("%Y-%m-%d %H:%M")
 

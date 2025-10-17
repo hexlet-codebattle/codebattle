@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.Api.V1.UserControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: false
 
   describe "#index" do
     test "shows rating list", %{conn: conn} do
