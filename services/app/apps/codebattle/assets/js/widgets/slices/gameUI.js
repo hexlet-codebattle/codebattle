@@ -14,7 +14,6 @@ const initialState = {
   taskDescriptionLanguage: taskDescriptionLanguages.default,
   showToastActionsAfterGame: false,
   isShowGuide: false,
-  showVideoConferencePanel: false,
   videoMuted: false,
   audioMuted: false,
   audioAvailable: false,
@@ -50,15 +49,6 @@ const gameUI = createSlice({
     },
     toggleStreamMode: state => {
       state.streamMode = !state.streamMode;
-    },
-    toggleShowVideoConferencePanel: state => {
-      state.showVideoConferencePanel = !state.showVideoConferencePanel;
-    },
-    setAudioMuted: (state, { payload }) => {
-      state.audioMuted = payload;
-    },
-    setVideoMuted: (state, { payload }) => {
-      state.videoMuted = payload;
     },
     setInMainDraw: (state, { payload }) => {
       state.inMainDraw = payload;

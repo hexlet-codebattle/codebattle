@@ -9,9 +9,9 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   require Logger
 
   @tournament_run_upcoming Application.compile_env(:codebattle, :tournament_run_upcoming)
-  @worker_timeout to_timeout(second: 3)
+  @worker_timeout to_timeout(second: 15)
 
-  @upcoming_time_before_live_mins 7
+  @upcoming_time_before_live_mins 10
 
   @spec start_link([]) :: GenServer.on_start()
   def start_link(_) do
