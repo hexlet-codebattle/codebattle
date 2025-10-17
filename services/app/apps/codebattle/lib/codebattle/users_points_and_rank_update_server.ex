@@ -18,7 +18,7 @@ defmodule Codebattle.UsersPointsAndRankUpdateServer do
 
   # SERVER
   def init(_) do
-    Process.send_after(self(), :subscribe, 0)
+    Process.send_after(self(), :subscribe, 200)
     Process.send_after(self(), :work, to_timeout(minute: 5))
 
     Logger.debug("Start UsersPointsServer")

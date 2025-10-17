@@ -260,21 +260,21 @@ defmodule Codebattle.Tournament.Base do
 
       def cancel(tournament, params \\ %{})
 
-      def cancel(tournament, %{user: user}) do
+      def cancel(tournament, %{user: user} = params) do
         if can_moderate?(tournament, user) do
-          new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
-
-          Game.Context.terminate_tournament_games(tournament.id)
-          Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
-
-          new_tournament
+          cancel_tournament(tournament, params)
         else
           tournament
         end
       end
 
       def cancel(tournament, _params) do
+        cancel_tournament(tournament)
+      end
+
+      defp cancel_tournament(tournament, params \\ %{}) do
         new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
+        broadcast_tournament_canceled(new_tournament)
 
         Game.Context.terminate_tournament_games(tournament.id)
         Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
@@ -914,6 +914,11 @@ defmodule Codebattle.Tournament.Base do
 
       defp broadcast_tournament_started(tournament) do
         Codebattle.PubSub.broadcast("tournament:started", %{tournament: tournament})
+        tournament
+      end
+
+      defp broadcast_tournament_canceled(tournament) do
+        Codebattle.PubSub.broadcast("tournament:canceled", %{tournament: tournament})
         tournament
       end
 

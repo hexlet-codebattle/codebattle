@@ -33,6 +33,7 @@ defmodule Codebattle.User.Scope do
       lang: u.lang,
       name: u.name,
       rank: u.rank,
+      points: u.points,
       rating: u.rating
     })
   end
@@ -78,6 +79,10 @@ defmodule Codebattle.User.Scope do
 
   defp apply_sort(query, "rank", direction) do
     order_by(query, {^direction, :rank})
+  end
+
+  defp apply_sort(query, "points", direction) do
+    order_by(query, {^direction, :points})
   end
 
   defp apply_sort(query, "rating", direction) do
