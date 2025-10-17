@@ -113,6 +113,15 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:canceled", payload: %{tournament: tournament}}, socket) do
+    push(socket, "tournament:canceled", %{
+      id: tournament.id,
+      state: tournament.state
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_info({:after_join, state}, socket) do
     {:ok, _} =
       Presence.track(socket, socket.assigns.current_user.id, %{

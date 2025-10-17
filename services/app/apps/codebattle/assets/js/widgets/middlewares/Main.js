@@ -104,6 +104,11 @@ const initPresence = followId => dispatch => {
       data => {
         camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
       },
+    ).addListener(
+      channelTopics.tournamentCanceled,
+      data => {
+        camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
+      },
     );
 };
 

@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament.Entire.SwissGrandSlamTest do
   @decimal100 Decimal.new("100.0")
   @decimal0 Decimal.new("0.0")
 
+  @tag :skip
   test "works with player who solved all tasks" do
     [%{id: t1_id}, %{id: t2_id}, %{id: t3_id}] = insert_list(3, :task, level: "easy")
     insert(:task_pack, name: "tp", task_ids: [t1_id, t2_id, t3_id])

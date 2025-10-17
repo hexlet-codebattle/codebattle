@@ -54,6 +54,7 @@ config :codebattle, CodebattleWeb.Endpoint,
     ]
   ]
 
+config :codebattle, :tournament_run_upcoming, true
 config :codebattle, asserts_executor: Local
 config :codebattle, checker_executor: Local
 

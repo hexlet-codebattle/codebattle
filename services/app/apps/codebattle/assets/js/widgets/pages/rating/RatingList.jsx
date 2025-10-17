@@ -31,6 +31,7 @@ const renderUser = (page, pageSize, user, index) => (
       <UserInfo user={user} truncate />
     </td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rank}</td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.points}</td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rating}</td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.gamesPlayed}</td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">
@@ -234,6 +235,13 @@ function UsersRating() {
               >
                 Rank &nbsp;
                 {renderSortArrow('rank', sortParams)}
+              </th>
+              <th
+                className="p-3 border-0 text-nowrap cursor-pointer"
+                onClick={() => triggerSort('points')}
+              >
+                Points &nbsp;
+                {renderSortArrow('points', sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"

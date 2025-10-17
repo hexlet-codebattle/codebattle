@@ -109,18 +109,6 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
-  @spec get_waiting_participants_to_start_candidates() :: list(Tournament.t())
-  def get_waiting_participants_to_start_candidates do
-    Enum.filter(get_live_tournaments(), fn tournament ->
-      tournament.state == "waiting_participants" &&
-        tournament.grade != "open" &&
-        tournament.starts_at
-
-      # &&
-      # DateTime.compare(tournament.starts_at, DateTime.utc_now()) == :lt
-    end)
-  end
-
   @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
   def get_upcoming_to_live_candidate(starts_at_delay_mins) do
     now = DateTime.utc_now()
@@ -133,8 +121,8 @@ defmodule Codebattle.Tournament.Context do
         where:
           t.state == "upcoming" and
             t.grade != "open" and
-            t.starts_at > ^now and
-            t.starts_at < ^delay_time
+            t.starts_at >= ^now and
+            t.starts_at <= ^delay_time
       )
     )
   end
@@ -341,11 +329,12 @@ defmodule Codebattle.Tournament.Context do
 
   @spec move_upcoming_to_live(Tournament.t()) :: :ok
   def move_upcoming_to_live(tournament) do
-    tournament
-    |> Tournament.changeset(%{state: "waiting_participants"})
-    |> Repo.update!()
+    tournament =
+      tournament
+      |> Tournament.changeset(%{state: "waiting_participants"})
+      |> Repo.update!()
 
-    :timer.sleep(1000)
+    :timer.sleep(100)
 
     Tournament.GlobalSupervisor.start_tournament(tournament)
     Codebattle.PubSub.broadcast("tournament:activated", %{tournament: tournament})

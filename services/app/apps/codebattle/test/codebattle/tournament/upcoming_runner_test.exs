@@ -87,176 +87,149 @@ defmodule Codebattle.Tournament.UpcomingRunnerTest do
     end
   end
 
-  describe "start_or_cancel_waiting_participants/0" do
-    test "starts tournament when it has players and is in waiting_participants state" do
+  describe "get_upcoming_to_live_candidate/1" do
+    test "returns tournament that starts within the delay window" do
+      # Tournament starting in 5 minutes (within 7 minute window)
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(-5, :minute)
+        |> DateTime.add(5, :minute)
         |> DateTime.truncate(:second)
-        |> Calendar.strftime("%Y-%m-%dT%H:%M")
 
-      user1 = insert(:user)
-      user2 = insert(:user)
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
 
-      {:ok, tournament} =
-        Tournament.Context.create(%{
-          "starts_at" => starts_at,
-          "name" => "Test Tournament",
-          "user_timezone" => "Etc/UTC",
-          "level" => "easy",
-          "creator" => user1,
-          "break_duration_seconds" => 0,
-          "task_provider" => "level",
-          "task_strategy" => "random",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "players_limit" => 16,
-          "grade" => "rookie"
-        })
-
-      # Add players to the tournament
-      Tournament.Server.handle_event(tournament.id, :join, %{users: [user1, user2]})
-
-      tournament = Tournament.Context.get(tournament.id)
-      assert tournament.state == "waiting_participants"
-      assert tournament.players_count == 2
-
-      UpcomingRunner.start_or_cancel_waiting_participants()
-
-      updated_tournament = Tournament.Context.get(tournament.id)
-      # Tournament should be started
-      assert updated_tournament.state in ["active", "finished"]
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result.id == tournament.id
     end
 
-    test "cancels tournament when it has no players and is in waiting_participants state" do
+    test "returns tournament that starts exactly at the delay time" do
+      # Tournament starting exactly in 7 minutes
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(-5, :minute)
+        |> DateTime.add(7, :minute)
         |> DateTime.truncate(:second)
-        |> Calendar.strftime("%Y-%m-%dT%H:%M")
 
-      user = insert(:user)
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
 
-      {:ok, tournament} =
-        Tournament.Context.create(%{
-          "starts_at" => starts_at,
-          "name" => "Test Tournament",
-          "user_timezone" => "Etc/UTC",
-          "level" => "easy",
-          "creator" => user,
-          "break_duration_seconds" => 0,
-          "task_provider" => "level",
-          "task_strategy" => "random",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "players_limit" => 16,
-          "grade" => "rookie"
-        })
-
-      assert tournament.state == "waiting_participants"
-      assert tournament.players_count == 0
-
-      UpcomingRunner.start_or_cancel_waiting_participants()
-
-      updated_tournament = Tournament.Context.get(tournament.id)
-      assert updated_tournament.state == "canceled"
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result.id == tournament.id
     end
 
-    test "does not process open grade tournaments" do
+    test "returns tournament that starts right now" do
+      # Tournament starting right now (edge case)
+      starts_at = DateTime.truncate(DateTime.utc_now(), :second)
+
+      tournament =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
+
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result.id == tournament.id
+    end
+
+    test "returns nil when tournament starts beyond the delay window" do
+      # Tournament starting in 10 minutes (beyond 7 minute window)
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(-5, :minute)
+        |> DateTime.add(10, :minute)
         |> DateTime.truncate(:second)
-        |> Calendar.strftime("%Y-%m-%dT%H:%M")
 
-      user = insert(:user)
+      insert(:tournament,
+        state: "upcoming",
+        grade: "rookie",
+        starts_at: starts_at
+      )
 
-      {:ok, tournament} =
-        Tournament.Context.create(%{
-          "starts_at" => starts_at,
-          "name" => "Test Tournament",
-          "user_timezone" => "Etc/UTC",
-          "level" => "easy",
-          "creator" => user,
-          "break_duration_seconds" => 0,
-          "task_provider" => "level",
-          "task_strategy" => "random",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "players_limit" => 16,
-          "grade" => "open"
-        })
-
-      assert tournament.state == "waiting_participants"
-      assert tournament.players_count == 0
-
-      UpcomingRunner.start_or_cancel_waiting_participants()
-
-      # Open grade tournaments should not be auto-canceled
-      updated_tournament = Tournament.Context.get(tournament.id)
-      assert updated_tournament.state == "waiting_participants"
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result == nil
     end
 
-    test "processes multiple tournaments correctly" do
+    test "returns nil when tournament already started (in the past)" do
+      # Tournament that should have started 1 minute ago
       starts_at =
         DateTime.utc_now()
-        |> DateTime.add(-5, :minute)
+        |> DateTime.add(-1, :minute)
         |> DateTime.truncate(:second)
-        |> Calendar.strftime("%Y-%m-%dT%H:%M")
 
-      user1 = insert(:user)
-      user2 = insert(:user)
+      insert(:tournament,
+        state: "upcoming",
+        grade: "rookie",
+        starts_at: starts_at
+      )
 
-      # Tournament with players - should start
-      {:ok, tournament_with_players} =
-        Tournament.Context.create(%{
-          "starts_at" => starts_at,
-          "name" => "Tournament With Players",
-          "user_timezone" => "Etc/UTC",
-          "level" => "easy",
-          "creator" => user1,
-          "break_duration_seconds" => 0,
-          "task_provider" => "level",
-          "task_strategy" => "random",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "players_limit" => 16,
-          "grade" => "rookie"
-        })
-
-      Tournament.Server.handle_event(tournament_with_players.id, :join, %{users: [user1]})
-
-      # Tournament without players - should cancel
-      {:ok, tournament_without_players} =
-        Tournament.Context.create(%{
-          "starts_at" => starts_at,
-          "name" => "Tournament Without Players",
-          "user_timezone" => "Etc/UTC",
-          "level" => "easy",
-          "creator" => user2,
-          "break_duration_seconds" => 0,
-          "task_provider" => "level",
-          "task_strategy" => "random",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "players_limit" => 16,
-          "grade" => "rookie"
-        })
-
-      UpcomingRunner.start_or_cancel_waiting_participants()
-
-      tournament1 = Tournament.Context.get(tournament_with_players.id)
-      tournament2 = Tournament.Context.get(tournament_without_players.id)
-
-      # Tournament with players should be started
-      assert tournament1.state in ["active", "finished"]
-
-      # Tournament without players should be canceled
-      assert tournament2.state == "canceled"
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result == nil
     end
 
-    test "returns :ok after processing" do
-      assert UpcomingRunner.start_or_cancel_waiting_participants() == :ok
+    test "ignores open grade tournaments" do
+      # Tournament with open grade should be ignored
+      starts_at =
+        DateTime.utc_now()
+        |> DateTime.add(5, :minute)
+        |> DateTime.truncate(:second)
+
+      insert(:tournament,
+        state: "upcoming",
+        grade: "open",
+        starts_at: starts_at
+      )
+
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result == nil
+    end
+
+    test "ignores non-upcoming tournaments" do
+      # Tournament in waiting_participants state should be ignored
+      starts_at =
+        DateTime.utc_now()
+        |> DateTime.add(5, :minute)
+        |> DateTime.truncate(:second)
+
+      insert(:tournament,
+        state: "waiting_participants",
+        grade: "rookie",
+        starts_at: starts_at
+      )
+
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      assert result == nil
+    end
+
+    test "returns the tournament with lowest id when multiple match" do
+      starts_at =
+        DateTime.utc_now()
+        |> DateTime.add(5, :minute)
+        |> DateTime.truncate(:second)
+
+      tournament1 =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
+
+      tournament2 =
+        insert(:tournament,
+          state: "upcoming",
+          grade: "rookie",
+          starts_at: starts_at
+        )
+
+      result = Tournament.Context.get_upcoming_to_live_candidate(7)
+      # Should return the one with lower id
+      assert result.id == min(tournament1.id, tournament2.id)
     end
   end
 

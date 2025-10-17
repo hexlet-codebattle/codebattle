@@ -9,7 +9,7 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   require Logger
 
   @tournament_run_upcoming Application.compile_env(:codebattle, :tournament_run_upcoming)
-  @worker_timeout to_timeout(second: 30)
+  @worker_timeout to_timeout(second: 3)
 
   @upcoming_time_before_live_mins 7
 
@@ -30,7 +30,6 @@ defmodule Codebattle.Tournament.UpcomingRunner do
   @impl GenServer
   def handle_info(:run_upcoming, state) do
     run_upcoming()
-    start_or_cancel_waiting_participants()
 
     Process.send_after(self(), :run_upcoming, @worker_timeout)
 
@@ -48,24 +47,6 @@ defmodule Codebattle.Tournament.UpcomingRunner do
 
       _ ->
         :noop
-    end
-  end
-
-  def start_or_cancel_waiting_participants do
-    case Tournament.Context.get_waiting_participants_to_start_candidates() do
-      tournaments when is_list(tournaments) ->
-        Enum.each(
-          tournaments,
-          fn
-            %{players_count: pc} = t when pc > 0 ->
-              Tournament.Context.handle_event(t.id, :start, %{})
-
-            %{players_count: 0} = t ->
-              Tournament.Context.handle_event(t.id, :cancel, %{})
-          end
-        )
-
-        :ok
     end
   end
 end
