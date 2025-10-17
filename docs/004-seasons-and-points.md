@@ -67,7 +67,7 @@ For each finished tournament (grade ≠ open), we award Season Points by final p
 
 rookie: [8, 4, 2] (top‑3)
 
-challenger: [64, 32, 16, 8, 4, 2] (top‑6)
+challenger: [16, 8, 4, 2] (top‑6)
 
 pro: [128, 64, 32, 16, 8, 4, 2] (top‑7)
 
