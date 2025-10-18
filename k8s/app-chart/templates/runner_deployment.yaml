@@ -17,6 +17,15 @@ spec:
       labels:
         app: "runner"
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values: ["runner"]
+              topologyKey: "kubernetes.io/hostname"
       volumes:
         - name: users-code-path
           hostPath:
@@ -40,9 +49,7 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 1
-          command:
-            - bin/runner
-            - start
+          command: ["bin/runner","start"]
           ports:
             - containerPort: 4001
           volumeMounts:

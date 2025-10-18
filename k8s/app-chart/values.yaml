@@ -26,7 +26,7 @@ codebattle:
     CODEBATTLE_PORT: 4000
 
 runner:
-  replicaCount: 1
+  replicaCount: 2
   # Deployment or DaemonSet
   type: Deployment
   image:
