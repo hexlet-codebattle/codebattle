@@ -11,6 +11,7 @@ import {
 
 import i18n from '../../../i18n';
 
+import CodebattleLeagueDescription from './CodebattleLeagueDescription';
 import TournamentListItem, { activeIcon } from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 16 - Dec 21';
@@ -61,14 +62,7 @@ const SeasonProfilePanel = ({
     <div className="d-flex flex-column-reverse flex-lg-row flex-md-row my-0 my-lg-2 my-md-2">
       <div className="col-12 col-lg-8 col-md-8 my-2 my-lg-0 my-md-0">
         <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center">
-          <h2 className="text-white">Codebattle Season Competition</h2>
-          <p className="m-auto pb-3 px-4 text-white">
-            Challenge the best! Participate in the Competition tournaments
-            {', '}
-            defeat your rivals to earn points
-            {', '}
-            and claim the first place in the programmer ranking.
-          </p>
+          <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
             <div className="cb-bg-highlight-panel">
               {liveTournaments?.length !== 0 && (
