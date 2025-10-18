@@ -25,6 +25,7 @@ defmodule Codebattle.Game do
              :ref,
              :starts_at,
              :state,
+             :grade,
              :type,
              :use_chat,
              :use_timer,
@@ -60,6 +61,7 @@ defmodule Codebattle.Game do
     field(:round_position, :integer)
     field(:starts_at, :naive_datetime)
     field(:state, :string)
+    field(:grade, :string)
     field(:timeout_seconds, :integer, default: @default_timeout_seconds)
     field(:type, :string, default: "duo")
     field(:use_chat, :boolean, default: true)
@@ -94,6 +96,7 @@ defmodule Codebattle.Game do
       :round_position,
       :starts_at,
       :state,
+      :grade,
       :player_ids,
       :task_id,
       :timeout_seconds,
@@ -108,6 +111,7 @@ defmodule Codebattle.Game do
     |> validate_required([:state, :level, :type, :mode])
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:state, @states)
+    |> validate_inclusion(:grade, Codebattle.Tournament.grades())
     |> validate_inclusion(:mode, @modes)
     |> validate_inclusion(:visibility_type, @visibility_types)
     |> validate_inclusion(:rematch_state, @rematch_states)

@@ -90,6 +90,7 @@ defmodule Codebattle.Game.Engine do
           player_ids: Enum.map(params.players, & &1.id),
           ref: params[:ref],
           round_id: params[:round_id],
+          grade: params[:grade],
           round_position: params[:round_position],
           starts_at: now,
           state: params.state,

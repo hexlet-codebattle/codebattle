@@ -1,8 +1,3 @@
-<%= if load_jitsi?(@user, get_first_player(@game), get_second_player(@game)) do %>
-  <script src="https://8x8.vc/vpaas-magic-cookie-49c2df81b24941e39869fc4c4560b688/external_api.js">
-  </script>
-<% end %>
-
 <div class="w-100">
   <div id="game-widget-root"></div>
   <%= if Application.get_env(:codebattle, :html_debug_mode) do %>

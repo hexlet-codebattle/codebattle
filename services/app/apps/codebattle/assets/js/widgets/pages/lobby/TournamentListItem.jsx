@@ -18,6 +18,8 @@ const mapTournamentTitleByState = {
 
 const getActionText = tournament => {
   switch (tournament.state) {
+    case tournamentStates.upcoming:
+      return 'Check Upcoming';
     case tournamentStates.waitingParticipants:
       return 'Join';
     case tournamentStates.active:
@@ -26,34 +28,60 @@ const getActionText = tournament => {
       return 'Show';
     case tournamentStates.finished:
       return 'View results';
-    default: return 'Show';
+    default:
+      return 'Show';
   }
 };
 
-const TournamentAction = ({ tournament }) => {
-  if (tournament.state === tournamentStates.upcoming) {
+const TournamentAction = ({ tournament, isAdmin = false }) => {
+  if (!isAdmin && tournament.state === tournamentStates.upcoming) {
     return <></>;
   }
 
   const className = cn('btn text-nowrap rounded', {
-    'btn-secondary cb-btn-secondary': [tournamentStates.finished, tournamentStates.canceled].includes(tournament.state),
-    'btn-success cb-btn-success': [tournamentStates.active, tournamentStates.waitingParticipants].includes(tournament.state),
+    'btn-secondary cb-btn-secondary': [
+      tournamentStates.finished,
+      tournamentStates.canceled,
+    ].includes(tournament.state),
+    'btn-success cb-btn-success': [
+      tournamentStates.active,
+      tournamentStates.upcoming,
+      tournamentStates.waitingParticipants,
+    ].includes(tournament.state),
   });
   const text = getActionText(tournament);
 
   return (
     <div className="align-content-center">
       <div className="d-flex p-3">
-        <a type="button" className={className} href={getTournamentUrl(tournament.id)}>{text}</a>
+        <a
+          type="button"
+          className={className}
+          href={getTournamentUrl(tournament.id)}
+        >
+          {text}
+        </a>
       </div>
     </div>
   );
 };
 
-export const activeIcon = <FontAwesomeIcon style={{ width: '60px', height: '60px' }} icon="laptop-code" className="text-warning" />;
-export const upcomingIcon = <FontAwesomeIcon style={{ width: '60px', height: '60px' }} icon="clock" className="text-gray" />;
+export const activeIcon = (
+  <FontAwesomeIcon
+    style={{ width: '60px', height: '60px' }}
+    icon="laptop-code"
+    className="text-warning"
+  />
+);
+export const upcomingIcon = (
+  <FontAwesomeIcon
+    style={{ width: '60px', height: '60px' }}
+    icon="clock"
+    className="text-gray"
+  />
+);
 
-const TournamentListItem = ({ tournament, icon }) => (
+const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
   <div className="d-flex flex-column flex-lg-row flex-md-row flex-sm-row w-100 cb-bg-panel mt-1">
     <div className="d-flex w-100">
       <div className="d-none d-lg-block d-md-block p-3">
@@ -74,20 +102,26 @@ const TournamentListItem = ({ tournament, icon }) => (
               {mapTournamentTitleByState[tournament.state]}
             </span>
           )}
-          {tournamentStates.canceled !== tournament.state && tournament.state !== 'upcoming' && (
-            <>
-              <span className="pr-2">
-                <FontAwesomeIcon icon="user" className="mr-1" />
-                {tournament.playersCount}
-              </span>
-            </>
-          )}
-          {[tournamentStates.active, tournamentStates.waitingParticipants, tournamentStates.upcoming].includes(tournament.state) && (
+          {tournamentStates.canceled !== tournament.state
+            && tournament.state !== 'upcoming' && (
+              <>
+                <span className="pr-2">
+                  <FontAwesomeIcon icon="user" className="mr-1" />
+                  {tournament.playersCount}
+                </span>
+              </>
+            )}
+          {[
+            tournamentStates.active,
+            tournamentStates.waitingParticipants,
+            tournamentStates.upcoming,
+          ].includes(tournament.state) && (
             <>
               <span
-                className={
-                  cn('pr-2', { 'd-none d-lg-inline d-md-inline d-sm-inline': tournament.state !== tournamentStates.upcoming })
-                }
+                className={cn('pr-2', {
+                  'd-none d-lg-inline d-md-inline d-sm-inline':
+                    tournament.state !== tournamentStates.upcoming,
+                })}
               >
                 <FontAwesomeIcon icon="clock" className="mr-1" />
                 {dayjs(tournament.startsAt).format('MMMM D, YYYY [at] h:mma')}
@@ -98,14 +132,16 @@ const TournamentListItem = ({ tournament, icon }) => (
             <>
               <span className="d-none d-lg-inline d-md-inline d-sm-inline pr-2">
                 <FontAwesomeIcon icon="clock" className="mr-1" />
-                {dayjs(tournament.lastRoundEndedAt).format('MMMM D, YYYY [at] h:mma')}
+                {dayjs(tournament.lastRoundEndedAt).format(
+                  'MMMM D, YYYY [at] h:mma',
+                )}
               </span>
             </>
           )}
         </span>
       </div>
     </div>
-    <TournamentAction tournament={tournament} />
+    <TournamentAction tournament={tournament} isAdmin={isAdmin} />
   </div>
 );
 

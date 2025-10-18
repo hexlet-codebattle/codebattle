@@ -43,7 +43,7 @@ $cb-bg-highlight-panel: #1c1c24;
 // $cb-bg-highlight-panel: #13181f;
 
 $secondary: #477591;
-$link-color: black;
+$link-color: white;
 $error: #dc3545;
 $bg-orange: rgba(238, 55, 55);
 $orange: rgba(238, 55, 55, 0.76);
@@ -411,7 +411,7 @@ a {
 }
 
 .cb-game-score-draw {
-  color: var(--black) !important;
+  color: var(--gray) !important;
 }
 
 .cb-user-online {

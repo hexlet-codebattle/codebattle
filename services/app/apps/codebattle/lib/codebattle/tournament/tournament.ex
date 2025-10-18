@@ -208,6 +208,7 @@ defmodule Codebattle.Tournament do
   end
 
   def access_types, do: @access_types
+  def grades, do: @grades
   def public_types, do: @public_types
   def ranking_types, do: @ranking_types
   def score_strategies, do: @score_strategies

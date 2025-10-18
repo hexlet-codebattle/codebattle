@@ -58,8 +58,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-            ? { ...player, editorLang: payload.editorLang }
-            : player));
+              ? { ...player, editorLang: payload.editorLang }
+              : player));
 
           return { ...game, players: newPlayers };
         }
@@ -71,8 +71,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-            ? { ...player, checkResult: payload.checkResult }
-            : player));
+              ? { ...player, checkResult: payload.checkResult }
+              : player));
 
           return { ...game, players: newPlayers };
         }
@@ -131,16 +131,25 @@ const lobby = createSlice({
   },
   extraReducers: {
     [tournamentActions.changeTournamentState]: (state, { payload }) => {
-      const seasonTournament = state.seasonTournaments.find(t => t.id === payload.id);
-      const liveTournament = state.liveTournaments.find(t => t.id === payload.id);
+      const seasonTournament = state.seasonTournaments.find(
+        t => t.id === payload.id,
+      );
+      const liveTournament = state.liveTournaments.find(
+        t => t.id === payload.id,
+      );
 
       if (seasonTournament) {
-        state.upcomingTournaments = state.upcomingTournaments.filter(t => t.id !== payload.id);
-        state.liveTournaments = [...state.liveTournaments, seasonTournament].sort(sortByStartsAt);
+        state.seasonTournaments = state.seasonTournaments.filter(
+          t => t.id !== payload.id,
+        );
+        state.liveTournaments = [
+          ...state.liveTournaments,
+          { ...seasonTournament, state: payload.state },
+        ].sort(sortByStartsAt);
       }
 
       if (liveTournament) {
-        state.liveTournaments = state.liveTournaments.map(t => (t.id === payload.id ? ({ ...t, state: payload.state }) : t));
+        state.liveTournaments = state.liveTournaments.map(t => (t.id === payload.id ? { ...t, state: payload.state } : t));
       }
     },
   },

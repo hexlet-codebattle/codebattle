@@ -109,21 +109,10 @@ defmodule Codebattle.Tournament.Context do
     )
   end
 
-  @spec get_waiting_participants_to_start_candidates() :: list(Tournament.t())
-  def get_waiting_participants_to_start_candidates do
-    Enum.filter(get_live_tournaments(), fn tournament ->
-      tournament.state == "waiting_participants" &&
-        tournament.grade != "open" &&
-        tournament.starts_at
-
-      # &&
-      # DateTime.compare(tournament.starts_at, DateTime.utc_now()) == :lt
-    end)
-  end
-
   @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
   def get_upcoming_to_live_candidate(starts_at_delay_mins) do
-    delay_time = DateTime.add(DateTime.utc_now(), starts_at_delay_mins, :minute)
+    now = DateTime.utc_now()
+    delay_time = DateTime.add(now, starts_at_delay_mins, :minute)
 
     Repo.one(
       from(t in Tournament,
@@ -131,7 +120,9 @@ defmodule Codebattle.Tournament.Context do
         order_by: t.id,
         where:
           t.state == "upcoming" and
-            t.starts_at < ^delay_time
+            t.grade != "open" and
+            t.starts_at >= ^now and
+            t.starts_at <= ^delay_time
       )
     )
   end
@@ -159,7 +150,7 @@ defmodule Codebattle.Tournament.Context do
   def get_one_upcoming_tournament_for_each_grade do
     cte_query =
       from(t in Tournament,
-        where: t.state == "upcoming" and t.grade != "open",
+        where: t.state == "upcoming" and t.grade != "open" and t.starts_at > ^DateTime.utc_now(),
         group_by: t.grade,
         select: %{grade: t.grade, min_id: min(t.id)}
       )
@@ -338,11 +329,12 @@ defmodule Codebattle.Tournament.Context do
 
   @spec move_upcoming_to_live(Tournament.t()) :: :ok
   def move_upcoming_to_live(tournament) do
-    tournament
-    |> Tournament.changeset(%{state: "waiting_participants"})
-    |> Repo.update!()
+    tournament =
+      tournament
+      |> Tournament.changeset(%{state: "waiting_participants"})
+      |> Repo.update!()
 
-    :timer.sleep(1000)
+    :timer.sleep(100)
 
     Tournament.GlobalSupervisor.start_tournament(tournament)
     Codebattle.PubSub.broadcast("tournament:activated", %{tournament: tournament})

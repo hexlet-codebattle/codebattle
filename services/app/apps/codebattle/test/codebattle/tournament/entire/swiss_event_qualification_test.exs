@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Entire.SwissTest do
+defmodule Codebattle.Tournament.Entire.SwissEventQualificationTest do
   use Codebattle.DataCase, async: false
 
   import Codebattle.Tournament.Helpers

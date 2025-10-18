@@ -42,11 +42,14 @@ const EditorToolbar = ({
   actionBtnsProps,
   showControlBtns,
   isAdmin = false,
-  isPremium = false,
   isHistory = false,
 }) => (
   <>
-    <div ref={toolbarRef} className="cb-bg-panel cb-border-color rounded-top" data-player-type={type}>
+    <div
+      ref={toolbarRef}
+      className="cb-bg-panel cb-border-color rounded-top"
+      data-player-type={type}
+    >
       <div className={toolbarClassNames} role="toolbar">
         <div className="d-flex justify-content-between">
           <div
@@ -68,15 +71,27 @@ const EditorToolbar = ({
             role="group"
             aria-label="Report actions"
           >
-            {(isAdmin || isPremium) && !showControlBtns && <GameReportButton userId={player.id} gameId={gameId} />}
-            {isAdmin && !showControlBtns && <GameBanPlayerButton userId={player.id} status={status} tournamentId={tournamentId} />}
+            {!showControlBtns && (
+              <GameReportButton userId={player.id} gameId={gameId} />
+            )}
+            {isAdmin && !showControlBtns && (
+              <GameBanPlayerButton
+                userId={player.id}
+                status={status}
+                tournamentId={tournamentId}
+              />
+            )}
           </div>
           <div
             className={userInfoClassNames}
             role="group"
             aria-label="User info"
           >
-            <UserInfo mode="dark" user={player} placement={Placements.bottomEnd} />
+            <UserInfo
+              mode="dark"
+              user={player}
+              placement={Placements.bottomEnd}
+            />
             {mode === GameRoomModes.standard && (
               <UserGameScore userId={player.id} />
             )}

@@ -58,7 +58,7 @@ defmodule Codebattle.Tournament.Server do
     GenServer.call(server_name(tournament.id), {:update, tournament})
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.Server do
     )
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -85,7 +85,7 @@ defmodule Codebattle.Tournament.Server do
     )
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -93,7 +93,15 @@ defmodule Codebattle.Tournament.Server do
     GenServer.call(server_name(tournament_id), {:fire_event, event_type, params}, 20_000)
   catch
     :exit, reason ->
-      Logger.error("Error to send tournament update: #{inspect(reason)}")
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
+      {:error, :not_found}
+  end
+
+  def cast_event(tournament_id, event_type, params) do
+    GenServer.cast(server_name(tournament_id), {:fire_event, event_type, params})
+  catch
+    :exit, reason ->
+      Logger.warning("Error to send tournament update: #{inspect(reason)}")
       {:error, :not_found}
   end
 
@@ -120,6 +128,11 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:tasks_table, tasks_table)
       |> Map.put(:clans_table, clans_table)
 
+    if tournament.grade != "open" do
+      time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
+      Process.send_after(self(), :start_grade_tournament, time_diff_ms)
+    end
+
     {:ok, %{tournament: tournament}}
   end
 
@@ -128,6 +141,12 @@ defmodule Codebattle.Tournament.Server do
       nil -> tournament
       wrn -> Map.put(tournament, :waiting_room_name, wrn)
     end
+  end
+
+  def handle_cast({:fire_event, event_type, params}, state) do
+    {:reply, _tournament, state} = handle_call({:fire_event, event_type, params}, nil, state)
+
+    {:noreply, state}
   end
 
   def handle_cast(:match_waiting_room_players, state) do
@@ -241,6 +260,15 @@ defmodule Codebattle.Tournament.Server do
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
     {:reply, tournament, Map.put(state, :tournament, new_tournament)}
+  end
+
+  def handle_info(:start_grade_tournament, %{tournament: tournament}) do
+    case tournament do
+      %{players_count: pc} = t when pc > 0 -> cast_event(t.id, :start, %{})
+      %{players_count: 0} = t -> cast_event(t.id, :cancel, %{})
+    end
+
+    {:noreply, %{tournament: tournament}}
   end
 
   def handle_info({:stop_round_break, round_position}, %{tournament: tournament}) do
@@ -422,10 +450,4 @@ defmodule Codebattle.Tournament.Server do
   end
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}
-
-  # defp prepare_wr_player(player) do
-  #   player
-  #   |> Map.take([:id, :clan_id, :score, :wr_joined_at])
-  #   |> Map.put(:tasks, Enum.count(player.task_ids))
-  # end
 end

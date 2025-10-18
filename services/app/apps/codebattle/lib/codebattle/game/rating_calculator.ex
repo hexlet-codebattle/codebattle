@@ -8,31 +8,23 @@ defmodule Codebattle.Game.RatingCalculator do
   def call(%{is_bot: true} = game), do: game
   def call(%{type: "solo"} = game), do: game
 
-  # skip rating changes gave_up games
-  def call(%{players: [%{result: "gave_up"} = player, _]} = game) do
-    calculate_gave_up(game, player)
-  end
-
-  def call(%{players: [_, %{result: "gave_up"} = player]} = game) do
-    calculate_gave_up(game, player)
-  end
-
   def call(%{mode: "standard", players: [%{result: "won"} = winner, loser]} = game) do
-    calculate(game, winner, loser)
+    calculate(game, winner, loser, :win)
   end
 
   def call(%{mode: "standard", players: [loser, %{result: "won"} = winner]} = game) do
-    calculate(game, winner, loser)
+    calculate(game, winner, loser, :win)
+  end
+
+  def call(%{mode: "standard", players: [%{result: "timeout"} = loser, %{result: "timeout"} = winner]} = game) do
+    calculate(game, winner, loser, :draw)
   end
 
   def call(game), do: game
 
-  defp calculate_gave_up(game, player) do
-    Helpers.update_player(game, player.id, %{rating: player.rating - 10, rating_diff: -10})
-  end
-
-  defp calculate(game, winner, loser) do
-    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, game.level)
+  defp calculate(game, winner, loser, win_or_draw) do
+    {winner_rating, loser_rating} =
+      Elo.calc_elo(winner.rating, loser.rating, game.grade, win_or_draw)
 
     game
     |> Helpers.update_player(winner.id, %{

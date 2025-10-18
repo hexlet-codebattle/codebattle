@@ -4,7 +4,10 @@ import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { reportOnPlayer } from '@/middlewares/Main';
-import { userIsAdminSelector, userIsGamePlayerSelector } from '@/selectors';
+import {
+  currentUserIsAdminSelector,
+  userIsGamePlayerSelector,
+} from '@/selectors';
 
 import i18n from '../../../i18n';
 
@@ -18,10 +21,14 @@ const states = {
 const getText = state => {
   switch (state) {
     case states.loading:
-    case states.idle: return i18n.t('Report');
-    case states.success: return i18n.t('Sended');
-    case states.error: return i18n.t('Error');
-    default: return i18n.t('Report');
+    case states.idle:
+      return i18n.t('Report');
+    case states.success:
+      return i18n.t('Sended');
+    case states.error:
+      return i18n.t('Error');
+    default:
+      return i18n.t('Report');
   }
 };
 
@@ -29,7 +36,7 @@ const GameReportButton = ({ userId, gameId }) => {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
-  const isAdmin = useSelector(userIsAdminSelector);
+  const isAdmin = useSelector(currentUserIsAdminSelector);
   const isPlayer = useSelector(userIsGamePlayerSelector);
 
   const onSuccess = () => setState(states.success);

@@ -1,5 +1,7 @@
 defmodule Codebattle.Tournament.Tasks do
   @moduledoc false
+
+  @spec create_table(pos_integer()) :: :ets.tid()
   def create_table(id) do
     :ets.new(
       :"t_#{id}_tasks",

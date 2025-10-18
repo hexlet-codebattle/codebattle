@@ -260,21 +260,21 @@ defmodule Codebattle.Tournament.Base do
 
       def cancel(tournament, params \\ %{})
 
-      def cancel(tournament, %{user: user}) do
+      def cancel(tournament, %{user: user} = params) do
         if can_moderate?(tournament, user) do
-          new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
-
-          Game.Context.terminate_tournament_games(tournament.id)
-          Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
-
-          new_tournament
+          cancel_tournament(tournament, params)
         else
           tournament
         end
       end
 
       def cancel(tournament, _params) do
+        cancel_tournament(tournament)
+      end
+
+      defp cancel_tournament(tournament, params \\ %{}) do
         new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
+        broadcast_tournament_canceled(new_tournament)
 
         Game.Context.terminate_tournament_games(tournament.id)
         Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
@@ -299,7 +299,6 @@ defmodule Codebattle.Tournament.Base do
             last_round_started_at: nil,
             winner_ids: [],
             top_player_ids: [],
-            starts_at: :second |> DateTime.utc_now() |> DateTime.add(5 * 60, :second),
             state: "waiting_participants"
           })
         else
@@ -385,6 +384,7 @@ defmodule Codebattle.Tournament.Base do
             player = %{
               player
               | lang: params.player_results[player_id].lang,
+                rating: params.player_results[player_id].rating,
                 wins_count:
                   player.wins_count +
                     if(params.player_results[player_id].result == "won", do: 1, else: 0)
@@ -613,6 +613,7 @@ defmodule Codebattle.Tournament.Base do
                 ref: match_id,
                 round_id: tournament.current_round_id,
                 round_position: tournament.current_round_position,
+                grade: tournament.grade,
                 state: "playing",
                 task: task,
                 waiting_room_name: tournament.waiting_room_name,
@@ -778,6 +779,7 @@ defmodule Codebattle.Tournament.Base do
               state: "playing",
               task: task,
               timeout_seconds: get_game_timeout(tournament, task),
+              grade: tournament.grade,
               tournament_id: tournament.id,
               type: game_type(),
               use_chat: tournament.use_chat,
@@ -808,8 +810,8 @@ defmodule Codebattle.Tournament.Base do
           |> Tournament.TournamentResult.upsert_results()
           |> maybe_finish_waiting_room()
           |> set_stats()
-          |> set_winner_ids()
           |> maybe_save_event_results()
+          |> upsert_tournament_user_results()
           |> db_save!(:with_ets)
           |> broadcast_tournament_finished()
           |> then(fn tournament ->
@@ -870,10 +872,6 @@ defmodule Codebattle.Tournament.Base do
         update_struct(tournament, %{stats: get_stats(tournament)})
       end
 
-      defp set_winner_ids(tournament) do
-        update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
-      end
-
       defp maybe_start_global_timer(%{tournament_timeout_seconds: timer} = tournament) when is_integer(timer) do
         Process.send_after(
           self(),
@@ -916,6 +914,11 @@ defmodule Codebattle.Tournament.Base do
 
       defp broadcast_tournament_started(tournament) do
         Codebattle.PubSub.broadcast("tournament:started", %{tournament: tournament})
+        tournament
+      end
+
+      defp broadcast_tournament_canceled(tournament) do
+        Codebattle.PubSub.broadcast("tournament:canceled", %{tournament: tournament})
         tournament
       end
 
@@ -1057,6 +1060,10 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_set_free_task(game_params, _tournament, _player) do
         game_params
+      end
+
+      defp upsert_tournament_user_results(tournament) do
+        Tournament.TournamentUserResult.upsert_results(tournament)
       end
 
       defp maybe_save_event_results(%{use_clan: true, event_id: event_id} = tournament) when not is_nil(event_id) do

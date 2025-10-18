@@ -27,6 +27,7 @@ defmodule Codebattle.Tournament.TournamentResult do
     field(:tournament_id, :integer)
     field(:user_id, :integer)
     field(:user_name, :string)
+    field(:user_lang, :string)
   end
 
   def get_by(tournament_id) do
@@ -85,6 +86,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       (p.player_info->>'result_percent')::numeric AS result_percent,
       (p.player_info->>'id')::integer AS user_id,
       (p.player_info->>'name')::text AS user_name,
+      (p.player_info->>'lang')::text AS user_lang,
       (p.player_info->>'clan_id')::integer AS clan_id,
       g.duration_sec,
       g.tournament_id,
@@ -121,6 +123,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       game_id,
       user_id,
       user_name,
+      user_lang,
       clan_id,
       task_id,
       score,
@@ -135,6 +138,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       game_id,
       user_id,
       user_name,
+      user_lang,
       clan_id,
       task_id,
       score,
@@ -159,6 +163,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       (p.player_info->>'result_percent')::numeric AS result_percent,
       (p.player_info->>'id')::integer AS user_id,
       (p.player_info->>'name')::text AS user_name,
+      (p.player_info->>'lang')::text AS user_lang,
       (p.player_info->>'clan_id')::integer AS clan_id,
       g.duration_sec,
       g.level,
@@ -183,6 +188,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       game_id,
       user_id,
       user_name,
+      user_lang,
       clan_id,
       task_id,
       score,
@@ -197,6 +203,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       game_id,
       user_id,
       user_name,
+      user_lang,
       clan_id,
       task_id,
       score,
@@ -229,6 +236,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       select: %{
         user_id: tr.user_id,
         user_name: max(tr.user_name),
+        user_lang: max(tr.user_lang),
         opponent_id: tr2.user_id,
         round_position: tr.round_position,
         score: coalesce(sum(tr.score), 0),
@@ -242,6 +250,7 @@ defmodule Codebattle.Tournament.TournamentResult do
             tr2.result_percent
           ),
         opponent_name: max(tr2.user_name),
+        opponent_lang: max(tr2.user_lang),
         opponent_clan_id: max(tr2.clan_id)
       }
     )
@@ -280,13 +289,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         select: %{
           id: r.user_id,
           name: r.user_name,
+          lang: r.user_lang,
           clan_id: c.id,
           clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name, c.id],
+        group_by: [r.user_id, r.user_name, r.user_lang, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
@@ -306,13 +316,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         select: %{
           id: r.user_id,
           name: r.user_name,
+          lang: r.user_lang,
           clan_id: c.id,
           clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name, c.id],
+        group_by: [r.user_id, r.user_name, r.user_lang, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
@@ -357,6 +368,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           tr.clan_id,
           tr.user_id,
           tr.user_name,
+          tr.user_lang,
           SUM(tr.score) AS total_score,
           SUM(tr.duration_sec) AS total_duration_sec,
           SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END) AS wins_count
@@ -365,13 +377,14 @@ defmodule Codebattle.Tournament.TournamentResult do
       WHERE
           tr.tournament_id = #{tournament.id}
       GROUP BY
-          tr.clan_id, tr.user_id, tr.user_name
+          tr.clan_id, tr.user_id, tr.user_name, tr.user_lang
     ),
     TopPlayers AS (
       SELECT
           pa.clan_id,
           pa.user_id,
           pa.user_name,
+          pa.user_lang,
           pa.total_score,
           pa.total_duration_sec,
           pa.wins_count,
@@ -384,6 +397,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           tp.clan_id,
           tp.user_id,
           tp.user_name,
+          tp.user_lang,
           tp.total_score,
           tp.total_duration_sec,
           tp.wins_count
@@ -410,6 +424,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           tp.clan_id,
           tp.user_id,
           tp.user_name,
+          tp.user_lang,
           tp.total_score,
           tp.total_duration_sec,
           tp.wins_count,
@@ -425,6 +440,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       c.long_name AS clan_long_name,
       t.user_id,
       t.user_name,
+      t.user_lang,
       t.total_score,
       t.total_duration_sec,
       t.wins_count,
@@ -590,7 +606,8 @@ defmodule Codebattle.Tournament.TournamentResult do
           game_id: r.game_id,
           score: r.score,
           user_id: r.user_id,
-          user_name: max(r.user_name)
+          user_name: max(r.user_name),
+          user_lang: max(r.user_lang)
         }
       )
 

@@ -85,10 +85,6 @@ config :codebattle, fake_html_to_image: false
 config :codebattle, free_users_redirect_url: "/"
 config :codebattle, freeze_time: false
 config :codebattle, html_debug_mode: true
-
-config :codebattle,
-  jitsi_api_key: System.get_env("JITSI_API_KEY", "")
-
 config :codebattle, load_dot_env_file: true
 config :codebattle, store_playbook_async: true
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer

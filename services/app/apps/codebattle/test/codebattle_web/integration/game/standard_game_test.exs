@@ -177,8 +177,8 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 
     assert game.state == "game_over"
-    assert user1.rating == 1012
-    assert user2.rating == 988
+    assert user1.rating == 1000
+    assert user2.rating == 1000
 
     assert user_game1.creator == true
     assert user_game1.result == "won"
@@ -334,8 +334,8 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
     user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 
     assert game.state == "game_over"
-    assert user1.rating == 1012
-    assert user2.rating == 988
+    assert user1.rating == 1000
+    assert user2.rating == 1000
 
     assert user_game1.creator == true
     assert user_game1.result == "won"

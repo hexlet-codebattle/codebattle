@@ -19,7 +19,6 @@ defmodule Codebattle.Application do
       [
         {ChromicPDF, chromic_pdf_opts()},
         {Codebattle.TasksImporter, []},
-        {Codebattle.UsersRankUpdateServer, []},
         {Codebattle.UsersPointsAndRankUpdateServer, []},
         {Codebattle.Bot.GameCreator, []},
         {Codebattle.Tournament.UpcomingRunner, []},
