@@ -2178,7 +2178,8 @@ a.cb-text:hover {
   background-color: $cb-success;
   border-color: $cb-success;
 
-  &:hover {
+  &:hover:not(:disabled),
+  &:hover:not(.disabled) {
     background-color: $cb-hovered-success;
     border-color: $cb-hovered-success;
   }
@@ -2187,7 +2188,8 @@ a.cb-text:hover {
 .cb-btn-outline-success {
   border-color: $cb-success;
 
-  &:hover {
+  &:hover:not(:disabled),
+  &:hover:not(.disabled) {
     background-color: $cb-hovered-success;
     border-color: $cb-hovered-success;
   }
@@ -2500,3 +2502,7 @@ a.cb-text:hover {
 //   background-color: rgba(90, 123, 151, 0.2);
 // }
 //
+
+.btn-link {
+  color: white;
+}

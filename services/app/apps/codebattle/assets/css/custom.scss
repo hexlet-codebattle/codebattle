@@ -56,13 +56,11 @@
 }
 
 .cb-custom-event-td:not(:last-child)::after {
-  background-color: black;
   right: 0;
   top: 8px;
 }
 
 .cb-custom-event-nav-item:not(:first-child):not(.active)::after {
-  background-color: white;
   left: 0;
   top: 13px;
 }

@@ -55,8 +55,8 @@ const OutputTab = ({ sideOutput, large = false }) => {
 
   return (
     <>
-      {isShowMessage && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
-      <span className={`p-2 bg-${statusColor}`}>{message}</span>
+      {isShowMessage && <span className="font-weight-bold text-white small mr-3">{assertsStatusMessage}</span>}
+      <span className={`p-2 text-white bg-${statusColor}`}>{message}</span>
     </>
   );
 };

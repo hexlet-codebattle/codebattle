@@ -30,14 +30,14 @@ const fetchUsers = createAsyncThunk(
     };
 
     const params = periodType === periodTypes.ALL
-        ? baseParams
-        : {
-            ...baseParams,
-            date_from: moment()
-              .startOf(periodMapping[periodType])
-              .utc()
-              .format('YYYY-MM-DD'),
-          };
+      ? baseParams
+      : {
+        ...baseParams,
+        date_from: moment()
+          .startOf(periodMapping[periodType])
+          .utc()
+          .format('YYYY-MM-DD'),
+      };
 
     const response = await axios.get('/api/v1/users', { params });
 

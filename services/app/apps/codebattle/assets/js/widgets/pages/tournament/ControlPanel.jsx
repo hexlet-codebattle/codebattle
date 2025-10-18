@@ -143,7 +143,7 @@ function ControlPanel({
   );
 
   const backBtnClassName = cn('btn text-nowrap cb-rounded mr-1 mb-2', {
-    'btn-outline-secondary': !hasCustomEventStyles,
+    'btn-outline-secondary cb-btn-outline-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-outline-secondary': hasCustomEventStyles,
   });
 

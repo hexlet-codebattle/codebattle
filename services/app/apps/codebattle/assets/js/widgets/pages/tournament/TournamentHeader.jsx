@@ -185,7 +185,7 @@ function TournamentHeader({
       },
   );
   const copyBtnClassName = cn('btn btn-sm rounded-right', {
-    'btn-secondary': !hasCustomEventStyle,
+    'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
     'cb-custom-event-btn-secondary': hasCustomEventStyle,
   });
   // const backBtnClassName = cn('btn rounded-lg ml-lg-2 mr-2', {
@@ -328,7 +328,7 @@ function TournamentHeader({
                 <span className="mx-2">|</span>
                 <div className="d-flex input-group ml-2">
                   <div title="Access token" className="input-group-prepend">
-                    <span className="input-group-text">
+                    <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text">
                       <FontAwesomeIcon icon="key" />
                     </span>
                   </div>

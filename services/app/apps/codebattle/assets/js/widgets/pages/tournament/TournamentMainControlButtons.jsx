@@ -1,11 +1,10 @@
-import React, { memo, useCallback, useContext } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch } from 'react-redux';
 
-import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import {
   cancelTournament,
   restartTournament as handleRestartTournament,
@@ -45,8 +44,6 @@ const TournamentMainControlButtons = ({
 }) => {
   const dispatch = useDispatch();
 
-  const hasCustomEventStyles = useContext(CustomEventStylesContext);
-
   const handleStartTournament = useCallback(() => {
     handleStartRound('firstRound');
   }, [handleStartRound]);
@@ -57,21 +54,13 @@ const TournamentMainControlButtons = ({
     handleStartRound('nextRound');
   }, [handleStartRound]);
 
-  const restartBtnClassName = cn('btn text-white text-nowrap ml-lg-2 rounded-left', {
-    'btn-info': !hasCustomEventStyles,
-    'cb-custom-event-btn-info': hasCustomEventStyles,
-  });
-  const roundBtnClassName = cn('btn text-white text-nowrap ml-lg-2 rounded-left', {
-    'btn-success': !hasCustomEventStyles,
-    'cb-custom-event-btn-success': hasCustomEventStyles,
-  });
+  const restartBtnClassName = cn('btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary');
+  const roundBtnClassName = cn('btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white');
 
   const dropdownBtnClassName = cn('btn text-white rounded-right', {
     'rounded-left': streamMode,
-    'btn-info': !hasCustomEventStyles && canRestart,
-    'btn-success': !hasCustomEventStyles && !canRestart,
-    'cb-custom-event-btn-info': hasCustomEventStyles && canRestart,
-    'cb-custom-event-btn-success': hasCustomEventStyles && !canRestart,
+    'btn-secondary cb-btn-secondary': canRestart,
+    'btn-success cb-btn-success text-white': !canRestart,
   });
 
   return (

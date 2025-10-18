@@ -2,49 +2,23 @@ import React, { memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 
+import { customStyle } from '@/components/LanguagePickerView';
 import UserInfo from '@/components/UserInfo';
 import { sendNewReportState } from '@/middlewares/TournamentAdmin';
 import { tournamentPlayersSelector, reportsSelector, userIsAdminSelector } from '@/selectors';
 
 import i18next from '../../../i18n';
 
-const customStyle = {
-  control: provided => ({
-    ...provided,
-    height: '33px',
-    minHeight: '31px',
-    minWidth: '210px',
-    borderRadius: '0.3rem',
-    backgroundColor: 'hsl(0, 0%, 100%)',
-  }),
-  indicatorsContainer: provided => ({
-    ...provided,
-    height: '29px',
-  }),
-  clearIndicator: provided => ({
-    ...provided,
-    padding: '5px',
-  }),
-  dropdownIndicator: provided => ({
-    ...provided,
-    padding: '5px',
-  }),
-  input: provided => ({
-    ...provided,
-    height: '21px',
-  }),
-};
-
 const customEventTrClassName = cn(
-  'text-dark cb-custom-event-tr',
+  'cb-custom-event-tr align-items-center',
 );
 
 const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  'p-1 pl-4 my-2 ml-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
 const reportStatusOptions = [
@@ -85,8 +59,8 @@ function ReportsPanel() {
 
   return (
     <div className="d-flex my-2">
-      <table className="table table-striped cb-custom-event-table border border-secondary rounded-lg">
-        <thead className="text-muted">
+      <table className="table table-striped cb-custom-event-table border cb-border-color border-secondary cb-rounded">
+        <thead className="cb-text">
           <tr>
             <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t('Offender')}
@@ -123,20 +97,18 @@ function ReportsPanel() {
                     <Select
                       styles={customStyle}
                       value={{
-                      label: getStateText(item.state),
-                      value: item.state,
-                    }}
+                        label: getStateText(item.state),
+                        value: item.state,
+                      }}
                       onChange={changeReportState(item.id)}
                       options={reportStatusOptions}
                     />
                   </td>
                   <td className={tableDataCellClassName}>
-                    <p>
-                      {moment
-                      .utc(item.insertedAt)
-                      .local()
-                      .format('YYYY-MM-DD HH:mm:ss')}
-                    </p>
+                    <span className="text-white">
+                      {dayjs(item.insertedAt)
+                        .format('YYYY-MM-DD HH:mm:ss')}
+                    </span>
                   </td>
                   <td className={tableDataCellClassName}>
                     <a href={`/games/${item.gameId}`}>
