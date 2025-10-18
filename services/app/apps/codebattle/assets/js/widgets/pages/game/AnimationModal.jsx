@@ -35,6 +35,13 @@ const AnimationModal = NiceModal.create(() => {
   const currentUserId = useSelector(state => currentUserIdSelector(state));
   const tournamentId = useSelector(state => state.game.gameStatus.tournamentId);
 
+  useEffect(() => {
+    if (modal.visible) {
+      NiceModal.hide(ModalCodes.premiumRestrictionModal);
+      NiceModal.hide(ModalCodes.taskDescriptionModal);
+    }
+  }, [modal.visible]);
+
   const currentPlayer = players[currentUserId];
 
   if (!currentPlayer || currentPlayer.result === 'undefined') {
@@ -47,13 +54,6 @@ const AnimationModal = NiceModal.create(() => {
     ? i18n.t("Woohoo, you're Champion!!!!!")
     : i18n.t("If you read this you've lost the game");
   const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
-
-  useEffect(() => {
-    if (modal.visible) {
-      NiceModal.hide(ModalCodes.premiumRestrictionModal);
-      NiceModal.hide(ModalCodes.taskDescriptionModal);
-    }
-  }, [modal.visible]);
 
   return (
     <Modal

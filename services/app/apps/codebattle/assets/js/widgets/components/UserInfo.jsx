@@ -62,11 +62,11 @@ function UserInfo({
   const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
 
   if (!user?.id) {
-    return <span className="text-secondary">John Doe</span>;
+    return <span className="text-white">John Doe</span>;
   }
 
   if (user?.id === 0) {
-    return <span className="text-secondary">{user.name}</span>;
+    return <span className="text-white">{user.name}</span>;
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);

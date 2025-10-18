@@ -9,7 +9,7 @@ import * as selectors from '../selectors';
 
 import LanguageIcon from './LanguageIcon';
 
-const customStyle = {
+export const customStyle = {
   control: provided => ({
     ...provided,
     color: 'white',
@@ -23,6 +23,10 @@ const customStyle = {
     ':hover': {
       borderColor: '#4c4c5a',
     },
+  }),
+  singleValue: provider => ({
+    ...provider,
+    color: 'white',
   }),
   indicatorsContainer: provided => ({
     ...provided,
@@ -39,14 +43,17 @@ const customStyle = {
   }),
   input: provided => ({
     ...provided,
+    color: 'white',
     height: '21px',
   }),
   menu: provided => ({
     ...provided,
+    color: 'white',
     backgroundColor: '#2a2a35',
   }),
   option: provided => ({
     ...provided,
+    color: 'white',
     backgroundColor: '#2a2a35',
     ':hover': {
       backgroundColor: '#3a3f50',

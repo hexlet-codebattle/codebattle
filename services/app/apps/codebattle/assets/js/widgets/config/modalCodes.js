@@ -8,6 +8,7 @@ const modalCodes = {
   premiumRestrictionModal: 'premium_restriction_modal',
   awardModal: 'award_modal',
   eventStageModal: 'event_stage_modal',
+  calendarEventModal: 'calendar_event_modal',
 };
 
 export default modalCodes;

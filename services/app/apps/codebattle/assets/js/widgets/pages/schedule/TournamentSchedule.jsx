@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import cn from 'classnames';
 import dayjs from 'dayjs';
 import uniqBy from 'lodash/uniqBy';
@@ -8,10 +9,13 @@ import { useSelector } from 'react-redux';
 
 import { uploadTournamentsByFilter } from '@/middlewares/Tournament';
 import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
+import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
-import tournamentStates from '../../config/tournament';
+import ModalCodes from '../../config/modalCodes';
 
-const grades = {
+import ScheduleLegend, { states } from './ScheduleLegend';
+
+export const grades = {
   open: 'open',
   rookie: 'rookie',
   challenger: 'challenger',
@@ -21,12 +25,6 @@ const grades = {
   grandSlam: 'grand_slam',
 };
 
-const states = {
-  contest: '#contest',
-  my: '#my',
-  all: '#all',
-};
-
 const views = {
   month: 'month',
   week: 'week',
@@ -34,7 +32,6 @@ const views = {
   agenda: 'agenda',
 };
 
-// const filterRookieGrade = e => !(e.resourse.grade === 'rookie' && e.resourse.state === tournamentStates.upcoming);
 const haveSeasonGrade = t => t.grade !== grades.open;
 const filterMyTournaments = userId => t => t.ownerId === userId;
 
@@ -62,6 +59,7 @@ const getEventFromTournamentData = t => ({
     .toDate(),
   resourse: {
     id: t.id,
+    description: t.description,
     state: t.state,
     grade: t.grade,
   },
@@ -103,21 +101,18 @@ const checkNeedLoading = (oldData, newDate) => {
 const TournamentSchedule = () => {
   const [event, setSelectedEvent] = useState(null);
   const [context, setContext] = useState(getStateFromHash);
-  const [hash, setHash] = useState({
+  const [tournaments, setTournaments] = useState({
     seasonTournaments: [],
     userTournaments: [],
     loading: true,
   });
-  const [tournaments, setTournaments] = useState([]);
   const [events, setEvents] = useState([]);
   const [date, setDate] = useState(dayjs().format());
   const [view, setView] = useState(views.month);
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const currentUserId = useSelector(currentUserIdSelector);
 
-  const sectionBtnClassName = cn(
-    'btn btn-secondary border-0 cb-btn-secondary cb-rounded mx-2',
-  );
+  useTournamentScheduleModals();
 
   const codebattleLocalizer = dayjsLocalizer(dayjs);
 
@@ -126,7 +121,7 @@ const TournamentSchedule = () => {
     const endMonth = dayjs(newDate).endOf('month').toISOString();
 
     const [seasonTournaments, userTournaments] = await uploadTournamentsByFilter(beginMonth, endMonth);
-    setHash({ seasonTournaments, userTournaments, loading: false });
+    setTournaments({ seasonTournaments, userTournaments, loading: false });
   };
 
   const onView = useCallback(
@@ -156,7 +151,7 @@ const TournamentSchedule = () => {
   const onNavigate = newDate => {
     if (checkNeedLoading(date, newDate)) {
       const abortController = new AbortController();
-      setHash(state => ({ ...state, loading: true }));
+      setTournaments(state => ({ ...state, loading: true }));
       setEvents([]);
       loadTournaments(abortController, newDate).catch(e => {
         console.error(e);
@@ -180,84 +175,51 @@ const TournamentSchedule = () => {
       return;
     }
 
+    if (tournaments.loading) {
+      setEvents([]);
+      return;
+    }
+
     if (context === states.contest) {
-      const newTournaments = uniqBy([
-        ...hash.seasonTournaments,
-        ...hash.userTournaments.filter(haveSeasonGrade),
-      ], 'id');
+      const newEvents = uniqBy([
+        ...tournaments.seasonTournaments,
+        ...tournaments.userTournaments.filter(haveSeasonGrade),
+      ], 'id').map(getEventFromTournamentData);
 
-      setTournaments(newTournaments);
+      setEvents(newEvents);
     } else if (context === states.my) {
-      setTournaments(
-        hash.userTournaments.filter(filterMyTournaments(currentUserId)),
-      );
+      const newEvents = tournaments.userTournaments
+        .filter(filterMyTournaments(currentUserId))
+        .map(getEventFromTournamentData);
+
+      setEvents(newEvents);
     } else if (context === states.all) {
-      const newTournaments = uniqBy([
-        ...hash.seasonTournaments,
-        ...hash.userTournaments,
-      ], 'id');
+      const newEvents = uniqBy([
+        ...tournaments.seasonTournaments,
+        ...tournaments.userTournaments,
+      ], 'id').map(getEventFromTournamentData);
 
-      setTournaments(newTournaments);
+      setEvents(newEvents);
     }
-  }, [context, hash, setTournaments, currentUserId, isAdmin]);
+  }, [context, currentUserId, tournaments, isAdmin]);
 
   useEffect(() => {
-    if (tournaments) {
-      setEvents(tournaments.map(getEventFromTournamentData));
+    if (event) {
+      NiceModal.show(ModalCodes.calendarEventModal, { event, events, clearEvent: setSelectedEvent });
     }
-  }, [tournaments]);
-
-  useEffect(() => {
-    if (
-      event?.resourse
-      && event?.resourse?.state !== tournamentStates.upcoming
-    ) {
-      window.location.href = `/tournaments/${event.resourse.id}`;
-    }
-  }, [event]);
-
-  // const filteredEvents = events.filter(filterRookieGrade);
+    /* eslint-disable-next-line */
+  }, [event, setSelectedEvent]);
 
   return (
     <div
       className="d-flex flex-column h-100 w-100 cb-bg-panel cb-rounded p-1 p-md-3 p-lg-3 position-relative cb-overflow-y-scroll"
       style={{ maxHeight: '90vh' }}
     >
-      <div className="d-flex btn-group align-items-center justify-content-center p-1 pb-4">
-        <button
-          type="button"
-          className={cn(sectionBtnClassName, {
-            active: context === states.contest,
-          })}
-          data-context={states.contest}
-          onClick={onChangeContext}
-          disabled={hash.loading}
-        >
-          Contests History
-        </button>
-        <button
-          type="button"
-          className={cn(sectionBtnClassName, { active: context === states.my })}
-          data-context={states.my}
-          onClick={onChangeContext}
-          disabled={hash.loading}
-        >
-          My Tournaments
-        </button>
-        {isAdmin && (
-          <button
-            type="button"
-            className={cn(sectionBtnClassName, {
-              active: context === states.all,
-            })}
-            data-context={states.all}
-            onClick={onChangeContext}
-            disabled={hash.loading}
-          >
-            All Tournaments
-          </button>
-        )}
-      </div>
+      <ScheduleLegend
+        context={context}
+        loading={tournaments.loading}
+        onChangeContext={onChangeContext}
+      />
       <BigCalendar
         localizer={codebattleLocalizer}
         startAccessor="start"

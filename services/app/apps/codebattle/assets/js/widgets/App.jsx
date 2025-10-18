@@ -150,7 +150,9 @@ export const TournamentsSchedulePage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <TournamentsSchedule />
+        <NiceModal.Provider>
+          <TournamentsSchedule />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>
