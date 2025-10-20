@@ -122,7 +122,7 @@
     "redux-persist": "^6.0.0",
     "rehype-katex": "^7.0.0",
     "remark-math": "^6.0.0",
-    "rollbar": "^2.19.4",
+    "rollbar": "^2.26.5",
     "rollbar-redux-middleware": "^0.2.0",
     "sass": "^1.44.0",
     "set-value": "^4.0.1",
