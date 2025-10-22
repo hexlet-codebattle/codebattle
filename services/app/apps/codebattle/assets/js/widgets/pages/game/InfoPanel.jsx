@@ -16,7 +16,6 @@ const InfoPanel = ({
   idOutput = 'leftOutput',
   canShowOutputPanel,
   outputData,
-  timerProps,
   taskPanelProps,
 }) => {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
@@ -57,9 +56,7 @@ const InfoPanel = ({
               <div
                 className="rounded-0 text-center border-left cb-border-color col-6 text-white px-1 py-2"
               >
-                <TimerContainer
-                  {...timerProps}
-                />
+                <TimerContainer />
               </div>
             </div>
           </nav>

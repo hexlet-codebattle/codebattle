@@ -33,6 +33,7 @@ defmodule Codebattle.Task do
              :state,
              :tags,
              :time_to_solve_sec,
+             :type,
              :visibility
            ]}
 
@@ -55,6 +56,7 @@ defmodule Codebattle.Task do
     "github" => 1
   }
 
+  @task_type "algorithms"
   @levels ~w(elementary easy medium hard)
   @states ~w(blank draft on_moderation active disabled)
   @origin_types ~w(github user)
@@ -63,6 +65,7 @@ defmodule Codebattle.Task do
   schema "tasks" do
     field(:description_ru, :string)
     field(:description_en, :string)
+    field(:type, :string, default: @task_type)
     field(:name, :string)
     field(:level, :string)
     field(:comment, :string)
@@ -107,6 +110,7 @@ defmodule Codebattle.Task do
       :state,
       :tags,
       :time_to_solve_sec,
+      :type,
       :visibility
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])

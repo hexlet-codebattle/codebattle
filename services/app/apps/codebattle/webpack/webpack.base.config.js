@@ -24,6 +24,7 @@ module.exports = {
   target: 'browserslist',
   entry: {
     app: ['./assets/js/app.js', './assets/css/style.scss'],
+    cssbattle: ['./assets/js/iframes/cssbattle/index.js'],
     landing: ['./assets/js/landing.js', './assets/css/landing.scss'],
     external: ['./assets/js/external.js', './assets/css/external.scss'],
     broadcast_editor: ['./assets/js/widgets/pages/broadcast-editor/index'],

@@ -13,6 +13,28 @@ defmodule Runner.Executor do
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
+  def call(task = %Runner.Task{type: "sql"}, lang_meta, solution_text, run_id) do
+    seed = get_seed()
+
+    wait_permission_to_launch(run_id, 0, Languages.get_timeout_ms(lang_meta) + 500)
+
+    tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, "", "")
+
+    {out, err, status} =
+      lang_meta
+      |> get_docker_command(tmp_dir_path)
+      |> run_command(lang_meta)
+
+    Task.start(File, :rm_rf, [tmp_dir_path])
+
+    %{
+      container_output: out,
+      container_stderr: err,
+      exit_code: status,
+      seed: seed
+    }
+  end
+
   def call(task, lang_meta, solution_text, run_id) do
     seed = get_seed()
 

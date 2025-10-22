@@ -89,6 +89,22 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("editor:lang", payload, socket) do
+    game_id = socket.assigns.game_id
+
+    game = Context.get_game!(game_id)
+    user = socket.assigns.current_user
+
+    %{"lang_slug" => lang_slug} = payload
+
+    Codebattle.PubSub.broadcast(
+      "game:editor_lang_changed",
+      %{game_id: game.id, user_id: user.id, editor_lang: lang_slug}
+    )
+
+    {:noreply, socket}
+  end
+
   def handle_in("editor:data", payload, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user

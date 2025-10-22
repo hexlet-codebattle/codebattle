@@ -19,6 +19,9 @@ const languages = {
   less: 'less',
   sass: 'scss',
   stylus: 'stylus',
+  postgresql: 'pgsql',
+  mongodb: 'mongodb',
+  mysql: 'mysql',
 };
 
 export const cssProcessors = ['css', 'less', 'sass', 'stylus'];

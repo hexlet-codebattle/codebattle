@@ -9,11 +9,14 @@ defmodule Runner.Task do
 
   @type t :: %__MODULE__{}
 
-  @required_fields [:input_signature, :output_signature, :asserts, :asserts_examples]
+  @required_experiment_fields [:type]
+  @required_fields [:type, :input_signature, :output_signature, :asserts, :asserts_examples]
+  @all_experiment_fields [:type]
   @all_fields @required_fields ++ [:comment]
 
   @primary_key false
   embedded_schema do
+    field(:type, :string, default: "algorithms")
     field(:comment, :string, default: "use stdout to debug")
     field(:input_signature, {:array, AtomizedMap}, default: [])
     field(:output_signature, AtomizedMap, default: %{})
@@ -24,10 +27,17 @@ defmodule Runner.Task do
   @spec new!(params :: map()) :: t()
   def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
 
-  def new!(params = %{}) do
+  def new!(params = %{type: "algorithms"}) do
     %__MODULE__{}
     |> cast(params, @all_fields)
     |> validate_required(@required_fields)
+    |> apply_action!(:validate)
+  end
+
+  def new!(params = %{}) do
+    %__MODULE__{}
+    |> cast(params, @all_experiment_fields)
+    |> validate_required(@required_experiment_fields)
     |> apply_action!(:validate)
   end
 end

@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, memo } from 'react';
 
 import i18next from 'i18next';
+import { useSelector } from 'react-redux';
 
 import CountdownTimer from '../../components/CountdownTimer';
 import RoomContext from '../../components/RoomContext';
@@ -18,6 +19,7 @@ import {
   isReadyTaskSelector,
   isInvalidTaskSelector,
 } from '../../machines/selectors';
+import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 const gameStatuses = {
@@ -44,10 +46,16 @@ const GameRoomTimer = ({ timeoutSeconds, time }) => {
   return <Timer time={time} />;
 };
 
-function TimerContainer({
- time, mode, timeoutSeconds, gameStateName,
-}) {
+function TimerContainer() {
   const { mainService, taskService } = useContext(RoomContext);
+
+  const {
+    startsAt: time,
+    timeoutSeconds,
+    state: gameStateName,
+    mode,
+  } = useSelector(selectors.gameStatusSelector);
+
   const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
   const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
 
@@ -71,22 +79,22 @@ function TimerContainer({
 
   if (isBuilderRoom) {
     if (isTaskSaved) {
-      return 'Task Saved';
+      return i18next.t('Task Saved');
     }
 
     if (isTaskReady) {
-      return 'Task Is Ready';
+      return i18next.t('Task Is Ready');
     }
 
     if (isInvalidTask) {
-      return 'Task Is Invalid';
+      return i18next.t('Task Is Invalid');
     }
 
-    return 'Task Builder';
+    return i18next.t('Task Builder');
   }
 
   if (isTestingRoom) {
-    return 'Task Testing';
+    return i18next.t('Task Testing');
   }
 
   if (isGameOver || isGameStored) {
@@ -96,4 +104,4 @@ function TimerContainer({
   return <GameRoomTimer timeoutSeconds={timeoutSeconds} time={time} />;
 }
 
-export default TimerContainer;
+export default memo(TimerContainer);

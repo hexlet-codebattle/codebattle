@@ -88,12 +88,9 @@ function ChatWidget() {
             'cb-game-chat-container cb-messages-container cb-text',
           )}
         >
-          <>
-            <ChatHeader
-              showRooms={isStandardGame}
-              disabled={disabledChatHeader}
-            />
-            {openedReplayer ? (
+          <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
+          {openedReplayer
+            ? (
               <Messages
                 messages={historyMessages}
                 disabled={disabledChatMessages}
@@ -105,10 +102,7 @@ function ChatWidget() {
                 disabled={disabledChatMessages}
               />
             )}
-            {showChatInput && (
-              <ChatInput inputRef={inputRef} disabled={disabledChatInput} />
-            )}
-          </>
+          {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
         </div>
         <div className="flex-shrink-1 p-0 border-left cb-border-color rounded-right cb-game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">

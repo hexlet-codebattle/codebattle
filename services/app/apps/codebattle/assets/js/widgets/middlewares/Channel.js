@@ -205,6 +205,8 @@ export default class Channel {
       decamelizeKeys(params, { separator: '_' }),
     );
 
+    pushInstance.receive('error', console.error);
+
     return pushInstance;
   }
 

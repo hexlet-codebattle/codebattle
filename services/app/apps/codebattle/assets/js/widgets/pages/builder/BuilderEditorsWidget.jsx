@@ -23,7 +23,7 @@ import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import { taskTemplatesStates } from '../../utils/builder';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import DakModeButton from '../game/DarkModeButton';
+import DarkModeButton from '../game/DarkModeButton';
 
 import AssertsOutput from './AssertsOutput';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
@@ -207,7 +207,7 @@ function BuilderEditorsWidget() {
                   role="group"
                   aria-label="Editor mode"
                 >
-                  <DakModeButton playerId={currentUserId} />
+                  <DarkModeButton playerId={currentUserId} className="btn mr-2 border rounded" />
                 </div>
               </div>
               <div

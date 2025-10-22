@@ -6,7 +6,7 @@ import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
 import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 import FeedbackWidget from '../components/FeedbackWidget';
-import GameWidgetGuide from '../components/GameWidgetGuide';
+// import GameWidgetGuide from '../components/GameWidgetGuide';
 import RoomContext from '../components/RoomContext';
 import * as machineSelectors from '../machines/selectors';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
@@ -47,7 +47,7 @@ function RoomWidget({
 
   const mute = useGameRoomSoundSettings();
   const {
-    tournamentId,
+    // tournamentId,
     viewMode,
     showWaitingRoom,
     showBattleRoom,
@@ -80,7 +80,7 @@ function RoomWidget({
       >
         <RoomContext.Provider value={machines}>
           <div className="x-outline-none">
-            <GameWidgetGuide tournamentId={tournamentId} />
+            {/* <GameWidgetGuide tournamentId={tournamentId} /> */}
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div

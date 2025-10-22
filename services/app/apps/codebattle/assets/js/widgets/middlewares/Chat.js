@@ -58,12 +58,10 @@ export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => d
 
 export const addMessage = payload => {
   channel
-    .push(channelMethods.chatAddMsg, payload)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.chatAddMsg, payload);
 };
 
 export const pushCommand = command => {
   channel
-    .push(channelMethods.chatCommand, command)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.chatCommand, command);
 };

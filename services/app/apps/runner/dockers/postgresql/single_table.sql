@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS sum (a NUMERIC, b NUMERIC);
+
+INSERT INTO sum (a, b) VALUES (1, 2);
+INSERT INTO sum (a, b) VALUES (7, 5);
+INSERT INTO sum (a, b) VALUES (3, 1);
+INSERT INTO sum (a, b) VALUES (11, 3);
+INSERT INTO sum (a, b) VALUES (100, 200);
+INSERT INTO sum (a, b) VALUES (14, 3);

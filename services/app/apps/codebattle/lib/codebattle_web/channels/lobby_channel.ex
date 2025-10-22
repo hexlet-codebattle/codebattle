@@ -54,6 +54,29 @@ defmodule CodebattleWeb.LobbyChannel do
     end
   end
 
+  def handle_in("game:experiment:create", payload, socket) do
+    user = socket.assigns.current_user
+
+    game_params =
+      %{
+        task: %{
+          type: payload["type"]
+        },
+        level: payload["level"] || "elementary",
+        timeout_seconds: 60 * 60 * 23,
+      }
+      |> add_players(payload, user)
+      |> maybe_add_task(payload, user)
+
+    case Game.Context.create_game(game_params) do
+      {:ok, game} ->
+        {:reply, {:ok, %{game_id: game.id}}, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
   end
@@ -65,6 +88,11 @@ defmodule CodebattleWeb.LobbyChannel do
 
   def handle_info(%{event: "game:terminated", payload: payload}, socket) do
     push(socket, "game:remove", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:editor_lang_changed", payload: payload}, socket) do
+    push(socket, "game:editor_lang_changed", payload)
     {:noreply, socket}
   end
 

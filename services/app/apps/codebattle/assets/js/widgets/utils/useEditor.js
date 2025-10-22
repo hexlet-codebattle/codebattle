@@ -166,7 +166,6 @@ const useEditor = props => {
       rules: [],
     });
 
-    // currentMonaco.editor.setTheme('db-theme-dark');
     // currentMonaco.editor.setTheme('code-theme-dark');
 
     const {

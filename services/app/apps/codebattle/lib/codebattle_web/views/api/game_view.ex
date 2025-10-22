@@ -11,7 +11,7 @@ defmodule CodebattleWeb.Api.GameView do
       id: get_game_id(game),
       inserted_at: Map.get(game, :inserted_at),
       award: game.award,
-      langs: get_langs_with_templates(game.task),
+      langs: get_langs_with_templates(game),
       level: game.level,
       locked: game.locked,
       mode: game.mode,
@@ -22,7 +22,7 @@ defmodule CodebattleWeb.Api.GameView do
       starts_at: Map.get(game, :starts_at),
       state: game.state,
       status: game.state,
-      task: game.task,
+      task: render_task(game),
       timeout_seconds: game.timeout_seconds,
       tournament_id: Map.get(game, :tournament_id),
       type: game.type,
@@ -32,6 +32,10 @@ defmodule CodebattleWeb.Api.GameView do
       visibility_type: game.visibility_type
     }
   end
+
+  def render_task(game = %{task_type: "sql"}), do: game.sql_task
+  def render_task(game = %{task_type: "css"}), do: game.css_task
+  def render_task(game), do: game.task
 
   def render_completed_games(games) do
     Enum.map(games, &render_completed_game/1)
@@ -77,7 +81,59 @@ defmodule CodebattleWeb.Api.GameView do
 
   def get_langs_with_templates(nil), do: []
 
-  def get_langs_with_templates(task) do
+  def get_langs_with_templates(%{css_task: %{}}) do
+    [
+      %{
+        slug: "css",
+        name: "css",
+        version: "3",
+        solution_template: "body {\n\tbackground-color: #F3AC3C;\n}"
+      },
+      %{
+        slug: "sass",
+        name: "scss",
+        version: "1.79.4",
+        solution_template: "body {\n\tbackground-color: #F3AC3C;\n}"
+      },
+      %{
+        slug: "less",
+        name: "less",
+        version: "4.2.0",
+        solution_template: "body {\n\tbackground-color: #F3AC3C;\n}"
+      },
+      %{
+        slug: "stylus",
+        name: "stylus",
+        version: "0.63.0",
+        solution_template: "body\n\tbackground-color #F3AC3C"
+      }
+    ]
+  end
+
+  def get_langs_with_templates(%{sql_task: %{}}) do
+    [
+      %{
+        slug: "postgresql",
+        name: "postgresql",
+        version: "18",
+        solution_template: "SELECT solution FROM Solution;"
+      },
+      %{
+        slug: "mongodb",
+        name: "mongodb",
+        version: "8.0",
+        solution_template: "db.solution.find();"
+      },
+      %{
+        slug: "mysql",
+        name: "mysql",
+        version: "8.4.6",
+        solution_template: "SELECT solution FROM Solution;"
+      },
+    ]
+  end
+
+  def get_langs_with_templates(game) do
     Languages.meta()
     |> Map.take(Languages.get_lang_slugs())
     |> Map.values()
@@ -86,7 +142,7 @@ defmodule CodebattleWeb.Api.GameView do
         slug: meta.slug,
         name: meta.name,
         version: meta.version,
-        solution_template: CodeCheck.generate_solution_template(task, meta),
+        solution_template: CodeCheck.generate_solution_template(game.task, meta),
         arguments_generator_template: Map.get(meta, :arguments_generator_template, "")
       }
     end)

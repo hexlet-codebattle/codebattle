@@ -30,6 +30,7 @@ defmodule Codebattle.Game.Player do
              :is_bot,
              :is_guest,
              :lang,
+             :style_lang,
              :name,
              :rank,
              :rating,
@@ -54,6 +55,8 @@ defmodule Codebattle.Game.Player do
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)
     field(:lang, :string, default: "js")
+    field(:style_lang, :string, default: "css")
+    field(:db_type, :string, default: "sql")
     field(:name, :string, default: "Ada Lovelace")
     field(:playbook_id, :integer, default: nil)
     field(:rank, :integer, default: -1)
@@ -73,6 +76,8 @@ defmodule Codebattle.Game.Player do
       :is_bot,
       :is_guest,
       :lang,
+      :style_lang,
+      :db_type,
       :clan_id,
       :editor_text,
       :editor_lang,
@@ -108,8 +113,10 @@ defmodule Codebattle.Game.Player do
             avatar_url: user.avatar_url,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
-            editor_lang: user_game.lang,
-            lang: user_game.lang,
+            editor_lang: get_editor_lang(user, params),
+            lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
+            style_lang: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug),
+            db_type: user.db_type || Application.get_env(:codebattle, :default_db_type_slug),
             creator: user_game.creator,
             result: user_game.result
           }
@@ -129,8 +136,10 @@ defmodule Codebattle.Game.Player do
       rating: player.rating,
       rank: player.rank,
       avatar_url: player.avatar_url,
-      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
-      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug)
+      editor_lang: get_editor_lang(player, params),
+      lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      style_lang: player.style_lang || Application.get_env(:codebattle, :default_style_lang_slug),
+      db_type: player.db_type || Application.get_env(:codebattle, :default_db_type_slug)
     }
 
     player =
@@ -152,8 +161,10 @@ defmodule Codebattle.Game.Player do
       name: player.name,
       rating: player.rating,
       rank: player.rank,
-      editor_lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      editor_lang: get_editor_lang(player, params),
       lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
+      style_lang: player.style_lang || Application.get_env(:codebattle, :default_style_lang_slug),
+      db_type: player.db_type || Application.get_env(:codebattle, :default_db_type_slug),
       playbook_id: player.playbook_id
     }
 
@@ -181,8 +192,10 @@ defmodule Codebattle.Game.Player do
             clan_id: user.clan_id,
             rating: user.rating,
             rank: user.rank,
-            editor_lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
+            editor_lang: get_editor_lang(user, params),
             lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
+            style_lang: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug),
+            db_type: user.db_type || Application.get_env(:codebattle, :default_db_type_slug),
             achievements: user.achievements,
             avatar_url: user.avatar_url
           }
@@ -197,7 +210,43 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.delete(params, :task))
   end
 
-  def setup_editor_params(%__MODULE__{} = player, task) do
+  def setup_editor_params(player = %__MODULE__{}, task = %{type: "sql"}) do
+    editor_lang = player.editor_lang
+
+    editor_text =
+      CodebattleWeb.Api.GameView.get_langs_with_templates(%{sql_task: task})
+      |> Enum.find(fn t -> t.slug == editor_lang end)
+      |> Map.get(:solution_template)
+
+    params = %{
+      editor_lang: editor_lang,
+      editor_text: editor_text,
+      result: "undefined",
+      check_result: %CodeCheck.SqlResult{}
+    }
+
+    Map.merge(player, params)
+  end
+
+  def setup_editor_params(player = %__MODULE__{}, task = %{type: "css"}) do
+    editor_lang = player.editor_lang
+
+    editor_text =
+      CodebattleWeb.Api.GameView.get_langs_with_templates(%{css_task: task})
+      |> Enum.find(fn t -> t.slug == editor_lang end)
+      |> Map.get(:solution_template)
+
+    params = %{
+      editor_lang: editor_lang,
+      editor_text: editor_text,
+      result: "undefined",
+      check_result: %CodeCheck.CssResult{}
+    }
+
+    Map.merge(player, params)
+  end
+
+  def setup_editor_params(player = %__MODULE__{}, task) do
     editor_lang = player.editor_lang
 
     editor_text = CodeCheck.generate_solution_template(task, Languages.meta(editor_lang))
@@ -211,4 +260,8 @@ defmodule Codebattle.Game.Player do
 
     Map.merge(player, params)
   end
+
+  defp get_editor_lang(user, %{task: %{type: "sql"}}), do: user.db_type || Application.get_env(:codebattle, :default_db_type_slug)
+  defp get_editor_lang(user, %{task: %{type: "css"}}), do: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug)
+  defp get_editor_lang(user, _params), do: user.lang || Application.get_env(:codebattle, :default_lang_slug)
 end

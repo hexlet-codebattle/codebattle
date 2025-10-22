@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import NiceModal from '@ebay/nice-modal-react';
 import cn from 'classnames';
-import dayjs from 'dayjs';
 import uniqBy from 'lodash/uniqBy';
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar';
 import { useSelector } from 'react-redux';
@@ -11,6 +10,7 @@ import { uploadTournamentsByFilter } from '@/middlewares/Tournament';
 import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
 import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
+import dayjs from '../../../i18n/dayjs';
 import ModalCodes from '../../config/modalCodes';
 
 import ScheduleLegend, { states } from './ScheduleLegend';
@@ -229,6 +229,7 @@ const TournamentSchedule = () => {
         view={view}
         onView={onView}
         date={date}
+        defaultDate={date}
         onNavigate={onNavigate}
         onSelectEvent={setSelectedEvent}
         popup
