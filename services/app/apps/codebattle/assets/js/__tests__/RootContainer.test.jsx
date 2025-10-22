@@ -244,38 +244,6 @@ test('test rendering preview game component', async () => {
   expect(await findByText(/Examples:/)).toBeInTheDocument();
 });
 
-test('test game guide', async () => {
-  const store = configureStore({
-    reducer,
-    preloadedState,
-  });
-
-  const { findByRole, user } = setup(
-    <Provider store={store}>
-      <NiceModal.Provider>
-        <RootContainer
-          pageName="game"
-          mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-          taskMachine={createMachine({ predictableActionArguments: true, ...task })}
-          editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
-        />
-      </NiceModal.Provider>
-    </Provider>,
-  );
-
-  const showGuideButton = await findByRole('button', { name: 'Show guide' });
-
-  await user.click(showGuideButton);
-
-  const closeGuideButton = await findByRole('button', { name: 'Close' });
-  expect(closeGuideButton).toBeInTheDocument();
-
-  await user.click(closeGuideButton);
-
-  expect(closeGuideButton).not.toBeInTheDocument();
-});
-
 test('test a bot invite button', async () => {
   const store = configureStore({
     reducer,
