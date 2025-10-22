@@ -99,7 +99,7 @@ defmodule Codebattle.Game.Helpers do
     %{
       game
       | is_bot: bot_game?(game),
-        is_tournament: tournament_game?(game),
+        is_tournament: tournament_game?(game)
     }
   end
 

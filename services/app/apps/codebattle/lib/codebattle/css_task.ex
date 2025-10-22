@@ -2,6 +2,7 @@ defmodule Codebattle.CssTask do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
   @type t :: %__MODULE__{}
@@ -84,6 +85,6 @@ defmodule Codebattle.CssTask do
       state: "blank",
       visibility: "public",
       origin: "user",
-      creator_id: creator_id,
+      creator_id: creator_id
     }
 end

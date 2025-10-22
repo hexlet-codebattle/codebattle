@@ -10,6 +10,7 @@ defmodule Codebattle.Game.Player do
   alias Codebattle.Tournament
   alias Codebattle.User
   alias Codebattle.UserGame
+  alias CodebattleWeb.Api.GameView
   alias Runner.AtomizedMap
   alias Runner.Languages
 
@@ -210,11 +211,12 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.delete(params, :task))
   end
 
-  def setup_editor_params(player = %__MODULE__{}, task = %{type: "sql"}) do
+  def setup_editor_params(%__MODULE__{} = player, %{type: "sql"} = task) do
     editor_lang = player.editor_lang
 
     editor_text =
-      CodebattleWeb.Api.GameView.get_langs_with_templates(%{sql_task: task})
+      %{sql_task: task}
+      |> GameView.get_langs_with_templates()
       |> Enum.find(fn t -> t.slug == editor_lang end)
       |> Map.get(:solution_template)
 
@@ -228,11 +230,12 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, params)
   end
 
-  def setup_editor_params(player = %__MODULE__{}, task = %{type: "css"}) do
+  def setup_editor_params(%__MODULE__{} = player, %{type: "css"} = task) do
     editor_lang = player.editor_lang
 
     editor_text =
-      CodebattleWeb.Api.GameView.get_langs_with_templates(%{css_task: task})
+      %{css_task: task}
+      |> GameView.get_langs_with_templates()
       |> Enum.find(fn t -> t.slug == editor_lang end)
       |> Map.get(:solution_template)
 
@@ -246,7 +249,7 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, params)
   end
 
-  def setup_editor_params(player = %__MODULE__{}, task) do
+  def setup_editor_params(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
 
     editor_text = CodeCheck.generate_solution_template(task, Languages.meta(editor_lang))
@@ -261,7 +264,11 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, params)
   end
 
-  defp get_editor_lang(user, %{task: %{type: "sql"}}), do: user.db_type || Application.get_env(:codebattle, :default_db_type_slug)
-  defp get_editor_lang(user, %{task: %{type: "css"}}), do: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug)
+  defp get_editor_lang(user, %{task: %{type: "sql"}}),
+    do: user.db_type || Application.get_env(:codebattle, :default_db_type_slug)
+
+  defp get_editor_lang(user, %{task: %{type: "css"}}),
+    do: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug)
+
   defp get_editor_lang(user, _params), do: user.lang || Application.get_env(:codebattle, :default_lang_slug)
 end

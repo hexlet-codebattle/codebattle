@@ -63,7 +63,7 @@ defmodule CodebattleWeb.LobbyChannel do
           type: payload["type"]
         },
         level: payload["level"] || "elementary",
-        timeout_seconds: 60 * 60 * 23,
+        timeout_seconds: 60 * 60 * 23
       }
       |> add_players(payload, user)
       |> maybe_add_task(payload, user)

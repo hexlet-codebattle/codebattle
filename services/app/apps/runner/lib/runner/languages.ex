@@ -824,7 +824,7 @@ defmodule Runner.Languages do
       check_dir: "check",
       docker_image: "codebattle/mongodb:8.0.14",
       solution_file_name: "solution.js",
-      checker_file_name: "checker.js",
+      checker_file_name: "checker.js"
     },
     "mysql" => %LanguageMeta{
       name: "MySQL",
@@ -837,7 +837,7 @@ defmodule Runner.Languages do
       check_dir: "check",
       docker_image: "codebattle/mysql:8.4.6",
       solution_file_name: "solution.sql",
-      checker_file_name: "checker.sql",
+      checker_file_name: "checker.sql"
     },
     "postgresql" => %LanguageMeta{
       name: "PostgreSQL",
@@ -850,7 +850,7 @@ defmodule Runner.Languages do
       check_dir: "check",
       docker_image: "codebattle/postgresql:18",
       solution_file_name: "solution.sql",
-      checker_file_name: "checker.sql",
+      checker_file_name: "checker.sql"
     }
   }
 

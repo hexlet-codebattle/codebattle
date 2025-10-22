@@ -1,6 +1,4 @@
 defmodule Codebattle.CodeCheck.SqlResult do
-  use TypedStruct
-
   @moduledoc """
   statuses:
   initial ->  no check runs
@@ -11,6 +9,8 @@ defmodule Codebattle.CodeCheck.SqlResult do
   service_timeout -> remote execution timeout
   service_failure ->  remote execution failure
   """
+
+  use TypedStruct
 
   @derive Jason.Encoder
 

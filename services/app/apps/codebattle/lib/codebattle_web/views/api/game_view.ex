@@ -33,8 +33,8 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
-  def render_task(game = %{task_type: "sql"}), do: game.sql_task
-  def render_task(game = %{task_type: "css"}), do: game.css_task
+  def render_task(%{task_type: "sql"} = game), do: game.sql_task
+  def render_task(%{task_type: "css"} = game), do: game.css_task
   def render_task(game), do: game.task
 
   def render_completed_games(games) do
@@ -129,7 +129,7 @@ defmodule CodebattleWeb.Api.GameView do
         name: "mysql",
         version: "8.4.6",
         solution_template: "SELECT solution FROM Solution;"
-      },
+      }
     ]
   end
 

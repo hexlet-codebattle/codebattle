@@ -5,20 +5,20 @@ defmodule Codebattle.Game.Engine do
 
   alias Codebattle.Bot
   alias Codebattle.CodeCheck
+  alias Codebattle.CssTask
   alias Codebattle.Game
   alias Codebattle.Playbook
   alias Codebattle.Repo
+  alias Codebattle.SqlTask
   alias Codebattle.User
   alias Codebattle.UserGame
-  alias Codebattle.CssTask
-  alias Codebattle.SqlTask
 
   require Logger
 
   @default_timeout div(to_timeout(minute: 30), 1000)
   @max_timeout div(to_timeout(hour: 2), 1000)
 
-  def create_game(params = %{task: %{type: expriment_type}}) do
+  def create_game(%{task: %{type: expriment_type}} = params) do
     locked = Map.get(params, :locked, false)
     award = Map.get(params, :award, nil)
     use_chat = Map.get(params, :use_chat, true)
@@ -29,37 +29,44 @@ defmodule Codebattle.Game.Engine do
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     [creator | _] = params.players
-    opponent = Repo.get!(Codebattle.User, 1798)
+    opponent = Repo.get!(User, 1798)
     tournament_id = params[:tournament_id]
 
-    module = if expriment_type == "css" do
-      CssTask
-    else
-      SqlTask
-    end
+    module =
+      if expriment_type == "css" do
+        CssTask
+      else
+        SqlTask
+      end
+
     task = module.create_empty(creator.id)
 
     players = build_players([creator, opponent], task, creator)
-    game_params = %{
-      state: state,
-      level: task.level,
-      locked: locked,
-      award: award,
-      use_chat: use_chat,
-      use_timer: use_timer,
-      ref: params[:ref],
-      round_id: params[:round_id],
-      task_type: task.type,
-      mode: mode,
-      type: type,
-      visibility_type: visibility_type,
-      timeout_seconds: min(timeout_seconds, @max_timeout),
-      tournament_id: tournament_id,
-      waiting_room_name: params[:waiting_room_name],
-      players: players,
-      player_ids: Enum.map(players, & &1.id),
-      starts_at: TimeHelper.utc_now()
-    } |> put_task(task)
+
+    game_params =
+      put_task(
+        %{
+          state: state,
+          level: task.level,
+          locked: locked,
+          award: award,
+          use_chat: use_chat,
+          use_timer: use_timer,
+          ref: params[:ref],
+          round_id: params[:round_id],
+          task_type: task.type,
+          mode: mode,
+          type: type,
+          visibility_type: visibility_type,
+          timeout_seconds: min(timeout_seconds, @max_timeout),
+          tournament_id: tournament_id,
+          waiting_room_name: params[:waiting_room_name],
+          players: players,
+          player_ids: Enum.map(players, & &1.id),
+          starts_at: TimeHelper.utc_now()
+        },
+        task
+      )
 
     with :ok <- check_auth(players, mode, tournament_id),
          {:ok, game} <- insert_game(game_params),
@@ -69,9 +76,6 @@ defmodule Codebattle.Game.Engine do
          :ok <- start_timeout_timer(game),
          :ok <- broadcast_game_created(game) do
       {:ok, game}
-    else
-      {:error, reason} ->
-        {:error, reason}
     end
   end
 
@@ -600,10 +604,10 @@ defmodule Codebattle.Game.Engine do
     end)
   end
 
-  defp put_task(params, task = %CssTask{}), do: Map.merge(params, %{css_task: task})
-  defp put_task(params, task = %SqlTask{}), do: Map.merge(params, %{sql_task: task})
+  defp put_task(params, %CssTask{} = task), do: Map.put(params, :css_task, task)
+  defp put_task(params, %SqlTask{} = task), do: Map.put(params, :sql_task, task)
 
-  defp get_game_task(game = %{css_task: %CssTask{}}), do: game.css_task
-  defp get_game_task(game = %{sql_task: %SqlTask{}}), do: game.sql_task
+  defp get_game_task(%{css_task: %CssTask{}} = game), do: game.css_task
+  defp get_game_task(%{sql_task: %SqlTask{}} = game), do: game.sql_task
   defp get_game_task(game), do: game.task
 end

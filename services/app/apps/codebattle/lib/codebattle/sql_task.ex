@@ -2,6 +2,7 @@ defmodule Codebattle.SqlTask do
   @moduledoc false
 
   use Ecto.Schema
+
   import Ecto.Changeset
 
   @type t :: %__MODULE__{}
@@ -19,7 +20,7 @@ defmodule Codebattle.SqlTask do
              :origin,
              :visibility,
              :creator_id,
-             :sql_text,
+             :sql_text
            ]}
 
   @task_type "sql"
@@ -60,7 +61,7 @@ defmodule Codebattle.SqlTask do
       :origin,
       :visibility,
       :creator_id,
-      :sql_text,
+      :sql_text
     ])
     |> validate_required([:description_en, :name, :level, :sql_text])
     |> validate_inclusion(:state, @states)
@@ -81,6 +82,6 @@ defmodule Codebattle.SqlTask do
       state: "blank",
       visibility: "public",
       origin: "user",
-      creator_id: creator_id,
+      creator_id: creator_id
     }
 end
