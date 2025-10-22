@@ -19,16 +19,18 @@ import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
+jest.mock('pixelmatch', () => ({}));
+
 jest.mock('monaco-editor', () => ({
   editor: {
-    defineTheme: () => {},
+    defineTheme: () => { },
     create: () => ({
-      dispose: () => {},
-      onDidChangeModelContent: () => {},
-      setValue: () => {},
-      getValue: () => {},
-      getModel: () => {},
-      focus: () => {},
+      dispose: () => { },
+      onDidChangeModelContent: () => { },
+      setValue: () => { },
+      getValue: () => { },
+      getModel: () => { },
+      focus: () => { },
     }),
   },
 }));
@@ -37,7 +39,7 @@ jest.mock('monaco-vim', () => ({
   VimMode: class {
     constructor() {
       return {
-        dispose: () => {},
+        dispose: () => { },
       };
     }
   },
