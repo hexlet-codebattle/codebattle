@@ -13,7 +13,7 @@ defmodule Runner.Executor do
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
-  def call(task = %Runner.Task{type: "sql"}, lang_meta, solution_text, run_id) do
+  def call(%Runner.Task{type: "sql"}, lang_meta, solution_text, run_id) do
     seed = get_seed()
 
     wait_permission_to_launch(run_id, 0, Languages.get_timeout_ms(lang_meta) + 500)
