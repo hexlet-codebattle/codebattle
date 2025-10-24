@@ -19,6 +19,11 @@ import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
+jest.mock('bad-words-next');
+jest.mock('bad-words-next/lib/en');
+jest.mock('bad-words-next/lib/ru');
+jest.mock('bad-words-next/lib/ru_lat');
+
 jest.mock('pixelmatch', () => ({}));
 
 jest.mock('monaco-editor', () => ({

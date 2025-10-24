@@ -17,19 +17,10 @@ Object.defineProperty(window, 'scrollTo', {
   value: jest.fn(),
 });
 
-jest.mock(
-  'bad-words-next/lib/en',
-  () => { },
-);
-jest.mock(
-  'bad-words-next/lib/ru',
-  () => { },
-);
-
-jest.mock(
-  'bad-words-next/lib/ru_lat',
-  () => { },
-);
+jest.mock('bad-words-next');
+jest.mock('bad-words-next/lib/en');
+jest.mock('bad-words-next/lib/ru');
+jest.mock('bad-words-next/lib/ru_lat');
 
 jest.mock(
   '../widgets/components/UserInfo',

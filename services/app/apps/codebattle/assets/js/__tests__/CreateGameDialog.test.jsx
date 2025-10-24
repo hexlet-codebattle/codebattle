@@ -31,6 +31,11 @@ jest.mock(
 
 jest.mock('axios');
 
+jest.mock('bad-words-next');
+jest.mock('bad-words-next/lib/en');
+jest.mock('bad-words-next/lib/ru');
+jest.mock('bad-words-next/lib/ru_lat');
+
 const {
   elementaryTasksFromBackend,
   easyTasksFromBackend,
