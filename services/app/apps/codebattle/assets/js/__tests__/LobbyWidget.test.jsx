@@ -18,6 +18,20 @@ Object.defineProperty(window, 'scrollTo', {
 });
 
 jest.mock(
+  'bad-words-next/lib/en',
+  () => { },
+);
+jest.mock(
+  'bad-words-next/lib/ru',
+  () => { },
+);
+
+jest.mock(
+  'bad-words-next/lib/ru_lat',
+  () => { },
+);
+
+jest.mock(
   '../widgets/components/UserInfo',
   () => function UserInfo() {
     return (
