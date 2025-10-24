@@ -212,7 +212,7 @@ defmodule Codebattle.Game.Player do
   end
 
   def setup_editor_params(%__MODULE__{} = player, %{type: "sql"} = task) do
-    editor_lang = player.editor_lang
+    editor_lang = player.db_type
 
     editor_text =
       %{sql_task: task}
@@ -231,7 +231,7 @@ defmodule Codebattle.Game.Player do
   end
 
   def setup_editor_params(%__MODULE__{} = player, %{type: "css"} = task) do
-    editor_lang = player.editor_lang
+    editor_lang = player.style_lang
 
     editor_text =
       %{css_task: task}
@@ -250,7 +250,7 @@ defmodule Codebattle.Game.Player do
   end
 
   def setup_editor_params(%__MODULE__{} = player, task) do
-    editor_lang = player.editor_lang
+    editor_lang = player.lang
 
     editor_text = CodeCheck.generate_solution_template(task, Languages.meta(editor_lang))
 

@@ -13,7 +13,9 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           github_name: "g_name",
           clan: "abc",
           rating: 2400,
-          lang: "dart"
+          lang: "dart",
+          db_type: "mongodb",
+          style_lang: "less"
         })
 
       conn =
@@ -27,6 +29,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
                "locale" => "en",
                "clan" => "abc",
                "sound_settings" => %{"level" => 7, "type" => "dendy"},
+               "db_type" => "mongodb",
+               "style_lang" => "less",
                "github_id" => 1,
                "github_name" => "g_name"
              }
@@ -42,6 +46,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         "clan" => "  Bca  ",
         "locale" => "ru",
         "sound_settings" => %{"level" => 3, "type" => "cs"},
+        "db_type" => "postgresql",
+        "style_lang" => "css",
         "lang" => "ruby"
       }
 

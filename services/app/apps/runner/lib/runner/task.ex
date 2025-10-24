@@ -13,6 +13,7 @@ defmodule Runner.Task do
   @required_fields [:type, :input_signature, :output_signature, :asserts, :asserts_examples]
   @all_experiment_fields [:type]
   @all_fields @required_fields ++ [:comment]
+  @experiment_types ["css", "sql"]
 
   @primary_key false
   embedded_schema do
@@ -27,17 +28,18 @@ defmodule Runner.Task do
   @spec new!(params :: map()) :: t()
   def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
 
-  def new!(params = %{type: "algorithms"}) do
-    %__MODULE__{}
-    |> cast(params, @all_fields)
-    |> validate_required(@required_fields)
-    |> apply_action!(:validate)
-  end
-
-  def new!(params = %{}) do
+  def new!(params = %{type: experiment_type})
+      when experiment_type in @experiment_types do
     %__MODULE__{}
     |> cast(params, @all_experiment_fields)
     |> validate_required(@required_experiment_fields)
+    |> apply_action!(:validate)
+  end
+
+  def new!(params) do
+    %__MODULE__{}
+    |> cast(params, @all_fields)
+    |> validate_required(@required_fields)
     |> apply_action!(:validate)
   end
 end

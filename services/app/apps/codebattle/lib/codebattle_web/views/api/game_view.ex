@@ -133,6 +133,8 @@ defmodule CodebattleWeb.Api.GameView do
     ]
   end
 
+  def get_langs_with_templates(game) when is_nil(game.task) and is_nil(game.sql_task) and is_nil(game.css_task), do: []
+
   def get_langs_with_templates(game) do
     Languages.meta()
     |> Map.take(Languages.get_lang_slugs())

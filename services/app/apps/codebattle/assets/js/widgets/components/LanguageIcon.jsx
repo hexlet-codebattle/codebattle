@@ -45,6 +45,7 @@ const iconRenderers = {
   css: className => <CssOriginalIcon className={className} size="1.125em" />,
   stylus: className => (
     <StylusOriginalIcon
+      fill="#fff"
       className={className}
       size="1.6em"
     />

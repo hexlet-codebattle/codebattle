@@ -2103,12 +2103,12 @@ a.cb-text:hover {
     border-color: $cb-secondary-focus-border;
   }
 
-  &:hover {
+  &:hover:not(:disabled):not(.disabled) {
     background-color: $cb-secondary-hover-background;
     border-color: $cb-secondary-hover-border;
   }
 
-  &:focus {
+  &:focus:not(:disabled):not(.disabled) {
     background-color: $cb-secondary;
     border-color: $cb-secondary-focus-border;
   }
@@ -2148,13 +2148,13 @@ a.cb-text:hover {
     border-color: $cb-secondary-focus-border;
   }
 
-  &:hover {
+  &:hover:not(:disabled):not(.disabled) {
     color: white;
     background-color: $cb-secondary-hover-background;
     border-color: $cb-secondary-hover-border;
   }
 
-  &:focus {
+  &:focus:not(:disabled):not(.disabled) {
     color: white;
     background-color: $cb-secondary;
     border-color: $cb-secondary-focus-border;
@@ -2186,8 +2186,12 @@ a.cb-text:hover {
   background-color: $cb-success;
   border-color: $cb-success;
 
-  &:hover:not(:disabled),
-  &:hover:not(.disabled) {
+  &:hover:not(:disabled):not(.disabled) {
+    background-color: $cb-hovered-success;
+    border-color: $cb-hovered-success;
+  }
+
+  &:focus:not(:disabled):not(.disabled) {
     background-color: $cb-hovered-success;
     border-color: $cb-hovered-success;
   }
@@ -2196,8 +2200,7 @@ a.cb-text:hover {
 .cb-btn-outline-success {
   border-color: $cb-success;
 
-  &:hover:not(:disabled),
-  &:hover:not(.disabled) {
+  &:hover:not(:disabled):not(.disabled) {
     background-color: $cb-hovered-success;
     border-color: $cb-hovered-success;
   }
