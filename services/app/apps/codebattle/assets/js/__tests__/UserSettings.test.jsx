@@ -98,7 +98,10 @@ describe('UserSettings test cases', () => {
           clan: '',
           name: 'Dmitry',
           lang: 'js',
-          langView: 'code',
+          locale: undefined,
+          lang_view: 'code',
+          db_type: '',
+          style_lang: '',
           sound_settings: {
             level: 6,
             type: 'standard',
