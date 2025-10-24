@@ -76,19 +76,19 @@ describe('UserSettings test cases', () => {
       .spyOn(axios, 'patch')
       .mockResolvedValueOnce({ data: {} });
     const {
- getByRole, getByLabelText, getByTestId, user,
-} = setup(
-  <Provider store={store}>
-    <UserSettings />
-  </Provider>,
+      getByRole, getByLabelText, getByTestId, user,
+    } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
     );
     const submitButton = getByLabelText('SubmitForm');
     const nameInput = getByTestId('nameInput');
-    const langSelect = getByTestId('langSelect');
+    const codeLangSelect = getByTestId('code-langSelect');
 
     await user.clear(nameInput);
     await user.type(nameInput, 'Dmitry');
-    await user.selectOptions(langSelect, 'Javascript');
+    await user.selectOptions(codeLangSelect, 'Javascript');
     await user.click(submitButton);
 
     await waitFor(() => {
@@ -111,11 +111,11 @@ describe('UserSettings test cases', () => {
 
   test('failed user settings update', async () => {
     const {
- getByTestId, getByLabelText, findByRole, findByText, user,
-} = setup(
-  <Provider store={store}>
-    <UserSettings />
-  </Provider>,
+      getByTestId, getByLabelText, findByRole, findByText, user,
+    } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
     );
     const submitButton = getByLabelText('SubmitForm');
     const nameInput = getByTestId('nameInput');

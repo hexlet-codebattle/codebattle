@@ -93,6 +93,7 @@ const LanguageSelect = ({
         <LanguageIcon className="w-100 h-100 mb-2" lang={lang} />
         <Field
           as="select"
+          data-testid={`${view}-langSelect`}
           aria-label="Programming language select"
           name={getFieldNameByView(view)}
           className="cb-bg-panel ml-2 cb-border-color text-white custom-select"
