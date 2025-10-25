@@ -24,7 +24,7 @@ const InfoPanel = ({
   return (
     <>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <div className="d-flex shadow-sm flex-column h-100 cb-bg-panel">
+        <div className="d-flex shadow-sm flex-column h-100 cb-bg-panel cb-rounded">
           <nav>
             <div
               className="nav nav-tabs cb-border-color text-uppercase font-weight-bold text-center"

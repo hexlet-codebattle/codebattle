@@ -6,6 +6,7 @@ import GameRoomModes from '../../config/gameModes';
 import Placements from '../../config/placements';
 
 // import DarkModeButton from './DarkModeButton';
+import CopyEditorButton from './CopyEditorButton';
 import EditorResultIcon from './EditorResultIcon';
 import GameActionButtons from './GameActionButtons';
 import GameBanPlayerButton from './GameBanPlayerButton';
@@ -66,22 +67,27 @@ const EditorToolbar = ({
           {showControlBtns && !isHistory && editorState !== 'banned' && (
             <GameActionButtons {...actionBtnsProps} />
           )}
-          <div
-            className="btn-group btn-group-sm py-2 mx-2"
-            role="group"
-            aria-label="Report actions"
-          >
-            {!showControlBtns && (
+          {!showControlBtns && (
+            <div
+              className="py-2"
+              role="group"
+              aria-label="Report actions"
+            >
               <GameReportButton userId={player.id} gameId={gameId} />
-            )}
-            {isAdmin && !showControlBtns && (
-              <GameBanPlayerButton
-                userId={player.id}
-                status={status}
-                tournamentId={tournamentId}
-              />
-            )}
-          </div>
+              {isAdmin && (
+                <>
+                  <GameBanPlayerButton
+                    userId={player.id}
+                    status={status}
+                    tournamentId={tournamentId}
+                  />
+                  <CopyEditorButton
+                    editor={editor}
+                  />
+                </>
+              )}
+            </div>
+          )}
           <div
             className={userInfoClassNames}
             role="group"

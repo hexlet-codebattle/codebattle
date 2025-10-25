@@ -188,7 +188,7 @@ function GameActionButtons({
 
   return (
     <div
-      className="d-flex py-2 mr-2"
+      className="d-flex py-2"
       role="group"
       aria-label="Game actions"
     >
