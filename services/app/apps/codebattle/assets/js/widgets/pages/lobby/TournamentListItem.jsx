@@ -7,7 +7,7 @@ import cn from 'classnames';
 import getIconForGrade from '@/components/icons/Grades';
 import TournamentTimer from '@/components/TournamentTimer';
 import { getRankingPoints, grades } from '@/config/grades';
-import modalCodes from '@/config/modalCodes';
+import ModalCodes from '@/config/modalCodes';
 import { getTournamentUrl } from '@/utils/urlBuilders';
 
 import dayjs from '../../../i18n/dayjs';
@@ -90,7 +90,7 @@ const TournamentAction = ({ tournament, isAdmin = false }) => {
   const text = getActionText(tournament);
 
   const openTournamentInfo = () => {
-    NiceModal.show(modalCodes.tournamentModal, { tournament });
+    NiceModal.show(ModalCodes.tournamentModal, { tournament });
   };
 
   return (
