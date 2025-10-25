@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 
 import NiceModal, { unregister } from '@ebay/nice-modal-react';
 
-import ModalCodes from '@/config/modalCodes';
 import TournamentModal from '@/pages/lobby/TournamentModal';
+
+import ModalCodes from '../config/modalCodes';
 
 const useLobbyModals = () => {
   useEffect(() => {
