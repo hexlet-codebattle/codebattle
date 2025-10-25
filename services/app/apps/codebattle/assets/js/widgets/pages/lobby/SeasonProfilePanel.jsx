@@ -67,7 +67,7 @@ const SeasonProfilePanel = ({
             <div>
               {liveTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center align-items-center pt-2 cb-bg-panel">
+                  <div className="d-flex justify-content-center align-items-center pt-2">
                     <span className="text-white text-uppercase h4">
                       Live Tournaments
                     </span>
@@ -86,7 +86,7 @@ const SeasonProfilePanel = ({
               )}
               {seasonTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center pt-2 cb-bg-panel">
+                  <div className="d-flex justify-content-center pt-2">
                     <span className="text-white text-uppercase h4">
                       Upcoming Tournaments
                     </span>

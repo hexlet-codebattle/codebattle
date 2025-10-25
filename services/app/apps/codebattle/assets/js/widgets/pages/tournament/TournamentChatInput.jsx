@@ -1,5 +1,5 @@
 import React, {
- useState, useCallback, useRef, useEffect,
+  useState, useCallback, useRef, useEffect,
 } from 'react';
 
 import BadWordsNext from 'bad-words-next';
@@ -73,7 +73,7 @@ export default function TournamentChatInput({ disabled }) {
 
   return (
     <form className="m-0" onSubmit={handleSubmit}>
-      <div className="d-flex input-group shadow-sm rounded-bottom border-top cb-border-color">
+      <div className="d-flex input-group shadow-sm rounded-bottom cb-border-color">
         <input
           type="text"
           ref={inputRef}

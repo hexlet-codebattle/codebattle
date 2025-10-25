@@ -13,7 +13,7 @@ const TournamentPreviewPanel = ({
   end,
 }) => (
   <div className={className}>
-    <div className="d-flex flex-column cb-bg-panel cb-rounded p-3">
+    <div className="d-flex flex-column border cb-border-color cb-rounded p-3">
       <span>{`Start Date: ${dayjs(start).format('MMMM DD, YYYY')}`}</span>
       <span>{`Time: ${dayjs(start).format('hh:mm A')} - ${dayjs(end).format('hh:mm A')}`}</span>
       {tournament.grade !== grades.open

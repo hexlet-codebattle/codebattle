@@ -13,6 +13,8 @@ import { getTournamentUrl } from '@/utils/urlBuilders';
 import dayjs from '../../../i18n/dayjs';
 import tournamentStates from '../../config/tournament';
 
+const iconSize = { width: '22px', height: '22px' };
+
 const mapTournamentTitleByState = {
   [tournamentStates.waitingParticipants]: 'Waiting Players',
   [tournamentStates.active]: 'Playing',
@@ -73,30 +75,30 @@ const TournamentTitle = ({ tournament }) => {
 };
 
 const TournamentAction = ({ tournament, isAdmin = false }) => {
-  const infoClassName = 'btn btn-outline-secondary cb-btn-outline-secondary mx-2 px-3 cb-rounded border-0';
-
-  const actionClassName = cn('btn text-nowrap px-2 cb-rounded', {
-    'btn-secondary cb-btn-secondary': [
-      tournamentStates.finished,
-      tournamentStates.canceled,
-    ].includes(tournament.state),
-    'btn-success cb-btn-success': [
-      tournamentStates.active,
-      tournamentStates.upcoming,
-      tournamentStates.waitingParticipants,
-    ].includes(tournament.state),
-  });
-
   const text = getActionText(tournament);
+  const showTournamentLink = (tournament.state !== tournamentStates.upcoming || isAdmin);
 
   const openTournamentInfo = () => {
     NiceModal.show(ModalCodes.tournamentModal, { tournament });
   };
 
+  const infoClassName = cn(
+    'btn btn-outline-secondary cb-btn-outline-secondary',
+    'mx-2 px-3 cb-rounded border-0',
+    {
+      'btn-lg': !showTournamentLink,
+    },
+  );
+
+  const actionClassName = cn(
+    'btn btn-secondary cb-btn-secondary',
+    'text-nowrap px-2 cb-rounded',
+  );
+
   return (
     <div className="align-content-center">
       <div className="d-flex">
-        {(tournament.state !== tournamentStates.upcoming || isAdmin) && (
+        {showTournamentLink && (
           <a
             type="button"
             className={actionClassName}
@@ -144,7 +146,7 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
   <div className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2" style={{ width: '350px' }}>
     <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
       <div className="d-flex align-items-center">
-        <div className="d-none d-lg-block d-md-block">
+        <div className="d-none d-lg-block d-md-block mr-2">
           {icon || getIconForGrade(tournament.grade)}
         </div>
         <TournamentTitle tournament={tournament} />
@@ -155,32 +157,48 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
           {tournament.grade !== grades.open && (
             <span
               title={tournament.name}
-              className="text-nowrap"
+              className="text-nowrap d-inline-flex mt-2 text-white text-nowrap"
             >
-              <FontAwesomeIcon icon="trophy" className="mr-1" />
-              {getRankingPoints(tournament.grade)[0]}
+              <FontAwesomeIcon
+                icon="trophy"
+                className="mr-2 text-warning"
+                style={iconSize}
+              />
+              <span className="text-warning">{getRankingPoints(tournament.grade)[0]}</span>
               <span className="ml-1">Ranking Points</span>
             </span>
           )}
           <span className="text-nowrap">
             {tournament.state !== 'upcoming' && (
-              <span className="mr-2">
-                <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
+              <span className="mr-2 d-inline-flex mt-2 text-white text-nowrap">
+                <FontAwesomeIcon
+                  icon="flag-checkered"
+                  className="mr-2 text-warning"
+                  style={iconSize}
+                />
                 {mapTournamentTitleByState[tournament.state]}
               </span>
             )}
             {tournamentStates.canceled !== tournament.state
               && tournament.state !== 'upcoming' && (
-                <span>
-                  <FontAwesomeIcon icon="user" className="mr-1" />
+                <span className="d-inline-flex mt-2 text-white text-nowrap">
+                  <FontAwesomeIcon
+                    icon="user"
+                    className="mr-2 text-warning"
+                    style={iconSize}
+                  />
                   {tournament.playersCount}
                 </span>
               )}
           </span>
           {showStartsAt(tournament.state) && (
             <>
-              <span>
-                <FontAwesomeIcon icon="clock" className="mr-1" />
+              <span className="d-inline-flex mt-2 text-white text-nowrap">
+                <FontAwesomeIcon
+                  icon="clock"
+                  className="mr-2 text-warning"
+                  style={iconSize}
+                />
                 <TournamentTimer label="starts in" date={tournament.startsAt}>
                   {dayjs(tournament.startsAt).format(getDateFormat(tournament.grade))}
                 </TournamentTimer>
@@ -189,8 +207,12 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
           )}
           {tournament.state === tournamentStates.finished && (
             <>
-              <span className="d-none d-lg-inline d-md-inline d-sm-inline pr-2">
-                <FontAwesomeIcon icon="clock" className="mr-1" />
+              <span className="d-none d-lg-inline-flex d-md-inline-flex d-sm-inline-flex pr-2 mt-2 text-white text-nowrap">
+                <FontAwesomeIcon
+                  icon="clock"
+                  className="mr-2 text-warning"
+                  style={iconSize}
+                />
                 {dayjs(tournament.lastRoundEndedAt).format(getDateFormat(tournament.grade))}
               </span>
             </>

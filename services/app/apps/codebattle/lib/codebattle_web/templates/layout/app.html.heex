@@ -55,7 +55,7 @@
     <!--End Google Tag Manager-->
   </head>
 
-  <body class="position-relative dark-bg h-100">
+  <body class="bg-dark position-relative h-100">
     <!--Google Tag Manager (noscript)-->
     <%= if FunWithFlags.enabled?(:use_external_js) do %>
       <noscript>
@@ -69,9 +69,9 @@
       </noscript>
     <% end %>
 
-    <div class="d-flex flex-column min-vh-100">
+    <div class="d-flex cb-bg-dark  flex-column min-vh-100">
       <%= unless FunWithFlags.enabled?(:hide_header) do %>
-        <div class="dark-bg">
+        <div>
           <div class="container-lg">
             <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
               <a class="navbar-brand d-flex align-items-end" href="/">
@@ -132,7 +132,7 @@
                           <a
                             href="https://github.com/hexlet-codebattle/codebattle"
                             target="_blank"
-                            class="btn btn-dark d-flex align-items-center mx-auto mx-sm-0 mr-sm-3 px-2 px-sm-3 py-1 py-sm-2 rounded-pill"
+                            class="btn d-flex align-items-center mx-auto mx-sm-0 mr-sm-3 px-2 px-sm-3 py-1 py-sm-2 rounded-pill"
                             title="Star us on GitHub"
                           >
                             <span class="fab fa-github mr-1 mr-sm-2 text-white"></span>
@@ -160,7 +160,7 @@
                           class="nav-item d-flex justify-content-center mb-2 mb-sm-0"
                           id="invites-root"
                         >
-                          <div class="btn btn-dark mx-auto mx-sm-2">
+                          <div class="btn mx-auto mx-sm-2">
                             <img
                               alt="invites"
                               src="/assets/images/fight.svg"

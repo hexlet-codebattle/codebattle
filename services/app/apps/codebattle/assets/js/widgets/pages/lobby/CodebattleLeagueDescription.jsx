@@ -5,7 +5,7 @@ import React from 'react';
 
 const CodebattleLeagueDescription = () => (
   <section className="container my-3">
-    <div className="cb-bg-panel cb-rounded p-3 text-center">
+    <div className="p-3 text-center">
       <h2 className="text-white m-0">Codebattle League</h2>
       <p className="text-white mt-2 mb-3">
         Challenge the best! Participate in the Competition tournaments, defeat
@@ -15,7 +15,7 @@ const CodebattleLeagueDescription = () => (
 
       {/* Toggle for Rules/Details */}
       <button
-        className="btn btn-secondary cb-btn-secondary"
+        className="btn btn-secondary cb-btn-secondary cb-rounded"
         type="button"
         data-toggle="collapse"
         data-target="#leagueProtocol"
@@ -397,6 +397,6 @@ const CodebattleLeagueDescription = () => (
       </div>
     </div>
   </section>
-  );
+);
 
 export default CodebattleLeagueDescription;

@@ -155,7 +155,7 @@ const LobbyWidget = () => {
       <Modal
         show={showCreateGameModal}
         onHide={handleCloseCreateGameModal}
-        contentClassName="cb-bg-highlight-panel"
+        contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>Create a game</Modal.Title>
@@ -167,7 +167,7 @@ const LobbyWidget = () => {
       <Modal
         show={showJoinGameModal}
         onHide={handleCloseJoinGameModal}
-        contentClassName="cb-bg-highlight-panel cb-join-game-modal"
+        contentClassName="cb-bg-panel cb-join-game-modal"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
           <Modal.Title>Join a game</Modal.Title>

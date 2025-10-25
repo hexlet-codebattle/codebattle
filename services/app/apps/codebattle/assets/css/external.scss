@@ -39,6 +39,11 @@ $dark-red: #b00020;
   background-color: #0C0F1E !important;
 }
 
+.cb-bg-dark {
+  background-color: #0C0F1E !important;
+  background: linear-gradient(135deg, #242424 0%, #151515 100%);
+}
+
 // Example custom classes for your text
 .battle-title {
   color: $warning; // or #fffb47 if you want a brighter yellow

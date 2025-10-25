@@ -30,11 +30,11 @@ const TournamentTimer = ({ date = new Date(), label, children }) => {
   }
 
   return (
-    <>
+    <span className="d-inline-flex">
       {label}
       {' '}
-      <span className="text-monospace">{dayjs.duration(duration).format('HH:mm:ss')}</span>
-    </>
+      <span className="text-monospace text-warning ml-2">{dayjs.duration(duration).format('HH:mm:ss')}</span>
+    </span>
   );
 };
 

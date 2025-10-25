@@ -103,9 +103,8 @@ function InvitesContainer() {
       >
         {({ ref, ...triggerHandler }) => (
           <Button
-            variant="dark"
             {...triggerHandler}
-            className="attachment mx-2"
+            className="bg-transparent border-0 attachment mx-2"
           >
             <img
               ref={ref}

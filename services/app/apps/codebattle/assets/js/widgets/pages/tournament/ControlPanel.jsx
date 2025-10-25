@@ -160,7 +160,7 @@ function ControlPanel({
           {i18next.t('Back')}
         </button>
         {panelMode.panel === PanelModeCodes.ratingMode && !disabledSearch ? (
-          <div className="input-group cb-bg-panel flex-nowrap mb-2">
+          <div className="input-group flex-nowrap mb-2">
             <div className="input-group-prepend">
               <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text" id="search-icon">
                 <FontAwesomeIcon icon="search" />
