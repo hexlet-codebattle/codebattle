@@ -8,7 +8,7 @@ import editorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-function DakModeButton() {
+function DarkModeButton({ className = 'btn btn-sm rounded-right' }) {
   const dispatch = useDispatch();
 
   const currentTheme = useSelector(editorsThemeSelector);
@@ -16,7 +16,7 @@ function DakModeButton() {
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const className = cn('btn mr-2 border cb-border-color cb-rounded', {
+  const btnClassName = cn(className, {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });
@@ -26,10 +26,11 @@ function DakModeButton() {
   };
 
   return (
-    <button type="button" className={className} onClick={handleToggleDarkMode}>
-      <FontAwesomeIcon icon={isDarkMode ? 'sun' : 'moon'} />
+    <button type="button" className={btnClassName} onClick={handleToggleDarkMode}>
+      <span className="invisible">1</span>
+      <FontAwesomeIcon style={{ marginLeft: '-8px' }} icon={isDarkMode ? 'sun' : 'moon'} />
     </button>
   );
 }
 
-export default DakModeButton;
+export default DarkModeButton;

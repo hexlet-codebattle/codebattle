@@ -5,9 +5,11 @@ defmodule Codebattle.Game.Engine do
 
   alias Codebattle.Bot
   alias Codebattle.CodeCheck
+  alias Codebattle.CssTask
   alias Codebattle.Game
   alias Codebattle.Playbook
   alias Codebattle.Repo
+  alias Codebattle.SqlTask
   alias Codebattle.User
   alias Codebattle.UserGame
 
@@ -15,6 +17,67 @@ defmodule Codebattle.Game.Engine do
 
   @default_timeout div(to_timeout(minute: 30), 1000)
   @max_timeout div(to_timeout(hour: 2), 1000)
+
+  def create_game(%{task: %{type: expriment_type}} = params) when expriment_type in ["css", "sql"] do
+    locked = Map.get(params, :locked, false)
+    award = Map.get(params, :award, nil)
+    use_chat = Map.get(params, :use_chat, true)
+    use_timer = Map.get(params, :use_timer, true)
+    state = "playing"
+    type = params[:type] || "duo"
+    mode = params[:mode] || "standard"
+    visibility_type = params[:visibility_type] || "public"
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
+    [creator | _] = params.players
+    opponent = Bot.Context.build()
+    tournament_id = params[:tournament_id]
+
+    module =
+      if expriment_type == "css" do
+        CssTask
+      else
+        SqlTask
+      end
+
+    task = module.create_empty(creator.id)
+
+    players = build_players([creator, opponent], task, creator)
+
+    game_params =
+      put_task(
+        %{
+          state: state,
+          level: task.level,
+          locked: locked,
+          award: award,
+          use_chat: use_chat,
+          use_timer: use_timer,
+          ref: params[:ref],
+          round_id: params[:round_id],
+          task_type: task.type,
+          mode: mode,
+          type: type,
+          visibility_type: visibility_type,
+          timeout_seconds: min(timeout_seconds, @max_timeout),
+          tournament_id: tournament_id,
+          waiting_room_name: params[:waiting_room_name],
+          players: players,
+          player_ids: Enum.map(players, & &1.id),
+          starts_at: TimeHelper.utc_now()
+        },
+        task
+      )
+
+    with :ok <- check_auth(players, mode, tournament_id),
+         {:ok, game} <- insert_game(game_params),
+         game = fill_virtual_fields(game),
+         game = mark_as_live(game),
+         {:ok, _} <- Game.GlobalSupervisor.start_game(game),
+         :ok <- start_timeout_timer(game),
+         :ok <- broadcast_game_created(game) do
+      {:ok, game}
+    end
+  end
 
   def create_game(params) do
     # TODO: add support for tags
@@ -56,6 +119,7 @@ defmodule Codebattle.Game.Engine do
              tournament_id: tournament_id,
              waiting_room_name: params[:waiting_room_name],
              task: task,
+             task_type: task.type,
              players: players,
              player_ids: Enum.map(players, & &1.id),
              starts_at: TimeHelper.utc_now()
@@ -95,6 +159,7 @@ defmodule Codebattle.Game.Engine do
           starts_at: now,
           state: params.state,
           task_id: task.id,
+          task_type: task.type,
           timeout_seconds: min(params.timeout_seconds, @max_timeout),
           tournament_id: params.tournament_id,
           type: type,
@@ -128,7 +193,7 @@ defmodule Codebattle.Game.Engine do
     now = TimeHelper.utc_now()
 
     with :ok <- check_auth(user, game.mode, game.tournament_id),
-         players = game.players ++ [Game.Player.build(user, %{task: game.task})],
+         players = game.players ++ [Game.Player.build(user, %{task: get_game_task(game)})],
          {:ok, {_old_game_state, game}} <-
            fire_transition(game.id, :join, %{
              players: players,
@@ -139,7 +204,10 @@ defmodule Codebattle.Game.Engine do
            player_ids: Enum.map(players, & &1.id),
            state: "playing",
            starts_at: now,
-           task_id: game.task.id
+           task_id: Map.get(game.task, "id", nil),
+           css_task_id: Map.get(game.css_task, "id", nil),
+           sql_task_id: Map.get(game.sql_task, "id", nil),
+           task_type: game.task_type
          }),
          :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_game_updated(game) do
@@ -162,7 +230,7 @@ defmodule Codebattle.Game.Engine do
       user_id: user.id
     })
 
-    check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
+    check_result = CodeCheck.check_solution(get_game_task(game), editor_text, editor_lang)
 
     # TODO: maybe drop editor_text here
     Codebattle.PubSub.broadcast("game:check_completed", %{
@@ -332,7 +400,7 @@ defmodule Codebattle.Game.Engine do
           playbook_id: Map.get(player, :playbook_id)
         })
 
-        update_user!(player)
+        update_user!(player, game)
       end)
 
       update_game!(game, %{
@@ -344,10 +412,20 @@ defmodule Codebattle.Game.Engine do
     end)
   end
 
-  def update_user!(%{is_guest: true}), do: :noop
-  def update_user!(%{is_bot: true}), do: :noop
+  defp update_user!(%{is_guest: true}, _game), do: :noop
+  defp update_user!(%{is_bot: true}, _game), do: :noop
 
-  def update_user!(player) do
+  defp update_user!(player, %Game{task_type: "css"}) do
+    User
+    |> Repo.get!(player.id)
+    |> User.changeset(%{
+      rating: player.rating,
+      style_lang: player.editor_lang
+    })
+    |> Repo.update!()
+  end
+
+  defp update_user!(player, _game) do
     achievements = User.Achievements.recalculate_achievements(player)
 
     User
@@ -444,6 +522,8 @@ defmodule Codebattle.Game.Engine do
 
   defp maybe_get_playbook_id_for_bot(_bot, nil), do: nil
 
+  defp maybe_get_playbook_id_for_bot(%{is_bot: true}, %{type: "css"}), do: nil
+
   defp maybe_get_playbook_id_for_bot(%{is_bot: true}, task) do
     Playbook.Context.get_random_completed_id(task.id)
   end
@@ -484,6 +564,7 @@ defmodule Codebattle.Game.Engine do
       mode: game.mode,
       visibility_type: game.visibility_type,
       timeout_seconds: game.timeout_seconds,
+      task_type: game.task_type,
       players: game.players,
       state: "playing"
     })
@@ -524,4 +605,12 @@ defmodule Codebattle.Game.Engine do
       |> Map.put(:editor_text, editor_text)
     end)
   end
+
+  defp put_task(params, %CssTask{} = task), do: Map.put(params, :css_task, task)
+  defp put_task(params, %SqlTask{} = task), do: Map.put(params, :sql_task, task)
+  defp put_task(params, task), do: Map.put(params, task, task)
+
+  defp get_game_task(%{task_type: "css"} = game), do: game.css_task
+  defp get_game_task(%{task_type: "sql"} = game), do: game.sql_task
+  defp get_game_task(game), do: game.task
 end

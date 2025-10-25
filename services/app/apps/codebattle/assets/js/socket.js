@@ -76,13 +76,14 @@ export const channelMethods = {
   gameScore: 'game:score',
   gameCancel: 'game:cancel',
   gameCreate: 'game:create',
-  cssGameCreate: 'game:css:create',
+  experimentGameCreate: 'game:experiment:create',
   gameCreateInvite: 'game:create_invite',
   gameAcceptInvite: 'game:accept_invite',
   gameDeclineInvite: 'game:decline_invite',
   gameCancelInvite: 'game:cancel_invite',
 
   reportOnPlayer: 'game:report',
+  gameTaskChangeTarget: 'game:task:change_target',
 
   chatAddMsg: 'chat:add_msg',
   chatCommand: 'chat:command',

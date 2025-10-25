@@ -3,9 +3,9 @@ import React from 'react';
 import Output from './Output';
 import OutputTab from './OutputTab';
 import TaskAssignment from './TaskAssignment';
+import TimerContainer from './TimerContainer';
 
 const SideInfoPanel = ({
-  // timerProps,
   taskPanelProps,
   outputData,
 }) => (
@@ -22,7 +22,7 @@ const SideInfoPanel = ({
       <div
         className="d-flex justify-content-around align-items-center w-100 p-2"
       >
-        {/* <TimerContainer {...timerProps} /> */}
+        <TimerContainer />
         <OutputTab sideOutput={outputData} large />
       </div>
       <div

@@ -18,6 +18,7 @@ defmodule Codebattle.Game do
              :is_bot,
              :is_live,
              :is_tournament,
+             :task_type,
              :level,
              :locked,
              :mode,
@@ -36,15 +37,18 @@ defmodule Codebattle.Game do
   @default_timeout_seconds div(to_timeout(minute: 30), 1000)
   @states ~w(initial builder waiting_opponent playing game_over timeout canceled)
   @rematch_states ~w(none in_approval rejected accepted)
+  @task_types ~w(algorithms css sql)
 
   @types ~w(solo duo multi)
   @modes ~w(standard builder training)
   @visibility_types ~w(hidden public)
 
   schema "games" do
+    belongs_to(:css_task, Codebattle.CssTask)
     belongs_to(:task, Codebattle.Task)
     belongs_to(:tournament, Codebattle.Tournament)
     belongs_to(:round, Codebattle.Tournament.Round)
+    belongs_to(:sql_task, Codebattle.SqlTask)
     has_many(:user_games, Codebattle.UserGame)
     has_many(:users, through: [:user_games, :user])
     has_one(:playbook, Codebattle.Playbook)
@@ -75,6 +79,7 @@ defmodule Codebattle.Game do
     field(:is_live, :boolean, default: false, virtual: true)
     field(:is_tournament, :boolean, default: false, virtual: true)
     field(:locked, :boolean, default: false, virtual: true)
+    field(:task_type, :string, default: "algorithms")
 
     timestamps()
   end
@@ -99,6 +104,9 @@ defmodule Codebattle.Game do
       :grade,
       :player_ids,
       :task_id,
+      :task_type,
+      :css_task_id,
+      :sql_task_id,
       :timeout_seconds,
       :tournament_id,
       :waiting_room_name,
@@ -110,6 +118,7 @@ defmodule Codebattle.Game do
     ])
     |> validate_required([:state, :level, :type, :mode])
     |> validate_inclusion(:type, @types)
+    |> validate_inclusion(:task_type, @task_types)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:grade, Codebattle.Tournament.grades())
     |> validate_inclusion(:mode, @modes)
@@ -117,6 +126,8 @@ defmodule Codebattle.Game do
     |> validate_inclusion(:rematch_state, @rematch_states)
     |> put_players(attrs)
     |> put_task(attrs)
+    |> put_css_task(attrs)
+    |> put_sql_task(attrs)
   end
 
   defp put_players(changeset, %{players: players}), do: put_embed(changeset, :players, players)
@@ -124,4 +135,10 @@ defmodule Codebattle.Game do
 
   defp put_task(changeset, %{task: task}), do: put_assoc(changeset, :task, task)
   defp put_task(changeset, _attrs), do: changeset
+
+  defp put_css_task(changeset, %{css_task: task}), do: put_assoc(changeset, :css_task, task)
+  defp put_css_task(changeset, _attrs), do: changeset
+
+  defp put_sql_task(changeset, %{sql_task: task}), do: put_assoc(changeset, :sql_task, task)
+  defp put_sql_task(changeset, _attrs), do: changeset
 end

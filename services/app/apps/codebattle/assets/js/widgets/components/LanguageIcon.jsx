@@ -9,7 +9,10 @@ import GolangOriginalIcon from 'react-devicons/go/original';
 import HaskellOriginalIcon from 'react-devicons/haskell/original';
 import JavaOriginalIcon from 'react-devicons/java/original';
 import LessOriginalIcon from 'react-devicons/less/plain-wordmark';
+import MongodbOriginalIcon from 'react-devicons/mongodb/original';
+import MysqlOriginalIcon from 'react-devicons/mysql/original';
 import NodejsPlainIcon from 'react-devicons/nodejs/plain';
+import PostgresqlOriginalIcon from 'react-devicons/postgresql/original';
 import SassOriginalIcon from 'react-devicons/sass/original';
 import StylusOriginalIcon from 'react-devicons/stylus/original';
 import SwiftOriginalIcon from 'react-devicons/swift/original';
@@ -40,15 +43,39 @@ const iconRenderers = {
   rust: className => <RustOriginalIcon className={className} size="1.125em" />,
   ts: className => <TypescriptOriginalIcon className={className} size="1.125em" />,
   css: className => <CssOriginalIcon className={className} size="1.125em" />,
-  stylus: className => <StylusOriginalIcon className={className} size="1.185em" />,
-  less: className => <LessOriginalIcon className={className} size="1.135em" />,
-  sass: className => <SassOriginalIcon className={className} size="1.135em" />,
+  stylus: className => (
+    <StylusOriginalIcon
+      fill="#fff"
+      className={className}
+      size="1.6em"
+    />
+  ),
+  less: className => <LessOriginalIcon className={className} size="1.6em" />,
+  sass: className => <SassOriginalIcon className={className} size="1.3em" />,
   typescript: className => <TypescriptOriginalIcon className={className} size="1.125em" />,
   java: className => (
     <JavaOriginalIcon
       className={className}
       style={{ transform: 'translateY(-0.125em)' }}
       size="1.25em"
+    />
+  ),
+  postgresql: className => (
+    <PostgresqlOriginalIcon
+      className={className}
+      size="1.3em"
+    />
+  ),
+  mongodb: className => (
+    <MongodbOriginalIcon
+      className={className}
+      size="1.3em"
+    />
+  ),
+  mysql: className => (
+    <MysqlOriginalIcon
+      className={className}
+      size="1.3em"
     />
   ),
   default: () => null,

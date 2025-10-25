@@ -14,7 +14,9 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
       github_id: current_user.github_id,
       github_name: current_user.github_name,
       sound_settings: current_user.sound_settings,
-      lang: current_user.lang
+      lang: current_user.lang,
+      style_lang: current_user.style_lang,
+      db_type: current_user.db_type
     })
   end
 
@@ -31,7 +33,9 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
           clan: user.clan,
           locale: user.locale,
           sound_settings: user.sound_settings,
-          lang: user.lang
+          lang: user.lang,
+          style_lang: user.style_lang,
+          db_type: user.db_type
         })
 
       {:error, %Ecto.Changeset{} = changeset} ->

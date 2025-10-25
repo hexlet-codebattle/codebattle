@@ -812,6 +812,45 @@ defmodule Runner.Languages do
         defining_variable_template: "<%= name %>: <%= type %>",
         nested_value_expression_template: "<%= value %>"
       }
+    },
+    "mongodb" => %LanguageMeta{
+      name: "MongoDB",
+      slug: "mongodb",
+      version: "8.0.14",
+      checker_version: 2,
+      output_version: 2,
+      generate_checker?: false,
+      container_run_timeout: "20s",
+      check_dir: "check",
+      docker_image: "codebattle/mongodb:8.0.14",
+      solution_file_name: "solution.js",
+      checker_file_name: "checker.js"
+    },
+    "mysql" => %LanguageMeta{
+      name: "MySQL",
+      slug: "mysql",
+      version: "8.4.6",
+      checker_version: 2,
+      output_version: 2,
+      generate_checker?: false,
+      container_run_timeout: "20s",
+      check_dir: "check",
+      docker_image: "codebattle/mysql:8.4.6",
+      solution_file_name: "solution.sql",
+      checker_file_name: "checker.sql"
+    },
+    "postgresql" => %LanguageMeta{
+      name: "PostgreSQL",
+      slug: "postgresql",
+      version: "18",
+      checker_version: 2,
+      output_version: 2,
+      generate_checker?: false,
+      container_run_timeout: "20s",
+      check_dir: "check",
+      docker_image: "codebattle/postgresql:18",
+      solution_file_name: "solution.sql",
+      checker_file_name: "checker.sql"
     }
   }
 

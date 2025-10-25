@@ -43,6 +43,8 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :is_guest,
       :category,
       :lang,
+      :style_lang,
+      :db_type,
       :locale,
       :name,
       :performance,

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import '../initEditor';
 import languages from '../config/languages';
+import { actions } from '../slices';
 import useEditor from '../utils/useEditor';
 
 import EditorLoading from './EditorLoading';
@@ -105,6 +106,8 @@ Editor.propTypes = {
   editable: PropTypes.bool,
   roomMode: PropTypes.string.isRequired,
   checkResult: PropTypes.func.isRequired,
+  toggleMuteSound: PropTypes.func,
+  mute: PropTypes.bool,
   userType: PropTypes.string.isRequired,
   userId: PropTypes.number.isRequired,
 };
@@ -114,8 +117,10 @@ Editor.defaultProps = {
   lineNumbers: 'on',
   syntax: 'js',
   fontSize: 16,
+  mute: true,
   editable: false,
   loading: false,
+  toggleMuteSound: actions.toggleMuteSound,
 };
 
 export default memo(Editor);

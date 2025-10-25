@@ -97,6 +97,7 @@ defmodule Codebattle.Game.Context do
       {:ok, game} ->
         game
         |> fill_virtual_fields()
+        |> Repo.preload([:css_task, :sql_task])
         |> mark_as_live()
 
       {:error, :not_found} ->

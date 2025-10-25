@@ -2,11 +2,11 @@ import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import dayjs from 'dayjs';
 
 import getIconForGrade from '@/components/icons/Grades';
 import { getTournamentUrl } from '@/utils/urlBuilders';
 
+import dayjs from '../../../i18n/dayjs';
 import tournamentStates from '../../config/tournament';
 
 const mapTournamentTitleByState = {
@@ -66,6 +66,14 @@ const TournamentAction = ({ tournament, isAdmin = false }) => {
   );
 };
 
+const showStartsAt = state => (
+  [
+    tournamentStates.active,
+    tournamentStates.waitingParticipants,
+    tournamentStates.upcoming,
+  ].includes(state)
+);
+
 export const activeIcon = (
   <FontAwesomeIcon
     style={{ width: '60px', height: '60px' }}
@@ -111,11 +119,7 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
                 </span>
               </>
             )}
-          {[
-            tournamentStates.active,
-            tournamentStates.waitingParticipants,
-            tournamentStates.upcoming,
-          ].includes(tournament.state) && (
+          {showStartsAt(tournament.state) && (
             <>
               <span
                 className={cn('pr-2', {

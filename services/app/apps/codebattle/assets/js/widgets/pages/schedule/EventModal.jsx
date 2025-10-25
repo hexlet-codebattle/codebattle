@@ -42,12 +42,12 @@ const getTasksCount = grade => {
 };
 
 const GradeInfo = ({ grade, selected }) => (
-  <div className="d-flex justify-content-between">
-    <span>
+  <div className={cn('d-flex justify-content-between', { 'text-monospace': grade === selected })}>
+    <span className={grade === selected ? 'text-white' : ''}>
       {capitalize(grade)}
-      {selected === grade ? ' (*)' : ''}
+      {grade === selected && '(*)'}
     </span>
-    <span className="pl-3">
+    <span className={cn('pl-3', { 'text-white': grade === selected })}>
       [
       {getRankingPoints(grade).join(', ')}
       ]
@@ -86,7 +86,7 @@ const Timer = ({ date = new Date(), label }) => {
     <>
       {label}
       {' '}
-      {dayjs.duration(duration).format('HH:mm:ss')}
+      <span className="text-monospace">{dayjs.duration(duration).format('HH:mm:ss')}</span>
     </>
   );
 };
@@ -137,7 +137,7 @@ export const EventModal = NiceModal.create(({ event: selectedEvent, events, clea
 
   return (
     <Modal
-      size="sm"
+      size="lg"
       show={modal.visible}
       onHide={modal.hide}
       contentClassName="cb-bg-highlight-panel cb-text"
@@ -180,20 +180,24 @@ export const EventModal = NiceModal.create(({ event: selectedEvent, events, clea
               )}
             </div>
           </div>
-          <div className="d-flex flex-column cb-bg-panel cb-rounded w-100 h-100 p-3">
-            <span>{`Start Date: ${dayjs(event.start).format('MMMM DD, YYYY')}`}</span>
-            <span>{`Time: ${dayjs(event.start).format('hh:mm A')} - ${dayjs(event.end).format('hh:mm A')}`}</span>
-            {event.resourse.grade !== grades.open
-              && <span>{`First Place Points: ${getRankingPoints(event.resourse.grade)[0]} Ranking Points`}</span>}
-            <span><Timer date={event.start} label="Starts in: " /></span>
+          <div className="d-flex justify-content-center w-100 h-100">
+            <div className="d-flex flex-column cb-bg-panel cb-rounded p-3">
+              <span>{`Start Date: ${dayjs(event.start).format('MMMM DD, YYYY')}`}</span>
+              <span>{`Time: ${dayjs(event.start).format('hh:mm A')} - ${dayjs(event.end).format('hh:mm A')}`}</span>
+              {event.resourse.grade !== grades.open
+                && <span>{`First Place Points: ${getRankingPoints(event.resourse.grade)[0]} Ranking Points`}</span>}
+              <span><Timer date={event.start} label="Starts in: " /></span>
+            </div>
           </div>
-          <div className="d-flex flex-column cb-rounded w-100 h-100 p-3">
+          <div className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3">
             {event.resourse.grade !== grades.open ? (
               <>
                 <span className="text-white">Tournament Highlights:</span>
-                <span>Prizes: Codebattle T-shirt merch for a top-tier of League</span>
-                <span>{`Challenges: ${getTasksCount(event.resourse.grade)} unique algorithm problems`}</span>
-                <span>Impact: Advancing in the Codebattle programmer rankings</span>
+                <div className="d-flex flex-column">
+                  <span>Prizes: Codebattle T-shirt merch for a top-tier of League</span>
+                  <span>{`Challenges: ${getTasksCount(event.resourse.grade)} unique algorithm problems`}</span>
+                  <span>Impact: Advancing in the Codebattle programmer rankings</span>
+                </div>
                 <div className="d-flex justify-content-center w-100">
                   <div className="card cb-card mt-2">
                     <div className="card-header text-center">View League Ranking Points System</div>

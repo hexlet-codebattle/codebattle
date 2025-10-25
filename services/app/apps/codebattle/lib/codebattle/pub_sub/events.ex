@@ -513,6 +513,27 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("game:editor_lang_changed", params) do
+    payload = %{
+      game_id: params.game_id,
+      user_id: params.user_id,
+      editor_lang: params.editor_lang
+    }
+
+    [
+      %Message{
+        topic: "game:#{params.game_id}",
+        event: "game:editor_lang_changed",
+        payload: payload
+      },
+      %Message{
+        topic: "games",
+        event: "game:editor_lang_changed",
+        payload: payload
+      }
+    ]
+  end
+
   def get_messages("game:check_started", params) do
     payload = %{game_id: params.game.id, user_id: params.user_id}
 

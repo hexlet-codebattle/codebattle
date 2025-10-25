@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
 import find from 'lodash/find';
 import reject from 'lodash/reject';
+
+import dayjs from '../../i18n/dayjs';
 
 import initial from './initial';
 import { actions as tournamentActions } from './tournament';
@@ -58,8 +59,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, editorLang: payload.editorLang }
-              : player));
+            ? { ...player, editorLang: payload.editorLang }
+            : player));
 
           return { ...game, players: newPlayers };
         }
@@ -71,8 +72,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, checkResult: payload.checkResult }
-              : player));
+            ? { ...player, checkResult: payload.checkResult }
+            : player));
 
           return { ...game, players: newPlayers };
         }

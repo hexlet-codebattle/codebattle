@@ -35,7 +35,9 @@ config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :base_user_path, "/"
+config :codebattle, :default_db_type_slug, "postgresql"
 config :codebattle, :default_lang_slug, "js"
+config :codebattle, :default_style_lang_slug, "css"
 
 config :codebattle, :external,
   app_name: "Codebattle External",

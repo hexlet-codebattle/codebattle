@@ -194,8 +194,7 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
       .push('tournament:players:request', { playerIds })
       .receive('ok', response => {
         dispatch(actions.updateTournamentPlayers(response.players));
-      })
-      .receive('error', error => console.error(error));
+      });
   } else {
     const playerIdsStr = playerIds.join(',');
 
@@ -219,8 +218,7 @@ export const requestMatchesByPlayerId = userId => dispatch => {
     .receive('ok', data => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
-    })
-    .receive('error', error => console.error(error));
+    });
 };
 
 export const uploadPlayersMatches = playerId => dispatch => {
@@ -230,13 +228,11 @@ export const uploadPlayersMatches = playerId => dispatch => {
 export const joinTournament = teamId => {
   const params = teamId !== undefined ? { teamId } : {};
   channel
-    .push('tournament:join', params)
-    .receive('error', error => console.error(error));
+    .push('tournament:join', params);
 };
 
 export const leaveTournament = teamId => {
   const params = teamId !== undefined ? { teamId } : {};
   channel
-    .push('tournament:leave', params)
-    .receive('error', error => console.error(error));
+    .push('tournament:leave', params);
 };

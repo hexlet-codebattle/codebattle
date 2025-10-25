@@ -134,20 +134,17 @@ export const addWaitingRoomListeners = (
 
 export const pauseWaitingRoomMatchmaking = () => () => {
   channel
-    .push(channelMethods.matchmakingPause, {})
-    .receive('error', error => console.error(error));
+    .push(channelMethods.matchmakingPause, {});
 };
 
 export const startWaitingRoomMatchmaking = () => () => {
   channel
-    .push(channelMethods.matchmakingResume, {})
-    .receive('error', error => console.error(error));
+    .push(channelMethods.matchmakingResume, {});
 };
 
 export const restartWaitingRoomMatchmaking = () => () => {
   channel
-    .push(channelMethods.matchmakingRestart, {})
-    .receive('error', error => console.error(error));
+    .push(channelMethods.matchmakingRestart, {});
 };
 
 export default addWaitingRoomListeners;

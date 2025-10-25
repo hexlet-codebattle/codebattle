@@ -237,8 +237,7 @@ export const sendEditorText = (editorText, langSlug = null) => (_dispatch, getSt
 // TODO: only for show tournament
 export const startRoundTournament = () => {
   channel
-    .push('tournament:start_round', {})
-    .receive('error', error => console.error(error));
+    .push('tournament:start_round', {});
 };
 
 export const sendEditorCursorPosition = offset => {
@@ -1264,4 +1263,11 @@ export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
     default:
       break;
   }
+};
+
+export const changeTaskImgDataUrl = imgDataUrl => () => {
+  channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl })
+    .receive('ok', () => {
+      window.location.reload();
+    });
 };

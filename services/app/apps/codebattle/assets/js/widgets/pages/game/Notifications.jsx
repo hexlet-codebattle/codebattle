@@ -42,9 +42,7 @@ function Notifications() {
 
   return (
     <>
-      {roomMachineState.matches({ room: roomMachineStates.testing }) && (
-        <BackToTaskBuilderButton />
-      )}
+      {roomMachineState.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
       <ReplayerControlButton />
       {isCurrentUserPlayer
         && roomMachineState.matches({ room: roomMachineStates.gameOver }) && (

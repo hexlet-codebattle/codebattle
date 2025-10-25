@@ -25,6 +25,7 @@ defmodule Codebattle.User do
              :category,
              :clan,
              :clan_id,
+             :db_type,
              :editor_mode,
              :editor_theme,
              :games_played,
@@ -41,6 +42,7 @@ defmodule Codebattle.User do
              :rank,
              :rating,
              :sound_settings,
+             :style_lang,
              :subscription_type
            ]}
 
@@ -55,6 +57,7 @@ defmodule Codebattle.User do
     field(:clan, :string)
     field(:clan_id, :integer)
     field(:collab_logo, :string)
+    field(:db_type, :string, default: "postgresql")
     field(:discord_avatar, :string)
     field(:discord_id, :integer)
     field(:discord_name, :string)
@@ -74,6 +77,7 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:rank, :integer, default: 5432)
     field(:rating, :integer, default: 1200)
+    field(:style_lang, :string, default: "css")
     field(:subscription_type, Ecto.Enum, values: @subscription_types)
     field(:timezone, :string, default: "Etc/UTC")
 
@@ -95,6 +99,7 @@ defmodule Codebattle.User do
       :auth_token,
       :avatar_url,
       :category,
+      :db_type,
       :discord_avatar,
       :discord_id,
       :discord_name,
@@ -109,6 +114,7 @@ defmodule Codebattle.User do
       :locale,
       :name,
       :rating,
+      :style_lang,
       :subscription_type
     ])
     |> unique_constraint(:name)

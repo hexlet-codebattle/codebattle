@@ -19,16 +19,18 @@ import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
+jest.mock('pixelmatch', () => ({}));
+
 jest.mock('monaco-editor', () => ({
   editor: {
-    defineTheme: () => {},
+    defineTheme: () => { },
     create: () => ({
-      dispose: () => {},
-      onDidChangeModelContent: () => {},
-      setValue: () => {},
-      getValue: () => {},
-      getModel: () => {},
-      focus: () => {},
+      dispose: () => { },
+      onDidChangeModelContent: () => { },
+      setValue: () => { },
+      getValue: () => { },
+      getModel: () => { },
+      focus: () => { },
     }),
   },
 }));
@@ -37,7 +39,7 @@ jest.mock('monaco-vim', () => ({
   VimMode: class {
     constructor() {
       return {
-        dispose: () => {},
+        dispose: () => { },
       };
     }
   },
@@ -240,38 +242,6 @@ test('test rendering preview game component', async () => {
   );
 
   expect(await findByText(/Examples:/)).toBeInTheDocument();
-});
-
-test('test game guide', async () => {
-  const store = configureStore({
-    reducer,
-    preloadedState,
-  });
-
-  const { findByRole, user } = setup(
-    <Provider store={store}>
-      <NiceModal.Provider>
-        <RootContainer
-          pageName="game"
-          mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-          taskMachine={createMachine({ predictableActionArguments: true, ...task })}
-          editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
-        />
-      </NiceModal.Provider>
-    </Provider>,
-  );
-
-  const showGuideButton = await findByRole('button', { name: 'Show guide' });
-
-  await user.click(showGuideButton);
-
-  const closeGuideButton = await findByRole('button', { name: 'Close' });
-  expect(closeGuideButton).toBeInTheDocument();
-
-  await user.click(closeGuideButton);
-
-  expect(closeGuideButton).not.toBeInTheDocument();
 });
 
 test('test a bot invite button', async () => {

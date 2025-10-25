@@ -17,11 +17,15 @@ const languages = {
   ts: 'typescript',
   css: 'css',
   less: 'less',
-  sass: 'scss',
+  sass: 'sass',
   stylus: 'stylus',
+  postgresql: 'postgresql',
+  mongodb: 'mongodb',
+  mysql: 'mysql',
 };
 
 export const cssProcessors = ['css', 'less', 'sass', 'stylus'];
+export const dbNames = ['postgresql', 'mysql', 'mongodb'];
 
 export const constructorLangauges = ['ruby'];
 

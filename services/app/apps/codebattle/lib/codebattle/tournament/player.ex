@@ -17,6 +17,8 @@ defmodule Codebattle.Tournament.Player do
     :id,
     :is_bot,
     :lang,
+    :style_lang,
+    :db_type,
     :matches_ids,
     :name,
     :place,
@@ -43,11 +45,13 @@ defmodule Codebattle.Tournament.Player do
     field(:avatar_url, :string)
     field(:clan, :string)
     field(:clan_id, :integer)
+    field(:draw_index, :integer, default: 1)
     field(:id, :integer)
     field(:is_bot, :boolean)
-    field(:draw_index, :integer, default: 1)
-    field(:max_draw_index, :integer, default: 0)
     field(:lang, :string)
+    field(:max_draw_index, :integer, default: 0)
+    field(:style_lang, :string)
+    field(:db_type, :string)
     field(:matches_ids, {:array, :integer}, default: [])
     field(:name, :string)
     field(:place, :integer, default: 0)

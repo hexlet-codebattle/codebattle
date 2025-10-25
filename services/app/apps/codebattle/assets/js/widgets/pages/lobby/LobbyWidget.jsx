@@ -31,19 +31,20 @@ const joinGameBtnClassName = cn(
   'btn-secondary cb-btn-secondary w-100',
 );
 
-const createCssGameBtnClassName = cn(
+const createExperementalGameBtnClassName = cn(
   createBtnClassName,
   'btn-secondary cb-btn-secondary mt-2 pl-2',
 );
 
-const CreateCssGameButton = ({ onClick, isOnline }) => (
+const CreateExperimentalGameButton = ({ onClick, isOnline, type = 'css' }) => (
   <button
     type="button"
-    className={createCssGameBtnClassName}
+    className={createExperementalGameBtnClassName}
+    data-type={type}
     onClick={onClick}
     disabled={!isOnline}
   >
-    Create a CSS Game
+    {type === 'css' ? 'Create a CSS Game' : 'Create a SQL Game'}
   </button>
 );
 
@@ -92,7 +93,7 @@ const LobbyWidget = () => {
   } = useSelector(selectors.lobbyDataSelector);
 
   // const showCssGameButton = !!activeGame && isAdmin;
-  const showCssGameButton = false;
+  const hideExperimentGamesButtons = !isAdmin;
 
   const handleShowCreateGameModal = useCallback(
     () => dispatch(actions.showCreateGameModal()),
@@ -118,9 +119,11 @@ const LobbyWidget = () => {
       handleShowCreateGameModal();
     }
   }, [activeGame, handleShowCreateGameModal]);
-  const handleCreateCssGameBtnClick = useCallback(() => {
+  const handleExperimentalGameBtnClick = useCallback(event => {
+    const type = event.currentTarget.dataset.type || 'css';
+
     if (isAdmin) {
-      lobbyMiddlewares.createCssGame({});
+      lobbyMiddlewares.createExperimentGame({ type });
     }
   }, [isAdmin]);
 
@@ -195,11 +198,19 @@ const LobbyWidget = () => {
               />
               <JoinGameButton onClick={handleJoinGameBtnClick} />
             </div>
-            {showCssGameButton && (
-              <CreateCssGameButton
-                onClick={handleCreateCssGameBtnClick}
-                isOnline={online}
-              />
+            {!hideExperimentGamesButtons && (
+              <>
+                <CreateExperimentalGameButton
+                  type="css"
+                  onClick={handleExperimentalGameBtnClick}
+                  isOnline={online}
+                />
+                <CreateExperimentalGameButton
+                  type="sql"
+                  onClick={handleExperimentalGameBtnClick}
+                  isOnline={online}
+                />
+              </>
             )}
           </div>
         )}

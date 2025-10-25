@@ -87,42 +87,36 @@ export const openDirect = (userId, name) => dispatch => {
 
 export const cancelGame = gameId => () => {
   channel
-    .push(channelMethods.gameCancel, { gameId })
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameCancel, { gameId });
 };
 
 export const createGame = params => {
   channel
-    .push(channelMethods.gameCreate, params)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameCreate, params);
 };
 
-export const createCssGame = params => {
+export const createExperimentGame = params => {
   channel
-    .push(channelMethods.cssGameCreate, params)
+    .push(channelMethods.experimentGameCreate, params)
     .receive('error', error => console.error(error));
 };
 
 export const createInvite = invite => {
   channel
-    .push(channelMethods.gameCreateInvite, invite)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameCreateInvite, invite);
 };
 
 export const acceptInvite = invite => () => {
   channel
-    .push(channelMethods.gameAcceptInvite, invite)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameAcceptInvite, invite);
 };
 
 export const declineInvite = invite => () => {
   channel
-    .push(channelMethods.gameDeclineInvite, invite)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameDeclineInvite, invite);
 };
 
 export const cancelInvite = invite => () => {
   channel
-    .push(channelMethods.gameCancelInvite, invite)
-    .receive('error', error => console.error(error));
+    .push(channelMethods.gameCancelInvite, invite);
 };

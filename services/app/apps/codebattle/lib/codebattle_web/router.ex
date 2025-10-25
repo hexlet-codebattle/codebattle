@@ -156,6 +156,8 @@ defmodule CodebattleWeb.Router do
     pipe_through(:browser)
     get("/broadcast-editor", BroadcastEditorController, :index)
 
+    get("/cssbattle/builder", CssBattleBuilderController, :index)
+
     get("/robots.txt", RootController, :robots)
     get("/sitemap.xml", RootController, :sitemap)
     get("/feedback/rss.xml", RootController, :feedback)
