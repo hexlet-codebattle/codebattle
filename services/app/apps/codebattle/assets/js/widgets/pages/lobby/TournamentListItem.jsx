@@ -22,7 +22,7 @@ const mapTournamentTitleByState = {
 
 const getDateFormat = grade => {
   switch (grade) {
-    case grades.open: return 'MMM D, YYYY [at] ';
+    case grades.open: return 'MMM D, YYYY [at] h:mma';
     default: return '[at] h:mma';
   }
 };
