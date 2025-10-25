@@ -48,7 +48,7 @@ const EditorToolbar = ({
   <>
     <div
       ref={toolbarRef}
-      className="cb-bg-panel cb-border-color rounded-top"
+      className="cb-bg-panel cb-toolbar cb-border-color rounded-top"
       data-player-type={type}
     >
       <div className={toolbarClassNames} role="toolbar">

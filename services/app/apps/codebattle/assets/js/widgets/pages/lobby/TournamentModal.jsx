@@ -33,7 +33,7 @@ export const TournamentModal = NiceModal.create(({ tournament }) => {
       size="lg"
       show={modal.visible}
       onHide={modal.hide}
-      contentClassName="cb-bg-highlight-panel cb-text"
+      contentClassName="cb-bg-panel cb-text"
     >
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title className="d-flex flex-column">

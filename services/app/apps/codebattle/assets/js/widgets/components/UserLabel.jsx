@@ -15,7 +15,7 @@ function UserLabel({ user }) {
   );
   const onlineIndicatorClassName = cn('mr-1', {
     'cb-user-online': isOnline,
-    'cb-user-offline': !isOnline,
+    'cb-user-dark-offline': !isOnline,
   });
 
   return (

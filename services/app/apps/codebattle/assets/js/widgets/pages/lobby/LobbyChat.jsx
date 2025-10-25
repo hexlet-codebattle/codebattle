@@ -64,7 +64,7 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }) {
 
 const chatHeaderClassName = cn(
   'col-lg-8 col-md-8 d-flex flex-column position-relative',
-  'p-0 cb-bg-panel rounded-left h-sm-100 cb-lobby-widget-container w-100',
+  'p-0 rounded-left h-sm-100 cb-lobby-widget-container w-100',
 );
 
 function LobbyChat({
@@ -119,7 +119,7 @@ function LobbyChat({
 
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
-      <div className="d-flex flex-column flex-lg-row flex-md-row rounded shadow-sm mt-2">
+      <div className="d-flex flex-column flex-lg-row flex-md-row cb-bg-panel cb-rounded shadow-sm mt-2">
         <div
           className={chatHeaderClassName}
         >
@@ -129,7 +129,7 @@ function LobbyChat({
         </div>
         <div className={
           cn(
-            'col-lg-4 col-md-4 p-0 pb-3 pb-sm-4 cb-bg-panel cb-players-container',
+            'col-lg-4 col-md-4 p-0 pb-3 pb-sm-4 cb-players-container',
             'border-left cb-border-color rounded-right',
           )
         }
