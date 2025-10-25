@@ -131,6 +131,7 @@ module.exports = {
         '../assets/js/widgets/middlewares',
       ),
       '@/pages': path.resolve(__dirname, '../assets/js/widgets/pages'),
+      '@/config': path.resolve(__dirname, '../assets/js/widgets/config'),
       '@/selectors': path.resolve(__dirname, '../assets/js/widgets/selectors'),
       '@/slices': path.resolve(__dirname, '../assets/js/widgets/slices'),
       '@/utils': path.resolve(__dirname, '../assets/js/widgets/utils'),

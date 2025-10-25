@@ -6,24 +6,15 @@ import uniqBy from 'lodash/uniqBy';
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar';
 import { useSelector } from 'react-redux';
 
+import { grades } from '@/config/grades';
+import ModalCodes from '@/config/modalCodes';
 import { uploadTournamentsByFilter } from '@/middlewares/Tournament';
 import { currentUserIdSelector, currentUserIsAdminSelector } from '@/selectors';
 import useTournamentScheduleModals from '@/utils/useTournamentScheduleModals';
 
 import dayjs from '../../../i18n/dayjs';
-import ModalCodes from '../../config/modalCodes';
 
 import ScheduleLegend, { states } from './ScheduleLegend';
-
-export const grades = {
-  open: 'open',
-  rookie: 'rookie',
-  challenger: 'challenger',
-  pro: 'pro',
-  elite: 'elite',
-  masters: 'masters',
-  grandSlam: 'grand_slam',
-};
 
 const views = {
   month: 'month',
@@ -44,7 +35,7 @@ const getEndOffsetParams = t => {
     return [diff, 'millisecond'];
   }
 
-  if (t.grade === 'rookie') {
+  if (t.grade === grades.rookie) {
     return [15, 'minute'];
   }
 
@@ -58,10 +49,7 @@ const getEventFromTournamentData = t => ({
     .add(...getEndOffsetParams(t))
     .toDate(),
   resourse: {
-    id: t.id,
-    description: t.description,
-    state: t.state,
-    grade: t.grade,
+    ...t,
   },
 });
 

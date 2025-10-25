@@ -1,6 +1,4 @@
-import React, {
-  memo, useCallback, useState,
-} from 'react';
+import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
@@ -9,26 +7,26 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
-import ScheduleNavigationTab from '@/components/ScheduleNavigationBar';
 import TournamentDescription from '@/components/TournamentDescription';
 import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
 import { grades } from '@/config/grades';
 import ModalCodes from '@/config/modalCodes';
 import { currentUserIsAdminSelector } from '@/selectors';
 
-export const EventModal = NiceModal.create(({ event: selectedEvent, events, clearEvent }) => {
-  const [currentEvent, setCurrentEvent] = useState();
+import dayjs from '../../../i18n/dayjs';
 
+export const TournamentModal = NiceModal.create(({ tournament }) => {
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
-  const modal = useModal(ModalCodes.calendarEventModal);
+  const modal = useModal(ModalCodes.tournamentModal);
 
-  const event = currentEvent || selectedEvent;
-  const isUpcoming = event?.resourse?.grade === 'upcoming';
-  const handleClose = useCallback(() => {
-    modal.hide();
-    clearEvent();
-  }, [modal, clearEvent]);
+  const isUpcoming = tournament?.grade === 'upcoming';
+  const start = dayjs(tournament.startsAt).toDate();
+  const end = dayjs(tournament.startsAt).add(1, 'hour').toDate();
+
+  if (!tournament) {
+    return <></>;
+  }
 
   return (
     <Modal
@@ -39,34 +37,28 @@ export const EventModal = NiceModal.create(({ event: selectedEvent, events, clea
     >
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title className="d-flex flex-column">
-          {event.resourse.grade !== grades.open && <span className="text-white">Codebattle League 2025</span>}
-          {i18n.t('Tournament: %{name}', { name: event.title })}
+          {tournament.grade !== grades.open && <span className="text-white">Codebattle League 2025</span>}
+          {i18n.t('Tournament: %{name}', { name: tournament.name })}
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className="position-relative">
         <div className="d-flex flex-column">
-          <ScheduleNavigationTab
-            className="w-100 d-flex justify-content-between p-2"
-            events={events}
-            event={event}
-            setEvent={setCurrentEvent}
-          />
           <TournamentPreviewPanel
             className="d-flex justify-content-center w-100 h-100"
-            tournament={event.resourse}
-            start={event.start}
-            end={event.end}
+            tournament={tournament}
+            start={start}
+            end={end}
           />
           <TournamentDescription
             className="d-flex flex-column align-items-center cb-rounded w-100 h-100 p-3"
-            tournament={event.resourse}
+            tournament={tournament}
           />
         </div>
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
-        {event.resourse.id && (
+        {tournament.id && (
           <a
-            href={(isAdmin || !isUpcoming) ? `/tournaments/${event.resourse.id}` : 'blank'}
+            href={(isAdmin || !isUpcoming) ? `/tournaments/${tournament.id}` : 'blank'}
             className={
               cn(
                 'btn btn-secondary cb-btn-secondary pr-2 cb-rounded',
@@ -78,7 +70,7 @@ export const EventModal = NiceModal.create(({ event: selectedEvent, events, clea
             {i18n.t('Open Tournament')}
           </a>
         )}
-        <Button onClick={handleClose} className="btn btn-secondary cb-btn-secondary cb-rounded">
+        <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
           {i18n.t('Close')}
         </Button>
       </Modal.Footer>
@@ -86,4 +78,4 @@ export const EventModal = NiceModal.create(({ event: selectedEvent, events, clea
   );
 });
 
-export default memo(EventModal);
+export default memo(TournamentModal);

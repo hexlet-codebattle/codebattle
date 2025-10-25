@@ -7,10 +7,11 @@ import Gon from 'gon';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
-import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
+import * as lobbyMiddlewares from '@/middlewares/Lobby';
+import * as selectors from '@/selectors';
+import { actions } from '@/slices';
+import { getLobbyUrl, makeGameUrl } from '@/utils/urlBuilders';
+import useLobbyModals from '@/utils/useLobbyModals';
 
 import ActiveGames from './ActiveGames';
 import Announcement from './Announcement';
@@ -146,6 +147,8 @@ const LobbyWidget = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useLobbyModals();
 
   return (
     <div>

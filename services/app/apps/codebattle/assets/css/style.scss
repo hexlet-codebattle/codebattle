@@ -2213,7 +2213,7 @@ a.cb-text:hover {
 
 .cb-separator {
   width: 100%;
-  border: 2px solid gray;
+  border: 1px solid gray;
 }
 
 // react big calendar for tournaments
@@ -2516,4 +2516,8 @@ a.cb-text:hover {
 
 .btn-link {
   color: white;
+}
+
+.cb-subtle-background {
+  background: radial-gradient(circle at 50% 0%, #3a3b40 0%, $cb-bg-panel 100%);
 }
