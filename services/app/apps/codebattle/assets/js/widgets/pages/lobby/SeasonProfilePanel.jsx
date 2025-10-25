@@ -64,7 +64,7 @@ const SeasonProfilePanel = ({
         <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center">
           <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
-            <div className="cb-bg-highlight-panel">
+            <div>
               {liveTournaments?.length !== 0 && (
                 <>
                   <div className="d-flex justify-content-center align-items-center pt-2 cb-bg-panel">
@@ -72,14 +72,16 @@ const SeasonProfilePanel = ({
                       Live Tournaments
                     </span>
                   </div>
-                  {liveTournaments.map(tournament => (
-                    <TournamentListItem
-                      isAdmin={isAdmin}
-                      key={tournament.id}
-                      tournament={tournament}
-                      icon={activeIcon}
-                    />
-                  ))}
+                  <div className="d-flex flex-wrap">
+                    {liveTournaments.map(tournament => (
+                      <TournamentListItem
+                        isAdmin={isAdmin}
+                        key={tournament.id}
+                        tournament={tournament}
+                        icon={activeIcon}
+                      />
+                    ))}
+                  </div>
                 </>
               )}
               {seasonTournaments?.length !== 0 && (
@@ -89,10 +91,7 @@ const SeasonProfilePanel = ({
                       Upcoming Tournaments
                     </span>
                   </div>
-                  <div
-                    className="d-flex flex-column cb-overflow-y-scroll position-relative"
-                    style={{ maxHeight: '280px' }}
-                  >
+                  <div className="d-flex flex-wrap">
                     {seasonTournaments.map(tournament => (
                       <TournamentListItem
                         isAdmin={isAdmin}

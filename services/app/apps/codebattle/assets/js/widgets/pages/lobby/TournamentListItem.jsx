@@ -1,9 +1,13 @@
 import React from 'react';
 
+import NiceModal from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
 import getIconForGrade from '@/components/icons/Grades';
+import TournamentTimer from '@/components/TournamentTimer';
+import { getRankingPoints, grades } from '@/config/grades';
+import modalCodes from '@/config/modalCodes';
 import { getTournamentUrl } from '@/utils/urlBuilders';
 
 import dayjs from '../../../i18n/dayjs';
@@ -16,10 +20,15 @@ const mapTournamentTitleByState = {
   [tournamentStates.finished]: 'Finished',
 };
 
+const getDateFormat = grade => {
+  switch (grade) {
+    case grades.open: return 'MMM D, YYYY [at] ';
+    default: return '[at] h:mma';
+  }
+};
+
 const getActionText = tournament => {
   switch (tournament.state) {
-    case tournamentStates.upcoming:
-      return 'Check Upcoming';
     case tournamentStates.waitingParticipants:
       return 'Join';
     case tournamentStates.active:
@@ -27,18 +36,46 @@ const getActionText = tournament => {
     case tournamentStates.canceled:
       return 'Show';
     case tournamentStates.finished:
-      return 'View results';
+      return 'Results';
     default:
       return 'Show';
   }
 };
 
-const TournamentAction = ({ tournament, isAdmin = false }) => {
-  if (!isAdmin && tournament.state === tournamentStates.upcoming) {
-    return <></>;
+const TournamentTitle = ({ tournament }) => {
+  if (tournament.grade === grades.open) {
+    return (
+      <span
+        title={tournament.name}
+        className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block"
+        style={{ maxWidth: '210px', minWidth: '210px' }}
+      >
+        {tournament.name}
+      </span>
+    );
   }
 
-  const className = cn('btn text-nowrap rounded', {
+  const words = tournament.name.split(' ');
+  const subtitle = words[words.length - 1];
+  words.pop();
+  const title = words.join(' ');
+
+  return (
+    <div className="d-flex flex-column align-items-baseline">
+      <span
+        className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block"
+      >
+        {title}
+      </span>
+      <span className="small">{subtitle}</span>
+    </div>
+  );
+};
+
+const TournamentAction = ({ tournament, isAdmin = false }) => {
+  const infoClassName = 'btn btn-outline-secondary cb-btn-outline-secondary mx-2 px-3 cb-rounded border-0';
+
+  const actionClassName = cn('btn text-nowrap px-2 cb-rounded', {
     'btn-secondary cb-btn-secondary': [
       tournamentStates.finished,
       tournamentStates.canceled,
@@ -49,18 +86,32 @@ const TournamentAction = ({ tournament, isAdmin = false }) => {
       tournamentStates.waitingParticipants,
     ].includes(tournament.state),
   });
+
   const text = getActionText(tournament);
+
+  const openTournamentInfo = () => {
+    NiceModal.show(modalCodes.tournamentModal, { tournament });
+  };
 
   return (
     <div className="align-content-center">
-      <div className="d-flex p-3">
-        <a
+      <div className="d-flex">
+        {(tournament.state !== tournamentStates.upcoming || isAdmin) && (
+          <a
+            type="button"
+            className={actionClassName}
+            href={getTournamentUrl(tournament.id)}
+          >
+            {text}
+          </a>
+        )}
+        <button
           type="button"
-          className={className}
-          href={getTournamentUrl(tournament.id)}
+          className={infoClassName}
+          onClick={openTournamentInfo}
         >
-          {text}
-        </a>
+          <FontAwesomeIcon icon="info" />
+        </button>
       </div>
     </div>
   );
@@ -90,45 +141,49 @@ export const upcomingIcon = (
 );
 
 const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
-  <div className="d-flex flex-column flex-lg-row flex-md-row flex-sm-row w-100 cb-bg-panel mt-1">
-    <div className="d-flex w-100">
-      <div className="d-none d-lg-block d-md-block p-3">
-        {icon || getIconForGrade(tournament.grade)}
+  <div className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2" style={{ width: '350px' }}>
+    <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
+      <div className="d-flex align-items-center">
+        <div className="d-none d-lg-block d-md-block">
+          {icon || getIconForGrade(tournament.grade)}
+        </div>
+        <TournamentTitle tournament={tournament} />
       </div>
-      <div className="d-flex flex-column w-100 p-3 align-content-center align-items-baseline justify-content-between">
-        <span
-          title={tournament.name}
-          className="h5 font-weight-bold text-white text-truncate d-inline-block"
-          style={{ maxWidth: '400px', minWidth: '100px' }}
-        >
-          {tournament.name}
-        </span>
-        <span className="cb-font-size-small text-nowrap">
-          {tournament.state !== 'upcoming' && (
-            <span className="pr-2">
-              <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
-              {mapTournamentTitleByState[tournament.state]}
+      <div className="cb-separator mb-2" />
+      <div className="d-flex w-100 justify-content-between">
+        <div className="d-flex flex-column align-items-baseline">
+          {tournament.grade !== grades.open && (
+            <span
+              title={tournament.name}
+              className="text-nowrap"
+            >
+              <FontAwesomeIcon icon="trophy" className="mr-1" />
+              {getRankingPoints(tournament.grade)[0]}
+              <span className="ml-1">Ranking Points</span>
             </span>
           )}
-          {tournamentStates.canceled !== tournament.state
-            && tournament.state !== 'upcoming' && (
-              <>
-                <span className="pr-2">
+          <span className="text-nowrap">
+            {tournament.state !== 'upcoming' && (
+              <span className="mr-2">
+                <FontAwesomeIcon icon="flag-checkered" className="mr-1" />
+                {mapTournamentTitleByState[tournament.state]}
+              </span>
+            )}
+            {tournamentStates.canceled !== tournament.state
+              && tournament.state !== 'upcoming' && (
+                <span>
                   <FontAwesomeIcon icon="user" className="mr-1" />
                   {tournament.playersCount}
                 </span>
-              </>
-            )}
+              )}
+          </span>
           {showStartsAt(tournament.state) && (
             <>
-              <span
-                className={cn('pr-2', {
-                  'd-none d-lg-inline d-md-inline d-sm-inline':
-                    tournament.state !== tournamentStates.upcoming,
-                })}
-              >
+              <span>
                 <FontAwesomeIcon icon="clock" className="mr-1" />
-                {dayjs(tournament.startsAt).format('MMMM D, YYYY [at] h:mma')}
+                <TournamentTimer label="starts in" date={tournament.startsAt}>
+                  {dayjs(tournament.startsAt).format(getDateFormat(tournament.grade))}
+                </TournamentTimer>
               </span>
             </>
           )}
@@ -136,16 +191,14 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
             <>
               <span className="d-none d-lg-inline d-md-inline d-sm-inline pr-2">
                 <FontAwesomeIcon icon="clock" className="mr-1" />
-                {dayjs(tournament.lastRoundEndedAt).format(
-                  'MMMM D, YYYY [at] h:mma',
-                )}
+                {dayjs(tournament.lastRoundEndedAt).format(getDateFormat(tournament.grade))}
               </span>
             </>
           )}
-        </span>
+        </div>
+        <TournamentAction tournament={tournament} isAdmin={isAdmin} />
       </div>
     </div>
-    <TournamentAction tournament={tournament} isAdmin={isAdmin} />
   </div>
 );
 

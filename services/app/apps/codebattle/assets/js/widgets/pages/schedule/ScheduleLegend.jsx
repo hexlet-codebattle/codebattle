@@ -12,14 +12,20 @@ export const states = {
 };
 
 const sectionBtnClassName = cn(
-  'btn btn-secondary border-0 cb-btn-secondary cb-rounded mx-2',
+  'btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2',
 );
 
 const ScheduleLegend = ({ onChangeContext, loading, context }) => {
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className="d-flex btn-group align-items-center justify-content-center p-1 pb-4">
+    <div className={
+      cn(
+        'align-items-center justify-content-center p-1 pb-4',
+        'd-flex flex-column flex-lg-row flex-md-row',
+      )
+    }
+    >
       <button
         type="button"
         className={cn(sectionBtnClassName, {

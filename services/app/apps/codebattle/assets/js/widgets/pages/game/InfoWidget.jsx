@@ -161,7 +161,7 @@ function InfoWidget({ viewMode }) {
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
   const { outputData, canShowOutput } = usePlayerOutputForInfoPanel(viewMode, roomMachineState);
 
-  if (task.type === 'css') {
+  if (task?.type === 'css') {
     return (
       <CssBattleInfoWidget
         viewMode={viewMode}

@@ -51,8 +51,8 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 const store = configureStore({
   reducer: rootReducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware({
-      serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
-    }).concat(rollbarRedux),
+    serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
+  }).concat(rollbarRedux),
 });
 
 const persistor = persistStore(store);
@@ -130,7 +130,9 @@ export const Lobby = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <LobbyWidget />
+        <NiceModal.Provider>
+          <LobbyWidget />
+        </NiceModal.Provider>
       </Suspense>
     </PersistGate>
   </Provider>

@@ -9,6 +9,7 @@ const modalCodes = {
   awardModal: 'award_modal',
   eventStageModal: 'event_stage_modal',
   calendarEventModal: 'calendar_event_modal',
+  tournamentModal: 'tournament_modal',
 };
 
 export default modalCodes;
