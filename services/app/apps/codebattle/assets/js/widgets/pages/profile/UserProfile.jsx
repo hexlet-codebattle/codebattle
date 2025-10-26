@@ -15,6 +15,31 @@ import Achievement from './Achievement';
 import Heatmap from './Heatmap';
 import UserStatCharts from './UserStatCharts';
 
+function HolipinTags({ name }) {
+  return (
+    name && (
+      <div className="row mt-5 mb-md-3 mb-lg-4 mt-lg-0">
+        <div className="position-relative col-lg-10 col-md-11 mx-auto">
+          <div className="card cb-card">
+            <div className="card-header py-1 cb-bg-highlight-panel font-weight-bold text-center">
+              Holopins
+            </div>
+            <div className="card-body p-0">
+              <a href={`https://holopin.io/@${name}`}>
+                <img
+                  src={`https://holopin.me/@${name}`}
+                  alt={`@${name}'s Holopin board`}
+                  className="w-100"
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  );
+}
+
 function UserProfile() {
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
@@ -154,6 +179,7 @@ function UserProfile() {
                   <Heatmap />
                 </div>
               </div>
+              <HolipinTags />
             </div>
             <div
               className="tab-pane fade min-h-100"
