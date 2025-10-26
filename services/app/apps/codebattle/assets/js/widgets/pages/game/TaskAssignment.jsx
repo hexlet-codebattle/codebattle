@@ -5,13 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 
 import i18n from '../../../i18n';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ModalCodes from '../../config/modalCodes';
 import PageNames from '../../config/pageNames';
-import { actions } from '../../slices';
 import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 
 import ContributorsList from './ContributorsList';
@@ -29,33 +27,12 @@ const renderTaskLink = name => {
   );
 };
 
-function ShowGuideButton() {
-  const dispatch = useDispatch();
-  const guideShow = () => {
-    dispatch(actions.updateGameUI({ isShowGuide: true }));
-  };
-
-  return (
-    <button
-      type="button"
-      className="btn btn-outline-secondary cb-btn-outline-secondary btn-sm mx-2 text-nowrap cb-rounded"
-      onClick={guideShow}
-      data-toggle="tooltip"
-      data-placement="top"
-      title="Show guide"
-    >
-      {i18n.t('Show guide')}
-    </button>
-  );
-}
-
 function TaskAssignment({
   task,
   taskLanguage,
   taskSize = 0,
   handleSetLanguage,
   changeTaskDescriptionSizes,
-  hideGuide = false,
   hideContribution = false,
   hideContent = false,
   hidingControls = false,
@@ -124,7 +101,6 @@ function TaskAssignment({
                 {i18n.t('Expand')}
               </button>
             )}
-            {!hideGuide && <ShowGuideButton />}
             {changeTaskDescriptionSizes && !hidingControls && (
               <div
                 className="btn-group align-items-center ml-2 mr-auto"

@@ -415,6 +415,16 @@ defmodule Codebattle.Game.Engine do
   defp update_user!(%{is_guest: true}, _game), do: :noop
   defp update_user!(%{is_bot: true}, _game), do: :noop
 
+  defp update_user!(player, %Game{task_type: "sql"}) do
+    User
+    |> Repo.get!(player.id)
+    |> User.changeset(%{
+      rating: player.rating,
+      db_type: player.editor_lang
+    })
+    |> Repo.update!()
+  end
+
   defp update_user!(player, %Game{task_type: "css"}) do
     User
     |> Repo.get!(player.id)

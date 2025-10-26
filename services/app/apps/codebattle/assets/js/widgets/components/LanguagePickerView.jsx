@@ -49,12 +49,14 @@ export const customStyle = {
   menu: provided => ({
     ...provided,
     color: 'white',
-    backgroundColor: '#2a2a35',
+    backgroundColor: 'rgba(0, 0, 0, .3)',
+    backdropFilter: 'blur(16px)',
   }),
   option: provided => ({
     ...provided,
     color: 'white',
-    backgroundColor: '#2a2a35',
+    backgroundColor: 'transparent',
+
     ':hover': {
       backgroundColor: '#3a3f50',
     },

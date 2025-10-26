@@ -9,7 +9,7 @@ const CopyEditorButton = ({ editor }) => {
   const text = i18n.t('Copy');
 
   const handleCopyClick = () => {
-    copy(editor.value);
+    copy(editor.text);
   };
 
   return (
