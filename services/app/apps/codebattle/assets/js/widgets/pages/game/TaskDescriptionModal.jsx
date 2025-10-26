@@ -34,7 +34,6 @@ const TaskDescriptionModal = NiceModal.create(() => {
           task={task}
           taskLanguage={taskLanguage}
           handleSetLanguage={handleSetLanguage}
-          hideGuide
           hideContribution
           fullSize
         />

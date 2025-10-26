@@ -50,7 +50,6 @@ function CommonBattleInfoWidget({
     taskLanguage,
     handleSetLanguage,
     hideContribution: !!tournamentId,
-    hideGuide: !!tournamentId,
     hideContent: isRestricted,
   };
 

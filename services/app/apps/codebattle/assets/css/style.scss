@@ -80,7 +80,6 @@ $fa-font-path: '/fonts';
 
 @import 'fonts';
 @import 'tournaments';
-@import 'taskComponent';
 @import 'grades';
 
 .katex .rlap>.inner {
@@ -1118,16 +1117,27 @@ a:hover {
   border-radius: 0.50rem;
 }
 
-.dropdown-item.cb-dropdown-item {
-  color: white;
+#tasklang-dropdown {
 
-  &:disabled,
-  &.disabled {
-    color: $text-muted;
+  &-toggle,
+  &-menu {
+    min-width: 4.375rem;
   }
+}
 
-  &:hover:not(:disabled):not(.disabled) {
-    background-color: $cb-bg-panel;
+.dropdown-menu,
+.cb-dropdown-menu {
+  & .dropdown-item.cb-dropdown-item {
+    color: white;
+
+    &:hover:not(:active):not(.active) {
+      background-color: $cb-bg-panel;
+    }
+
+    &:active,
+    &.active {
+      background-color: $cb-bg-panel;
+    }
   }
 }
 
@@ -2541,4 +2551,18 @@ a.cb-text:hover {
 
 .cb-subtle-background {
   background: radial-gradient(circle at 50% 0%, #3a3b40 0%, $cb-bg-panel 100%);
+}
+
+.cb-blur {
+  background: rgba(0, 0, 0, .3);
+  backdrop-filter: blur(16px);
+}
+
+.arrow::after,
+.bs-popover-bottom .arrow::after {
+  border-bottom-color: rgba(0, 0, 0);
+
+  .cb-blur & {
+    border-bottom-color: rgba(0, 0, 0, .3);
+  }
 }

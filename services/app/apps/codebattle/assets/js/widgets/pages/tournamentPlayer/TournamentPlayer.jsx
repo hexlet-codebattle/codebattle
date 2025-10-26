@@ -294,7 +294,6 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
           taskLanguage={taskLanguage}
           handleSetLanguage={handleSetLanguage}
           changeTaskDescriptionSizes={changeTaskDescriptionSizes}
-          hideGuide
           hideContribution
           hidingControls={hidingControls}
           fullSize

@@ -16,6 +16,7 @@ const TaskLanguagesSelection = ({
       key={language}
       active={language === displayLanguage}
       onClick={handleSetLanguage(language)}
+      className="cb-dropdown-item"
     >
       <span translate="no">{`${language.toUpperCase()}`}</span>
     </Dropdown.Item>
@@ -30,7 +31,7 @@ const TaskLanguagesSelection = ({
       >
         {displayLanguage.toUpperCase()}
       </Dropdown.Toggle>
-      <Dropdown.Menu id="tasklang-dropdown-menu" className="cb-bg-highlight-panel cb-border-color text-white">
+      <Dropdown.Menu id="tasklang-dropdown-menu" className="cb-blur">
         {avaibleLanguages.map(renderLanguage)}
       </Dropdown.Menu>
     </Dropdown>

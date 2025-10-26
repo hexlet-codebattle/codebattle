@@ -203,7 +203,7 @@ function GameActionButtons({
           <FontAwesomeIcon icon="ellipsis-v" className="mr-1" />
         </Dropdown.Toggle>
 
-        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat bg-dark">
+        <Dropdown.Menu className="h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-blur">
           <ResetButtonDropDownItem onSelect={handleReset} status={resetBtnStatus} />
           {showGiveUpBtn && <GiveUpButtonDropdownItem onSelect={modalShow} status={giveUpBtnStatus} />}
         </Dropdown.Menu>

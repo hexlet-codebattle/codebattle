@@ -57,7 +57,7 @@ function PopoverStickOnHover({
         shouldUpdatePosition
       >
         <Popover
-          className="cb-bg-panel cb-text cb-rounded"
+          className="cb-blur cb-text cb-rounded"
           trigger="click"
           onMouseEnter={() => {
             setShowPopover(true);
