@@ -98,7 +98,7 @@ const SeasonOpponents = ({ user, opponents }) => {
     return () => { };
   }, [dispatch, setLoading, user?.points]);
 
-  if (user.points || (!loading && opponents.length === 0)) {
+  if (!user.points || (!loading && opponents.length === 0)) {
     return <></>;
   }
 
