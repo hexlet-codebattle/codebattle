@@ -25,6 +25,14 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
+export const loadUserOpponents = (abortController, onSuccess, onFailure) => {
+  axios
+    .get('/api/v1/user/opponents', { signal: abortController.signal })
+    .then(camelizeKeys)
+    .then(onSuccess)
+    .catch(onFailure);
+};
+
 export const loadSimpleUserStats = (onSuccess, onFailure) => user => {
   axios
     .get(`/api/v1/user/${user.id}/simple_stats`)

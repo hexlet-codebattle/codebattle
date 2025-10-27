@@ -55,6 +55,24 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{active_game_id: active_game_id, stats: game_stats, user: user})
   end
 
+  def opponents(conn, _) do
+    rank = Map.get(conn.assigns.current_user, :rank, nil)
+
+    if rank == nil do
+      json(conn, %{users: []})
+    else
+      places =
+        if rank == 1 do
+          [2]
+        else
+          [rank + 1, rank - 1]
+        end
+
+      opponents = User.get_users_by_ranks(places)
+      json(conn, %{users: opponents})
+    end
+  end
+
   def simple_stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
     json(conn, %{stats: game_stats})

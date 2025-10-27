@@ -90,6 +90,7 @@ const LobbyWidget = () => {
     seasonTournaments,
     // completedTournaments,
     presenceList,
+    opponents,
     channel: { online },
   } = useSelector(selectors.lobbyDataSelector);
 
@@ -191,6 +192,7 @@ const LobbyWidget = () => {
         liveTournaments={liveTournaments}
         seasonTournaments={seasonTournaments}
         user={currentUser}
+        opponents={opponents}
         controls={(
           <div className="d-flex flex-column mt-2">
             <div className="d-flex w-100">
