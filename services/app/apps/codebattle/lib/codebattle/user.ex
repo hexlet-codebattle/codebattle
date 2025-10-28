@@ -180,18 +180,26 @@ defmodule Codebattle.User do
     _e -> nil
   end
 
-  @spec get_users_by_ids(list(raw_id())) :: list(t())
-  def get_users_by_ids(ids) do
+  @spec get_user_places_and_ids() :: list({integer(), integer()})
+  def get_user_places_and_ids do
     __MODULE__
-    |> where([u], u.id in ^ids)
-    |> order_by([u], {:desc, :rating})
+    |> order_by([u], {:asc, u.rank})
+    |> select([u], {u.rank, u.id})
     |> Repo.all()
   end
 
-  @spec get_users_by_ranks(list(integer())) :: list(t())
-  def get_users_by_ranks(ranks) do
+  @spec get_nearby_users(t()) :: list(t())
+  def get_nearby_users(%__MODULE__{rank: nil}), do: []
+  def get_nearby_users(%__MODULE__{is_guest: true}), do: []
+
+  def get_nearby_users(%__MODULE__{id: id, rank: rank}) do
+    user_ids =
+      rank
+      |> Codebattle.UsersPointsAndRankServer.get_nearby_user_ids()
+      |> Enum.filter(&(&1 != id))
+
     __MODULE__
-    |> where([u], u.rank in ^ranks)
+    |> where([u], u.id in ^user_ids)
     |> order_by([u], {:asc, :rank})
     |> Repo.all()
   end

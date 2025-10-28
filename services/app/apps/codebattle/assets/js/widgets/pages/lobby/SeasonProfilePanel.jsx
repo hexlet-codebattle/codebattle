@@ -5,7 +5,7 @@ import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { loadUserOpponents } from '@/middlewares/Users';
+import { loadNearbyUsers } from '@/middlewares/Users';
 import {
   selectDefaultAvatarUrl,
   currentUserIsAdminSelector,
@@ -29,12 +29,9 @@ const OpponentInfo = ({ id }) => {
         <UserLogo user={user} size="25px" />
         <span
           title={user?.name}
-          className={
-            cn(
-              'text-white text-truncate ml-2',
-              { 'cb-text-skeleton w-100': !user },
-            )
-          }
+          className={cn('text-white text-truncate ml-2', {
+            'cb-text-skeleton w-100': !user,
+          })}
           style={{ maxWidth: '70px' }}
         >
           {user?.name}
@@ -42,12 +39,9 @@ const OpponentInfo = ({ id }) => {
       </div>
       <div className="d-flex flex-column text-center py-1 w-100">
         <span
-          className={
-            cn(
-              'stat-value d-block cb-text-danger',
-              { 'd-inline cb-text-skeleton w-25 mx-auto': !user },
-            )
-          }
+          className={cn('stat-value d-block cb-text-danger', {
+            'd-inline cb-text-skeleton w-25 mx-auto': !user,
+          })}
         >
           {user ? user.rank : ''}
         </span>
@@ -55,12 +49,9 @@ const OpponentInfo = ({ id }) => {
       </div>
       <div className="d-flex flex-column text-center py-1 w-100">
         <span
-          className={
-            cn(
-              'stat-value d-block cb-text-danger',
-              { 'd-inline cb-text-skeleton w-25 mx-auto': !user },
-            )
-          }
+          className={cn('stat-value d-block cb-text-danger', {
+            'd-inline cb-text-skeleton w-25 mx-auto': !user,
+          })}
         >
           {user ? user.points : ''}
         </span>
@@ -70,17 +61,17 @@ const OpponentInfo = ({ id }) => {
   );
 };
 
-const SeasonOpponents = ({ user, opponents }) => {
+const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(!!user.points);
 
   useEffect(() => {
-    if (!user.points) {
+    if (user.points) {
       const abortController = new AbortController();
 
       const onSuccess = payload => {
         if (!abortController.signal.aborted) {
-          dispatch(actions.setOpponents(payload.data));
+          dispatch(actions.setNearbyUsers(payload.data));
           dispatch(actions.updateUsers(payload.data));
           setLoading(false);
         }
@@ -90,15 +81,15 @@ const SeasonOpponents = ({ user, opponents }) => {
       };
 
       setLoading(true);
-      loadUserOpponents(abortController, onSuccess, onError);
+      loadNearbyUsers(abortController, onSuccess, onError);
 
       return abortController.abort;
     }
 
-    return () => { };
+    return () => {};
   }, [dispatch, setLoading, user?.points]);
 
-  if (!user.points || (!loading && opponents.length === 0)) {
+  if (!user.points || (!loading && nearbyUsers.length === 0)) {
     return <></>;
   }
 
@@ -106,14 +97,18 @@ const SeasonOpponents = ({ user, opponents }) => {
     <div className="cb-bg-panel cb-rounded mt-2">
       <div className="d-flex flex-column">
         <div className="cb-bg-highlight-panel text-center cb-rounded-top">
-          <span className="text-white text-uppercase p-1 pt-2">Closest opponents</span>
+          <span className="text-white text-uppercase p-1 pt-2">
+            Closest Opponents
+          </span>
         </div>
         {loading ? (
           <>
             <OpponentInfo />
             <OpponentInfo />
           </>
-        ) : opponents.map(id => <OpponentInfo id={id} />)}
+        ) : (
+          nearbyUsers.map(id => <OpponentInfo id={id} />)
+        )}
       </div>
     </div>
   );
@@ -142,7 +137,7 @@ const UserLogo = ({ user, size = '70px' }) => {
       return controller.abort;
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line
   }, [setUserInfo, user?.id]);
 
@@ -159,7 +154,7 @@ const UserLogo = ({ user, size = '70px' }) => {
 const SeasonProfilePanel = ({
   seasonTournaments = [],
   liveTournaments = [],
-  opponents,
+  nearbyUsers,
   user,
   controls,
 }) => {
@@ -286,7 +281,7 @@ const SeasonProfilePanel = ({
             <span className="d-block">{contestDatesText}</span>
           </div>
         </div>
-        <SeasonOpponents user={user} opponents={opponents} />
+        <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
         {controls}
       </div>
     </div>

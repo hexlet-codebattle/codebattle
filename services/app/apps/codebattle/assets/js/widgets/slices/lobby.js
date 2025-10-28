@@ -16,7 +16,7 @@ const initialState = {
   completedTournaments: initial.completedTournaments,
   seasonProfile: initial.seasonProfile,
   presenceList: [],
-  opponents: [],
+  nearbyUsers: [],
   newGame: { timeoutSeconds: null },
   joinGameModal: {
     show: false,
@@ -60,8 +60,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-            ? { ...player, editorLang: payload.editorLang }
-            : player));
+              ? { ...player, editorLang: payload.editorLang }
+              : player));
 
           return { ...game, players: newPlayers };
         }
@@ -73,8 +73,8 @@ const lobby = createSlice({
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
-            ? { ...player, checkResult: payload.checkResult }
-            : player));
+              ? { ...player, checkResult: payload.checkResult }
+              : player));
 
           return { ...game, players: newPlayers };
         }
@@ -130,8 +130,8 @@ const lobby = createSlice({
     updateMainChannelState: (state, { payload }) => {
       state.mainChannel.online = payload;
     },
-    setOpponents: (state, { payload }) => {
-      state.opponents = payload.users.map(u => u.id);
+    setNearbyUsers: (state, { payload }) => {
+      state.nearbyUsers = payload.users.map(u => u.id);
     },
   },
   extraReducers: {

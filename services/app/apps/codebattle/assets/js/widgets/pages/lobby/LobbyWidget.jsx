@@ -1,5 +1,5 @@
 import React, {
-  useState, useRef, useEffect, useCallback,
+ useState, useRef, useEffect, useCallback,
 } from 'react';
 
 import cn from 'classnames';
@@ -90,7 +90,7 @@ const LobbyWidget = () => {
     seasonTournaments,
     // completedTournaments,
     presenceList,
-    opponents,
+    nearbyUsers,
     channel: { online },
   } = useSelector(selectors.lobbyDataSelector);
 
@@ -121,13 +121,16 @@ const LobbyWidget = () => {
       handleShowCreateGameModal();
     }
   }, [activeGame, handleShowCreateGameModal]);
-  const handleExperimentalGameBtnClick = useCallback(event => {
-    const type = event.currentTarget.dataset.type || 'css';
+  const handleExperimentalGameBtnClick = useCallback(
+    event => {
+      const type = event.currentTarget.dataset.type || 'css';
 
-    if (isAdmin) {
-      lobbyMiddlewares.createExperimentGame({ type });
-    }
-  }, [isAdmin]);
+      if (isAdmin) {
+        lobbyMiddlewares.createExperimentGame({ type });
+      }
+    },
+    [isAdmin],
+  );
 
   useEffect(() => {
     const channel = lobbyMiddlewares.fetchState(currentUserId)(dispatch);
@@ -192,7 +195,7 @@ const LobbyWidget = () => {
         liveTournaments={liveTournaments}
         seasonTournaments={seasonTournaments}
         user={currentUser}
-        opponents={opponents}
+        nearbyUsers={nearbyUsers}
         controls={(
           <div className="d-flex flex-column mt-2">
             <div className="d-flex w-100">
