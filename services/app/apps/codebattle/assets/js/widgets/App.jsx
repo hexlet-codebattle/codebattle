@@ -51,14 +51,14 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 const store = configureStore({
   reducer: rootReducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware({
-    serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
-  }).concat(rollbarRedux),
+      serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
+    }).concat(rollbarRedux),
 });
 
 const persistor = persistStore(store);
 
 const EventWidget = React.lazy(() => import('./pages/event'));
-const HallOfFame = React.lazy(() => import('./pages/HallOfFame'));
+const HallOfFame = React.lazy(() => import('./pages/hallOfFamePage'));
 const InvitesContainer = React.lazy(
   () => import('./components/InvitesContainer'),
 );
