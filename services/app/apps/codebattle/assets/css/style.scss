@@ -4,6 +4,7 @@ $cb-text-color: #999;
 $cb-border-radius: 0.5rem;
 $cb-success: #32CD32;
 $cb-hovered-success: #28a428;
+$cb-border-radius: 0.5rem;
 
 $cb-secondary: #3a3f50;
 $cb-secondary-focus-background: #3a3f50;
@@ -64,6 +65,7 @@ $cb-grand-slam-bg: rgba(238, 55, 55, 1.0);
 @import '~bootstrap/scss/bootstrap';
 @import '~nprogress/nprogress.css';
 @import 'gamePreview';
+@import 'skeleton';
 @import 'custom';
 @import '~react-contexify/dist/ReactContexify.css';
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -2037,9 +2039,6 @@ a:hover {
   display: block;
 }
 
-/* Stats Grid - The main data display */
-.stats-grid {}
-
 .stat-item {
   text-align: center;
   border-right: 1px solid #3a3a45;
@@ -2047,8 +2046,17 @@ a:hover {
   padding: 0 5px;
 }
 
+.stat-line {
+  border-bottom: 1px solid #3a3a45;
+}
+
 .stat-item:last-child {
   border-right: none;
+}
+
+
+.stat-line:last-child {
+  border-bottom: none;
 }
 
 .stat-value {
@@ -2067,10 +2075,28 @@ a:hover {
 }
 
 .cb-rounded {
-  border-radius: 0.5rem;
+  border-radius: $cb-border-radius;
 }
 
+.cb-rounded-top {
+  border-top-left-radius: $cb-border-radius;
+  border-top-right-radius: $cb-border-radius;
+}
 
+.cb-rounded-bottom {
+  border-top-left-radius: $cb-border-radius;
+  border-top-right-radius: $cb-border-radius;
+}
+
+.cb-rounded-left {
+  border-top-left-radius: $cb-border-radius;
+  border-bottom-left-radius: $cb-border-radius;
+}
+
+.cb-rounded-right {
+  border-top-right-radius: $cb-border-radius;
+  border-bottom-right-radius: $cb-border-radius;
+}
 
 .cb-bg-panel {
   background-color: $cb-bg-panel;

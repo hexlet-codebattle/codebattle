@@ -129,6 +129,7 @@ const preloadedState = {
     presenceList: players,
     liveTournaments: [],
     completedTournaments: [],
+    opponents: [],
     joinGameModal: {
       show: false,
     },

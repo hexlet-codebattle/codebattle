@@ -15,7 +15,7 @@ import Achievement from './Achievement';
 import Heatmap from './Heatmap';
 import UserStatCharts from './UserStatCharts';
 
-function HolipinTags({ name }) {
+function HolopinTags({ name }) {
   return (
     name && (
       <div className="row mt-5 mb-md-3 mb-lg-4 mt-lg-0">
@@ -179,7 +179,7 @@ function UserProfile() {
                   <Heatmap />
                 </div>
               </div>
-              <HolipinTags />
+              <HolopinTags name={user?.githubName} />
             </div>
             <div
               className="tab-pane fade min-h-100"

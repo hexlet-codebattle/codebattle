@@ -16,6 +16,7 @@ const initialState = {
   completedTournaments: initial.completedTournaments,
   seasonProfile: initial.seasonProfile,
   presenceList: [],
+  opponents: [],
   newGame: { timeoutSeconds: null },
   joinGameModal: {
     show: false,
@@ -128,6 +129,9 @@ const lobby = createSlice({
     },
     updateMainChannelState: (state, { payload }) => {
       state.mainChannel.online = payload;
+    },
+    setOpponents: (state, { payload }) => {
+      state.opponents = payload.users.map(u => u.id);
     },
   },
   extraReducers: {

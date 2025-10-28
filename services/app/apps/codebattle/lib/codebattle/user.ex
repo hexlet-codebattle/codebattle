@@ -188,6 +188,14 @@ defmodule Codebattle.User do
     |> Repo.all()
   end
 
+  @spec get_users_by_ranks(list(integer())) :: list(t())
+  def get_users_by_ranks(ranks) do
+    __MODULE__
+    |> where([u], u.rank in ^ranks)
+    |> order_by([u], {:asc, :rank})
+    |> Repo.all()
+  end
+
   def search_users(query) do
     __MODULE__
     |> where([u], u.is_bot == false)

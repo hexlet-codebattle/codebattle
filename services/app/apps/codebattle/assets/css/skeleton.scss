@@ -1,0 +1,20 @@
+$item-bg: #15202B;
+
+.cb-text-skeleton {
+  animation: skeleton-loading 1s linear infinite alternate;
+
+  height: 1.2rem;
+  border-radius: 0.25rem;
+  background-color: lighten($item-bg, 7%);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    opacity: .2
+  }
+
+  80%,
+  100% {
+    opacity: 1;
+  }
+}
