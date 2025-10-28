@@ -57,26 +57,27 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
-const OnlineContainer = React.lazy(
-  () => import('./components/OnlineContainer'),
-);
+const EventWidget = React.lazy(() => import('./pages/event'));
+const HallOfFame = React.lazy(() => import('./pages/HallOfFame'));
 const InvitesContainer = React.lazy(
   () => import('./components/InvitesContainer'),
 );
-const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
 const LobbyWidget = React.lazy(() => import('./pages/lobby'));
+const OnlineContainer = React.lazy(
+  () => import('./components/OnlineContainer'),
+);
 const RatingList = React.lazy(() => import('./pages/rating'));
-const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
-const UserSettings = React.lazy(() => import('./pages/settings'));
-const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
+const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
+const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(
   () => import('./pages/tournament/TournamentAdminWidget'),
 );
-const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
-const EventWidget = React.lazy(() => import('./pages/event'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
+const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
+const UserProfile = React.lazy(() => import('./pages/profile'));
+const UserSettings = React.lazy(() => import('./pages/settings'));
 
 export const Online = () => (
   <Provider store={store}>
@@ -254,6 +255,16 @@ export const StreamPage = () => (
           taskMachine={taskMachine}
           editorMachine={editorMachine}
         />
+      </Suspense>
+    </PersistGate>
+  </Provider>
+);
+
+export const HallOfFamePage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Suspense>
+        <HallOfFame />
       </Suspense>
     </PersistGate>
   </Provider>

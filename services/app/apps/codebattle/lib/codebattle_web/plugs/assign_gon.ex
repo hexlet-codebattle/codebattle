@@ -10,12 +10,21 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   @spec call(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
   def call(conn, _opts) do
     current_user = conn.assigns.current_user
+    current_season = Codebattle.Season.get_current_season()
 
     user_token = Phoenix.Token.sign(conn, "user_token", current_user.id)
 
     conn
     |> assign(:ticker_text, nil)
     |> put_gon(
+      current_season:
+        current_season &&
+          %{
+            name: current_season.name,
+            year: current_season.year,
+            starts_at: current_season.starts_at,
+            ends_at: current_season.ends_at
+          },
       sentry_data_source_name: Application.get_env(:sentry_fe, :dsn),
       user_token: user_token,
       current_user: prepare_user(current_user),

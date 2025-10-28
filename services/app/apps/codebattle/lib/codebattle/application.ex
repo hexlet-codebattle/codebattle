@@ -18,6 +18,7 @@ defmodule Codebattle.Application do
     children =
       [
         {ChromicPDF, chromic_pdf_opts()},
+        {Cachex, name: :season_cache},
         {Codebattle.TasksImporter, []},
         {Codebattle.UsersPointsAndRankServer, []},
         {Codebattle.Bot.GameCreator, []},

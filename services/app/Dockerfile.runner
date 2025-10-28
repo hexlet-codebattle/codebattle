@@ -1,4 +1,4 @@
-FROM elixir:1.18.4-otp-27-alpine AS compile-image
+FROM elixir:1.19.1-otp-28-alpine AS compile-image
 ARG GIT_HASH
 
 ENV APP_VERSION=$GIT_HASH
@@ -24,7 +24,7 @@ COPY ./apps/runner/ ./apps/runner/
 RUN mix release runner \
   && mv _build/prod/rel/runner /opt/release
 
-FROM elixir:1.18.4-otp-27-alpine AS runtime-image
+FROM elixir:1.19.1-otp-28-alpine AS runtime-image
 
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 24.0.9

@@ -188,14 +188,14 @@ defmodule Codebattle.User do
     |> Repo.all()
   end
 
-  @spec get_nearby_users(t()) :: list(t())
-  def get_nearby_users(%__MODULE__{rank: nil}), do: []
-  def get_nearby_users(%__MODULE__{is_guest: true}), do: []
+  @spec get_nearby_users(map()) :: list(t())
+  def get_nearby_users(%{rank: nil}), do: []
+  def get_nearby_users(%{is_guest: true}), do: []
 
-  def get_nearby_users(%__MODULE__{id: id, rank: rank}) do
+  def get_nearby_users(%{id: id, rank: rank}, limit \\ 2) do
     user_ids =
       rank
-      |> Codebattle.UsersPointsAndRankServer.get_nearby_user_ids()
+      |> Codebattle.UsersPointsAndRankServer.get_nearby_user_ids(limit)
       |> Enum.filter(&(&1 != id))
 
     __MODULE__

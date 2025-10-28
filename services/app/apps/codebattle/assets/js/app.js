@@ -33,22 +33,23 @@ import { LiveSocket } from 'phoenix_live_view';
 import './widgets/lib/sentry';
 import {
   renderBuilderWidget,
+  renderEventPage,
   renderGameWidget,
+  renderHallOfFame,
   renderHeatmapWidget,
-  renderOnlineWidget,
   renderInvitesWidget,
   renderLobby,
+  renderOnlineWidget,
   renderRegistrationPage,
   renderSettingPage,
   renderStairwayGamePage,
-  renderTournamentPage,
-  renderTournamentAdminPage,
-  renderEventPage,
-  renderTournamentPlayerPage,
-  renderUserPage,
   renderStreamPage,
-  renderUsersRating,
+  renderTournamentAdminPage,
+  renderTournamentPage,
+  renderTournamentPlayerPage,
   renderTournamentsSchedule,
+  renderUserPage,
+  renderUsersRating,
 } from './widgets';
 
 if (process.env.NODE_ENV === 'development') {
@@ -107,7 +108,10 @@ const tournamentRoot = document.getElementById('tournament-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
-const tournamentsScheduleRoot = document.getElementById('tournaments-schedule-root');
+const tournamentsScheduleRoot = document.getElementById(
+  'tournaments-schedule-root',
+);
+const hallOfFameRoot = document.getElementById('hall-of-fame-root');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -175,4 +179,8 @@ if (streamRoot) {
 
 if (tournamentsScheduleRoot) {
   renderTournamentsSchedule(tournamentsScheduleRoot);
+}
+
+if (hallOfFameRoot) {
+  renderHallOfFame(hallOfFameRoot);
 }

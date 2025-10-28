@@ -1,38 +1,151 @@
+/* eslint-disable max-len */
 import React from 'react';
 
-const COLOR_TEXT = '#FFD700'; // Gold for the caption
+const GrandSlamIcon = React.forwardRef((props, ref) => {
+  const {
+    color = 'gold',
+    glowColor = 'gold',
+    size = 80,
+    title,
+    animate = true,
+    speed = 3.4, // seconds per pulse
+    intensity = 2.2, // >1 = stronger glow
+    ...rest
+  } = props;
 
-const GrandSlamIcon = ({ size = '48px' }) => (
-  <div className="rank-icon-container">
+  // Ensure unique ids if multiple icons are on the page
+  const uid = React.useId();
+  const filterId = `neon-glow-${uid}`;
+  const gradId = `neon-grad-${uid}`;
+
+  return (
     <svg
-      className="rank-svg-icon aura-animation"
+      ref={ref}
       width={size}
       height={size}
-      viewBox="0 0 100 100"
+      viewBox="0 0 820 820"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      style={{ filter: `drop-shadow(0 0 3px ${COLOR_TEXT})` }}
+      role="img"
+      aria-hidden={title ? undefined : true}
+      {...rest}
     >
+      {title ? <title>{title}</title> : null}
+
       <defs>
-        {/* Red-Gold Gradient Definition */}
-        <linearGradient id="RG_Gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: '#FFD700', stopOpacity: 1 }} />
-          <stop offset="100%" style={{ stopColor: '#FF4500', stopOpacity: 1 }} />
+        {/* optional subtle gradient to make the fill look more neon-y */}
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="1" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.85" />
         </linearGradient>
+
+        {/* Neon glow filter */}
+        <filter
+          id={filterId}
+          x="-60%"
+          y="-60%"
+          width="220%"
+          height="220%"
+          colorInterpolationFilters="sRGB"
+        >
+          {/* blur the source to create outer glow */}
+          <feGaussianBlur
+            in="SourceGraphic"
+            stdDeviation={4 * intensity}
+            result="blur1"
+          >
+            {animate && (
+              <animate
+                attributeName="stdDeviation"
+                values={`${2 * intensity};${7 * intensity};${2 * intensity}`}
+                dur={`${speed}s`}
+                repeatCount="indefinite"
+              />
+            )}
+          </feGaussianBlur>
+
+          {/* tint the blur to a dedicated glowColor */}
+          <feColorMatrix
+            in="blur1"
+            type="matrix"
+            values="
+              0 0 0 0 0
+              0 0 0 0 0
+              0 0 0 0 0
+              0 0 0 1 0"
+            result="alphaOnly"
+          />
+          <feFlood floodColor={glowColor} floodOpacity="1" result="glowFlood">
+            {animate && (
+              <animate
+                attributeName="flood-opacity"
+                values="0.55;1;0.55"
+                dur={`${speed}s`}
+                repeatCount="indefinite"
+              />
+            )}
+          </feFlood>
+          <feComposite
+            in="glowFlood"
+            in2="alphaOnly"
+            operator="in"
+            result="glowColored"
+          />
+
+          {/* stack a couple of blurs to intensify the glow */}
+          <feGaussianBlur
+            in="glowColored"
+            stdDeviation={6 * intensity}
+            result="blur2"
+          />
+          <feMerge>
+            <feMergeNode in="blur2" />
+            <feMergeNode in="glowColored" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
-      {/* Trophy Symbol */}
-      <g fill="url(#RG_Gradient)">
-        {/* Trophy Base */}
-        <rect x="35" y="70" width="30" height="5" rx="2" />
-        {/* Trophy Stem */}
-        <rect x="47.5" y="55" width="5" height="15" />
-        {/* Trophy Bowl */}
-        <path d="M30,55 C20,40 80,40 70,55 L70,55 C70,45 60,30 50,30 C40,30 30,45 30,55 Z" />
-        {/* Shine highlight */}
-        <circle cx="50" cy="45" r="5" fill="#FFFFFF" opacity="0.8" />
+      {/* Apply the filter to the ICON CONTENT (not an empty group) */}
+      <g
+        filter={`url(#${filterId})`}
+        stroke={glowColor}
+        strokeOpacity="0.25"
+        strokeWidth="2"
+      >
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M464.794 386.579L432.946 404.752L470.881 426.398L432.919 448.019L464.795 466.209V491.246L410.906 460.555L357.019 491.246V466.207L388.913 448.029L350.897 426.379L350.907 426.377L388.864 404.729L357.019 386.581V361.427L410.892 392.167L464.794 361.427V386.579ZM395.024 426.393L410.941 435.477L426.88 426.394L410.941 417.311L395.024 426.393Z"
+          fill={`url(#${gradId})`}
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M678.25 312.753C678.25 322.863 677.735 332.877 676.705 342.753H755.25V358.253C755.25 410.081 737.377 449.348 705.463 475.282C674.104 500.766 631.212 511.728 583.905 511.752C562.982 527.349 538.772 539.878 511.412 548.727C468.829 567.976 445.75 590.776 445.75 629.253H445.688L483.477 657.753H516.235L571.262 731.122L558.862 755.922H261.639L248.495 732.207L295.028 657.753H337.523L375.312 629.253C375.312 591.128 353.011 568.394 311.24 549.255C282.831 540.263 257.783 527.326 236.25 511.12V511.753C188.881 511.753 145.93 500.794 114.537 475.282C82.6231 449.348 64.7501 410.081 64.75 358.253V342.753H144.295C143.265 332.877 142.75 322.863 142.75 312.753V297.253H678.25V312.753ZM289.604 724.922H527.862L500.735 688.753H312.21L289.604 724.922ZM174.205 328.253C177.406 382.371 197.466 431.209 233.229 467.425C272.153 506.843 330.953 532.589 410.5 532.75C490.047 532.589 548.847 506.843 587.771 467.425C623.534 431.209 643.594 382.371 646.795 328.253H174.205ZM96.4023 373.753C99.5022 409.508 113.484 434.48 134.088 451.224C151.161 465.098 173.844 474.181 201.06 478.265C175.234 448.4 158.001 412.604 149.333 373.753H96.4023ZM671.667 373.753C663.016 412.528 645.833 448.26 620.092 478.09C646.796 473.925 669.08 464.902 685.912 451.224C706.516 434.48 720.498 409.508 723.598 373.753H671.667Z"
+          fill={`url(#${gradId})`}
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M93.79 127.113C101.33 122.392 110.822 121.851 121.093 124.686L121.329 124.75L121.561 124.828L241.489 164.805L278.813 249.737L269.505 254.087C245.917 265.109 218.376 269.861 194.987 265.746C173.449 261.957 154.149 250.217 146.667 227.743C130.991 225.154 118.203 221.035 109.801 212.788C101.2 204.346 98.58 193.164 99.2656 180.21C86.8065 173.778 80.5154 159.983 81.6475 147.648C82.3588 139.898 86.097 131.93 93.79 127.113ZM115.176 144.273C108.19 142.387 104.806 143.598 103.544 144.389C102.422 145.091 101.46 146.394 101.235 148.845C100.723 154.431 104.554 161.634 112.086 163.206L112.108 163.211L112.13 163.216L195.552 181.047L190.906 200.951L118.884 185.556C119.229 191.76 121.06 195.309 123.621 197.823C128.318 202.433 137.718 206.017 156.116 208.527L156.188 208.537L156.26 208.549L210.229 216.762L206.682 236.867L171.414 231.499C177.614 238.902 187.06 243.616 198.963 245.71C215.016 248.534 234.385 246.215 252.45 239.57L226.944 181.53L115.176 144.273Z"
+          fill={`url(#${gradId})`}
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M698.909 124.686C709.18 121.851 718.672 122.392 726.212 127.113C733.905 131.93 737.643 139.898 738.354 147.648C739.487 159.983 733.195 173.778 720.736 180.21C721.422 193.164 718.802 204.346 710.201 212.788C701.799 221.035 689.011 225.154 673.335 227.743C665.853 250.217 646.553 261.957 625.015 265.746C601.626 269.861 574.085 265.109 550.497 254.087L541.188 249.737L578.513 164.805L698.441 124.828L698.673 124.75L698.909 124.686ZM716.458 144.389C715.196 143.598 711.812 142.387 704.826 144.273L593.058 181.53L567.552 239.57C585.617 246.215 604.986 248.534 621.039 245.71C632.942 243.616 642.388 238.902 648.588 231.499L613.32 236.867L609.772 216.762L663.742 208.549L663.813 208.537L663.886 208.527C682.284 206.017 691.684 202.433 696.381 197.823C698.942 195.309 700.772 191.76 701.118 185.556L629.096 200.951L624.45 181.047L707.872 163.216L707.894 163.211L707.916 163.206C715.448 161.634 719.279 154.431 718.767 148.845C718.542 146.394 717.579 145.091 716.458 144.389Z"
+          fill={`url(#${gradId})`}
+        />
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M483.017 57.8271L479.147 153.825L542.569 107.29L559.771 123.074L519.831 224.033C516.951 233.484 508.886 239.875 501.609 244.093C493.621 248.723 483.679 252.402 473.385 255.266C452.753 261.005 428.355 264.11 409.6 264.11C390.845 264.11 366.446 261.005 345.814 255.266C335.52 252.402 325.578 248.723 317.59 244.093C310.314 239.875 302.248 233.484 299.367 224.033L259.428 123.074L278.095 108.149L339.503 150.039L336.168 59.0361L359.133 51.7549L409.6 129.217L460.066 51.7549L483.017 57.8271ZM420.073 158.94H399.126L362.803 103.186L365.393 173.853L345.856 184.637L297.66 151.759L322.831 215.382L323.281 216.745C323.245 216.61 323.35 217.157 324.474 218.312C325.602 219.473 327.422 220.896 330.128 222.465C335.574 225.622 343.284 228.613 352.515 231.181C370.933 236.304 393.076 239.11 409.6 239.11C426.123 239.11 448.266 236.304 466.685 231.181C475.915 228.613 483.626 225.622 489.071 222.465C491.777 220.896 493.598 219.473 494.726 218.312C495.767 217.242 495.934 216.694 495.924 216.727L496.368 215.382L524.517 144.229L473.385 184.637L454.832 173.853L460.336 97.1377L420.073 158.94Z"
+          fill={`url(#${gradId})`}
+        />
       </g>
     </svg>
-  </div>
-);
+  );
+});
 
-export default GrandSlamIcon;
+export default React.memo(GrandSlamIcon);

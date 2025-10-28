@@ -84,6 +84,8 @@ defmodule CodebattleWeb.Router do
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
     live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
+    live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
+    live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
   end
 
   scope "/auth", CodebattleWeb do
@@ -176,6 +178,7 @@ defmodule CodebattleWeb.Router do
     get("/stream", StreamController, :index)
     get("/schedule", TournamentsScheduleController, :index)
     get("/stream/preset", StreamController, :stream_preset)
+    get("/hall_of_fame", HallOfFameController, :index)
 
     scope "/tournaments" do
       get("/:id/admin", Tournament.AdminController, :show)

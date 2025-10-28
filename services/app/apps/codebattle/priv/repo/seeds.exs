@@ -524,3 +524,17 @@ Repo.delete_all(UserEvent)
 # }
 # ]
 # })
+#
+seasons = [
+  %{name: "0", year: "2025", starts_at: ~D[2025-09-21], ends_at: ~D[2025-12-21]},
+  %{name: "1", year: "2026", starts_at: ~D[2025-12-21], ends_at: ~D[2026-03-21]},
+  %{name: "2", year: "2026", starts_at: ~D[2026-03-21], ends_at: ~D[2026-06-21]},
+  %{name: "3", year: "2026", starts_at: ~D[2026-06-21], ends_at: ~D[2026-09-21]},
+  %{name: "0", year: "2026", starts_at: ~D[2026-09-21], ends_at: ~D[2026-12-21]},
+  %{name: "1", year: "2027", starts_at: ~D[2026-12-21], ends_at: ~D[2027-03-21]}
+]
+
+Enum.each(seasons, fn season_params ->
+  Repo.get_by(Codebattle.Season, starts_at: season_params.starts_at) ||
+    Codebattle.Season.create(season_params)
+end)

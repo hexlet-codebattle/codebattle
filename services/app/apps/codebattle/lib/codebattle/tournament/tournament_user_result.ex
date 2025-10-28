@@ -35,8 +35,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   end
 
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
-      when type in ["swiss", "arena", "top200"] do
+  def upsert_results(%{type: "swiss", ranking_type: "by_user", score_strategy: "75_percentile"} = tournament) do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -86,7 +85,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           ROW_NUMBER() OVER (ORDER BY ar.score DESC, ar.total_time ASC) AS place,
           t.grade
         FROM aggregated_results ar
-        JOIN tournaments t ON t.id = ar.tournament_id
+        JOIN tournaments t ON t.id = ar.tournament_id and t.grade != 'open'
       ),
       results_with_points AS (
         SELECT

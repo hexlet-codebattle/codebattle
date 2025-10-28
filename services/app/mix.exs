@@ -7,13 +7,6 @@ defmodule CodebattleUmbrella.MixProject do
       apps_path: "apps",
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.json": :test,
-        "coveralls.html": :test
-      ],
       test_coverage: [tool: ExCoveralls, threshold: 60],
       deps: [
         {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
@@ -38,6 +31,18 @@ defmodule CodebattleUmbrella.MixProject do
           applications: [runner: :permanent],
           validate_compile_env: false
         ]
+      ]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.json": :test,
+        "coveralls.html": :test
       ]
     ]
   end

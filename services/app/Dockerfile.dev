@@ -1,4 +1,4 @@
-FROM elixir:1.18.4-otp-27-alpine
+FROM elixir:1.19.1-otp-28-alpine
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 20.10.9
 
