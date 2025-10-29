@@ -285,11 +285,9 @@ defmodule Codebattle.User do
   # nil for new token users, clan will be managed by admin
   defp assign_clan(changeset, params, nil), do: assign_clan(changeset, params, 1)
 
-  defp assign_clan(changeset, %{clan: clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{clan: clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
-  defp assign_clan(changeset, %{"clan" => clan_name}, user_id),
-    do: find_or_create_by_clan(changeset, clan_name, user_id)
+  defp assign_clan(changeset, %{"clan" => clan_name}, user_id), do: find_or_create_by_clan(changeset, clan_name, user_id)
 
   defp assign_clan(changeset, _params, _user_id), do: changeset
 
