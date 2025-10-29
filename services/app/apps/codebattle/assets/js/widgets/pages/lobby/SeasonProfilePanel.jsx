@@ -285,6 +285,14 @@ const SeasonProfilePanel = ({
           </div>
         </div>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
+        <div className="text-center mt-2">
+          <a
+            href="/hall_of_fame"
+            className="text-uppercase stat-label cb-rounded"
+          >
+            {i18n.t('View Hall of Fame')}
+          </a>
+        </div>
         {controls}
       </div>
     </div>
