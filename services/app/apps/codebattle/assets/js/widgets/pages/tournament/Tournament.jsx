@@ -1,5 +1,5 @@
 import React, {
-  useState, useCallback, useEffect, useMemo,
+ useState, useCallback, useEffect, useMemo,
 } from 'react';
 
 import { useInterpret } from '@xstate/react';
@@ -40,7 +40,7 @@ const getTournamentPresentationStatus = state => {
 };
 
 function InfoPanel({
-  currentUserId, tournament, hideResults, canModerate,
+ currentUserId, tournament, hideResults, canModerate,
 }) {
   if (
     tournament.state === TournamentStates.waitingParticipants
@@ -68,26 +68,28 @@ function InfoPanel({
 
       return (
         <CustomTournamentInfoPanel
-          players={tournament.players}
-          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-          taskList={tournament.taskList}
-          type={tournament.type}
-          state={tournament.state}
-          topPlayerIds={tournament.topPlayerIds}
-          matches={tournament.matches}
-          tournamentId={tournament.id}
-          currentUserId={currentUserId}
-          roundsLimit={tournament.roundsLimit}
+          canModerate={canModerate}
           currentRoundPosition={tournament.currentRoundPosition}
-          pageNumber={tournament.playersPageNumber}
-          pageSize={tournament.playersPageSize}
+          currentUserId={currentUserId}
           hideBots={!tournament.showBots}
           hideResults={hideResults}
+          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+          matches={tournament.matches}
+          pageNumber={tournament.playersPageNumber}
+          pageSize={tournament.playersPageSize}
+          players={tournament.players}
+          playersCount={tournament.playersCount}
+          ranking={tournament.ranking}
+          roundsLimit={tournament.roundsLimit}
+          state={tournament.state}
+          taskList={tournament.taskList}
+          topPlayerIds={tournament.topPlayerIds}
+          tournamentId={tournament.id}
+          type={tournament.type}
           hideCustomGameConsole={
             tournament.type !== 'versus'
             || tournament.state !== TournamentStates.active
           }
-          canModerate={canModerate}
         />
       );
     }
@@ -129,13 +131,13 @@ function Tournament({ waitingRoomMachine }) {
 
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.canceled].includes(
-      tournament.state,
-    ),
+        tournament.state,
+      ),
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
   const hiddenSidePanel = (tournament.type === 'arena'
-    && tournament.state !== 'waiting_participants')
+      && tournament.state !== 'waiting_participants')
     || streamMode;
 
   const panelClassName = cn('mb-2', {
@@ -196,7 +198,7 @@ function Tournament({ waitingRoomMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tournament.isLive]);
 
@@ -237,10 +239,10 @@ function Tournament({ waitingRoomMachine }) {
         />
         <div className="d-flex flex-column justify-content-center align-items-center p-3">
           {has(tournament.players, currentUserId)
-            || tournament.state !== TournamentStates.waitingParticipants ? (
-              <span className="h3">
-                {getTournamentPresentationStatus(tournament.state)}
-              </span>
+          || tournament.state !== TournamentStates.waitingParticipants ? (
+            <span className="h3">
+              {getTournamentPresentationStatus(tournament.state)}
+            </span>
           ) : (
             <>
               <span className="h3">{tournament.name}</span>
@@ -353,12 +355,14 @@ function Tournament({ waitingRoomMachine }) {
               </div>
             </div>
             <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-4 h-100">
-              {!tournament.useClan && !hiddenSidePanel && (
-                <PlayersRankingPanel
-                  playersCount={tournament.playersCount}
-                  ranking={tournament.ranking}
-                />
-              )}
+              {tournament.state !== TournamentStates.finished
+                && !tournament.useClan
+                && !hiddenSidePanel && (
+                  <PlayersRankingPanel
+                    playersCount={tournament.playersCount}
+                    ranking={tournament.ranking}
+                  />
+                )}
               {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
               {tournament.useClan && !hiddenSidePanel && (
                 <TournamentClanTable />

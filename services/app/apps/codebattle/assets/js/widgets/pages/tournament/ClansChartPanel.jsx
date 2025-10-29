@@ -1,8 +1,5 @@
 import React, {
-  memo,
-  useState,
-  useCallback,
-  useRef,
+ memo, useState, useCallback, useRef,
 } from 'react';
 
 import {
@@ -15,7 +12,7 @@ import {
 import { Bubble } from 'react-chartjs-2';
 import { useDispatch } from 'react-redux';
 
-import { getResults } from '../../middlewares/TournamentAdmin';
+import { getResults } from '../../middlewares/Tournament';
 
 import useTournamentPanel from './useTournamentPanel';
 
@@ -73,7 +70,10 @@ function ClansChartPanel({ type, state }) {
   };
 
   return (
-    <div ref={chartRef} className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto">
+    <div
+      ref={chartRef}
+      className="my-2 px-1 mt-lg-0 rounded-lg position-relative cb-overflow-x-auto cb-overflow-y-auto"
+    >
       <Bubble data={config.data} options={config.options} />
     </div>
   );

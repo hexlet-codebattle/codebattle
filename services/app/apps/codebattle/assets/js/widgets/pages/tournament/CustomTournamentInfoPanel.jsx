@@ -1,40 +1,43 @@
-import React, { memo, useState, useEffect, useCallback, useRef } from "react";
+import React, {
+ memo, useState, useEffect, useCallback, useRef,
+} from 'react';
 
-import { useSelector } from "react-redux";
+import { useSelector } from 'react-redux';
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import TournamentStates from "../../config/tournament";
-import TournamentTypes from "../../config/tournamentTypes";
-import { tournamentPlayersSelector } from "../../selectors";
+import TournamentStates from '../../config/tournament';
+import { tournamentPlayersSelector } from '../../selectors';
 
-import ClansChartPanel from "./ClansChartPanel";
-import ControlPanel, { PanelModeCodes } from "./ControlPanel";
-import PlayerStatsPanel from "./PlayerStatsPanel";
-import LeaderboardPanel from "./LeaderboardPanel";
-import RatingClansPanel from "./RatingClansPanel";
-import RatingPanel from "./RatingPanel";
-import ReportsPanel from "./ReportsPanel";
-import TaskRankingAdvancedPanel from "./TaskRankingAdvancedPanel";
-import TaskRankingPanel from "./TaskRankingPanel";
-import TournamentGameCreatePanel from "./TournamentGameCreatePanel";
+import ClansChartPanel from './ClansChartPanel';
+import ControlPanel, { PanelModeCodes } from './ControlPanel';
+import LeaderboardPanel from './LeaderboardPanel';
+import PlayerStatsPanel from './PlayerStatsPanel';
+import RatingClansPanel from './RatingClansPanel';
+import RatingPanel from './RatingPanel';
+import ReportsPanel from './ReportsPanel';
+import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
+import TaskRankingPanel from './TaskRankingPanel';
+import TournamentGameCreatePanel from './TournamentGameCreatePanel';
 
 function CustomTournamentInfoPanel({
-  roundsLimit = 1,
+  canModerate = false,
   currentRoundPosition = 0,
+  currentUserId,
+  hideBots = false,
+  hideCustomGameConsole = false,
+  hideResults = false,
   matchTimeoutSeconds,
   matches,
-  players,
-  taskList,
-  topPlayerIds,
-  currentUserId,
   pageNumber,
   pageSize,
-  hideBots = false,
-  hideResults = false,
-  hideCustomGameConsole = false,
-  type,
+  players,
+  playersCount,
+  ranking,
+  roundsLimit = 1,
   state,
-  canModerate = false,
+  taskList,
+  topPlayerIds,
+  type,
 }) {
   const getDefaultPanelMode = () => {
     if (state === TournamentStates.finished) {
@@ -54,33 +57,35 @@ function CustomTournamentInfoPanel({
   // eslint-disable-next-line no-nested-ternary
 
   useEffect(() => {
-    setPanelMode(getDefaultPanelMode);
+    if (players[currentUserId]) {
+      setPanelMode(getDefaultPanelMode);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, players[currentUserId]?.id);
+  }, [players[currentUserId]?.id]);
 
   const allPlayers = useSelector(tournamentPlayersSelector);
 
   const handleUserSelectClick = useCallback(
-    (event) => {
+    event => {
       const { userId } = event.currentTarget.dataset;
       setPanelMode({
         panel: PanelModeCodes.ratingMode,
         userId: Number(userId),
       });
-      setPanelHistory((items) => [...items, panelMode]);
+      setPanelHistory(items => [...items, panelMode]);
       setSearchedUser(allPlayers[Number(userId)]);
     },
     [panelMode, setPanelMode, setPanelHistory, setSearchedUser, allPlayers],
   );
   const handleTaskSelectClick = useCallback(
-    (event) => {
+    event => {
       const { taskId } = event.currentTarget.dataset;
       setPanelMode({
         panel: PanelModeCodes.taskRatingAdvanced,
         taskId: Number(taskId),
       });
-      setPanelHistory((items) => [...items, panelMode]);
+      setPanelHistory(items => [...items, panelMode]);
     },
     [panelMode, setPanelMode, setPanelHistory],
   );
@@ -94,9 +99,8 @@ function CustomTournamentInfoPanel({
   const allowedPanelModes = canModerate
     ? Object.values(PanelModeCodes)
     : [
-        PanelModeCodes.ratingMode,
-        PanelModeCodes.leaderboardMode,
         PanelModeCodes.playerMode,
+        PanelModeCodes.leaderboardMode,
         PanelModeCodes.topUserByClansMode,
         PanelModeCodes.taskRatingMode,
         PanelModeCodes.clansBubbleDistributionMode,
@@ -139,14 +143,9 @@ function CustomTournamentInfoPanel({
         />
         {panelMode.panel === PanelModeCodes.leaderboardMode && (
           <LeaderboardPanel
-            currentRoundPosition={currentRoundPosition}
-            roundsLimit={roundsLimit}
-            matches={matches}
-            players={players}
-            type={type}
-            currentUserId={currentUserId}
-            hideBots={hideBots}
-            canModerate={canModerate}
+            state={state}
+            ranking={ranking}
+            playersCount={playersCount}
           />
         )}
         {panelMode.panel === PanelModeCodes.playerMode && (
@@ -174,8 +173,8 @@ function CustomTournamentInfoPanel({
             pageSize={pageSize}
             hideBots={hideBots}
             hideResults={
-              (hideResults && !canModerate) ||
-              (!players[currentUserId] && !canModerate)
+              (hideResults && !canModerate)
+              || (!players[currentUserId] && !canModerate)
             }
           />
         )}

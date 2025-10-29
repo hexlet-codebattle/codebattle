@@ -1024,3 +1024,6 @@ msgstr "Отправлено"
 
 msgid "Wait reviling results"
 msgstr "Ожидайте результатов соревнования"
+
+msgid "Leaderboard"
+msgstr "Рейтинг"

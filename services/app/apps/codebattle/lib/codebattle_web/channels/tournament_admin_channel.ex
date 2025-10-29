@@ -4,7 +4,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
-  alias Codebattle.Tournament.TournamentResult
   alias Codebattle.UserGameReport
 
   require Logger
@@ -112,56 +111,6 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     })
 
     {:noreply, socket}
-  end
-
-  def handle_in("tournament:get_task", %{"task_id" => task_id}, socket) do
-    task =
-      task_id
-      |> Codebattle.Task.get()
-      |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
-
-    {:reply, {:ok, task}, socket}
-  end
-
-  def handle_in("tournament:get_results", %{"params" => params}, socket) do
-    tournament = socket.assigns.tournament_info
-
-    results =
-      case params do
-        %{"type" => "top_users_by_clan_ranking"} ->
-          TournamentResult.get_top_users_by_clan_ranking(
-            tournament,
-            Map.get(params, "players_limit", 5),
-            Map.get(params, "clans_limit", 7)
-          )
-
-        %{"type" => "tasks_ranking"} ->
-          TournamentResult.get_tasks_ranking(tournament)
-
-        %{"type" => "task_duration_distribution", "task_id" => task_id} ->
-          TournamentResult.get_task_duration_distribution(
-            tournament,
-            task_id
-          )
-
-        %{"type" => "clans_bubble_distribution"} ->
-          TournamentResult.get_clans_bubble_distribution(
-            tournament,
-            Map.get(params, "max_radius", 7)
-          )
-
-        %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
-          TournamentResult.get_top_user_by_task_ranking(
-            tournament,
-            task_id,
-            Map.get(params, "limit", 40)
-          )
-
-        _ ->
-          []
-      end
-
-    {:reply, {:ok, %{results: results}}, socket}
   end
 
   def handle_in("tournament:toggle_match_visible", %{"game_id" => game_id}, socket) do

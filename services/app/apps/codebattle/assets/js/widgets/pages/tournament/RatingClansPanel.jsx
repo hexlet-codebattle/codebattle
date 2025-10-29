@@ -5,21 +5,19 @@ import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
-import { getResults } from '../../middlewares/TournamentAdmin';
+import { getResults } from '../../middlewares/Tournament';
 
 import TournamentContextMenu, {
   useTournamentContextMenu,
 } from './TournamentContextMenu';
 import useTournamentPanel from './useTournamentPanel';
 
-const getCustomEventTrClassName = (type, muted) => cn(
-  'text-dark font-weight-bold cb-custom-event-tr', {
+const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
     'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
     'cb-custom-event-bg-muted-purple cursor-pointer': type === 'user' && muted,
-  },
-);
+  });
 
 const tableDataCellClassName = hideSeparator => cn(
     'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -77,9 +75,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                     title={users[0].clanLongName}
                     className={tableDataCellClassName()}
                   >
-                    <div
-                      className="cb-custom-event-name mr-1"
-                    >
+                    <div className="cb-custom-event-name mr-1">
                       {users[0].clanName}
                     </div>
                   </td>
@@ -99,11 +95,11 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                 {users.map(user => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
-                    <tr className={getCustomEventTrClassName('user', index > 3)}>
+                    <tr
+                      className={getCustomEventTrClassName('user', index > 3)}
+                    >
                       <td className={tableDataCellClassName(true)} />
-                      <td
-                        className={tableDataCellClassName()}
-                      >
+                      <td className={tableDataCellClassName()}>
                         <div
                           role="button"
                           tabIndex={0}

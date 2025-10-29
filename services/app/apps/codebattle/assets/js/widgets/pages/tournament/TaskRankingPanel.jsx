@@ -1,24 +1,19 @@
-import React, {
-  memo, useState, useCallback,
-} from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 
-import { getResults } from '../../middlewares/TournamentAdmin';
+import { getResults } from '../../middlewares/Tournament';
 
 import useTournamentPanel from './useTournamentPanel';
 
-const getCustomEventTrClassName = level => cn(
-  'font-weight-bold cb-custom-event-tr cursor-pointer',
-  {
+const getCustomEventTrClassName = level => cn('font-weight-bold cb-custom-event-tr cursor-pointer', {
     'text-dark cb-custom-event-bg-success': level === 'easy',
     'text-dark cb-custom-event-bg-orange': level === 'elementary',
     'text-dark cb-custom-event-bg-blue': level === 'medium',
     'text-dark cb-custom-event-bg-brown': level === 'hard',
-  },
-);
+  });
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
@@ -74,41 +69,22 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
           {items.map(item => (
             <React.Fragment key={`${type}-task-${item.taskId}`}>
               <tr className="cb-custom-event-empty-space-tr" />
-              <tr onClick={handleTaskSelectClick} data-task-id={item.taskId} className={getCustomEventTrClassName(item.level)}>
-                <td
-                  title={item.name}
-                  className={tableDataCellClassName}
-                >
-                  <div
-                    className="cb-custom-event-name mr-1"
-                  >
-                    {item.name}
-                  </div>
+              <tr
+                onClick={handleTaskSelectClick}
+                data-task-id={item.taskId}
+                className={getCustomEventTrClassName(item.level)}
+              >
+                <td title={item.name} className={tableDataCellClassName}>
+                  <div className="cb-custom-event-name mr-1">{item.name}</div>
                 </td>
-                <td className={tableDataCellClassName}>
-                  {item.winsCount}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.min}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.p5}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.p25}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.p50}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.p75}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.p95}
-                </td>
-                <td className={tableDataCellClassName}>
-                  {item.max}
-                </td>
+                <td className={tableDataCellClassName}>{item.winsCount}</td>
+                <td className={tableDataCellClassName}>{item.min}</td>
+                <td className={tableDataCellClassName}>{item.p5}</td>
+                <td className={tableDataCellClassName}>{item.p25}</td>
+                <td className={tableDataCellClassName}>{item.p50}</td>
+                <td className={tableDataCellClassName}>{item.p75}</td>
+                <td className={tableDataCellClassName}>{item.p95}</td>
+                <td className={tableDataCellClassName}>{item.max}</td>
               </tr>
             </React.Fragment>
           ))}

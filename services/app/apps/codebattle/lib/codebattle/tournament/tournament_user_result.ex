@@ -28,9 +28,19 @@ defmodule Codebattle.Tournament.TournamentUserResult do
     timestamps(updated_at: false)
   end
 
+  @spec get_by(pos_integer()) :: [t()]
   def get_by(tournament_id) do
     __MODULE__
     |> where([tr], tr.tournament_id == ^tournament_id)
+    |> Repo.all()
+  end
+
+  @spec get_leaderboard(pos_integer(), pos_integer()) :: [t()]
+  def get_leaderboard(tournament_id, limit \\ 32) do
+    __MODULE__
+    |> where([tr], tr.tournament_id == ^tournament_id)
+    |> order_by([tr], asc: tr.place)
+    |> limit(^limit)
     |> Repo.all()
   end
 

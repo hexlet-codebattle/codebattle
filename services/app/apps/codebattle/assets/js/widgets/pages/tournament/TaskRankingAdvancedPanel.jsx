@@ -19,7 +19,7 @@ import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
 import i18next from '../../../i18n';
 import UserInfo from '../../components/UserInfo';
-import { getResults, getTask } from '../../middlewares/TournamentAdmin';
+import { getResults, getTask } from '../../middlewares/Tournament';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 
 import useTournamentPanel from './useTournamentPanel';

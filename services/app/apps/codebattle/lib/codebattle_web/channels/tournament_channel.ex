@@ -4,6 +4,8 @@ defmodule CodebattleWeb.TournamentChannel do
 
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.Tournament.TournamentUserResult
 
   require Logger
 
@@ -142,6 +144,77 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
   end
 
+  def handle_in("tournament:get_task", %{"task_id" => task_id}, socket) do
+    task =
+      task_id
+      |> Codebattle.Task.get()
+      |> Map.take([:id, :level, :name, :description_ru, :description_en, :examples])
+
+    {:reply, {:ok, task}, socket}
+  end
+
+  def handle_in("tournament:get_results", %{"params" => params}, socket) do
+    tournament = socket.assigns.tournament_info
+
+    results =
+      case params do
+        %{"type" => "leaderboard"} ->
+          tournament.id
+          |> TournamentUserResult.get_leaderboard(32)
+          |> Enum.map(
+            &Map.take(&1, [
+              :avg_result_percent,
+              :clan_id,
+              :games_count,
+              :is_cheater,
+              :place,
+              :points,
+              :score,
+              :total_time,
+              :tournament_id,
+              :user_id,
+              :user_name,
+              :user_lang,
+              :wins_count
+            ])
+          )
+
+        %{"type" => "top_users_by_clan_ranking"} ->
+          TournamentResult.get_top_users_by_clan_ranking(
+            tournament,
+            Map.get(params, "players_limit", 5),
+            Map.get(params, "clans_limit", 7)
+          )
+
+        %{"type" => "tasks_ranking"} ->
+          TournamentResult.get_tasks_ranking(tournament)
+
+        %{"type" => "task_duration_distribution", "task_id" => task_id} ->
+          TournamentResult.get_task_duration_distribution(
+            tournament,
+            task_id
+          )
+
+        %{"type" => "clans_bubble_distribution"} ->
+          TournamentResult.get_clans_bubble_distribution(
+            tournament,
+            Map.get(params, "max_radius", 7)
+          )
+
+        %{"type" => "top_user_by_task_ranking", "task_id" => task_id} ->
+          TournamentResult.get_top_user_by_task_ranking(
+            tournament,
+            task_id,
+            Map.get(params, "limit", 40)
+          )
+
+        _ ->
+          []
+      end
+
+    {:reply, {:ok, %{results: results}}, socket}
+  end
+
   def handle_in(_topic, _payload, socket) do
     {:noreply, socket}
   end
@@ -257,7 +330,9 @@ defmodule CodebattleWeb.TournamentChannel do
 
     # Filter out players from nearest_ranking that are already in top 3
     filtered_nearest_players =
-      Enum.reject(nearest_ranking.entries, fn player -> Map.has_key?(top_3_players_map, player.id) end)
+      Enum.reject(nearest_ranking.entries, fn player ->
+        Map.has_key?(top_3_players_map, player.id)
+      end)
 
     # Combine top 3 with filtered nearest players
     combined_entries = top_3_ranking.entries ++ filtered_nearest_players

@@ -2,6 +2,9 @@ import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
+import groupBy from 'lodash/groupBy';
+
+import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
 import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
@@ -212,6 +215,32 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
   }
 };
 
+export const getTask = (taskId, onSuccess) => () => {
+  channel.push('tournament:get_task', { taskId }).receive('ok', payload => {
+    const data = camelizeKeys(payload);
+
+    onSuccess(data);
+  });
+};
+
+export const getResults = (type, params, onSuccess) => () => {
+  channel
+    .push('tournament:get_results', { params: { type, ...params } })
+    .receive('ok', payload => {
+      const data = camelizeKeys(payload);
+      console.log(data);
+
+      if (type === PanelModeCodes.topUserByClansMode) {
+        const result = Object.values(
+          groupBy(data.results, item => item.clanRank),
+        );
+        onSuccess(result);
+      } else {
+        onSuccess(data.results);
+      }
+    });
+};
+
 export const requestMatchesByPlayerId = userId => dispatch => {
   channel
     .push('tournament:matches:request', { playerId: userId })
@@ -227,12 +256,10 @@ export const uploadPlayersMatches = playerId => dispatch => {
 
 export const joinTournament = teamId => {
   const params = teamId !== undefined ? { teamId } : {};
-  channel
-    .push('tournament:join', params);
+  channel.push('tournament:join', params);
 };
 
 export const leaveTournament = teamId => {
   const params = teamId !== undefined ? { teamId } : {};
-  channel
-    .push('tournament:leave', params);
+  channel.push('tournament:leave', params);
 };

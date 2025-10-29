@@ -2,9 +2,6 @@ import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
-import groupBy from 'lodash/groupBy';
-
-import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
 import { actions } from '../slices';
 
@@ -230,56 +227,45 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
 };
 
 export const createCustomRound = params => {
-  channel
-    .push('tournament:start_round', params);
+  channel.push('tournament:start_round', params);
 };
 
 export const startTournament = () => {
-  channel
-    .push('tournament:start', {});
+  channel.push('tournament:start', {});
 };
 
 export const cancelTournament = () => dispatch => {
-  channel
-    .push('tournament:cancel', {})
-    .receive('ok', response => {
-      dispatch(actions.updateTournamentData(response.tournament));
-    });
+  channel.push('tournament:cancel', {}).receive('ok', response => {
+    dispatch(actions.updateTournamentData(response.tournament));
+  });
 };
 
 export const restartTournament = () => {
-  channel
-    .push('tournament:restart', {});
+  channel.push('tournament:restart', {});
 };
 
 export const startRoundTournament = () => {
-  channel
-    .push('tournament:start_round', {});
+  channel.push('tournament:start_round', {});
 };
 
 export const finishRoundTournament = () => {
-  channel
-    .push('tournament:finish_round', {});
+  channel.push('tournament:finish_round', {});
 };
 
 export const toggleVisibleGameResult = gameId => {
-  channel
-    .push('tournament:toggle_match_visible', { gameId });
+  channel.push('tournament:toggle_match_visible', { gameId });
 };
 
 export const openUpTournament = () => {
-  channel
-    .push('tournament:open_up', {});
+  channel.push('tournament:open_up', {});
 };
 
 export const showTournamentResults = () => {
-  channel
-    .push('tournament:toggle_show_results', {});
+  channel.push('tournament:toggle_show_results', {});
 };
 
 export const sendMatchGameOver = matchId => {
-  channel
-    .push('tournament:match:game_over', { matchId });
+  channel.push('tournament:match:game_over', { matchId });
 };
 
 export const toggleBanUser = (userId, isBanned) => dispatch => {
@@ -298,31 +284,6 @@ export const sendNewReportState = (reportId, state) => dispatch => {
       dispatch(actions.updateReport(report));
     })
     .receive('error', error => console.error(error));
-};
-
-export const getResults = (type, params, onSuccess) => () => {
-  channel
-    .push('tournament:get_results', { params: { type, ...params } })
-    .receive('ok', payload => {
-      const data = camelizeKeys(payload);
-
-      if (type === PanelModeCodes.topUserByClansMode) {
-        const result = Object.values(
-          groupBy(data.results, item => item.clanRank),
-        );
-        onSuccess(result);
-      } else {
-        onSuccess(data.results);
-      }
-    });
-};
-
-export const getTask = (taskId, onSuccess) => () => {
-  channel.push('tournament:get_task', { taskId }).receive('ok', payload => {
-    const data = camelizeKeys(payload);
-
-    onSuccess(data);
-  });
 };
 
 export const pushActiveMatchToStream = gameId => dispatch => {
