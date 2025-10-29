@@ -20,53 +20,6 @@ const HallOfFamePage = () => {
       <div className="container">
         <h1 className="text-center text-white mb-5 fw-bold">Hall of Fame</h1>
 
-        {currentSeason && (
-          <div
-            className={cn(
-              'card mb-5 cb-bg-panel cb-border-color cb-rounded shadow-sm',
-              'border-0 text-light',
-            )}
-          >
-            <div className="card-body">
-              <h2 className="card-title mb-4 text-white">Current Season</h2>
-
-              <div className="row mb-2">
-                <div className="col-md-6">
-                  <p>
-                    <strong>Season:</strong>
-                    {' '}
-                    {currentSeason.name || 'N/A'}
-                  </p>
-                </div>
-                <div className="col-md-6">
-                  <p>
-                    <strong>Year:</strong>
-                    {' '}
-                    {currentSeason.year || 'N/A'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-md-6">
-                  <p>
-                    <strong>Starts:</strong>
-                    {' '}
-                    {currentSeason.starts_at || 'N/A'}
-                  </p>
-                </div>
-                <div className="col-md-6">
-                  <p>
-                    <strong>Ends:</strong>
-                    {' '}
-                    {currentSeason.ends_at || 'N/A'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div
           className={cn(
             'card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light',
@@ -133,6 +86,41 @@ const HallOfFamePage = () => {
             </div>
           </div>
         </div>
+
+        {currentSeason && (
+          <div
+            className={cn(
+              'card mt-4 cb-bg-panel cb-border-color cb-rounded shadow-sm',
+              'border-0 text-light',
+            )}
+          >
+            <div className="card-body py-3">
+              <h5 className="card-title mb-2 text-white">Current Season</h5>
+              <div className="d-flex flex-wrap gap-3 small">
+                <span>
+                  <strong>Season:</strong>
+                  {' '}
+                  {currentSeason.name || 'N/A'}
+                </span>
+                <span>
+                  <strong>Year:</strong>
+                  {' '}
+                  {currentSeason.year || 'N/A'}
+                </span>
+                <span>
+                  <strong>Starts:</strong>
+                  {' '}
+                  {currentSeason.starts_at || 'N/A'}
+                </span>
+                <span>
+                  <strong>Ends:</strong>
+                  {' '}
+                  {currentSeason.ends_at || 'N/A'}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -65,31 +65,14 @@ defmodule Codebattle.UsersPointsAndRankServer do
 
   # Recalculate user points when a non-open tournament finishes
   # Open tournaments are excluded from point recalculation as they don't affect user ratings
-  def handle_info(%{event: "tournament:finished", payload: %{grade: grade}}, state) when grade != "open" do
+  def handle_info(%{event: "tournament:finished", payload: %{grade: grade}}, state)
+      when grade != "open" do
     :timer.sleep(to_timeout(second: 1))
     do_work()
     {:noreply, state}
   end
 
   def handle_info(_, state), do: {:noreply, state}
-
-  defp do_work do
-    Codebattle.User.PointsAndRankUpdate.update()
-    update_ets()
-    Logger.debug("Points has been recalculated")
-  end
-
-  defp update_ets do
-    data = Codebattle.User.get_user_places_and_ids()
-    :ets.insert(@user_ranking, data)
-  end
-
-  defp ensure_ets_populated do
-    case :ets.info(@user_ranking, :size) do
-      0 -> update_ets()
-      _ -> :ok
-    end
-  end
 
   def get_nearby_user_ids(rank, limit \\ 2) do
     ensure_ets_populated()
@@ -113,5 +96,23 @@ defmodule Codebattle.UsersPointsAndRankServer do
     _e ->
       Logger.error("Error getting top ranking user_ids")
       []
+  end
+
+  defp do_work do
+    Codebattle.User.PointsAndRankUpdate.update()
+    update_ets()
+    Logger.debug("Points has been recalculated")
+  end
+
+  defp update_ets do
+    data = Codebattle.User.get_user_places_and_ids()
+    :ets.insert(@user_ranking, data)
+  end
+
+  defp ensure_ets_populated do
+    case :ets.info(@user_ranking, :size) do
+      0 -> update_ets()
+      _ -> :ok
+    end
   end
 end

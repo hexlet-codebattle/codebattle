@@ -38,14 +38,17 @@ const OpponentInfo = ({ id }) => {
         </span>
       </div>
       <div className="d-flex flex-column text-center py-1 w-100">
-        <span
-          className={cn('stat-value d-block cb-text-danger', {
-            'd-inline cb-text-skeleton w-25 mx-auto': !user,
-          })}
-        >
-          {user ? user.rank : ''}
-        </span>
-        <span className="stat-label text-uppercase">Place</span>
+        <a href="/hall_of_fame" className="stat-item py-1 w-100">
+          <span
+            className={cn('stat-value d-block cb-text-danger', {
+              'd-inline cb-text-skeleton w-25 mx-auto': !user,
+            })}
+          >
+            #
+            {user ? user.rank : ''}
+          </span>
+          <span className="stat-label text-uppercase">Place</span>
+        </a>
       </div>
       <div className="d-flex flex-column text-center py-1 w-100">
         <span
@@ -258,7 +261,7 @@ const SeasonProfilePanel = ({
               </span>
               <span className="stat-label text-uppercase">(Elo Rating)</span>
             </div>
-            <div className="stat-item py-1 w-100">
+            <a href="/hall_of_fame" className="stat-item py-1 w-100">
               {user.points ? (
                 <span className="stat-value d-block cb-text-success">
                   #
@@ -268,7 +271,7 @@ const SeasonProfilePanel = ({
                 <span className="stat-value d-block cb-text-danger">#0</span>
               )}
               <span className="stat-label text-uppercase">Place</span>
-            </div>
+            </a>
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">
                 {user.points || 0}

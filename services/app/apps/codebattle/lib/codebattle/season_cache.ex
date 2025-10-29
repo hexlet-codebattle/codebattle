@@ -17,7 +17,6 @@ defmodule Codebattle.SeasonCache do
         season -> {:commit, season, ttl: @ttl}
       end
     end)
-    |> dbg()
     |> case do
       {:commit, season, _params} -> season
       {:ok, season} -> season
