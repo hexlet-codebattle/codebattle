@@ -1,0 +1,34 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG ELIXIR_TAG=1.19.1-alpine
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM elixir:${ELIXIR_TAG}
+
+ENV ERL_MAX_PORTS=1024 \
+  MIX_ENV=test
+
+RUN apk add --update --no-cache make
+
+# keep tooling as root, then drop later
+RUN mix local.hex --force && mix local.rebar --force
+
+WORKDIR /usr/src/app
+
+# sources
+COPY check check
+COPY checker.exs checker.exs
+
+# app user
+RUN addgroup -S app -g 10001 \
+  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app \
+  && chown -R app:app /usr/src/app
+
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

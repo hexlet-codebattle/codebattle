@@ -1,0 +1,44 @@
+# Elixir specific
+**/.elixir_ls
+**/_build
+**/cover
+**/deps
+**/priv/plts
+
+# Node/Frontend
+**/node_modules
+**/priv/static
+
+# Testing
+**/test
+
+# Build & Development
+**/tmp
+**/.env
+**/.env.*
+!**/.env.example
+
+# Git
+.git
+.gitignore
+
+# IDE & Editor
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+**/*~
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Container
+**/Containerfile
+**/.containerignore
+
+# Documentation & CI
+**/README.md
+**/LICENSE
+**/.github
+**/.gitlab-ci.yml

@@ -1,0 +1,31 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG NODE_TAG=24.11.0-alpine3.22
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM node:${NODE_TAG}
+
+RUN apk add --update --no-cache make
+
+# app user
+RUN addgroup -S app -g 10001 \
+  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+
+WORKDIR /usr/src/app
+
+COPY package.json .
+COPY package-lock.json .
+RUN npm install \
+  && chown -R app:app /usr/src/app
+
+ENV NODE_PATH=/usr/local/lib/node_modules/
+
+COPY checker.js .
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

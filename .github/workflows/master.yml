@@ -14,7 +14,6 @@ jobs:
 
     env:
       MIX_ENV: test
-      DOCKER_BUILDKIT: 1 # Enable buildkit for faster docker builds
 
     services:
       db:
@@ -113,29 +112,20 @@ jobs:
           file: ./services/app/assp/codebattle/cover/excoveralls.json
           fail_ci_if_error: false
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Install Podman
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install podman
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Login to Github Container Registry
+        run: podman login ghcr.io -u vtm9 -p ${{ secrets.GH_REGISTRY_TOKEN }}
 
       - name: Build and push codebattle image
         run: |
-          make GIT_HASH=${{ github.sha }} docker-build-codebattle
-          make docker-push-codebattle
+          make GIT_HASH=${{ github.sha }} podman-build-codebattle
+          make podman-push-codebattle
 
       - name: Build and push runner image
         run: |
-          make docker-build-runner
-          make docker-push-runner
-
-      # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
-      # - name: Pull dockers
-      #   run: mix dockers.pull
-      #   working-directory: ./services/app
-
-      # - name: Run code checkers tests
-      #   run: make test-code-checkers
+          make podman-build-runner
+          make podman-push-runner

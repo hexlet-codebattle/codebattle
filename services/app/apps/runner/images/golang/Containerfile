@@ -1,0 +1,38 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG GO_TAG=1.25.3-alpine3.22
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM golang:${GO_TAG}
+
+RUN apk add --no-cache make git
+
+# create app user with a real home
+RUN addgroup -S app -g 10001 \
+  && adduser -S -D -H -h /home/app -s /sbin/nologin -G app -u 10001 app \
+  && mkdir -p /home/app && chown -R app:app /home/app
+
+# make Go caches/modules writable by the app user
+ENV HOME=/home/app \
+  GOCACHE=/home/app/.cache/go-build \
+  GOPATH=/home/app/go \
+  GOMODCACHE=/home/app/go/pkg/mod
+
+RUN mkdir -p "$GOCACHE" "$GOMODCACHE" && chown -R app:app /home/app
+
+WORKDIR /usr/src/app
+
+# app sources
+COPY check check
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+# runner binary (ensure path exists and perms are OK)
+RUN mkdir -p /runner
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+RUN chown -R app:app /runner && chmod +x /runner/codebattle_runner
+
+USER app
+
+EXPOSE 8000
+ENTRYPOINT ["/runner/codebattle_runner"]

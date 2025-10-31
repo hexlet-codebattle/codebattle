@@ -12,7 +12,7 @@ defmodule Runner.LanguageMeta do
     field(:output_version, pos_integer(), default: 2)
     field(:container_run_timeout, String.t(), defatul: "10s")
     field(:default_values, map())
-    field(:docker_image, String.t())
+    field(:image, String.t())
     field(:expected_template, String.t())
     field(:generate_checker?, boolean(), default: true)
     field(:generate_types_file?, boolean(), default: false)

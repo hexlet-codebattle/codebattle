@@ -74,7 +74,7 @@ config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
 # config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", "chat_bot")
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteDockerRun
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteContainerRun
 config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", "en")
 
 config :codebattle,
@@ -136,7 +136,7 @@ config :phoenix_meta_tags,
 
 config :porcelain, goon_warn_if_missing: false
 
-config :runner, Runner.DockerImagesPuller, timeout: to_timeout(hour: 7)
+config :runner, Runner.ImagesPuller, timeout: to_timeout(hour: 7)
 
 # Configures the runner endpoint
 config :runner, RunnerWeb.Endpoint,
@@ -147,7 +147,6 @@ config :runner, RunnerWeb.Endpoint,
   pubsub_server: Runner.PubSub
 
 config :runner, :runner_url, "http://localhost:4001"
-config :runner, container_runtime: "docker"
 config :runner, fake_docker_run: false
 config :runner, load_dot_env_file: true
 config :runner, max_parallel_containers_run: 16

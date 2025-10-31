@@ -1,0 +1,26 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG PY_TAG=3.14.0-alpine3.22
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM python:${PY_TAG}
+
+RUN apk add --update --no-cache make
+
+# Create system group+user first (Alpine)
+RUN addgroup -S app -g 10001 \
+  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+
+WORKDIR /usr/src/app
+
+# Copy files, then fix ownership
+COPY check ./check
+COPY checker.py .
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

@@ -2,7 +2,7 @@ defmodule Codebattle.CodeCheck.Result.V2 do
   @moduledoc """
   statuses:
   initial ->  no check runs
-  started -> docker execution
+  started -> container execution
   ok -> all tests were successful
   failure -> some tests fails
   error -> compile error, or out of memory

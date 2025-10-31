@@ -2,7 +2,7 @@ defmodule Codebattle.AssertsService.Result do
   @moduledoc """
   statuses:
   initial ->  no generation runs
-  started -> docker execution
+  started -> container execution
   ok -> all asserts were successful checked/generated
   failure -> some asserts checks/generate fails
   error -> compile error, or out of memory

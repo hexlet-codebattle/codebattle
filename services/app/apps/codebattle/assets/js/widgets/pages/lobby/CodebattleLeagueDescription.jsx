@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Bootstrap 4 compatible, dark theme friendly (no bg-white / color backgrounds).
 // Uses your custom dark styles like: cb-bg-panel, cb-bg-highlight-panel, cb-rounded, cb-btn-secondary, etc.
@@ -9,8 +9,8 @@ const CodebattleLeagueDescription = () => (
       <h2 className="text-white m-0">Codebattle League</h2>
       <p className="text-white mt-2 mb-3">
         Challenge the best! Participate in the Competition tournaments, defeat
-        your rivals to earn points, and claim the first place in the
-        programmer ranking.
+        your rivals to earn points, and claim the first place in the programmer
+        ranking.
       </p>
 
       {/* Toggle for Rules/Details */}
@@ -63,14 +63,8 @@ const CodebattleLeagueDescription = () => (
                   </ul>
                   <ul className="mb-3 text-white">
                     <li>
-                      On the season end date (the 21st), we run a
-                      {' '}
-                      <strong>Grand Slam</strong>
-                      {' '}
-                      at
-                      {' '}
-                      <strong>16:00 UTC</strong>
-                      .
+                      On the season end date (the 21st), we run a{" "}
+                      <strong>Grand Slam</strong> at <strong>16:00 UTC</strong>.
                     </li>
                     <li>
                       Season Points reset each season. Elo never resets
@@ -81,8 +75,8 @@ const CodebattleLeagueDescription = () => (
                     <strong>Grades</strong>
                   </p>
                   <p className="mb-0 text-white">
-                    open, rookie, challenger, pro, elite, masters, grand_slam
-                    — determine prestige, task pools, points, schedules, and
+                    open, rookie, challenger, pro, elite, masters, grand_slam —
+                    determine prestige, task pools, points, schedules, and
                     limits.
                   </p>
                 </div>
@@ -117,14 +111,12 @@ const CodebattleLeagueDescription = () => (
                   </p>
                   <ul className="mb-3">
                     <li>
-                      <strong>Rookie</strong>
-                      : every 4 hours — 03:00, 07:00,
+                      <strong>Rookie</strong>: every 4 hours — 03:00, 07:00,
                       11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot).
                     </li>
                     <li>
-                      <strong>Challenger</strong>
-                      : daily 16:00 UTC; preempted
-                      by higher grades that day/week.
+                      <strong>Challenger</strong>: daily 16:00 UTC; preempted by
+                      higher grades that day/week.
                     </li>
                   </ul>
                   <p className="mb-2">
@@ -134,8 +126,8 @@ const CodebattleLeagueDescription = () => (
                     grand_slam &gt; masters &gt; elite &gt; pro.
                   </p>
                   <p className="mb-0">
-                    In any week, exactly one of these runs at 16:00. Grand
-                    Slam week → only GS at 16:00. Masters week → no pro/elite.
+                    In any week, exactly one of these runs at 16:00. Grand Slam
+                    week → only GS at 16:00. Masters week → no pro/elite.
                     Otherwise pro (Tue) and elite (Wed) alternate as backbone.
                   </p>
                 </div>
@@ -222,28 +214,22 @@ const CodebattleLeagueDescription = () => (
                 <div className="card-body text-white">
                   <p>
                     For each finished tournament (grade ≠ open), award Season
-                    Points by final place using the tables below. All
-                    remaining participants (outside prize slots) receive
-                    {' '}
-                    <strong>2 points</strong>
-                    {' '}
-                    each. Prize points do not stack
+                    Points by final place using the tables below. All remaining
+                    participants (outside prize slots) receive{" "}
+                    <strong>2 points</strong> each. Prize points do not stack
                     with participation points.
                   </p>
                   <div className="row">
                     <div className="col-md-6">
                       <ul className="mb-3">
                         <li>
-                          <strong>rookie</strong>
-                          : [8, 4, 2] — top‑3
+                          <strong>rookie</strong>: [8, 4, 2] — top‑3
                         </li>
                         <li>
-                          <strong>challenger</strong>
-                          : [16, 8, 4, 2] — top‑6
+                          <strong>challenger</strong>: [16, 8, 4, 2] — top‑6
                         </li>
                         <li>
-                          <strong>pro</strong>
-                          : [128, 64, 32, 16, 8, 4, 2] —
+                          <strong>pro</strong>: [128, 64, 32, 16, 8, 4, 2] —
                           top‑7
                         </li>
                       </ul>
@@ -251,18 +237,15 @@ const CodebattleLeagueDescription = () => (
                     <div className="col-md-6">
                       <ul className="mb-0">
                         <li>
-                          <strong>elite</strong>
-                          : [256, 128, 64, 32, 16, 8, 4,
+                          <strong>elite</strong>: [256, 128, 64, 32, 16, 8, 4,
                           2] — top‑8
                         </li>
                         <li>
-                          <strong>masters</strong>
-                          : [1024, 512, 256, 128, 64,
+                          <strong>masters</strong>: [1024, 512, 256, 128, 64,
                           32, 16, 8, 4, 2] — top‑10
                         </li>
                         <li>
-                          <strong>grand_slam</strong>
-                          : [2048, 1024, 512, 256,
+                          <strong>grand_slam</strong>: [2048, 1024, 512, 256,
                           128, 64, 32, 16, 8, 4, 2] — top‑11
                         </li>
                       </ul>
@@ -327,15 +310,8 @@ const CodebattleLeagueDescription = () => (
                 data-parent="#leagueAccordion"
               >
                 <div className="card-body text-white">
-                  Maintain a HoF for
-                  {' '}
-                  <strong>Season Champions</strong>
-                  {' '}
-                  and
-                  {' '}
-                  <strong>Grand Slam Champions</strong>
-                  {' '}
-                  (participants page
+                  Maintain a HoF for <strong>Season Champions</strong> and{" "}
+                  <strong>Grand Slam Champions</strong> (participants page
                   optional later).
                 </div>
               </div>
@@ -368,9 +344,9 @@ const CodebattleLeagueDescription = () => (
                     <strong>Competitive Programming Game</strong>
                   </p>
                   <p className="mb-3">
-                    Codebattle (codebattle.hexlet.io) is a real‑time coding
-                    duel platform. Two players solve the same task in
-                    parallel; whoever solves it first wins the match.
+                    Codebattle (codebattle.hexlet.io) is a real‑time coding duel
+                    platform. Two players solve the same task in parallel;
+                    whoever solves it first wins the match.
                   </p>
                   <p className="mb-2">
                     <strong>Swiss Tournaments</strong>
@@ -387,7 +363,7 @@ const CodebattleLeagueDescription = () => (
                   <p className="mb-0">
                     16 supported — clojure, cpp, csharp, dart, elixir, golang,
                     haskell, java, js, kotlin, php, python, ruby, rust, swift,
-                    ts.
+                    zig, ts.
                   </p>
                 </div>
               </div>

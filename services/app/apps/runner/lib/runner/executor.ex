@@ -2,27 +2,39 @@ defmodule Runner.Executor do
   @moduledoc false
 
   require Logger
-
   alias Runner.CheckerGenerator
-  alias Runner.Languages
 
-  @tmp_basedir "/tmp/codebattle-runner"
-  @container_cmd_template "run --rm --init --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+  defp tmp_basedir do
+    System.get_env("CODEBATTLE_RUNNER_TMP") ||
+      case System.get_env("XDG_CACHE_HOME") do
+        nil -> Path.join([System.user_home!(), ".cache", "codebattle-runner"])
+        xdg -> Path.join([xdg, "codebattle-runner"])
+      end
+  end
 
-  @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
+  # optional flags via env
+  defp platform_arg do
+    case System.get_env("RUNNER_PLATFORM", "") do
+      "" -> ""
+      p -> "--platform " <> p
+    end
+  end
+
+  defp volume_label_suffix, do: System.get_env("RUNNER_VOLUME_LABEL", "")
+
+  @container_cmd_template "podman run --rm --init --entrypoint= --memory 600m --cpus=2 --net none -l codebattle_game ~s ~s timeout -s KILL ~s make --silent test"
+  @fake_container_run Application.compile_env(:runner, :fake_container_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
-  def call(%Runner.Task{type: "sql"}, lang_meta, solution_text, run_id) do
+  def call(%Runner.Task{type: "sql"}, lang_meta, solution_text, _run_id) do
     seed = get_seed()
-
-    wait_permission_to_launch(run_id, 0, Languages.get_timeout_ms(lang_meta) + 500)
 
     tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, "", "")
 
     {out, err, status} =
       lang_meta
-      |> get_docker_command(tmp_dir_path)
+      |> get_container_command(tmp_dir_path)
       |> run_command(lang_meta)
 
     Task.start(File, :rm_rf, [tmp_dir_path])
@@ -35,10 +47,8 @@ defmodule Runner.Executor do
     }
   end
 
-  def call(task, lang_meta, solution_text, run_id) do
+  def call(task, lang_meta, solution_text, _run_id) do
     seed = get_seed()
-
-    wait_permission_to_launch(run_id, 0, Languages.get_timeout_ms(lang_meta) + 500)
 
     checker_text =
       if lang_meta.generate_checker? do
@@ -58,7 +68,7 @@ defmodule Runner.Executor do
 
     {out, err, status} =
       lang_meta
-      |> get_docker_command(tmp_dir_path)
+      |> get_container_command(tmp_dir_path)
       |> run_command(lang_meta)
 
     Task.start(File, :rm_rf, [tmp_dir_path])
@@ -71,30 +81,10 @@ defmodule Runner.Executor do
     }
   end
 
-  defp wait_permission_to_launch(nil, _waiting_time_ms, _max_timeout_ms) do
-    :ok
-  end
-
-  defp wait_permission_to_launch(run_id, waiting_time_ms, max_timeout_ms)
-       when waiting_time_ms >= max_timeout_ms do
-    Runner.StateContainersRunLimiter.unregistry_container(run_id)
-    throw(:error)
-  end
-
-  defp wait_permission_to_launch(run_id, waiting_time_ms, max_timeout_ms) do
-    case Runner.StateContainersRunLimiter.check_run_status(run_id) do
-      {:ok, {:wait, wait_timeout_ms}} ->
-        :timer.sleep(wait_timeout_ms)
-        wait_permission_to_launch(run_id, wait_timeout_ms + waiting_time_ms, max_timeout_ms)
-
-      _ ->
-        :ok
-    end
-  end
-
   defp prepare_tmp_dir!(lang_meta, solution_text, checker_text, asserts_text) do
-    File.mkdir_p!(@tmp_basedir)
-    tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: @tmp_basedir})
+    base = tmp_basedir()
+    File.mkdir_p!(base)
+    tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: base})
 
     Logger.debug("Solution text: #{inspect(solution_text)}")
     Logger.debug("Checker text: #{inspect(checker_text)}")
@@ -109,35 +99,41 @@ defmodule Runner.Executor do
     end
 
     File.write!(Path.join(tmp_dir_path, "asserts.json"), asserts_text)
-
     tmp_dir_path
   end
 
-  defp get_docker_command(lang_meta, tmp_dir_path) do
-    volume = "-v #{tmp_dir_path}:/usr/src/app/#{lang_meta.check_dir}"
+  defp get_container_command(lang_meta, tmp_dir_path) do
+    plat = platform_arg()
+    vol_suffix = volume_label_suffix()
+    mount = "-v #{tmp_dir_path}:/usr/src/app/#{lang_meta.check_dir}#{vol_suffix}"
 
-    Logger.info("Docker volume: #{inspect(volume)}")
+    first_slot =
+      [plat, mount]
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.join(" ")
 
-    cmd_template =
-      Application.get_env(:runner, :container_runtime) <> " " <> @container_cmd_template
+    Logger.info("Container volume: #{inspect(mount)}")
+    if plat != "", do: Logger.info("Container platform: #{plat}")
 
-    cmd_template
-    |> :io_lib.format([volume, lang_meta.docker_image, lang_meta.container_run_timeout])
-    |> to_string
+    @container_cmd_template
+    |> :io_lib.format([first_slot, lang_meta.image, lang_meta.container_run_timeout])
+    |> to_string()
     |> String.split()
   end
 
   defp run_command([cmd | cmd_opts], lang_meta) do
-    if @fake_docker_run do
+    if @fake_container_run do
       {"oi", "blz", 0}
     else
       hostname = System.get_env("HOSTNAME", "unknown")
-      Logger.info("Start docker execution: #{inspect(cmd_opts)}")
+      Logger.info("Start container execution: #{cmd} #{inspect(cmd_opts)}")
 
       {execution_time, {output, status}} =
         :timer.tc(fn ->
           System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
         end)
+
+      Logger.debug("Output: #{inspect(output)}")
 
       Logger.error(
         "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
@@ -148,10 +144,6 @@ defmodule Runner.Executor do
   end
 
   defp get_seed do
-    if @fake_docker_run do
-      "blz"
-    else
-      to_string(:rand.uniform(10_000_000))
-    end
+    if @fake_container_run, do: "blz", else: to_string(:rand.uniform(10_000_000))
   end
 end

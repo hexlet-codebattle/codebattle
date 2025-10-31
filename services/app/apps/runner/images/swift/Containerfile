@@ -1,0 +1,28 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG SWIFT_TAG=6.2.0-jammy
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM swift:${SWIFT_TAG}
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends make \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create system group+user with a real home
+RUN groupadd -g 10001 -r app \
+  && useradd -m -r -g app -u 10001 -d /home/app -s /usr/sbin/nologin app \
+  && chown -R app:app /home/app
+ENV HOME=/home/app
+
+WORKDIR /usr/src/app
+
+COPY check ./check
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

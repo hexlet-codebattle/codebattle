@@ -1,0 +1,51 @@
+FROM elixir:1.19.1-otp-28-alpine AS compile-image
+ARG GIT_HASH
+
+ENV APP_VERSION=$GIT_HASH
+ENV MIX_ENV=prod
+
+WORKDIR /opt/app
+
+RUN apk update && apk add --no-cache build-base git ca-certificates make curl \
+  && mix local.hex --force \
+  && mix local.rebar --force
+
+COPY mix.exs .
+COPY mix.lock .
+COPY config ./config
+COPY apps/runner/mix.exs apps/runner/mix.exs
+COPY apps/phoenix_gon/mix.exs apps/phoenix_gon/mix.exs
+COPY apps/codebattle/mix.exs apps/codebattle/mix.exs
+
+RUN mix do deps.get --only prod, deps.compile
+
+COPY ./apps/runner/ ./apps/runner/
+
+RUN mix release runner \
+  && mv _build/prod/rel/runner /opt/release
+
+FROM elixir:1.19.1-otp-28-alpine AS runtime-image
+
+ENV GOON_VERSION v1.1.1
+
+RUN apk update && apk add --no-cache \
+    podman \
+    iptables \
+    fuse-overlayfs \
+    shadow \
+    slirp4netns \
+    ca-certificates \
+    git \
+    make \
+    curl \
+    vim
+
+RUN curl -fsSL "https://github.com/alco/goon/releases/download/${GOON_VERSION}/goon_linux_amd64.tar.gz" \
+  | tar -xzC /usr/local/bin
+
+ENV PORT=4001
+EXPOSE ${PORT}
+WORKDIR /opt/app
+COPY --from=compile-image /opt/release .
+COPY Makefile Makefile
+CMD exec /opt/app/bin/runner start

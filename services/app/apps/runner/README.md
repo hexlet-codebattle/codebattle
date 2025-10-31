@@ -1,3 +1,3 @@
 # Runner
 
-Tasks runner for different languages by docker-run with http api
+Tasks runner for different languages by podman run with http api

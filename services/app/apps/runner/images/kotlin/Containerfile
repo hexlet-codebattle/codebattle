@@ -1,0 +1,46 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG CORRETTO_TAG=25-alpine3.22-full
+ARG KOTLIN_VERSION=2.2.21
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+
+FROM --platform=$TARGETPLATFORM amazoncorretto:${CORRETTO_TAG}
+
+# bring build args into this stage's scope
+ARG KOTLIN_VERSION
+ARG TARGETPLATFORM
+
+ENV KOTLIN_VERSION=${KOTLIN_VERSION} \
+  KOTLIN_HOME=/usr/share/kotlin
+
+RUN apk add --update --no-cache bash make curl \
+  && apk add --no-cache --virtual=build-deps wget ca-certificates unzip \
+  && cd /tmp \
+  && wget "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip" \
+  && unzip "kotlin-compiler-${KOTLIN_VERSION}.zip" \
+  && mkdir -p "${KOTLIN_HOME}" \
+  && rm "/tmp/kotlinc/bin/"*.bat \
+  && mv "/tmp/kotlinc/bin" "/tmp/kotlinc/lib" "${KOTLIN_HOME}" \
+  && ln -s "${KOTLIN_HOME}/bin/"* "/usr/bin/" \
+  && apk del build-deps \
+  && rm -rf /tmp/* /var/cache/apk/*
+
+# app user (Alpine)
+RUN addgroup -S app -g 10001 \
+  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+
+WORKDIR /usr/src/app
+
+RUN curl -L -o gson.jar https://repo1.maven.org/maven2/com/google/code/gson/gson/2.13.1/gson-2.13.1.jar \
+  && chown -R app:app /usr/src/app
+
+COPY check check
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

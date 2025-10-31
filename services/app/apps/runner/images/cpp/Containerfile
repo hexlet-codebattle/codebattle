@@ -1,0 +1,58 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG ALPINE_TAG=3.22
+ARG TARGETPLATFORM
+
+########################################
+# 1) builder – create the mega-PCH
+########################################
+FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG} AS pch-builder
+RUN apk add --no-cache clang mold lld libc++ make wget ca-certificates
+
+# single-header libs
+RUN wget -qO /usr/include/json.hpp \
+  https://github.com/nlohmann/json/releases/download/v3.12.0/json.hpp \
+  && wget -qO /usr/include/fifo_map.hpp \
+  https://raw.githubusercontent.com/nlohmann/fifo_map/master/src/fifo_map.hpp
+
+# compose heavy header and precompile
+RUN mkdir /pch \
+  && printf '#include <bits/stdc++.h>\n#include "json.hpp"\n#include "fifo_map.hpp"\n' > /pch/all.hpp \
+  && clang++ -std=c++23 -O0 -x c++-header /pch/all.hpp -o /pch/all.pch
+
+########################################
+# 2) runner stage
+########################################
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+
+########################################
+# 3) runtime – super-light layer
+########################################
+FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG}
+
+RUN apk add --no-cache clang mold lld libc++ make
+
+# idempotent user/group creation (no failure if already present)
+RUN grep -q '^app:' /etc/group || addgroup -S -g 10001 app \
+  && id -u app >/dev/null 2>&1 || adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+
+# working dir for mounted code
+WORKDIR /usr/src/app
+
+# copy headers + PCH
+COPY --from=pch-builder /usr/include/json.hpp     /usr/include/json.hpp
+COPY --from=pch-builder /usr/include/fifo_map.hpp /usr/include/fifo_map.hpp
+COPY --from=pch-builder /pch/all.pch              /pch/all.pch
+COPY --from=pch-builder /pch/all.hpp              /pch/all.hpp
+
+# app files
+COPY check ./check
+COPY Makefile ./
+
+# don’t fail if user/group already exists; chown only if it does
+RUN chown -R app:app /usr/src/app || true
+
+USER app
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

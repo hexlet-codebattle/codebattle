@@ -3,7 +3,7 @@ import Config
 checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "local" -> Codebattle.CodeCheck.Executor.Local
-    "remote" -> Codebattle.CodeCheck.Executor.RemoteDockerRun
+    "remote" -> Codebattle.CodeCheck.Executor.RemoteContainerRun
     "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
@@ -89,4 +89,4 @@ config :logger, :console, level: :error
 
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 
-config :runner, fake_docker_run: true
+config :runner, fake_container_run: true

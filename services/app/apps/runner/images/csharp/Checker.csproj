@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>app</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 4.84.0 is known-good on arm64/amd64; you can omit Version to take latest -->
+    <PackageReference Include="CompareNETObjects" Version="4.84.0" />
+  </ItemGroup>
+</Project>

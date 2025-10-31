@@ -1,0 +1,62 @@
+# ---------- build args ----------
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG DOTNET_TAG=9.0.306-bookworm-slim
+ARG TARGETPLATFORM
+
+# ---------- bring in the external runner ----------
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+
+# ---------- .NET SDK base (Debian/glibc) ----------
+FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG}
+
+# Dotnet/NuGet behavior (also used at runtime)
+ENV DOTNET_NOLOGO=1 \
+  DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+  DOTNET_EnableWriteXorExecute=0 \
+  HOME=/home/runneruser \
+  DOTNET_CLI_HOME=/home/runneruser \
+  NUGET_PACKAGES=/home/runneruser/.nuget/packages
+
+WORKDIR /usr/src/app
+
+# System deps
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends make curl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create user + writable HOME and workdir
+RUN groupadd -r runneruser \
+  && useradd -r -g runneruser -d /home/runneruser -s /usr/sbin/nologin runneruser \
+  && mkdir -p /home/runneruser/.nuget/packages /usr/src/app \
+  && chown -R runneruser:runneruser /home/runneruser /usr/src/app
+
+# Switch to non-root BEFORE restore so any generated dirs are owned correctly
+USER runneruser
+
+# Create Directory.Build.props inside the image so obj/bin go to /tmp (always writable)
+RUN cat > Directory.Build.props <<'EOF'
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>/tmp/obj/</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>/tmp/obj/</IntermediateOutputPath>
+    <BaseOutputPath>/tmp/bin/</BaseOutputPath>
+  </PropertyGroup>
+</Project>
+EOF
+
+# Restore first (better layer cache)
+COPY --chown=runneruser:runneruser Checker.csproj ./
+RUN dotnet --info \
+  && dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org || true \
+  && dotnet nuget locals all --clear \
+  && dotnet restore --disable-parallel --source https://api.nuget.org/v3/index.json
+
+# App sources
+COPY --chown=runneruser:runneruser Program.cs .
+COPY --chown=runneruser:runneruser check ./check
+COPY --chown=runneruser:runneruser Makefile .
+
+EXPOSE 8000
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+ENTRYPOINT ["/runner/codebattle_runner"]

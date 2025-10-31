@@ -205,6 +205,15 @@ defmodule Runner.SolutionGeneratorTest do
   }
   // use stdout to debug
   """
+  @zig_expected """
+  const std = @import("std");
+
+  pub fn solution(a: i64, text: []const u8, b: f64, c: bool, nested_hash_of_string: std.StringHashMap([]const u8), nested_array_of_string: []const []const u8, nested_array_of_array_of_strings: []const []const []const u8) []const []const u8 {
+      const ans: []const []const u8 = &.{"value"};
+      return ans;
+  }
+  // use stdout to debug
+  """
 
   setup do
     task = %Runner.Task{
@@ -272,6 +281,7 @@ defmodule Runner.SolutionGeneratorTest do
     assert_solution(@rust_expected, "rust", task)
     assert_solution(@swift_expected, "swift", task)
     assert_solution(@ts_expected, "ts", task)
+    assert_solution(@zig_expected, "zig", task)
   end
 
   def assert_solution(exptected_soluiton, lang, task) do

@@ -6,8 +6,8 @@ defmodule Runner.AssertsExecutor do
   alias Runner.AssertsGenerator
 
   @tmp_basedir "/tmp/codebattle-runner"
-  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
-  @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
+  @container_cmd_template "podman run --rm --init --entrypoint= --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
+  @fake_container_run Application.compile_env(:runner, :fake_container_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
@@ -21,7 +21,7 @@ defmodule Runner.AssertsExecutor do
 
     {output, exit_code} =
       lang_meta
-      |> get_docker_command(tmp_dir_path)
+      |> get_container_command(tmp_dir_path)
       |> run_command()
 
     Task.start(File, :rm_rf, [tmp_dir_path])
@@ -64,28 +64,28 @@ defmodule Runner.AssertsExecutor do
     tmp_dir_path
   end
 
-  defp get_docker_command(lang_meta, tmp_dir_path) do
+  defp get_container_command(lang_meta, tmp_dir_path) do
     volume = "-v #{tmp_dir_path}:/usr/src/app/#{lang_meta.generator_dir}"
 
-    Logger.info("Docker volume: #{inspect(volume)}")
+    Logger.info("Container volume: #{inspect(volume)}")
 
-    @docker_cmd_template
-    |> :io_lib.format([volume, lang_meta.docker_image])
+    @container_cmd_template
+    |> :io_lib.format([volume, lang_meta.image])
     |> to_string
     |> String.split()
   end
 
   defp run_command([cmd | cmd_opts]) do
-    if @fake_docker_run do
+    if @fake_container_run do
       {"oi", 0}
     else
-      Logger.info("Start docker execution: #{inspect(cmd_opts)}")
+      Logger.info("Start container execution: #{inspect(cmd_opts)}")
       System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
     end
   end
 
   defp get_seed do
-    if @fake_docker_run do
+    if @fake_container_run do
       "blz"
     else
       to_string(:rand.uniform(10_000_000))

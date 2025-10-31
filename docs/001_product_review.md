@@ -14,4 +14,4 @@ Tournament grades: open, rookie, challenger, pro, elite, masters, grand_slam —
 
 Seasons: Four per year aligned to equinoxes/solstices. Season points reset each season; lifetime Elo never resets.
 
-Languages: 16 supported — clojure, cpp, csharp, dart, elixir, golang, haskell, java, js, kotlin, php, python, ruby, rust, swift, ts.
+Languages: 16 supported — clojure, cpp, csharp, dart, elixir, golang, haskell, java, js, kotlin, php, python, ruby, rust, swift, ts, zig.

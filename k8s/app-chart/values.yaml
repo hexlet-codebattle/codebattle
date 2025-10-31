@@ -1,6 +1,6 @@
 ---
 version: latest
-registry: docker.io
+registry: ghcr.io
 
 ingress:
   className: "nginx"

@@ -30,9 +30,6 @@ spec:
         - name: users-code-path
           hostPath:
             path: /tmp/codebattle-runner
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
         - name: containerd-sock
           hostPath:
             path: /run/containerd/containerd.sock
@@ -55,8 +52,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp/codebattle-runner
               name: users-code-path
-            - mountPath: /var/run/docker.sock
-              name: docker-sock
             - mountPath: /run/containerd/containerd.sock
               name: containerd-sock
           envFrom:
@@ -67,7 +62,7 @@ spec:
               value: {{ .Values.version }}
             - name: CODEBATTLE_RUNNER_PORT
               value: "4001"
-            - name: RUNNER_PULL_DOCKER_IMAGES
+            - name: RUNNER_PULL_IMAGES
               value: "true"
             - name: RUNNER_CONTAINER_KILLER
               value: "true"

@@ -2,7 +2,7 @@ defmodule Codebattle.CodeCheck.CssResult do
   @moduledoc """
   statuses:
   initial ->  no check runs
-  started -> docker execution
+  started -> container execution
   ok -> all tests were successful
   failure -> final snapshots doesn't matches
   error -> compile error, or out of memory

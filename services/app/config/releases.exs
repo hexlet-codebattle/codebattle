@@ -15,7 +15,7 @@ tournament_rematch_timeout_ms =
 checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
-    _ -> Codebattle.CodeCheck.Executor.RemoteDockerRun
+    _ -> Codebattle.CodeCheck.Executor.RemoteContainerRun
   end
 
 runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
@@ -157,13 +157,12 @@ config :runner, RunnerWeb.Endpoint,
 
 config :runner, :runner_url, "http://runner.default.svc"
 config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") == "true"
-config :runner, container_runtime: System.get_env("RUNNER_CONTAINER_RUNTIME", "docker")
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
 config :runner,
   max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
-config :runner, pull_docker_images: System.get_env("RUNNER_PULL_DOCKER_IMAGES", "") == "true"
+config :runner, pull_images: System.get_env("RUNNER_PULL_IMAGES", "") == "true"
 
 config :runner,
   white_list_lang_slugs:

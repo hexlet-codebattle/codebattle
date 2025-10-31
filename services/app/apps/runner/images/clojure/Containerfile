@@ -1,0 +1,30 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG BB_TAG=1.12.210-SNAPSHOT
+ARG TARGETPLATFORM
+
+FROM --platform=${TARGETPLATFORM} ${RUNNER_IMAGE} AS runner
+
+FROM --platform=${TARGETPLATFORM} babashka/babashka:${BB_TAG}
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends make ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN groupadd --system --gid 10001 app \
+  && useradd --system --no-create-home \
+  --home-dir /nonexistent --shell /usr/sbin/nologin \
+  --uid 10001 --gid 10001 app
+
+WORKDIR /usr/src/app
+COPY check check
+COPY checker.clj .
+COPY Makefile .
+RUN chown -R app:app /usr/src/app
+
+RUN mkdir -p /runner && chown app:app /runner
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+RUN chmod +x /runner/codebattle_runner
+
+EXPOSE 8000
+USER app
+ENTRYPOINT ["/runner/codebattle_runner"]

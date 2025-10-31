@@ -1,7 +1,7 @@
 include make-compose.mk
 
 pg:
-	docker compose up -d db-local
+	podman compose up -d db-local
 
 clean:
 	rm -rf services/app/_build
@@ -18,12 +18,12 @@ test-code-checkers:
 	make -C ./services/app/ test-code-checkers
 
 terraform-vars-generate:
-	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
+	podman run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
 
 setup: setup-env compose-setup
 
 setup-env:
-	docker run --rm -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/development.yml -i ansible/development -vv
+	podman run --rm -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/development.yml -i ansible/development -vv
 
 setup-env-local:
 	ansible-playbook ansible/development.yml -i ansible/development -vv
@@ -32,97 +32,97 @@ ansible-edit-secrets:
 	ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 ansible-vault-edit-production:
-	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
+	podman run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 release:
 	make -C services/app release
 
-docker-build-local:
-	docker build --target assets-image \
-				--file services/app/Dockerfile.codebattle \
+podman-build-local:
+	podman build --target assets-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:assets-image services/app
-	docker build --target compile-image \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target compile-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:compile-image services/app
-	docker build --target nginx-assets \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target nginx-assets \
+				--file services/app/Containerfile.codebattle \
 				--tag codebattle/nginx-assets:latest services/app
-	docker build --target runtime-image \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target runtime-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:latest services/app
-	docker build --target compile-image \
-				--file services/app/Dockerfile.runner \
+	podman build --target compile-image \
+				--file services/app/Containerfile.runner \
 				--tag codebattle/runner:compile-image services/app
-	docker build --target runtime-image \
-				--file services/app/Dockerfile.runner \
+	podman build --target runtime-image \
+				--file services/app/Containerfile.runner \
 				--tag codebattle/runner:latest services/app
 
-docker-build-codebattle:
-	# docker pull codebattle/codebattle:assets-image  || true
-	# docker pull codebattle/codebattle:compile-image || true
-	# docker pull codebattle/codebattle:latest        || true
-	docker build --target assets-image \
-				--file services/app/Dockerfile.codebattle \
+podman-build-codebattle:
+	# podman pull codebattle/codebattle:assets-image  || true
+	# podman pull codebattle/codebattle:compile-image || true
+	# podman pull codebattle/codebattle:latest        || true
+	podman build --target assets-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:assets-image services/app
-	docker build --target compile-image \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target compile-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:compile-image services/app
-	docker build --target nginx-assets \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target nginx-assets \
+				--file services/app/Containerfile.codebattle \
 				--tag codebattle/nginx-assets:latest services/app
-	docker build --target runtime-image \
-				--file services/app/Dockerfile.codebattle \
+	podman build --target runtime-image \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:latest services/app
 
-docker-build-arm:
-	docker build --platform linux/arm64 \
+podman-build-arm:
+	podman build --platform linux/arm64 \
 				--target assets-image \
-				--file services/app/Dockerfile.codebattle \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:assets-image-arm services/app
-	docker build --platform linux/arm64 \
+	podman build --platform linux/arm64 \
 				--target compile-image \
-				--file services/app/Dockerfile.codebattle \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:compile-image-arm services/app
-	docker build --platform linux/arm64 \
+	podman build --platform linux/arm64 \
 				--target nginx-assets \
-				--file services/app/Dockerfile.codebattle \
+				--file services/app/Containerfile.codebattle \
 				--tag codebattle/nginx-assets:arm services/app
-	docker build --platform linux/arm64 \
+	podman build --platform linux/arm64 \
 				--target runtime-image \
-				--file services/app/Dockerfile.codebattle \
+				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--tag codebattle/codebattle:arm services/app
 
-docker-push-codeabttle-arm:
-	docker push codebattle/codebattle:assets-image-arm
-	docker push codebattle/codebattle:compile-image-arm
-	docker push codebattle/codebattle:arm
-	docker push codebattle/nginx-assets:arm
+podman-push-codeabttle-arm:
+	podman push codebattle/codebattle:assets-image-arm
+	podman push codebattle/codebattle:compile-image-arm
+	podman push codebattle/codebattle:arm
+	podman push codebattle/nginx-assets:arm
 
-docker-push-codebattle:
-	docker push codebattle/codebattle:assets-image
-	docker push codebattle/codebattle:compile-image
-	docker push codebattle/codebattle:latest
-	docker push codebattle/nginx-assets:latest
+podman-push-codebattle:
+	podman push codebattle/codebattle:assets-image
+	podman push codebattle/codebattle:compile-image
+	podman push codebattle/codebattle:latest
+	podman push codebattle/nginx-assets:latest
 
-docker-build-runner:
-	# docker pull codebattle/runner:compile-image || true
-	# docker pull codebattle/runner:latest        || true
-	docker build --target compile-image \
-				--file services/app/Dockerfile.runner \
+podman-build-runner:
+	# podman pull codebattle/runner:compile-image || true
+	# podman pull codebattle/runner:latest        || true
+	podman build --target compile-image \
+				--file services/app/Containerfile.runner \
 				--tag codebattle/runner:compile-image services/app
-	docker build --target runtime-image \
-				--file services/app/Dockerfile.runner \
+	podman build --target runtime-image \
+				--file services/app/Containerfile.runner \
 				--tag codebattle/runner:latest services/app
 
-docker-push-runner:
-	docker push codebattle/runner:compile-image
-	docker push codebattle/runner:latest
+podman-push-runner:
+	podman push codebattle/runner:compile-image
+	podman push codebattle/runner:latest

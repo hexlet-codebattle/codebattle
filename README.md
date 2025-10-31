@@ -19,7 +19,7 @@ This project exists thanks to all the people who contribute. [Contribute guideli
 ### Requirements
 
 - Mac / Linux
-- docker
+- podman
 
 ### Install
 
@@ -59,18 +59,18 @@ $ make compose-lint-js-fix
 ```bash
 $ mix upload_langs
 
-$ mix dockers.push # all
-$ mix dockers.push elixir
+$ mix images.push # all
+$ mix images.push elixir
 
-$ mix dockers.build # all
-$ mix dockers.build elixir
+$ mix images.build # all
+$ mix images.build elixir
 
-$ mix dockers.pull # all
-$ mix dockers.pull elixir
+$ mix images.pull # all
+$ mix images.pull elixir
 
 $ mix asserts.upload # Pulls from battle_asserts all issues and upserts into DB
 
-#If you use docker in dev env, run commands in make compose-bash
+#If you use images in dev env, run commands in make compose-bash
 ```
 
 ### Profile js bundle
@@ -87,41 +87,83 @@ yarn profile:visualize
 
 ### Troubleshooting
 
-- Install and run docker
+#### macOS
 
-Make sure you have installed `docker` for your OS.
+- Install podman
 
-https://docs.docker.com/install/
+Make sure you have installed `podman` for macOS.
 
-Make sure your docker daemon is running. You can run it manually by typing:
-
+```bash
+brew install podman
 ```
-sudo dockerd
+
+Or follow the official installation guide: https://podman.io/getting-started/installation
+
+- Initialize and start podman machine
+
+On macOS, podman requires a virtual machine to run containers. Initialize and start it:
+
+```bash
+podman machine init
+podman machine start
+```
+
+If you encounter issues, try removing and reinitializing the machine:
+
+```bash
+podman machine stop
+podman machine rm
+podman machine init
+podman machine start
+```
+
+- Set podman machine to start automatically
+
+To have the podman machine start automatically on boot:
+
+```bash
+podman machine set --rootful=false
+```
+
+Close and open your terminal if podman didn't start immediately.
+
+#### Linux
+
+- Install podman
+
+Make sure you have installed `podman` for your Linux distribution.
+
+https://podman.io/getting-started/installation
+
+- Start podman service
+
+Make sure podman is running. You can start the podman service manually by typing:
+
+```bash
+sudo systemctl start podman
 ```
 
 or you can add it to startup by typing:
 
-```
-sudo systemctl enable docker
-```
-
-Close and open your terminal if docker daemon didn't start immediately.
-
-- Manage Docker as a non-root user
-
-https://docs.docker.com/install/linux/linux-postinstall/
-
-Create the docker group.
-
-```
-sudo groupadd docker
+```bash
+sudo systemctl enable podman
 ```
 
-Add your user to the docker group.
+Close and open your terminal if podman didn't start immediately.
 
+- Running podman in rootless mode
+
+Podman can run containers without root privileges by default. If you encounter permission issues, ensure your user is set up for rootless podman:
+
+https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md
+
+You may need to configure subuid and subgid mappings:
+
+```bash
+sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 $USER
 ```
-sudo usermod -aG docker $USER
-```
+
+Then restart your session for the changes to take effect.
 
 ## Star History
 

@@ -1,0 +1,25 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG PG_TAG=18-alpine
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM postgres:${PG_TAG}
+
+RUN apk add --no-cache make
+
+ENV POSTGRES_DB=db \
+  POSTGRES_USER=user \
+  POSTGRES_PASSWORD=password
+
+WORKDIR /usr/src/app
+
+# Keep files owned by postgres to avoid permission issues
+COPY single_table.sql .
+COPY Makefile .
+RUN chown -R postgres:postgres /usr/src/app
+
+EXPOSE 8000
+
+# Keep the default Postgres entrypoint
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+CMD ["postgres"]

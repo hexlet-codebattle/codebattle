@@ -25,9 +25,6 @@ spec:
         - name: users-code-path
           hostPath:
             path: /tmp/codebattle-runner
-        - name: docker-sock
-          hostPath:
-            path: /var/run/docker.sock
     # {{- with .Values.imagePullSecrets }}
     #   imagePullSecrets:
     #     {{- toYaml . | nindent 8 }}
@@ -53,8 +50,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp/codebattle-runner
               name: users-code-path
-            - mountPath: /var/run/docker.sock
-              name: docker-sock
           envFrom:
             - secretRef:
                 name: codebattle-secrets

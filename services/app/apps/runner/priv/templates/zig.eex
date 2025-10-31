@@ -1,0 +1,84 @@
+const std = @import("std");
+const solution = @import("solution.zig");
+
+const Pipe = struct { r: std.posix.fd_t, w: std.posix.fd_t };
+
+fn pipeOpen() !Pipe {
+    const fds = try std.posix.pipe(); // Zig 0.14.1: no args
+    return .{ .r = fds[0], .w = fds[1] };
+}
+
+fn secondsFromNs(ns: i128) f64 {
+    return @as(f64, @floatFromInt(ns)) / @as(f64, @floatFromInt(std.time.ns_per_s));
+}
+
+pub fn main() !void {
+    const gpa = std.heap.page_allocator;
+    const stdout_fd = std.io.getStdOut().handle;
+    var outw = std.io.getStdOut().writer();
+
+    // Begin JSON array
+    try outw.writeByte('[');
+    var first = true;
+
+    <%= for %{arguments: arguments} <- checks do %>
+    {
+        if (!first) try outw.writeByte(',') else first = false;
+
+        <%= for %{defining: defining, value: value} <- arguments.info do %>
+        const <%= defining %> = <%= value %>;
+        <% end %>
+
+        const maybe_p = pipeOpen() catch null;
+
+        if (maybe_p) |p| {
+            // duplicate stdout and redirect
+            const saved = try std.posix.dup(stdout_fd);
+            defer _ = std.posix.close(saved);
+
+            try std.posix.dup2(p.w, stdout_fd);
+
+            const t0 = std.time.nanoTimestamp();
+            const val = solution.solution(<%= arguments.expression %>);
+            const t1 = std.time.nanoTimestamp();
+
+            // restore stdout (no flush method on fs.File in Zig 0.14)
+            try std.posix.dup2(saved, stdout_fd);
+            _ = std.posix.close(p.w);
+
+            // read captured output
+            var rfile = std.fs.File{ .handle = p.r };
+            defer _ = rfile.close();
+
+            const out_slice = try rfile.reader().readAllAlloc(gpa, 1 << 20); // 1 MiB
+            defer gpa.free(out_slice);
+
+            const secs = secondsFromNs(t1 - t0);
+
+            // emit JSON object
+            try outw.writeAll("{\"type\":\"result\",\"value\":");
+            try std.json.stringify(val, .{}, outw);
+            try outw.writeAll(",\"time\":");
+            try std.json.stringify(secs, .{}, outw);
+            try outw.writeAll(",\"output\":");
+            try std.json.stringify(@as([]const u8, out_slice), .{}, outw);
+            try outw.writeByte('}');
+        } else {
+            // No-capture fallback
+            const t0 = std.time.nanoTimestamp();
+            const val = solution.solution(<%= arguments.expression %>);
+            const t1 = std.time.nanoTimestamp();
+            const secs = secondsFromNs(t1 - t0);
+
+            try outw.writeAll("{\"type\":\"result\",\"value\":");
+            try std.json.stringify(val, .{}, outw);
+            try outw.writeAll(",\"time\":");
+            try std.json.stringify(secs, .{}, outw);
+            try outw.writeAll(",\"output\":\"\"}");
+        }
+    }
+    <% end %>
+
+    // End JSON array
+    try outw.writeByte(']');
+}

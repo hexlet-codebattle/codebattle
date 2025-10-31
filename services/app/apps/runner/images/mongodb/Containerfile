@@ -1,0 +1,25 @@
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG MONGO_TAG=8.0.15
+ARG TARGETPLATFORM
+
+FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+FROM --platform=$TARGETPLATFORM mongo:${MONGO_TAG}
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends make \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV MONGO_INITDB_DATABASE=db \
+  MONGO_INITDB_ROOT_USERNAME=user \
+  MONGO_INITDB_ROOT_PASSWORD=password
+
+WORKDIR /usr/src/app
+
+EXPOSE 8000
+
+COPY single_table.js .
+COPY Makefile .
+
+# keep Mongo's entrypoint
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+CMD ["mongod"]

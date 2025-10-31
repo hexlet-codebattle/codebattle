@@ -21,6 +21,8 @@ config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_A
 
 # Configure your database
 config :codebattle, Codebattle.Repo,
+  stacktrace: true,
+  log: :debug,
   username: System.get_env("CODEBATTLE_DB_USERNAME", "postgres"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD", "postgres"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
@@ -54,7 +56,7 @@ config :codebattle, CodebattleWeb.Endpoint,
     ]
   ]
 
-config :codebattle, :tournament_run_upcoming, true
+config :codebattle, :tournament_run_upcoming, false
 config :codebattle, asserts_executor: Local
 config :codebattle, checker_executor: Local
 

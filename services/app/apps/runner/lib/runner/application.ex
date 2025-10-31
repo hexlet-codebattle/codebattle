@@ -19,8 +19,8 @@ defmodule Runner.Application do
     prod_workers = []
 
     prod_workers =
-      if Application.get_env(:runner, :pull_docker_images) do
-        [{Runner.DockerImagesPuller, []} | prod_workers]
+      if Application.get_env(:runner, :pull_images) do
+        [{Runner.ImagesPuller, []} | prod_workers]
       else
         prod_workers
       end
