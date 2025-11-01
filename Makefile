@@ -1,7 +1,7 @@
 include make-compose.mk
 
 pg:
-	podman compose up -d db-local
+	podman-compose up -d db-local
 
 clean:
 	rm -rf services/app/_build

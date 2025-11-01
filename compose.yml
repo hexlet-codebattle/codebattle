@@ -6,6 +6,7 @@ services:
     working_dir: /app
     tty: true # allocates a pseudo-TTY for interactive IEx
     stdin_open: true # keeps STDIN open even if not attached
+    mem_limit: 4g
     env_file: .env
     command: mix phx.server
     environment:
