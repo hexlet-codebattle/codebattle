@@ -37,92 +37,92 @@ ansible-vault-edit-production:
 release:
 	make -C services/app release
 
-podman-build-local:
-	podman build --target assets-image \
+build-local:
+	docker build --target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:assets-image services/app
-	podman build --target compile-image \
+				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image services/app
+	docker build --target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:compile-image services/app
-	podman build --target nginx-assets \
+				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image services/app
+	docker build --target nginx-assets \
 				--file services/app/Containerfile.codebattle \
-				--tag codebattle/nginx-assets:latest services/app
-	podman build --target runtime-image \
+				--tag ghcr.io/hexlet-codebattle/nginx-assets:latest services/app
+	docker build --target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:latest services/app
-	podman build --target compile-image \
+				--tag ghcr.io/hexlet-codebattle/codebattle:latest services/app
+	docker build --target compile-image \
 				--file services/app/Containerfile.runner \
-				--tag codebattle/runner:compile-image services/app
-	podman build --target runtime-image \
+				--tag ghcr.io/hexlet-codebattle/runner:compile-image services/app
+	docker build --target runtime-image \
 				--file services/app/Containerfile.runner \
-				--tag codebattle/runner:latest services/app
+				--tag ghcr.io/hexlet-codebattle/runner:latest services/app
 
-podman-build-codebattle:
-	# podman pull codebattle/codebattle:assets-image  || true
-	# podman pull codebattle/codebattle:compile-image || true
-	# podman pull codebattle/codebattle:latest        || true
-	podman build --target assets-image \
+build-codebattle:
+	docker pull ghcr.io/hexlet-codebattle/codebattle:assets-image  || true
+	docker pull ghcr.io/hexlet-codebattle/codebattle:compile-image || true
+	docker pull ghcr.io/hexlet-codebattle/codebattle:latest        || true
+	docker build --target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:assets-image services/app
-	podman build --target compile-image \
+				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image services/app
+	docker build --target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:compile-image services/app
-	podman build --target nginx-assets \
+				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image services/app
+	docker build --target nginx-assets \
 				--file services/app/Containerfile.codebattle \
-				--tag codebattle/nginx-assets:latest services/app
-	podman build --target runtime-image \
+				--tag ghcr.io/hexlet-codebattle/nginx-assets:latest services/app
+	docker build --target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:latest services/app
+				--tag ghcr.io/hexlet-codebattle/codebattle:latest services/app
 
-podman-build-arm:
-	podman build --platform linux/arm64 \
+build-arm:
+	docker build --platform linux/arm64 \
 				--target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:assets-image-arm services/app
-	podman build --platform linux/arm64 \
+				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image-arm services/app
+	docker build --platform linux/arm64 \
 				--target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:compile-image-arm services/app
-	podman build --platform linux/arm64 \
+				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image-arm services/app
+	docker build --platform linux/arm64 \
 				--target nginx-assets \
 				--file services/app/Containerfile.codebattle \
-				--tag codebattle/nginx-assets:arm services/app
-	podman build --platform linux/arm64 \
+				--tag ghcr.io/hexlet-codebattle/nginx-assets:arm services/app
+	docker build --platform linux/arm64 \
 				--target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
-				--tag codebattle/codebattle:arm services/app
+				--tag ghcr.io/hexlet-codebattle/codebattle:arm services/app
 
-podman-push-codeabttle-arm:
-	podman push codebattle/codebattle:assets-image-arm
-	podman push codebattle/codebattle:compile-image-arm
-	podman push codebattle/codebattle:arm
-	podman push codebattle/nginx-assets:arm
+push-codeabttle-arm:
+	docker push ghcr.io/hexlet-codebattle/codebattle:assets-image-arm
+	docker push ghcr.io/hexlet-codebattle/codebattle:compile-image-arm
+	docker push ghcr.io/hexlet-codebattle/codebattle:arm
+	docker push ghcr.io/hexlet-codebattle/nginx-assets:arm
 
-podman-push-codebattle:
-	podman push codebattle/codebattle:assets-image
-	podman push codebattle/codebattle:compile-image
-	podman push codebattle/codebattle:latest
-	podman push codebattle/nginx-assets:latest
+push-codebattle:
+	docker push ghcr.io/hexlet-codebattle/codebattle:assets-image
+	docker push ghcr.io/hexlet-codebattle/codebattle:compile-image
+	docker push ghcr.io/hexlet-codebattle/codebattle:latest
+	docker push ghcr.io/hexlet-codebattle/nginx-assets:latest
 
-podman-build-runner:
-	# podman pull codebattle/runner:compile-image || true
-	# podman pull codebattle/runner:latest        || true
-	podman build --target compile-image \
+build-runner:
+	docker pull ghcr.io/hexlet-codebattle/runner:compile-image || true
+	docker pull ghcr.io/hexlet-codebattle/runner:latest        || true
+	docker build --target compile-image \
 				--file services/app/Containerfile.runner \
-				--tag codebattle/runner:compile-image services/app
-	podman build --target runtime-image \
+				--tag ghcr.io/hexlet-codebattle/runner:compile-image services/app
+	docker build --target runtime-image \
 				--file services/app/Containerfile.runner \
-				--tag codebattle/runner:latest services/app
+				--tag ghcr.io/hexlet-codebattle/runner:latest services/app
 
-podman-push-runner:
-	podman push codebattle/runner:compile-image
-	podman push codebattle/runner:latest
+push-runner:
+	docker push ghcr.io/hexlet-codebattle/runner:compile-image
+	docker push ghcr.io/hexlet-codebattle/runner:latest

@@ -1,99 +1,35 @@
+# Stage 1: Codebattle runner binary
 ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG ALPINE_TAG=3.22
 ARG TARGETPLATFORM
-
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
-FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG}
 
-# Toolchain (+ libs GHC expects)
-RUN apk add --no-cache ghc cabal make libc-dev gmp-dev zlib-dev git
-
-# app user with writable home
-RUN addgroup -S app -g 10001 \
-  && adduser -S -D -H -h /home/app -s /bin/sh -G app -u 10001 app \
-  && mkdir -p /home/app && chown -R app:app /home/app
+# Stage 2: Haskell environment
+FROM --platform=$TARGETPLATFORM haskell:9.12.2-slim-bookworm
 
 WORKDIR /usr/src/app
 
-# ---- build-time Cabal config (root) ----
-ENV CABAL_STORE=/opt/cabal/store
-RUN mkdir -p /root/.config/cabal ${CABAL_STORE} && \
-  cabal user-config init && \
-  printf '%s\n' \
-  '' \
-  '-- low-memory + minimal artifacts' \
-  'documentation: False' \
-  'tests: False' \
-  'benchmarks: False' \
-  'jobs: 1' \
-  'library-profiling: False' \
-  'executable-profiling: False' \
-  'shared: False' \
-  'library-vanilla: True' \
-  'executable-dynamic: False' \
-  'executable-static: False' \
-  'split-objs: False' \
-  'split-sections: False' \
-  "store-dir: ${CABAL_STORE}" \
-  'write-ghc-environment-files: never' \
-  >> /root/.config/cabal/config
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends make cabal-install curl ca-certificates && \
+  rm -rf /var/lib/apt/lists/*
 
-# Refresh package index (online at build time)
-RUN cabal update --ignore-project
+# Add project files
+ADD cabal.project .
+ADD checker.cabal .
+ADD LICENSE .
 
-# Project files
-COPY checker.cabal .
+# Update cabal package index
+RUN cabal update
 
-# Project: pin an index-state and keep GHC cheap
-RUN printf '%s\n' \
-  'packages: .' \
-  'index-state: 2024-06-01T00:00:00Z' \
-  'optimization: False' \
-  'program-options' \
-  '  ghc-options: -O0 -fno-specialise -fno-spec-constr -fno-full-laziness -fno-cse -fno-strictness' \
-  > cabal.project
+# Pre-fetch dependencies (serial + no optimization to avoid OOM)
+RUN cabal build --only-dependencies -j1 --ghc-options="-O0" || true
 
-# Tiny dummy sources so Cabal can solve & build deps during image build
-RUN mkdir -p check && \
-  printf '%s\n' 'module Solution where' 'solution :: Int -> Int -> Int; solution = (+)' > check/Solution.hs && \
-  printf '%s\n' 'module Checker where' 'main = putStrLn "ok"' > check/Checker.hs
-
-# Prebuild ONLY dependencies into /opt/cabal/store and freeze the plan
-RUN cabal build --only-dependencies -j1 \
-  --disable-optimization --disable-tests --disable-benchmarks --disable-documentation && \
-  cabal freeze
-
-# Ensure runtime user can read the store
-RUN chown -R app:app ${CABAL_STORE}
-
-# Bring in your Makefile, etc.
-COPY Makefile .
-RUN chown -R app:app /usr/src/app
-
-# ---- runtime (offline) ----
-USER app
-ENV HOME=/home/app \
-  XDG_CONFIG_HOME=/home/app/.config \
-  XDG_CACHE_HOME=/home/app/.cache
-
-# Cabal runtime config: offline + same store dir
-RUN mkdir -p /home/app/.config/cabal /home/app/.cache && \
-  cabal user-config init && \
-  printf '%s\n' \
-  '' \
-  '-- offline defaults' \
-  "store-dir: ${CABAL_STORE}" \
-  'offline: True' \
-  'jobs: 1' \
-  >> /home/app/.config/cabal/config
-
-# Safety net: force all cabal invocations to be offline at runtime
-USER root
-RUN mv /usr/bin/cabal /usr/bin/cabal-real && \
-  printf '%s\n' '#!/bin/sh' 'exec /usr/bin/cabal-real --offline "$@"' > /usr/bin/cabal && \
-  chmod +x /usr/bin/cabal
-USER app
+# Add source and makefile
+ADD check check
+ADD Makefile .
 
 EXPOSE 8000
+
+# Copy Codebattle runner binary
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
+
 ENTRYPOINT ["/runner/codebattle_runner"]
