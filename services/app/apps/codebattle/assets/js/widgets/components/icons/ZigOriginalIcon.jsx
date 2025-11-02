@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
-import React from "react";
+import React from 'react';
 
-const ZigOriginalIcon = ({ className, size = "1em" }) => (
+const ZigOriginalIcon = ({ className, size = '1em' }) => (
   <svg
     viewBox="0 0 153 140"
     xmlns="http://www.w3.org/2000/svg"

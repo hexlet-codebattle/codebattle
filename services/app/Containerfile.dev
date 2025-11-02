@@ -15,9 +15,9 @@ RUN apk add --no-cache \
   build-base \
   git
 
-# Install Node.js and Yarn
+# Install Node.js and pnpm
 RUN apk add --no-cache nodejs npm \
-  && npm install --global yarn@1.22.10
+  && npm install --global pnpm
 
 # Install Podman for local development
 RUN apk add --no-cache podman

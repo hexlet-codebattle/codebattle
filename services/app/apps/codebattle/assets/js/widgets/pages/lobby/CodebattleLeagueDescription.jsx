@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 // Bootstrap 4 compatible, dark theme friendly (no bg-white / color backgrounds).
 // Uses your custom dark styles like: cb-bg-panel, cb-bg-highlight-panel, cb-rounded, cb-btn-secondary, etc.
@@ -63,8 +63,13 @@ const CodebattleLeagueDescription = () => (
                   </ul>
                   <ul className="mb-3 text-white">
                     <li>
-                      On the season end date (the 21st), we run a{" "}
-                      <strong>Grand Slam</strong> at <strong>16:00 UTC</strong>.
+                      On the season end date (the 21st), we run a
+                      {' '}
+                      <strong>Grand Slam</strong>
+                      {' '}
+                      at
+                      <strong>16:00 UTC</strong>
+                      .
                     </li>
                     <li>
                       Season Points reset each season. Elo never resets
@@ -111,11 +116,13 @@ const CodebattleLeagueDescription = () => (
                   </p>
                   <ul className="mb-3">
                     <li>
-                      <strong>Rookie</strong>: every 4 hours — 03:00, 07:00,
+                      <strong>Rookie</strong>
+                      : every 4 hours — 03:00, 07:00,
                       11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot).
                     </li>
                     <li>
-                      <strong>Challenger</strong>: daily 16:00 UTC; preempted by
+                      <strong>Challenger</strong>
+                      : daily 16:00 UTC; preempted by
                       higher grades that day/week.
                     </li>
                   </ul>
@@ -215,21 +222,27 @@ const CodebattleLeagueDescription = () => (
                   <p>
                     For each finished tournament (grade ≠ open), award Season
                     Points by final place using the tables below. All remaining
-                    participants (outside prize slots) receive{" "}
-                    <strong>2 points</strong> each. Prize points do not stack
+                    participants (outside prize slots) receive
+                    {' '}
+                    <strong>2 points</strong>
+                    {' '}
+                    each. Prize points do not stack
                     with participation points.
                   </p>
                   <div className="row">
                     <div className="col-md-6">
                       <ul className="mb-3">
                         <li>
-                          <strong>rookie</strong>: [8, 4, 2] — top‑3
+                          <strong>rookie</strong>
+                          : [8, 4, 2] — top‑3
                         </li>
                         <li>
-                          <strong>challenger</strong>: [16, 8, 4, 2] — top‑6
+                          <strong>challenger</strong>
+                          : [16, 8, 4, 2] — top‑6
                         </li>
                         <li>
-                          <strong>pro</strong>: [128, 64, 32, 16, 8, 4, 2] —
+                          <strong>pro</strong>
+                          : [128, 64, 32, 16, 8, 4, 2] —
                           top‑7
                         </li>
                       </ul>
@@ -237,15 +250,18 @@ const CodebattleLeagueDescription = () => (
                     <div className="col-md-6">
                       <ul className="mb-0">
                         <li>
-                          <strong>elite</strong>: [256, 128, 64, 32, 16, 8, 4,
+                          <strong>elite</strong>
+                          : [256, 128, 64, 32, 16, 8, 4,
                           2] — top‑8
                         </li>
                         <li>
-                          <strong>masters</strong>: [1024, 512, 256, 128, 64,
+                          <strong>masters</strong>
+                          : [1024, 512, 256, 128, 64,
                           32, 16, 8, 4, 2] — top‑10
                         </li>
                         <li>
-                          <strong>grand_slam</strong>: [2048, 1024, 512, 256,
+                          <strong>grand_slam</strong>
+                          : [2048, 1024, 512, 256,
                           128, 64, 32, 16, 8, 4, 2] — top‑11
                         </li>
                       </ul>
@@ -310,8 +326,15 @@ const CodebattleLeagueDescription = () => (
                 data-parent="#leagueAccordion"
               >
                 <div className="card-body text-white">
-                  Maintain a HoF for <strong>Season Champions</strong> and{" "}
-                  <strong>Grand Slam Champions</strong> (participants page
+                  Maintain a HoF for
+                  {' '}
+                  <strong>Season Champions</strong>
+                  {' '}
+                  and
+                  {' '}
+                  <strong>Grand Slam Champions</strong>
+                  {' '}
+                  (participants page
                   optional later).
                 </div>
               </div>

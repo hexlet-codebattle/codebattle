@@ -17,8 +17,6 @@ config :codebattle, Codebattle.Invite,
   timeout: to_timeout(minute: 15),
   lifetime: to_timeout(minute: 15)
 
-config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
-
 # Configure your database
 config :codebattle, Codebattle.Repo,
   stacktrace: true,
@@ -42,7 +40,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-  watchers: [yarn: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")]]
+  watchers: [pnpm: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")]]
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,
@@ -59,6 +57,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, asserts_executor: Local
 config :codebattle, checker_executor: Local
+config :codebattle, env: :dev
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n", level: :debug

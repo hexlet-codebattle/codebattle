@@ -1,8 +1,12 @@
-/* eslint-disable global-require */
+// services/app/apps/codebattle/assets/js/i18n/index.js
 import Gon from 'gon';
 import i18next from 'i18next';
 
-const lng = Gon.getAsset('locale') || 'en';
+// ESM imports for translations (no require)
+import en from '../../../priv/gettext/en/LC_MESSAGES/default.po';
+import ru from '../../../priv/gettext/ru/LC_MESSAGES/default.po';
+
+const lng = Gon?.getAsset?.('locale') || 'en';
 
 export const getLocale = () => lng;
 
@@ -15,12 +19,8 @@ i18next.init({
     suffix: '}',
   },
   resources: {
-    en: {
-      translation: require('../../../priv/gettext/en/LC_MESSAGES/default.po'),
-    },
-    ru: {
-      translation: require('../../../priv/gettext/ru/LC_MESSAGES/default.po'),
-    },
+    en: { translation: en },
+    ru: { translation: ru },
   },
 });
 

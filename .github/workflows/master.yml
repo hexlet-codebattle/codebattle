@@ -10,7 +10,7 @@ jobs:
   build:
     if: github.repository == 'hexlet-codebattle/codebattle'
     runs-on: ubuntu-latest
-    timeout-minutes: 30 # Add timeout to prevent hanging builds
+    timeout-minutes: 30
 
     env:
       MIX_ENV: test
@@ -21,7 +21,7 @@ jobs:
         ports: ["5432:5432"]
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST_AUTH_METHOD: trust # Simplify auth for CI
+          POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch complete history for better caching
+          fetch-depth: 0
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -71,27 +71,30 @@ jobs:
         run: mix credo
         working-directory: ./services/app
 
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
+      # --- pnpm setup & caching ---
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: ./services/app/apps/codebattle/pnpm-lock.yaml
 
-      - name: Install yarn dependencies
-        run: yarn install --frozen-lockfile --network-timeout 300000
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install pnpm dependencies
+        run: pnpm install --frozen-lockfile
         working-directory: ./services/app/apps/codebattle
 
       - name: Eslint
-        run: yarn lint
+        run: pnpm run lint
         working-directory: ./services/app/apps/codebattle
 
       - name: Run jest
-        run: yarn test
+        run: pnpm run test
         working-directory: ./services/app/apps/codebattle
 
       - name: Mix audit

@@ -24,6 +24,5 @@ resource "kubernetes_secret" "codebattle_secrets" {
     ONESIGNAL_APP_ID           = "${var.onesignal_app_id}"
     FIREBASE_API_KEY           = "${var.firebase_api_key}"
     FIREBASE_SENDER_ID         = "${var.firebase_sender_id}"
-    ROLLBAR_API_KEY            = "${var.rollbar_api_key}"
   }
 }

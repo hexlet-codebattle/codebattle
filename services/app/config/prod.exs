@@ -22,7 +22,7 @@ config :codebattle, :tournament_run_upcoming, true
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
 config :codebattle, dev_sign_in: false
 config :codebattle, html_debug_mode: false
-config :codebattle, html_env: :prod
+config :codebattle, env: :prod
 config :codebattle, load_dot_env_file: false
 config :codebattle, ws_port: 4000
 

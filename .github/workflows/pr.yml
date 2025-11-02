@@ -14,7 +14,6 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: true
 
-    # Use test environment by default
     env:
       MIX_ENV: test
       POSTGRES_PASSWORD: postgres
@@ -72,28 +71,32 @@ jobs:
         run: mix credo --strict
         working-directory: ./services/app
 
-      - name: Get yarn cache
-        id: yarn-cache
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v4
+      # --- pnpm setup & caching ---
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: "24"
+          cache: "pnpm"
+          cache-dependency-path: ./services/app/apps/codebattle/pnpm-lock.yaml
 
-      - name: Install yarn dependencies
-        run: yarn install --frozen-lockfile
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install pnpm dependencies
+        run: pnpm install --frozen-lockfile
         working-directory: ./services/app/apps/codebattle
 
       - name: Eslint
-        run: yarn lint
+        run: pnpm lint
         working-directory: ./services/app/apps/codebattle
 
       - name: Run jest
-        run: yarn test
+        run: pnpm test
         working-directory: ./services/app/apps/codebattle
+      # --- end pnpm block ---
 
       - name: Setup db
         run: |

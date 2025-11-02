@@ -2,7 +2,7 @@ $body-bg: #e5e5e5;
 $success: #82b792;
 $cb-text-color: #999;
 $cb-border-radius: 0.5rem;
-$cb-success: #32CD32;
+$cb-success: #32cd32;
 $cb-hovered-success: #28a428;
 $cb-border-radius: 0.5rem;
 
@@ -54,37 +54,38 @@ $border-radius-sm: 0%;
 $btn-border-width: 2px;
 $gold: #daa520;
 
-$cb-rookie-bg: rgba(50, 205, 50, 1.0);
-$cb-challenger-bg: rgba(87, 187, 61, 1.0);
-$cb-pro-bg: rgba(125, 169, 72, 1.0);
-$cb-masters-bg: rgba(162, 137, 83, 1.0);
-$cb-elite-bg: rgba(200, 99, 69, 1.0);
-$cb-grand-slam-bg: rgba(238, 55, 55, 1.0);
+$cb-rookie-bg: rgba(50, 205, 50, 1);
+$cb-challenger-bg: rgba(87, 187, 61, 1);
+$cb-pro-bg: rgba(125, 169, 72, 1);
+$cb-masters-bg: rgba(162, 137, 83, 1);
+$cb-elite-bg: rgba(200, 99, 69, 1);
+$cb-grand-slam-bg: rgba(238, 55, 55, 1);
 
-@import 'variables';
-@import '~bootstrap/scss/bootstrap';
-@import '~nprogress/nprogress.css';
-@import 'gamePreview';
-@import 'skeleton';
-@import 'custom';
-@import '~react-contexify/dist/ReactContexify.css';
-@import 'react-big-calendar/lib/css/react-big-calendar.css';
+@import "variables";
+@import "bootstrap/scss/bootstrap";
+@import "nprogress/nprogress.css";
+@import "gamePreview";
+@import "skeleton";
+@import "custom";
+@import "react-contexify/dist/ReactContexify.css";
+@import "react-big-calendar/lib/css/react-big-calendar.css";
 
 @font-face {
-  font-family: 'External';
-  src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
+  font-family: "External";
+  src: url("https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf")
+    format("truetype");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
-$fa-font-path: '/fonts';
+$fa-font-path: "/fonts";
 
-@import 'fonts';
-@import 'tournaments';
-@import 'grades';
+@import "fonts";
+@import "tournaments";
+@import "grades";
 
-.katex .rlap>.inner {
+.katex .rlap > .inner {
   position: relative !important;
 }
 
@@ -139,12 +140,12 @@ em-emoji-picker {
   }
 }
 
-[data-editor-state='checking'] {
+[data-editor-state="checking"] {
   animation: checking_fade 1000ms infinite;
   -webkit-animation: checking_fade 1000ms infinite;
 }
 
-[data-editor-state='banned'] {
+[data-editor-state="banned"] {
   opacity: 0.6;
   color: var(--red);
   background: var(--red);
@@ -203,15 +204,15 @@ input[type="range"] {
   background: linear-gradient(to top, var(--flag-color), $cb-bg-panel 15%);
 }
 
-[data-player-type='current_user'] {
+[data-player-type="current_user"] {
   --flag-color: var(--success);
 }
 
-[data-player-type='player'] {
+[data-player-type="player"] {
   --flag-color: var(--gray);
 }
 
-[data-player-type='opponent'] {
+[data-player-type="opponent"] {
   --flag-color: var(--danger);
 }
 
@@ -220,7 +221,7 @@ input[type="range"] {
 }
 
 .gutter-vertical {
-  background-image: url('../static/images/verticalGutter.svg');
+  background-image: url("../static/images/verticalGutter.svg");
   cursor: col-resize;
   background-repeat: no-repeat;
   background-position: 50%;
@@ -522,7 +523,7 @@ a {
     }
   }
 
-  &>.cb-asserts-progress {
+  & > .cb-asserts-progress {
     position: absolute;
     height: 100%;
     border-radius: 0.25rem;
@@ -530,19 +531,19 @@ a {
   }
 
   &.ok {
-    &>.cb-asserts-progress {
+    & > .cb-asserts-progress {
       background: $gold;
     }
   }
 
   &.failure {
-    &>.cb-asserts-progress {
+    & > .cb-asserts-progress {
       background: $error;
     }
   }
 
   &.error {
-    &>.cb-asserts-progress {
+    & > .cb-asserts-progress {
       background: $error;
       width: 100% !important;
     }
@@ -561,7 +562,7 @@ a {
 .cb-polyglot {
   width: 65px;
   height: 65px;
-  background: url('../static/images/achievements/polyglot.png');
+  background: url("../static/images/achievements/polyglot.png");
   background-size: cover;
   padding: 5px;
 }
@@ -658,7 +659,7 @@ a {
 .sort-arrows:before,
 .sort-arrows:after {
   border: 5px solid transparent;
-  content: '';
+  content: "";
   display: block;
 }
 
@@ -697,7 +698,7 @@ a {
 }
 
 .cb-opacity-10 {
-  opacity: 0.10;
+  opacity: 0.1;
 }
 
 .cb-opacity-25 {
@@ -868,7 +869,7 @@ a {
 
 p,
 td {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 main {
@@ -1049,17 +1050,21 @@ a:hover {
 }
 
 .cb-right-scroll-control {
-  background: linear-gradient(to right,
-      transparent 0,
-      var(--light) 12px,
-      var(--light) 100%);
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    var(--light) 12px,
+    var(--light) 100%
+  );
 }
 
 .cb-left-scroll-control {
-  background: linear-gradient(to left,
-      transparent 0,
-      var(--light) 12px,
-      var(--light) 100%);
+  background: linear-gradient(
+    to left,
+    transparent 0,
+    var(--light) 12px,
+    var(--light) 100%
+  );
 }
 
 // adapted styles from bootstrap 5.3
@@ -1106,21 +1111,20 @@ a:hover {
 
 .cb-gold-place-bg {
   background-color: #fce300 !important;
-  border-radius: 0.50rem;
+  border-radius: 0.5rem;
 }
 
 .cb-silver-place-bg {
   background-color: #c3c2bc !important;
-  border-radius: 0.50rem;
+  border-radius: 0.5rem;
 }
 
 .cb-bronze-place-bg {
   background-color: #ff9c41 !important;
-  border-radius: 0.50rem;
+  border-radius: 0.5rem;
 }
 
 #tasklang-dropdown {
-
   &-toggle,
   &-menu {
     min-width: 4.375rem;
@@ -1146,7 +1150,6 @@ a:hover {
 div.cb-dropdown-menu {
   transform: translate3d(-100%, 0, 0);
 }
-
 
 .cb-builder-argument-input {
   min-width: 150px;
@@ -1264,7 +1267,7 @@ div.cb-dropdown-menu {
     }
   }
 
-  &>.cb-asserts-progress {
+  & > .cb-asserts-progress {
     position: absolute;
     height: 100%;
     border-top-left-radius: 0.25rem;
@@ -1273,13 +1276,13 @@ div.cb-dropdown-menu {
   }
 
   &.failure {
-    &>.cb-asserts-progress {
+    & > .cb-asserts-progress {
       background: $success;
     }
   }
 
   &.error {
-    &>.cb-asserts-progress {
+    & > .cb-asserts-progress {
       background: $error;
       width: 100% !important;
     }
@@ -1298,7 +1301,7 @@ div.cb-dropdown-menu {
 .cb-polyglot {
   width: 65px;
   height: 65px;
-  background: url('../static/images/achievements/polyglot.png');
+  background: url("../static/images/achievements/polyglot.png");
   background-size: cover;
   padding: 5px;
 }
@@ -1421,7 +1424,7 @@ div.cb-dropdown-menu {
 .sort-arrows:before,
 .sort-arrows:after {
   border: 5px solid transparent;
-  content: '';
+  content: "";
   display: block;
 }
 
@@ -1656,7 +1659,7 @@ div.cb-dropdown-menu {
 
 p,
 td {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 main {
@@ -1816,17 +1819,21 @@ a:hover {
 }
 
 .cb-right-scroll-control {
-  background: linear-gradient(to right,
-      transparent 0,
-      var(--light) 12px,
-      var(--light) 100%);
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    var(--light) 12px,
+    var(--light) 100%
+  );
 }
 
 .cb-left-scroll-control {
-  background: linear-gradient(to left,
-      transparent 0,
-      var(--light) 12px,
-      var(--light) 100%);
+  background: linear-gradient(
+    to left,
+    transparent 0,
+    var(--light) 12px,
+    var(--light) 100%
+  );
 }
 
 // adapted styles from bootstrap 5.3
@@ -1883,7 +1890,6 @@ a:hover {
   background-color: #ff9c41 !important;
 }
 
-
 .user-select-none {
   user-select: none;
   -webkit-user-select: text;
@@ -1896,9 +1902,8 @@ a:hover {
   /* IE10+ */
 }
 
-
 .scroll-button {
-  background-image: url('../static/images/arrowDown.svg');
+  background-image: url("../static/images/arrowDown.svg");
   width: 25px;
   height: 25px;
   bottom: 25px;
@@ -1921,20 +1926,20 @@ a:hover {
 }
 
 .cb-stream-tasks-stats {
-  background-color: #FAFF0F;
+  background-color: #faff0f;
   padding: 20px 16px;
   border-radius: 25px;
 }
 
 .cb-stream-output-title {
-  background-color: #FAFF0F;
+  background-color: #faff0f;
 
   padding: 16px 20px;
   border-radius: 25px;
 }
 
 .cb-stream-editor-panel {
-  border: 4px solid #3C4168;
+  border: 4px solid #3c4168;
 }
 
 .cb-stream-editor-left {
@@ -1951,17 +1956,17 @@ a:hover {
 
 .cb-stream-name {
   width: 118px;
-  color: #FAFF0F;
+  color: #faff0f;
 }
 
 .cb-stream-output {
   width: 100%;
-  border: 4px solid #3C4168;
+  border: 4px solid #3c4168;
   border-radius: 25px;
 }
 
 .cb-stream-task-description {
-  color: #B6A4FF;
+  color: #b6a4ff;
 }
 
 .cb-stream-widget {
@@ -1969,19 +1974,19 @@ a:hover {
 }
 
 .cb-stream-output-data {
-  color: #B6A4FF;
+  color: #b6a4ff;
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
 }
 
 .cb-stream-full-video {
-  border: 4px solid #3C4168;
+  border: 4px solid #3c4168;
   border-radius: 25px;
 }
 
 .cb-stream-full-editor {
-  border: 4px solid #3C4168;
+  border: 4px solid #3c4168;
   border-radius: 25px;
 }
 
@@ -1998,7 +2003,7 @@ a:hover {
 }
 
 .cb-stream-widget-text {
-  font-family: 'External';
+  font-family: "External";
   font-weight: 700;
 }
 
@@ -2006,23 +2011,23 @@ a:hover {
   background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/back-stripes.svg);
-  fill: #FAFF0F;
+  fill: #faff0f;
 }
 
 .cb-stream-widget-header-img-right {
   background-size: cover;
   width: 20%;
   background-image: url(../static/images/stream/stripes.svg);
-  fill: #FAFF0F;
+  fill: #faff0f;
 }
 
 .cb-stream-widget-header-title {
   width: 60%;
-  background-color: #FAFF0F;
+  background-color: #faff0f;
 }
 
 .cb-stream-player-number {
-  background-color: #FAFF0F;
+  background-color: #faff0f;
   padding: 20px 16px;
   border-radius: 25px;
 }
@@ -2053,7 +2058,6 @@ a:hover {
 .stat-item:last-child {
   border-right: none;
 }
-
 
 .stat-line:last-child {
   border-bottom: none;
@@ -2130,7 +2134,7 @@ a:hover {
 
 .cb-text {
   color: $cb-text-color;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 a.cb-text:hover {
@@ -2178,7 +2182,7 @@ a.cb-text:hover {
 
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
-  .show>&.dropdown-toggle {
+  .show > &.dropdown-toggle {
     color: $cb-text-color;
     background-color: $cb-secondary;
     border-color: #282c38;
@@ -2191,7 +2195,6 @@ a.cb-text:hover {
     border-color: $cb-secondary-disabled-border;
   }
 }
-
 
 .cb-btn-outline-secondary {
   color: $cb-text-color;
@@ -2225,7 +2228,7 @@ a.cb-text:hover {
 
   &:not(:disabled):not(.disabled):active,
   &:not(:disabled):not(.disabled).active,
-  .show>&.dropdown-toggle {
+  .show > &.dropdown-toggle {
     color: $cb-text-color;
     background-color: $cb-secondary;
     border-color: #282c38;
@@ -2288,7 +2291,7 @@ a.cb-text:hover {
   }
 
   & .rbc-btn-group button {
-    color: #E0E0E0;
+    color: #e0e0e0;
     background-color: $cb-bg-panel;
     border-color: $cb-border-color;
   }
@@ -2309,7 +2312,7 @@ a.cb-text:hover {
   }
 
   & .rbc-toolbar-label {
-    color: #FFF;
+    color: #fff;
     font-weight: bold;
     border-color: $cb-border-color;
   }
@@ -2329,7 +2332,7 @@ a.cb-text:hover {
   }
 
   & .rbc-date-cell {
-    color: #E0E0E0;
+    color: #e0e0e0;
     border-color: $cb-border-color;
   }
 
@@ -2385,7 +2388,7 @@ a.cb-text:hover {
 
 .cb-rbc-calendar,
 .cb-rbc-calendar * {
-  color: #E0E0E0;
+  color: #e0e0e0;
   border-color: $cb-border-color;
 }
 
@@ -2456,7 +2459,6 @@ a.cb-text:hover {
   }
 }
 
-
 .cb-rbc-event {
   border-color: $cb-border-color;
 
@@ -2500,21 +2502,21 @@ a.cb-text:hover {
 
   & .card-header {
     color: white;
-    font-family: 'Arial', sans-serif;
+    font-family: "Arial", sans-serif;
     background-color: $cb-bg-highlight-panel;
     border-color: $cb-border-color;
   }
 
   & .card-footer {
     color: white;
-    font-family: 'Arial', sans-serif;
+    font-family: "Arial", sans-serif;
     background-color: $cb-bg-highlight-panel;
     border-color: $cb-border-color;
   }
 
   & .card-text {
     color: white;
-    font-family: 'Arial', sans-serif;
+    font-family: "Arial", sans-serif;
   }
 
   & code {
@@ -2545,7 +2547,6 @@ a.cb-text:hover {
 }
 
 .pagination {
-
   & .page-item.disabled .page-link,
   & .page-link {
     color: white;
@@ -2580,7 +2581,7 @@ a.cb-text:hover {
 }
 
 .cb-blur {
-  background: rgba(0, 0, 0, .3);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(16px);
 }
 
@@ -2589,6 +2590,6 @@ a.cb-text:hover {
   border-bottom-color: rgba(0, 0, 0);
 
   .cb-blur & {
-    border-bottom-color: rgba(0, 0, 0, .3);
+    border-bottom-color: rgba(0, 0, 0, 0.3);
   }
 }

@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useCallback, useRef,
+ useState, useEffect, useCallback, useRef,
 } from 'react';
 
 import data from '@emoji-mart/data';
@@ -40,9 +40,12 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
 
-  const sendBtnClassName = cn('btn btn-secondary cb-btn-secondary border-gray border-left rounded-right', {
-    'cb-border-color': true,
-  });
+  const sendBtnClassName = cn(
+    'btn btn-secondary cb-btn-secondary border-gray border-left rounded-right',
+    {
+      'cb-border-color': true,
+    },
+  );
   const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
     'bg-dark cb-border-color text-white': true,
     'is-invalid': isMaxLengthExceeded,
@@ -55,7 +58,6 @@ export default function ChatInput({ inputRef, disabled = false }) {
     let mounted = true;
     async function loadBadwords() {
       try {
-        // Import without extension to let webpack resolve the correct file
         const enData = await import('bad-words-next/lib/en');
         const ruData = await import('bad-words-next/lib/ru');
         const rlData = await import('bad-words-next/lib/ru_lat');
@@ -111,7 +113,9 @@ export default function ChatInput({ inputRef, disabled = false }) {
       const message = {
         text: filteredText,
         meta: {
-          type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
+          type: activeRoom.targetUserId
+            ? messageTypes.private
+            : messageTypes.general,
           targetUserId: activeRoom.targetUserId,
         },
       };
@@ -121,10 +125,13 @@ export default function ChatInput({ inputRef, disabled = false }) {
     }
   };
 
-  const togglePickerVisibility = useCallback(e => {
-    e.stopPropagation();
-    setPickerVisibility(!isPickerVisible);
-  }, [setPickerVisibility, isPickerVisible]);
+  const togglePickerVisibility = useCallback(
+    e => {
+      e.stopPropagation();
+      setPickerVisibility(!isPickerVisible);
+    },
+    [setPickerVisibility, isPickerVisible],
+  );
 
   const hidePicker = () => setPickerVisibility(false);
 
@@ -146,13 +153,9 @@ export default function ChatInput({ inputRef, disabled = false }) {
     );
   };
 
-  useClickAway(
-    inputRef,
-    () => {
-      hideTooltip();
-    },
-    ['click'],
-  );
+  useClickAway(inputRef, () => {
+    hideTooltip();
+  }, ['click']);
 
   useEffect(() => {
     init({ data });

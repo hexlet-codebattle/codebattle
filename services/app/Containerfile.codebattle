@@ -3,15 +3,14 @@ ENV MIX_ENV=prod
 
 WORKDIR /tmp/codebattle/assets
 
-COPY apps/codebattle/package.json apps/codebattle/yarn.lock ./
-RUN yarn install --frozen-lockfile --network-timeout 300000
+COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml ./
+RUN pnpm install
 
 COPY apps/codebattle/postcss.config.js apps/codebattle/.babelrc ./
-COPY apps/codebattle/webpack ./webpack
 COPY apps/codebattle/assets ./assets
 COPY apps/codebattle/priv/gettext ./priv/gettext
 
-RUN yarn build
+RUN pnpm run build
 
 FROM elixir:1.19.1-otp-28-alpine AS compile-image
 ARG GIT_HASH

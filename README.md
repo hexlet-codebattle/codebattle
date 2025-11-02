@@ -74,11 +74,6 @@ $ mix asserts.upload # Pulls from battle_asserts all issues and upserts into DB
 ```
 
 ### Profile js bundle
-To build stat.json and see details in browser run:
-```
-yarn profile:build
-yarn profile:visualize
-```
 
 ### Support
 

@@ -89,8 +89,3 @@ variable "firebase_api_key" {
 variable "firebase_sender_id" {
   type = string
 }
-
-variable "rollbar_api_key" {
-  type = string
-  description = "Postgres DB Cluster name"
-}

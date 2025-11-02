@@ -1,5 +1,5 @@
 import React, {
-  useState, useCallback, useRef, useEffect,
+ useState, useCallback, useRef, useEffect,
 } from 'react';
 
 import BadWordsNext from 'bad-words-next';
@@ -48,7 +48,6 @@ export default function TournamentChatInput({ disabled }) {
     let mounted = true;
     async function loadBadwords() {
       try {
-        // Import without extension to let webpack resolve the correct file
         const enData = await import('bad-words-next/lib/en');
         const ruData = await import('bad-words-next/lib/ru');
         const rlData = await import('bad-words-next/lib/ru_lat');

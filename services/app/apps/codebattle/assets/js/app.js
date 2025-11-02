@@ -18,6 +18,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'phoenix_html';
 import '@fortawesome/fontawesome-free/js/all';
+import '../css/style.scss';
 import 'bootstrap';
 
 import { inspect } from '@xstate/inspect';

@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-const RustOriginalIcon = ({ className = "", size = "120" }) => (
+const RustOriginalIcon = ({ className = '', size = '120' }) => (
   <svg
     version="1.1"
     height={size}
@@ -8,7 +8,7 @@ const RustOriginalIcon = ({ className = "", size = "120" }) => (
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
     className={`text-[#dea584] dark:text-neutral-100 ${className}`}
-    style={{ stroke: "currentColor", fill: "none" }}
+    style={{ stroke: 'currentColor', fill: 'none' }}
   >
     <g id="logo" transform="translate(60, 60)">
       <path

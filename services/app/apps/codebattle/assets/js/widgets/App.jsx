@@ -6,9 +6,7 @@ import { Provider } from 'react-redux';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import storage from 'redux-persist/lib/storage';
-import rollbarMiddleware from 'rollbar-redux-middleware';
 
-import rollbar from '@/lib/rollbar';
 import machines from '@/machines';
 import reducers from '@/slices';
 
@@ -46,13 +44,12 @@ const rootReducer = combineReducers({
   ...otherReducers,
 });
 
-const rollbarRedux = rollbarMiddleware(rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
   middleware: getDefaultMiddleware => getDefaultMiddleware({
       serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
-    }).concat(rollbarRedux),
+    }),
 });
 
 const persistor = persistStore(store);

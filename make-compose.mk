@@ -12,14 +12,11 @@ compose-build:
 compose-down:
 	podman-compose down -v || true
 
-compose-profile:
-	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn profile'
-
 compose-test-code-checkers:
 	podman-compose run --rm --name codebattle_app app mix test image_executor
 
-compose-test-yarn:
-	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn test'
+compose-test-fe:
+	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm test'
 
 compose-test:
 	podman-compose run --rm --name codebattle_app app mix test --exclude image_executor
@@ -33,10 +30,10 @@ compose-bash:
 compose-install-mix:
 	podman-compose run --rm --name codebattle_app app mix deps.get
 
-compose-install-yarn:
-	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn'
+compose-install-pnpm:
+	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm'
 
-compose-install: compose-install-mix compose-install-yarn
+compose-install: compose-install-mix compose-install-pnpm
 
 compose-setup: compose-down compose-build compose-install compose-db-setup
 
@@ -55,7 +52,7 @@ compose-mix-credo:
 	podman-compose run app mix credo
 
 compose-lint-js-fix:
-	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn lint --fix'
+	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm run lint --fix'
 
 compose-console:
 	podman-compose run --rm --name codebattle_app app iex -S mix
