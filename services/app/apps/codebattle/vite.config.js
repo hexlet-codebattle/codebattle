@@ -51,6 +51,18 @@ export default defineConfig(({ command, mode }) => ({
   define: {
     gon: "window.gon",
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        includePaths: [path.resolve(__dirname, "assets/css")],
+        silenceDeprecations: ["mixed-decls"],
+      },
+    },
+    modules: {
+      localsConvention: "dashes",
+      generateScopedName: "[local]_[hash:base64:4]",
+    },
+  },
   plugins: [
     react(),
     poLoader(),
