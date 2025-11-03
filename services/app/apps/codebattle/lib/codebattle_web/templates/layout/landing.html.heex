@@ -51,6 +51,20 @@
       src={Routes.static_path(@conn, "/assets/landing.js")}
     >
     </script>
+
+    <%= if CodebattleWeb.Vite.dev?() do %>
+      <link rel="stylesheet" href="http://localhost:8080/assets/css/landing.scss" />
+      <script type="module" src="http://localhost:8080/@vite/client"></script>
+      <script type="module" src="http://localhost:8080/assets/js/landing.js"></script>
+    <% else %>
+      <link rel="stylesheet" href={CodebattleWeb.Vite.asset_path("app.css")} />
+      <%= for href <- CodebattleWeb.Vite.css_paths("app.js") do %>
+        <link rel="stylesheet" href={href} />
+      <% end %>
+      <script type="module" src={CodebattleWeb.Vite.asset_path("app.js")}></script>
+    <% end %>
+
+
     <title><%= Application.get_env(:codebattle, :app_title) %></title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
     <script async="" defer="" src="https://buttons.github.io/buttons.js">

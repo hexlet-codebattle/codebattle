@@ -21,6 +21,7 @@ import "@fortawesome/fontawesome-free/js/all";
 // import '../css/style.scss';
 import "bootstrap";
 
+import "@vitejs/plugin-react/preamble";
 import { inspect } from "@xstate/inspect";
 import NProgress from "nprogress";
 import { Socket } from "phoenix";

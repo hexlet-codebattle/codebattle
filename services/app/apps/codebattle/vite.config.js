@@ -37,6 +37,7 @@ const input = {
   cssbattle: path.resolve(__dirname, "assets/js/iframes/cssbattle/index.js"),
   landing: path.resolve(__dirname, "assets/js/landing.js"),
   external: path.resolve(__dirname, "assets/js/external.js"),
+  styles: path.resolve(__dirname, "assets/css/style.scss"),
   // broadcast_editor: path.resolve(
   //   __dirname,
   //   "assets/js/widgets/pages/broadcast-editor/index.js",
