@@ -13,8 +13,6 @@ function poLoader() {
     transform(code, id) {
       if (!id.endsWith(".po")) return null;
       const po = gettextParser.po.parse(code);
-      // i18next expects a simple key/value map;
-      // adjust to your exact structure if needed.
       const out = {};
       for (const ctx of Object.values(po.translations)) {
         for (const [key, val] of Object.entries(ctx)) {
@@ -23,10 +21,18 @@ function poLoader() {
           out[key] = msg;
         }
       }
-      return {
-        code: `export default ${JSON.stringify(out)};`,
-        map: null,
-      };
+      return { code: `export default ${JSON.stringify(out)};`, map: null };
+    },
+  };
+}
+
+// --- force a hard reload for every change (no module-level HMR)
+function forceFullReload() {
+  return {
+    name: "force-full-reload",
+    handleHotUpdate(ctx) {
+      ctx.server.ws.send({ type: "full-reload" });
+      return []; // prevent Vite from doing module HMR
     },
   };
 }
@@ -38,20 +44,13 @@ const input = {
   landing: path.resolve(__dirname, "assets/js/landing.js"),
   external: path.resolve(__dirname, "assets/js/external.js"),
   styles: path.resolve(__dirname, "assets/css/style.scss"),
-  // broadcast_editor: path.resolve(
-  //   __dirname,
-  //   "assets/js/widgets/pages/broadcast-editor/index.js",
-  // ),
-  // stream: path.resolve(
-  //   __dirname,
-  //   "assets/js/widgets/pages/broadcast-editor/stream.js",
-  // ),
+  // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.js"),
+  // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.js"),
 };
 
 export default defineConfig(({ command, mode }) => ({
-  define: {
-    gon: "window.gon",
-  },
+  define: { gon: "window.gon" },
+
   css: {
     preprocessorOptions: {
       scss: {
@@ -64,29 +63,25 @@ export default defineConfig(({ command, mode }) => ({
       generateScopedName: "[local]_[hash:base64:4]",
     },
   },
+
   plugins: [
-    react(),
+    react({ fastRefresh: false }), // no react-refresh preamble
     poLoader(),
-    // makes process.env.* defined (stringified) if your code references it
+    forceFullReload(), // always trigger full reload
     environment(["NODE_ENV"]),
   ],
 
-  root: ".", // project root
+  root: ".",
   base: command === "serve" ? "/" : "/assets/",
-  // keep the rest of your config
 
-  // where Phoenix serves from in production:
   build: {
     outDir: "priv/static/assets",
-    assetsDir: "", // keep flat (so your [name].css/js stay at /assets/)
-    manifest: true, // needed for Phoenix helper
+    assetsDir: "",
+    manifest: true,
     sourcemap: mode === "development",
     rollupOptions: {
       input,
-      // (optional) put monaco in a separate chunk
-      output: {
-        manualChunks: { monaco: ["monaco-editor"] },
-      },
+      output: { manualChunks: { monaco: ["monaco-editor"] } },
     },
     emptyOutDir: true,
   },
@@ -101,18 +96,20 @@ export default defineConfig(({ command, mode }) => ({
     ],
   },
 
-  // Vite dev server (replaces webpack-dev-server on :8080)
+  // Dev server
   server: {
     host: "0.0.0.0",
     port: 8080,
     strictPort: true,
     cors: true,
-    hmr: { host: "localhost", protocol: "ws" },
+    // HMR must be enabled so the browser receives the "full-reload" message
+    hmr: { host: "localhost", protocol: "ws", port: 8080 },
+    // If developing inside Docker and file changes aren't detected, uncomment:
+    // watch: { usePolling: true, interval: 100 },
   },
 
   resolve: {
     alias: {
-      // keep your Webpack aliases
       gon: path.resolve(__dirname, "assets/js/shims/gon.js"),
       "@/": path.resolve(__dirname, "assets/js/widgets"),
       "@/components": path.resolve(__dirname, "assets/js/widgets/components"),
@@ -124,14 +121,10 @@ export default defineConfig(({ command, mode }) => ({
       "@/selectors": path.resolve(__dirname, "assets/js/widgets/selectors"),
       "@/slices": path.resolve(__dirname, "assets/js/widgets/slices"),
       "@/utils": path.resolve(__dirname, "assets/js/widgets/utils"),
-
-      // your old ProvidePlugin fallbacks
       path: "path-browserify",
     },
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
 
-  // Copy static assets like CopyWebpackPlugin:
-  // Place files in ./assets/static — Vite copies that to outDir at build.
   publicDir: "assets/static",
 }));
