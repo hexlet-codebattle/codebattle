@@ -8,6 +8,7 @@
     "watch": "pnpm run dev",
     "dev": "vite",
     "build": "vite build",
+    "build:mem": "NODE_OPTIONS='--max-old-space-size=4096' pnpm build",
     "preview": "vite preview",
     "test": "jest",
     "test-watch": "jest --watchAll",

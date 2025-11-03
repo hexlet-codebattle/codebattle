@@ -10,6 +10,7 @@ services:
     env_file: .env
     command: mix phx.server
     environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
       - "USER=${USER}"
     ports:
       - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
