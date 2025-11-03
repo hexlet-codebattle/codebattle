@@ -31,7 +31,7 @@ compose-install-mix:
 	podman-compose run --rm --name codebattle_app app mix deps.get
 
 compose-install-pnpm:
-	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm'
+	podman-compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && pnpm install && pnpm build'
 
 compose-install: compose-install-mix compose-install-pnpm
 
