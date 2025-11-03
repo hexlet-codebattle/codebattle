@@ -99,7 +99,7 @@ Or follow the official installation guide: https://podman.io/getting-started/ins
 On macOS, podman requires a virtual machine to run containers. Initialize and start it:
 
 ```bash
-podman machine init
+podman machine init --memory=8192
 podman machine start
 ```
 
