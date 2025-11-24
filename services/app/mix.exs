@@ -8,6 +8,7 @@ defmodule CodebattleUmbrella.MixProject do
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
       test_coverage: [tool: ExCoveralls, threshold: 60],
+      aliases: aliases(),
       deps: [
         {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
@@ -47,5 +48,15 @@ defmodule CodebattleUmbrella.MixProject do
         "coveralls.html": :test
       ]
     ]
+  end
+
+  defp aliases do
+    [
+      sobelow: &run_sobelow/1
+    ]
+  end
+
+  defp run_sobelow(_) do
+    Mix.shell().cmd("cd apps/codebattle && mix sobelow", [])
   end
 end
