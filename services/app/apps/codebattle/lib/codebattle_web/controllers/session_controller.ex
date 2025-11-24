@@ -4,6 +4,7 @@ defmodule CodebattleWeb.SessionController do
   alias Codebattle.User
 
   plug(:put_view, CodebattleWeb.SessionView)
+  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
 
   def external_signup(conn, _params) do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))

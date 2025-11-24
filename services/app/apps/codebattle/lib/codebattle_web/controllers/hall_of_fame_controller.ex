@@ -3,6 +3,9 @@ defmodule CodebattleWeb.HallOfFameController do
 
   import PhoenixGon.Controller
 
+  plug(:put_view, CodebattleWeb.HallOfFameView)
+  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+
   def index(conn, _params) do
     top10 = Codebattle.User.get_nearby_users(%{id: nil, rank: 1}, 9)
 

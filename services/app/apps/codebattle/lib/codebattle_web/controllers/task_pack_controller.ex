@@ -5,6 +5,7 @@ defmodule CodebattleWeb.TaskPackController do
   alias Codebattle.User
 
   plug(:put_view, CodebattleWeb.TaskPackView)
+  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
 
   plug(CodebattleWeb.Plugs.RequireAuth)
 

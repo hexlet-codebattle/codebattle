@@ -1,8 +1,9 @@
 defmodule CodebattleWeb.UserController do
   use CodebattleWeb, :controller
 
-  plug(:put_view, CodebattleWeb.UserView)
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :edit, :show])
+  plug(:put_view, CodebattleWeb.UserView)
+  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
 
   def index(conn, _params) do
     conn
