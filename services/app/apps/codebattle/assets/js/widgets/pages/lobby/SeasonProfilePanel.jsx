@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import axios from "axios";
-import cn from "classnames";
-import { camelizeKeys } from "humps";
-import { useDispatch, useSelector } from "react-redux";
+import axios from 'axios';
+import cn from 'classnames';
+import { camelizeKeys } from 'humps';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { loadNearbyUsers } from "@/middlewares/Users";
+import { loadNearbyUsers } from '@/middlewares/Users';
 import {
   selectDefaultAvatarUrl,
   currentUserIsAdminSelector,
   userByIdSelector,
-} from "@/selectors";
+} from '@/selectors';
 
-import i18n from "../../../i18n";
-import { actions } from "../../slices";
+import i18n from '../../../i18n';
+import { actions } from '../../slices';
 
-import CodebattleLeagueDescription from "./CodebattleLeagueDescription";
-import TournamentListItem, { activeIcon } from "./TournamentListItem";
+import CodebattleLeagueDescription from './CodebattleLeagueDescription';
+import TournamentListItem, { activeIcon } from './TournamentListItem';
 
-const contestDatesText = "Season: Oct 16 - Dec 21";
+const contestDatesText = 'Season: Oct 16 - Dec 21';
 
 const OpponentInfo = ({ id }) => {
   const user = useSelector(userByIdSelector(id));
@@ -29,10 +29,10 @@ const OpponentInfo = ({ id }) => {
         <UserLogo user={user} size="25px" />
         <span
           title={user?.name}
-          className={cn("text-white text-truncate ml-2", {
-            "cb-text-skeleton w-100": !user,
+          className={cn('text-white text-truncate ml-2', {
+            'cb-text-skeleton w-100': !user,
           })}
-          style={{ maxWidth: "70px" }}
+          style={{ maxWidth: '70px' }}
         >
           {user?.name}
         </span>
@@ -40,22 +40,23 @@ const OpponentInfo = ({ id }) => {
       <div className="d-flex flex-column text-center py-1 w-100">
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
-            className={cn("stat-value d-block cb-text-danger", {
-              "d-inline cb-text-skeleton w-25 mx-auto": !user,
+            className={cn('stat-value d-block cb-text-danger', {
+              'd-inline cb-text-skeleton w-25 mx-auto': !user,
             })}
           >
-            #{user ? user.rank : ""}
+            #
+            {user ? user.rank : ''}
           </span>
           <span className="stat-label text-uppercase">Place</span>
         </a>
       </div>
       <div className="d-flex flex-column text-center py-1 w-100">
         <span
-          className={cn("stat-value d-block cb-text-danger", {
-            "d-inline cb-text-skeleton w-25 mx-auto": !user,
+          className={cn('stat-value d-block cb-text-danger', {
+            'd-inline cb-text-skeleton w-25 mx-auto': !user,
           })}
         >
-          {user ? user.points : ""}
+          {user ? user.points : ''}
         </span>
         <span className="stat-label text-uppercase">Points</span>
       </div>
@@ -71,7 +72,7 @@ const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
     if (user.points) {
       const abortController = new AbortController();
 
-      const onSuccess = (payload) => {
+      const onSuccess = payload => {
         if (!abortController.signal.aborted) {
           dispatch(actions.setNearbyUsers(payload.data));
           dispatch(actions.updateUsers(payload.data));
@@ -109,14 +110,14 @@ const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
             <OpponentInfo />
           </>
         ) : (
-          nearbyUsers.map((id) => <OpponentInfo id={id} />)
+          nearbyUsers.map(id => <OpponentInfo id={id} />)
         )}
       </div>
     </div>
   );
 };
 
-const UserLogo = ({ user, size = "70px" }) => {
+const UserLogo = ({ user, size = '70px' }) => {
   const [userInfo, setUserInfo] = useState();
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
   const avatarUrl = user?.avatarUrl || userInfo?.avatarUrl || defaultAvatarUrl;
@@ -130,7 +131,7 @@ const UserLogo = ({ user, size = "70px" }) => {
         .get(`/api/v1/user/${userId}/stats`, {
           signal: controller.signal,
         })
-        .then((response) => {
+        .then(response => {
           if (!controller.signal.aborted) {
             setUserInfo(camelizeKeys(response.data.user));
           }
@@ -177,7 +178,7 @@ const SeasonProfilePanel = ({
                     </span>
                   </div>
                   <div className="d-flex flex-wrap">
-                    {liveTournaments.map((tournament) => (
+                    {liveTournaments.map(tournament => (
                       <TournamentListItem
                         isAdmin={isAdmin}
                         key={tournament.id}
@@ -196,7 +197,7 @@ const SeasonProfilePanel = ({
                     </span>
                   </div>
                   <div className="d-flex flex-wrap">
-                    {seasonTournaments.map((tournament) => (
+                    {seasonTournaments.map(tournament => (
                       <TournamentListItem
                         isAdmin={isAdmin}
                         key={tournament.id}
@@ -216,21 +217,21 @@ const SeasonProfilePanel = ({
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("Contests History")}
+              {i18n.t('Contests History')}
             </a>
             <a
               href="/schedule#my"
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("My Tournaments")}
+              {i18n.t('My Tournaments')}
             </a>
             <a
               href="/tournaments"
               type="button"
               className="btn btn-secondary cb-btn-secondary mx-0 mx-md-2 mx-lg-2 w-100 cb-rounded text-nowrap"
             >
-              {i18n.t("Create a Tournament")}
+              {i18n.t('Create a Tournament')}
             </a>
           </div>
         </div>
@@ -242,7 +243,7 @@ const SeasonProfilePanel = ({
             <span className="clan-tag mt-2">{user.name}</span>
             <span className="h1 clan-title m-0 text-white text-uppercase">
               Clan
-              {": "}
+              {': '}
               {user.clanId ? (
                 user.clan
               ) : (
@@ -263,7 +264,8 @@ const SeasonProfilePanel = ({
             <a href="/hall_of_fame" className="stat-item py-1 w-100">
               {user.points ? (
                 <span className="stat-value d-block cb-text-success">
-                  #{user.rank}
+                  #
+                  {user.rank}
                 </span>
               ) : (
                 <span className="stat-value d-block cb-text-danger">#0</span>
@@ -288,7 +290,7 @@ const SeasonProfilePanel = ({
             href="/hall_of_fame"
             className="text-uppercase stat-label cb-rounded"
           >
-            {i18n.t("View Hall of Fame")}
+            {i18n.t('View Hall of Fame')}
           </a>
         </div>
         {controls}

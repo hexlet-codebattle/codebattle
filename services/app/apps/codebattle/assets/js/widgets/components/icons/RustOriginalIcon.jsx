@@ -33,13 +33,15 @@ const RustOriginalIcon = ({ className = '', size = '120' }) => (
             strokeLinejoin="round"
             points="46,3 51,0 46,-3"
           />
+          {/* eslint-disable react/no-array-index-key */}
           {[...Array(31)].map((_, i) => (
             <use
-              key={i}
+              key={`cog-${i}`}
               xlinkHref="#cog"
               transform={`rotate(${11.25 * (i + 1)})`}
             />
           ))}
+          {/* eslint-enable react/no-array-index-key */}
         </g>
         <g id="mounts">
           <polygon
@@ -49,25 +51,29 @@ const RustOriginalIcon = ({ className = '', size = '120' }) => (
             strokeLinejoin="round"
             points="-7,-42 0,-35 7,-42"
           />
+          {/* eslint-disable react/no-array-index-key */}
           {[...Array(4)].map((_, i) => (
             <use
-              key={i}
+              key={`mount-${i}`}
               xlinkHref="#mount"
               transform={`rotate(${72 * (i + 1)})`}
             />
           ))}
+          {/* eslint-enable react/no-array-index-key */}
         </g>
       </g>
       <mask id="holes">
         <rect x="-60" y="-60" width="120" height="120" fill="white" />
         <circle id="hole" cy="-40" r="3" />
+        {/* eslint-disable react/no-array-index-key */}
         {[...Array(4)].map((_, i) => (
           <use
-            key={i}
+            key={`hole-${i}`}
             xlinkHref="#hole"
             transform={`rotate(${72 * (i + 1)})`}
           />
         ))}
+        {/* eslint-enable react/no-array-index-key */}
       </mask>
     </g>
   </svg>

@@ -202,6 +202,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           type="button"
           className={emojiBtnClassName}
           onClick={togglePickerVisibility}
+          aria-label="Open emoji picker"
         >
           <em-emoji id="grinning" size={20} />
         </button>

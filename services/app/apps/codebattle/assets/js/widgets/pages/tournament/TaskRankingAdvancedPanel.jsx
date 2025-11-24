@@ -131,7 +131,9 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                 <th className="p-1 pl-4 font-weight-light border-0">
                   {i18next.t('Duration (sec)')}
                 </th>
-                <th className="p-1 pl-4 font-weight-light border-0"> </th>
+                <th className="p-1 pl-4 font-weight-light border-0">
+                  {i18next.t('Link')}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -142,6 +144,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                   <tr className="cb-custom-event-empty-space-tr" />
                   <tr className={getCustomEventTrClassName()}>
                     <td className={tableDataCellClassName}>
+                      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                       <div
                         role="button"
                         tabIndex={0}

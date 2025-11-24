@@ -163,7 +163,7 @@ export const language = {
     comment: [
       [/[^/*]+/, 'comment'],
       [/\*\//, 'comment', '@pop'],
-      [/[\/*]/, 'comment'],
+      [/[/*]/, 'comment'],
     ],
 
     whitespace: [

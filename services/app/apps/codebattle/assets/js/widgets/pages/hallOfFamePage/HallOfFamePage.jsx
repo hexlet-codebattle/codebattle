@@ -1,12 +1,11 @@
-import React, { memo } from "react";
+import React, { memo } from 'react';
 
-import cn from "classnames";
-import Gon from "gon";
+import cn from 'classnames';
+import Gon from 'gon';
 
 const HallOfFamePage = () => {
-  const currentSeason =
-    (Gon && Gon.getAsset && Gon.getAsset("current_season")) || null;
-  const top10 = (Gon && Gon.getAsset && Gon.getAsset("top10")) || [];
+  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset('current_season')) || null;
+  const top10 = (Gon && Gon.getAsset && Gon.getAsset('top10')) || [];
 
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5 d-flex flex-column align-items-center">
@@ -15,7 +14,7 @@ const HallOfFamePage = () => {
 
         <div
           className={cn(
-            "card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light",
+            'card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light',
           )}
         >
           <div className="card-body">
@@ -45,7 +44,7 @@ const HallOfFamePage = () => {
                                 src={user.avatar_url}
                                 alt={user.name}
                                 className="rounded-circle me-2"
-                                style={{ width: "32px", height: "32px" }}
+                                style={{ width: '32px', height: '32px' }}
                               />
                             )}
                             <span>
@@ -61,10 +60,10 @@ const HallOfFamePage = () => {
                             </span>
                           </div>
                         </td>
-                        <td>{user.rank || "-"}</td>
+                        <td>{user.rank || '-'}</td>
                         <td>{user.points || 0}</td>
                         <td>{user.rating || 0}</td>
-                        <td>{user.clan || "-"}</td>
+                        <td>{user.clan || '-'}</td>
                       </tr>
                     ))
                   ) : (
@@ -83,24 +82,32 @@ const HallOfFamePage = () => {
         {currentSeason && (
           <div
             className={cn(
-              "card mt-4 cb-bg-panel cb-border-color cb-rounded shadow-sm",
-              "border-0 text-light",
+              'card mt-4 cb-bg-panel cb-border-color cb-rounded shadow-sm',
+              'border-0 text-light',
             )}
           >
             <div className="card-body py-3">
               <h5 className="card-title mb-2 text-white">Current Season</h5>
               <div className="d-flex flex-wrap gap-3 small">
                 <span>
-                  <strong>Season:</strong> {currentSeason.name || "N/A"}
+                  <strong>Season:</strong>
+                  {' '}
+                  {currentSeason.name || 'N/A'}
                 </span>
                 <span>
-                  <strong>Year:</strong> {currentSeason.year || "N/A"}
+                  <strong>Year:</strong>
+                  {' '}
+                  {currentSeason.year || 'N/A'}
                 </span>
                 <span>
-                  <strong>Starts:</strong> {currentSeason.starts_at || "N/A"}
+                  <strong>Starts:</strong>
+                  {' '}
+                  {currentSeason.starts_at || 'N/A'}
                 </span>
                 <span>
-                  <strong>Ends:</strong> {currentSeason.ends_at || "N/A"}
+                  <strong>Ends:</strong>
+                  {' '}
+                  {currentSeason.ends_at || 'N/A'}
                 </span>
               </div>
             </div>

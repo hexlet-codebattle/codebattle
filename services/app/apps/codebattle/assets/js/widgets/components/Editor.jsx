@@ -34,13 +34,13 @@ function Editor(props) {
   const vimModeRef = useRef(null);
 
   // Wrap your existing "didMount" to store editor and call original if needed
-  function handleEditorDidMount(editor, monaco) {
+  const handleEditorDidMount = React.useCallback((editor, monaco) => {
     editorRef.current = editor;
 
     if (typeof originalEditorDidMount === 'function') {
       originalEditorDidMount(editor, monaco);
     }
-  }
+  }, [originalEditorDidMount]);
   // Whenever `mode` changes, enable or disable vimMode
   useEffect(() => {
     // If we haven't mounted the editor yet, exit

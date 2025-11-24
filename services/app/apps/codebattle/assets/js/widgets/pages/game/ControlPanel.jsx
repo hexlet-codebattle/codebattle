@@ -66,16 +66,18 @@ function ControlPanel({
           data-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          aria-label="Settings menu"
         >
           <i className="fas fa-cog" />
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <div className="d-flex">
-            <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+            <button type="button" className={speedControlClassNames} onClick={onChangeSpeed} aria-label="Toggle speed">x2</button>
             <button
               type="button"
               className="btn btn-sm ml-2 border btn-light cb-rounded"
               title="Copy history game url at current record id"
+              aria-label="Copy game link"
               onClick={() => {
                 const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
                 copy(url);

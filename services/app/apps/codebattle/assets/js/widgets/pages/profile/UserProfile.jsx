@@ -101,6 +101,7 @@ function UserProfile() {
                   title="Github account"
                   className="text-muted"
                   href={`https://github.com/${user.githubName}`}
+                  aria-label="Github account"
                 >
                   <span className="fab fa-github" />
                 </a>

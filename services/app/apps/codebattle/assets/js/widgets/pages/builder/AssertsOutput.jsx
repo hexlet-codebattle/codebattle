@@ -18,7 +18,7 @@ const AssertsOutput = memo(({ asserts, status, output }) => {
         asserts
         && asserts.map((assert, index) => (
           <AccordeonBox.SubMenu
-            key={index.toString()}
+            key={assert.id || `assert-${index}`}
             statusColor={color[assert.status]}
             executionTime={assert.executionTime || 0}
             assert={{

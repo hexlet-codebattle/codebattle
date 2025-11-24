@@ -1,4 +1,5 @@
 // assets/js/shims/gon.js
+/* global globalThis */
 const Gon = (globalThis && (globalThis.Gon || globalThis.gon)) || null;
 
 if (!Gon) {

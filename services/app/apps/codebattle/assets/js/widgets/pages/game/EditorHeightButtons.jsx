@@ -15,6 +15,7 @@ function EditorHeightButtons({ editor: { userId } }) {
         type="button"
         className="btn btn-sm btn-light border"
         onClick={compressEditor(userId)}
+        aria-label="Compress editor"
       >
         <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
       </button>
@@ -22,6 +23,7 @@ function EditorHeightButtons({ editor: { userId } }) {
         type="button"
         className="btn btn-sm btn-light border ml-2"
         onClick={expandEditor(userId)}
+        aria-label="Expand editor"
       >
         <i className="fas fa-expand-arrows-alt" aria-hidden="true" />
       </button>

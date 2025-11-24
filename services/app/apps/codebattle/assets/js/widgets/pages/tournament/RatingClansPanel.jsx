@@ -98,7 +98,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                     <tr
                       className={getCustomEventTrClassName('user', index > 3)}
                     >
-                      <td className={tableDataCellClassName(true)} />
+                      <td className={tableDataCellClassName(true)} aria-label="User row" />
                       <td className={tableDataCellClassName()}>
                         <div
                           role="button"

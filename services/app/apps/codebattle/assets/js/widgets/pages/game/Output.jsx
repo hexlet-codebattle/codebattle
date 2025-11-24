@@ -133,7 +133,7 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
         normalizedAsserts
         && normalizedAsserts.map((assert, index) => (
           <AccordeonBox.SubMenu
-            key={index.toString()}
+            key={assert.id || `assert-${index}`}
             fontSize={fontSize}
             statusColor={color[assert.status]}
             executionTime={assert.executionTime}

@@ -48,6 +48,7 @@ function GameActionButton({
               data-toggle="tooltip"
               data-placement="right"
               title="Copy link"
+              aria-label="Copy link"
             >
               <i className="far fa-copy" />
             </button>
@@ -58,6 +59,7 @@ function GameActionButton({
               data-toggle="tooltip"
               data-placement="right"
               title="Cancel game"
+              aria-label="Cancel game"
               disabled={!isOnline}
             >
               <i className="fas fa-times" />
@@ -78,6 +80,7 @@ function GameActionButton({
             data-toggle="tooltip"
             data-placement="right"
             title="Copy link"
+            aria-label="Copy link"
           >
             <i className="far fa-copy" />
           </button>
@@ -88,6 +91,7 @@ function GameActionButton({
             data-toggle="tooltip"
             data-placement="right"
             title="Cancel game"
+            aria-label="Cancel game"
             disabled={!isOnline}
           >
             <i className="fas fa-times" />
