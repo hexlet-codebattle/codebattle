@@ -83,7 +83,6 @@ defmodule Codebattle.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       # dev
       {:phoenix_live_reload, "~> 1.3", only: :dev},
 
@@ -105,7 +104,6 @@ defmodule Codebattle.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      sobelow: ["cmd mix sobelow"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate", "test"]

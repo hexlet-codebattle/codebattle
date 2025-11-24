@@ -13,7 +13,6 @@ defmodule CodebattleUmbrella.MixProject do
         {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.13", only: :test},
-        {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
       ],
       listeners: [Phoenix.CodeReloader],
       dialyzer: [
@@ -51,12 +50,6 @@ defmodule CodebattleUmbrella.MixProject do
   end
 
   defp aliases do
-    [
-      sobelow: &run_sobelow/1
-    ]
-  end
-
-  defp run_sobelow(_) do
-    Mix.shell().cmd("cd apps/codebattle && mix sobelow", [])
+    [ ]
   end
 end
