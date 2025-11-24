@@ -91,8 +91,7 @@ defmodule Codebattle.MixProject do
       {:excoveralls, "~> 0.13", only: :test},
       {:floki, "~> 0.29", only: :test},
       {:mock, "~> 0.3.5", only: :test},
-      {:phoenix_integration,
-       github: "jaimeiniesta/phoenix_integration", branch: "relax-phoenix-html", only: :test}
+      {:phoenix_integration, github: "jaimeiniesta/phoenix_integration", branch: "relax-phoenix-html", only: :test}
     ]
   end
 

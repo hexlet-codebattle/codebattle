@@ -12,7 +12,7 @@ defmodule CodebattleUmbrella.MixProject do
       deps: [
         {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
-        {:excoveralls, "~> 0.13", only: :test},
+        {:excoveralls, "~> 0.13", only: :test}
       ],
       listeners: [Phoenix.CodeReloader],
       dialyzer: [
@@ -50,6 +50,6 @@ defmodule CodebattleUmbrella.MixProject do
   end
 
   defp aliases do
-    [ ]
+    []
   end
 end
