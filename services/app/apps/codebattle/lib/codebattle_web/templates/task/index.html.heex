@@ -1,13 +1,13 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
   <h1 class="text-center text-white">Tasks</h1>
-  <%= link("Create new task",
+  {link("Create new task",
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :new),
     class: "btn btn-success cb-btn-success mt-2 cb-rounded"
-  ) %>
-  <%= link("Task packs",
+  )}
+  {link("Task packs",
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index),
     class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"
-  ) %>
+  )}
   <div class="table-responsive mt-4">
     <table class="table table-sm">
       <thead class="cb-text">
@@ -26,8 +26,8 @@
       <tbody>
         <%= for task <- @tasks do %>
           <tr>
-            <td class="align-middle text text-white cb-border-color"><%= task.id %></td>
-            <td class="align-middle text text-white cb-border-color"><%= task.name %></td>
+            <td class="align-middle text text-white cb-border-color">{task.id}</td>
+            <td class="align-middle text text-white cb-border-color">{task.name}</td>
             <td class="align-middle text-nowrap text-white cb-border-color">
               <div class="d-flex">
                 <div class="p-1 m-1 bg-gray cb-rounded">
@@ -36,43 +36,43 @@
               </div>
             </td>
             <td class="align-middle text text-white cb-border-color">
-              <%= Enum.join(task.tags, ", ") %>
+              {Enum.join(task.tags, ", ")}
             </td>
-            <td class="align-middle text text-white cb-border-color"><%= task.origin %></td>
-            <td class="align-middle text text-white cb-border-color"><%= task.state %></td>
-            <td class="align-middle text text-white cb-border-color"><%= task.visibility %></td>
+            <td class="align-middle text text-white cb-border-color">{task.origin}</td>
+            <td class="align-middle text text-white cb-border-color">{task.state}</td>
+            <td class="align-middle text text-white cb-border-color">{task.visibility}</td>
             <td class="align-middle text text-white cb-border-color">
-              <%= format_datetime(task.updated_at) %>
+              {format_datetime(task.updated_at)}
             </td>
             <td class="align-middle text-nowrap text-white cb-border-color">
               <div class="d-flex">
                 <%= if !Codebattle.User.admin?(@current_user) do %>
-                  <%= link("Show",
+                  {link("Show",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
-                  ) %>
+                  )}
                 <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
-                  <%= link("Show",
+                  {link("Show",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
                     class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
-                  ) %>
-                  <%= button("Activate",
+                  )}
+                  {button("Activate",
                     to:
                       CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id),
                     method: "patch",
                     class: "btn btn-sm btn-success cb-btn-success cb-rounded"
-                  ) %>
-                  <%= button("Disable",
+                  )}
+                  {button("Disable",
                     to: CodebattleWeb.Router.Helpers.task_disable_path(@conn, :disable, task.id),
                     method: "patch",
                     class: "btn btn-sm btn-danger cb-rounded"
-                  ) %>
-                  <%= button("Delete",
+                  )}
+                  {button("Delete",
                     to: CodebattleWeb.Router.Helpers.task_path(@conn, :delete, task.id),
                     method: "delete",
                     class: "btn btn-sm btn-danger cb-rounded"
-                  ) %>
+                  )}
                 <% end %>
               </div>
             </td>

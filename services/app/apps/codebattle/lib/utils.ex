@@ -41,7 +41,7 @@ defmodule Utils do
 
   def sanitize_jsonb(_), do: ""
 
-  # Remove null bytes from JSON string
+  # Remove null bytes from Jason string
   defp remove_null_bytes(json_string) do
     String.replace(json_string, <<0>>, "")
   end

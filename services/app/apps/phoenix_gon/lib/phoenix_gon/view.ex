@@ -1,7 +1,8 @@
 defmodule PhoenixGon.View do
   import PhoenixGon.Utils
   import Phoenix.HTML
-  import Phoenix.HTML.Tag
+  use PhoenixHTMLHelpers
+  import PhoenixHTMLHelpers.Tag
 
   @moduledoc """
   Adds templates helpers for rendering and adding javascript code to browser.

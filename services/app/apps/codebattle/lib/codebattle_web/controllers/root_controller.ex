@@ -7,6 +7,9 @@ defmodule CodebattleWeb.RootController do
   alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.LayoutView
 
+  plug(:put_view, CodebattleWeb.RootView)
+  plug(:put_layout, {LayoutView, "app.html"})
+
   def index(conn, params) do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 

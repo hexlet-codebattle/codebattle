@@ -94,31 +94,31 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
           <div class="card-body">
             <.form :let={f} for={@changeset} phx-change="validate" phx-submit="create" class="row g-3">
               <div class="col-md-6">
-                <%= label(f, :name, class: "form-label") %>
-                <%= text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season") %>
-                <%= error_tag(f, :name) %>
+                {label(f, :name, class: "form-label")}
+                {text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season")}
+                {error_tag(f, :name)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :year, class: "form-label") %>
-                <%= number_input(f, :year, class: "form-control", placeholder: "e.g., 2024") %>
-                <%= error_tag(f, :year) %>
+                {label(f, :year, class: "form-label")}
+                {number_input(f, :year, class: "form-control", placeholder: "e.g., 2024")}
+                {error_tag(f, :year)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :starts_at, "Start Date", class: "form-label") %>
-                <%= date_input(f, :starts_at, class: "form-control") %>
-                <%= error_tag(f, :starts_at) %>
+                {label(f, :starts_at, "Start Date", class: "form-label")}
+                {date_input(f, :starts_at, class: "form-control")}
+                {error_tag(f, :starts_at)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :ends_at, "End Date", class: "form-label") %>
-                <%= date_input(f, :ends_at, class: "form-control") %>
-                <%= error_tag(f, :ends_at) %>
+                {label(f, :ends_at, "End Date", class: "form-label")}
+                {date_input(f, :ends_at, class: "form-control")}
+                {error_tag(f, :ends_at)}
               </div>
 
               <div class="col-12">
-                <%= submit("Create Season", class: "btn btn-primary", phx_disable_with: "Creating...") %>
+                {submit("Create Season", class: "btn btn-primary", phx_disable_with: "Creating...")}
               </div>
             </.form>
           </div>
@@ -149,13 +149,13 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
                 <tbody>
                   <%= for season <- @seasons do %>
                     <tr>
-                      <td><%= season.id %></td>
-                      <td><strong><%= season.name %></strong></td>
-                      <td><%= season.year %></td>
-                      <td><%= Calendar.strftime(season.starts_at, "%b %d, %Y") %></td>
-                      <td><%= Calendar.strftime(season.ends_at, "%b %d, %Y") %></td>
+                      <td>{season.id}</td>
+                      <td><strong>{season.name}</strong></td>
+                      <td>{season.year}</td>
+                      <td>{Calendar.strftime(season.starts_at, "%b %d, %Y")}</td>
+                      <td>{Calendar.strftime(season.ends_at, "%b %d, %Y")}</td>
                       <td>
-                        <%= Date.diff(season.ends_at, season.starts_at) %> days
+                        {Date.diff(season.ends_at, season.starts_at)} days
                       </td>
                       <td>
                         <div class="btn-group" role="group">

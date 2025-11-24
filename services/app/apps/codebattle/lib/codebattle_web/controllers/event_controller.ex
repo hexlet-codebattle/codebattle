@@ -12,7 +12,10 @@ defmodule CodebattleWeb.EventController do
   end
 
   def new(conn, _params) do
-    render(conn, "new.html", changeset: Event.changeset(%Event{}), user: conn.assigns.current_user)
+    render(conn, "new.html",
+      changeset: Event.changeset(%Event{}),
+      user: conn.assigns.current_user
+    )
   end
 
   def show(conn, %{"id" => id}) do
@@ -27,7 +30,7 @@ defmodule CodebattleWeb.EventController do
     user = conn.assigns.current_user
     params = Map.put(event_params, "user_id", user.id)
 
-    # Handle stages JSON if present
+    # Handle stages Jason if present
     params = process_stages_json(params)
 
     case Event.create(params) do
@@ -44,7 +47,7 @@ defmodule CodebattleWeb.EventController do
   def update(conn, %{"id" => id, "event" => event_params}) do
     event = Event.get!(id)
 
-    # Handle stages JSON if present
+    # Handle stages Jason if present
     event_params = process_stages_json(event_params)
 
     case Event.update(
@@ -57,7 +60,11 @@ defmodule CodebattleWeb.EventController do
         |> redirect(to: Routes.event_path(conn, :show, event))
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", event: event, changeset: changeset, user: conn.assigns.current_user)
+        render(conn, "edit.html",
+          event: event,
+          changeset: changeset,
+          user: conn.assigns.current_user
+        )
     end
   end
 
@@ -78,7 +85,7 @@ defmodule CodebattleWeb.EventController do
     |> redirect(to: Routes.event_path(conn, :index))
   end
 
-  # Process stages JSON data from form
+  # Process stages Jason data from form
   defp process_stages_json(%{"stages_json" => stages_json} = params) when is_binary(stages_json) and stages_json != "" do
     with {:ok, stages_data} <- Jason.decode(stages_json),
          true <- is_list(stages_data) do
@@ -94,7 +101,7 @@ defmodule CodebattleWeb.EventController do
       |> Map.put("stages", stages)
     else
       _ ->
-        # Invalid format - not a list or invalid JSON
+        # Invalid format - not a list or invalid Jason
         params
     end
   end

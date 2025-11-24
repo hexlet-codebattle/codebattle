@@ -4,6 +4,8 @@ defmodule CodebattleWeb.TaskPackController do
   alias Codebattle.TaskPack
   alias Codebattle.User
 
+  plug(:put_view, CodebattleWeb.TaskPackView)
+
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do

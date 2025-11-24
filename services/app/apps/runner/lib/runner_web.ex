@@ -19,7 +19,7 @@ defmodule RunnerWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: RunnerWeb
+      use Phoenix.Controller, formats: [:json]
 
       import Plug.Conn
       alias RunnerWeb.Router.Helpers, as: Routes

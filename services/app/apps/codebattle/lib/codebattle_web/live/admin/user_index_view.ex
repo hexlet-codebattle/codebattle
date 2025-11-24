@@ -88,23 +88,23 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
         <tbody>
           <%= for {user, index} <- Enum.with_index(@users) do %>
             <tr>
-              <td><%= index %></td>
-              <td><%= user.id %></td>
+              <td>{index}</td>
+              <td>{user.id}</td>
               <td>
                 <a
                   href={Routes.admin_user_show_view_path(@socket, :show, user.id)}
                   class="text-primary"
                 >
-                  <%= user.name %>
+                  {user.name}
                 </a>
               </td>
-              <td><%= user.clan && String.slice(user.clan, 0, 20) %></td>
+              <td>{user.clan && String.slice(user.clan, 0, 20)}</td>
               <td>
-                <%= CodebattleWeb.Router.Helpers.auth_url(CodebattleWeb.Endpoint, :token,
+                {CodebattleWeb.Router.Helpers.auth_url(CodebattleWeb.Endpoint, :token,
                   t: user.auth_token
-                ) %>
+                )}
               </td>
-              <td><%= user.inserted_at %></td>
+              <td>{user.inserted_at}</td>
               <td>
                 <button class="btn btn-sm btn-primary" phx-click="reset_token" phx-value-id={user.id}>
                   Reset Auth
@@ -119,10 +119,10 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                   phx-submit="update"
                   class="col-12 col-md-8 col-lg-8 col-xl-8 offset-md-2 offset-lg-2 offset-xl-2"
                 >
-                  <%= hidden_input(f, :user_id, value: user.id) %>
-                  <%= select(f, :subscription_type, Codebattle.User.subscription_types(),
+                  {hidden_input(f, :user_id, value: user.id)}
+                  {select(f, :subscription_type, Codebattle.User.subscription_types(),
                     class: "custom-select"
-                  ) %>
+                  )}
                 </.form>
               </td>
             </tr>

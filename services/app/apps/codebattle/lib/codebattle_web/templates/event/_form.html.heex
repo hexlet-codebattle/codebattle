@@ -1,61 +1,61 @@
-<%= f = form_for(@changeset, @action, class: "col-8  offset-2") %>
+{f = form_for(@changeset, @action, class: "col-8  offset-2")}
 <div class="form-group">
   <div>
     <span>Slug</span>
     <span class="ml-3 text-muted">Slug for an Event should be unique</span>
   </div>
-  <%= text_input(f, :slug,
+  {text_input(f, :slug,
     class: "form-control form-control-lg",
     maxlength: "57",
     required: false
-  ) %>
-  <%= error_tag(f, :slug) %>
+  )}
+  {error_tag(f, :slug)}
 </div>
 <div class="form-group">
   <div>
     <span>Title</span>
   </div>
-  <%= text_input(f, :title,
+  {text_input(f, :title,
     class: "form-control form-control-lg",
     maxlength: "157",
     required: false
-  ) %>
-  <%= error_tag(f, :title) %>
+  )}
+  {error_tag(f, :title)}
 </div>
 <div class="form-group">
   <div>
     <span>Description</span>
   </div>
-  <%= textarea(f, :description, class: "form-control form-control-lg") %>
-  <%= error_tag(f, :description) %>
+  {textarea(f, :description, class: "form-control form-control-lg")}
+  {error_tag(f, :description)}
 </div>
 <div class="form-group">
-  <%= label(f, :type) %>
-  <%= select(f, :type, Codebattle.Event.types(), class: "form-control form-control-lg") %>
-  <%= error_tag(f, :type) %>
+  {label(f, :type)}
+  {select(f, :type, Codebattle.Event.types(), class: "form-control form-control-lg")}
+  {error_tag(f, :type)}
 </div>
 <div class="d-flex flex-column justify-content-between w-auto">
-  <label>Starts at (<%= @user.timezone %>)</label>
-  <%= datetime_local_input(f, :starts_at,
+  <label>Starts at ({@user.timezone})</label>
+  {datetime_local_input(f, :starts_at,
     class: "form-control",
     required: true,
     value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user.timezone), 5, :minute)
-  ) %>
-  <%= error_tag(f, :starts_at) %>
+  )}
+  {error_tag(f, :starts_at)}
 </div>
 <div class="form-group">
   <div>
     <span>Ticker Text</span>
   </div>
-  <%= text_input(f, :ticker_text, class: "form-control form-control-lg") %>
-  <%= error_tag(f, :ticker_text) %>
+  {text_input(f, :ticker_text, class: "form-control form-control-lg")}
+  {error_tag(f, :ticker_text)}
 </div>
 <div class="form-group">
   <div>
     <span>Personal Tournament ID</span>
   </div>
-  <%= number_input(f, :personal_tournament_id, class: "form-control form-control-lg") %>
-  <%= error_tag(f, :personal_tournament_id) %>
+  {number_input(f, :personal_tournament_id, class: "form-control form-control-lg")}
+  {error_tag(f, :personal_tournament_id)}
 </div>
 
 <div class="mb-4">
@@ -64,12 +64,12 @@
     <div>
       <span>Stages (JSON format)</span>
     </div>
-    <%= textarea(f, :stages_json,
+    {textarea(f, :stages_json,
       class: "form-control form-control-lg",
-      value: Jason.encode_to_iodata!(@changeset.data.stages || [], pretty: true),
+      value: JSON.encode_to_iodata!(@changeset.data.stages || [], pretty: true),
       rows: 15
-    ) %>
-    <%= error_tag(f, :stages_json) %>
+    )}
+    {error_tag(f, :stages_json)}
     <div class="alert alert-info mt-2">
       <p>Edit stages in JSON format. Each stage should include:</p>
       <ul>
@@ -91,9 +91,9 @@
 </div>
 
 <div class="d-flex">
-  <%= submit("Save",
+  {submit("Save",
     phx_disable_with: "Saving...",
     class: "btn btn-success text-white mb-2 rounded-lg"
-  ) %>
-  <%= link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto") %>
+  )}
+  {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
 </div>

@@ -158,8 +158,7 @@ config :runner, container_killer: System.get_env("RUNNER_CONTAINER_KILLER", "") 
 config :runner, cpu_logger: System.get_env("RUNNER_CPU_LOGGER", "") == "true"
 
 config :runner,
-  max_parallel_containers_run:
-    "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
+  max_parallel_containers_run: "CODEBATTLE_MAX_PARALLEL_CONTAINERS_RUN" |> System.get_env("16") |> String.to_integer()
 
 config :runner, pull_images: System.get_env("RUNNER_PULL_IMAGES", "") == "true"
 

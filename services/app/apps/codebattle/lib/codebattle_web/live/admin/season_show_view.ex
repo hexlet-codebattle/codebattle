@@ -90,32 +90,32 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
           <%= if @editing do %>
             <.form :let={f} for={@changeset} phx-change="validate" phx-submit="update" class="row g-3">
               <div class="col-md-6">
-                <%= label(f, :name, class: "form-label") %>
-                <%= text_input(f, :name, class: "form-control") %>
-                <%= error_tag(f, :name) %>
+                {label(f, :name, class: "form-label")}
+                {text_input(f, :name, class: "form-control")}
+                {error_tag(f, :name)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :year, class: "form-label") %>
-                <%= number_input(f, :year, class: "form-control") %>
-                <%= error_tag(f, :year) %>
+                {label(f, :year, class: "form-label")}
+                {number_input(f, :year, class: "form-control")}
+                {error_tag(f, :year)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :starts_at, "Start Date", class: "form-label") %>
-                <%= date_input(f, :starts_at, class: "form-control") %>
-                <%= error_tag(f, :starts_at) %>
+                {label(f, :starts_at, "Start Date", class: "form-label")}
+                {date_input(f, :starts_at, class: "form-control")}
+                {error_tag(f, :starts_at)}
               </div>
 
               <div class="col-md-6">
-                <%= label(f, :ends_at, "End Date", class: "form-label") %>
-                <%= date_input(f, :ends_at, class: "form-control") %>
-                <%= error_tag(f, :ends_at) %>
+                {label(f, :ends_at, "End Date", class: "form-label")}
+                {date_input(f, :ends_at, class: "form-control")}
+                {error_tag(f, :ends_at)}
               </div>
 
               <div class="col-12">
                 <div class="btn-group" role="group">
-                  <%= submit("Save Changes", class: "btn btn-primary", phx_disable_with: "Saving...") %>
+                  {submit("Save Changes", class: "btn btn-primary", phx_disable_with: "Saving...")}
                   <button type="button" class="btn btn-secondary" phx-click="toggle_edit">
                     Cancel
                   </button>
@@ -126,37 +126,37 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">ID</label>
-                <div class="fw-bold"><%= @season.id %></div>
+                <div class="fw-bold">{@season.id}</div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">Name</label>
-                <div class="fw-bold"><%= @season.name %></div>
+                <div class="fw-bold">{@season.name}</div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">Year</label>
-                <div class="fw-bold"><%= @season.year %></div>
+                <div class="fw-bold">{@season.year}</div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">Duration</label>
                 <div class="fw-bold">
-                  <%= Date.diff(@season.ends_at, @season.starts_at) %> days
+                  {Date.diff(@season.ends_at, @season.starts_at)} days
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">Start Date</label>
                 <div class="fw-bold">
-                  <%= Calendar.strftime(@season.starts_at, "%B %d, %Y") %>
+                  {Calendar.strftime(@season.starts_at, "%B %d, %Y")}
                 </div>
               </div>
 
               <div class="col-md-6 mb-3">
                 <label class="form-label text-muted">End Date</label>
                 <div class="fw-bold">
-                  <%= Calendar.strftime(@season.ends_at, "%B %d, %Y") %>
+                  {Calendar.strftime(@season.ends_at, "%B %d, %Y")}
                 </div>
               </div>
 

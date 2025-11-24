@@ -1,13 +1,13 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
   <h1 class="text-center text-white">
-    <span><%= @task_pack.name %></span>
+    <span>{@task_pack.name}</span>
   </h1>
   <h3 class="text-center mt-4 text-white">Params</h3>
   <div class="d-flex text-white flex-wrap align-items-center justify-content-around text-muted">
-    <span>Visibility: <%= @task_pack.visibility %></span>
-    <span>State: <%= @task_pack.state %></span>
+    <span>Visibility: {@task_pack.visibility}</span>
+    <span>State: {@task_pack.state}</span>
     <%= if @task_pack.creator_id do %>
-      <span>Creator_id: <%= @task_pack.creator_id %></span>
+      <span>Creator_id: {@task_pack.creator_id}</span>
     <% end %>
   </div>
 
@@ -31,27 +31,27 @@
         <%= for {task_id, index} <- Enum.with_index(@task_pack.task_ids) do %>
           <%= if task = Enum.find(@tasks, fn task -> task.id == task_id end) do %>
             <tr>
-              <td class="align-middle text text-white cb-border-color"><%= index %></td>
-              <td class="align-middle text text-white cb-border-color"><%= task.id %></td>
+              <td class="align-middle text text-white cb-border-color">{index}</td>
+              <td class="align-middle text text-white cb-border-color">{task.id}</td>
               <td class="align-middle text text-white cb-border-color">
-                <%= link(task.name,
+                {link(task.name,
                   to: Routes.raw_task_path(@conn, :show, task.id),
                   class: "ml-auto text-primary"
-                ) %>
+                )}
               </td>
-              <td class="align-middle text text-white cb-border-color"><%= task.level %></td>
+              <td class="align-middle text text-white cb-border-color">{task.level}</td>
               <td class="align-middle text text-white cb-border-color">
-                <%= Enum.join(task.tags, ", ") %>
+                {Enum.join(task.tags, ", ")}
               </td>
-              <td class="align-middle text text-white cb-border-color"><%= task.origin %></td>
-              <td class="align-middle text text-white cb-border-color"><%= task.state %></td>
+              <td class="align-middle text text-white cb-border-color">{task.origin}</td>
+              <td class="align-middle text text-white cb-border-color">{task.state}</td>
               <td class="align-middle text text-white cb-border-color">
-                <%= task.time_to_solve_sec %>
+                {task.time_to_solve_sec}
               </td>
-              <td class="align-middle text text-white cb-border-color"><%= task.visibility %></td>
+              <td class="align-middle text text-white cb-border-color">{task.visibility}</td>
             </tr>
           <% else %>
-            <span className="cb-text">Task not found for id = <%= task_id %></span>
+            <span className="cb-text">Task not found for id = {task_id}</span>
           <% end %>
         <% end %>
       </tbody>
@@ -59,21 +59,21 @@
   </div>
   <div class="d-flex">
     <%= if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do %>
-      <%= link("Edit",
+      {link("Edit",
         to: Routes.task_pack_path(@conn, :edit, @task_pack),
         class: "btn btn-success cb-btn-success mt-2 cb-rounded"
-      ) %>
+      )}
     <% end %>
 
     <%= if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do %>
-      <%= link("Delete",
+      {link("Delete",
         to: Routes.task_pack_path(@conn, :delete, @task_pack),
         class: "btn btn-danger mt-2 cb-rounded",
         method: :delete,
         data: [confirm: "Delete task pack?"]
-      ) %>
+      )}
     <% end %>
 
-    <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto text-white") %>
+    {link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto text-white")}
   </div>
 </div>

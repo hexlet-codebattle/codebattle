@@ -46,7 +46,18 @@ defmodule Codebattle.Game.Player do
     field(:achievements, {:array, :string}, default: [])
     field(:avatar_url, :string)
     # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
-    field(:check_result, AtomizedMap, default: %CodeCheck.Result{})
+    field(:check_result, AtomizedMap,
+      default: %{
+        exit_code: 0,
+        success_count: 0,
+        asserts_count: 1,
+        status: "initial",
+        output_error: "",
+        version: 2,
+        asserts: []
+      }
+    )
+
     field(:creator, :boolean, default: false)
     field(:editor_lang, :string, default: "js")
     field(:editor_text, :string, default: @default_editor_text)

@@ -36,9 +36,9 @@
     <meta content="#b91d47" name="msapplication-TileColor" />
     <meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config" />
     <meta content="#ffffff" name="theme-color" />
-    <%= render_tags_all(assigns[:meta_tags] || %{}) %>
+    {render_tags_all(assigns[:meta_tags] || %{})}
     <meta name="csrf-token" content={csrf_token_value()} />
-    <title><%= Application.get_env(:codebattle, :app_title) %></title>
+    <title>{Application.get_env(:codebattle, :app_title)}</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
 
     <link
@@ -85,10 +85,10 @@
                 <% end %>
                 <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb">
                   <span class="font-weight-bold">
-                    <%= Application.get_env(:codebattle, :logo_title) %>
+                    {Application.get_env(:codebattle, :logo_title)}
                   </span>
                   <span class="header-txt">
-                    <%= Application.get_env(:codebattle, :app_subtitle) %>
+                    {Application.get_env(:codebattle, :app_subtitle)}
                   </span>
                 </div>
               </a>
@@ -118,7 +118,7 @@
                       >
                         <div class="d-flex flex-column justify-content-center mr-2">
                           <h5 class="text-white text-right mb-0 text-break">
-                            <%= @current_user.name %>
+                            {@current_user.name}
                           </h5>
                         </div>
 
@@ -132,7 +132,7 @@
                       <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
                         <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
                           <span class="fas fa-sign-out-alt mr-2"></span>
-                          <%= gettext("Sign Out") %>
+                          {gettext("Sign Out")}
                         <% end %>
                       </div>
                     </li>
@@ -146,12 +146,12 @@
                       href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
                     >
                       <button class="btn btn-outline-success rounded-lg">
-                        <%= gettext("Sign in") %>
+                        {gettext("Sign in")}
                       </button>
                     </a>
                     <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
                       <button class="btn btn-outline-success rounded-lg">
-                        <%= gettext("Sign up") %>
+                        {gettext("Sign up")}
                       </button>
                     </a>
                   </li>
@@ -165,15 +165,15 @@
         <div class="cb-ticker-line-wrap">
           <div class="cb-ticker-content">
             <%= for _ <- 1..20 do %>
-              <span class="cb-ticker-line"><%= @ticker_text %></span>
+              <span class="cb-ticker-line">{@ticker_text}</span>
             <% end %>
           </div>
         </div>
       <% end %>
 
-      <%= @inner_content %>
+      {@inner_content}
     </div>
 
-    <%= render_gon_script(@conn) %>
+    {render_gon_script(@conn)}
   </body>
 </html>

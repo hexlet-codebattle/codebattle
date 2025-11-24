@@ -3,5 +3,5 @@
   <p class="text-center text-white">
     Use it for tournaments to play with tasks that you really want
   </p>
-  <%= render("_form.html", Map.put(assigns, :action, Routes.task_pack_path(@conn, :create))) %>
+  {render("_form.html", Map.put(assigns, :action, Routes.task_pack_path(@conn, :create)))}
 </div>

@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <%= csrf_meta_tag() %>
+    {csrf_meta_tag()}
     <title>Stream Viewer</title>
   </head>
   <body>
     <div id="stream-root"></div>
 
     <script>
-      window.STREAM_CONFIGS = <%= raw(@stream_configs |> Jason.encode!()) %>
+      window.STREAM_CONFIGS = <%= raw(@stream_configs |> JSON.encode!()) %>
     </script>
 
     <script defer src="/assets/stream.js">

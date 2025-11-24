@@ -4,18 +4,18 @@
     <div class="row mb-3 text-white">
       <div class="col-md-6">
         <h4>Clan Details</h4>
-        <p><strong>Name:</strong> <span class="cb-text"><%= @clan.name %></span></p>
+        <p><strong>Name:</strong> <span class="cb-text">{@clan.name}</span></p>
         <%= if @clan.long_name && @clan.long_name != "" do %>
-          <p><strong>Long Name:</strong> <span class="cb-text"><%= @clan.long_name %></span></p>
+          <p><strong>Long Name:</strong> <span class="cb-text">{@clan.long_name}</span></p>
         <% end %>
         <p>
           <strong>Creation Date:</strong>
-          <span class="cb-text"><%= NaiveDateTime.to_date(@clan.inserted_at) %></span>
+          <span class="cb-text">{NaiveDateTime.to_date(@clan.inserted_at)}</span>
         </p>
       </div>
       <div class="col-md-6">
         <h4>Creator</h4>
-        <p><strong>Name:</strong> <span class="cb-text"><%= @clan.creator.name %></span></p>
+        <p><strong>Name:</strong> <span class="cb-text">{@clan.creator.name}</span></p>
       </div>
     </div>
 
@@ -31,9 +31,9 @@
         <tbody>
           <%= for user <- Enum.sort_by(@clan.users, & &1.id) do %>
             <tr>
-              <td class="align-middle cb-border-color text-white"><%= user.name %></td>
+              <td class="align-middle cb-border-color text-white">{user.name}</td>
               <td class="align-middle cb-border-color text-white">
-                <%= NaiveDateTime.to_date(user.inserted_at) %>
+                {NaiveDateTime.to_date(user.inserted_at)}
               </td>
             </tr>
           <% end %>

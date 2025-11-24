@@ -1,25 +1,25 @@
-<%= f = form_for(@changeset, @action, class: ~c"col-8  offset-2") %>
+{f = form_for(@changeset, @action, class: ~c"col-8  offset-2")}
 <div class="form-group">
-  <%= render_base_errors(@changeset.errors[:base]) %>
+  {render_base_errors(@changeset.errors[:base])}
 </div>
 <div class="form-group">
   <div>
     <span class="text-white">Name</span>
     <span class="ml-3 text-muted">Name for task pack, should be unique</span>
   </div>
-  <%= text_input(f, :name,
+  {text_input(f, :name,
     class: "form-control form-control-lg custom-control cb-bg-panel cb-border-color text-white",
     maxlength: "37",
     required: false
-  ) %>
-  <%= error_tag(f, :name) %>
+  )}
+  {error_tag(f, :name)}
 </div>
 <div class="form-group">
-  <%= label(f, :visibility, class: "text-white") %>
-  <%= select(f, :visibility, Codebattle.TaskPack.visibility_types(),
+  {label(f, :visibility, class: "text-white")}
+  {select(f, :visibility, Codebattle.TaskPack.visibility_types(),
     class: "form-select form-select-lg custom-select cb-bg-panel cb-border-color text-white"
-  ) %>
-  <%= error_tag(f, :visibility) %>
+  )}
+  {error_tag(f, :visibility)}
 </div>
 <div class="form-group">
   <div>
@@ -28,20 +28,20 @@
   <div>
     <span class="text-muted">Example: 1,37,42</span>
   </div>
-  <%= text_input(f, :task_ids,
+  {text_input(f, :task_ids,
     value: render_task_ids(f.data),
     class: "form-control form-control-lg custom-control cb-bg-panel cb-border-color text-white",
     required: true
-  ) %>
-  <%= error_tag(f, :task_ids) %>
+  )}
+  {error_tag(f, :task_ids)}
 </div>
 <div class="d-flex">
-  <%= submit("Save",
+  {submit("Save",
     phx_disable_with: "Saving...",
     class: "btn btn-success cb-btn-success mb-2 cb-rounded"
-  ) %>
-  <%= link("Back",
+  )}
+  {link("Back",
     to: Routes.task_pack_path(@conn, :index),
     class: "btn btn-link text-white ml-auto"
-  ) %>
+  )}
 </div>

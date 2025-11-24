@@ -41,11 +41,10 @@ defmodule Runner.MixProject do
       {:diff_match_patch, "~> 0.3.0"},
       {:ecto, "~> 3.7"},
       {:envy, "~> 1.1.1"},
-      {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_view, "~> 2.0"},
       {:porcelain, "~> 2.0"},
-      {:sentry, "~> 10.0"},
+      {:sentry, "~> 11.0"},
       {:temp, "~> 0.4"},
       {:typed_struct, "~> 0.3"}
     ]

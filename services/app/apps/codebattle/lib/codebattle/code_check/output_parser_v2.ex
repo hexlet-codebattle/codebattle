@@ -163,7 +163,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
             result: safe_encode(solution_result["value"]),
             status:
               if solution_result["type"] == "result" and
-                   AtomizedMap.atomize(solution_result["value"]) == AtomizedMap.atomize(assert_item.expected) do
+                   AtomizedMap.atomize(solution_result["value"]) ==
+                     AtomizedMap.atomize(assert_item.expected) do
                 "success"
               else
                 "failure"

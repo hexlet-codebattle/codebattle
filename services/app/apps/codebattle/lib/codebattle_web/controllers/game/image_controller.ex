@@ -5,6 +5,8 @@ defmodule CodebattleWeb.Game.ImageController do
   alias Codebattle.Game.Context
   alias CodebattleWeb.HtmlImage
 
+  plug :put_layout, html: false
+
   def show(conn, %{"game_id" => id}) do
     case Context.fetch_game(id) do
       {:ok, game} ->

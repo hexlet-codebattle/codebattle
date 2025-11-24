@@ -72,6 +72,7 @@ config :codebattle,
 # else
 config :codebattle, checker_executor: checker_executor
 config :codebattle, code_check_timeout: 35_000
+config :codebattle, env: :test
 config :codebattle, fake_html_to_image: true
 config :codebattle, freeze_time: true
 config :codebattle, store_playbook_async: false
@@ -81,7 +82,6 @@ config :codebattle, tournament_match_timeout: 1
 config :codebattle, tournament_rematch_timeout_ms: 1
 config :codebattle, user_rank_server: false
 config :codebattle, ws_port: 4001
-config :codebattle, env: :test
 
 config :fun_with_flags, :cache, enabled: false
 config :fun_with_flags, :cache_bust_notifications, enabled: false

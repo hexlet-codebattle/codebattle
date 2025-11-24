@@ -45,9 +45,9 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
           <tbody>
             <%= for tournament <- @tournaments do %>
               <tr>
-                <td class="align-middle text-white cb-border-color"><%= tournament.name %></td>
+                <td class="align-middle text-white cb-border-color">{tournament.name}</td>
                 <td class="align-middle text-nowrap text-white cb-border-color">
-                  <%= tournament.type %>
+                  {tournament.type}
                 </td>
                 <td class="align-middle text-nowrap cb-border-color">
                   <div class="d-flex">
@@ -60,16 +60,16 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
                   </div>
                 </td>
                 <td class="align-middle text-nowrap text-white cb-border-color">
-                  <%= tournament.state %>
+                  {tournament.state}
                 </td>
                 <td class="align-middle text-nowrap text-white cb-border-color">
-                  <%= format_datetime(tournament.starts_at, @user_timezone) %>
+                  {format_datetime(tournament.starts_at, @user_timezone)}
                 </td>
                 <td class="align-middle text-nowrap text-white cb-border-color">
-                  <%= link("Show",
+                  {link("Show",
                     to: Routes.tournament_path(@socket, :show, tournament.id),
                     class: "btn btn-success cb-btn-success cb-rounded mt-2"
-                  ) %>
+                  )}
                 </td>
               </tr>
             <% end %>

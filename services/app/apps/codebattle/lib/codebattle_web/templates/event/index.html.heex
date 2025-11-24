@@ -1,9 +1,9 @@
 <div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
   <h1 class="text-center">Events</h1>
-  <%= link("Create new event",
+  {link("Create new event",
     to: Routes.event_path(@conn, :new),
     class: "btn btn-success text-white mt-2 rounded-lg"
-  ) %>
+  )}
   <div class="table-responsive mt-4">
     <table class="table table-sm">
       <thead>
@@ -18,33 +18,33 @@
       <tbody>
         <%= for event <- @events do %>
           <tr>
-            <td class="align-middle text"><%= event.slug %></td>
-            <td class="align-middle text"><%= event.type %></td>
-            <td class="align-middle text"><%= event.title %></td>
-            <td class="align-middle text"><%= format_datetime(event.starts_at) %></td>
+            <td class="align-middle text">{event.slug}</td>
+            <td class="align-middle text">{event.type}</td>
+            <td class="align-middle text">{event.title}</td>
+            <td class="align-middle text">{format_datetime(event.starts_at)}</td>
             <td class="align-middle text">
-              <%= event.description && String.slice(event.description, 1..10) %>
+              {event.description && String.slice(event.description, 1..10)}
             </td>
             <td class="align-middle text-nowrap">
               <div class="d-flex">
-                <%= link("Preview",
+                {link("Preview",
                   to: "/e/#{event.slug}",
                   class: "btn btn-sm btn-info rounded-lg"
-                ) %>
-                <%= link("Show",
+                )}
+                {link("Show",
                   to: Routes.event_path(@conn, :show, event.id),
                   class: "btn btn-sm btn-info rounded-lg"
-                ) %>
-                <%= link("Edit",
+                )}
+                {link("Edit",
                   to: Routes.event_path(@conn, :edit, event.id),
                   class: "btn btn-sm btn-primary rounded-lg ml-2"
-                ) %>
-                <%= link("Delete",
+                )}
+                {link("Delete",
                   to: Routes.event_path(@conn, :delete, event.id),
                   method: :delete,
                   data: [confirm: "Are you sure you want to delete this event?"],
                   class: "btn btn-sm btn-danger rounded-lg ml-2"
-                ) %>
+                )}
               </div>
             </td>
           </tr>

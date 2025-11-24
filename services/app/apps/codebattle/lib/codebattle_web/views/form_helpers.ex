@@ -17,10 +17,10 @@ defmodule CodebattleWeb.FormHelpers do
       phx-feedback-for={input_name(@form, @field)}
       class={[@class, if(@form.errors[@field], do: "show-errors", else: "")]}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
       <%= for error <- Keyword.get_values(@form.errors, @field) do %>
         <span class="hidden text-red-600 text-sm phx-form-error:block">
-          <%= translate_error(error) %>
+          {translate_error(error)}
         </span>
       <% end %>
     </div>

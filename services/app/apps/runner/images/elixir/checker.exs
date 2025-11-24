@@ -2,14 +2,14 @@ defmodule Checker do
   import ExUnit.CaptureIO
 
   def run do
-    arguments = JSON.decode!(File.read!(Path.join(__DIR__, ~c"./check/asserts.json")))
+    arguments = Jason.decode!(File.read!(Path.join(__DIR__, ~c"./check/asserts.json")))
 
     try do
       Code.eval_file("./check/solution.exs")
     rescue
       e ->
         IO.puts(
-          JSON.encode!([
+          Jason.encode!([
             %{
               type: "error",
               time: 0,
@@ -52,7 +52,7 @@ defmodule Checker do
       ]
     end)
     |> Enum.reverse()
-    |> JSON.encode!()
+    |> Jason.encode!()
     |> IO.puts()
   end
 end

@@ -18,7 +18,7 @@ defmodule Codebattle.SeasonCache do
       end
     end)
     |> case do
-      {:commit, season, _params} -> season
+      {:commit, season} -> season
       {:ok, season} -> season
       {:ignore, nil} -> nil
       {:error, _} -> nil

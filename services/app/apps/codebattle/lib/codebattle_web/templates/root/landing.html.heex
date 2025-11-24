@@ -12,29 +12,29 @@
       <ul class="navbar-nav ml-auto flex-row">
         <li class="nav-item mx-1">
           <a href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-            <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign in") %></button>
+            <button class="btn btn-outline-success rounded-lg">{gettext("Sign in")}</button>
           </a>
         </li>
         <li class="nav-item mx-1">
           <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-            <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign up") %></button>
+            <button class="btn btn-outline-success rounded-lg">{gettext("Sign up")}</button>
           </a>
         </li>
 
         <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
           <li class="nav-item mx-1">
-            <%= button("Dev",
+            {button("Dev",
               to: "/auth/dev_login?locale=en&subscription_type=free",
               class: "btn btn-outline-danger rounded-lg"
-            ) %>
-            <%= button("Premium",
+            )}
+            {button("Premium",
               to: "/auth/dev_login?locale=en&subscription_type=premium",
               class: "btn btn-outline-danger rounded-lg"
-            ) %>
-            <%= button("Admin",
+            )}
+            {button("Admin",
               to: "/auth/dev_login?locale=en&subscription_type=admin",
               class: "btn btn-outline-danger rounded-lg"
-            ) %>
+            )}
           </li>
         <% end %>
       </ul>
@@ -71,7 +71,7 @@
     <div class="d-flex flex-lg-row flex-column justify-content-between">
       <div>
         <h2 class="text-uppercase text-center text-lg-left text-orange mb-4 text-nowrap">
-          {{Description}}
+          Description
         </h2>
         <div class="pr-lg-5">
           <p>
@@ -90,7 +90,7 @@
       </div>
       <div class="d-flex flex-column w-100">
         <h2 class="order-lg-2 mt-3 text-uppercase text-center text-lg-right text-orange text-nowrap">
-          {{Languages}}
+          Languages
         </h2>
         <div class="order-lg-1 lang-icons">
           <img alt="clojure" src="/assets/images/landing/languages/clojure.svg" title="clojure" />
@@ -148,7 +148,7 @@
     </div>
     <div class="d-flex mt-2">
       <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
-      <h2 class="text-uppercase text-light mx-auto">{{USER::TYPES}}</h2>
+      <h2 class="text-uppercase text-light mx-auto">USER::TYPES</h2>
       <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
     </div>
     <div class="mt-5 row flex-wrap">
@@ -175,7 +175,7 @@
   <div class="container-lg text-center pt-4">
     <div class="d-flex align-items-center">
       <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
-      <h2 class="text-uppercase text-light mx-auto">{{Algorithm}}</h2>
+      <h2 class="text-uppercase text-light mx-auto">Algorithm</h2>
       <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
     </div>
     <img alt="algorithm" class="w-100 my-5 pr-md-5" src="/assets/images/landing/flowchart.svg" />
@@ -183,7 +183,7 @@
 </div>
 <div class="bg-light py-5">
   <div class="container-lg">
-    <h2 class="text-uppercase text-center mb-0 pt-5">{{Comments}}</h2>
+    <h2 class="text-uppercase text-center mb-0 pt-5">Comments</h2>
     <div class="comments mt-5">
       <div class="comment border border-dark d-flex flex-column">
         <div class="d-flex flex-wrap align-items-center">
@@ -238,7 +238,7 @@
 </div>
 <div class="bg-light py-5">
   <div class="container-lg">
-    <h2 class="text-uppercase text-center mb-0">{{Contributors}}</h2>
+    <h2 class="text-uppercase text-center mb-0">Contributors</h2>
     <div class="mt-5">
       <div class="d-flex">
         <a
@@ -262,7 +262,7 @@
       </div>
 
       <div class="d-flex flex-wrap my-3">
-        <%= render("_contributors_codebattle.html") %>
+        {render("_contributors_codebattle.html")}
       </div>
       <div class="d-flex flex-wrap">
         <span class="mr-1">#elixir</span>
@@ -299,7 +299,7 @@
         </div>
       </div>
       <div class="d-flex flex-wrap my-3">
-        <%= render("_contributors_asserts.html") %>
+        {render("_contributors_asserts.html")}
       </div>
       <div class="d-flex flex-wrap my-3">
         <span class="mr-1">#clojure</span>
@@ -328,7 +328,7 @@
         </div>
       </div>
       <div class="d-flex flex-wrap my-3">
-        <%= render("_contributors_extension.html") %>
+        {render("_contributors_extension.html")}
       </div>
       <span class="mr-1">#es6</span>
       <span class="mr-1">#react</span>
@@ -389,7 +389,7 @@
         </a>
       </p>
       <p class="mb-0 mt-2 small text-muted">
-        Version: <%= app_short_version() %>
+        Version: {app_short_version()}
       </p>
     </div>
   </div>

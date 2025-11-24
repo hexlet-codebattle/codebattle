@@ -7,12 +7,16 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.User
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show])
+  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
 
   def index(conn, _params) do
     current_user = conn.assigns[:current_user]
 
     live_render(conn, CodebattleWeb.Live.Tournament.IndexView,
-      session: %{"current_user" => current_user, "tournaments" => Tournament.Context.list_live_and_finished(current_user)}
+      session: %{
+        "current_user" => current_user,
+        "tournaments" => Tournament.Context.list_live_and_finished(current_user)
+      }
     )
   end
 

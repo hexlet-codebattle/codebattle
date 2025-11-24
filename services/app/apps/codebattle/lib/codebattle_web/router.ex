@@ -224,9 +224,7 @@ defmodule CodebattleWeb.Router do
     end
 
     # only for dev-admin liveView experiments
-    resources("/live_view_tournaments", LiveViewTournamentController,
-      only: [:index, :show, :edit]
-    )
+    resources("/live_view_tournaments", LiveViewTournamentController, only: [:index, :show, :edit])
   end
 
   scope "/feature-flags" do

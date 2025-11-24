@@ -13,16 +13,16 @@
       <tbody>
         <%= for clan <- @clans do %>
           <tr>
-            <td class="align-middle text text-white cb-border-color"><%= clan.name %></td>
-            <td class="align-middle text text-white cb-border-color"><%= clan.long_name %></td>
+            <td class="align-middle text text-white cb-border-color">{clan.name}</td>
+            <td class="align-middle text text-white cb-border-color">{clan.long_name}</td>
             <td class="align-middle text text-white cb-border-color">
-              <%= clan.creator && clan.creator.name %>
+              {clan.creator && clan.creator.name}
             </td>
             <td class="align-middle cb-border-color">
-              <%= link("Show",
+              {link("Show",
                 to: Routes.clan_path(@conn, :show, clan.id),
                 class: "btn btn-sm btn-secondary cb-btn-secondary cb-rounded"
-              ) %>
+              )}
             </td>
           </tr>
         <% end %>

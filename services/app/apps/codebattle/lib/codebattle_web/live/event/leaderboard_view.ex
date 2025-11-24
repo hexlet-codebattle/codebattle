@@ -18,10 +18,10 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
       <table class="table table-striped cb-custom-event-table">
         <thead class="sticky-top text-muted bg-white">
           <tr>
-            <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Place") %></th>
-            <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Score") %></th>
-            <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Clan players count") %></th>
-            <th class="p-1 pl-4 font-weight-light border-0"><%= gettext("Clan") %></th>
+            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Place")}</th>
+            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Score")}</th>
+            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Clan players count")}</th>
+            <th class="p-1 pl-4 font-weight-light border-0">{gettext("Clan")}</th>
           </tr>
         </thead>
         <tbody>
@@ -29,16 +29,16 @@ defmodule CodebattleWeb.Live.Event.LeaderboardView do
             <tr class="cb-custom-event-empty-space-tr"></tr>
             <tr class="text-dark font-weight-bold cb-custom-event-tr bg-light">
               <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
-                <%= item.place %>
+                {item.place}
               </td>
               <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
-                <%= item.score %>
+                {item.score}
               </td>
               <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
-                <%= item.players_count %>
+                {item.players_count}
               </td>
               <td class="p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0">
-                <%= item.clan_name %>
+                {item.clan_name}
               </td>
             </tr>
           <% end %>

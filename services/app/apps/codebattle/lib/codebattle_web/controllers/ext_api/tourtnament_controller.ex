@@ -54,12 +54,12 @@ defmodule CodebattleWeb.ExtApi.TournamentController do
       {:ok, %{status: status}} ->
         conn
         |> put_status(:bad_gateway)
-        |> json(%{error: "Failed to retrieve JSON", status: status})
+        |> json(%{error: "Failed to retrieve Jason", status: status})
 
       {:error, reason} ->
         conn
         |> put_status(:internal_server_error)
-        |> json(%{error: "Error fetching JSON: #{inspect(reason)}"})
+        |> json(%{error: "Error fetching Jason: #{inspect(reason)}"})
     end
   end
 

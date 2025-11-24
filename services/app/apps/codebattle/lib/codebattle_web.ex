@@ -28,7 +28,7 @@ defmodule CodebattleWeb do
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: CodebattleWeb
+      use Phoenix.Controller, formats: [:html, :json]
       use PhoenixMetaTags.TagController
       use Gettext, backend: CodebattleWeb.Gettext
 
@@ -52,12 +52,12 @@ defmodule CodebattleWeb do
         namespace: CodebattleWeb
 
       use PhoenixMetaTags.TagView
-      use Phoenix.HTML
       use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.FormHelpers
       import Phoenix.Controller, only: [view_module: 1]
+      import Phoenix.HTML
       import Phoenix.HTML.Form
 
       alias CodebattleWeb.Router.Helpers, as: Routes
@@ -71,24 +71,24 @@ defmodule CodebattleWeb do
 
   def live_view do
     quote do
+      use PhoenixHTMLHelpers
+
       use Phoenix.LiveView,
         root: "lib/codebattle_web/templates",
         namespace: CodebattleWeb
 
       use PhoenixMetaTags.TagView
-      use Phoenix.HTML
       use Gettext, backend: CodebattleWeb.Gettext
 
       import CodebattleWeb.ErrorHelpers
+      import Phoenix.Controller, only: [view_module: 1]
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
+      import PhoenixHTMLHelpers.Tag
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
-      import Phoenix.HTML.Form
-      import Phoenix.HTML.Format
-      import Phoenix.HTML.Link
-      import Phoenix.HTML.Tag
 
       unquote(view_helpers())
     end
@@ -112,12 +112,14 @@ defmodule CodebattleWeb do
 
   defp view_helpers do
     quote do
-      use Phoenix.HTML
+      use PhoenixHTMLHelpers
+
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
+      import PhoenixHTMLHelpers.Tag
 
       alias CodebattleWeb.Router.Helpers, as: Routes
       alias Phoenix.LiveView.JS
-      # Import basic rendering functionality (render, render_layout, etc)
-      # import Phoenix.View
     end
   end
 

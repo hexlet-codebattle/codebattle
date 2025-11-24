@@ -50,8 +50,8 @@ defmodule PhoenixGon.Mixfile do
 
   defp deps do
     [
-      {:jason, "~> 1.1"},
-      {:phoenix_html, "~> 3.2"},
+      {:phoenix_html, "~> 4.2"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:plug, "~> 1.10"},
       {:recase, "~> 0.6"}
     ]

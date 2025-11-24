@@ -13,6 +13,7 @@ defmodule CodebattleUmbrella.MixProject do
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.13", only: :test}
       ],
+      listeners: [Phoenix.CodeReloader],
       dialyzer: [
         paths: [
           Path.join(File.cwd!(), "_build/dev/lib/codebattle/ebin"),

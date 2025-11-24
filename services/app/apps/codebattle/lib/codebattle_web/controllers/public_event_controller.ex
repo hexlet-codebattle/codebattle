@@ -11,6 +11,7 @@ defmodule CodebattleWeb.PublicEventController do
   require Logger
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:show, :stage])
+  plug(:put_view, CodebattleWeb.PublicEventView)
 
   def show(conn, %{"slug" => slug}) do
     if event_allowed?(conn.assigns.current_user) do

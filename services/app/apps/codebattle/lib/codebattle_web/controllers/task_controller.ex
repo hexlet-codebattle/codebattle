@@ -8,6 +8,7 @@ defmodule CodebattleWeb.TaskController do
   alias CodebattleWeb.Api.GameView
 
   plug(CodebattleWeb.Plugs.RequireAuth)
+  plug(:put_view, CodebattleWeb.TaskView)
 
   def index(conn, _params) do
     tasks =

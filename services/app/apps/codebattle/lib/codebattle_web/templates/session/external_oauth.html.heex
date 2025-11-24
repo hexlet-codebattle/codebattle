@@ -3,25 +3,25 @@
   <div id="externalBackGround" class="rotating-background"></div>
   <div class="auth-card text-center p-4">
     <div class="battle-title mb-3">
-      <%= Application.get_env(:codebattle, :external)[:app_name] %>
+      {Application.get_env(:codebattle, :external)[:app_name]}
     </div>
 
     <h1 class="main-title text-purple mb-3">
-      <%= raw(Application.get_env(:codebattle, :external)[:app_slogan]) %>
+      {raw(Application.get_env(:codebattle, :external)[:app_slogan])}
     </h1>
 
     <div class="login-description text-light mb-4">
-      <%= Application.get_env(:codebattle, :external)[:app_login_description] %>
+      {Application.get_env(:codebattle, :external)[:app_login_description]}
     </div>
 
     <button class="btn btn-yellow" id="externalLoginBtn">
-      <%= Application.get_env(:codebattle, :external)[:app_login_button] %>
+      {Application.get_env(:codebattle, :external)[:app_login_button]}
     </button>
   </div>
 </div>
 
 <%= if body = Codebattle.Customization.get("external_oauth_body") do %>
   <div class="mb-3">
-    <%= raw(body) %>
+    {raw(body)}
   </div>
 <% end %>

@@ -4,14 +4,14 @@
       Codebattle.Customization.get("waiting_header") ||
         "<center><h1>Waiting</h1></center>" %>
     <div class="mb-3">
-      <%= raw(header) %>
+      {raw(header)}
     </div>
 
     <% body =
       Codebattle.Customization.get("waiting_body") ||
         "Please wait for the next tournament to start." %>
     <div class="mb-3">
-      <%= raw(body) %>
+      {raw(body)}
     </div>
     <div>
       <button
@@ -20,7 +20,7 @@
         data-method="post"
         data-to="/games/training"
       >
-        <%= gettext("Try simple battle") %>
+        {gettext("Try simple battle")}
       </button>
     </div>
   </div>

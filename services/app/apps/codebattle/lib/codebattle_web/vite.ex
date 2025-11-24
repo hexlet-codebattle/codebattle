@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Vite do
     Application.get_env(:codebattle, :env) == :dev
   end
 
-  def manifest() do
+  def manifest do
     with {:ok, json} <- File.read(@manifest_path),
          {:ok, data} <- Jason.decode(json) do
       data

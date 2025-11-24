@@ -117,7 +117,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         end
 
       {:error, error} ->
-        {:noreply, put_flash(socket, :error, "Invalid JSON format: #{inspect(error)}")}
+        {:noreply, put_flash(socket, :error, "Invalid Jason format: #{inspect(error)}")}
     end
   end
 
@@ -175,7 +175,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>
           <i class="bi bi-person-circle"></i>
-          <%= @user.name || "Anonymous" %>
+          {@user.name || "Anonymous"}
         </h1>
         <a href={Routes.admin_user_index_view_path(@socket, :index)} class="btn btn-outline-secondary">
           <i class="bi bi-arrow-left"></i> Back
@@ -190,23 +190,23 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
               <div>
                 <span class={"badge " <> if(@user.is_bot, do: "bg-danger", else: "bg-success")}>
                   <i class={"bi " <> if(@user.is_bot, do: "bi-robot", else: "bi-person")}></i>
-                  <%= if @user.is_bot, do: "Bot", else: "Human" %>
+                  {if @user.is_bot, do: "Bot", else: "Human"}
                 </span>
               </div>
             </div>
             <div class="col-md-10">
               <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                  <strong>ID:</strong> <%= @user.id %>
-                  <span class="ms-3 badge bg-info"><%= @user.subscription_type %></span>
+                  <strong>ID:</strong> {@user.id}
+                  <span class="ms-3 badge bg-info">{@user.subscription_type}</span>
                 </li>
                 <li class="list-group-item">
                   <strong>GitHub:</strong>
                   <%= if @user.github_id do %>
                     <a href={"https://github.com/#{@user.github_name}"} target="_blank" rel="noopener">
-                      <%= @user.github_name %> <i class="bi bi-box-arrow-up-right small"></i>
+                      {@user.github_name} <i class="bi bi-box-arrow-up-right small"></i>
                     </a>
-                    <span class="text-muted small ms-2">ID: <%= @user.github_id %></span>
+                    <span class="text-muted small ms-2">ID: {@user.github_id}</span>
                   <% else %>
                     <span class="text-muted">–</span>
                   <% end %>
@@ -214,8 +214,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 <li class="list-group-item">
                   <strong>Discord:</strong>
                   <%= if @user.discord_id do %>
-                    <%= @user.discord_name %>
-                    <span class="text-muted small ms-2">ID: <%= @user.discord_id %></span>
+                    {@user.discord_name}
+                    <span class="text-muted small ms-2">ID: {@user.discord_id}</span>
                   <% else %>
                     <span class="text-muted">–</span>
                   <% end %>
@@ -223,24 +223,24 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 <li class="list-group-item">
                   <strong>External OAuth:</strong>
                   <%= if @user.external_oauth_id do %>
-                    <span><%= @user.external_oauth_id %></span>
+                    <span>{@user.external_oauth_id}</span>
                     <%= if @user.category do %>
-                      <span class="badge bg-secondary ms-2"><%= @user.category %></span>
+                      <span class="badge bg-secondary ms-2">{@user.category}</span>
                     <% end %>
                   <% else %>
                     <span class="text-muted">–</span>
                   <% end %>
                 </li>
                 <li class="list-group-item">
-                  <strong>Email:</strong> <%= @user.email || "–" %>
+                  <strong>Email:</strong> {@user.email || "–"}
                 </li>
                 <li class="list-group-item">
                   <strong>Joined:</strong>
-                  <%= Timex.format!(@user.inserted_at, "{Mfull} {D}, {YYYY}") %>
+                  {Timex.format!(@user.inserted_at, "{Mfull} {D}, {YYYY}")}
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <div>
-                    <strong>Rating:</strong> <%= @user.rating %> pts
+                    <strong>Rating:</strong> {@user.rating} pts
                   </div>
                   <div class="w-50">
                     <div class="progress" style="height: .75rem;">
@@ -252,26 +252,26 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         aria-valuemin="0"
                         aria-valuemax="100"
                       >
-                        <%= @progress %>%
+                        {@progress}%
                       </div>
                     </div>
                   </div>
                 </li>
                 <li class="list-group-item">
                   <strong>Category:</strong>
-                  <span class="badge bg-warning text-dark"><%= @user.category %></span>
+                  <span class="badge bg-warning text-dark">{@user.category}</span>
                 </li>
                 <li class="list-group-item">
                   <strong>Clan:</strong>
                   <%= if @user.clan_id do %>
                     <div>
-                      <span class="badge bg-secondary"><%= @user.clan_id %></span>
+                      <span class="badge bg-secondary">{@user.clan_id}</span>
                       <% clan = Clan.get(@user.clan_id) %>
                       <%= if clan do %>
                         <div class="mt-2 small">
-                          <div><strong>ID:</strong> <%= clan.id %></div>
+                          <div><strong>ID:</strong> {clan.id}</div>
                           <%= if clan.long_name && clan.long_name != clan.name do %>
-                            <div><strong>Full name:</strong> <%= clan.long_name %></div>
+                            <div><strong>Full name:</strong> {clan.long_name}</div>
                           <% end %>
                         </div>
                       <% end %>
@@ -315,9 +315,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
               </div>
               <div>
                 <strong>Has Password:</strong>
-                <%= if @user.password_hash,
+                {if @user.password_hash,
                   do: "<span class=\"text-success\">Yes</span>",
-                  else: "<span class=\"text-muted\">No</span>" |> raw %>
+                  else: "<span class=\"text-muted\">No</span>" |> raw}
               </div>
             </div>
           </div>
@@ -335,14 +335,14 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 phx-change="update_subscription_type"
                 class="row g-2 align-items-center"
               >
-                <%= hidden_input(f, :user_id, value: @user.id) %>
+                {hidden_input(f, :user_id, value: @user.id)}
                 <div class="col-auto">
                   <label for="subscription_type" class="col-form-label">Type:</label>
                 </div>
                 <div class="col">
-                  <%= select(f, :subscription_type, Codebattle.User.subscription_types(),
+                  {select(f, :subscription_type, Codebattle.User.subscription_types(),
                     class: "form-select"
-                  ) %>
+                  )}
                 </div>
               </.form>
             </div>
@@ -365,14 +365,14 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     <!-- Event Info as Paragraph -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
                       <div>
-                        <h5 class="mb-1"><%= event.event.title %></h5>
+                        <h5 class="mb-1">{event.event.title}</h5>
                         <p class="text-muted mb-1">
                           <small>
-                            <strong>ID:</strong> <%= event.id %> |
-                            <strong>Date:</strong> <%= Timex.format!(
+                            <strong>ID:</strong> {event.id} |
+                            <strong>Date:</strong> {Timex.format!(
                               event.inserted_at,
                               "{Mshort} {D}, {YYYY}"
-                            ) %> | <strong>Slug:</strong> <%= event.event.slug %>
+                            )} | <strong>Slug:</strong> {event.event.slug}
                           </small>
                         </p>
                         <p>
@@ -390,12 +390,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               any_started -> "bg-info"
                               true -> "bg-secondary"
                             end}>
-                              <%= cond do
+                              {cond do
                                 all_completed -> "Completed"
                                 any_failed -> "Failed"
                                 any_started -> "In Progress"
                                 true -> "Pending"
-                              end %>
+                              end}
                             </span>
                           <% else %>
                             <span class="badge bg-secondary">Unknown</span>
@@ -443,7 +443,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                     end),
                                   else: nil %>
                               <tr>
-                                <td><%= event_stage.slug %></td>
+                                <td>{event_stage.slug}</td>
                                 <td>
                                   <span class={"badge " <> case event_stage.status do
                                     :active -> "bg-success"
@@ -451,7 +451,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                     :passed -> "bg-info"
                                     _ -> "bg-secondary"
                                   end}>
-                                    <%= event_stage.status %>
+                                    {event_stage.status}
                                   </span>
                                 </td>
                                 <td>
@@ -462,7 +462,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                       :failed -> "bg-danger"
                                       _ -> "bg-secondary"
                                     end}>
-                                      <%= user_stage.status %>
+                                      {user_stage.status}
                                     </span>
                                   <% else %>
                                     <span class="text-muted">–</span>
@@ -485,7 +485,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                       </a>
                                     <% else %>
                                       <span class="text-muted">
-                                        <%= user_stage.entrance_result %>
+                                        {user_stage.entrance_result}
                                       </span>
                                     <% end %>
                                   <% else %>
@@ -494,10 +494,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                 </td>
                                 <td>
                                   <%= if user_stage && user_stage.started_at do %>
-                                    <div><%= format_datetime(user_stage.started_at) %></div>
+                                    <div>{format_datetime(user_stage.started_at)}</div>
                                     <div>
-                                      <%= if user_stage.finished_at,
-                                        do: format_datetime(user_stage.finished_at) %>
+                                      {if user_stage.finished_at,
+                                        do: format_datetime(user_stage.finished_at)}
                                     </div>
                                   <% else %>
                                     <span class="text-muted">–</span>
@@ -506,10 +506,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                 <td>
                                   <%= if user_stage do %>
                                     <div>
-                                      Win/Games: <%= user_stage.wins_count %> / <%= user_stage.games_count %>
+                                      Win/Games: {user_stage.wins_count} / {user_stage.games_count}
                                     </div>
-                                    <div>Score: <%= user_stage.score %></div>
-                                    <div>Time spent: <%= user_stage.time_spent_in_seconds %></div>
+                                    <div>Score: {user_stage.score}</div>
+                                    <div>Time spent: {user_stage.time_spent_in_seconds}</div>
                                   <% else %>
                                     <span class="text-muted">–</span>
                                   <% end %>
@@ -517,10 +517,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                 <td>
                                   <%= if user_stage do %>
                                     <div>
-                                      Place in total_rank: <%= user_stage.place_in_total_rank %>
+                                      Place in total_rank: {user_stage.place_in_total_rank}
                                     </div>
                                     <div>
-                                      Place in category_rank: <%= user_stage.place_in_category_rank %>
+                                      Place in category_rank: {user_stage.place_in_category_rank}
                                     </div>
                                   <% else %>
                                     <span class="text-muted">–</span>
@@ -573,20 +573,20 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     <tbody>
                       <%= for g <- @user_games do %>
                         <tr>
-                          <td><%= g.id %></td>
-                          <td><%= g.inserted_at %></td>
-                          <td><%= g.finishes_at %></td>
-                          <td><%= g.task_name %></td>
+                          <td>{g.id}</td>
+                          <td>{g.inserted_at}</td>
+                          <td>{g.finishes_at}</td>
+                          <td>{g.task_name}</td>
                           <td>
                             <span class={"badge " <> case g.state do
                               "finished" -> "bg-success"
                               "timeout"  -> "bg-warning text-dark"
                               _          -> "bg-secondary"
                             end}>
-                              <%= String.capitalize(g.state) %>
+                              {String.capitalize(g.state)}
                             </span>
                           </td>
-                          <td><%= String.capitalize(to_string(g.result)) %></td>
+                          <td>{String.capitalize(to_string(g.result))}</td>
                           <td>
                             <.link
                               href={Routes.game_path(@socket, :show, g.id)}
@@ -629,7 +629,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
             <div class="modal-body">
               <form phx-submit="update_user_event_stages">
                 <div class="mb-3">
-                  <label for="stagesJson" class="form-label">Stages JSON</label>
+                  <label for="stagesJson" class="form-label">Stages Jason</label>
                   <textarea
                     class="form-control font-monospace"
                     id="stagesJson"
@@ -637,7 +637,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     rows="15"
                   ><%= @stages_json %></textarea>
                   <div class="form-text">
-                    Edit the JSON representation of the stages. Make sure to keep valid JSON format.
+                    Edit the Jason representation of the stages. Make sure to keep valid Jason format.
                   </div>
                 </div>
                 <div class="modal-footer">
