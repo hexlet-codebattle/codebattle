@@ -44,6 +44,8 @@ const input = {
   landing: path.resolve(__dirname, "assets/js/landing.js"),
   external: path.resolve(__dirname, "assets/js/external.js"),
   styles: path.resolve(__dirname, "assets/css/style.scss"),
+  // Note: landing.css and external.css use the same styles as app.css
+  // Templates should reference app.css instead
   // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.js"),
   // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.js"),
 };
@@ -77,11 +79,22 @@ export default defineConfig(({ command, mode }) => ({
   build: {
     outDir: "priv/static/assets",
     assetsDir: "",
-    manifest: true,
+    manifest: "manifest.json",
     sourcemap: mode === "development",
     rollupOptions: {
       input,
-      output: { manualChunks: { monaco: ["monaco-editor"] } },
+      output: {
+        entryFileNames: "[name].js",
+        chunkFileNames: "[name]-[hash].js",
+        assetFileNames: (assetInfo) => {
+          // Rename styles.css to app.css for backwards compatibility
+          if (assetInfo.name === 'styles.css') {
+            return 'app.css';
+          }
+          return "[name].[ext]";
+        },
+        manualChunks: { monaco: ["monaco-editor"] },
+      },
     },
     emptyOutDir: true,
   },
