@@ -1,4 +1,4 @@
-FROM elixir:1.19.1-otp-28-alpine
+FROM elixir:1.19-otp-28-alpine
 
 # Install Elixir tooling
 RUN mix local.hex --force \
