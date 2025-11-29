@@ -1,11 +1,11 @@
 FROM elixir:1.19.1-otp-28-alpine
 
-# Install Elixir dependencies as root
+# Install Elixir tooling
 RUN mix local.hex --force \
   && mix local.rebar --force \
   && mix archive.install hex phx_new --force
 
-# Install system dependencies
+# Install system dependencies + Node.js + npm + podman
 RUN apk add --no-cache \
   inotify-tools \
   curl \
@@ -13,27 +13,33 @@ RUN apk add --no-cache \
   chromium \
   postgresql-client \
   build-base \
-  git
+  git \
+  nodejs \
+  npm \
+  podman
 
-# Install Node.js and pnpm
-RUN apk add --no-cache nodejs npm \
-  && npm install --global pnpm
+# Install pnpm globally
+RUN npm install --global pnpm
 
-# Install Podman for local development
-RUN apk add --no-cache podman
-
-# Add non-root user
-RUN adduser -D developer
-
-# Copy Hex and other Mix archives from root to developer
-RUN cp -R /root/.mix /home/developer/ && chown -R developer:developer /home/developer/.mix
-
-# Switch to non-root user
-USER developer
-
-# Set working directory
+# Base workdir
 WORKDIR /app
 
 ARG GIT_HASH
-ENV APP_VERSION=$GIT_HASH
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+ENV APP_VERSION="$GIT_HASH" \
+    NODE_OPTIONS="--max-old-space-size=4096" \
+    PNPM_SKIP_BUILD_SCRIPT_CHECK=1
+
+# Copy repo
+COPY . .
+
+# Go to Codebattle app where package.json is
+WORKDIR /app/apps/codebattle
+
+# Install JS dependencies for Codebattle
+RUN pnpm install --force && pnpm add regenerator-runtime
+
+# Build Codebattle assets (change to your real script if needed)
+RUN pnpm run build
+
+# Return to umbrella root for further Elixir steps (mix deps.get, etc., if you add them later)
+WORKDIR /app
