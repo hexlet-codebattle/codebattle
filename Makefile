@@ -1,7 +1,7 @@
 include make-compose.mk
 
 pg:
-	podman-compose up -d db-local
+	docker compose up -d db-local
 
 clean:
 	rm -rf services/app/_build
@@ -18,12 +18,12 @@ test-code-checkers:
 	make -C ./services/app/ test-code-checkers
 
 terraform-vars-generate:
-	podman run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
+	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
 
 setup: setup-env compose-setup
 
 setup-env:
-	podman run --rm -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/development.yml -i ansible/development -vv
+	docker run --rm -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-playbook ansible/development.yml -i ansible/development -vv
 
 setup-env-local:
 	ansible-playbook ansible/development.yml -i ansible/development -vv
@@ -32,7 +32,7 @@ ansible-edit-secrets:
 	ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 ansible-vault-edit-production:
-	podman run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
+	docker run --rm -it -v $(CURDIR):/app -w /app williamyeh/ansible:alpine3 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
 
 release:
 	make -C services/app release

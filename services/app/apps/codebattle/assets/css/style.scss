@@ -220,6 +220,44 @@ input[type="range"] {
   border-radius: unset;
 }
 
+.alert-dark-theme {
+  border: none;
+  backdrop-filter: blur(10px);
+  
+  &.alert-info {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.7));
+    color: #ffffff;
+    border-left: 4px solid #0d6efd;
+  }
+  
+  &.alert-success {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(25, 135, 84, 0.7));
+    color: #ffffff;
+    border-left: 4px solid #198754;
+  }
+  
+  &.alert-danger {
+    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(220, 53, 69, 0.7));
+    color: #ffffff;
+    border-left: 4px solid #dc3545;
+  }
+  
+  &.alert-warning {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 193, 7, 0.7));
+    color: #000000;
+    border-left: 4px solid #ffc107;
+  }
+  
+  .close {
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+    opacity: 0.8;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
 .gutter-vertical {
   background-image: url("../static/images/verticalGutter.svg");
   cursor: col-resize;

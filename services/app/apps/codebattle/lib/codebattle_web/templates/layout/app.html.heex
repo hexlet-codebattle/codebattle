@@ -337,15 +337,15 @@
           </div>
         </div>
       <% end %>
-      <div class="bg-light">
+      <div class="bg-dark py-2">
         <div class="container-lg">
           <%= for {type, message} <- @flash || [] do %>
             <div
-              class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"}
+              class={"alert alert-#{type} alert-dismissible fade show mb-2 rounded shadow-sm alert-dark-theme"}
               role="alert"
             >
               {message}
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
