@@ -121,6 +121,7 @@
     "react-transition-group": "^4.4.1",
     "recharts": "^2.1.16",
     "redux-persist": "^6.0.0",
+    "regenerator-runtime": "^0.14.1",
     "rehype-katex": "^7.0.0",
     "remark-math": "^6.0.0",
     "sass": "^1.44.0",
