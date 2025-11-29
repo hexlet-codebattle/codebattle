@@ -3,6 +3,9 @@ ENV MIX_ENV=prod
 
 WORKDIR /tmp/codebattle/assets
 
+# Install pnpm globally
+RUN npm install --global pnpm
+
 COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml ./
 RUN pnpm install
 
