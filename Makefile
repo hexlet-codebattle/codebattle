@@ -38,67 +38,102 @@ release:
 	make -C services/app release
 
 build-local:
-	docker build --target assets-image \
+	DOCKER_BUILDKIT=1 docker build --target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
 				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image services/app
-	docker build --target compile-image \
+	DOCKER_BUILDKIT=1 docker build --target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image services/app
-	docker build --target nginx-assets \
+	DOCKER_BUILDKIT=1 docker build --target nginx-assets \
 				--file services/app/Containerfile.codebattle \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:latest \
 				--tag ghcr.io/hexlet-codebattle/nginx-assets:latest services/app
-	docker build --target runtime-image \
+	DOCKER_BUILDKIT=1 docker build --target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:latest \
 				--tag ghcr.io/hexlet-codebattle/codebattle:latest services/app
-	docker build --target compile-image \
+	DOCKER_BUILDKIT=1 docker build --target compile-image \
 				--file services/app/Containerfile.runner \
+				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
 				--tag ghcr.io/hexlet-codebattle/runner:compile-image services/app
-	docker build --target runtime-image \
+	DOCKER_BUILDKIT=1 docker build --target runtime-image \
 				--file services/app/Containerfile.runner \
+				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/runner:latest \
 				--tag ghcr.io/hexlet-codebattle/runner:latest services/app
 
 build-codebattle:
 	docker pull ghcr.io/hexlet-codebattle/codebattle:assets-image  || true
 	docker pull ghcr.io/hexlet-codebattle/codebattle:compile-image || true
 	docker pull ghcr.io/hexlet-codebattle/codebattle:latest        || true
-	docker build --target assets-image \
+	DOCKER_BUILDKIT=1 docker build --target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image services/app
-	docker build --target compile-image \
+	DOCKER_BUILDKIT=1 docker build --target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image services/app
-	docker build --target nginx-assets \
+	DOCKER_BUILDKIT=1 docker build --target nginx-assets \
 				--file services/app/Containerfile.codebattle \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:latest \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/nginx-assets:latest services/app
-	docker build --target runtime-image \
+	DOCKER_BUILDKIT=1 docker build --target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:latest \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:latest services/app
 
 build-arm:
-	docker build --platform linux/arm64 \
+	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target assets-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image-arm services/app
-	docker build --platform linux/arm64 \
+	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target compile-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image-arm \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:compile-image-arm services/app
-	docker build --platform linux/arm64 \
+	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target nginx-assets \
 				--file services/app/Containerfile.codebattle \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:arm \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/nginx-assets:arm services/app
-	docker build --platform linux/arm64 \
+	DOCKER_BUILDKIT=1 docker build --platform linux/arm64 \
 				--target runtime-image \
 				--file services/app/Containerfile.codebattle \
 				--build-arg GIT_HASH=$(GIT_HASH) \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image-arm \
+				--cache-from ghcr.io/hexlet-codebattle/codebattle:arm \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:arm services/app
 
 push-codeabttle-arm:
@@ -116,11 +151,16 @@ push-codebattle:
 build-runner:
 	docker pull ghcr.io/hexlet-codebattle/runner:compile-image || true
 	docker pull ghcr.io/hexlet-codebattle/runner:latest        || true
-	docker build --target compile-image \
+	DOCKER_BUILDKIT=1 docker build --target compile-image \
 				--file services/app/Containerfile.runner \
+				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/runner:compile-image services/app
-	docker build --target runtime-image \
+	DOCKER_BUILDKIT=1 docker build --target runtime-image \
 				--file services/app/Containerfile.runner \
+				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
+				--cache-from ghcr.io/hexlet-codebattle/runner:latest \
+				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/runner:latest services/app
 
 push-runner:
