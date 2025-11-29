@@ -115,20 +115,19 @@ jobs:
           file: ./services/app/assp/codebattle/cover/excoveralls.json
           fail_ci_if_error: false
 
-      - name: Install Podman
-        run: |
-          sudo apt-get update
-          sudo apt-get -y install podman
-
       - name: Login to Github Container Registry
-        run: podman login ghcr.io -u vtm9 -p ${{ secrets.GH_REGISTRY_TOKEN }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: vtm9
+          password: ${{ secrets.GH_REGISTRY_TOKEN }}
 
       - name: Build and push codebattle image
         run: |
-          make GIT_HASH=${{ github.sha }} podman-build-codebattle
-          make podman-push-codebattle
+          make GIT_HASH=${{ github.sha }} build-codebattle
+          make push-codebattle
 
       - name: Build and push runner image
         run: |
-          make podman-build-runner
-          make podman-push-runner
+          make build-runner
+          make push-runner
