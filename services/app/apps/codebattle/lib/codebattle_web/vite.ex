@@ -38,28 +38,28 @@ defmodule CodebattleWeb.Vite do
   end
 
   def css_paths(entry) do
+    m = manifest()
+
     paths =
-      case manifest()[entry] do
+      case m[entry] do
         %{"css" => css_list} ->
-          # CSS imported by this JS entry
           Enum.map(css_list, &("/assets/" <> &1))
 
         _ ->
-          # No CSS imported by this entry, look for standalone CSS
-          # Try to find a CSS file that matches the JS entry name
-          # For "app.js", look for any entry that outputs "app.css"
-          css_filename = String.replace(entry, ~r/\.js$/, ".css")
-
-          # Search through all manifest entries to find one with matching output
-          case Enum.find(manifest(), fn {_k, v} ->
-                 is_map(v) && Map.get(v, "file") == css_filename
-               end) do
-            {_key, %{"file" => file}} -> ["/assets/" <> file]
-            _ -> []
-          end
+          find_standalone_css(m, entry)
       end
 
-    # Apply digest hash to all paths in production
     Enum.map(paths, &apply_digest/1)
+  end
+
+  defp find_standalone_css(manifest_map, entry) do
+    css_filename = String.replace(entry, ~r/\.js$/, ".css")
+
+    case Enum.find(manifest_map, fn {_k, v} ->
+           is_map(v) && Map.get(v, "file") == css_filename
+         end) do
+      {_key, %{"file" => file}} -> ["/assets/" <> file]
+      _ -> []
+    end
   end
 end
