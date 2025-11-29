@@ -1,7 +1,7 @@
-FROM node:18.15.0-alpine AS assets-image
+FROM node:24.11-alpine AS assets-image
 ENV MIX_ENV=prod
 
-WORKDIR /tmp/codebattle/assets
+WORKDIR /tmp/codebattle
 
 # Install pnpm globally
 RUN npm install --global pnpm
@@ -9,7 +9,7 @@ RUN npm install --global pnpm
 COPY apps/codebattle/package.json apps/codebattle/pnpm-lock.yaml ./
 RUN pnpm install
 
-COPY apps/codebattle/postcss.config.js apps/codebattle/.babelrc ./
+COPY apps/codebattle/postcss.config.js apps/codebattle/.babelrc apps/codebattle/vite.config.js ./
 COPY apps/codebattle/assets ./assets
 COPY apps/codebattle/priv/gettext ./priv/gettext
 
@@ -40,7 +40,7 @@ COPY ./apps/codebattle/ ./apps/codebattle/
 COPY ./apps/runner/ ./apps/runner/
 COPY ./apps/phoenix_gon/ ./apps/phoenix_gon/
 
-COPY --from=assets-image /tmp/codebattle/assets/priv/static ./apps/codebattle/priv/static
+COPY --from=assets-image /tmp/codebattle/priv/static ./apps/codebattle/priv/static
 
 RUN mix phx.digest \
   && mix release codebattle \
