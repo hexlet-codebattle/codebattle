@@ -1,14 +1,19 @@
 // assets/js/monaco-bootstrap.js
 
-// 1) wire workers & include monaco css (per official ESM docs)
+// 1) wire workers & include monaco css
 import '../monaco.setup';
 import 'monaco-editor/min/vs/editor/editor.main.css';
+// Override codicon font path - MUST be after monaco CSS
+import '../../css/monaco-codicon-fix.css';
 
-// 2) use the @monaco-editor/react loader to get the monaco instance
+// 2) Import monaco-editor directly
+import * as monaco from 'monaco-editor';
+
+// 3) use the @monaco-editor/react loader to configure it with local monaco
 import { loader } from '@monaco-editor/react';
 
-// 3) no need to provide a CDN or custom monaco — Vite handles ESM bundling
-//    If you ever want to tweak loader config, you can still call loader.config({ ... })
+// Configure loader to use the local monaco instance
+loader.config({ monaco });
 
 import haskellProvider from './config/editor/haskell';
 import mongodbProvider, {
@@ -18,25 +23,25 @@ import sassProvider from './config/editor/sass';
 import stylusProvider from './config/editor/stylus';
 import zigProvider from './config/editor/zig';
 
-loader.init().then(monaco => {
+loader.init().then(monacoInstance => {
   // Haskell
-  monaco.languages.register({ id: 'haskell', aliases: ['haskell'] });
-  monaco.languages.setMonarchTokensProvider('haskell', haskellProvider);
+  monacoInstance.languages.register({ id: 'haskell', aliases: ['haskell'] });
+  monacoInstance.languages.setMonarchTokensProvider('haskell', haskellProvider);
 
   // Stylus
-  monaco.languages.register({ id: 'stylus', aliases: ['stylus'] });
-  monaco.languages.setMonarchTokensProvider('stylus', stylusProvider);
+  monacoInstance.languages.register({ id: 'stylus', aliases: ['stylus'] });
+  monacoInstance.languages.setMonarchTokensProvider('stylus', stylusProvider);
 
   // SCSS
-  monaco.languages.register({ id: 'scss', aliases: ['scss'] });
-  monaco.languages.setMonarchTokensProvider('scss', sassProvider);
+  monacoInstance.languages.register({ id: 'scss', aliases: ['scss'] });
+  monacoInstance.languages.setMonarchTokensProvider('scss', sassProvider);
 
   // MongoDB
-  monaco.languages.register({ id: 'mongodb', aliases: ['mongodb'] });
-  monaco.languages.setMonarchTokensProvider('mongodb', mongodbProvider);
-  monaco.languages.setLanguageConfiguration('mongodb', mongodbLangConf);
+  monacoInstance.languages.register({ id: 'mongodb', aliases: ['mongodb'] });
+  monacoInstance.languages.setMonarchTokensProvider('mongodb', mongodbProvider);
+  monacoInstance.languages.setLanguageConfiguration('mongodb', mongodbLangConf);
 
   // Zig
-  monaco.languages.register({ id: 'zig', aliases: ['zig'] });
-  monaco.languages.setMonarchTokensProvider('zig', zigProvider);
+  monacoInstance.languages.register({ id: 'zig', aliases: ['zig'] });
+  monacoInstance.languages.setMonarchTokensProvider('zig', zigProvider);
 });

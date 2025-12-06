@@ -242,7 +242,10 @@ const useEditor = props => {
 
     // Disable the context menu (right-click) to block "Paste" from there
     currentEditor.onContextMenu(e => {
-      e.preventDefault();
+      // Monaco's context menu event has the DOM event nested in e.event
+      if (e && e.event && e.event.preventDefault) {
+        e.event.preventDefault();
+      }
       return false;
     });
 

@@ -54,7 +54,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.1",
     "@inline-svg-unique-id/react": "^1.2.3",
-    "@monaco-editor/react": "^4.7.0",
+    "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^1.6.2",
     "@sentry/react": "^8.4.0",
     "@xstate/inspect": "^0.8.0",

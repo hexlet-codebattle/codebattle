@@ -1,0 +1,9 @@
+/* Override Monaco's codicon font path to use our local copy */
+/* This needs to be loaded AFTER monaco's CSS to override it */
+@font-face {
+  font-display: block;
+  font-family: codicon;
+  font-weight: 400;
+  font-style: normal;
+  src: url('/codicon.ttf') format('truetype');
+}

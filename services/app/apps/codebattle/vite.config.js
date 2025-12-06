@@ -37,6 +37,24 @@ function forceFullReload() {
   };
 }
 
+// --- copy codicon font to priv/static for Phoenix to serve
+function copyCodiconFont() {
+  return {
+    name: "copy-codicon-font",
+    closeBundle() {
+      // Copy codicon.ttf from assets/static to priv/static (root level for Phoenix)
+      const src = path.resolve(__dirname, "assets/static/codicon.ttf");
+      const dest = path.resolve(__dirname, "priv/static/codicon.ttf");
+      try {
+        fs.copyFileSync(src, dest);
+        console.log("✓ Copied codicon.ttf to priv/static/");
+      } catch (err) {
+        console.error("Failed to copy codicon.ttf:", err);
+      }
+    },
+  };
+}
+
 // Re-use your multiple entry points
 const input = {
   app: path.resolve(__dirname, "assets/js/app.js"),
@@ -70,6 +88,7 @@ export default defineConfig(({ command, mode }) => ({
     react({ fastRefresh: false }), // no react-refresh preamble
     poLoader(),
     forceFullReload(), // always trigger full reload
+    copyCodiconFont(), // copy codicon font for Phoenix to serve
     environment(["NODE_ENV"]),
   ],
 
@@ -140,4 +159,7 @@ export default defineConfig(({ command, mode }) => ({
   },
 
   publicDir: "assets/static",
+
+  // Explicitly include font files as assets
+  assetsInclude: ['**/*.ttf', '**/*.woff', '**/*.woff2'],
 }));
