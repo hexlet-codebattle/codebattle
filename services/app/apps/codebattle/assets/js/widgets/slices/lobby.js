@@ -134,8 +134,8 @@ const lobby = createSlice({
       state.nearbyUsers = payload.users.map(u => u.id);
     },
   },
-  extraReducers: {
-    [tournamentActions.changeTournamentState]: (state, { payload }) => {
+  extraReducers: builder => {
+    builder.addCase(tournamentActions.changeTournamentState, (state, { payload }) => {
       const seasonTournament = state.seasonTournaments.find(
         t => t.id === payload.id,
       );
@@ -156,7 +156,7 @@ const lobby = createSlice({
       if (liveTournament) {
         state.liveTournaments = state.liveTournaments.map(t => (t.id === payload.id ? { ...t, state: payload.state } : t));
       }
-    },
+    });
   },
 });
 

@@ -53,27 +53,28 @@ const leaderboardSlice = createSlice({
       state.period = action.payload;
     },
   },
-  extraReducers: {
-    [fetchUsers.pending]: state => {
-      if (state.loading === loadingStatuses.IDLE) {
-        state.loading = loadingStatuses.PENDING;
-      }
-      if (state.loading === loadingStatuses.INITIAL) {
-        state.loading = loadingStatuses.IDLE;
-      }
-    },
-    [fetchUsers.fulfilled]: (state, action) => {
-      if (state.loading === loadingStatuses.PENDING) {
-        state.loading = loadingStatuses.IDLE;
-        state.users = action.payload.users;
-      }
-    },
-    [fetchUsers.rejected]: (state, action) => {
-      if (state.loading === loadingStatuses.PENDING) {
-        state.loading = loadingStatuses.IDLE;
-        state.error = action.error;
-      }
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchUsers.pending, state => {
+        if (state.loading === loadingStatuses.IDLE) {
+          state.loading = loadingStatuses.PENDING;
+        }
+        if (state.loading === loadingStatuses.INITIAL) {
+          state.loading = loadingStatuses.IDLE;
+        }
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        if (state.loading === loadingStatuses.PENDING) {
+          state.loading = loadingStatuses.IDLE;
+          state.users = action.payload.users;
+        }
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        if (state.loading === loadingStatuses.PENDING) {
+          state.loading = loadingStatuses.IDLE;
+          state.error = action.error;
+        }
+      });
   },
 });
 

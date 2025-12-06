@@ -1,7 +1,8 @@
-import React, { useState, useContext, memo } from 'react';
+import React, { useState, useContext, memo, useMemo } from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';
+import isEqual from 'lodash/isEqual';
 import { useSelector } from 'react-redux';
 
 // import ExtendedEditor from '../../components/ExtendedEditor';
@@ -78,7 +79,12 @@ function GameWidget({ viewMode, editorMachine }) {
   const { mainService } = useContext(RoomContext);
   const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
 
-  const editors = useSelector(editorsPanelOptionsSelector(viewMode, roomMachineState));
+  const selector = useMemo(
+    () => editorsPanelOptionsSelector(viewMode, roomMachineState),
+    [viewMode, roomMachineState],
+  );
+
+  const editors = useSelector(selector, isEqual);
 
   return (
     <>

@@ -55,39 +55,40 @@ const completedGames = createSlice({
     error: null,
   },
   reducers: {},
-  extraReducers: {
-    [fetchCompletedGames.pending]: state => {
-      state.status = fetchionStatuses.loading;
-      state.error = null;
-    },
-    [fetchCompletedGames.fulfilled]: (state, { payload }) => {
-      state.status = fetchionStatuses.loaded;
-      state.completedGames = payload.games;
-      state.totalPages = payload.pageInfo.totalPages;
-      state.currrentPage = payload.pageInfo.pageNumber;
-      state.totalGames = payload.pageInfo.totalEntries;
-    },
-    [fetchCompletedGames.rejected]: (state, action) => {
-      state.status = fetchionStatuses.rejected;
-      state.error = action.error;
-    },
-    [loadNextPage.pending]: state => {
-      state.status = fetchionStatuses.loading;
-      state.error = null;
-    },
-    [loadNextPage.fulfilled]: (state, { payload }) => {
-      state.status = fetchionStatuses.loaded;
-      state.currrentPage = payload.pageInfo.pageNumber;
-      state.completedGames = unionBy(state.completedGames, payload.games, 'id');
-    },
-    [loadNextPage.rejected]: (state, action) => {
-      state.status = fetchionStatuses.rejected;
-      state.error = action.error;
-    },
-    [lobbyActions.finishGame]: (state, { payload: { game } }) => {
-      state.completedGames = [game, ...state.completedGames];
-      state.totalGames += 1;
-    },
+  extraReducers: builder => {
+    builder
+      .addCase(fetchCompletedGames.pending, state => {
+        state.status = fetchionStatuses.loading;
+        state.error = null;
+      })
+      .addCase(fetchCompletedGames.fulfilled, (state, { payload }) => {
+        state.status = fetchionStatuses.loaded;
+        state.completedGames = payload.games;
+        state.totalPages = payload.pageInfo.totalPages;
+        state.currrentPage = payload.pageInfo.pageNumber;
+        state.totalGames = payload.pageInfo.totalEntries;
+      })
+      .addCase(fetchCompletedGames.rejected, (state, action) => {
+        state.status = fetchionStatuses.rejected;
+        state.error = action.error;
+      })
+      .addCase(loadNextPage.pending, state => {
+        state.status = fetchionStatuses.loading;
+        state.error = null;
+      })
+      .addCase(loadNextPage.fulfilled, (state, { payload }) => {
+        state.status = fetchionStatuses.loaded;
+        state.currrentPage = payload.pageInfo.pageNumber;
+        state.completedGames = unionBy(state.completedGames, payload.games, 'id');
+      })
+      .addCase(loadNextPage.rejected, (state, action) => {
+        state.status = fetchionStatuses.rejected;
+        state.error = action.error;
+      })
+      .addCase(lobbyActions.finishGame, (state, { payload: { game } }) => {
+        state.completedGames = [game, ...state.completedGames];
+        state.totalGames += 1;
+      });
   },
 });
 

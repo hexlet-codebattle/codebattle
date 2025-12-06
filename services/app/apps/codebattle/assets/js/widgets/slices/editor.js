@@ -58,23 +58,23 @@ const meta = createSlice({
 const text = createSlice({
   name: 'text',
   initialState: initial.editor.text,
-  extraReducers: {
-    [meta.actions.updateEditorText]: (
+  extraReducers: builder => {
+    builder.addCase(meta.actions.updateEditorText, (
       state,
       { payload: { userId, langSlug, editorText } },
     ) => {
       state[makeEditorTextKey(userId, langSlug)] = editorText;
-    },
+    });
   },
 });
 
 const textHistory = createSlice({
   name: 'textHistory',
   initialState: initial.editor.textHistory,
-  extraReducers: {
-    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, editorText } }) => {
+  extraReducers: builder => {
+    builder.addCase(meta.actions.updateEditorTextHistory, (state, { payload: { userId, editorText } }) => {
       state[userId] = editorText;
-    },
+    });
   },
 });
 
@@ -91,10 +91,10 @@ const langs = createSlice({
 const langsHistory = createSlice({
   name: 'langsHistory',
   initialState: initial.editor.langsHistory,
-  extraReducers: {
-    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, langSlug } }) => {
+  extraReducers: builder => {
+    builder.addCase(meta.actions.updateEditorTextHistory, (state, { payload: { userId, langSlug } }) => {
       state[userId] = langSlug;
-    },
+    });
   },
 });
 

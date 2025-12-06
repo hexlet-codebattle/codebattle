@@ -13,7 +13,18 @@ import EditorLoading from './EditorLoading';
 
 function Editor(props) {
   const {
-    value, syntax, onChange, theme, loading = false, mode,
+    value,
+    syntax = 'js',
+    onChange,
+    theme,
+    loading = false,
+    mode,
+    wordWrap = 'off',
+    lineNumbers = 'on',
+    fontSize = 16,
+    mute = true,
+    editable = false,
+    toggleMuteSound = actions.toggleMuteSound,
   } = props;
 
   // Map your custom language key to an actual Monaco recognized language
@@ -110,17 +121,6 @@ Editor.propTypes = {
   mute: PropTypes.bool,
   userType: PropTypes.string.isRequired,
   userId: PropTypes.number.isRequired,
-};
-
-Editor.defaultProps = {
-  wordWrap: 'off',
-  lineNumbers: 'on',
-  syntax: 'js',
-  fontSize: 16,
-  mute: true,
-  editable: false,
-  loading: false,
-  toggleMuteSound: actions.toggleMuteSound,
 };
 
 export default memo(Editor);

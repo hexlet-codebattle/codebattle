@@ -25,33 +25,34 @@ const playbook = createSlice({
     },
     changeSolutionType: (state, { payload }) => ({ ...state, solutionType: payload.solutionType }),
   },
-  extraReducers: {
-    [editorActions.updateEditorText]: (state, { payload }) => {
-      const { players, records } = addRecord({
-        ...state,
-        payload,
-        type: 'update_editor_data',
-      });
+  extraReducers: builder => {
+    builder
+      .addCase(editorActions.updateEditorText, (state, { payload }) => {
+        const { players, records } = addRecord({
+          ...state,
+          payload,
+          type: 'update_editor_data',
+        });
 
-      return {
-        ...state,
-        players,
-        records,
-      };
-    },
-    [executionOutputActions.updateExecutionOutput]: (state, { payload }) => {
-      const { players, records } = addRecord({
-        ...state,
-        payload,
-        type: 'check_complete',
-      });
+        return {
+          ...state,
+          players,
+          records,
+        };
+      })
+      .addCase(executionOutputActions.updateExecutionOutput, (state, { payload }) => {
+        const { players, records } = addRecord({
+          ...state,
+          payload,
+          type: 'check_complete',
+        });
 
-      return {
-        ...state,
-        players,
-        records,
-      };
-    },
+        return {
+          ...state,
+          players,
+          records,
+        };
+      });
   },
 });
 

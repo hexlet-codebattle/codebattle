@@ -7,8 +7,8 @@ import Popover from 'react-bootstrap/Popover';
 
 function PopoverStickOnHover({
   id,
-  delay,
-  onMouseEnter,
+  delay = 0,
+  onMouseEnter = () => { },
   children,
   component,
   placement,
@@ -79,11 +79,6 @@ PopoverStickOnHover.propTypes = {
   onMouseEnter: PropTypes.func,
   component: PropTypes.node.isRequired,
   placement: PropTypes.string.isRequired,
-};
-
-PopoverStickOnHover.defaultProps = {
-  delay: 0,
-  onMouseEnter: () => { },
 };
 
 export default PopoverStickOnHover;
