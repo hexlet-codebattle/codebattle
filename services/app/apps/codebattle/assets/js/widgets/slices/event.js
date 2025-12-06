@@ -89,25 +89,25 @@ const eventSlice = createSlice({
       ...payload,
     }),
   },
-  extraReducers: builder => {
-    // builder
-    //   .addCase(fetchCommonLeaderboard.pending, state => {
-    //     state.loading = loadingStatuses.LOADING;
-    //   })
-    //   .addCase(fetchCommonLeaderboard.fulfilled, (state, action) => {
-    //     state.loading = loadingStatuses.PENDING;
-    //     state.commonLeaderboard = {
-    //       items: action.payload.items,
-    //       pageNumber: action.payload.pageInfo.pageNumber,
-    //       pageSize: action.payload.pageInfo.pageSize,
-    //       totalEntries: action.payload.pageInfo.totalEntries,
-    //     };
-    //   })
-    //   .addCase(fetchCommonLeaderboard.rejected, state => {
-    //     state.loading = loadingStatuses.PENDING;
-    //     state.commonLeaderboard = {};
-    //   });
-  },
+  // extraReducers: builder => {
+  //   builder
+  //     .addCase(fetchCommonLeaderboard.pending, state => {
+  //       state.loading = loadingStatuses.LOADING;
+  //     })
+  //     .addCase(fetchCommonLeaderboard.fulfilled, (state, action) => {
+  //       state.loading = loadingStatuses.PENDING;
+  //       state.commonLeaderboard = {
+  //         items: action.payload.items,
+  //         pageNumber: action.payload.pageInfo.pageNumber,
+  //         pageSize: action.payload.pageInfo.pageSize,
+  //         totalEntries: action.payload.pageInfo.totalEntries,
+  //       };
+  //     })
+  //     .addCase(fetchCommonLeaderboard.rejected, state => {
+  //       state.loading = loadingStatuses.PENDING;
+  //       state.commonLeaderboard = {};
+  //     });
+  // },
 });
 
 const { actions, reducer } = eventSlice;

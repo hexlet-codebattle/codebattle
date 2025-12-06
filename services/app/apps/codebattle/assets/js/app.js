@@ -17,7 +17,7 @@ import 'core-js/stable';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'regenerator-runtime/runtime';
 import 'phoenix_html';
-import '@fortawesome/fontawesome-free/js/all';
+import './fontawesome';
 // import '../css/style.scss';
 import 'bootstrap';
 
@@ -54,9 +54,12 @@ import {
 } from './widgets';
 
 if (process.env.NODE_ENV === 'development') {
-  inspect({
-    iframe: () => document.querySelector('.xstate'),
-  });
+  const xstateIframe = document.querySelector('.xstate');
+  if (xstateIframe) {
+    inspect({
+      iframe: () => xstateIframe,
+    });
+  }
 }
 
 const Hooks = {

@@ -1,4 +1,6 @@
-import React, { useState, useContext, memo, useMemo } from 'react';
+import React, {
+ useState, useContext, memo, useMemo,
+} from 'react';
 
 import cn from 'classnames';
 import i18next from 'i18next';

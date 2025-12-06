@@ -2,11 +2,9 @@ import React, { memo, useRef, useEffect } from 'react';
 
 import MonacoEditor from '@monaco-editor/react';
 import { initVimMode } from 'monaco-vim';
-import PropTypes from 'prop-types';
 
 import '../initEditor';
 import languages from '../config/languages';
-import { actions } from '../slices';
 import useEditor from '../utils/useEditor';
 
 import EditorLoading from './EditorLoading';
@@ -19,12 +17,6 @@ function Editor(props) {
     theme,
     loading = false,
     mode,
-    wordWrap = 'off',
-    lineNumbers = 'on',
-    fontSize = 16,
-    mute = true,
-    editable = false,
-    toggleMuteSound = actions.toggleMuteSound,
   } = props;
 
   // Map your custom language key to an actual Monaco recognized language
@@ -103,24 +95,5 @@ function Editor(props) {
     </>
   );
 }
-
-Editor.propTypes = {
-  value: PropTypes.string.isRequired,
-  syntax: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  theme: PropTypes.string.isRequired,
-  mode: PropTypes.string.isRequired,
-  loading: PropTypes.bool,
-  wordWrap: PropTypes.string,
-  lineNumbers: PropTypes.string,
-  fontSize: PropTypes.number,
-  editable: PropTypes.bool,
-  roomMode: PropTypes.string.isRequired,
-  checkResult: PropTypes.func.isRequired,
-  toggleMuteSound: PropTypes.func,
-  mute: PropTypes.bool,
-  userType: PropTypes.string.isRequired,
-  userId: PropTypes.number.isRequired,
-};
 
 export default memo(Editor);

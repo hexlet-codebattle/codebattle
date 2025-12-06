@@ -89,7 +89,6 @@ const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) =>
 
 function GiveUpButtonDropdownItem({ onSelect, status }) {
   const commonProps = {
-    key: 'giveUp',
     href: '#',
     title: i18next.t('Give Up'),
     onSelect,
@@ -98,7 +97,7 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
   };
 
   return (
-    <Dropdown.Item {...commonProps}>
+    <Dropdown.Item key="giveUp" {...commonProps}>
       <span className={status === 'disabled' ? 'text-muted' : 'text-danger'}>
         <FontAwesomeIcon icon={['far', 'flag']} className="mr-1" />
         {i18next.t('Give up')}
@@ -109,7 +108,6 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
 
 function ResetButtonDropDownItem({ onSelect, status }) {
   const commonProps = {
-    key: 'reset',
     href: '#',
     title: i18next.t('Reset solution'),
     onSelect,
@@ -118,7 +116,7 @@ function ResetButtonDropDownItem({ onSelect, status }) {
   };
 
   return (
-    <Dropdown.Item {...commonProps}>
+    <Dropdown.Item key="reset" {...commonProps}>
       <span className="text-white">
         <FontAwesomeIcon icon={['fas', 'sync']} className="mr-1" />
         {i18next.t('Reset solution')}

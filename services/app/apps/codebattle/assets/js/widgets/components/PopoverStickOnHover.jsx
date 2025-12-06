@@ -1,7 +1,6 @@
 // SEE: https://gist.github.com/lou/571b7c0e7797860d6c555a9fdc0496f9
 import React, { useState, useEffect, useRef } from 'react';
 
-import PropTypes from 'prop-types';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 
@@ -71,14 +70,5 @@ function PopoverStickOnHover({
     </>
   );
 }
-
-PopoverStickOnHover.propTypes = {
-  id: PropTypes.string.isRequired,
-  children: PropTypes.element.isRequired,
-  delay: PropTypes.number,
-  onMouseEnter: PropTypes.func,
-  component: PropTypes.node.isRequired,
-  placement: PropTypes.string.isRequired,
-};
 
 export default PopoverStickOnHover;
