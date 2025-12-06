@@ -7,13 +7,10 @@ import 'monaco-editor/min/vs/editor/editor.main.css';
 import '../../css/monaco-codicon-fix.css';
 
 // 2) Import monaco-editor directly
+import { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
 // 3) use the @monaco-editor/react loader to configure it with local monaco
-import { loader } from '@monaco-editor/react';
-
-// Configure loader to use the local monaco instance
-loader.config({ monaco });
 
 import haskellProvider from './config/editor/haskell';
 import mongodbProvider, {
@@ -22,6 +19,9 @@ import mongodbProvider, {
 import sassProvider from './config/editor/sass';
 import stylusProvider from './config/editor/stylus';
 import zigProvider from './config/editor/zig';
+
+// Configure loader to use the local monaco instance
+loader.config({ monaco });
 
 loader.init().then(monacoInstance => {
   // Haskell
