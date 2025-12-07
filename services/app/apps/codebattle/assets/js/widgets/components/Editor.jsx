@@ -37,13 +37,16 @@ function Editor(props) {
   const vimModeRef = useRef(null);
 
   // Wrap your existing "didMount" to store editor and call original if needed
-  const handleEditorDidMount = React.useCallback((editor, monaco) => {
-    editorRef.current = editor;
+  const handleEditorDidMount = React.useCallback(
+    (editor, monaco) => {
+      editorRef.current = editor;
 
-    if (typeof originalEditorDidMount === 'function') {
-      originalEditorDidMount(editor, monaco);
-    }
-  }, [originalEditorDidMount]);
+      if (typeof originalEditorDidMount === 'function') {
+        originalEditorDidMount(editor, monaco);
+      }
+    },
+    [originalEditorDidMount],
+  );
   // Whenever `mode` changes, enable or disable vimMode
   useEffect(() => {
     // If we haven't mounted the editor yet, exit
@@ -82,7 +85,7 @@ function Editor(props) {
 
       {/* This is for displaying normal/insert mode status in Vim */}
       <div
-        className="bg-dark"
+        className="bg-dark text-white"
         ref={vimStatusRef}
         style={{
           padding: '4px 8px',
