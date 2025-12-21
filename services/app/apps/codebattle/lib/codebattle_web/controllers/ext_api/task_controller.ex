@@ -6,14 +6,20 @@ defmodule CodebattleWeb.ExtApi.TaskController do
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   def create(conn, params) do
+    task_params = Map.get(params, "task")
+    origin = Map.get(params, "origin")
+    visibility = Map.get(params, "visibility")
+
     params =
-      params
+      task_params
       |> Map.put("state", "active")
+      |> Map.put("origin", origin)
+      |> Map.put("visibility", visibility)
       |> Runner.AtomizedMap.atomize()
 
     case Codebattle.Task.changeset(%Codebattle.Task{}, params) do
       %{valid?: true} ->
-        Codebattle.Task.upsert!(params)
+        params |> Codebattle.Task.upsert!() |> dbg()
         send_resp(conn, 201, "")
 
       %{valid?: false, errors: errors} ->

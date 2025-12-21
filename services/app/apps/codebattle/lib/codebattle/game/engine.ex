@@ -611,7 +611,7 @@ defmodule Codebattle.Game.Engine do
       editor_text = Utils.sanitize_jsonb(player.editor_text)
 
       player
-      |> Map.take([:id, :result, :result_percent, :name, :clan_id, :is_bot])
+      |> Map.take([:id, :result, :result_percent, :name, :clan_id, :is_bot, :lang, :editor_lang])
       |> Map.put(:editor_text, editor_text)
     end)
   end

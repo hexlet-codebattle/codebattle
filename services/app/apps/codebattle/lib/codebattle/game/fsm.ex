@@ -34,6 +34,7 @@ defmodule Codebattle.Game.Fsm do
 
   def transition(:update_editor_data, %{state: s} = game, params) when s in ["playing", "game_over", "timeout"] do
     params_to_update = Map.take(params, [:editor_text, :editor_lang])
+
     game = update_player(game, params.id, params_to_update)
     {:ok, game}
   end
@@ -145,6 +146,7 @@ defmodule Codebattle.Game.Fsm do
       check_result: params.check_result,
       editor_text: params.editor_text,
       editor_lang: params.editor_lang,
+      lang: params.editor_lang,
       result_percent:
         Float.round(
           100.0 * params.check_result.success_count / params.check_result.asserts_count,

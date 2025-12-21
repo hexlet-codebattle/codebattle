@@ -11,7 +11,14 @@ defmodule CodebattleWeb.ExtApi.TaskPackController do
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   def create(conn, params) do
-    params = AtomizedMap.atomize(params)
+    visibility = Map.get(params, "visibility", "public")
+    tp_params = Map.get(params, "task_pack", %{})
+
+    params =
+      tp_params
+      |> AtomizedMap.atomize()
+      |> Map.put(:visibility, visibility)
+      |> Map.put(:state, "active")
 
     task_names = Map.get(params, :task_names, [])
     tasks = Task.get_by_names(task_names)

@@ -16,12 +16,12 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
       <h2 class="text-center mb-2 text-white">Edit Tournament</h2>
       <h3 class="text-center mb-4 text-white">
         Creator:
-        <a
+        <%!-- <a
           href={Routes.user_path(@socket, :show, @tournament.creator.id)}
           class="text-decoration-none cb-text"
         >
           {@tournament.creator.name}
-        </a>
+        </a> --%>
       </h3>
 
       <.form

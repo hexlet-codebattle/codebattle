@@ -19,13 +19,14 @@ defmodule CodebattleWeb.ExtApi.TaskPackControllerTest do
       |> put_req_header("x-auth-key", "x-key")
       |> post(
         Routes.ext_api_task_pack_path(conn, :create, %{
-          name: "qualification-2025",
-          state: "active",
           visibility: "hidden",
-          task_names: [
-            "sum of two",
-            "tasks"
-          ]
+          task_pack: %{
+            name: "qualification-2025",
+            task_names: [
+              "sum of two",
+              "tasks"
+            ]
+          }
         })
       )
       |> response(201)
@@ -48,14 +49,15 @@ defmodule CodebattleWeb.ExtApi.TaskPackControllerTest do
       |> put_req_header("x-auth-key", "x-key")
       |> post(
         Routes.ext_api_task_pack_path(conn, :create, %{
-          name: "qualification-2025",
-          state: "active",
           visibility: "hidden",
-          task_names: [
-            "sum of two",
-            "tasks",
-            "missing numbers"
-          ]
+          task_pack: %{
+            name: "qualification-2025",
+            task_names: [
+              "sum of two",
+              "tasks",
+              "missing numbers"
+            ]
+          }
         })
       )
       |> response(201)

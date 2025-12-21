@@ -67,8 +67,16 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           tr.tournament_id,
           tr.user_id,
           tr.clan_id,
-          tr.user_name,
-          tr.user_lang,
+          MAX(tr.user_name) AS user_name,
+          (
+            SELECT user_lang
+            FROM tournament_results tr2
+            WHERE tr2.tournament_id = tr.tournament_id
+              AND tr2.user_id = tr.user_id
+            GROUP BY user_lang
+            ORDER BY COUNT(*) DESC, user_lang DESC
+            LIMIT 1
+          ) AS user_lang,
           SUM(tr.score)::integer AS score,
           COUNT(*)::integer AS games_count,
           SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END)::integer AS wins_count,
@@ -77,7 +85,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           AVG(tr.result_percent)::numeric(5,1) AS avg_result_percent
         FROM tournament_results tr
         WHERE tr.tournament_id = #{tournament.id}
-        GROUP BY tr.tournament_id, tr.user_id, tr.clan_id, tr.user_name, tr.user_lang
+        GROUP BY tr.tournament_id, tr.user_id, tr.clan_id
       ),
       ranked_results AS (
         SELECT

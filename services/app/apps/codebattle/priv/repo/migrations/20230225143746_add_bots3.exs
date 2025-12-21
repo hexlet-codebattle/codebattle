@@ -99,7 +99,8 @@ ZuseZinger
 xXxKolyanxXx
 AndreyAntibiotik
 )
-    bot_ids = -42..(-42 - Enum.count(names))
+    count = Enum.count(names)
+    bot_ids = -42..(-42 - count)//-1
     utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
     bots =

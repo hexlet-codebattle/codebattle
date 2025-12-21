@@ -86,7 +86,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       (p.player_info->>'result_percent')::numeric AS result_percent,
       (p.player_info->>'id')::integer AS user_id,
       (p.player_info->>'name')::text AS user_name,
-      (p.player_info->>'lang')::text AS user_lang,
+      (p.player_info->>'editor_lang')::text AS user_lang,
       (p.player_info->>'clan_id')::integer AS clan_id,
       g.duration_sec,
       g.tournament_id,
