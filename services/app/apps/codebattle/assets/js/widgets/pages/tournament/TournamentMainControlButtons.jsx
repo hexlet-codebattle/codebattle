@@ -13,17 +13,19 @@ import {
   showTournamentResults as handleShowResults,
 } from '../../middlewares/TournamentAdmin';
 
-const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) => (
-  <button
-    type="button"
-    ref={ref}
-    className={className.replace('dropdown-toggle', '')}
-    onClick={onClick}
-    disabled={disabled}
-  >
-    <FontAwesomeIcon icon="ellipsis-v" />
-  </button>
-));
+const CustomToggle = React.forwardRef(
+  ({ onClick, className, disabled }, ref) => (
+    <button
+      type="button"
+      ref={ref}
+      className={className.replace('dropdown-toggle', '')}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon="ellipsis-v" />
+    </button>
+  ),
+);
 
 const TournamentMainControlButtons = ({
   accessType,
@@ -54,8 +56,12 @@ const TournamentMainControlButtons = ({
     handleStartRound('nextRound');
   }, [handleStartRound]);
 
-  const restartBtnClassName = cn('btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary');
-  const roundBtnClassName = cn('btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white');
+  const restartBtnClassName = cn(
+    'btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary',
+  );
+  const roundBtnClassName = cn(
+    'btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white',
+  );
 
   const dropdownBtnClassName = cn('btn text-white rounded-right', {
     'rounded-left': streamMode,
@@ -124,7 +130,7 @@ const TournamentMainControlButtons = ({
           <Dropdown.Item
             disabled={disabled}
             key="edit"
-            href={`/live_view_tournaments/${tournamentId}/edit`}
+            href={`/tournaments/${tournamentId}/edit`}
             className="cb-dropdown-item"
           >
             <FontAwesomeIcon className="mr-2" icon="edit" />

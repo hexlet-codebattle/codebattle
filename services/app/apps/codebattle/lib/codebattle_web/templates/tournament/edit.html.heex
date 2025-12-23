@@ -1,0 +1,10 @@
+<script>
+  window.csrf_token = "<%= csrf_token() %>"
+</script>
+
+<div id="tournament-edit-root" 
+     data-tournament-id={@tournament.id}
+     data-task-pack-names={Jason.encode!(@task_pack_names)}
+     data-user-timezone={@user_timezone}>
+</div>
+

@@ -6,7 +6,7 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.Tournament
   alias Codebattle.User
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show, :edit])
   plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
 
   def index(conn, _params) do
@@ -31,6 +31,37 @@ defmodule CodebattleWeb.TournamentController do
       |> put_status(:not_found)
       |> put_view(CodebattleWeb.ErrorView)
       |> render("404.html", %{msg: gettext("Tournament not found")})
+    end
+  end
+
+  def edit(conn, %{"id" => id}) do
+    current_user = conn.assigns[:current_user]
+    tournament = Tournament.Context.get!(id)
+
+    # Check if user has permission to edit
+    if tournament.creator_id == current_user.id || User.admin?(current_user) do
+      user_timezone = get_in(conn.private, [:connect_params, "timezone"]) || "UTC"
+
+      task_pack_names =
+        current_user
+        |> Codebattle.TaskPack.list_visible()
+        |> Enum.map(& &1.name)
+
+      conn
+      |> put_view(CodebattleWeb.TournamentView)
+      |> put_meta_tags(%{
+        title: "Edit #{tournament.name}",
+        description: "Edit tournament settings"
+      })
+      |> render("edit.html",
+        tournament: tournament,
+        task_pack_names: task_pack_names,
+        user_timezone: user_timezone
+      )
+    else
+      conn
+      |> put_flash(:error, gettext("You don't have permission to edit this tournament"))
+      |> redirect(to: Routes.tournament_path(conn, :show, id))
     end
   end
 

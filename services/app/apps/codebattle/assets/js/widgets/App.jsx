@@ -71,6 +71,7 @@ const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(
   () => import('./pages/tournament/TournamentAdminWidget'),
 );
+const TournamentEdit = React.lazy(() => import('./pages/tournament/EditTournament'));
 const TournamentPlayer = React.lazy(() => import('./pages/tournamentPlayer'));
 const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
@@ -205,6 +206,28 @@ export const TournamentPage = () => (
     </PersistGate>
   </Provider>
 );
+
+export const TournamentEditPage = () => {
+  const container = document.getElementById('tournament-edit-root');
+  const tournamentId = container?.dataset?.tournamentId;
+  const taskPackNames = JSON.parse(container?.dataset?.taskPackNames || '[]');
+  const userTimezone = container?.dataset?.userTimezone || 'UTC';
+
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <TournamentEdit
+            tournamentId={tournamentId}
+            taskPackNames={taskPackNames}
+            userTimezone={userTimezone}
+          />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+};
+
 export const TournamentAdminPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>

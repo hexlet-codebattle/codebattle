@@ -132,7 +132,7 @@ defmodule CodebattleWeb.Router do
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController)
-      get("/tournaments", TournamentController, :index)
+      resources("/tournaments", TournamentController, only: [:index, :show, :create, :update])
       post("/tasks/build", TaskController, :build)
       post("/tasks/check", TaskController, :check)
       get("/tasks/:name/unique", TaskController, :unique)
@@ -174,7 +174,7 @@ defmodule CodebattleWeb.Router do
     get("/session/external/signup", SessionController, :external_signup)
     get("/remind_password", SessionController, :remind_password)
 
-    resources("/tournaments", TournamentController, only: [:index, :show])
+    resources("/tournaments", TournamentController, only: [:index, :show, :edit])
 
     get("/stream", StreamController, :index)
     get("/schedule", TournamentsScheduleController, :index)
@@ -223,9 +223,6 @@ defmodule CodebattleWeb.Router do
       post("/training", GameController, :create_training)
       post("/:id/join", GameController, :join)
     end
-
-    # only for dev-admin liveView experiments
-    resources("/live_view_tournaments", LiveViewTournamentController, only: [:index, :show, :edit])
   end
 
   scope "/feature-flags" do

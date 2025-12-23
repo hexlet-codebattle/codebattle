@@ -17,30 +17,36 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
   end
 
   @impl true
-  def handle_event("validate", %{"season" => season_params}, socket) do
-    changeset =
-      socket.assigns.season
-      |> Season.changeset(season_params)
-      |> Map.put(:action, :validate)
-
-    {:noreply, assign(socket, changeset: changeset)}
-  end
-
   def handle_event("update", %{"season" => season_params}, socket) do
+    IO.puts("=== UPDATE EVENT RECEIVED ===")
+    IO.inspect(season_params, label: "Params")
+
     case Season.update(socket.assigns.season, season_params) do
-      {:ok, _season} ->
+      {:ok, season} ->
+        IO.puts("=== UPDATE SUCCESSFUL ===")
+        changeset = Season.changeset(season)
+
         {:noreply,
          socket
-         |> put_flash(:info, "Season updated successfully")
-         |> push_navigate(to: Routes.admin_season_index_view_path(socket, :index))}
+         |> assign(season: season, changeset: changeset)
+         |> put_flash(:info, "Season updated successfully")}
 
       {:error, changeset} ->
+        IO.puts("=== UPDATE FAILED ===")
+        IO.inspect(changeset.errors, label: "Errors")
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
 
   def handle_event("cancel", _params, socket) do
     {:noreply, push_navigate(socket, to: Routes.admin_season_index_view_path(socket, :index))}
+  end
+
+  def handle_event(event, params, socket) do
+    IO.puts("=== UNKNOWN EVENT RECEIVED ===")
+    IO.inspect(event, label: "Event name")
+    IO.inspect(params, label: "Params")
+    {:noreply, socket}
   end
 
   @impl true
@@ -64,37 +70,39 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
           <span><i class="bi bi-pencil"></i> Season Information</span>
         </div>
         <div class="card-body">
-          <.form :let={f} for={@changeset} phx-change="validate" phx-submit="update" class="row g-3">
-            <div class="col-md-6">
-              {label(f, :name, class: "form-label")}
-              {text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season")}
-              {error_tag(f, :name)}
-            </div>
+          <.form :let={f} for={@changeset} phx-submit="update">
+            <div class="row g-3">
+              <div class="col-md-6">
+                {label(f, :name, class: "form-label")}
+                {text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season")}
+                {error_tag(f, :name)}
+              </div>
 
-            <div class="col-md-6">
-              {label(f, :year, class: "form-label")}
-              {number_input(f, :year, class: "form-control", placeholder: "e.g., 2024")}
-              {error_tag(f, :year)}
-            </div>
+              <div class="col-md-6">
+                {label(f, :year, class: "form-label")}
+                {number_input(f, :year, class: "form-control", placeholder: "e.g., 2024")}
+                {error_tag(f, :year)}
+              </div>
 
-            <div class="col-md-6">
-              {label(f, :starts_at, "Start Date", class: "form-label")}
-              {date_input(f, :starts_at, class: "form-control")}
-              {error_tag(f, :starts_at)}
-            </div>
+              <div class="col-md-6">
+                {label(f, :starts_at, "Start Date", class: "form-label")}
+                {date_input(f, :starts_at, class: "form-control")}
+                {error_tag(f, :starts_at)}
+              </div>
 
-            <div class="col-md-6">
-              {label(f, :ends_at, "End Date", class: "form-label")}
-              {date_input(f, :ends_at, class: "form-control")}
-              {error_tag(f, :ends_at)}
-            </div>
+              <div class="col-md-6">
+                {label(f, :ends_at, "End Date", class: "form-label")}
+                {date_input(f, :ends_at, class: "form-control")}
+                {error_tag(f, :ends_at)}
+              </div>
 
-            <div class="col-12">
-              <div class="btn-group" role="group">
-                {submit("Save Changes", class: "btn btn-primary", phx_disable_with: "Saving...")}
-                <button type="button" class="btn btn-secondary" phx-click="cancel">
-                  Cancel
-                </button>
+              <div class="col-12">
+                <div class="btn-group" role="group">
+                  {submit("Save Changes", class: "btn btn-primary")}
+                  <button type="button" class="btn btn-secondary" phx-click="cancel">
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           </.form>

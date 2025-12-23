@@ -47,6 +47,7 @@ import {
   renderStreamPage,
   renderTournamentAdminPage,
   renderTournamentPage,
+  renderTournamentEditPage,
   renderTournamentPlayerPage,
   renderTournamentsSchedule,
   renderUserPage,
@@ -109,6 +110,7 @@ const settingsRoot = document.getElementById('settings');
 const stairwayGameRoot = document.getElementById('stairway-game-root');
 const tournamentPlayerRoot = document.getElementById('tournament-player-root');
 const tournamentRoot = document.getElementById('tournament-root');
+const tournamentEditRoot = document.getElementById('tournament-edit-root');
 const adminTournamentRoot = document.getElementById('tournament-admin-root');
 const eventWidgetRoot = document.getElementById('event-widget');
 const userPageRoot = document.getElementById('user-page-root');
@@ -159,6 +161,10 @@ if (tournamentPlayerRoot) {
 
 if (tournamentRoot) {
   renderTournamentPage(tournamentRoot);
+}
+
+if (tournamentEditRoot) {
+  renderTournamentEditPage(tournamentEditRoot);
 }
 
 if (adminTournamentRoot) {

@@ -16,6 +16,7 @@ import {
   StreamPage,
   TournamentAdminPage,
   TournamentPage,
+  TournamentEditPage,
   TournamentPlayerPage,
   TournamentsSchedulePage,
   UserPage,
@@ -38,6 +39,7 @@ export const renderStreamPage = domElement => createRoot(domElement).render(<Str
 export const renderHallOfFame = domElement => createRoot(domElement).render(<HallOfFamePage />);
 export const renderTournamentAdminPage = domElement => createRoot(domElement).render(<TournamentAdminPage />);
 export const renderTournamentPage = domElement => createRoot(domElement).render(<TournamentPage />);
+export const renderTournamentEditPage = domElement => createRoot(domElement).render(<TournamentEditPage />);
 export const renderTournamentPlayerPage = domElement => createRoot(domElement).render(<TournamentPlayerPage />);
 export const renderTournamentsSchedule = domElement => createRoot(domElement).render(<TournamentsSchedulePage />);
 export const renderUserPage = domElement => createRoot(domElement).render(<UserPage />);
