@@ -18,7 +18,6 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
   end
 
   def show(conn, %{"id" => id}) do
-    current_user = conn.assigns.current_user
     tournament = Tournament.Context.get!(id)
 
     json(conn, %{tournament: tournament})
