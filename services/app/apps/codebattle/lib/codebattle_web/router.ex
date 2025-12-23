@@ -85,6 +85,7 @@ defmodule CodebattleWeb.Router do
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
     live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
     live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
+    live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
   end
 

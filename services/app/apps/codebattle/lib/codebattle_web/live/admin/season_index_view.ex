@@ -165,6 +165,12 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
                           >
                             <i class="bi bi-eye"></i> View
                           </a>
+                          <a
+                            href={Routes.admin_season_edit_view_path(@socket, :edit, season.id)}
+                            class="btn btn-sm btn-outline-secondary"
+                          >
+                            <i class="bi bi-pencil"></i> Edit
+                          </a>
                           <button
                             class="btn btn-sm btn-outline-danger"
                             phx-click="delete"

@@ -38,7 +38,11 @@ defmodule CodebattleWeb.ExtApi.TaskPackController do
 
     case find_or_create_task_pack(params) do
       {:ok, _task_pack} ->
-        send_resp(conn, 201, "Created task pack with name: #{params.name}, task_ids: #{task_ids}")
+        send_resp(
+          conn,
+          201,
+          "Created task pack with name: #{inspect(params.name)}, task_ids: #{inspect(task_ids)}"
+        )
 
       {:error, %{errors: errors}} ->
         errors = Map.new(errors, fn {k, {v, _}} -> {k, v} end)
