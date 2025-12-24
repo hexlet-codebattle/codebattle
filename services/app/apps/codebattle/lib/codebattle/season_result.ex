@@ -148,8 +148,8 @@ defmodule Codebattle.SeasonResult do
           LEFT JOIN clans c ON c.id = tur.clan_id
           WHERE t.grade != 'open'
             AND t.state = 'finished'
-            AND t.started_at >= $2::date
-            AND t.started_at <= $3::date
+            AND t.started_at::date >= $2::date
+            AND t.started_at::date <= $3::date
           GROUP BY tur.user_id
         ),
         ranked_data AS (
