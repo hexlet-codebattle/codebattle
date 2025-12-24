@@ -36,7 +36,7 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
     {:noreply, push_navigate(socket, to: Routes.admin_season_index_view_path(socket, :index))}
   end
 
-  def handle_event(event, params, socket) do
+  def handle_event(_event, _params, socket) do
     {:noreply, socket}
   end
 
