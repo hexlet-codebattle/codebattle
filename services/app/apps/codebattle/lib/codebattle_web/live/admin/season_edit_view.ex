@@ -18,12 +18,8 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
 
   @impl true
   def handle_event("update", %{"season" => season_params}, socket) do
-    IO.puts("=== UPDATE EVENT RECEIVED ===")
-    IO.inspect(season_params, label: "Params")
-
     case Season.update(socket.assigns.season, season_params) do
       {:ok, season} ->
-        IO.puts("=== UPDATE SUCCESSFUL ===")
         changeset = Season.changeset(season)
 
         {:noreply,
@@ -32,8 +28,6 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
          |> put_flash(:info, "Season updated successfully")}
 
       {:error, changeset} ->
-        IO.puts("=== UPDATE FAILED ===")
-        IO.inspect(changeset.errors, label: "Errors")
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
@@ -43,9 +37,6 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
   end
 
   def handle_event(event, params, socket) do
-    IO.puts("=== UNKNOWN EVENT RECEIVED ===")
-    IO.inspect(event, label: "Event name")
-    IO.inspect(params, label: "Params")
     {:noreply, socket}
   end
 
