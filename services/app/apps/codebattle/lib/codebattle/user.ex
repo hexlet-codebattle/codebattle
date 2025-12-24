@@ -193,16 +193,21 @@ defmodule Codebattle.User do
   def get_nearby_users(%{rank: nil}), do: []
   def get_nearby_users(%{is_guest: true}), do: []
 
-  def get_nearby_users(%{id: id, rank: rank}, limit \\ 2) do
-    user_ids =
-      rank
-      |> Codebattle.UsersPointsAndRankServer.get_nearby_user_ids(limit)
-      |> Enum.filter(&(&1 != id))
+  def get_nearby_users(%{id: id}, limit \\ 2) do
+    case Codebattle.Season.get_current_season() do
+      nil ->
+        # Fallback to old ranking system if no current season
+        []
 
-    __MODULE__
-    |> where([u], u.id in ^user_ids)
-    |> order_by([u], {:asc, :rank})
-    |> Repo.all()
+      season ->
+        season.id
+        |> Codebattle.SeasonResult.get_nearby_users(id, limit)
+        |> Enum.map(fn season_result ->
+          # Return User structs for compatibility
+          Repo.get(__MODULE__, season_result.user_id)
+        end)
+        |> Enum.reject(&is_nil/1)
+    end
   end
 
   def search_users(query) do

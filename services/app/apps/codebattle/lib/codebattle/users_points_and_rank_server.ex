@@ -1,11 +1,16 @@
 defmodule Codebattle.UsersPointsAndRankServer do
-  @moduledoc "Gen server for collect actions from users"
+  @moduledoc """
+  Gen server for updating user points and season results.
+
+  This server:
+  - Subscribes to tournament events
+  - Triggers season results aggregation when tournaments finish
+  - Maintains backward compatibility with legacy user points/rank system
+  """
 
   use GenServer
 
   require Logger
-
-  @user_ranking :user_ranking
 
   @work_timeout to_timeout(day: 1)
 
@@ -20,26 +25,12 @@ defmodule Codebattle.UsersPointsAndRankServer do
 
   # SERVER
   def init(_) do
-    create_table()
     Process.send_after(self(), :subscribe, 200)
     Process.send_after(self(), :work, to_timeout(minute: 5))
 
     Logger.debug("Start UsersPointsAndRankServer")
 
     {:ok, true}
-  end
-
-  def create_table do
-    :ets.new(
-      @user_ranking,
-      [
-        :ordered_set,
-        :public,
-        :named_table,
-        {:write_concurrency, true},
-        {:read_concurrency, true}
-      ]
-    )
   end
 
   def handle_cast(:update, state) do
@@ -73,45 +64,23 @@ defmodule Codebattle.UsersPointsAndRankServer do
 
   def handle_info(_, state), do: {:noreply, state}
 
-  def get_nearby_user_ids(rank, limit \\ 2) do
-    ensure_ets_populated()
-
-    :ets.select(@user_ranking, [
-      {{:"$1", :"$2"}, [{:>=, :"$1", rank - limit}, {:"=<", :"$1", rank + limit}], [:"$2"]}
-    ])
-  rescue
-    _e ->
-      Logger.error("Error getting nearby user_ids")
-      []
-  end
-
-  def get_top_user_ids(limit) do
-    ensure_ets_populated()
-
-    :ets.select(@user_ranking, [
-      {{:"$1", :"$2"}, [{:>=, :"$1", 1}, {:"=<", :"$1", limit}], [:"$2"]}
-    ])
-  rescue
-    _e ->
-      Logger.error("Error getting top ranking user_ids")
-      []
-  end
-
   defp do_work do
-    Codebattle.User.PointsAndRankUpdate.update()
-    update_ets()
-    Logger.debug("Points has been recalculated")
-  end
+    case Codebattle.Season.get_current_season() do
+      nil ->
+        Logger.warning("No current season found, skipping season results update")
 
-  defp update_ets do
-    data = Codebattle.User.get_user_places_and_ids()
-    :ets.insert(@user_ranking, data)
-  end
+      season ->
+        case Codebattle.SeasonResult.aggregate_season_results(season.id) do
+          {:ok, num_rows} ->
+            Logger.debug("Season results aggregated: #{num_rows} users updated")
 
-  defp ensure_ets_populated do
-    case :ets.info(@user_ranking, :size) do
-      0 -> update_ets()
-      _ -> :ok
+          {:error, error} ->
+            Logger.error("Error aggregating season results: #{inspect(error)}")
+        end
     end
+
+    # Keep updating user points/ranks for backward compatibility
+    Codebattle.User.PointsAndRankUpdate.update()
+    Logger.debug("Points has been recalculated")
   end
 end

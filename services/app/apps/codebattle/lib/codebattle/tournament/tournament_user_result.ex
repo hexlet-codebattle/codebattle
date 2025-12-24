@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   schema "tournament_user_results" do
     field(:avg_result_percent, :decimal)
     field(:clan_id, :integer)
+    field(:clan_name, :string)
     field(:games_count, :integer, default: 0)
     field(:is_cheater, :boolean, default: false)
     field(:place, :integer, default: 0)
@@ -100,16 +101,19 @@ defmodule Codebattle.Tournament.TournamentUserResult do
           ar.total_time,
           ar.is_cheater,
           ar.avg_result_percent,
+          c.name AS clan_name,
           ROW_NUMBER() OVER (ORDER BY ar.score DESC, ar.total_time ASC) AS place,
           t.grade
         FROM aggregated_results ar
         JOIN tournaments t ON t.id = ar.tournament_id and t.grade != 'open'
+        LEFT JOIN clans c ON c.id = ar.clan_id
       ),
       results_with_points AS (
         SELECT
           rr.tournament_id,
           rr.user_id,
           rr.clan_id,
+          rr.clan_name,
           rr.user_name,
           rr.user_lang,
           rr.score,
@@ -127,6 +131,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
         tournament_id,
         user_id,
         clan_id,
+        clan_name,
         user_name,
         user_lang,
         score,
@@ -143,6 +148,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
         tournament_id,
         user_id,
         clan_id,
+        clan_name,
         user_name,
         user_lang,
         score,
@@ -158,6 +164,8 @@ defmodule Codebattle.Tournament.TournamentUserResult do
       ON CONFLICT (tournament_id, user_id)
       DO UPDATE SET
         user_name = EXCLUDED.user_name,
+        clan_id = EXCLUDED.clan_id,
+        clan_name = EXCLUDED.clan_name,
         user_lang = EXCLUDED.user_lang,
         score = EXCLUDED.score,
         points = EXCLUDED.points,

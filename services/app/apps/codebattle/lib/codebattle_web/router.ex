@@ -181,6 +181,8 @@ defmodule CodebattleWeb.Router do
     get("/stream/preset", StreamController, :stream_preset)
     get("/hall_of_fame", HallOfFameController, :index)
 
+    resources("/seasons", SeasonController, only: [:index, :show])
+
     scope "/tournaments" do
       get("/:id/admin", Tournament.AdminController, :show)
       get("/:id/stream", Tournament.StreamController, :show)

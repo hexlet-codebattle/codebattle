@@ -367,8 +367,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       SELECT
           tr.clan_id,
           tr.user_id,
-          tr.user_name,
-          tr.user_lang,
+          MAX(tr.user_name) AS user_name,
+          MAX(tr.user_lang) AS user_lang,
           SUM(tr.score) AS total_score,
           SUM(tr.duration_sec) AS total_duration_sec,
           SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END) AS wins_count
@@ -377,7 +377,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       WHERE
           tr.tournament_id = #{tournament.id}
       GROUP BY
-          tr.clan_id, tr.user_id, tr.user_name, tr.user_lang
+          tr.clan_id, tr.user_id
     ),
     TopPlayers AS (
       SELECT

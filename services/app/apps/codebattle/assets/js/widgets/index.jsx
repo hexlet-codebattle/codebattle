@@ -11,6 +11,8 @@ import {
   Lobby,
   Online,
   RegistrationPage,
+  SeasonsPage,
+  SeasonShowPage,
   SettingsPage,
   StairwayGamePage,
   StreamPage,
@@ -37,6 +39,8 @@ export const renderSettingPage = domElement => createRoot(domElement).render(<Se
 export const renderStairwayGamePage = domElement => createRoot(domElement).render(<StairwayGamePage />);
 export const renderStreamPage = domElement => createRoot(domElement).render(<StreamPage />);
 export const renderHallOfFame = domElement => createRoot(domElement).render(<HallOfFamePage />);
+export const renderSeasonsPage = domElement => createRoot(domElement).render(<SeasonsPage />);
+export const renderSeasonShowPage = domElement => createRoot(domElement).render(<SeasonShowPage />);
 export const renderTournamentAdminPage = domElement => createRoot(domElement).render(<TournamentAdminPage />);
 export const renderTournamentPage = domElement => createRoot(domElement).render(<TournamentPage />);
 export const renderTournamentEditPage = domElement => createRoot(domElement).render(<TournamentEditPage />);

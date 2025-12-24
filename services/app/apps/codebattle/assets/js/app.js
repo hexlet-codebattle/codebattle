@@ -42,6 +42,8 @@ import {
   renderLobby,
   renderOnlineWidget,
   renderRegistrationPage,
+  renderSeasonsPage,
+  renderSeasonShowPage,
   renderSettingPage,
   renderStairwayGamePage,
   renderStreamPage,
@@ -118,6 +120,8 @@ const tournamentsScheduleRoot = document.getElementById(
   'tournaments-schedule-root',
 );
 const hallOfFameRoot = document.getElementById('hall-of-fame-root');
+const seasonsRoot = document.getElementById('seasons-root');
+const seasonShowRoot = document.getElementById('season-show-root');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -193,4 +197,12 @@ if (tournamentsScheduleRoot) {
 
 if (hallOfFameRoot) {
   renderHallOfFame(hallOfFameRoot);
+}
+
+if (seasonsRoot) {
+  renderSeasonsPage(seasonsRoot);
+}
+
+if (seasonShowRoot) {
+  renderSeasonShowPage(seasonShowRoot);
 }
