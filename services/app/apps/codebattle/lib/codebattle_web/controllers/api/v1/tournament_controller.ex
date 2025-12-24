@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
 
     filter = %{
       from: get_datetime(params["from"]) || DateTime.utc_now(),
-      to: get_datetime(params["to"]) || DateTime.add(DateTime.utc_now(), 30, :day),
+      to: get_datetime(params["to"]) || DateTime.add(DateTime.utc_now(), 10, :day),
       user: current_user
     }
 
