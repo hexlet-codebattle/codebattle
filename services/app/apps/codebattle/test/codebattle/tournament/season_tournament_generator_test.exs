@@ -89,7 +89,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
       assert starts_at.minute == 0
 
       name = Ecto.Changeset.get_field(grand_slam, :name)
-      assert name == "Grand Slam Season 0 2024"
+      assert name == "Grand Slam"
 
       task_pack_name = Ecto.Changeset.get_field(grand_slam, :task_pack_name)
       assert task_pack_name == "grand_slam_s0_2024"
@@ -365,7 +365,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
         end)
 
       name = Ecto.Changeset.get_field(grand_slam, :name)
-      assert String.contains?(name, "Season 0")
+      assert String.contains?(name, "Grand Slam")
 
       # Winter (Dec 21 - Mar 21) = Season 1
       winter_season = %Season{
@@ -384,7 +384,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
         end)
 
       name = Ecto.Changeset.get_field(grand_slam, :name)
-      assert String.contains?(name, "Season 1")
+      assert String.contains?(name, "Grand Slam")
 
       # Spring (Mar 21 - Jun 21) = Season 2
       spring_season = %Season{
@@ -403,7 +403,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
         end)
 
       name = Ecto.Changeset.get_field(grand_slam, :name)
-      assert String.contains?(name, "Season 2")
+      assert String.contains?(name, "Grand Slam")
 
       # Summer (Jun 21 - Sep 21) = Season 3
       summer_season = %Season{
@@ -422,7 +422,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
         end)
 
       name = Ecto.Changeset.get_field(grand_slam, :name)
-      assert String.contains?(name, "Season 3")
+      assert String.contains?(name, "Grand Slam")
     end
 
     test "handles February correctly for Pro tournaments" do
