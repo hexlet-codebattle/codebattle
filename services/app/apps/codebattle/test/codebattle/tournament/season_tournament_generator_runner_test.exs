@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert first_rookie.task_strategy == "random"
       assert first_rookie.type == "swiss"
       assert first_rookie.access_type == "public"
-      assert String.contains?(first_rookie.name, "Rookie S:")
+      assert first_rookie.name == "Rookie"
     end
 
     test "challenger tournaments have correct configuration" do
@@ -112,14 +112,14 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert first_pro.level == "easy"
       assert first_pro.task_provider == "level"
       assert first_pro.task_strategy == "random"
-      assert String.contains?(first_pro.name, "Pro Weekly")
+      assert first_pro.name == "Biweekly Pro"
 
-      # All pro tournaments should be on Tuesday at 16:00 UTC
+      # All pro tournaments should be on the 14th or 28th at 16:00 UTC
       Enum.each(pro_tournaments, fn tournament ->
         starts_at = tournament.starts_at
         date = DateTime.to_date(starts_at)
-        # Tuesday
-        assert Date.day_of_week(date) == 2
+        # Should be on the 14th or 28th of the month
+        assert date.day in [14, 28]
         assert starts_at.hour == 16
         assert starts_at.minute == 0
       end)
@@ -140,14 +140,14 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert first_elite.level == "medium"
       assert first_elite.task_provider == "level"
       assert first_elite.task_strategy == "random"
-      assert String.contains?(first_elite.name, "Elite S:0")
+      assert first_elite.name == "Monthly Elite"
 
-      # All elite tournaments should be on Wednesday at 16:00 UTC
+      # All elite tournaments should be on the 7th at 16:00 UTC
       Enum.each(elite_tournaments, fn tournament ->
         starts_at = tournament.starts_at
         date = DateTime.to_date(starts_at)
-        # Wednesday
-        assert Date.day_of_week(date) == 3
+        # Should be on the 7th of the month
+        assert date.day == 7
         assert starts_at.hour == 16
         assert starts_at.minute == 0
       end)
@@ -171,12 +171,12 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert String.contains?(first_masters.name, "Masters")
       assert String.contains?(first_masters.task_pack_name, "masters_s0_2024_")
 
-      # All masters tournaments should be on Thursday at 16:00 UTC
+      # All masters tournaments should be on the 21st at 16:00 UTC
       Enum.each(masters_tournaments, fn tournament ->
         starts_at = tournament.starts_at
         date = DateTime.to_date(starts_at)
-        # Thursday
-        assert Date.day_of_week(date) == 4
+        # Should be on the 21st of the month
+        assert date.day == 21
         assert starts_at.hour == 16
         assert starts_at.minute == 0
       end)
@@ -197,7 +197,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       assert grand_slam.task_provider == "task_pack"
       assert grand_slam.task_strategy == "sequential"
       assert grand_slam.task_pack_name == "grand_slam_s0_2024"
-      assert String.contains?(grand_slam.name, "Grand Slam Season 0 2024")
+      assert grand_slam.name == "Grand Slam"
 
       # Should be on the season end date (Dec 21) at 16:00 UTC
       starts_at = grand_slam.starts_at
