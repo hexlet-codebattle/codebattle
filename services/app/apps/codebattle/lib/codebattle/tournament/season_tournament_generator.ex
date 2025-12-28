@@ -341,6 +341,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
       if compare_year_month(current, end_month) == :gt do
         nil
       else
+        # credo:disable-for-next-line
         next =
           if month == 12 do
             {year + 1, 1}
