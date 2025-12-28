@@ -7,17 +7,40 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
   """
 
   alias Codebattle.Repo
+  alias Codebattle.Season
   alias Codebattle.Tournament.SeasonTournamentGenerator
 
   require Logger
 
   @doc """
-  Generate and insert all tournaments for Season 0, 2025.
+  Generate and insert all tournaments for a given season.
+  Can accept a season_id or create a temporary season struct from season/year.
   """
-  def generate_season(season, year) do
+  def generate_season(season_or_id, year \\ nil) do
+    # Get or create season struct
+    season_struct =
+      case {season_or_id, year} do
+        {%Season{} = season, _} ->
+          season
+
+        {season_id, nil} when is_integer(season_id) or is_binary(season_id) ->
+          Season.get!(season_id)
+
+        {season_num, year} when is_integer(season_num) and is_integer(year) ->
+          # Create temporary season struct for backward compatibility
+          {start_date, end_date} = get_season_dates(season_num, year)
+
+          %Season{
+            name: "Season #{season_num} #{year}",
+            year: year,
+            starts_at: start_date,
+            ends_at: end_date
+          }
+      end
+
     # Generate all tournament changesets
-    Logger.info("Generating tournaments for Season #{season}, #{year}...")
-    tournaments = SeasonTournamentGenerator.generate_season_tournaments(season, year)
+    Logger.info("Generating tournaments for #{season_struct.name}...")
+    tournaments = SeasonTournamentGenerator.generate_season_tournaments(season_struct)
 
     Logger.info("Generated #{length(tournaments)} tournaments:")
     print_tournament_summary(tournaments)
@@ -46,7 +69,16 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
     results =
       for season <- 0..3 do
         Logger.info("Generating Season #{season}, #{year}...")
-        tournaments = SeasonTournamentGenerator.generate_season_tournaments(season, year)
+        {start_date, end_date} = get_season_dates(season, year)
+
+        season_struct = %Season{
+          name: "Season #{season} #{year}",
+          year: year,
+          starts_at: start_date,
+          ends_at: end_date
+        }
+
+        tournaments = SeasonTournamentGenerator.generate_season_tournaments(season_struct)
 
         {success_count, failed_count} =
           Enum.reduce(tournaments, {0, 0}, fn changeset, {success, failed} ->
@@ -73,10 +105,30 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
   @doc """
   Preview tournaments without inserting them into the database.
   """
-  def preview_season(season, year) do
-    tournaments = SeasonTournamentGenerator.generate_season_tournaments(season, year)
+  def preview_season(season_or_id, year \\ nil) do
+    # Get or create season struct
+    season_struct =
+      case {season_or_id, year} do
+        {%Season{} = season, _} ->
+          season
 
-    Logger.info("Preview for Season #{season}, #{year}:")
+        {season_id, nil} when is_integer(season_id) or is_binary(season_id) ->
+          Season.get!(season_id)
+
+        {season_num, year} when is_integer(season_num) and is_integer(year) ->
+          {start_date, end_date} = get_season_dates(season_num, year)
+
+          %Season{
+            name: "Season #{season_num} #{year}",
+            year: year,
+            starts_at: start_date,
+            ends_at: end_date
+          }
+      end
+
+    tournaments = SeasonTournamentGenerator.generate_season_tournaments(season_struct)
+
+    Logger.info("Preview for #{season_struct.name}:")
     print_tournament_summary(tournaments)
     print_sample_tournaments(tournaments)
 
@@ -117,5 +169,15 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
 
       Logger.info("")
     end)
+  end
+
+  # Helper function to get season dates for backward compatibility
+  defp get_season_dates(season, year) do
+    case season do
+      0 -> {Date.new!(year, 9, 21), Date.new!(year, 12, 21)}
+      1 -> {Date.new!(year, 12, 21), Date.new!(year + 1, 3, 21)}
+      2 -> {Date.new!(year, 3, 21), Date.new!(year, 6, 21)}
+      3 -> {Date.new!(year, 6, 21), Date.new!(year, 9, 21)}
+    end
   end
 end

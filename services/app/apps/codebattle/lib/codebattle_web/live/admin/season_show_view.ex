@@ -1,15 +1,25 @@
 defmodule CodebattleWeb.Live.Admin.Season.ShowView do
   use CodebattleWeb, :live_view
 
+  import Ecto.Query
+
+  alias Codebattle.Game
+  alias Codebattle.Repo
   alias Codebattle.Season
+  alias Codebattle.Tournament
+  alias Codebattle.Tournament.Round
+  alias Codebattle.Tournament.SeasonTournamentGeneratorRunner
+  alias Codebattle.UserGameReport
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     season = Season.get!(id)
+    tournament_count = get_tournament_count(season.id)
 
     {:ok,
      assign(socket,
        season: season,
+       tournament_count: tournament_count,
        layout: {CodebattleWeb.LayoutView, :empty}
      )}
   end
@@ -26,6 +36,76 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to delete season")}
     end
+  end
+
+  @impl true
+  def handle_event("create_tournaments", _params, socket) do
+    season = socket.assigns.season
+
+    {:ok, success_count, failed_count} = SeasonTournamentGeneratorRunner.generate_season(season)
+    tournament_count = get_tournament_count(season.id)
+
+    {:noreply,
+     socket
+     |> assign(:tournament_count, tournament_count)
+     |> put_flash(
+       :info,
+       "Successfully created #{success_count} tournaments (#{failed_count} failed)"
+     )}
+  end
+
+  @impl true
+  def handle_event("drop_tournaments", _params, socket) do
+    season = socket.assigns.season
+    start_datetime = DateTime.new!(season.starts_at, ~T[00:00:00], "Etc/UTC")
+    end_datetime = DateTime.new!(season.ends_at, ~T[23:59:59], "Etc/UTC")
+
+    # Get all tournament IDs for this season
+    tournament_ids =
+      Repo.all(
+        from(t in Tournament,
+          where: t.starts_at >= ^start_datetime,
+          where: t.starts_at <= ^end_datetime,
+          select: t.id
+        )
+      )
+
+    # Delete in order to satisfy foreign key constraints:
+    # 1. Delete user game reports
+    Repo.delete_all(from(ugr in UserGameReport, where: ugr.tournament_id in ^tournament_ids))
+
+    # 2. Delete games
+    Repo.delete_all(from(g in Game, where: g.tournament_id in ^tournament_ids))
+
+    # 3. Delete rounds
+    Repo.delete_all(from(r in Round, where: r.tournament_id in ^tournament_ids))
+
+    # 4. Finally delete tournaments
+    deleted_count =
+      from(t in Tournament,
+        where: t.starts_at >= ^start_datetime,
+        where: t.starts_at <= ^end_datetime
+      )
+      |> Repo.delete_all()
+      |> elem(0)
+
+    tournament_count = get_tournament_count(season.id)
+
+    {:noreply,
+     socket
+     |> assign(:tournament_count, tournament_count)
+     |> put_flash(:info, "Successfully deleted #{deleted_count} tournaments and all related data")}
+  end
+
+  defp get_tournament_count(season_id) do
+    season = Season.get!(season_id)
+    start_datetime = DateTime.new!(season.starts_at, ~T[00:00:00], "Etc/UTC")
+    end_datetime = DateTime.new!(season.ends_at, ~T[23:59:59], "Etc/UTC")
+
+    Tournament
+    |> where([t], t.starts_at >= ^start_datetime)
+    |> where([t], t.starts_at <= ^end_datetime)
+    |> Repo.aggregate(:count)
   end
 
   @impl true
@@ -113,6 +193,48 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
                 <% end %>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+          <i class="bi bi-trophy"></i> Tournament Management
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label text-muted">Tournament Count</label>
+            <div class="fw-bold fs-4">{@tournament_count} tournaments</div>
+          </div>
+
+          <p class="text-muted mb-3">
+            Generate all tournaments for this season based on the tournament schedule, or clean up existing tournaments.
+          </p>
+
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-success"
+              phx-click="create_tournaments"
+              data-confirm="This will create all tournaments for this season. Continue?"
+            >
+              <i class="bi bi-plus-circle"></i> Create Season Tournaments
+            </button>
+
+            <button
+              class="btn btn-warning"
+              phx-click="drop_tournaments"
+              data-confirm="This will delete ALL tournaments within this season's date range. Are you sure?"
+              disabled={@tournament_count == 0}
+            >
+              <i class="bi bi-trash"></i> Drop Season Tournaments
+            </button>
+          </div>
+
+          <div class="mt-3">
+            <small class="text-muted">
+              <i class="bi bi-info-circle"></i>
+              Expected tournament types: Grand Slam (1), Masters (2), Elite (~3), Pro (~6), Challenger (daily), Rookie (every 3 hours)
+            </small>
           </div>
         </div>
       </div>

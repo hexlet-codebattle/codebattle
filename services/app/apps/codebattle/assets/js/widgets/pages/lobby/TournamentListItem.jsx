@@ -59,15 +59,12 @@ const TournamentTitle = ({ tournament }) => {
     );
   }
 
-  const words = tournament.name.split(' ');
   const subtitle = dayjs(tournament.startsAt).format('MMM D, YYYY [at] HH:mm');
-  words.pop();
-  const title = words.join(' ');
 
   return (
     <div className="d-flex flex-column align-items-baseline">
       <span className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block">
-        {title}
+        {tournament.name}
       </span>
       <span className="small">{subtitle}</span>
     </div>
