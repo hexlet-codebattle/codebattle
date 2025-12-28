@@ -335,25 +335,21 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
     end_month = {end_date.year, end_date.month}
 
     start_month
-    |> Stream.unfold(fn {year, month} ->
-      current = {year, month}
-
-      if compare_year_month(current, end_month) == :gt do
-        nil
-      else
-        # credo:disable-for-next-line
-        next =
-          if month == 12 do
-            {year + 1, 1}
-          else
-            {year, month + 1}
-          end
-
-        {current, next}
-      end
-    end)
+    |> Stream.unfold(&unfold_months(&1, end_month))
     |> Enum.to_list()
   end
+
+  defp unfold_months({year, month} = current, end_month) do
+    if compare_year_month(current, end_month) == :gt do
+      nil
+    else
+      next = next_month(year, month)
+      {current, next}
+    end
+  end
+
+  defp next_month(year, 12), do: {year + 1, 1}
+  defp next_month(year, month), do: {year, month + 1}
 
   defp compare_year_month({y1, m1}, {y2, m2}) do
     cond do
