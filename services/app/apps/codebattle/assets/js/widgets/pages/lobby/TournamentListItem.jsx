@@ -122,22 +122,7 @@ const showStartsAt = state => [
     tournamentStates.upcoming,
   ].includes(state);
 
-export const activeIcon = (
-  <FontAwesomeIcon
-    style={{ width: '60px', height: '60px' }}
-    icon="laptop-code"
-    className="text-warning"
-  />
-);
-export const upcomingIcon = (
-  <FontAwesomeIcon
-    style={{ width: '60px', height: '60px' }}
-    icon="clock"
-    className="text-gray"
-  />
-);
-
-const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
+const TournamentListItem = ({ tournament, isAdmin = false }) => (
   <div
     className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2"
     style={{ width: '350px' }}
@@ -145,7 +130,7 @@ const TournamentListItem = ({ tournament, icon, isAdmin = false }) => (
     <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
       <div className="d-flex align-items-center">
         <div className="d-none d-lg-block d-md-block mr-2 mb-3">
-          {icon || getIconForGrade(tournament.grade)}
+          {getIconForGrade(tournament.grade)}
         </div>
         <TournamentTitle tournament={tournament} />
       </div>

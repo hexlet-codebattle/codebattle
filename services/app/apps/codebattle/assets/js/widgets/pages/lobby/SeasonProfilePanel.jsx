@@ -16,7 +16,7 @@ import i18n from '../../../i18n';
 import { actions } from '../../slices';
 
 import CodebattleLeagueDescription from './CodebattleLeagueDescription';
-import TournamentListItem, { activeIcon } from './TournamentListItem';
+import TournamentListItem from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 16 - Dec 21';
 
@@ -183,7 +183,6 @@ const SeasonProfilePanel = ({
                         isAdmin={isAdmin}
                         key={tournament.id}
                         tournament={tournament}
-                        icon={activeIcon}
                       />
                     ))}
                   </div>
