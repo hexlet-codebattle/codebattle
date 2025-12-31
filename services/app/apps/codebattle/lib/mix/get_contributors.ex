@@ -1,35 +1,56 @@
 defmodule Mix.Tasks.GetContributors do
   @shortdoc "Get contributors for landing"
-
   @moduledoc false
 
   use Mix.Task
 
   @repos %{
-    codebattle: ~c"https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000",
-    asserts: ~c"https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000",
-    extension: ~c"https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000"
+    codebattle: "https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000",
+    asserts: "https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000",
+    extension: "https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000"
   }
 
-  def run(_) do
+  def run(_args) do
     {:ok, _started} = Application.ensure_all_started(:req)
 
     Enum.each(@repos, fn {repo_name, url} ->
-      content =
-        url
-        |> Req.get!()
-        |> Map.get(:body)
-        |> Jason.decode!()
-        |> Enum.filter(fn params -> params["type"] == "User" end)
-        |> Enum.sort_by(fn params -> params["contributions"] end)
-        |> Enum.reverse()
-        |> Enum.map(&Map.take(&1, ["html_url", "login", "contributions", "avatar_url"]))
-        |> Enum.map_join("", fn params -> template(params) end)
+      resp = Req.get!(url, headers: github_headers())
 
-      File.cwd!()
-      |> Path.join("apps/codebattle/lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex")
-      |> File.write!(content)
+      case resp.status do
+        200 ->
+          resp.body
+          |> Enum.filter(&(&1["type"] == "User"))
+          |> Enum.sort_by(& &1["contributions"], :desc)
+          |> Enum.map(&Map.take(&1, ["html_url", "login", "contributions", "avatar_url"]))
+          |> Enum.map_join("", &template/1)
+          |> write_file(repo_name)
+
+        status ->
+          Mix.raise("""
+          GitHub API error for #{repo_name} (status #{status}):
+
+          #{inspect(resp.body)}
+          """)
+      end
     end)
+  end
+
+  defp github_headers do
+    base = [
+      # GitHub likes having this
+      {"user-agent", "codebattle-contributors-task"}
+    ]
+
+    case System.get_env("GITHUB_TOKEN") do
+      nil -> base
+      token -> [{"authorization", "Bearer #{token}"} | base]
+    end
+  end
+
+  defp write_file(content, repo_name) do
+    File.cwd!()
+    |> Path.join("apps/codebattle/lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex")
+    |> File.write!(content)
   end
 
   defp template(params) do

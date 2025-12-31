@@ -6,6 +6,15 @@ defmodule CodebattleWeb.RootView do
   alias Codebattle.Feedback
 
   @app_version Application.compile_env(:codebattle, :app_version)
+
+  @doc """
+  Returns the path for a static asset with cache busting support.
+  In dev, returns the original path. In prod, returns the hashed path from manifest.
+  """
+  def static_asset(path) do
+    CodebattleWeb.Vite.static_asset_path(path)
+  end
+
   def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end

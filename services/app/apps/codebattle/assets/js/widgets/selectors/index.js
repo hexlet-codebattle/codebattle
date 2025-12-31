@@ -5,6 +5,7 @@ import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 import moment from 'moment';
 
+import logoSvg from '../../../static/images/logo.svg';
 import i18n from '../../i18n';
 import BattleRoomViewModes from '../config/battleRoomViewModes';
 import editorModes from '../config/editorModes';
@@ -556,7 +557,7 @@ export const reportsSelector = createDraftSafeSelector(
   },
 );
 
-export const selectDefaultAvatarUrl = () => '/assets/images/logo.svg';
+export const selectDefaultAvatarUrl = () => logoSvg;
 
 // Participant data selector
 export const participantDataSelector = state => {

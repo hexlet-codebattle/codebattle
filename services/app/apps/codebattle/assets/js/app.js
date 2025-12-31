@@ -18,8 +18,11 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'phoenix_html';
 import './fontawesome';
-// import '../css/style.scss';
+// ../css/style.scss is imported via vite config entry points
 import 'bootstrap';
+
+// Import static assets for cache busting (adds them to Vite manifest)
+import './staticAssets';
 
 import { inspect } from '@xstate/inspect';
 import NProgress from 'nprogress';

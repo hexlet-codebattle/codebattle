@@ -100,7 +100,7 @@
                   <img
                     alt="Logo"
                     class="my-auto pt-1 pl-2 pl-md-0 pl-lg-0"
-                    src="/assets/images/logo.svg"
+                    src={static_asset("images/logo.svg")}
                   />
                 <% end %>
                 <%= if collab_logo_minor(@current_user) do %>
@@ -177,7 +177,7 @@
                           <div class="btn mx-auto mx-sm-2">
                             <img
                               alt="invites"
-                              src="/assets/images/fight.svg"
+                              src={static_asset("images/fight.svg")}
                               style="width:40px; height:40px"
                             />
                           </div>

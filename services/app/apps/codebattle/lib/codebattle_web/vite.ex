@@ -37,6 +37,23 @@ defmodule CodebattleWeb.Vite do
     apply_digest(path)
   end
 
+  @doc """
+  Returns the path for a static asset (e.g., images from assets/static/).
+  In dev, returns the original path. In prod, looks up the hashed filename from manifest.
+  """
+  def static_asset_path(asset_path) do
+    # The manifest key for static assets imported in JS is "assets/static/..." 
+    manifest_key = "assets/static/" <> asset_path
+
+    path =
+      case manifest()[manifest_key] do
+        %{"file" => file} -> "/assets/" <> file
+        _ -> "/assets/" <> asset_path
+      end
+
+    apply_digest(path)
+  end
+
   def css_paths(entry) do
     m = manifest()
 

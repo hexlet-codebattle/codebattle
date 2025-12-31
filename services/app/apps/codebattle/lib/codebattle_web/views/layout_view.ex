@@ -14,6 +14,14 @@ defmodule CodebattleWeb.LayoutView do
     "FFE500"
   ]
 
+  @doc """
+  Returns the path for a static asset with cache busting support.
+  In dev, returns the original path. In prod, returns the hashed path from manifest.
+  """
+  def static_asset(path) do
+    CodebattleWeb.Vite.static_asset_path(path)
+  end
+
   def get_next_path(conn) do
     next = conn.params["next"]
 

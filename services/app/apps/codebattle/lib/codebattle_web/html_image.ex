@@ -46,7 +46,12 @@ defmodule CodebattleWeb.HtmlImage do
     if logo = Application.get_env(:codebattle, :collab_logo) do
       logo
     else
-      "https://codebattle.hexlet.io/assets/images/logo.svg"
+      endpoint_config = Application.get_env(:codebattle, CodebattleWeb.Endpoint, [])
+      url_config = Keyword.get(endpoint_config, :url, [])
+      scheme = Keyword.get(url_config, :scheme, "https")
+      host = Keyword.get(url_config, :host, "codebattle.hexlet.io")
+      logo_path = CodebattleWeb.Vite.static_asset_path("images/logo.svg")
+      "#{scheme}://#{host}#{logo_path}"
     end
   end
 end

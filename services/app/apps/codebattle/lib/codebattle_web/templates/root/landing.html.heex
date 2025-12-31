@@ -3,7 +3,7 @@
   <div class="container-lg">
     <nav class="navbar navbar-dark px-0 pt-4">
       <a class="navbar-brand d-flex align-items-end" href="/">
-        <img alt="Logo" src="/assets/images/logo.svg" />
+        <img alt="Logo" height="40px" src={static_asset("images/logo.svg")} />
         <div class="d-sm-flex d-none flex-column text-gray ml-1 pb-1">
           <span class="header-txt">Codebattle</span>
           <span class="header-txt">by Hexlet’s community</span>
@@ -93,23 +93,55 @@
           Languages
         </h2>
         <div class="order-lg-1 lang-icons">
-          <img alt="clojure" src="/assets/images/landing/languages/clojure.svg" title="clojure" />
-          <img alt="cpp" src="/assets/images/landing/languages/cpp.svg" title="cpp" />
-          <img alt="csharp" src="/assets/images/landing/languages/c-sharp.svg" title="csharp" />
-          <img alt="dart" src="/assets/images/landing/languages/dart.svg" title="dart" />
-          <img alt="elixir" src="/assets/images/landing/languages/elixir.svg" title="elixir" />
-          <img alt="go" src="/assets/images/landing/languages/go.svg" title="go" />
-          <img alt="haskell" src="/assets/images/landing/languages/haskell.svg" title="haskell" />
-          <img alt="java" src="/assets/images/landing/languages/java.svg" title="java" />
-          <img alt="javascript" src="/assets/images/landing/languages/js.svg" title="javascript" />
-          <img alt="kotlin" src="/assets/images/landing/languages/kotlin.svg" title="kotlin" />
-          <img alt="php" src="/assets/images/landing/languages/php.svg" title="php" />
-          <img alt="python" src="/assets/images/landing/languages/python.svg" title="python" />
-          <img alt="ruby" src="/assets/images/landing/languages/ruby.svg" title="ruby" />
-          <img alt="rust" src="/assets/images/landing/languages/rust.svg" title="rust" />
-          <img alt="swift" src="/assets/images/landing/languages/swift.svg" title="swift" />
-          <img alt="typescript" src="/assets/images/landing/languages/ts.svg" title="typescript" />
-          <img alt="zig" src="/assets/images/landing/languages/zig.svg" title="zig" />
+          <img
+            alt="clojure"
+            src={static_asset("images/landing/languages/clojure.svg")}
+            title="clojure"
+          />
+          <img alt="cpp" src={static_asset("images/landing/languages/cpp.svg")} title="cpp" />
+          <img
+            alt="csharp"
+            src={static_asset("images/landing/languages/c-sharp.svg")}
+            title="csharp"
+          />
+          <img alt="dart" src={static_asset("images/landing/languages/dart.svg")} title="dart" />
+          <img
+            alt="elixir"
+            src={static_asset("images/landing/languages/elixir.svg")}
+            title="elixir"
+          />
+          <img alt="go" src={static_asset("images/landing/languages/go.svg")} title="go" />
+          <img
+            alt="haskell"
+            src={static_asset("images/landing/languages/haskell.svg")}
+            title="haskell"
+          />
+          <img alt="java" src={static_asset("images/landing/languages/java.svg")} title="java" />
+          <img
+            alt="javascript"
+            src={static_asset("images/landing/languages/js.svg")}
+            title="javascript"
+          />
+          <img
+            alt="kotlin"
+            src={static_asset("images/landing/languages/kotlin.svg")}
+            title="kotlin"
+          />
+          <img alt="php" src={static_asset("images/landing/languages/php.svg")} title="php" />
+          <img
+            alt="python"
+            src={static_asset("images/landing/languages/python.svg")}
+            title="python"
+          />
+          <img alt="ruby" src={static_asset("images/landing/languages/ruby.svg")} title="ruby" />
+          <img alt="rust" src={static_asset("images/landing/languages/rust.svg")} title="rust" />
+          <img alt="swift" src={static_asset("images/landing/languages/swift.svg")} title="swift" />
+          <img
+            alt="typescript"
+            src={static_asset("images/landing/languages/ts.svg")}
+            title="typescript"
+          />
+          <img alt="zig" src={static_asset("images/landing/languages/zig.svg")} title="zig" />
         </div>
       </div>
     </div>
@@ -153,19 +185,19 @@
     </div>
     <div class="mt-5 row flex-wrap">
       <div class="col-sm-3 text-center">
-        <img alt="beginner" src="/assets/images/landing/beginner.svg" />
+        <img alt="beginner" src={static_asset("images/landing/beginner.svg")} />
         <p class="mt-3">For beginners who want to pump their skills</p>
       </div>
       <div class="col-sm-3 text-center">
-        <img alt="experienced" src="/assets/images/landing/experienced.svg" />
+        <img alt="experienced" src={static_asset("images/landing/experienced.svg")} />
         <p class="mt-3">For experienced who want to break records</p>
       </div>
       <div class="col-sm-3 text-center">
-        <img alt="friend" src="/assets/images/landing/friends.svg" />
+        <img alt="friend" src={static_asset("images/landing/friends.svg")} />
         <p class="mt-3">For friends who want to battle each other</p>
       </div>
       <div class="col-sm-3 text-center">
-        <img alt="enthusiast" src="/assets/images/landing/enthusiast.svg" />
+        <img alt="enthusiast" src={static_asset("images/landing/enthusiast.svg")} />
         <p class="mt-3">For those who are in love with programming</p>
       </div>
     </div>
@@ -178,7 +210,11 @@
       <h2 class="text-uppercase text-light mx-auto">Algorithm</h2>
       <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
     </div>
-    <img alt="algorithm" class="w-100 my-5 pr-md-5" src="/assets/images/landing/flowchart.svg" />
+    <img
+      alt="algorithm"
+      class="w-100 my-5 pr-md-5"
+      src={static_asset("images/landing/flowchart.svg")}
+    />
   </div>
 </div>
 <div class="bg-light py-5">
@@ -187,14 +223,18 @@
     <div class="comments mt-5">
       <div class="comment border border-dark d-flex flex-column">
         <div class="d-flex flex-wrap align-items-center">
-          <img alt="Journalist" src="/assets/images/landing/photo1.png" />
+          <img alt="Journalist" src={static_asset("images/landing/photo1.png")} />
           <div class="mx-3">
             <p class="font-weight-bold mb-0 text-uppercase">Journalist</p>
             <p>Middle frontend engineer</p>
           </div>
         </div>
         <div class="h-100 d-flex">
-          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment.png" />
+          <img
+            alt="comment"
+            class="w-100 my-auto"
+            src={static_asset("images/landing/comment.png")}
+          />
         </div>
       </div>
       <div class="comment border border-dark d-flex flex-column">
@@ -203,18 +243,22 @@
             <p class="font-weight-bold mb-0 text-uppercase">Rosa Robot</p>
             <p>UI/UX Senior</p>
           </div>
-          <img alt="rosa" src="/assets/images/landing/photo2.png" />
+          <img alt="rosa" src={static_asset("images/landing/photo2.png")} />
         </div>
         <div class="h-100 d-flex">
-          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/html.png" />
+          <img alt="comment" class="w-100 my-auto" src={static_asset("images/landing/html.png")} />
         </div>
       </div>
       <div class="comment border border-dark d-flex flex-column justify-content-end">
         <div class="h-100 d-flex">
-          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment2.png" />
+          <img
+            alt="comment"
+            class="w-100 my-auto"
+            src={static_asset("images/landing/comment2.png")}
+          />
         </div>
         <div class="d-flex flex-wrap align-items-center">
-          <img alt="SHERSHNYAGA" src="/assets/images/landing/photo4.png" />
+          <img alt="SHERSHNYAGA" src={static_asset("images/landing/photo4.png")} />
           <div class="mx-3">
             <p class="font-weight-bold mb-0">SHERSHNYAGA</p>
             <p class="mb-0">Senior frontend dev</p>
@@ -223,14 +267,18 @@
       </div>
       <div class="comment border border-dark d-flex flex-column justify-content-end">
         <div class="h-100 d-flex pt-1 mt-3">
-          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment3.png" />
+          <img
+            alt="comment"
+            class="w-100 my-auto"
+            src={static_asset("images/landing/comment3.png")}
+          />
         </div>
         <div class="d-flex flex-wrap align-items-center justify-content-end">
           <div class="text-right mx-3">
             <p class="font-weight-bold text-uppercase mb-0">Engineer</p>
             <p class="mb-0">Beginner</p>
           </div>
-          <img alt="Engineer" src="/assets/images/landing/photo3.png" />
+          <img alt="Engineer" src={static_asset("images/landing/photo3.png")} />
         </div>
       </div>
     </div>
@@ -245,7 +293,7 @@
           class="text-uppercase text-black fw-500"
           href="https://github.com/hexlet-codebattle/codebattle"
         >
-          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Codebattle
+          <img class="mr-sm-2" src={static_asset("images/landing/github.svg")} /> Codebattle
         </a>
         <div class="float-right mt-2 ml-auto">
           <a
@@ -283,7 +331,7 @@
           class="text-uppercase text-nowrap text-black fw-500"
           href="https://github.com/hexlet-codebattle/battle_asserts"
         >
-          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Battle asserts
+          <img class="mr-sm-2" src={static_asset("images/landing/github.svg")} /> Battle asserts
         </a>
         <div class="float-right mt-2 ml-auto">
           <a
@@ -312,7 +360,7 @@
           class="text-uppercase text-nowrap text-black fw-500"
           href="https://github.com/hexlet-codebattle/chrome_extension"
         >
-          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Chrome extension
+          <img class="mr-sm-2" src={static_asset("images/landing/github.svg")} /> Chrome extension
         </a>
         <div class="float-right mt-2 ml-auto">
           <a

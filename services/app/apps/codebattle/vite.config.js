@@ -110,6 +110,10 @@ export default defineConfig(({ command, mode }) => ({
           if (assetInfo.name === 'styles.css') {
             return 'app.css';
           }
+          // Add hash to images for cache busting in production
+          if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {
+            return "[name]-[hash].[ext]";
+          }
           return "[name].[ext]";
         },
         manualChunks: { monaco: ["monaco-editor"] },

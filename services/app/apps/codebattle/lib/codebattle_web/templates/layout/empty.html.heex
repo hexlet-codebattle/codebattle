@@ -40,14 +40,21 @@
     <meta name="csrf-token" content={csrf_token_value()} />
     <title>{Application.get_env(:codebattle, :app_title)}</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
-    <script
-      defer
-      phx-track-static
-      type="module"
-      src={Routes.static_path(@conn, "/assets/app.js")}
-    >
-    </script>
+
+    <%= if CodebattleWeb.Vite.dev?() do %>
+      <script type="module" src="http://localhost:8080/@vite/client">
+      </script>
+      <script type="module" src="http://localhost:8080/assets/js/app.js">
+      </script>
+      <link rel="stylesheet" href="http://localhost:8080/assets/css/style.scss" />
+    <% else %>
+      <link rel="stylesheet" href={CodebattleWeb.Vite.asset_path("app.css")} />
+      <%= for href <- CodebattleWeb.Vite.css_paths("app.js") do %>
+        <link rel="stylesheet" href={href} />
+      <% end %>
+      <script type="module" src={CodebattleWeb.Vite.asset_path("app.js")}>
+      </script>
+    <% end %>
   </head>
   <body>
     {@inner_content}

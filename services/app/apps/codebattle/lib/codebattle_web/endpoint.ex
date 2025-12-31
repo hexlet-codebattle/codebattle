@@ -45,7 +45,7 @@ defmodule CodebattleWeb.Endpoint do
     plug(
       Plug.Static,
       at: "/assets",
-      from: "apps/codebattle/assets/static",
+      from: Path.expand("../../assets/static", __DIR__),
       gzip: false
     )
   end
