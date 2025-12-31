@@ -62,8 +62,8 @@ const input = {
   landing: path.resolve(__dirname, "assets/js/landing.js"),
   external: path.resolve(__dirname, "assets/js/external.js"),
   styles: path.resolve(__dirname, "assets/css/style.scss"),
-  // Note: landing.css and external.css use the same styles as app.css
-  // Templates should reference app.css instead
+  landingStyles: path.resolve(__dirname, "assets/css/landing.scss"),
+  externalStyles: path.resolve(__dirname, "assets/css/external.scss"),
   // broadcast_editor: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/index.js"),
   // stream: path.resolve(__dirname, "assets/js/widgets/pages/broadcast-editor/stream.js"),
 };
@@ -109,6 +109,14 @@ export default defineConfig(({ command, mode }) => ({
           // Rename styles.css to app.css for backwards compatibility
           if (assetInfo.name === 'styles.css') {
             return 'app.css';
+          }
+          // Rename landingStyles.css to landing.css
+          if (assetInfo.name === 'landingStyles.css') {
+            return 'landing.css';
+          }
+          // Rename externalStyles.css to external.css
+          if (assetInfo.name === 'externalStyles.css') {
+            return 'external.css';
           }
           // Add hash to images for cache busting in production
           if (/\.(png|jpe?g|gif|svg|webp|ico)$/i.test(assetInfo.name)) {

@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { unfollowUser, followUser } from '@/middlewares/Main';
 
+import fightSvg from '../../../static/images/fight.svg';
 import i18n from '../../i18n';
 import { initInvites } from '../middlewares/Invite';
 import initPresence from '../middlewares/Main';
@@ -117,7 +118,7 @@ function InvitesContainer() {
             <img
               ref={ref}
               alt="invites"
-              src="/assets/images/fight.svg"
+              src={fightSvg}
               style={{ width: '46px', height: '46px' }}
             />
             {followId && (

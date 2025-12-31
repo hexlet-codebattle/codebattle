@@ -44,13 +44,13 @@
     <link
       phx-track-static
       rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/external.css")}
+      href={CodebattleWeb.Vite.asset_path("external.css")}
     />
     <script
       defer
       phx-track-static
       type="text/javascript"
-      src={Routes.static_path(@conn, "/assets/external.js")}
+      src={CodebattleWeb.Vite.asset_path("external.js")}
     >
     </script>
   </head>
