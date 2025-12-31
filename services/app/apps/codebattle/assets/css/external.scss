@@ -29,7 +29,7 @@ $dark-red: #b00020;
 // Bootstrap override must come *after* variables
 
 @import 'variables';
-@import "~bootstrap/scss/bootstrap";
+@import "bootstrap/scss/bootstrap";
 
 // --------------------------------------------------
 // CUSTOM STYLES
