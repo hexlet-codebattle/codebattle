@@ -79,6 +79,11 @@ defmodule CodebattleWeb.Router do
     get("/health", HealthController, :index)
   end
 
+  # Chrome DevTools IDE integration (dev only)
+  scope "/.well-known/appspecific", CodebattleWeb do
+    get("/com.chrome.devtools.json", DevToolsController, :index)
+  end
+
   scope "/admin" do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)

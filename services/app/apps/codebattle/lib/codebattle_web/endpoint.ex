@@ -39,6 +39,17 @@ defmodule CodebattleWeb.Endpoint do
     only: ~w(assets css fonts images js favicon.ico robots.txt)
   )
 
+  # Serve static files (images, fonts, audio) from assets/static in development
+  # These are served at /assets/* to match the URL paths used in templates
+  if Mix.env() == :dev do
+    plug(
+      Plug.Static,
+      at: "/assets",
+      from: "apps/codebattle/assets/static",
+      gzip: false
+    )
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
