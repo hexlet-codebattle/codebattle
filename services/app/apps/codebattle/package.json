@@ -91,7 +91,7 @@
     "popper.js": "^1.16.1",
     "process": "^0.11.10",
     "prop-types": "^15.5.10",
-    "qs": "^6.9.4",
+    "qs": "^6.14.1",
     "quill-delta": "^4.2.2",
     "react": "^18.2.0",
     "react-big-calendar": "^1.19.4",
