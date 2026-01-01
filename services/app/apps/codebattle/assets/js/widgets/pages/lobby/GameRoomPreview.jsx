@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { selectDefaultAvatarUrl } from '@/selectors';
 
+import fightSvg from '../../../static/images/fight.svg';
 import LanguageIcon from '../../components/LanguageIcon';
 
 const defaultPreviewAvatarUrl = 'https://avatars.githubusercontent.com/u/35539033?v=4';
@@ -39,27 +40,43 @@ const GameRoomPreview = ({ pageName }) => {
     <div className="preview container-fluid slideInLeft">
       <div className="preview__container w-100 d-flex align-items-center">
         <div className="player1">
-          <img src={player1.avatar_url || defaultPreviewAvatarUrl} alt="avatar" className="player1__avatar" />
+          <img
+            src={player1.avatar_url || defaultPreviewAvatarUrl}
+            alt="avatar"
+            className="player1__avatar"
+          />
           <p className="player1__name">{player1.name}</p>
           <div className="player1__status">
             <LanguageIcon className="preview__icon" lang={player1.lang} />
             <span className="preview__info">{player1.lang}</span>
-            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+            <img
+              className="preview__icon"
+              src="/assets/images/rating.svg"
+              alt="rating"
+            />
             <span className="preview__info">{player1.rating}</span>
           </div>
         </div>
 
         <div className="preview__middle">
-          <img src="/assets/images/fight.svg" alt="fight" className="preview__fight" />
+          <img src={fightSvg} alt="fight" className="preview__fight" />
         </div>
 
         <div className="player2">
-          <img src={player2.avatar_url || defaultPreviewAvatarUrl} alt="avatar" className="player2__avatar" />
+          <img
+            src={player2.avatar_url || defaultPreviewAvatarUrl}
+            alt="avatar"
+            className="player2__avatar"
+          />
           <p className="player2__name">{player2.name}</p>
           <div className="player2__status">
             <LanguageIcon className="preview__icon" lang={player2.lang} />
             <span className="preview__info">{player2.lang}</span>
-            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+            <img
+              className="preview__icon"
+              src="/assets/images/rating.svg"
+              alt="rating"
+            />
             <span className="preview__info">{player2.rating}</span>
           </div>
         </div>

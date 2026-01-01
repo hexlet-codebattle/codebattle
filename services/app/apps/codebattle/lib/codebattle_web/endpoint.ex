@@ -40,8 +40,17 @@ defmodule CodebattleWeb.Endpoint do
   )
 
   # Serve static files (images, fonts, audio) from assets/static in development
-  # These are served at /assets/* to match the URL paths used in templates
+  # Served at both /assets/* and /assets/static/* to support both:
+  # - Template usage: /assets/images/logo.svg
+  # - JS imports in dev: /assets/static/images/logo.svg (Vite returns this in dev)
   if Mix.env() == :dev do
+    plug(
+      Plug.Static,
+      at: "/assets/static",
+      from: Path.expand("../../assets/static", __DIR__),
+      gzip: false
+    )
+
     plug(
       Plug.Static,
       at: "/assets",

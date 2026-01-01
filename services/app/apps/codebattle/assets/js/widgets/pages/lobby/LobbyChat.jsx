@@ -1,8 +1,5 @@
 import React, {
-  memo,
-  useEffect,
-  useMemo,
-  useCallback,
+ memo, useEffect, useMemo, useCallback,
 } from 'react';
 
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +8,7 @@ import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
 import { useDispatch, useSelector } from 'react-redux';
 
+import fightSvg from '../../../../static/images/fight.svg';
 import ChatContextMenu from '../../components/ChatContextMenu';
 import ChatHeader from '../../components/ChatHeader';
 import ChatInput from '../../components/ChatInput';
@@ -24,7 +22,7 @@ import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
 
 function UsersList({
-  list, title, displayMenu, mode,
+ list, title, displayMenu, mode,
 }) {
   return (
     <>
@@ -53,11 +51,36 @@ function ChatGroupedPlayersList({ players, displayMenu, mode }) {
 
   return (
     <>
-      <UsersList mode={mode} title="Watching" list={watchingList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Playing" list={playingList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Lobby" list={lobbyList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Online" list={onlineList} displayMenu={displayMenu} />
-      <UsersList mode={mode} title="Edit task" list={builderList} displayMenu={displayMenu} />
+      <UsersList
+        mode={mode}
+        title="Watching"
+        list={watchingList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title="Playing"
+        list={playingList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title="Lobby"
+        list={lobbyList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title="Online"
+        list={onlineList}
+        displayMenu={displayMenu}
+      />
+      <UsersList
+        mode={mode}
+        title="Edit task"
+        list={builderList}
+        displayMenu={displayMenu}
+      />
     </>
   );
 }
@@ -120,19 +143,20 @@ function LobbyChat({
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
       <div className="d-flex flex-column flex-lg-row flex-md-row cb-bg-panel cb-rounded shadow-sm mt-2">
-        <div
-          className={chatHeaderClassName}
-        >
+        <div className={chatHeaderClassName}>
           <ChatHeader mode={mode} disabled={!isOnline} showRooms />
-          <Messages className="text-white" displayMenu={displayMenu} messages={filteredMessages} />
+          <Messages
+            className="text-white"
+            displayMenu={displayMenu}
+            messages={filteredMessages}
+          />
           <ChatInput mode={mode} disabled={!isOnline} inputRef={inputRef} />
         </div>
-        <div className={
-          cn(
+        <div
+          className={cn(
             'col-lg-4 col-md-4 p-0 pb-3 pb-sm-4 cb-players-container',
             'border-left cb-border-color rounded-right',
-          )
-        }
+          )}
         >
           <div className="d-flex flex-column h-100">
             <div className="d-flex justify-content-between">
@@ -168,7 +192,7 @@ function LobbyChat({
                     title="Send fight invite"
                     alt="fight"
                     style={{ width: '16px', height: '16px' }}
-                    src="/assets/images/fight.svg"
+                    src={fightSvg}
                   />
                 </button>
               </div>
