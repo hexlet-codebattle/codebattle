@@ -8,7 +8,6 @@
 
 Codebattle - is an open source game being developed by the Hexlet community.
 The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
-We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow to subscribe on last game updates.
 
 This project exists thanks to all the people who contribute. [Contribute guideline.](CONTRIBUTING.md)
 
@@ -67,8 +66,6 @@ $ mix images.build elixir
 
 $ mix images.pull # all
 $ mix images.pull elixir
-
-$ mix asserts.upload # Pulls from battle_asserts all issues and upserts into DB
 
 #If you use images in dev env, run commands in make compose-bash
 ```

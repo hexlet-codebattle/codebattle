@@ -1,5 +1,3 @@
-ASSERTS_PATH = "/tmp/battle_asserts"
-
 compose:
 	docker compose up app
 
@@ -68,9 +66,6 @@ compose-logs:
 
 compose-compile:
 	docker compose  run --rm --name codebattle_app app mix compile
-
-compose-upload-battle-asserts:
-	docker compose run --rm --name codebattle_app app mix asserts.upload
 
 compose-build-images:
 	docker compose run --rm --name codebattle_app app mix images.build ${lang}

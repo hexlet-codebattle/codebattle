@@ -10,11 +10,6 @@ defmodule CodebattleWeb.Endpoint do
 
   socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity, compress: true])
 
-  socket("/extension", CodebattleWeb.ExtensionSocket,
-    websocket: [timeout: :infinity, check_origin: false],
-    check_origin: false
-  )
-
   socket("/live", Phoenix.LiveView.Socket,
     websocket: [
       connect_info: [

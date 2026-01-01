@@ -9,7 +9,6 @@ clean:
 	rm -rf services/app/.elixir_ls
 	rm -rf services/app/priv/static
 	rm -rf node_modules
-	rm -rf tmp/battle_asserts
 
 test:
 	make -C ./services/app/ test

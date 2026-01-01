@@ -35,7 +35,7 @@
               <td class="align-middle text text-white cb-border-color">{task.id}</td>
               <td class="align-middle text text-white cb-border-color">
                 {link(task.name,
-                  to: Routes.raw_task_path(@conn, :show, task.id),
+                  to: Routes.task_path(@conn, :show, task.id),
                   class: "ml-auto text-primary"
                 )}
               </td>

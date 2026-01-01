@@ -16,8 +16,8 @@ import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 import TaskLanguagesSelection from './TaskLanguageSelection';
 
-const renderTaskLink = name => {
-  const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
+const renderTaskLink = task => {
+  const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags[0]}/${task.name}.toml`;
 
   return (
     <a href={link} className="cb-text d-inline-block">
@@ -132,7 +132,7 @@ function TaskAssignment({
         </div>
         {task.origin === 'github' && !hideContribution && (
           <>
-            <ContributorsList name={task.name} />
+            <ContributorsList task={task} />
             <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
               <h6 className="card-text small font-italic">
                 <span className="mr-2">
@@ -140,7 +140,7 @@ function TaskAssignment({
                     'Found a mistake? Have something to add? Pull Requests are welcome: ',
                   )}
                 </span>
-                {renderTaskLink(task.name)}
+                {renderTaskLink(task)}
               </h6>
             </div>
           </>

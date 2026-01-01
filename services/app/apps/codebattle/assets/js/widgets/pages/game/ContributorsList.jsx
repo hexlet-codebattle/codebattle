@@ -22,13 +22,13 @@ const renderContributorsList = contributors => (
             />
           </a>
         </li>
-      ))
+        ))
       : null}
   </ul>
 );
 
-function ContributorsList({ name }) {
-  const url = `https://api.github.com/repos/hexlet-codebattle/battle_asserts/commits?path=src/battle_asserts/issues/${name}.clj`;
+function ContributorsList({ name, tags, level }) {
+  const url = `https://api.github.com/repos/hexlet-codebattle/tasks/commits?path=tasks/${level}/${tags[0]}/${name}.toml`;
 
   const dispatch = useDispatch();
 
@@ -60,7 +60,9 @@ function ContributorsList({ name }) {
 
   return (
     <div className="d-flex flex-column mb-1 align-self-end">
-      <h6 className="card-text">{i18n.t('This users have contributed to this task:')}</h6>
+      <h6 className="card-text">
+        {i18n.t('This users have contributed to this task:')}
+      </h6>
       {renderContributorsList(contributors)}
     </div>
   );
