@@ -37,7 +37,7 @@ function forceFullReload() {
   };
 }
 
-// --- copy codicon font to priv/static for Phoenix to serve
+// --- copy codicon font to priv/static for Phoenix to serve (production)
 function copyCodiconFont() {
   return {
     name: "copy-codicon-font",
@@ -50,6 +50,60 @@ function copyCodiconFont() {
         console.log("✓ Copied codicon.ttf to priv/static/");
       } catch (err) {
         console.error("Failed to copy codicon.ttf:", err);
+      }
+    },
+  };
+}
+
+// --- copy KaTeX fonts to assets/static/fonts for dev and priv/static/fonts for prod
+function copyKatexFonts() {
+  return {
+    name: "copy-katex-fonts",
+    buildStart() {
+      const katexFontsDir = path.resolve(__dirname, "node_modules/katex/dist/fonts");
+      const devDestDir = path.resolve(__dirname, "assets/static/fonts/katex");
+
+      try {
+        if (!fs.existsSync(devDestDir)) {
+          fs.mkdirSync(devDestDir, { recursive: true });
+        }
+
+        const fonts = fs.readdirSync(katexFontsDir);
+        for (const font of fonts) {
+          if (/\.(woff2?|ttf)$/.test(font)) {
+            fs.copyFileSync(
+              path.join(katexFontsDir, font),
+              path.join(devDestDir, font)
+            );
+          }
+        }
+        console.log("✓ Copied KaTeX fonts to assets/static/fonts/katex/");
+      } catch (err) {
+        console.error("Failed to copy KaTeX fonts:", err);
+      }
+    },
+    closeBundle() {
+      // Also copy to priv/static/fonts/katex for production
+      const katexFontsDir = path.resolve(__dirname, "node_modules/katex/dist/fonts");
+      const prodDestDir = path.resolve(__dirname, "priv/static/fonts/katex");
+
+      try {
+        if (!fs.existsSync(prodDestDir)) {
+          fs.mkdirSync(prodDestDir, { recursive: true });
+        }
+
+        const fonts = fs.readdirSync(katexFontsDir);
+        for (const font of fonts) {
+          if (/\.(woff2?|ttf)$/.test(font)) {
+            fs.copyFileSync(
+              path.join(katexFontsDir, font),
+              path.join(prodDestDir, font)
+            );
+          }
+        }
+        console.log("✓ Copied KaTeX fonts to priv/static/fonts/katex/");
+      } catch (err) {
+        console.error("Failed to copy KaTeX fonts:", err);
       }
     },
   };
@@ -89,6 +143,7 @@ export default defineConfig(({ command, mode }) => ({
     poLoader(),
     forceFullReload(), // always trigger full reload
     copyCodiconFont(), // copy codicon font for Phoenix to serve
+    copyKatexFonts(), // copy KaTeX fonts for serving
     environment(["NODE_ENV"]),
   ],
 

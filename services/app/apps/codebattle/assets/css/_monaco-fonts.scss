@@ -1,0 +1,8 @@
+// Override Monaco Editor codicon font path
+// The font is served from /codicon.ttf in both dev and production
+
+@font-face {
+  font-family: "codicon";
+  font-display: block;
+  src: url("/codicon.ttf") format("truetype");
+}

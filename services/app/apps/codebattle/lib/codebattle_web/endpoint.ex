@@ -52,6 +52,22 @@ defmodule CodebattleWeb.Endpoint do
       from: Path.expand("../../assets/static", __DIR__),
       gzip: false
     )
+
+    # Serve fonts and codicon.ttf at root level for KaTeX and Monaco in dev
+    plug(
+      Plug.Static,
+      at: "/fonts",
+      from: Path.expand("../../assets/static/fonts", __DIR__),
+      gzip: false
+    )
+
+    plug(
+      Plug.Static,
+      at: "/",
+      from: Path.expand("../../assets/static", __DIR__),
+      gzip: false,
+      only: ~w(codicon.ttf)
+    )
   end
 
   # Code reloading can be explicitly enabled under the

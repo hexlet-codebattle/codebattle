@@ -250,6 +250,7 @@ function EditorContainer({
     userId: id,
     wordWrap: 'off',
     lineNumbers: 'on',
+    fontSize: 16,
     hidingPanelControls: false,
     userType: type,
     syntax: editorState?.currentLangSlug || 'js',
