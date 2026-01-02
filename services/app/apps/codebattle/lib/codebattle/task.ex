@@ -133,7 +133,7 @@ defmodule Codebattle.Task do
           comment: Map.get(params, :comment),
           creator_id: params[:creator_id],
           description_en: params.description_en,
-          description_ru: params.description_ru,
+          description_ru: Map.get(params, :description_ru, ""),
           examples: params.examples,
           generator_lang: Map.get(params, :generator_lang, "js"),
           input_signature: params.input_signature,
@@ -143,7 +143,7 @@ defmodule Codebattle.Task do
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),
           state: params.state,
-          tags: params.tags,
+          tags: Map.get(params, :tags, []),
           updated_at: DateTime.utc_now(),
           visibility: params.visibility
         ]
