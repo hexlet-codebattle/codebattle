@@ -30,9 +30,9 @@ function Notifications() {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
   const playbookSolutionType = useSelector(
-    state => state.playbook.solutionType,
+    (state) => state.playbook.solutionType,
   );
-  const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
+  const tournamentsInfo = useSelector((state) => state.game.tournamentsInfo);
   const tournament = useSelector(selectors.tournamentSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isCurrentUserPlayer = hasIn(players, currentUserId);
@@ -53,11 +53,9 @@ function Notifications() {
         )}
       {isAdmin
         && !roomMachineState.matches({ replayer: replayerMachineStates.off }) && (
-          <>
-            <ApprovePlaybookButtons
-              playbookSolutionType={playbookSolutionType}
-            />
-          </>
+          <ApprovePlaybookButtons
+            playbookSolutionType={playbookSolutionType}
+          />
         )}
       {isTournamentGame && isActiveTournament && (
         <GoToNextGame

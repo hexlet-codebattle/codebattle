@@ -22,7 +22,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
   const currentUserId = useSelector(currentUserIdSelector);
   const { alreadySendPremiumRequest } = useSelector(userSettingsSelector);
 
-  const handleSendRequest = useCallback(event => {
+  const handleSendRequest = useCallback((event) => {
     const { premiumRequest, userId } = event.currentTarget.dataset;
 
     setSended(true);

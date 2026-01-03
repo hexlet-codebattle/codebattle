@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import moment from 'moment';
-import Pagination from 'react-js-pagination';
+import ReactPaginate from 'react-paginate';
 import { useSelector, useDispatch } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
 import { getUsersRatingPage } from '../../middlewares/Users';
 import { usersListSelector } from '../../selectors';
 
-const decorateJoinedDate = str => moment.utc(str).format('LL');
+const decorateJoinedDate = (str) => moment.utc(str).format('LL');
 
 const renderSortArrow = (attribute, sortParams) => {
   const { attribute: currentAttribute, direction } = sortParams;
@@ -60,24 +60,34 @@ const renderUser = (page, pageSize, user, index) => (
 const renderPagination = (
   { pageInfo: { pageNumber, pageSize, totalEntries } },
   setPage,
-) => (
-  <Pagination
-    activePage={pageNumber}
-    itemsCountPerPage={pageSize}
-    totalItemsCount={totalEntries}
-    pageRangeDisplayed={5}
-    prevPageText="<"
-    firstPageText="<<"
-    lastPageText=">>"
-    nextPageText=">"
-    onChange={page => {
-      setPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }}
-    itemClass="page-item"
-    linkClass="page-link"
-  />
-);
+) => {
+  const pageCount = Math.ceil(totalEntries / pageSize);
+
+  return (
+    <ReactPaginate
+      forcePage={pageNumber - 1}
+      pageCount={pageCount}
+      pageRangeDisplayed={5}
+      marginPagesDisplayed={1}
+      previousLabel="<"
+      nextLabel=">"
+      breakLabel="..."
+      onPageChange={({ selected }) => {
+        setPage(selected + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }}
+      pageClassName="page-item"
+      pageLinkClassName="page-link"
+      previousClassName="page-item"
+      previousLinkClassName="page-link"
+      nextClassName="page-item"
+      nextLinkClassName="page-link"
+      breakClassName="page-item"
+      breakLinkClassName="page-link"
+      activeClassName="active"
+    />
+  );
+};
 
 const renderFilterPeriodButtons = (
   period,
@@ -138,7 +148,7 @@ function UsersRating() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterParams, sortParams, page, pageSize]);
 
-  const triggerSort = attribute => {
+  const triggerSort = (attribute) => {
     const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
 
     setSortParams({
@@ -154,7 +164,7 @@ function UsersRating() {
       <p>{`Total entries: ${totalEntries}`}</p>
 
       <ul className="nav nav-pills justify-content-center mb-3">
-        {periods.map(period => renderFilterPeriodButtons(
+        {periods.map((period) => renderFilterPeriodButtons(
           period,
           filterParams,
           setFilterParams,
@@ -176,7 +186,7 @@ function UsersRating() {
             aria-label="Username"
             aria-describedby="basic-addon1"
             value={filterParams.name}
-            onChange={e => {
+            onChange={(e) => {
               setFilterParams({ ...filterParams, name: e.target.value });
               setPage(1);
             }}
@@ -189,7 +199,7 @@ function UsersRating() {
               <select
                 className="custom-select cb-bg-panel cb-border-color text-white"
                 id="usersPerPage"
-                onChange={e => {
+                onChange={(e) => {
                   setPageSize(e.target.value);
                   setPage(1);
                 }}

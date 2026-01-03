@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ * @jest-environment-options {"url": "http://localhost/users/new"}
+ */
 import React from 'react';
 
 import { render, waitFor } from '@testing-library/react';
@@ -16,7 +20,7 @@ const { data, route, headers } = validData;
 
 jest.mock('gon', () => {
   const gonParams = { local: 'en', current_user: { sound_settings: {} } };
-  return { getAsset: type => gonParams[type] };
+  return { getAsset: (type) => gonParams[type] };
 }, { virtual: true });
 
 describe('sign up', () => {
@@ -28,12 +32,6 @@ describe('sign up', () => {
   }
 
   beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: {
-        pathname: '/users/new',
-      },
-    });
     document.head.innerHTML = '<meta name="csrf-token" content="test-csrf-token">';
   });
 

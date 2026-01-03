@@ -21,13 +21,13 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
   return channel;
 };
 
-const initTournamentChannel = (waitingRoomMachine, currentChannel) => dispatch => {
-    const onJoinFailure = err => {
+const initTournamentChannel = (waitingRoomMachine, currentChannel) => (dispatch) => {
+    const onJoinFailure = (err) => {
       console.error(err);
       // window.location.reload();
     };
 
-    const onJoinSuccess = response => {
+    const onJoinSuccess = (response) => {
       dispatch(
         actions.setTournamentData({
           ...response.tournament,
@@ -71,11 +71,11 @@ const initTournamentChannel = (waitingRoomMachine, currentChannel) => dispatch =
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (waitingRoomMachine, newTournamentId) => dispatch => {
+export const connectToTournament = (waitingRoomMachine, newTournamentId) => (dispatch) => {
     setTournamentChannel(newTournamentId);
     initTournamentChannel(waitingRoomMachine, channel)(dispatch);
 
-    const handleUpdate = response => {
+    const handleUpdate = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
       dispatch(
         actions.updateTournamentPlayers(compact(response.players || [])),
@@ -88,19 +88,19 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => disp
       }
     };
 
-    const handleMatchesUpdate = response => {
+    const handleMatchesUpdate = (response) => {
       dispatch(actions.updateTournamentMatches(compact(response.matches)));
     };
 
-    const handlePlayersUpdate = response => {
+    const handlePlayersUpdate = (response) => {
       dispatch(actions.updateTournamentPlayers(compact(response.players)));
     };
 
-    const handleTournamentRoundCreated = response => {
+    const handleTournamentRoundCreated = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handleRoundFinished = response => {
+    const handleRoundFinished = (response) => {
       dispatch(
         actions.updateTournamentData({
           ...response.tournament,
@@ -114,7 +114,7 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => disp
       dispatch(actions.updateTopPlayers(compact(response.players)));
     };
 
-    const handleTournamentRestarted = response => {
+    const handleTournamentRestarted = (response) => {
       dispatch(
         actions.setTournamentData({
           ...response.tournament,
@@ -127,26 +127,26 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => disp
       );
     };
 
-    const handlePlayerJoined = response => {
+    const handlePlayerJoined = (response) => {
       dispatch(actions.addTournamentPlayer(response));
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handlePlayerLeft = response => {
+    const handlePlayerLeft = (response) => {
       dispatch(actions.removeTournamentPlayer(response));
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handleMatchUpserted = response => {
+    const handleMatchUpserted = (response) => {
       dispatch(actions.updateTournamentMatches(compact([response.match])));
       dispatch(actions.updateTournamentPlayers(compact(response.players)));
     };
 
-    const handleTournamentFinished = response => {
+    const handleTournamentFinished = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handleTournamentRankingUpdate = response => {
+    const handleTournamentRankingUpdate = (response) => {
       dispatch(
         actions.updateTournamentData({
           ranking: response.ranking,
@@ -180,14 +180,14 @@ export const uploadTournamentsByFilter = (from, to) => axios
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
 
       return [data.seasonTournaments, data.userTournaments];
     });
 
 // TODO (tournaments): request matches by searched player id
-export const uploadPlayers = playerIds => (dispatch, getState) => {
+export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   const state = getState();
 
   const { isLive, id } = state.tournament;
@@ -195,7 +195,7 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
   if (isLive) {
     channel
       .push('tournament:players:request', { playerIds })
-      .receive('ok', response => {
+      .receive('ok', (response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       });
   } else {
@@ -208,15 +208,15 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
           'x-csrf-token': window.csrf_token,
         },
       })
-      .then(response => {
+      .then((response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 };
 
 export const getTask = (taskId, onSuccess) => () => {
-  channel.push('tournament:get_task', { taskId }).receive('ok', payload => {
+  channel.push('tournament:get_task', { taskId }).receive('ok', (payload) => {
     const data = camelizeKeys(payload);
 
     onSuccess(data);
@@ -226,13 +226,13 @@ export const getTask = (taskId, onSuccess) => () => {
 export const getResults = (type, params, onSuccess) => () => {
   channel
     .push('tournament:get_results', { params: { type, ...params } })
-    .receive('ok', payload => {
+    .receive('ok', (payload) => {
       const data = camelizeKeys(payload);
       console.log(data);
 
       if (type === PanelModeCodes.topUserByClansMode) {
         const result = Object.values(
-          groupBy(data.results, item => item.clanRank),
+          groupBy(data.results, (item) => item.clanRank),
         );
         onSuccess(result);
       } else {
@@ -241,25 +241,25 @@ export const getResults = (type, params, onSuccess) => () => {
     });
 };
 
-export const requestMatchesByPlayerId = userId => dispatch => {
+export const requestMatchesByPlayerId = (userId) => (dispatch) => {
   channel
     .push('tournament:matches:request', { playerId: userId })
-    .receive('ok', data => {
+    .receive('ok', (data) => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
     });
 };
 
-export const uploadPlayersMatches = playerId => dispatch => {
+export const uploadPlayersMatches = (playerId) => (dispatch) => {
   requestMatchesByPlayerId(playerId)(dispatch);
 };
 
-export const joinTournament = teamId => {
+export const joinTournament = (teamId) => {
   const params = teamId !== undefined ? { teamId } : {};
   channel.push('tournament:join', params);
 };
 
-export const leaveTournament = teamId => {
+export const leaveTournament = (teamId) => {
   const params = teamId !== undefined ? { teamId } : {};
   channel.push('tournament:leave', params);
 };

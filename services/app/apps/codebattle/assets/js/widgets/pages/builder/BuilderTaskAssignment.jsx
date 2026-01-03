@@ -21,25 +21,27 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 import TaskLanguagesSelection from '../game/TaskLanguageSelection';
 
-const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({
+const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map((level) => ({
   value: level,
   label: capitalize(level),
 }));
 
-const ConfigurationButton = ({ onClick, disabled }) => (
-  <button
-    type="button"
-    className="btn btn-outline-secondary mr-1 btn-sm text-nowrap rounded-lg"
-    onClick={onClick}
-    data-toggle="tooltip"
-    data-placement="top"
-    title="Open task details"
-    disabled={disabled}
-  >
-    <FontAwesomeIcon icon="cog" />
-    <span className="ml-1">Details</span>
-  </button>
-);
+function ConfigurationButton({ onClick, disabled }) {
+  return (
+    <button
+      type="button"
+      className="btn btn-outline-secondary mr-1 btn-sm text-nowrap rounded-lg"
+      onClick={onClick}
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Open task details"
+      disabled={disabled}
+    >
+      <FontAwesomeIcon icon="cog" />
+      <span className="ml-1">Details</span>
+    </button>
+  );
+}
 
 const renderGameLevelSelectButton = (level, handleSetLevel) => (
   <div className="dropdown mr-1">
@@ -91,7 +93,7 @@ function BuilderTaskAssignment({
   const taskDescriptionText = descriptionTextMapping[taskLanguage];
 
   const handleSetLevel = useCallback(
-    event => {
+    (event) => {
       const { value } = event.currentTarget.dataset;
       dispatch(actions.setTaskLevel({ level: value }));
     },
@@ -99,7 +101,7 @@ function BuilderTaskAssignment({
   );
 
   const handleSetDescription = useCallback(
-    event => {
+    (event) => {
       dispatch(
         actions.setTaskDescription({
           lang: taskLanguage,
@@ -111,17 +113,17 @@ function BuilderTaskAssignment({
   );
 
   const [validName, invalidNameReason] = useSelector(
-    state => state.builder.validationStatuses.name,
+    (state) => state.builder.validationStatuses.name,
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const validateName = useCallback(
-    debounce(name => dispatch(validateTaskName(name)), 700),
+    debounce((name) => dispatch(validateTaskName(name)), 700),
     [],
   );
 
   const handleSetName = useCallback(
-    event => {
+    (event) => {
       dispatch(actions.setTaskName({ name: event.target.value }));
       validateName(event.target.value);
     },

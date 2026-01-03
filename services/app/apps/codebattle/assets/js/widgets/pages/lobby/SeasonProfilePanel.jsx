@@ -20,7 +20,7 @@ import TournamentListItem from './TournamentListItem';
 
 const contestDatesText = 'Season: Oct 16 - Dec 21';
 
-const OpponentInfo = ({ id }) => {
+function OpponentInfo({ id }) {
   const user = useSelector(userByIdSelector(id));
 
   return (
@@ -62,9 +62,9 @@ const OpponentInfo = ({ id }) => {
       </div>
     </div>
   );
-};
+}
 
-const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
+function SeasonNearbyUsers({ user, nearbyUsers }) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(!!user.points);
 
@@ -72,7 +72,7 @@ const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
     if (user.points) {
       const abortController = new AbortController();
 
-      const onSuccess = payload => {
+      const onSuccess = (payload) => {
         if (!abortController.signal.aborted) {
           dispatch(actions.setNearbyUsers(payload.data));
           dispatch(actions.updateUsers(payload.data));
@@ -110,14 +110,14 @@ const SeasonNearbyUsers = ({ user, nearbyUsers }) => {
             <OpponentInfo />
           </>
         ) : (
-          nearbyUsers.map(id => <OpponentInfo id={id} />)
+          nearbyUsers.map((id) => <OpponentInfo id={id} />)
         )}
       </div>
     </div>
   );
-};
+}
 
-const UserLogo = ({ user, size = '70px' }) => {
+function UserLogo({ user, size = '70px' }) {
   const [userInfo, setUserInfo] = useState();
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
   const avatarUrl = user?.avatarUrl || userInfo?.avatarUrl || defaultAvatarUrl;
@@ -131,7 +131,7 @@ const UserLogo = ({ user, size = '70px' }) => {
         .get(`/api/v1/user/${userId}/stats`, {
           signal: controller.signal,
         })
-        .then(response => {
+        .then((response) => {
           if (!controller.signal.aborted) {
             setUserInfo(camelizeKeys(response.data.user));
           }
@@ -152,15 +152,15 @@ const UserLogo = ({ user, size = '70px' }) => {
       src={avatarUrl}
     />
   );
-};
+}
 
-const SeasonProfilePanel = ({
+function SeasonProfilePanel({
   seasonTournaments = [],
   liveTournaments = [],
   nearbyUsers,
   user,
   controls,
-}) => {
+}) {
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
@@ -178,7 +178,7 @@ const SeasonProfilePanel = ({
                     </span>
                   </div>
                   <div className="d-flex flex-wrap">
-                    {liveTournaments.map(tournament => (
+                    {liveTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
                         key={tournament.id}
@@ -196,7 +196,7 @@ const SeasonProfilePanel = ({
                     </span>
                   </div>
                   <div className="d-flex flex-wrap">
-                    {seasonTournaments.map(tournament => (
+                    {seasonTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
                         key={tournament.id}
@@ -296,6 +296,6 @@ const SeasonProfilePanel = ({
       </div>
     </div>
   );
-};
+}
 
 export default SeasonProfilePanel;

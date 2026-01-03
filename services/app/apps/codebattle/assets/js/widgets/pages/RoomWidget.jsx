@@ -84,12 +84,10 @@ function RoomWidget({
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div
-              className={cn(
-                'container-fluid', {
+              className={cn('container-fluid', {
                 'd-none': roomLocked,
                 invisible: !visible,
-              },
-              )}
+              })}
             >
               <div className="row no-gutter cb-game px-1">
                 {showTaskBuilder && (

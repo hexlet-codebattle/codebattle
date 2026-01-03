@@ -1,24 +1,142 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useMemo } from 'react';
 
 import cn from 'classnames';
 import Gon from 'gon';
 
-const getPlaceBadgeClass = place => {
-  switch (place) {
-    case 1:
-      return 'bg-warning text-dark';
-    case 2:
-      return 'bg-secondary';
-    case 3:
-      return 'bg-bronze';
-    default:
-      return 'bg-primary';
-  }
-};
+import LanguageIcon from '../../components/LanguageIcon';
+import PlayerInsightsModal from '../../components/PlayerInsightsModal';
+import {
+  LeaderboardTable,
+  useLeaderboardState,
+  getMedalEmoji,
+} from '../../components/SeasonLeaderboard';
 
-const SeasonShowPage = () => {
+function StatBox({ label, value, highlight = false }) {
+  return (
+    <div className="text-center">
+      <div className={cn('fw-bold', highlight ? 'fs-3 text-warning' : 'fs-5 text-white')}>
+        {value}
+      </div>
+      <div className="text-muted small text-uppercase">{label}</div>
+    </div>
+  );
+}
+
+function PodiumCard({ result, isFirst = false }) {
+  return (
+    <div
+      className={cn('card h-100 border-2 shadow-lg', {
+      'border-warning': result.place === 1,
+      'border-secondary': result.place === 2,
+      'border-bronze': result.place === 3,
+    })}
+      style={{
+      background: result.place === 1
+        ? 'linear-gradient(180deg, rgba(255,193,7,0.2) 0%, rgba(0,0,0,0.9) 100%)'
+        : 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.9) 100%)',
+    }}
+    >
+      <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
+        <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>
+          {getMedalEmoji(result.place)}
+        </div>
+        {result.avatar_url && (
+        <img
+          src={result.avatar_url}
+          alt={result.user_name}
+          className="rounded-circle mb-2"
+          style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
+        />
+      )}
+        <h4 className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
+          {result.user_name}
+        </h4>
+        <div className="mb-3">
+          {result.user_lang && (
+          <span className="mr-2">
+            <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
+          </span>
+        )}
+          {result.clan_name && (
+          <span className="text-info">{result.clan_name}</span>
+        )}
+        </div>
+        <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
+          <div className="px-3"><StatBox label="Points" value={result.total_points} highlight={isFirst} /></div>
+          <div className="px-3"><StatBox label="Wins" value={result.total_wins_count} /></div>
+        </div>
+        <div className="d-flex justify-content-center mt-3">
+          <div className="px-3"><StatBox label="Score" value={result.total_score} /></div>
+          <div className="px-3"><StatBox label="Tournaments" value={result.tournaments_count} /></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChampionsPodium({ top3 }) {
+  if (!top3 || top3.length === 0) return null;
+
+  const first = top3.find((r) => r.place === 1);
+  const second = top3.find((r) => r.place === 2);
+  const third = top3.find((r) => r.place === 3);
+
+  return (
+    <div className="mb-5">
+      <h2 className="text-white mb-4 text-center">Champions</h2>
+      <div className="row align-items-end justify-content-center">
+        {/* Second place - left */}
+        <div className="col-md-4 col-lg-3">
+          {second && (
+            <div style={{ marginTop: '2rem' }}>
+              <PodiumCard result={second} />
+            </div>
+          )}
+        </div>
+
+        {/* First place - center, elevated */}
+        <div className="col-md-4 col-lg-3">
+          {first && <PodiumCard result={first} isFirst />}
+        </div>
+
+        {/* Third place - right */}
+        <div className="col-md-4 col-lg-3">
+          {third && (
+            <div style={{ marginTop: '3rem' }}>
+              <PodiumCard result={third} />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SeasonShowPage() {
   const season = (Gon && Gon.getAsset && Gon.getAsset('season')) || null;
-  const results = (Gon && Gon.getAsset && Gon.getAsset('results')) || [];
+
+  // Memoize results to ensure stable reference
+  const results = useMemo(
+    () => (Gon && Gon.getAsset && Gon.getAsset('results')) || [],
+    [],
+  );
+
+  // Modal state
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  // Use shared leaderboard state hook
+  const leaderboardState = useLeaderboardState(results);
+
+  const handleShowInsights = (player) => {
+    setSelectedPlayer(player);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedPlayer(null);
+  };
 
   if (!season) {
     return (
@@ -36,148 +154,108 @@ const SeasonShowPage = () => {
 
   const top3 = results.slice(0, 3);
 
+  // Determine season status
+  const now = new Date();
+  const startsAt = season.starts_at ? new Date(season.starts_at) : null;
+  const endsAt = season.ends_at ? new Date(season.ends_at) : null;
+
+  let seasonStatus = 'active';
+  if (startsAt && now < startsAt) {
+    seasonStatus = 'upcoming';
+  } else if (endsAt && now > endsAt) {
+    seasonStatus = 'completed';
+  }
+
+  const statusBadge = {
+    upcoming: { class: 'bg-info', text: 'Upcoming' },
+    active: { class: 'bg-success', text: 'Active' },
+    completed: { class: 'bg-secondary', text: 'Completed' },
+  }[seasonStatus];
+
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5">
       <div className="container">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        {/* Header */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5">
           <div>
-            <h1 className="text-white fw-bold mb-2">
-              {season.name}
-              {' '}
-              {season.year}
-            </h1>
+            <div className="d-flex align-items-center mb-2">
+              <h1 className="text-warning fw-bold mb-0 mr-2">
+                {season.name}
+                {' '}
+                {season.year}
+              </h1>
+              <span className={cn('badge', statusBadge.class)}>{statusBadge.text}</span>
+            </div>
             <div className="text-muted">
+              <i className="bi bi-calendar3 mr-2" />
               {season.starts_at}
-              {' '}
-              -
-              {' '}
+              {' — '}
               {season.ends_at}
             </div>
           </div>
-          <div className="d-flex gap-2">
-            <a href="/seasons" className="btn btn-outline-light">
+          <div className="d-flex mt-3 mt-md-0">
+            <a href="/seasons" className="btn btn-outline-light mr-2">
               All Seasons
             </a>
-            <a href="/hall_of_fame" className="btn btn-outline-primary">
+            <a href="/hall_of_fame" className="btn btn-outline-warning">
               Hall of Fame
             </a>
           </div>
         </div>
 
-        {top3.length > 0 && (
-          <div className="mb-5">
-            <h2 className="text-white mb-4 text-center">Champions</h2>
-            <div className="row g-4 justify-content-center">
-              {top3.map(result => (
-                <div key={result.user_id} className="col-md-4">
-                  <div
-                    className={cn('card h-100 border-3 shadow-lg', {
-                      'bg-dark border-warning': result.place === 1,
-                      'bg-dark border-secondary': result.place === 2,
-                      'bg-dark border-bronze': result.place === 3,
-                    })}
-                  >
-                    <div className="card-body text-center">
-                      <div className={cn('badge fs-3 mb-3', getPlaceBadgeClass(result.place))}>
-                        {result.place === 1 && '🥇'}
-                        {result.place === 2 && '🥈'}
-                        {result.place === 3 && '🥉'}
-                      </div>
-                      <h4 className="card-title text-white mb-2">{result.user_name}</h4>
-                      <div className="mb-3">
-                        {result.user_lang && (
-                          <span className="badge bg-dark me-2">{result.user_lang}</span>
-                        )}
-                        {result.clan_name && (
-                          <span className="badge bg-info">{result.clan_name}</span>
-                        )}
-                      </div>
-                      <div className="mt-4">
-                        <div className="row g-3">
-                          <div className="col-6">
-                            <div className="text-muted small">Points</div>
-                            <div className="text-white fw-bold fs-4">{result.total_points}</div>
-                          </div>
-                          <div className="col-6">
-                            <div className="text-muted small">Wins</div>
-                            <div className="text-white fw-bold fs-4">{result.total_wins_count}</div>
-                          </div>
-                          <div className="col-6">
-                            <div className="text-muted small">Score</div>
-                            <div className="text-white">{result.total_score}</div>
-                          </div>
-                          <div className="col-6">
-                            <div className="text-muted small">Tournaments</div>
-                            <div className="text-white">{result.tournaments_count}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {/* Champions Podium */}
+        <ChampionsPodium top3={top3} />
+
+        {/* Full Leaderboard */}
+        <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
+          <div className="card-header bg-transparent border-bottom border-secondary py-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <h2 className="mb-0 text-white fs-4">Full Leaderboard</h2>
+              <span className="badge bg-secondary">
+                {results.length}
+                {' '}
+                players
+              </span>
             </div>
           </div>
-        )}
-
-        <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
-          <div className="card-body">
-            <h2 className="card-title mb-4 text-white">Full Leaderboard</h2>
-
-            {results.length === 0 ? (
-              <div className="text-center py-5">
-                <p className="text-muted mb-0">No results yet</p>
-              </div>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-dark table-striped table-hover mb-0 cb-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">Player</th>
-                      <th scope="col">Clan</th>
-                      <th scope="col">Points</th>
-                      <th scope="col">Wins</th>
-                      <th scope="col">Score</th>
-                      <th scope="col">Tournaments</th>
-                      <th scope="col">Avg Place</th>
-                      <th scope="col">Best Place</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.map(result => (
-                      <tr key={result.user_id}>
-                        <th scope="row">
-                          <span className={cn('badge', getPlaceBadgeClass(result.place))}>
-                            {result.place}
-                          </span>
-                        </th>
-                        <td>
-                          <div className="d-flex align-items-center gap-2">
-                            <span>{result.user_name}</span>
-                            {result.user_lang && (
-                              <span className="badge bg-dark text-xs">{result.user_lang}</span>
-                            )}
-                          </div>
-                        </td>
-                        <td>{result.clan_name || '-'}</td>
-                        <td className="fw-bold">{result.total_points}</td>
-                        <td>{result.total_wins_count}</td>
-                        <td>{result.total_score}</td>
-                        <td>{result.tournaments_count}</td>
-                        <td>{result.avg_place ? Number(result.avg_place).toFixed(1) : '-'}</td>
-                        <td>{result.best_place || '-'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+          <div className="card-body p-0">
+            <LeaderboardTable
+              results={results}
+              onShowInsights={handleShowInsights}
+              searchQuery={leaderboardState.searchQuery}
+              onSearchChange={leaderboardState.handleSearchChange}
+              clanFilter={leaderboardState.clanFilter}
+              onClanFilterChange={leaderboardState.handleClanFilterChange}
+              langFilter={leaderboardState.langFilter}
+              onLangFilterChange={leaderboardState.handleLangFilterChange}
+              uniqueClans={leaderboardState.uniqueClans}
+              uniqueLangs={leaderboardState.uniqueLangs}
+              onResetFilters={leaderboardState.handleResetFilters}
+              sortConfig={leaderboardState.sortConfig}
+              onSort={leaderboardState.handleSort}
+              currentPage={leaderboardState.currentPage}
+              totalPages={leaderboardState.totalPages}
+              onPageChange={leaderboardState.handlePageChange}
+              totalItems={leaderboardState.sortedResults.length}
+              itemsPerPage={leaderboardState.itemsPerPage}
+              onItemsPerPageChange={leaderboardState.handleItemsPerPageChange}
+              displayedResults={leaderboardState.displayedResults}
+              showInsightsButton
+            />
           </div>
         </div>
+
+        {/* Player Insights Modal */}
+        <PlayerInsightsModal
+          show={showModal}
+          onHide={handleCloseModal}
+          player={selectedPlayer}
+          allResults={results}
+          season={season}
+        />
       </div>
     </div>
   );
-};
+}
 
 export default memo(SeasonShowPage);

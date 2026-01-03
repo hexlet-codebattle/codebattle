@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
 
-import Pagination from 'react-js-pagination';
+import ReactPaginate from 'react-paginate';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -27,28 +27,36 @@ function TournamentPlayersPagination({ pageNumber, pageSize }) {
     [players, isAdmin, isOwner, topPlayerIds],
   );
 
-  const onChangePageNumber = useCallback(page => {
-    dispatch(actions.changeTournamentPageNumber(page));
+  const onChangePageNumber = useCallback(({ selected }) => {
+    dispatch(actions.changeTournamentPageNumber(selected + 1));
   }, [dispatch]);
+
+  const pageCount = Math.ceil(totalEntries / pageSize);
 
   if (totalEntries < pageSize) {
     return <></>;
   }
 
   return (
-    <Pagination
-      innerClass="d-flex justify-content-center pagination"
-      activePage={pageNumber}
-      itemsCountPerPage={pageSize}
-      totalItemsCount={totalEntries}
+    <ReactPaginate
+      className="d-flex justify-content-center pagination"
+      forcePage={pageNumber - 1}
+      pageCount={pageCount}
       pageRangeDisplayed={5}
-      prevPageText="<"
-      firstPageText="<<"
-      lastPageText=">>"
-      nextPageText=">"
-      onChange={onChangePageNumber}
-      itemClass="page-item"
-      linkClass="page-link"
+      marginPagesDisplayed={1}
+      previousLabel="<"
+      nextLabel=">"
+      breakLabel="..."
+      onPageChange={onChangePageNumber}
+      pageClassName="page-item"
+      pageLinkClassName="page-link"
+      previousClassName="page-item"
+      previousLinkClassName="page-link"
+      nextClassName="page-item"
+      nextLinkClassName="page-link"
+      breakClassName="page-item"
+      breakLinkClassName="page-link"
+      activeClassName="active"
     />
   );
 }

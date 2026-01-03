@@ -2,13 +2,13 @@ import React from 'react';
 
 import cn from 'classnames';
 
-const StairwayRounds = ({
+function StairwayRounds({
   players,
   activePlayerId,
   activeRoundId,
   setActiveRoundId,
-}) => {
-  const currentUser = players.find(player => player.id === activePlayerId);
+}) {
+  const currentUser = players.find((player) => player.id === activePlayerId);
 
   const renderRoundTabs = currentUser.tasks.map(({ roundId, status }) => {
     const isActiveRound = activeRoundId === roundId;
@@ -42,15 +42,13 @@ const StairwayRounds = ({
   });
 
   return (
-    <>
-      <div className="d-flex flex-row" style={{ background: '#ffffff' }}>
-        <div className="col d-flex flex-grow-0 px-2 m-auto justify-content-center">
-          Rounds:
-        </div>
-        {renderRoundTabs}
+    <div className="d-flex flex-row" style={{ background: '#ffffff' }}>
+      <div className="col d-flex flex-grow-0 px-2 m-auto justify-content-center">
+        Rounds:
       </div>
-    </>
+      {renderRoundTabs}
+    </div>
   );
-};
+}
 
 export default StairwayRounds;

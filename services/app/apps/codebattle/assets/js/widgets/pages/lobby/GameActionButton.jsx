@@ -13,11 +13,13 @@ import ShowButton from './ShowButton';
 
 const havePlayer = (userId, game) => !isEmpty(find(game.players, { id: userId }));
 
-const ContinueButton = ({ url, type = 'table' }) => (
-  <a type="button" className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`} href={url}>
-    Continue
-  </a>
-);
+function ContinueButton({ url, type = 'table' }) {
+  return (
+    <a type="button" className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`} href={url}>
+      Continue
+    </a>
+  );
+}
 
 function GameActionButton({
   type = 'table', game, currentUserId, isGuest, isOnline,

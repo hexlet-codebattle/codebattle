@@ -98,7 +98,7 @@ function Canvas({
   const [snapEnabled, setSnapEnabled] = useState(true);
   const [showAddMenu, setShowAddMenu] = useState(false);
 
-  const snap = value => {
+  const snap = (value) => {
     const grid = 32;
     const threshold = 6;
     const mod = value % grid;
@@ -108,7 +108,7 @@ function Canvas({
   };
 
   useEffect(() => {
-    const handleKeyDown = e => {
+    const handleKeyDown = (e) => {
       if (e.altKey) setSnapEnabled(false);
     };
     const handleKeyUp = () => setSnapEnabled(true);
@@ -127,7 +127,7 @@ function Canvas({
 
   const updateBlock = (id, changes) => {
     if (readOnly) return;
-    const updated = blocks.map(block => (block.id === id ? { ...block, ...changes } : block));
+    const updated = blocks.map((block) => (block.id === id ? { ...block, ...changes } : block));
     setBlocks(updated);
     onBlocksChange(updated);
   };
@@ -139,19 +139,19 @@ function Canvas({
     setShowAddMenu(false);
   };
 
-  const handleDelete = id => {
+  const handleDelete = (id) => {
     if (readOnly) return;
-    const newBlocks = blocks.filter(block => block.id !== id);
+    const newBlocks = blocks.filter((block) => block.id !== id);
     setBlocks(newBlocks);
     setToast('🗑 Block deleted');
     onBlocksChange(newBlocks);
     closeContextMenu();
   };
 
-  const handleAddBlock = id => {
+  const handleAddBlock = (id) => {
     if (readOnly) return;
-    const hasBlock = blockId => blocks.some(b => b.id === blockId);
-    const templates = Object.fromEntries(defaultBlocks.map(b => [b.id, b]));
+    const hasBlock = (blockId) => blocks.some((b) => b.id === blockId);
+    const templates = Object.fromEntries(defaultBlocks.map((b) => [b.id, b]));
     if (templates[id] && !hasBlock(id)) {
       const newBlocks = [...blocks, templates[id]];
       setBlocks(newBlocks);
@@ -167,11 +167,11 @@ function Canvas({
     <div
       className="canvas"
       role="presentation"
-      onClick={e => {
+      onClick={(e) => {
         if (!e.target.closest('.context-menu')) closeContextMenu();
       }}
     >
-      {blocks.map(block => {
+      {blocks.map((block) => {
         const common = {
           id: block.id,
           x: block.x,
@@ -179,7 +179,7 @@ function Canvas({
           position: { x: block.x, y: block.y },
           width: block.width,
           height: block.height,
-          onContextMenu: e => handleContextMenu(e, block.id),
+          onContextMenu: (e) => handleContextMenu(e, block.id),
           onMove: (x, y) => updateBlock(block.id, {
               x: snapEnabled ? snap(x) : x,
               y: snapEnabled ? snap(y) : y,
@@ -213,7 +213,7 @@ function Canvas({
               color={block.color}
               code={block.code || ''}
               theme={block.theme || 'vscDarkPlus'}
-              onThemeChange={newTheme => updateBlock(block.id, { theme: newTheme })}
+              onThemeChange={(newTheme) => updateBlock(block.id, { theme: newTheme })}
             />
           );
         }

@@ -13,7 +13,7 @@ const defaultPreviewAvatarUrl = 'https://avatars.githubusercontent.com/u/3553903
 const players = Gon.getAsset('players');
 
 // TODO : user user.avatarUrl
-const GameRoomPreview = ({ pageName }) => {
+function GameRoomPreview({ pageName }) {
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
 
   if (pageName === 'builder') {
@@ -83,6 +83,6 @@ const GameRoomPreview = ({ pageName }) => {
       </div>
     </div>
   );
-};
+}
 
 export default GameRoomPreview;

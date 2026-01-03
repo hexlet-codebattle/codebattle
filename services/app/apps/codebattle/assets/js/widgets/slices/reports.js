@@ -15,7 +15,7 @@ const reports = createSlice({
       list: [...state.list, payload],
     }),
     updateReport: (state, { payload }) => ({
-      list: state.list.map(r => {
+      list: state.list.map((r) => {
         if (r.id === payload.id) {
           return { ...r, ...payload };
         }
@@ -24,7 +24,7 @@ const reports = createSlice({
       }),
     }),
     removeReport: (state, { payload }) => ({
-      list: state.list.filter(r => r.id !== payload),
+      list: state.list.filter((r) => r.id !== payload),
     }),
   },
 });

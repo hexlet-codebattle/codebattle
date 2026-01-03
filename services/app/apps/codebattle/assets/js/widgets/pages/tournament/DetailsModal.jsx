@@ -34,7 +34,8 @@ function DetailsModal({
           'topPlayerIds',
         ],
       ),
-      null, 2,
+      null,
+2,
     ),
     [tournament],
   );

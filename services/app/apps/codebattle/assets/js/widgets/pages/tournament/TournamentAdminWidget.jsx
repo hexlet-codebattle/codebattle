@@ -55,7 +55,7 @@ function TournamentAdminWidget() {
   const [playerMatches, setPlayerMatches] = useState({});
 
   // Render match buttons for a specific player
-  const renderPlayerMatchButtons = playerId => {
+  const renderPlayerMatchButtons = (playerId) => {
     const allMatches = playerMatches[playerId] || [];
 
     if (allMatches.length === 0) {
@@ -64,7 +64,7 @@ function TournamentAdminWidget() {
 
     return (
       <div className="d-flex flex-wrap gap-1">
-        {allMatches.map(match => {
+        {allMatches.map((match) => {
           // Determine button color based on match state
           let buttonClass = 'btn-outline-secondary';
           if (match.state === 'finished') {
@@ -120,9 +120,9 @@ function TournamentAdminWidget() {
     if (tournament?.matches && Object.keys(tournament.matches).length > 0) {
       const matchesByPlayer = {};
 
-      Object.values(tournament.matches).forEach(match => {
+      Object.values(tournament.matches).forEach((match) => {
         if (match.playerIds && match.playerIds.length > 0) {
-          match.playerIds.forEach(playerId => {
+          match.playerIds.forEach((playerId) => {
             if (!matchesByPlayer[playerId]) {
               matchesByPlayer[playerId] = [];
             }
@@ -158,7 +158,7 @@ function TournamentAdminWidget() {
             </tr>
           </thead>
           <tbody>
-            {tournament.ranking.entries.map(rankingPlayer => (
+            {tournament.ranking.entries.map((rankingPlayer) => (
               <tr key={rankingPlayer.id}>
                 <td>{rankingPlayer.id}</td>
                 <td>

@@ -77,7 +77,7 @@ function ChatWidget() {
   // }, [isTournamentGame, users]);
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
-  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+  const filteredMessages = messages.filter((message) => shouldShowMessage(message, activeRoom));
 
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>

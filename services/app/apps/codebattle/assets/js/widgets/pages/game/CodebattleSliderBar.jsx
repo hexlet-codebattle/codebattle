@@ -85,7 +85,7 @@ function CodebattleSliderBar({
           value={holded ? lastIntent : handlerPosition}
         />
       </div>
-      {mainEvents.map(event => (
+      {mainEvents.map((event) => (
         <SliderAction
           value={event.recordId / recordsCount}
           className="cb-slider-action position-absolute bg-warning cb-rounded"

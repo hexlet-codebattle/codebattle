@@ -16,10 +16,10 @@ export const pushCommandTypes = {
   cleanBanned: 'clead_banned',
 };
 
-const establishChat = page => dispatch => {
-  const getDispatchActionHandler = actionCreator => data => dispatch(actionCreator(data));
+const establishChat = (page) => (dispatch) => {
+  const getDispatchActionHandler = (actionCreator) => (data) => dispatch(actionCreator(data));
 
-  channel.join().receive('ok', data => {
+  channel.join().receive('ok', (data) => {
     const greetingMessage = getSystemMessage({
       text: `Joined channel: ${capitalize(page)}`,
       status: 'success',
@@ -44,7 +44,7 @@ const establishChat = page => dispatch => {
     .addListener(channelTopics.chatUserBannedTopic, handleUserbanned);
 };
 
-export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => dispatch => {
+export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => (dispatch) => {
     if (!isRecord && useChat) {
       const page = getChatTopic(chatPage, chatId);
       channel.setupChannel(page);
@@ -56,12 +56,12 @@ export const connectToChat = (useChat = true, chatPage = 'channel', chatId) => d
     return undefined;
   };
 
-export const addMessage = payload => {
+export const addMessage = (payload) => {
   channel
     .push(channelMethods.chatAddMsg, payload);
 };
 
-export const pushCommand = command => {
+export const pushCommand = (command) => {
   channel
     .push(channelMethods.chatCommand, command);
 };

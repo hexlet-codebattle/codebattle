@@ -11,7 +11,7 @@ const iconRenderers = {
   won: () => <FontAwesomeIcon icon={faTrophy} className="mr-2 text-warning" transform="grow-1.25" />,
 };
 
-const ResultIcon = ({ icon = null }) => {
+function ResultIcon({ icon = null }) {
   if (icon === null) return null;
 
   const renderIcon = iconRenderers[icon.name];
@@ -24,6 +24,6 @@ const ResultIcon = ({ icon = null }) => {
       {renderIcon()}
     </OverlayTrigger>
   );
-};
+}
 
 export default ResultIcon;

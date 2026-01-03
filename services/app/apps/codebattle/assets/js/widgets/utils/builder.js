@@ -43,25 +43,25 @@ export const defaultSignatureByType = {
   [argumentTypes.array]: { type: { name: argumentTypes.array, nested: { name: argumentTypes.integer } } },
 };
 
-export const getDefaultInputSignatureByType = type => ({
+export const getDefaultInputSignatureByType = (type) => ({
   argumentName: '', ...defaultSignatureByType[type],
 });
 
-export const getExamplesFromAsserts = asserts => (
+export const getExamplesFromAsserts = (asserts) => (
   `\`\`\`\n${asserts.map(({ expected, arguments: args }) => {
       const argsStr = JSON.stringify(JSON.parse(args));
       return `${expected} == solution(${argsStr.slice(1, argsStr.length - 1)})`;
   }).join('\n')}`
 );
 
-export const labelTaskParamsWithIds = task => ({
+export const labelTaskParamsWithIds = (task) => ({
   ...task,
   assertsExamples: (task.assertsExamples || []).map((item, index) => ({ ...item, id: index })),
   inputSignature: task.inputSignature.map((item, index) => ({ ...item, id: index })),
   outputSignature: { ...task.outputSignature, id: Date.now() },
 });
 
-export const getTaskTemplates = task => ({
+export const getTaskTemplates = (task) => ({
   state: !task.solution && !task.argumentsGenerator
     ? taskTemplatesStates.none
     : taskTemplatesStates.init,
@@ -73,14 +73,14 @@ export const getTaskTemplates = task => ({
     : {},
 });
 
-export const haveNestedType = type => !!defaultSignatureByType[type].type.nested;
+export const haveNestedType = (type) => !!defaultSignatureByType[type].type.nested;
 
 /**
  *
  * @return {([boolean]|[boolean, string])}
  *
  */
-export const validateTaskName = name => {
+export const validateTaskName = (name) => {
   if (!name || name.length === 0) {
     return [false, 'Name is required'];
   }
@@ -101,7 +101,7 @@ export const validateTaskName = name => {
  * @return {([boolean]|[boolean, string])}
  *
  */
-export const validateDescription = description => {
+export const validateDescription = (description) => {
   if (!description || description.length === 0) {
     return [false, 'Description is required'];
   }
@@ -122,7 +122,7 @@ export const validateDescription = description => {
  * @return {([boolean]|[boolean, string])}
  *
  */
-export const validateInputSignatures = inputSignature => {
+export const validateInputSignatures = (inputSignature) => {
   if (inputSignature.length === 0) {
     return [false, 'At least 1 argument must be described'];
   }

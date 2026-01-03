@@ -22,7 +22,7 @@ const mapViewerStateToWeight = {
   playing: 5,
 };
 
-const getMajorState = metas => metas.reduce(
+const getMajorState = (metas) => metas.reduce(
   (state, item) => (mapViewerStateToWeight[state] > mapViewerStateToWeight[item.state]
     ? state
     : item.state),
@@ -37,7 +37,7 @@ const getUserStateByPath = () => {
   }
 
   if (pathname.startsWith('/games')) {
-    const state = players.some(player => player.id === currentUser.id)
+    const state = players.some((player) => player.id === currentUser.id)
       ? 'playing'
       : 'watching';
 
@@ -61,9 +61,9 @@ const getUserStateByPath = () => {
   return { state: 'online' };
 };
 
-const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => dispatch(actionCreator(camelizeKeys(data)));
+const camelizeKeysAndDispatch = (dispatch, actionCreator) => (data) => dispatch(actionCreator(camelizeKeys(data)));
 
-const redirectToNewGame = data => (_dispatch, getState) => {
+const redirectToNewGame = (data) => (_dispatch, getState) => {
   const { followPaused } = getState().gameUI;
 
   if (!followPaused) {
@@ -71,14 +71,14 @@ const redirectToNewGame = data => (_dispatch, getState) => {
   }
 };
 
-const initPresence = followId => dispatch => {
+const initPresence = (followId) => (dispatch) => {
   channel = new Channel('main', {
     ...getUserStateByPath(),
     followId,
   });
   channel.syncPresence(
-    list => {
-      const updatedList = list.map(userInfo => ({
+    (list) => {
+      const updatedList = list.map((userInfo) => ({
         ...userInfo,
         currentState: getMajorState(userInfo.userPresence),
       }));
@@ -95,28 +95,28 @@ const initPresence = followId => dispatch => {
   return channel
     .addListener(
       'user:game_created',
-      data => {
+      (data) => {
         camelizeKeysAndDispatch(dispatch, actions.setActiveGameId)(data);
         dispatch(redirectToNewGame(camelizeKeys(data)));
       },
     ).addListener(
       channelTopics.tournamentActivated,
-      data => {
+      (data) => {
         camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
       },
     ).addListener(
       channelTopics.tournamentCanceled,
-      data => {
+      (data) => {
         camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
       },
     );
 };
 
-export const changePresenceState = state => () => {
+export const changePresenceState = (state) => () => {
   channel.push('change_presence_state', { state });
 };
 
-export const changePresenceUser = user => () => {
+export const changePresenceUser = (user) => () => {
   channel.push('change_presence_user', { user });
 };
 
@@ -126,19 +126,19 @@ export const banPlayer = (userId, tournamentId, onSuccess, onError) => () => {
     .receive('error', onError);
 };
 
-export const changeReportStatus = (reportId, status) => dispatch => {
+export const changeReportStatus = (reportId, status) => (dispatch) => {
   channel.push('report:status:update', { reportId, status })
-    .receive('ok', payload => {
+    .receive('ok', (payload) => {
       const report = camelizeKeys(payload.report);
       dispatch(actions.updateReport(report));
     })
-    .receive('error', payload => {
+    .receive('error', (payload) => {
       console.error(payload);
     });
 };
 
-export const followUser = userId => (dispatch, getState) => {
-  channel.push('user:follow', { userId }).receive('ok', payload => {
+export const followUser = (userId) => (dispatch, getState) => {
+  channel.push('user:follow', { userId }).receive('ok', (payload) => {
     const data = camelizeKeys(payload);
 
     camelizeKeysAndDispatch(dispatch, actions.followUser)(data);
@@ -155,16 +155,16 @@ export const followUser = userId => (dispatch, getState) => {
   });
 };
 
-export const unfollowUser = userId => dispatch => {
+export const unfollowUser = (userId) => (dispatch) => {
   channel.push('user:unfollow', { userId });
   camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
 };
 
-export const reportOnPlayer = (playerId, gameId, onSuccess, onError) => dispatch => {
-  channel.push(channelMethods.reportOnPlayer, { playerId, gameId }).receive('ok', payload => {
+export const reportOnPlayer = (playerId, gameId, onSuccess, onError) => (dispatch) => {
+  channel.push(channelMethods.reportOnPlayer, { playerId, gameId }).receive('ok', (payload) => {
     dispatch(actions.addReport(payload.report));
     onSuccess();
-  }).receive('error', payload => {
+  }).receive('error', (payload) => {
     console.error(payload);
     onError();
   });

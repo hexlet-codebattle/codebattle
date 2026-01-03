@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 
 const { createFilter } = jest.requireActual('react-select');
 
-const Select = ({ options, onChange, filterOption }) => {
+function Select({ options, onChange, filterOption }) {
   const [selectInput, setSelectInput] = useState('task');
 
   return (
     <div>
       {options
         .filter(({ name }) => (filterOption({ data: { name } }, selectInput)))
-        .map(option => (
+        .map((option) => (
           <button
             type="button"
             onClick={() => onChange(option)}
@@ -27,7 +27,7 @@ const Select = ({ options, onChange, filterOption }) => {
       </button>
     </div>
   );
-};
+}
 
 export { createFilter };
 export default Select;

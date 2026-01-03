@@ -10,11 +10,11 @@ import Channel from './Channel';
 
 const channel = new Channel();
 
-export const fetchState = currentUserId => dispatch => {
+export const fetchState = (currentUserId) => (dispatch) => {
   const channelName = 'lobby';
   channel.setupChannel(channelName);
 
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
+  const camelizeKeysAndDispatch = (actionCreator) => (data) => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
@@ -22,7 +22,7 @@ export const fetchState = currentUserId => dispatch => {
     dispatch(actions.updateLobbyChannelState(false));
   });
 
-  const handleGameUpsert = data => {
+  const handleGameUpsert = (data) => {
     const {
       game: { players, id, state: gameState },
     } = data;
@@ -40,11 +40,11 @@ export const fetchState = currentUserId => dispatch => {
     }
   };
 
-  const handleGameEditorLangChanged = data => {
+  const handleGameEditorLangChanged = (data) => {
     dispatch(actions.updateEditorLang(data));
   };
 
-  const handleGameCheckStarted = data => {
+  const handleGameCheckStarted = (data) => {
     const { gameId, userId } = data;
     const payload = { gameId, userId, checkResult: { status: 'started' } };
 
@@ -69,7 +69,7 @@ export const fetchState = currentUserId => dispatch => {
     );
 };
 
-export const openDirect = (userId, name) => dispatch => {
+export const openDirect = (userId, name) => (dispatch) => {
   const expireTo = calculateExpireDate();
   const roomData = {
     targetUserId: userId,
@@ -85,38 +85,38 @@ export const openDirect = (userId, name) => dispatch => {
   dispatch(actions.createPrivateRoom(roomData));
 };
 
-export const cancelGame = gameId => () => {
+export const cancelGame = (gameId) => () => {
   channel
     .push(channelMethods.gameCancel, { gameId });
 };
 
-export const createGame = params => {
+export const createGame = (params) => {
   channel
     .push(channelMethods.gameCreate, params);
 };
 
-export const createExperimentGame = params => {
+export const createExperimentGame = (params) => {
   channel
     .push(channelMethods.experimentGameCreate, params)
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
-export const createInvite = invite => {
+export const createInvite = (invite) => {
   channel
     .push(channelMethods.gameCreateInvite, invite);
 };
 
-export const acceptInvite = invite => () => {
+export const acceptInvite = (invite) => () => {
   channel
     .push(channelMethods.gameAcceptInvite, invite);
 };
 
-export const declineInvite = invite => () => {
+export const declineInvite = (invite) => () => {
   channel
     .push(channelMethods.gameDeclineInvite, invite);
 };
 
-export const cancelInvite = invite => () => {
+export const cancelInvite = (invite) => () => {
   channel
     .push(channelMethods.gameCancelInvite, invite);
 };

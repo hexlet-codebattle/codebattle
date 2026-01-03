@@ -10,7 +10,7 @@ import * as selectors from '../selectors';
 import LanguageIcon from './LanguageIcon';
 
 export const customStyle = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     color: 'white',
     height: '33px',
@@ -24,35 +24,35 @@ export const customStyle = {
       borderColor: '#4c4c5a',
     },
   }),
-  singleValue: provider => ({
+  singleValue: (provider) => ({
     ...provider,
     color: 'white',
   }),
-  indicatorsContainer: provided => ({
+  indicatorsContainer: (provided) => ({
     ...provided,
     height: '29px',
   }),
-  clearIndicator: provided => ({
+  clearIndicator: (provided) => ({
     ...provided,
     padding: '5px',
   }),
-  dropdownIndicator: provided => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     color: 'white',
     padding: '5px',
   }),
-  input: provided => ({
+  input: (provided) => ({
     ...provided,
     color: 'white',
     height: '21px',
   }),
-  menu: provided => ({
+  menu: (provided) => ({
     ...provided,
     color: 'white',
     backgroundColor: 'rgba(0, 0, 0, .3)',
     backdropFilter: 'blur(16px)',
   }),
-  option: provided => ({
+  option: (provided) => ({
     ...provided,
     color: 'white',
     backgroundColor: 'transparent',
@@ -69,23 +69,25 @@ export const customStyle = {
   }),
 };
 
-const LangTitle = ({ slug, name, version }) => (
-  <div translate="no" className="d-inline-flex align-items-center text-nowrap">
-    <LanguageIcon lang={slug} className="ml-1" />
-    <span className="text-white mx-1">{capitalize(name)}</span>
-    <span className="text-white">{version}</span>
-  </div>
-);
+function LangTitle({ slug, name, version }) {
+  return (
+    <div translate="no" className="d-inline-flex align-items-center text-nowrap">
+      <LanguageIcon lang={slug} className="ml-1" />
+      <span className="text-white mx-1">{capitalize(name)}</span>
+      <span className="text-white">{version}</span>
+    </div>
+  );
+}
 
 function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
   const langs = useSelector(selectors.editorLangsSelector);
 
   const [[currentLang], otherLangs] = useMemo(
-    () => partition(langs, lang => lang.slug === currentLangSlug),
+    () => partition(langs, (lang) => lang.slug === currentLangSlug),
     [langs, currentLangSlug],
   );
   const options = useMemo(
-    () => otherLangs.map(lang => ({
+    () => otherLangs.map((lang) => ({
       label: <LangTitle {...lang} />,
       value: lang.name,
     })),
@@ -105,15 +107,13 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
   }
 
   return (
-    <>
-      <Select
-        styles={customStyle}
-        className="guide-LanguagePicker"
-        defaultValue={defaultLang}
-        onChange={changeLang}
-        options={options}
-      />
-    </>
+    <Select
+      styles={customStyle}
+      className="guide-LanguagePicker"
+      defaultValue={defaultLang}
+      onChange={changeLang}
+      options={options}
+    />
   );
 }
 

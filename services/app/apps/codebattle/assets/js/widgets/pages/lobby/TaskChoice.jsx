@@ -26,7 +26,7 @@ const taskTags = Gon.getAsset('task_tags');
 const groupTasksByLevelByTags = (allTasks, allTags) => {
   const [restTag, ...popularTags] = allTags.slice().reverse();
 
-  const groupTasksByTags = tasks => {
+  const groupTasksByTags = (tasks) => {
     const tasksByPopularTags = popularTags.reduce((acc, tag) => ({
       ...acc,
       [tag]: tasks.filter(({ tags }) => tags.includes(tag)),
@@ -56,10 +56,10 @@ function TaskSelect({ value, onChange, options }) {
   useEffect(() => {
     axios
       .get(`/api/v1/user/${currentUserId}/stats`)
-      .then(response => {
+      .then((response) => {
         setAvatarUrl(response.data.user.avatar_url);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [currentUserId, dispatch]);
@@ -70,7 +70,7 @@ function TaskSelect({ value, onChange, options }) {
     random: { icon: faShuffle, transform: 'down-1' },
   };
 
-  const renderOptionLabel = task => (
+  const renderOptionLabel = (task) => (
     <div className="d-flex align-items-center">
       {task.creatorId === currentUserId ? (
         <img
@@ -94,11 +94,11 @@ function TaskSelect({ value, onChange, options }) {
   return (
     <Select
       styles={{
-        menu: base => ({
+        menu: (base) => ({
           ...base,
           backgroundColor: '#1c1c24',
         }),
-        container: base => ({
+        container: (base) => ({
           ...base,
           backgroundColor: '#1c1c24',
           color: 'white',
@@ -109,7 +109,7 @@ function TaskSelect({ value, onChange, options }) {
             borderColor: '#e04d5b',
           },
         }),
-        indicatorSeparator: base => ({
+        indicatorSeparator: (base) => ({
           ...base,
           backgroundColor: '#dc3545',
           ':hover': {
@@ -118,7 +118,7 @@ function TaskSelect({ value, onChange, options }) {
             backgroundColor: '#e04d5b',
           },
         }),
-        dropdownIndicator: base => ({
+        dropdownIndicator: (base) => ({
           ...base,
           color: '#dc3545',
           ':hover': {
@@ -127,7 +127,7 @@ function TaskSelect({ value, onChange, options }) {
             color: '#e04d5b',
           },
         }),
-        control: base => ({
+        control: (base) => ({
           ...base,
           backgroundColor: '#1c1c24',
           color: 'white',
@@ -138,12 +138,12 @@ function TaskSelect({ value, onChange, options }) {
             borderColor: '#e04d5b',
           },
         }),
-        singleValue: base => ({
+        singleValue: (base) => ({
           ...base,
           backgroundColor: '#1c1c24',
           color: 'white',
         }),
-        option: base => ({
+        option: (base) => ({
           ...base,
           backgroundColor: '#1c1c24',
           color: 'white',
@@ -159,9 +159,9 @@ function TaskSelect({ value, onChange, options }) {
       value={value}
       onChange={onChange}
       options={options}
-      getOptionLabel={task => renderOptionLabel(task)}
-      getOptionValue={task => task.id}
-      filterOption={createFilter({ stringify: option => option.data.name })}
+      getOptionLabel={(task) => renderOptionLabel(task)}
+      getOptionValue={(task) => task.id}
+      filterOption={createFilter({ stringify: (option) => option.data.name })}
     />
   );
 }
@@ -169,7 +169,7 @@ function TaskSelect({ value, onChange, options }) {
 function TagButtonGroup({
   tags, value, onChange, disabled,
 }) {
-  const getTagClassName = tag => {
+  const getTagClassName = (tag) => {
     const isTagMarked = value.includes(tag);
     return cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
       'bg-orange text-white': isTagMarked,
@@ -177,14 +177,14 @@ function TagButtonGroup({
     });
   };
 
-  const toggleTagButton = tag => {
-    const newValue = value.includes(tag) ? value.filter(item => item !== tag) : value.concat(tag);
+  const toggleTagButton = (tag) => {
+    const newValue = value.includes(tag) ? value.filter((item) => item !== tag) : value.concat(tag);
     onChange(newValue);
   };
 
   return (
     <div className="d-flex flex-wrap border border-danger pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
-      {tags.map(tag => (
+      {tags.map((tag) => (
         <button
           key={tag}
           type="button"
@@ -216,7 +216,7 @@ const TaskChoice = memo(({
         const { tasks } = camelizeKeys(data);
         setGroupedTasks(groupTasksByLevelByTags(tasks, taskTags));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
@@ -227,7 +227,7 @@ const TaskChoice = memo(({
   const tasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
   const filteredTasks = isShowAllTasks
     ? tasksByLevel.all
-    : uniqBy(chosenTags.flatMap(tag => tasksByLevel[tag]), 'id');
+    : uniqBy(chosenTags.flatMap((tag) => tasksByLevel[tag]), 'id');
   const randomTaskName = i18n.t('random task (%{total} available)', { total: filteredTasks.length });
   const randomTask = { id: null, name: randomTaskName, origin: 'random' };
   const taskSelectValue = isTaskChosen ? chosenTask : randomTask;

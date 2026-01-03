@@ -18,11 +18,11 @@ import { makeGameUrl } from '@/utils/urlBuilders';
 
 import i18next from '../../../i18n';
 
-const openNextMatch = nextMatch => {
+const openNextMatch = (nextMatch) => {
   window.location.replace(makeGameUrl(nextMatch.gameId));
 };
 const begin = 15 * 1000;
-const getTimerProgress = remaining => {
+const getTimerProgress = (remaining) => {
   if (remaining <= 0) {
     return 0;
   }
@@ -50,7 +50,7 @@ function MatchConfirmationModal({
     () => Object.values(matches)
       .sort((a, b) => b.id - a.id)
       .find(
-        match => match.state === 'playing'
+        (match) => match.state === 'playing'
           && match.playerIds.includes(currentUserId)
           && currentRoundPosition === match.roundPosition,
       ),
@@ -96,7 +96,7 @@ function MatchConfirmationModal({
 
     if (nextMatch?.gameId && !redirectImmediatly) {
       const timerId = window.setInterval(() => {
-        setRemainingTime(time => {
+        setRemainingTime((time) => {
           if (time === null) {
             return begin;
           }

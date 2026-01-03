@@ -19,16 +19,16 @@ import GameStateBadge from './GameStateBadge';
 // import LiveTournaments from './LiveTournaments';
 import Players from './Players';
 
-const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
+const isActiveGame = (game) => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
-const ActiveGames = ({
+function ActiveGames({
   games, currentUserId, isGuest, isOnline,
-}) => {
+}) {
   if (!games) {
     return null;
   }
 
-  const filterGames = game => {
+  const filterGames = (game) => {
     if (game.visibilityType === 'hidden') {
       return !!find(game.players, { id: currentUserId });
     }
@@ -41,14 +41,14 @@ const ActiveGames = ({
   }
 
   const gamesSortByLevel = sortBy(filtetedGames, [
-    game => levelRatio[game.level],
+    (game) => levelRatio[game.level],
   ]);
 
   const {
     gamesWithCurrentUser = [],
     gamesWithActiveUsers = [],
     gamesWithBots = [],
-  } = groupBy(gamesSortByLevel, game => {
+  } = groupBy(gamesSortByLevel, (game) => {
     const isCurrentUserPlay = game.players.some(
       ({ id }) => id === currentUserId,
     );
@@ -83,7 +83,7 @@ const ActiveGames = ({
           </thead>
           <tbody>
             {sortedGames.map(
-              game => isActiveGame(game) && (
+              (game) => isActiveGame(game) && (
                 <tr key={game.id} className="game-item">
                   <td className="cb-level-badge align-middle">
                     <div className="p-3 bg-gray cb-rounded">
@@ -117,7 +117,7 @@ const ActiveGames = ({
         </table>
       </div>
       <HorizontalScrollControls className="d-md-none m-2">
-        {sortedGames.map(game => isActiveGame(game) && (
+        {sortedGames.map((game) => isActiveGame(game) && (
           <GameCard
             key={`card-${game.id}`}
             type="active"
@@ -130,6 +130,6 @@ const ActiveGames = ({
       </HorizontalScrollControls>
     </>
   );
-};
+}
 
 export default ActiveGames;

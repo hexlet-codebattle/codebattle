@@ -1,7 +1,9 @@
 // import React from 'react';
 // import Table from 'react-bootstrap/Table';
 
-const Announcement = () => null;
+function Announcement() {
+  return null;
+}
   // <Table striped borderless className="border border-dark m-0">
   //   <thead>
   //     <tr className="bg-gray">

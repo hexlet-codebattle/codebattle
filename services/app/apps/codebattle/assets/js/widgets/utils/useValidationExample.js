@@ -28,13 +28,13 @@ const isValidValueToSignature = (value, signature) => {
       return isBoolean(value);
     }
     case argumentTypes.array: {
-      return isArray(value) && !value.some(item => !isValidValueToSignature(item, signature.nested));
+      return isArray(value) && !value.some((item) => !isValidValueToSignature(item, signature.nested));
     }
     case argumentTypes.hash: {
       return !isArray(value)
         && isObject(value)
-        && !Object.keys(value).some(item => item.length === 0)
-        && !Object.values(value).some(item => !isValidValueToSignature(item, signature.nested));
+        && !Object.keys(value).some((item) => item.length === 0)
+        && !Object.values(value).some((item) => !isValidValueToSignature(item, signature.nested));
     }
     default: {
       return false;

@@ -12,7 +12,7 @@ import {
 
 const getName = (name = '') => (name || '?');
 
-const SignatureTrack = ({
+function SignatureTrack({
   items = [],
   selected = {},
   selectedRef,
@@ -21,29 +21,30 @@ const SignatureTrack = ({
   handleAdd,
   handleEdit,
   handleDelete,
-}) => (
-  <>
-    {items.map(item => (
-      <div
-        key={item.id}
-        className={cn(itemClassName, {
+}) {
+  return (
+    <>
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className={cn(itemClassName, {
           'border-warning': selected.id === item.id,
           'border-danger': selected.id !== item.id && !valid,
         })}
-        role="group"
-      >
-        <div
-          ref={selectedRef}
-          title={`${item.argumentName} (${item.type.name})`}
-          className={itemActionClassName}
+          role="group"
         >
-          {
+          <div
+            ref={selectedRef}
+            title={`${item.argumentName} (${item.type.name})`}
+            className={itemActionClassName}
+          >
+            {
             selected?.id === item.id
               ? `${getName(selected.argumentName)} (${selected.type.name})`
               : `${getName(item.argumentName)} (${item.type.name})`
           }
-        </div>
-        {editable && selected.id !== item.id && (
+          </div>
+          {editable && selected.id !== item.id && (
           <>
             <button
               type="button"
@@ -63,9 +64,9 @@ const SignatureTrack = ({
             </button>
           </>
         )}
-      </div>
+        </div>
     ))}
-    {!isEmpty(selected) && !items.some(item => item.id === selected.id) && (
+      {!isEmpty(selected) && !items.some((item) => item.id === selected.id) && (
       <div key={selected.id} className={`${itemClassName} border-warning`} role="group">
         <div
           title="New input"
@@ -75,7 +76,7 @@ const SignatureTrack = ({
         </div>
       </div>
     )}
-    {!isEmpty(selected) && items.some(item => item.id === selected.id) && items.length !== 3 && (
+      {!isEmpty(selected) && items.some((item) => item.id === selected.id) && items.length !== 3 && (
       <button
         type="button"
         title="Add input parameter"
@@ -85,7 +86,8 @@ const SignatureTrack = ({
         <FontAwesomeIcon icon="plus" />
       </button>
     )}
-  </>
-);
+    </>
+  );
+}
 
 export default SignatureTrack;

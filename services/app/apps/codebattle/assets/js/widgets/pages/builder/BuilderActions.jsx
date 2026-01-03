@@ -86,7 +86,7 @@ function BuilderActions({
   const isOwner = useSelector(selectors.isTaskOwner);
 
   const task = useSelector(
-    state => state.builder.task,
+    (state) => state.builder.task,
   );
 
   const notPublished = task.state === taskStateCodes.draft

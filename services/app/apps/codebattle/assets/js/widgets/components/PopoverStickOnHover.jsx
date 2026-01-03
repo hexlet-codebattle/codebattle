@@ -34,10 +34,10 @@ function PopoverStickOnHover({
     setShowPopover(false);
   };
 
-  const displayChild = React.Children.map(children, child => React.cloneElement(child, {
+  const displayChild = React.Children.map(children, (child) => React.cloneElement(child, {
     onMouseEnter: handleMouseEnter,
     onMouseLeave: handleMouseLeave,
-    ref: node => {
+    ref: (node) => {
       childNode.current = node;
       const { ref } = child;
       if (typeof ref === 'function') {

@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 const isClient = typeof window === 'object';
 const defaultTarget = isClient ? window : null;
-const isListenerType1 = target => !!target.addEventListener;
-const isListenerType2 = target => !!target.on;
+const isListenerType1 = (target) => !!target.addEventListener;
+const isListenerType2 = (target) => !!target.on;
 const useEvent = (name, handler, target = defaultTarget, options) => {
     useEffect(() => {
         if (!handler) {

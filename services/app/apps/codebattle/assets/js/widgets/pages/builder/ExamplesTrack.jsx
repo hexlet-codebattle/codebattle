@@ -12,7 +12,7 @@ import {
 
 const getValueText = (value = '') => (value || '?');
 
-const ExamplesTrack = ({
+function ExamplesTrack({
   items = [],
   selected = {},
   selectedRef,
@@ -21,29 +21,30 @@ const ExamplesTrack = ({
   handleAdd,
   handleEdit,
   handleDelete,
-}) => (
-  <>
-    {items.map(item => (
-      <div
-        key={item.id}
-        className={cn(itemClassName, {
+}) {
+  return (
+    <>
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className={cn(itemClassName, {
           'border-warning': selected?.id === item.id,
           'border-danger': selected?.id !== item.id && !valid,
         })}
-        role="group"
-      >
-        <div
-          ref={selectedRef}
-          title={`Example: ${item.id}`}
-          className={itemActionClassName}
+          role="group"
         >
-          {
+          <div
+            ref={selectedRef}
+            title={`Example: ${item.id}`}
+            className={itemActionClassName}
+          >
+            {
             selected?.id === item.id
               ? `${getValueText(selected?.arguments)} -> ${getValueText(selected?.expected)}`
               : `${getValueText(item.arguments)} -> ${getValueText(item.expected)}`
           }
-        </div>
-        {editable && selected?.id !== item.id && (
+          </div>
+          {editable && selected?.id !== item.id && (
           <>
             <button
               type="button"
@@ -63,9 +64,9 @@ const ExamplesTrack = ({
             </button>
           </>
         )}
-      </div>
+        </div>
     ))}
-    {!isEmpty(selected) && !items.some(item => item.id === selected.id) && (
+      {!isEmpty(selected) && !items.some((item) => item.id === selected.id) && (
       <div
         key={selected.id}
         className={`${itemClassName} border-warning`}
@@ -79,7 +80,7 @@ const ExamplesTrack = ({
         </div>
       </div>
     )}
-    {!isEmpty(selected) && items.some(item => item.id === selected.id) && (
+      {!isEmpty(selected) && items.some((item) => item.id === selected.id) && (
       <button
         type="button"
         title="Add input parameter"
@@ -89,7 +90,8 @@ const ExamplesTrack = ({
         <FontAwesomeIcon icon="plus" />
       </button>
     )}
-  </>
-);
+    </>
+  );
+}
 
 export default ExamplesTrack;

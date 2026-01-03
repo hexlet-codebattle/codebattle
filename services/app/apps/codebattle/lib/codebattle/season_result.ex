@@ -21,6 +21,7 @@ defmodule Codebattle.SeasonResult do
              :user_id,
              :user_name,
              :user_lang,
+             :avatar_url,
              :clan_id,
              :clan_name,
              :place,
@@ -40,6 +41,7 @@ defmodule Codebattle.SeasonResult do
     field(:user_id, :integer)
     field(:user_name, :string)
     field(:user_lang, :string)
+    field(:avatar_url, :string, virtual: true)
     field(:clan_id, :integer)
     field(:clan_name, :string)
     field(:place, :integer, default: 0)
@@ -57,26 +59,41 @@ defmodule Codebattle.SeasonResult do
 
   @spec get_by_season(pos_integer()) :: [t()]
   def get_by_season(season_id) do
-    __MODULE__
-    |> where([sr], sr.season_id == ^season_id)
-    |> order_by([sr], asc: sr.place)
-    |> Repo.all()
+    Repo.all(
+      from(sr in __MODULE__,
+        left_join: u in Codebattle.User,
+        on: u.id == sr.user_id,
+        where: sr.season_id == ^season_id,
+        order_by: [asc: sr.place],
+        select: %{sr | avatar_url: u.avatar_url}
+      )
+    )
   end
 
   @spec get_leaderboard(pos_integer(), pos_integer()) :: [t()]
   def get_leaderboard(season_id, limit \\ 100) do
-    __MODULE__
-    |> where([sr], sr.season_id == ^season_id)
-    |> order_by([sr], asc: sr.place)
-    |> limit(^limit)
-    |> Repo.all()
+    Repo.all(
+      from(sr in __MODULE__,
+        left_join: u in Codebattle.User,
+        on: u.id == sr.user_id,
+        where: sr.season_id == ^season_id,
+        order_by: [asc: sr.place],
+        limit: ^limit,
+        select: %{sr | avatar_url: u.avatar_url}
+      )
+    )
   end
 
   @spec get_by_user(pos_integer(), pos_integer()) :: t() | nil
   def get_by_user(season_id, user_id) do
-    __MODULE__
-    |> where([sr], sr.season_id == ^season_id and sr.user_id == ^user_id)
-    |> Repo.one()
+    Repo.one(
+      from(sr in __MODULE__,
+        left_join: u in Codebattle.User,
+        on: u.id == sr.user_id,
+        where: sr.season_id == ^season_id and sr.user_id == ^user_id,
+        select: %{sr | avatar_url: u.avatar_url}
+      )
+    )
   end
 
   @doc """
@@ -90,12 +107,17 @@ defmodule Codebattle.SeasonResult do
         []
 
       %{place: place} ->
-        __MODULE__
-        |> where([sr], sr.season_id == ^season_id)
-        |> where([sr], sr.place >= ^(place - limit) and sr.place <= ^(place + limit))
-        |> where([sr], sr.user_id != ^user_id)
-        |> order_by([sr], asc: sr.place)
-        |> Repo.all()
+        Repo.all(
+          from(sr in __MODULE__,
+            left_join: u in Codebattle.User,
+            on: u.id == sr.user_id,
+            where: sr.season_id == ^season_id,
+            where: sr.place >= ^(place - limit) and sr.place <= ^(place + limit),
+            where: sr.user_id != ^user_id,
+            order_by: [asc: sr.place],
+            select: %{sr | avatar_url: u.avatar_url}
+          )
+        )
     end
   end
 
@@ -104,11 +126,16 @@ defmodule Codebattle.SeasonResult do
   """
   @spec get_top_users(pos_integer(), pos_integer()) :: [t()]
   def get_top_users(season_id, limit) do
-    __MODULE__
-    |> where([sr], sr.season_id == ^season_id)
-    |> where([sr], sr.place >= 1 and sr.place <= ^limit)
-    |> order_by([sr], asc: sr.place)
-    |> Repo.all()
+    Repo.all(
+      from(sr in __MODULE__,
+        left_join: u in Codebattle.User,
+        on: u.id == sr.user_id,
+        where: sr.season_id == ^season_id,
+        where: sr.place >= 1 and sr.place <= ^limit,
+        order_by: [asc: sr.place],
+        select: %{sr | avatar_url: u.avatar_url}
+      )
+    )
   end
 
   @spec aggregate_season_results(Season.t() | pos_integer()) :: {:ok, integer()} | {:error, any()}
@@ -242,6 +269,180 @@ defmodule Codebattle.SeasonResult do
     |> where([sr], sr.season_id == ^season_id)
     |> Repo.delete_all()
   end
+
+  @doc """
+  Get detailed player stats for a season, including tournament breakdown by grade.
+  This is an expensive query, so it should only be called on-demand for a single player.
+  """
+  @spec get_player_detailed_stats(pos_integer(), pos_integer()) :: map() | nil
+  def get_player_detailed_stats(season_id, user_id) do
+    season = Season.get!(season_id)
+    season_result = get_by_user(season_id, user_id)
+
+    case season_result do
+      nil ->
+        nil
+
+      _ ->
+        # Get tournament stats grouped by grade
+        grade_stats = get_grade_stats(season, user_id)
+
+        # Get recent tournament performances (last 10)
+        recent_tournaments = get_recent_tournaments(season, user_id)
+
+        # Get performance trend over tournaments
+        performance_trend = get_performance_trend(season, user_id)
+
+        %{
+          season_result: season_result,
+          grade_stats: grade_stats,
+          recent_tournaments: recent_tournaments,
+          performance_trend: performance_trend
+        }
+    end
+  end
+
+  @spec get_grade_stats(Season.t(), pos_integer()) :: [map()]
+  defp get_grade_stats(season, user_id) do
+    result =
+      Repo.query!(
+        """
+        SELECT
+          t.grade,
+          COUNT(DISTINCT tur.tournament_id)::integer AS tournaments_count,
+          SUM(tur.points)::integer AS total_points,
+          SUM(tur.score)::integer AS total_score,
+          SUM(tur.games_count)::integer AS total_games,
+          SUM(tur.wins_count)::integer AS total_wins,
+          MIN(tur.place)::integer AS best_place,
+          AVG(tur.place)::numeric(10,2) AS avg_place,
+          SUM(tur.total_time)::integer AS total_time,
+          ARRAY_AGG(DISTINCT tur.place ORDER BY tur.place) FILTER (WHERE tur.place <= 3) AS podium_finishes
+        FROM tournament_user_results tur
+        INNER JOIN tournaments t ON t.id = tur.tournament_id
+        WHERE tur.user_id = $1
+          AND t.grade != 'open'
+          AND t.state = 'finished'
+          AND t.started_at::date >= $2::date
+          AND t.started_at::date <= $3::date
+        GROUP BY t.grade
+        ORDER BY
+          CASE t.grade
+            WHEN 'grand_slam' THEN 1
+            WHEN 'masters' THEN 2
+            WHEN 'elite' THEN 3
+            WHEN 'pro' THEN 4
+            WHEN 'challenger' THEN 5
+            WHEN 'rookie' THEN 6
+            ELSE 7
+          END
+        """,
+        [user_id, season.starts_at, season.ends_at]
+      )
+
+    Enum.map(result.rows, fn row ->
+      %{
+        grade: Enum.at(row, 0),
+        tournaments_count: Enum.at(row, 1) || 0,
+        total_points: Enum.at(row, 2) || 0,
+        total_score: Enum.at(row, 3) || 0,
+        total_games: Enum.at(row, 4) || 0,
+        total_wins: Enum.at(row, 5) || 0,
+        best_place: Enum.at(row, 6),
+        avg_place: row |> Enum.at(7) |> to_float(),
+        total_time: Enum.at(row, 8) || 0,
+        podium_finishes: Enum.at(row, 9) || []
+      }
+    end)
+  end
+
+  @spec get_recent_tournaments(Season.t(), pos_integer()) :: [map()]
+  defp get_recent_tournaments(season, user_id) do
+    result =
+      Repo.query!(
+        """
+        SELECT
+          t.id AS tournament_id,
+          t.name AS tournament_name,
+          t.grade,
+          t.started_at,
+          tur.place,
+          tur.points,
+          tur.score,
+          tur.games_count,
+          tur.wins_count,
+          tur.total_time,
+          (SELECT COUNT(*) FROM tournament_user_results WHERE tournament_id = t.id)::integer AS total_participants
+        FROM tournament_user_results tur
+        INNER JOIN tournaments t ON t.id = tur.tournament_id
+        WHERE tur.user_id = $1
+          AND t.grade != 'open'
+          AND t.state = 'finished'
+          AND t.started_at::date >= $2::date
+          AND t.started_at::date <= $3::date
+        ORDER BY t.started_at DESC
+        LIMIT 10
+        """,
+        [user_id, season.starts_at, season.ends_at]
+      )
+
+    Enum.map(result.rows, fn row ->
+      %{
+        tournament_id: Enum.at(row, 0),
+        tournament_name: Enum.at(row, 1),
+        grade: Enum.at(row, 2),
+        started_at: Enum.at(row, 3),
+        place: Enum.at(row, 4),
+        points: Enum.at(row, 5),
+        score: Enum.at(row, 6),
+        games_count: Enum.at(row, 7),
+        wins_count: Enum.at(row, 8),
+        total_time: Enum.at(row, 9),
+        total_participants: Enum.at(row, 10)
+      }
+    end)
+  end
+
+  @spec get_performance_trend(Season.t(), pos_integer()) :: [map()]
+  defp get_performance_trend(season, user_id) do
+    result =
+      Repo.query!(
+        """
+        SELECT
+          DATE_TRUNC('week', t.started_at)::date AS week,
+          COUNT(DISTINCT tur.tournament_id)::integer AS tournaments_count,
+          SUM(tur.points)::integer AS total_points,
+          SUM(tur.wins_count)::integer AS total_wins,
+          SUM(tur.games_count)::integer AS total_games,
+          AVG(tur.place)::numeric(10,2) AS avg_place
+        FROM tournament_user_results tur
+        INNER JOIN tournaments t ON t.id = tur.tournament_id
+        WHERE tur.user_id = $1
+          AND t.grade != 'open'
+          AND t.state = 'finished'
+          AND t.started_at::date >= $2::date
+          AND t.started_at::date <= $3::date
+        GROUP BY DATE_TRUNC('week', t.started_at)
+        ORDER BY week
+        """,
+        [user_id, season.starts_at, season.ends_at]
+      )
+
+    Enum.map(result.rows, fn row ->
+      %{
+        week: Enum.at(row, 0),
+        tournaments_count: Enum.at(row, 1) || 0,
+        total_points: Enum.at(row, 2) || 0,
+        total_wins: Enum.at(row, 3) || 0,
+        total_games: Enum.at(row, 4) || 0,
+        avg_place: row |> Enum.at(5) |> to_float()
+      }
+    end)
+  end
+
+  defp to_float(nil), do: nil
+  defp to_float(%Decimal{} = decimal), do: Decimal.to_float(decimal)
+  defp to_float(value), do: value
 
   @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(season_result, attrs \\ %{}) do

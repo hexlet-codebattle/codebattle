@@ -94,34 +94,38 @@ export const renderEditTournament = (containerId, store) => {
 /**
  * Example 3: Direct Component Usage in React Application
  */
-export const TournamentCreatePage = ({ store, taskPackNames, userTimezone }) => (
-  <Provider store={store}>
-    <CreateTournament
-      taskPackNames={taskPackNames}
-      userTimezone={userTimezone}
-      onSuccess={tournament => {
+export function TournamentCreatePage({ store, taskPackNames, userTimezone }) {
+  return (
+    <Provider store={store}>
+      <CreateTournament
+        taskPackNames={taskPackNames}
+        userTimezone={userTimezone}
+        onSuccess={(tournament) => {
         console.log('Tournament created:', tournament);
         // Custom success handler
       }}
-    />
-  </Provider>
-);
+      />
+    </Provider>
+  );
+}
 
-export const TournamentEditPage = ({
+export function TournamentEditPage({
  store, tournamentId, taskPackNames, userTimezone,
-}) => (
-  <Provider store={store}>
-    <EditTournament
-      tournamentId={tournamentId}
-      taskPackNames={taskPackNames}
-      userTimezone={userTimezone}
-      onSuccess={tournament => {
+}) {
+  return (
+    <Provider store={store}>
+      <EditTournament
+        tournamentId={tournamentId}
+        taskPackNames={taskPackNames}
+        userTimezone={userTimezone}
+        onSuccess={(tournament) => {
         console.log('Tournament updated:', tournament);
         // Custom success handler
       }}
-    />
-  </Provider>
-);
+      />
+    </Provider>
+  );
+}
 
 /**
  * API Endpoints Used:

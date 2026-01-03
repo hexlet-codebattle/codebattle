@@ -9,7 +9,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import i18n from '../../i18n';
 import color from '../config/statusColor';
 
-const getMessage = status => {
+const getMessage = (status) => {
   switch (status) {
     case 'error':
       return i18n.t('Solution cannot be executed');
@@ -22,13 +22,15 @@ const getMessage = status => {
   }
 };
 
-const AccordeonBox = ({ children }) => (
-  <div className="accordion border-top cb-border-color" id="accordionExample">
-    {children}
-  </div>
-);
+function AccordeonBox({ children }) {
+  return (
+    <div className="accordion border-top cb-border-color" id="accordionExample">
+      {children}
+    </div>
+  );
+}
 
-const renderFirstAssert = firstAssert => (
+const renderFirstAssert = (firstAssert) => (
   <AccordeonBox.SubMenu statusColor={color[firstAssert.status]} assert={firstAssert} hasOutput={firstAssert.output}>
     <AccordeonBox.Item output={firstAssert.output} />
   </AccordeonBox.SubMenu>
@@ -78,9 +80,7 @@ function Menu({
           {firstAssert && renderFirstAssert(firstAssert)}
         </>
       ) : (
-        <>
-          <span className={`badge badge-${statusColor}`}>{message}</span>
-        </>
+        <span className={`badge badge-${statusColor}`}>{message}</span>
       )}
       <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
         <div className="list-group list-group-flush">{children}</div>
@@ -168,18 +168,16 @@ function SubMenu({
           </span>
         </pre>
         {hasOutput && (
-          <>
-            <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
+          <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
               {children}
-            </div>
-          </>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-const Item = ({ output, fontSize }) => {
+function Item({ output, fontSize }) {
   if (output === '') {
     return null;
   }
@@ -199,7 +197,7 @@ const Item = ({ output, fontSize }) => {
       </pre>
     </div>
   );
-};
+}
 
 AccordeonBox.Item = Item;
 AccordeonBox.Menu = Menu;

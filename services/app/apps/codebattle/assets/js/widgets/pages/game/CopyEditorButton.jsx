@@ -4,7 +4,7 @@ import copy from 'copy-to-clipboard';
 
 import i18n from '../../../i18n';
 
-const CopyEditorButton = ({ editor }) => {
+function CopyEditorButton({ editor }) {
   const className = 'btn btn-sm btn-secondary cb-btn-secondary cb-rounded mx-1';
   const text = i18n.t('Copy');
 
@@ -22,6 +22,6 @@ const CopyEditorButton = ({ editor }) => {
       {text}
     </button>
   );
-};
+}
 
 export default CopyEditorButton;

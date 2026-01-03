@@ -37,7 +37,7 @@ const playSound = (type, volume) => {
   player[type].play('win', volume);
 };
 
-const getFieldNameByView = view => {
+const getFieldNameByView = (view) => {
   switch (view) {
     case views.code: return 'lang';
     case views.css: return 'styleLang';
@@ -54,7 +54,7 @@ const getPlaceholder = ({ disabled, placeholder }) => {
   return 'No access yet';
 };
 
-const TextInput = ({ label, ...props }) => {
+function TextInput({ label, ...props }) {
   const [field, meta] = useField(props);
   const {
     name, disabled, hint, hintHref = '',
@@ -81,35 +81,37 @@ const TextInput = ({ label, ...props }) => {
       )}
     </div>
   );
-};
+}
 
-const LanguageSelect = ({
+function LanguageSelect({
   lang, view, currentView, items,
-}) => (
-  <div className={cn('col-lg-4', { hidden: view !== currentView })}>
-    <div className="h6">Your weapon</div>
-    <div className="card cb-card p-3">
-      <div className="d-flex align-items-center">
-        <LanguageIcon className="w-100 h-100 mb-2" lang={lang} />
-        <Field
-          as="select"
-          data-testid={`${view}-langSelect`}
-          aria-label="Programming language select"
-          name={getFieldNameByView(view)}
-          className="cb-bg-panel ml-2 cb-border-color text-white custom-select"
-        >
-          {items.map(([slug, l]) => (
-            <option key={slug} value={slug}>
-              {capitalize(l)}
-            </option>
+}) {
+  return (
+    <div className={cn('col-lg-4', { hidden: view !== currentView })}>
+      <div className="h6">Your weapon</div>
+      <div className="card cb-card p-3">
+        <div className="d-flex align-items-center">
+          <LanguageIcon className="w-100 h-100 mb-2" lang={lang} />
+          <Field
+            as="select"
+            data-testid={`${view}-langSelect`}
+            aria-label="Programming language select"
+            name={getFieldNameByView(view)}
+            className="cb-bg-panel ml-2 cb-border-color text-white custom-select"
+          >
+            {items.map(([slug, l]) => (
+              <option key={slug} value={slug}>
+                {capitalize(l)}
+              </option>
           ))}
-        </Field>
+          </Field>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
-const UserSettingsForm = ({ onSubmit, settings }) => {
+function UserSettingsForm({ onSubmit, settings }) {
   const initialValues = useMemo(
     () => ({
       locale: settings.locale,
@@ -282,7 +284,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               max={10}
               name="soundSettings.level"
               disabled={values.soundSettings.type === 'silent'}
-              onInput={e => {
+              onInput={(e) => {
                 handleChange(e);
                 playSound(values.soundSettings.type, e.target.value * 0.1);
               }}
@@ -312,6 +314,6 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
       )}
     </Formik>
   );
-};
+}
 
 export default UserSettingsForm;

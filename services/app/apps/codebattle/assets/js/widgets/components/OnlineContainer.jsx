@@ -11,11 +11,9 @@ function OnlineContainer() {
   if (count === 0) return <></>;
 
   return (
-    <>
-      <span className="d-flex aling-items-center text-muted mr-2">
-        {`${count} Online`}
-      </span>
-    </>
+    <span className="d-flex aling-items-center text-muted mr-2">
+      {`${count} Online`}
+    </span>
   );
 }
 

@@ -68,7 +68,7 @@ function TournamentUserPanel({
   );
 
   const handleOpenMatches = useCallback(
-    event => {
+    (event) => {
       event.preventDefault();
       if (!open && userId !== currentUserId) {
         dispatch(requestMatchesByPlayerId(userId));

@@ -12,10 +12,10 @@ import useMachineStateSelector from '../../utils/useMachineStateSelector';
 import BackToTournamentButton from './BackToTournamentButton';
 import Notifications from './Notifications';
 
-const WaitingRoomPanel = ({ children }) => {
+function WaitingRoomPanel({ children }) {
   const gameId = useSelector(gameIdSelector);
   const activeGameId = useSelector(
-    state => state.tournamentPlayer.gameId,
+    (state) => state.tournamentPlayer.gameId,
   );
 
   const { waitingRoomService } = useContext(RoomContext);
@@ -50,6 +50,6 @@ const WaitingRoomPanel = ({ children }) => {
       )}
     </div>
   );
-};
+}
 
 export default WaitingRoomPanel;

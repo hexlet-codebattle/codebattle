@@ -18,7 +18,7 @@ const useChatContextMenu = ({
 
   const [menuRequest, setMenuRequest] = useState();
 
-  const displayMenu = useCallback(event => {
+  const displayMenu = useCallback((event) => {
     const { userId, userName } = event.currentTarget.dataset;
 
     if (!userId) {

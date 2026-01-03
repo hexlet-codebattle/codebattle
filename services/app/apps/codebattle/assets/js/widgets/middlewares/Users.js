@@ -5,7 +5,7 @@ import qs from 'qs';
 
 import { actions } from '../slices';
 
-export const loadUser = dispatch => async user => {
+export const loadUser = (dispatch) => async (user) => {
   try {
     const response = await axios.get(`/api/v1/users/${user.id}`);
     const data = camelizeKeys(response.data);
@@ -15,7 +15,7 @@ export const loadUser = dispatch => async user => {
   }
 };
 
-export const loadUserStats = dispatch => async user => {
+export const loadUserStats = (dispatch) => async (user) => {
   try {
     const response = await axios.get(`/api/v1/user/${user.id}/stats`);
     const data = camelizeKeys(response.data);
@@ -33,14 +33,14 @@ export const loadNearbyUsers = (abortController, onSuccess, onFailure) => {
     .catch(onFailure);
 };
 
-export const loadSimpleUserStats = (onSuccess, onFailure) => user => {
+export const loadSimpleUserStats = (onSuccess, onFailure) => (user) => {
   axios
     .get(`/api/v1/user/${user.id}/simple_stats`)
     .then(onSuccess)
     .catch(onFailure);
 };
 
-export const sendPremiumRequest = (requestStatus, userId) => async dispatch => {
+export const sendPremiumRequest = (requestStatus, userId) => async (dispatch) => {
     try {
       await axios.post(
         `/api/v1/user/${userId}/send_premium_request`,
@@ -63,14 +63,14 @@ const periodToTimeUnit = {
   monthly: 'month',
 };
 
-const getDateByPeriod = period => {
+const getDateByPeriod = (period) => {
   if (period === 'total') {
     return null;
   }
   return moment().startOf(periodToTimeUnit[period]).utc().format('YYYY-MM-DD');
 };
 
-export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page, pageSize) => dispatch => {
+export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page, pageSize) => (dispatch) => {
     const queryParamsString = qs.stringify({
       page,
       page_size: pageSize,
@@ -88,7 +88,7 @@ export const getUsersRatingPage = ({ name, period, withBots }, { attribute, dire
         dispatch(actions.updateUsersRatingPage(camelizeKeys(data)));
         dispatch(actions.finishStoreInit());
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   };

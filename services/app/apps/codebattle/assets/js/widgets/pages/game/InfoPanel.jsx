@@ -12,12 +12,12 @@ import TaskAssignment from './TaskAssignment';
 import TimerContainer from './TimerContainer';
 import TournamentCurrentPlayerRankingPanel from './TournamentCurrentPlayerRankingPanel';
 
-const InfoPanel = ({
+function InfoPanel({
   idOutput = 'leftOutput',
   canShowOutputPanel,
   outputData,
   taskPanelProps,
-}) => {
+}) {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const isTournamentGame = !!tournamentId;
 
@@ -97,6 +97,6 @@ const InfoPanel = ({
 
     </>
   );
-};
+}
 
 export default InfoPanel;

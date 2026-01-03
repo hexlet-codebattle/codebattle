@@ -7,7 +7,7 @@ import TournamentStateCodes from '../config/tournament';
 
 export default (players, tournamentState) => {
   const uniqKey = useMemo(
-    () => Number(players.map(p => p.id).sort().join('') || '0'),
+    () => Number(players.map((p) => p.id).sort().join('') || '0'),
     [players],
   );
 

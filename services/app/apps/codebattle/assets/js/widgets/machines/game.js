@@ -353,7 +353,7 @@ export const config = {
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
     isTaskBuilder: (_ctx, { payload }) => payload.state === GameStateCodes.builder,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
-    haveOnlyFreeAccess: ctx => ctx.subscriptionType === 'free',
+    haveOnlyFreeAccess: (ctx) => ctx.subscriptionType === 'free',
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
   },

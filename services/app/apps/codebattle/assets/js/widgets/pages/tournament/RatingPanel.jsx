@@ -27,13 +27,14 @@ const navPlayerTabsClassName = cn(
 );
 
 const tabLinkClassName = (active, isCurrent = false) => cn(
-  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100', {
-  active,
-  'text-primary': isCurrent,
-},
+  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
+  {
+    active,
+    'text-primary': isCurrent,
+  },
 );
 
-const tabContentClassName = active => cn('tab-pane fade', {
+const tabContentClassName = (active) => cn('tab-pane fade', {
   'd-flex flex-column show active': active,
 });
 
@@ -44,12 +45,12 @@ const PlayersList = memo(
     currentUserId,
     searchedUserId,
     hideBots,
-  }) => players.map(player => {
+  }) => players.map((player) => {
     if (player.id === searchedUserId) {
       return <></>;
     }
 
-    const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
+    const userMatches = matchList.filter((match) => match.playerIds.includes(player.id));
 
     return (
       <TournamentUserPanel
@@ -77,7 +78,7 @@ const SearchedUserPanel = memo(({
     return <></>;
   }
 
-  const userMatches = matchList.filter(match => match.playerIds.includes(searchedUser.id));
+  const userMatches = matchList.filter((match) => match.playerIds.includes(searchedUser.id));
 
   return (
     <TournamentUserPanel
@@ -131,7 +132,7 @@ function RatingPanel({
   const topPlayersList = useMemo(
     () => (topPlayerIds || [])
       .slice(0 + pageSize * (pageNumber - 1), pageSize * pageNumber)
-      .map(id => players[id])
+      .map((id) => players[id])
       .sort((a, b) => b.score - a.score)
       .reduce((acc, player) => {
         if (player.isBot && hideBots) {
@@ -204,7 +205,7 @@ function RatingPanel({
       ) : (
         <nav>
           <div className={navPlayerTabsClassName} id="nav-matches-tab" role="tablist">
-            {stages.map(stage => (
+            {stages.map((stage) => (
               <a
                 className={tabLinkClassName(
                   openedStage === stage,
@@ -233,9 +234,9 @@ function RatingPanel({
             className="tab-content flex-grow-1"
             id="nav-matches-tabContent"
           >
-            {stages.map(stage => {
+            {stages.map((stage) => {
               const stageMatches = matchList.filter(
-                match => match.roundPosition === stage,
+                (match) => match.roundPosition === stage,
               );
 
               return (

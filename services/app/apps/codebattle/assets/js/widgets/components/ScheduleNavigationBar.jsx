@@ -2,19 +2,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import dayjs from '../../i18n/dayjs';
 
-const ScheduleNavigationTab = ({
+function ScheduleNavigationTab({
   className,
   events,
   event,
   setEvent,
-}) => {
+}) {
   const [prev, setPrevEvent] = useState();
   const [next, setNextEvent] = useState();
 
   useEffect(() => {
     if (event) {
       const sortedEvents = events.sort((a, b) => dayjs(a.start).diff(dayjs(b.start)));
-      const eventIndex = sortedEvents.findIndex(e => e.resourse.id === event.resourse.id);
+      const eventIndex = sortedEvents.findIndex((e) => e.resourse.id === event.resourse.id);
 
       if (eventIndex === -1) return;
 
@@ -71,6 +71,6 @@ const ScheduleNavigationTab = ({
       </div>
     </div>
   );
-};
+}
 
 export default ScheduleNavigationTab;

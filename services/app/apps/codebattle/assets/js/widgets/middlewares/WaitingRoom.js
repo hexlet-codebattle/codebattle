@@ -9,10 +9,10 @@ export const addWaitingRoomListeners = (
   currentChannel,
   waitingRoomMachine,
   { cancelRedirect = false },
-) => dispatch => {
+) => (dispatch) => {
   channel = currentChannel;
 
-  const handleWaitingRoomStarted = response => {
+  const handleWaitingRoomStarted = (response) => {
     waitingRoomMachine.send(channelTopics.waitingRoomStartedTopic, {
       payload: response,
     });
@@ -20,7 +20,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.setActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomEnded = response => {
+  const handleWaitingRoomEnded = (response) => {
     waitingRoomMachine.send(channelTopics.waitingRoomEndedTopic, {
       payload: response,
     });
@@ -28,7 +28,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerBanned = response => {
+  const handleWaitingRoomPlayerBanned = (response) => {
     waitingRoomMachine.send(channelTopics.waitingRoomPlayerBannedTopic, {
       payload: response,
     });
@@ -36,7 +36,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerUnbanned = response => {
+  const handleWaitingRoomPlayerUnbanned = (response) => {
     waitingRoomMachine.send(channelTopics.waitingRoomPlayerUnbannedTopic, {
       payload: response,
     });
@@ -44,7 +44,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerMatchmakingStarted = response => {
+  const handleWaitingRoomPlayerMatchmakingStarted = (response) => {
     waitingRoomMachine.send(
       channelTopics.waitingRoomPlayerMatchmakingStartedTopic,
       { payload: response },
@@ -53,7 +53,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerMatchmakingResumed = response => {
+  const handleWaitingRoomPlayerMatchmakingResumed = (response) => {
     waitingRoomMachine.send(
       channelTopics.waitingRoomPlayerMatchmakingResumedTopic,
       { payload: response },
@@ -62,7 +62,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerMatchmakingStopped = response => {
+  const handleWaitingRoomPlayerMatchmakingStopped = (response) => {
     waitingRoomMachine.send(
       channelTopics.waitingRoomPlayerMatchmakingStoppedTopic,
       { payload: response },
@@ -71,7 +71,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerMatchmakingPaused = response => {
+  const handleWaitingRoomPlayerMatchmakingPaused = (response) => {
     waitingRoomMachine.send(
       channelTopics.waitingRoomPlayerMatchmakingPausedTopic,
       { payload: response },
@@ -80,7 +80,7 @@ export const addWaitingRoomListeners = (
     dispatch(actions.updateActiveTournamentPlayer(response.currentPlayer));
   };
 
-  const handleWaitingRoomPlayerMatchCreated = response => {
+  const handleWaitingRoomPlayerMatchCreated = (response) => {
     waitingRoomMachine.send(
       channelTopics.waitingRoomPlayerMatchCreatedTopic,
       { payload: response },

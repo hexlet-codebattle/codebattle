@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GoToNextGame = ({ currentUserId, tournamentsInfo: { playerGames } }) => {
+function GoToNextGame({ currentUserId, tournamentsInfo: { playerGames } }) {
   if (!playerGames) {
     return (<></>);
   }
@@ -18,6 +18,6 @@ const GoToNextGame = ({ currentUserId, tournamentsInfo: { playerGames } }) => {
       }
     </>
   );
-};
+}
 
 export default GoToNextGame;

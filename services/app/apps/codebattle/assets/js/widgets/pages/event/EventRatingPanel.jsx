@@ -21,7 +21,7 @@ const getCustomEventTrClassNamePersonal = (type, muted, isUser) => cn('text-dark
   'cb-custom-event-tr-brown-border': isUser,
 });
 
-const tableDataCellClassNamePersonal = hideSeparator => cn(
+const tableDataCellClassNamePersonal = (hideSeparator) => cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
   {
     'hide-separator': hideSeparator,
@@ -37,7 +37,7 @@ const navTabsClassName = cn(
   'rounded-top',
 );
 
-const getTabLinkClassName = isActive => cn(
+const getTabLinkClassName = (isActive) => cn(
   'nav-item nav-link cb-custom-event-nav-item position-relative',
   'text-nowrap text-white rounded-0 p-2 px-3 border-0 w-100 bg-gray',
   {
@@ -72,13 +72,13 @@ const commonRatingTypes = {
 const maxTopClansCount = 4;
 const maxTopPlayersCount = 5;
 
-const PersonalEventTable = ({
+function PersonalEventTable({
   currentUserId,
   currentUserClanId,
   items,
   type,
-}) => {
-  const groupedItems = Object.values(groupBy(items, item => item.clanRank));
+}) {
+  const groupedItems = Object.values(groupBy(items, (item) => item.clanRank));
 
   return (
     <table className="table table-striped cb-custom-event-table">
@@ -169,9 +169,9 @@ const PersonalEventTable = ({
       </tbody>
     </table>
   );
-};
+}
 
-const EventRatingPanel = ({
+function EventRatingPanel({
   commonLeaderboard: {
     items, pageNumber, pageSize, totalEntries,
   } = {
@@ -183,7 +183,7 @@ const EventRatingPanel = ({
   currentUserClanId,
   currentUserId,
   eventId,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const [type, setType] = useState(
@@ -191,7 +191,7 @@ const EventRatingPanel = ({
   );
   const selectedId = type === commonRatingTypes.clan ? currentUserClanId : currentUserId;
   const handleChangePanelTypeClick = useCallback(
-    e => {
+    (e) => {
       const {
         currentTarget: { dataset },
       } = e;
@@ -201,7 +201,7 @@ const EventRatingPanel = ({
   );
 
   const setPage = useCallback(
-    page => {
+    (page) => {
       (async () => {
         try {
           await dispatch(
@@ -237,58 +237,57 @@ const EventRatingPanel = ({
   }, [type]);
 
   return (
-    <>
-      <div className="d-flex flex-column">
-        <div className="d-flex w-100 justify-content-starts border-bottom border-dark pb-2">
-          <span className="font-weight-bold">{i18next.t('Event rating')}</span>
-        </div>
-        <div className="d-flex flex-column w-100 mt-3 cb-custom-event-common-leaderboard-bg cb-rounded">
-          <nav className="pb-2">
-            <div id="nav-tab" className={navTabsClassName} role="tablist">
-              <button
-                type="button"
-                id="personal-tab"
-                className={getTabLinkClassName(type === commonRatingTypes.personal)}
-                role="tab"
-                data-tab-name="personal"
-                onClick={handleChangePanelTypeClick}
-              >
-                {i18next.t('Clans rating')}
-              </button>
-              <button
-                type="button"
-                id="player-tab"
-                className={getTabLinkClassName(
+    <div className="d-flex flex-column">
+      <div className="d-flex w-100 justify-content-starts border-bottom border-dark pb-2">
+        <span className="font-weight-bold">{i18next.t('Event rating')}</span>
+      </div>
+      <div className="d-flex flex-column w-100 mt-3 cb-custom-event-common-leaderboard-bg cb-rounded">
+        <nav className="pb-2">
+          <div id="nav-tab" className={navTabsClassName} role="tablist">
+            <button
+              type="button"
+              id="personal-tab"
+              className={getTabLinkClassName(type === commonRatingTypes.personal)}
+              role="tab"
+              data-tab-name="personal"
+              onClick={handleChangePanelTypeClick}
+            >
+              {i18next.t('Clans rating')}
+            </button>
+            <button
+              type="button"
+              id="player-tab"
+              className={getTabLinkClassName(
                   type === commonRatingTypes.player,
                 )}
-                role="tab"
-                data-tab-name="player"
-                onClick={handleChangePanelTypeClick}
-              >
-                {i18next.t('Players rating')}
-              </button>
-              <button
-                type="button"
-                id="clan-player-tab"
-                className={getTabLinkClassName(
+              role="tab"
+              data-tab-name="player"
+              onClick={handleChangePanelTypeClick}
+            >
+              {i18next.t('Players rating')}
+            </button>
+            <button
+              type="button"
+              id="clan-player-tab"
+              className={getTabLinkClassName(
                   type === commonRatingTypes.playerClan,
                 )}
-                role="tab"
-                data-tab-name="player_clan"
-                onClick={handleChangePanelTypeClick}
-              >
-                {i18next.t('Clan players rating')}
-              </button>
-            </div>
-          </nav>
-          <div className="px-3 cb-overflow-x-auto">
-            {type === commonRatingTypes.personal ? (
-              <PersonalEventTable
-                type={type}
-                items={items}
-                currentUserId={currentUserId}
-                currentUserClanId={currentUserClanId}
-              />
+              role="tab"
+              data-tab-name="player_clan"
+              onClick={handleChangePanelTypeClick}
+            >
+              {i18next.t('Clan players rating')}
+            </button>
+          </div>
+        </nav>
+        <div className="px-3 cb-overflow-x-auto">
+          {type === commonRatingTypes.personal ? (
+            <PersonalEventTable
+              type={type}
+              items={items}
+              currentUserId={currentUserId}
+              currentUserClanId={currentUserClanId}
+            />
             ) : (
               <table className="table table-striped cb-custom-event-table mt-3">
                 <thead className="text-muted">
@@ -315,7 +314,7 @@ const EventRatingPanel = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {items?.map(item => (
+                  {items?.map((item) => (
                     <React.Fragment key={`${type}${item.clanId}${item.userId}`}>
                       <tr className="cb-custom-event-empty-space-tr" />
                       <tr
@@ -364,26 +363,25 @@ const EventRatingPanel = ({
                 </tbody>
               </table>
             )}
-          </div>
-          <div className="d-flex justify-content-between mr-1 px-2">
-            {totalEntries > 0 && (
-              <>
-                <div className="pl-2">
-                  <span>
-                    {i18next.t('Total entries: %{totalEntries}', { totalEntries })}
-                  </span>
-                </div>
-                <LeaderboardPagination
-                  pageInfo={{ pageNumber, pageSize, totalEntries }}
-                  setPage={setPage}
-                />
-              </>
+        </div>
+        <div className="d-flex justify-content-between mr-1 px-2">
+          {totalEntries > 0 && (
+          <>
+            <div className="pl-2">
+              <span>
+                {i18next.t('Total entries: %{totalEntries}', { totalEntries })}
+              </span>
+            </div>
+            <LeaderboardPagination
+              pageInfo={{ pageNumber, pageSize, totalEntries }}
+              setPage={setPage}
+            />
+          </>
             )}
-          </div>
         </div>
       </div>
-    </>
+    </div>
   );
-};
+}
 
 export default EventRatingPanel;

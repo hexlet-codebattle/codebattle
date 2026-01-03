@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import i18n from '../../../i18n';
 import { actions } from '../../slices';
 
-const renderContributorsList = contributors => (
+const renderContributorsList = (contributors) => (
   <ul className="d-flex flex-row align-items-begin list-unstyled mb-2">
     {contributors
       ? contributors.map(({ avatarLink, link }) => (
@@ -42,17 +42,17 @@ function ContributorsList({ task: { name, tags, level } }) {
     }
     axios
       .get(url)
-      .then(res => {
+      .then((res) => {
         console.log(res.data);
         console.log(11111);
-        const authors = res.data.filter(item => item.author);
-        const contributorsList = authors.map(el => ({
+        const authors = res.data.filter((item) => item.author);
+        const contributorsList = authors.map((el) => ({
           avatarLink: el.author.avatar_url,
           link: el.author.html_url,
         }));
         setAvatars(uniqBy(contributorsList, 'avatarLink'));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [url, name, dispatch]);

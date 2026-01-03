@@ -5,8 +5,8 @@ import * as GameActions from '../middlewares/Room';
 /**
  * @param {object} editor
 */
-const useEditorCursor = editor => {
-  const handleChangeCursorSelection = useCallback(e => {
+const useEditorCursor = (editor) => {
+  const handleChangeCursorSelection = useCallback((e) => {
     const { readOnly, canSendCursor } = editor.getRawOptions();
 
     if (!canSendCursor) {
@@ -25,7 +25,7 @@ const useEditorCursor = editor => {
     }
   }, [editor]);
 
-  const handleChangeCursorPosition = useCallback(e => {
+  const handleChangeCursorPosition = useCallback((e) => {
     const { readOnly, canSendCursor } = editor.getRawOptions();
 
     if (!canSendCursor) {

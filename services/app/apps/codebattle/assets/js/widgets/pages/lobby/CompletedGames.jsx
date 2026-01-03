@@ -29,7 +29,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
     const observableTable = tableRef.current;
 
     const onTableScroll = () => {
-      const height = tableRef.current.scrollHeight - tableRef.current.parentElement?.offsetHeight;
+      const height = tableRef.current.scrollHeight - (tableRef.current.parentElement?.offsetHeight ?? 0);
       const delta = height - tableRef.current.scrollTop;
 
       if (delta < 500) {
@@ -44,8 +44,8 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
     };
   }, [dispatch]);
 
-  const onCardsScroll = useCallback(cardList => {
-    const width = cardList.scrollWidth - cardList.parentElement?.offsetWidth;
+  const onCardsScroll = useCallback((cardList) => {
+    const width = cardList.scrollWidth - (cardList.parentElement?.offsetWidth ?? 0);
     const delta = width - cardList.scrollLeft;
 
     if (delta < 500) {
@@ -66,7 +66,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
             </tr>
           </thead>
           <tbody>
-            {games.map(game => {
+            {games.map((game) => {
               const { player1, player2 } = getGamePlayersData(game);
 
               return (
@@ -101,7 +101,7 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
         </table>
       </div>
       <HorizontalScrollControls className="d-md-none my-2" onScroll={onCardsScroll}>
-        {games.map(game => (
+        {games.map((game) => (
           <GameCard key={`card-${game.id}`} type="completed" game={game} />
         ))}
       </HorizontalScrollControls>

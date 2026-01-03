@@ -21,14 +21,14 @@ import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 import RoomContext from './RoomContext';
 
-const WaitingRoomStatus = ({
+function WaitingRoomStatus({
   page,
   taskCount,
   breakState,
   tournamentState,
   maxPlayerTasks,
   activeGameId,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const { waitingRoomService } = useContext(RoomContext);
@@ -167,6 +167,6 @@ const WaitingRoomStatus = ({
       )}
     </>
   );
-};
+}
 
 export default memo(WaitingRoomStatus);

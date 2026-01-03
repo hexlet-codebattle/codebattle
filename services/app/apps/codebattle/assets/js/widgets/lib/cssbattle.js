@@ -6,7 +6,7 @@ const getMatchPoints = (stats, width, height) => (
   1 - stats / (width * height)
 );
 
-const getMatchPercentageText = match => (
+const getMatchPercentageText = (match) => (
   `${(match * 100).toFixed(2)}%`
 );
 

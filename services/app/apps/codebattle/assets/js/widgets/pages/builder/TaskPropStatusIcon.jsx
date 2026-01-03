@@ -16,22 +16,24 @@ const iconByValidStatus = {
   [validationStatuses.validation]: ['fas', 'spinner'],
 };
 
-const getStatusClassName = status => cn('mx-2', {
+const getStatusClassName = (status) => cn('mx-2', {
   'text-success': status === validationStatuses.valid,
   'text-danger': status === validationStatuses.invalid,
   'text-warning cb-loading-icon': status === validationStatuses.validation,
 });
 
-const Icon = ({ status }) => (
-  <FontAwesomeIcon
-    data-task-prop-status={status}
-    className={getStatusClassName(status)}
-    icon={iconByValidStatus[status]}
-  />
-);
+function Icon({ status }) {
+  return (
+    <FontAwesomeIcon
+      data-task-prop-status={status}
+      className={getStatusClassName(status)}
+      icon={iconByValidStatus[status]}
+    />
+  );
+}
 
-const TaskPropStatusIcon = ({ id, status, reason }) => (
-  reason ? (
+function TaskPropStatusIcon({ id, status, reason }) {
+  return reason ? (
     <OverlayTrigger
       trigger={isSafari() ? 'click' : 'focus'}
       placement="top"
@@ -41,7 +43,7 @@ const TaskPropStatusIcon = ({ id, status, reason }) => (
         <Icon status={status} />
       </span>
     </OverlayTrigger>
-  ) : (<Icon status={status} />)
-);
+  ) : (<Icon status={status} />);
+}
 
 export default TaskPropStatusIcon;

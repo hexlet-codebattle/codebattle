@@ -13,7 +13,7 @@ import UserInfo from '../../components/UserInfo';
 import MatchAction from './MatchAction';
 import TournamentMatchBadge from './TournamentMatchBadge';
 
-export const toLocalTime = time => moment.utc(time).local().format('HH:mm:ss');
+export const toLocalTime = (time) => moment.utc(time).local().format('HH:mm:ss');
 
 const matchClassName = cn(
   'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
@@ -26,7 +26,7 @@ const matchInfoClassName = cn(
 );
 
 function UserTournamentInfo({ userId }) {
-  const user = useSelector(state => state.tournament.players[userId]);
+  const user = useSelector((state) => state.tournament.players[userId]);
 
   if (!user) {
     return <Loading adaptive />;
@@ -75,12 +75,12 @@ function UsersMatchList({
           </span>
         </div>
       )}
-      {matches.map(match => {
+      {matches.map((match) => {
         const currentUserIsPlayer = currentUserId === match.playerIds[0]
           || currentUserId === match.playerIds[1];
         const isWinner = playerId === match.winnerId;
         const matchPlayerIds = hideBots
-          ? match.playerIds.filter(id => id >= 0)
+          ? match.playerIds.filter((id) => id >= 0)
           : match.playerIds;
         const matchResult = match.playerResults[playerId];
 

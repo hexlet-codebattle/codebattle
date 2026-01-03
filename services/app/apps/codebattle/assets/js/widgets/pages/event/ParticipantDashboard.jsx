@@ -17,7 +17,7 @@ import EventStageConfirmationModal from './EventStageConfirmationModal';
 import NotPassedIcon from './NotPassedIcon';
 import PassedIcon from './PassedIcon';
 
-const ParticipantDashboard = () => {
+function ParticipantDashboard() {
   useEffect(() => {
     NiceModal.register(ModalCodes.eventStageModal, EventStageConfirmationModal);
 
@@ -115,7 +115,7 @@ const ParticipantDashboard = () => {
               </div>
             </div>
           </div>
-          {participantData.stages.map(stage => (
+          {participantData.stages.map((stage) => (
             <div
               key={stage.slug}
               className="col-12 cb-custom-event-stage-section"
@@ -242,6 +242,6 @@ const ParticipantDashboard = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ParticipantDashboard;

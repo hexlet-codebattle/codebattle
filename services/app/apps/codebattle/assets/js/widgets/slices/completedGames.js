@@ -55,9 +55,9 @@ const completedGames = createSlice({
     error: null,
   },
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchCompletedGames.pending, state => {
+      .addCase(fetchCompletedGames.pending, (state) => {
         state.status = fetchionStatuses.loading;
         state.error = null;
       })
@@ -72,7 +72,7 @@ const completedGames = createSlice({
         state.status = fetchionStatuses.rejected;
         state.error = action.error;
       })
-      .addCase(loadNextPage.pending, state => {
+      .addCase(loadNextPage.pending, (state) => {
         state.status = fetchionStatuses.loading;
         state.error = null;
       })

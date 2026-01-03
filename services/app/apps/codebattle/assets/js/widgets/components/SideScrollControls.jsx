@@ -55,7 +55,7 @@ function HorizontalScrollControls({ children, className, onScroll = noop }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleScroll = useCallback(event => {
+  const handleScroll = useCallback((event) => {
     onScroll(event.currentTarget);
     setScrollLeft(event.currentTarget.scrollLeft);
   }, [onScroll, setScrollLeft]);

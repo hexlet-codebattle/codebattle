@@ -7,13 +7,13 @@ import PlaybookStatusCodes from '../config/playbookStatusCodes';
 const snapshotStep = 400;
 
 const updatePlayers = (players, params) => (
-  players.map(player => (player.id === params.id
+  players.map((player) => (player.id === params.id
     ? { ...player, ...params }
     : player))
 );
 
 const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
-  players.map(player => ((player.id === firstPlayer.id)
+  players.map((player) => ((player.id === firstPlayer.id)
     ? { ...player, ...firstPlayer }
     : { ...player, ...secondPlayer }))
 );
@@ -196,7 +196,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'leave_chat') {
-    const newUsers = users.filter(user => user.id !== record.id);
+    const newUsers = users.filter((user) => user.id !== record.id);
     const newChatState = { users: newUsers, messages };
     const data = {
       type,
@@ -327,7 +327,7 @@ export const getFinalState = ({ recordId, records, initRecords }) => {
 export const resolveDiffs = (playbook, type) => {
   const [initRecords, restRecords] = partition(
     playbook.records,
-    record => record.type === 'init',
+    (record) => record.type === 'init',
   );
 
   // record types "init"

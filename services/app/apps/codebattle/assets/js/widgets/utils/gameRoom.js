@@ -26,8 +26,8 @@ export const getGameStatus = ({
   tournamentId,
 });
 
-export const getGamePlayers = players => {
-  const [firstPlayer, secondPlayer] = sortBy(players, player => (player?.id));
+export const getGamePlayers = (players) => {
+  const [firstPlayer, secondPlayer] = sortBy(players, (player) => (player?.id));
   const typedPlayers = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {
@@ -37,13 +37,13 @@ export const getGamePlayers = players => {
   return typedPlayers;
 };
 
-export const getPlayersText = player => ({
+export const getPlayersText = (player) => ({
   userId: player.id,
   editorText: player.editorText,
   langSlug: player.editorLang,
 });
 
-export const getPlayersExecutionData = player => ({
+export const getPlayersExecutionData = (player) => ({
   ...player.checkResult,
   userId: player.id,
 });

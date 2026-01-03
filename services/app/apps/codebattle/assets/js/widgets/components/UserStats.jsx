@@ -14,7 +14,7 @@ import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
 
-const UserStats = ({ data, user: userInfo }) => {
+function UserStats({ data, user: userInfo }) {
   const dispatch = useDispatch();
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
 
@@ -23,7 +23,7 @@ const UserStats = ({ data, user: userInfo }) => {
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
 
-  const followId = useSelector(state => state.gameUI.followId);
+  const followId = useSelector((state) => state.gameUI.followId);
 
   const handlePlayClick = useCallback(() => {
     if (activeGameId) {
@@ -131,6 +131,6 @@ const UserStats = ({ data, user: userInfo }) => {
       )}
     </div>
   );
-};
+}
 
 export default UserStats;

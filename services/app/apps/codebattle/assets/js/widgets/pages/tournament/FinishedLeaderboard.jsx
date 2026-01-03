@@ -23,7 +23,7 @@ const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
-const FinishedLeaderboard = ({ leaderboard }) => {
+function FinishedLeaderboard({ leaderboard }) {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
 
   return (
@@ -68,7 +68,7 @@ const FinishedLeaderboard = ({ leaderboard }) => {
                 </tr>
               </thead>
               <tbody>
-                {leaderboard.map(item => (
+                {leaderboard.map((item) => (
                   <React.Fragment key={item.userId}>
                     {item.place > 3 ? (
                       <>
@@ -105,8 +105,8 @@ const FinishedLeaderboard = ({ leaderboard }) => {
                             maxWidth: '13ch',
                           }}
                         >
-                          {item?.userName.slice(0, 9)
-                            + (item?.userName.length > 11 ? '...' : '')}
+                          {(item?.userName ?? '').slice(0, 9)
+                            + ((item?.userName?.length ?? 0) > 11 ? '...' : '')}
                         </div>
                       </td>
                       <td className={tableDataCellClassName}>
@@ -142,6 +142,6 @@ const FinishedLeaderboard = ({ leaderboard }) => {
       </div>
     </div>
   );
-};
+}
 
 export default memo(FinishedLeaderboard);

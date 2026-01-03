@@ -40,14 +40,14 @@ const gameUI = createSlice({
       state.followId = payload.followId;
       state.followPaused = false;
     },
-    unfollowUser: state => {
+    unfollowUser: (state) => {
       state.followId = undefined;
       state.followPaused = false;
     },
-    togglePausedFollow: state => {
+    togglePausedFollow: (state) => {
       state.followPaused = !state.followPaused;
     },
-    toggleStreamMode: state => {
+    toggleStreamMode: (state) => {
       state.streamMode = !state.streamMode;
     },
     setInMainDraw: (state, { payload }) => {

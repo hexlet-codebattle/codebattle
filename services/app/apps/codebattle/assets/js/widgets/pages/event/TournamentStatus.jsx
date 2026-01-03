@@ -2,9 +2,9 @@ import React from 'react';
 
 import i18next from '../../../i18n';
 
-const TournamentStatus = ({
+function TournamentStatus({
   type = 'loading',
-}) => {
+}) {
   switch (type) {
     case 'finished': return (
       <span
@@ -40,6 +40,6 @@ const TournamentStatus = ({
       </span>
     );
   }
-};
+}
 
 export default TournamentStatus;

@@ -19,7 +19,7 @@ import useTimer from '../../utils/useTimer';
 import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 
-const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
+const getIconByAccessType = (accessType) => (accessType === 'token' ? 'lock' : 'unlock');
 
 const getBadgeTitle = (state, breakState, hideResults) => {
   if (hideResults && state === TournamentStates.finished) {
@@ -40,7 +40,7 @@ const getBadgeTitle = (state, breakState, hideResults) => {
   }
 };
 
-const getDescriptionByState = state => {
+const getDescriptionByState = (state) => {
   switch (state) {
     case TournamentStates.canceled:
       return i18next.t('The tournament is canceled');

@@ -29,7 +29,7 @@ const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
-const TournamentRankingTable = () => {
+function TournamentRankingTable() {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const gameStatus = useSelector(gameStatusSelector);
   const {
@@ -73,7 +73,7 @@ const TournamentRankingTable = () => {
             </tr>
           </thead>
           <tbody>
-            {ranking?.entries?.map(item => (
+            {ranking?.entries?.map((item) => (
               <React.Fragment key={item.id}>
                 {item.place > 3 ? (
                   <>
@@ -104,8 +104,8 @@ const TournamentRankingTable = () => {
                         maxWidth: '13ch',
                       }}
                     >
-                      {item?.name.slice(0, 9)
-                        + (item?.name.length > 11 ? '...' : '')}
+                      {(item?.name ?? '').slice(0, 9)
+                        + ((item?.name?.length ?? 0) > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>
@@ -119,8 +119,8 @@ const TournamentRankingTable = () => {
                         maxWidth: '15ch',
                       }}
                     >
-                      {item?.clan?.slice(0, 9)
-                        + (item?.clan?.length > 11 ? '...' : '')}
+                      {(item?.clan ?? '').slice(0, 9)
+                        + ((item?.clan?.length ?? 0) > 11 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>{item.score}</td>
@@ -179,6 +179,6 @@ const TournamentRankingTable = () => {
       </div>
     </div>
   );
-};
+}
 
 export default TournamentRankingTable;

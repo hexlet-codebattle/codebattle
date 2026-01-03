@@ -15,7 +15,7 @@ const sectionBtnClassName = cn(
   'btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2',
 );
 
-const ScheduleLegend = ({ onChangeContext, loading, context }) => {
+function ScheduleLegend({ onChangeContext, loading, context }) {
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
@@ -61,6 +61,6 @@ const ScheduleLegend = ({ onChangeContext, loading, context }) => {
       )}
     </div>
   );
-};
+}
 
 export default ScheduleLegend;

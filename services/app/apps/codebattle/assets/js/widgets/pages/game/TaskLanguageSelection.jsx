@@ -2,16 +2,16 @@ import React from 'react';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const TaskLanguagesSelection = ({
+function TaskLanguagesSelection({
   avaibleLanguages,
   displayLanguage,
   handleSetLanguage,
-}) => {
+}) {
   if (avaibleLanguages.length < 2) {
     return null;
   }
 
-  const renderLanguage = language => (
+  const renderLanguage = (language) => (
     <Dropdown.Item
       key={language}
       active={language === displayLanguage}
@@ -36,6 +36,6 @@ const TaskLanguagesSelection = ({
       </Dropdown.Menu>
     </Dropdown>
   );
-};
+}
 
 export default TaskLanguagesSelection;

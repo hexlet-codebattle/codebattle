@@ -44,7 +44,7 @@ const sound = {
   },
 };
 
-const createSound = slug => ({
+const createSound = (slug) => ({
   play: (type, soundLevel) => {
     const soundEffect = audio(slug, soundLevel);
     soundEffect.play(type);

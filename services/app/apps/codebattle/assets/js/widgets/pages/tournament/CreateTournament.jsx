@@ -9,7 +9,7 @@ function CreateTournament({ taskPackNames = [], userTimezone = 'UTC', onSuccess 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(async formData => {
+  const handleSubmit = useCallback(async (formData) => {
     setIsSubmitting(true);
     setErrors({});
 

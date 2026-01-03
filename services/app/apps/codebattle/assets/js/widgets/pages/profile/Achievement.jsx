@@ -19,7 +19,7 @@ function Achievement({ achievement }) {
   return (
     <div className="cb-polyglot mr-1 mb-1" title={achievement}>
       <div className="cb-polyglot-icons d-flex flex-wrap align-items-center justify-content-around h-75">
-        {langs.map(lang => (
+        {langs.map((lang) => (
           <img
             src={`/assets/images/achievements/${lang}.png`}
             alt={lang}

@@ -48,7 +48,7 @@ function UserStatCharts({ stats }) {
 
   const fullMark = Math.max(...Object.values(stats.games));
   const resultDataForRadar = Object.keys(stats.games)
-    .map(subject => ({
+    .map((subject) => ({
       subject,
       A: stats.games[subject],
       fullMark,

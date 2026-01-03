@@ -49,7 +49,7 @@ jest.mock(
       current_user: { sound_settings: {} },
       game_id: 10,
     };
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );

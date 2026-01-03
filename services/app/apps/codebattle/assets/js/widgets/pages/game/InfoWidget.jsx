@@ -44,7 +44,7 @@ function CommonBattleInfoWidget({
     tournamentId,
   } = useSelector(gameStatusSelector);
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
   const taskPanelProps = {
     task,
     taskLanguage,

@@ -52,7 +52,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
   const [taskItems, setTaskItems] = useState([]);
 
   const handleChangeMode = useCallback(
-    event => {
+    (event) => {
       setMode(event.target.checked);
     },
     [setMode],
@@ -77,8 +77,8 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
 
   useTournamentPanel(fetchData, state);
 
-  const labels = taskItems.map(x => x.start);
-  const lineData = taskItems.map(x => x.winsCount);
+  const labels = taskItems.map((x) => x.start);
+  const lineData = taskItems.map((x) => x.winsCount);
 
   const taskChartData = {
     labels,
@@ -137,7 +137,7 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
               </tr>
             </thead>
             <tbody>
-              {users.map(item => (
+              {users.map((item) => (
                 <React.Fragment
                   key={`${PanelModeCodes.topUserByTasksMode}-user-${item.userId}`}
                 >

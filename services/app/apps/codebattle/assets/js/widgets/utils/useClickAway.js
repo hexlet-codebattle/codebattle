@@ -10,7 +10,7 @@ const useClickAway = (ref, onClickAway, events = defaultEvents) => {
         savedCallback.current = onClickAway;
     }, [onClickAway]);
     useEffect(() => {
-        const handler = event => {
+        const handler = (event) => {
             const { current: el } = ref;
             // eslint-disable-next-line no-unused-expressions
             el && !el.contains(event.target) && savedCallback.current(event);

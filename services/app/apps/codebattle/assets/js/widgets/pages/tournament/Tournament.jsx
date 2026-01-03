@@ -30,7 +30,7 @@ import TournamentChat from './TournamentChat';
 import TournamentClanTable from './TournamentClanTable';
 import TournamentHeader from './TournamentHeader';
 
-const getTournamentPresentationStatus = state => {
+const getTournamentPresentationStatus = (state) => {
   switch (state) {
     case TournamentStates.finished:
       return 'Tournament finished';
@@ -106,12 +106,12 @@ function Tournament({ waitingRoomMachine }) {
     actions: [],
   });
 
-  const machines = { waitingRoomService };
+  const machines = useMemo(() => ({ waitingRoomService }), [waitingRoomService]);
 
   const activePresentationMode = searchParams.has('presentation');
   const activeStreamMode = searchParams.has('stream');
 
-  const streamMode = useSelector(state => state.gameUI.streamMode);
+  const streamMode = useSelector((state) => state.gameUI.streamMode);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);

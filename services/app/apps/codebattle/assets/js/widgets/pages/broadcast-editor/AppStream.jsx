@@ -100,7 +100,7 @@ export default function App() {
     setTimeout(() => setIsLoaded(true), 60);
   }, []);
 
-  const handlePresetChange = e => {
+  const handlePresetChange = (e) => {
     const name = e.target.value;
     const updated = { ...presets, current: name };
     setPresets(updated);
@@ -147,8 +147,8 @@ export default function App() {
           onChange={handlePresetChange}
         >
           {Object.keys(presets)
-            .filter(k => k !== 'current')
-            .map(k => (
+            .filter((k) => k !== 'current')
+            .map((k) => (
               <option key={k} value={k}>
                 {k}
               </option>
@@ -172,8 +172,8 @@ export default function App() {
               className="preset-input"
               placeholder="Preset name"
               value={saveName}
-              onChange={e => setSaveName(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSaveConfirm()}
+              onChange={(e) => setSaveName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
             />
             <button
               type="button"

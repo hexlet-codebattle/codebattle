@@ -115,7 +115,7 @@ const TaskParamsModal = NiceModal.create(({
 
   const modal = useModal(ModalCodes.taskParamsModal);
 
-  const getContentClassnameByMode = useCallback(currentMode => (
+  const getContentClassnameByMode = useCallback((currentMode) => (
     cn('p-3', {
       'd-none': mode !== currentMode,
       'd-flex flex-column': mode === currentMode,
@@ -123,7 +123,7 @@ const TaskParamsModal = NiceModal.create(({
   ), [mode]);
 
   const handleChangeMode = useCallback(
-    event => {
+    (event) => {
       const nextMode = event.target.checked
         ? modalModes.showJSON
         : modalModes.preview;
@@ -133,7 +133,7 @@ const TaskParamsModal = NiceModal.create(({
     [setMode],
   );
 
-  const handleChange = useCallback(event => {
+  const handleChange = useCallback((event) => {
     debouncedSetValue(event.target.value, setValue);
   }, [setValue]);
 
@@ -155,7 +155,7 @@ const TaskParamsModal = NiceModal.create(({
     setError();
     setState(LoadingStatusCodes.LOADING);
 
-    const onError = err => {
+    const onError = (err) => {
       setError(err);
       setState(LoadingStatusCodes.IDLE);
     };

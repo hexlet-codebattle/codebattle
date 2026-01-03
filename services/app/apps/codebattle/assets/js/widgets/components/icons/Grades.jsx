@@ -22,7 +22,7 @@ export const colors = {
   grandSlam: '#FF0000', // Pure Bright Red
 };
 
-export const getIconForGrade = grade => {
+export const getIconForGrade = (grade) => {
   switch (grade) {
     case 'rookie':
       return <RookieIcon size="60px" color={colors.rookie} />;

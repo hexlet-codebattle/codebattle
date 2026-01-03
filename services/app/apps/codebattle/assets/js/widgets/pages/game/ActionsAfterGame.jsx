@@ -30,9 +30,7 @@ function ActionsAfterGame() {
   }
 
   return (
-    <>
-      <RematchButton disabled={isRematchDisabled} />
-    </>
+    <RematchButton disabled={isRematchDisabled} />
   );
 }
 

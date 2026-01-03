@@ -23,7 +23,7 @@ import tournamentPlayer, { actions as tournamentPlayerActions } from './tourname
 import user, { actions as userActions } from './user';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
 
-const setError = error => ({
+const setError = (error) => ({
   type: 'ERROR',
   error: true,
   payload: error,
@@ -53,7 +53,7 @@ export const actions = {
   ...reportsActions,
 };
 
-export const redirectToNewGame = gameId => {
+export const redirectToNewGame = (gameId) => {
   window.location.href = `/games/${gameId}`;
 };
 

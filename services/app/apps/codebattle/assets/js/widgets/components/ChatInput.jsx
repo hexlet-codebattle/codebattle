@@ -20,11 +20,11 @@ import EmojiToolTip from './EmojiTooltip';
 
 const MAX_MESSAGE_LENGTH = 1024;
 
-const trimColons = message => message.slice(0, message.lastIndexOf(':'));
+const trimColons = (message) => message.slice(0, message.lastIndexOf(':'));
 
-const getColons = message => message.slice(message.lastIndexOf(':') + 1);
+const getColons = (message) => message.slice(message.lastIndexOf(':') + 1);
 
-const getTooltipVisibility = async msg => {
+const getTooltipVisibility = async (msg) => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return Promise.resolve(false);
   const colons = getColons(msg);
@@ -92,7 +92,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     setTooltipVisibility(await getTooltipVisibility(value));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (isTooltipVisible || isMaxLengthExceeded || isMessageBlank) {
@@ -126,7 +126,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
   };
 
   const togglePickerVisibility = useCallback(
-    e => {
+    (e) => {
       e.stopPropagation();
       setPickerVisibility(!isPickerVisible);
     },

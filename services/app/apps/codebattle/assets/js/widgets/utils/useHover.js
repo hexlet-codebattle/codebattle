@@ -13,7 +13,7 @@ function useHover() {
   }, []);
 
   const customRef = useCallback(
-    node => {
+    (node) => {
       if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
         previousNode.current.removeEventListener(
           'mouseenter',

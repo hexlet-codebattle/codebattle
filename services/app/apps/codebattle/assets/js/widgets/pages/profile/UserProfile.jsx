@@ -49,10 +49,10 @@ function UserProfile() {
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
-      .then(response => {
+      .then((response) => {
         setUserData(camelizeKeys(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
@@ -112,7 +112,7 @@ function UserProfile() {
                 <hr className="mt-2" />
                 <h3 className="text-break cb-heading">Achievements</h3>
                 <div className="d-flex flex-wrap justify-content-start mt-3">
-                  {user.achievements.map(item => <Achievement key={item} achievement={item} />)}
+                  {user.achievements.map((item) => <Achievement key={item} achievement={item} />)}
                 </div>
               </>
             )}

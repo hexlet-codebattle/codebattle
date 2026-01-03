@@ -10,7 +10,9 @@ import {
 
 import GameLevelBadge from './GameLevelBadge';
 
-const NoInvites = () => <div className="p-2 text-center">No Invites</div>;
+function NoInvites() {
+  return <div className="p-2 text-center">No Invites</div>;
+}
 
 function InvitesList({ list, followId, currentUserId }) {
   const dispatch = useDispatch();

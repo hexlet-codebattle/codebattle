@@ -3,20 +3,136 @@ import React, { memo } from 'react';
 import cn from 'classnames';
 import Gon from 'gon';
 
-const getPlaceBadgeClass = place => {
+const getMedalEmoji = (place) => {
   switch (place) {
     case 1:
-      return 'bg-warning text-dark';
+      return '🥇';
     case 2:
-      return 'bg-secondary';
+      return '🥈';
     case 3:
-      return 'bg-bronze';
+      return '🥉';
     default:
-      return 'bg-primary';
+      return null;
   }
 };
 
-const SeasonsPage = () => {
+function PodiumPlace({ result, size = 'normal' }) {
+  const isLarge = size === 'large';
+
+  return (
+    <div
+      className={cn('card h-100 border-2', {
+        'border-warning': result.place === 1,
+        'border-secondary': result.place === 2,
+        'border-bronze': result.place === 3,
+      })}
+      style={{
+        background: result.place === 1
+          ? 'linear-gradient(180deg, rgba(255,193,7,0.15) 0%, rgba(0,0,0,0.8) 100%)'
+          : 'rgba(0,0,0,0.6)',
+      }}
+    >
+      <div className={cn('card-body text-center', isLarge ? 'py-4' : 'py-3')}>
+        <div className={cn('mb-2', isLarge ? 'fs-2' : 'fs-4')}>
+          {getMedalEmoji(result.place)}
+        </div>
+        <h6 className={cn('text-white mb-2', isLarge && 'fs-5 fw-bold')}>
+          {result.user_name}
+        </h6>
+        {result.clan_name && (
+          <div className="mb-2">
+            <span className="badge bg-info bg-opacity-75 small">{result.clan_name}</span>
+          </div>
+        )}
+        <div className={cn('fw-bold', isLarge ? 'fs-4 text-warning' : 'fs-5 text-white')}>
+          {result.total_points}
+        </div>
+        <div className="text-muted small">points</div>
+      </div>
+    </div>
+  );
+}
+
+function Top3Podium({ top3 }) {
+  if (!top3 || top3.length === 0) {
+    return (
+      <div className="text-muted text-center py-4">
+        No results yet
+      </div>
+    );
+  }
+
+  const first = top3.find((r) => r.place === 1);
+  const second = top3.find((r) => r.place === 2);
+  const third = top3.find((r) => r.place === 3);
+
+  return (
+    <div className="row g-2 align-items-end">
+      {/* Second place - left */}
+      <div className="col-4">
+        {second && (
+          <div style={{ marginTop: '1.5rem' }}>
+            <PodiumPlace result={second} />
+          </div>
+        )}
+      </div>
+
+      {/* First place - center, elevated */}
+      <div className="col-4">
+        {first && <PodiumPlace result={first} size="large" />}
+      </div>
+
+      {/* Third place - right */}
+      <div className="col-4">
+        {third && (
+          <div style={{ marginTop: '2rem' }}>
+            <PodiumPlace result={third} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SeasonCard({ season }) {
+  return (
+    <div
+      className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light h-100"
+      style={{
+      background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
+    }}
+    >
+      <div className="card-body d-flex flex-column">
+        <div className="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h3 className="card-title text-warning mb-1 fs-4">
+              {season.name}
+              {' '}
+              {season.year}
+            </h3>
+            <div className="text-muted small">
+              {season.starts_at}
+              {' — '}
+              {season.ends_at}
+            </div>
+          </div>
+          <a
+            href={`/seasons/${season.id}`}
+            className="btn btn-sm btn-outline-warning"
+          >
+            View Results
+          </a>
+        </div>
+
+        <div className="flex-grow-1 d-flex flex-column justify-content-center">
+          <Top3Podium top3={season.top3} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SeasonsPage() {
   const seasons = (Gon && Gon.getAsset && Gon.getAsset('seasons')) || [];
 
   return (
@@ -37,85 +153,9 @@ const SeasonsPage = () => {
           </div>
         ) : (
           <div className="row g-4">
-            {seasons.map(season => (
+            {seasons.map((season) => (
               <div key={season.id} className="col-lg-6">
-                <div
-                  className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light h-100"
-                  style={{
-                    background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
-                  }}
-                >
-                  <div className="card-body">
-                    <div className="d-flex justify-content-between align-items-start mb-3">
-                      <div>
-                        <h3 className="card-title text-warning mb-1">
-                          {season.name}
-                          {' '}
-                          {season.year}
-                        </h3>
-                        <div className="text-muted small">
-                          {season.starts_at}
-                          {' '}
-                          -
-                          {' '}
-                          {season.ends_at}
-                        </div>
-                      </div>
-                      <a
-                        href={`/seasons/${season.id}`}
-                        className="btn btn-sm btn-outline-warning"
-                      >
-                        View Results
-                      </a>
-                    </div>
-
-                    {season.top3 && season.top3.length > 0 ? (
-                      <div>
-                        <h5 className="text-white mb-3 small">Top 3</h5>
-                        <div className="d-flex flex-column gap-2">
-                          {season.top3.map(result => (
-                            <div
-                              key={result.user_id}
-                              className={cn('card border-2', {
-                                'bg-dark border-warning': result.place === 1,
-                                'bg-dark border-secondary': result.place === 2,
-                                'bg-dark border-bronze': result.place === 3,
-                              })}
-                            >
-                              <div className="card-body py-2 px-3">
-                                <div className="d-flex justify-content-between align-items-center">
-                                  <div className="d-flex align-items-center gap-2">
-                                    <span className={cn('badge', getPlaceBadgeClass(result.place))}>
-                                      {result.place === 1 && '🥇'}
-                                      {result.place === 2 && '🥈'}
-                                      {result.place === 3 && '🥉'}
-                                    </span>
-                                    <div>
-                                      <div className="text-white fw-bold">{result.user_name}</div>
-                                      {result.clan_name && (
-                                        <div className="text-muted small">
-                                          <span className="badge bg-info">{result.clan_name}</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="text-end">
-                                    <div className="text-white fw-bold">{result.total_points}</div>
-                                    <div className="text-muted small">points</div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-muted text-center py-3 small">
-                        No results yet
-                      </div>
-                    )}
-                  </div>
-                </div>
+                <SeasonCard season={season} />
               </div>
             ))}
           </div>
@@ -123,6 +163,6 @@ const SeasonsPage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default memo(SeasonsPage);

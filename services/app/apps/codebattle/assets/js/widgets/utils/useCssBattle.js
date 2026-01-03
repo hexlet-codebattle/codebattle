@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { matchBattlePictures } from '../lib/cssbattle';
 import * as selectors from '../selectors';
 
-const getIframeHtmlContent = text => `<div></div><style>${text}</style>`;
+const getIframeHtmlContent = (text) => `<div></div><style>${text}</style>`;
 // const defaultText = '\ndiv {\n\tbackground: #F3AC3C;\n\twidth: 50px;\n\theight: 50px\n}';
 
 const useIframes = () => {
@@ -81,7 +81,7 @@ const useCssBattleStats = (
   const cssTextLeft = leftEditor.text;
   const cssTextRight = rightEditor.text;
 
-  const receivedCssBattleIframeMessage = useCallback(event => {
+  const receivedCssBattleIframeMessage = useCallback((event) => {
     try {
       if (event.data?.type !== 'cssbattle' && !event.data?.dataUrl) {
         return;
@@ -125,7 +125,7 @@ const useCssBattleStats = (
 
   useEffect(() => {
     if (leftDataUrl && rightDataUrl && targetDataUrl) {
-      setMatchStats(state => ({ ...state, status: 'process' }));
+      setMatchStats((state) => ({ ...state, status: 'process' }));
 
       const intervalId = setInterval(() => {
         try {
@@ -144,7 +144,7 @@ const useCssBattleStats = (
           clearInterval(intervalId);
         } catch (e) {
           console.error(e);
-          setMatchStats(state => ({ ...state, status: 'loading' }));
+          setMatchStats((state) => ({ ...state, status: 'loading' }));
           console.warn('images not ready for pixel matching');
         }
       }, 1000);
@@ -155,7 +155,7 @@ const useCssBattleStats = (
     }
 
     if (!targetDataUrl) {
-      setMatchStats(state => ({ ...state, status: 'targetIsEmpty' }));
+      setMatchStats((state) => ({ ...state, status: 'targetIsEmpty' }));
 
       return () => { };
     }

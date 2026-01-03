@@ -51,7 +51,7 @@ const settingsByState = {
 };
 
 // const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
-const initContextByState = state => assign(({ userId, type }) => ({
+const initContextByState = (state) => assign(({ userId, type }) => ({
   ...editorSettingsByUserType[type],
   ...settingsByState[state],
   userId,
@@ -182,13 +182,13 @@ const editor = {
   },
 };
 
-const canSkipCharging = type => type !== SubscriptionTypeCodes.free;
+const canSkipCharging = (type) => type !== SubscriptionTypeCodes.free;
 
 export const config = {
   actions: {
     userSendSolution: () => { },
     handleTimeoutFailureChecking: () => { },
-    openCheckResultOutput: ctx => {
+    openCheckResultOutput: (ctx) => {
       const leftOutputNode = document.getElementById('leftOutput-tab');
       if (ctx.type === editorUserTypes.currentUser && leftOutputNode) {
         leftOutputNode.click();
@@ -211,7 +211,7 @@ export const config = {
       ctx.userId === userId
       && canSkipCharging(ctx.subscriptionType)
     ),
-    canSkipCharging: ctx => canSkipCharging(ctx.subscriptionType),
+    canSkipCharging: (ctx) => canSkipCharging(ctx.subscriptionType),
   },
 };
 

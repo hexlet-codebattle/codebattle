@@ -5,24 +5,24 @@ import rooms from '../config/rooms';
 
 const currentUserId = Gon.getAsset('current_user')?.id;
 
-export const isGeneralRoom = room => room.name === rooms.general.name;
+export const isGeneralRoom = (room) => room.name === rooms.general.name;
 
-export const isPrivateRoom = room => !Object.values(rooms).some(r => r.name === room.name);
+export const isPrivateRoom = (room) => !Object.values(rooms).some((r) => r.name === room.name);
 
-export const isPrivateMessage = messageType => messageType === messageTypes.private;
+export const isPrivateMessage = (messageType) => messageType === messageTypes.private;
 
-export const isSystemMessage = messageType => messageType === messageTypes.system;
+export const isSystemMessage = (messageType) => messageType === messageTypes.system;
 
 export const isMessageForCurrentPrivateRoom = (room, message) => (
   room.targetUserId === message.meta?.targetUserId || room.targetUserId === message.userId
 );
 
-export const isMessageForCurrentUser = message => (
+export const isMessageForCurrentUser = (message) => (
   message.meta?.type === messageTypes.private
   && (message.userId === currentUserId || message.meta.targetUserId === currentUserId)
 );
 
-export const isMessageForEveryone = message => !message.meta || message.meta.type === messageTypes.general;
+export const isMessageForEveryone = (message) => !message.meta || message.meta.type === messageTypes.general;
 
 const isProperPrivateRoomActive = (message, room) => (
   (room.targetUserId === message.meta.targetUserId && message.userId === currentUserId)

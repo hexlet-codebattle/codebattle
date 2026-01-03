@@ -6,20 +6,22 @@ const getText = (name, type) => (
   name ? `${name} (${type.name})` : `(${type.name})`
 );
 
-const SignaturePreview = ({
+function SignaturePreview({
   argumentName,
   type,
-}) => (
-  <div
-    className={itemClassName}
-  >
+}) {
+  return (
     <div
-      title={getText(argumentName, type)}
-      className={itemActionClassName}
+      className={itemClassName}
     >
-      {getText(argumentName, type)}
+      <div
+        title={getText(argumentName, type)}
+        className={itemActionClassName}
+      >
+        {getText(argumentName, type)}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default SignaturePreview;

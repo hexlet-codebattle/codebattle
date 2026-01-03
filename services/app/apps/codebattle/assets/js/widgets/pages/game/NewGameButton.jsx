@@ -7,7 +7,7 @@ import i18n from '../../../i18n';
 import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
 
-const NewGameButton = props => {
+function NewGameButton(props) {
   const { gameTask: { level }, gameMode, timeoutSeconds } = props;
   const type = gameMode === GameTypeCodes.regular ? 'withRandomPlayer' : 'withFriend';
   const queryParamsString = qs.stringify({ level, type, timeout_seconds: timeoutSeconds });
@@ -24,9 +24,9 @@ const NewGameButton = props => {
       {i18n.t('Start new game')}
     </button>
   );
-};
+}
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   timeoutSeconds: selectors.gameStatusSelector(state).timeoutSeconds,
   gameTask: selectors.gameTaskSelector(state),
 });

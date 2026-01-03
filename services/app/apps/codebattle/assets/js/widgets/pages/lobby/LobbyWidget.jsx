@@ -37,36 +37,42 @@ const createExperementalGameBtnClassName = cn(
   'btn-secondary cb-btn-secondary mt-2 pl-2',
 );
 
-const CreateExperimentalGameButton = ({ onClick, isOnline, type = 'css' }) => (
-  <button
-    type="button"
-    className={createExperementalGameBtnClassName}
-    data-type={type}
-    onClick={onClick}
-    disabled={!isOnline}
-  >
-    {type === 'css' ? 'Create a CSS Game' : 'Create a SQL Game'}
-  </button>
-);
+function CreateExperimentalGameButton({ onClick, isOnline, type = 'css' }) {
+  return (
+    <button
+      type="button"
+      className={createExperementalGameBtnClassName}
+      data-type={type}
+      onClick={onClick}
+      disabled={!isOnline}
+    >
+      {type === 'css' ? 'Create a CSS Game' : 'Create a SQL Game'}
+    </button>
+  );
+}
 
-const JoinGameButton = ({ onClick }) => (
-  <button type="button" className={joinGameBtnClassName} onClick={onClick}>
-    Join a battle
-  </button>
-);
+function JoinGameButton({ onClick }) {
+  return (
+    <button type="button" className={joinGameBtnClassName} onClick={onClick}>
+      Join a battle
+    </button>
+  );
+}
 
-const CreateGameButton = ({ onClick, isOnline, isContinue }) => (
-  <button
-    type="button"
-    className={createBasicGameBtnClassName}
-    onClick={onClick}
-    disabled={!isOnline}
-  >
-    {isContinue ? 'Continue battle' : 'Create a battle'}
-  </button>
-);
+function CreateGameButton({ onClick, isOnline, isContinue }) {
+  return (
+    <button
+      type="button"
+      className={createBasicGameBtnClassName}
+      onClick={onClick}
+      disabled={!isOnline}
+    >
+      {isContinue ? 'Continue battle' : 'Create a battle'}
+    </button>
+  );
+}
 
-const LobbyWidget = () => {
+function LobbyWidget() {
   const currentOpponent = Gon.getAsset('opponent');
 
   const dispatch = useDispatch();
@@ -122,7 +128,7 @@ const LobbyWidget = () => {
     }
   }, [activeGame, handleShowCreateGameModal]);
   const handleExperimentalGameBtnClick = useCallback(
-    event => {
+    (event) => {
       const type = event.currentTarget.dataset.type || 'css';
 
       if (isAdmin) {
@@ -240,6 +246,6 @@ const LobbyWidget = () => {
       </div>
     </div>
   );
-};
+}
 
 export default LobbyWidget;

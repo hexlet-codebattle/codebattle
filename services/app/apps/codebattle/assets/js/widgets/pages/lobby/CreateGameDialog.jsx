@@ -53,18 +53,18 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
             ({ id }) => id !== currentUserId,
           );
           const onlineUsersFromPresence = presenceList
-            .map(p => p.user)
-            .filter(user => user.id !== currentUserId);
+            .map((p) => p.user)
+            .filter((user) => user.id !== currentUserId);
           const combinedUsersMap = new Map();
 
-          filteredApiUsers.forEach(user => {
+          filteredApiUsers.forEach((user) => {
             const isOnline = presenceList.some(
-              presence => String(presence.id) === String(user.id),
+              (presence) => String(presence.id) === String(user.id),
             );
             combinedUsersMap.set(user.id, { ...user, online: isOnline });
           });
 
-          onlineUsersFromPresence.forEach(onlineUser => {
+          onlineUsersFromPresence.forEach((onlineUser) => {
             if (!combinedUsersMap.has(onlineUser.id)) {
               combinedUsersMap.set(onlineUser.id, {
                 ...onlineUser,
@@ -84,14 +84,14 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
             return aOnline ? -1 : 1;
           });
 
-          const options = sortedUsers.map(user => ({
+          const options = sortedUsers.map((user) => ({
             label: <UserLabel user={user} />,
             value: user,
           }));
 
           callback(options);
         })
-        .catch(error => {
+        .catch((error) => {
           dispatch(actions.setError(error));
         });
     },
@@ -115,7 +115,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
 });
 
 const LevelButtonGroup = memo(({ value, onChange }) => {
-  const getLevelClassName = level => {
+  const getLevelClassName = (level) => {
     const isLevelActive = level === value;
     return cn('btn border-0 mb-2 bg-gray cb-rounded', {
       'bg-orange': isLevelActive,
@@ -123,14 +123,14 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
     });
   };
 
-  const changeGameLevel = level => {
+  const changeGameLevel = (level) => {
     if (level === value) return;
     onChange(level);
   };
 
   return (
     <div className="d-flex justify-content-around px-sm-3 px-md-5">
-      {gameLevels.map(level => (
+      {gameLevels.map((level) => (
         <button
           key={level}
           type="button"
@@ -148,7 +148,7 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
 });
 
 const GameTypeButtonGroup = memo(({ value, onChange }) => {
-  const getGameTypeClassName = gameType => {
+  const getGameTypeClassName = (gameType) => {
     const isGameTypeActive = gameType === value;
     return cn('btn mr-1 mb-1 mb-sm-0 cb-rounded text-nowrap', {
       'bg-orange text-white': isGameTypeActive,
@@ -158,7 +158,7 @@ const GameTypeButtonGroup = memo(({ value, onChange }) => {
 
   return (
     <div className="d-flex flex-wrap flex-sm-nowrap justify-content-around px-sm-3 px-md-5 mt-3">
-      {gameTypeCodes.map(gameTypeCode => (
+      {gameTypeCodes.map((gameTypeCode) => (
         <button
           key={gameTypeCode}
           type="button"
@@ -190,12 +190,12 @@ function CreateGameDialog({ hideModal }) {
   const isTaskChosen = chosenTask.id !== null;
 
   const handleTimeoutChange = useCallback(
-    e => setGameTimeout(e.target.value * 60),
+    (e) => setGameTimeout(e.target.value * 60),
     [setGameTimeout],
   );
 
   const switchGameLevel = useCallback(
-    level => {
+    (level) => {
       setGameLevel(level);
       setChosenTask(unchosenTask);
       setChosenTags([]);

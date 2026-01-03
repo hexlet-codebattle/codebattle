@@ -15,40 +15,46 @@ const getCsrfToken = () => document.querySelector("meta[name='csrf-token']").get
 
 const isShowInvalidMessage = (formik, typeValue) => formik.submitCount !== 0 && !!formik.errors[typeValue];
 
-const getInputClassName = isInvalid => cn('form-control custom-control cb-bg-panel cb-border-color text-white', {
+const getInputClassName = (isInvalid) => cn('form-control custom-control cb-bg-panel cb-border-color text-white', {
   'is-invalid': isInvalid,
 });
 
-const Container = ({ children }) => (
-  <div className="container-fluid">
-    <div className="row justify-content-center">
-      <div className="col-lg-5 col-md-5 col-sm-5 px-md-4">
-        <div className="card cb-card border cb-border-color cb-rounded shadow-sm">{children}</div>
+function Container({ children }) {
+  return (
+    <div className="container-fluid">
+      <div className="row justify-content-center">
+        <div className="col-lg-5 col-md-5 col-sm-5 px-md-4">
+          <div className="card cb-card border cb-border-color cb-rounded shadow-sm">{children}</div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
-const Title = ({ text }) => <h3 className="text-center text-white">{text}</h3>;
+function Title({ text }) {
+  return <h3 className="text-center text-white">{text}</h3>;
+}
 
-const Form = ({ onSubmit, id, children }) => (
-  <form onSubmit={onSubmit} noValidate>
-    {children}
-    <input
-      type="submit"
-      name="commit"
-      id={`${id}-submit`}
-      value="Submit"
-      aria-label="SubmitForm"
-      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
-      data-disable-with="Submit"
-    />
-  </form>
-);
+function Form({ onSubmit, id, children }) {
+  return (
+    <form onSubmit={onSubmit} noValidate>
+      {children}
+      <input
+        type="submit"
+        name="commit"
+        id={`${id}-submit`}
+        value="Submit"
+        aria-label="SubmitForm"
+        className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
+        data-disable-with="Submit"
+      />
+    </form>
+  );
+}
 
-const Input = ({
+function Input({
   id, type, title, formik,
-}) => {
+}) {
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
 
@@ -65,15 +71,15 @@ const Input = ({
       {isInvalid && <div className="invalid-feedback">{formik.errors[id]}</div>}
     </div>
   );
-};
+}
 
-const PasswordInput = ({ id, title, formik }) => {
+function PasswordInput({ id, title, formik }) {
   const [showPassword, setShowPassword] = useState(false);
   const isInvalid = isShowInvalidMessage(formik, id);
   const inputClassName = getInputClassName(isInvalid);
 
   const togglePasswordVisibility = () => {
-    setShowPassword(prevState => !prevState);
+    setShowPassword((prevState) => !prevState);
   };
 
   return (
@@ -99,76 +105,84 @@ const PasswordInput = ({ id, title, formik }) => {
       {isInvalid && <div className="invalid-feedback">{formik.errors[id]}</div>}
     </div>
   );
-};
+}
 
-const Body = ({ children }) => (
-  <div className="card-body p-lg-4 p-xl-5">{children}</div>
-);
+function Body({ children }) {
+  return <div className="card-body p-lg-4 p-xl-5">{children}</div>;
+}
 
-const Footer = ({ children }) => (
-  <div className="card-footer py-2">
-    <div className="text-center">{children}</div>
-  </div>
-);
+function Footer({ children }) {
+  return (
+    <div className="card-footer py-2">
+      <div className="text-center">{children}</div>
+    </div>
+  );
+}
 
 const searchParams = new URLSearchParams(window.location.search);
 const getNextLocation = () => (searchParams.has('next') ? searchParams.get('next') : '/');
-const getLinkWithNext = link => (searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link);
+const getLinkWithNext = (link) => (searchParams.has('next') ? `${link}?next=${searchParams.get('next')}` : link);
 
-const SocialLinks = ({ isSignUp }) => (
-  <>
-    <div className="mt-1">
-      <a
-        type="button"
-        aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
-        href={getLinkWithNext('/auth/github')}
-        className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-      >
-        {isSignUp
+function SocialLinks({ isSignUp }) {
+  return (
+    <>
+      <div className="mt-1">
+        <a
+          type="button"
+          aria-label={isSignUp ? 'signUpWithGithub' : 'signInWithGithub'}
+          href={getLinkWithNext('/auth/github')}
+          className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+        >
+          {isSignUp
           ? i18n.t('Sign up with Github')
           : i18n.t('Sign in with Github')}
-      </a>
-    </div>
-    <div className="mt-1">
-      <a
-        type="button"
-        aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
-        href={getLinkWithNext('/auth/discord')}
-        className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-      >
-        {isSignUp
+        </a>
+      </div>
+      <div className="mt-1">
+        <a
+          type="button"
+          aria-label={isSignUp ? 'signUpWithDiscord' : 'signInWithDiscord'}
+          href={getLinkWithNext('/auth/discord')}
+          className="btn w-100 px-2 btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+        >
+          {isSignUp
           ? i18n.t('Sign up with Discord')
           : i18n.t('Sign in with Discord')}
+        </a>
+      </div>
+    </>
+  );
+}
+
+function SignInInvitation() {
+  return (
+    <div className="small">
+      <span className="cb-text">{i18n.t('If you have an account')}</span>
+      <a
+        href={getLinkWithNext('/session/new')}
+        role="button"
+        className="btn-link text-white ml-3"
+      >
+        {i18n.t('Sign In')}
       </a>
     </div>
-  </>
-);
+  );
+}
 
-const SignInInvitation = () => (
-  <div className="small">
-    <span className="cb-text">{i18n.t('If you have an account')}</span>
-    <a
-      href={getLinkWithNext('/session/new')}
-      role="button"
-      className="btn-link text-white ml-3"
-    >
-      {i18n.t('Sign In')}
-    </a>
-  </div>
-);
-
-const SignUpInvitation = () => (
-  <div className="small">
-    <span className="cb-text">{i18n.t('Have not an account?')}</span>
-    <a
-      href={getLinkWithNext('/users/new')}
-      role="button"
-      className="btn-link text-primary ml-3"
-    >
-      {i18n.t('Sign Up')}
-    </a>
-  </div>
-);
+function SignUpInvitation() {
+  return (
+    <div className="small">
+      <span className="cb-text">{i18n.t('Have not an account?')}</span>
+      <a
+        href={getLinkWithNext('/users/new')}
+        role="button"
+        className="btn-link text-primary ml-3"
+      >
+        {i18n.t('Sign Up')}
+      </a>
+    </div>
+  );
+}
 
 function SignIn() {
   const formik = useFormik({
@@ -190,7 +204,7 @@ function SignIn() {
         .then(() => {
           window.location.href = getNextLocation();
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: add log for auth error
           // TODO: Add better errors handler
           if (error.response.data.errors) {
@@ -241,7 +255,7 @@ function SignUp() {
       passwordConfirmation: '',
     },
     validationSchema: Yup.object().shape(schemas.signUp),
-    onSubmit: formData => {
+    onSubmit: (formData) => {
       axios
         .post('/api/v1/users', formData, {
           headers: {
@@ -252,7 +266,7 @@ function SignUp() {
         .then(() => {
           window.location.href = getNextLocation();
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
@@ -317,7 +331,7 @@ function ResetPassword() {
         .then(() => {
           setIsSend(true);
         })
-        .catch(error => {
+        .catch((error) => {
           // TODO: add log for auth error
           // TODO: Add better errors handler
           if (error.response.data.errors) {

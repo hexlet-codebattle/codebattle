@@ -17,12 +17,12 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
 };
 
 const initTournamentChannel = (dispatch, isAdminWidged = false) => {
-  const onJoinFailure = err => {
+  const onJoinFailure = (err) => {
     console.error(err);
     // window.location.reload();
   };
 
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     if (isAdminWidged) {
       // Handle active_game_id if it exists in the response
       if (response.activeGameId) {
@@ -56,11 +56,11 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (_machine, newTournamentId, isAdminWidged = false) => dispatch => {
+export const connectToTournament = (_machine, newTournamentId, isAdminWidged = false) => (dispatch) => {
     setTournamentChannel(newTournamentId);
     initTournamentChannel(dispatch, isAdminWidged);
 
-    const handleUpdate = response => {
+    const handleUpdate = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
       dispatch(
         actions.updateTournamentPlayers(compact(response.players || [])),
@@ -76,27 +76,27 @@ export const connectToTournament = (_machine, newTournamentId, isAdminWidged = f
       }
     };
 
-    const handleReportPending = response => {
+    const handleReportPending = (response) => {
       dispatch(actions.addReport(response.report));
     };
 
-    const handleReportUpdated = response => {
+    const handleReportUpdated = (response) => {
       dispatch(actions.updateReport(response.report));
     };
 
-    const handleMatchesUpdate = response => {
+    const handleMatchesUpdate = (response) => {
       dispatch(actions.updateTournamentMatches(compact(response.matches)));
     };
 
-    const handlePlayersUpdate = response => {
+    const handlePlayersUpdate = (response) => {
       dispatch(actions.updateTournamentPlayers(compact(response.players)));
     };
 
-    const handleTournamentRoundCreated = response => {
+    const handleTournamentRoundCreated = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handleRoundFinished = response => {
+    const handleRoundFinished = (response) => {
       dispatch(
         actions.updateTournamentData({
           ...response.tournament,
@@ -110,7 +110,7 @@ export const connectToTournament = (_machine, newTournamentId, isAdminWidged = f
       dispatch(actions.updateTopPlayers(compact(response.players)));
     };
 
-    const handleTournamentRestarted = response => {
+    const handleTournamentRestarted = (response) => {
       dispatch(
         actions.setTournamentData({
           ...response.tournament,
@@ -123,22 +123,22 @@ export const connectToTournament = (_machine, newTournamentId, isAdminWidged = f
       );
     };
 
-    const handlePlayerJoined = response => {
+    const handlePlayerJoined = (response) => {
       dispatch(actions.addTournamentPlayer(response));
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handlePlayerLeft = response => {
+    const handlePlayerLeft = (response) => {
       dispatch(actions.removeTournamentPlayer(response));
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
-    const handleMatchUpserted = response => {
+    const handleMatchUpserted = (response) => {
       dispatch(actions.updateTournamentMatches(compact([response.match])));
       dispatch(actions.updateTournamentPlayers(compact(response.players)));
     };
 
-    const handleTournamentFinished = response => {
+    const handleTournamentFinished = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
@@ -158,7 +158,7 @@ export const connectToTournament = (_machine, newTournamentId, isAdminWidged = f
   };
 
 // TODO (tournaments): request matches by searched player id
-export const uploadPlayers = playerIds => (dispatch, getState) => {
+export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   const state = getState();
 
   const { isLive, id } = state.tournament;
@@ -166,7 +166,7 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
   if (isLive) {
     channel
       .push('tournament:players:request', { playerIds })
-      .receive('ok', response => {
+      .receive('ok', (response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       });
   } else {
@@ -179,32 +179,32 @@ export const uploadPlayers = playerIds => (dispatch, getState) => {
           'x-csrf-token': window.csrf_token,
         },
       })
-      .then(response => {
+      .then((response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 };
 
-export const requestMatchesForRound = () => dispatch => {
+export const requestMatchesForRound = () => (dispatch) => {
   channel
     .push('tournament:matches:request_for_round', {})
-    .receive('ok', data => {
+    .receive('ok', (data) => {
       dispatch(actions.updateTournamentMatches(data.matches));
     })
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
-export const requestMatchesByPlayerId = userId => dispatch => {
+export const requestMatchesByPlayerId = (userId) => (dispatch) => {
   channel
     .push('tournament:matches:request', { playerId: userId })
-    .receive('ok', data => {
+    .receive('ok', (data) => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
     });
 };
 
-export const uploadPlayersMatches = playerId => (dispatch, getState) => {
+export const uploadPlayersMatches = (playerId) => (dispatch, getState) => {
   const state = getState();
 
   const { isLive, id } = state.tournament;
@@ -219,14 +219,14 @@ export const uploadPlayersMatches = playerId => (dispatch, getState) => {
           'x-csrf-token': window.csrf_token,
         },
       })
-      .then(response => {
+      .then((response) => {
         dispatch(actions.updateTournamentMatches(response.matches));
       })
-      .catch(error => console.error(error));
+      .catch((error) => console.error(error));
   }
 };
 
-export const createCustomRound = params => {
+export const createCustomRound = (params) => {
   channel.push('tournament:start_round', params);
 };
 
@@ -234,8 +234,8 @@ export const startTournament = () => {
   channel.push('tournament:start', {});
 };
 
-export const cancelTournament = () => dispatch => {
-  channel.push('tournament:cancel', {}).receive('ok', response => {
+export const cancelTournament = () => (dispatch) => {
+  channel.push('tournament:cancel', {}).receive('ok', (response) => {
     dispatch(actions.updateTournamentData(response.tournament));
   });
 };
@@ -252,7 +252,7 @@ export const finishRoundTournament = () => {
   channel.push('tournament:finish_round', {});
 };
 
-export const toggleVisibleGameResult = gameId => {
+export const toggleVisibleGameResult = (gameId) => {
   channel.push('tournament:toggle_match_visible', { gameId });
 };
 
@@ -264,34 +264,34 @@ export const showTournamentResults = () => {
   channel.push('tournament:toggle_show_results', {});
 };
 
-export const sendMatchGameOver = matchId => {
+export const sendMatchGameOver = (matchId) => {
   channel.push('tournament:match:game_over', { matchId });
 };
 
-export const toggleBanUser = (userId, isBanned) => dispatch => {
+export const toggleBanUser = (userId, isBanned) => (dispatch) => {
   channel
     .push('tournament:ban:player', { userId })
     .receive('ok', () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])));
 };
 
-export const sendNewReportState = (reportId, state) => dispatch => {
+export const sendNewReportState = (reportId, state) => (dispatch) => {
   const params = { reportId, state };
 
   channel
     .push('tournament:report:update', params)
-    .receive('ok', payload => {
+    .receive('ok', (payload) => {
       const report = camelizeKeys(payload.report);
       dispatch(actions.updateReport(report));
     })
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
-export const pushActiveMatchToStream = gameId => dispatch => {
+export const pushActiveMatchToStream = (gameId) => (dispatch) => {
   // Update the Redux state immediately for instant UI feedback
   dispatch(actions.setAdminActiveGameId(gameId));
 
   // Send the update to the server
   channel
     .push('tournament:stream:active_game', { gameId })
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };

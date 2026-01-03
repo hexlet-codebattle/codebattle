@@ -67,7 +67,7 @@ function BlockBase({
 
         {isResizable && (
           <>
-            {['tl', 'tr', 'bl', 'br'].map(pos => (
+            {['tl', 'tr', 'bl', 'br'].map((pos) => (
               <div key={pos} className={`resize-dot ${pos}`} />
             ))}
             <div

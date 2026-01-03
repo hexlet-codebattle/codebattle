@@ -47,7 +47,7 @@ function Messages({
     }
   }, [messages.length, stayScrolled, scrollBottom, isNearBottom]);
 
-  const scrollHandler = e => {
+  const scrollHandler = (e) => {
     const chatContainer = e.target;
     const chatScrollHeight = chatContainer.scrollHeight
       - chatContainer.scrollTop

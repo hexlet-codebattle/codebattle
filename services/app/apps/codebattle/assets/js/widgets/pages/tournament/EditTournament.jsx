@@ -66,7 +66,7 @@ function EditTournament({
     }
   }, [tournamentId]);
 
-  const handleSubmit = useCallback(async formData => {
+  const handleSubmit = useCallback(async (formData) => {
     setIsSubmitting(true);
     setErrors({});
     setNotification(notifications.empty);
@@ -149,7 +149,7 @@ function EditTournament({
   }
 
   // Format starts_at for datetime-local input
-  const formatDatetimeLocal = dateString => {
+  const formatDatetimeLocal = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     const year = date.getFullYear();

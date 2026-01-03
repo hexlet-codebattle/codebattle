@@ -12,7 +12,7 @@ import TournamentStatisticsModal from '@/pages/game/TournamentStatisticsModal';
 
 import ModalCodes from '../config/modalCodes';
 
-const useGameRoomModals = machines => {
+const useGameRoomModals = (machines) => {
   useEffect(() => {
     NiceModal.register(ModalCodes.gameResultModal, AnimationModal);
     NiceModal.register(ModalCodes.premiumRestrictionModal, PremiumRestrictionModal);

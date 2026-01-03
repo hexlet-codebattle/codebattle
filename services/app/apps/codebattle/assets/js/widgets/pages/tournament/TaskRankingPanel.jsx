@@ -8,7 +8,7 @@ import { getResults } from '../../middlewares/Tournament';
 
 import useTournamentPanel from './useTournamentPanel';
 
-const getCustomEventTrClassName = level => cn('font-weight-bold cb-custom-event-tr cursor-pointer', {
+const getCustomEventTrClassName = (level) => cn('font-weight-bold cb-custom-event-tr cursor-pointer', {
     'text-dark cb-custom-event-bg-success': level === 'easy',
     'text-dark cb-custom-event-bg-orange': level === 'elementary',
     'text-dark cb-custom-event-bg-blue': level === 'medium',
@@ -66,7 +66,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
           </tr>
         </thead>
         <tbody>
-          {items.map(item => (
+          {items.map((item) => (
             <React.Fragment key={`${type}-task-${item.taskId}`}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr

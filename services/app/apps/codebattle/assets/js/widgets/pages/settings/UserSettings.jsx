@@ -45,11 +45,11 @@ function Notification({ notification, onClose }) {
 }
 
 function SocialButtons({ settings }) {
-  const onlyOneProviderLinked = providers.filter(provider => (
+  const onlyOneProviderLinked = providers.filter((provider) => (
     !!settings[mapUserPropNameByProviderName[provider]]
   )).length === 1;
 
-  return providers.map(provider => {
+  return providers.map((provider) => {
     const providerPropName = mapUserPropNameByProviderName[provider];
     const isLinked = !!settings[providerPropName];
     const formatedProviderName = capitalize(provider);

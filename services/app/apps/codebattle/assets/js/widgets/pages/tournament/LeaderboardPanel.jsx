@@ -17,7 +17,7 @@ function LeaderboardPanel({ state, ranking, playersCount }) {
     if (state === TournamentStates.finished) {
       console.log('Tournament finished, fetching leaderboard...');
       dispatch(
-        getResults('leaderboard', {}, data => {
+        getResults('leaderboard', {}, (data) => {
           console.log('Leaderboard fetched');
           setLeaderboard(data);
         }),

@@ -47,7 +47,7 @@ const rootReducer = combineReducers({
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
-  middleware: getDefaultMiddleware => getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
       serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
     }),
 });
@@ -79,137 +79,161 @@ const TournamentsSchedule = React.lazy(() => import('./pages/schedule'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
 
-export const Online = () => (
-  <Provider store={store}>
-    <OnlineContainer />
-  </Provider>
-);
+export function Online() {
+  return (
+    <Provider store={store}>
+      <OnlineContainer />
+    </Provider>
+  );
+}
 
-export const Invites = () => (
-  <Provider store={store}>
-    <InvitesContainer />
-  </Provider>
-);
+export function Invites() {
+  return (
+    <Provider store={store}>
+      <InvitesContainer />
+    </Provider>
+  );
+}
 
-export const Game = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <RoomWidget
-            pageName={PageNames.game}
-            mainMachine={mainMachine}
-            waitingRoomMachine={waitingRoomMachine}
-            taskMachine={taskMachine}
-            editorMachine={editorMachine}
-          />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Game() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <RoomWidget
+              pageName={PageNames.game}
+              mainMachine={mainMachine}
+              waitingRoomMachine={waitingRoomMachine}
+              taskMachine={taskMachine}
+              editorMachine={editorMachine}
+            />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const Builder = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <RoomWidget
-            pageName={PageNames.builder}
-            mainMachine={mainMachine}
-            waitingRoomMachine={waitingRoomMachine}
-            taskMachine={taskMachine}
-            editorMachine={editorMachine}
-          />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Builder() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <RoomWidget
+              pageName={PageNames.builder}
+              mainMachine={mainMachine}
+              waitingRoomMachine={waitingRoomMachine}
+              taskMachine={taskMachine}
+              editorMachine={editorMachine}
+            />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const Lobby = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <LobbyWidget />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Lobby() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <LobbyWidget />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const UsersRating = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <RatingList />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function UsersRating() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <RatingList />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const TournamentsSchedulePage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <TournamentsSchedule />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function TournamentsSchedulePage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <TournamentsSchedule />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const UserPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <UserProfile />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function UserPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <UserProfile />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const SettingsPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <UserSettings />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function SettingsPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <UserSettings />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const RegistrationPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Registration />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function RegistrationPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Registration />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const StairwayGamePage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>{/* <Stairway /> */}</Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function StairwayGamePage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>{/* <Stairway /> */}</Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const TournamentPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Tournament waitingRoomMachine={waitingRoomMachine} />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function TournamentPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Tournament waitingRoomMachine={waitingRoomMachine} />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const TournamentEditPage = () => {
+export function TournamentEditPage() {
   const container = document.getElementById('tournament-edit-root');
   const tournamentId = container?.dataset?.tournamentId;
   const taskPackNames = JSON.parse(container?.dataset?.taskPackNames || '[]');
@@ -228,86 +252,100 @@ export const TournamentEditPage = () => {
       </PersistGate>
     </Provider>
   );
-};
+}
 
-export const TournamentAdminPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <TournamentAdmin waitingRoomMachine={waitingRoomMachine} />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function TournamentAdminPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <TournamentAdmin waitingRoomMachine={waitingRoomMachine} />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const EventPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <EventWidget />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function EventPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <EventWidget />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const TournamentPlayerPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <NiceModal.Provider>
-          <TournamentPlayer
-            spectatorMachine={spectatorMachine}
+export function TournamentPlayerPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <NiceModal.Provider>
+            <TournamentPlayer
+              spectatorMachine={spectatorMachine}
+              waitingRoomMachine={waitingRoomMachine}
+            />
+          </NiceModal.Provider>
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export function StreamPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Stream
+            mainMachine={mainMachine}
             waitingRoomMachine={waitingRoomMachine}
+            taskMachine={taskMachine}
+            editorMachine={editorMachine}
           />
-        </NiceModal.Provider>
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const StreamPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Stream
-          mainMachine={mainMachine}
-          waitingRoomMachine={waitingRoomMachine}
-          taskMachine={taskMachine}
-          editorMachine={editorMachine}
-        />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function HallOfFamePage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <HallOfFame />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const HallOfFamePage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <HallOfFame />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function SeasonsPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Seasons />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const SeasonsPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Seasons />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
-
-export const SeasonShowPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <SeasonShow />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function SeasonShowPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <SeasonShow />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}

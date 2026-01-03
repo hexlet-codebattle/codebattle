@@ -106,7 +106,7 @@ const RematchButton = ({
     || mapRematchStateToButtons.none;
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const currentUserId = selectors.currentUserIdSelector(state);
 
   return {

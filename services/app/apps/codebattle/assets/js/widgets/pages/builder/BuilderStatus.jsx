@@ -19,26 +19,26 @@ function BuilderStatus() {
   const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
 
   const [isValidName, invalidNameReason] = useSelector(
-    state => state.builder.validationStatuses.name,
+    (state) => state.builder.validationStatuses.name,
   );
   const [isValidDescription, invalidDescriptionReason] = useSelector(
-    state => state.builder.validationStatuses.description,
+    (state) => state.builder.validationStatuses.description,
   );
   const [isValidInputSignature, invalidInputReason] = useSelector(
-    state => state.builder.validationStatuses.inputSignature,
+    (state) => state.builder.validationStatuses.inputSignature,
   );
   const [isValidExamples, invalidExamplesReason] = useSelector(
-    state => state.builder.validationStatuses.assertsExamples,
+    (state) => state.builder.validationStatuses.assertsExamples,
   );
   const [
     isValidArgumentsGenerator,
     invalidArgumentsGeneratorReason,
-  ] = useSelector(state => state.builder.validationStatuses.argumentsGenerator);
+  ] = useSelector((state) => state.builder.validationStatuses.argumentsGenerator);
   const [isValidSolution, invalidSolutionReason] = useSelector(
-    state => state.builder.validationStatuses.solution,
+    (state) => state.builder.validationStatuses.solution,
   );
 
-  const templateState = useSelector(state => state.builder.templates.state);
+  const templateState = useSelector((state) => state.builder.templates.state);
 
   return (
     <div className="p-3">

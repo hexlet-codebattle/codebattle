@@ -37,7 +37,7 @@ function UserSimpleStats({
   const [data, setData] = useState();
 
   const load = () => {
-    const onSuccess = payload => {
+    const onSuccess = (payload) => {
       setData(payload.data.stats.games);
       setState('opened');
     };
@@ -108,14 +108,12 @@ function GameCard({
         </div>
         <div className="d-flex flex-column align-self-center">
           {game.players.length === 1 ? (
-            <>
-              <div className="d-flex flex-column align-items-center">
-                <UserInfo user={player1.data} mode="dark" lang={player1.data.editorLang} />
-                {currentUserId !== player1.data.id && (
-                  <UserSimpleStats user={player1.data} />
+            <div className="d-flex flex-column align-items-center">
+              <UserInfo user={player1.data} mode="dark" lang={player1.data.editorLang} />
+              {currentUserId !== player1.data.id && (
+              <UserSimpleStats user={player1.data} />
                 )}
-              </div>
-            </>
+            </div>
           ) : (
             <>
               <div className="d-flex flex-column align-items-center position-relative">

@@ -9,7 +9,7 @@ import HorizontalScrollControls from '../../components/SideScrollControls';
 import ShowButton from './ShowButton';
 import TournamentCard from './TournamentCard';
 
-const CompletedTournaments = ({ tournaments = [] }) => {
+function CompletedTournaments({ tournaments = [] }) {
   const sortedTournaments = useMemo(
     () => orderBy(tournaments, 'startsAt', 'desc'),
     [tournaments],
@@ -33,7 +33,7 @@ const CompletedTournaments = ({ tournaments = [] }) => {
             </tr>
           </thead>
           <tbody className="">
-            {sortedTournaments.map(tournament => (
+            {sortedTournaments.map((tournament) => (
               <tr key={tournament.id}>
                 <td className="p-3 align-middle">{tournament.name}</td>
                 <td className="p-3 align-middle">{tournament.type}</td>
@@ -52,7 +52,7 @@ const CompletedTournaments = ({ tournaments = [] }) => {
         </table>
       </div>
       <HorizontalScrollControls className="d-md-none m-2">
-        {sortedTournaments.map(tournament => (
+        {sortedTournaments.map((tournament) => (
           <TournamentCard
             key={`card-${tournament.id}`}
             type="completed"
@@ -62,6 +62,6 @@ const CompletedTournaments = ({ tournaments = [] }) => {
       </HorizontalScrollControls>
     </div>
   );
-};
+}
 
 export default CompletedTournaments;

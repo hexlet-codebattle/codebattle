@@ -28,11 +28,11 @@ import DarkModeButton from '../game/DarkModeButton';
 import AssertsOutput from './AssertsOutput';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
 
-const isGeneratorsError = status => status === assertsStatuses.error
+const isGeneratorsError = (status) => status === assertsStatuses.error
   || status === assertsStatuses.memoryLeak
   || status === assertsStatuses.timeout;
 
-const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
+function InfoPopup({ reloadGeneratorCode, editable, origin }) {
   const infoClassName = cn(
     'd-flex align-items-center justify-content-around position-absolute w-100 h-100 p-3',
     'bg-gray cb-opacity-75',
@@ -67,7 +67,7 @@ const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
       )}
     </div>
   );
-};
+}
 
 function BuilderEditorsWidget() {
   const dispatch = useDispatch();
@@ -97,10 +97,10 @@ function BuilderEditorsWidget() {
   const editorsMode = useSelector(selectors.editorsModeSelector);
 
   const [isValidArgumentsGenerator, invalidGeneratorReason] = useSelector(
-    state => state.builder.validationStatuses.argumentsGenerator,
+    (state) => state.builder.validationStatuses.argumentsGenerator,
   );
   const [isValidSolution, invalidSolutionReason] = useSelector(
-    state => state.builder.validationStatuses.solution,
+    (state) => state.builder.validationStatuses.solution,
   );
 
   const reloadCode = useCallback(() => {
@@ -140,7 +140,7 @@ function BuilderEditorsWidget() {
   const handleChanges = isAssertsReady ? changeTaskServiceState : noop;
 
   const onChangeGenerator = useCallback(
-    value => {
+    (value) => {
       handleChanges();
 
       dispatch(actions.setTaskArgumentsGenerator({ value }));
@@ -148,7 +148,7 @@ function BuilderEditorsWidget() {
     [dispatch, handleChanges],
   );
   const onChangeSolution = useCallback(
-    value => {
+    (value) => {
       handleChanges();
 
       dispatch(actions.setTaskSolution({ value }));

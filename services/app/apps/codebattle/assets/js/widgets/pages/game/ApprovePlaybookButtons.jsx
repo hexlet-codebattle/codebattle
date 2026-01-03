@@ -17,24 +17,22 @@ function ApprovePlaybookButtons({ playbookSolutionType }) {
   switch (playbookSolutionType) {
     case SolutionTypeCodes.waitingModerator:
       return (
-        <>
-          <div className="d-flex btn-block">
-            <button
-              type="button"
-              className="btn btn-outline-primary flex-grow-1 mr-1 rounded-lg"
-              onClick={approve}
-            >
-              Approve
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline-danger flex-grow-1 ml-1 rounded-lg"
-              onClick={reject}
-            >
-              Ban
-            </button>
-          </div>
-        </>
+        <div className="d-flex btn-block">
+          <button
+            type="button"
+            className="btn btn-outline-primary flex-grow-1 mr-1 rounded-lg"
+            onClick={approve}
+          >
+            Approve
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline-danger flex-grow-1 ml-1 rounded-lg"
+            onClick={reject}
+          >
+            Ban
+          </button>
+        </div>
       );
     case SolutionTypeCodes.complete:
       return (
@@ -50,15 +48,13 @@ function ApprovePlaybookButtons({ playbookSolutionType }) {
       );
     case SolutionTypeCodes.banned:
       return (
-        <>
-          <button
-            type="button"
-            className="btn btn-block btn-outline-primary rounded-lg"
-            onClick={approve}
-          >
-            To approved list
-          </button>
-        </>
+        <button
+          type="button"
+          className="btn btn-block btn-outline-primary rounded-lg"
+          onClick={approve}
+        >
+          To approved list
+        </button>
       );
     default:
       return <></>;

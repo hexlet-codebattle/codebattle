@@ -20,7 +20,7 @@ const useCursorUpdates = (editor, monaco, props) => {
     selection: {},
   });
 
-  const updateRemoteCursorPosition = useCallback(offset => {
+  const updateRemoteCursorPosition = useCallback((offset) => {
     const { readOnly, userType } = editor.getRawOptions();
 
     const position = editor.getModel().getPositionAt(offset);
@@ -39,7 +39,7 @@ const useCursorUpdates = (editor, monaco, props) => {
         options: { className: `cb-editor-remote-cursor ${userClassName}` },
       };
 
-      setRemote(oldRemote => ({
+      setRemote((oldRemote) => ({
         ...oldRemote,
         cursor,
       }));
@@ -72,7 +72,7 @@ const useCursorUpdates = (editor, monaco, props) => {
         options: { className: `cb-editor-remote-selection ${userClassName}` },
       };
 
-      setRemote(prevRemote => ({
+      setRemote((prevRemote) => ({
         ...prevRemote,
         selection,
       }));
@@ -81,7 +81,7 @@ const useCursorUpdates = (editor, monaco, props) => {
 
   useEffect(() => {
     if (remote.cursor.range && remote.selection.range) {
-      setRemoteKeys(oldRemoteKeys => (
+      setRemoteKeys((oldRemoteKeys) => (
         editor.deltaDecorations(oldRemoteKeys, Object.values(remote))
       ));
     }

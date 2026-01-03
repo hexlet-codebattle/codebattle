@@ -21,7 +21,7 @@ export function ArenaStatisticsCard({
 
   const [playerStats] = useMatchesStatistics(playerId, matchList);
   const playerRanking = useSelector(userRankingSelector(playerId));
-  const clanStats = useSelector(state => {
+  const clanStats = useSelector((state) => {
     if (Array.isArray(state.tournament.ranking)) {
       return state.tournament.ranking.find(({ id }) => id === clanId);
     }

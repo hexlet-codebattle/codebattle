@@ -20,7 +20,7 @@ export const useTournamentContextMenu = ({ type }) => {
 
   const [menuRequest, setMenuRequest] = useState();
 
-  const displayMenu = useCallback(event => {
+  const displayMenu = useCallback((event) => {
     const { userId } = event.currentTarget.dataset;
 
     if (!userId) {

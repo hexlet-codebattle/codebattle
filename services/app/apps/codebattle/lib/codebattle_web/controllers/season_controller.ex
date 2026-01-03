@@ -13,10 +13,19 @@ defmodule CodebattleWeb.SeasonController do
     seasons = Season.get_all()
 
     # Get top 3 for each season
+    # Convert struct to map to ensure all fields (including :top3) are JSON encoded
     seasons_with_top3 =
       Enum.map(seasons, fn season ->
         top3 = SeasonResult.get_leaderboard(season.id, 3)
-        Map.put(season, :top3, top3)
+
+        %{
+          id: season.id,
+          name: season.name,
+          year: season.year,
+          starts_at: season.starts_at,
+          ends_at: season.ends_at,
+          top3: top3
+        }
       end)
 
     conn

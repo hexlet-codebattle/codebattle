@@ -53,9 +53,9 @@ function BuilderExampleForm() {
     }
   });
 
-  const inputSignature = useSelector(state => state.builder.task.inputSignature);
-  const outputSignature = useSelector(state => state.builder.task.outputSignature);
-  const examples = useSelector(state => state.builder.task.assertsExamples);
+  const inputSignature = useSelector((state) => state.builder.task.inputSignature);
+  const outputSignature = useSelector((state) => state.builder.task.outputSignature);
+  const examples = useSelector((state) => state.builder.task.assertsExamples);
 
   const [inputSuggest, setInputSuggest] = useState();
   const [outputSuggest, setOutputSuggest] = useState();
@@ -66,7 +66,7 @@ function BuilderExampleForm() {
     setTimeout(() => inputEditTabRef.current?.click(), 10);
     setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [setInputSuggest]);
-  const editInputType = useCallback(item => {
+  const editInputType = useCallback((item) => {
     setInputSuggest(cloneDeep(item));
     setTimeout(() => inputEditTabRef.current?.click(), 10);
     setTimeout(() => inputSuggestRef.current?.scrollIntoView({
@@ -75,7 +75,7 @@ function BuilderExampleForm() {
       inline: 'start',
     }), 10);
   }, [setInputSuggest]);
-  const deleteInputType = useCallback(item => {
+  const deleteInputType = useCallback((item) => {
     dispatch(actions.removeTaskInputType({
       typeId: item.id,
     }));
@@ -92,7 +92,7 @@ function BuilderExampleForm() {
 
     let inputSignatureTypeCount = inputSignature.length;
     const existedInputType = inputSignature.find(
-      item => item.id === inputSuggest.id,
+      (item) => item.id === inputSuggest.id,
     );
 
     if (existedInputType) {
@@ -113,7 +113,7 @@ function BuilderExampleForm() {
     }
   }, [createInputTypeSuggest, clearInputSuggest, inputSignature, inputSuggest, dispatch, taskService]);
 
-  const editOutputType = useCallback(newOutputSignature => {
+  const editOutputType = useCallback((newOutputSignature) => {
     setOutputSuggest(cloneDeep(newOutputSignature));
     setTimeout(() => outputEditTabRef.current?.click(), 10);
   }, [setOutputSuggest]);
@@ -135,7 +135,7 @@ function BuilderExampleForm() {
     setTimeout(() => exampleEditTabRef.current?.click(), 10);
     setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, []);
-  const editExample = useCallback(example => {
+  const editExample = useCallback((example) => {
     setExampleSuggest(cloneDeep(example));
     setTimeout(() => exampleEditTabRef.current?.click(), 10);
     setTimeout(() => exampleSuggestRef.current?.scrollIntoView({
@@ -144,7 +144,7 @@ function BuilderExampleForm() {
       inline: 'start',
     }), 10);
   }, [setExampleSuggest]);
-  const deleteExample = useCallback(example => {
+  const deleteExample = useCallback((example) => {
     dispatch(actions.removeTaskExample({
       exampleId: example.id,
     }));
@@ -155,7 +155,7 @@ function BuilderExampleForm() {
     argumentsTabRef.current?.click();
   }, [setExampleSuggest]);
   const submitNewExample = useCallback(() => {
-    const existingExample = examples.find(example => (example.id === exampleSuggest.id));
+    const existingExample = examples.find((example) => (example.id === exampleSuggest.id));
 
     taskService.send('CHANGES');
     const setExample = existingExample

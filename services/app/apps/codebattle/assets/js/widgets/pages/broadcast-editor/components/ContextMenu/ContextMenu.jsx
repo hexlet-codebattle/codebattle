@@ -11,9 +11,9 @@ function ContextMenu({
   setShowAddMenu,
   blocks,
 }) {
-  const handleAddClick = e => {
+  const handleAddClick = (e) => {
     e.stopPropagation();
-    setShowAddMenu(prev => !prev);
+    setShowAddMenu((prev) => !prev);
   };
 
   const items = [
@@ -26,12 +26,12 @@ function ContextMenu({
     { label: '✅ Tests 2', type: 'text-4', mapId: 'text-4' },
   ];
 
-  const handleAddType = type => {
-    const found = items.find(item => item.type === type);
+  const handleAddType = (type) => {
+    const found = items.find((item) => item.type === type);
     if (found) onAddBlock(found.mapId);
   };
 
-  const blockExists = blockId => blocks.some(b => b.id === blockId);
+  const blockExists = (blockId) => blocks.some((b) => b.id === blockId);
 
   return (
     <div
@@ -48,12 +48,12 @@ function ContextMenu({
         zIndex: 9999,
         minWidth: '160px',
       }}
-      onClick={e => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       role="presentation"
     >
       <button
         className="context-button"
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           onResize();
         }}
@@ -64,7 +64,7 @@ function ContextMenu({
 
       <button
         className="context-button delete"
-        onClick={e => {
+        onClick={(e) => {
           e.stopPropagation();
           onDelete();
         }}
@@ -85,7 +85,7 @@ function ContextMenu({
         {showAddMenu && (
           <div
             className="submenu"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
             role="presentation"
           >
             {items.map(({ label, type, mapId }) => {
@@ -95,7 +95,7 @@ function ContextMenu({
                   type="button"
                   key={type}
                   className="context-button"
-                  onClick={e => {
+                  onClick={(e) => {
                     e.stopPropagation();
                     if (!disabled) {
                       handleAddType(type);

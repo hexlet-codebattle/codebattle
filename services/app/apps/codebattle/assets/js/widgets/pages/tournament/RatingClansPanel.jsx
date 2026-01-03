@@ -19,7 +19,7 @@ const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bol
     'cb-custom-event-bg-muted-purple cursor-pointer': type === 'user' && muted,
   });
 
-const tableDataCellClassName = hideSeparator => cn(
+const tableDataCellClassName = (hideSeparator) => cn(
     'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
     {
       'hide-separator': hideSeparator,
@@ -92,7 +92,7 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                     ) || 0}
                   </td>
                 </tr>
-                {users.map(user => (
+                {users.map((user) => (
                   <React.Fragment key={`${type}-user-${user.userId}`}>
                     <tr className="cb-custom-event-empty-space-tr" />
                     <tr

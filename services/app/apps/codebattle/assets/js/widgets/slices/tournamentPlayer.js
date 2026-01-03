@@ -11,19 +11,19 @@ const tournament = createSlice({
     setActiveTournamentId: (state, { payload }) => {
       state.tournamentId = payload.activeTournamentId;
     },
-    clearActiveTournamentId: state => {
+    clearActiveTournamentId: (state) => {
       state.tournamentId = null;
     },
     setActivePlayerId: (state, { payload }) => {
       state.playerId = payload.activePlayerId;
     },
-    clearActivePlayerId: state => {
+    clearActivePlayerId: (state) => {
       state.playerId = null;
     },
     setActiveGameId: (state, { payload }) => {
       state.gameId = payload.activeGameId;
     },
-    clearActiveGameId: state => {
+    clearActiveGameId: (state) => {
       state.gameId = null;
     },
     setActiveTournamentPlayer: (state, { payload }) => {
@@ -36,7 +36,7 @@ const tournament = createSlice({
         state.user = { ...payload };
       }
     },
-    clearActiveTournamentPlayer: state => {
+    clearActiveTournamentPlayer: (state) => {
       state.user = null;
     },
     updateTournamentPlayerChannelState: (state, { payload }) => {

@@ -12,17 +12,15 @@ const steps = [
     disableOverlayClose: true,
     title: 'Game page',
     content: (
-      <>
-        <div className="text-justify">
-          This is a
-          <b> game page</b>
-          . You need to solve the task
-          <b> first </b>
-          and pass all tests
-          <b> successfully</b>
-          .
-        </div>
-      </>
+      <div className="text-justify">
+        This is a
+        <b> game page</b>
+        . You need to solve the task
+        <b> first </b>
+        and pass all tests
+        <b> successfully</b>
+        .
+      </div>
     ),
     locale: {
       skip: 'Skip guide',

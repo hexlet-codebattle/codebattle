@@ -79,7 +79,7 @@ function BlockCode({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  const handleThemeSelect = e => {
+  const handleThemeSelect = (e) => {
     const newTheme = e.target.value;
     setSelectedTheme(newTheme);
     onThemeChange(newTheme);
@@ -95,8 +95,8 @@ function BlockCode({
             <select
               className="block-code-select"
               value={filter}
-              onChange={e => setFilter(e.target.value)}
-              onMouseDown={e => e.stopPropagation()}
+              onChange={(e) => setFilter(e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
               style={{ fontSize: '0.7rem' }}
             >
               <option value="all">🌗 All</option>
@@ -108,9 +108,9 @@ function BlockCode({
               className="block-code-select"
               value={selectedTheme}
               onChange={handleThemeSelect}
-              onMouseDown={e => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
             >
-              {filteredThemes.map(key => (
+              {filteredThemes.map((key) => (
                 <option key={key} value={key}>
                   {key}
                 </option>

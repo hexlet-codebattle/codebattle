@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import dayjs from '../../i18n/dayjs';
 
-const TournamentTimer = ({ date = new Date(), label, children }) => {
+function TournamentTimer({ date = new Date(), label, children }) {
   const [duration, setDuration] = useState(0);
   const [stoped, setStoped] = useState(0);
 
@@ -36,6 +36,6 @@ const TournamentTimer = ({ date = new Date(), label, children }) => {
       <span className="text-monospace text-warning ml-2">{dayjs.duration(duration).format('HH:mm:ss')}</span>
     </span>
   );
-};
+}
 
 export default TournamentTimer;

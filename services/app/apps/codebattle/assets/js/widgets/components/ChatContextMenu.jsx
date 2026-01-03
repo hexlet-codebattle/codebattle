@@ -46,7 +46,7 @@ function ChatContextMenu({
 
   const [, setSwordIconSrc] = useState(blackSwordSrc);
 
-  const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
+  const currentUserIsAdmin = useSelector((state) => currentUserIsAdminSelector(state));
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
 

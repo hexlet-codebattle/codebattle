@@ -23,10 +23,10 @@ const views = {
   agenda: 'agenda',
 };
 
-const haveSeasonGrade = t => t.grade !== grades.open;
-const filterMyTournaments = userId => t => t.ownerId === userId;
+const haveSeasonGrade = (t) => t.grade !== grades.open;
+const filterMyTournaments = (userId) => (t) => t.ownerId === userId;
 
-const getEndOffsetParams = t => {
+const getEndOffsetParams = (t) => {
   if (t.finished && t.lastRoundEndedAt) {
     const begin = dayjs(t.startsAt);
     const end = dayjs(t.lastRoundEndedAt);
@@ -42,7 +42,7 @@ const getEndOffsetParams = t => {
   return [1, 'hour'];
 };
 
-const getEventFromTournamentData = t => ({
+const getEventFromTournamentData = (t) => ({
   title: t.name,
   start: dayjs(t.startsAt).toDate(),
   end: dayjs(t.startsAt)
@@ -66,7 +66,7 @@ const getStateFromHash = () => {
 };
 
 // const eventPropGetter = (event, _start, _end, _isSelected) => ({
-const eventPropGetter = event => ({
+const eventPropGetter = (event) => ({
   className: cn('cb-rbc-event', {
     'cb-rbc-open-event': event?.resourse?.grade === grades.open,
     'cb-rbc-rookie-event': event?.resourse?.grade === grades.rookie,
@@ -86,7 +86,7 @@ const checkNeedLoading = (oldData, newDate) => {
   return result !== 0;
 };
 
-const TournamentSchedule = () => {
+function TournamentSchedule() {
   const [event, setSelectedEvent] = useState(null);
   const [context, setContext] = useState(getStateFromHash);
   const [tournaments, setTournaments] = useState({
@@ -113,13 +113,13 @@ const TournamentSchedule = () => {
   };
 
   const onView = useCallback(
-    v => {
+    (v) => {
       setView(v);
     },
     [setView],
   );
 
-  const onChangeContext = e => {
+  const onChangeContext = (e) => {
     e.preventDefault();
 
     try {
@@ -136,12 +136,12 @@ const TournamentSchedule = () => {
     }
   };
 
-  const onNavigate = newDate => {
+  const onNavigate = (newDate) => {
     if (checkNeedLoading(date, newDate)) {
       const abortController = new AbortController();
-      setTournaments(state => ({ ...state, loading: true }));
+      setTournaments((state) => ({ ...state, loading: true }));
       setEvents([]);
-      loadTournaments(abortController, newDate).catch(e => {
+      loadTournaments(abortController, newDate).catch((e) => {
         console.error(e);
         setDate(date);
       });
@@ -235,6 +235,6 @@ const TournamentSchedule = () => {
       />
     </div>
   );
-};
+}
 
 export default TournamentSchedule;

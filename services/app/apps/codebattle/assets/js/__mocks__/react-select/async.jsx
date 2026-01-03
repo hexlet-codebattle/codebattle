@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-const AsyncSelect = ({ loadOptions, onChange }) => {
+function AsyncSelect({ loadOptions, onChange }) {
   const [entities, setEntities] = useState([]);
 
   useEffect(() => {
-    const callback = options => {
-      setEntities(options.map(option => option.value));
+    const callback = (options) => {
+      setEntities(options.map((option) => option.value));
     };
 
     loadOptions('test', callback);
@@ -14,7 +14,7 @@ const AsyncSelect = ({ loadOptions, onChange }) => {
 
   return (
     <div>
-      {entities.map(entity => (
+      {entities.map((entity) => (
         <button
           type="button"
           onClick={() => onChange({ value: entity })}
@@ -25,6 +25,6 @@ const AsyncSelect = ({ loadOptions, onChange }) => {
       ))}
     </div>
   );
-};
+}
 
 export default AsyncSelect;

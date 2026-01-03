@@ -18,15 +18,14 @@ export default function Rooms({ disabled }) {
   const dropdownClassName = cn('h-auto cb-overflow-x-hidden cb-scrollable-menu-dropdown-chat cb-bg-highlight-panel');
 
   return (
-    <>
-      <Dropdown as={ButtonGroup} title="" disabled={disabled}>
-        <Dropdown.Toggle className="rounded-top cb-btn-secondary" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
-          <span className="mr-2">{i18next.t(activeRoom.name)}</span>
-        </Dropdown.Toggle>
+    <Dropdown as={ButtonGroup} title="" disabled={disabled}>
+      <Dropdown.Toggle className="rounded-top cb-btn-secondary" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
+        <span className="mr-2">{i18next.t(activeRoom.name)}</span>
+      </Dropdown.Toggle>
 
-        <Dropdown.Menu className={dropdownClassName}>
-          {
-            rooms.map(room => (
+      <Dropdown.Menu className={dropdownClassName}>
+        {
+            rooms.map((room) => (
               <Dropdown.Item
                 href="#"
                 className="cb-text"
@@ -37,8 +36,7 @@ export default function Rooms({ disabled }) {
               </Dropdown.Item>
             ))
           }
-        </Dropdown.Menu>
-      </Dropdown>
-    </>
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }

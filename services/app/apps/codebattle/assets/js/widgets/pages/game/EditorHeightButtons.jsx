@@ -6,8 +6,8 @@ import { compressEditorHeight, expandEditorHeight } from '../../middlewares/Room
 
 function EditorHeightButtons({ editor: { userId } }) {
   const dispatch = useDispatch();
-  const compressEditor = userID => () => dispatch(compressEditorHeight(userID));
-  const expandEditor = userID => () => dispatch(expandEditorHeight(userID));
+  const compressEditor = (userID) => () => dispatch(compressEditorHeight(userID));
+  const expandEditor = (userID) => () => dispatch(expandEditorHeight(userID));
 
   return (
     <div className="mx-1" role="group" aria-label="Editor height">

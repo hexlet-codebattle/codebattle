@@ -14,7 +14,7 @@ import {
 
 import initial from './initial';
 
-const getTaskAssertsStatus = task => ({
+const getTaskAssertsStatus = (task) => ({
   status: task.asserts.length > 0 ? 'ok' : 'none',
   output: '',
 });
@@ -61,7 +61,7 @@ const builder = createSlice({
       state.textSolution = solution;
       state.textArgumentsGenerator = argumentsGenerator;
     },
-    resetGeneratorAndSolution: state => {
+    resetGeneratorAndSolution: (state) => {
       const prevGeneratorLang = state.task.generatorLang;
 
       state.textSolution = {
@@ -80,7 +80,7 @@ const builder = createSlice({
         state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
       }
     },
-    rejectGeneratorAndSolution: state => {
+    rejectGeneratorAndSolution: (state) => {
       state.templates.state = 'none';
 
       if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
@@ -110,7 +110,7 @@ const builder = createSlice({
       state.validationStatuses.inputSignature = validateInputSignatures(state.task.inputSignature);
     },
     updateTaskInputType: (state, { payload: { newType } }) => {
-      state.task.inputSignature = state.task.inputSignature.map(item => (
+      state.task.inputSignature = state.task.inputSignature.map((item) => (
         item.id === newType.id ? newType : item
       ));
       if (state.task.assertsExamples.length > 0) {
@@ -119,7 +119,7 @@ const builder = createSlice({
       }
     },
     removeTaskInputType: (state, { payload: { typeId } }) => {
-      remove(state.task.inputSignature, item => (
+      remove(state.task.inputSignature, (item) => (
         item.id === typeId
       ));
       if (state.task.assertsExamples.length > 0) {
@@ -140,13 +140,13 @@ const builder = createSlice({
       state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
     },
     updateTaskExample: (state, { payload: { newExample } }) => {
-      state.task.assertsExamples = state.task.assertsExamples.map(example => (
+      state.task.assertsExamples = state.task.assertsExamples.map((example) => (
         example.id === newExample.id ? newExample : example
       ));
       state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
     },
     removeTaskExample: (state, { payload: { exampleId } }) => {
-      remove(state.task.assertsExamples, item => (
+      remove(state.task.assertsExamples, (item) => (
         item.id === exampleId
       ));
       state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);

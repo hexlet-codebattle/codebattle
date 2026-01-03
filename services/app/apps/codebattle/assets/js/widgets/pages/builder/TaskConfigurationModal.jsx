@@ -23,14 +23,14 @@ const TaskConfigurationModal = NiceModal.create(() => {
 
   const [configState, setConfigState] = useState(LoadingStatusCodes.IDLE);
 
-  const task = useSelector(state => state.builder.task);
+  const task = useSelector((state) => state.builder.task);
 
   const onError = useCallback(() => {
     setConfigState(LoadingStatusCodes.IDLE);
   }, [setConfigState]);
 
   const onChangeVisibility = useCallback(
-    event => {
+    (event) => {
       if (configState === LoadingStatusCodes.LOADING) {
         return;
       }

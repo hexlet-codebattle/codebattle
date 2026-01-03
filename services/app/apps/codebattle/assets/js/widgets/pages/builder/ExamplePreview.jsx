@@ -6,20 +6,22 @@ const getText = (args, expected) => (
   `${JSON.stringify(args)} -> ${JSON.stringify(expected)}`
 );
 
-const ExamplePreview = ({
+function ExamplePreview({
   arguments: args,
   expected,
-}) => (
-  <div
-    className={itemClassName}
-  >
+}) {
+  return (
     <div
-      title={getText(args, expected)}
-      className={itemActionClassName}
+      className={itemClassName}
     >
-      {getText(args, expected)}
+      <div
+        title={getText(args, expected)}
+        className={itemActionClassName}
+      >
+        {getText(args, expected)}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default ExamplePreview;

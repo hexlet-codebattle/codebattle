@@ -6,7 +6,7 @@ import cn from 'classnames';
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
 
-const getMessage = status => {
+const getMessage = (status) => {
   switch (status) {
     case 'timeout':
       return i18n.t("We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:");
@@ -21,7 +21,7 @@ const getMessage = status => {
   }
 };
 
-const OutputTab = ({ sideOutput, large = false }) => {
+function OutputTab({ sideOutput, large = false }) {
   const { successCount, assertsCount, status } = sideOutput;
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
@@ -59,6 +59,6 @@ const OutputTab = ({ sideOutput, large = false }) => {
       <span className={`p-2 text-white bg-${statusColor}`}>{message}</span>
     </>
   );
-};
+}
 
 export default OutputTab;

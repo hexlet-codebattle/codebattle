@@ -27,7 +27,7 @@ const CustomToggle = React.forwardRef(
   ),
 );
 
-const TournamentMainControlButtons = ({
+function TournamentMainControlButtons({
   accessType,
   streamMode,
   tournamentId,
@@ -43,7 +43,7 @@ const TournamentMainControlButtons = ({
   handleStartRound,
   handleOpenDetails,
   toggleStreamMode,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const handleStartTournament = useCallback(() => {
@@ -206,6 +206,6 @@ const TournamentMainControlButtons = ({
       </Dropdown>
     </>
   );
-};
+}
 
 export default memo(TournamentMainControlButtons);

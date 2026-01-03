@@ -18,7 +18,7 @@ import BuilderActions from './BuilderActions';
 import ExamplesTrack from './ExamplesTrack';
 import SignatureTrack from './SignatureTrack';
 
-const TaskStateBadge = ({ state }) => {
+function TaskStateBadge({ state }) {
   const className = cn('badge py-2 mb-2', {
     'badge-danger': state === taskStateCodes.disabled,
     'badge-success': state === taskStateCodes.active,
@@ -30,7 +30,7 @@ const TaskStateBadge = ({ state }) => {
   }
 
   return <span className={className}>{state}</span>;
-};
+}
 
 function PreviewAssertsPanel({
   haveInputSuggest,
@@ -55,13 +55,13 @@ function PreviewAssertsPanel({
     outputSignature,
     assertsExamples: examples,
     state: taskState,
-  } = useSelector(state => state.builder.task);
+  } = useSelector((state) => state.builder.task);
 
   const validInputSignature = useSelector(
-    state => state.builder.validationStatuses.inputSignature[0],
+    (state) => state.builder.validationStatuses.inputSignature[0],
   );
   const validExamples = useSelector(
-    state => state.builder.validationStatuses.assertsExamples[0],
+    (state) => state.builder.validationStatuses.assertsExamples[0],
   );
 
   const editable = useSelector(selectors.canEditTask);

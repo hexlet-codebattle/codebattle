@@ -27,70 +27,70 @@ import RustOriginalIcon from './icons/RustOriginalIcon';
 import ZigOriginalIcon from './icons/ZigOriginalIcon';
 
 const iconRenderers = {
-  clojure: className => (
+  clojure: (className) => (
     <ClojureOriginalIcon className={className} size="1.125em" />
   ),
-  cpp: className => <CppOriginalIcon className={className} size="1.25em" />,
-  csharp: className => (
+  cpp: (className) => <CppOriginalIcon className={className} size="1.25em" />,
+  csharp: (className) => (
     <CsharpOriginalIcon className={className} size="1.25em" />
   ),
-  swift: className => (
+  swift: (className) => (
     <SwiftOriginalIcon className={className} size="1.25em" />
   ),
-  dart: className => (
+  dart: (className) => (
     <DartOriginalIcon className={className} size="1.125em" />
   ),
-  elixir: className => (
+  elixir: (className) => (
     <ElixirOriginalIcon className={className} size="1.25em" />
   ),
-  golang: className => (
+  golang: (className) => (
     <GolangOriginalIcon className={className} size="1.25em" />
   ),
-  haskell: className => (
+  haskell: (className) => (
     <HaskellOriginalIcon className={className} size="1.125em" />
   ),
-  javascript: className => (
+  javascript: (className) => (
     <NodejsPlainIcon className={className} color="green" size="1.25em" />
   ),
-  js: className => (
+  js: (className) => (
     <NodejsPlainIcon className={className} color="green" size="1.25em" />
   ),
-  kotlin: className => <KotlinOriginalIcon className={className} />,
-  php: className => <PhpOriginalIcon className={className} size="1.875em" />,
-  python: className => (
+  kotlin: (className) => <KotlinOriginalIcon className={className} />,
+  php: (className) => <PhpOriginalIcon className={className} size="1.875em" />,
+  python: (className) => (
     <PythonOriginalIcon className={className} size="1.25em" />
   ),
-  ruby: className => <RubyOriginalIcon className={className} />,
-  zig: className => <ZigOriginalIcon className={className} size="1.125em" />,
-  rust: className => (
+  ruby: (className) => <RubyOriginalIcon className={className} />,
+  zig: (className) => <ZigOriginalIcon className={className} size="1.125em" />,
+  rust: (className) => (
     <RustOriginalIcon className={className} size="1.125em" />
   ),
-  ts: className => (
+  ts: (className) => (
     <TypescriptOriginalIcon className={className} size="1.125em" />
   ),
-  css: className => <CssOriginalIcon className={className} size="1.125em" />,
-  stylus: className => (
+  css: (className) => <CssOriginalIcon className={className} size="1.125em" />,
+  stylus: (className) => (
     <StylusOriginalIcon fill="#fff" className={className} size="1.6em" />
   ),
-  less: className => <LessOriginalIcon className={className} size="1.6em" />,
-  sass: className => <SassOriginalIcon className={className} size="1.3em" />,
-  typescript: className => (
+  less: (className) => <LessOriginalIcon className={className} size="1.6em" />,
+  sass: (className) => <SassOriginalIcon className={className} size="1.3em" />,
+  typescript: (className) => (
     <TypescriptOriginalIcon className={className} size="1.125em" />
   ),
-  java: className => (
+  java: (className) => (
     <JavaOriginalIcon
       className={className}
       style={{ transform: 'translateY(-0.125em)' }}
       size="1.25em"
     />
   ),
-  postgresql: className => (
+  postgresql: (className) => (
     <PostgresqlOriginalIcon className={className} size="1.3em" />
   ),
-  mongodb: className => (
+  mongodb: (className) => (
     <MongodbOriginalIcon className={className} size="1.3em" />
   ),
-  mysql: className => (
+  mysql: (className) => (
     <MysqlOriginalIcon className={className} size="1.3em" />
   ),
   default: () => null,

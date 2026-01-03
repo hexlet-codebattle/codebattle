@@ -19,11 +19,13 @@ import EditorContainer from './EditorContainer';
 import Output from './Output';
 import OutputTab from './OutputTab';
 
-const EditorWrapper = ({ children, id, className }) => (
-  <div id={id} translate="no" className={className}>
-    {children}
-  </div>
-);
+function EditorWrapper({ children, id, className }) {
+  return (
+    <div id={id} translate="no" className={className}>
+      {children}
+    </div>
+  );
+}
 
 function RightSide({ output, children }) {
   const [showTab, setShowTab] = useState('editor');
@@ -51,7 +53,7 @@ function RightSide({ output, children }) {
               { active: showTab === 'editor' },
             )}
             href="#Editor"
-            onClick={e => {
+            onClick={(e) => {
               e.preventDefault();
               setShowTab('editor');
             }}
@@ -64,7 +66,7 @@ function RightSide({ output, children }) {
               { active: showTab === 'output' },
             )}
             href="#Output"
-            onClick={e => {
+            onClick={(e) => {
               e.preventDefault();
               setShowTab('output');
             }}
@@ -99,7 +101,7 @@ function GameWidget({ viewMode, editorMachine }) {
             editorMachine={editorMachine}
             {...editors[0]}
           >
-            {params => (
+            {(params) => (
               <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative cb-editor-height">
                 <ExtendedEditor {...params} />
               </EditorWrapper>
@@ -112,7 +114,7 @@ function GameWidget({ viewMode, editorMachine }) {
             editorMachine={editorMachine}
             {...editors[1]}
           >
-            {params => (
+            {(params) => (
               <RightSide output={editors[1].output}>
                 <ExtendedEditor {...params} />
               </RightSide>
@@ -132,7 +134,7 @@ function GameWidget({ viewMode, editorMachine }) {
             editorMachine={editorMachine}
             {...editors[0]}
           >
-            {params => (
+            {(params) => (
               <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
                 <ExtendedEditor {...params} />
               </EditorWrapper>

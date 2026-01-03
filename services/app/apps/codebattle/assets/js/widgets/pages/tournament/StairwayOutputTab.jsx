@@ -7,7 +7,7 @@ import OutputTab from '../game/OutputTab';
 
 function StairwayOutputTab({ playerId }) {
   const output = useSelector(
-    state => state.executionOutput.results[playerId],
+    (state) => state.executionOutput.results[playerId],
   );
   const isShowOutput = output && output.status;
 

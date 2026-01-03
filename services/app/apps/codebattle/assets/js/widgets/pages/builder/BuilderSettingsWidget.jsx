@@ -27,7 +27,7 @@ function BuilderSettingsWidget() {
     NiceModal.show('task_configuration_modal');
   }, []);
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   return (
     <>

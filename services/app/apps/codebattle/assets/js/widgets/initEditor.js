@@ -23,7 +23,7 @@ import zigProvider from './config/editor/zig';
 // Configure loader to use the local monaco instance
 loader.config({ monaco });
 
-loader.init().then(monacoInstance => {
+loader.init().then((monacoInstance) => {
   // Haskell
   monacoInstance.languages.register({ id: 'haskell', aliases: ['haskell'] });
   monacoInstance.languages.setMonarchTokensProvider('haskell', haskellProvider);

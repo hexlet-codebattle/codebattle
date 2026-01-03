@@ -6,10 +6,12 @@ import remarkMath from 'remark-math';
 import 'katex/dist/katex.min.css';
 import '../../../../css/_katex-fonts.scss';
 
-const TaskDescriptionMarkdown = ({ description }) => (
-  <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
-    {description}
-  </Markdown>
-);
+function TaskDescriptionMarkdown({ description }) {
+  return (
+    <Markdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+      {description}
+    </Markdown>
+  );
+}
 
 export default TaskDescriptionMarkdown;

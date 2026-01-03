@@ -13,7 +13,7 @@ import {
   MAX_NESTED_TYPE_LEVEL,
 } from '../../utils/builder';
 
-const resolveSignatureToTypes = signature => {
+const resolveSignatureToTypes = (signature) => {
   if (!signature) {
     return [];
   }
@@ -55,10 +55,10 @@ function SignatureForm({ signature, handleEdit }) {
       key={`${typeName}-${index}`}
       className="form-control custom-select rounded-lg m-1 cb-builder-type-selector"
       value={typeName}
-      onChange={e => { handleSelect(e.target.value, index); }}
+      onChange={(e) => { handleSelect(e.target.value, index); }}
       size={1}
     >
-      {argumentTypeNames.map(t => (
+      {argumentTypeNames.map((t) => (
         <option
           key={t}
           value={t}

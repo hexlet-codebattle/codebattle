@@ -18,7 +18,7 @@ const states = {
   error: 'error',
 };
 
-const getText = state => {
+const getText = (state) => {
   switch (state) {
     case states.loading:
     case states.idle:
@@ -32,7 +32,7 @@ const getText = state => {
   }
 };
 
-const GameReportButton = ({ userId, gameId }) => {
+function GameReportButton({ userId, gameId }) {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
@@ -71,6 +71,6 @@ const GameReportButton = ({ userId, gameId }) => {
       {text}
     </button>
   );
-};
+}
 
 export default GameReportButton;

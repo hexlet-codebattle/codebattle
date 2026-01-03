@@ -22,7 +22,7 @@ const TaskDescriptionModal = NiceModal.create(() => {
   const task = useSelector(gameTaskSelector);
   const taskLanguage = useSelector(taskDescriptionLanguageSelector);
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   return (
     <Modal contentClassName="cb-bg-panel cb-text" centered show={modal.visible} onHide={modal.hide}>

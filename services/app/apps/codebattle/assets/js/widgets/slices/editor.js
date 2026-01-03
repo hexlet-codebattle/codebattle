@@ -58,7 +58,7 @@ const meta = createSlice({
 const text = createSlice({
   name: 'text',
   initialState: initial.editor.text,
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(meta.actions.updateEditorText, (
       state,
       { payload: { userId, langSlug, editorText } },
@@ -71,7 +71,7 @@ const text = createSlice({
 const textHistory = createSlice({
   name: 'textHistory',
   initialState: initial.editor.textHistory,
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(meta.actions.updateEditorTextHistory, (state, { payload: { userId, editorText } }) => {
       state[userId] = editorText;
     });
@@ -91,7 +91,7 @@ const langs = createSlice({
 const langsHistory = createSlice({
   name: 'langsHistory',
   initialState: initial.editor.langsHistory,
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder.addCase(meta.actions.updateEditorTextHistory, (state, { payload: { userId, langSlug } }) => {
       state[userId] = langSlug;
     });

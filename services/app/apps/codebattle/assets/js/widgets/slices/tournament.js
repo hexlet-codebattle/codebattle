@@ -72,7 +72,7 @@ const tournament = createSlice({
       };
     },
     updateTopPlayers: (state, { payload }) => {
-      state.topPlayerIds = payload.map(item => (item.id));
+      state.topPlayerIds = payload.map((item) => (item.id));
     },
     changeTournamentPageNumber: (state, { payload }) => {
       state.playersPageNumber = payload;
@@ -85,13 +85,13 @@ const tournament = createSlice({
     setTournamentPlayers: (state, { payload }) => {
       state.players = payload;
     },
-    clearTournamentPlayers: state => {
+    clearTournamentPlayers: (state) => {
       state.players = [];
     },
     setTournamentPlayersPageNumber: (state, { payload }) => {
       state.playersPageNumber = payload;
     },
-    toggleShowBots: state => {
+    toggleShowBots: (state) => {
       if (state.type === TournamentTypes.show) {
         state.showBots = !state.showBots;
       }

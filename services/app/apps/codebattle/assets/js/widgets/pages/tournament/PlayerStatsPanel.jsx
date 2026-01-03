@@ -25,14 +25,14 @@ const navMatchesTabsClassName = cn(
   'cb-overflow-x-auto cb-overflow-y-hidden',
 );
 
-const tabLinkClassName = active => cn(
+const tabLinkClassName = (active) => cn(
     'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
     {
       active,
     },
   );
 
-const tabContentClassName = active => cn('tab-pane fade', {
+const tabContentClassName = (active) => cn('tab-pane fade', {
     'd-flex flex-column show active': active,
   });
 
@@ -47,12 +47,12 @@ const PlayerPanelCodes = {
   matches: 'matches',
 };
 
-const getPlayerPanelCodes = type => {
+const getPlayerPanelCodes = (type) => {
   if (type === TournamentTypes.arena) {
     return Object.values(ArenaPlayerPanelCodes);
   }
   return Object.values(PlayerPanelCodes).filter(
-    panel => panel !== PlayerPanelCodes.stages,
+    (panel) => panel !== PlayerPanelCodes.stages,
   );
 };
 
@@ -73,12 +73,12 @@ function PlayerStatsPanel({
   const currentPlayer = players[currentUserId];
 
   const matchList = useMemo(
-    () => reverse(Object.values(matches)).filter(match => match.playerIds.includes(currentUserId)),
+    () => reverse(Object.values(matches)).filter((match) => match.playerIds.includes(currentUserId)),
     [matches, currentUserId],
   );
   const [opponentId, matchId] = useMemo(() => {
     const activeMatch = matchList.find(
-      match => match.state === MatchStatesCodes.playing,
+      (match) => match.state === MatchStatesCodes.playing,
     );
     const lastMatch = matchList[0];
     const targetMatch = activeMatch || lastMatch;
@@ -122,7 +122,7 @@ function PlayerStatsPanel({
           role="tablist"
           className={navMatchesTabsClassName}
         >
-          {getPlayerPanelCodes(type).map(panelName => (
+          {getPlayerPanelCodes(type).map((panelName) => (
             <a
               className={tabLinkClassName(playerPanel === panelName)}
               id={`${panelName}-player-panel`}
@@ -201,7 +201,7 @@ function PlayerStatsPanel({
                 No stages statistics
               </div>
             ) : (
-              stages.map(stage => {
+              stages.map((stage) => {
                 const stageFirstMatch = groupedMatchListByRound[stage][0];
                 const stageOpponentId = getOpponentId(
                   stageFirstMatch,
@@ -251,7 +251,7 @@ function PlayerStatsPanel({
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.matches}`}
           >
-            {stages.map(stage => (
+            {stages.map((stage) => (
               <React.Fragment key={`stage-${stage}-matches`}>
                 {type !== TournamentTypes.arena && (
                   <div className="d-flex justify-content-center p-2">

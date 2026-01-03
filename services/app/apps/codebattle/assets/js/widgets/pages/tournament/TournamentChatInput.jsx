@@ -21,7 +21,7 @@ export default function TournamentChatInput({ disabled }) {
   );
 
   const handleSubmit = useCallback(
-    e => {
+    (e) => {
       e.preventDefault();
       let filteredText = message;
 

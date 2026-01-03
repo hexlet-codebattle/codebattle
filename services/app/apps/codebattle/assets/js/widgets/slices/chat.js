@@ -43,7 +43,7 @@ const chat = createSlice({
     },
     newChatMessage: (state, { payload }) => {
       if (isMessageForCurrentUser(payload)) {
-        state.rooms = state.rooms.map(room => (
+        state.rooms = state.rooms.map((room) => (
           isMessageForCurrentPrivateRoom(room, payload)
             ? { ...room, expireTo: room.expireTo + ttl }
             : room
@@ -54,7 +54,7 @@ const chat = createSlice({
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
-        ...state.messages.filter(message => message.name !== payload.name),
+        ...state.messages.filter((message) => message.name !== payload.name),
       ];
     },
     setActiveRoom: (state, { payload }) => {
@@ -63,7 +63,7 @@ const chat = createSlice({
     createPrivateRoom: (state, { payload }) => {
       const rooms = current(state.rooms);
       const privateRooms = filterPrivateRooms(rooms);
-      const existingPrivateRoom = privateRooms.find(room => (
+      const existingPrivateRoom = privateRooms.find((room) => (
         room.targetUserId === payload.targetUserId
       ));
       if (existingPrivateRoom) {

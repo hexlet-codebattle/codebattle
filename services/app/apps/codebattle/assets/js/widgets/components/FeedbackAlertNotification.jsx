@@ -9,7 +9,7 @@ import AlertCodes from '../config/alertCodes';
 import { gameAlertsSelector } from '../selectors/index';
 import { actions } from '../slices';
 
-const getNotification = status => {
+const getNotification = (status) => {
   switch (status) {
     case AlertCodes.feedbackSendSuccessful: {
       return {
@@ -33,7 +33,7 @@ function FeedbackAlertNotification() {
   const dispatch = useDispatch();
   const alerts = useSelector(gameAlertsSelector);
 
-  const handleClose = useCallback(id => {
+  const handleClose = useCallback((id) => {
     dispatch(actions.deleteAlert(id));
   }, [dispatch]);
 

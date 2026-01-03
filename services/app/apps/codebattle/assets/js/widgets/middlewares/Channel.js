@@ -41,10 +41,10 @@ export default class Channel {
     this.channel = channel;
     this.presence = new Presence(channel);
 
-    Object.keys(this.listeners).forEach(listenerTopic => {
+    Object.keys(this.listeners).forEach((listenerTopic) => {
       const listeners = this.listeners[listenerTopic];
       if (listeners) {
-        const newListeners = listeners.map(listener => {
+        const newListeners = listeners.map((listener) => {
           const { cb } = listener;
           const ref = channel.on(listenerTopic, cb);
 
@@ -90,7 +90,7 @@ export default class Channel {
 
   clear() {
     if (this.channel) {
-      Object.keys(this.listeners).forEach(topic => {
+      Object.keys(this.listeners).forEach((topic) => {
         this.off(topic);
       });
     }
@@ -114,11 +114,11 @@ export default class Channel {
       : this.listeners[topic];
     const removedRefs = map(removedListeners, 'ref');
 
-    removedRefs.forEach(ref => {
+    removedRefs.forEach((ref) => {
       this.channel.off(topic, ref);
     });
 
-    remove(this.listeners[topic], listener => {
+    remove(this.listeners[topic], (listener) => {
       removedRefs.includes(listener.ref);
     });
 
@@ -241,5 +241,5 @@ export default class Channel {
     };
 
     return userInfo;
-  }
+  };
 }

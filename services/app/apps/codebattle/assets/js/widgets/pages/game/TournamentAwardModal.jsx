@@ -22,7 +22,7 @@ const startRound = () => {
   }
 };
 
-const TournamentAwardModal = NiceModal.create(params => {
+const TournamentAwardModal = NiceModal.create((params) => {
   const onlyShowAward = params?.onlyShowAward || false;
 
   const gameStatus = useSelector(gameStatusSelector);

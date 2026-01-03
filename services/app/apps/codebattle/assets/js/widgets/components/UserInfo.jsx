@@ -27,12 +27,12 @@ function UserPopoverContent({ user }) {
       .get(`/api/v1/user/${userId}/stats`, {
         signal: controller.signal,
       })
-      .then(response => {
+      .then((response) => {
         if (!controller.signal.aborted) {
           setStats(camelizeKeys(response.data));
         }
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
 

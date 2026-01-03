@@ -4,10 +4,10 @@ import cn from 'classnames';
 
 import PlayerLoading from '../../components/PlayerLoading';
 
-export const getPregressbarClass = player => cn('cb-check-result-bar shadow-sm mt-1', player.checkResult.status);
+export const getPregressbarClass = (player) => cn('cb-check-result-bar shadow-sm mt-1', player.checkResult.status);
 
-export const getPregressbarWidth = player => `${
-  player.checkResult?.solutionPercentage || (player.checkResult?.successCount / player.checkResult?.assertsCount) * 100
+export const getPregressbarWidth = (player) => `${
+  player.checkResult?.solutionPercentage || ((player.checkResult?.successCount ?? 0) / (player.checkResult?.assertsCount ?? 1)) * 100
 }%`;
 
 function GameProgressBar({ player, position }) {

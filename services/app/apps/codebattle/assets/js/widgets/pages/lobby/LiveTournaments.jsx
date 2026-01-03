@@ -9,7 +9,7 @@ import HorizontalScrollControls from '../../components/SideScrollControls';
 import ShowButton from './ShowButton';
 import TournamentCard from './TournamentCard';
 
-const LiveTournaments = ({ tournaments = [] }) => {
+function LiveTournaments({ tournaments = [] }) {
   const sortedTournaments = useMemo(() => orderBy(tournaments, 'startsAt', 'desc'), [tournaments]);
 
   if (isEmpty(tournaments)) {
@@ -38,7 +38,7 @@ const LiveTournaments = ({ tournaments = [] }) => {
             </tr>
           </thead>
           <tbody className="">
-            {sortedTournaments.map(tournament => (
+            {sortedTournaments.map((tournament) => (
               <tr key={tournament.id}>
                 <td className="p-3 align-middle">{tournament.name}</td>
                 <td className="p-3 align-middle text-nowrap">
@@ -56,7 +56,7 @@ const LiveTournaments = ({ tournaments = [] }) => {
         </table>
       </div>
       <HorizontalScrollControls className="d-md-none m-2">
-        {sortedTournaments.map(tournament => (
+        {sortedTournaments.map((tournament) => (
           <TournamentCard
             key={`card-${tournament.id}`}
             type="active"
@@ -71,6 +71,6 @@ const LiveTournaments = ({ tournaments = [] }) => {
       </div>
     </div>
   );
-};
+}
 
 export default LiveTournaments;

@@ -5,7 +5,7 @@ const messageType = 'cssbattle';
 // if (event.origin.startsWith('https://codebattle.hexlet.io/games/')) {
 window.addEventListener(
   'message',
-  event => {
+  (event) => {
     try {
       if (event.data.type !== 'cssbattle') {
         return;
@@ -21,7 +21,7 @@ window.addEventListener(
 
         document.body.innerHTML = bodyStr;
 
-        toPng(document.body).then(dataUrl => {
+        toPng(document.body).then((dataUrl) => {
           window.parent.postMessage(
             { type: messageType, dataUrl, userId },
             event.origin,

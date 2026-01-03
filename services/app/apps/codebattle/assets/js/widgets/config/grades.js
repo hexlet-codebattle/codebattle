@@ -8,7 +8,7 @@ export const grades = {
   grandSlam: 'grand_slam',
 };
 
-export const getRankingPoints = grade => {
+export const getRankingPoints = (grade) => {
   switch (grade) {
     case grades.rookie: return [8, 4, 2];
     case grades.challenger: return [16, 8, 4, 2];
@@ -20,7 +20,7 @@ export const getRankingPoints = grade => {
   }
 };
 
-export const getTasksCount = grade => {
+export const getTasksCount = (grade) => {
   switch (grade) {
     case grades.rookie: return 4;
     case grades.challenger: return 6;

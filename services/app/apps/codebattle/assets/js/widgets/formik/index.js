@@ -9,7 +9,7 @@ const emailSchema = Yup.string()
   .test(
     'exclude-braille-pattern-blank',
     'Invalid email',
-    value => (
+    (value) => (
       value
         ? !value.includes(braillePatternBlank)
         : true
@@ -20,7 +20,7 @@ const emailSchema = Yup.string()
   .required('Email required');
 
 const schemas = {
-  userSettings: settings => ({
+  userSettings: (settings) => ({
     name: Yup.string()
       .strict()
       .required("Field can't be empty")
@@ -54,11 +54,11 @@ const schemas = {
         .test(
           'start-or-end-with-empty-symbols',
           'Can\'t start or end with empty symbols',
-          value => {
+          (value) => {
             if (!value) {
               return true;
             }
-            const invalidSymbolIndex = invalidSymbols.findIndex(invalidSymbol => (
+            const invalidSymbolIndex = invalidSymbols.findIndex((invalidSymbol) => (
               value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
             ));
 

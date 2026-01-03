@@ -24,7 +24,7 @@ jest.mock(
       current_user: { id: 1, sound_settings: {} },
       task_tags: ['math', 'string', 'asd', 'rest'],
     };
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );
@@ -105,7 +105,7 @@ const store = configureStore({
   preloadedState,
 });
 
-const setup = jsx => ({
+const setup = (jsx) => ({
   user: userEvent.setup(),
   ...render(jsx),
 });
@@ -227,13 +227,13 @@ test('filter tasks by level', async () => {
 
   const easyLevelButton = await findByTitle('easy');
 
-  elementaryTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
-  easyTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+  elementaryTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
+  easyTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
 
   await user.click(easyLevelButton);
 
-  easyTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
-  elementaryTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+  easyTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
+  elementaryTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
 });
 
 test('filter tasks by tags', async () => {
@@ -262,9 +262,9 @@ test('filter tasks by tags', async () => {
   await user.click(await findByRole('button', { name: /random task/ }));
 
   await waitFor(() => {
-    tasksMatchingRestTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksMatchingRestTags.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
 
-    tasksUnsuitableForRestTags.forEach(task => (
+    tasksUnsuitableForRestTags.forEach((task) => (
       expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
     ));
   });
@@ -272,14 +272,14 @@ test('filter tasks by tags', async () => {
   await user.click(restTag);
 
   await waitFor(() => {
-    elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    elementaryTasksFromBackend.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
   });
 
   await user.click(mathTag);
 
   await waitFor(() => {
-    tasksMatchingMathTag.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-    tasksUnsuitableForMathTag.forEach(task => (
+    tasksMatchingMathTag.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksUnsuitableForMathTag.forEach((task) => (
       expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
     ));
   });
@@ -287,8 +287,8 @@ test('filter tasks by tags', async () => {
   await user.click(stringTag);
 
   await waitFor(() => {
-    tasksMatchingMathAndStringTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-    tasksUnsuitableForMathAndStringTags.forEach(task => (
+    tasksMatchingMathAndStringTags.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksUnsuitableForMathAndStringTags.forEach((task) => (
       expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
     ));
   });
@@ -297,7 +297,7 @@ test('filter tasks by tags', async () => {
   await user.click(stringTag);
 
   await waitFor(() => {
-    elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    elementaryTasksFromBackend.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
   });
 }, 6000);
 
@@ -309,8 +309,8 @@ test('filter tasks by name', async () => {
   await user.click(await findByRole('button', { name: 'filter tasks by name' }));
 
   await waitFor(() => {
-    tasksFilteredByName.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-    tasksEliminatedByName.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+    tasksFilteredByName.forEach((task) => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksEliminatedByName.forEach((task) => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
   });
 });
 
@@ -322,8 +322,8 @@ test('filter tasks by name and tags', async () => {
   await user.click(await findByRole('button', { name: 'filter tasks by name' }));
   await user.click(getByRole('button', { name: 'math' }));
 
-  tasksFilteredByNameAndTag.forEach(task => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
-  tasksEliminatedByNameAndTag.forEach(task => (
+  tasksFilteredByNameAndTag.forEach((task) => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
+  tasksEliminatedByNameAndTag.forEach((task) => (
     expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
   ));
 });

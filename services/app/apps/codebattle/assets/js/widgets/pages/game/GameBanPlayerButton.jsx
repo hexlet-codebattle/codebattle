@@ -22,9 +22,9 @@ const getText = (state, text) => {
   }
 };
 
-const GameBanPlayerButton = ({
+function GameBanPlayerButton({
   userId, status, tournamentId,
-}) => {
+}) {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
@@ -62,6 +62,6 @@ const GameBanPlayerButton = ({
       {text}
     </button>
   );
-};
+}
 
 export default GameBanPlayerButton;

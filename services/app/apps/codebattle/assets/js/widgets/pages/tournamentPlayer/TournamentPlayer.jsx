@@ -139,7 +139,7 @@ const getSpectatorStatus = (state, task, gameId) => {
 const taskSizeDefault = Number(
   window.localStorage.getItem('CodebattleSpectatorTaskSize') || '0',
 );
-const setTaskSizeDefault = size => (
+const setTaskSizeDefault = (size) => (
   window.localStorage.setItem('CodebattleSpectatorTaskSize', size)
 );
 
@@ -156,7 +156,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const activeTimerMode = searchParams.has('timer');
 
   const changeTaskDescriptionSizes = useCallback(
-    size => {
+    (size) => {
       setTaskSize(size);
       setTaskSizeDefault(size);
     },
@@ -173,7 +173,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const tournament = useSelector(selectors.tournamentSelector);
   const task = useSelector(selectors.gameTaskSelector);
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector);
-  const { playerId, gameId } = useSelector(state => state.tournamentPlayer);
+  const { playerId, gameId } = useSelector((state) => state.tournamentPlayer);
 
   const output = useSelector(selectors.executionOutputSelector(playerId));
 
@@ -198,17 +198,17 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   const waitingRoomService = useInterpret(waitingRoomMachine, {});
 
   const handleSwitchWidgets = useCallback(
-    () => setSwitchedWidgetsStatus(state => !state),
+    () => setSwitchedWidgetsStatus((state) => !state),
     [setSwitchedWidgetsStatus],
   );
   const handleSwitchHidingControls = useCallback(
     () => {
-      setHidingControls(state => !state);
+      setHidingControls((state) => !state);
     },
     [setHidingControls],
   );
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   useEffect(() => {
     NiceModal.register(ModalCodes.awardModal, TournamentAwardModal);
@@ -272,7 +272,8 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
   const spectatorDisplayClassName = cn(
     'd-flex flex-column vh-100',
-    'vh-100', {
+    'vh-100',
+{
     // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
     // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
   },
@@ -285,7 +286,8 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     },
   );
 
-  const GamePanel = () => (!spectatorStatus ? (
+  function GamePanel() {
+  return !spectatorStatus ? (
     <>
       <div className="card cb-card border-0 shadow-sm">
         <TaskAssignment
@@ -322,7 +324,8 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
         {spectatorStatus}
       </div>
     </div>
-  ));
+  );
+}
 
   // const MatchesPannel = () => {
   //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
@@ -410,27 +413,25 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
   }
 
   return (
-    <>
-      <div className="container-fluid d-flex flex-column">
-        <div className={spectatorDisplayClassName}>
-          <div
-            className="d-flex flex-column p-1"
-          >
-            <GamePanel />
-            {/* <MatchesPannel /> */}
-          </div>
-          <SpectatorEditor
-            panelClassName="spectator h-100 p-1"
-            switchedWidgetsStatus={switchedWidgetsStatus}
-            handleSwitchWidgets={handleSwitchWidgets}
-            hidingControls={hidingControls}
-            handleSwitchHidingControls={handleSwitchHidingControls}
-            spectatorService={spectatorService}
-            playerId={playerId}
-          />
+    <div className="container-fluid d-flex flex-column">
+      <div className={spectatorDisplayClassName}>
+        <div
+          className="d-flex flex-column p-1"
+        >
+          <GamePanel />
+          {/* <MatchesPannel /> */}
         </div>
+        <SpectatorEditor
+          panelClassName="spectator h-100 p-1"
+          switchedWidgetsStatus={switchedWidgetsStatus}
+          handleSwitchWidgets={handleSwitchWidgets}
+          hidingControls={hidingControls}
+          handleSwitchHidingControls={handleSwitchHidingControls}
+          spectatorService={spectatorService}
+          playerId={playerId}
+        />
       </div>
-    </>
+    </div>
   );
 }
 

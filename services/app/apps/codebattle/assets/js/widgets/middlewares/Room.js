@@ -43,7 +43,7 @@ export const setGameChannel = (newGameId = gameId) => {
   return channel.setupChannel(!isRecord && newGameId ? newChannelName : undefined);
 };
 
-const initEditors = dispatch => (playbookStatusCode, players) => {
+const initEditors = (dispatch) => (playbookStatusCode, players) => {
   const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
   const updateEditorTextAction = isHistory
     ? actions.updateEditorTextHistory
@@ -52,7 +52,7 @@ const initEditors = dispatch => (playbookStatusCode, players) => {
     ? actions.updateExecutionOutputHistory
     : actions.updateExecutionOutput;
 
-  players.forEach(player => {
+  players.forEach((player) => {
     const editorData = getPlayersText(player);
     const executionOutputData = getPlayersExecutionData(player);
 
@@ -62,7 +62,7 @@ const initEditors = dispatch => (playbookStatusCode, players) => {
   });
 };
 
-const updateStore = dispatch => ({
+const updateStore = (dispatch) => ({
   firstPlayer,
   secondPlayer,
   task,
@@ -93,7 +93,7 @@ const updateStore = dispatch => ({
   }
 };
 
-const initStoredGame = dispatch => data => {
+const initStoredGame = (dispatch) => (data) => {
   const mode = GameRoomModes.history;
 
   const gameStatus = {
@@ -119,14 +119,14 @@ const initStoredGame = dispatch => data => {
   dispatch(actions.updateChatData(data.chat));
 };
 
-const initPlaybook = dispatch => data => {
+const initPlaybook = (dispatch) => (data) => {
   initEditors(dispatch)(PlaybookStatusCodes.stored, data.players);
 
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (gameRoomService, waitingRoomService) => dispatch => {
-  const onJoinFailure = payload => {
+const initGameChannel = (gameRoomService, waitingRoomService) => (dispatch) => {
+  const onJoinFailure = (payload) => {
     gameRoomService.send('REJECT_LOADING_GAME', { payload });
     gameRoomService.send('FAILURE_JOIN', { payload });
     window.location.reload();
@@ -136,7 +136,7 @@ const initGameChannel = (gameRoomService, waitingRoomService) => dispatch => {
     gameRoomService.send('FAILURE');
   });
 
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     if (response.error) {
       console.error(response.error);
       return;
@@ -213,7 +213,7 @@ export const updateEditorText = (editorText, langSlug = null) => (dispatch, getS
   );
 };
 
-export const sendEditorLang = langSlug => (_dispatch, getState) => {
+export const sendEditorLang = (langSlug) => (_dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
   const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
@@ -240,7 +240,7 @@ export const startRoundTournament = () => {
     .push('tournament:start_round', {});
 };
 
-export const sendEditorCursorPosition = offset => {
+export const sendEditorCursorPosition = (offset) => {
   channel.push(channelMethods.editorCursorPosition, { offset });
 };
 
@@ -251,13 +251,13 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
   });
 };
 
-export const sendPassCode = (passCode, onError) => dispatch => {
+export const sendPassCode = (passCode, onError) => (dispatch) => {
   channel
     .push(channelMethods.enterPassCode, { passCode })
     .receive('ok', () => {
       dispatch(actions.setLocked(false));
     })
-    .receive('error', error => {
+    .receive('error', (error) => {
       onError({ message: error.reason });
     });
 };
@@ -278,7 +278,7 @@ export const sendAcceptToRematch = () => {
   channel.push(channelMethods.rematchAcceptOffer, {});
 };
 
-export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
+export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
   const payload = { user_id: userId, reason: 'cheat', comment: '' };
 
   axios
@@ -288,10 +288,10 @@ export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then(data => {
+    .then((data) => {
       onSuccess(camelizeKeys(data));
     })
-    .catch(error => {
+    .catch((error) => {
       onError(error);
 
       dispatch(actions.setError(error));
@@ -299,7 +299,7 @@ export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
     });
 };
 
-export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
+export const updateCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
@@ -308,7 +308,7 @@ export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   dispatch(updateEditorText(textToSet, langSlug));
 };
 
-export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
+export const sendCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
@@ -330,14 +330,14 @@ export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) =>
   dispatch(sendEditorLang(langSlug));
 };
 
-export const resetTextToTemplate = langSlug => (dispatch, getState) => {
+export const resetTextToTemplate = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
   dispatch(updateEditorText(template, langSlug));
 };
 
-export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
+export const resetTextToTemplateAndSend = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = find(langs, { slug: langSlug });
@@ -362,14 +362,14 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection) 
     return () => { };
   }
 
-  const handleNewCursorPosition = debounce(data => {
+  const handleNewCursorPosition = debounce((data) => {
     const { offset } = data;
     if (userId === data.userId) {
       onChangePosition(offset);
     }
   }, 80);
 
-  const handleNewCursorSelection = debounce(data => {
+  const handleNewCursorSelection = debounce((data) => {
     const { startOffset, endOffset } = data;
     if (userId === data.userId) {
       onChangeSelection(startOffset, endOffset);
@@ -419,19 +419,19 @@ export const activeEditorReady = (service, isBanned) => {
   //   service.send('typing', { userId });
   // });
 
-  const handleUserBanned = data => {
+  const handleUserBanned = (data) => {
     service.send('banned_user', data);
   };
 
-  const handleUserUnbanned = data => {
+  const handleUserUnbanned = (data) => {
     service.send('unbanned_user', data);
   };
 
-  const handleStartsCheck = data => {
+  const handleStartsCheck = (data) => {
     service.send('check_solution_received', data);
   };
 
-  const handleNewCheckResult = data => {
+  const handleNewCheckResult = (data) => {
     service.send('receive_check_result', data);
   };
 
@@ -465,7 +465,7 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     waitingRoomService,
   )(dispatch);
 
-  const handleNewEditorData = data => {
+  const handleNewEditorData = (data) => {
     dispatch(actions.updateEditorText(data));
   };
 
@@ -473,14 +473,14 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     dispatch(actions.updateCheckStatus({ [userId]: true }));
   };
 
-  const handleNewCheckResult = responseData => {
+  const handleNewCheckResult = (responseData) => {
     const {
       state, solutionStatus, checkResult, players, userId, award,
     } = responseData;
     if (solutionStatus) {
       channel
         .push(channelMethods.gameScore, {})
-        .receive('ok', data => dispatch(actions.setGameScore(data)));
+        .receive('ok', (data) => dispatch(actions.setGameScore(data)));
     }
     dispatch(actions.updateGamePlayers({ players }));
 
@@ -497,7 +497,7 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     gameRoomService.send(channelTopics.userCheckCompleteTopic, { payload });
   };
 
-  const handleUserJoined = data => {
+  const handleUserJoined = (data) => {
     const {
       state, startsAt, timeoutSeconds, langs, players, task,
     } = data;
@@ -554,24 +554,24 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     });
   };
 
-  const handleUserWon = data => {
+  const handleUserWon = (data) => {
     const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
     gameRoomService.send(channelTopics.userWonTopic, { payload: data });
   };
 
-  const handleUserGiveUp = data => {
+  const handleUserGiveUp = (data) => {
     const { players, state, msg } = data;
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
     channel
       .push(channelMethods.gameScore, {})
-      .receive('ok', response => dispatch(actions.setGameScore(response)));
+      .receive('ok', (response) => dispatch(actions.setGameScore(response)));
     gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
   };
 
-  const handleRematchStatusUpdate = data => {
+  const handleRematchStatusUpdate = (data) => {
     dispatch(actions.updateRematchStatus(data));
     gameRoomService.send(channelTopics.rematchStatusUpdatedTopic, {
       payload: data,
@@ -583,7 +583,7 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     redirectToNewGame(newGameId);
   };
 
-  const handleGameTimeout = data => {
+  const handleGameTimeout = (data) => {
     const { gameState } = data;
     const payload = { state: gameState };
     dispatch(actions.updateGameStatus(payload));
@@ -598,7 +598,7 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     dispatch(actions.setLocked(false));
   };
 
-  const handleTournamentGameCreated = data => {
+  const handleTournamentGameCreated = (data) => {
     dispatch(actions.setTournamentsInfo(data));
     gameRoomService.send(channelTopics.tournamentGameCreatedTopic, {
       payload: data,
@@ -610,11 +610,11 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     }
   };
 
-  const handleTournamentRoundCreated = response => {
+  const handleTournamentRoundCreated = (response) => {
     dispatch(actions.updateTournamentData(response));
   };
 
-  const handleTournamentRoundFinished = response => {
+  const handleTournamentRoundFinished = (response) => {
     dispatch(actions.updateTournamentData(response.tournament));
     dispatch(actions.updateTournamentMatches(response.matches || []));
     gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
@@ -622,18 +622,18 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     });
   };
 
-  const handleTournamentGameWait = response => {
+  const handleTournamentGameWait = (response) => {
     dispatch(actions.setTournamentWaitType(response.type));
   };
 
-  const handleWaitingRoomPlayerFinishedRound = response => {
+  const handleWaitingRoomPlayerFinishedRound = (response) => {
     waitingRoomService.send(
       channelTopics.tournamentPlayerFinishedRoundTopic,
       { payload: response },
     );
   };
 
-  const handleWaitingRoomPlayerFinished = response => {
+  const handleWaitingRoomPlayerFinished = (response) => {
     waitingRoomService.send(channelTopics.tournamentPlayerFinishedTopic, {
       payload: response,
     });
@@ -714,7 +714,7 @@ const fetchOrCreateTask = (gameService, taskService) => (dispatch, getState) => 
   gameService.send('LOAD_GAME', message);
 };
 
-export const reloadGeneratorAndSolutionTemplates = taskService => (dispatch, getState) => {
+export const reloadGeneratorAndSolutionTemplates = (taskService) => (dispatch, getState) => {
   const state = getState();
 
   const langs = selectors.editorLangsSelector(state);
@@ -736,7 +736,7 @@ export const reloadGeneratorAndSolutionTemplates = taskService => (dispatch, get
   taskService.send('CHANGES');
 };
 
-export const validateTaskName = name => (dispatch, getState) => {
+export const validateTaskName = (name) => (dispatch, getState) => {
   if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
     return;
   }
@@ -748,7 +748,7 @@ export const validateTaskName = name => (dispatch, getState) => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
       const { name: currentTaskName } = selectors.builderTaskSelector(getState());
 
@@ -766,12 +766,12 @@ export const validateTaskName = name => (dispatch, getState) => {
         );
       }
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(actions.setValidationStatuses({ name: [false, error.message] }));
     });
 };
 
-export const updateTaskState = (id, state) => dispatch => {
+export const updateTaskState = (id, state) => (dispatch) => {
   axios
     .patch(
       `/api/v1/tasks/${id}`,
@@ -786,13 +786,13 @@ export const updateTaskState = (id, state) => dispatch => {
     .then(() => {
       dispatch(actions.setTaskState(state));
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(actions.setError(error));
       console.error(error);
     });
 };
 
-export const publishTask = id => (dispatch, getState) => {
+export const publishTask = (id) => (dispatch, getState) => {
   const state = getState();
   const isAdmin = selectors.currentUserIsAdminSelector(state);
   const nextTaskState = isAdmin
@@ -802,7 +802,7 @@ export const publishTask = id => (dispatch, getState) => {
   dispatch(updateTaskState(id, nextTaskState));
 };
 
-export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
+export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
   axios
     .patch(
       `/api/v1/tasks/${id}`,
@@ -817,14 +817,14 @@ export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
     .then(() => {
       dispatch(actions.setTaskVisibility(visibility));
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(actions.setError(error));
       console.error(error);
       onError(error);
     });
 };
 
-export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onError = () => { }) => dispatch => {
+export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onError = () => { }) => (dispatch) => {
   const payload = {
     task: decamelizeKeys(taskParams, { separator: '_' }),
     options: {
@@ -839,7 +839,7 @@ export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onErr
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
       const labledTask = labelTaskParamsWithIds(data.task);
 
@@ -847,7 +847,7 @@ export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onErr
       taskService.send('CONFIRM');
       onSuccess();
     })
-    .catch(err => {
+    .catch((err) => {
       onError(err);
 
       dispatch(actions.setError(err));
@@ -875,14 +875,14 @@ export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }
             'x-csrf-token': window.csrf_token,
           },
         })
-        .then(response => {
+        .then((response) => {
           const data = camelizeKeys(response.data);
 
           taskService.send('CONFIRM');
           window.location.href = `/tasks/${data.task.id}`;
           onSuccess();
         })
-        .catch(err => {
+        .catch((err) => {
           onError(err);
 
           dispatch(actions.setError(err));
@@ -896,7 +896,7 @@ export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }
             'x-csrf-token': window.csrf_token,
           },
         })
-        .then(response => {
+        .then((response) => {
           const data = camelizeKeys(response.data);
           const labledTask = labelTaskParamsWithIds(data.task);
 
@@ -904,7 +904,7 @@ export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }
           taskService.send('CONFIRM');
           onSuccess();
         })
-        .catch(err => {
+        .catch((err) => {
           onError(err);
 
           dispatch(actions.setError(err));
@@ -919,7 +919,7 @@ export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }
   }
 };
 
-export const deleteTask = id => dispatch => {
+export const deleteTask = (id) => (dispatch) => {
   axios
     .delete(`/api/v1/tasks/${id}`, {
       headers: {
@@ -930,13 +930,13 @@ export const deleteTask = id => dispatch => {
     .then(() => {
       window.location.href = '/tasks';
     })
-    .catch(err => {
+    .catch((err) => {
       dispatch(actions.setError(err));
       console.error(err);
     });
 };
 
-export const buildTaskAsserts = taskService => (dispatch, getState) => {
+export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
   const state = getState();
 
   if (state.builder.templates.state !== taskTemplatesStates.init) {
@@ -980,7 +980,7 @@ export const buildTaskAsserts = taskService => (dispatch, getState) => {
         },
       },
     )
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
 
       dispatch(
@@ -1012,7 +1012,7 @@ export const buildTaskAsserts = taskService => (dispatch, getState) => {
         }
       }
     })
-    .catch(err => {
+    .catch((err) => {
       dispatch(
         actions.setTaskAsserts({
           asserts: [],
@@ -1027,12 +1027,12 @@ export const buildTaskAsserts = taskService => (dispatch, getState) => {
     });
 };
 
-const fetchPlaybook = (service, init) => dispatch => {
+const fetchPlaybook = (service, init) => (dispatch) => {
   service.send('START_LOADING_PLAYBOOK');
 
   axios
     .get(`/api/v1/playbook/${gameId}`)
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
       const type = isRecord
         ? PlaybookStatusCodes.stored
@@ -1043,14 +1043,14 @@ const fetchPlaybook = (service, init) => dispatch => {
 
       service.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(err);
       dispatch(actions.setError(err));
       service.send('REJECT_LOADING_PLAYBOOK', { payload: err });
     });
 };
 
-export const changePlaybookSolution = method => dispatch => {
+export const changePlaybookSolution = (method) => (dispatch) => {
   axios
     .post(
       `/api/v1/playbooks/${method}`,
@@ -1064,7 +1064,7 @@ export const changePlaybookSolution = method => dispatch => {
         },
       },
     )
-    .then(response => {
+    .then((response) => {
       const data = camelizeKeys(response.data);
 
       if (data.errors) {
@@ -1078,31 +1078,31 @@ export const changePlaybookSolution = method => dispatch => {
         dispatch(actions.changeSolutionType(data));
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.error(error);
       dispatch(actions.setError(error));
     });
 };
 
-export const storedEditorReady = service => {
+export const storedEditorReady = (service) => {
   service.send('load_stored_editor');
 
   return () => { };
 };
 
-export const downloadPlaybook = service => dispatch => {
+export const downloadPlaybook = (service) => (dispatch) => {
   dispatch(fetchPlaybook(service, initPlaybook));
 };
 
-export const openPlaybook = service => () => {
+export const openPlaybook = (service) => () => {
   service.send('OPEN_REPLAYER');
 };
 
-export const connectToTask = (gameService, taskService) => dispatch => {
+export const connectToTask = (gameService, taskService) => (dispatch) => {
   dispatch(fetchOrCreateTask(gameService, taskService));
 };
 
-export const connectToGame = (gameRoomService, waitingRoomService, options) => dispatch => {
+export const connectToGame = (gameRoomService, waitingRoomService, options) => (dispatch) => {
   if (isRecord) {
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
@@ -1132,7 +1132,7 @@ export const checkGameSolution = () => (dispatch, getState) => {
   channel.push(channelMethods.checkResult, payload);
 };
 
-export const checkTaskSolution = editorService => (dispatch, getState) => {
+export const checkTaskSolution = (editorService) => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const { text, lang } = selectors.getSolution(currentUserId)(state);
@@ -1158,7 +1158,7 @@ export const checkTaskSolution = editorService => (dispatch, getState) => {
         'x-csrf-token': window.csrf_token,
       },
     })
-    .then(response => {
+    .then((response) => {
       const { checkResult } = camelizeKeys(response.data);
 
       dispatch(
@@ -1169,7 +1169,7 @@ export const checkTaskSolution = editorService => (dispatch, getState) => {
       );
       editorService.send('receive_check_result', { userId: currentUserId });
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(
         actions.updateExecutionOutput({
           status: 'error',
@@ -1183,14 +1183,14 @@ export const checkTaskSolution = editorService => (dispatch, getState) => {
     });
 };
 
-export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
-export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));
+export const compressEditorHeight = (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }));
+export const expandEditorHeight = (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }));
 
 /*
  * Middleware actions for CodebattlePlayer
  */
 
-export const setGameHistoryState = recordId => (dispatch, getState) => {
+export const setGameHistoryState = (recordId) => (dispatch, getState) => {
   const state = getState();
   const initRecords = selectors.playbookInitRecordsSelector(state);
   const records = selectors.playbookRecordsSelector(state);
@@ -1201,7 +1201,7 @@ export const setGameHistoryState = recordId => (dispatch, getState) => {
     initRecords,
   });
 
-  editorsState.forEach(player => {
+  editorsState.forEach((player) => {
     dispatch(
       actions.updateEditorTextHistory({
         userId: player.id,
@@ -1221,7 +1221,7 @@ export const setGameHistoryState = recordId => (dispatch, getState) => {
   dispatch(actions.updateChatDataHistory(chatState));
 };
 
-export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
+export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => {
   const state = getState();
   const records = selectors.playbookRecordsSelector(state);
   const nextRecord = parse(records[nextRecordId]) || {};
@@ -1265,7 +1265,7 @@ export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
   }
 };
 
-export const changeTaskImgDataUrl = imgDataUrl => () => {
+export const changeTaskImgDataUrl = (imgDataUrl) => () => {
   channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl })
     .receive('ok', () => {
       window.location.reload();

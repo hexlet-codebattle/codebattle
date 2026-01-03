@@ -24,7 +24,7 @@ function FeedbackWidget() {
 
   const currentUserName = useSelector(currentUserNameSelector);
 
-  const addAlert = useCallback(status => {
+  const addAlert = useCallback((status) => {
     dispatch(actions.addAlert({ [Date.now()]: status }));
   }, [dispatch]);
 

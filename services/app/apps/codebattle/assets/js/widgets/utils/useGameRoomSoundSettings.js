@@ -8,10 +8,10 @@ import { actions } from '../slices';
 const useGameRoomSoundSettings = () => {
   const dispatch = useDispatch();
 
-  const mute = useSelector(state => state.user.settings.mute);
+  const mute = useSelector((state) => state.user.settings.mute);
 
   useEffect(() => {
-    const muteSound = e => {
+    const muteSound = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
 

@@ -78,22 +78,22 @@ function TournamentForm({
     }
   }, [formData, onValidate]);
 
-  const handleChange = useCallback(e => {
+  const handleChange = useCallback((e) => {
     const {
  name, value, type, checked,
 } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
   }, []);
 
-  const handleSubmit = useCallback(e => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     onSubmit(formData);
   }, [formData, onSubmit]);
 
-  const renderError = fieldName => {
+  const renderError = (fieldName) => {
     if (errors[fieldName]) {
       return (
         <div className="invalid-feedback d-block">
@@ -203,7 +203,7 @@ function TournamentForm({
                 value={formData.access_type}
                 onChange={handleChange}
               >
-                {ACCESS_TYPES.map(type => (
+                {ACCESS_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.label}
                   </option>
@@ -274,7 +274,7 @@ function TournamentForm({
                 value={formData.task_provider}
                 onChange={handleChange}
               >
-                {TASK_PROVIDERS.map(provider => (
+                {TASK_PROVIDERS.map((provider) => (
                   <option key={provider.value} value={provider.value}>
                     {provider.label}
                   </option>
@@ -297,7 +297,7 @@ function TournamentForm({
                 value={formData.task_strategy}
                 onChange={handleChange}
               >
-                {TASK_STRATEGIES.map(strategy => (
+                {TASK_STRATEGIES.map((strategy) => (
                   <option key={strategy.value} value={strategy.value}>
                     {strategy.label}
                   </option>
@@ -323,7 +323,7 @@ function TournamentForm({
                   value={formData.level}
                   onChange={handleChange}
                 >
-                  {LEVELS.map(level => (
+                  {LEVELS.map((level) => (
                     <option key={level.value} value={level.value}>
                       {level.label}
                     </option>
@@ -349,7 +349,7 @@ function TournamentForm({
                   onChange={handleChange}
                 >
                   <option value="">Select a task pack</option>
-                  {taskPackNames.map(name => (
+                  {taskPackNames.map((name) => (
                     <option key={name} value={name}>
                       {name}
                     </option>
@@ -404,7 +404,7 @@ function TournamentForm({
                 value={formData.players_limit}
                 onChange={handleChange}
               >
-                {PLAYERS_LIMITS.map(limit => (
+                {PLAYERS_LIMITS.map((limit) => (
                   <option key={limit} value={limit}>
                     {limit}
                   </option>
@@ -427,7 +427,7 @@ function TournamentForm({
                 value={formData.ranking_type}
                 onChange={handleChange}
               >
-                {RANKING_TYPES.map(type => (
+                {RANKING_TYPES.map((type) => (
                   <option key={type.value} value={type.value}>
                     {type.label}
                   </option>
@@ -450,7 +450,7 @@ function TournamentForm({
                 value={formData.score_strategy}
                 onChange={handleChange}
               >
-                {SCORE_STRATEGIES.map(strategy => (
+                {SCORE_STRATEGIES.map((strategy) => (
                   <option key={strategy.value} value={strategy.value}>
                     {strategy.label}
                   </option>
@@ -475,7 +475,7 @@ function TournamentForm({
                 value={formData.rounds_limit}
                 onChange={handleChange}
               >
-                {Array.from({ length: 42 }, (_, i) => i + 1).map(num => (
+                {Array.from({ length: 42 }, (_, i) => i + 1).map((num) => (
                   <option key={num} value={num}>
                     {num}
                   </option>

@@ -120,7 +120,7 @@ const useOption = (
  *   onChangeCursorPosition: Function,
  * }} props
  */
-const useEditor = props => {
+const useEditor = (props) => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();
 
@@ -130,7 +130,7 @@ const useEditor = props => {
   useResizeListener(editor, props);
 
   // Prevent browser "Save Page" on Ctrl+S / Cmd+S
-  const handleEnterCtrPlusS = useCallback(e => {
+  const handleEnterCtrPlusS = useCallback((e) => {
     if (e.key === 's' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
     }
@@ -173,7 +173,7 @@ const useEditor = props => {
     } = props;
 
     // Intercept keydown for custom Copy, Cut, and Paste logic.
-    currentEditor.onKeyDown(e => {
+    currentEditor.onKeyDown((e) => {
       const isCtrlOrCmd = e.ctrlKey || e.metaKey;
 
       // COPY (Ctrl+C / Cmd+C)
@@ -241,7 +241,7 @@ const useEditor = props => {
     });
 
     // Disable the context menu (right-click) to block "Paste" from there
-    currentEditor.onContextMenu(e => {
+    currentEditor.onContextMenu((e) => {
       // Monaco's context menu event has the DOM event nested in e.event
       if (e && e.event && e.event.preventDefault) {
         e.event.preventDefault();
@@ -253,7 +253,7 @@ const useEditor = props => {
     const domNode = currentEditor.getDomNode();
     domNode.addEventListener(
       'paste',
-      e => {
+      (e) => {
         e.preventDefault();
         e.stopPropagation();
         return false;
@@ -263,7 +263,7 @@ const useEditor = props => {
 
     domNode.addEventListener(
       'drop',
-      e => {
+      (e) => {
         e.preventDefault();
         e.stopPropagation();
         return false;
@@ -311,7 +311,7 @@ const useEditor = props => {
 
     domNode.addEventListener(
       'wheel',
-      e => {
+      (e) => {
         const scrollTop = currentEditor.getScrollTop();
         const scrollHeight = currentEditor.getScrollHeight();
         const clientHeight = currentEditor.getLayoutInfo().height;

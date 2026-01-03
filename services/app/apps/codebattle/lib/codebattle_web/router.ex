@@ -146,6 +146,7 @@ defmodule CodebattleWeb.Router do
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
+      get("/seasons/:season_id/players/:user_id/stats", SeasonResultController, :player_stats)
     end
 
     scope "/v1", V1, as: :v1 do

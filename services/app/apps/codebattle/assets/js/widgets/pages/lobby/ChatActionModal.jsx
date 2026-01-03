@@ -23,7 +23,7 @@ function ChatActionModal({
   const handleCloseModal = useCallback(() => {
     setModalShowing({ opened: false });
   }, [setModalShowing]);
-  const createBattleInvite = useCallback(event => {
+  const createBattleInvite = useCallback((event) => {
     event.preventDefault();
 
     const { userId, userName } = event.currentTarget.dataset;
@@ -35,7 +35,7 @@ function ChatActionModal({
       }),
     );
   }, [dispatch, setModalShowing]);
-  const openDirect = useCallback(event => {
+  const openDirect = useCallback((event) => {
     event.preventDefault();
 
     const { userId, userName } = event.currentTarget.dataset;
@@ -62,7 +62,7 @@ function ChatActionModal({
       <Modal.Body className="overflow-auto">
         {modalShowing.action && (
           <div className="d-flex flex-column">
-            {presenceList.map(presenceUser => (
+            {presenceList.map((presenceUser) => (
               currentUserId !== presenceUser.id && (
                 <div
                   role="button"

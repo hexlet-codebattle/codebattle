@@ -15,18 +15,20 @@ import GameResultIcon from './GameResultIcon';
 import UserGameScore from './UserGameScore';
 import VimModeButton from './VimModeButton';
 
-const ModeButtons = ({ player }) => (
-  <div
-    className="btn-group align-items-center mr-auto"
-    role="group"
-    aria-label="Editor mode"
-  >
-    <VimModeButton playerId={player.id} />
-    {/* <DarkModeButton playerId={player.id} /> */}
-  </div>
-);
+function ModeButtons({ player }) {
+  return (
+    <div
+      className="btn-group align-items-center mr-auto"
+      role="group"
+      aria-label="Editor mode"
+    >
+      <VimModeButton playerId={player.id} />
+      {/* <DarkModeButton playerId={player.id} /> */}
+    </div>
+  );
+}
 
-const EditorToolbar = ({
+function EditorToolbar({
   gameId,
   toolbarRef,
   type,
@@ -44,30 +46,31 @@ const EditorToolbar = ({
   showControlBtns,
   isAdmin = false,
   isHistory = false,
-}) => (
-  <>
-    <div
-      ref={toolbarRef}
-      className="cb-bg-panel cb-toolbar cb-border-color rounded-top"
-      data-player-type={type}
-    >
-      <div className={toolbarClassNames} role="toolbar">
-        <div className="d-flex justify-content-between">
-          <div
-            className={editorSettingClassNames}
-            role="group"
-            aria-label="Editor settings"
-          >
-            <LanguagePicker editor={editor} status={langPickerStatus} />
+}) {
+  return (
+    <>
+      <div
+        ref={toolbarRef}
+        className="cb-bg-panel cb-toolbar cb-border-color rounded-top"
+        data-player-type={type}
+      >
+        <div className={toolbarClassNames} role="toolbar">
+          <div className="d-flex justify-content-between">
+            <div
+              className={editorSettingClassNames}
+              role="group"
+              aria-label="Editor settings"
+            >
+              <LanguagePicker editor={editor} status={langPickerStatus} />
+            </div>
+            {showControlBtns && !isHistory && <ModeButtons player={player} />}
           </div>
-          {showControlBtns && !isHistory && <ModeButtons player={player} />}
-        </div>
 
-        <div className="d-flex justify-content-between">
-          {showControlBtns && !isHistory && editorState !== 'banned' && (
+          <div className="d-flex justify-content-between">
+            {showControlBtns && !isHistory && editorState !== 'banned' && (
             <GameActionButtons {...actionBtnsProps} />
           )}
-          {!showControlBtns && (
+            {!showControlBtns && (
             <div
               className="py-2"
               role="group"
@@ -75,40 +78,41 @@ const EditorToolbar = ({
             >
               <GameReportButton userId={player.id} gameId={gameId} />
               {isAdmin && (
-                <>
-                  <GameBanPlayerButton
-                    userId={player.id}
-                    status={status}
-                    tournamentId={tournamentId}
-                  />
-                  <CopyEditorButton
-                    editor={editor}
-                  />
-                </>
+              <>
+                <GameBanPlayerButton
+                  userId={player.id}
+                  status={status}
+                  tournamentId={tournamentId}
+                />
+                <CopyEditorButton
+                  editor={editor}
+                />
+              </>
               )}
             </div>
           )}
-          <div
-            className={userInfoClassNames}
-            role="group"
-            aria-label="User info"
-          >
-            <UserInfo
-              mode="dark"
-              user={player}
-              placement={Placements.bottomEnd}
-            />
-            {mode === GameRoomModes.standard && (
+            <div
+              className={userInfoClassNames}
+              role="group"
+              aria-label="User info"
+            >
+              <UserInfo
+                mode="dark"
+                user={player}
+                placement={Placements.bottomEnd}
+              />
+              {mode === GameRoomModes.standard && (
               <UserGameScore userId={player.id} />
             )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <EditorResultIcon>
-      <GameResultIcon userId={editor.userId} />
-    </EditorResultIcon>
-  </>
-);
+      <EditorResultIcon>
+        <GameResultIcon userId={editor.userId} />
+      </EditorResultIcon>
+    </>
+  );
+}
 
 export default EditorToolbar;

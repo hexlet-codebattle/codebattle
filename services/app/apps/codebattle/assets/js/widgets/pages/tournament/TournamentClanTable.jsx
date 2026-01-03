@@ -55,7 +55,7 @@ function TournamentClanTable() {
           </tr>
         </thead>
         <tbody>
-          {items?.map(item => (
+          {items?.map((item) => (
             <React.Fragment key={item.id}>
               <tr className="cb-custom-event-empty-space-tr" />
               <tr

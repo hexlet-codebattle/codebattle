@@ -27,7 +27,7 @@ function UsersList({
   return (
     <>
       {list.length !== 0 && <div>{`${title}: `}</div>}
-      {list.map(player => (
+      {list.map((player) => (
         <ChatUserInfo
           mode={mode}
           key={player.id}
@@ -134,7 +134,7 @@ function LobbyChat({
   useChatRooms('page');
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
-  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+  const filteredMessages = messages.filter((message) => shouldShowMessage(message, activeRoom));
 
   if (!presenceList) {
     return null;

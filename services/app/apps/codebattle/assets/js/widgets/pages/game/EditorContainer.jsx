@@ -97,11 +97,11 @@ function EditorContainer({
   );
 
   const updateEditorValue = useCallback(
-    data => dispatch(GameActions.updateEditorText(data)),
+    (data) => dispatch(GameActions.updateEditorText(data)),
     [dispatch],
   );
   const updateAndSendEditorValue = useCallback(
-    data => {
+    (data) => {
       dispatch(GameActions.updateEditorText(data));
       dispatch(GameActions.sendEditorText(data));
     },
@@ -141,12 +141,12 @@ function EditorContainer({
     devTools: true,
     id: `editor_${id}`,
     actions: {
-      userSendSolution: ctx => {
+      userSendSolution: (ctx) => {
         if (ctx.editorState === 'active') {
           dispatch(GameActions.checkGameSolution());
         }
       },
-      handleTimeoutFailureChecking: ctx => {
+      handleTimeoutFailureChecking: (ctx) => {
         dispatch(
           actions.updateExecutionOutput({
             userId: ctx.userId,
@@ -186,7 +186,7 @@ function EditorContainer({
 
   useEffect(() => {
     /** @param {KeyboardEvent} e */
-    const check = e => {
+    const check = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         checkResult();

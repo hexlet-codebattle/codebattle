@@ -6,9 +6,9 @@ import cn from 'classnames';
 
 import LanguageIcon from './LanguageIcon';
 
-const UserName = ({
+function UserName({
   className = '', linkClassName = '', user, lang = user.lang, truncate, isOnline, hovered, hideOnlineIndicator, hideLink, hideRank,
-}) => {
+}) {
   const commonClassName = 'd-flex align-items-center';
   const onlineIndicatorClassName = cn('mr-1', {
     'cb-user-online': isOnline,
@@ -41,6 +41,6 @@ const UserName = ({
       )}
     </div>
   );
-};
+}
 
 export default UserName;

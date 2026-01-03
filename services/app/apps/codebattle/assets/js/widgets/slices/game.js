@@ -14,7 +14,7 @@ const game = createSlice({
     setGameId: (state, { payload: { id } }) => {
       state.id = id;
     },
-    clearGameStatus: state => {
+    clearGameStatus: (state) => {
       state.gameStatus = defaultGameStatusState;
     },
     updateGameStatus: (state, { payload }) => {
@@ -26,7 +26,7 @@ const game = createSlice({
     updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },
-    clearGamePlayers: state => {
+    clearGamePlayers: (state) => {
       if (state.players) {
         state.players = {};
       }
@@ -65,7 +65,7 @@ const game = createSlice({
     setVisible: (state, { payload }) => {
       state.visible = payload;
     },
-    toggleVisible: state => {
+    toggleVisible: (state) => {
       state.visible = !state.visible;
     },
   },

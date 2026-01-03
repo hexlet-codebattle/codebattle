@@ -5,7 +5,7 @@ import Select from 'react-select';
 import UserInfo from '../../components/UserInfo';
 
 const customStyle = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     height: '33px',
     minHeight: '31px',
@@ -13,19 +13,19 @@ const customStyle = {
     borderRadius: 'unset',
     backgroundColor: 'hsl(0, 0%, 100%)',
   }),
-  indicatorsContainer: provided => ({
+  indicatorsContainer: (provided) => ({
     ...provided,
     height: '29px',
   }),
-  clearIndicator: provided => ({
+  clearIndicator: (provided) => ({
     ...provided,
     padding: '5px',
   }),
-  dropdownIndicator: provided => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     padding: '5px',
   }),
-  input: provided => ({
+  input: (provided) => ({
     ...provided,
     height: '21px',
   }),
@@ -36,8 +36,8 @@ function PlayerPicker({
 }) {
   const options = useMemo(
     () => players
-        .filter(player => player.id !== activePlayer.id)
-        .map(player => ({
+        .filter((player) => player.id !== activePlayer.id)
+        .map((player) => ({
           label: <UserInfo user={player} truncate />,
           value: player.id,
         })),
@@ -57,14 +57,12 @@ function PlayerPicker({
   }
 
   return (
-    <>
-      <Select
-        styles={customStyle}
-        defaultValue={defaultValue}
-        onChange={changePlayer}
-        options={options}
-      />
-    </>
+    <Select
+      styles={customStyle}
+      defaultValue={defaultValue}
+      onChange={changePlayer}
+      options={options}
+    />
   );
 }
 

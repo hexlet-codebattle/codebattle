@@ -30,8 +30,8 @@ const maxPlayersPerRoundType = {
 const roundTypesValues = Object.values(RoundTypes);
 const maxRoundsCount = roundTypesValues.length;
 
-const getRoundCounts = playersCount => (
-  roundTypesValues.filter(type => maxPlayersPerRoundType[type] / 2 < playersCount).length
+const getRoundCounts = (playersCount) => (
+  roundTypesValues.filter((type) => maxPlayersPerRoundType[type] / 2 < playersCount).length
 );
 
 const getTitleByRoundType = (type, playersCount) => {
@@ -93,7 +93,7 @@ const getLinkParams = (match, currentUserId) => {
 };
 
 const getMatchesByRoundPosition = (matches, round) => (
-  Object.values(matches).filter(match => match.roundPosition === round)
+  Object.values(matches).filter((match) => match.roundPosition === round)
 );
 
 const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy text-warning' : '');
@@ -118,7 +118,7 @@ function Round({
         {getTitleByRoundType(type, playersCount)}
       </div>
       <div className="round-inner">
-        {matchesPerRound.map(match => (
+        {matchesPerRound.map((match) => (
           <div key={match.gameId} className="match">
             <div className="match__content">
               {match ? (
@@ -135,7 +135,7 @@ function Round({
                     </div>
                   </div>
                   <div className="d-flex flex-column justify-content-around">
-                    {match.playerIds.map(id => (
+                    {match.playerIds.map((id) => (
                       <div
                         className={`d-flex align-items-center bg-light tournament-bg-${match.state}`}
                       >
@@ -167,22 +167,20 @@ function IndividualMatches({
   const roundsCount = useMemo(() => getRoundCounts(playersCount), [playersCount]);
 
   return (
-    <>
-      <div className="overflow-auto mt-2">
-        <div className="bracket">
-          {roundTypesValues.map((type, index) => (
-            <Round
-              matches={matches}
-              players={players}
-              playersCount={playersCount}
-              round={roundsCount - maxRoundsCount + index}
-              type={type}
-              currentUserId={currentUserId}
-            />
+    <div className="overflow-auto mt-2">
+      <div className="bracket">
+        {roundTypesValues.map((type, index) => (
+          <Round
+            matches={matches}
+            players={players}
+            playersCount={playersCount}
+            round={roundsCount - maxRoundsCount + index}
+            type={type}
+            currentUserId={currentUserId}
+          />
           ))}
-        </div>
       </div>
-    </>
+    </div>
   );
 }
 

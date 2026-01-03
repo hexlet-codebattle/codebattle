@@ -30,7 +30,7 @@ const gameStatuses = {
 
 const loadingTitle = i18next.t('Loading...');
 
-const GameRoomTimer = ({ timeoutSeconds, time }) => {
+function GameRoomTimer({ timeoutSeconds, time }) {
   if (timeoutSeconds === null) {
     return loadingTitle;
   }
@@ -44,7 +44,7 @@ const GameRoomTimer = ({ timeoutSeconds, time }) => {
   }
 
   return <Timer time={time} />;
-};
+}
 
 function TimerContainer() {
   const { mainService, taskService } = useContext(RoomContext);

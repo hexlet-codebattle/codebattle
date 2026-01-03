@@ -19,7 +19,7 @@ function GameRoomLockPanel() {
   }, [error, setError]);
   const onSubmitCode = useCallback(() => {
     const value = (inputRef.current.value || '').replaceAll(' ', '');
-    const onError = err => setError(err);
+    const onError = (err) => setError(err);
 
     dispatch(sendPassCode(value, onError));
   }, [inputRef, setError, dispatch]);

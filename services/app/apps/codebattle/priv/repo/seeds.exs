@@ -526,15 +526,214 @@ Repo.delete_all(UserEvent)
 # })
 #
 seasons = [
-  %{name: "0", year: "2025", starts_at: ~D[2025-09-21], ends_at: ~D[2025-12-21]},
-  %{name: "1", year: "2026", starts_at: ~D[2025-12-21], ends_at: ~D[2026-03-21]},
-  %{name: "2", year: "2026", starts_at: ~D[2026-03-21], ends_at: ~D[2026-06-21]},
-  %{name: "3", year: "2026", starts_at: ~D[2026-06-21], ends_at: ~D[2026-09-21]},
-  %{name: "0", year: "2026", starts_at: ~D[2026-09-21], ends_at: ~D[2026-12-21]},
-  %{name: "1", year: "2027", starts_at: ~D[2026-12-21], ends_at: ~D[2027-03-21]}
+  %{name: "0", year: 2025, starts_at: ~D[2025-09-21], ends_at: ~D[2025-12-21]},
+  %{name: "1", year: 2026, starts_at: ~D[2025-12-21], ends_at: ~D[2026-03-21]},
+  %{name: "2", year: 2026, starts_at: ~D[2026-03-21], ends_at: ~D[2026-06-21]},
+  %{name: "3", year: 2026, starts_at: ~D[2026-06-21], ends_at: ~D[2026-09-21]},
+  %{name: "0", year: 2026, starts_at: ~D[2026-09-21], ends_at: ~D[2026-12-21]},
+  %{name: "1", year: 2027, starts_at: ~D[2026-12-21], ends_at: ~D[2027-03-21]}
 ]
 
-Enum.each(seasons, fn season_params ->
-  Repo.get_by(Codebattle.Season, starts_at: season_params.starts_at) ||
-    Codebattle.Season.create(season_params)
+created_seasons =
+  Enum.map(seasons, fn season_params ->
+    case Repo.get_by(Codebattle.Season, starts_at: season_params.starts_at) do
+      nil ->
+        {:ok, season} = Codebattle.Season.create(season_params)
+        season
+
+      existing ->
+        existing
+    end
+  end)
+
+# Generate rich tournament and season result data for testing charts
+Logger.info("Generating season results data...")
+
+# Get all users with clans (created earlier in seeds)
+all_users =
+  User
+  |> Repo.all()
+  |> Enum.filter(&(&1.id > 0 && !&1.is_bot))
+  |> Enum.take(200)
+
+# Programming languages for variety
+languages = [
+  "ruby",
+  "python",
+  "javascript",
+  "elixir",
+  "go",
+  "rust",
+  "java",
+  "kotlin",
+  "typescript",
+  "cpp"
+]
+
+# Tournament grades with their point distributions
+grade_configs = %{
+  "rookie" => %{points: [8, 4, 2], max_players: 32},
+  "challenger" => %{points: [16, 8, 4, 2], max_players: 64},
+  "pro" => %{points: [128, 64, 32, 16, 8, 4, 2], max_players: 128},
+  "elite" => %{points: [256, 128, 64, 32, 16, 8, 4, 2], max_players: 200},
+  "masters" => %{points: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], max_players: 300},
+  "grand_slam" => %{points: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], max_players: 500}
+}
+
+# Helper to generate realistic score distributions
+generate_score = fn place, total_players ->
+  # Higher placed players get higher scores with some randomness
+  base_score = max(1, total_players - place + 1) * 100
+  variance = :rand.uniform(50) - 25
+  max(0, base_score + variance)
+end
+
+# Helper to generate realistic game counts
+generate_games = fn ->
+  # Most players play 5-15 games per tournament
+  5 + :rand.uniform(10)
+end
+
+# Helper to generate win counts based on place
+generate_wins = fn place, games_count, total_players ->
+  # Better placed players have higher win rates
+  win_rate = max(0.1, 1.0 - place / total_players)
+  adjusted_rate = win_rate * (0.7 + :rand.uniform() * 0.3)
+  round(games_count * adjusted_rate)
+end
+
+# Helper to generate time spent
+generate_time = fn games_count ->
+  # Average 3-8 minutes per game
+  games_count * (180 + :rand.uniform(300))
+end
+
+# Create finished tournaments and results for each season
+Enum.each(created_seasons, fn season ->
+  Logger.info("Generating data for season #{season.name} #{season.year}...")
+
+  # Get season date range
+  season_start = season.starts_at
+  season_end = season.ends_at
+
+  # Generate 8-15 tournaments per season with different grades
+  tournaments_count = 8 + :rand.uniform(7)
+
+  # Distribute tournaments across grades (more lower-tier tournaments)
+  grade_distribution = [
+    {"rookie", 3},
+    {"challenger", 3},
+    {"pro", 2},
+    {"elite", 2},
+    {"masters", 1},
+    {"grand_slam", 1}
+  ]
+
+  tournament_grades =
+    grade_distribution
+    |> Enum.flat_map(fn {grade, count} -> List.duplicate(grade, count) end)
+    |> Enum.shuffle()
+    |> Enum.take(tournaments_count)
+
+  # Create tournaments for this season
+  Enum.with_index(tournament_grades, fn grade, idx ->
+    # Calculate tournament date within season
+    days_in_season = Date.diff(season_end, season_start)
+    tournament_day = div(days_in_season * idx, tournaments_count)
+    tournament_date = Date.add(season_start, tournament_day)
+
+    tournament_datetime = DateTime.new!(tournament_date, ~T[18:00:00], "Etc/UTC")
+
+    config = grade_configs[grade]
+
+    # Create the tournament
+    tournament_params = %{
+      name: "#{String.capitalize(grade)} Tournament ##{idx + 1}",
+      type: "swiss",
+      state: "finished",
+      grade: grade,
+      starts_at: tournament_datetime,
+      started_at: tournament_datetime,
+      finished_at: DateTime.add(tournament_datetime, 3600, :second),
+      players_limit: config.max_players,
+      ranking_type: "by_user",
+      score_strategy: "75_percentile",
+      task_provider: "level",
+      rounds_limit: 7,
+      current_round_position: 7,
+      creator_id: 1
+    }
+
+    {:ok, tournament} =
+      %Codebattle.Tournament{}
+      |> Codebattle.Tournament.changeset(tournament_params)
+      |> Repo.insert()
+
+    # Select random participants (30-80% of available users based on grade)
+    participation_rate =
+      case grade do
+        "rookie" -> 0.3
+        "challenger" -> 0.4
+        "pro" -> 0.5
+        "elite" -> 0.6
+        "masters" -> 0.7
+        "grand_slam" -> 0.8
+      end
+
+    participants =
+      all_users
+      |> Enum.shuffle()
+      |> Enum.take(round(length(all_users) * participation_rate))
+
+    total_participants = length(participants)
+
+    # Create tournament_user_results for each participant
+    participants
+    |> Enum.with_index(1)
+    |> Enum.each(fn {user, place} ->
+      games_count = generate_games.()
+      wins_count = generate_wins.(place, games_count, total_participants)
+      score = generate_score.(place, total_participants)
+      total_time = generate_time.(games_count)
+
+      # Calculate points based on grade and place
+      points_list = config.points
+      points = Enum.at(points_list, place - 1) || 2
+
+      # Get clan info
+      clan = if user.clan_id, do: Repo.get(Clan, user.clan_id)
+
+      result_params = %{
+        tournament_id: tournament.id,
+        user_id: user.id,
+        user_name: user.name,
+        user_lang: Enum.random(languages),
+        clan_id: user.clan_id,
+        clan_name: clan && clan.name,
+        place: place,
+        score: score,
+        points: points,
+        games_count: games_count,
+        wins_count: wins_count,
+        total_time: total_time,
+        is_cheater: false,
+        avg_result_percent: Decimal.new("#{50 + :rand.uniform(50)}.#{:rand.uniform(9)}"),
+        inserted_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+      }
+
+      Repo.insert_all(
+        "tournament_user_results",
+        [result_params],
+        on_conflict: :nothing
+      )
+    end)
+
+    Logger.info("  Created #{grade} tournament with #{total_participants} participants")
+  end)
+
+  # Aggregate season results
+  Logger.info("  Aggregating season results...")
+  Codebattle.SeasonResult.aggregate_season_results(season.id)
 end)
+
+Logger.info("Season data generation complete!")

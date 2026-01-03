@@ -37,7 +37,7 @@ const TournamentStatisticsModal = NiceModal.create(() => {
     );
   }, [tournament.matches, tournament.currentRoundPosition, showFullStatistics]);
   const gameRound = useMemo(() => (
-    Object.values(tournament?.matches || {}).find(match => match.gameId === gameId)?.round
+    Object.values(tournament?.matches || {}).find((match) => match.gameId === gameId)?.round
   ), [tournament.matches, gameId]);
 
   const [player, opponent] = useMatchesStatistics(firstPlayer.id, matches);

@@ -16,7 +16,7 @@ import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 import TaskLanguagesSelection from './TaskLanguageSelection';
 
-const renderTaskLink = task => {
+const renderTaskLink = (task) => {
   const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags[0]}/${task.name}.toml`;
 
   return (

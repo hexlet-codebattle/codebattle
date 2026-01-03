@@ -21,7 +21,7 @@ function ExampleForm({
   handleSubmit,
 }) {
   const handleArguments = useCallback(
-    event => {
+    (event) => {
       const data = event.target.value;
       const newExample = cloneDeep({ ...example, arguments: data });
       if (exampleRef?.current) {
@@ -35,7 +35,7 @@ function ExampleForm({
     [example, exampleRef, handleEdit],
   );
   const handleExpected = useCallback(
-    event => {
+    (event) => {
       const data = event.target.value;
       const newExample = cloneDeep({ ...example, expected: data });
       if (exampleRef?.current) {
@@ -130,7 +130,7 @@ function ExamplesEditPanel({
   handleClear,
 }) {
   const handleReset = useCallback(() => {
-    const existedExample = items.find(item => item.id === suggest?.id);
+    const existedExample = items.find((item) => item.id === suggest?.id);
 
     if (existedExample) {
       handleEdit(cloneDeep(existedExample));

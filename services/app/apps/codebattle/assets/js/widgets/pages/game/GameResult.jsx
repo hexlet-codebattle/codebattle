@@ -11,11 +11,11 @@ import GameStateCodes from '../../config/gameStateCodes';
 import * as selectors from '../../selectors';
 
 function GameResult() {
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
-  const players = useSelector(state => selectors.gamePlayersSelector(state));
+  const currentUserId = useSelector((state) => selectors.currentUserIdSelector(state));
+  const players = useSelector((state) => selectors.gamePlayersSelector(state));
   const isCurrentUserPlayer = hasIn(players, currentUserId);
-  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
-  const gameMode = useSelector(state => selectors.gameModeSelector(state));
+  const gameStatus = useSelector((state) => selectors.gameStatusSelector(state));
+  const gameMode = useSelector((state) => selectors.gameModeSelector(state));
 
   const result = useMemo(() => {
     if (gameStatus.state === GameStateCodes.timeout) {

@@ -37,7 +37,7 @@ const useTournamentStats = ({ type }) => {
 
   const activeGameId = type === 'tournament'
       ? Object.values(matches).find(
-          match => match.state === MatchStateCodes.playing
+          (match) => match.state === MatchStateCodes.playing
             && match.playerIds.includes(user?.id),
         )?.gameId
       : getActiveGameId(gameStatus, gameId);

@@ -21,7 +21,7 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
     window.location.reload();
   };
 
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
 
     dispatch(actions.setActiveGameId(data));
@@ -50,17 +50,17 @@ const initSpectatorChannel = (dispatch, spectatorChannel) => {
 
 // export const soundNotification = notification();
 
-export const connectToSpectator = () => dispatch => {
+export const connectToSpectator = () => (dispatch) => {
   setSpectatorChannel();
   initSpectatorChannel(dispatch, channel);
 
-  const handleGameCreate = payload => {
+  const handleGameCreate = (payload) => {
     const data = camelizeKeys(payload);
 
     dispatch(actions.clearActiveGameId());
     dispatch(actions.clearGameStatus());
 
-    setTimeout(params => {
+    setTimeout((params) => {
       dispatch(actions.setActiveGameId(params));
     }, 10, data);
   };

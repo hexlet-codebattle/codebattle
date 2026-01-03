@@ -19,7 +19,7 @@ function Leaderboard() {
   const anchorMonthRef = useRef(null);
   const anchorAllRef = useRef(null);
 
-  const handlePeriodClick = e => {
+  const handlePeriodClick = (e) => {
     const { currentTarget: { dataset } } = e;
     const periodValue = dataset.period || periodTypes.ALL;
     e.preventDefault();
@@ -114,7 +114,7 @@ function Leaderboard() {
       <tbody>
         {rating && rating.length > 0 ? (
           rating
-            .map(item => (
+            .map((item) => (
               <tr key={item.name} className="cb-border-color">
                 <td className="cb-border-color pr-0">
                   <div className="d-flex">

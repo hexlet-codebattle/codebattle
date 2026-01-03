@@ -229,7 +229,7 @@ const defaultValidationStatuses = {
   assertsExamples: [false],
 };
 
-const getTaskValidationStatuses = task => ({
+const getTaskValidationStatuses = (task) => ({
   ...defaultValidationStatuses,
   name: validateTaskName(task.name),
   description: validateTaskName(task.descriptionEn),
@@ -317,10 +317,10 @@ const initialTournament = tournamentParams
   : defaultTournamentParams;
 
 const initialseasonTournaments = tournamentsParams.filter(
-  x => x.state === tournamentStates.upcoming,
+  (x) => x.state === tournamentStates.upcoming,
 );
-const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
-const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
+const initialLiveTournaments = tournamentsParams.filter((x) => x.isLive);
+const initialCompletedTournaments = tournamentsParams.filter((x) => !x.isLive);
 
 const defaultTournamentPlayerParams = {
   tournamentId,

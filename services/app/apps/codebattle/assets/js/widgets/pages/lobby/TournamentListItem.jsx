@@ -22,7 +22,7 @@ const mapTournamentTitleByState = {
   [tournamentStates.finished]: 'Finished',
 };
 
-const getDateFormat = grade => {
+const getDateFormat = (grade) => {
   switch (grade) {
     case grades.open:
       return 'MMM D, YYYY [at] h:mma';
@@ -31,7 +31,7 @@ const getDateFormat = grade => {
   }
 };
 
-const getActionText = tournament => {
+const getActionText = (tournament) => {
   switch (tournament.state) {
     case tournamentStates.waitingParticipants:
       return 'Join';
@@ -46,7 +46,7 @@ const getActionText = tournament => {
   }
 };
 
-const TournamentTitle = ({ tournament }) => {
+function TournamentTitle({ tournament }) {
   if (tournament.grade === grades.open) {
     return (
       <span
@@ -69,9 +69,9 @@ const TournamentTitle = ({ tournament }) => {
       <span className="small">{subtitle}</span>
     </div>
   );
-};
+}
 
-const TournamentAction = ({ tournament, isAdmin = false }) => {
+function TournamentAction({ tournament, isAdmin = false }) {
   const text = getActionText(tournament);
   const showTournamentLink = tournament.state !== tournamentStates.upcoming || isAdmin;
 
@@ -114,30 +114,31 @@ const TournamentAction = ({ tournament, isAdmin = false }) => {
       </div>
     </div>
   );
-};
+}
 
-const showStartsAt = state => [
+const showStartsAt = (state) => [
     tournamentStates.active,
     tournamentStates.waitingParticipants,
     tournamentStates.upcoming,
   ].includes(state);
 
-const TournamentListItem = ({ tournament, isAdmin = false }) => (
-  <div
-    className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2"
-    style={{ width: '350px' }}
-  >
-    <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
-      <div className="d-flex align-items-center">
-        <div className="d-none d-lg-block d-md-block mr-2 mb-3">
-          {getIconForGrade(tournament.grade)}
+function TournamentListItem({ tournament, isAdmin = false }) {
+  return (
+    <div
+      className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2"
+      style={{ width: '350px' }}
+    >
+      <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
+        <div className="d-flex align-items-center">
+          <div className="d-none d-lg-block d-md-block mr-2 mb-3">
+            {getIconForGrade(tournament.grade)}
+          </div>
+          <TournamentTitle tournament={tournament} />
         </div>
-        <TournamentTitle tournament={tournament} />
-      </div>
-      <div className="cb-separator mb-2" />
-      <div className="d-flex w-100 justify-content-between">
-        <div className="d-flex flex-column align-items-baseline">
-          {tournament.grade !== grades.open && (
+        <div className="cb-separator mb-2" />
+        <div className="d-flex w-100 justify-content-between">
+          <div className="d-flex flex-column align-items-baseline">
+            {tournament.grade !== grades.open && (
             <span
               title={tournament.name}
               className="text-nowrap d-inline-flex mt-2 text-white text-nowrap"
@@ -148,8 +149,8 @@ const TournamentListItem = ({ tournament, isAdmin = false }) => (
               <span className="ml-1">Ranking Points</span>
             </span>
           )}
-          <span className="text-nowrap">
-            {tournament.state !== 'upcoming' && (
+            <span className="text-nowrap">
+              {tournament.state !== 'upcoming' && (
               <span className="mr-2 d-inline-flex mt-2 text-white text-nowrap">
                 <FontAwesomeIcon
                   icon="flag-checkered"
@@ -159,7 +160,7 @@ const TournamentListItem = ({ tournament, isAdmin = false }) => (
                 {mapTournamentTitleByState[tournament.state]}
               </span>
             )}
-            {tournamentStates.canceled !== tournament.state
+              {tournamentStates.canceled !== tournament.state
               && tournament.state !== 'upcoming' && (
                 <span className="d-inline-flex mt-2 text-white text-nowrap">
                   <FontAwesomeIcon
@@ -170,44 +171,43 @@ const TournamentListItem = ({ tournament, isAdmin = false }) => (
                   {tournament.playersCount}
                 </span>
               )}
-          </span>
-          {showStartsAt(tournament.state) && (
+            </span>
+            {showStartsAt(tournament.state) && (
             <>
               {dayjs(tournament.startsAt).diff(dayjs(), 'hours') <= 24 && (
-                <span className="d-inline-flex mt-2 text-white text-nowrap">
-                  <FontAwesomeIcon
-                    icon="clock"
-                    className="mr-2 text-warning"
-                    style={iconSize}
-                  />
-                  <TournamentTimer label="starts in" date={tournament.startsAt}>
-                    {dayjs(tournament.startsAt).format(
-                      getDateFormat(tournament.grade),
-                    )}
-                  </TournamentTimer>
-                </span>
-              )}
-            </>
-          )}
-          {tournament.state === tournamentStates.finished && (
-            <>
-              <span className="d-none d-lg-inline-flex d-md-inline-flex d-sm-inline-flex pr-2 mt-2 text-white text-nowrap">
+              <span className="d-inline-flex mt-2 text-white text-nowrap">
                 <FontAwesomeIcon
                   icon="clock"
                   className="mr-2 text-warning"
                   style={iconSize}
                 />
-                {dayjs(tournament.lastRoundEndedAt).format(
-                  getDateFormat(tournament.grade),
-                )}
+                <TournamentTimer label="starts in" date={tournament.startsAt}>
+                  {dayjs(tournament.startsAt).format(
+                      getDateFormat(tournament.grade),
+                    )}
+                </TournamentTimer>
               </span>
+              )}
             </>
           )}
+            {tournament.state === tournamentStates.finished && (
+            <span className="d-none d-lg-inline-flex d-md-inline-flex d-sm-inline-flex pr-2 mt-2 text-white text-nowrap">
+              <FontAwesomeIcon
+                icon="clock"
+                className="mr-2 text-warning"
+                style={iconSize}
+              />
+              {dayjs(tournament.lastRoundEndedAt).format(
+                  getDateFormat(tournament.grade),
+                )}
+            </span>
+          )}
+          </div>
+          <TournamentAction tournament={tournament} isAdmin={isAdmin} />
         </div>
-        <TournamentAction tournament={tournament} isAdmin={isAdmin} />
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default TournamentListItem;

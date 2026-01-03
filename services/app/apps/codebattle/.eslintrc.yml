@@ -1,66 +1,113 @@
 ---
 root: true
 
+env:
+  node: true
+  browser: true
+  jest: true
+
+parser: "@babel/eslint-parser"
+
+parserOptions:
+  requireConfigFile: false
+  ecmaVersion: latest
+  sourceType: module
+  ecmaFeatures:
+    jsx: true
+
 plugins:
   - react
   - jsx-a11y
   - jest
   - react-hooks
-env:
-  node: true
-  browser: true
-
-parser: "@babel/eslint-parser"
 
 extends:
-  - "airbnb"
-  - "plugin:jest/recommended"
+  - airbnb
+  - plugin:jest/recommended
+
+settings:
+  react:
+    version: detect
+  import/resolver:
+    alias:
+      map:
+        - ["@", "./assets/js"]
+      extensions:
+        - ".js"
+        - ".jsx"
+        - ".json"
 
 rules:
-  no-console: 0
-  react/prop-types: 0
-  react/no-unused-prop-types: 0
-  import/no-unresolved: 0
+  # --- general ---
+  no-console: off
+  no-param-reassign: off
+  class-methods-use-this: off
+  default-param-last: off
+  indent: off
+  template-curly-spacing: off
+  max-len: ["error", 140, 2]
+
+  # --- imports ---
+  import/no-unresolved: off
+  import/extensions: off
   import/no-extraneous-dependencies:
-    - 2
+    - error
     - devDependencies: true
   import/order:
-  - 2
-  - newlines-between: always
-    alphabetize:
-      order: asc
-      caseInsensitive: true
-    groups:
-      - builtin
-      - external
-      - internal
-      - parent
-      - sibling
-      - index
-    pathGroups:
-      - pattern: react
-        group: builtin
-      - pattern: '@/**'
-        group: internal
-    pathGroupsExcludedImportTypes:
-      - internal
-  no-param-reassign: 0
-  arrow-parens:
-    - 2
-    - "as-needed"
-  react/jsx-props-no-spreading: 0
-  react/static-property-placement: 0
-  react/state-in-constructor: 0
-  jest/no-disabled-tests: "warn"
-  jest/no-focused-tests: "error"
-  jest/no-identical-title: "error"
-  jest/prefer-to-have-length: "warn"
-  jest/valid-expect: "error"
-  react-hooks/rules-of-hooks: "error"
-  react-hooks/exhaustive-deps: "warn"
-  template-curly-spacing: "off"
-  indent: "off"
-  max-len: ["error", 140, 2]
+    - error
+    - newlines-between: always
+      alphabetize:
+        order: asc
+        caseInsensitive: true
+      groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+      pathGroups:
+        - pattern: react
+          group: builtin
+        - pattern: "@/**"
+          group: internal
+      pathGroupsExcludedImportTypes:
+        - internal
+
+  # --- react ---
+  react/prop-types: off
+  react/no-unused-prop-types: off
+  react/jsx-props-no-spreading: off
+  react/static-property-placement: off
+  react/state-in-constructor: off
+  react/jsx-no-useless-fragment: off
+  react/no-unstable-nested-components: off
+  react/jsx-no-constructed-context-values: warn
+
+  # --- hooks ---
+  react-hooks/rules-of-hooks: error
+  react-hooks/exhaustive-deps: warn
+
+  # --- jest ---
+  jest/no-disabled-tests: warn
+  jest/no-focused-tests: error
+  jest/no-identical-title: error
+  jest/prefer-to-have-length: warn
+  jest/valid-expect: error
+
+  # --- a11y ---
   jsx-a11y/label-has-associated-control:
-    - 2
-    - assert: "either"
+    - error
+    - assert: either
+
+  # --- safety (keep these ON) ---
+  no-unsafe-optional-chaining: error
+
+overrides:
+  - files:
+      - "**/__tests__/**/*.{js,jsx}"
+      - "**/*.{test,spec}.{js,jsx}"
+    rules:
+      func-names: off
+      no-constructor-return: off
+      react/jsx-no-useless-fragment: off

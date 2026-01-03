@@ -19,15 +19,13 @@ function UserLabel({ user }) {
   });
 
   return (
-    <>
-      <span className="text-truncate">
-        <FontAwesomeIcon
-          icon={['fa', 'circle']}
-          className={onlineIndicatorClassName}
-        />
-        <span>{user.name}</span>
-      </span>
-    </>
+    <span className="text-truncate">
+      <FontAwesomeIcon
+        icon={['fa', 'circle']}
+        className={onlineIndicatorClassName}
+      />
+      <span>{user.name}</span>
+    </span>
   );
 }
 

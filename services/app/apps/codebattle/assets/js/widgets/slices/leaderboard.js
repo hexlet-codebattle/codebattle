@@ -13,7 +13,7 @@ const periodMapping = {
   [periodTypes.WEEKLY]: 'week',
 };
 
-export const leaderboardSelector = state => state.leaderboard;
+export const leaderboardSelector = (state) => state.leaderboard;
 
 const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
@@ -53,9 +53,9 @@ const leaderboardSlice = createSlice({
       state.period = action.payload;
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(fetchUsers.pending, state => {
+      .addCase(fetchUsers.pending, (state) => {
         if (state.loading === loadingStatuses.IDLE) {
           state.loading = loadingStatuses.PENDING;
         }

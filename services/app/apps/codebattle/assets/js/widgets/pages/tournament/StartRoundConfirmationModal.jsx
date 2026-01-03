@@ -13,7 +13,7 @@ import {
   startRoundTournament as handleStartRoundTournament,
 } from '../../middlewares/TournamentAdmin';
 
-const getModalTittle = type => {
+const getModalTittle = (type) => {
   switch (type) {
     case 'firstRound':
       return 'Start tournament confirmation';
@@ -24,7 +24,7 @@ const getModalTittle = type => {
   }
 };
 
-const getModalText = type => {
+const getModalText = (type) => {
   switch (type) {
     case 'firstRound':
       return 'Are you sure you want to start the tournament?';

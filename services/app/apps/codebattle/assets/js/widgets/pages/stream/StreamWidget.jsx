@@ -22,7 +22,7 @@ const orientations = {
 
 function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
   const dispatch = useDispatch();
-  const game = useSelector(state => state.game);
+  const game = useSelector((state) => state.game);
   const searchParams = useSearchParams();
   const orientation = searchParams.has('orientation')
     ? searchParams.get('orientation')

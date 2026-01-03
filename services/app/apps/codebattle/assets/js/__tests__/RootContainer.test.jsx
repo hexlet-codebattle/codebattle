@@ -47,13 +47,15 @@ jest.mock('monaco-vim', () => ({
 
 jest.mock('../widgets/initEditor.js', () => ({}));
 
-jest.mock('../widgets/pages/game/TaskDescriptionMarkdown', () => () => (<>Examples: </>));
+jest.mock('../widgets/pages/game/TaskDescriptionMarkdown', () => function () {
+  return <>Examples: </>;
+});
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
 }));
 
-const createPlayer = params => ({
+const createPlayer = (params) => ({
   isAdmin: false,
   id: 0,
   name: '',
@@ -82,7 +84,7 @@ jest.mock(
       },
     };
 
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );
@@ -216,12 +218,12 @@ const preloadedState = {
 game.states.room.initial = 'active';
 editor.initial = 'idle';
 
-const setup = jsx => ({
+const setup = (jsx) => ({
   user: userEvent.setup(),
   ...render(jsx),
 });
 
-test('test rendering preview game component', async () => {
+test('rendering preview game component', async () => {
   const store = configureStore({
     reducer,
     preloadedState,
@@ -244,7 +246,7 @@ test('test rendering preview game component', async () => {
   expect(await findByText(/Examples:/)).toBeInTheDocument();
 });
 
-test('test a bot invite button', async () => {
+test('a bot invite button', async () => {
   const store = configureStore({
     reducer,
     preloadedState,

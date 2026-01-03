@@ -38,46 +38,40 @@ function MatchAction({ match, currentUserIsPlayer }) {
     case MatchStatesCodes.playing: {
       if (currentUserIsPlayer) {
         return (
-          <>
-            <a
-              href={href}
-              title={i18next.t('Continue match')}
-              className={continueBtnClassName}
-            >
-              <FontAwesomeIcon className="mr-2" icon="laptop-code" />
-              {i18next.t('Continue')}
-            </a>
-          </>
+          <a
+            href={href}
+            title={i18next.t('Continue match')}
+            className={continueBtnClassName}
+          >
+            <FontAwesomeIcon className="mr-2" icon="laptop-code" />
+            {i18next.t('Continue')}
+          </a>
         );
       }
 
       return (
-        <>
-          <a
-            href={href}
-            title={i18next.t('Show match')}
-            className={showBtnClassName}
-          >
-            <FontAwesomeIcon className="mr-2" icon="eye" />
-            {i18next.t('Show')}
-          </a>
-        </>
+        <a
+          href={href}
+          title={i18next.t('Show match')}
+          className={showBtnClassName}
+        >
+          <FontAwesomeIcon className="mr-2" icon="eye" />
+          {i18next.t('Show')}
+        </a>
       );
     }
     case MatchStatesCodes.canceled:
     case MatchStatesCodes.timeout:
     case MatchStatesCodes.gameOver:
       return (
-        <>
-          <a
-            href={href}
-            title={i18next.t('Show game history')}
-            className={showBtnClassName}
-          >
-            <FontAwesomeIcon className="mr-2" icon="eye" />
-            {i18next.t('Show')}
-          </a>
-        </>
+        <a
+          href={href}
+          title={i18next.t('Show game history')}
+          className={showBtnClassName}
+        >
+          <FontAwesomeIcon className="mr-2" icon="eye" />
+          {i18next.t('Show')}
+        </a>
       );
     default:
       throw new Error(`Invalid Match state: ${match.state}`);

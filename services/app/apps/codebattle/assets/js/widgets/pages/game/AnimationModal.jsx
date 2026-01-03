@@ -13,7 +13,7 @@ import ModalCodes from '../../config/modalCodes';
 import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
 
 function TournamentInfoPanel() {
-  const waitType = useSelector(state => state.game.waitType);
+  const waitType = useSelector((state) => state.game.waitType);
 
   switch (waitType) {
     case 'tournament': return i18n.t('Tournament is over');
@@ -31,9 +31,9 @@ function TournamentInfoPanel() {
 const AnimationModal = NiceModal.create(() => {
   const modal = useModal(ModalCodes.gameResultModal);
 
-  const players = useSelector(state => gamePlayersSelector(state));
-  const currentUserId = useSelector(state => currentUserIdSelector(state));
-  const tournamentId = useSelector(state => state.game.gameStatus.tournamentId);
+  const players = useSelector((state) => gamePlayersSelector(state));
+  const currentUserId = useSelector((state) => currentUserIdSelector(state));
+  const tournamentId = useSelector((state) => state.game.gameStatus.tournamentId);
 
   useEffect(() => {
     if (modal.visible) {

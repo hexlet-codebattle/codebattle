@@ -27,7 +27,7 @@ function TournamentGameCreatePanel({
     if (!selectedPlayer) return null;
 
     const activeMatches = Object.values(matches)
-      .filter(match => (
+      .filter((match) => (
         match.roundPosition === currentRoundPosition
         && match.playerIds.includes(selectedPlayer.id)
         && match.state === MatchStates.playing
@@ -68,7 +68,7 @@ function TournamentGameCreatePanel({
   useEffect(() => {
     if (selectedPlayer === emptyPlayer) {
       const playersListWithoutBots = Object.values(players)
-        .filter(player => !player.isBot);
+        .filter((player) => !player.isBot);
 
       if (playersListWithoutBots.length === 1) {
         setSelectedPlayer(playersListWithoutBots[0]);
@@ -91,14 +91,14 @@ function TournamentGameCreatePanel({
           <div className="d-flex justify-content-between align-items-center flex-column">
             <select
               className="form-control custom-select cb-rounded m-1"
-              onChange={e => setSelectedPlayer(players[e.target.value])}
+              onChange={(e) => setSelectedPlayer(players[e.target.value])}
             >
               <option disabled selected value>
                 Choose player
               </option>
               {Object.values(players)
-                .filter(player => !player.isBot)
-                .map(player => (
+                .filter((player) => !player.isBot)
+                .map((player) => (
                   <option key={player.id} value={player.id}>
                     {player.name}
                   </option>
@@ -222,7 +222,7 @@ function TournamentGameCreatePanel({
                   step="60"
                   placeholder={defaultMatchTimeoutSeconds}
                   value={selectedTimeoutSeconds}
-                  onChange={event => {
+                  onChange={(event) => {
                     const newTimeout = Number(event.target.value);
 
                     if (newTimeout >= 180 && newTimeout <= 7200) {

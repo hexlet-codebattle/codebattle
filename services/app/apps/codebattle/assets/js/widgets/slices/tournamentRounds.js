@@ -11,7 +11,7 @@ const tournament = createSlice({
     setActiveGameId: (state, { payload }) => {
       state.gameId = payload.activeGameId;
     },
-    clearActiveGameId: state => {
+    clearActiveGameId: (state) => {
       state.gameId = null;
     },
     updateTournamentPlayerChannelState: (state, { payload }) => {

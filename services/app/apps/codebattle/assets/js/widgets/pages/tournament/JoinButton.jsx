@@ -7,9 +7,9 @@ import i18next from '../../../i18n';
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
-const JoinButton = ({
+function JoinButton({
   isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
-}) => {
+}) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const onClick = isParticipant ? leaveTournament : joinTournament;
@@ -42,6 +42,6 @@ const JoinButton = ({
       </button>
     </>
   );
-};
+}
 
 export default JoinButton;

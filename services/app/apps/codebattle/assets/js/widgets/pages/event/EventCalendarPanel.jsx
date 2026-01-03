@@ -10,8 +10,8 @@ import TournamentStatusCodes from '../../config/tournament';
 
 import TournamentInfo from './TournamentInfo';
 
-const EventCalendarPanel = ({ tournaments }) => {
-  const handleOpenInstruction = useCallback(description => {
+function EventCalendarPanel({ tournaments }) {
+  const handleOpenInstruction = useCallback((description) => {
     NiceModal.show(ModalCodes.tournamentDescriptionModal, { description });
   }, []);
 
@@ -81,6 +81,6 @@ const EventCalendarPanel = ({ tournaments }) => {
       </div>
     </div>
   );
-};
+}
 
 export default EventCalendarPanel;

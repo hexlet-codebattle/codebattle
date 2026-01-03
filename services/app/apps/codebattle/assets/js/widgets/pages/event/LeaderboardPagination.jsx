@@ -1,26 +1,36 @@
 import React from 'react';
 
-import Pagination from 'react-js-pagination';
+import ReactPaginate from 'react-paginate';
 
-const LeaderboardPagination = ({
+function LeaderboardPagination({
   pageInfo: { pageNumber, pageSize, totalEntries },
   setPage,
-}) => (totalEntries > 0 && (
-  <Pagination
-    activePage={pageNumber}
-    itemsCountPerPage={pageSize}
-    totalItemsCount={totalEntries}
-    pageRangeDisplayed={5}
-    prevPageText="<"
-    firstPageText="<<"
-    lastPageText=">>"
-    nextPageText=">"
-    onChange={page => {
-      setPage(page);
-    }}
-    itemClass="cb-custom-event-pagination-page-item px-1"
-    linkClass="cb-custom-event-pagination-page-link px-1"
-  />
-));
+}) {
+  const pageCount = Math.ceil(totalEntries / pageSize);
+
+  return totalEntries > 0 && (
+    <ReactPaginate
+      forcePage={pageNumber - 1}
+      pageCount={pageCount}
+      pageRangeDisplayed={5}
+      marginPagesDisplayed={1}
+      previousLabel="<"
+      nextLabel=">"
+      breakLabel="..."
+      onPageChange={({ selected }) => {
+        setPage(selected + 1);
+      }}
+      pageClassName="cb-custom-event-pagination-page-item px-1"
+      pageLinkClassName="cb-custom-event-pagination-page-link px-1"
+      previousClassName="cb-custom-event-pagination-page-item px-1"
+      previousLinkClassName="cb-custom-event-pagination-page-link px-1"
+      nextClassName="cb-custom-event-pagination-page-item px-1"
+      nextLinkClassName="cb-custom-event-pagination-page-link px-1"
+      breakClassName="cb-custom-event-pagination-page-item px-1"
+      breakLinkClassName="cb-custom-event-pagination-page-link px-1"
+      activeClassName="active"
+    />
+  );
+}
 
 export default LeaderboardPagination;

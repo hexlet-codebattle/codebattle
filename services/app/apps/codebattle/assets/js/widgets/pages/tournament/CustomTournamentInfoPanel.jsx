@@ -67,25 +67,25 @@ function CustomTournamentInfoPanel({
   const allPlayers = useSelector(tournamentPlayersSelector);
 
   const handleUserSelectClick = useCallback(
-    event => {
+    (event) => {
       const { userId } = event.currentTarget.dataset;
       setPanelMode({
         panel: PanelModeCodes.ratingMode,
         userId: Number(userId),
       });
-      setPanelHistory(items => [...items, panelMode]);
+      setPanelHistory((items) => [...items, panelMode]);
       setSearchedUser(allPlayers[Number(userId)]);
     },
     [panelMode, setPanelMode, setPanelHistory, setSearchedUser, allPlayers],
   );
   const handleTaskSelectClick = useCallback(
-    event => {
+    (event) => {
       const { taskId } = event.currentTarget.dataset;
       setPanelMode({
         panel: PanelModeCodes.taskRatingAdvanced,
         taskId: Number(taskId),
       });
-      setPanelHistory(items => [...items, panelMode]);
+      setPanelHistory((items) => [...items, panelMode]);
     },
     [panelMode, setPanelMode, setPanelHistory],
   );

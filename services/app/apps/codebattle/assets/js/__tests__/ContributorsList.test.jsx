@@ -11,14 +11,14 @@ import axios from 'axios';
 
 jest.mock('gon', () => {
   const gonParams = { local: 'en' };
-  return { getAsset: type => gonParams[type] };
+  return { getAsset: (type) => gonParams[type] };
 }, { virtual: true });
 
 jest.mock('axios');
 const users = [];
 axios.get.mockResolvedValue({ data: users });
 //
-test('test rendering ContributorsList', async () => {
+test('rendering ContributorsList', async () => {
 //   const reducer = combineReducers(reducers);
 //
 //   const preloadedState = {

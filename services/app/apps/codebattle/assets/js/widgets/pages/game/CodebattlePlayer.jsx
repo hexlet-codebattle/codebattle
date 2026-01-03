@@ -60,21 +60,21 @@ class CodebattlePlayer extends Component {
       mainService.send('PLAY');
       this.play(handlerPosition);
     }
-  }
+  };
 
   onPauseClick = () => {
     const { mainService } = this.context;
     mainService.send('PAUSE');
-  }
+  };
 
   onChangeSpeed = () => {
     const { mainService } = this.context;
     mainService.send('TOGGLE_SPEED_MODE');
-  }
+  };
 
   // Slider callbacks
 
-  onSliderHandleChange = value => {
+  onSliderHandleChange = (value) => {
     this.setState({ handlerPosition: value });
 
     const { roomMachineState } = this.props;
@@ -83,14 +83,14 @@ class CodebattlePlayer extends Component {
     if (roomMachineState.matches({ replayer: replayerMachineStates.holded })) {
       setTimeout(this.runSetGameState, setGameStateDelay, value);
     }
-  }
+  };
 
   onSliderHandleChangeStart = () => {
     const { mainService } = this.context;
     mainService.send('HOLD');
-  }
+  };
 
-  onSliderHandleChangeEnd = handlerPosition => {
+  onSliderHandleChangeEnd = (handlerPosition) => {
     const { setError, roomMachineState } = this.props;
     const { mainService } = this.context;
     const { holding } = roomMachineState.context;
@@ -106,19 +106,19 @@ class CodebattlePlayer extends Component {
       default:
         setError(new Error('Unexpected holding state [replayer machine]'));
     }
-  }
+  };
 
-  onSliderHandleChangeIntent = intent => {
+  onSliderHandleChangeIntent = (intent) => {
     this.setState(() => ({ lastIntent: intent }));
-  }
+  };
 
   onSliderHandleChangeIntentEnd = () => {
     this.setState(() => ({ lastIntent: 0 }));
-  }
+  };
 
   // Helpers
 
-  setGameState = handlerPosition => {
+  setGameState = (handlerPosition) => {
     const { setGameStateByRecordId, stepCoefficient, recordsCount } = this.props;
     const { mainService } = this.context;
 
@@ -132,7 +132,7 @@ class CodebattlePlayer extends Component {
     }
 
     this.setState({ handlerPosition, nextRecordId });
-  }
+  };
 
   updateGameState = () => {
     const { updateGameStateByRecordId, recordsCount } = this.props;
@@ -148,18 +148,18 @@ class CodebattlePlayer extends Component {
     }
 
     this.setState({ nextRecordId });
-  }
+  };
 
-  play = handlerPosition => {
+  play = (handlerPosition) => {
     const { roomMachineState } = this.props;
 
     const { speedMode } = roomMachineState.context;
     const playDelay = playDelays[speedMode];
 
     setTimeout(this.runPlay, playDelay, handlerPosition);
-  }
+  };
 
-  runPlay = handlerPosition => {
+  runPlay = (handlerPosition) => {
     const { stepCoefficient, roomMachineState } = this.props;
     const { handlerPosition: currentHandlerPosition } = this.state;
 
@@ -180,7 +180,7 @@ class CodebattlePlayer extends Component {
     }
   };
 
-  runSetGameState = handlerPosition => {
+  runSetGameState = (handlerPosition) => {
     const { handlerPosition: currentHandlerPosition } = this.state;
 
     /*
@@ -252,7 +252,7 @@ class CodebattlePlayer extends Component {
 
 CodebattlePlayer.contextType = RoomContext;
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const recordsCount = playbookRecordsSelector(state).length;
   const { mainEvents } = state.playbook;
 

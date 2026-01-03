@@ -28,7 +28,7 @@ const reportStatusOptions = [
   { label: i18next.t('Denied'), value: 'denied' },
 ];
 
-const getStateText = state => {
+const getStateText = (state) => {
   switch (state) {
     case 'pending':
       return i18next.t('Pending');
@@ -49,7 +49,7 @@ function ReportsPanel() {
   const players = useSelector(tournamentPlayersSelector);
   const isAdmin = useSelector(userIsAdminSelector);
 
-  const changeReportState = reportId => ({ value }) => {
+  const changeReportState = (reportId) => ({ value }) => {
     dispatch(sendNewReportState(reportId, value));
   };
 
@@ -80,7 +80,7 @@ function ReportsPanel() {
           </tr>
         </thead>
         <tbody>
-          {reports.map(item => {
+          {reports.map((item) => {
             const offender = players[item.offenderId];
             const reporter = players[item.reporterId];
             return (

@@ -27,7 +27,7 @@ const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
 );
 
-const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
+function ArenaTopLeaderboardPanel({ taskCount, maxPlayerTasks }) {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const { ranking } = useSelector(tournamentSelector);
 
@@ -65,7 +65,7 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
             </tr>
           </thead>
           <tbody>
-            {ranking.map(item => (
+            {ranking.map((item) => (
               <React.Fragment key={item.id}>
                 {item.place > 3 ? (
                   <>
@@ -105,6 +105,6 @@ const ArenaTopLeaderboardPanel = ({ taskCount, maxPlayerTasks }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ArenaTopLeaderboardPanel;

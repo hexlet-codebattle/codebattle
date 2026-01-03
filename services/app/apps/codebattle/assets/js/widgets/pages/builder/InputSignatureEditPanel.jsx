@@ -26,7 +26,7 @@ function InputSignatureEditPanel({
   handleSubmit,
   handleClear,
 }) {
-  const handleChangeName = useCallback(event => {
+  const handleChangeName = useCallback((event) => {
     handleEdit({ ...suggest, argumentName: event.target.value });
     if (suggestRef?.current) {
       suggestRef.current.scrollIntoView({
@@ -36,7 +36,7 @@ function InputSignatureEditPanel({
   }, [suggest, suggestRef, handleEdit]);
 
   const handleReset = useCallback(() => {
-    const existedInputSignature = items.find(item => item.id === suggest?.id);
+    const existedInputSignature = items.find((item) => item.id === suggest?.id);
 
     if (existedInputSignature) {
       handleEdit(existedInputSignature);
@@ -68,7 +68,7 @@ function InputSignatureEditPanel({
       return [false, 'Only lowercase latin'];
     }
 
-    if (items.find(item => item.id !== suggest.id && item.argumentName === suggest.argumentName)) {
+    if (items.find((item) => item.id !== suggest.id && item.argumentName === suggest.argumentName)) {
       return [false, 'Name must be unig'];
     }
 

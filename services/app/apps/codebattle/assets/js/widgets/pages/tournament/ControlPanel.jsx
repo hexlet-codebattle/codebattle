@@ -49,7 +49,7 @@ export const mapPanelModeToTitle = {
 };
 
 const customStyle = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     color: 'white',
     borderRadius: '0.3rem',
@@ -60,28 +60,28 @@ const customStyle = {
       borderColor: '#4c4c5a',
     },
   }),
-  indicatorsContainer: provided => ({
+  indicatorsContainer: (provided) => ({
     ...provided,
   }),
-  indicatorSeparator: provided => ({
+  indicatorSeparator: (provided) => ({
     ...provided,
     backgroundColor: '#999',
   }),
-  clearIndicator: provided => ({
+  clearIndicator: (provided) => ({
     ...provided,
   }),
-  dropdownIndicator: provided => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     color: '#999',
   }),
-  input: provided => ({
+  input: (provided) => ({
     ...provided,
   }),
-  menu: provided => ({
+  menu: (provided) => ({
     ...provided,
     backgroundColor: '#2a2a35',
   }),
-  option: provided => ({
+  option: (provided) => ({
     ...provided,
     backgroundColor: '#2a2a35',
     ':hover': {
@@ -129,9 +129,9 @@ function ControlPanel({
     allPlayers,
   ]);
   const onChangePanelMode = useCallback(
-    e => {
+    (e) => {
       setPanelMode({ panel: e.target.value });
-      setPanelHistory(items => [...items, panelMode]);
+      setPanelHistory((items) => [...items, panelMode]);
     },
     [setPanelMode, setPanelHistory, panelMode],
   );
@@ -144,8 +144,8 @@ function ControlPanel({
       const substr = (inputValue || '').toLowerCase();
 
       const options = Object.values(allPlayers)
-        .filter(player => player.name.toLowerCase().indexOf(substr) !== -1)
-        .map(player => ({
+        .filter((player) => player.name.toLowerCase().indexOf(substr) !== -1)
+        .map((player) => ({
           label: <UserLabel user={player} />,
           value: player,
         }));
@@ -219,7 +219,7 @@ function ControlPanel({
           }}
         >
           {allowedPanelModes.map(
-            mode => (![
+            (mode) => (![
                 PanelModeCodes.taskRatingAdvanced,
                 PanelModeCodes.taskDurationDistributionMode,
                 PanelModeCodes.topUserByTasksMode,

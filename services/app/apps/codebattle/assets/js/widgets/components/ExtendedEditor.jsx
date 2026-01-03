@@ -44,12 +44,12 @@ class ExtendedEditor extends Component {
       monaco.editor.setTheme(monacoTheme);
     } else if (monacoTheme !== 'default') {
       import(`monaco-themes/themes/${monacoTheme}.json`)
-        .then(data => {
+        .then((data) => {
           const themeName = monacoTheme.split(' ').join('-');
           monaco.editor.defineTheme(themeName, data);
           monaco.editor.setTheme(themeName);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     }
@@ -76,12 +76,12 @@ class ExtendedEditor extends Component {
       && monacoTheme !== 'default'
     ) {
       import(`monaco-themes/themes/${monacoTheme}.json`)
-        .then(data => {
+        .then((data) => {
           const themeName = monacoTheme.split(' ').join('-');
           monaco.editor.defineTheme(themeName, data);
           monaco.editor.setTheme(themeName);
         })
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
         });
     }
@@ -99,7 +99,7 @@ class ExtendedEditor extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const gameId = gameIdSelector(state);
   const gameMode = gameModeSelector(state);
   const locked = gameLockedSelector(state);

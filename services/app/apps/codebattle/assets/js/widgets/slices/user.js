@@ -43,11 +43,11 @@ const userSlice = createSlice({
     updateUserSettings: (state, { payload }) => {
       Object.assign(state.settings, payload);
     },
-    toggleMuteSound: state => {
+    toggleMuteSound: (state) => {
       localStorage.setItem('ui_mute_sound', !state.settings.mute);
       state.settings.mute = !state.settings.mute;
     },
-    togglePremiumRequestStatus: state => {
+    togglePremiumRequestStatus: (state) => {
       localStorage.setItem('already_send_premium_request', !state.settings.alreadySendPremiumRequest);
       state.settings.alreadySendPremiumRequest = !state.settings.alreadySendPremiumRequest;
     },

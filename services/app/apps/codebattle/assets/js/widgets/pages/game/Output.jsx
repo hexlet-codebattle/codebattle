@@ -81,7 +81,7 @@ const EmptyOutput = memo(
   ),
 );
 
-const Output = ({ fontSize, sideOutput, hideContent }) => {
+function Output({ fontSize, sideOutput, hideContent }) {
   if (hideContent) {
     return <></>;
   }
@@ -93,7 +93,7 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
   const uniqIndex = uniqueId('heading');
   const normalizedAsserts = version === 2
     ? asserts || []
-    : (asserts || []).map(elem => camelizeKeys(JSON.parse(elem)));
+    : (asserts || []).map((elem) => camelizeKeys(JSON.parse(elem)));
   const normalizedOutput = version === 2 ? outputError : output;
   const isError = [
     'error',
@@ -149,6 +149,6 @@ const Output = ({ fontSize, sideOutput, hideContent }) => {
       )}
     </>
   );
-};
+}
 
 export default Output;
