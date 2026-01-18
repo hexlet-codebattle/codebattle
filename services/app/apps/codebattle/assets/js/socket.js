@@ -59,16 +59,6 @@ export const channelTopics = {
 
   roundCreatedTopic: 'round:created',
 
-  waitingRoomStartedTopic: 'waiting_room:started',
-  waitingRoomEndedTopic: 'waiting_room:ended',
-  waitingRoomPlayerBannedTopic: 'waiting_room:player:banned',
-  waitingRoomPlayerUnbannedTopic: 'waiting_room:player:unbanned',
-  waitingRoomPlayerMatchmakingStartedTopic: 'waiting_room:player:matchmaking_started',
-  waitingRoomPlayerMatchmakingResumedTopic: 'waiting_room:player:matchmaking_resumed',
-  waitingRoomPlayerMatchmakingStoppedTopic: 'waiting_room:player:matchmaking_stopped',
-  waitingRoomPlayerMatchmakingPausedTopic: 'waiting_room:player:matchmaking_paused',
-  waitingRoomPlayerMatchCreatedTopic: 'waiting_room:player:match_created',
-
   streamActiveGameSelectedTopic: 'stream:active_game_selected',
 };
 

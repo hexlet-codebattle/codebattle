@@ -20,27 +20,6 @@ Each tournament is a unique event with its own settings, but there are general p
 
 ## 3. Types of Tournaments
 
-### Individual
-
-- **Description**: A knockout tournament where each match is a duel, and the winner advances.
-- **How it works**: A bracket is created at the start of the tournament, with players paired off. In each round, participants face off one-on-one, and the winners move on to the next stage. The tournament continues until the final, where the absolute champion is determined.
-- **How we supplement participants**: Only 2, 4, 8, 16, 32, 64, or 128 players are supported. If there are fewer participants, we add bots to ensure full competition.
-- **Who it's for**: For those who want to feel like a gladiator in the coding world, advancing from round to round toward the coveted victory.
-
-### Team
-
-- **Description**: A battle between two teams, where each player is an important part of the overall success.
-- **How it works**: Two teams battle through several rounds, aiming to score a certain number of points. In each round, team members conduct individual matches. A win in a round earns the team 1 point, a draw gives each team 0.5 points. The tournament ends when one of the teams reaches the set number of points.
-- **How we supplement participants**: If there aren't enough teams for fair competition, we add bots.
-- **Who it's for**: For those who value teamwork and strategic thinking, ready to achieve victory together with the team.
-
-### Arena
-
-- **Description**: A dynamic, endless tournament where players can join and leave at any time.
-- **How it works**: In an arena tournament, you can specify the number of rounds, round timeout, and match time in advance. Players start battling in the initial rounds, and as the tournament progresses, the system tries to match winners with winners and losers with losers. This allows each player to face an opponent of their level after a few rounds. Consolation points can also be awarded — if a player loses the match but managed to partially solve the task (e.g., solved 90% of the task), they will receive 90% of the winner's points. If the solution covers only 10% of the task, they will receive 10% of the winner's points. The difficulty level of the tasks and the time allotted to solve them may change from round to round, adding an additional element of strategy.
-- **How we supplement participants**: If there aren’t enough participants to ensure fair play, we add bots to maintain balance.
-- **Who it's for**: For those who love dynamic competitions with the opportunity to test their skills at different levels.
-
 ### Swiss
 
 - **Description**: A Swiss-system tournament where participants play several rounds, meeting opponents with similar levels of success in each round.

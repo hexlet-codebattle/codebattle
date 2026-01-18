@@ -104,7 +104,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       pro_tournaments = Enum.filter(tournaments, &(&1.grade == "pro"))
 
       # Should have pro tournaments (some may be preempted by higher grades)
-      assert length(pro_tournaments) > 0
+      refute Enum.empty?(pro_tournaments)
 
       # Check first pro tournament
       first_pro = List.first(pro_tournaments)
@@ -132,7 +132,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       elite_tournaments = Enum.filter(tournaments, &(&1.grade == "elite"))
 
       # Should have some elite tournaments
-      assert length(elite_tournaments) > 0
+      refute Enum.empty?(elite_tournaments)
 
       # Check first elite tournament
       first_elite = List.first(elite_tournaments)
@@ -160,7 +160,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       masters_tournaments = Enum.filter(tournaments, &(&1.grade == "masters"))
 
       # Should have some masters tournaments
-      assert length(masters_tournaments) > 0
+      refute Enum.empty?(masters_tournaments)
 
       # Check first masters tournament
       first_masters = List.first(masters_tournaments)
@@ -189,9 +189,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunnerTest do
       grand_slam_tournaments = Enum.filter(tournaments, &(&1.grade == "grand_slam"))
 
       # Should have exactly one grand slam
-      assert length(grand_slam_tournaments) == 1
-
-      grand_slam = List.first(grand_slam_tournaments)
+      assert [grand_slam] = grand_slam_tournaments
       assert grand_slam.players_limit == 256
       assert grand_slam.level == "hard"
       assert grand_slam.task_provider == "task_pack"

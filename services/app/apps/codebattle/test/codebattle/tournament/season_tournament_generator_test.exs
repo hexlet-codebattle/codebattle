@@ -16,7 +16,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
 
       tournaments = SeasonTournamentGenerator.generate_season_tournaments(season)
 
-      assert length(tournaments) > 0
+      refute Enum.empty?(tournaments)
 
       # Verify all tournaments are changesets
       Enum.each(tournaments, fn tournament ->
@@ -80,8 +80,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
           Ecto.Changeset.get_field(changeset, :grade) == "grand_slam"
         end)
 
-      assert length(grand_slams) == 1
-      grand_slam = List.first(grand_slams)
+      assert [grand_slam] = grand_slams
 
       starts_at = Ecto.Changeset.get_field(grand_slam, :starts_at)
       assert DateTime.to_date(starts_at) == ~D[2024-12-21]

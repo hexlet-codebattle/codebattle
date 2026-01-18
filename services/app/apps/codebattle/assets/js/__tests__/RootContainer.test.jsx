@@ -15,7 +15,6 @@ import userTypes from '../widgets/config/userTypes';
 import editor from '../widgets/machines/editor';
 import game from '../widgets/machines/game';
 import task from '../widgets/machines/task';
-import waitingRoom from '../widgets/machines/waitingRoom';
 import RootContainer from '../widgets/pages/RoomWidget';
 import reducers from '../widgets/slices';
 
@@ -237,7 +236,6 @@ test('rendering preview game component', async () => {
           mainMachine={createMachine({ predictableActionArguments: true, ...game })}
           taskMachine={createMachine({ predictableActionArguments: true, ...task })}
           editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
         />
       </NiceModal.Provider>
     </Provider>,
@@ -260,7 +258,6 @@ test('a bot invite button', async () => {
           mainMachine={createMachine({ predictableActionArguments: true, ...game })}
           taskMachine={createMachine({ predictableActionArguments: true, ...task })}
           editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
-          waitingRoomMachine={createMachine({ predictableActionArguments: true, ...waitingRoom })}
         />
       </NiceModal.Provider>
     </Provider>,

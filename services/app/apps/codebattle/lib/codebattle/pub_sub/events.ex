@@ -4,8 +4,6 @@ defmodule Codebattle.PubSub.Events do
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
 
-  require Logger
-
   def get_messages("tournament:created", params) do
     [
       %Message{
@@ -192,19 +190,11 @@ defmodule Codebattle.PubSub.Events do
     player = get_player_changed_fields(params.player)
 
     [
-      if params.tournament.waiting_room_name do
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-          event: "waiting_room:player:matchmaking_stopped",
-          payload: %{current_player: player}
-        }
-      else
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-          event: "tournament:player:updated",
-          payload: %{player: player}
-        }
-      end
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      }
     ]
   end
 
@@ -212,19 +202,11 @@ defmodule Codebattle.PubSub.Events do
     player = get_player_changed_fields(params.player)
 
     [
-      if params.tournament.waiting_room_name do
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-          event: "waiting_room:ended",
-          payload: %{current_player: player}
-        }
-      else
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-          event: "tournament:player:updated",
-          payload: %{player: player}
-        }
-      end
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
+      }
     ]
   end
 
@@ -233,9 +215,9 @@ defmodule Codebattle.PubSub.Events do
 
     [
       %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:matchmaking_started",
-        payload: %{current_player: player}
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
       }
     ]
   end
@@ -257,11 +239,6 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:player:updated",
         payload: %{player: player}
-      },
-      %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:banned",
-        payload: %{current_player: player}
       }
     ] ++ game_messages
   end
@@ -283,11 +260,6 @@ defmodule Codebattle.PubSub.Events do
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:player:updated",
         payload: %{player: player}
-      },
-      %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:unbanned",
-        payload: %{current_player: player}
       }
     ] ++ game_messages
   end
@@ -313,9 +285,9 @@ defmodule Codebattle.PubSub.Events do
 
     [
       %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:matchmaking_paused",
-        payload: %{current_player: player}
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
       }
     ]
   end
@@ -325,9 +297,9 @@ defmodule Codebattle.PubSub.Events do
 
     [
       %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{params.player.id}",
-        event: "waiting_room:player:matchmaking_resumed",
-        payload: %{current_player: player}
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:player:updated",
+        payload: %{player: player}
       }
     ]
   end
@@ -339,23 +311,11 @@ defmodule Codebattle.PubSub.Events do
       |> Enum.reject(&is_nil/1)
 
     Enum.map(players, fn player ->
-      if params.tournament.waiting_room_name do
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{player.id}",
-          event: "waiting_room:player:match_created",
-          payload: %{
-            current_player: player,
-            match: params.match,
-            players: players
-          }
-        }
-      else
-        %Message{
-          topic: "tournament:#{params.tournament.id}:player:#{player.id}",
-          event: "tournament:match:upserted",
-          payload: %{match: params.match, players: players}
-        }
-      end
+      %Message{
+        topic: "tournament:#{params.tournament.id}:player:#{player.id}",
+        event: "tournament:match:upserted",
+        payload: %{match: params.match, players: players}
+      }
     end)
   end
 
@@ -592,42 +552,6 @@ defmodule Codebattle.PubSub.Events do
         topic: "game:#{params.game_id}",
         event: "game:unlocked",
         payload: %{}
-      }
-    ]
-  end
-
-  def get_messages("waiting_room:started", params) do
-    Logger.debug("WR started, name: " <> inspect(params))
-
-    [
-      %Message{
-        topic: "waiting_room:#{params.name}",
-        event: "waiting_room:started",
-        payload: %{name: params.name}
-      }
-    ]
-  end
-
-  def get_messages("waiting_room:matchmaking_started", params) do
-    Logger.debug("WR MM started, player_ids: " <> inspect(params.player_ids))
-
-    [
-      %Message{
-        topic: "waiting_room:#{params.name}",
-        event: "waiting_room:player:matchmaking_started",
-        payload: %{player_ids: params.player_ids}
-      }
-    ]
-  end
-
-  def get_messages("waiting_room:matched", params) do
-    Logger.debug("WR MM matched, pairs: " <> inspect(params.pairs))
-
-    [
-      %Message{
-        topic: "waiting_room:#{params.name}",
-        event: "waiting_room:matched",
-        payload: %{pairs: params.pairs, matched_with_bot: params.matched_with_bot}
       }
     ]
   end

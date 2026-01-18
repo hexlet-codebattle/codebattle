@@ -68,12 +68,6 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).set_ranking(tournament)
   end
 
-  @spec set_ranking_to_ets(Tournament.t()) :: Tournament.t()
-  def set_ranking_to_ets(tournament) do
-    get_module(tournament).set_ranking_to_ets(tournament)
-    tournament
-  end
-
   @spec create_table(pos_integer()) :: term()
   def create_table(tournament_id) do
     Ranking.create_table(tournament_id)

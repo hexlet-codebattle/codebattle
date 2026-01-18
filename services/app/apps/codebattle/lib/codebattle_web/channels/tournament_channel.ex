@@ -271,12 +271,6 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "waiting_room:player" <> _rest} = message, socket) do
-    push(socket, message.event, message.payload)
-
-    {:noreply, socket}
-  end
-
   def handle_info(message, socket) do
     Logger.warning("TournamentChannel Unexpected message: " <> inspect(message))
     {:noreply, socket}

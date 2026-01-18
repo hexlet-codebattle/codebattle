@@ -52,12 +52,6 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
     tournament
   end
 
-  def set_ranking_to_ets(tournament) do
-    ranking = TournamentResult.get_user_ranking(tournament)
-    Ranking.put_ranking(tournament, ranking)
-    :ok
-  end
-
   def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
     place = Ranking.count(tournament) + 1
 

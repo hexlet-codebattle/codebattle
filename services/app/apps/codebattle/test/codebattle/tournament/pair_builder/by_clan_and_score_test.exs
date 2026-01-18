@@ -10,7 +10,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert Enum.empty?(pairs)
-      assert length(unmatched_player_ids) == 1
+      assert [_unmatched_player_id] = unmatched_player_ids
     end
 
     test "two players" do
@@ -73,7 +73,7 @@ defmodule Codebattle.Tournament.PairBuilder.ByClanAndScoreTest do
       {pairs, unmatched_player_ids} = @matcher.call(users)
 
       assert length(pairs) > 5040
-      assert length(unmatched_player_ids) > 0
+      refute Enum.empty?(unmatched_player_ids)
     end
 
     @tag :skip

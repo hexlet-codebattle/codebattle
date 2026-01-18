@@ -361,7 +361,6 @@ const defaultTournamentPlayerParams = {
  * }} Player
  * @typedef {{
  *  state: @type {import("../config/gameStateCodes.js").default},
- *  waitingRoomName: string,
  *  msg: string,
  *  type: string,
  *  mode: @type {import("../config/gameModes.js").default},
@@ -437,7 +436,6 @@ const defaultTournamentPlayerParams = {
  *   useChat: boolean,
  *   showBots: boolean,
  *   showResults: boolean,
- *   waitingRoomName: string,
  *   channel: ChannelState,
  * }} TournamentState
  *

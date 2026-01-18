@@ -7,7 +7,9 @@ import initial from './initial';
 
 const initialState = initial.tournament;
 
-export const updateTournamentStateAction = createAction('updateTournamentState');
+export const updateTournamentStateAction = createAction(
+  'updateTournamentState',
+);
 
 const tournament = createSlice({
   name: 'tournament',
@@ -18,21 +20,25 @@ const tournament = createSlice({
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,
-      ...(
-        [TournamentTypes.arena, TournamentTypes.versus, TournamentTypes.swiss, TournamentTypes.show]
-          .includes(payload.type)
-          ? omit(payload, ['matches', 'players'])
-          : payload
-      ),
+      ...([
+        TournamentTypes.versus,
+        TournamentTypes.swiss,
+        TournamentTypes.show,
+      ].includes(payload.type)
+        ? omit(payload, ['matches', 'players'])
+        : payload),
     }),
     updateTournamentMatches: (state, { payload }) => {
-      const newMatches = payload.reduce((acc, match) => ({
-        ...acc,
-        [match.id]: {
-          ...(state.matches[match.id] || {}),
-          ...match,
-        },
-      }), {});
+      const newMatches = payload.reduce(
+        (acc, match) => ({
+          ...acc,
+          [match.id]: {
+            ...(state.matches[match.id] || {}),
+            ...match,
+          },
+        }),
+        {},
+      );
 
       state.matches = {
         ...state.matches,
@@ -58,13 +64,16 @@ const tournament = createSlice({
       state.ranking = payload;
     },
     updateTournamentPlayers: (state, { payload }) => {
-      const newPlayers = payload.reduce((acc, player) => ({
-        ...acc,
-        [player.id]: {
-          ...(state.players[player.id] || {}),
-          ...player,
-        },
-      }), {});
+      const newPlayers = payload.reduce(
+        (acc, player) => ({
+          ...acc,
+          [player.id]: {
+            ...(state.players[player.id] || {}),
+            ...player,
+          },
+        }),
+        {},
+      );
 
       state.players = {
         ...state.players,
@@ -72,7 +81,7 @@ const tournament = createSlice({
       };
     },
     updateTopPlayers: (state, { payload }) => {
-      state.topPlayerIds = payload.map((item) => (item.id));
+      state.topPlayerIds = payload.map((item) => item.id);
     },
     changeTournamentPageNumber: (state, { payload }) => {
       state.playersPageNumber = payload;

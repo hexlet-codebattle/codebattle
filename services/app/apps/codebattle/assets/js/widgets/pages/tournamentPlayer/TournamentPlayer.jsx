@@ -143,7 +143,7 @@ const setTaskSizeDefault = (size) => (
   window.localStorage.setItem('CodebattleSpectatorTaskSize', size)
 );
 
-function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
+function TournamentPlayer({ spectatorMachine }) {
   const dispatch = useDispatch();
 
   const searchParams = useSearchParams();
@@ -195,8 +195,6 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       },
     },
   });
-  const waitingRoomService = useInterpret(waitingRoomMachine, {});
-
   const handleSwitchWidgets = useCallback(
     () => setSwitchedWidgetsStatus((state) => !state),
     [setSwitchedWidgetsStatus],
@@ -238,7 +236,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
 
   useEffect(() => {
     if (tournament.id) {
-      const channel = connectToTournament(waitingRoomService, tournament.id)(dispatch);
+      const channel = connectToTournament(tournament.id)(dispatch);
 
       return () => {
         channel.leave();
@@ -246,7 +244,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     }
 
     return () => { };
-  }, [tournament.id, waitingRoomService, dispatch]);
+  }, [tournament.id, dispatch]);
 
   useEffect(() => {
     const channel = setGameChannel(gameId);
@@ -255,7 +253,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
       NiceModal.hide(ModalCodes.awardModal);
       const options = { cancelRedirect: true };
 
-      connectToGame(spectatorService, waitingRoomService, options)(dispatch);
+      connectToGame(spectatorService, options)(dispatch);
       connectToEditor(spectatorService, options)(dispatch);
 
       return () => {
@@ -268,7 +266,7 @@ function TournamentPlayer({ spectatorMachine, waitingRoomMachine }) {
     return () => {
 
     };
-  }, [gameId, spectatorService, waitingRoomService, dispatch]);
+  }, [gameId, spectatorService, dispatch]);
 
   const spectatorDisplayClassName = cn(
     'd-flex flex-column vh-100',

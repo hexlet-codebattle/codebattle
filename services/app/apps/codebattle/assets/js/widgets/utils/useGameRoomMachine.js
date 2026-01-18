@@ -16,14 +16,12 @@ import { actions } from '../slices';
  * @return {{
  *  mainService: import('xstate').InterpreterFrom<import('xstate').StateMachine>,
  *  taskService: import('xstate').InterpreterFrom<import('xstate').StateMachine>,
- *  waitingRoomService: import('xstate').InterpreterFrom<import('xstate').StateMachine>
  * }}
  *
  */
 const useGameRoomMachine = ({
   mainMachine,
   taskMachine,
-  waitingRoomMachine,
 }) => {
   const dispatch = useDispatch();
 
@@ -94,12 +92,7 @@ const useGameRoomMachine = ({
     },
   });
 
-  const waitingRoomService = useInterpret(waitingRoomMachine, {
-    devTools: true,
-    actions: {},
-  });
-
-  return { mainService, taskService, waitingRoomService };
+  return { mainService, taskService };
 };
 
 export default useGameRoomMachine;

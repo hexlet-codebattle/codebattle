@@ -32,7 +32,7 @@ const useGameRoomSocketChannel = (pageName, machines) => {
 
     const options = { cancelRedirect: false };
 
-    GameRoomActions.connectToGame(machines.mainService, machines.waitingRoomService, options)(
+    GameRoomActions.connectToGame(machines.mainService, options)(
       dispatch,
     );
     const chatChannel = ChatActions.connectToChat(useChat, 'channel')(dispatch);

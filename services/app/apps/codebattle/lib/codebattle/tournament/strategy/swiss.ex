@@ -21,6 +21,8 @@ defmodule Codebattle.Tournament.Swiss do
 
   @impl Tournament.Base
   def finish_round_after_match?(tournament) do
+    # For smaller tournaments we finish the round as soon as all matches are done;
+    # for larger ones we wait for all games to finish to avoid early churn.
     if tournament.players_count < 128 do
       matches = get_round_matches(tournament, tournament.current_round_position)
 
@@ -73,11 +75,10 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   defp build_player_pairs(%{current_round_position: 0} = tournament) do
-    played_pair_ids = MapSet.new()
-
     player_pairs =
       tournament
       |> get_players()
+      |> Enum.filter(&(&1.is_bot == false and &1.state != "banned"))
       |> Enum.sort_by(& &1.id)
       |> Enum.chunk_every(2)
 
@@ -88,6 +89,13 @@ defmodule Codebattle.Tournament.Swiss do
         [player] -> {List.delete_at(player_pairs, -1), [player]}
         _ -> {player_pairs, []}
       end
+
+    played_pair_ids =
+      player_pairs
+      |> Enum.filter(&(length(&1) == 2))
+      |> Enum.reduce(MapSet.new(), fn [p1, p2], acc ->
+        MapSet.put(acc, Enum.sort([p1.id, p2.id]))
+      end)
 
     {player_pairs, unmatched_players, played_pair_ids}
   end
@@ -157,6 +165,11 @@ defmodule Codebattle.Tournament.Swiss do
 
   defp drop_player(players, player_id) do
     index_to_delete = Enum.find_index(players, &(&1.id == player_id))
-    List.delete_at(players, index_to_delete)
+
+    if index_to_delete do
+      List.delete_at(players, index_to_delete)
+    else
+      players
+    end
   end
 end

@@ -1,7 +1,6 @@
 import { networkMachineStates, replayerMachineStates, roomMachineStates } from './game';
 import { spectatorEditorMachineStates } from './spectator';
 import { taskMachineStates } from './task';
-import { waitingRoomMachineStates } from './waitingRoom';
 
 const stateSelector = (state) => state;
 
@@ -10,8 +9,6 @@ export const roomStateSelector = stateSelector;
 export const taskStateSelector = stateSelector;
 
 export const editorStateSelector = stateSelector;
-
-export const waitingRoomStateSelector = stateSelector;
 
 export const spectatorStateSelector = stateSelector;
 
@@ -54,34 +51,6 @@ export const isTaskAssertsReadySelector = (state) => [taskMachineStates.ready, t
 export const isTaskPrepareSavingSelector = (state) => state.matches(taskMachineStates.prepareSaving);
 
 export const isTaskPrepareTestingSelector = (state) => state.matches(taskMachineStates.prepareTesting);
-
-export const isWaitingRoomActiveSelector = (state) => state.matches({
-  status: waitingRoomMachineStates.room.active,
-});
-
-export const isMatchmakingPausedSelector = (state) => state.matches({
-  player: waitingRoomMachineStates.matchmaking.paused,
-});
-
-export const isMatchmakingInProgressSelector = (state) => state.matches({
-  player: waitingRoomMachineStates.matchmaking.progress,
-});
-
-export const isPlayerIdleSelector = (state) => state.matches({
-  player: waitingRoomMachineStates.player.idle,
-});
-
-export const isPlayerBannedSelector = (state) => state.matches({
-  player: waitingRoomMachineStates.player.banned,
-});
-
-export const isWaitingRoomInactiveSelector = (state) => state.matches({
-  status: waitingRoomMachineStates.room.inactive,
-});
-
-export const isWaitingRoomNoneSelector = (state) => state.matches({
-  status: waitingRoomMachineStates.room.none,
-});
 
 export const isTaskAssertsFormingSelector = (state) => [
   taskMachineStates.prepareSaving,

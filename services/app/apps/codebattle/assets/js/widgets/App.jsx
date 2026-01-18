@@ -17,7 +17,6 @@ const {
   editor: editorMachine,
   task: taskMachine,
   spectator: spectatorMachine,
-  waitingRoom: waitingRoomMachine,
 } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
@@ -104,7 +103,6 @@ export function Game() {
             <RoomWidget
               pageName={PageNames.game}
               mainMachine={mainMachine}
-              waitingRoomMachine={waitingRoomMachine}
               taskMachine={taskMachine}
               editorMachine={editorMachine}
             />
@@ -124,7 +122,6 @@ export function Builder() {
             <RoomWidget
               pageName={PageNames.builder}
               mainMachine={mainMachine}
-              waitingRoomMachine={waitingRoomMachine}
               taskMachine={taskMachine}
               editorMachine={editorMachine}
             />
@@ -226,7 +223,7 @@ export function TournamentPage() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <Tournament waitingRoomMachine={waitingRoomMachine} />
+          <Tournament />
         </Suspense>
       </PersistGate>
     </Provider>
@@ -259,7 +256,7 @@ export function TournamentAdminPage() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <TournamentAdmin waitingRoomMachine={waitingRoomMachine} />
+          <TournamentAdmin />
         </Suspense>
       </PersistGate>
     </Provider>
@@ -288,7 +285,6 @@ export function TournamentPlayerPage() {
           <NiceModal.Provider>
             <TournamentPlayer
               spectatorMachine={spectatorMachine}
-              waitingRoomMachine={waitingRoomMachine}
             />
           </NiceModal.Provider>
         </Suspense>
@@ -304,7 +300,6 @@ export function StreamPage() {
         <Suspense>
           <Stream
             mainMachine={mainMachine}
-            waitingRoomMachine={waitingRoomMachine}
             taskMachine={taskMachine}
             editorMachine={editorMachine}
           />

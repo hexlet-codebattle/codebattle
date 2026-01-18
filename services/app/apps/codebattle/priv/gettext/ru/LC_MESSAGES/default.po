@@ -850,8 +850,6 @@ msgstr "Швейцарская система"
 msgid "individual"
 msgstr "Олимпийская система"
 
-msgid "arena"
-msgstr "Арена"
 
 msgid "Tournament waiting_participants"
 msgstr "Турнир скоро начнется"

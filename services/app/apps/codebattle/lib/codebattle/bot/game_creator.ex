@@ -41,7 +41,7 @@ defmodule Codebattle.Bot.GameCreator do
     games =
       Game.Context.get_active_games(%{is_bot: true, state: "waiting_opponent", level: level})
 
-    if Enum.count(games) < 1 do
+    if Enum.empty?(games) do
       bot = Bot.Context.build()
 
       Game.Context.create_game(%{

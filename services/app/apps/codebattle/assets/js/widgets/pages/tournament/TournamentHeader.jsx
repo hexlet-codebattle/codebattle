@@ -6,12 +6,10 @@ import i18next from 'i18next';
 import moment from 'moment';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
-import useTournamentStats from '@/utils/useTournamentStats';
 
 import CopyButton from '../../components/CopyButton';
 import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
-import WaitingRoomStatus from '../../components/WaitingRoomStatus';
 import TournamentStates from '../../config/tournament';
 import TournamentTypes from '../../config/tournamentTypes';
 import useTimer from '../../utils/useTimer';
@@ -151,9 +149,6 @@ function TournamentHeader({
   handleStartRound,
   handleOpenDetails,
 }) {
-  const { taskSolvedCount, maxPlayerTasks, activeGameId } = useTournamentStats({
-    type: 'tournament',
-  });
   const stateBadgeTitle = useMemo(
     () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
     [state, breakState, hideResults],
@@ -164,25 +159,25 @@ function TournamentHeader({
     'badge mr-2',
     hasCustomEventStyle
       ? {
-        'cb-custom-event-badge-warning':
-          state === TournamentStates.waitingParticipants,
-        'cb-custom-event-badge-success':
-          !hideResults
-          && (breakState === 'off' || state === TournamentStates.finished),
-        'cb-custom-event-badge-light': state === TournamentStates.canceled,
-        'cb-custom-event-badge-danger': breakState === 'on',
-        'cb-custom-event-badge-primary':
-          hideResults && state === TournamentStates.finished,
-      }
+          'cb-custom-event-badge-warning':
+            state === TournamentStates.waitingParticipants,
+          'cb-custom-event-badge-success':
+            !hideResults
+            && (breakState === 'off' || state === TournamentStates.finished),
+          'cb-custom-event-badge-light': state === TournamentStates.canceled,
+          'cb-custom-event-badge-danger': breakState === 'on',
+          'cb-custom-event-badge-primary':
+            hideResults && state === TournamentStates.finished,
+        }
       : {
-        'badge-warning': state === TournamentStates.waitingParticipants,
-        'badge-success':
-          !hideResults
-          && (breakState === 'off' || state === TournamentStates.finished),
-        'badge-light': state === TournamentStates.canceled,
-        'badge-danger': breakState === 'on',
-        'badge-primary': hideResults && state === TournamentStates.finished,
-      },
+          'badge-warning': state === TournamentStates.waitingParticipants,
+          'badge-success':
+            !hideResults
+            && (breakState === 'off' || state === TournamentStates.finished),
+          'badge-light': state === TournamentStates.canceled,
+          'badge-danger': breakState === 'on',
+          'badge-primary': hideResults && state === TournamentStates.finished,
+        },
   );
   const copyBtnClassName = cn('btn btn-sm rounded-right', {
     'btn-secondary cb-btn-secondary': !hasCustomEventStyle,
@@ -257,13 +252,9 @@ function TournamentHeader({
                   <div className="d-flex mr-2 mr-lg-0">
                     <JoinButton
                       isShow={
-                        state !== TournamentStates.active
-                        || type === 'arena'
-                        || type === 'swiss'
+                        state !== TournamentStates.active || type === 'swiss'
                       }
-                      isShowLeave={
-                        type === 'arena' || state !== TournamentStates.active
-                      }
+                      isShowLeave={state !== TournamentStates.active}
                       isParticipant={!!players[currentUserId]}
                       disabled={!isOnline || !isLive}
                     />
@@ -296,12 +287,10 @@ function TournamentHeader({
         </div>
         {canModerate && !streamMode && (
           <div
-            className={
-              cn(
-                'd-flex align-items-center small text-nowrap text-muted mt-1',
-                'cb-grid-divider overflow-auto border-top cb-border-color',
-              )
-            }
+            className={cn(
+              'd-flex align-items-center small text-nowrap text-muted mt-1',
+              'cb-grid-divider overflow-auto border-top cb-border-color',
+            )}
           >
             <div title={type} className="d-flex align-items-center">
               Mode:
@@ -367,21 +356,6 @@ function TournamentHeader({
             />
           </span>
         </p>
-        {type === TournamentTypes.arena
-          && state === TournamentStates.active
-          && !!players[currentUserId]
-          && breakState === 'off' && (
-            <div className="d-flex align-items-center">
-              <WaitingRoomStatus
-                page="tournament"
-                taskCount={taskSolvedCount}
-                tournamentState={state}
-                breakState={breakState}
-                maxPlayerTasks={maxPlayerTasks}
-                activeGameId={activeGameId}
-              />
-            </div>
-          )}
       </div>
     </>
   );

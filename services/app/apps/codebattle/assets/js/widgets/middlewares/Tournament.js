@@ -10,7 +10,6 @@ import TournamentTypes from '../config/tournamentTypes';
 import { actions } from '../slices';
 
 import Channel from './Channel';
-import { addWaitingRoomListeners } from './WaitingRoom';
 
 const tournamentId = Gon.getAsset('tournament_id');
 const channel = new Channel();
@@ -21,7 +20,7 @@ export const setTournamentChannel = (newTournamentId = tournamentId) => {
   return channel;
 };
 
-const initTournamentChannel = (waitingRoomMachine, currentChannel) => (dispatch) => {
+const initTournamentChannel = (currentChannel) => (dispatch) => {
     const onJoinFailure = (err) => {
       console.error(err);
       // window.location.reload();
@@ -43,15 +42,6 @@ const initTournamentChannel = (waitingRoomMachine, currentChannel) => (dispatch)
         }),
       );
 
-      if (response.tournament.waitingRoomName && response.currentPlayer) {
-        waitingRoomMachine.send('LOAD_WAITING_ROOM', {
-          payload: { currentPlayer: response.currentPlayer },
-        });
-        dispatch(actions.setActiveTournamentPlayer(response.currentPlayer));
-      } else {
-        waitingRoomMachine.send('REJECT_LOADING', {});
-      }
-
       dispatch(actions.updateTournamentPlayers(compact(response.players)));
       dispatch(actions.updateTournamentMatches(compact(response.matches)));
       dispatch(actions.setTournamentTaskList(compact(response.tasksInfo)));
@@ -71,9 +61,9 @@ const initTournamentChannel = (waitingRoomMachine, currentChannel) => (dispatch)
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (waitingRoomMachine, newTournamentId) => (dispatch) => {
+export const connectToTournament = (newTournamentId) => (dispatch) => {
     setTournamentChannel(newTournamentId);
-    initTournamentChannel(waitingRoomMachine, channel)(dispatch);
+    initTournamentChannel(channel)(dispatch);
 
     const handleUpdate = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
@@ -154,10 +144,6 @@ export const connectToTournament = (waitingRoomMachine, newTournamentId) => (dis
         }),
       );
     };
-
-    addWaitingRoomListeners(channel, waitingRoomMachine, {
-      cancelRedirect: true,
-    })(dispatch);
 
     return channel
       .addListener('tournament:update', handleUpdate)

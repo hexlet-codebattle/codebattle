@@ -22,20 +22,6 @@ defmodule Codebattle.Tournament.Supervisor do
       }
     ]
 
-    children =
-      if tournament.ranking_type == "by_user" and tournament.type == "arena" do
-        children ++
-          [
-            %{
-              id: "Codebattle.Tournament.Ranking.UpdateFromResultsServer.#{tournament.id}",
-              restart: :transient,
-              start: {Codebattle.Tournament.Ranking.UpdateFromResultsServer, :start_link, [tournament.id]}
-            }
-          ]
-      else
-        children
-      end
-
     Supervisor.init(children, strategy: :one_for_one)
   end
 

@@ -31,7 +31,6 @@ import {
 import notification from '../utils/notification';
 
 import Channel from './Channel';
-import { addWaitingRoomListeners } from './WaitingRoom';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
@@ -125,7 +124,7 @@ const initPlaybook = (dispatch) => (data) => {
   dispatch(actions.loadPlaybook(data));
 };
 
-const initGameChannel = (gameRoomService, waitingRoomService) => (dispatch) => {
+const initGameChannel = (gameRoomService) => (dispatch) => {
   const onJoinFailure = (payload) => {
     gameRoomService.send('REJECT_LOADING_GAME', { payload });
     gameRoomService.send('FAILURE_JOIN', { payload });
@@ -148,24 +147,15 @@ const initGameChannel = (gameRoomService, waitingRoomService) => (dispatch) => {
         task,
         langs,
         locked,
-        waitingRoomName,
         award,
       },
       activeGameId,
       tournament,
-      currentPlayer,
     } = response;
 
     const gameStatus = getGameStatus(response.game);
 
     gameRoomService.send('LOAD_GAME', { payload: gameStatus });
-
-    if (waitingRoomName && currentPlayer) {
-      waitingRoomService.send('LOAD_WAITING_ROOM', {
-        payload: { currentPlayer },
-      });
-      dispatch(actions.setActiveTournamentPlayer(currentPlayer));
-    }
 
     if (activeGameId) {
       dispatch(actions.setActiveGameId({ activeGameId }));
@@ -459,11 +449,8 @@ export const activeEditorReady = (service, isBanned) => {
   };
 };
 
-export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRedirect = false }) => (dispatch, getState) => {
-  initGameChannel(
-    gameRoomService,
-    waitingRoomService,
-  )(dispatch);
+export const activeGameReady = (gameRoomService, { cancelRedirect = false }) => (dispatch) => {
+  initGameChannel(gameRoomService)(dispatch);
 
   const handleNewEditorData = (data) => {
     dispatch(actions.updateEditorText(data));
@@ -626,25 +613,6 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     dispatch(actions.setTournamentWaitType(response.type));
   };
 
-  const handleWaitingRoomPlayerFinishedRound = (response) => {
-    waitingRoomService.send(
-      channelTopics.tournamentPlayerFinishedRoundTopic,
-      { payload: response },
-    );
-  };
-
-  const handleWaitingRoomPlayerFinished = (response) => {
-    waitingRoomService.send(channelTopics.tournamentPlayerFinishedTopic, {
-      payload: response,
-    });
-  };
-
-  addWaitingRoomListeners(
-    channel,
-    waitingRoomService,
-    { cancelRedirect },
-  )(dispatch, getState);
-
   return channel
     .addListener(channelTopics.editorDataTopic, handleNewEditorData)
     .addListener(
@@ -693,14 +661,6 @@ export const activeGameReady = (gameRoomService, waitingRoomService, { cancelRed
     .addListener(
       channelTopics.tournamentGameWaitTopic,
       handleTournamentGameWait,
-    )
-    .addListener(
-      channelTopics.tournamentPlayerFinishedRoundTopic,
-      handleWaitingRoomPlayerFinishedRound,
-    )
-    .addListener(
-      channelTopics.tournamentPlayerFinishedTopic,
-      handleWaitingRoomPlayerFinished,
     );
 };
 
@@ -1102,14 +1062,14 @@ export const connectToTask = (gameService, taskService) => (dispatch) => {
   dispatch(fetchOrCreateTask(gameService, taskService));
 };
 
-export const connectToGame = (gameRoomService, waitingRoomService, options) => (dispatch) => {
+export const connectToGame = (gameRoomService, options) => (dispatch) => {
   if (isRecord) {
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
 
   gameRoomService.send('JOIN');
 
-  return activeGameReady(gameRoomService, waitingRoomService, options)(dispatch);
+  return activeGameReady(gameRoomService, options)(dispatch);
 };
 
 export const connectToEditor = (service, isBanned) => () => (isRecord ? storedEditorReady(service) : activeEditorReady(service, isBanned));

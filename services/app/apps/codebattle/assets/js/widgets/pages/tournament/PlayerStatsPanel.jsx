@@ -6,17 +6,14 @@ import i18next from 'i18next';
 import capitalize from 'lodash/capitalize';
 import groupBy from 'lodash/groupBy';
 import reverse from 'lodash/reverse';
-import { useSelector } from 'react-redux';
 
 import Loading from '../../components/Loading';
 import MatchStatesCodes from '../../config/matchStates';
-import TournamentTypes from '../../config/tournamentTypes';
-import { tournamentSelector, currentUserClanIdSelector } from '../../selectors';
 import { getOpponentId } from '../../utils/matches';
 
 import StageCard from './StageCard';
 import StageTitle from './StageTitle';
-import StatisticsCard, { ArenaStatisticsCard } from './StatisticsCard';
+import StatisticsCard from './StatisticsCard';
 import UsersMatchList from './UsersMatchList';
 
 const navMatchesTabsClassName = cn(
@@ -36,25 +33,15 @@ const tabContentClassName = (active) => cn('tab-pane fade', {
     'd-flex flex-column show active': active,
   });
 
-const ArenaPlayerPanelCodes = {
-  review: 'review',
-  matches: 'matches',
-};
-
 const PlayerPanelCodes = {
   review: 'review',
   stages: 'stages',
   matches: 'matches',
 };
 
-const getPlayerPanelCodes = (type) => {
-  if (type === TournamentTypes.arena) {
-    return Object.values(ArenaPlayerPanelCodes);
-  }
-  return Object.values(PlayerPanelCodes).filter(
+const getPlayerPanelCodes = () => Object.values(PlayerPanelCodes).filter(
     (panel) => panel !== PlayerPanelCodes.stages,
   );
-};
 
 function PlayerStatsPanel({
   type,
@@ -66,9 +53,6 @@ function PlayerStatsPanel({
   hideBots,
   canModerate,
 }) {
-  const { taskIds } = useSelector(tournamentSelector);
-  const currentUserClanId = useSelector(currentUserClanIdSelector);
-
   const [playerPanel, setPlayerPanel] = useState(PlayerPanelCodes.review);
   const currentPlayer = players[currentUserId];
 
@@ -122,7 +106,7 @@ function PlayerStatsPanel({
           role="tablist"
           className={navMatchesTabsClassName}
         >
-          {getPlayerPanelCodes(type).map((panelName) => (
+          {getPlayerPanelCodes().map((panelName) => (
             <a
               className={tabLinkClassName(playerPanel === panelName)}
               id={`${panelName}-player-panel`}
@@ -167,24 +151,13 @@ function PlayerStatsPanel({
                 matchList={groupedMatchListByRound[currentRoundPosition]}
                 isBanned={currentPlayer.isBanned}
               />
-              {type === TournamentTypes.arena ? (
-                <ArenaStatisticsCard
-                  type={type}
-                  playerId={currentUserId}
-                  clanId={currentUserClanId}
-                  taskIds={taskIds}
-                  isBanned={currentPlayer.isBanned}
-                  matchList={matchList}
-                />
-              ) : (
-                <StatisticsCard
-                  type={type}
-                  playerId={currentUserId}
-                  taskIds={currentPlayer.taskIds}
-                  isBanned={currentPlayer.isBanned}
-                  matchList={matchList}
-                />
-              )}
+              <StatisticsCard
+                type={type}
+                playerId={currentUserId}
+                taskIds={currentPlayer.taskIds}
+                isBanned={currentPlayer.isBanned}
+                matchList={matchList}
+              />
             </div>
           </div>
           <div
@@ -223,20 +196,10 @@ function PlayerStatsPanel({
                       lastMatchState={stageFirstMatch?.state}
                       matchList={groupedMatchListByRound[stage]}
                     />
-                    {type === TournamentTypes.arena ? (
-                      <ArenaStatisticsCard
-                        type={type}
-                        playerId={currentUserId}
-                        taskIds={currentPlayer.taskIds}
-                        isBanned={currentPlayer.isBanned}
-                        matchList={matchList}
-                      />
-                    ) : (
-                      <StatisticsCard
-                        playerId={currentUserId}
-                        matchList={groupedMatchListByRound[stage]}
-                      />
-                    )}
+                    <StatisticsCard
+                      playerId={currentUserId}
+                      matchList={groupedMatchListByRound[stage]}
+                    />
                   </div>
                 );
               })
@@ -253,11 +216,9 @@ function PlayerStatsPanel({
           >
             {stages.map((stage) => (
               <React.Fragment key={`stage-${stage}-matches`}>
-                {type !== TournamentTypes.arena && (
-                  <div className="d-flex justify-content-center p-2">
-                    <StageTitle stage={stage} stagesLimit={roundsLimit} />
-                  </div>
-                )}
+                <div className="d-flex justify-content-center p-2">
+                  <StageTitle stage={stage} stagesLimit={roundsLimit} />
+                </div>
                 <div className="border-top cb-border-color">
                   <UsersMatchList
                     currentUserId={currentUserId}

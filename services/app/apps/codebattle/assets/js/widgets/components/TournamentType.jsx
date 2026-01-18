@@ -9,16 +9,12 @@ function TournamentType({ type }) {
     return 'Versus';
   }
 
-  if (type === TournamentTypeCodes.arena) {
-    return 'Arena';
-  }
-
   if (type === TournamentTypeCodes.swiss) {
     return 'Swiss';
   }
 
   if (type === TournamentTypeCodes.individual) {
-    return (<FontAwesomeIcon icon="users" />);
+    return <FontAwesomeIcon icon="users" />;
   }
 
   if (type === TournamentTypeCodes.team) {
@@ -41,16 +37,11 @@ function TournamentType({ type }) {
   }
 
   if (type === TournamentTypeCodes.show) {
-    return (
-      <FontAwesomeIcon icon="wine-bottle" />
-    );
+    return <FontAwesomeIcon icon="wine-bottle" />;
   }
 
   return (
-    <FontAwesomeIcon
-      title="Unknown tournament type"
-      icon="question-circle"
-    />
+    <FontAwesomeIcon title="Unknown tournament type" icon="question-circle" />
   );
 }
 

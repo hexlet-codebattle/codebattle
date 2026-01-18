@@ -30,13 +30,11 @@ function RoomWidget({
   pageName,
   mainMachine,
   taskMachine,
-  waitingRoomMachine,
   editorMachine,
 }) {
   const machines = useGameRoomMachine({
     mainMachine,
     taskMachine,
-    waitingRoomMachine,
   });
 
   const roomMachineState = useMachineStateSelector(
@@ -49,7 +47,7 @@ function RoomWidget({
   const {
     // tournamentId,
     viewMode,
-    showWaitingRoom,
+    showWaitingOpponent,
     showBattleRoom,
     showTaskBuilder,
     showTimeoutMessage,
@@ -60,7 +58,7 @@ function RoomWidget({
   useGameRoomModals(machines);
   useGameRoomSocketChannel(pageName, machines);
 
-  if (showWaitingRoom) {
+  if (showWaitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }

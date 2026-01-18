@@ -53,16 +53,20 @@ defmodule Codebattle.Tournament.Ranking.ByClan do
     |> set_places(tournament)
   end
 
-  def set_ranking_to_ets(_tournament), do: :ok
-
   def update_player_result(tournament, player, score) do
     ranking = Ranking.get_all(tournament)
 
-    index = Enum.find_index(ranking, &(&1.id == get_clan_id(player)))
+    clan_id = get_clan_id(player)
+    index = Enum.find_index(ranking, &(&1.id == clan_id))
 
-    ranking
-    |> List.update_at(index, &%{&1 | score: &1.score + score})
-    |> set_places(tournament)
+    ranking =
+      if index do
+        List.update_at(ranking, index, &%{&1 | score: &1.score + score})
+      else
+        [%{id: clan_id, score: score, place: 0, players_count: 1} | ranking]
+      end
+
+    set_places(ranking, tournament)
   end
 
   def add_new_player(tournament, player) do

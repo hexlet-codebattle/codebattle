@@ -20,7 +20,7 @@ const orientations = {
   RIGHT: 'right',
 };
 
-function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
+function StreamWidget({ mainMachine, taskMachine }) {
   const dispatch = useDispatch();
   const game = useSelector((state) => state.game);
   const searchParams = useSearchParams();
@@ -44,10 +44,9 @@ function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
     ? searchParams.get('widthEditorPanel')
     : 60;
 
-  const { mainService, waitingRoomService } = useGameRoomMachine({
+  const { mainService } = useGameRoomMachine({
     mainMachine,
     taskMachine,
-    waitingRoomMachine,
   });
 
   const roomMachineState = useMachineStateSelector(
@@ -67,7 +66,7 @@ function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
     const channel = setGameChannel(game.id);
 
     const options = { cancelRedirect: true };
-    connectToGame(mainService, waitingRoomService, options)(dispatch);
+    connectToGame(mainService, options)(dispatch);
 
     const clearChannel = () => {
       if (channel) {
@@ -76,7 +75,7 @@ function StreamWidget({ mainMachine, waitingRoomMachine, taskMachine }) {
     };
 
     return clearChannel;
-  }, [game.id, mainService, waitingRoomService, dispatch]);
+  }, [game.id, mainService, dispatch]);
 
   if (!game.id) {
     return <div className="vh-100 overflow-hidden cb-stream-widget" />;

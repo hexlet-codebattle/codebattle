@@ -1,5 +1,4 @@
 export default {
-  arena: 'arena',
   swiss: 'swiss',
   versus: 'versus',
   individual: 'individual',

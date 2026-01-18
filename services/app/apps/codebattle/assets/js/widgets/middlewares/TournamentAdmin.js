@@ -56,7 +56,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = (_machine, newTournamentId, isAdminWidged = false) => (dispatch) => {
+export const connectToTournament = (newTournamentId, isAdminWidged = false) => (dispatch) => {
     setTournamentChannel(newTournamentId);
     initTournamentChannel(dispatch, isAdminWidged);
 

@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament.Storage.Ranking do
     |> Enum.map(&{&1.place, &1.id, &1})
     |> then(fn records ->
       try do
+        :ets.delete_all_objects(tournament.ranking_table)
         :ets.insert(tournament.ranking_table, records)
       rescue
         _e ->

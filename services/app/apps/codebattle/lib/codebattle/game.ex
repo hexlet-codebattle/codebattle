@@ -30,8 +30,7 @@ defmodule Codebattle.Game do
              :type,
              :use_chat,
              :use_timer,
-             :visibility_type,
-             :waiting_room_name
+             :visibility_type
            ]}
 
   @default_timeout_seconds div(to_timeout(minute: 30), 1000)
@@ -71,7 +70,6 @@ defmodule Codebattle.Game do
     field(:use_chat, :boolean, default: true)
     field(:use_timer, :boolean, default: true)
     field(:visibility_type, :string, default: "public")
-    field(:waiting_room_name, :string)
     field(:was_cheated, :boolean, default: false)
 
     field(:award, :string, virtual: true)
@@ -109,7 +107,6 @@ defmodule Codebattle.Game do
       :sql_task_id,
       :timeout_seconds,
       :tournament_id,
-      :waiting_room_name,
       :type,
       :use_chat,
       :use_timer,

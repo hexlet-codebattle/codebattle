@@ -20,14 +20,14 @@ const useRoomSettings = (pageName, roomMachineState) => {
   const locked = useSelector(selectors.gameLockedSelector);
   const visible = useSelector(selectors.gameVisibleSelector);
 
-  const inWaitingRoom = machineSelectors.inWaitingOpponentStateSelector(roomMachineState);
+  const inWaitingOpponent = machineSelectors.inWaitingOpponentStateSelector(roomMachineState);
   const inBuilderRoom = machineSelectors.inBuilderRoomSelector(roomMachineState);
   const inPreviewRoom = machineSelectors.inPreviewRoomSelector(roomMachineState);
   const replayerIsOpen = machineSelectors.openedReplayerSelector(roomMachineState);
 
   const tournamentId = gameStatus?.tournamentId;
 
-  const showWaitingRoom = inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent;
+  const showWaitingOpponent = inWaitingOpponent || gameStatus.state === GameStateCodes.waitingOpponent;
   const showTaskBuilder = inBuilderRoom || (pageName === PageNames.builder && inPreviewRoom);
   const showBattleRoom = !showTaskBuilder;
   const showTimeoutMessage = gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer);
@@ -36,7 +36,7 @@ const useRoomSettings = (pageName, roomMachineState) => {
     tournamentId,
     // viewMode: BattleRoomViewModesCodes.single,
     viewMode: mapGameTypeOnViewMode[gameStatus.type] || BattleRoomViewModesCodes.duel,
-    showWaitingRoom,
+    showWaitingOpponent,
     showBattleRoom,
     showTaskBuilder,
     showTimeoutMessage,

@@ -10,29 +10,24 @@ defmodule Codebattle.Tournament.Server do
 
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
-  # @waiting_room_timeout_ms to_timeout(second: 1)
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
-  def match_waiting_room_players(tournament_id) do
-    GenServer.cast(server_name(tournament_id), :match_waiting_room_players)
-  end
-
-  def update_waiting_room_state(tournament_id, params) do
-    GenServer.cast(server_name(tournament_id), {:update_waiting_room_state, params})
-  end
-
   def get_tournament_info(id) do
     # Try to get from ETS cache first
-    case :ets.lookup(@tournament_info_table, id) do
-      [{^id, tournament_info}] ->
-        tournament_info
+    if :ets.whereis(@tournament_info_table) == :undefined do
+      GenServer.call(server_name(id), :get_tournament_info, 20_000)
+    else
+      case :ets.lookup(@tournament_info_table, id) do
+        [{^id, tournament_info}] ->
+          tournament_info
 
-      [] ->
-        # Fall back to GenServer call if not in cache
-        GenServer.call(server_name(id), :get_tournament_info, 20_000)
+        [] ->
+          # Fall back to GenServer call if not in cache
+          GenServer.call(server_name(id), :get_tournament_info, 20_000)
+      end
     end
   catch
     :exit, {:noproc, _} ->
@@ -107,7 +102,15 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament_id) do
-    # Create tournament_info_cache table if it doesn't exist
+    if :ets.whereis(@tournament_info_table) == :undefined do
+      :ets.new(@tournament_info_table, [
+        :set,
+        :public,
+        :named_table,
+        {:write_concurrency, true},
+        {:read_concurrency, true}
+      ])
+    end
 
     players_table = Tournament.Players.create_table(tournament_id)
     matches_table = Tournament.Matches.create_table(tournament_id)
@@ -121,7 +124,6 @@ defmodule Codebattle.Tournament.Server do
       tournament_id
       |> Tournament.Context.get_from_db!()
       |> Tournament.Context.mark_as_live()
-      |> maybe_set_waiting_room()
       |> Map.put(:matches_table, matches_table)
       |> Map.put(:players_table, players_table)
       |> Map.put(:ranking_table, ranking_table)
@@ -130,39 +132,16 @@ defmodule Codebattle.Tournament.Server do
 
     if tournament.grade != "open" do
       time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
-      Process.send_after(self(), :start_grade_tournament, time_diff_ms)
+      Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
     end
 
     {:ok, %{tournament: tournament}}
-  end
-
-  def maybe_set_waiting_room(tournament) do
-    case Tournament.Context.get_waiting_room_name(tournament) do
-      nil -> tournament
-      wrn -> Map.put(tournament, :waiting_room_name, wrn)
-    end
   end
 
   def handle_cast({:fire_event, event_type, params}, state) do
     {:reply, _tournament, state} = handle_call({:fire_event, event_type, params}, nil, state)
 
     {:noreply, state}
-  end
-
-  def handle_cast(:match_waiting_room_players, state) do
-    handle_info(:match_waiting_room_players, state)
-    {:noreply, state}
-  end
-
-  def handle_cast({:update_waiting_room_state, params}, state) do
-    new_tournament =
-      Map.put(
-        state.tournament,
-        :waiting_room_state,
-        Map.merge(state.tournament.waiting_room_state, params)
-      )
-
-    {:noreply, %{state | tournament: new_tournament}}
   end
 
   def handle_call({:update, new_tournament}, _from, state) do
@@ -175,7 +154,6 @@ defmodule Codebattle.Tournament.Server do
         :event,
         :matches,
         :players,
-        :waiting_room_state,
         :stats,
         :played_pair_ids
       ])
@@ -219,7 +197,6 @@ defmodule Codebattle.Tournament.Server do
         :event,
         :matches,
         :players,
-        :waiting_room_state,
         :stats,
         :played_pair_ids
       ])
@@ -249,7 +226,6 @@ defmodule Codebattle.Tournament.Server do
         :event,
         :matches,
         :players,
-        :waiting_room_state,
         :stats,
         :played_pair_ids
       ])
@@ -259,7 +235,7 @@ defmodule Codebattle.Tournament.Server do
     # TODO: rethink broadcasting during applying event, maybe put inside tournament module
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
 
-    {:reply, tournament, Map.put(state, :tournament, new_tournament)}
+    {:reply, new_tournament, Map.put(state, :tournament, new_tournament)}
   end
 
   def handle_info(:start_grade_tournament, %{tournament: tournament}) do
@@ -338,72 +314,6 @@ defmodule Codebattle.Tournament.Server do
   def handle_info(:terminate, %{tournament: tournament}) do
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
   end
-
-  # def handle_info(
-  #       %{
-  #         topic: "waiting_room:" <> _wr_name,
-  #         event: "waiting_room:matched",
-  #         payload: payload
-  #       },
-  #       %{tournament: tournament}
-  #     ) do
-  #   new_tournament =
-  #     tournament.module.create_games_for_waiting_room_pairs(
-  #       tournament,
-  #       payload.pairs,
-  #       payload.matched_with_bot
-  #     )
-  #
-  #   {:noreply, %{tournament: new_tournament}}
-  # end
-
-  # def handle_info(:match_waiting_room_players, %{
-  #       tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "active"}} = tournament
-  #     }) do
-  #   players =
-  #     tournament
-  #     |> Tournament.Players.get_players("matchmaking_active")
-  #     |> Enum.map(&prepare_wr_player/1)
-
-  #   played_pair_ids = tournament.played_pair_ids
-
-  #   wr_new_state =
-  #     WaitingRoom.Engine.call(%{
-  #       tournament.waiting_room_state
-  #       | players: players,
-  #         played_pair_ids: played_pair_ids
-  #     })
-
-  #   tournament.module.create_games_for_waiting_room_pairs(
-  #     tournament,
-  #     wr_new_state.pairs,
-  #     wr_new_state.matched_with_bot
-  #   )
-
-  #   new_tournament = %{
-  #     tournament
-  #     | played_pair_ids: wr_new_state.played_pair_ids,
-  #       waiting_room_state: %{
-  #         wr_new_state
-  #         | pairs: [],
-  #           matched_with_bot: []
-  #       }
-  #   }
-
-  #   Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
-  #   {:noreply, %{tournament: new_tournament}}
-  # end
-
-  # def handle_info(:match_waiting_room_players, %{
-  #       tournament: %Tournament{waiting_room_state: %WaitingRoom.State{state: "paused"}} = tournament
-  #     }) do
-  #   Process.send_after(self(), :match_waiting_room_players, @waiting_room_timeout_ms)
-  #   {:noreply, %{tournament: tournament}}
-  # end
-
-  # def handle_info(:match_waiting_room_players, state) do
-  #   {:noreply, state}
-  # end
 
   def handle_info(_message, state) do
     {:noreply, state}

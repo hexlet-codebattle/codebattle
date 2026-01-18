@@ -125,8 +125,6 @@ defmodule Codebattle.Tournament do
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
     field(:task_ids, {:array, :integer}, virtual: true, default: [])
-    field(:waiting_room_name, :string, virtual: true)
-    field(:waiting_room_state, :map, virtual: true, default: %{})
 
     timestamps()
   end
@@ -172,8 +170,7 @@ defmodule Codebattle.Tournament do
       :use_clan,
       :use_event_ranking,
       :use_infinite_break,
-      :use_timer,
-      :waiting_room_name
+      :use_timer
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)
@@ -187,7 +184,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
-    |> validate_event_id(params["event_id"])
+    |> validate_event_id(params["event_id"] || params[:event_id])
     |> add_creator(params["creator"] || params[:creator])
   end
 

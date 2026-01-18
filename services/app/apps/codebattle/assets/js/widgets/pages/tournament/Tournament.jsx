@@ -2,7 +2,6 @@ import React, {
  useState, useCallback, useEffect, useMemo,
 } from 'react';
 
-import { useInterpret } from '@xstate/react';
 import cn from 'classnames';
 import has from 'lodash/has';
 import isEmpty from 'lodash/isEmpty';
@@ -10,7 +9,6 @@ import Markdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
-import RoomContext from '../../components/RoomContext';
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
 import { connectToTournament } from '../../middlewares/Tournament';
@@ -96,17 +94,10 @@ function InfoPanel({
   }
 }
 
-function Tournament({ waitingRoomMachine }) {
+function Tournament() {
   const dispatch = useDispatch();
 
   const searchParams = useSearchParams();
-
-  const waitingRoomService = useInterpret(waitingRoomMachine, {
-    devTools: true,
-    actions: [],
-  });
-
-  const machines = useMemo(() => ({ waitingRoomService }), [waitingRoomService]);
 
   const activePresentationMode = searchParams.has('presentation');
   const activeStreamMode = searchParams.has('stream');
@@ -136,9 +127,7 @@ function Tournament({ waitingRoomMachine }) {
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
-  const hiddenSidePanel = (tournament.type === 'arena'
-      && tournament.state !== 'waiting_participants')
-    || streamMode;
+  const hiddenSidePanel = streamMode;
 
   const panelClassName = cn('mb-2', {
     'container-fluid': !streamMode,
@@ -165,16 +154,12 @@ function Tournament({ waitingRoomMachine }) {
   ]);
 
   useEffect(() => {
-    const tournamentChannel = connectToTournament(
-      waitingRoomService,
-      tournament?.id,
-    )(dispatch);
+    const tournamentChannel = connectToTournament(tournament?.id)(dispatch);
 
     if (canModerate) {
-      const tournamentAdminChannel = connectToTournamentAdmin(
-        waitingRoomService,
-        tournament?.id,
-      )(dispatch);
+      const tournamentAdminChannel = connectToTournamentAdmin(tournament?.id)(
+        dispatch,
+      );
 
       return () => {
         tournamentChannel.leave();
@@ -281,7 +266,7 @@ function Tournament({ waitingRoomMachine }) {
 
   return (
     <CustomEventStylesContext.Provider value={hasCustomEventStyles}>
-      <RoomContext.Provider value={machines}>
+      <>
         <DetailsModal
           tournament={tournament}
           modalShowing={detailsModalShowing}
@@ -370,7 +355,7 @@ function Tournament({ waitingRoomMachine }) {
             </div>
           </div>
         </div>
-      </RoomContext.Provider>
+      </>
     </CustomEventStylesContext.Provider>
   );
 }

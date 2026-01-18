@@ -60,7 +60,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   """
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
-      when type in ["swiss", "arena", "top200"] do
+      when type in ["swiss", "top200"] do
     clean_results(tournament.id)
 
     Repo.query!("""
@@ -154,7 +154,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   end
 
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "win_loss"} = tournament)
-      when type in ["swiss", "arena"] do
+      when type in ["swiss"] do
     clean_results(tournament.id)
 
     Repo.query!("""

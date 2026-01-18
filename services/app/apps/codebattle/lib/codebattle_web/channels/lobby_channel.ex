@@ -161,7 +161,7 @@ defmodule CodebattleWeb.LobbyChannel do
     end
   end
 
-  defp maybe_add_task(params, %{"task_tags" => task_tags}, user) when length(task_tags) > 0 do
+  defp maybe_add_task(params, %{"task_tags" => [_ | _] = task_tags}, user) do
     level = Map.get(params, :level)
 
     case Codebattle.Task.get_task_by_tags_for_user(user, task_tags, level) do

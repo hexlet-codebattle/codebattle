@@ -60,7 +60,6 @@ defmodule Codebattle.Game.Engine do
           visibility_type: visibility_type,
           timeout_seconds: min(timeout_seconds, @max_timeout),
           tournament_id: tournament_id,
-          waiting_room_name: params[:waiting_room_name],
           players: players,
           player_ids: Enum.map(players, & &1.id),
           starts_at: TimeHelper.utc_now()
@@ -117,7 +116,6 @@ defmodule Codebattle.Game.Engine do
              visibility_type: visibility_type,
              timeout_seconds: min(timeout_seconds, @max_timeout),
              tournament_id: tournament_id,
-             waiting_room_name: params[:waiting_room_name],
              task: task,
              task_type: task.type,
              players: players,
@@ -163,7 +161,6 @@ defmodule Codebattle.Game.Engine do
           timeout_seconds: min(params.timeout_seconds, @max_timeout),
           tournament_id: params.tournament_id,
           type: type,
-          waiting_room_name: params[:waiting_room_name],
           use_chat: params.use_chat,
           use_timer: params.use_timer,
           visibility_type: visibility_type,

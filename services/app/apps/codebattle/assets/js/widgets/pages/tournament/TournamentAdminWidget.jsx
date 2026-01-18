@@ -106,7 +106,7 @@ function TournamentAdminWidget() {
   };
 
   useEffect(() => {
-    dispatch(connectToTournament(null, tournamentId, true));
+    dispatch(connectToTournament(tournamentId, true));
   }, [dispatch, tournamentId]);
 
   useEffect(() => {
