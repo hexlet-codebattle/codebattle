@@ -85,6 +85,7 @@ defmodule Codebattle.MixProject do
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       # dev
       {:phoenix_live_reload, "~> 1.3", only: :dev},
+      {:tidewave, "~> 0.5", only: :dev},
 
       # test
       {:ex_machina, "~> 2.4", only: :test},
