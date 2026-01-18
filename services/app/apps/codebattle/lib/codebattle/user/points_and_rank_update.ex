@@ -7,17 +7,71 @@ defmodule Codebattle.User.PointsAndRankUpdate do
   """
 
   alias Codebattle.Repo
+  alias Codebattle.Season
   alias Ecto.Adapters.SQL
 
   @doc """
   Updates user points and rankings based on tournament performance in current season.
 
-  Points are already calculated in tournament_user_results table based on tournament grade and place.
-  This function aggregates those points for the current season and updates user rankings.
-
-  Updates the current season points in points field and rank.
+  Points and places are calculated in season_results based on current season tournaments.
+  This function aligns user points and rank with the current season standings.
   """
-  def update do
+  def update(season \\ nil) do
+    case season || Season.get_current_season() do
+      %Season{id: season_id} ->
+        update_from_season_results(season_id)
+
+      nil ->
+        update_from_date_ranges()
+    end
+  end
+
+  defp update_from_season_results(season_id) do
+    sql = """
+      WITH season_results_data AS (
+        SELECT
+          sr.user_id,
+          sr.total_points,
+          sr.place
+        FROM season_results sr
+        WHERE sr.season_id = $1
+      ),
+      max_place AS (
+        SELECT COALESCE(MAX(place), 0) AS max_place
+        FROM season_results
+        WHERE season_id = $1
+      ),
+      fallback_rankings AS (
+        SELECT
+          u.id AS user_id,
+          (SELECT max_place FROM max_place)
+            + DENSE_RANK() OVER (ORDER BY u.rating DESC, u.id ASC) AS fallback_rank
+        FROM users u
+        LEFT JOIN season_results_data sr ON sr.user_id = u.id
+        WHERE u.is_bot = false AND sr.user_id IS NULL
+      ),
+      user_rankings AS (
+        SELECT
+          u.id AS user_id,
+          COALESCE(sr.total_points, 0) AS season_points,
+          COALESCE(sr.place, fr.fallback_rank) AS new_rank
+        FROM users u
+        LEFT JOIN season_results_data sr ON sr.user_id = u.id
+        LEFT JOIN fallback_rankings fr ON fr.user_id = u.id
+        WHERE u.is_bot = false
+      )
+      UPDATE users
+      SET
+        points = ur.season_points,
+        rank = ur.new_rank
+      FROM user_rankings ur
+      WHERE users.id = ur.user_id;
+    """
+
+    SQL.query!(Repo, sql, [season_id])
+  end
+
+  defp update_from_date_ranges do
     {current_season, season_start, season_end} = get_current_season_info()
 
     sql = """

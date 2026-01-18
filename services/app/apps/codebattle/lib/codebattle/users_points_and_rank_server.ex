@@ -65,22 +65,26 @@ defmodule Codebattle.UsersPointsAndRankServer do
   def handle_info(_, state), do: {:noreply, state}
 
   defp do_work do
-    case Codebattle.Season.get_current_season() do
-      nil ->
-        Logger.warning("No current season found, skipping season results update")
+    season =
+      case Codebattle.Season.get_current_season() do
+        nil ->
+          Logger.warning("No current season found, skipping season results update")
+          nil
 
-      season ->
-        case Codebattle.SeasonResult.aggregate_season_results(season.id) do
-          {:ok, num_rows} ->
-            Logger.debug("Season results aggregated: #{num_rows} users updated")
+        season ->
+          case Codebattle.SeasonResult.aggregate_season_results(season.id) do
+            {:ok, num_rows} ->
+              Logger.debug("Season results aggregated: #{num_rows} users updated")
 
-          {:error, error} ->
-            Logger.error("Error aggregating season results: #{inspect(error)}")
-        end
-    end
+            {:error, error} ->
+              Logger.error("Error aggregating season results: #{inspect(error)}")
+          end
+
+          season
+      end
 
     # Keep updating user points/ranks for backward compatibility
-    Codebattle.User.PointsAndRankUpdate.update()
+    Codebattle.User.PointsAndRankUpdate.update(season)
     Logger.debug("Points has been recalculated")
   end
 end
