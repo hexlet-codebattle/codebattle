@@ -43,6 +43,14 @@ defmodule Codebattle.Bot.Context do
     |> Enum.map(&Map.merge(&1, params))
   end
 
+  @spec get(pos_integer()) :: User.t() | nil
+  def get(id) do
+    case Repo.get(User, id) do
+      %User{is_bot: true} = bot -> bot
+      _ -> nil
+    end
+  end
+
   defp bots_query(limit \\ 1) do
     from(
       user in User,

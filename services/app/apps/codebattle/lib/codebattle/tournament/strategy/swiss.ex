@@ -2,7 +2,6 @@ defmodule Codebattle.Tournament.Swiss do
   @moduledoc false
   use Codebattle.Tournament.Base
 
-  alias Codebattle.Bot
   alias Codebattle.Tournament
 
   @impl Tournament.Base
@@ -41,7 +40,7 @@ defmodule Codebattle.Tournament.Swiss do
   def build_round_pairs(tournament) do
     {player_pairs, unmatched_players, played_pair_ids} = build_player_pairs(tournament)
 
-    opponent_bot = Tournament.Player.new!(Bot.Context.build())
+    {tournament, opponent_bot} = get_or_build_tournament_bot(tournament)
 
     unmatched_pairs = Enum.map(unmatched_players, fn player -> [player, opponent_bot] end)
 

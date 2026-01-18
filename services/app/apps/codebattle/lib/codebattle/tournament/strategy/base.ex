@@ -888,6 +888,21 @@ defmodule Codebattle.Tournament.Base do
         game_params
       end
 
+      defp get_or_build_tournament_bot(tournament) do
+        meta = tournament.meta || %{}
+        bot_id = Map.get(meta, :bot_id)
+
+        case bot_id && Bot.Context.get(bot_id) do
+          %{} = bot ->
+            {tournament, Tournament.Player.new!(bot)}
+
+          _ ->
+            bot = Bot.Context.build()
+            meta = Map.put(meta, :bot_id, bot.id)
+            {update_struct(tournament, %{meta: meta}), Tournament.Player.new!(bot)}
+        end
+      end
+
       defp upsert_tournament_user_results(tournament) do
         Tournament.TournamentUserResult.upsert_results(tournament)
       end
