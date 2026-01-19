@@ -26,6 +26,7 @@ const preloadedState = {
       soundSettings: {
         type: 'standard',
         level: 6,
+        tournamentLevel: 4,
       },
       id: 11,
       name: 'Diman',
@@ -104,6 +105,7 @@ describe('UserSettings test cases', () => {
           style_lang: '',
           sound_settings: {
             level: 6,
+            tournament_level: 4,
             type: 'standard',
           },
         },

@@ -1,6 +1,7 @@
 import { assign, actions } from 'xstate';
 
 import GameStateCodes from '../config/gameStateCodes';
+import tournamentSounds from '../config/tournamentSounds';
 import sound from '../lib/sound';
 
 import editor, { config as editorConfig } from './editor';
@@ -195,8 +196,12 @@ export const config = {
     soundTimeIsOver: () => {
       sound.play('time_is_over');
     },
-    soundTournamentRoundCreated: () => {
-      sound.play('round_created');
+    soundTournamentRoundCreated: (_ctx, { payload }) => {
+      if (payload?.tournament?.currentRoundPosition === 0) {
+        sound.playTournamentAsset(tournamentSounds.started);
+      } else {
+        sound.playTournamentAsset(tournamentSounds.roundStarted);
+      }
     },
     soundRematchUpdateStatus: () => { },
     blockGameRoomAfterCheck: () => { },

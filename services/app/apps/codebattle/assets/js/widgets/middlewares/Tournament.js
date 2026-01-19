@@ -6,7 +6,10 @@ import groupBy from 'lodash/groupBy';
 
 import { PanelModeCodes } from '@/pages/tournament/ControlPanel';
 
+import TournamentStates from '../config/tournament';
+import tournamentSounds from '../config/tournamentSounds';
 import TournamentTypes from '../config/tournamentTypes';
+import sound from '../lib/sound';
 import { actions } from '../slices';
 
 import Channel from './Channel';
@@ -64,6 +67,7 @@ const initTournamentChannel = (currentChannel) => (dispatch) => {
 export const connectToTournament = (newTournamentId) => (dispatch) => {
     setTournamentChannel(newTournamentId);
     initTournamentChannel(channel)(dispatch);
+    let lastRoundPosition = 0;
 
     const handleUpdate = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
@@ -87,21 +91,33 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     };
 
     const handleTournamentRoundCreated = (response) => {
+      const currentRoundPosition = response.tournament?.currentRoundPosition || lastRoundPosition;
+      const isFirstRound = currentRoundPosition === 0;
+      lastRoundPosition = currentRoundPosition;
+
+      if (isFirstRound) {
+        sound.playTournamentAsset(tournamentSounds.started);
+      } else {
+        sound.playTournamentAsset(tournamentSounds.roundStarted);
+      }
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
     const handleRoundFinished = (response) => {
+      if (response.tournament?.state !== TournamentStates.finished) {
+        sound.playTournamentAsset(tournamentSounds.roundFinished);
+      }
       dispatch(
         actions.updateTournamentData({
           ...response.tournament,
-          topPlayerIds: response.topPlayerIds,
+          topPlayerIds: response.topPlayerIds || [],
           playersPageNumber: 1,
           playersPageSize: 20,
         }),
       );
 
-      dispatch(actions.updateTournamentPlayers(compact(response.players)));
-      dispatch(actions.updateTopPlayers(compact(response.players)));
+      dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
+      dispatch(actions.updateTopPlayers(compact(response.players || [])));
     };
 
     const handleTournamentRestarted = (response) => {
@@ -133,6 +149,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     };
 
     const handleTournamentFinished = (response) => {
+      sound.playTournamentAsset(tournamentSounds.finished);
       dispatch(actions.updateTournamentData(response.tournament));
     };
 

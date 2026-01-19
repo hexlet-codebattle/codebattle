@@ -28,7 +28,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
                "lang" => "dart",
                "locale" => "en",
                "clan" => "abc",
-               "sound_settings" => %{"level" => 7, "type" => "dendy"},
+               "sound_settings" => %{"level" => 7, "tournament_level" => 7, "type" => "dendy"},
                "db_type" => "mongodb",
                "style_lang" => "less",
                "github_id" => 1,
@@ -45,7 +45,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         "name" => "evgen",
         "clan" => "  Bca  ",
         "locale" => "ru",
-        "sound_settings" => %{"level" => 3, "type" => "cs"},
+        "sound_settings" => %{"level" => 3, "tournament_level" => 8, "type" => "cs"},
         "db_type" => "postgresql",
         "style_lang" => "css",
         "lang" => "ruby"
@@ -63,6 +63,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       updated = Repo.get!(Codebattle.User, user.id)
 
       assert updated.sound_settings.level == 3
+      assert updated.sound_settings.tournament_level == 8
       assert updated.sound_settings.type == "cs"
       assert updated.clan == "Bca"
       assert updated.clan_id == clan.id

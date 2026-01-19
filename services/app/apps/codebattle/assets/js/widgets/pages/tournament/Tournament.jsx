@@ -154,11 +154,11 @@ function Tournament() {
   ]);
 
   useEffect(() => {
-    const tournamentChannel = connectToTournament(tournament?.id)(dispatch);
+    const tournamentChannel = dispatch(connectToTournament(tournament?.id));
 
     if (canModerate) {
-      const tournamentAdminChannel = connectToTournamentAdmin(tournament?.id)(
-        dispatch,
+      const tournamentAdminChannel = dispatch(
+        connectToTournamentAdmin(tournament?.id, true),
       );
 
       return () => {
@@ -299,7 +299,7 @@ function Tournament() {
             breakState={tournament.breakState}
             currentUserId={currentUserId}
             isLive={tournament.isLive}
-            isOnline={tournament.channel.online}
+            isOnline={tournament.channel?.online ?? false}
             isOver={isOver}
             canModerate={canModerate}
             lastRoundEndedAt={tournament.lastRoundEndedAt}

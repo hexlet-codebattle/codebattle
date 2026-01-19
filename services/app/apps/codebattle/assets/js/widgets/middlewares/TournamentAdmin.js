@@ -3,6 +3,9 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import compact from 'lodash/compact';
 
+import TournamentStates from '../config/tournament';
+import tournamentSounds from '../config/tournamentSounds';
+import sound from '../lib/sound';
 import { actions } from '../slices';
 
 import Channel from './Channel';
@@ -36,6 +39,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
           ranking: response.ranking || { entries: [] },
           players: {},
           playersPageSize: 20,
+          channel: { online: true },
         }),
       );
     }
@@ -59,6 +63,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
 export const connectToTournament = (newTournamentId, isAdminWidged = false) => (dispatch) => {
     setTournamentChannel(newTournamentId);
     initTournamentChannel(dispatch, isAdminWidged);
+    let lastRoundPosition = 0;
 
     const handleUpdate = (response) => {
       dispatch(actions.updateTournamentData(response.tournament));
@@ -93,21 +98,33 @@ export const connectToTournament = (newTournamentId, isAdminWidged = false) => (
     };
 
     const handleTournamentRoundCreated = (response) => {
+      const currentRoundPosition = response.tournament?.currentRoundPosition || lastRoundPosition;
+      const isFirstRound = currentRoundPosition === 0;
+      lastRoundPosition = currentRoundPosition;
+
+      if (isFirstRound) {
+        sound.playTournamentAsset(tournamentSounds.started);
+      } else {
+        sound.playTournamentAsset(tournamentSounds.roundStarted);
+      }
       dispatch(actions.updateTournamentData(response.tournament));
     };
 
     const handleRoundFinished = (response) => {
+      if (response.tournament?.state !== TournamentStates.finished) {
+        sound.playTournamentAsset(tournamentSounds.roundFinished);
+      }
       dispatch(
         actions.updateTournamentData({
           ...response.tournament,
-          topPlayerIds: response.topPlayerIds,
+          topPlayerIds: response.topPlayerIds || [],
           playersPageNumber: 1,
           playersPageSize: 20,
         }),
       );
 
-      dispatch(actions.updateTournamentPlayers(compact(response.players)));
-      dispatch(actions.updateTopPlayers(compact(response.players)));
+      dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
+      dispatch(actions.updateTopPlayers(compact(response.players || [])));
     };
 
     const handleTournamentRestarted = (response) => {
@@ -139,6 +156,7 @@ export const connectToTournament = (newTournamentId, isAdminWidged = false) => (
     };
 
     const handleTournamentFinished = (response) => {
+      sound.playTournamentAsset(tournamentSounds.finished);
       dispatch(actions.updateTournamentData(response.tournament));
     };
 

@@ -119,6 +119,7 @@ function UserSettingsForm({ onSubmit, settings }) {
       soundSettings: {
         type: settings.soundSettings.type,
         level: settings.soundSettings.level,
+        tournamentLevel: settings.soundSettings.tournamentLevel ?? settings.soundSettings.level,
       },
       clan: settings.clan || '',
       langView: views.code,
@@ -283,6 +284,25 @@ function UserSettingsForm({ onSubmit, settings }) {
               min={0}
               max={10}
               name="soundSettings.level"
+              disabled={values.soundSettings.type === 'silent'}
+              onInput={(e) => {
+                handleChange(e);
+                playSound(values.soundSettings.type, e.target.value * 0.1);
+              }}
+              className="ml-3 mr-3 form-control"
+            />
+            <Icon.Volume2 />
+          </div>
+
+          <div className="h6 ml-2">Select tournament sound level</div>
+          <div className="ml-2 mb-3 d-flex align-items-center">
+            <Icon.VolumeX />
+            <Field
+              component={Slider}
+              type="range"
+              min={0}
+              max={10}
+              name="soundSettings.tournamentLevel"
               disabled={values.soundSettings.type === 'silent'}
               onInput={(e) => {
                 handleChange(e);

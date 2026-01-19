@@ -32,7 +32,13 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       assert "asdf" == user.external_oauth_id
       assert 1 == clan.creator_id
       assert user.clan_id == clan.id
-      assert user.sound_settings == %User.SoundSettings{level: 0, type: "silent"}
+
+      assert user.sound_settings == %User.SoundSettings{
+               level: 0,
+               tournament_level: 7,
+               type: "silent"
+             }
+
       assert user.subscription_type == :premium
     end
 

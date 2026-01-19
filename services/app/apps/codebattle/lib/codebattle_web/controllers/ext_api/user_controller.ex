@@ -10,7 +10,7 @@ defmodule CodebattleWeb.ExtApi.UserController do
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   @default_settings %{
-    sound_settings: %{level: 0, type: "silent"},
+    sound_settings: %{level: 0, tournament_level: 7, type: "silent"},
     subscription_type: "premium"
   }
 

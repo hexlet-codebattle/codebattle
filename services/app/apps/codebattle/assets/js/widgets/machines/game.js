@@ -4,6 +4,7 @@ import { channelTopics } from '../../socket';
 import GameStateCodes from '../config/gameStateCodes';
 import speedModes from '../config/speedModes';
 import subscriptionTypes from '../config/subscriptionTypes';
+import tournamentSounds from '../config/tournamentSounds';
 import sound from '../lib/sound';
 
 const { send } = actions;
@@ -380,8 +381,12 @@ export const config = {
     soundTimeIsOver: () => {
       sound.play('time_is_over');
     },
-    soundTournamentRoundCreated: () => {
-      sound.play('round_created');
+    soundTournamentRoundCreated: (_ctx, { payload }) => {
+      if (payload?.tournament?.currentRoundPosition === 0) {
+        sound.playTournamentAsset(tournamentSounds.started);
+      } else {
+        sound.playTournamentAsset(tournamentSounds.roundStarted);
+      }
     },
     soundRematchUpdateStatus: () => { },
     blockGameRoomAfterCheck: () => { },

@@ -236,7 +236,7 @@ function TournamentPlayer({ spectatorMachine }) {
 
   useEffect(() => {
     if (tournament.id) {
-      const channel = connectToTournament(tournament.id)(dispatch);
+      const channel = dispatch(connectToTournament(tournament.id));
 
       return () => {
         channel.leave();
