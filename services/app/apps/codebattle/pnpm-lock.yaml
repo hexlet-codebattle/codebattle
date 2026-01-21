@@ -114,8 +114,8 @@ importers:
         specifier: ^0.16.21
         version: 0.16.25
       lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
+        specifier: ^4.17.23
+        version: 4.17.23
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
@@ -2391,6 +2391,7 @@ packages:
 
   bad-words-next@3.1.1:
     resolution: {integrity: sha512-u0PSwEJijXlcz9X4bEXdR4rbOLZQVqMgY7QgJkpFa/VLrVrr+N7poT7pAHy2LcwOYNSBEF9Jnvk5G2sig5SYlg==}
+    deprecated: This version is deprecated. Please upgrade to 3.2.0
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -2411,6 +2412,7 @@ packages:
 
   bootstrap@4.6.2:
     resolution: {integrity: sha512-51Bbp/Uxr9aTuy6ca/8FbFloBUJZLHwnhTcnjIeRn2suQWsWzcuJhGjKDB5eppVte/8oCdOL3VuwxvZDUggwGQ==}
+    deprecated: This version of Bootstrap is no longer supported. Please upgrade to the latest version.
     peerDependencies:
       jquery: 1.9.1 - 3
       popper.js: ^1.16.1
@@ -2740,6 +2742,7 @@ packages:
 
   deep-diff@1.0.2:
     resolution: {integrity: sha512-aWS3UIVH+NPGCD1kki+DCU9Dua032iSsO43LqQpcs4R3+dVv7tX0qBGjiVHJHjplsoUM2XRO/KB92glqc68awg==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   deep-equal@1.1.2:
     resolution: {integrity: sha512-5tdhKF6DbU7iIzrIOa1AOUt39ZRm13cmL1cGEh//aqR8x9+tNfbywRf0n5FD/18OKMdo7DNEtrX2t22ZAkI+eg==}
@@ -3922,8 +3925,8 @@ packages:
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
@@ -4113,6 +4116,7 @@ packages:
 
   moize@6.1.6:
     resolution: {integrity: sha512-vSKdIUO61iCmTqhdoIDrqyrtp87nWZUmBPniNjO0fX49wEYmyDO4lvlnFXiGcaH1JLE/s/9HbiK4LSHsbiUY6Q==}
+    deprecated: This library has been deprecated in favor of micro-memoize, which as-of version 5 incorporates most of the functionality that this library offers at nearly half the size and better speed.
 
   moment-timezone@0.5.48:
     resolution: {integrity: sha512-f22b8LV1gbTO2ms2j2z13MuPogNoh5UzxL3nzNAYKGraILnbGc9NEE6dyiiiLv46DGRb8A4kg8UKWLjPthxBHw==}
@@ -7186,7 +7190,7 @@ snapshots:
       chalk: 3.0.0
       css.escape: 1.5.1
       dom-accessibility-api: 0.5.16
-      lodash: 4.17.21
+      lodash: 4.17.23
       redent: 3.0.0
 
   '@testing-library/react@14.3.1(@types/react@19.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
@@ -7705,7 +7709,7 @@ snapshots:
       '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
       '@babel/types': 7.28.5
       glob: 7.2.3
-      lodash: 4.17.21
+      lodash: 4.17.23
       require-package-name: 2.0.1
     transitivePeerDependencies:
       - supports-color
@@ -7752,7 +7756,7 @@ snapshots:
       '@babel/helper-annotate-as-pure': 7.27.3
       '@babel/helper-module-imports': 7.27.1(supports-color@5.5.0)
       '@babel/plugin-syntax-jsx': 7.27.1(@babel/core@7.28.5)
-      lodash: 4.17.21
+      lodash: 4.17.23
       picomatch: 2.3.1
       styled-components: 5.3.11(@babel/core@7.28.5)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)
     transitivePeerDependencies:
@@ -8810,7 +8814,7 @@ snapshots:
       '@types/hoist-non-react-statics': 3.3.7(@types/react@19.2.2)
       deepmerge: 2.2.1
       hoist-non-react-statics: 3.3.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash-es: 4.17.21
       react: 18.3.1
       react-fast-compare: 2.0.4
@@ -9782,7 +9786,7 @@ snapshots:
 
   lodash.merge@4.6.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   longest-streak@3.1.0: {}
 
@@ -10420,7 +10424,7 @@ snapshots:
       dom-helpers: 5.2.1
       globalize: 0.1.1
       invariant: 2.2.4
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash-es: 4.17.21
       luxon: 3.7.2
       memoize-one: 6.0.0
@@ -10478,7 +10482,7 @@ snapshots:
       consolidated-events: 2.0.2
       enzyme-shallow-equal: 1.0.7
       is-touch-device: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       moment: 2.30.1
       object.assign: 4.1.7
       object.values: 1.2.1
@@ -10842,7 +10846,7 @@ snapshots:
     dependencies:
       clsx: 2.1.1
       eventemitter3: 4.0.7
-      lodash: 4.17.21
+      lodash: 4.17.23
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-is: 18.3.1
@@ -11776,7 +11780,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.4
       fn-name: 3.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash-es: 4.17.21
       property-expr: 2.0.6
       synchronous-promise: 2.0.17

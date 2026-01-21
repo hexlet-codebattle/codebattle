@@ -77,7 +77,7 @@
     "i18next": "^19.8.4",
     "jquery": "^3.5.1",
     "katex": "^0.16.21",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lz-string": "^1.5.0",
     "moment": "^2.29.4",
     "monaco-themes": "^0.4.4",
