@@ -39,7 +39,10 @@ function PlayersRankingPanel({ playersCount, ranking }) {
   const requestedFirstPage = useRef(false);
   const manualPageChange = useRef(false);
 
-  const rankingItems = useMemo(() => ranking?.entries || [], [ranking?.entries]);
+  const rankingItems = useMemo(
+    () => ranking?.entries || [],
+    [ranking?.entries],
+  );
   const pageNumber = ranking?.pageNumber || 1;
   const totalEntries = ranking?.totalEntries || 0;
   const displayPageSize = 16;
@@ -89,10 +92,7 @@ function PlayersRankingPanel({ playersCount, ranking }) {
   }, [effectivePageNumber, isServerPaged, totalPages]);
 
   useEffect(() => {
-    if (
-      requestedFirstPage.current
-      || manualPageChange.current
-    ) {
+    if (requestedFirstPage.current || manualPageChange.current) {
       return;
     }
 
@@ -100,12 +100,7 @@ function PlayersRankingPanel({ playersCount, ranking }) {
       requestedFirstPage.current = true;
       dispatch(requestRankingPage(1, effectivePageSize));
     }
-  }, [
-    dispatch,
-    effectivePageSize,
-    playersCount,
-    rankingItems.length,
-  ]);
+  }, [dispatch, effectivePageSize, playersCount, rankingItems.length]);
 
   useEffect(() => {
     if (
@@ -178,7 +173,7 @@ function PlayersRankingPanel({ playersCount, ranking }) {
                 </span>
               </div>
               <div className="d-flex cb-overflow-x-auto">
-                <table className="table cb-text table-striped cb-custom-event-table m-1">
+                <table className="table cb-text-light table-striped cb-custom-event-table m-1">
                   <colgroup>
                     <col style={{ width: '12%' }} />
                     <col style={{ width: '40%' }} />

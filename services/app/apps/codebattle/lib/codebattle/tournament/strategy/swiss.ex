@@ -145,8 +145,7 @@ defmodule Codebattle.Tournament.Swiss do
           if MapSet.member?(played_pair_ids, pair_ids) do
             {:cont, {player, remain_players, played_pair_ids}}
           else
-            {:halt,
-             {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
+            {:halt, {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
           end
         end
       )

@@ -59,7 +59,7 @@ const options = {
   },
 };
 
-const getCustomEventTrClassName = () => cn('cb-text font-weight-bold cb-custom-event-tr cb-bg-panel');
+const getCustomEventTrClassName = () => cn('cb-text-light font-weight-bold cb-custom-event-tr cb-bg-panel');
 
 const tableDataCellClassName = cn(
   'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0 cb-text',
@@ -138,7 +138,10 @@ function TaskRankingAdvancedPanel({ taskId, state, handleUserSelectClick }) {
                 checked={mode}
                 onChange={handleChangeMode}
               />
-              <label className="custom-control-label" htmlFor="task-params-view">
+              <label
+                className="custom-control-label"
+                htmlFor="task-params-view"
+              >
                 {i18next.t('Show task description')}
               </label>
             </div>

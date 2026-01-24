@@ -1,9 +1,5 @@
 import React, {
-  useMemo,
-  useState,
-  useEffect,
-  useRef,
-  memo,
+ useMemo, useState, useEffect, useRef, memo,
 } from 'react';
 
 import cn from 'classnames';
@@ -33,7 +29,7 @@ const filterControlsClassName = cn(
 
 const searchLabelClassName = cn(
   'text-nowrap mb-0 mr-2 font-weight-bold text-uppercase small',
-  'cb-text',
+  'cb-text-light',
 );
 
 const searchInputClassName = cn(
@@ -41,10 +37,7 @@ const searchInputClassName = cn(
   'cb-bg-highlight-panel cb-border-color text-white',
 );
 
-const fuzzyBadgeClassName = cn(
-  'badge cb-text ml-2',
-  'cb-bg-panel',
-);
+const fuzzyBadgeClassName = cn('badge cb-text-light ml-2', 'cb-bg-panel');
 
 const isFuzzyMatch = (value, query) => {
   if (!query) return true;
@@ -65,40 +58,32 @@ const isFuzzyMatch = (value, query) => {
 
 const PlayersList = memo(
   ({
-    players,
-    matchList,
-    currentUserId,
-    searchedUserId,
-    hideBots,
-  }) => players.map((player) => {
-    if (player.id === searchedUserId) {
-      return <></>;
-    }
+ players, matchList, currentUserId, searchedUserId, hideBots,
+}) => players.map((player) => {
+      if (player.id === searchedUserId) {
+        return <></>;
+      }
 
-    const userMatches = matchList.filter((match) => match.playerIds.includes(player.id));
+      const userMatches = matchList.filter((match) => match.playerIds.includes(player.id));
 
-    return (
-      <TournamentUserPanel
-        key={`user-panel-${player.id}`}
-        matches={userMatches}
-        currentUserId={currentUserId}
-        userId={player.id}
-        name={player.name}
-        score={player.score}
-        place={player.place}
-        isBanned={player.isBanned}
-        searchedUserId={searchedUserId}
-        hideBots={hideBots}
-      />
-    );
-  }),
+      return (
+        <TournamentUserPanel
+          key={`user-panel-${player.id}`}
+          matches={userMatches}
+          currentUserId={currentUserId}
+          userId={player.id}
+          name={player.name}
+          score={player.score}
+          place={player.place}
+          isBanned={player.isBanned}
+          searchedUserId={searchedUserId}
+          hideBots={hideBots}
+        />
+      );
+    }),
 );
 
-const SearchedUserPanel = memo(({
-  searchedUser,
-  matchList,
-  currentUserId,
-}) => {
+const SearchedUserPanel = memo(({ searchedUser, matchList, currentUserId }) => {
   if (!searchedUser) {
     return <></>;
   }
@@ -164,23 +149,29 @@ function PlayersMatchesPanel({
 
   const normalizedPageSize = Number(pageSize);
   const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 16;
-  const totalPages = Math.max(1, Math.ceil(basePlayersList.length / safePageSize));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(basePlayersList.length / safePageSize),
+  );
   const normalizedPageNumber = Number(pageNumber);
   const safePageNumber = Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0
-    ? Math.min(normalizedPageNumber, totalPages)
-    : 1;
+      ? Math.min(normalizedPageNumber, totalPages)
+      : 1;
 
   const playersShowList = useMemo(
     () => basePlayersList
-      .slice(safePageSize * (safePageNumber - 1), safePageSize * safePageNumber)
-      .reduce((acc, player) => {
-        if (player.id === currentUserId) {
-          return [player, ...acc];
-        }
+        .slice(
+          safePageSize * (safePageNumber - 1),
+          safePageSize * safePageNumber,
+        )
+        .reduce((acc, player) => {
+          if (player.id === currentUserId) {
+            return [player, ...acc];
+          }
 
-        acc.push(player);
-        return acc;
-      }, []),
+          acc.push(player);
+          return acc;
+        }, []),
     [basePlayersList, currentUserId, safePageSize, safePageNumber],
   );
 
@@ -227,9 +218,11 @@ function PlayersMatchesPanel({
     }
 
     requestAllPlayersInFlight.current = true;
-    dispatch(requestAllPlayersAdmin(() => {
-      requestAllPlayersInFlight.current = false;
-    }));
+    dispatch(
+      requestAllPlayersAdmin(() => {
+        requestAllPlayersInFlight.current = false;
+      }),
+    );
   }, [dispatch, canModerate, players, playersCount]);
 
   useEffect(() => {

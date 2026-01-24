@@ -34,9 +34,9 @@ function FinishedLeaderboard({ leaderboard }) {
   const safePageNumber = Math.min(pageNumber, totalPages);
   const pagedLeaderboard = useMemo(
     () => leaderboard.slice(
-      (safePageNumber - 1) * pageSize,
-      safePageNumber * pageSize,
-    ),
+        (safePageNumber - 1) * pageSize,
+        safePageNumber * pageSize,
+      ),
     [leaderboard, pageSize, safePageNumber],
   );
   const canGoPrev = safePageNumber > 1;
@@ -77,7 +77,7 @@ function FinishedLeaderboard({ leaderboard }) {
             <span className="font-weight-bold">{i18next.t('Leaderboard')}</span>
           </div>
           <div className="d-flex cb-overflow-x-auto">
-            <table className="table cb-text table-striped cb-custom-event-table m-1">
+            <table className="table cb-text-light table-striped cb-custom-event-table m-1">
               <thead>
                 <tr>
                   <th className="p-1 pl-4 font-weight-light border-0">
@@ -133,10 +133,14 @@ function FinishedLeaderboard({ leaderboard }) {
                             maxWidth: '13ch',
                           }}
                         >
-                          {(item?.userLang || item?.user_lang || item?.lang) && (
+                          {(item?.userLang
+                            || item?.user_lang
+                            || item?.lang) && (
                             <LanguageIcon
                               className="mr-1"
-                              lang={item?.userLang || item?.user_lang || item?.lang}
+                              lang={
+                                item?.userLang || item?.user_lang || item?.lang
+                              }
                             />
                           )}
                           {(item?.userName ?? '').slice(0, 9)

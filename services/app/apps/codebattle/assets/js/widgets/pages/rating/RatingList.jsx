@@ -15,8 +15,8 @@ const decorateJoinedDate = (str) => moment.utc(str).format('LL');
 const renderSortArrow = (attribute, sortParams) => {
   const { attribute: currentAttribute, direction } = sortParams;
   const classes = attribute === currentAttribute
-    ? `cb-sort-arrow ${direction}`
-    : 'sort-arrows';
+      ? `cb-sort-arrow ${direction}`
+      : 'sort-arrows';
 
   return <span className={`d-inline-block ${classes}`} />;
 };
@@ -30,10 +30,18 @@ const renderUser = (page, pageSize, user, index) => (
     <td className="tex-left p-3 align-middle text-nowrap text-white cb-border-color">
       <UserInfo user={user} truncate />
     </td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rank}</td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.points}</td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rating}</td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.gamesPlayed}</td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
+      {user.rank}
+    </td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
+      {user.points}
+    </td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
+      {user.rating}
+    </td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
+      {user.gamesPlayed}
+    </td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">
       {decorateJoinedDate(user.insertedAt)}
     </td>
@@ -165,17 +173,20 @@ function UsersRating() {
 
       <ul className="nav nav-pills justify-content-center mb-3">
         {periods.map((period) => renderFilterPeriodButtons(
-          period,
-          filterParams,
-          setFilterParams,
-          setPage,
-        ))}
+            period,
+            filterParams,
+            setFilterParams,
+            setPage,
+          ))}
       </ul>
 
       <div className="form-inline justify-content-between">
         <div className="input-group mb-3">
           <div className="input-group-prepend">
-            <span className="input-group-text cb-bg-highlight-panel cb-border-color text-white" id="basic-addon1">
+            <span
+              className="input-group-text cb-bg-highlight-panel cb-border-color text-white"
+              id="basic-addon1"
+            >
               <FontAwesomeIcon icon="search" />
             </span>
           </div>
@@ -236,7 +247,7 @@ function UsersRating() {
       </div>
       <div className="overflow-auto">
         <table className="table">
-          <thead className="text-left cb-text">
+          <thead className="text-left cb-text-light">
             <tr>
               <th className="p-3 text-nowrap border-0">№</th>
               <th className="p-3 text-nowrap border-0">User</th>

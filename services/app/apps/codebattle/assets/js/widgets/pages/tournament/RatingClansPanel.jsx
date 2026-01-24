@@ -12,7 +12,7 @@ import TournamentContextMenu, {
 } from './TournamentContextMenu';
 import useTournamentPanel from './useTournamentPanel';
 
-const getCustomEventTrClassName = (type, muted) => cn('cb-text font-weight-bold cb-custom-event-tr', {
+const getCustomEventTrClassName = (type, muted) => cn('cb-text-light font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
     'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
@@ -98,7 +98,10 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                     <tr
                       className={getCustomEventTrClassName('user', index > 3)}
                     >
-                      <td className={tableDataCellClassName(true)} aria-label="User row" />
+                      <td
+                        className={tableDataCellClassName(true)}
+                        aria-label="User row"
+                      />
                       <td className={tableDataCellClassName()}>
                         <div
                           role="button"
