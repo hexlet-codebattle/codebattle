@@ -41,7 +41,7 @@ const initTournamentChannel = (dispatch) => {
       ...data,
       channel: { online: true },
       playersPageNumber: 1,
-      playersPageSize: 20,
+      playersPageSize: 16,
     }));
 
     const { gameId } = data.activeMatch;

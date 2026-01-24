@@ -12,7 +12,7 @@ import TournamentContextMenu, {
 } from './TournamentContextMenu';
 import useTournamentPanel from './useTournamentPanel';
 
-const getCustomEventTrClassName = (type, muted) => cn('text-dark font-weight-bold cb-custom-event-tr', {
+const getCustomEventTrClassName = (type, muted) => cn('cb-text font-weight-bold cb-custom-event-tr', {
     'cb-custom-event-bg-success': type === 'clan' && !muted,
     'cb-custom-event-bg-muted-success': type === 'clan' && muted,
     'cb-custom-event-bg-purple cursor-pointer': type === 'user' && !muted,
@@ -103,16 +103,18 @@ function RatingClansPanel({ type, state, handleUserSelectClick }) {
                         <div
                           role="button"
                           tabIndex={0}
-                          className="cb-custom-event-name cursor-pointer mr-1"
+                          className="cb-custom-event-name cursor-pointer mr-1 text-secondary"
                           // onContextMenu={displayMenu}
                           onClick={handleUserSelectClick}
                           onKeyPress={handleUserSelectClick}
                           data-user-id={user.userId}
+                          data-user-name={user.userName}
                         >
                           <UserInfo
                             user={{ id: user.userId, name: user.userName }}
                             hideOnlineIndicator
                             hideLink
+                            linkClassName="text-secondary"
                           />
                         </div>
                       </td>

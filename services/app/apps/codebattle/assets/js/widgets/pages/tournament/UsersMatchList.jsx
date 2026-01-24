@@ -101,6 +101,9 @@ function UsersMatchList({
                   />
                 </span>
                 <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
+                  <span className="badge cb-bg-panel cb-text mr-2 text-nowrap">
+                    {`R${(match.roundPosition ?? 0) + 1}`}
+                  </span>
                   {matchPlayerIds.length === 1 ? (
                     <div className="d-flex align-items-center">
                       {match.winnerId === matchPlayerIds[0] && (

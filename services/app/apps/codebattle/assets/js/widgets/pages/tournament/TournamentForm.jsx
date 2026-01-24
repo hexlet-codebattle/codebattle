@@ -36,7 +36,9 @@ const SCORE_STRATEGIES = [
   { value: 'win_loss', label: 'Win/Loss' },
 ];
 
-const PLAYERS_LIMITS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
+const PLAYERS_LIMITS = [
+  2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
+];
 
 function TournamentForm({
   initialValues = {},
@@ -65,8 +67,10 @@ function TournamentForm({
     rounds_limit: initialValues.rounds_limit || 7,
     round_timeout_seconds: initialValues.round_timeout_seconds || 177,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
-    use_chat: initialValues.use_chat !== undefined ? initialValues.use_chat : true,
-    use_clan: initialValues.use_clan !== undefined ? initialValues.use_clan : false,
+    use_chat:
+      initialValues.use_chat !== undefined ? initialValues.use_chat : true,
+    use_clan:
+      initialValues.use_clan !== undefined ? initialValues.use_clan : false,
     ranking_type: initialValues.ranking_type || 'by_user',
     score_strategy: initialValues.score_strategy || '75_percentile',
     meta_json: initialValues.meta_json || '{}',
@@ -88,16 +92,21 @@ function TournamentForm({
     }));
   }, []);
 
-  const handleSubmit = useCallback((e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  }, [formData, onSubmit]);
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      onSubmit(formData);
+    },
+    [formData, onSubmit],
+  );
 
   const renderError = (fieldName) => {
     if (errors[fieldName]) {
       return (
         <div className="invalid-feedback d-block">
-          {Array.isArray(errors[fieldName]) ? errors[fieldName].join(', ') : errors[fieldName]}
+          {Array.isArray(errors[fieldName])
+            ? errors[fieldName].join(', ')
+            : errors[fieldName]}
         </div>
       );
     }
@@ -308,7 +317,8 @@ function TournamentForm({
           </div>
 
           <div className="row">
-            {(formData.task_provider === 'level' || formData.task_provider === 'tags') && (
+            {(formData.task_provider === 'level'
+              || formData.task_provider === 'tags') && (
               <div className="col-md-4 mb-3">
                 <label htmlFor="level" className="form-label text-white">
                   Level
@@ -335,7 +345,10 @@ function TournamentForm({
 
             {formData.task_provider === 'task_pack' && (
               <div className="col-md-4 mb-3">
-                <label htmlFor="task_pack_name" className="form-label text-white">
+                <label
+                  htmlFor="task_pack_name"
+                  className="form-label text-white"
+                >
                   Task Pack
                 </label>
                 <select
@@ -485,7 +498,10 @@ function TournamentForm({
             </div>
 
             <div className="col-md-4 mb-3">
-              <label htmlFor="round_timeout_seconds" className="form-label text-white">
+              <label
+                htmlFor="round_timeout_seconds"
+                className="form-label text-white"
+              >
                 Round Timeout (seconds)
               </label>
               <input
@@ -498,14 +514,17 @@ function TournamentForm({
                 )}
                 value={formData.round_timeout_seconds}
                 onChange={handleChange}
-                min={100}
+                min={10}
                 max={10000}
               />
               {renderError('round_timeout_seconds')}
             </div>
 
             <div className="col-md-4 mb-3">
-              <label htmlFor="break_duration_seconds" className="form-label text-white">
+              <label
+                htmlFor="break_duration_seconds"
+                className="form-label text-white"
+              >
                 Break Duration (seconds)
               </label>
               <input
@@ -602,22 +621,70 @@ TournamentForm.propTypes = {
   onValidate: PropTypes.func,
   errors: PropTypes.shape({
     base: PropTypes.string,
-    name: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    description: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    starts_at: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    access_type: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    task_provider: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    task_strategy: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    level: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    task_pack_name: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    tags: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    players_limit: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    rounds_limit: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    round_timeout_seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    break_duration_seconds: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    ranking_type: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    score_strategy: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    meta_json: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    name: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    description: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    starts_at: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    access_type: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    task_provider: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    task_strategy: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    level: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    task_pack_name: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    tags: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    players_limit: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    rounds_limit: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    round_timeout_seconds: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    break_duration_seconds: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    ranking_type: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    score_strategy: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
+    meta_json: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.string),
+    ]),
   }),
   isSubmitting: PropTypes.bool,
   submitButtonText: PropTypes.string,

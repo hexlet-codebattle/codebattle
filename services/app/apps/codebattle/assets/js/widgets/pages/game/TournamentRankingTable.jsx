@@ -10,7 +10,9 @@ import {
   gameStatusSelector,
 } from '@/selectors';
 
+import LanguageIcon from '../../components/LanguageIcon';
 import GameStateCodes from '../../config/gameStateCodes';
+import TournamentStates from '../../config/tournament';
 import { TournamentRemainingTimer } from '../tournament/TournamentHeader';
 
 const getCustomEventTrClassName = (item, selectedId) => cn(
@@ -40,9 +42,13 @@ function TournamentRankingTable() {
     lastRoundStartedAt,
     matchTimeoutSeconds,
     ranking,
+    state,
     taskIds,
     roundTimeoutSeconds,
   } = useSelector(tournamentSelector);
+  const tasksCount = taskIds?.length || 0;
+  const isLastRound = tasksCount > 0 && currentRoundPosition + 1 >= tasksCount;
+  const isTournamentFinished = state === TournamentStates.finished;
 
   return (
     <div
@@ -55,11 +61,20 @@ function TournamentRankingTable() {
         <span className="font-weight-bold">{i18next.t('Ranking')}</span>
       </div>
       <div className="d-flex cb-overflow-x-auto">
-        <table className="table table-striped cb-custom-event-table m-1">
+        <table className="table table-striped cb-custom-event-table m-1 cb-text">
+          <colgroup>
+            <col style={{ width: '12%' }} />
+            <col style={{ width: '44%' }} />
+            <col style={{ width: '28%' }} />
+            <col style={{ width: '16%' }} />
+          </colgroup>
           <thead className="cb-text">
             <tr>
               <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('User')}
+                {i18next.t('Place')}
+              </th>
+              <th className="p-1 pl-4 font-weight-light border-0">
+                {i18next.t('Player')}
               </th>
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Clan')}
@@ -67,23 +82,12 @@ function TournamentRankingTable() {
               <th className="p-1 pl-4 font-weight-light border-0">
                 {i18next.t('Score')}
               </th>
-              <th className="p-1 pl-4 font-weight-light border-0">
-                {i18next.t('Place')}
-              </th>
             </tr>
           </thead>
           <tbody>
-            {ranking?.entries?.map((item) => (
+            {ranking?.entries?.slice(0, 7)?.map((item) => (
               <React.Fragment key={item.id}>
-                {item.place > 3 ? (
-                  <>
-                    <tr className="cb-custom-event-empty-space-tr" />
-                    <tr className="cb-custom-event-empty-space-tr" />
-                    <tr className="cb-custom-event-dots-space-tr" />
-                  </>
-                ) : (
-                  <tr className="cb-custom-event-empty-space-tr" />
-                )}
+                <tr className="cb-custom-event-empty-space-tr" />
                 <tr
                   className={getCustomEventTrClassName(item, currentUserClanId)}
                 >
@@ -94,6 +98,9 @@ function TournamentRankingTable() {
                     }}
                     className={tableDataCellClassName}
                   >
+                    {item.place}
+                  </td>
+                  <td className={tableDataCellClassName}>
                     <div
                       title={item?.name}
                       className="cb-custom-event-name"
@@ -101,11 +108,17 @@ function TournamentRankingTable() {
                         textOverflow: 'ellipsis',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
-                        maxWidth: '13ch',
+                        maxWidth: '16ch',
                       }}
                     >
-                      {(item?.name ?? '').slice(0, 9)
-                        + ((item?.name?.length ?? 0) > 11 ? '...' : '')}
+                      {(item?.lang || item?.userLang || item?.user_lang) && (
+                        <LanguageIcon
+                          className="mr-1"
+                          lang={item?.lang || item?.userLang || item?.user_lang}
+                        />
+                      )}
+                      {(item?.name ?? '').slice(0, 12)
+                        + ((item?.name?.length ?? 0) > 14 ? '...' : '')}
                     </div>
                   </td>
                   <td className={tableDataCellClassName}>
@@ -116,14 +129,13 @@ function TournamentRankingTable() {
                         textOverflow: 'ellipsis',
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
-                        maxWidth: '15ch',
+                        maxWidth: '14ch',
                       }}
                     >
-                      {(item?.clan ?? '').slice(0, 9)
-                        + ((item?.clan?.length ?? 0) > 11 ? '...' : '')}
+                      {(item?.clan ?? '').slice(0, 12)
+                        + ((item?.clan?.length ?? 0) > 14 ? '...' : '')}
                     </div>
                   </td>
-                  <td className={tableDataCellClassName}>{item.score}</td>
                   <td
                     style={{
                       borderTopRightRadius: '0.5rem',
@@ -131,7 +143,7 @@ function TournamentRankingTable() {
                     }}
                     className={tableDataCellClassName}
                   >
-                    {item.place}
+                    {item.score}
                   </td>
                 </tr>
               </React.Fragment>
@@ -144,7 +156,7 @@ function TournamentRankingTable() {
         {currentRoundPosition + 1 !== (taskIds?.length || 0)
           && gameStatus.state !== GameStateCodes.playing
           && breakState === 'off' && (
-            <span className="font-weight-bold me-3">
+            <span className="font-weight-bold me-3 cb-text">
               {i18next.t('Round ends in ')}
               <TournamentRemainingTimer
                 key={lastRoundStartedAt}
@@ -154,8 +166,11 @@ function TournamentRankingTable() {
             </span>
           )}
 
-        {gameStatus.state !== GameStateCodes.playing && breakState === 'on' && (
-          <span className="font-weight-bold me-3">
+        {gameStatus.state !== GameStateCodes.playing
+          && breakState === 'on'
+          && !isTournamentFinished
+          && !isLastRound && (
+          <span className="font-weight-bold me-3 cb-text">
             {i18next.t('Next round will start in ')}
             <TournamentRemainingTimer
               key={lastRoundEndedAt}
@@ -168,7 +183,7 @@ function TournamentRankingTable() {
 
       <div className="d-flex justify-content-around align-items-center mt-1">
         {taskIds?.length > 0 && (
-          <span className="font-weight-bold">
+          <span className="font-weight-bold cb-text">
             {i18next.t('Task')}
             {': '}
             {currentRoundPosition + 1}

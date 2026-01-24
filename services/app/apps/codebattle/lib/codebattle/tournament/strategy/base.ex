@@ -262,7 +262,8 @@ defmodule Codebattle.Tournament.Base do
         if can_moderate?(tournament, user) do
           Tournament.Round.disable_all_rounds(tournament.id)
 
-          update_struct(tournament, %{
+          tournament
+          |> update_struct(%{
             players: %{},
             meta: reset_meta(tournament.meta),
             matches: %{},
@@ -273,10 +274,15 @@ defmodule Codebattle.Tournament.Base do
             current_round_id: nil,
             last_round_ended_at: nil,
             last_round_started_at: nil,
+            finished_at: nil,
+            started_at: nil,
+            starts_at: :second |> DateTime.utc_now() |> DateTime.add(300, :second),
             winner_ids: [],
             top_player_ids: [],
             state: "waiting_participants"
           })
+          |> db_save!()
+          |> tap(&broadcast_tournament_update/1)
         else
           tournament
         end

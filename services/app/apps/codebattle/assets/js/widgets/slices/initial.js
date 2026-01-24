@@ -297,7 +297,7 @@ const defaultTournamentParams = {
   taskPackName: null,
 
   playersPageNumber: 1,
-  playersPageSize: 20,
+  playersPageSize: 16,
   useChat: false,
   showResults: true,
   showBots: true,

@@ -136,8 +136,10 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
   });
 
   const onJoinSuccess = (response) => {
-    if (response.error) {
-      console.error(response.error);
+    const normalizedResponse = camelizeKeys(response);
+
+    if (normalizedResponse.error) {
+      console.error(normalizedResponse.error);
       return;
     }
 
@@ -151,9 +153,9 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
       },
       activeGameId,
       tournament,
-    } = response;
+    } = normalizedResponse;
 
-    const gameStatus = getGameStatus(response.game);
+    const gameStatus = getGameStatus(normalizedResponse.game);
 
     gameRoomService.send('LOAD_GAME', { payload: gameStatus });
 
@@ -598,7 +600,7 @@ export const activeGameReady = (gameRoomService, { cancelRedirect = false }) => 
   };
 
   const handleTournamentRoundCreated = (response) => {
-    dispatch(actions.updateTournamentData(response));
+    dispatch(actions.updateTournamentData(response.tournament));
   };
 
   const handleTournamentRoundFinished = (response) => {

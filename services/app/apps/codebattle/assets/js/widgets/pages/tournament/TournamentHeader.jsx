@@ -252,11 +252,12 @@ function TournamentHeader({
                   <div className="d-flex mr-2 mr-lg-0">
                     <JoinButton
                       isShow={
-                        state !== TournamentStates.active || type === 'swiss'
+                        state === TournamentStates.waitingParticipants
+                        || state === TournamentStates.active
                       }
-                      isShowLeave={state !== TournamentStates.active}
+                      isShowLeave={state === TournamentStates.waitingParticipants}
                       isParticipant={!!players[currentUserId]}
-                      disabled={!isOnline || !isLive}
+                      disabled={!isOnline}
                     />
                   </div>
                 )}

@@ -11,9 +11,9 @@ import { tournamentPlayersSelector } from '../../selectors';
 import ClansChartPanel from './ClansChartPanel';
 import ControlPanel, { PanelModeCodes } from './ControlPanel';
 import LeaderboardPanel from './LeaderboardPanel';
+import PlayersMatchesPanel from './PlayersMatchesPanel';
 import PlayerStatsPanel from './PlayerStatsPanel';
 import RatingClansPanel from './RatingClansPanel';
-import RatingPanel from './RatingPanel';
 import ReportsPanel from './ReportsPanel';
 import TaskRankingAdvancedPanel from './TaskRankingAdvancedPanel';
 import TaskRankingPanel from './TaskRankingPanel';
@@ -68,13 +68,15 @@ function CustomTournamentInfoPanel({
 
   const handleUserSelectClick = useCallback(
     (event) => {
-      const { userId } = event.currentTarget.dataset;
+      const { userId, userName } = event.currentTarget.dataset;
       setPanelMode({
         panel: PanelModeCodes.ratingMode,
         userId: Number(userId),
       });
       setPanelHistory((items) => [...items, panelMode]);
-      setSearchedUser(allPlayers[Number(userId)]);
+      setSearchedUser(
+        allPlayers[Number(userId)] || { id: Number(userId), name: userName },
+      );
     },
     [panelMode, setPanelMode, setPanelHistory, setSearchedUser, allPlayers],
   );
@@ -96,18 +98,25 @@ function CustomTournamentInfoPanel({
   //   }
   // }, [infoPanelRef.current?.style]);
 
-  const allowedPanelModes = canModerate
-    ? Object.values(PanelModeCodes)
-    : [
-        PanelModeCodes.playerMode,
-        PanelModeCodes.leaderboardMode,
-        PanelModeCodes.topUserByClansMode,
-        PanelModeCodes.taskRatingMode,
-        PanelModeCodes.clansBubbleDistributionMode,
-        PanelModeCodes.taskRatingAdvanced,
-        PanelModeCodes.taskDurationDistributionMode,
-        PanelModeCodes.topUserByTasksMode,
-      ];
+  const basePanelModes = [
+    PanelModeCodes.playerMode,
+    PanelModeCodes.leaderboardMode,
+  ];
+  const finishedPanelModes = [
+    ...basePanelModes,
+    PanelModeCodes.topUserByClansMode,
+    PanelModeCodes.taskRatingMode,
+    PanelModeCodes.clansBubbleDistributionMode,
+    PanelModeCodes.taskRatingAdvanced,
+    PanelModeCodes.taskDurationDistributionMode,
+    PanelModeCodes.topUserByTasksMode,
+  ];
+  let allowedPanelModes = basePanelModes;
+  if (canModerate) {
+    allowedPanelModes = Object.values(PanelModeCodes);
+  } else if (state === TournamentStates.finished) {
+    allowedPanelModes = finishedPanelModes;
+  }
 
   return (
     <>
@@ -132,14 +141,12 @@ function CustomTournamentInfoPanel({
       <div ref={infoPanelRef}>
         <ControlPanel
           isPlayer={!!players[currentUserId]}
-          searchOption={searchedUser}
           panelMode={panelMode}
           panelHistory={panelHistory}
           setSearchOption={setSearchedUser}
           setPanelMode={setPanelMode}
           setPanelHistory={setPanelHistory}
           allowedPanelModes={allowedPanelModes}
-          disabledSearch={!canModerate}
         />
         {panelMode.panel === PanelModeCodes.leaderboardMode && (
           <LeaderboardPanel
@@ -161,17 +168,18 @@ function CustomTournamentInfoPanel({
           />
         )}
         {panelMode.panel === PanelModeCodes.ratingMode && (
-          <RatingPanel
+          <PlayersMatchesPanel
             searchedUser={searchedUser}
             roundsLimit={roundsLimit}
-            currentRoundPosition={currentRoundPosition}
             matches={matches}
             players={players}
             topPlayerIds={topPlayerIds}
             currentUserId={currentUserId}
+            playersCount={playersCount}
             pageNumber={pageNumber}
             pageSize={pageSize}
             hideBots={hideBots}
+            canModerate={canModerate}
             hideResults={
               (hideResults && !canModerate)
               || (!players[currentUserId] && !canModerate)

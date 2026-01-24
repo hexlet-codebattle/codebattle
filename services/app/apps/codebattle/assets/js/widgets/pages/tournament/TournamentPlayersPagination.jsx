@@ -1,4 +1,6 @@
-import React, { memo, useMemo, useCallback } from 'react';
+import React, {
+ memo, useMemo, useCallback, useEffect,
+} from 'react';
 
 import ReactPaginate from 'react-paginate';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +12,7 @@ import {
 } from '../../selectors';
 import { actions } from '../../slices';
 
-function TournamentPlayersPagination({ pageNumber, pageSize }) {
+function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverride }) {
   const dispatch = useDispatch();
 
   const { players, topPlayerIds } = useSelector(tournamentSelector);
@@ -18,29 +20,50 @@ function TournamentPlayersPagination({ pageNumber, pageSize }) {
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
   const totalEntries = useMemo(
     () => {
+      if (Number.isFinite(totalEntriesOverride)) {
+        return totalEntriesOverride;
+      }
       if (topPlayerIds.length === 0 || isAdmin || isOwner) {
         return Object.keys(players).length;
       }
 
       return topPlayerIds.length;
     },
-    [players, isAdmin, isOwner, topPlayerIds],
+    [players, isAdmin, isOwner, topPlayerIds, totalEntriesOverride],
   );
 
+  const normalizedPageSize = Number(pageSize);
+  const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 20;
+  const normalizedTotalEntries = Number(totalEntries);
+  const safeTotalEntries = Number.isFinite(normalizedTotalEntries) ? normalizedTotalEntries : 0;
+  const normalizedPageNumber = Number(pageNumber);
+  const safePageNumber = Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0
+    ? normalizedPageNumber
+    : 1;
+
+  const pageCount = Math.ceil(safeTotalEntries / safePageSize);
+
+  useEffect(() => {
+    if (Number.isFinite(pageCount) && pageCount > 0 && safePageNumber > pageCount) {
+      dispatch(actions.changeTournamentPageNumber(pageCount));
+    }
+  }, [dispatch, pageCount, safePageNumber]);
+
   const onChangePageNumber = useCallback(({ selected }) => {
-    dispatch(actions.changeTournamentPageNumber(selected + 1));
-  }, [dispatch]);
+    const nextPage = selected + 1;
+    if (nextPage !== safePageNumber) {
+      dispatch(actions.changeTournamentPageNumber(nextPage));
+    }
+  }, [dispatch, safePageNumber]);
 
-  const pageCount = Math.ceil(totalEntries / pageSize);
-
-  if (totalEntries < pageSize) {
+  if (!Number.isFinite(pageCount) || pageCount <= 1) {
     return <></>;
   }
 
   return (
     <ReactPaginate
       className="d-flex justify-content-center pagination"
-      forcePage={pageNumber - 1}
+      forcePage={safePageNumber - 1}
       pageCount={pageCount}
       pageRangeDisplayed={5}
       marginPagesDisplayed={1}

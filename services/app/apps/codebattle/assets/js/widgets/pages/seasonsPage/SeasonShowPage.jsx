@@ -25,16 +25,11 @@ function StatBox({ label, value, highlight = false }) {
 function PodiumCard({ result, isFirst = false }) {
   return (
     <div
-      className={cn('card h-100 border-2 shadow-lg', {
-      'border-warning': result.place === 1,
-      'border-secondary': result.place === 2,
-      'border-bronze': result.place === 3,
-    })}
-      style={{
-      background: result.place === 1
-        ? 'linear-gradient(180deg, rgba(255,193,7,0.2) 0%, rgba(0,0,0,0.9) 100%)'
-        : 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.9) 100%)',
-    }}
+      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
+        'cb-gold-place-bg': result.place === 1,
+        'cb-silver-place-bg': result.place === 2,
+        'cb-bronze-place-bg': result.place === 3,
+      })}
     >
       <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
         <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>
@@ -58,8 +53,8 @@ function PodiumCard({ result, isFirst = false }) {
           </span>
         )}
           {result.clan_name && (
-          <span className="text-info">{result.clan_name}</span>
-        )}
+            <span className="text-muted">{result.clan_name}</span>
+          )}
         </div>
         <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
           <div className="px-3"><StatBox label="Points" value={result.total_points} highlight={isFirst} /></div>
@@ -83,7 +78,7 @@ function ChampionsPodium({ top3 }) {
 
   return (
     <div className="mb-5">
-      <h2 className="text-white mb-4 text-center">Champions</h2>
+      <h2 className="text-gold mb-4 text-center">Champions</h2>
       <div className="row align-items-end justify-content-center">
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
@@ -179,7 +174,7 @@ function SeasonShowPage() {
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-5">
           <div>
             <div className="d-flex align-items-center mb-2">
-              <h1 className="text-warning fw-bold mb-0 mr-2">
+              <h1 className="text-gold fw-bold mb-0 mr-2">
                 {season.name}
                 {' '}
                 {season.year}
@@ -194,10 +189,10 @@ function SeasonShowPage() {
             </div>
           </div>
           <div className="d-flex mt-3 mt-md-0">
-            <a href="/seasons" className="btn btn-outline-light mr-2">
+            <a href="/seasons" className="btn btn-outline-gold mr-2">
               All Seasons
             </a>
-            <a href="/hall_of_fame" className="btn btn-outline-warning">
+            <a href="/hall_of_fame" className="btn btn-outline-gold">
               Hall of Fame
             </a>
           </div>
@@ -210,7 +205,7 @@ function SeasonShowPage() {
         <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
           <div className="card-header bg-transparent border-bottom border-secondary py-3">
             <div className="d-flex justify-content-between align-items-center">
-              <h2 className="mb-0 text-white fs-4">Full Leaderboard</h2>
+              <h2 className="mb-0 text-gold fs-4">Full Leaderboard</h2>
               <span className="badge bg-secondary">
                 {results.length}
                 {' '}

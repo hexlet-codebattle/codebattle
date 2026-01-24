@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { unfollowUser, followUser } from '@/middlewares/Main';
 
-import fightSvg from '../../../static/images/fight.svg';
 import i18n from '../../i18n';
 import { initInvites } from '../middlewares/Invite';
 import initPresence from '../middlewares/Main';
@@ -18,6 +17,8 @@ import { selectors as invitesSelectors } from '../slices/invites';
 import { isSafari } from '../utils/browser';
 
 import InvitesList from './InvitesList';
+
+const fightSvg = '/assets/images/fight.svg';
 
 function InvitesContainer() {
   const dispatch = useDispatch();

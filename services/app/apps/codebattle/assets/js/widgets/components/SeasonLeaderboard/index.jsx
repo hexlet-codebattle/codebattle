@@ -9,12 +9,12 @@ export const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100];
 export const DEFAULT_ITEMS_PER_PAGE = 25;
 
 export const GRADE_COLORS = {
-  grand_slam: '#ffd700',
-  masters: '#e91e63',
-  elite: '#9c27b0',
-  pro: '#2196f3',
-  challenger: '#4caf50',
-  rookie: '#ff9800',
+  grand_slam: 'var(--cb-grade-grand_slam)',
+  masters: 'var(--cb-grade-masters)',
+  elite: 'var(--cb-grade-elite)',
+  pro: 'var(--cb-grade-pro)',
+  challenger: 'var(--cb-grade-challenger)',
+  rookie: 'var(--cb-grade-rookie)',
 };
 
 export const ALL_GRADES = ['grand_slam', 'masters', 'elite', 'pro', 'challenger', 'rookie'];

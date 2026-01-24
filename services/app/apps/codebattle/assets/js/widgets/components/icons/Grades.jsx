@@ -14,12 +14,12 @@ export const binaryLetterSpacing = 0.7; // Adjusted for better fit
 
 // --- Color Palette from earlier interpolation ---
 export const colors = {
-  rookie: '#00FF00', // Bright Neon Green
-  challenger: '#00FF7F', // Spring Green
-  pro: '#FFD700', // Bright Gold
-  elite: '#FF8C00', // Vibrant Dark Orange
-  masters: '#FF4500', // Bright Orange-Red
-  grandSlam: '#FF0000', // Pure Bright Red
+  rookie: 'var(--cb-grade-rookie)',
+  challenger: 'var(--cb-grade-challenger)',
+  pro: 'var(--cb-grade-pro)',
+  elite: 'var(--cb-grade-elite)',
+  masters: 'var(--cb-grade-masters)',
+  grandSlam: 'var(--cb-grade-grand_slam)',
 };
 
 export const getIconForGrade = (grade) => {

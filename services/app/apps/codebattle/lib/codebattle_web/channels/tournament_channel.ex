@@ -122,9 +122,40 @@ defmodule CodebattleWeb.TournamentChannel do
     {:reply, {:ok, %{players: players}}, socket}
   end
 
+  def handle_in("tournament:ranking:request", params, socket) when is_map(params) do
+    tournament_info = socket.assigns.tournament_info
+    nearest = Map.get(params, "nearest") || Map.get(params, :nearest)
+
+    ranking =
+      if nearest do
+        user_id =
+          params
+          |> Map.get("user_id", Map.get(params, "userId"))
+          |> parse_pos_integer(socket.assigns.current_user.id)
+
+        page_size =
+          params
+          |> Map.get("page_size", Map.get(params, "pageSize"))
+          |> parse_pos_integer(10)
+
+        get_nearest_ranking_for_user(tournament_info, %{id: user_id}, page_size)
+      else
+        page = parse_pos_integer(Map.get(params, "page"), 1)
+
+        page_size =
+          params
+          |> Map.get("page_size", Map.get(params, "pageSize"))
+          |> parse_pos_integer(10)
+
+        Tournament.Ranking.get_page(tournament_info, page, page_size)
+      end
+
+    {:reply, {:ok, %{ranking: ranking}}, socket}
+  end
+
   def handle_in("tournament:ranking:request", _params, socket) do
     tournament_info = socket.assigns.tournament_info
-    ranking = Tournament.Ranking.get_page(tournament_info, 1)
+    ranking = get_nearest_ranking_for_user(tournament_info, socket.assigns.current_user)
 
     {:reply, {:ok, %{ranking: ranking}}, socket}
   end
@@ -142,6 +173,19 @@ defmodule CodebattleWeb.TournamentChannel do
     opponents = Helpers.get_players(tournament_info, opponent_ids)
 
     {:reply, {:ok, %{matches: matches, players: opponents}}, socket}
+  end
+
+  def handle_in("tournament:matches:request_for_round", _params, socket) do
+    tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
+
+    matches =
+      if tournament_info do
+        Helpers.get_matches(tournament_info, tournament_info.current_round_position)
+      else
+        []
+      end
+
+    {:reply, {:ok, %{matches: matches}}, socket}
   end
 
   def handle_in("tournament:get_task", %{"task_id" => task_id}, socket) do
@@ -249,24 +293,57 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
-    if payload.player.id == socket.assigns.current_user.id do
-      tournament = socket.assigns.tournament_info
-      user = socket.assigns.current_user
-      ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, user)
-      clans = Helpers.get_clans_by_ranking(tournament, ranking)
+  def handle_info(%{event: "tournament:restarted", payload: payload}, socket) do
+    tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-      push(socket, "tournament:player:joined", payload)
-      push(socket, "tournament:ranking_update", %{ranking: ranking, clans: clans})
-    else
-      push(socket, "tournament:player:joined", payload)
-    end
+    socket =
+      if tournament_info do
+        assign(socket,
+          tournament_info:
+            Map.take(tournament_info, [
+              :id,
+              :ranking_type,
+              :players,
+              :matches,
+              :use_clan,
+              :players_table,
+              :ranking_table,
+              :clans_table,
+              :matches_table,
+              :tasks_table
+            ])
+        )
+      else
+        socket
+      end
+
+    push(socket, "tournament:restarted", payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:player:joined", payload: payload}, socket) do
+    tournament = socket.assigns.tournament_info
+    ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
+    push(socket, "tournament:player:joined", payload)
+
+    push(socket, "tournament:ranking_update", %{
+      ranking: ranking,
+      clans: build_clans_payload(tournament, ranking)
+    })
 
     {:noreply, socket}
   end
 
   def handle_info(%{event: "tournament:player:left", payload: payload}, socket) do
+    tournament = socket.assigns.tournament_info
+    ranking = get_nearest_ranking_for_user(tournament, socket.assigns.current_user)
     push(socket, "tournament:player:left", payload)
+
+    push(socket, "tournament:ranking_update", %{
+      ranking: ranking,
+      clans: build_clans_payload(tournament, ranking)
+    })
 
     {:noreply, socket}
   end
@@ -277,7 +354,7 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   defp get_tournament_join_payload(tournament, nil) do
-    ranking = Tournament.Ranking.get_page(tournament, 1)
+    ranking = Tournament.Ranking.get_page(tournament, 1, 16)
 
     players =
       if tournament.players_count > 256 do
@@ -315,27 +392,10 @@ defmodule CodebattleWeb.TournamentChannel do
         }
       end
 
-    # TODO: add here top 3 and your page
-    top_3_ranking = Tournament.Ranking.get_page(tournament, 1, 3)
-    nearest_ranking = Tournament.Ranking.get_nearest_page_by_player(tournament, current_player)
-
-    # Create a map of player IDs to player data from top 3
-    top_3_players_map = Map.new(top_3_ranking.entries, &{&1.id, &1})
-
-    # Filter out players from nearest_ranking that are already in top 3
-    filtered_nearest_players =
-      Enum.reject(nearest_ranking.entries, fn player ->
-        Map.has_key?(top_3_players_map, player.id)
-      end)
-
-    # Combine top 3 with filtered nearest players
-    combined_entries = top_3_ranking.entries ++ filtered_nearest_players
-
-    # Create a combined ranking with the merged entries
-    combined_ranking = Map.put(top_3_ranking, :entries, combined_entries)
+    nearest_ranking = get_nearest_ranking_for_player(tournament, current_player)
 
     Map.merge(player_data, %{
-      ranking: combined_ranking,
+      ranking: nearest_ranking,
       # clans: Helpers.get_clans_by_ranking(tournament, ranking),
       current_player: current_player,
       tournament: Helpers.prepare_to_json(tournament)
@@ -347,6 +407,56 @@ defmodule CodebattleWeb.TournamentChannel do
       true
     else
       Helpers.can_access?(tournament, current_user, payload)
+    end
+  end
+
+  defp parse_pos_integer(nil, default), do: default
+
+  defp parse_pos_integer(value, default) when is_integer(value) and value > 0 do
+    value
+  end
+
+  defp parse_pos_integer(value, default) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, ""} when int > 0 -> int
+      _ -> default
+    end
+  end
+
+  defp parse_pos_integer(_value, default), do: default
+
+  defp build_clans_payload(%{use_clan: true} = tournament, ranking) do
+    Helpers.get_clans_by_ranking(tournament, ranking)
+  end
+
+  defp build_clans_payload(_tournament, _ranking), do: %{}
+
+  defp get_nearest_ranking_for_user(tournament, current_user, page_size \\ 16) do
+    page =
+      case Tournament.Ranking.get_by_id(tournament, current_user.id) do
+        %{place: place} when is_integer(place) and place > 0 ->
+          div(place - 1, page_size) + 1
+
+        _ ->
+          1
+      end
+
+    Tournament.Ranking.get_page(tournament, page, page_size)
+  end
+
+  defp get_nearest_ranking_for_player(tournament, player, page_size \\ 16) do
+    page = get_nearest_page_for_player(tournament, player, page_size)
+
+    Tournament.Ranking.get_page(tournament, page, page_size)
+  end
+
+  defp get_nearest_page_for_player(tournament, player, page_size) do
+    case Tournament.Ranking.get_by_player(tournament, player) do
+      %{place: place} when is_integer(place) and place > 0 ->
+        div(place - 1, page_size) + 1
+
+      _ ->
+        1
     end
   end
 end

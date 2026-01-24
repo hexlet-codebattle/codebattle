@@ -5,7 +5,6 @@ import isUndefined from 'lodash/isUndefined';
 import pick from 'lodash/pick';
 import moment from 'moment';
 
-import logoSvg from '../../../static/images/logo.svg';
 import i18n from '../../i18n';
 import BattleRoomViewModes from '../config/battleRoomViewModes';
 import editorModes from '../config/editorModes';
@@ -19,11 +18,14 @@ import userTypes from '../config/userTypes';
 import { replayerMachineStates } from '../machines/game';
 import { makeEditorTextKey } from '../utils/gameRoom';
 
+const logoSvg = '/assets/images/logo.svg';
+
 export const currentUserIdSelector = (state) => state.user.currentUserId;
 
 export const currentUserClanIdSelector = (state) => state.user.users[state.user.currentUserId].clanId;
 
-export const currentUserIsAdminSelector = (state) => !!state.user.users[state.user.currentUserId].isAdmin;
+export const currentUserIsAdminSelector = (state) => state.user.users[state.user.currentUserId]
+  .subscriptionType === SubscriptionTypeCodes.admin;
 export const currentUserIsPremiumSelector = (state) => state.user.users[state.user.currentUserId].subscriptionType
   === SubscriptionTypeCodes.premium;
 
@@ -31,7 +33,8 @@ export const currentUserIsGuestSelector = (state) => !!state.user.users[state.us
 
 export const userByIdSelector = (userId) => (state) => state.user.users[userId];
 
-export const userIsAdminSelector = (userId) => (state) => !!state.user.users[userId]?.isAdmin;
+export const userIsAdminSelector = (userId) => (state) => state.user.users[userId]?.subscriptionType
+  === SubscriptionTypeCodes.admin;
 
 export const subscriptionTypeSelector = (state) => (currentUserIsAdminSelector(state)
     ? SubscriptionTypeCodes.admin

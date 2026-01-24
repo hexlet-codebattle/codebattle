@@ -5,10 +5,10 @@ import { useSelector } from 'react-redux';
 
 import { selectDefaultAvatarUrl } from '@/selectors';
 
-import fightSvg from '../../../static/images/fight.svg';
 import LanguageIcon from '../../components/LanguageIcon';
 
 const defaultPreviewAvatarUrl = 'https://avatars.githubusercontent.com/u/35539033?v=4';
+const fightSvg = '/assets/images/fight.svg';
 
 const players = Gon.getAsset('players');
 

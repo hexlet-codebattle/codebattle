@@ -4,10 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import i18next from 'i18next';
 import { useSelector } from 'react-redux';
-import AsyncSelect from 'react-select/async';
 
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
-import UserLabel from '../../components/UserLabel';
 import { tournamentPlayersSelector } from '../../selectors';
 
 // %{"type" => "top_users_by_clan_ranking"} ->
@@ -30,7 +28,7 @@ export const PanelModeCodes = {
 };
 
 export const mapPanelModeToTitle = {
-  [PanelModeCodes.ratingMode]: i18next.t('Rating Panel'),
+  [PanelModeCodes.ratingMode]: i18next.t('Players & Matches'),
   [PanelModeCodes.reportsMode]: i18next.t('Reports Panel'),
   [PanelModeCodes.playerMode]: i18next.t('Player Panel'),
   [PanelModeCodes.leaderboardMode]: i18next.t('Leaderboard'),
@@ -48,61 +46,11 @@ export const mapPanelModeToTitle = {
   [PanelModeCodes.topUserByTasksMode]: i18next.t('Top user by task ranking'),
 };
 
-const customStyle = {
-  control: (provided) => ({
-    ...provided,
-    color: 'white',
-    borderRadius: '0.3rem',
-    backgroundColor: '#2a2a35',
-    borderColor: '#3a3f50',
-
-    ':hover': {
-      borderColor: '#4c4c5a',
-    },
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-  }),
-  indicatorSeparator: (provided) => ({
-    ...provided,
-    backgroundColor: '#999',
-  }),
-  clearIndicator: (provided) => ({
-    ...provided,
-  }),
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    color: '#999',
-  }),
-  input: (provided) => ({
-    ...provided,
-  }),
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: '#2a2a35',
-  }),
-  option: (provided) => ({
-    ...provided,
-    backgroundColor: '#2a2a35',
-    ':hover': {
-      backgroundColor: '#3a3f50',
-    },
-    ':focus': {
-      backgroundColor: '#3a3f50',
-    },
-    ':active': {
-      backgroundColor: '#3a3f50',
-    },
-  }),
-};
-
 function ControlPanel({
   allowedPanelModes,
   isPlayer,
-  searchOption,
   panelMode,
   panelHistory,
-  disabledSearch = false,
   setPanelHistory,
   setSearchOption,
   setPanelMode,
@@ -135,26 +83,6 @@ function ControlPanel({
     },
     [setPanelMode, setPanelHistory, panelMode],
   );
-  const onChangeSearchedPlayer = useCallback(
-    ({ value = {} }) => setSearchOption(value),
-    [setSearchOption],
-  );
-  const loadOptions = useCallback(
-    (inputValue, callback) => {
-      const substr = (inputValue || '').toLowerCase();
-
-      const options = Object.values(allPlayers)
-        .filter((player) => player.name.toLowerCase().indexOf(substr) !== -1)
-        .map((player) => ({
-          label: <UserLabel user={player} />,
-          value: player,
-        }));
-
-      callback(options);
-    },
-    [allPlayers],
-  );
-
   const backBtnClassName = cn('btn text-nowrap cb-rounded mr-1 mb-2', {
     'btn-outline-secondary cb-btn-outline-secondary': !hasCustomEventStyles,
     'cb-custom-event-btn-outline-secondary': hasCustomEventStyles,
@@ -172,34 +100,7 @@ function ControlPanel({
           <FontAwesomeIcon icon="backward" className="mr-1" />
           {i18next.t('Back')}
         </button>
-        {panelMode.panel === PanelModeCodes.ratingMode && !disabledSearch ? (
-          <div className="input-group flex-nowrap mb-2">
-            <div className="input-group-prepend">
-              <span
-                className="input-group-text cb-bg-highlight-panel cb-border-color cb-text"
-                id="search-icon"
-              >
-                <FontAwesomeIcon icon="search" />
-              </span>
-            </div>
-            <AsyncSelect
-              styles={customStyle}
-              value={
-                searchOption && {
-                  label: <UserLabel user={searchOption} />,
-                  value: searchOption,
-                }
-              }
-              defaultOptions
-              className="w-50"
-              classNamePrefix="rounded-0 "
-              onChange={onChangeSearchedPlayer}
-              loadOptions={loadOptions}
-            />
-          </div>
-        ) : (
-          <div />
-        )}
+        <div />
       </div>
       <div className={cn('d-flex mb-2 text-nowrap justify-content-end')}>
         <select

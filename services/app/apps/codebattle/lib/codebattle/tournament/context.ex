@@ -316,6 +316,8 @@ defmodule Codebattle.Tournament.Context do
 
   @spec restart(Tournament.t()) :: :ok
   def restart(tournament) do
+    tournament_info = Tournament.Server.get_tournament_info(tournament.id)
+
     tournament
     |> Tournament.Helpers.get_matches("playing")
     |> Enum.each(&Game.Context.terminate_game(&1.game_id))
@@ -323,7 +325,10 @@ defmodule Codebattle.Tournament.Context do
     :timer.sleep(59)
 
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    drop_tournament_tables(tournament_info)
+    clear_tournament_info_cache(tournament.id)
     Tournament.GlobalSupervisor.start_tournament(tournament)
+    Codebattle.PubSub.broadcast("tournament:restarted", %{tournament: tournament})
     :ok
   end
 
@@ -339,6 +344,38 @@ defmodule Codebattle.Tournament.Context do
     Tournament.GlobalSupervisor.start_tournament(tournament)
     Codebattle.PubSub.broadcast("tournament:activated", %{tournament: tournament})
     :ok
+  end
+
+  defp clear_tournament_info_cache(tournament_id) do
+    if :ets.whereis(:tournament_info_cache) != :undefined do
+      :ets.delete(:tournament_info_cache, tournament_id)
+    end
+
+    :ok
+  rescue
+    _e -> :ok
+  end
+
+  defp drop_tournament_tables(nil), do: :ok
+
+  defp drop_tournament_tables(tournament_info) do
+    Enum.each([:players_table, :matches_table, :tasks_table, :ranking_table, :clans_table], fn key ->
+      case Map.get(tournament_info, key) do
+        nil ->
+          :ok
+
+        ref when is_reference(ref) ->
+          case :ets.info(ref) do
+            :undefined -> :ok
+            _ -> :ets.delete(ref)
+          end
+
+        _ ->
+          :ok
+      end
+    end)
+  rescue
+    _e -> :ok
   end
 
   defp prepare_tournament_params(params) do

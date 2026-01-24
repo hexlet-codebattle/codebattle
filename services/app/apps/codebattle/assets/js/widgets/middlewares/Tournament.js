@@ -35,13 +35,13 @@ const initTournamentChannel = (currentChannel) => (dispatch) => {
           ...response.tournament,
           topPlayerIds: response.topPlayerIds || [],
           matches: {},
-          ranking: response.ranking || { entries: [] },
+          ranking: response.ranking ? camelizeKeys(response.ranking) : { entries: [] },
           clans: response.clans || {},
           players: {},
           showBots: response.tournament.type !== TournamentTypes.show,
           channel: { online: true },
           playersPageNumber: 1,
-          playersPageSize: 20,
+          playersPageSize: 16,
         }),
       );
 
@@ -91,7 +91,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
     };
 
     const handleTournamentRoundCreated = (response) => {
-      const currentRoundPosition = response.tournament?.currentRoundPosition || lastRoundPosition;
+      const currentRoundPosition = response.tournament?.currentRoundPosition ?? lastRoundPosition;
       const isFirstRound = currentRoundPosition === 0;
       lastRoundPosition = currentRoundPosition;
 
@@ -112,7 +112,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
           ...response.tournament,
           topPlayerIds: response.topPlayerIds || [],
           playersPageNumber: 1,
-          playersPageSize: 20,
+          playersPageSize: 16,
         }),
       );
 
@@ -126,7 +126,7 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
           ...response.tournament,
           channel: { online: true },
           playersPageNumber: 1,
-          playersPageSize: 20,
+          playersPageSize: 16,
           matches: {},
           players: {},
         }),
@@ -250,6 +250,32 @@ export const requestMatchesByPlayerId = (userId) => (dispatch) => {
     .receive('ok', (data) => {
       dispatch(actions.updateTournamentMatches(data.matches));
       dispatch(actions.updateTournamentPlayers(data.players));
+    });
+};
+
+export const requestMatchesForRound = () => (dispatch) => {
+  channel
+    .push('tournament:matches:request_for_round', {})
+    .receive('ok', (data) => {
+      dispatch(actions.updateTournamentMatches(data.matches));
+    });
+};
+
+export const requestRankingPage = (page, pageSize) => (dispatch) => {
+  channel
+    .push('tournament:ranking:request', { page, pageSize })
+    .receive('ok', (payload) => {
+      const data = camelizeKeys(payload);
+      dispatch(actions.updateTournamentRanking(data.ranking));
+    });
+};
+
+export const requestNearestRankingPage = (userId, pageSize) => (dispatch) => {
+  channel
+    .push('tournament:ranking:request', { nearest: true, userId, pageSize })
+    .receive('ok', (payload) => {
+      const data = camelizeKeys(payload);
+      dispatch(actions.updateTournamentRanking(data.ranking));
     });
 };
 

@@ -152,6 +152,25 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("tournament:restarted", params) do
+    [
+      %Message{
+        topic: "tournament:#{params.tournament.id}:common",
+        event: "tournament:restarted",
+        payload: %{
+          tournament: Tournament.Helpers.prepare_to_json(params.tournament)
+        }
+      },
+      %Message{
+        topic: "tournament:#{params.tournament.id}",
+        event: "tournament:restarted",
+        payload: %{
+          tournament: Tournament.Helpers.prepare_to_json(params.tournament)
+        }
+      }
+    ]
+  end
+
   def get_messages("tournament:player:joined", params) do
     [
       %Message{

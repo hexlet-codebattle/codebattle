@@ -8,7 +8,6 @@ import cn from 'classnames';
 import groupBy from 'lodash/groupBy';
 import { useDispatch, useSelector } from 'react-redux';
 
-import fightSvg from '../../../../static/images/fight.svg';
 import ChatContextMenu from '../../components/ChatContextMenu';
 import ChatHeader from '../../components/ChatHeader';
 import ChatInput from '../../components/ChatInput';
@@ -20,6 +19,8 @@ import * as selectors from '../../selectors';
 import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
+
+const fightSvg = '/assets/images/fight.svg';
 
 function UsersList({
  list, title, displayMenu, mode,

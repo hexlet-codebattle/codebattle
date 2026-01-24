@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 function RustOriginalIcon({ className = '', size = '120' }) {
+  const uid = useId();
+  const id = (name) => `rust-original-${uid}-${name}`;
+
   return (
     <svg
       version="1.1"
@@ -11,9 +14,9 @@ function RustOriginalIcon({ className = '', size = '120' }) {
       className={`text-[#dea584] dark:text-neutral-100 ${className}`}
       style={{ stroke: 'currentColor', fill: 'none' }}
     >
-      <g id="logo" transform="translate(60, 60)">
+      <g id={id('logo')} transform="translate(60, 60)">
         <path
-          id="r"
+          id={id('r')}
           transform="translate(0.5, 0.5)"
           stroke="currentColor"
           strokeWidth="1"
@@ -24,11 +27,11 @@ function RustOriginalIcon({ className = '', size = '120' }) {
           V 3 H 34 V 5 C 34,13 24,12 24,7 C 23,2 19,-2 18,-2 C 33,-10 24,-26 12,-26 H -35
           V -15H -25 V 11 H -40 Z"
         />
-        <g id="gear" mask="url(#holes)">
+        <g id={id('gear')} mask={`url(#${id('holes')})`}>
           <circle r="43" fill="none" stroke="currentColor" strokeWidth="9" />
-          <g id="cogs">
+          <g id={id('cogs')}>
             <polygon
-              id="cog"
+              id={id('cog')}
               stroke="currentColor"
               strokeWidth="3"
               strokeLinejoin="round"
@@ -38,15 +41,15 @@ function RustOriginalIcon({ className = '', size = '120' }) {
             {[...Array(31)].map((_, i) => (
               <use
                 key={`cog-${i}`}
-                xlinkHref="#cog"
+                xlinkHref={`#${id('cog')}`}
                 transform={`rotate(${11.25 * (i + 1)})`}
               />
           ))}
             {/* eslint-enable react/no-array-index-key */}
           </g>
-          <g id="mounts">
+          <g id={id('mounts')}>
             <polygon
-              id="mount"
+              id={id('mount')}
               stroke="currentColor"
               strokeWidth="6"
               strokeLinejoin="round"
@@ -56,21 +59,21 @@ function RustOriginalIcon({ className = '', size = '120' }) {
             {[...Array(4)].map((_, i) => (
               <use
                 key={`mount-${i}`}
-                xlinkHref="#mount"
+                xlinkHref={`#${id('mount')}`}
                 transform={`rotate(${72 * (i + 1)})`}
               />
           ))}
             {/* eslint-enable react/no-array-index-key */}
           </g>
         </g>
-        <mask id="holes">
+        <mask id={id('holes')}>
           <rect x="-60" y="-60" width="120" height="120" fill="white" />
-          <circle id="hole" cy="-40" r="3" />
+          <circle id={id('hole')} cy="-40" r="3" />
           {/* eslint-disable react/no-array-index-key */}
           {[...Array(4)].map((_, i) => (
             <use
               key={`hole-${i}`}
-              xlinkHref="#hole"
+              xlinkHref={`#${id('hole')}`}
               transform={`rotate(${72 * (i + 1)})`}
             />
         ))}

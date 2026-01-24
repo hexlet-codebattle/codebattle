@@ -3,47 +3,47 @@
 // These can then be referenced in server-rendered templates using the Vite helper.
 
 // Main logo (used in header, og images, etc.)
-import '../static/images/logo.svg';
+import '../static/images/logo.svg?url';
 
 // Fight icon (used in header)
-import '../static/images/fight.svg';
+import '../static/images/fight.svg?url';
 
 // Landing page images
-import '../static/images/landing/github.svg';
-import '../static/images/landing/flowchart.svg';
-import '../static/images/landing/beginner.svg';
-import '../static/images/landing/experienced.svg';
-import '../static/images/landing/friends.svg';
-import '../static/images/landing/enthusiast.svg';
+import '../static/images/landing/github.svg?url';
+import '../static/images/landing/flowchart.svg?url';
+import '../static/images/landing/beginner.svg?url';
+import '../static/images/landing/experienced.svg?url';
+import '../static/images/landing/friends.svg?url';
+import '../static/images/landing/enthusiast.svg?url';
 
 // Landing page photos and comments
-import '../static/images/landing/photo1.png';
-import '../static/images/landing/photo2.png';
-import '../static/images/landing/photo3.png';
-import '../static/images/landing/photo4.png';
-import '../static/images/landing/comment.png';
-import '../static/images/landing/comment2.png';
-import '../static/images/landing/comment3.png';
-import '../static/images/landing/html.png';
+import '../static/images/landing/photo1.png?url';
+import '../static/images/landing/photo2.png?url';
+import '../static/images/landing/photo3.png?url';
+import '../static/images/landing/photo4.png?url';
+import '../static/images/landing/comment.png?url';
+import '../static/images/landing/comment2.png?url';
+import '../static/images/landing/comment3.png?url';
+import '../static/images/landing/html.png?url';
 
 // Landing page language icons
-import '../static/images/landing/languages/clojure.svg';
-import '../static/images/landing/languages/cpp.svg';
-import '../static/images/landing/languages/c-sharp.svg';
-import '../static/images/landing/languages/dart.svg';
-import '../static/images/landing/languages/elixir.svg';
-import '../static/images/landing/languages/go.svg';
-import '../static/images/landing/languages/haskell.svg';
-import '../static/images/landing/languages/java.svg';
-import '../static/images/landing/languages/js.svg';
-import '../static/images/landing/languages/kotlin.svg';
-import '../static/images/landing/languages/php.svg';
-import '../static/images/landing/languages/python.svg';
-import '../static/images/landing/languages/ruby.svg';
-import '../static/images/landing/languages/rust.svg';
-import '../static/images/landing/languages/swift.svg';
-import '../static/images/landing/languages/ts.svg';
-import '../static/images/landing/languages/zig.svg';
+import '../static/images/landing/languages/clojure.svg?url';
+import '../static/images/landing/languages/cpp.svg?url';
+import '../static/images/landing/languages/c-sharp.svg?url';
+import '../static/images/landing/languages/dart.svg?url';
+import '../static/images/landing/languages/elixir.svg?url';
+import '../static/images/landing/languages/go.svg?url';
+import '../static/images/landing/languages/haskell.svg?url';
+import '../static/images/landing/languages/java.svg?url';
+import '../static/images/landing/languages/js.svg?url';
+import '../static/images/landing/languages/kotlin.svg?url';
+import '../static/images/landing/languages/php.svg?url';
+import '../static/images/landing/languages/python.svg?url';
+import '../static/images/landing/languages/ruby.svg?url';
+import '../static/images/landing/languages/rust.svg?url';
+import '../static/images/landing/languages/swift.svg?url';
+import '../static/images/landing/languages/ts.svg?url';
+import '../static/images/landing/languages/zig.svg?url';
 
 // Note: Favicons are intentionally NOT imported here because:
 // 1. They rarely change

@@ -100,7 +100,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
       tournament: Helpers.prepare_to_json(tournament)
     })
 
-    {:noreply, socket}
+    {:noreply, assign(socket, tournament_info: Helpers.tournament_info(tournament))}
   end
 
   def handle_in("tournament:open_up", _, socket) do
@@ -192,9 +192,30 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:reply, {:ok, %{players: players}}, socket}
   end
 
+  def handle_in("tournament:players:request_all", _params, socket) do
+    tournament_info =
+      Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
+
+    players =
+      if tournament_info do
+        Helpers.get_players(tournament_info)
+      else
+        []
+      end
+
+    {:reply, {:ok, %{players: players}}, socket}
+  end
+
   def handle_in("tournament:matches:request_for_round", _params, socket) do
-    tournament_info = socket.assigns.tournament_info
-    matches = Helpers.get_matches(tournament_info, tournament_info.current_round_potision)
+    tournament_info =
+      Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
+
+    matches =
+      if tournament_info do
+        Helpers.get_round_matches(tournament_info, tournament_info.current_round_position)
+      else
+        []
+      end
 
     {:reply, {:ok, %{matches: matches}}, socket}
   end
@@ -272,12 +293,16 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     #   []
     # else
     matches =
-      Helpers.get_matches(socket.assigns.tournament_info)
+      if socket.assigns.tournament_info.matches_table do
+        Helpers.get_matches(socket.assigns.tournament_info)
+      else
+        []
+      end
 
     # end
 
     players =
-      if payload.tournament.type in ["swiss"] do
+      if payload.tournament.type in ["swiss"] or is_nil(socket.assigns.tournament_info.players_table) do
         []
       else
         Helpers.get_players(socket.assigns.tournament_info)
@@ -328,6 +353,21 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     push(socket, "tournament:finished", %{
       tournament: payload.tournament
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "tournament:restarted", payload: payload}, socket) do
+    tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
+
+    socket =
+      if tournament_info do
+        assign(socket, tournament_info: Helpers.tournament_info(tournament_info))
+      else
+        socket
+      end
+
+    push(socket, "tournament:restarted", payload)
 
     {:noreply, socket}
   end

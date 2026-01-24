@@ -46,6 +46,7 @@ function UserPopoverContent({ user }) {
 
 function UserInfo({
   className,
+  linkClassName: linkClassNameProp,
   user,
   banned = false,
   lang,
@@ -74,10 +75,12 @@ function UserInfo({
     'cb-opacity-50': loading,
     'text-danger': banned,
   });
-  const linkClassName = cn(className, {
-    'text-white': !banned,
-    'text-danger': banned,
-  });
+  const linkClassName = linkClassNameProp
+    ? cn(linkClassNameProp, { 'text-danger': banned })
+    : cn(className, {
+      'text-white': !banned,
+      'text-danger': banned,
+    });
 
   if (hideInfo) {
     return (

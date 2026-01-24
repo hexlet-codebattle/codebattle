@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.Ranking do
   @moduledoc false
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
   alias Codebattle.Tournament.Ranking.ByClan
   alias Codebattle.Tournament.Ranking.ByUser
   alias Codebattle.Tournament.Storage.Ranking
@@ -21,6 +22,13 @@ defmodule Codebattle.Tournament.Ranking do
     get_module(tournament).get_by_player(tournament, player)
   end
 
+  @spec get_by_id(tournament :: Tournament.t(), player_id :: pos_integer()) :: map() | nil
+  def get_by_id(%{ranking_table: nil}, _player_id), do: nil
+
+  def get_by_id(tournament, player_id) do
+    Ranking.get_by_id(tournament, player_id)
+  end
+
   @spec get_nearest_page_by_player(tournament :: Tournament.t(), player :: Tournament.Player.t()) ::
           map()
   def get_nearest_page_by_player(%{ranking_table: nil}, _player),
@@ -34,8 +42,48 @@ defmodule Codebattle.Tournament.Ranking do
           map()
   def get_page(tournament, page, page_size \\ 10)
 
-  def get_page(%{ranking_table: nil}, _page, _page_size),
-    do: %{total_entries: 0, page_number: 1, page_size: 10, entries: []}
+  def get_page(%{ranking_table: nil} = tournament, page, page_size) do
+    if tournament.ranking_type == "by_user" do
+      players =
+        tournament
+        |> Helpers.get_players()
+        |> Enum.reject(& &1.is_bot)
+        |> Enum.sort_by(fn player ->
+          cond do
+            is_integer(player.place) and player.place > 0 -> {0, player.place}
+            is_integer(player.wr_joined_at) -> {1, player.wr_joined_at}
+            true -> {2, player.id}
+          end
+        end)
+
+      entries =
+        players
+        |> Enum.with_index(1)
+        |> Enum.map(fn {player, place} ->
+          %{
+            id: player.id,
+            place: place,
+            score: player.score || 0,
+            lang: player.lang,
+            name: player.name,
+            clan_id: player.clan_id,
+            clan: player.clan
+          }
+        end)
+
+      total_entries = length(entries)
+      start_index = (page - 1) * page_size
+
+      %{
+        total_entries: total_entries,
+        page_number: page,
+        page_size: page_size,
+        entries: Enum.slice(entries, start_index, page_size)
+      }
+    else
+      %{total_entries: 0, page_number: page, page_size: page_size, entries: []}
+    end
+  end
 
   def get_page(tournament, page, page_size) do
     get_module(tournament).get_page(tournament, page, page_size)

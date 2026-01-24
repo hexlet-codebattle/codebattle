@@ -47,9 +47,14 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   def set_ranking(tournament) do
     ranking = tournament |> TournamentResult.get_user_ranking() |> Map.values()
 
-    set_places_with_score_to_players(tournament, ranking)
-    Ranking.put_ranking(tournament, ranking)
-    tournament
+    if tournament.current_round_position == 0 or Enum.empty?(ranking) do
+      # Keep existing ETS ranking (seeded on join) when there are no results yet.
+      tournament
+    else
+      set_places_with_score_to_players(tournament, ranking)
+      Ranking.put_ranking(tournament, ranking)
+      tournament
+    end
   end
 
   def add_new_player(%{state: state} = tournament, player) when state in ["waiting_participants", "active"] do
@@ -59,6 +64,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
       id: player.id,
       place: place,
       score: 0,
+      lang: player.lang,
       name: player.name,
       clan_id: player.clan_id,
       clan: player.clan
@@ -76,7 +82,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   end
 
   def set_places_with_score_to_players(tournament, ranking) do
-    Enum.each(ranking, fn %{id: id, place: place, score: score} ->
+    Enum.each(ranking, fn %{id: id, place: place, score: score, lang: lang} ->
       tournament
       |> Players.get_player(id)
       |> case do
@@ -84,7 +90,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
           :noop
 
         player ->
-          Players.put_player(tournament, %{player | place: place, score: score})
+          Players.put_player(tournament, %{player | place: place, score: score, lang: lang})
       end
     end)
   end

@@ -1,9 +1,8 @@
 $body-bg: #e5e5e5;
-$success: #82b792;
 $cb-text-color: #999;
 $cb-border-radius: 0.5rem;
-$cb-success: #32cd32;
-$cb-hovered-success: #28a428;
+$cb-success: #46a077;
+$cb-hovered-success: #398862;
 $cb-border-radius: 0.5rem;
 
 $cb-secondary: #3a3f50;
@@ -52,14 +51,29 @@ $orange: rgba(238, 55, 55, 0.76);
 $link-hover-color: $orange;
 $border-radius-sm: 0%;
 $btn-border-width: 2px;
-$gold: #daa520;
 
-$cb-rookie-bg: rgba(50, 205, 50, 1);
-$cb-challenger-bg: rgba(87, 187, 61, 1);
-$cb-pro-bg: rgba(125, 169, 72, 1);
-$cb-masters-bg: rgba(162, 137, 83, 1);
-$cb-elite-bg: rgba(200, 99, 69, 1);
-$cb-grand-slam-bg: rgba(238, 55, 55, 1);
+$gold: #c9a56c; // Grand Slam – polished gold highlight
+$silver: #a3acb9; // Masters – brighter brushed silver (more readable)
+$bronze: #b07a4a; // Elite – copper bronze highlight
+$platinum: #8b919a; // Pro – cooler, slightly darker than silver (clear separation)
+$steel: #6f7680; // Challenger – neutral steel (a touch lighter than iron)
+$iron: #59606a; // Rookie – darker iron (avoids “disabled outline” look)
+
+$cb-grand-slam-bg: $gold;
+$cb-masters-bg: $silver;
+$cb-elite-bg: $bronze;
+$cb-pro-bg: $platinum;
+$cb-challenger-bg: $steel;
+$cb-rookie-bg: $iron;
+
+:root {
+  --cb-grade-grand_slam: #{$cb-grand-slam-bg};
+  --cb-grade-masters: #{$cb-masters-bg};
+  --cb-grade-elite: #{$cb-elite-bg};
+  --cb-grade-pro: #{$cb-pro-bg};
+  --cb-grade-challenger: #{$cb-challenger-bg};
+  --cb-grade-rookie: #{$cb-rookie-bg};
+}
 
 @import "variables";
 @import "bootstrap/scss/bootstrap";
@@ -224,39 +238,68 @@ input[type="range"] {
 .alert-dark-theme {
   border: none;
   backdrop-filter: blur(10px);
-  
+
   &.alert-info {
-    background: linear-gradient(135deg, rgba(13, 110, 253, 0.9), rgba(13, 110, 253, 0.7));
+    background: linear-gradient(
+      135deg,
+      rgba(13, 110, 253, 0.9),
+      rgba(13, 110, 253, 0.7)
+    );
     color: #ffffff;
     border-left: 4px solid #0d6efd;
   }
-  
+
   &.alert-success {
-    background: linear-gradient(135deg, rgba(25, 135, 84, 0.9), rgba(25, 135, 84, 0.7));
+    background: linear-gradient(
+      135deg,
+      rgba(25, 135, 84, 0.9),
+      rgba(25, 135, 84, 0.7)
+    );
     color: #ffffff;
     border-left: 4px solid #198754;
   }
-  
+
   &.alert-danger {
-    background: linear-gradient(135deg, rgba(220, 53, 69, 0.9), rgba(220, 53, 69, 0.7));
+    background: linear-gradient(
+      135deg,
+      rgba(220, 53, 69, 0.9),
+      rgba(220, 53, 69, 0.7)
+    );
     color: #ffffff;
     border-left: 4px solid #dc3545;
   }
-  
+
   &.alert-warning {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.9), rgba(255, 193, 7, 0.7));
+    background: linear-gradient(
+      135deg,
+      rgba(255, 193, 7, 0.9),
+      rgba(255, 193, 7, 0.7)
+    );
     color: #000000;
     border-left: 4px solid #ffc107;
   }
-  
+
   .close {
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
     opacity: 0.8;
-    
+
     &:hover {
       opacity: 1;
     }
   }
+}
+
+.alert-dark-theme.cb-game-win-alert.alert-success {
+  background: linear-gradient(
+    135deg,
+    rgba(25, 135, 84, 0.95),
+    rgba(240, 199, 94, 0.75)
+  );
+  color: #ffffff;
+  border-left: 4px solid #f0c75e;
+  box-shadow:
+    0 0 0 1px rgba(240, 199, 94, 0.25),
+    0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 .gutter-vertical {
@@ -1149,18 +1192,21 @@ a:hover {
 }
 
 .cb-gold-place-bg {
-  background-color: #fce300 !important;
+  background: linear-gradient(180deg, #8f734c 0%, #7f6442 100%) !important;
   border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .cb-silver-place-bg {
-  background-color: #c3c2bc !important;
+  background: linear-gradient(180deg, #3a3f4a 0%, #343944 100%) !important;
   border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .cb-bronze-place-bg {
-  background-color: #ff9c41 !important;
+  background: linear-gradient(180deg, #3a271a 0%, #2f2016 100%) !important;
   border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 #tasklang-dropdown {
@@ -1918,15 +1964,21 @@ a:hover {
 }
 
 .cb-gold-place-bg {
-  background-color: #fce300 !important;
+  background: linear-gradient(180deg, #8f734c 0%, #7f6442 100%) !important;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .cb-silver-place-bg {
-  background-color: #c3c2bc !important;
+  background: linear-gradient(180deg, #3a3f4a 0%, #343944 100%) !important;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .cb-bronze-place-bg {
-  background-color: #ff9c41 !important;
+  background: linear-gradient(180deg, #3a271a 0%, #2f2016 100%) !important;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .user-select-none {

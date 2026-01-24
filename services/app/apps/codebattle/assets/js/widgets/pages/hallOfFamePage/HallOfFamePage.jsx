@@ -26,16 +26,11 @@ function StatBox({ label, value, highlight = false }) {
 function PodiumCard({ result, isFirst = false }) {
   return (
     <div
-      className={cn('card h-100 border-2 shadow-lg', {
-      'border-warning': result.place === 1,
-      'border-secondary': result.place === 2,
-      'border-bronze': result.place === 3,
-    })}
-      style={{
-      background: result.place === 1
-        ? 'linear-gradient(180deg, rgba(255,193,7,0.2) 0%, rgba(0,0,0,0.9) 100%)'
-        : 'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0.9) 100%)',
-    }}
+      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
+        'cb-gold-place-bg': result.place === 1,
+        'cb-silver-place-bg': result.place === 2,
+        'cb-bronze-place-bg': result.place === 3,
+      })}
     >
       <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
         <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>
@@ -59,8 +54,8 @@ function PodiumCard({ result, isFirst = false }) {
           </span>
         )}
           {result.clan_name && (
-          <span className="text-info">{result.clan_name}</span>
-        )}
+            <span className="text-muted">{result.clan_name}</span>
+          )}
         </div>
         <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
           <div className="px-3"><StatBox label="Points" value={result.total_points} highlight={isFirst} /></div>
@@ -84,7 +79,7 @@ function ChampionsPodium({ top3 }) {
 
   return (
     <div className="mb-5">
-      <h2 className="text-white mb-4 text-center">Top 3</h2>
+      <h2 className="text-gold mb-4 text-center">Top 3</h2>
       <div className="row align-items-end justify-content-center">
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
@@ -119,8 +114,8 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
   return (
     <div className="mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="text-white">Previous Seasons Champions</h2>
-        <a href="/seasons" className="btn btn-outline-light btn-sm">
+        <h2 className="text-gold">Previous Seasons Champions</h2>
+        <a href="/seasons" className="btn btn-outline-gold btn-sm">
           View All Seasons
         </a>
       </div>
@@ -142,7 +137,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
               </h4>
               <a
                 href={`/seasons/${season.id}`}
-                className="btn btn-sm btn-outline-warning"
+                className="btn btn-sm btn-outline-gold"
               >
                 Full Results
               </a>
@@ -152,10 +147,10 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
               {winners.map((winner) => (
                 <div key={winner.user_id} className="col-md-4 mb-3">
                   <div
-                    className={cn('card h-100 border-2', {
-                      'bg-dark border-warning': winner.place === 1,
-                      'bg-dark border-secondary': winner.place === 2,
-                      'bg-dark border-bronze': winner.place === 3,
+                    className={cn('card h-100 border-0 cb-hof-podium-card', {
+                      'cb-gold-place-bg': winner.place === 1,
+                      'cb-silver-place-bg': winner.place === 2,
+                      'cb-bronze-place-bg': winner.place === 3,
                     })}
                   >
                     <div className="card-body">
@@ -181,7 +176,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                             </span>
                           )}
                           {winner.clan_name && (
-                            <span className="text-info">{winner.clan_name}</span>
+                            <span className="text-muted">{winner.clan_name}</span>
                           )}
                         </div>
                         <div className="d-flex justify-content-between">
@@ -231,7 +226,7 @@ function HallOfFamePage() {
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5">
       <div className="container">
-        <h1 className="text-center text-white mb-5 fw-bold">Hall of Fame</h1>
+        <h1 className="text-center text-gold mb-5 fw-bold">Hall of Fame</h1>
 
         {currentSeason && (
           <>
@@ -239,7 +234,7 @@ function HallOfFamePage() {
               <div className="card-body py-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
-                    <h5 className="card-title mb-2 text-white">
+                    <h5 className="card-title mb-2 text-gold">
                       {currentSeason.name}
                       {' '}
                       {currentSeason.year}
@@ -257,7 +252,7 @@ function HallOfFamePage() {
                       </span>
                     </div>
                   </div>
-                  <a href="/seasons" className="btn btn-outline-primary">
+                  <a href="/seasons" className="btn btn-outline-gold">
                     View All Seasons
                   </a>
                 </div>
@@ -270,7 +265,7 @@ function HallOfFamePage() {
               <div className={cn('card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light')}>
                 <div className="card-header bg-transparent border-bottom border-secondary py-3">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="mb-0 text-white fs-4">Current Season Leaderboard</h2>
+                    <h2 className="mb-0 text-gold fs-4">Current Season Leaderboard</h2>
                     <span className="badge bg-secondary">
                       {currentSeasonResults.length}
                       {' '}

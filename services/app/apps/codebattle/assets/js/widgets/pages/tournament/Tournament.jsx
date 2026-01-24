@@ -127,7 +127,8 @@ function Tournament() {
     [tournament.state],
   );
   const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
-  const hiddenSidePanel = streamMode;
+  const hiddenSidePanel = streamMode
+    || (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
 
   const panelClassName = cn('mb-2', {
     'container-fluid': !streamMode,

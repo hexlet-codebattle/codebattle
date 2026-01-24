@@ -10,8 +10,14 @@ defmodule Codebattle.Tournament.Swiss do
   @impl Tournament.Base
   def complete_players(tournament) do
     # just for the UI test
-    # users = Codebattle.User |> Codebattle.Repo.all() |> Enum.filter(&(&1.is_bot == false)) |> Enum.take(127)
+    # users =
+    #   Codebattle.User
+    #   |> Codebattle.Repo.all()
+    #   |> Enum.filter(&(&1.is_bot == false))
+    #   |> Enum.filter(&(&1.name && &1.name != ""))
+    #   |> Enum.take(327)
     # add_players(tournament, %{users: users})
+
     tournament
   end
 
@@ -139,7 +145,8 @@ defmodule Codebattle.Tournament.Swiss do
           if MapSet.member?(played_pair_ids, pair_ids) do
             {:cont, {player, remain_players, played_pair_ids}}
           else
-            {:halt, {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
+            {:halt,
+             {:new, [player, candidate], pair_ids, drop_player(remain_players, candidate.id)}}
           end
         end
       )

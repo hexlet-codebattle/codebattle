@@ -21,16 +21,11 @@ function PodiumPlace({ result, size = 'normal' }) {
 
   return (
     <div
-      className={cn('card h-100 border-2', {
-        'border-warning': result.place === 1,
-        'border-secondary': result.place === 2,
-        'border-bronze': result.place === 3,
+      className={cn('card h-100 border-0 cb-hof-podium-card', {
+        'cb-gold-place-bg': result.place === 1,
+        'cb-silver-place-bg': result.place === 2,
+        'cb-bronze-place-bg': result.place === 3,
       })}
-      style={{
-        background: result.place === 1
-          ? 'linear-gradient(180deg, rgba(255,193,7,0.15) 0%, rgba(0,0,0,0.8) 100%)'
-          : 'rgba(0,0,0,0.6)',
-      }}
     >
       <div className={cn('card-body text-center', isLarge ? 'py-4' : 'py-3')}>
         <div className={cn('mb-2', isLarge ? 'fs-2' : 'fs-4')}>
@@ -41,7 +36,7 @@ function PodiumPlace({ result, size = 'normal' }) {
         </h6>
         {result.clan_name && (
           <div className="mb-2">
-            <span className="badge bg-info bg-opacity-75 small">{result.clan_name}</span>
+            <span className="small text-muted">{result.clan_name}</span>
           </div>
         )}
         <div className={cn('fw-bold', isLarge ? 'fs-4 text-warning' : 'fs-5 text-white')}>
@@ -105,7 +100,7 @@ function SeasonCard({ season }) {
       <div className="card-body d-flex flex-column">
         <div className="d-flex justify-content-between align-items-start mb-3">
           <div>
-            <h3 className="card-title text-warning mb-1 fs-4">
+            <h3 className="card-title text-gold mb-1 fs-4">
               {season.name}
               {' '}
               {season.year}
@@ -118,7 +113,7 @@ function SeasonCard({ season }) {
           </div>
           <a
             href={`/seasons/${season.id}`}
-            className="btn btn-sm btn-outline-warning"
+            className="btn btn-sm btn-outline-gold"
           >
             View Results
           </a>
@@ -138,11 +133,19 @@ function SeasonsPage() {
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5">
       <div className="container">
-        <div className="d-flex justify-content-between align-items-center mb-5">
-          <h1 className="text-white fw-bold">Seasons</h1>
-          <a href="/hall_of_fame" className="btn btn-outline-light">
+        <div className="position-relative mb-5 text-center">
+          <h1 className="text-gold fw-bold mb-0">Seasons</h1>
+          <a
+            href="/hall_of_fame"
+            className="btn btn-outline-gold d-none d-md-inline-flex position-absolute top-50 end-0 translate-middle-y"
+          >
             Hall of Fame
           </a>
+          <div className="d-md-none mt-3">
+            <a href="/hall_of_fame" className="btn btn-outline-gold">
+              Hall of Fame
+            </a>
+          </div>
         </div>
 
         {seasons.length === 0 ? (

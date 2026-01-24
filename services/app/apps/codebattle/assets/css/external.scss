@@ -294,6 +294,27 @@ $dark-red: #b00020;
   border: 1px solid #8C64FF;
 }
 
+.cb-ranking-page-btn {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cb-ranking-pagination {
+  gap: 0.5rem;
+}
+
+.cb-ranking-pagination .cb-ranking-page-btn {
+  margin: 0;
+}
+
+.cb-ranking-pagination .cb-ranking-page-btn + .cb-ranking-page-btn {
+  margin-left: 0.4rem;
+}
+
 .cb-custom-event-stage-section {
   background-color: #30333F;
   border-radius: 25px;

@@ -39,6 +39,7 @@ function GameResult() {
       return ({
         alertStyle: 'success',
         msg,
+        isWin: true,
       });
     } if (isCurrentUserPlayer) {
       return ({
@@ -57,7 +58,8 @@ function GameResult() {
   ]);
 
   if (result) {
-    return (<Alert className="mt-2" variant={result.alertStyle}>{result.msg}</Alert>);
+    const alertClassName = `mt-2 alert-dark-theme${result.isWin ? ' cb-game-win-alert' : ''}`;
+    return (<Alert className={alertClassName} variant={result.alertStyle}>{result.msg}</Alert>);
   }
   return null;
 }

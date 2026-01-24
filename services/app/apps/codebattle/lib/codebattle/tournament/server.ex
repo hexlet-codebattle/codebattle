@@ -10,6 +10,16 @@ defmodule Codebattle.Tournament.Server do
 
   @type tournament_id :: pos_integer()
   @tournament_info_table :tournament_info_cache
+  @tournament_info_drop_fields [
+    :__struct__,
+    :__meta__,
+    :creator,
+    :event,
+    :matches,
+    :players,
+    :stats,
+    :played_pair_ids
+  ]
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
@@ -33,6 +43,9 @@ defmodule Codebattle.Tournament.Server do
     :exit, {:noproc, _} ->
       nil
 
+    :exit, {:shutdown, _} ->
+      nil
+
     :exit, reason ->
       Logger.error("Error to get tournament: #{inspect(reason)}")
       nil
@@ -42,6 +55,9 @@ defmodule Codebattle.Tournament.Server do
     GenServer.call(server_name(id), :get_tournament, 20_000)
   catch
     :exit, {:noproc, _} ->
+      nil
+
+    :exit, {:shutdown, _} ->
       nil
 
     :exit, reason ->
@@ -130,7 +146,7 @@ defmodule Codebattle.Tournament.Server do
       |> Map.put(:tasks_table, tasks_table)
       |> Map.put(:clans_table, clans_table)
 
-    if tournament.grade != "open" do
+    if tournament.grade != "open" and tournament.state not in ["canceled", "finished"] do
       time_diff_ms = DateTime.diff(tournament.starts_at, DateTime.utc_now()) * 1000
       Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
     end
@@ -145,20 +161,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call({:update, new_tournament}, _from, state) do
-    # Update the tournament_info cache when tournament is updated
-    tournament_info =
-      Map.drop(new_tournament, [
-        :__struct__,
-        :__meta__,
-        :creator,
-        :event,
-        :matches,
-        :players,
-        :stats,
-        :played_pair_ids
-      ])
-
-    :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
+    update_tournament_info_cache(new_tournament)
 
     broadcast_tournament_update(new_tournament)
     {:reply, :ok, %{state | tournament: new_tournament}}
@@ -189,21 +192,9 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call(:get_tournament_info, _from, state) do
-    tournament_info =
-      Map.drop(state.tournament, [
-        :__struct__,
-        :__meta__,
-        :creator,
-        :event,
-        :matches,
-        :players,
-        :stats,
-        :played_pair_ids
-      ])
+    update_tournament_info_cache(state.tournament)
 
-    # Update the cache
-    :ets.insert(@tournament_info_table, {state.tournament.id, tournament_info})
-
+    tournament_info = Map.drop(state.tournament, @tournament_info_drop_fields)
     {:reply, tournament_info, state}
   end
 
@@ -217,20 +208,7 @@ defmodule Codebattle.Tournament.Server do
         apply(module, event_type, [tournament, params])
       end
 
-    # Update the tournament_info cache when firing events
-    tournament_info =
-      Map.drop(new_tournament, [
-        :__struct__,
-        :__meta__,
-        :creator,
-        :event,
-        :matches,
-        :players,
-        :stats,
-        :played_pair_ids
-      ])
-
-    :ets.insert(@tournament_info_table, {new_tournament.id, tournament_info})
+    update_tournament_info_cache(new_tournament)
 
     # TODO: rethink broadcasting during applying event, maybe put inside tournament module
     broadcast_tournament_event_by_type(event_type, params, new_tournament)
@@ -252,6 +230,7 @@ defmodule Codebattle.Tournament.Server do
          in_break?(tournament) and
          not finished?(tournament) do
       new_tournament = tournament.module.start_round_force(tournament)
+      update_tournament_info_cache(new_tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else
@@ -264,6 +243,7 @@ defmodule Codebattle.Tournament.Server do
       {:noreply, %{tournament: tournament}}
     else
       new_tournament = tournament.module.finish_tournament(tournament)
+      update_tournament_info_cache(new_tournament)
       {:noreply, %{tournament: new_tournament}}
     end
   end
@@ -273,6 +253,7 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not finished?(tournament) do
       new_tournament = tournament.module.finish_round(tournament)
+      update_tournament_info_cache(new_tournament)
 
       {:noreply, %{tournament: new_tournament}}
     else
@@ -291,6 +272,8 @@ defmodule Codebattle.Tournament.Server do
       new_tournament =
         tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
 
+      update_tournament_info_cache(new_tournament)
+
       {:noreply, %{tournament: new_tournament}}
     else
       {:noreply, %{tournament: tournament}}
@@ -302,6 +285,7 @@ defmodule Codebattle.Tournament.Server do
          not in_break?(tournament) and
          not finished?(tournament) do
       new_tournament = tournament.module.start_rematch(tournament, match_ref)
+      update_tournament_info_cache(new_tournament)
 
       broadcast_tournament_update(new_tournament)
 
@@ -320,6 +304,11 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
+
+  defp update_tournament_info_cache(tournament) do
+    tournament_info = Map.drop(tournament, @tournament_info_drop_fields)
+    :ets.insert(@tournament_info_table, {tournament.id, tournament_info})
+  end
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})

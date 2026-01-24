@@ -38,7 +38,7 @@ const initTournamentChannel = (dispatch, isAdminWidged = false) => {
           matches: {},
           ranking: response.ranking || { entries: [] },
           players: {},
-          playersPageSize: 20,
+          playersPageSize: 16,
           channel: { online: true },
         }),
       );
@@ -98,7 +98,7 @@ export const connectToTournament = (newTournamentId, isAdminWidged = false) => (
     };
 
     const handleTournamentRoundCreated = (response) => {
-      const currentRoundPosition = response.tournament?.currentRoundPosition || lastRoundPosition;
+      const currentRoundPosition = response.tournament?.currentRoundPosition ?? lastRoundPosition;
       const isFirstRound = currentRoundPosition === 0;
       lastRoundPosition = currentRoundPosition;
 
@@ -119,7 +119,7 @@ export const connectToTournament = (newTournamentId, isAdminWidged = false) => (
           ...response.tournament,
           topPlayerIds: response.topPlayerIds || [],
           playersPageNumber: 1,
-          playersPageSize: 20,
+          playersPageSize: 16,
         }),
       );
 
@@ -133,7 +133,7 @@ export const connectToTournament = (newTournamentId, isAdminWidged = false) => (
           ...response.tournament,
           channel: { online: true },
           playersPageNumber: 1,
-          playersPageSize: 20,
+          playersPageSize: 16,
           matches: {},
           players: {},
         }),
@@ -211,6 +211,23 @@ export const requestMatchesForRound = () => (dispatch) => {
       dispatch(actions.updateTournamentMatches(data.matches));
     })
     .receive('error', (error) => console.error(error));
+};
+
+export const requestAllPlayers = (onSuccess) => (dispatch) => {
+  channel
+    .push('tournament:players:request_all', {})
+    .receive('ok', (data) => {
+      dispatch(actions.updateTournamentPlayers(data.players));
+      if (onSuccess) {
+        onSuccess(data);
+      }
+    })
+    .receive('error', (error) => {
+      console.error(error);
+      if (onSuccess) {
+        onSuccess(null);
+      }
+    });
 };
 
 export const requestMatchesByPlayerId = (userId) => (dispatch) => {
