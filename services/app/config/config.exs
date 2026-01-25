@@ -71,7 +71,7 @@ config :codebattle, :oauth,
 config :codebattle, :start_create_bot_timeout, to_timeout(second: 3)
 config :codebattle, :tournament_run_upcoming, false
 config :codebattle, app_version: System.get_env("APP_VERSION", "dev")
-# config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteRust
+# config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteZig
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, chat_bot_token: System.get_env("CODEBATTLE_CHAT_BOT_TOKEN", "chat_bot")
 config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.RemoteContainerRun

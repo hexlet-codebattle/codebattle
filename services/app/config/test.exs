@@ -4,7 +4,7 @@ checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "local" -> Codebattle.CodeCheck.Executor.Local
     "remote" -> Codebattle.CodeCheck.Executor.RemoteContainerRun
-    "rust" -> Codebattle.CodeCheck.Executor.RemoteRust
+    "zig" -> Codebattle.CodeCheck.Executor.RemoteZig
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
 

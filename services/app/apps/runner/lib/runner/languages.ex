@@ -40,12 +40,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.4.7",
+      version: "4.0.1",
       container_run_timeout: "15s",
       check_dir: "check",
       solution_file_name: "solution.rb",
       checker_file_name: "checker.rb",
-      image: "ghcr.io/hexlet-codebattle/ruby:3.4.7",
+      image: "ghcr.io/hexlet-codebattle/ruby:4.0.1",
       solution_template: """
       def solution(<%= arguments %>)
         ans = <%= default_value %>
@@ -514,12 +514,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.14.0",
+      version: "3.14.2",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
-      image: "ghcr.io/hexlet-codebattle/python:3.14.0",
+      image: "ghcr.io/hexlet-codebattle/python:3.14.2",
       solution_template: """
       from typing import List, Dict
 
