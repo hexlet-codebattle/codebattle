@@ -51,8 +51,6 @@ COPY Makefile ./
 # don’t fail if user/group already exists; chown only if it does
 RUN chown -R app:app /usr/src/app || true
 
-USER app
-
 EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

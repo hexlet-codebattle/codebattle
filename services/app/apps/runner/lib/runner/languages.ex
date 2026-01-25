@@ -74,12 +74,12 @@ defmodule Runner.Languages do
       generate_checker?: false,
       name: "Node.js",
       slug: "js",
-      version: "24.11.0",
+      version: "25.4.0",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:24.11.0",
+      image: "ghcr.io/hexlet-codebattle/js:25.4.0",
       solution_template: """
       const _ = require("lodash");
       const R = require("rambda");
@@ -126,7 +126,7 @@ defmodule Runner.Languages do
       container_run_timeout: "15s",
       solution_file_name: "solution.js",
       checker_file_name: "checker.js",
-      image: "ghcr.io/hexlet-codebattle/js:24.11.0",
+      image: "ghcr.io/hexlet-codebattle/js:25.4.0",
       solution_template: """
       import * as _ from "lodash";
       import * as R from "rambda";
@@ -315,13 +315,13 @@ defmodule Runner.Languages do
     "kotlin" => %LanguageMeta{
       name: "Kotlin",
       slug: "kotlin",
-      version: "2.2.21",
+      version: "2.3.0",
       output_version: 2,
       check_dir: "check",
       container_run_timeout: "25s",
       solution_file_name: "solution.kt",
       checker_file_name: "checker.kt",
-      image: "ghcr.io/hexlet-codebattle/kotlin:2.2.21",
+      image: "ghcr.io/hexlet-codebattle/kotlin:2.3.0",
       solution_template: """
       package solution
 
@@ -831,12 +831,12 @@ defmodule Runner.Languages do
       name: "Swift",
       slug: "swift",
       output_version: 2,
-      version: "6.1.0",
+      version: "6.2.3",
       container_run_timeout: "20s",
       solution_file_name: "solution.swift",
       checker_file_name: "checker.swift",
       check_dir: "check",
-      image: "ghcr.io/hexlet-codebattle/swift:6.1.0",
+      image: "ghcr.io/hexlet-codebattle/swift:6.2.3",
       solution_template: """
       import Foundation
 

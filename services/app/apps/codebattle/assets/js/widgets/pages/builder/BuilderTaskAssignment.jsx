@@ -87,8 +87,8 @@ function BuilderTaskAssignment({
   const editable = useSelector(selectors.canEditTask);
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
   const descriptionTextMapping = {
-    en: task.descriptionEn,
-    ru: task.descriptionRu,
+    en: task?.descriptionEn || '',
+    ru: task?.descriptionRu || '',
   };
   const taskDescriptionText = descriptionTextMapping[taskLanguage];
 

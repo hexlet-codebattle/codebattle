@@ -1,5 +1,5 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG NODE_TAG=24.11.0-alpine3.22
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG NODE_TAG=25.4.0-alpine3.23
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
@@ -27,8 +27,6 @@ COPY assertsRunner.js .
 COPY Makefile .
 RUN chown -R app:app /usr/src/app
 
-USER app
-
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

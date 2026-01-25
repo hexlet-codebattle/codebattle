@@ -40,6 +40,12 @@ defmodule Codebattle.CodeCheck.Checker do
     %{token | result: OutputParser.call(token)}
   end
 
-  defp get_executor, do: Application.fetch_env!(:codebattle, :checker_executor)
+  defp get_executor do
+    if FunWithFlags.enabled?(:use_remote_zig_executor) do
+      Codebattle.CodeCheck.Executor.RemoteZig
+    else
+      Application.fetch_env!(:codebattle, :checker_executor)
+    end
+  end
   # defp get_executor, do: Codebattle.CodeCheck.Executor.RemoteZig
 end

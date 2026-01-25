@@ -2,11 +2,11 @@
   "name": "js-checker",
   "version": "0.0.1",
   "dependencies": {
-    "@types/lodash": "^4.14.183",
-    "@types/node": "^20.11.25",
-    "@faker-js/faker": "^8.0.2",
-    "lodash": "^4.17.21",
-    "rambda": "^9.1.0",
-    "typescript": "^5.4.2"
+    "@faker-js/faker": "^10.2.0",
+    "@types/lodash": "^4.17.23",
+    "@types/node": "^25.0.10",
+    "lodash": "^4.17.23",
+    "rambda": "^11.0.1",
+    "typescript": "^5.9.3"
   }
 }

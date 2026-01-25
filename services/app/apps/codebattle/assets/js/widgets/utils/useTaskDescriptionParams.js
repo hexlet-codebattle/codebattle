@@ -5,35 +5,38 @@ import keys from 'lodash/keys';
 
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
-const wrapExamplesInCodeBlock = (examples = '') => {
-  const trimmed = examples.trim();
+const wrapExamplesInCodeBlock = (examples) => {
+  const safeExamples = typeof examples === 'string' ? examples : '';
+  const trimmed = safeExamples.trim();
 
   if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
-    return examples;
+    return safeExamples;
   }
 
-  return `\`\`\`\n${examples}\n\`\`\``;
+  return `\`\`\`\n${safeExamples}\n\`\`\``;
 };
 
 const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
-    const avaibleLanguages = keys(task)
+    const safeTask = task || {};
+    const normalizedTaskLanguage = taskLanguage || taskDescriptionLanguages.default;
+    const avaibleLanguages = keys(safeTask)
       .filter((key) => key.includes('description'))
       .map((key) => key.split('description'))
       .map(([, language]) => language.toLowerCase());
 
-    const displayLanguage = includes(avaibleLanguages, taskLanguage)
-      ? taskLanguage
+    const displayLanguage = includes(avaibleLanguages, normalizedTaskLanguage)
+      ? normalizedTaskLanguage
       : taskDescriptionLanguages.default;
 
-    const examples = wrapExamplesInCodeBlock(task.examples);
+    const examples = wrapExamplesInCodeBlock(safeTask.examples);
 
     // TODO: remove russian text from string (create ru/en templates of basic description)
     const taskDescriptionMapping = {
-      en: `${task.descriptionEn}\n\n**Examples:**\n${examples}`,
-      ru: `${task.descriptionRu}\n\n**Примеры:**\n${examples}`,
+      en: `${safeTask.descriptionEn || ''}\n\n**Examples:**\n${examples}`,
+      ru: `${safeTask.descriptionRu || ''}\n\n**Примеры:**\n${examples}`,
     };
 
-    const description = taskDescriptionMapping[taskLanguage];
+    const description = taskDescriptionMapping[displayLanguage];
 
     return [avaibleLanguages, displayLanguage, description];
   }, [task, taskLanguage]);

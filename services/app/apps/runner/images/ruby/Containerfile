@@ -8,19 +8,18 @@ FROM --platform=$TARGETPLATFORM ruby:${RUBY_TAG}
 
 RUN apk add --no-cache make
 
-# Create system group+user first
+# Create system group+user for workspace ownership
 RUN addgroup -S app -g 10001 \
   && adduser  -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
 
 WORKDIR /usr/src/app
 
-# Copy files, then fix ownership
 COPY check ./check
 COPY checker.rb .
 COPY Makefile .
-RUN chown -R app:app /usr/src/app
 
-USER app
+# Ensure runner can drop privileges to app (workspace is owned by app)
+RUN chown -R app:app /usr/src/app
 
 EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

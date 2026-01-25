@@ -1,6 +1,6 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG CORRETTO_TAG=25-alpine3.22-full
-ARG KOTLIN_VERSION=2.2.21
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG CORRETTO_TAG=25-alpine3.23-full
+ARG KOTLIN_VERSION=2.3.0
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
@@ -39,8 +39,6 @@ COPY check check
 COPY Makefile .
 RUN chown -R app:app /usr/src/app
 
-USER app
-
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]
