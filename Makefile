@@ -165,3 +165,46 @@ build-runner:
 push-runner:
 	docker push ghcr.io/hexlet-codebattle/runner:compile-image
 	docker push ghcr.io/hexlet-codebattle/runner:latest
+
+
+runner-ruby:
+	 docker run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/ruby:4.0.1
+
+runner-cpp:
+	 docker run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/cpp:23
+
+runner-swift:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/swift:6.2.3
+
+runner-kotlin:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/kotlin:2.3.0
+
+runner-kotlin:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/kotlin:2.3.0
+
+runner-js:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/js:25.4.0
