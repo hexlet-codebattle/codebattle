@@ -5,7 +5,11 @@
     <div class="landing-orb orb-a"></div>
 
     <div class="container-lg">
-      <nav class="navbar navbar-dark px-0 pt-4 landing-nav" data-reveal style="--reveal-delay: 0ms;">
+      <nav
+        class="navbar navbar-dark px-0 pt-4 landing-nav"
+        data-reveal
+        style="--reveal-delay: 0ms;"
+      >
         <a class="navbar-brand d-flex align-items-end" href="/">
           <img alt="Logo" height="40px" src={static_asset("images/logo.svg")} />
           <div class="d-sm-flex d-none flex-column text-gray ml-2 pb-1">
@@ -78,7 +82,7 @@
                 <span class="panel-title">Current Season Leaderboard</span>
                 <span class="panel-status">
                   <%= if @current_season do %>
-                    <%= @current_season.name %> <%= @current_season.year %>
+                    {@current_season.name} {@current_season.year}
                   <% else %>
                     Upcoming
                   <% end %>
@@ -91,7 +95,7 @@
                   <% else %>
                     <%= for result <- @current_season_leaderboard do %>
                       <div class="leaderboard-row">
-                        <div class="leaderboard-rank"><%= result.place %></div>
+                        <div class="leaderboard-rank">{result.place}</div>
                         <div class="leaderboard-player">
                           <%= if result.avatar_url do %>
                             <img
@@ -103,13 +107,13 @@
                             <div class="leaderboard-avatar placeholder"></div>
                           <% end %>
                           <div>
-                            <p class="leaderboard-name"><%= result.user_name %></p>
+                            <p class="leaderboard-name">{result.user_name}</p>
                             <span class="leaderboard-meta">
-                              <%= result.user_lang || "Any" %>
+                              {result.user_lang || "Any"}
                             </span>
                           </div>
                         </div>
-                        <div class="leaderboard-points"><%= result.total_points %> pts</div>
+                        <div class="leaderboard-points">{result.total_points} pts</div>
                       </div>
                     <% end %>
                   <% end %>
@@ -136,7 +140,9 @@
         <div class="cards-grid" data-reveal style="--reveal-delay: 120ms;">
           <div class="feature-card">
             <h3>Season ladder</h3>
-            <p>Earn season points, climb the live leaderboard, and lock your place in the finale.</p>
+            <p>
+              Earn season points, climb the live leaderboard, and lock your place in the finale.
+            </p>
             <div class="chip-row">
               <span>Season points</span>
               <span>Finals on 21st</span>
@@ -145,7 +151,9 @@
           </div>
           <div class="feature-card">
             <h3>Swiss tournaments</h3>
-            <p>Face opponents with similar scores, solve the same task, and rise with every win.</p>
+            <p>
+              Face opponents with similar scores, solve the same task, and rise with every win.
+            </p>
             <div class="chip-row">
               <span>Swiss pairing</span>
               <span>Live standings</span>
@@ -324,10 +332,15 @@
               class="text-uppercase text-white fw-500"
               href="https://github.com/hexlet-codebattle/codebattle"
             >
-              <img class="mr-sm-2 github-logo" src={static_asset("images/landing/github.svg")} /> Codebattle
+              <img class="mr-sm-2 github-logo" src={static_asset("images/landing/github.svg")} />
+              Codebattle
             </a>
             <div class="float-right mt-2 ml-auto">
-              <a href="https://github.com/hexlet-codebattle/codebattle" target="_blank" rel="noopener">
+              <a
+                href="https://github.com/hexlet-codebattle/codebattle"
+                target="_blank"
+                rel="noopener"
+              >
                 <img
                   alt="GitHub stars"
                   class="github-stars-badge"
@@ -394,8 +407,7 @@
     </div>
     <div class="mt-3 mt-sm-0">
       <p class="mb-0">
-        Design by:
-        <span class="text-muted ml-2">ChatGPT</span>
+        Design by: <span class="text-muted ml-2">ChatGPT</span>
       </p>
       <p class="mb-0 mt-2 small text-muted">
         Version: {app_short_version()}
