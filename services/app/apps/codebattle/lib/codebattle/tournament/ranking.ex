@@ -43,45 +43,14 @@ defmodule Codebattle.Tournament.Ranking do
   def get_page(tournament, page, page_size \\ 10)
 
   def get_page(%{ranking_table: nil} = tournament, page, page_size) do
-    if tournament.ranking_type == "by_user" do
-      players =
+    case tournament.ranking_type do
+      "by_user" ->
         tournament
-        |> Helpers.get_players()
-        |> Enum.reject(& &1.is_bot)
-        |> Enum.sort_by(fn player ->
-          cond do
-            is_integer(player.place) and player.place > 0 -> {0, player.place}
-            is_integer(player.wr_joined_at) -> {1, player.wr_joined_at}
-            true -> {2, player.id}
-          end
-        end)
+        |> build_user_entries()
+        |> paginate(page, page_size)
 
-      entries =
-        players
-        |> Enum.with_index(1)
-        |> Enum.map(fn {player, place} ->
-          %{
-            id: player.id,
-            place: place,
-            score: player.score || 0,
-            lang: player.lang,
-            name: player.name,
-            clan_id: player.clan_id,
-            clan: player.clan
-          }
-        end)
-
-      total_entries = length(entries)
-      start_index = (page - 1) * page_size
-
-      %{
-        total_entries: total_entries,
-        page_number: page,
-        page_size: page_size,
-        entries: Enum.slice(entries, start_index, page_size)
-      }
-    else
-      %{total_entries: 0, page_number: page, page_size: page_size, entries: []}
+      _ ->
+        empty_page(page, page_size)
     end
   end
 
@@ -123,4 +92,46 @@ defmodule Codebattle.Tournament.Ranking do
 
   defp get_module(%{ranking_type: "by_clan"}), do: ByClan
   defp get_module(%{ranking_type: "by_user"}), do: ByUser
+
+  defp build_user_entries(tournament) do
+    tournament
+    |> Helpers.get_players()
+    |> Enum.reject(& &1.is_bot)
+    |> Enum.sort_by(&player_sort_key/1)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {player, place} ->
+      %{
+        id: player.id,
+        place: place,
+        score: player.score || 0,
+        lang: player.lang,
+        name: player.name,
+        clan_id: player.clan_id,
+        clan: player.clan
+      }
+    end)
+  end
+
+  defp player_sort_key(player) do
+    cond do
+      is_integer(player.place) and player.place > 0 -> {0, player.place}
+      is_integer(player.wr_joined_at) -> {1, player.wr_joined_at}
+      true -> {2, player.id}
+    end
+  end
+
+  defp paginate(entries, page, page_size) do
+    start_index = (page - 1) * page_size
+
+    %{
+      total_entries: length(entries),
+      page_number: page,
+      page_size: page_size,
+      entries: Enum.slice(entries, start_index, page_size)
+    }
+  end
+
+  defp empty_page(page, page_size) do
+    %{total_entries: 0, page_number: page, page_size: page_size, entries: []}
+  end
 end
