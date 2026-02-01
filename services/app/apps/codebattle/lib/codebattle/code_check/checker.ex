@@ -47,5 +47,6 @@ defmodule Codebattle.CodeCheck.Checker do
       Application.fetch_env!(:codebattle, :checker_executor)
     end
   end
+
   # defp get_executor, do: Codebattle.CodeCheck.Executor.RemoteZig
 end

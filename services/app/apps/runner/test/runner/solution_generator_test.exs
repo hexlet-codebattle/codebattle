@@ -69,43 +69,6 @@ defmodule Runner.SolutionGeneratorTest do
   // use stdout to debug
   """
 
-  @haskell_expected """
-  module Solution where
-
-  import qualified Data.HashMap.Lazy as HM
-
-  solution :: Int -> String -> Double -> Bool -> HM.HashMap String String -> [String] -> [[String]] -> [String]
-  solution a text b c nested_hash_of_string nested_array_of_string nested_array_of_array_of_strings =
-
-  -- use stdout to debug
-  {- Included packages:
-    aeson
-    bytestring
-    case-insensitive
-    containers
-    deepseq
-    fgl
-    integer-logarithms
-    megaparsec
-    mtl
-    parser-combinators
-    pretty
-    random
-    regex-base
-    regex-compat
-    regex-posix
-    scientific
-    split
-    template-haskell
-    text
-    time
-    transformers
-    unordered-containers
-    vector
-    vector-algorithms
-  -}
-  """
-
   @java_expected """
   package solution;
 
@@ -209,6 +172,7 @@ defmodule Runner.SolutionGeneratorTest do
   const std = @import("std");
 
   pub fn solution(a: i64, text: []const u8, b: f64, c: bool, nested_hash_of_string: std.StringHashMap([]const u8), nested_array_of_string: []const []const u8, nested_array_of_array_of_strings: []const []const []const u8) []const []const u8 {
+      _ = .{ a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings };
       const ans: []const []const u8 = &.{"value"};
       return ans;
   }
@@ -271,7 +235,6 @@ defmodule Runner.SolutionGeneratorTest do
     assert_solution(@dart_expected, "dart", task)
     assert_solution(@elixir_expected, "elixir", task)
     assert_solution(@golang_expected, "golang", task)
-    assert_solution(@haskell_expected, "haskell", task)
     assert_solution(@java_expected, "java", task)
     assert_solution(@js_expected, "js", task)
     assert_solution(@kotlin_expected, "kotlin", task)

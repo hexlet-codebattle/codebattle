@@ -18,6 +18,8 @@ import { actions } from '../../slices';
 import TaskChoice from './TaskChoice';
 
 const TIMEOUT = 480;
+const TIMEOUT_MIN = 1;
+const TIMEOUT_MAX = 60;
 const gameLevels = Object.keys(levelRatio);
 const gameTypeNames = {
   other_user: i18n.t('With other user'),
@@ -190,7 +192,7 @@ function CreateGameDialog({ hideModal }) {
   const isTaskChosen = chosenTask.id !== null;
 
   const handleTimeoutChange = useCallback(
-    (e) => setGameTimeout(e.target.value * 60),
+    (e) => setGameTimeout(Number(e.target.value) * 60),
     [setGameTimeout],
   );
 
@@ -227,52 +229,82 @@ function CreateGameDialog({ hideModal }) {
     hideModal();
   };
 
+  const timeoutMinutes = gameTimeout / 60;
+  const timeoutPercent = Math.min(
+    100,
+    Math.max(
+      0,
+      ((timeoutMinutes - TIMEOUT_MIN) / (TIMEOUT_MAX - TIMEOUT_MIN)) * 100,
+    ),
+  );
+
   return (
-    <div className="mb-2">
-      <h5>{i18n.t('Level')}</h5>
-      <LevelButtonGroup value={gameLevel} onChange={switchGameLevel} />
-      <h5 className="mt-1">{i18n.t('Game Type')}</h5>
-      <GameTypeButtonGroup value={gameType} onChange={setGameType} />
-      <h5 className="mt-2 mt-sm-3">{i18n.t('Time control')}</h5>
-      <div className="px-sm-3 px-md-5 mt-3">
-        <input
-          type="range"
-          className="form-range w-100"
-          value={gameTimeout / 60}
-          onChange={handleTimeoutChange}
-          min="3"
-          max="60"
-          step="1"
-          id="customRange3"
-        />
-        <span className="d-block text-center text-orange">
-          {i18n.t(`${gameTimeout / 60} min`)}
-        </span>
+    <div className="cb-create-game">
+      <div className="cb-create-game__section">
+        <div className="cb-create-game__section-title">
+          <h5 className="mb-0">{i18n.t('Level')}</h5>
+        </div>
+        <LevelButtonGroup value={gameLevel} onChange={switchGameLevel} />
+      </div>
+      <div className="cb-create-game__section">
+        <div className="cb-create-game__section-title">
+          <h5 className="mb-0">{i18n.t('Game Type')}</h5>
+        </div>
+        <GameTypeButtonGroup value={gameType} onChange={setGameType} />
+      </div>
+      <div className="cb-create-game__section">
+        <div className="cb-create-game__section-title cb-create-game__section-title--with-value">
+          <h5 className="mb-0">{i18n.t('Time control')}</h5>
+          <span className="cb-create-game__time-value">
+            {i18n.t(`${timeoutMinutes} min`)}
+          </span>
+        </div>
+        <div className="px-sm-3 px-md-5 mt-3">
+          <input
+            type="range"
+            className="form-range w-100 cb-range"
+            value={timeoutMinutes}
+            onChange={handleTimeoutChange}
+            min={TIMEOUT_MIN}
+            max={TIMEOUT_MAX}
+            step="1"
+            id="customRange3"
+            style={{ '--range-progress': `${timeoutPercent}%` }}
+          />
+        </div>
       </div>
       {isInvite && (
-        <>
-          <h5>{i18n.t('Choose opponent')}</h5>
-          <div className="px-sm-3 px-md-5 mt-3 mb-3">
+        <div className="cb-create-game__section">
+          <div className="cb-create-game__section-title">
+            <h5 className="mb-0">{i18n.t('Choose opponent')}</h5>
+          </div>
+          <div className="px-sm-3 px-md-5 mt-3">
             <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
           </div>
-        </>
+        </div>
       )}
-      <h5 className="mt-2">{i18n.t('Choose task by name or tags')}</h5>
-      <TaskChoice
-        chosenTask={chosenTask}
-        setChosenTask={setChosenTask}
-        chosenTags={chosenTags}
-        setChosenTags={setChosenTags}
-        level={gameLevel}
-      />
-      <button
-        type="button"
-        className="btn btn-secondary cb-btn-secondary d-block mt-4 ml-auto cb-rounded"
-        onClick={createGame}
-        disabled={isInvite && !opponent}
-      >
-        {isInvite ? i18n.t('Create invite') : i18n.t('Create battle')}
-      </button>
+      <div className="cb-create-game__section">
+        <div className="cb-create-game__section-title">
+          <h5 className="mb-0">{i18n.t('Choose task by name or tags')}</h5>
+        </div>
+        <TaskChoice
+          chosenTask={chosenTask}
+          setChosenTask={setChosenTask}
+          chosenTags={chosenTags}
+          setChosenTags={setChosenTags}
+          level={gameLevel}
+        />
+      </div>
+      <div className="cb-create-game__footer">
+        <button
+          type="button"
+          className="btn btn-secondary cb-btn-secondary cb-rounded px-4"
+          onClick={createGame}
+          disabled={isInvite && !opponent}
+        >
+          {isInvite ? i18n.t('Create invite') : i18n.t('Create battle')}
+        </button>
+      </div>
     </div>
   );
 }

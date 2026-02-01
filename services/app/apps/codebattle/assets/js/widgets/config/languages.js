@@ -6,7 +6,6 @@ const languages = {
   dart: 'dart',
   elixir: 'elixir',
   golang: 'go',
-  haskell: 'haskell',
   java: 'java',
   js: 'javascript',
   kotlin: 'kotlin',

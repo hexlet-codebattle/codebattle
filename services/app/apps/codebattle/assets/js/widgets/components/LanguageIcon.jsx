@@ -6,7 +6,6 @@ import CsharpOriginalIcon from 'react-devicons/csharp/original';
 import CssOriginalIcon from 'react-devicons/css3/original';
 import DartOriginalIcon from 'react-devicons/dart/original';
 import GolangOriginalIcon from 'react-devicons/go/original';
-import HaskellOriginalIcon from 'react-devicons/haskell/original';
 import JavaOriginalIcon from 'react-devicons/java/original';
 import LessOriginalIcon from 'react-devicons/less/plain-wordmark';
 import MongodbOriginalIcon from 'react-devicons/mongodb/original';
@@ -45,9 +44,6 @@ const iconRenderers = {
   ),
   golang: (className) => (
     <GolangOriginalIcon className={className} size="1.25em" />
-  ),
-  haskell: (className) => (
-    <HaskellOriginalIcon className={className} size="1.125em" />
   ),
   javascript: (className) => (
     <NodejsPlainIcon className={className} color="green" size="1.25em" />

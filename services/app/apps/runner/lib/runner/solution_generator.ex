@@ -37,7 +37,11 @@ defmodule Runner.SolutionGenerator do
         )
       )
 
-    Map.put(binding, :arguments, arguments)
+    argument_names = Enum.map_join(input_signature, ", ", & &1.argument_name)
+
+    binding
+    |> Map.put(:arguments, arguments)
+    |> Map.put(:argument_names, argument_names)
   end
 
   defp add_typespec(binding, %{typespec_template: nil}, _input_signature) do

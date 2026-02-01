@@ -13,6 +13,7 @@ import {
 } from '@/selectors';
 
 import i18n from '../../../i18n';
+import UserInfo from '../../components/UserInfo';
 import { actions } from '../../slices';
 
 import CodebattleLeagueDescription from './CodebattleLeagueDescription';
@@ -24,20 +25,25 @@ function OpponentInfo({ id }) {
   const user = useSelector(userByIdSelector(id));
 
   return (
-    <div className="d-flex py-2 mx-1 stat-line">
-      <div className="d-flex align-items-center w-100">
+    <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line">
+      <div className="d-flex align-items-center flex-fill pr-2" style={{ minWidth: 0 }}>
         <UserLogo user={user} size="25px" />
-        <span
-          title={user?.name}
-          className={cn('text-white text-truncate ml-2', {
-            'cb-text-skeleton w-100': !user,
-          })}
-          style={{ maxWidth: '70px' }}
-        >
-          {user?.name}
-        </span>
+        <div className="ml-2" style={{ maxWidth: '110px' }}>
+          {user ? (
+            <UserInfo
+              user={user}
+              className="text-white text-truncate"
+              linkClassName="text-white"
+              truncate
+              hideOnlineIndicator
+              hideRank
+            />
+          ) : (
+            <span className="cb-text-skeleton w-100 d-block">&nbsp;</span>
+          )}
+        </div>
       </div>
-      <div className="d-flex flex-column text-center py-1 w-100">
+      <div className="d-flex flex-column text-center py-1 px-1 flex-fill">
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
             className={cn('stat-value d-block cb-text-danger', {
@@ -50,7 +56,7 @@ function OpponentInfo({ id }) {
           <span className="stat-label text-uppercase">Place</span>
         </a>
       </div>
-      <div className="d-flex flex-column text-center py-1 w-100">
+      <div className="d-flex flex-column text-center py-1 px-1 flex-fill">
         <span
           className={cn('stat-value d-block cb-text-danger', {
             'd-inline cb-text-skeleton w-25 mx-auto': !user,
@@ -99,19 +105,21 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
   return (
     <div className="cb-bg-panel cb-rounded mt-2">
       <div className="d-flex flex-column">
-        <div className="cb-bg-highlight-panel text-center cb-rounded-top">
-          <span className="text-white text-uppercase p-1 pt-2">
+        <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
+          <span className="text-white text-uppercase py-2 d-block">
             Closest Opponents
           </span>
         </div>
-        {loading ? (
-          <>
-            <OpponentInfo />
-            <OpponentInfo />
-          </>
+        <div className="px-1 pb-1">
+          {loading ? (
+            <>
+              <OpponentInfo />
+              <OpponentInfo />
+            </>
         ) : (
           nearbyUsers.map((id) => <OpponentInfo id={id} />)
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

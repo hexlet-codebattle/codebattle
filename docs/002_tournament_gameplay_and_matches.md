@@ -20,6 +20,6 @@ Cheating reports: If cheating is confirmed against your opponent, your match sco
 
 Languages & Environment
 
-Supported languages: clojure, cpp, csharp, dart, elixir, golang, haskell, java, js, kotlin, php, python, ruby, rust, swift, ts, zig.
+Supported languages: clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, ts, zig.
 
 Same task for both players in the match.

@@ -1,5 +1,5 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG BB_TAG=1.12.210-SNAPSHOT
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG BB_TAG=1.12.214-SNAPSHOT
 ARG TARGETPLATFORM
 
 FROM --platform=${TARGETPLATFORM} ${RUNNER_IMAGE} AS runner
@@ -25,6 +25,5 @@ RUN mkdir -p /runner && chown app:app /runner
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 RUN chmod +x /runner/codebattle_runner
 
-EXPOSE 8000
-USER app
+EXPOSE 4040
 ENTRYPOINT ["/runner/codebattle_runner"]

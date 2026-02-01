@@ -12,10 +12,17 @@ fn secondsFromNs(ns: i128) f64 {
     return @as(f64, @floatFromInt(ns)) / @as(f64, @floatFromInt(std.time.ns_per_s));
 }
 
+fn writeJson(outw: anytype, value: anytype) !void {
+    try outw.print("{f}", .{std.json.fmt(value, .{})});
+}
+
 pub fn main() !void {
     const gpa = std.heap.page_allocator;
-    const stdout_fd = std.io.getStdOut().handle;
-    var outw = std.io.getStdOut().writer();
+    const stdout_file = std.fs.File.stdout();
+    const stdout_fd = stdout_file.handle;
+    var stdout_buf: [4096]u8 = undefined;
+    var stdout_writer = stdout_file.writer(&stdout_buf);
+    const outw = &stdout_writer.interface;
 
     // Begin JSON array
     try outw.writeByte('[');
@@ -50,18 +57,18 @@ pub fn main() !void {
             var rfile = std.fs.File{ .handle = p.r };
             defer _ = rfile.close();
 
-            const out_slice = try rfile.reader().readAllAlloc(gpa, 1 << 20); // 1 MiB
+            const out_slice = try rfile.readToEndAlloc(gpa, 1 << 20); // 1 MiB
             defer gpa.free(out_slice);
 
             const secs = secondsFromNs(t1 - t0);
 
             // emit JSON object
             try outw.writeAll("{\"type\":\"result\",\"value\":");
-            try std.json.stringify(val, .{}, outw);
+            try writeJson(outw, val);
             try outw.writeAll(",\"time\":");
-            try std.json.stringify(secs, .{}, outw);
+            try writeJson(outw, secs);
             try outw.writeAll(",\"output\":");
-            try std.json.stringify(@as([]const u8, out_slice), .{}, outw);
+            try writeJson(outw, @as([]const u8, out_slice));
             try outw.writeByte('}');
         } else {
             // No-capture fallback
@@ -71,9 +78,9 @@ pub fn main() !void {
             const secs = secondsFromNs(t1 - t0);
 
             try outw.writeAll("{\"type\":\"result\",\"value\":");
-            try std.json.stringify(val, .{}, outw);
+            try writeJson(outw, val);
             try outw.writeAll(",\"time\":");
-            try std.json.stringify(secs, .{}, outw);
+            try writeJson(outw, secs);
             try outw.writeAll(",\"output\":\"\"}");
         }
     }
@@ -81,4 +88,5 @@ pub fn main() !void {
 
     // End JSON array
     try outw.writeByte(']');
+    try outw.flush();
 }

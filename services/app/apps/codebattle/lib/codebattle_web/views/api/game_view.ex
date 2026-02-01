@@ -23,6 +23,8 @@ defmodule CodebattleWeb.Api.GameView do
       state: game.state,
       status: game.state,
       task: render_task(game),
+      duration_sec: Map.get(game, :duration_sec),
+      finishes_at: Map.get(game, :finishes_at),
       timeout_seconds: game.timeout_seconds,
       tournament_id: Map.get(game, :tournament_id),
       type: game.type,

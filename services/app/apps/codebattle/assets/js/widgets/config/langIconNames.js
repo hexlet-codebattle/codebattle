@@ -5,7 +5,6 @@ export default {
   dart: 'dart',
   elixir: 'elixir',
   golang: 'golang',
-  haskell: 'haskell',
   java: 'java',
   javascript: 'js',
   js: 'js',

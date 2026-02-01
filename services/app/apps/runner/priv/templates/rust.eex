@@ -38,7 +38,7 @@ fn pipe() -> std::io::Result<(File, File)> {
 }
 
 fn main() {
-    let mut stdout_ = unsafe { File::from_raw_fd(libc::dup(io::stdout().as_raw_fd())) };
+    let stdout_ = unsafe { File::from_raw_fd(libc::dup(io::stdout().as_raw_fd())) };
     let mut results_ = Vec::with_capacity(<%= length(checks) %>);
     <%= for %{arguments: arguments} <- checks do %>
     {
@@ -76,8 +76,13 @@ fn main() {
     };
 
     <% end %>
-    if let Err(_) = serde_json::to_writer(&mut stdout_, &results_) {
+    unsafe {
+        libc::dup2(stdout_.as_raw_fd(), io::stdout().as_raw_fd());
+    }
+    let mut out_ = io::stdout().lock();
+    if let Err(_) = serde_json::to_writer(&mut out_, &results_) {
         eprintln!("Encoding error");
         exit(0);
     }
+    let _ = out_.flush();
 }

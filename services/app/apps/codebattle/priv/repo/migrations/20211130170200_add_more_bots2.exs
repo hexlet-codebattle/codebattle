@@ -127,17 +127,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         updated_at: utc_now
       },
       %{
-        id: -39,
-        name: "StuffyDilshod",
-        is_bot: true,
-        rating: 1200,
-        email: "Stuffy@Dilshod.bot_codebattle",
-        lang: "haskell",
-        achievements: ["bot"],
-        inserted_at: utc_now,
-        updated_at: utc_now
-      },
-      %{
         id: -40,
         name: "IvanNebot",
         is_bot: true,

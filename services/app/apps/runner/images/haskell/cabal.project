@@ -1,4 +1,0 @@
-packages: .
-jobs: 1
-program-options
-  ghc-options: -O0

@@ -2,7 +2,7 @@ import React, { memo, useMemo, useCallback } from 'react';
 
 import cn from 'classnames';
 
-import LanguageIcon from '../LanguageIcon';
+import UserInfo from '../UserInfo';
 
 // Constants
 export const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100];
@@ -57,6 +57,19 @@ export const getRowBorderStyle = (place) => {
       return {};
   }
 };
+
+const getLeaderboardRowClassName = (place) => cn(
+  'font-weight-bold cb-custom-event-tr-border',
+  {
+    'cb-gold-place-bg': place === 1,
+    'cb-silver-place-bg': place === 2,
+    'cb-bronze-place-bg': place === 3,
+  },
+);
+
+const tableDataCellClassName = cn(
+  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+);
 
 export const formatTime = (seconds) => {
   if (!seconds) return '0s';
@@ -317,65 +330,72 @@ export function SearchFilterBar({
 }
 
 // Leaderboard Table Row
-const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => (
-  <tr style={getRowBorderStyle(result.place)}>
-    <th scope="row">
-      <span className={cn('badge', getPlaceBadgeClass(result.place))}>
-        {result.place <= 3 ? getMedalEmoji(result.place) : result.place}
-      </span>
-    </th>
-    <td>
-      <div className="d-flex align-items-center">
-        {result.avatar_url && (
+const truncateText = (text, maxLength = 12) => (
+  text && text.length > maxLength ? text.slice(0, maxLength) : text
+);
+
+const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => {
+  const displayName = truncateText(result.user_name);
+  const displayClan = truncateText(result.clan_name);
+  const user = {
+    id: result.user_id,
+    name: result.user_name,
+    lang: result.user_lang,
+    avatarUrl: result.avatar_url,
+    clan: result.clan_name,
+    points: result.total_points,
+    rank: result.place,
+  };
+
+  return (
+    <tr className={getLeaderboardRowClassName(result.place)}>
+      <th scope="row" className={tableDataCellClassName}>
+        <span className="text-white">{result.place}</span>
+      </th>
+      <td className={tableDataCellClassName}>
+        <div className="d-flex align-items-center">
+          {result.avatar_url && (
           <img
             src={result.avatar_url}
             alt={result.user_name}
-            className="rounded mr-2"
-            style={{ width: '24px', height: '24px' }}
+            className="rounded-circle mr-2"
+            style={{ width: '32px', height: '32px' }}
           />
         )}
-        <a
-          href={`/users/${result.user_id}`}
-          className={cn('text-decoration-none', {
+          <UserInfo
+            user={user}
+            lang={result.user_lang}
+            hideOnlineIndicator
+            hideRank
+            displayName={displayName}
+            className={cn('text-decoration-none', {
             'fw-bold text-white': result.place <= 3,
             'text-light': result.place > 3,
           })}
-        >
-          {result.user_name}
-        </a>
-      </div>
-    </td>
-    <td>
-      {result.user_lang ? (
-        <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
+            linkClassName={cn('text-decoration-none', {
+            'fw-bold text-white': result.place <= 3,
+            'text-light': result.place > 3,
+          })}
+          />
+        </div>
+      </td>
+      <td className={tableDataCellClassName}>
+        {result.clan_name ? (
+          <span className="text-white" title={result.clan_name}>{displayClan}</span>
       ) : (
         <span className="text-muted">-</span>
       )}
-    </td>
-    <td>
-      {result.clan_name ? (
-        <span className="text-info">{result.clan_name}</span>
-      ) : (
-        <span className="text-muted">-</span>
-      )}
-    </td>
-    <td className="fw-bold text-warning">{result.total_points}</td>
-    <td>{result.total_wins_count}</td>
-    <td>{result.total_score}</td>
-    <td>{result.tournaments_count}</td>
-    <td>{result.avg_place ? Number(result.avg_place).toFixed(1) : '-'}</td>
-    <td>
-      {result.best_place ? (
-        <span className={cn('badge', getPlaceBadgeClass(result.best_place))}>
-          {result.best_place}
-        </span>
-      ) : '-'}
-    </td>
-    {showInsightsButton && (
-      <td className="text-center">
+      </td>
+      <td className={cn(tableDataCellClassName, 'fw-bold text-white')}>{result.total_points}</td>
+      <td className={tableDataCellClassName}>{result.total_wins_count}</td>
+      <td className={tableDataCellClassName}>{result.total_score}</td>
+      <td className={tableDataCellClassName}>{result.tournaments_count}</td>
+      <td className={tableDataCellClassName}>{result.avg_place ? Number(result.avg_place).toFixed(1) : '-'}</td>
+      {showInsightsButton && (
+      <td className={cn(tableDataCellClassName, 'text-center')}>
         <button
           type="button"
-          className="btn btn-sm btn-outline-info"
+          className="btn btn-sm btn-outline-light"
           onClick={() => onShowInsights(result)}
           title="View player insights"
         >
@@ -385,8 +405,9 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
         </button>
       </td>
     )}
-  </tr>
-));
+    </tr>
+  );
+});
 
 LeaderboardRow.displayName = 'LeaderboardRow';
 
@@ -449,19 +470,17 @@ export function LeaderboardTable({
         </div>
       ) : (
         <div className="table-responsive">
-          <table className="table table-dark table-striped table-hover mb-0 cb-table">
+          <table className="table table-dark table-striped table-hover mb-0 cb-table cb-custom-event-table">
             <thead>
               <tr>
                 <SortableHeader label="#" sortKey="place" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Player" sortKey="user_name" currentSort={sortConfig} onSort={onSort} />
-                <SortableHeader label="Lang" sortKey="user_lang" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Clan" sortKey="clan_name" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Points" sortKey="total_points" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Wins" sortKey="total_wins_count" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Score" sortKey="total_score" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Tournaments" sortKey="tournaments_count" currentSort={sortConfig} onSort={onSort} />
                 <SortableHeader label="Avg Place" sortKey="avg_place" currentSort={sortConfig} onSort={onSort} />
-                <SortableHeader label="Best" sortKey="best_place" currentSort={sortConfig} onSort={onSort} />
                 {showInsightsButton && <th scope="col" className="text-center">Insights</th>}
               </tr>
             </thead>

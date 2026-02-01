@@ -1,9 +1,9 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG ZIG_TAG=0.14.1
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG ZIG_TAG=0.15.2
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
-FROM --platform=$TARGETPLATFORM alpine:3.22
+FROM --platform=$TARGETPLATFORM alpine:3.23
 
 # Ensure build tools if needed (alpine-based Zig images may already have them)
 RUN apk add --no-cache build-base zig make
@@ -37,6 +37,6 @@ RUN chown -R app:app /usr/src/app
 
 USER app
 
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

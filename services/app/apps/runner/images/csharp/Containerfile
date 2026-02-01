@@ -1,6 +1,6 @@
 # ---------- build args ----------
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG DOTNET_TAG=9.0.306-bookworm-slim
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG DOTNET_TAG=10.0.102-noble
 ARG TARGETPLATFORM
 
 # ---------- bring in the external runner ----------
@@ -28,7 +28,7 @@ RUN apt-get update \
 # Create user + writable HOME and workdir
 RUN groupadd -r runneruser \
   && useradd -r -g runneruser -d /home/runneruser -s /usr/sbin/nologin runneruser \
-  && mkdir -p /home/runneruser/.nuget/packages /usr/src/app \
+  && mkdir -p /home/runneruser/.nuget/packages /home/runneruser/.nuget/NuGet /usr/src/app \
   && chown -R runneruser:runneruser /home/runneruser /usr/src/app
 
 # Switch to non-root BEFORE restore so any generated dirs are owned correctly
@@ -57,6 +57,6 @@ COPY --chown=runneruser:runneruser Program.cs .
 COPY --chown=runneruser:runneruser check ./check
 COPY --chown=runneruser:runneruser Makefile .
 
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

@@ -12,7 +12,6 @@ import * as monaco from 'monaco-editor';
 
 // 3) use the @monaco-editor/react loader to configure it with local monaco
 
-import haskellProvider from './config/editor/haskell';
 import mongodbProvider, {
   languageConfig as mongodbLangConf,
 } from './config/editor/mongodb';
@@ -24,10 +23,6 @@ import zigProvider from './config/editor/zig';
 loader.config({ monaco });
 
 loader.init().then((monacoInstance) => {
-  // Haskell
-  monacoInstance.languages.register({ id: 'haskell', aliases: ['haskell'] });
-  monacoInstance.languages.setMonarchTokensProvider('haskell', haskellProvider);
-
   // Stylus
   monacoInstance.languages.register({ id: 'stylus', aliases: ['stylus'] });
   monacoInstance.languages.setMonarchTokensProvider('stylus', stylusProvider);

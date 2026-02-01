@@ -55,6 +55,8 @@ function UserInfo({
   hideInfo = false,
   truncate = false,
   hideOnlineIndicator = false,
+  hideRank = false,
+  displayName,
   loading = false,
   placement = Placements.bottomStart,
 }) {
@@ -94,7 +96,9 @@ function UserInfo({
         isAdmin={isAdmin}
         isOnline={isOnline}
         hideOnlineIndicator={hideOnlineIndicator}
+        hideRank={hideRank}
         hideLink={hideLink}
+        displayName={displayName}
       />
     );
   }
@@ -116,7 +120,9 @@ function UserInfo({
           isAdmin={isAdmin}
           isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}
+          hideRank={hideRank}
           hideLink={hideLink}
+          displayName={displayName}
         />
       </div>
     </PopoverStickOnHover>

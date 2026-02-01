@@ -412,7 +412,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
   defp parse_pos_integer(nil, default), do: default
 
-  defp parse_pos_integer(value, default) when is_integer(value) and value > 0 do
+  defp parse_pos_integer(value, _default) when is_integer(value) and value > 0 do
     value
   end
 

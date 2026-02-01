@@ -6,17 +6,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
 
     bots = [
       %{
-        id: -15,
-        name: "MityaCopywriter",
-        is_bot: true,
-        rating: 1200,
-        email: "mitya@cprywriter.bot_codebattle",
-        lang: "haskell",
-        achievements: ["bot"],
-        inserted_at: utc_now,
-        updated_at: utc_now
-      },
-      %{
         id: -16,
         name: "Meldony",
         is_bot: true,

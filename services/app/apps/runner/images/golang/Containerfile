@@ -1,5 +1,5 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG GO_TAG=1.25.3-alpine3.22
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG GO_TAG=1.25.6-alpine3.23
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
@@ -34,5 +34,5 @@ RUN chown -R app:app /runner && chmod +x /runner/codebattle_runner
 
 USER app
 
-EXPOSE 8000
+EXPOSE 4040
 ENTRYPOINT ["/runner/codebattle_runner"]

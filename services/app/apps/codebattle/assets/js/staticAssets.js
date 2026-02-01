@@ -33,7 +33,6 @@ import '../static/images/landing/languages/c-sharp.svg?url';
 import '../static/images/landing/languages/dart.svg?url';
 import '../static/images/landing/languages/elixir.svg?url';
 import '../static/images/landing/languages/go.svg?url';
-import '../static/images/landing/languages/haskell.svg?url';
 import '../static/images/landing/languages/java.svg?url';
 import '../static/images/landing/languages/js.svg?url';
 import '../static/images/landing/languages/kotlin.svg?url';

@@ -1,4 +1,4 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
 ARG MONGO_TAG=8.0.15
 ARG TARGETPLATFORM
 
@@ -15,7 +15,7 @@ ENV MONGO_INITDB_DATABASE=db \
 
 WORKDIR /usr/src/app
 
-EXPOSE 8000
+EXPOSE 4040
 
 COPY single_table.js .
 COPY Makefile .

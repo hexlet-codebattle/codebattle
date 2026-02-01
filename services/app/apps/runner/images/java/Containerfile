@@ -1,5 +1,5 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG CORRETTO_TAG=25-alpine3.22-full
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG CORRETTO_TAG=25-alpine3.23-full
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
@@ -13,7 +13,7 @@ RUN addgroup -S app -g 10001 \
 
 WORKDIR /usr/src/app
 
-RUN curl -L -o gson.jar https://repo1.maven.org/maven2/com/google/code/gson/gson/2.13.1/gson-2.13.1.jar \
+RUN curl -L -o gson.jar https://repo1.maven.org/maven2/com/google/code/gson/gson/2.13.2/gson-2.13.2.jar \
   && chown -R app:app /usr/src/app
 
 COPY check check
@@ -22,6 +22,6 @@ RUN chown -R app:app /usr/src/app
 
 USER app
 
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

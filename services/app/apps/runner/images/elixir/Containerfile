@@ -1,5 +1,5 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-rs:latest
-ARG ELIXIR_TAG=1.19.1-alpine
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG ELIXIR_TAG=1.19.5-alpine
 ARG TARGETPLATFORM
 
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
@@ -29,6 +29,6 @@ RUN chown -R app:app /usr/src/app
 
 USER app
 
-EXPOSE 8000
+EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

@@ -11,6 +11,7 @@ import {
   getPlaceBadgeClass,
   getMedalEmoji,
 } from '../../components/SeasonLeaderboard';
+import UserInfo from '../../components/UserInfo';
 
 function StatBox({ label, value, highlight = false }) {
   return (
@@ -23,7 +24,23 @@ function StatBox({ label, value, highlight = false }) {
   );
 }
 
+const truncateText = (text, maxLength = 12) => (
+  text && text.length > maxLength ? text.slice(0, maxLength) : text
+);
+
 function PodiumCard({ result, isFirst = false }) {
+  const displayName = truncateText(result.user_name);
+  const displayClan = truncateText(result.clan_name);
+  const user = {
+    id: result.user_id,
+    name: result.user_name,
+    lang: result.user_lang,
+    avatarUrl: result.avatar_url,
+    clan: result.clan_name,
+    points: result.total_points,
+    rank: result.place,
+  };
+
   return (
     <div
       className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
@@ -44,9 +61,19 @@ function PodiumCard({ result, isFirst = false }) {
           style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
         />
       )}
-        <h4 className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
-          {result.user_name}
-        </h4>
+        <div className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
+          <div className="d-flex justify-content-center">
+            <UserInfo
+              user={user}
+              lang={null}
+              hideOnlineIndicator
+              hideRank
+              displayName={displayName}
+              className="text-white"
+              linkClassName="text-white"
+            />
+          </div>
+        </div>
         <div className="mb-3">
           {result.user_lang && (
           <span className="mr-2">
@@ -54,7 +81,7 @@ function PodiumCard({ result, isFirst = false }) {
           </span>
         )}
           {result.clan_name && (
-            <span className="text-muted">{result.clan_name}</span>
+            <span className="text-muted" title={result.clan_name}>{displayClan}</span>
           )}
         </div>
         <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
@@ -144,50 +171,72 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
             </div>
 
             <div className="row">
-              {winners.map((winner) => (
-                <div key={winner.user_id} className="col-md-4 mb-3">
-                  <div
-                    className={cn('card h-100 border-0 cb-hof-podium-card', {
-                      'cb-gold-place-bg': winner.place === 1,
-                      'cb-silver-place-bg': winner.place === 2,
-                      'cb-bronze-place-bg': winner.place === 3,
-                    })}
-                  >
-                    <div className="card-body">
-                      <div className="d-flex align-items-center mb-2">
-                        <span className={cn('badge mr-2', getPlaceBadgeClass(winner.place))}>
-                          {getMedalEmoji(winner.place)}
-                        </span>
-                        {winner.avatar_url && (
-                          <img
-                            src={winner.avatar_url}
-                            alt={winner.user_name}
-                            className="rounded mr-2"
-                            style={{ width: '24px', height: '24px' }}
+              {winners.map((winner) => {
+                const displayName = truncateText(winner.user_name);
+                const displayClan = truncateText(winner.clan_name);
+                const user = {
+                  id: winner.user_id,
+                  name: winner.user_name,
+                  lang: winner.user_lang,
+                  avatarUrl: winner.avatar_url,
+                  clan: winner.clan_name,
+                  points: winner.total_points,
+                  rank: winner.place,
+                };
+
+                return (
+                  <div key={winner.user_id} className="col-md-4 mb-3">
+                    <div
+                      className={cn('card h-100 border-0 cb-hof-podium-card', {
+                        'cb-gold-place-bg': winner.place === 1,
+                        'cb-silver-place-bg': winner.place === 2,
+                        'cb-bronze-place-bg': winner.place === 3,
+                      })}
+                    >
+                      <div className="card-body">
+                        <div className="d-flex align-items-center mb-2">
+                          <span className={cn('badge mr-2', getPlaceBadgeClass(winner.place))}>
+                            {getMedalEmoji(winner.place)}
+                          </span>
+                          {winner.avatar_url && (
+                            <img
+                              src={winner.avatar_url}
+                              alt={winner.user_name}
+                              className="rounded-circle mr-2"
+                              style={{ width: '32px', height: '32px' }}
+                            />
+                          )}
+                          <UserInfo
+                            user={user}
+                            lang={null}
+                            hideOnlineIndicator
+                            hideRank
+                            displayName={displayName}
+                            className="mb-0 text-white"
+                            linkClassName="text-white"
                           />
-                        )}
-                        <h6 className="mb-0 text-white">{winner.user_name}</h6>
-                      </div>
-                      <div className="small">
-                        <div className="d-flex align-items-center mb-1">
-                          {winner.user_lang && (
-                            <span className="mr-2">
-                              <LanguageIcon lang={winner.user_lang} style={{ width: '16px', height: '16px' }} />
-                            </span>
-                          )}
-                          {winner.clan_name && (
-                            <span className="text-muted">{winner.clan_name}</span>
-                          )}
                         </div>
-                        <div className="d-flex justify-content-between">
-                          <span className="text-muted">Points:</span>
-                          <span className="text-white fw-bold">{winner.total_points}</span>
+                        <div className="small">
+                          <div className="d-flex align-items-center mb-1">
+                            {winner.user_lang && (
+                              <span className="mr-2">
+                                <LanguageIcon lang={winner.user_lang} style={{ width: '16px', height: '16px' }} />
+                              </span>
+                            )}
+                            {winner.clan_name && (
+                              <span className="text-muted" title={winner.clan_name}>{displayClan}</span>
+                            )}
+                          </div>
+                          <div className="d-flex justify-content-between">
+                            <span className="text-muted">Points:</span>
+                            <span className="text-white fw-bold">{winner.total_points}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>

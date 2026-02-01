@@ -386,8 +386,7 @@ function CodebattleLeagueDescription() {
                     </p>
                     <p className="mb-0">
                       16 supported — clojure, cpp, csharp, dart, elixir, golang,
-                      haskell, java, js, kotlin, php, python, ruby, rust, swift,
-                      zig, ts.
+                      java, js, kotlin, php, python, ruby, rust, swift, zig, ts.
                     </p>
                   </div>
                 </div>

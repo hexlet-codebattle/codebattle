@@ -211,6 +211,48 @@ input[type="range"] {
   }
 }
 
+input[type="range"].cb-range {
+  --range-progress: 50%;
+
+  &::-webkit-slider-runnable-track {
+    background: linear-gradient(90deg, $orange var(--range-progress), $cb-bg-panel var(--range-progress));
+    border: 1px solid $cb-border-color;
+  }
+
+  &::-moz-range-track {
+    background: linear-gradient(90deg, $orange var(--range-progress), $cb-bg-panel var(--range-progress));
+    border: 1px solid $cb-border-color;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: $orange;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  &::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: $orange;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  &:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px rgba(238, 55, 55, 0.25);
+  }
+
+  &:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 4px rgba(238, 55, 55, 0.25);
+  }
+}
+
 .dark-bg {
   background-color: $dark;
 }
@@ -2169,13 +2211,14 @@ a:hover {
   border-bottom: 1px solid #3a3a45;
 }
 
+.stat-line:last-child {
+  border-bottom: none;
+}
+
 .stat-item:last-child {
   border-right: none;
 }
 
-.stat-line:last-child {
-  border-bottom: none;
-}
 
 .stat-value {
   font-size: 20px;
@@ -2240,6 +2283,50 @@ a:hover {
 
 .cb-bg-highlight-panel {
   background-color: $cb-bg-highlight-panel;
+}
+
+.cb-create-game {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cb-create-game__section {
+  background: $cb-bg-highlight-panel;
+  border: 1px solid $cb-border-color;
+  border-radius: $cb-border-radius;
+  padding: 14px 16px 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.cb-create-game__section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  h5 {
+    letter-spacing: 0.02em;
+  }
+}
+
+.cb-create-game__section-title--with-value {
+  margin-bottom: 12px;
+}
+
+.cb-create-game__time-value {
+  color: white;
+  background: rgba(238, 55, 55, 0.16);
+  border: 1px solid rgba(238, 55, 55, 0.45);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.cb-create-game__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
 }
 
 .cb-border-color {
@@ -2707,6 +2794,7 @@ a.cb-text-light:hover {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(16px);
 }
+
 
 .arrow::after,
 .bs-popover-bottom .arrow::after {

@@ -195,16 +195,72 @@ runner-kotlin:
 	    --security-opt=no-new-privileges=false \
 	    ghcr.io/hexlet-codebattle/kotlin:2.3.0
 
-runner-kotlin:
-	 podman run --rm -p 4040:4040 \
-	    --cap-add=SYS_ADMIN \
-	    --cap-add=SYS_CHROOT \
-	    --security-opt=no-new-privileges=false \
-	    ghcr.io/hexlet-codebattle/kotlin:2.3.0
-
 runner-js:
 	 podman run --rm -p 4040:4040 \
 	    --cap-add=SYS_ADMIN \
 	    --cap-add=SYS_CHROOT \
 	    --security-opt=no-new-privileges=false \
 	    ghcr.io/hexlet-codebattle/js:25.4.0
+
+runner-dart:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/dart:3.10.0
+
+runner-csharp:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/csharp:10.0.102
+
+runner-clojure:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/clojure:1.12.4
+
+runner-elixir:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/elixir:1.19.5
+
+runner-golang:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/golang:1.25.6
+
+runner-php:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/php:8.5.2
+
+runner-java:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/java:25.0.2
+
+runner-zig:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/zig:0.15.2
+
+runner-rust:
+	 podman run --rm -p 4040:4040 \
+	    --cap-add=SYS_ADMIN \
+	    --cap-add=SYS_CHROOT \
+	    --security-opt=no-new-privileges=false \
+	    ghcr.io/hexlet-codebattle/rust:1.93.0

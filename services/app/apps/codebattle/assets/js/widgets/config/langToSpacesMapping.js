@@ -3,7 +3,6 @@ export default {
   cpp: true,
   csharp: true,
   elixir: true,
-  haskell: true,
   java: true,
   js: true,
   kotlin: true,

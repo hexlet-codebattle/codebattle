@@ -45,9 +45,11 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }) {
       <span className="text-monospace">
         {timeoutSeconds && (
           <span>
-            {i18n.t('Timeout in: %{time}', {
-              time: moment.utc(duration).format('HH:mm:ss'),
-            })}
+            {duration <= 0
+              ? i18n.t('Time is Over')
+              : i18n.t('Timeout in: %{time}', {
+                time: moment.utc(duration).format('HH:mm:ss'),
+              })}
           </span>
         )}
       </span>
