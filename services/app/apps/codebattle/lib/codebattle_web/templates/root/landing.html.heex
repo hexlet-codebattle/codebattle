@@ -1,342 +1,368 @@
 <h1 class="d-none">Codebattle</h1>
-<div class="dark-bg pb-md-6 pb-3">
-  <div class="container-lg">
-    <nav class="navbar navbar-dark px-0 pt-4">
-      <a class="navbar-brand d-flex align-items-end" href="/">
-        <img alt="Logo" height="40px" src={static_asset("images/logo.svg")} />
-        <div class="d-sm-flex d-none flex-column text-gray ml-1 pb-1">
-          <span class="header-txt">Codebattle</span>
-          <span class="header-txt">by Hexlet’s community</span>
-        </div>
-      </a>
-      <ul class="navbar-nav ml-auto flex-row">
-        <li class="nav-item mx-1">
-          <a href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-            <button class="btn btn-outline-success rounded-lg">{gettext("Sign in")}</button>
-          </a>
-        </li>
-        <li class="nav-item mx-1">
-          <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-            <button class="btn btn-outline-success rounded-lg">{gettext("Sign up")}</button>
-          </a>
-        </li>
+<div class="landing">
+  <div class="landing-shell">
+    <div class="landing-noise"></div>
+    <div class="landing-orb orb-a"></div>
 
-        <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
-          <li class="nav-item mx-1">
-            {button("Dev",
-              to: "/auth/dev_login?locale=en&subscription_type=free",
-              class: "btn btn-outline-danger rounded-lg"
-            )}
-            {button("Premium",
-              to: "/auth/dev_login?locale=en&subscription_type=premium",
-              class: "btn btn-outline-danger rounded-lg"
-            )}
-            {button("Admin",
-              to: "/auth/dev_login?locale=en&subscription_type=admin",
-              class: "btn btn-outline-danger rounded-lg"
-            )}
-          </li>
-        <% end %>
-      </ul>
-    </nav>
-
-    <div class="bg-codebattle">
-      <div class="text-white py-6 d-flex flex-column">
-        <div>
-          <p class="mb-0">Have fun and improve your skills</p>
-          <p class="mb-0">Beat the challenge faster than your opponent using your ❤ language</p>
-        </div>
-        <div class="col-md-8 pl-0 mt-4">
-          <h1 class="text-uppercase text-light">A place where your fingers become arms</h1>
-        </div>
-        <hr class="w-25 mx-0 hr-gray my-4" />
-        <div>
-          <button
-            class="btn btn-outline-red text-uppercase mt-3 p-3 rounded-lg"
-            data-csrf={csrf_token()}
-            data-method="post"
-            data-to="/games/training"
-          >
-            Try simple battle
-          </button>
-          <span class="d-block mt-2 text-muted">No registration required</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="bg-light py-5">
-  <div class="container-lg pb-xl-6">
-    <div class="d-flex flex-lg-row flex-column justify-content-between">
-      <div>
-        <h2 class="text-uppercase text-center text-lg-left text-orange mb-4 text-nowrap">
-          Description
-        </h2>
-        <div class="pr-lg-5">
-          <p>
-            It's a game for developers. It's very simple: solve the coding challenge faster than your opponent using your ❤ language.
-          </p>
-          <p class="mt-3">
-            We help beginner and experienced developers spend time with fun, gain new knowledge and grow professionally.
-          </p>
-          <p class="mt-3">
-            You can battle in single player mode with bots or against your friends.
-          </p>
-          <p class="mt-3">
-            Participate in monthly individual or team tournaments with prizes or create your own to find the best developer in your team.
-          </p>
-        </div>
-      </div>
-      <div class="d-flex flex-column w-100">
-        <h2 class="order-lg-2 mt-3 text-uppercase text-center text-lg-right text-orange text-nowrap">
-          Languages
-        </h2>
-        <div class="order-lg-1 lang-icons">
-          <img
-            alt="clojure"
-            src={static_asset("images/landing/languages/clojure.svg")}
-            title="clojure"
-          />
-          <img alt="cpp" src={static_asset("images/landing/languages/cpp.svg")} title="cpp" />
-          <img
-            alt="csharp"
-            src={static_asset("images/landing/languages/c-sharp.svg")}
-            title="csharp"
-          />
-          <img alt="dart" src={static_asset("images/landing/languages/dart.svg")} title="dart" />
-          <img
-            alt="elixir"
-            src={static_asset("images/landing/languages/elixir.svg")}
-            title="elixir"
-          />
-          <img alt="go" src={static_asset("images/landing/languages/go.svg")} title="go" />
-          <img alt="java" src={static_asset("images/landing/languages/java.svg")} title="java" />
-          <img
-            alt="javascript"
-            src={static_asset("images/landing/languages/js.svg")}
-            title="javascript"
-          />
-          <img
-            alt="kotlin"
-            src={static_asset("images/landing/languages/kotlin.svg")}
-            title="kotlin"
-          />
-          <img alt="php" src={static_asset("images/landing/languages/php.svg")} title="php" />
-          <img
-            alt="python"
-            src={static_asset("images/landing/languages/python.svg")}
-            title="python"
-          />
-          <img alt="ruby" src={static_asset("images/landing/languages/ruby.svg")} title="ruby" />
-          <img alt="rust" src={static_asset("images/landing/languages/rust.svg")} title="rust" />
-          <img alt="swift" src={static_asset("images/landing/languages/swift.svg")} title="swift" />
-          <img
-            alt="typescript"
-            src={static_asset("images/landing/languages/ts.svg")}
-            title="typescript"
-          />
-          <img alt="zig" src={static_asset("images/landing/languages/zig.svg")} title="zig" />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="dark-bg text-white">
-  <div class="container-lg">
-    <div class="d-flex flex-wrap flex-column flex-lg-row justify-content-md-around text-black text-center x-tranform-none x-translate-xl-y-50 x-top-0 py-5 py-xl-0">
-      <div class="d-flex flex-column p-5 factoid bg-light shadow-lg mx-auto" translate="no">
-        <div class="my-auto">
-          <h2>
-            <span class="text-orange">≥</span>256
-          </h2>
-          <span class="my-3 lead">Task.all.count()</span>
-        </div>
-      </div>
-      <div
-        class="d-flex flex-column p-5 factoid bg-light shadow-lg my-3 my-lg-0 mx-auto"
-        translate="no"
-      >
-        <div class="my-auto">
-          <h2>
-            <span class="text-orange">></span>5400
-          </h2>
-          <span class="my-3 lead">User.all.count()</span>
-        </div>
-      </div>
-      <div class="d-flex flex-column p-5 factoid bg-light shadow-lg mx-auto" translate="no">
-        <div class="my-auto">
-          <h2>
-            <span class="text-orange">></span>56_000
-          </h2>
-          <span class="my-3 lead">Game.all.count()</span>
-        </div>
-      </div>
-    </div>
-    <div class="d-flex mt-2">
-      <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
-      <h2 class="text-uppercase text-light mx-auto">USER::TYPES</h2>
-      <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
-    </div>
-    <div class="mt-5 row flex-wrap">
-      <div class="col-sm-3 text-center">
-        <img alt="beginner" src={static_asset("images/landing/beginner.svg")} />
-        <p class="mt-3">For beginners who want to pump their skills</p>
-      </div>
-      <div class="col-sm-3 text-center">
-        <img alt="experienced" src={static_asset("images/landing/experienced.svg")} />
-        <p class="mt-3">For experienced who want to break records</p>
-      </div>
-      <div class="col-sm-3 text-center">
-        <img alt="friend" src={static_asset("images/landing/friends.svg")} />
-        <p class="mt-3">For friends who want to battle each other</p>
-      </div>
-      <div class="col-sm-3 text-center">
-        <img alt="enthusiast" src={static_asset("images/landing/enthusiast.svg")} />
-        <p class="mt-3">For those who are in love with programming</p>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="dark-bg text-white py-5">
-  <div class="container-lg text-center pt-4">
-    <div class="d-flex align-items-center">
-      <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
-      <h2 class="text-uppercase text-light mx-auto">Algorithm</h2>
-      <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
-    </div>
-    <img
-      alt="algorithm"
-      class="w-100 my-5 pr-md-5"
-      src={static_asset("images/landing/flowchart.svg")}
-    />
-  </div>
-</div>
-<div class="bg-light py-5">
-  <div class="container-lg">
-    <h2 class="text-uppercase text-center mb-0 pt-5">Comments</h2>
-    <div class="comments mt-5">
-      <div class="comment border border-dark d-flex flex-column">
-        <div class="d-flex flex-wrap align-items-center">
-          <img alt="Journalist" src={static_asset("images/landing/photo1.png")} />
-          <div class="mx-3">
-            <p class="font-weight-bold mb-0 text-uppercase">Journalist</p>
-            <p>Middle frontend engineer</p>
+    <div class="container-lg">
+      <nav class="navbar navbar-dark px-0 pt-4 landing-nav" data-reveal style="--reveal-delay: 0ms;">
+        <a class="navbar-brand d-flex align-items-end" href="/">
+          <img alt="Logo" height="40px" src={static_asset("images/logo.svg")} />
+          <div class="d-sm-flex d-none flex-column text-gray ml-2 pb-1">
+            <span class="header-txt">Hexlet Codebattle</span>
+            <span class="header-txt">Competitive coding platform</span>
           </div>
-        </div>
-        <div class="h-100 d-flex">
-          <img
-            alt="comment"
-            class="w-100 my-auto"
-            src={static_asset("images/landing/comment.png")}
-          />
-        </div>
-      </div>
-      <div class="comment border border-dark d-flex flex-column">
-        <div class="d-flex flex-wrap align-items-center justify-content-end">
-          <div class="text-right mx-3">
-            <p class="font-weight-bold mb-0 text-uppercase">Rosa Robot</p>
-            <p>UI/UX Senior</p>
-          </div>
-          <img alt="rosa" src={static_asset("images/landing/photo2.png")} />
-        </div>
-        <div class="h-100 d-flex">
-          <img alt="comment" class="w-100 my-auto" src={static_asset("images/landing/html.png")} />
-        </div>
-      </div>
-      <div class="comment border border-dark d-flex flex-column justify-content-end">
-        <div class="h-100 d-flex">
-          <img
-            alt="comment"
-            class="w-100 my-auto"
-            src={static_asset("images/landing/comment2.png")}
-          />
-        </div>
-        <div class="d-flex flex-wrap align-items-center">
-          <img alt="SHERSHNYAGA" src={static_asset("images/landing/photo4.png")} />
-          <div class="mx-3">
-            <p class="font-weight-bold mb-0">SHERSHNYAGA</p>
-            <p class="mb-0">Senior frontend dev</p>
-          </div>
-        </div>
-      </div>
-      <div class="comment border border-dark d-flex flex-column justify-content-end">
-        <div class="h-100 d-flex pt-1 mt-3">
-          <img
-            alt="comment"
-            class="w-100 my-auto"
-            src={static_asset("images/landing/comment3.png")}
-          />
-        </div>
-        <div class="d-flex flex-wrap align-items-center justify-content-end">
-          <div class="text-right mx-3">
-            <p class="font-weight-bold text-uppercase mb-0">Engineer</p>
-            <p class="mb-0">Beginner</p>
-          </div>
-          <img alt="Engineer" src={static_asset("images/landing/photo3.png")} />
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="bg-light py-5">
-  <div class="container-lg">
-    <h2 class="text-uppercase text-center mb-0">Contributors</h2>
-    <div class="mt-5">
-      <div class="d-flex">
-        <a
-          class="text-uppercase text-black fw-500"
-          href="https://github.com/hexlet-codebattle/codebattle"
-        >
-          <img class="mr-sm-2" src={static_asset("images/landing/github.svg")} /> Codebattle
         </a>
-        <div class="float-right mt-2 ml-auto">
-          <a
-            aria-label="Star hexlet-codebattle/codebattle on GitHub"
-            class="github-button"
-            data-icon="octicon-star"
-            data-show-count="true"
-            data-size="large"
-            href="https://github.com/hexlet-codebattle/codebattle"
-          >
-            Star
-          </a>
+        <ul class="navbar-nav ml-auto flex-row landing-nav-actions">
+          <li class="nav-item mx-1">
+            <a href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+              <button class="btn btn-outline-success rounded-lg">{gettext("Sign in")}</button>
+            </a>
+          </li>
+          <li class="nav-item mx-1">
+            <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+              <button class="btn btn-primary rounded-lg">{gettext("Sign up")}</button>
+            </a>
+          </li>
+
+          <%= if Application.get_env(:codebattle, :dev_sign_in) do %>
+            <li class="nav-item mx-1">
+              {button("Dev",
+                to: "/auth/dev_login?locale=en&subscription_type=free",
+                class: "btn btn-outline-danger rounded-lg"
+              )}
+              {button("Premium",
+                to: "/auth/dev_login?locale=en&subscription_type=premium",
+                class: "btn btn-outline-danger rounded-lg"
+              )}
+              {button("Admin",
+                to: "/auth/dev_login?locale=en&subscription_type=admin",
+                class: "btn btn-outline-danger rounded-lg"
+              )}
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <div class="container-lg">
+        <div class="hero-grid">
+          <div class="hero-copy" data-reveal style="--reveal-delay: 120ms;">
+            <span class="eyebrow">Tournaments. Seasons. Code-first competition.</span>
+            <h1 class="hero-title">Play in the best coding arena</h1>
+            <p class="hero-lead">
+              Codebattle powers head-to-head battles, team brackets, and seasonal leaderboards.
+              Set formats, invite players, and watch the rankings move in real time.
+            </p>
+            <div class="hero-cta">
+              <button
+                class="btn btn-try text-uppercase p-3 rounded-lg"
+                data-csrf={csrf_token()}
+                data-method="post"
+                data-to="/games/training"
+              >
+                Try simple battle
+              </button>
+              <span class="d-block mt-2 text-muted">No registration required</span>
+            </div>
+            <div class="hero-pills" data-reveal style="--reveal-delay: 220ms;">
+              <span class="pill">Live ladders</span>
+              <span class="pill">Team seasons</span>
+              <span class="pill">Bots + training</span>
+            </div>
+          </div>
+          <div class="hero-visual" data-reveal style="--reveal-delay: 240ms;">
+            <div class="hero-panel">
+              <div class="hero-panel-header">
+                <span class="panel-title">Current Season Leaderboard</span>
+                <span class="panel-status">
+                  <%= if @current_season do %>
+                    <%= @current_season.name %> <%= @current_season.year %>
+                  <% else %>
+                    Upcoming
+                  <% end %>
+                </span>
+              </div>
+              <div class="hero-panel-body">
+                <div class="leaderboard-list">
+                  <%= if Enum.empty?(@current_season_leaderboard) do %>
+                    <p class="text-muted mb-0">Season standings will appear here soon.</p>
+                  <% else %>
+                    <%= for result <- @current_season_leaderboard do %>
+                      <div class="leaderboard-row">
+                        <div class="leaderboard-rank"><%= result.place %></div>
+                        <div class="leaderboard-player">
+                          <%= if result.avatar_url do %>
+                            <img
+                              alt={result.user_name}
+                              class="leaderboard-avatar"
+                              src={result.avatar_url}
+                            />
+                          <% else %>
+                            <div class="leaderboard-avatar placeholder"></div>
+                          <% end %>
+                          <div>
+                            <p class="leaderboard-name"><%= result.user_name %></p>
+                            <span class="leaderboard-meta">
+                              <%= result.user_lang || "Any" %>
+                            </span>
+                          </div>
+                        </div>
+                        <div class="leaderboard-points"><%= result.total_points %> pts</div>
+                      </div>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="hero-badge">Top 5 players • current season</div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div class="d-flex flex-wrap my-3">
-        {render("_contributors_codebattle.html")}
+    <section class="section" id="seasons">
+      <div class="container-lg">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Seasons and formats</p>
+          <h2>Four seasons a year. One Grand Slam to crown the best.</h2>
+          <p class="section-lead">
+            Join a competitive ladder that resets each season so every coder gets a fresh climb.
+            Swiss rounds keep every match fair, while lifetime Elo tracks your true skill across seasons.
+            Top finishers earn prizes and exclusive merch.
+          </p>
+        </div>
+        <div class="cards-grid" data-reveal style="--reveal-delay: 120ms;">
+          <div class="feature-card">
+            <h3>Season ladder</h3>
+            <p>Earn season points, climb the live leaderboard, and lock your place in the finale.</p>
+            <div class="chip-row">
+              <span>Season points</span>
+              <span>Finals on 21st</span>
+              <span>Hall of Fame</span>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h3>Swiss tournaments</h3>
+            <p>Face opponents with similar scores, solve the same task, and rise with every win.</p>
+            <div class="chip-row">
+              <span>Swiss pairing</span>
+              <span>Live standings</span>
+              <span>No repeat pairs</span>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h3>Grades & schedule</h3>
+            <p>Start at rookie, fight up the grades, and aim for the Grand Slam spotlight.</p>
+            <div class="chip-row">
+              <span>Rookie → Grand Slam</span>
+              <span>Grand Slam finale</span>
+              <span>Points by place</span>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="d-flex flex-wrap">
-        <span class="mr-1">#elixir</span>
-        <span class="mr-1">#phoenix</span>
-        <span class="mr-1">#live_view</span>
-        <span class="mr-1">#es6</span>
-        <span class="mr-1">#react</span>
-        <span class="mr-1">#redux</span>
-        <span class="mr-1">#bootstrap</span>
-        <span class="mr-1">#k8s</span>
-        <span class="mr-1">#podman</span>
-      </div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<div class="bg-dark py-1 py-md-6 text-white what-now-bg-img">
-  <div class="container-lg">
-    <div class="row">
-      <div class="col-3 d-none d-md-block border-top border-left border-bottom border-secondary">
+    <section class="section section-alt">
+      <div class="container-lg">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">How it works</p>
+          <h2>Join, battle, climb, repeat</h2>
+          <p class="section-lead">
+            A clear loop that keeps the competition fair and the season exciting.
+          </p>
+        </div>
+        <div class="how-steps" data-reveal style="--reveal-delay: 120ms;">
+          <div class="how-step" data-parallax="0.06">
+            <div class="how-step-index">01</div>
+            <div>
+              <h3>Join a season</h3>
+              <p>Seasons reset points so everyone gets a fresh shot at the top.</p>
+            </div>
+          </div>
+          <div class="how-step" data-parallax="0.04">
+            <div class="how-step-index">02</div>
+            <div>
+              <h3>Battle in Swiss rounds</h3>
+              <p>Face opponents with similar scores on the same task each round.</p>
+            </div>
+          </div>
+          <div class="how-step" data-parallax="0.07">
+            <div class="how-step-index">03</div>
+            <div>
+              <h3>Earn season points</h3>
+              <p>Climb the live leaderboard and secure your place in the finale.</p>
+            </div>
+          </div>
+          <div class="how-step" data-parallax="0.05">
+            <div class="how-step-index">04</div>
+            <div>
+              <h3>Win the Grand Slam</h3>
+              <p>Champions take the spotlight, prizes, and exclusive merch.</p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-6 py-5 mx-auto">
-        <h2 class="text-uppercase text-center text-light mt-3">
-          What now?
-        </h2>
-        <p class="text-center mt-3">
-          Start to code on your ❤ language
-        </p>
-        <div class="d-block text-center mt-3">
+    </section>
+
+    <section class="section">
+      <div class="container-lg">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Private tournaments</p>
+          <h2>Build your own tournaments for friends or teams</h2>
+          <p class="section-lead">
+            Host custom events for meetups, work team‑building, or just fun sessions.
+            We’ve run tournaments for 1,000+ players.
+          </p>
+        </div>
+        <div class="cards-grid" data-reveal style="--reveal-delay: 120ms;">
+          <div class="feature-card">
+            <h3>Friends & communities</h3>
+            <p>Create private rooms, invite friends, and enjoy real‑time battles together.</p>
+            <div class="chip-row">
+              <span>Invite links</span>
+              <span>Live standings</span>
+              <span>Instant rematch</span>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h3>Team‑building</h3>
+            <p>Run company tournaments and energize your team with friendly competition.</p>
+            <div class="chip-row">
+              <span>Team brackets</span>
+              <span>Flexible schedule</span>
+              <span>Highlights</span>
+            </div>
+          </div>
+          <div class="feature-card">
+            <h3>Large‑scale events</h3>
+            <p>Trusted for tournaments at scale with thousands of players.</p>
+            <div class="chip-row">
+              <span>1,000+ players</span>
+              <span>Stable rounds</span>
+              <span>Fast judge</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-languages">
+      <div class="container-lg">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Languages</p>
+          <h2>Battle in your language</h2>
+          <p class="section-lead">Pick your stack and jump into any tournament format.</p>
+        </div>
+        <div class="lang-icons landing-langs" data-reveal style="--reveal-delay: 120ms;">
+          <span class="lang-tooltip" data-tooltip="Clojure">
+            <img alt="clojure" src={static_asset("images/landing/languages/clojure.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="C++">
+            <img alt="cpp" src={static_asset("images/landing/languages/cpp.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="C#">
+            <img alt="csharp" src={static_asset("images/landing/languages/c-sharp.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Dart">
+            <img alt="dart" src={static_asset("images/landing/languages/dart.svg")} />
+          </span>
+          <span class="lang-tooltip lang-highlight lang-highlight--elixir" data-tooltip="Elixir">
+            <img alt="elixir" src={static_asset("images/landing/languages/elixir.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Go">
+            <img alt="go" src={static_asset("images/landing/languages/go.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Java">
+            <img alt="java" src={static_asset("images/landing/languages/java.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="JavaScript">
+            <img alt="javascript" src={static_asset("images/landing/languages/js.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Kotlin">
+            <img alt="kotlin" src={static_asset("images/landing/languages/kotlin.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="PHP">
+            <img alt="php" src={static_asset("images/landing/languages/php.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Python">
+            <img alt="python" src={static_asset("images/landing/languages/python.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Ruby">
+            <img alt="ruby" src={static_asset("images/landing/languages/ruby.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Rust">
+            <img alt="rust" src={static_asset("images/landing/languages/rust.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Swift">
+            <img alt="swift" src={static_asset("images/landing/languages/swift.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="TypeScript">
+            <img alt="typescript" src={static_asset("images/landing/languages/ts.svg")} />
+          </span>
+          <span class="lang-tooltip" data-tooltip="Zig">
+            <img alt="zig" src={static_asset("images/landing/languages/zig.svg")} />
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container-lg">
+        <div class="section-head" data-reveal>
+          <p class="eyebrow">Community</p>
+          <h2>Built by competitive coders</h2>
+          <p class="section-lead">
+            Codebattle is open and community-driven. Join contributors and help shape upcoming seasons.
+          </p>
+        </div>
+        <div class="community" data-reveal style="--reveal-delay: 120ms;">
+          <div class="community-head">
+            <a
+              class="text-uppercase text-white fw-500"
+              href="https://github.com/hexlet-codebattle/codebattle"
+            >
+              <img class="mr-sm-2 github-logo" src={static_asset("images/landing/github.svg")} /> Codebattle
+            </a>
+            <div class="float-right mt-2 ml-auto">
+              <a href="https://github.com/hexlet-codebattle/codebattle" target="_blank" rel="noopener">
+                <img
+                  alt="GitHub stars"
+                  class="github-stars-badge"
+                  src="https://img.shields.io/github/stars/hexlet-codebattle/codebattle?style=social"
+                />
+              </a>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap my-3 contributors">
+            {render("_contributors_codebattle.html")}
+          </div>
+          <div class="tag-row">
+            <span>#elixir</span>
+            <span>#phoenix</span>
+            <span>#live_view</span>
+            <span>#es6</span>
+            <span>#react</span>
+            <span>#redux</span>
+            <span>#postgres</span>
+            <span>#k8s</span>
+            <span>#podman</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" data-reveal>
+      <div class="container-lg">
+        <div class="cta-card">
+          <div>
+            <h2>Ready to enter the arena?</h2>
+            <p>Spin up a quick match or start planning your next season.</p>
+          </div>
           <button
-            class="btn btn-outline-red text-uppercase mt-3 p-3 rounded-lg"
+            class="btn btn-try text-uppercase p-3 rounded-lg"
             data-csrf={csrf_token()}
             data-method="post"
             data-to="/games/training"
@@ -345,20 +371,19 @@
           </button>
         </div>
       </div>
-      <div class="col-3 d-none d-md-block border-top border-bottom border-right border-secondary">
-      </div>
-    </div>
+    </section>
   </div>
 </div>
+
 <div class="footer text-white">
   <div class="container-lg py-3 d-flex justify-content-between align-items-center text-gray flex-column flex-sm-row">
     <div>
       <p class="mb-0 mr-4">
         ©
         <a class="text-muted" href="https://hexlet.io/">
-          Hexlet ltd
+          Hexlet ltd,
         </a>
-        , 2025
+        2026
       </p>
       <p class="mb-0">
         Support:
@@ -370,9 +395,7 @@
     <div class="mt-3 mt-sm-0">
       <p class="mb-0">
         Design by:
-        <a class="text-muted ml-2" href="https://www.behance.net/caspermosh" target="_blank">
-          CasperMosh
-        </a>
+        <span class="text-muted ml-2">ChatGPT</span>
       </p>
       <p class="mb-0 mt-2 small text-muted">
         Version: {app_short_version()}

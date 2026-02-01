@@ -3,6 +3,8 @@ defmodule CodebattleWeb.RootController do
 
   import PhoenixGon.Controller
 
+  alias Codebattle.Season
+  alias Codebattle.SeasonResult
   alias Codebattle.User
   alias CodebattleWeb.Api.LobbyView
   alias CodebattleWeb.LayoutView
@@ -38,7 +40,19 @@ defmodule CodebattleWeb.RootController do
 
       # render guests landing page for normal mode
       is_guest? ->
-        render(conn, "landing.html", layout: {LayoutView, "landing.html"})
+        current_season = Season.get_current_season()
+
+        current_season_leaderboard =
+          if current_season do
+            SeasonResult.get_top_users(current_season.id, 5)
+          else
+            []
+          end
+
+        conn
+        |> assign(:current_season, current_season)
+        |> assign(:current_season_leaderboard, current_season_leaderboard)
+        |> render("landing.html", layout: {LayoutView, "landing.html"})
 
       # by default render index page with lobby view
       true ->
