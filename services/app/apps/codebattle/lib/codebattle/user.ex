@@ -20,7 +20,6 @@ defmodule Codebattle.User do
   @valid_locales ~w(en ru)
   @derive {Jason.Encoder,
            only: [
-             :achievements,
              :avatar_url,
              :category,
              :clan,
@@ -49,8 +48,8 @@ defmodule Codebattle.User do
   schema "users" do
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
+    has_many(:achievements, Codebattle.UserAchievement)
 
-    field(:achievements, {:array, :string}, default: [])
     field(:auth_token, :string)
     field(:avatar_url, :string)
     field(:category, :string)
@@ -95,7 +94,6 @@ defmodule Codebattle.User do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :achievements,
       :auth_token,
       :avatar_url,
       :category,

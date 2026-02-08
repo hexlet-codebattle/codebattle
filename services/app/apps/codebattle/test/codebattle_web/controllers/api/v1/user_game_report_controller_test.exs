@@ -8,8 +8,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
   describe "create/1" do
     test "player can report opponent", %{conn: conn} do
-      user = insert(:user)
-      bot = Bot.Context.build()
+      user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 
@@ -55,8 +55,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
     end
 
     test "player cannot report himself", %{conn: conn} do
-      user = insert(:user)
-      bot = Bot.Context.build()
+      user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 
@@ -80,9 +80,9 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
     end
 
     test "player cannot report other player which is not game player", %{conn: conn} do
-      user = insert(:user)
-      other_user = insert(:user)
-      bot = Bot.Context.build()
+      user = insert(:user, lang: "js")
+      other_user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 
@@ -106,9 +106,9 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
     end
 
     test "player which is not game player cannot report player of the game", %{conn: conn} do
-      other_user = insert(:user)
-      user = insert(:user)
-      bot = Bot.Context.build()
+      other_user = insert(:user, lang: "js")
+      user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 
@@ -132,8 +132,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
     end
 
     test "unprocessable entity with bad request", %{conn: conn} do
-      user = insert(:user)
-      bot = Bot.Context.build()
+      user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 
@@ -156,8 +156,8 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
     end
 
     test "unprocessable entity with incorrect reason", %{conn: conn} do
-      user = insert(:user)
-      bot = Bot.Context.build()
+      user = insert(:user, lang: "js")
+      bot = Bot.Context.build(%{lang: "js"})
 
       task = insert(:task)
 

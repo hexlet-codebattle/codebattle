@@ -433,13 +433,10 @@ defmodule Codebattle.Game.Engine do
   end
 
   defp update_user!(player, _game) do
-    achievements = User.Achievements.recalculate_achievements(player)
-
     User
     |> Repo.get!(player.id)
     |> User.changeset(%{
       rating: player.rating,
-      achievements: achievements,
       lang: player.editor_lang
     })
     |> Repo.update!()

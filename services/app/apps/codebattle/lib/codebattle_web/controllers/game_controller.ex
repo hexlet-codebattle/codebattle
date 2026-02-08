@@ -135,7 +135,6 @@ defmodule CodebattleWeb.GameController do
         :rank,
         :lang,
         :name,
-        :achievements,
         :avatar_url
       ])
     )

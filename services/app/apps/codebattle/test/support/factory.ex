@@ -171,6 +171,7 @@ defmodule CodebattleWeb.Factory do
       type: "individual",
       break_duration_seconds: 0,
       name: "name",
+      description: "tournament description",
       current_round_position: 0,
       players_limit: 16,
       players_count: 16,
@@ -191,6 +192,7 @@ defmodule CodebattleWeb.Factory do
       access_type: "token",
       access_token: "asdfasdfasdf",
       name: "name",
+      description: "tournament description",
       current_round_position: 0,
       players_limit: 16,
       starts_at:

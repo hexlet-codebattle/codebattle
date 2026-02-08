@@ -246,6 +246,113 @@
   color: #cbd5e1 !important;
 }
 
+.cb-season-leaderboard-filters {
+  background: linear-gradient(180deg, rgba(16, 22, 34, 0.82) 0%, rgba(14, 19, 29, 0.94) 100%);
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-label {
+  color: #a8b2c2 !important;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-input-group {
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.28);
+  transition: box-shadow 0.2s ease;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-input-group:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(52, 180, 254, 0.2), inset 0 0 0 1px rgba(52, 180, 254, 0.45);
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-prefix {
+  border: 0 !important;
+  background-color: rgba(32, 42, 60, 0.9) !important;
+  color: #8ea2be !important;
+  padding: 0 0.8rem;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-control {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px !important;
+  border-color: rgba(148, 163, 184, 0.3) !important;
+  background-color: rgba(22, 29, 43, 0.94) !important;
+  color: #f1f5f9 !important;
+  font-size: 0.86rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.cb-season-leaderboard-filters select.cb-season-filter-control {
+  padding-left: 1rem !important;
+  padding-inline-start: 1rem !important;
+  padding-right: 2.25rem !important;
+  background-position: right 0.8rem center;
+  text-indent: 0.1rem;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-control::placeholder {
+  color: #7f8ea3;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-control:hover {
+  border-color: rgba(148, 163, 184, 0.5) !important;
+  background-color: rgba(28, 36, 52, 0.96) !important;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-control:focus {
+  border-color: rgba(52, 180, 254, 0.65) !important;
+  box-shadow: 0 0 0 0.2rem rgba(52, 180, 254, 0.18);
+  background-color: rgba(28, 36, 52, 0.98) !important;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-input-group .cb-season-filter-control {
+  padding: 0.45rem 0.85rem;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-clear-btn {
+  border: 0;
+  background-color: rgba(32, 42, 60, 0.9);
+  color: #cbd5e1;
+  padding: 0 0.8rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-clear-btn:hover,
+.cb-season-leaderboard-filters .cb-season-filter-clear-btn:focus {
+  color: #fff;
+  background-color: rgba(52, 180, 254, 0.36);
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-reset-btn {
+  min-height: 2.25rem;
+  border-radius: 999px;
+  border-color: rgba(148, 163, 184, 0.36);
+  color: #c8d3e2;
+  background-color: rgba(22, 29, 43, 0.9);
+}
+
+.cb-season-leaderboard-filters .cb-season-filter-reset-btn:hover,
+.cb-season-leaderboard-filters .cb-season-filter-reset-btn:focus {
+  border-color: rgba(52, 180, 254, 0.64);
+  color: #fff;
+  background-color: rgba(52, 180, 254, 0.26);
+}
+
+@media (max-width: 767.98px) {
+  .cb-season-leaderboard-filters {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}
+
 .cb-custom-event-pagination-page-item:first-child
   .cb-custom-event-pagination-page-link,
 .cb-custom-event-pagination-page-item:nth-child(2)

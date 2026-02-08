@@ -61,6 +61,7 @@ defmodule Codebattle.Event.Context do
                task_strategy: event_stage.tournament_meta.task_strategy,
                task_pack_name: event_stage.tournament_meta.task_pack_name,
                name: event_stage.name,
+               description: "#{event_stage.name} stage tournament",
                meta: event_stage.tournament_meta
              }) do
           {:ok, tournament} ->
