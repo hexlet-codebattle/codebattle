@@ -3,9 +3,9 @@ import React, {
 } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
+import Modal from '@/components/BootstrapModal';
 import {
   tournamentSelector,
   firstPlayerSelector,

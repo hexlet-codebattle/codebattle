@@ -95,3 +95,15 @@
   background-color:  #dedede !important;
 }
 
+.cb-match-confirmation-modal .cb-match-confirmation-progress {
+  background-color: #2f2f38;
+
+  .progress-bar {
+    background: linear-gradient(
+      90deg,
+      darken($gold, 14%) 0%,
+      $gold 52%,
+      lighten($gold, 8%) 100%
+    );
+  }
+}

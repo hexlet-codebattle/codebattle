@@ -28,7 +28,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        current_user_event: nil,
        stages_json: "",
        progress: progress,
-       layout: {CodebattleWeb.LayoutView, :empty}
+       layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
 

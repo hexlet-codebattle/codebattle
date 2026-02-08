@@ -4,9 +4,9 @@ import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
 import i18n from 'i18next';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
+import Modal from '@/components/BootstrapModal';
 import TournamentDescription from '@/components/TournamentDescription';
 import TournamentPreviewPanel from '@/components/TournamentPreviewPanel';
 import { grades } from '@/config/grades';

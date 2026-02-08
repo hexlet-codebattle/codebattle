@@ -10,8 +10,8 @@ import React, {
 
 import cn from 'classnames';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
+import Modal from '@/components/BootstrapModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 import getOpponentId from '@/utils/matches';
 import { makeGameUrl } from '@/utils/urlBuilders';
@@ -145,7 +145,11 @@ function MatchConfirmationModal({
   });
 
   return (
-    <Modal contentClassName="cb-bg-panel cb-text" show={modalShowing} onHide={handleCancel}>
+    <Modal
+      contentClassName="cb-bg-panel cb-text cb-match-confirmation-modal"
+      show={modalShowing}
+      onHide={handleCancel}
+    >
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -159,7 +163,7 @@ function MatchConfirmationModal({
           </span>
         )}
         {remainingTime !== null && (
-          <div className="progress mx-5">
+          <div className="progress mx-5 cb-match-confirmation-progress">
             <div
               aria-label="Countdown before redirect to the next match"
               style={{ width: `${timerProgress}%` }}

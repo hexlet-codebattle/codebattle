@@ -10,8 +10,9 @@ import isEmpty from 'lodash/isEmpty';
 import omit from 'lodash/omit';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Modal from '@/components/BootstrapModal';
 
 import LoadingStatusCodes from '../../config/loadingStatuses';
 import ModalCodes from '../../config/modalCodes';

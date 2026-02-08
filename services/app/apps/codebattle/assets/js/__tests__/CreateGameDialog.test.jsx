@@ -3,7 +3,7 @@ import React from 'react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import axios from 'axios';
 import noop from 'lodash/noop';
 import omit from 'lodash/omit';
@@ -223,9 +223,12 @@ describe('test create game', () => {
 });
 
 test('filter tasks by level', async () => {
-  const { findByTitle, queryByRole, user } = setup(vdom);
+  const {
+    findByTitle, findByRole, queryByRole, user,
+  } = setup(vdom);
 
   const easyLevelButton = await findByTitle('easy');
+  await findByRole('button', { name: elementaryTasksFromBackend[0].name });
 
   elementaryTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
   easyTasksFromBackend.forEach((task) => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());

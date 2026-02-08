@@ -183,6 +183,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:task_strategy, @task_strategies)
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
+    |> validate_number(:round_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at, :description])
     |> validate_length(:description, min: 3, max: 7531)
     |> validate_event_id(params["event_id"] || params[:event_id])

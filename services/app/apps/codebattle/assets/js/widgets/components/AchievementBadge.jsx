@@ -2,6 +2,8 @@ import React from 'react';
 
 import langIconNames from '../config/langIconNames';
 
+import LanguageIcon from './LanguageIcon';
+
 const gradeLabels = {
   rookie: 'Rookie',
   challenger: 'Challenger',
@@ -121,13 +123,11 @@ function AchievementBadge({ achievement }) {
             const iconName = langIconNames[lang] || lang;
 
             return (
-              <img
+              <LanguageIcon
                 key={lang}
-                src={`/assets/images/achievements/${iconName}.png`}
-                alt={lang}
-                title={lang}
-                width="11"
-                height="11"
+                lang={iconName}
+                color="#171720"
+                style={{ fontSize: '0.72rem' }}
               />
             );
           })}

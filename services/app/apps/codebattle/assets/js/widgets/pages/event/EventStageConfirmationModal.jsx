@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import Modal from 'react-bootstrap/Modal';
+
+import Modal from '@/components/BootstrapModal';
 
 import ModalCodes from '../../config/modalCodes';
 

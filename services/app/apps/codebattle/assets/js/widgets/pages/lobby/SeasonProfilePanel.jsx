@@ -23,10 +23,11 @@ const contestDatesText = 'Season: Oct 16 - Dec 21';
 
 function OpponentInfo({ id }) {
   const user = useSelector(userByIdSelector(id));
+  const statColumnStyle = { width: '72px' };
 
   return (
     <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line">
-      <div className="d-flex align-items-center flex-fill pr-2" style={{ minWidth: 0 }}>
+      <div className="d-flex align-items-center flex-grow-1 pr-2" style={{ minWidth: 0 }}>
         <UserLogo user={user} size="25px" />
         <div className="ml-2" style={{ maxWidth: '110px' }}>
           {user ? (
@@ -43,7 +44,7 @@ function OpponentInfo({ id }) {
           )}
         </div>
       </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-fill">
+      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0" style={statColumnStyle}>
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
             className={cn('stat-value d-block cb-text-danger', {
@@ -56,15 +57,17 @@ function OpponentInfo({ id }) {
           <span className="stat-label text-uppercase">Place</span>
         </a>
       </div>
-      <div className="d-flex flex-column text-center py-1 px-1 flex-fill">
-        <span
-          className={cn('stat-value d-block cb-text-danger', {
-            'd-inline cb-text-skeleton w-25 mx-auto': !user,
-          })}
-        >
-          {user ? user.points : ''}
-        </span>
-        <span className="stat-label text-uppercase">Points</span>
+      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0" style={statColumnStyle}>
+        <div className="stat-item py-1 w-100">
+          <span
+            className={cn('stat-value d-block cb-text-danger', {
+              'd-inline cb-text-skeleton w-25 mx-auto': !user,
+            })}
+          >
+            {user ? user.points : ''}
+          </span>
+          <span className="stat-label text-uppercase">Points</span>
+        </div>
       </div>
     </div>
   );

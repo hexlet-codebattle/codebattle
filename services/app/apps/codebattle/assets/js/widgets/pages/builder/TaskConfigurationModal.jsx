@@ -4,8 +4,9 @@ import React, {
 
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import cn from 'classnames';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Modal from '@/components/BootstrapModal';
 
 import LoadingStatusCodes from '../../config/loadingStatuses';
 import ModalCodes from '../../config/modalCodes';

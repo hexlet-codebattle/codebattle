@@ -29,7 +29,6 @@ const renderContributorsList = (contributors) => (
 
 function ContributorsList({ task: { name, tags, level } }) {
   const url = `https://api.github.com/repos/hexlet-codebattle/tasks/commits?path=tasks/${level}/${tags && tags[0]}/${name}.toml`;
-  console.log(url);
 
   const dispatch = useDispatch();
 
@@ -43,8 +42,6 @@ function ContributorsList({ task: { name, tags, level } }) {
     axios
       .get(url)
       .then((res) => {
-        console.log(res.data);
-        console.log(11111);
         const authors = res.data.filter((item) => item.author);
         const contributorsList = authors.map((el) => ({
           avatarLink: el.author.avatar_url,

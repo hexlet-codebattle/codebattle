@@ -1,101 +1,213 @@
 import React from 'react';
 
-import ClojureOriginalIcon from 'react-devicons/clojure/original';
-import CppOriginalIcon from 'react-devicons/cplusplus/original';
-import CsharpOriginalIcon from 'react-devicons/csharp/original';
-import CssOriginalIcon from 'react-devicons/css3/original';
-import DartOriginalIcon from 'react-devicons/dart/original';
-import GolangOriginalIcon from 'react-devicons/go/original';
-import JavaOriginalIcon from 'react-devicons/java/original';
-import LessOriginalIcon from 'react-devicons/less/plain-wordmark';
-import MongodbOriginalIcon from 'react-devicons/mongodb/original';
-import MysqlOriginalIcon from 'react-devicons/mysql/original';
-import NodejsPlainIcon from 'react-devicons/nodejs/plain';
-import PostgresqlOriginalIcon from 'react-devicons/postgresql/original';
-import SassOriginalIcon from 'react-devicons/sass/original';
-import StylusOriginalIcon from 'react-devicons/stylus/original';
-import SwiftOriginalIcon from 'react-devicons/swift/original';
-import TypescriptOriginalIcon from 'react-devicons/typescript/original';
+import { DiRuby } from 'react-icons/di';
+import { FaJava, FaPhp } from 'react-icons/fa';
+import { FaDartLang } from 'react-icons/fa6';
+import {
+  SiClojure,
+  SiCplusplus,
+  SiCss3,
+  SiElixir,
+  SiGo,
+  SiJavascript,
+  SiLess,
+  SiMongodb,
+  SiMysql,
+  SiPostgresql,
+  SiPython,
+  SiRust,
+  SiSass,
+  SiStylus,
+  SiSwift,
+  SiTypescript,
+  SiZig,
+} from 'react-icons/si';
+import { TbBrandCSharp, TbBrandKotlin } from 'react-icons/tb';
 
-import ElixirOriginalIcon from './icons/ElixirOriginalIcon';
-import KotlinOriginalIcon from './icons/KotlinOriginalIcon';
-import PhpOriginalIcon from './icons/PhpOriginalIcon';
-import PythonOriginalIcon from './icons/PythonOriginalIcon';
-import RubyOriginalIcon from './icons/RubyOriginalIcon';
-import RustOriginalIcon from './icons/RustOriginalIcon';
-import ZigOriginalIcon from './icons/ZigOriginalIcon';
+const DEFAULT_ICON_COLOR = '#c2c9d6';
+
+const renderSimpleIcon = (Icon, {
+  className,
+  style,
+  size = '1.25em',
+  color = DEFAULT_ICON_COLOR,
+}) => (
+  <Icon className={className} style={style} size={size} color={color} />
+);
 
 const iconRenderers = {
-  clojure: (className) => (
-    <ClojureOriginalIcon className={className} size="1.125em" />
-  ),
-  cpp: (className) => <CppOriginalIcon className={className} size="1.25em" />,
-  csharp: (className) => (
-    <CsharpOriginalIcon className={className} size="1.25em" />
-  ),
-  swift: (className) => (
-    <SwiftOriginalIcon className={className} size="1.25em" />
-  ),
-  dart: (className) => (
-    <DartOriginalIcon className={className} size="1.125em" />
-  ),
-  elixir: (className) => (
-    <ElixirOriginalIcon className={className} size="1.25em" />
-  ),
-  golang: (className) => (
-    <GolangOriginalIcon className={className} size="1.25em" />
-  ),
-  javascript: (className) => (
-    <NodejsPlainIcon className={className} color="green" size="1.25em" />
-  ),
-  js: (className) => (
-    <NodejsPlainIcon className={className} color="green" size="1.25em" />
-  ),
-  kotlin: (className) => <KotlinOriginalIcon className={className} />,
-  php: (className) => <PhpOriginalIcon className={className} size="1.875em" />,
-  python: (className) => (
-    <PythonOriginalIcon className={className} size="1.25em" />
-  ),
-  ruby: (className) => <RubyOriginalIcon className={className} />,
-  zig: (className) => <ZigOriginalIcon className={className} size="1.125em" />,
-  rust: (className) => (
-    <RustOriginalIcon className={className} size="1.125em" />
-  ),
-  ts: (className) => (
-    <TypescriptOriginalIcon className={className} size="1.125em" />
-  ),
-  css: (className) => <CssOriginalIcon className={className} size="1.125em" />,
-  stylus: (className) => (
-    <StylusOriginalIcon fill="#fff" className={className} size="1.6em" />
-  ),
-  less: (className) => <LessOriginalIcon className={className} size="1.6em" />,
-  sass: (className) => <SassOriginalIcon className={className} size="1.3em" />,
-  typescript: (className) => (
-    <TypescriptOriginalIcon className={className} size="1.125em" />
-  ),
-  java: (className) => (
-    <JavaOriginalIcon
-      className={className}
-      style={{ transform: 'translateY(-0.125em)' }}
-      size="1.25em"
-    />
-  ),
-  postgresql: (className) => (
-    <PostgresqlOriginalIcon className={className} size="1.3em" />
-  ),
-  mongodb: (className) => (
-    <MongodbOriginalIcon className={className} size="1.3em" />
-  ),
-  mysql: (className) => (
-    <MysqlOriginalIcon className={className} size="1.3em" />
-  ),
+  clojure: (className, style, color) => renderSimpleIcon(SiClojure, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  cpp: (className, style, color) => renderSimpleIcon(SiCplusplus, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  csharp: (className, style, color) => renderSimpleIcon(TbBrandCSharp, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  css: (className, style, color) => renderSimpleIcon(SiCss3, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  dart: (className, style, color) => renderSimpleIcon(FaDartLang, {
+    className,
+    style,
+    color,
+    size: '1.125em',
+  }),
+  elixir: (className, style, color) => renderSimpleIcon(SiElixir, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  golang: (className, style, color) => renderSimpleIcon(SiGo, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  java: (className, style, color) => renderSimpleIcon(FaJava, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  javascript: (className, style, color) => renderSimpleIcon(SiJavascript, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  js: (className, style, color) => renderSimpleIcon(SiJavascript, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  kotlin: (className, style, color) => renderSimpleIcon(TbBrandKotlin, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  less: (className, style, color) => renderSimpleIcon(SiLess, {
+      className,
+      style,
+      color,
+      size: '1.6em',
+    }),
+  mongodb: (className, style, color) => renderSimpleIcon(SiMongodb, {
+      className,
+      style,
+      color,
+      size: '1.3em',
+    }),
+  mysql: (className, style, color) => renderSimpleIcon(SiMysql, {
+      className,
+      style,
+      color,
+      size: '1.3em',
+    }),
+  php: (className, style, color) => renderSimpleIcon(FaPhp, {
+      className,
+      style,
+      color,
+      size: '1.875em',
+    }),
+  postgresql: (className, style, color) => renderSimpleIcon(SiPostgresql, {
+      className,
+      style,
+      color,
+      size: '1.3em',
+    }),
+  python: (className, style, color) => renderSimpleIcon(SiPython, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  ruby: (className, style, color) => renderSimpleIcon(DiRuby, {
+      className,
+      style,
+      color,
+    }),
+  rust: (className, style, color) => renderSimpleIcon(SiRust, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  sass: (className, style, color) => renderSimpleIcon(SiSass, {
+      className,
+      style,
+      color,
+      size: '1.3em',
+    }),
+  stylus: (className, style, color) => renderSimpleIcon(SiStylus, {
+      className,
+      style,
+      color,
+      size: '1.6em',
+    }),
+  swift: (className, style, color) => renderSimpleIcon(SiSwift, {
+      className,
+      style,
+      color,
+      size: '1.25em',
+    }),
+  ts: (className, style, color) => renderSimpleIcon(SiTypescript, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  typescript: (className, style, color) => renderSimpleIcon(SiTypescript, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
+  zig: (className, style, color) => renderSimpleIcon(SiZig, {
+      className,
+      style,
+      color,
+      size: '1.125em',
+    }),
   default: () => null,
 };
 
-const LanguageIcon = ({ className = '', lang }) => {
+function LanguageIcon({
+  className = '',
+  style = undefined,
+  color = DEFAULT_ICON_COLOR,
+  title = undefined,
+  lang,
+}) {
   const renderIcon = iconRenderers[lang] || iconRenderers.default;
+  const icon = renderIcon(className, style, color);
+  const tooltip = title || lang;
 
-  return renderIcon(className);
-};
+  if (!icon) {
+    return null;
+  }
+
+  if (!tooltip) {
+    return icon;
+  }
+
+  return React.cloneElement(icon, { title: tooltip, 'aria-label': tooltip });
+}
 
 export default LanguageIcon;

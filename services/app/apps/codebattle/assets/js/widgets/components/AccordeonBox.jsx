@@ -3,8 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import uniqueId from 'lodash/uniqueId';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
 import i18n from '../../i18n';
 import color from '../config/statusColor';

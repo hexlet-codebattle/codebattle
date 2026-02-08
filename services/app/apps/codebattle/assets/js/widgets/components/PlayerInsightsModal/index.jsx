@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 
 import axios from 'axios';
 import cn from 'classnames';
-import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import {
   ResponsiveContainer,
@@ -25,6 +24,8 @@ import {
   Radar,
   ReferenceLine,
 } from 'recharts';
+
+import Modal from '@/components/BootstrapModal';
 
 import LanguageIcon from '../LanguageIcon';
 import {

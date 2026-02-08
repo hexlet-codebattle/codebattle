@@ -2,10 +2,10 @@ import React, { useEffect, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { useDispatch, useSelector } from 'react-redux';
 
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
 import { unfollowUser, followUser } from '@/middlewares/Main';
 
 import i18n from '../../i18n';

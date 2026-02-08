@@ -13,6 +13,7 @@ function TaskLanguagesSelection({
 
   const renderLanguage = (language) => (
     <Dropdown.Item
+      as="button"
       key={language}
       active={language === displayLanguage}
       onClick={handleSetLanguage(language)}

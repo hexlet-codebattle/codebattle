@@ -63,7 +63,7 @@ defmodule Codebattle.Tournament.Round.Context do
 
   defp add_round_timeout_and_task_pack(round, tournament) do
     update_struct(round, %{
-      round_timeout_seconds: tournament.match_timeout_seconds,
+      round_timeout_seconds: tournament.round_timeout_seconds,
       task_pack_id: Map.get(tournament.meta, :task_pack_id, nil)
     })
   end

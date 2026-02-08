@@ -1,11 +1,22 @@
-ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
-ARG NODE_TAG=24.11.0-alpine3.23
 ARG TARGETPLATFORM
+ARG RUNNER_IMAGE=ghcr.io/hexlet-codebattle/runner-zig:latest
+ARG NODE_TAG=25.4.0-alpine3.23
 
+# ---- runner binary stage ----
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
+
+# ---- app stage ----
 FROM --platform=$TARGETPLATFORM node:${NODE_TAG}
 
-RUN apk add --update --no-cache make
+# System deps + Chromium (for puppeteer) + fonts/certs
+RUN apk add --no-cache \
+  make \
+  chromium \
+  nss \
+  freetype \
+  harfbuzz \
+  ca-certificates \
+  ttf-freefont
 
 # app user
 RUN addgroup -S app -g 10001 \
@@ -13,19 +24,25 @@ RUN addgroup -S app -g 10001 \
 
 WORKDIR /usr/src/app
 
-COPY package.json .
-COPY package-lock.json .
-RUN npm install \
+# Puppeteer: skip big browser download; use system chromium
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# (some alpine builds use /usr/bin/chromium)
+# If chromium-browser doesn't exist in your alpine, change to:
+# ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev \
   && chown -R app:app /usr/src/app
 
 ENV NODE_PATH=/usr/local/lib/node_modules/
 
-COPY checker.js .
-COPY Makefile .
+COPY checker.js Makefile ./
 RUN chown -R app:app /usr/src/app
 
 USER app
 
 EXPOSE 4040
+
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

@@ -2,8 +2,9 @@ import React, {
   useCallback,
 } from 'react';
 
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
+
+import Modal from '@/components/BootstrapModal';
 
 import UserInfo from '../../components/UserInfo';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';

@@ -20,6 +20,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         """
       )
       |> assign(:default_game_passwords_json, ~S(["12341234", "33322233", "11112222"]))
+      |> assign(:timeout_mode, get_timeout_mode(assigns.changeset))
 
     ~H"""
     <div class="container-xl cb-bg-panel shadow-lg cb-rounded py-5">
@@ -267,21 +268,36 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               </div>
               <div class="col-12 col-md-4">
                 <div class="form-group">
-                  {label(f, :round_timeout_seconds,
-                    class: "form-label text-white font-weight-semibold"
-                  )}
-                  {number_input(
+                  <label class="form-label text-white font-weight-semibold">Timeout Mode</label>
+                  {select(
                     f,
-                    :round_timeout_seconds,
+                    :timeout_mode,
+                    [{"Per task timeout", "per_task"}, {"Per round timeout", "per_round"}],
                     class:
-                      "form-control form-control-lg cb-bg-panel cb-border-color custom-control text-white",
-                    value: f.params["round_timeout_seconds"] || "177",
-                    min: "100",
-                    max: "10000"
+                      "form-control form-control-lg custom-select cb-bg-panel cb-border-color text-white",
+                    value: @timeout_mode
                   )}
-                  {error_tag(f, :round_timeout_seconds)}
                 </div>
               </div>
+              <%= if @timeout_mode == "per_round" do %>
+                <div class="col-12 col-md-4">
+                  <div class="form-group">
+                    {label(f, :round_timeout_seconds,
+                      class: "form-label text-white font-weight-semibold"
+                    )}
+                    {number_input(
+                      f,
+                      :round_timeout_seconds,
+                      class:
+                        "form-control form-control-lg cb-bg-panel cb-border-color custom-control text-white",
+                      value: f.params["round_timeout_seconds"] || "177",
+                      min: "100",
+                      max: "10000"
+                    )}
+                    {error_tag(f, :round_timeout_seconds)}
+                  </div>
+                </div>
+              <% end %>
               <div class="col-12 col-md-4">
                 <div class="form-group">
                   {label(f, :break_duration_seconds,
@@ -317,4 +333,13 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
 
   def render_base_errors(nil), do: nil
   def render_base_errors(errors), do: elem(errors, 0)
+
+  defp get_timeout_mode(%{params: %{"timeout_mode" => mode}}) when mode in ["per_task", "per_round"], do: mode
+
+  defp get_timeout_mode(%{params: %{"round_timeout_seconds" => timeout}}) when timeout in [nil, ""], do: "per_task"
+
+  defp get_timeout_mode(%{params: %{"round_timeout_seconds" => _timeout}}), do: "per_round"
+
+  defp get_timeout_mode(%{data: %{round_timeout_seconds: nil}}), do: "per_task"
+  defp get_timeout_mode(_changeset), do: "per_round"
 end

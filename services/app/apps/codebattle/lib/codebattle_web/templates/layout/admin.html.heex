@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="IE=edge" http-equiv="X-UA-Compatible" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <meta content="7b3f1e2c1757ecf0" name="yandex-verification" />
+    <link rel="canonical" href="https://codebattle.hexlet.io/" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    {render_tags_all(assigns[:meta_tags] || %{})}
+    <meta name="csrf-token" content={csrf_token_value()} />
+    <title>{Application.get_env(:codebattle, :app_title)}</title>
+
+    <%= if CodebattleWeb.Vite.dev?() do %>
+      <script type="module" src="http://localhost:8080/@vite/client">
+      </script>
+      <script type="module">
+        import RefreshRuntime from "http://localhost:8080/@react-refresh";
+        RefreshRuntime.injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+        window.__vite_plugin_react_preamble_installed__ = true;
+      </script>
+      <script type="module" src="http://localhost:8080/assets/js/app.js">
+      </script>
+      <link rel="stylesheet" href="http://localhost:8080/assets/css/style.scss" />
+    <% else %>
+      <link rel="stylesheet" href={CodebattleWeb.Vite.asset_path("app.css")} />
+      <%= for href <- CodebattleWeb.Vite.css_paths("app.js") do %>
+        <link rel="stylesheet" href={href} />
+      <% end %>
+      <script type="module" src={CodebattleWeb.Vite.asset_path("app.js")}>
+      </script>
+    <% end %>
+  </head>
+  <body class="cb-bg-dark">
+    <div class="container-fluid">
+      <div class="row flex-nowrap">
+        <aside class="col-12 col-md-3 col-lg-2 px-0">
+          <div
+            class="cb-bg-panel cb-border-color border-right p-3"
+            style="min-height: 100vh; position: sticky; top: 0;"
+          >
+            <h4 class="text-white mb-3">Admin</h4>
+            <% admin_user =
+              assigns[:current_user] ||
+                (assigns[:socket] && assigns[:socket].assigns[:current_user]) %>
+            <%= if admin_user do %>
+              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 mb-3">
+                <div class="text-white text-truncate">{admin_user.name}</div>
+                <div class="cb-text">ID: {admin_user.id}</div>
+              </div>
+            <% end %>
+            <nav class="d-flex flex-column">
+              <a
+                href="/admin/"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                Dashboard
+              </a>
+              <a
+                href="/admin/users"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                Users
+              </a>
+              <a
+                href="/admin/seasons"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                Seasons
+              </a>
+              <a
+                href="/admin/feedback"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                Feedback
+              </a>
+              <a
+                href="/feature-flags"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                Feature Flags
+              </a>
+              <a
+                href="/admin/dashboard"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
+              >
+                LiveDashboard
+              </a>
+            </nav>
+          </div>
+        </aside>
+        <main class="col-12 col-md-9 col-lg-10 py-3">
+          {@inner_content}
+        </main>
+      </div>
+    </div>
+    {render_gon_script(@conn)}
+  </body>
+</html>

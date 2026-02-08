@@ -57,7 +57,7 @@ const getPlaceholder = ({ disabled, placeholder }) => {
 function TextInput({ label, ...props }) {
   const [field, meta] = useField(props);
   const {
-    name, disabled, hint, hintHref = '',
+    name, disabled, hint, hintHref = '', ...inputProps
   } = props;
 
   const labelClassName = cn('h6', {
@@ -72,7 +72,7 @@ function TextInput({ label, ...props }) {
       </label>
       <input
         {...field}
-        {...props}
+        {...inputProps}
         placeholder={getPlaceholder(props)}
         className="form-control cb-bg-panel cb-border-color text-white"
       />

@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import i18next from 'i18next';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+
+import Modal from '@/components/BootstrapModal';
 
 import CustomEventStylesContext from '../../components/CustomEventStylesContext';
 import ModalCodes from '../../config/modalCodes';

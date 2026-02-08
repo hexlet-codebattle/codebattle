@@ -39,6 +39,23 @@ defmodule CodebattleWeb.Endpoint do
   # - Template usage: /assets/images/logo.svg
   # - JS imports in dev: /assets/static/images/logo.svg (Vite returns this in dev)
   if Mix.env() == :dev do
+    # Serve node_modules in dev so Monaco ESM runtime paths can be fetched from
+    # the same origin as Phoenix (avoids cross-origin Worker restrictions).
+    plug(
+      Plug.Static,
+      at: "/node_modules",
+      from: Path.expand("../../node_modules", __DIR__),
+      gzip: false
+    )
+
+    # Serve local Monaco worker entry files in dev from Phoenix origin.
+    plug(
+      Plug.Static,
+      at: "/assets/js/monaco-workers",
+      from: Path.expand("../../assets/js/monaco-workers", __DIR__),
+      gzip: false
+    )
+
     plug(
       Plug.Static,
       at: "/assets/static",

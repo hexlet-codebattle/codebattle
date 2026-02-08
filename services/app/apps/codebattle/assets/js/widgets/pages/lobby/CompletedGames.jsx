@@ -74,23 +74,27 @@ const InfiniteScrollableGames = memo(({ className, tableClassName, games }) => {
                   <td className="p-3 align-middle text-nowrap cb-border-color">
                     <GameLevelBadge level={game.level} />
                   </td>
-                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate cb-border-color">
-                    <div className="d-flex align-items-center">
-                      <ResultIcon icon={player1.icon} />
-                      <UserInfo className={cn({ 'pl-4': !player1.icon })} user={player1.data} truncate="true" />
+                  <td className="p-3 align-middle text-nowrap cb-username-td cb-border-color">
+                    <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
+                      <div className="d-flex align-items-center justify-content-center mr-2" style={{ width: '1rem' }}>
+                        <ResultIcon icon={player1.icon} />
+                      </div>
+                      <UserInfo user={player1.data} truncate />
                     </div>
                   </td>
-                  <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate cb-border-color">
-                    <div className="d-flex align-items-center">
-                      <ResultIcon icon={player2.icon} />
-                      <UserInfo className={cn({ 'pl-4': !player2.icon })} user={player2.data} truncate="true" />
+                  <td className="p-3 align-middle text-nowrap cb-username-td cb-border-color">
+                    <div className="d-flex align-items-center" style={{ minWidth: 0 }}>
+                      <div className="d-flex align-items-center justify-content-center mr-2" style={{ width: '1rem' }}>
+                        <ResultIcon icon={player2.icon} />
+                      </div>
+                      <UserInfo user={player2.data} truncate />
                     </div>
                   </td>
                   <td className="px-1 py-3 align-middle text-nowrap text-white cb-border-color">
                     {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
                   </td>
                   <td className="px-1 py-3 align-middle cb-border-color">
-                    <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
+                    <a type="button" className="btn btn-secondary cb-btn-secondary btn-sm cb-rounded" href={`/games/${game.id}`}>
                       Show
                     </a>
                   </td>

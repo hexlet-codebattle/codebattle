@@ -1,8 +1,9 @@
 import React from 'react';
 
 import cn from 'classnames';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+
+import OverlayTrigger from '@/components/OverlayTriggerCompat';
 
 const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
 const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';

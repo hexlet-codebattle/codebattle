@@ -4,9 +4,9 @@ import React, {
 
 import cn from 'classnames';
 import Gon from 'gon';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Modal from '@/components/BootstrapModal';
 import * as lobbyMiddlewares from '@/middlewares/Lobby';
 import * as selectors from '@/selectors';
 import { actions } from '@/slices';
@@ -168,7 +168,7 @@ function LobbyWidget() {
         contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title>Create a game</Modal.Title>
+          <Modal.Title className="w-100 text-center pr-4">Create a game</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />

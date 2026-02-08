@@ -3,8 +3,9 @@ import React, { useContext, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Dropdown } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
+
+import Modal from '@/components/BootstrapModal';
 
 import i18next from '../../../i18n';
 import RoomContext from '../../components/RoomContext';
@@ -89,6 +90,7 @@ const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) =>
 
 function GiveUpButtonDropdownItem({ onSelect, status }) {
   const commonProps = {
+    as: 'a',
     href: '#',
     title: i18next.t('Give Up'),
     onSelect,
@@ -108,6 +110,7 @@ function GiveUpButtonDropdownItem({ onSelect, status }) {
 
 function ResetButtonDropDownItem({ onSelect, status }) {
   const commonProps = {
+    as: 'a',
     href: '#',
     title: i18next.t('Reset solution'),
     onSelect,

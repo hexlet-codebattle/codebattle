@@ -4,8 +4,8 @@ import React, {
 
 import cn from 'classnames';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 
+import Modal from '@/components/BootstrapModal';
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
 
 import {

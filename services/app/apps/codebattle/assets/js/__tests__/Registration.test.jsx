@@ -6,7 +6,7 @@ import React from 'react';
 
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import axios from 'axios';
 
 import Registration from '../widgets/pages/registration';

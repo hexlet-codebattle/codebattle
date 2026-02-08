@@ -2,7 +2,7 @@
 //
 // import { configureStore, combineReducers } from '@reduxjs/toolkit';
 // import { render } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import axios from 'axios';
 // import { Provider } from 'react-redux';
 //

@@ -46,7 +46,7 @@ function Heatmap() {
       <div className="card-header py-1 cb-bg-highlight-panel font-weight-bold text-center">
         Activity
       </div>
-      <div className="card-body pt-3 pr-3 pb-0 pl-2 cb-heatmap-background">
+      <div className="card-body pt-3 pr-3 pb-0 pl-2">
         <CalendarHeatmap
           showWeekdayLabels
           values={activities}

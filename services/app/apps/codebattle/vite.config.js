@@ -45,9 +45,16 @@ function copyCodiconFont() {
       // Copy codicon.ttf from assets/static to priv/static (root level for Phoenix)
       const src = path.resolve(__dirname, "assets/static/codicon.ttf");
       const dest = path.resolve(__dirname, "priv/static/codicon.ttf");
+      const monacoDest = path.resolve(
+        __dirname,
+        "priv/static/node_modules/.pnpm/monaco-editor@0.52.2/node_modules/monaco-editor/esm/vs/base/browser/ui/codicons/codicon/codicon.ttf"
+      );
       try {
+        fs.mkdirSync(path.dirname(monacoDest), { recursive: true });
         fs.copyFileSync(src, dest);
+        fs.copyFileSync(src, monacoDest);
         console.log("✓ Copied codicon.ttf to priv/static/");
+        console.log("✓ Copied codicon.ttf to priv/static/node_modules/... for Monaco");
       } catch (err) {
         console.error("Failed to copy codicon.ttf:", err);
       }
@@ -208,6 +215,7 @@ export default defineConfig(({ command, mode }) => ({
   },
 
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: {
       gon: path.resolve(__dirname, "assets/js/shims/gon.js"),
       "@/": path.resolve(__dirname, "assets/js/widgets"),

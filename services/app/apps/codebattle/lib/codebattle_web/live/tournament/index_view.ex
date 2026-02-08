@@ -101,7 +101,9 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
     creator = socket.assigns.current_user
 
     changeset =
-      Tournament.Context.validate(Map.put(params, "creator", creator))
+      params
+      |> Map.put("creator", creator)
+      |> Tournament.Context.validate()
 
     {:noreply, assign(socket, changeset: changeset)}
   end
@@ -109,13 +111,12 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @impl true
   def handle_event("create", %{"tournament" => params}, socket) do
     params =
-      Map.merge(
-        params,
-        %{
-          "creator" => socket.assigns.current_user,
-          "user_timezone" => socket.assigns.user_timezone
-        }
-      )
+      params
+      |> normalize_timeout_mode_params()
+      |> Map.merge(%{
+        "creator" => socket.assigns.current_user,
+        "user_timezone" => socket.assigns.user_timezone
+      })
 
     case Tournament.Context.create(params) do
       {:ok, tournament} ->
@@ -133,4 +134,16 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
+
+  defp normalize_timeout_mode_params(%{"timeout_mode" => "per_task"} = params) do
+    params
+    |> Map.put("round_timeout_seconds", nil)
+    |> Map.delete("timeout_mode")
+  end
+
+  defp normalize_timeout_mode_params(%{"timeout_mode" => "per_round"} = params) do
+    Map.delete(params, "timeout_mode")
+  end
+
+  defp normalize_timeout_mode_params(params), do: Map.delete(params, "timeout_mode")
 end

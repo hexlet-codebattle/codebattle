@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
      assign(socket,
        season: season,
        changeset: changeset,
-       layout: {CodebattleWeb.LayoutView, :empty}
+       layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
 
@@ -43,21 +43,21 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container mt-5">
+    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
+        <h1 class="text-white">
           <i class="bi bi-pencil-square"></i> Edit Season
         </h1>
         <a
           href={Routes.admin_season_index_view_path(@socket, :index)}
-          class="btn btn-outline-secondary"
+          class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
         >
           <i class="bi bi-arrow-left"></i> Back to List
         </a>
       </div>
 
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
+      <div class="card cb-card shadow-sm border cb-border-color">
+        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
           <span><i class="bi bi-pencil"></i> Season Information</span>
         </div>
         <div class="card-body">
@@ -65,32 +65,46 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
             <div class="row g-3">
               <div class="col-md-6">
                 {label(f, :name, class: "form-label")}
-                {text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season")}
+                {text_input(f, :name,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  placeholder: "e.g., Spring Season"
+                )}
                 {error_tag(f, :name)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :year, class: "form-label")}
-                {number_input(f, :year, class: "form-control", placeholder: "e.g., 2024")}
+                {number_input(f, :year,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  placeholder: "e.g., 2024"
+                )}
                 {error_tag(f, :year)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :starts_at, "Start Date", class: "form-label")}
-                {date_input(f, :starts_at, class: "form-control")}
+                {date_input(f, :starts_at,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                )}
                 {error_tag(f, :starts_at)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :ends_at, "End Date", class: "form-label")}
-                {date_input(f, :ends_at, class: "form-control")}
+                {date_input(f, :ends_at,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                )}
                 {error_tag(f, :ends_at)}
               </div>
 
               <div class="col-12">
                 <div class="btn-group" role="group">
-                  {submit("Save Changes", class: "btn btn-primary")}
-                  <button type="button" class="btn btn-secondary" phx-click="cancel">
+                  {submit("Save Changes", class: "btn btn-secondary cb-btn-secondary cb-rounded")}
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                    phx-click="cancel"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -100,26 +114,26 @@ defmodule CodebattleWeb.Live.Admin.Season.EditView do
         </div>
       </div>
 
-      <div class="card shadow-sm mt-4">
-        <div class="card-header bg-light">
+      <div class="card cb-card shadow-sm mt-4 border cb-border-color">
+        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
           <span><i class="bi bi-info-circle"></i> Current Values</span>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">ID</label>
-              <div class="fw-bold">{@season.id}</div>
+              <label class="form-label cb-text">ID</label>
+              <div class="fw-bold text-white">{@season.id}</div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">Duration</label>
-              <div class="fw-bold">
+              <label class="form-label cb-text">Duration</label>
+              <div class="fw-bold text-white">
                 {Date.diff(@season.ends_at, @season.starts_at)} days
               </div>
             </div>
 
             <div class="col-12 mb-3">
-              <label class="form-label text-muted">Status</label>
+              <label class="form-label cb-text">Status</label>
               <div>
                 <%= cond do %>
                   <% Date.compare(@season.starts_at, Date.utc_today()) == :gt -> %>

@@ -45,6 +45,34 @@ defmodule Codebattle.Tournament.TournamentUserResult do
     |> Repo.all()
   end
 
+  @spec get_user_history(integer() | String.t(), pos_integer(), pos_integer()) :: map()
+  def get_user_history(user_id, page \\ 1, page_size \\ 20) do
+    __MODULE__
+    |> join(:inner, [tur], t in Tournament, on: tur.tournament_id == t.id)
+    |> where([tur, t], tur.user_id == ^user_id and t.state == "finished")
+    |> order_by([_tur, t], desc: t.finished_at, desc: t.started_at, desc: t.id)
+    |> select([tur, t], %{
+      tournament_id: t.id,
+      tournament_name: t.name,
+      tournament_grade: t.grade,
+      tournament_type: t.type,
+      tournament_state: t.state,
+      tournament_started_at: t.started_at,
+      tournament_finished_at: t.finished_at,
+      place: tur.place,
+      points: tur.points,
+      score: tur.score,
+      games_count: tur.games_count,
+      wins_count: tur.wins_count,
+      total_time: tur.total_time,
+      avg_result_percent: tur.avg_result_percent,
+      user_lang: tur.user_lang,
+      clan_name: tur.clan_name,
+      is_cheater: tur.is_cheater
+    })
+    |> Repo.paginate(%{page: page, page_size: page_size, total: true})
+  end
+
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
   def upsert_results(%{type: "swiss", ranking_type: "by_user", score_strategy: "75_percentile"} = tournament) do
     clean_results(tournament.id)

@@ -69,24 +69,9 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
     results =
       for season <- 0..3 do
         Logger.info("Generating Season #{season}, #{year}...")
-        {start_date, end_date} = get_season_dates(season, year)
-
-        season_struct = %Season{
-          name: "Season #{season} #{year}",
-          year: year,
-          starts_at: start_date,
-          ends_at: end_date
-        }
-
+        season_struct = build_season_struct(season, year)
         tournaments = SeasonTournamentGenerator.generate_season_tournaments(season_struct)
-
-        {success_count, failed_count} =
-          Enum.reduce(tournaments, {0, 0}, fn changeset, {success, failed} ->
-            case Repo.insert(changeset) do
-              {:ok, _tournament} -> {success + 1, failed}
-              {:error, _changeset} -> {success, failed + 1}
-            end
-          end)
+        {success_count, failed_count} = insert_tournaments(tournaments)
 
         Logger.info("Season #{season}: #{success_count} inserted, #{failed_count} failed")
         {season, success_count, failed_count}
@@ -170,6 +155,26 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorRunner do
       Logger.info("")
     end)
   end
+
+  defp build_season_struct(season, year) do
+    {start_date, end_date} = get_season_dates(season, year)
+
+    %Season{
+      name: "Season #{season} #{year}",
+      year: year,
+      starts_at: start_date,
+      ends_at: end_date
+    }
+  end
+
+  defp insert_tournaments(tournaments) do
+    Enum.reduce(tournaments, {0, 0}, fn changeset, {success, failed} ->
+      update_insert_counts(Repo.insert(changeset), success, failed)
+    end)
+  end
+
+  defp update_insert_counts({:ok, _tournament}, success, failed), do: {success + 1, failed}
+  defp update_insert_counts({:error, _changeset}, success, failed), do: {success, failed + 1}
 
   # Helper function to get season dates for backward compatibility
   defp get_season_dates(season, year) do

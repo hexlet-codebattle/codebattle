@@ -540,17 +540,16 @@ defmodule Codebattle.Tournament.Base do
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
         task_id = get_task_id_by_params(round_params)
         task = get_task(tournament, task_id)
-        timeout_seconds = get_game_timeout(tournament, task)
 
         player_pairs
         |> Enum.with_index(matches_count(tournament))
         |> Enum.chunk_every(50)
-        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task, timeout_seconds))
+        |> Enum.each(&bulk_create_round_games_and_matches(&1, tournament, task))
 
-        update_struct(tournament, %{round_timeout_seconds: timeout_seconds})
+        tournament
       end
 
-      defp bulk_create_round_games_and_matches(batch, tournament, task, timeout_seconds) do
+      defp bulk_create_round_games_and_matches(batch, tournament, task) do
         # Prepare game creation parameters in a single pass
         game_params =
           Enum.map(batch, fn
@@ -563,7 +562,6 @@ defmodule Codebattle.Tournament.Base do
                 grade: tournament.grade,
                 state: "playing",
                 task: task,
-                timeout_seconds: timeout_seconds,
                 tournament_id: tournament.id,
                 type: game_type(),
                 use_chat: tournament.use_chat,
@@ -575,6 +573,7 @@ defmodule Codebattle.Tournament.Base do
                 base_params
                 |> maybe_set_free_task(tournament, p1)
                 |> maybe_add_award(tournament)
+                |> then(&Map.put(&1, :timeout_seconds, get_round_game_timeout(tournament, &1.task)))
 
               {params, players, match_id}
           end)
@@ -619,7 +618,8 @@ defmodule Codebattle.Tournament.Base do
                 round_position: tournament.current_round_position,
                 state: "playing",
                 task: task,
-                timeout_seconds: get_game_timeout(tournament, task),
+                # TODO: leave rematch timeout behavior unchanged for now.
+                timeout_seconds: get_rematch_game_timeout(tournament),
                 tournament_id: tournament.id,
                 type: game_type(),
                 use_chat: tournament.use_chat,
@@ -774,7 +774,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp get_game_timeout(tournament, task) do
+      defp get_round_game_timeout(tournament, task) do
         cond do
           tournament.tournament_timeout_seconds ->
             max(
@@ -783,28 +783,16 @@ defmodule Codebattle.Tournament.Base do
               10
             )
 
-          FunWithFlags.enabled?(:tournament_custom_timeout) ->
-            get_custom_round_timeout_seconds(tournament, task)
-
-          tournament.type in ["top200"] ->
-            min(seconds_to_end_round(tournament), tournament.match_timeout_seconds)
+          # nil means "per task timeout mode"
+          is_integer(tournament.round_timeout_seconds) ->
+            tournament.round_timeout_seconds
 
           true ->
-            get_round_timeout_seconds(tournament)
+            (task && task.time_to_solve_sec) || 300
         end
       end
 
-      defp get_custom_round_timeout_seconds(tournament, task) do
-        (task && task.time_to_solve_sec) || get_round_timeout_seconds(tournament)
-      end
-
-      defp seconds_to_end_round(tournament) do
-        max(
-          get_round_timeout_seconds(tournament) -
-            NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at),
-          0
-        )
-      end
+      defp get_rematch_game_timeout(tournament), do: get_round_timeout_seconds(tournament)
 
       defp get_round_timeout_seconds(tournament) do
         tournament.round_timeout_seconds || tournament.match_timeout_seconds

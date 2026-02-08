@@ -178,7 +178,7 @@ function EditTournament({
     tags: tournament.tags || '',
     players_limit: tournament.playersLimit || 64,
     rounds_limit: tournament.roundsLimit || 7,
-    round_timeout_seconds: tournament.roundTimeoutSeconds || 177,
+    round_timeout_seconds: tournament.roundTimeoutSeconds ?? null,
     break_duration_seconds: tournament.breakDurationSeconds || 42,
     use_chat: tournament.useChat !== undefined ? tournament.useChat : true,
     use_clan: tournament.useClan !== undefined ? tournament.useClan : false,

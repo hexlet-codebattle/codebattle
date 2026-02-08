@@ -20,7 +20,7 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
      assign(socket,
        season: season,
        tournament_count: tournament_count,
-       layout: {CodebattleWeb.LayoutView, :empty}
+       layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
 
@@ -111,26 +111,26 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container mt-5">
+    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
+        <h1 class="text-white">
           <i class="bi bi-calendar-range"></i> Season Details
         </h1>
         <a
           href={Routes.admin_season_index_view_path(@socket, :index)}
-          class="btn btn-outline-secondary"
+          class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
         >
           <i class="bi bi-arrow-left"></i> Back to List
         </a>
       </div>
 
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
+      <div class="card cb-card shadow-sm mb-4 border cb-border-color">
+        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
           <div class="d-flex justify-content-between align-items-center">
             <span><i class="bi bi-info-circle"></i> Season Information</span>
             <a
               href={Routes.admin_season_edit_view_path(@socket, :edit, @season.id)}
-              class="btn btn-sm btn-outline-light"
+              class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
             >
               <i class="bi bi-pencil"></i> Edit
             </a>
@@ -139,43 +139,43 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         <div class="card-body">
           <div class="row">
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">ID</label>
-              <div class="fw-bold">{@season.id}</div>
+              <label class="form-label cb-text">ID</label>
+              <div class="fw-bold text-white">{@season.id}</div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">Name</label>
-              <div class="fw-bold">{@season.name}</div>
+              <label class="form-label cb-text">Name</label>
+              <div class="fw-bold text-white">{@season.name}</div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">Year</label>
-              <div class="fw-bold">{@season.year}</div>
+              <label class="form-label cb-text">Year</label>
+              <div class="fw-bold text-white">{@season.year}</div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">Duration</label>
-              <div class="fw-bold">
+              <label class="form-label cb-text">Duration</label>
+              <div class="fw-bold text-white">
                 {Date.diff(@season.ends_at, @season.starts_at)} days
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">Start Date</label>
-              <div class="fw-bold">
+              <label class="form-label cb-text">Start Date</label>
+              <div class="fw-bold text-white">
                 {Calendar.strftime(@season.starts_at, "%B %d, %Y")}
               </div>
             </div>
 
             <div class="col-md-6 mb-3">
-              <label class="form-label text-muted">End Date</label>
-              <div class="fw-bold">
+              <label class="form-label cb-text">End Date</label>
+              <div class="fw-bold text-white">
                 {Calendar.strftime(@season.ends_at, "%B %d, %Y")}
               </div>
             </div>
 
             <div class="col-12 mb-3">
-              <label class="form-label text-muted">Status</label>
+              <label class="form-label cb-text">Status</label>
               <div>
                 <%= cond do %>
                   <% Date.compare(@season.starts_at, Date.utc_today()) == :gt -> %>
@@ -197,23 +197,23 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         </div>
       </div>
 
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-info text-white">
+      <div class="card cb-card shadow-sm mb-4 border cb-border-color">
+        <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
           <i class="bi bi-trophy"></i> Tournament Management
         </div>
         <div class="card-body">
           <div class="mb-3">
-            <label class="form-label text-muted">Tournament Count</label>
-            <div class="fw-bold fs-4">{@tournament_count} tournaments</div>
+            <label class="form-label cb-text">Tournament Count</label>
+            <div class="fw-bold fs-4 text-white">{@tournament_count} tournaments</div>
           </div>
 
-          <p class="text-muted mb-3">
+          <p class="cb-text mb-3">
             Generate all tournaments for this season based on the tournament schedule, or clean up existing tournaments.
           </p>
 
           <div class="d-flex gap-2">
             <button
-              class="btn btn-success"
+              class="btn btn-secondary cb-btn-secondary cb-rounded"
               phx-click="create_tournaments"
               data-confirm="This will create all tournaments for this season. Continue?"
             >
@@ -231,7 +231,7 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
           </div>
 
           <div class="mt-3">
-            <small class="text-muted">
+            <small class="cb-text">
               <i class="bi bi-info-circle"></i>
               Expected tournament types: Grand Slam (1), Masters (2), Elite (~3), Pro (~6), Challenger (daily), Rookie (every 3 hours)
             </small>
@@ -239,12 +239,12 @@ defmodule CodebattleWeb.Live.Admin.Season.ShowView do
         </div>
       </div>
 
-      <div class="card shadow-sm border-danger">
-        <div class="card-header bg-danger text-white">
+      <div class="card cb-card shadow-sm border-danger">
+        <div class="card-header cb-bg-highlight-panel text-white border-danger">
           <i class="bi bi-exclamation-triangle"></i> Danger Zone
         </div>
         <div class="card-body">
-          <p class="text-muted mb-3">
+          <p class="cb-text mb-3">
             Once you delete a season, there is no going back. Please be certain.
           </p>
           <button

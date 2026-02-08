@@ -3,9 +3,9 @@ import React, { memo, useEffect } from 'react';
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import i18n from 'i18next';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { useSelector } from 'react-redux';
 
+import Modal from '@/components/BootstrapModal';
 import Loading from '@/components/Loading';
 
 import gifs from '../../config/gifs';

@@ -138,6 +138,32 @@ defmodule Codebattle.SeasonResult do
     )
   end
 
+  @spec get_by_user_history(pos_integer()) :: [map()]
+  def get_by_user_history(user_id) do
+    Repo.all(
+      from(sr in __MODULE__,
+        join: s in Season,
+        on: s.id == sr.season_id,
+        where: sr.user_id == ^user_id,
+        order_by: [desc: s.year, desc: s.starts_at],
+        select: %{
+          season_id: s.id,
+          season_name: s.name,
+          season_year: s.year,
+          season_starts_at: s.starts_at,
+          season_ends_at: s.ends_at,
+          place: sr.place,
+          total_points: sr.total_points,
+          total_score: sr.total_score,
+          tournaments_count: sr.tournaments_count,
+          total_games_count: sr.total_games_count,
+          total_wins_count: sr.total_wins_count,
+          total_time: sr.total_time
+        }
+      )
+    )
+  end
+
   @spec aggregate_season_results(Season.t() | pos_integer()) :: {:ok, integer()} | {:error, any()}
   def aggregate_season_results(%Season{} = season) do
     aggregate_season_results(season.id)

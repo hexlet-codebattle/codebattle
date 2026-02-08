@@ -38,6 +38,10 @@ defmodule Codebattle.Feedback do
     |> Enum.map(&format_feedback/1)
   end
 
+  def list_all do
+    Repo.all(from(f in Feedback, order_by: [desc: f.inserted_at]))
+  end
+
   def format_feedback(%Feedback{
         id: id,
         author_name: name,

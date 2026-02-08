@@ -13,7 +13,7 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
        seasons: seasons,
        changeset: changeset,
        show_form: false,
-       layout: {CodebattleWeb.LayoutView, :empty}
+       layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
 
@@ -71,22 +71,29 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="container mt-5">
+    <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>
+        <h1 class="text-white">
           <i class="bi bi-calendar-range"></i> Season Management
         </h1>
-        <button :if={!@show_form} class="btn btn-primary" phx-click="show_form">
+        <button
+          :if={!@show_form}
+          class="btn btn-secondary cb-btn-secondary cb-rounded"
+          phx-click="show_form"
+        >
           <i class="bi bi-plus-circle"></i> New Season
         </button>
       </div>
 
       <%= if @show_form do %>
-        <div class="card shadow-sm mb-4">
-          <div class="card-header bg-primary text-white">
+        <div class="card cb-card shadow-sm mb-4 border cb-border-color">
+          <div class="card-header cb-bg-highlight-panel cb-border-color text-white">
             <div class="d-flex justify-content-between align-items-center">
               <span><i class="bi bi-plus-circle"></i> Create New Season</span>
-              <button class="btn btn-sm btn-outline-light" phx-click="hide_form">
+              <button
+                class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                phx-click="hide_form"
+              >
                 <i class="bi bi-x"></i> Cancel
               </button>
             </div>
@@ -95,73 +102,90 @@ defmodule CodebattleWeb.Live.Admin.Season.IndexView do
             <.form :let={f} for={@changeset} phx-change="validate" phx-submit="create" class="row g-3">
               <div class="col-md-6">
                 {label(f, :name, class: "form-label")}
-                {text_input(f, :name, class: "form-control", placeholder: "e.g., Spring Season")}
+                {text_input(f, :name,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  placeholder: "e.g., Spring Season"
+                )}
                 {error_tag(f, :name)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :year, class: "form-label")}
-                {number_input(f, :year, class: "form-control", placeholder: "e.g., 2024")}
+                {number_input(f, :year,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded",
+                  placeholder: "e.g., 2024"
+                )}
                 {error_tag(f, :year)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :starts_at, "Start Date", class: "form-label")}
-                {date_input(f, :starts_at, class: "form-control")}
+                {date_input(f, :starts_at,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                )}
                 {error_tag(f, :starts_at)}
               </div>
 
               <div class="col-md-6">
                 {label(f, :ends_at, "End Date", class: "form-label")}
-                {date_input(f, :ends_at, class: "form-control")}
+                {date_input(f, :ends_at,
+                  class: "form-control cb-bg-panel cb-border-color text-white cb-rounded"
+                )}
                 {error_tag(f, :ends_at)}
               </div>
 
               <div class="col-12">
-                {submit("Create Season", class: "btn btn-primary", phx_disable_with: "Creating...")}
+                {submit("Create Season",
+                  class: "btn btn-secondary cb-btn-secondary cb-rounded",
+                  phx_disable_with: "Creating..."
+                )}
               </div>
             </.form>
           </div>
         </div>
       <% end %>
 
-      <div class="card shadow-sm">
+      <div class="card cb-card shadow-sm border cb-border-color">
         <div class="card-body">
           <%= if @seasons == [] do %>
-            <div class="text-center text-muted py-5">
+            <div class="text-center cb-text py-5">
               <i class="bi bi-calendar-x" style="font-size: 3rem;"></i>
               <p class="mt-3">No seasons found. Create your first season!</p>
             </div>
           <% else %>
             <div class="table-responsive">
-              <table class="table table-hover">
-                <thead class="table-light">
+              <table class="table table-sm table-hover">
+                <thead class="cb-text">
                   <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Year</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">End Date</th>
-                    <th scope="col">Duration</th>
-                    <th scope="col">Actions</th>
+                    <th class="cb-border-color border-bottom">ID</th>
+                    <th class="cb-border-color border-bottom">Name</th>
+                    <th class="cb-border-color border-bottom">Year</th>
+                    <th class="cb-border-color border-bottom">Start Date</th>
+                    <th class="cb-border-color border-bottom">End Date</th>
+                    <th class="cb-border-color border-bottom">Duration</th>
+                    <th class="cb-border-color border-bottom">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <%= for season <- @seasons do %>
                     <tr>
-                      <td>{season.id}</td>
-                      <td><strong>{season.name}</strong></td>
-                      <td>{season.year}</td>
-                      <td>{Calendar.strftime(season.starts_at, "%b %d, %Y")}</td>
-                      <td>{Calendar.strftime(season.ends_at, "%b %d, %Y")}</td>
-                      <td>
+                      <td class="text-white cb-border-color">{season.id}</td>
+                      <td class="text-white cb-border-color"><strong>{season.name}</strong></td>
+                      <td class="text-white cb-border-color">{season.year}</td>
+                      <td class="text-white cb-border-color">
+                        {Calendar.strftime(season.starts_at, "%b %d, %Y")}
+                      </td>
+                      <td class="text-white cb-border-color">
+                        {Calendar.strftime(season.ends_at, "%b %d, %Y")}
+                      </td>
+                      <td class="text-white cb-border-color">
                         {Date.diff(season.ends_at, season.starts_at)} days
                       </td>
-                      <td>
+                      <td class="cb-border-color">
                         <div class="btn-group" role="group">
                           <a
                             href={Routes.admin_season_show_view_path(@socket, :show, season.id)}
-                            class="btn btn-sm btn-outline-primary"
+                            class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary"
                           >
                             <i class="bi bi-eye"></i> View
                           </a>

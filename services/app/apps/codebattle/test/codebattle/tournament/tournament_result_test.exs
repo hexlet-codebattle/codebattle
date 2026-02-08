@@ -1,9 +1,51 @@
 defmodule Codebattle.Tournament.TournamenResultTest do
   use Codebattle.DataCase, async: false
 
+  alias Codebattle.Repo
   alias Codebattle.Tournament.TournamentResult
 
   describe "get_player_results" do
+    test "aggregates ranking by user when language changes" do
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      user = insert(:user, name: "u1")
+      user_id = user.id
+
+      Repo.insert_all(TournamentResult, [
+        %{
+          tournament_id: tournament.id,
+          user_id: user.id,
+          user_name: user.name,
+          user_lang: "js",
+          score: 100,
+          duration_sec: 30,
+          round_position: 0,
+          game_id: 1,
+          task_id: 1,
+          level: "easy",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        },
+        %{
+          tournament_id: tournament.id,
+          user_id: user.id,
+          user_name: user.name,
+          user_lang: "python",
+          score: 200,
+          duration_sec: 40,
+          round_position: 1,
+          game_id: 2,
+          task_id: 2,
+          level: "easy",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        }
+      ])
+
+      assert %{^user_id => %{score: 300, place: 1}} = TournamentResult.get_user_ranking(tournament)
+    end
+
     test "calculates results correctly by_percentile" do
       [clan1, clan2, clan3, clan4, clan5, clan6, clan7, clan8] =
         Enum.map(1..8, fn i -> insert(:clan, name: "c#{i}", long_name: "l#{i}") end)

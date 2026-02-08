@@ -213,43 +213,97 @@ input[type="range"] {
 
 input[type="range"].cb-range {
   --range-progress: 50%;
+  --cb-range-track-bg: linear-gradient(
+    90deg,
+    #ff6a3d 0%,
+    $orange 50%,
+    #d63a3a 100%
+  );
+  --cb-range-track-rest: linear-gradient(
+    180deg,
+    rgba(58, 58, 74, 0.95) 0%,
+    rgba(33, 33, 43, 0.98) 100%
+  );
+  height: 22px;
 
   &::-webkit-slider-runnable-track {
-    background: linear-gradient(90deg, $orange var(--range-progress), $cb-bg-panel var(--range-progress));
-    border: 1px solid $cb-border-color;
+    height: 10px;
+    border-radius: 999px;
+    background:
+    linear-gradient(90deg, #dc3545 0%, #ff5a5a 100%) 0 / var(--range-progress) 100% no-repeat,
+    var(--cb-range-track-rest);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(238, 55, 55, 0.08);
+    transition: box-shadow 0.2s ease;
   }
 
   &::-moz-range-track {
-    background: linear-gradient(90deg, $orange var(--range-progress), $cb-bg-panel var(--range-progress));
-    border: 1px solid $cb-border-color;
+    height: 10px;
+    border-radius: 999px;
+    background:
+    linear-gradient(90deg, #dc3545 0%, #ff5a5a 100%) 0 / var(--range-progress) 100% no-repeat,
+    var(--cb-range-track-rest);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(238, 55, 55, 0.08);
+    transition: box-shadow 0.2s ease;
   }
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    margin-top: -6px;
+    width: 22px;
+    height: 22px;
+    margin-top: -7px;
     border-radius: 50%;
-    background: $orange;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle at 30% 30%, #fff2e8 0%, #ff955e 35%, $orange 65%, #cf2626 100%);
+    border: 2px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.55),
+      0 0 0 3px rgba(238, 55, 55, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
   }
 
   &::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    background: $orange;
-    border: 2px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    background: radial-gradient(circle at 30% 30%, #fff2e8 0%, #ff955e 35%, $orange 65%, #cf2626 100%);
+    border: 2px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.55),
+      0 0 0 3px rgba(238, 55, 55, 0.2);
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  &:hover::-webkit-slider-runnable-track,
+  &:hover::-moz-range-track {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(238, 55, 55, 0.18),
+      0 0 12px rgba(238, 55, 55, 0.2);
+  }
+
+  &:hover::-webkit-slider-thumb,
+  &:hover::-moz-range-thumb {
+    transform: scale(1.06);
   }
 
   &:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 0 0 4px rgba(238, 55, 55, 0.25);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.55),
+      0 0 0 5px rgba(238, 55, 55, 0.35);
   }
 
   &:focus-visible::-moz-range-thumb {
-    box-shadow: 0 0 0 4px rgba(238, 55, 55, 0.25);
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.55),
+      0 0 0 5px rgba(238, 55, 55, 0.35);
   }
 }
 
@@ -476,57 +530,62 @@ a {
 
 .react-calendar-heatmap {
   & .react-calendar-heatmap-month-label {
-    color: #999;
-    fill: #999;
+    color: #b8c0d0;
+    fill: #b8c0d0;
   }
 
   & .react-calendar-heatmap-weekday-label {
-    color: #999;
-    fill: #999;
+    color: #b8c0d0;
+    fill: #b8c0d0;
   }
 
   .color-huge {
-    background-color: #1e6823;
-    fill: #1e6823;
+    background-color: #e0bf7a;
+    fill: #e0bf7a;
   }
 
   .color-huge:hover {
-    background-color: #0e5813;
-    fill: #0e5813;
+    background-color: #e7ca8f;
+    fill: #e7ca8f;
   }
 
   .color-large {
-    background-color: #44a340;
-    fill: #44a340;
+    background-color: #a4aab3;
+    fill: #a4aab3;
   }
 
   .color-large:hover {
-    background-color: #349330;
-    fill: #349330;
+    background-color: #b3b9c2;
+    fill: #b3b9c2;
   }
 
   .color-small {
-    background-color: #d6e685;
-    fill: #d6e685;
+    background-color: #8a919c;
+    fill: #8a919c;
   }
 
   .color-small:hover {
-    background-color: #c6d675;
-    fill: #c6d675;
+    background-color: #9ba2ad;
+    fill: #9ba2ad;
   }
 
   .color-empty {
-    background-color: $cb-bg-highlight-panel;
-    fill: $cb-bg-highlight-panel;
+    background-color: #3a4150;
+    fill: #3a4150;
   }
 
   .color-empty:hover {
-    fill: $cb-bg-highlight-panel;
+    fill: #4a5262;
   }
 }
 
+.react-calendar-heatmap rect {
+  stroke: rgba(12, 16, 24, 0.65);
+  stroke-width: 1px;
+}
+
 .react-calendar-heatmap rect:hover {
-  stroke: #555;
+  stroke: #dbe3f2;
   stroke-width: 1px;
 }
 
@@ -1376,6 +1435,15 @@ $cb-bronze-bottom: #4a3223;
 
 .cb-bronze-place-bg {
   @include cb-place-bg($cb-bronze-top, $cb-bronze-bottom);
+}
+
+.cb-game-ranking-table .cb-gold-place-bg {
+  color: #fff;
+
+  .cb-custom-event-td,
+  .cb-custom-event-name {
+    color: #fff;
+  }
 }
 
 /* .cb-gold-place-bg {

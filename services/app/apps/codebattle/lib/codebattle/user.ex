@@ -219,7 +219,7 @@ defmodule Codebattle.User do
 
   def search_without_auth do
     __MODULE__
-    |> where([u], fragment("length(?) < 24", u.auth_token))
+    |> where([u], is_nil(u.auth_token) or fragment("length(btrim(?)) = 0", u.auth_token))
     |> order_by([u], {:desc, :updated_at})
     |> limit(40)
     |> Repo.all()

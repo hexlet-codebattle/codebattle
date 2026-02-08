@@ -82,7 +82,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   end
 
   def set_places_with_score_to_players(tournament, ranking) do
-    Enum.each(ranking, fn %{id: id, place: place, score: score, lang: lang} ->
+    Enum.each(ranking, fn %{id: id, place: place, score: score} ->
       tournament
       |> Players.get_player(id)
       |> case do
@@ -90,7 +90,7 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
           :noop
 
         player ->
-          Players.put_player(tournament, %{player | place: place, score: score, lang: lang})
+          Players.put_player(tournament, %{player | place: place, score: score})
       end
     end)
   end

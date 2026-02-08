@@ -27,6 +27,7 @@ export default function Rooms({ disabled }) {
         {
             rooms.map((room) => (
               <Dropdown.Item
+                as="a"
                 href="#"
                 className="cb-text"
                 key={room.targetUserId || room.name}

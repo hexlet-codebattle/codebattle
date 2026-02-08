@@ -13,24 +13,7 @@ defmodule CodebattleWeb.ExtApi.TaskController do
     with {:ok, gzipped_data} <- decode_base64(payload),
          {:ok, json_data} <- decompress_gzip(gzipped_data),
          {:ok, tasks_list} <- Jason.decode(json_data) do
-      results =
-        Enum.map(tasks_list, fn task_params ->
-          params =
-            task_params
-            |> Map.put("state", "active")
-            |> Map.put("origin", origin)
-            |> Map.put("visibility", visibility)
-            |> Runner.AtomizedMap.atomize()
-
-          case Codebattle.Task.changeset(%Codebattle.Task{}, params) do
-            %{valid?: true} ->
-              Codebattle.Task.upsert!(params)
-              {:ok, task_params}
-
-            %{valid?: false, errors: errors} ->
-              {:error, task_params, errors}
-          end
-        end)
+      results = Enum.map(tasks_list, &process_task(&1, origin, visibility))
 
       errors =
         results
@@ -78,6 +61,28 @@ defmodule CodebattleWeb.ExtApi.TaskController do
     case Base.decode64(data) do
       {:ok, decoded} -> {:ok, decoded}
       :error -> {:error, :invalid_base64}
+    end
+  end
+
+  defp process_task(task_params, origin, visibility) do
+    params =
+      task_params
+      |> Map.put("state", "active")
+      |> Map.put("origin", origin)
+      |> Map.put("visibility", visibility)
+      |> Runner.AtomizedMap.atomize()
+
+    save_task(params, task_params)
+  end
+
+  defp save_task(params, task_params) do
+    case Codebattle.Task.changeset(%Codebattle.Task{}, params) do
+      %{valid?: true} ->
+        Codebattle.Task.upsert!(params)
+        {:ok, task_params}
+
+      %{valid?: false, errors: errors} ->
+        {:error, task_params, errors}
     end
   end
 end

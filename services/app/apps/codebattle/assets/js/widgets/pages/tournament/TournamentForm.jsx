@@ -36,6 +36,11 @@ const SCORE_STRATEGIES = [
   { value: 'win_loss', label: 'Win/Loss' },
 ];
 
+const TIMEOUT_MODES = [
+  { value: 'per_task', label: 'Per task timeout' },
+  { value: 'per_round', label: 'Per round timeout' },
+];
+
 const PLAYERS_LIMITS = [
   2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384,
 ];
@@ -53,6 +58,9 @@ function TournamentForm({
   cancelButtonText = 'Cancel',
   onCancel,
 }) {
+  const hasRoundTimeout = initialValues.round_timeout_seconds !== null
+    && initialValues.round_timeout_seconds !== undefined;
+
   const [formData, setFormData] = useState({
     name: initialValues.name || '',
     description: initialValues.description || '',
@@ -65,7 +73,8 @@ function TournamentForm({
     tags: initialValues.tags || '',
     players_limit: initialValues.players_limit || 64,
     rounds_limit: initialValues.rounds_limit || 7,
-    round_timeout_seconds: initialValues.round_timeout_seconds || 177,
+    timeout_mode: hasRoundTimeout ? 'per_round' : 'per_task',
+    round_timeout_seconds: hasRoundTimeout ? initialValues.round_timeout_seconds : 177,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
     use_chat:
       initialValues.use_chat !== undefined ? initialValues.use_chat : true,
@@ -92,13 +101,18 @@ function TournamentForm({
     }));
   }, []);
 
-  const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault();
-      onSubmit(formData);
-    },
-    [formData, onSubmit],
-  );
+  const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+
+    const payload = { ...formData };
+    payload.round_timeout_seconds = formData.timeout_mode === 'per_round'
+      ? formData.round_timeout_seconds
+      : null;
+
+    delete payload.timeout_mode;
+
+    onSubmit(payload);
+  }, [formData, onSubmit]);
 
   const renderError = (fieldName) => {
     if (errors[fieldName]) {
@@ -498,28 +512,53 @@ function TournamentForm({
             </div>
 
             <div className="col-md-4 mb-3">
-              <label
-                htmlFor="round_timeout_seconds"
-                className="form-label text-white"
-              >
-                Round Timeout (seconds)
+              <label htmlFor="timeout_mode" className="form-label text-white">
+                Timeout Mode
               </label>
-              <input
-                type="number"
-                id="round_timeout_seconds"
-                name="round_timeout_seconds"
+              <select
+                id="timeout_mode"
+                name="timeout_mode"
                 className={cn(
-                  'form-control cb-bg-panel cb-border-color text-white cb-rounded',
-                  { 'is-invalid': errors.round_timeout_seconds },
+                  'form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded',
                 )}
-                value={formData.round_timeout_seconds}
+                value={formData.timeout_mode}
                 onChange={handleChange}
-                min={10}
-                max={10000}
-              />
-              {renderError('round_timeout_seconds')}
+              >
+                {TIMEOUT_MODES.map((mode) => (
+                  <option key={mode.value} value={mode.value}>
+                    {mode.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
+            {formData.timeout_mode === 'per_round' && (
+              <div className="col-md-4 mb-3">
+                <label
+                  htmlFor="round_timeout_seconds"
+                  className="form-label text-white"
+                >
+                  Round Timeout (seconds)
+                </label>
+                <input
+                  type="number"
+                  id="round_timeout_seconds"
+                  name="round_timeout_seconds"
+                  className={cn(
+                    'form-control cb-bg-panel cb-border-color text-white cb-rounded',
+                    { 'is-invalid': errors.round_timeout_seconds },
+                  )}
+                  value={formData.round_timeout_seconds}
+                  onChange={handleChange}
+                  min={10}
+                  max={10000}
+                />
+                {renderError('round_timeout_seconds')}
+              </div>
+            )}
+          </div>
+
+          <div className="row">
             <div className="col-md-4 mb-3">
               <label
                 htmlFor="break_duration_seconds"
@@ -609,6 +648,7 @@ TournamentForm.propTypes = {
     tags: PropTypes.string,
     players_limit: PropTypes.number,
     rounds_limit: PropTypes.number,
+    timeout_mode: PropTypes.oneOf(['per_task', 'per_round']),
     round_timeout_seconds: PropTypes.number,
     break_duration_seconds: PropTypes.number,
     use_chat: PropTypes.bool,

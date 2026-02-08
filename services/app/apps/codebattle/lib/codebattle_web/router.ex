@@ -87,6 +87,8 @@ defmodule CodebattleWeb.Router do
   scope "/admin" do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
+    live("/", CodebattleWeb.Live.Admin.IndexView, :index)
+    live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)
     live("/users/:id", CodebattleWeb.Live.Admin.UserShowView, :show)
     live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
@@ -128,6 +130,8 @@ defmodule CodebattleWeb.Router do
       get("/playbook/:id", PlaybookController, :show)
       get("/user/nearby_users", UserController, :nearby_users)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/:id/rivals", UserController, :rivals)
+      get("/user/:id/tournaments", UserController, :tournaments)
       get("/user/:id/achievements", UserController, :achievements)
       get("/user/:id/simple_stats", UserController, :simple_stats)
       get("/user/premium_requests", UserController, :premium_requests)

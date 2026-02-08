@@ -1,11 +1,15 @@
 import React from 'react';
 
-import ReactLoading from 'react-loading';
-
 function PlayerLoading({ small = false, show = false }) {
   const size = small ? 30 : 50;
   return (
-    <ReactLoading className={`cb-player-loading ${!show && 'invisible'}`} type="spin" color="#6c757d" height={size} width={size} />
+    <div
+      className={`cb-player-loading spinner-border text-secondary ${!show && 'invisible'}`}
+      style={{ width: `${size}px`, height: `${size}px` }}
+      role="status"
+    >
+      <span className="sr-only">Loading...</span>
+    </div>
   );
 }
 

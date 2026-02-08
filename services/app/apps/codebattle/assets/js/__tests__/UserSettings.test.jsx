@@ -1,6 +1,6 @@
 import React from 'react';
 
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -15,6 +15,16 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 }));
 
 jest.mock('calcite-react/Slider', () => 'input');
+jest.mock('../widgets/components/LanguageIcon', () => () => null);
+jest.mock(
+  'react-bootstrap/Alert',
+  () => ({
+    __esModule: true,
+    default: ({ children, variant, show }) => (
+      show ? <div role="alert" className={`alert-${variant}`}>{children}</div> : null
+    ),
+  }),
+);
 
 jest.mock('axios');
 

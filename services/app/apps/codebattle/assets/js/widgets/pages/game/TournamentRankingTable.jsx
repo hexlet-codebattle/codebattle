@@ -61,7 +61,7 @@ function TournamentRankingTable() {
         <span className="font-weight-bold">{i18next.t('Ranking')}</span>
       </div>
       <div className="d-flex cb-overflow-x-auto">
-        <table className="table table-striped cb-custom-event-table m-1 cb-text">
+        <table className="table table-striped cb-custom-event-table cb-game-ranking-table m-1 cb-text">
           <colgroup>
             <col style={{ width: '12%' }} />
             <col style={{ width: '44%' }} />

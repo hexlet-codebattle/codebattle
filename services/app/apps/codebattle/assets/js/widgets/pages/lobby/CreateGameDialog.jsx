@@ -33,6 +33,58 @@ const defaultGameOptions = {
   timeoutSeconds: TIMEOUT,
 };
 const unchosenTask = { id: null };
+const opponentSelectStyles = {
+  menu: (base) => ({
+    ...base,
+    backgroundColor: '#1c1c24',
+  }),
+  container: (base) => ({
+    ...base,
+    backgroundColor: '#1c1c24',
+    color: 'white',
+  }),
+  indicatorSeparator: (base) => ({
+    ...base,
+    backgroundColor: '#dc3545',
+  }),
+  dropdownIndicator: (base) => ({
+    ...base,
+    color: '#dc3545',
+    ':hover': {
+      ...base[':hover'],
+      color: '#e04d5b',
+    },
+  }),
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: '#1c1c24',
+    borderColor: state.isFocused ? '#e04d5b' : '#dc3545',
+    boxShadow: 'none',
+    ':hover': {
+      ...base[':hover'],
+      borderColor: '#e04d5b',
+      cursor: 'pointer',
+    },
+  }),
+  input: (base) => ({
+    ...base,
+    color: 'white',
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: 'white',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused ? '#2a2a35' : '#1c1c24',
+    color: 'white',
+    ':hover': {
+      ...base[':hover'],
+      cursor: 'pointer',
+      backgroundColor: '#2a2a35',
+    },
+  }),
+};
 
 const OpponentSelect = memo(({ setOpponent, opponent }) => {
   const dispatch = useDispatch();
@@ -103,6 +155,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
   return (
     <AsyncSelect
       className="w-100"
+      styles={opponentSelectStyles}
       value={
         opponent && {
           label: <UserLabel user={opponent} />,

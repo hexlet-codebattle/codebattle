@@ -89,11 +89,7 @@ defmodule CodebattleWeb.EventController do
   defp process_stages_json(%{"stages_json" => stages_json} = params) when is_binary(stages_json) and stages_json != "" do
     with {:ok, stages_data} <- Jason.decode(stages_json),
          true <- is_list(stages_data) do
-      stages =
-        Enum.map(stages_data, fn stage ->
-          # Ensure required fields are present
-          Map.new(stage, fn {k, v} -> {String.to_atom(k), v} end)
-        end)
+      stages = Enum.map(stages_data, &atomize_stage/1)
 
       # Replace stages_json with stages
       params
@@ -107,4 +103,9 @@ defmodule CodebattleWeb.EventController do
   end
 
   defp process_stages_json(params), do: params
+
+  defp atomize_stage(stage) do
+    # Ensure required fields are present
+    Map.new(stage, fn {k, v} -> {String.to_atom(k), v} end)
+  end
 end

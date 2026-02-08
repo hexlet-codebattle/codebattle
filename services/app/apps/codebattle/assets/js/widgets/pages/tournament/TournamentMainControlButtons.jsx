@@ -128,6 +128,7 @@ function TournamentMainControlButtons({
         />
         <Dropdown.Menu className="cb-dropdown-menu cb-bg-highlight-panel dropdown-menu-end">
           <Dropdown.Item
+            as="a"
             disabled={disabled}
             key="edit"
             href={`/tournaments/${tournamentId}/edit`}
@@ -137,6 +138,7 @@ function TournamentMainControlButtons({
             Edit
           </Dropdown.Item>
           <Dropdown.Item
+            as="a"
             key="tournaments"
             href="/tournaments"
             className="cb-dropdown-item"
@@ -145,6 +147,7 @@ function TournamentMainControlButtons({
             Tournaments
           </Dropdown.Item>
           <Dropdown.Item
+            as="button"
             disabled={disabled || !hideResults}
             key="showResults"
             onSelect={handleShowResults}
@@ -154,6 +157,7 @@ function TournamentMainControlButtons({
             Show Results
           </Dropdown.Item>
           <Dropdown.Item
+            as="button"
             disabled={disabled}
             key="streamMode"
             className="cb-dropdown-item"
@@ -163,8 +167,9 @@ function TournamentMainControlButtons({
             Toggle stream mode
           </Dropdown.Item>
           <Dropdown.Item
+            as="button"
             disabled={disabled || !canToggleShowBots}
-            key="showResults"
+            key="showBots"
             className="cb-dropdown-item"
             onSelect={toggleShowBots}
           >
@@ -172,6 +177,7 @@ function TournamentMainControlButtons({
             {showBots ? 'Hide bots' : 'Show bots'}
           </Dropdown.Item>
           <Dropdown.Item
+            as="button"
             key="tournamentDetails"
             className="cb-dropdown-item"
             onSelect={handleOpenDetails}
@@ -180,6 +186,7 @@ function TournamentMainControlButtons({
             Tournament details
           </Dropdown.Item>
           <Dropdown.Item
+            as="button"
             disabled={disabled}
             key="cancel"
             className="cb-dropdown-item"
@@ -192,6 +199,7 @@ function TournamentMainControlButtons({
             <>
               <Dropdown.Divider className="cb-border-color" />
               <Dropdown.Item
+                as="button"
                 disabled={disabled}
                 key="openUp"
                 className="cb-dropdown-item"

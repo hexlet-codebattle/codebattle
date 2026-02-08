@@ -289,14 +289,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         select: %{
           id: r.user_id,
           name: r.user_name,
-          lang: r.user_lang,
+          lang: max(r.user_lang),
           clan_id: c.id,
           clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name, r.user_lang, c.id],
+        group_by: [r.user_id, r.user_name, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )
@@ -316,14 +316,14 @@ defmodule Codebattle.Tournament.TournamentResult do
         select: %{
           id: r.user_id,
           name: r.user_name,
-          lang: r.user_lang,
+          lang: max(r.user_lang),
           clan_id: c.id,
           clan: c.name,
           score: sum(r.score),
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
-        group_by: [r.user_id, r.user_name, r.user_lang, c.id],
+        group_by: [r.user_id, r.user_name, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
       )

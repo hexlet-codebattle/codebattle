@@ -5,9 +5,9 @@ import React, {
 import NiceModal, { useModal } from '@ebay/nice-modal-react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Modal from '@/components/BootstrapModal';
 import { sendPremiumRequest } from '@/middlewares/Users';
 import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
 
