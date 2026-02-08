@@ -48,7 +48,7 @@ function mapAchievement(achievement) {
         tone: 'iron',
       };
     case 'highest_tournament_win_grade': {
-      const grade = meta.grade;
+      const { grade } = meta;
       return {
         title: 'Highest tournament win grade',
         label: 'Highest Win',

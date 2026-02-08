@@ -63,7 +63,9 @@ function UserProfile() {
     return <Loading />;
   }
 
-  const { stats, metrics, user, achievements } = userData;
+  const {
+ stats, metrics, user, achievements,
+} = userData;
   const visibleAchievements = achievements.filter((item) => !hiddenAchievementTypes.has(item.type));
   const gameStats = metrics?.gameStats || { won: 0, lost: 0, gaveUp: 0 };
   const userInsertedAt = new Date(user.insertedAt).toLocaleString('en-US', {
