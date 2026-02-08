@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Api.V1.UserControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
+  alias Codebattle.User.Achievements
+
   describe "#index" do
     test "shows rating list", %{conn: conn} do
       user1 =
@@ -123,21 +125,20 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       insert(:user_game, user: user2, creator: false, game: game2, result: "won", lang: "ruby")
       insert(:user_game, user: user1, creator: false, game: game3, result: "lost", lang: "golang")
       insert(:user_game, user: user2, creator: false, game: game3, result: "won", lang: "golang")
+      :ok = Achievements.recalculate_user(user1.id)
+      :ok = Achievements.recalculate_user(user2.id)
 
       resp_body =
         conn
         |> get(Routes.api_v1_user_path(conn, :stats, user1.id))
         |> json_response(200)
 
-      assert [
-               %{"count" => 1, "lang" => "golang", "result" => "lost"},
-               %{"count" => 1, "lang" => "js", "result" => "won"},
-               %{"count" => 1, "lang" => "ruby", "result" => "lost"}
-             ] = Enum.sort_by(resp_body["stats"]["all"], & &1["lang"])
-
       assert %{
                "active_game_id" => ^game4_id,
-               "stats" => %{"games" => %{"gave_up" => 0, "lost" => 2, "won" => 1}},
+               "stats" => %{"all" => []},
+               "metrics" => %{
+                 "game_stats" => %{"gave_up" => 0, "lost" => 2, "won" => 1}
+               },
                "user" => _user
              } = resp_body
 
@@ -148,9 +149,43 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
       assert %{
                "active_game_id" => nil,
-               "stats" => %{"games" => %{"gave_up" => 0, "lost" => 1, "won" => 2}},
+               "stats" => %{"all" => []},
+               "metrics" => %{
+                 "game_stats" => %{"gave_up" => 0, "lost" => 1, "won" => 2}
+               },
                "user" => _user
              } = resp_body
+    end
+  end
+
+  describe "achievements" do
+    test "shows lightweight achievements and metrics payload", %{conn: conn} do
+      user = insert(:user, %{name: "1", github_id: 1, rating: 2400})
+      bot = insert(:user, %{is_bot: true, name: "bot"})
+      game = insert(:game, state: "game_over")
+      %{id: active_game_id} = insert(:game, state: "playing", player_ids: [user.id])
+
+      insert(:user_game, user: user, creator: false, game: game, result: "won", lang: "js")
+      insert(:user_game, user: bot, creator: false, game: game, result: "lost", lang: "js")
+
+      :ok = Achievements.recalculate_user(user.id)
+
+      resp_body =
+        conn
+        |> get(Routes.api_v1_user_path(conn, :achievements, user.id))
+        |> json_response(200)
+
+      assert %{
+               "active_game_id" => ^active_game_id,
+               "metrics" => %{
+                 "game_stats" => %{"gave_up" => 0, "lost" => 0, "won" => 1}
+               },
+               "achievements" => achievements,
+               "user" => _user
+             } = resp_body
+
+      refute Map.has_key?(resp_body, "stats")
+      assert is_list(achievements)
     end
   end
 

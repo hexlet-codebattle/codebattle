@@ -16,6 +16,7 @@ defmodule Codebattle.Tournament.HelperTest do
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
         "name" => "Test Swiss",
+        "description" => "Test Swiss description",
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
         "task_pack_name" => "tp",

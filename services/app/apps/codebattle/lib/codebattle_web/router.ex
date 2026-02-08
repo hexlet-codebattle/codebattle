@@ -128,6 +128,7 @@ defmodule CodebattleWeb.Router do
       get("/playbook/:id", PlaybookController, :show)
       get("/user/nearby_users", UserController, :nearby_users)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/:id/achievements", UserController, :achievements)
       get("/user/:id/simple_stats", UserController, :simple_stats)
       get("/user/premium_requests", UserController, :premium_requests)
       post("/user/:id/send_premium_request", UserController, :send_premium_request)

@@ -23,6 +23,7 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
       Tournament.Context.create(%{
         "starts_at" => "2022-02-24T06:00",
         "name" => "Test Arena 2",
+        "description" => "Test Arena 2 description",
         "user_timezone" => "Etc/UTC",
         "level" => "easy",
         "creator" => creator,

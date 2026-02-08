@@ -19,7 +19,6 @@ defmodule Codebattle.Game.Player do
 
   @derive {Jason.Encoder,
            only: [
-             :achievements,
              :avatar_url,
              :check_result,
              :creator,
@@ -43,7 +42,6 @@ defmodule Codebattle.Game.Player do
   @results ~w(undefined won lost gave_up timeout)
 
   embedded_schema do
-    field(:achievements, {:array, :string}, default: [])
     field(:avatar_url, :string)
     # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
     field(:check_result, AtomizedMap,
@@ -96,7 +94,6 @@ defmodule Codebattle.Game.Player do
       :creator,
       :result,
       :check_result,
-      :achievements,
       :rating,
       :rating_diff,
       :rank,
@@ -121,7 +118,6 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             clan_id: user.clan_id,
             name: user.name,
-            achievements: user.achievements,
             avatar_url: user.avatar_url,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
@@ -208,7 +204,6 @@ defmodule Codebattle.Game.Player do
             lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
             style_lang: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug),
             db_type: user.db_type || Application.get_env(:codebattle, :default_db_type_slug),
-            achievements: user.achievements,
             avatar_url: user.avatar_url
           }
       end

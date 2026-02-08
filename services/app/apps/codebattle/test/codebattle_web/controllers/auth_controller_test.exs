@@ -35,7 +35,6 @@ defmodule CodebattleWeb.AuthControllerTest do
       user = Repo.get_by(User, name: "test_user")
 
       assert %User{
-               achievements: [],
                avatar_url: "https://avatars3.githubusercontent.com/u/10835816",
                discord_avatar: nil,
                discord_id: nil,
@@ -76,7 +75,6 @@ defmodule CodebattleWeb.AuthControllerTest do
       user = Repo.get_by(User, name: "test_name")
 
       assert %User{
-               achievements: [],
                avatar_url: "https://cdn.discordapp.com/avatars/1234567/12345.jpg",
                discord_avatar: "12345",
                discord_id: 1_234_567,

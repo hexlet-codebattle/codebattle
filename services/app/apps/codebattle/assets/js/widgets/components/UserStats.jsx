@@ -14,6 +14,47 @@ import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
 
+const defaultGameStats = { won: 0, lost: 0, gaveUp: 0 };
+
+const defaultTournamentStats = {
+  rookieWins: 0,
+  challengerWins: 0,
+  proWins: 0,
+  eliteWins: 0,
+  mastersWins: 0,
+  grandSlamWins: 0,
+};
+
+const tournamentGrades = [
+  { key: 'grandSlamWins', label: 'GS' },
+  { key: 'mastersWins', label: 'Masters' },
+  { key: 'eliteWins', label: 'Elite' },
+  { key: 'proWins', label: 'Pro' },
+  { key: 'challengerWins', label: 'Challenger' },
+  { key: 'rookieWins', label: 'Rookie' },
+];
+
+function StatsRow({ items }) {
+  return (
+    <div
+      className="text-muted small mt-1"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+        columnGap: '8px',
+      }}
+    >
+      {items.map(({ key, label, value }) => (
+        <span key={key} className="text-nowrap">
+          {label}
+          {': '}
+          <b className="text-white">{value}</b>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function UserStats({ data, user: userInfo }) {
   const dispatch = useDispatch();
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
@@ -26,6 +67,8 @@ function UserStats({ data, user: userInfo }) {
   const points = data?.user?.points || userInfo.points;
   const rating = data?.user?.rating || userInfo.rating;
   const rank = data?.user?.rank || userInfo.rank;
+  const gameStats = data?.metrics?.gameStats || defaultGameStats;
+  const tournamentsStats = data?.metrics?.tournamentsStats || defaultTournamentStats;
 
   const followId = useSelector((state) => state.gameUI.followId);
 
@@ -46,18 +89,23 @@ function UserStats({ data, user: userInfo }) {
   return (
     <div className="container-fluid p-2">
       <div className="row">
-        <div className="col d-flex align-items-center">
-          <img
-            className="img-fluid cb-rounded"
-            style={{ maxHeight: '56px', width: '56px' }}
-            src={avatarUrl}
-            alt="User avatar"
-          />
-          <div className="d-flex flex-column ml-2 w-100">
-            <div className="d-flex align-items-center justify-content-between">
+        <div className="col">
+          <div className="d-flex flex-column w-100">
+            <div className="d-flex align-items-start justify-content-between">
               <div className="d-flex align-items-center text-white">
-                <LanguageIcon className="mr-1" lang={lang} />
-                <span className="font-weight-bold">{name}</span>
+                <img
+                  className="img-fluid cb-rounded mr-2"
+                  style={{ maxHeight: '42px', width: '42px' }}
+                  src={avatarUrl}
+                  alt="User avatar"
+                />
+                <div className="d-flex flex-column">
+                  <div className="d-flex align-items-center">
+                    <LanguageIcon className="mr-1" lang={lang} />
+                    <span className="font-weight-bold">{name}</span>
+                  </div>
+                  {clan && <span className="text-muted small">{clan}</span>}
+                </div>
               </div>
               <div>
                 <button
@@ -91,47 +139,45 @@ function UserStats({ data, user: userInfo }) {
                 </button>
               </div>
             </div>
-            <div className="d-flex flex-wrap align-items-baseline text-muted small mt-1">
-              {clan && <span className="mr-2 text-white">{clan}</span>}
-              <span className="mr-2">
-                {i18next.t('Place')}
-                {': '}
-                <b className="text-white">{rank ?? '####'}</b>
-              </span>
-              <span className="mr-2">
-                {i18next.t('Points')}
-                {': '}
-                <b className="text-white">{points ?? '####'}</b>
-              </span>
-              <span>
-                {i18next.t('Rating')}
-                {': '}
-                <b className="text-white">{rating ?? '####'}</b>
-              </span>
-            </div>
-            <div className="d-flex justify-content-between mt-1">
-              <div>
-                <span>{i18next.t('Won:')}</span>
-                <b className="text-success">{data ? data.stats.games.won : '#'}</b>
-              </div>
-              <div className="ml-2">
-                <span>{i18next.t('Lost:')}</span>
-                <b className="text-danger">{data ? data.stats.games.lost : '#'}</b>
-              </div>
-              <div className="ml-2">
-                <span>{i18next.t('GaveUp:')}</span>
-                <b className="text-warning">
-                  {data ? data.stats.games.gaveUp : '#'}
-                </b>
-              </div>
-            </div>
+            <StatsRow
+              items={[
+                { key: 'place', label: i18next.t('Place'), value: rank ?? '####' },
+                { key: 'points', label: i18next.t('Points'), value: points ?? '####' },
+                { key: 'rating', label: i18next.t('Rating'), value: rating ?? '####' },
+              ]}
+            />
+            {data && (
+              <>
+                <StatsRow
+                  items={tournamentGrades.slice(0, 3).map(({ key, label }) => ({
+                    key,
+                    label,
+                    value: tournamentsStats[key] ?? 0,
+                  }))}
+                />
+                <StatsRow
+                  items={tournamentGrades.slice(3, 6).map(({ key, label }) => ({
+                    key,
+                    label,
+                    value: tournamentsStats[key] ?? 0,
+                  }))}
+                />
+                <StatsRow
+                  items={[
+                    { key: 'won', label: i18next.t('Won'), value: gameStats.won },
+                    { key: 'lost', label: i18next.t('Lost'), value: gameStats.lost },
+                    { key: 'gaveUp', label: i18next.t('GaveUp'), value: gameStats.gaveUp },
+                  ]}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
       {!data ? (
         <Loading small />
       ) : (
-        <UserAchievements achievements={data.user.achievements} />
+        <UserAchievements achievements={data.achievements} />
       )}
     </div>
   );

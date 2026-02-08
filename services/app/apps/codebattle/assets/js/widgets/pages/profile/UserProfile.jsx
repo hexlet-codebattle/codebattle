@@ -15,6 +15,8 @@ import Achievement from './Achievement';
 import Heatmap from './Heatmap';
 import UserStatCharts from './UserStatCharts';
 
+const hiddenAchievementTypes = new Set(['game_stats', 'tournaments_stats']);
+
 function HolopinTags({ name }) {
   return (
     name && (
@@ -61,13 +63,15 @@ function UserProfile() {
     return <Loading />;
   }
 
-  const { stats, user } = userData;
+  const { stats, metrics, user, achievements } = userData;
+  const visibleAchievements = achievements.filter((item) => !hiddenAchievementTypes.has(item.type));
+  const gameStats = metrics?.gameStats || { won: 0, lost: 0, gaveUp: 0 };
   const userInsertedAt = new Date(user.insertedAt).toLocaleString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
-  const gamesCount = sum(Object.values(stats.games));
+  const gamesCount = sum(Object.values(gameStats));
 
   return (
     <div className="row cb-bg-panel cb-rounded py-4">
@@ -107,12 +111,12 @@ function UserProfile() {
                 </a>
               </h3>
             )}
-            {user.achievements.length > 0 && (
+            {visibleAchievements.length > 0 && (
               <>
                 <hr className="mt-2" />
                 <h3 className="text-break cb-heading">Achievements</h3>
-                <div className="d-flex flex-wrap justify-content-start mt-3">
-                  {user.achievements.map((item) => <Achievement key={item} achievement={item} />)}
+                <div className="cb-achievements-grid mt-3">
+                  {visibleAchievements.map((item) => <Achievement key={item.type} achievement={item} />)}
                 </div>
               </>
             )}
@@ -174,7 +178,7 @@ function UserProfile() {
                   <p className="lead">games_played</p>
                 </div>
               </div>
-              {gamesCount > 0 && <UserStatCharts stats={stats} />}
+              {gamesCount > 0 && <UserStatCharts stats={{ all: stats?.all || [], games: gameStats }} />}
               <div className={cn('row mt-5 mb-md-3 mb-lg-4', { 'mt-lg-0': gamesCount > 0 })}>
                 <div className="col-md-11 col-lg-10 mx-auto">
                   <Heatmap />

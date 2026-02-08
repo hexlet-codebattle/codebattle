@@ -34,7 +34,6 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   defp prepare_user(user) do
     user
     |> Map.take([
-      :achievements,
       :clan,
       :clan_id,
       :discord_avatar,

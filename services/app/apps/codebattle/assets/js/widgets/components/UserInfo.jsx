@@ -24,7 +24,7 @@ function UserPopoverContent({ user }) {
     const controller = new AbortController();
 
     axios
-      .get(`/api/v1/user/${userId}/stats`, {
+      .get(`/api/v1/user/${userId}/achievements`, {
         signal: controller.signal,
       })
       .then((response) => {

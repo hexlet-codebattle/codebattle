@@ -258,18 +258,18 @@ export function SearchFilterBar({
   const hasFilters = searchQuery || clanFilter || langFilter;
 
   return (
-    <div className="p-3 border-bottom border-secondary">
-      <div className="row align-items-end">
+    <div className="p-3 border-bottom border-secondary cb-season-leaderboard-filters">
+      <div className="row align-items-end g-2">
         <div className="col-12 col-md-4">
-          <label htmlFor="search-player" className="form-label text-muted small mb-1">Search Player</label>
-          <div className="input-group input-group-sm">
-            <span className="input-group-text bg-dark border-secondary text-muted">
+          <div className="input-group input-group-sm cb-season-filter-input-group">
+            <span className="input-group-text bg-dark border-secondary text-muted cb-season-filter-prefix">
               <i className="bi bi-search" />
             </span>
             <input
               id="search-player"
               type="text"
-              className="form-control bg-dark text-light border-secondary"
+              aria-label="Search player"
+              className="form-control bg-dark text-light border-secondary cb-season-filter-control"
               placeholder="Search by name..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
@@ -277,7 +277,7 @@ export function SearchFilterBar({
             {searchQuery && (
               <button
                 type="button"
-                className="btn btn-outline-secondary"
+                className="btn btn-outline-secondary cb-season-filter-clear-btn"
                 onClick={() => onSearchChange('')}
               >
                 ×
@@ -286,10 +286,10 @@ export function SearchFilterBar({
           </div>
         </div>
         <div className="col-6 col-md-3">
-          <label htmlFor="filter-clan" className="form-label text-muted small mb-1">Clan</label>
           <select
             id="filter-clan"
-            className="form-select form-select-sm bg-dark text-light border-secondary"
+            aria-label="Filter by clan"
+            className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={clanFilter}
             onChange={(e) => onClanFilterChange(e.target.value)}
           >
@@ -300,10 +300,10 @@ export function SearchFilterBar({
           </select>
         </div>
         <div className="col-6 col-md-3">
-          <label htmlFor="filter-lang" className="form-label text-muted small mb-1">Language</label>
           <select
             id="filter-lang"
-            className="form-select form-select-sm bg-dark text-light border-secondary"
+            aria-label="Filter by language"
+            className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={langFilter}
             onChange={(e) => onLangFilterChange(e.target.value)}
           >
@@ -317,7 +317,7 @@ export function SearchFilterBar({
           {hasFilters && (
             <button
               type="button"
-              className="btn btn-sm btn-outline-secondary w-100"
+              className="btn btn-sm btn-outline-secondary w-100 cb-season-filter-reset-btn"
               onClick={onReset}
             >
               Clear Filters

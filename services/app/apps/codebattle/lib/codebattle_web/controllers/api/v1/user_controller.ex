@@ -6,7 +6,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
   alias Codebattle.Game
   alias Codebattle.PremiumRequest
   alias Codebattle.User
-  alias Codebattle.User.Stats
+  alias Codebattle.User.Achievements
   alias CodebattleWeb.Api.UserView
 
   def index(conn, params) do
@@ -44,15 +44,61 @@ defmodule CodebattleWeb.Api.V1.UserController do
   def stats(conn, %{"id" => "0"}) do
     user = User.build_guest()
 
-    json(conn, %{stats: %{games: %{"won" => 0, "lost" => 0, "gave_up" => 0}, all: []}, user: user})
+    json(conn, %{
+      stats: %{all: []},
+      metrics: %{
+        game_stats: %{"won" => 0, "lost" => 0, "gave_up" => 0},
+        tournaments_stats: %{
+          "rookie_wins" => 0,
+          "challenger_wins" => 0,
+          "pro_wins" => 0,
+          "elite_wins" => 0,
+          "masters_wins" => 0,
+          "grand_slam_wins" => 0
+        }
+      },
+      user: user,
+      achievements: []
+    })
   end
 
   def stats(conn, %{"id" => id}) do
-    game_stats = Stats.get_game_stats(id)
-    user = User.get!(id)
-    active_game_id = Game.Context.get_active_game_id(id)
+    %{user: user, active_game_id: active_game_id, achievements: achievements, metrics: metrics} =
+      get_achievements_payload(id)
 
-    json(conn, %{active_game_id: active_game_id, stats: game_stats, user: user})
+    json(conn, %{
+      active_game_id: active_game_id,
+      stats: %{all: []},
+      metrics: metrics,
+      user: user,
+      achievements: achievements
+    })
+  end
+
+  def achievements(conn, %{"id" => "0"}) do
+    user = User.build_guest()
+
+    json(conn, %{
+      active_game_id: nil,
+      metrics: %{
+        game_stats: %{"won" => 0, "lost" => 0, "gave_up" => 0},
+        tournaments_stats: %{
+          "rookie_wins" => 0,
+          "challenger_wins" => 0,
+          "pro_wins" => 0,
+          "elite_wins" => 0,
+          "masters_wins" => 0,
+          "grand_slam_wins" => 0
+        }
+      },
+      user: user,
+      achievements: []
+    })
+  end
+
+  def achievements(conn, %{"id" => id}) do
+    payload = get_achievements_payload(id)
+    json(conn, payload)
   end
 
   def nearby_users(conn, _) do
@@ -61,7 +107,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def simple_stats(conn, %{"id" => id}) do
-    game_stats = Stats.get_game_stats(id)
+    achievements = Achievements.get_user_achievements(id)
+    game_stats = build_metrics_from_achievements(achievements).game_stats
     json(conn, %{stats: game_stats})
   end
 
@@ -91,5 +138,57 @@ defmodule CodebattleWeb.Api.V1.UserController do
     |> Enum.filter(&(&1.status == status))
     |> Enum.uniq_by(& &1.user_id)
     |> Enum.count()
+  end
+
+  defp build_metrics_from_achievements(achievements) do
+    game_stats =
+      achievements
+      |> Enum.find(%{}, &(&1.type == "game_stats"))
+      |> Map.get(:meta, %{})
+      |> Map.take(["won", "lost", "gave_up"])
+      |> Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, fn _k, v, _ -> v end)
+
+    tournaments_stats =
+      achievements
+      |> Enum.find(%{}, &(&1.type == "tournaments_stats"))
+      |> Map.get(:meta, %{})
+      |> Map.take([
+        "rookie_wins",
+        "challenger_wins",
+        "pro_wins",
+        "elite_wins",
+        "masters_wins",
+        "grand_slam_wins"
+      ])
+      |> Map.merge(
+        %{
+          "rookie_wins" => 0,
+          "challenger_wins" => 0,
+          "pro_wins" => 0,
+          "elite_wins" => 0,
+          "masters_wins" => 0,
+          "grand_slam_wins" => 0
+        },
+        fn _k, v, _ -> v end
+      )
+
+    %{
+      game_stats: game_stats,
+      tournaments_stats: tournaments_stats
+    }
+  end
+
+  defp get_achievements_payload(id) do
+    user = User.get!(id)
+    active_game_id = Game.Context.get_active_game_id(id)
+    achievements = Achievements.get_user_achievements(id)
+    metrics = build_metrics_from_achievements(achievements)
+
+    %{
+      user: user,
+      active_game_id: active_game_id,
+      achievements: achievements,
+      metrics: metrics
+    }
   end
 end

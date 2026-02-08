@@ -43,13 +43,13 @@ config :codebattle, CodebattleWeb.BotEndpoint,
   server: true
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: 4001],
+  http: [port: 4003],
   server: true
 
 config :codebattle, :firebase,
   sender_id: "ASDF",
   api_key: "ASDF",
-  firebase_autn_url: "http://localhost:4000"
+  firebase_autn_url: "http://localhost:4002"
 
 config :codebattle, :oauth,
   github_client_id: "GITHUB_CLIENT_ID",
@@ -81,7 +81,7 @@ config :codebattle, tournament_finish_timeout_ms: 0
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, tournament_rematch_timeout_ms: 1
 config :codebattle, user_rank_server: false
-config :codebattle, ws_port: 4001
+config :codebattle, ws_port: 4003
 
 config :fun_with_flags, :cache, enabled: false
 config :fun_with_flags, :cache_bust_notifications, enabled: false
@@ -89,5 +89,9 @@ config :fun_with_flags, :cache_bust_notifications, enabled: false
 config :logger, :console, level: :error
 
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
+
+config :runner, RunnerWeb.Endpoint,
+  http: [port: 4004],
+  server: true
 
 config :runner, fake_container_run: true

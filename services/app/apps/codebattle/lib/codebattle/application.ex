@@ -20,37 +20,28 @@ defmodule Codebattle.Application do
         {ChromicPDF, chromic_pdf_opts()},
         {Cachex, name: :season_cache},
         {Codebattle.UsersPointsAndRankServer, []},
+        {Codebattle.UserAchievementsServer, []},
         {Codebattle.Bot.GameCreator, []},
         {Codebattle.Tournament.UpcomingRunner, []},
         {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
         {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
-        %{
-          # PubSub for internal messages
-          id: Codebattle.PubSub,
-          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}
-        },
-        %{
-          # PubSub for web phoenix channels
-          id: CodebattleWeb.PubSub,
-          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}
-        },
+        %{id: Codebattle.PubSub, start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}},
+        %{id: CodebattleWeb.PubSub, start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}},
         {CodebattleWeb.Presence, []},
         {Finch, name: CodebattleHTTP, pools: %{default: [size: 300, count: 5]}},
-        {CodebattleWeb.Endpoint, []},
-        # TODO: move bot endpoint to main endpoint
-        # {CodebattleWeb.BotEndpoint, []},
         {Codebattle.Game.TasksQueuesServer, []},
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
         {Codebattle.InvitesKillerServer, []},
-        %{
-          id: Codebattle.Chat.Lobby,
-          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
-        }
-      ]
+        %{id: Codebattle.Chat.Lobby, start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}}
+      ] ++ [{CodebattleWeb.Endpoint, []}]
 
+    # PubSub for internal messages
+    # PubSub for web phoenix channels
+    # TODO: move bot endpoint to main endpoint
+    # {CodebattleWeb.BotEndpoint, []},
     Supervisor.start_link(children,
       strategy: :one_for_one,
       name: Codebattle.Supervisor,
