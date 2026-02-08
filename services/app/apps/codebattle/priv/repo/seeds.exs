@@ -649,6 +649,7 @@ Enum.each(created_seasons, fn season ->
     # Create the tournament
     tournament_params = %{
       name: "#{String.capitalize(grade)} Tournament ##{idx + 1}",
+      description: "#{String.capitalize(grade)} season tournament ##{idx + 1}",
       type: "swiss",
       state: "finished",
       grade: grade,

@@ -1,8 +1,9 @@
 defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
+  @moduledoc false
   use Ecto.Migration
 
   def change do
-    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    utc_now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
     bots = [
       %{
@@ -150,6 +151,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
       }
     ]
 
-    Codebattle.Repo.insert_all(Codebattle.User, bots)
+    Codebattle.Repo.insert_all("users", bots)
   end
 end

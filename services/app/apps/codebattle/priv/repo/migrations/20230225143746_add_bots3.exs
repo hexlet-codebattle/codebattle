@@ -1,4 +1,5 @@
 defmodule Codebattle.Repo.Migrations.AddMoreBots3 do
+  @moduledoc false
   use Ecto.Migration
 
   def change do
@@ -101,7 +102,7 @@ AndreyAntibiotik
 )
     count = Enum.count(names)
     bot_ids = -42..(-42 - count)//-1
-    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    utc_now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
 
     bots =
       bot_ids
@@ -121,6 +122,6 @@ AndreyAntibiotik
         }
       end)
 
-    Codebattle.Repo.insert_all(Codebattle.User, bots)
+    Codebattle.Repo.insert_all("users", bots)
   end
 end
