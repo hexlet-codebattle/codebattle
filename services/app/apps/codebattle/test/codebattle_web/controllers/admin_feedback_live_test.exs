@@ -30,6 +30,8 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
     assert conn.status == 200
     assert response(conn, 200) =~ "Codebattle Admin Dashboard"
     assert response(conn, 200) =~ "User Registrations by Day"
+    assert response(conn, 200) =~ "Games Created by Day"
+    assert response(conn, 200) =~ "Unique Active Users by Day"
     assert response(conn, 200) =~ "Users"
     assert response(conn, 200) =~ "Tasks"
     assert response(conn, 200) =~ "Games"
