@@ -82,6 +82,10 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
 
   @impl true
   def handle_params(params, _uri, socket) do
+    previous_registrations_window = socket.assigns.registrations_window
+    previous_games_window = socket.assigns.games_window
+    previous_active_users_window = socket.assigns.active_users_window
+
     registrations_window = normalize_chart_window(params["registrations_window"])
     games_window = normalize_chart_window(params["games_window"])
     active_users_window = normalize_chart_window(params["active_users_window"])
@@ -91,9 +95,45 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
      |> assign(:registrations_window, registrations_window)
      |> assign(:games_window, games_window)
      |> assign(:active_users_window, active_users_window)
-     |> assign_registrations_chart_data_async(registrations_window)
-     |> assign_games_chart_data_async(games_window)
-     |> assign_active_users_chart_data_async(active_users_window)}
+     |> maybe_assign_registrations_chart_data_async(
+       registrations_window,
+       previous_registrations_window
+     )
+     |> maybe_assign_games_chart_data_async(games_window, previous_games_window)
+     |> maybe_assign_active_users_chart_data_async(
+       active_users_window,
+       previous_active_users_window
+     )}
+  end
+
+  defp maybe_assign_registrations_chart_data_async(socket, chart_window, previous_window) do
+    should_refresh = previous_window != chart_window or not socket.assigns.registrations_chart.ok?
+
+    if should_refresh do
+      assign_registrations_chart_data_async(socket, chart_window)
+    else
+      socket
+    end
+  end
+
+  defp maybe_assign_games_chart_data_async(socket, chart_window, previous_window) do
+    should_refresh = previous_window != chart_window or not socket.assigns.games_chart.ok?
+
+    if should_refresh do
+      assign_games_chart_data_async(socket, chart_window)
+    else
+      socket
+    end
+  end
+
+  defp maybe_assign_active_users_chart_data_async(socket, chart_window, previous_window) do
+    should_refresh = previous_window != chart_window or not socket.assigns.active_users_chart.ok?
+
+    if should_refresh do
+      assign_active_users_chart_data_async(socket, chart_window)
+    else
+      socket
+    end
   end
 
   defp assign_registrations_chart_data_async(socket, chart_window) do
@@ -422,7 +462,7 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   defp format_chart_datetime(datetime, :week), do: Calendar.strftime(datetime, "%Y-%m-%d")
   defp format_chart_datetime(datetime, :month), do: Calendar.strftime(datetime, "%Y-%m")
 
-  defp format_axis_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%b %d %H:%M")
+  defp format_axis_datetime(datetime, :hour), do: Calendar.strftime(datetime, "%b %d")
   defp format_axis_datetime(datetime, :day), do: Calendar.strftime(datetime, "%b %d")
   defp format_axis_datetime(datetime, :week), do: Calendar.strftime(datetime, "%b %d")
   defp format_axis_datetime(datetime, :month), do: Calendar.strftime(datetime, "%b %Y")
@@ -539,6 +579,34 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
   defp chart_plot_width, do: chart_width() - chart_left_padding() - chart_right_padding()
   defp chart_plot_height, do: chart_height() - chart_top_padding() - chart_bottom_padding()
   defp chart_plot_end_x, do: chart_width() - chart_right_padding()
+  defp chart_plot_end_y, do: chart_height() - chart_bottom_padding()
+  defp chart_x_ticks_count, do: 11
+
+  defp chart_x_axis_ticks(from_datetime, to_datetime, granularity) do
+    total_seconds =
+      to_datetime
+      |> NaiveDateTime.diff(from_datetime, :second)
+      |> max(0)
+
+    ticks_count = chart_x_ticks_count()
+    max_index = max(ticks_count - 1, 1)
+
+    Enum.map(0..(ticks_count - 1), fn index ->
+      ratio = index / max_index
+      seconds_offset = round(total_seconds * ratio)
+      tick_datetime = NaiveDateTime.add(from_datetime, seconds_offset, :second)
+      x = Float.round(chart_left_padding() + ratio * chart_plot_width(), 2)
+
+      anchor =
+        cond do
+          index == 0 -> "start"
+          index == max_index -> "end"
+          true -> "middle"
+        end
+
+      %{x: x, anchor: anchor, label: format_axis_datetime(tick_datetime, granularity)}
+    end)
+  end
 
   @impl true
   def render(assigns) do
@@ -638,24 +706,43 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
                 stroke-linecap="round"
               >
               </path>
+              <line
+                x1={chart_left_padding()}
+                y1={chart_plot_end_y()}
+                x2={chart_plot_end_x()}
+                y2={chart_plot_end_y()}
+                stroke={chart_axis_text_color()}
+                stroke-width="1"
+              >
+              </line>
+              <%= for tick <- chart_x_axis_ticks(
+                @registrations_chart.result.joins_from,
+                @registrations_chart.result.joins_to,
+                @registrations_chart.result.granularity
+              ) do %>
+                <line
+                  x1={tick.x}
+                  y1={chart_plot_end_y()}
+                  x2={tick.x}
+                  y2={chart_plot_end_y() + 4}
+                  stroke={chart_axis_text_color()}
+                  stroke-width="1"
+                >
+                </line>
+                <text
+                  x={tick.x}
+                  y={chart_height() - 6}
+                  fill={chart_axis_text_color()}
+                  font-size="11"
+                  text-anchor={tick.anchor}
+                >
+                  {tick.label}
+                </text>
+              <% end %>
             </svg>
 
-            <div class="d-flex justify-content-between cb-text mt-1">
-              <span>
-                {format_axis_datetime(
-                  @registrations_chart.result.joins_from,
-                  @registrations_chart.result.granularity
-                )}
-              </span>
-              <span>
-                {peak_label(@registrations_chart.result.granularity)}: {@registrations_chart.result.max_joins}
-              </span>
-              <span>
-                {format_axis_datetime(
-                  @registrations_chart.result.joins_to,
-                  @registrations_chart.result.granularity
-                )}
-              </span>
+            <div class="text-center cb-text mt-1">
+              {peak_label(@registrations_chart.result.granularity)}: {@registrations_chart.result.max_joins}
             </div>
           <% else %>
             <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
@@ -730,18 +817,43 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
                 stroke-linecap="round"
               >
               </path>
+              <line
+                x1={chart_left_padding()}
+                y1={chart_plot_end_y()}
+                x2={chart_plot_end_x()}
+                y2={chart_plot_end_y()}
+                stroke={chart_axis_text_color()}
+                stroke-width="1"
+              >
+              </line>
+              <%= for tick <- chart_x_axis_ticks(
+                @games_chart.result.games_from,
+                @games_chart.result.games_to,
+                @games_chart.result.granularity
+              ) do %>
+                <line
+                  x1={tick.x}
+                  y1={chart_plot_end_y()}
+                  x2={tick.x}
+                  y2={chart_plot_end_y() + 4}
+                  stroke={chart_axis_text_color()}
+                  stroke-width="1"
+                >
+                </line>
+                <text
+                  x={tick.x}
+                  y={chart_height() - 6}
+                  fill={chart_axis_text_color()}
+                  font-size="11"
+                  text-anchor={tick.anchor}
+                >
+                  {tick.label}
+                </text>
+              <% end %>
             </svg>
 
-            <div class="d-flex justify-content-between cb-text mt-1">
-              <span>
-                {format_axis_datetime(@games_chart.result.games_from, @games_chart.result.granularity)}
-              </span>
-              <span>
-                {peak_label(@games_chart.result.granularity)}: {@games_chart.result.max_games}
-              </span>
-              <span>
-                {format_axis_datetime(@games_chart.result.games_to, @games_chart.result.granularity)}
-              </span>
+            <div class="text-center cb-text mt-1">
+              {peak_label(@games_chart.result.granularity)}: {@games_chart.result.max_games}
             </div>
           <% else %>
             <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
@@ -822,24 +934,43 @@ defmodule CodebattleWeb.Live.Admin.IndexView do
                 stroke-linecap="round"
               >
               </path>
+              <line
+                x1={chart_left_padding()}
+                y1={chart_plot_end_y()}
+                x2={chart_plot_end_x()}
+                y2={chart_plot_end_y()}
+                stroke={chart_axis_text_color()}
+                stroke-width="1"
+              >
+              </line>
+              <%= for tick <- chart_x_axis_ticks(
+                @active_users_chart.result.active_users_from,
+                @active_users_chart.result.active_users_to,
+                @active_users_chart.result.granularity
+              ) do %>
+                <line
+                  x1={tick.x}
+                  y1={chart_plot_end_y()}
+                  x2={tick.x}
+                  y2={chart_plot_end_y() + 4}
+                  stroke={chart_axis_text_color()}
+                  stroke-width="1"
+                >
+                </line>
+                <text
+                  x={tick.x}
+                  y={chart_height() - 6}
+                  fill={chart_axis_text_color()}
+                  font-size="11"
+                  text-anchor={tick.anchor}
+                >
+                  {tick.label}
+                </text>
+              <% end %>
             </svg>
 
-            <div class="d-flex justify-content-between cb-text mt-1">
-              <span>
-                {format_axis_datetime(
-                  @active_users_chart.result.active_users_from,
-                  @active_users_chart.result.granularity
-                )}
-              </span>
-              <span>
-                {peak_label(@active_users_chart.result.granularity)}: {@active_users_chart.result.max_active_users}
-              </span>
-              <span>
-                {format_axis_datetime(
-                  @active_users_chart.result.active_users_to,
-                  @active_users_chart.result.granularity
-                )}
-              </span>
+            <div class="text-center cb-text mt-1">
+              {peak_label(@active_users_chart.result.granularity)}: {@active_users_chart.result.max_active_users}
             </div>
           <% else %>
             <div class="text-center py-5" style={"color: #{chart_secondary_text_color()};"}>
