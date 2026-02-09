@@ -4,7 +4,6 @@ defmodule CodebattleWeb.LayoutView do
   import CodebattleWeb.Router.Helpers
   import PhoenixGon.View
 
-  @app_version Application.compile_env(:codebattle, :app_version)
   @colors [
     "2AE881",
     "73CCFE",
@@ -33,14 +32,14 @@ defmodule CodebattleWeb.LayoutView do
   end
 
   def app_short_version do
-    case @app_version do
+    case app_version() do
       "" -> "undefined"
       version -> String.slice(version, 0, 7)
     end
   end
 
   def github_commit_link do
-    case @app_version do
+    case app_version() do
       "" -> "/"
       version -> "https://github.com/hexlet-codebattle/codebattle/commit/#{version}"
     end
@@ -85,5 +84,9 @@ defmodule CodebattleWeb.LayoutView do
 
   defp get_background_color(user) do
     Enum.at(@colors, rem(String.length(user.name), length(@colors)))
+  end
+
+  defp app_version do
+    Application.get_env(:codebattle, :app_version, "")
   end
 end

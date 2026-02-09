@@ -1,7 +1,4 @@
 FROM elixir:1.19-otp-28-alpine AS compile-image
-ARG GIT_HASH
-
-ENV APP_VERSION=$GIT_HASH
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -43,6 +40,9 @@ RUN apk update && apk add --no-cache \
 RUN curl -fsSL "https://github.com/alco/goon/releases/download/${GOON_VERSION}/goon_linux_amd64.tar.gz" \
   | tar -xzC /usr/local/bin
 
+ARG GIT_HASH
+
+ENV APP_VERSION=$GIT_HASH
 ENV PORT=4001
 EXPOSE ${PORT}
 WORKDIR /opt/app

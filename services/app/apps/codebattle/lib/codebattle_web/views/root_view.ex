@@ -5,8 +5,6 @@ defmodule CodebattleWeb.RootView do
 
   alias Codebattle.Feedback
 
-  @app_version Application.compile_env(:codebattle, :app_version)
-
   @doc """
   Returns the path for a static asset with cache busting support.
   In dev, returns the original path. In prod, returns the hashed path from manifest.
@@ -31,17 +29,21 @@ defmodule CodebattleWeb.RootView do
   end
 
   def app_short_version do
-    case @app_version do
+    case app_version() do
       "" -> "undefined"
       version -> String.slice(version, 0, 7)
     end
   end
 
   def github_commit_link do
-    case @app_version do
+    case app_version() do
       "" -> "/"
       version -> "https://github.com/hexlet-codebattle/codebattle/commit/#{version}"
     end
+  end
+
+  defp app_version do
+    Application.get_env(:codebattle, :app_version, "")
   end
 
   defp item(%{title: title, description: description, pubDate: pub_date, link: link, guid: guid}) do

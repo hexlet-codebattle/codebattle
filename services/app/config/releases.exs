@@ -105,6 +105,7 @@ config :codebattle, :oauth,
   external_avatar_url_template: System.get_env("EXTERNAL_AVATAR_URL_TEMPLATE", "ASFD")
 
 config :codebattle, :tournament_run_upcoming, true
+config :codebattle, app_version: System.get_env("APP_VERSION", "")
 config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, checker_executor: checker_executor
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
