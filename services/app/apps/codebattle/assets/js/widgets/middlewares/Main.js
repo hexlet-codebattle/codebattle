@@ -71,6 +71,38 @@ const redirectToNewGame = (data) => (_dispatch, getState) => {
   }
 };
 
+const deployBannerId = 'cb-deploy-handoff-banner';
+
+const renderDeployBanner = (text, backgroundColor = '#2f3747') => {
+  const existing = document.getElementById(deployBannerId);
+  const el = existing || document.createElement('div');
+
+  el.id = deployBannerId;
+  el.textContent = text;
+  el.style.position = 'fixed';
+  el.style.top = '0';
+  el.style.left = '0';
+  el.style.right = '0';
+  el.style.zIndex = '2000';
+  el.style.padding = '8px 12px';
+  el.style.textAlign = 'center';
+  el.style.fontSize = '14px';
+  el.style.color = '#ffffff';
+  el.style.backgroundColor = backgroundColor;
+
+  if (!existing) {
+    document.body.appendChild(el);
+  }
+};
+
+const removeDeployBanner = () => {
+  const existing = document.getElementById(deployBannerId);
+
+  if (existing) {
+    existing.remove();
+  }
+};
+
 const initPresence = (followId) => (dispatch) => {
   channel = new Channel('main', {
     ...getUserStateByPath(),
@@ -108,6 +140,25 @@ const initPresence = (followId) => (dispatch) => {
       channelTopics.tournamentCanceled,
       (data) => {
         camelizeKeysAndDispatch(dispatch, actions.changeTournamentState)(data);
+      },
+    ).addListener(
+      channelTopics.deployHandoffStarted,
+      () => {
+        renderDeployBanner('Deploy in progress. Reconnecting game session...');
+      },
+    ).addListener(
+      channelTopics.deployHandoffDone,
+      () => {
+        renderDeployBanner('Deploy finished. Syncing latest session...', '#3a8b3a');
+        setTimeout(() => {
+          removeDeployBanner();
+          window.location.reload();
+        }, 1200);
+      },
+    ).addListener(
+      channelTopics.deployHandoffFailed,
+      () => {
+        renderDeployBanner('Deploy handoff incomplete. Reconnecting...', '#b34d4d');
       },
     );
 };

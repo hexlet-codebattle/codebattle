@@ -77,6 +77,9 @@ defmodule CodebattleWeb.Router do
 
   scope "/", CodebattleWeb do
     get("/health", HealthController, :index)
+    post("/health/drain", HealthController, :drain)
+    post("/health/handoff", HealthController, :handoff)
+    get("/health/release_ready", HealthController, :release_ready)
   end
 
   # Chrome DevTools IDE integration (dev only)

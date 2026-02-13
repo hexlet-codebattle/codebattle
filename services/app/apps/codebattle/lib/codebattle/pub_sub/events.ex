@@ -4,6 +4,36 @@ defmodule Codebattle.PubSub.Events do
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
 
+  def get_messages("deploy:handoff_started", params) do
+    [
+      %Message{
+        topic: "main",
+        event: "deploy:handoff_started",
+        payload: params
+      }
+    ]
+  end
+
+  def get_messages("deploy:handoff_done", params) do
+    [
+      %Message{
+        topic: "main",
+        event: "deploy:handoff_done",
+        payload: params
+      }
+    ]
+  end
+
+  def get_messages("deploy:handoff_failed", params) do
+    [
+      %Message{
+        topic: "main",
+        event: "deploy:handoff_failed",
+        payload: params
+      }
+    ]
+  end
+
   def get_messages("tournament:created", params) do
     [
       %Message{

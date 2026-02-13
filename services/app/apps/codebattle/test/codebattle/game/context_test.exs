@@ -2,6 +2,7 @@ defmodule Codebattle.Game.ContextTest do
   use Codebattle.DataCase
 
   alias Codebattle.Game.Player
+  alias Codebattle.Game.Server
   alias Codebattle.PubSub.Message
 
   describe "trigger_timeout/1" do
@@ -44,6 +45,15 @@ defmodule Codebattle.Game.ContextTest do
         topic: ^game_topic,
         payload: %{game_id: ^game_id, game_state: "timeout"}
       }
+    end
+
+    test "returns handoff error when game server is frozen", %{user1: user1, user2: user2} do
+      {:ok, %{id: game_id}} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      assert :ok == Server.freeze(game_id)
+      assert {:error, :handoff_in_progress} = Game.Context.trigger_timeout(game_id)
+      assert :ok == Server.unfreeze(game_id)
     end
   end
 

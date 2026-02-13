@@ -480,35 +480,43 @@ defmodule Codebattle.Game.Engine do
 
   def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")
-    {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
-    new_game =
-      case {old_game_state, new_game.state} do
-        {old_state, "timeout"}
-        when old_state in ["waiting_opponent", "playing"] ->
-          update_game!(new_game, %{
-            state: get_state(new_game),
-            players: get_players(new_game),
-            duration_sec: new_game.duration_sec,
-            finishes_at: new_game.finishes_at
-          })
+    case fire_transition(game.id, :timeout, %{}) do
+      {:ok, {old_game_state, new_game}} ->
+        new_game =
+          case {old_game_state, new_game.state} do
+            {old_state, "timeout"}
+            when old_state in ["waiting_opponent", "playing"] ->
+              update_game!(new_game, %{
+                state: get_state(new_game),
+                players: get_players(new_game),
+                duration_sec: new_game.duration_sec,
+                finishes_at: new_game.finishes_at
+              })
 
-          Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+              Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
 
-          if game.tournament_id do
-            terminate_game_after(game, 1)
-          else
-            terminate_game_after(game, 15)
+              if game.tournament_id do
+                terminate_game_after(game, 1)
+              else
+                terminate_game_after(game, 15)
+              end
+
+              store_playbook_async(game)
+              new_game
+
+            _ ->
+              new_game
           end
 
-          store_playbook_async(game)
-          new_game
+        {:ok, new_game}
 
-        _ ->
-          new_game
-      end
+      {:error, :handoff_in_progress} ->
+        {:error, :handoff_in_progress}
 
-    {:ok, new_game}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do

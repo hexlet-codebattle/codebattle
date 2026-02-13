@@ -13,8 +13,15 @@ defmodule CodebattleWeb.FallbackController do
   end
 
   def call(conn, {:error, reason}) do
+    message =
+      case reason do
+        :draining -> "Deployment in progress, try again in a few moments"
+        reason when is_binary(reason) -> reason
+        _ -> inspect(reason)
+      end
+
     conn
-    |> put_flash(:danger, reason)
+    |> put_flash(:danger, message)
     |> redirect(to: Routes.root_path(conn, :index))
   end
 

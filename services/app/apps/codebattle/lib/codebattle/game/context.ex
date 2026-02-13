@@ -133,13 +133,17 @@ defmodule Codebattle.Game.Context do
 
   @spec create_game(game_params) :: {:ok, Game.t()} | {:error, atom}
   def create_game(game_params) do
-    case Engine.create_game(game_params) do
-      {:ok, game} ->
-        {:ok, game}
+    if Codebattle.Deployment.draining?() do
+      {:error, :draining}
+    else
+      case Engine.create_game(game_params) do
+        {:ok, game} ->
+          {:ok, game}
 
-      {:error, reason} ->
-        Logger.warning("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
-        {:error, reason}
+        {:error, reason} ->
+          Logger.warning("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
+          {:error, reason}
+      end
     end
   end
 
@@ -240,7 +244,7 @@ defmodule Codebattle.Game.Context do
     end
   end
 
-  @spec trigger_timeout(game_id) :: {:ok, Game.t()}
+  @spec trigger_timeout(game_id) :: {:ok, Game.t()} | {:error, atom()}
   def trigger_timeout(game_id) do
     game_id |> get_game!() |> Engine.trigger_timeout()
   end

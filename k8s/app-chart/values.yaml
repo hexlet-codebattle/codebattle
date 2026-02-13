@@ -18,6 +18,9 @@ codebattle:
   image:
     repository: hexlet-codebattle/codebattle
     imagePullPolicy: Always
+  rollout:
+    preStopSleepSeconds: 5
+    terminationGracePeriodSeconds: 7200
   service:
     type: ClusterIP
     port: 4000

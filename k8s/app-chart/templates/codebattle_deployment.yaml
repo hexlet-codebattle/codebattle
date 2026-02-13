@@ -17,6 +17,7 @@ spec:
       labels:
         app: "codebattle"
     spec:
+      terminationGracePeriodSeconds: {{ .Values.codebattle.rollout.terminationGracePeriodSeconds }}
       {{- with .Values.codebattle.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
@@ -48,6 +49,13 @@ spec:
           command:
             - make
             - start
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - "curl -s -X POST http://127.0.0.1:4000/health/drain || true; curl -s -X POST http://127.0.0.1:4000/health/handoff || true; until [ \"$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4000/health/release_ready)\" = \"200\" ]; do sleep 2; done; sleep {{ .Values.codebattle.rollout.preStopSleepSeconds }}"
           envFrom:
             - secretRef:
                 name: codebattle-secrets
@@ -55,5 +63,13 @@ spec:
                 name: codebattle-env
                 optional: true
           env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: DEPLOYED_AT
               value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}

@@ -235,24 +235,28 @@ defmodule Codebattle.Tournament.Context do
 
   @spec create(map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
-    changeset = Tournament.changeset(%Tournament{}, prepare_tournament_params(params))
+    if Codebattle.Deployment.draining?() do
+      {:error, :draining}
+    else
+      changeset = Tournament.changeset(%Tournament{}, prepare_tournament_params(params))
 
-    changeset
-    |> Repo.insert()
-    |> case do
-      {:ok, tournament} ->
-        {:ok, _pid} =
-          tournament
-          |> add_module()
-          |> mark_as_live()
-          |> Tournament.GlobalSupervisor.start_tournament()
+      changeset
+      |> Repo.insert()
+      |> case do
+        {:ok, tournament} ->
+          {:ok, _pid} =
+            tournament
+            |> add_module()
+            |> mark_as_live()
+            |> Tournament.GlobalSupervisor.start_tournament()
 
-        Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
+          Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
 
-        {:ok, tournament}
+          {:ok, tournament}
 
-      {:error, changeset} ->
-        {:error, changeset}
+        {:error, changeset} ->
+          {:error, changeset}
+      end
     end
   end
 

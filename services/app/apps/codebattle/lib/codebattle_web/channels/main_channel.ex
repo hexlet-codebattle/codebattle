@@ -16,6 +16,7 @@ defmodule CodebattleWeb.MainChannel do
       if !current_user.is_guest do
         topic = "main:#{current_user.id}"
         Codebattle.PubSub.subscribe(topic)
+        Codebattle.PubSub.subscribe("main")
         Codebattle.PubSub.subscribe("season")
 
         if !FunWithFlags.enabled?(:skip_presence) do
@@ -133,6 +134,21 @@ defmodule CodebattleWeb.MainChannel do
 
     push(socket, "presence_state", Presence.list(socket))
 
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "deploy:handoff_started", payload: payload}, socket) do
+    push(socket, "deploy:handoff_started", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "deploy:handoff_done", payload: payload}, socket) do
+    push(socket, "deploy:handoff_done", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "deploy:handoff_failed", payload: payload}, socket) do
+    push(socket, "deploy:handoff_failed", payload)
     {:noreply, socket}
   end
 
