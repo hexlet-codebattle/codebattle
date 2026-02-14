@@ -16,6 +16,7 @@ export const channelTopics = {
 
   editorCursorPositionTopic: 'editor:cursor_position',
   editorCursorSelectionTopic: 'editor:cursor_selection',
+  editorScrollPositionTopic: 'editor:scroll_position',
 
   rematchStatusUpdatedTopic: 'rematch:status_updated',
   rematchAcceptedTopic: 'rematch:accepted',
@@ -88,6 +89,7 @@ export const channelMethods = {
   editorLang: 'editor:lang',
   editorCursorPosition: channelTopics.editorCursorPositionTopic,
   editorCursorSelection: channelTopics.editorCursorSelectionTopic,
+  editorScrollPosition: channelTopics.editorScrollPositionTopic,
 
   enterPassCode: 'enter_pass_code',
 

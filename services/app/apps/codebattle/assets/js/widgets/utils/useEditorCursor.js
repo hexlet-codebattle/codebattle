@@ -39,12 +39,23 @@ const useEditorCursor = (editor) => {
     }
   }, [editor]);
 
+  const handleScrollChange = useCallback((e) => {
+    const { readOnly, canSendCursor } = editor.getRawOptions();
+
+    if (!canSendCursor || readOnly) {
+      return;
+    }
+
+    GameActions.sendEditorScrollPosition(e.scrollTop, e.scrollLeft);
+  }, [editor]);
+
   useEffect(() => {
     if (editor) {
       editor.onDidChangeCursorSelection(handleChangeCursorSelection);
       editor.onDidChangeCursorPosition(handleChangeCursorPosition);
+      editor.onDidScrollChange(handleScrollChange);
     }
-  }, [editor, handleChangeCursorSelection, handleChangeCursorPosition]);
+  }, [editor, handleChangeCursorSelection, handleChangeCursorPosition, handleScrollChange]);
 };
 
 export default useEditorCursor;

@@ -6,6 +6,7 @@ import {
   Builder,
   EventPage,
   Game,
+  GameThreejsPage,
   HallOfFamePage,
   Invites,
   Lobby,
@@ -30,6 +31,7 @@ const Heatmap = React.lazy(() => import('./pages/profile/Heatmap'));
 export const renderBuilderWidget = (domElement) => createRoot(domElement).render(<Builder />);
 export const renderEventPage = (domElement) => createRoot(domElement).render(<EventPage />);
 export const renderGameWidget = (domElement) => createRoot(domElement).render(<Game />);
+export const renderGameThreejsPage = (domElement) => createRoot(domElement).render(<GameThreejsPage />);
 export const renderHeatmapWidget = (domElement) => createRoot(domElement).render(<Heatmap />);
 export const renderInvitesWidget = (domElement) => createRoot(domElement).render(<Invites />);
 export const renderLobby = (domElement) => createRoot(domElement).render(<Lobby />);

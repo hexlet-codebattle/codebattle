@@ -243,6 +243,13 @@ export const sendEditorCursorSelection = (startOffset, endOffset) => {
   });
 };
 
+export const sendEditorScrollPosition = (scrollTop, scrollLeft) => {
+  channel.push(channelMethods.editorScrollPosition, {
+    scrollTop,
+    scrollLeft,
+  });
+};
+
 export const sendPassCode = (passCode, onError) => (dispatch) => {
   channel
     .push(channelMethods.enterPassCode, { passCode })
@@ -339,7 +346,7 @@ export const resetTextToTemplateAndSend = (langSlug) => (dispatch, getState) => 
 
 export const soundNotification = notification();
 
-export const addCursorListeners = (params, onChangePosition, onChangeSelection) => {
+export const addCursorListeners = (params, onChangePosition, onChangeSelection, onChangeScroll) => {
   const {
     roomMode,
     userId,
@@ -368,6 +375,13 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection) 
     }
   }, 200);
 
+  const handleNewScrollPosition = debounce((data) => {
+    const { scrollTop, scrollLeft } = data;
+    if (userId === data.userId && typeof onChangeScroll === 'function') {
+      onChangeScroll(scrollTop, scrollLeft);
+    }
+  }, 80);
+
   const listenerParams = { userId };
 
   channel
@@ -380,6 +394,11 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection) 
       channelTopics.editorCursorSelectionTopic,
       handleNewCursorSelection,
       listenerParams,
+    )
+    .addListener(
+      channelTopics.editorScrollPositionTopic,
+      handleNewScrollPosition,
+      listenerParams,
     );
 
   return () => {
@@ -391,6 +410,10 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection) 
         )
         .removeListeners(
           channelTopics.editorCursorSelectionTopic,
+          listenerParams,
+        )
+        .removeListeners(
+          channelTopics.editorScrollPositionTopic,
           listenerParams,
         );
     }

@@ -33,6 +33,29 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  def threejs(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+    game = Context.get_game!(id)
+
+    if can_access_game?(game, user) do
+      score = Context.fetch_score_by_game_id(game.id)
+      game_params = GameView.render_game(game, score)
+
+      conn
+      |> put_gon(
+        game: game_params,
+        game_id: game.id,
+        players: present_users_for_gon(Helpers.get_players(game))
+      )
+      |> put_game_meta_tags(game)
+      |> render("threejs.html", %{game: game, user: user})
+    else
+      conn
+      |> put_flash(:danger, gettext("You don't have access to this game"))
+      |> redirect(to: Routes.root_path(conn, :index))
+    end
+  end
+
   def join(conn, %{"id" => id}) do
     case Context.join_game(id, conn.assigns.current_user) do
       {:ok, _game} -> redirect(conn, to: Routes.game_path(conn, :show, id))

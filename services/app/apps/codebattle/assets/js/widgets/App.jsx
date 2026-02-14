@@ -67,6 +67,7 @@ const OnlineContainer = React.lazy(
 const RatingList = React.lazy(() => import('./pages/rating'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const RoomWidget = React.lazy(() => import('./pages/RoomWidget'));
+const ThreejsGamePage = React.lazy(() => import('./pages/game/ThreejsGamePage'));
 const Stream = React.lazy(() => import('./pages/stream/StreamWidget'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
 const TournamentAdmin = React.lazy(
@@ -109,6 +110,16 @@ export function Game() {
           </NiceModal.Provider>
         </Suspense>
       </PersistGate>
+    </Provider>
+  );
+}
+
+export function GameThreejsPage() {
+  return (
+    <Provider store={store}>
+      <Suspense>
+        <ThreejsGamePage />
+      </Suspense>
     </Provider>
   );
 }

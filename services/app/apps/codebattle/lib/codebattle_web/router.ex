@@ -233,6 +233,8 @@ defmodule CodebattleWeb.Router do
       get("/image", Game.ImageController, :show, as: :image)
     end
 
+    get("/games/:id/threejs", GameController, :threejs)
+
     scope "/games" do
       post("/training", GameController, :create_training)
       post("/:id/join", GameController, :join)

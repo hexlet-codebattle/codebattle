@@ -38,6 +38,7 @@ import './widgets/lib/sentry';
 import {
   renderBuilderWidget,
   renderEventPage,
+  renderGameThreejsPage,
   renderGameWidget,
   renderHallOfFame,
   renderHeatmapWidget,
@@ -104,6 +105,7 @@ liveSocket.connect();
 
 const builderWidgetRoot = document.getElementById('builder-widget-root');
 const gameWidgetRoot = document.getElementById('game-widget-root');
+const gameThreejsRoot = document.getElementById('game-threejs-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const onlineRoot = document.getElementById('online-root');
 const invitesRoot = document.getElementById('invites-root');
@@ -128,6 +130,10 @@ const seasonShowRoot = document.getElementById('season-show-root');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
+}
+
+if (gameThreejsRoot) {
+  renderGameThreejsPage(gameThreejsRoot);
 }
 
 if (builderWidgetRoot) {

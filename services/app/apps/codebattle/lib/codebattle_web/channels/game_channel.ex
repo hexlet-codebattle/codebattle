@@ -145,6 +145,16 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_in("editor:scroll_position", payload, socket) do
+    broadcast_from!(socket, "editor:scroll_position", %{
+      user_id: socket.assigns.current_user.id,
+      scroll_top: payload["scroll_top"],
+      scroll_left: payload["scroll_left"]
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("like", %{"liked_user_id" => user_id}, socket) do
     broadcast_from!(socket, "like", %{
       user_id: user_id

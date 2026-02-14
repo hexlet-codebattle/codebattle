@@ -43,6 +43,8 @@ const useCursorUpdates = (editor, monaco, props) => {
         ...oldRemote,
         cursor,
       }));
+
+      editor.revealPositionInCenterIfOutsideViewport(position);
     }
   }, [setRemote, editor, monaco]);
 
@@ -76,8 +78,24 @@ const useCursorUpdates = (editor, monaco, props) => {
         ...prevRemote,
         selection,
       }));
+
+      editor.revealRangeInCenterIfOutsideViewport(selection.range);
     }
   }, [setRemote, editor, monaco]);
+
+  const updateRemoteScrollPosition = useCallback((scrollTop, scrollLeft) => {
+    const { readOnly } = editor.getRawOptions();
+
+    if (readOnly) {
+      if (typeof scrollTop === 'number') {
+        editor.setScrollTop(scrollTop);
+      }
+
+      if (typeof scrollLeft === 'number') {
+        editor.setScrollLeft(scrollLeft);
+      }
+    }
+  }, [editor]);
 
   useEffect(() => {
     if (remote.cursor.range && remote.selection.range) {
@@ -92,6 +110,7 @@ const useCursorUpdates = (editor, monaco, props) => {
       params,
       updateRemoteCursorPosition,
       updateRemoteCursorSelection,
+      updateRemoteScrollPosition,
     );
 
     return clearCursorListeners;
@@ -99,6 +118,7 @@ const useCursorUpdates = (editor, monaco, props) => {
     params,
     updateRemoteCursorPosition,
     updateRemoteCursorSelection,
+    updateRemoteScrollPosition,
   ]);
 };
 

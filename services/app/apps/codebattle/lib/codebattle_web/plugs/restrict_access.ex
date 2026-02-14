@@ -9,6 +9,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
 
   @allowed_test_game_paths [
     ~r{^\/games\/\d+\/?$},
+    ~r{^\/games\/\d+\/threejs\/?$},
     ~r{^\/games\/training\/?$}
   ]
 
