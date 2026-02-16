@@ -8,7 +8,6 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import Collapse from 'react-bootstrap/Collapse';
 import { useDispatch, useSelector } from 'react-redux';
 
 import CustomEventStylesContext from '@/components/CustomEventStylesContext';
@@ -146,8 +145,11 @@ function TournamentUserPanel({
           </button>
         </div>
       </div>
-      <Collapse in={open}>
-        <div id="collapse-matches-one" className="border-top cb-border-color">
+      {open && (
+        <div
+          id={`collapse-matches-${userId}`}
+          className="border-top cb-border-color"
+        >
           <UsersMatchList
             currentUserId={currentUserId}
             playerId={userId}
@@ -158,7 +160,7 @@ function TournamentUserPanel({
             hideBots={hideBots}
           />
         </div>
-      </Collapse>
+      )}
     </div>
   );
 }

@@ -146,7 +146,8 @@ const initPresence = (followId) => (dispatch) => {
       () => {
         renderDeployBanner('Deploy in progress. Reconnecting game session...');
       },
-    ).addListener(
+    )
+.addListener(
       channelTopics.deployHandoffDone,
       () => {
         renderDeployBanner('Deploy finished. Syncing latest session...', '#3a8b3a');
@@ -155,7 +156,8 @@ const initPresence = (followId) => (dispatch) => {
           window.location.reload();
         }, 1200);
       },
-    ).addListener(
+    )
+.addListener(
       channelTopics.deployHandoffFailed,
       () => {
         renderDeployBanner('Deploy handoff incomplete. Reconnecting...', '#b34d4d');
