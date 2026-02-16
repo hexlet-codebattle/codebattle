@@ -172,12 +172,7 @@ defmodule Codebattle.Game.Server do
     {:reply, :ok, imported_state}
   end
 
-  defp with_transition_update(
-         %{is_record_games: true, playbook_state: playbook_state} = state,
-         new_game,
-         event,
-         params
-       ) do
+  defp with_transition_update(%{is_record_games: true, playbook_state: playbook_state} = state, new_game, event, params) do
     %{
       state
       | game: new_game,
