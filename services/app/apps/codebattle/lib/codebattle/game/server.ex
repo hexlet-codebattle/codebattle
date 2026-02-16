@@ -121,28 +121,20 @@ defmodule Codebattle.Game.Server do
   end
 
   @impl GenServer
+  def handle_call({:transition, _event, _params}, _from, %{frozen: true} = state) do
+    {:reply, {:error, :handoff_in_progress}, state}
+  end
+
   def handle_call({:transition, event, params}, _from, state) do
-    %{game: game, playbook_state: playbook_state, is_record_games: is_record_games} = state
+    %{game: game} = state
 
-    if state.frozen do
-      {:reply, {:error, :handoff_in_progress}, state}
-    else
-      case Game.Fsm.transition(event, game, params) do
-        {:error, reason} ->
-          {:reply, {:error, reason}, state}
+    case Game.Fsm.transition(event, game, params) do
+      {:error, reason} ->
+        {:reply, {:error, reason}, state}
 
-        {:ok, %Game{} = new_game} ->
-          if is_record_games do
-            {:reply, {:ok, {game.state, new_game}},
-             %{
-               state
-               | game: new_game,
-                 playbook_state: Playbook.Context.add_record(playbook_state, event, params)
-             }}
-          else
-            {:reply, {:ok, {game.state, new_game}}, %{state | game: new_game}}
-          end
-      end
+      {:ok, %Game{} = new_game} ->
+        next_state = with_transition_update(state, new_game, event, params)
+        {:reply, {:ok, {game.state, new_game}}, next_state}
     end
   end
 
@@ -178,6 +170,23 @@ defmodule Codebattle.Game.Server do
     }
 
     {:reply, :ok, imported_state}
+  end
+
+  defp with_transition_update(
+         %{is_record_games: true, playbook_state: playbook_state} = state,
+         new_game,
+         event,
+         params
+       ) do
+    %{
+      state
+      | game: new_game,
+        playbook_state: Playbook.Context.add_record(playbook_state, event, params)
+    }
+  end
+
+  defp with_transition_update(state, new_game, _event, _params) do
+    %{state | game: new_game}
   end
 
   defp server_name(game_id), do: {:via, Registry, {Codebattle.Registry, "game_srv:#{game_id}"}}

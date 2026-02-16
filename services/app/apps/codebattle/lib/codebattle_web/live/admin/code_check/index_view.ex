@@ -464,30 +464,25 @@ defmodule CodebattleWeb.Live.Admin.CodeCheck.IndexView do
     end)
   end
 
+  defp chart_x_axis_ticks([], _dims), do: []
+
   defp chart_x_axis_ticks(series, dims) do
-    if Enum.empty?(series) do
-      []
-    else
-      ticks_count = dims.ticks
-      max_index = max(length(series) - 1, 1)
+    ticks_count = dims.ticks
+    max_index = max(length(series) - 1, 1)
 
-      Enum.map(0..(ticks_count - 1), fn idx ->
-        ratio = idx / max(ticks_count - 1, 1)
-        series_index = round(max_index * ratio)
-        point = Enum.at(series, series_index)
-        x = Float.round(dims.left + ratio * plot_width(dims), 2)
+    Enum.map(0..(ticks_count - 1), fn idx ->
+      ratio = idx / max(ticks_count - 1, 1)
+      series_index = round(max_index * ratio)
+      point = Enum.at(series, series_index)
+      x = Float.round(dims.left + ratio * plot_width(dims), 2)
 
-        anchor =
-          cond do
-            idx == 0 -> "start"
-            idx == ticks_count - 1 -> "end"
-            true -> "middle"
-          end
-
-        %{x: x, anchor: anchor, label: format_short_time(point.bucket)}
-      end)
-    end
+      %{x: x, anchor: chart_tick_anchor(idx, ticks_count), label: format_short_time(point.bucket)}
+    end)
   end
+
+  defp chart_tick_anchor(0, _ticks_count), do: "start"
+  defp chart_tick_anchor(idx, ticks_count) when idx == ticks_count - 1, do: "end"
+  defp chart_tick_anchor(_idx, _ticks_count), do: "middle"
 
   defp plot_width(dims), do: dims.width - dims.left - dims.right
   defp plot_height(dims), do: dims.height - dims.top - dims.bottom

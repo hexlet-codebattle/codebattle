@@ -488,33 +488,7 @@ defmodule Codebattle.Game.Engine do
 
     case fire_transition(game.id, :timeout, %{}) do
       {:ok, {old_game_state, new_game}} ->
-        new_game =
-          case {old_game_state, new_game.state} do
-            {old_state, "timeout"}
-            when old_state in ["waiting_opponent", "playing"] ->
-              update_game!(new_game, %{
-                state: get_state(new_game),
-                players: get_players(new_game),
-                duration_sec: new_game.duration_sec,
-                finishes_at: new_game.finishes_at
-              })
-
-              Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-
-              if game.tournament_id do
-                terminate_game_after(game, 1)
-              else
-                terminate_game_after(game, 15)
-              end
-
-              store_playbook_async(game)
-              new_game
-
-            _ ->
-              new_game
-          end
-
-        {:ok, new_game}
+        {:ok, maybe_finalize_timeout(game, old_game_state, new_game)}
 
       {:error, :handoff_in_progress} ->
         {:error, :handoff_in_progress}
@@ -523,6 +497,27 @@ defmodule Codebattle.Game.Engine do
         {:error, reason}
     end
   end
+
+  defp maybe_finalize_timeout(game, old_game_state, %{state: "timeout"} = new_game)
+       when old_game_state in ["waiting_opponent", "playing"] do
+    updated_game =
+      update_game!(new_game, %{
+        state: get_state(new_game),
+        players: get_players(new_game),
+        duration_sec: new_game.duration_sec,
+        finishes_at: new_game.finishes_at
+      })
+
+    Codebattle.PubSub.broadcast("game:finished", %{game: updated_game})
+    terminate_game_after(game, timeout_termination_delay(game))
+    store_playbook_async(game)
+    updated_game
+  end
+
+  defp maybe_finalize_timeout(_game, _old_game_state, new_game), do: new_game
+
+  defp timeout_termination_delay(%{tournament_id: tournament_id}) when not is_nil(tournament_id), do: 1
+  defp timeout_termination_delay(_game), do: 15
 
   defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do
     init_playbook(game)
