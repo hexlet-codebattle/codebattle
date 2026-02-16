@@ -1,0 +1,24 @@
+# Shared values for all clusters
+version: latest
+registry: ghcr.io
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  host: codebattle.example.com
+  tls: []
+
+codebattle:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+
+# Legacy runner (hexlet-codebattle/runner)
+runner:
+  enabled: true
+  replicaCount: 1
+
+zigRunners:
+  enabled: true
+  avoidCodebattleNode: false

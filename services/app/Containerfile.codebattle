@@ -43,11 +43,32 @@ RUN mix phx.digest \
   && mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM nginx:alpine AS nginx-assets
+FROM alpine:3.23 AS nginx-assets
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+RUN apk add --no-cache nginx nginx-mod-http-brotli brotli
+
+COPY nginx.conf /etc/nginx/http.d/default.conf
+COPY nginx-assets-entrypoint.sh /opt/nginx-assets-entrypoint.sh
 
 COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ /var/www/assets
+
+RUN find /var/www/assets -type f \( \
+    -name "*.js" -o \
+    -name "*.mjs" -o \
+    -name "*.css" -o \
+    -name "*.html" -o \
+    -name "*.json" -o \
+    -name "*.map" -o \
+    -name "*.svg" -o \
+    -name "*.txt" -o \
+    -name "*.xml" -o \
+    -name "*.csv" -o \
+    -name "*.ico" \
+  \) -exec sh -c 'gzip -f -k -9 "$1" && brotli -f -q 11 "$1"' _ {} \;
+
+RUN chmod +x /opt/nginx-assets-entrypoint.sh
+
+CMD ["/opt/nginx-assets-entrypoint.sh"]
 
 FROM elixir:1.19.1-otp-28-alpine AS runtime-image
 

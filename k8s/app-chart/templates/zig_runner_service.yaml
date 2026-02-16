@@ -1,5 +1,5 @@
-{{- if .Values.runnerRust.enabled -}}
-{{- range .Values.runnerRust.langs }}
+{{- if .Values.zigRunners.enabled -}}
+{{- range .Values.zigRunners.langs }}
 ---
 kind: Service
 apiVersion: v1
@@ -12,6 +12,6 @@ spec:
     - name: "runner-{{ .name }}"
       protocol: TCP
       port: 80
-      targetPort: 8000
+      targetPort: 4040
 {{- end }}
 {{- end }}

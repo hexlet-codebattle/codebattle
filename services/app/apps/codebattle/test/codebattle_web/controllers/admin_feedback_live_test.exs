@@ -39,8 +39,23 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
     assert response(conn, 200) =~ "/admin/users"
     assert response(conn, 200) =~ "/admin/seasons"
     assert response(conn, 200) =~ "/admin/feedback"
+    assert response(conn, 200) =~ "/admin/code-checks"
     assert response(conn, 200) =~ "/feature-flags"
     assert response(conn, 200) =~ "/admin/dashboard"
+  end
+
+  test "admin can open code checks page", %{conn: conn} do
+    admin = insert(:admin)
+
+    conn =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> get("/admin/code-checks")
+
+    assert conn.status == 200
+    assert response(conn, 200) =~ "Code Checks Live"
+    assert response(conn, 200) =~ "Languages"
+    assert response(conn, 200) =~ "Timeline (avg duration)"
   end
 
   test "non-admin is redirected", %{conn: conn} do

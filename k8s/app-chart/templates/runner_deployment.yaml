@@ -1,4 +1,4 @@
-{{- if eq "Deployment" .Values.runner.type -}}
+{{- if and .Values.runner.enabled (eq "Deployment" .Values.runner.type) -}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -39,13 +39,22 @@ spec:
             privileged: true
           imagePullPolicy: "{{ .Values.runner.image.imagePullPolicy }}"
           image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.runner.image.repository }}:{{ .Values.version }}"
+          resources:
+            {{- toYaml .Values.runner.resources | nindent 12 }}
           readinessProbe:
             httpGet:
               path: /health
               port: 4001
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            successThreshold: 1
+            initialDelaySeconds: {{ .Values.runner.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.runner.probes.readiness.periodSeconds }}
+            successThreshold: {{ .Values.runner.probes.readiness.successThreshold }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: {{ .Values.runner.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.runner.probes.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.runner.probes.liveness.failureThreshold }}
           command: ["bin/runner","start"]
           ports:
             - containerPort: 4001

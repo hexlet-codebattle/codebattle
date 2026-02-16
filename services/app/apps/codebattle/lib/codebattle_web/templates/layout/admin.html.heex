@@ -34,70 +34,226 @@
       <script type="module" src={CodebattleWeb.Vite.asset_path("app.js")}>
       </script>
     <% end %>
+    <style>
+      @media (min-width: 768px) {
+        .admin-shell {
+          display: flex;
+          flex-wrap: nowrap;
+          min-height: 100vh;
+        }
+
+        .admin-sidebar {
+          width: 260px;
+          flex: 0 0 260px;
+          transition: width 0.2s ease, flex-basis 0.2s ease, opacity 0.2s ease;
+          overflow: hidden;
+        }
+
+        .admin-main {
+          flex: 1 1 auto;
+          min-width: 0;
+          transition: margin 0.2s ease;
+        }
+
+        .admin-sidebar-panel {
+          min-height: 100vh;
+          position: sticky;
+          top: 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .admin-sidebar-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .admin-sidebar-title {
+          margin: 0;
+          white-space: nowrap;
+        }
+
+        .admin-nav-link {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          white-space: nowrap;
+        }
+
+        .admin-nav-short {
+          display: inline-flex;
+          width: 22px;
+          height: 22px;
+          border-radius: 6px;
+          align-items: center;
+          justify-content: center;
+          font-size: 11px;
+          font-weight: 700;
+          background: #2a2e39;
+          color: #d7dce8;
+          flex-shrink: 0;
+        }
+
+        .admin-nav-label {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        body.admin-sidebar-collapsed .admin-sidebar {
+          width: 74px;
+          flex-basis: 74px;
+        }
+
+        body.admin-sidebar-collapsed .admin-sidebar-title,
+        body.admin-sidebar-collapsed .admin-user-card,
+        body.admin-sidebar-collapsed .admin-nav-label {
+          display: none;
+        }
+
+        body.admin-sidebar-collapsed .admin-sidebar-header {
+          justify-content: center;
+        }
+
+        body.admin-sidebar-collapsed .admin-sidebar-toggle {
+          margin: 0;
+        }
+
+        body.admin-sidebar-collapsed .admin-nav-link {
+          justify-content: center;
+          padding-left: 0.5rem;
+          padding-right: 0.5rem;
+        }
+
+        body.admin-sidebar-collapsed .admin-nav-short {
+          width: 26px;
+          height: 26px;
+        }
+      }
+    </style>
   </head>
   <body class="cb-bg-dark">
     <div class="container-fluid">
-      <div class="row flex-nowrap">
-        <aside class="col-12 col-md-3 col-lg-2 px-0">
-          <div
-            class="cb-bg-panel cb-border-color border-right p-3"
-            style="min-height: 100vh; position: sticky; top: 0;"
-          >
-            <h4 class="text-white mb-3">Admin</h4>
+      <div class="admin-shell">
+        <aside id="admin-sidebar" class="admin-sidebar px-0">
+          <div class="cb-bg-panel cb-border-color border-right p-3 admin-sidebar-panel">
+            <div class="admin-sidebar-header mb-3">
+              <h4 class="text-white admin-sidebar-title">Admin</h4>
+              <button
+                id="admin-sidebar-toggle"
+                class="btn btn-secondary cb-btn-secondary cb-rounded btn-sm admin-sidebar-toggle"
+                type="button"
+                aria-label="Toggle admin sidebar"
+                aria-expanded="true"
+              >
+                <span id="admin-sidebar-toggle-icon">‹</span>
+              </button>
+            </div>
             <% admin_user =
               assigns[:current_user] ||
                 (assigns[:socket] && assigns[:socket].assigns[:current_user]) %>
+            <nav class="d-flex flex-column">
+              <a
+                href="/admin/"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Dashboard"
+              >
+                <span class="admin-nav-short">DB</span>
+                <span class="admin-nav-label">Dashboard</span>
+              </a>
+              <a
+                href="/admin/users"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Users"
+              >
+                <span class="admin-nav-short">US</span>
+                <span class="admin-nav-label">Users</span>
+              </a>
+              <a
+                href="/admin/seasons"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Seasons"
+              >
+                <span class="admin-nav-short">SE</span>
+                <span class="admin-nav-label">Seasons</span>
+              </a>
+              <a
+                href="/admin/feedback"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Feedback"
+              >
+                <span class="admin-nav-short">FB</span>
+                <span class="admin-nav-label">Feedback</span>
+              </a>
+              <a
+                href="/admin/code-checks"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Code Checks Live"
+              >
+                <span class="admin-nav-short">CC</span>
+                <span class="admin-nav-label">Code Checks Live</span>
+              </a>
+              <a
+                href="/feature-flags"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="Feature Flags"
+              >
+                <span class="admin-nav-short">FF</span>
+                <span class="admin-nav-label">Feature Flags</span>
+              </a>
+              <a
+                href="/admin/dashboard"
+                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left admin-nav-link"
+                title="LiveDashboard"
+              >
+                <span class="admin-nav-short">LD</span>
+                <span class="admin-nav-label">LiveDashboard</span>
+              </a>
+            </nav>
             <%= if admin_user do %>
-              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 mb-3">
+              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2 mt-auto admin-user-card">
                 <div class="text-white text-truncate">{admin_user.name}</div>
                 <div class="cb-text">ID: {admin_user.id}</div>
               </div>
             <% end %>
-            <nav class="d-flex flex-column">
-              <a
-                href="/admin/"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                Dashboard
-              </a>
-              <a
-                href="/admin/users"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                Users
-              </a>
-              <a
-                href="/admin/seasons"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                Seasons
-              </a>
-              <a
-                href="/admin/feedback"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                Feedback
-              </a>
-              <a
-                href="/feature-flags"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                Feature Flags
-              </a>
-              <a
-                href="/admin/dashboard"
-                class="btn btn-secondary cb-btn-secondary cb-rounded mb-2 text-left"
-              >
-                LiveDashboard
-              </a>
-            </nav>
           </div>
         </aside>
-        <main class="col-12 col-md-9 col-lg-10 py-3">
+        <main class="admin-main py-3">
           {@inner_content}
         </main>
       </div>
     </div>
+    <script>
+      (() => {
+        const storageKey = "adminSidebarCollapsed";
+        const body = document.body;
+        const btn = document.getElementById("admin-sidebar-toggle");
+        const icon = document.getElementById("admin-sidebar-toggle-icon");
+
+        if (!btn) return;
+
+        const setState = collapsed => {
+          if (collapsed) {
+            body.classList.add("admin-sidebar-collapsed");
+            if (icon) icon.textContent = "›";
+            btn.setAttribute("aria-expanded", "false");
+          } else {
+            body.classList.remove("admin-sidebar-collapsed");
+            if (icon) icon.textContent = "‹";
+            btn.setAttribute("aria-expanded", "true");
+          }
+        };
+
+        const saved = localStorage.getItem(storageKey);
+        setState(saved === "1");
+
+        btn.addEventListener("click", () => {
+          const collapsed = !body.classList.contains("admin-sidebar-collapsed");
+          setState(collapsed);
+          localStorage.setItem(storageKey, collapsed ? "1" : "0");
+        });
+      })();
+    </script>
     {render_gon_script(@conn)}
   </body>
 </html>

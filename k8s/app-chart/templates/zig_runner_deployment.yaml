@@ -1,0 +1,84 @@
+{{- if .Values.zigRunners.enabled -}}
+{{- range .Values.zigRunners.langs }}
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "runner-{{ .name }}"
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      app: "runner-{{ .name }}"
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "runner-{{ .name }}"
+    spec:
+      {{- if or (eq $.Values.zigRunners.strategy "robust") (eq $.Values.zigRunners.strategy "hard") }}
+      nodeSelector:
+        {{- toYaml $.Values.zigRunners.runnerNodeSelector | nindent 8 }}
+      {{- else if $.Values.zigRunners.nodeSelector }}
+      nodeSelector:
+        {{- toYaml $.Values.zigRunners.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.zigRunners.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topologySpreadConstraints:
+      {{- if $.Values.zigRunners.topologySpread.enabled }}
+      - maxSkew: {{ $.Values.zigRunners.topologySpread.maxSkew }}
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: {{ $.Values.zigRunners.topologySpread.whenUnsatisfiable }}
+        labelSelector:
+          matchLabels:
+            app: "runner-{{ .name }}"
+      {{- end }}
+      {{- if or $.Values.zigRunners.avoidCodebattleNode $.Values.zigRunners.affinity }}
+      affinity:
+        {{- with $.Values.zigRunners.affinity }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if $.Values.zigRunners.avoidCodebattleNode }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: "codebattle"
+            topologyKey: "kubernetes.io/hostname"
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: "runner"
+          env:
+            - name: DEBUG
+              value: {{ $.Values.zigRunners.env.DEBUG | quote }}
+          resources:
+            {{- toYaml $.Values.zigRunners.resources | nindent 12 }}
+          imagePullPolicy: Always
+          image: "{{ .image }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4040
+            initialDelaySeconds: {{ $.Values.zigRunners.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.zigRunners.probes.readiness.periodSeconds }}
+            successThreshold: {{ $.Values.zigRunners.probes.readiness.successThreshold }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4040
+            initialDelaySeconds: {{ $.Values.zigRunners.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.zigRunners.probes.liveness.periodSeconds }}
+            failureThreshold: {{ $.Values.zigRunners.probes.liveness.failureThreshold }}
+          command:
+            - /runner/codebattle_runner
+          ports:
+            - containerPort: 4040
+{{- end }}
+{{- end }}

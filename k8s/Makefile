@@ -1,4 +1,6 @@
 PWD:=$(shell pwd)
+ROBUST_INGRESS_VALUES_FILE ?= $(PWD)/../.customization/robust-ingress.values.yaml
+ROBUST_ENV_VALUES_FILE ?= $(PWD)/../.customization/robust-env.values.yaml
 
 kb-%: export KUBECONFIG=$(PWD)/../.kube/config
 helm-%: export KUBECONFIG=$(PWD)/../.kube/config
@@ -41,3 +43,6 @@ kb-kubetail:
 
 helm-install-ingress:
 	helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx
+
+robust-deploy:
+	helm upgrade --install app $(PWD)/app-chart --force-conflicts -f $(PWD)/envs/common/values.yaml -f $(PWD)/envs/robust/values.yaml -f $(ROBUST_INGRESS_VALUES_FILE) -f $(ROBUST_ENV_VALUES_FILE)

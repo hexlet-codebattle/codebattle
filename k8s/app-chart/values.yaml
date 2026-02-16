@@ -5,7 +5,7 @@ registry: ghcr.io
 ingress:
   className: "nginx"
   annotations: {}
-  host: codebattle.hexlet.io
+  host: ""
   enabled: true
   tls: []
   #  - secretName: codebattle-tls
@@ -14,6 +14,8 @@ ingress:
 
 codebattle:
   affinity: {}
+  nodeSelector: {}
+  extraEnvConfigMapName: ""
   replicaCount: 1
   image:
     repository: hexlet-codebattle/codebattle
@@ -24,17 +26,53 @@ codebattle:
   service:
     type: ClusterIP
     port: 4000
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  probes:
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 3
+    startup:
+      periodSeconds: 5
+      failureThreshold: 60
   env:
     CODEBATTLE_VERSION: "{{ .Values.version }}"
     CODEBATTLE_PORT: 4000
 
 runner:
+  enabled: true
   replicaCount: 1
   # Deployment or DaemonSet
   type: Deployment
   image:
     repository: hexlet-codebattle/runner
     imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: "150m"
+      memory: "256Mi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  probes:
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 3
 
 chatbot:
   enabled: false
@@ -48,19 +86,105 @@ nginx:
   image:
     repository: hexlet-codebattle/nginx-assets
     imagePullPolicy: Always
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  probes:
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 3
 
-runnerRust:
+zigRunners:
   enabled: false
+  strategy: simple # simple | robust
+  avoidCodebattleNode: false
+  appNodeSelector:
+    label: app
+  runnerNodeSelector:
+    label: runner
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  topologySpread:
+    enabled: true
+    maxSkew: 3
+    whenUnsatisfiable: ScheduleAnyway
+  resources:
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+  probes:
+    readiness:
+      initialDelaySeconds: 5
+      periodSeconds: 5
+      successThreshold: 1
+    liveness:
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      failureThreshold: 3
+  env:
+    DEBUG: "true"
   langs:
-    - name: rust
-      image: hexlet-codebattle/rust:1.76.0
+    - name: clojure
+      image: ghcr.io/hexlet-codebattle/clojure:1.12.4
+      replicaCount: 1
+    - name: cpp
+      image: ghcr.io/hexlet-codebattle/cpp:23
+      replicaCount: 1
+    - name: csharp
+      image: ghcr.io/hexlet-codebattle/csharp:10.0.102
+      replicaCount: 1
+    - name: dart
+      image: ghcr.io/hexlet-codebattle/dart:3.10.0
+      replicaCount: 1
+    - name: elixir
+      image: ghcr.io/hexlet-codebattle/elixir:1.19.5
+      replicaCount: 1
+    - name: golang
+      image: ghcr.io/hexlet-codebattle/golang:1.25.6
+      replicaCount: 1
+    - name: java
+      image: ghcr.io/hexlet-codebattle/java:25.0.2
       replicaCount: 1
     - name: js
-      image: hexlet-codebattle/js:20.11.1
-      replicaCount: 2
-    - name: hexlet-python
-      image: codebattle/python:3.12.2
-      replicaCount: 3
+      image: ghcr.io/hexlet-codebattle/js:25.4.0
+      replicaCount: 1
+    - name: kotlin
+      image: ghcr.io/hexlet-codebattle/kotlin:2.3.0
+      replicaCount: 1
+    - name: php
+      image: ghcr.io/hexlet-codebattle/php:8.5.2
+      replicaCount: 1
+    - name: python
+      image: ghcr.io/hexlet-codebattle/python:3.14.2
+      replicaCount: 1
+    - name: ruby
+      image: ghcr.io/hexlet-codebattle/ruby:4.0.1
+      replicaCount: 1
+    - name: rust
+      image: ghcr.io/hexlet-codebattle/rust:1.93.0
+      replicaCount: 1
+    - name: swift
+      image: ghcr.io/hexlet-codebattle/swift:6.2.3
+      replicaCount: 1
+    - name: ts
+      image: ghcr.io/hexlet-codebattle/js:25.4.0
+      replicaCount: 1
+    - name: zig
+      image: ghcr.io/hexlet-codebattle/zig:0.15.2
+      replicaCount: 1
 
 resources: {}
 nodeSelector: {}

@@ -227,7 +227,12 @@ defmodule Codebattle.Game.Engine do
       user_id: user.id
     })
 
-    check_result = CodeCheck.check_solution(get_game_task(game), editor_text, editor_lang)
+    check_result =
+      CodeCheck.check_solution(get_game_task(game), editor_text, editor_lang, %{
+        user_id: user.id,
+        game_id: game.id,
+        tournament_id: game.tournament_id
+      })
 
     # TODO: maybe drop editor_text here
     Codebattle.PubSub.broadcast("game:check_completed", %{

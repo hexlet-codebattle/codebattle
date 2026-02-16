@@ -63,3 +63,5 @@ stats.json
 services/app/priv/plts/*.plt
 services/app/priv/plts/*.plt.hash
 *.pnpm-store
+
+.customization/

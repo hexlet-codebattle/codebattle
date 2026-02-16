@@ -1,0 +1,29 @@
+# Single-node cluster profile
+# Runs: codebattle app + legacy runner + 1 replica per each zig runner language
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  host: codebattle.hexlet.io
+  tls: []
+
+codebattle:
+  service:
+    type: ClusterIP
+  nodeSelector: {}
+
+runner:
+  enabled: true
+  replicaCount: 1
+
+zigRunners:
+  strategy: simple
+  avoidCodebattleNode: false
+
+  # Keep empty for one-node scheduling
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

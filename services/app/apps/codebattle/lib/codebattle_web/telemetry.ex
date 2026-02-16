@@ -41,7 +41,11 @@ defmodule CodebattleWeb.Telemetry do
       summary("vm.memory.total", unit: {:byte, :kilobyte}),
       summary("vm.total_run_queue_lengths.total"),
       summary("vm.total_run_queue_lengths.cpu"),
-      summary("vm.total_run_queue_lengths.io")
+      summary("vm.total_run_queue_lengths.io"),
+
+      # Code check metrics
+      counter("codebattle.code_check.run.count", tags: [:lang, :result]),
+      summary("codebattle.code_check.run.duration_ms", tags: [:lang, :result])
     ]
   end
 

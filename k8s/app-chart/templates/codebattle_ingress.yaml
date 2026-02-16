@@ -22,7 +22,9 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.host | quote }}
+    {{- if .Values.ingress.hosts }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
       http:
         paths:
           - path: /assets
@@ -39,4 +41,26 @@ spec:
                 name: codebattle
                 port:
                   name: codebattle
+    {{- end }}
+    {{- else }}
+    - {{- if .Values.ingress.host }}
+      host: {{ .Values.ingress.host | quote }}
+      {{- end }}
+      http:
+        paths:
+          - path: /assets
+            pathType: Prefix
+            backend:
+              service:
+                name: codebattle
+                port:
+                  name: assets
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: codebattle
+                port:
+                  name: codebattle
+    {{- end }}
 {{- end }}

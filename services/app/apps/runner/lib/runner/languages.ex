@@ -12,14 +12,14 @@ defmodule Runner.Languages do
     "golang",
     "java",
     "js",
-    "zig",
     "kotlin",
     "php",
     "python",
     "ruby",
     "rust",
     "swift",
-    "ts"
+    "ts",
+    "zig"
   ]
 
   @type_templates %{

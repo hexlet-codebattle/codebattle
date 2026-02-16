@@ -1,0 +1,31 @@
+# Multi-node robust cluster profile
+# Node groups:
+# - app nodes: label=app (codebattle only)
+# - runner nodes: label=runner (zig runners only)
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  host: ""
+  tls: []
+
+codebattle:
+  service:
+    type: NodePort
+  nodeSelector: {}
+
+# Not used in robust mode
+runner:
+  enabled: false
+
+zigRunners:
+  strategy: robust
+  avoidCodebattleNode: true
+  appNodeSelector:
+    label: app
+  runnerNodeSelector:
+    label: runner
+  topologySpread:
+    enabled: true
+    maxSkew: 1
+    whenUnsatisfiable: DoNotSchedule

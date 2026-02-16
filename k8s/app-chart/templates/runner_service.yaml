@@ -1,3 +1,4 @@
+{{- if .Values.runner.enabled -}}
 ---
 kind: Service
 apiVersion: v1
@@ -12,3 +13,4 @@ spec:
       port: 80
       targetPort: 4001
   type: ClusterIP
+{{- end }}
