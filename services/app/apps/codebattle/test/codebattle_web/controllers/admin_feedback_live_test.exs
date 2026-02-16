@@ -55,7 +55,7 @@ defmodule CodebattleWeb.AdminFeedbackLiveTest do
     assert conn.status == 200
     assert response(conn, 200) =~ "Code Checks Live"
     assert response(conn, 200) =~ "Languages"
-    assert response(conn, 200) =~ "Timeline (avg duration)"
+    assert response(conn, 200) =~ "Aggregated timeline for selected languages."
   end
 
   test "non-admin is redirected", %{conn: conn} do
