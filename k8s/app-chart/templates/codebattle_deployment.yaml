@@ -33,6 +33,9 @@ spec:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
           image: "{{- if .Values.registry -}}{{ .Values.registry }}/{{- end -}}{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
+          volumeMounts:
+            - name: nginx-shm
+              mountPath: /dev/shm
           resources:
             {{- toYaml .Values.nginx.resources | nindent 12 }}
           readinessProbe:
@@ -109,3 +112,8 @@ spec:
                   fieldPath: metadata.name
             - name: DEPLOYED_AT
               value: {{ dateInZone "2006-01-02 15:04:05" (now) "UTC" }}
+      volumes:
+        - name: nginx-shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.nginx.shm.sizeLimit | quote }}

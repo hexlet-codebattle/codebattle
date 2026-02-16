@@ -86,6 +86,8 @@ nginx:
   image:
     repository: hexlet-codebattle/nginx-assets
     imagePullPolicy: Always
+  shm:
+    sizeLimit: "128Mi"
   resources:
     requests:
       cpu: "50m"
