@@ -277,18 +277,18 @@ jobs:
             const deadline = Date.now() + 45 * 60 * 1000;
 
             while (true) {
-              const checkRuns = await github.paginate(
-                github.rest.checks.listForRef,
+              const jobs = await github.paginate(
+                github.rest.actions.listJobsForWorkflowRun,
                 {
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  ref: context.sha,
+                  run_id: context.runId,
                   per_page: 100,
                 },
-                response => response.data.check_runs,
+                response => response.data.jobs,
               );
 
-              const safeRuns = (checkRuns || []).filter(run => run && typeof run.name === "string");
+              const safeRuns = (jobs || []).filter(run => run && typeof run.name === "string");
               const byName = new Map();
               for (const run of safeRuns) {
                 const existing = byName.get(run.name);
@@ -313,7 +313,7 @@ jobs:
               }
 
               core.info(
-                `checks_total=${(checkRuns || []).length}, checks_named=${safeRuns.length}, pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`,
+                `jobs_total=${(jobs || []).length}, jobs_named=${safeRuns.length}, pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`,
               );
 
               if (failed.length > 0) {
