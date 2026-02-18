@@ -3067,6 +3067,8 @@ a.cb-text-light:hover {
 }
 
 .cb-season-actions .btn {
+  flex: 1 1 0;
+  min-width: 0;
   margin-bottom: 8px;
 }
 
