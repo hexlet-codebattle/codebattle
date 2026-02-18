@@ -2514,6 +2514,16 @@ a.cb-text-light:hover {
   flex: 1 1 0;
   min-width: 0;
   margin-bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cb-season-actions .btn:last-child {
@@ -2572,9 +2582,10 @@ a.cb-text-light:hover {
   }
 
   .cb-season-actions .btn {
-    white-space: normal !important;
-    line-height: 1.2;
-    padding: 9px 12px;
+    white-space: nowrap !important;
+    line-height: 1;
+    height: 40px;
+    padding: 0 12px;
   }
 
   .cb-lobby-controls-primary {
