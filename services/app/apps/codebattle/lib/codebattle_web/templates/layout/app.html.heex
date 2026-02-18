@@ -135,61 +135,55 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarResponsive">
-                  <ul class="navbar-nav ml-auto">
+                  <ul class="navbar-nav ml-auto align-items-sm-center">
                     <%= if FunWithFlags.enabled?(:hide_invites) do %>
-                      <div id="invites-root" class="d-none"></div>
+                      <li id="invites-root" class="d-none"></li>
                     <% else %>
-                      <!-- Mobile header items wrapper - centers items on mobile -->
-                      <div class="d-flex flex-column flex-sm-row align-items-center w-100 w-sm-auto mb-2 mb-sm-0">
-                        <!-- GitHub Star button - visible on all devices -->
-                        <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
-                          <a
-                            href="https://github.com/hexlet-codebattle/codebattle"
-                            target="_blank"
-                            class="btn d-flex align-items-center mx-auto mx-sm-0 mr-sm-3 px-2 px-sm-3 py-1 py-sm-2 rounded-pill"
-                            title="Star us on GitHub"
-                          >
-                            <span class="fab fa-github mr-1 mr-sm-2 text-white"></span>
-                            <span class="text-white font-weight-bold d-none d-sm-inline">
-                              {gettext("Star us")}
-                            </span>
-                            <img
-                              src="https://img.shields.io/github/stars/hexlet-codebattle/codebattle?style=social"
-                              alt="GitHub stars"
-                              class="ml-1 ml-sm-2"
-                            />
-                          </a>
-                        </li>
-                        <!-- Online counter - responsive display -->
-                        <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
-                          <span
-                            id="online-root"
-                            class="d-flex align-items-center text-muted mx-auto mx-sm-0 mr-sm-3"
-                          >
-                            0 Online
-                          </span>
-                        </li>
-                        <!-- Invites button -->
-                        <li
-                          class="nav-item d-flex justify-content-center mb-2 mb-sm-0"
-                          id="invites-root"
+                      <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
+                        <a
+                          href="https://github.com/hexlet-codebattle/codebattle"
+                          target="_blank"
+                          class="btn d-flex align-items-center mx-auto mx-sm-0 mr-sm-3 px-2 px-sm-3 py-1 py-sm-2 rounded-pill"
+                          title="Star us on GitHub"
                         >
-                          <div class="btn mx-auto mx-sm-2">
-                            <img
-                              alt="invites"
-                              src={static_asset("images/fight.svg")}
-                              style="width:40px; height:40px"
-                            />
-                          </div>
-                        </li>
-                      </div>
+                          <span class="fab fa-github mr-1 mr-sm-2 text-white"></span>
+                          <span class="text-white font-weight-bold d-none d-sm-inline">
+                            {gettext("Star us")}
+                          </span>
+                          <img
+                            src="https://img.shields.io/github/stars/hexlet-codebattle/codebattle?style=social"
+                            alt="GitHub stars"
+                            class="ml-1 ml-sm-2"
+                          />
+                        </a>
+                      </li>
+                      <li class="nav-item d-flex justify-content-center mb-2 mb-sm-0">
+                        <span
+                          id="online-root"
+                          class="d-flex align-items-center text-muted mx-auto mx-sm-0 mr-sm-3"
+                        >
+                          0 Online
+                        </span>
+                      </li>
+                      <li
+                        class="nav-item d-flex justify-content-center mb-2 mb-sm-0"
+                        id="invites-root"
+                      >
+                        <div class="btn mx-auto mx-sm-2">
+                          <img
+                            alt="invites"
+                            src={static_asset("images/fight.svg")}
+                            style="width:40px; height:40px"
+                          />
+                        </div>
+                      </li>
                     <% end %>
                     <li class="nav-item dropdown">
                       <a
                         aria-expanded="false"
                         aria-haspopup="true"
                         data-toggle="dropdown"
-                        class="nav-link noborder d-flex justify-content-center px-0"
+                        class="nav-link noborder d-flex justify-content-center align-items-center px-0"
                         href={Routes.user_path(@conn, :show, @current_user.id)}
                       >
                         <div class="d-flex flex-column justify-content-center text-nowrap mr-2">
@@ -204,98 +198,97 @@
                           src={avatar_url(@current_user)}
                           style="width:46px; height:46px"
                         />
-
-                        <div
-                          class="dropdown-menu dropdown-menu-right cb-bg-highlight-panel cb-rounded"
-                          style="z-index:1030"
-                        >
-                          <%= if FunWithFlags.enabled?(:hide_user_dropdown) do %>
-                            <div></div>
-                          <% else %>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={Routes.user_path(@conn, :show, @current_user.id)}
-                            >
-                              <span class="fas fa-user mr-2"></span>
-                              {gettext("My Profile")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={Routes.user_setting_path(@conn, :edit)}
-                            >
-                              <span class="fas fa-cog mr-2"></span>
-                              {gettext("Settings")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={hall_of_fame_path(@conn, :index)}
-                            >
-                              <span class="fas fa-medal mr-2"></span>
-                              {gettext("Hall of Fame")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={Routes.tournaments_schedule_path(@conn, :index)}
-                            >
-                              <span class="fas fa-trophy mr-2"></span>
-                              {gettext("Tournaments")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={task_path(@conn, :index)}
-                            >
-                              <span class="fas fa-tasks mr-2"></span>
-                              {gettext("Tasks")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href={clan_path(@conn, :index)}
-                            >
-                              <span class="fas fa-users mr-2"></span>
-                              {gettext("Clans")}
-                            </a>
-                            <div class="dropdown-divider cb-border-color"></div>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href="https://github.com/hexlet-codebattle/codebattle"
-                              target="_blank"
-                            >
-                              <span class="fab fa-github mr-2"></span>
-                              {gettext("SourceCode")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href="https://hexlet.io"
-                              target="_blank"
-                            >
-                              <span class="fa fa-university mr-2"></span>
-                              {gettext("Hexlet")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href="https://discord.gg/dTpFXrYU3v"
-                              target="_blank"
-                            >
-                              <span class="fab fa-discord mr-2"></span>
-                              {gettext("Join Discord")}
-                            </a>
-                            <a
-                              class="dropdown-item cb-dropdown-item text-white"
-                              href="https://t.me/hexletcommunity/5"
-                              target="_blank"
-                            >
-                              <span class="fab fa-telegram mr-2"></span>
-                              {gettext("Tg#codebattle")}
-                            </a>
-                            <div class="dropdown-divider cb-border-color"></div>
-                          <% end %>
-
-                          <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item cb-dropdown-item text-white" do %>
-                            <span class="fas fa-sign-out-alt mr-2"></span>
-                            {gettext("Sign Out")}
-                          <% end %>
-                        </div>
                       </a>
+                      <div
+                        class="dropdown-menu dropdown-menu-right cb-bg-highlight-panel cb-rounded"
+                        style="z-index:1030"
+                      >
+                        <%= if FunWithFlags.enabled?(:hide_user_dropdown) do %>
+                          <div></div>
+                        <% else %>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={Routes.user_path(@conn, :show, @current_user.id)}
+                          >
+                            <span class="fas fa-user mr-2"></span>
+                            {gettext("My Profile")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={Routes.user_setting_path(@conn, :edit)}
+                          >
+                            <span class="fas fa-cog mr-2"></span>
+                            {gettext("Settings")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={hall_of_fame_path(@conn, :index)}
+                          >
+                            <span class="fas fa-medal mr-2"></span>
+                            {gettext("Hall of Fame")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={Routes.tournaments_schedule_path(@conn, :index)}
+                          >
+                            <span class="fas fa-trophy mr-2"></span>
+                            {gettext("Tournaments")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={task_path(@conn, :index)}
+                          >
+                            <span class="fas fa-tasks mr-2"></span>
+                            {gettext("Tasks")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href={clan_path(@conn, :index)}
+                          >
+                            <span class="fas fa-users mr-2"></span>
+                            {gettext("Clans")}
+                          </a>
+                          <div class="dropdown-divider cb-border-color"></div>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href="https://github.com/hexlet-codebattle/codebattle"
+                            target="_blank"
+                          >
+                            <span class="fab fa-github mr-2"></span>
+                            {gettext("SourceCode")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href="https://hexlet.io"
+                            target="_blank"
+                          >
+                            <span class="fa fa-university mr-2"></span>
+                            {gettext("Hexlet")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href="https://discord.gg/dTpFXrYU3v"
+                            target="_blank"
+                          >
+                            <span class="fab fa-discord mr-2"></span>
+                            {gettext("Join Discord")}
+                          </a>
+                          <a
+                            class="dropdown-item cb-dropdown-item text-white"
+                            href="https://t.me/hexletcommunity/5"
+                            target="_blank"
+                          >
+                            <span class="fab fa-telegram mr-2"></span>
+                            {gettext("Tg#codebattle")}
+                          </a>
+                          <div class="dropdown-divider cb-border-color"></div>
+                        <% end %>
+
+                        <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item cb-dropdown-item text-white" do %>
+                          <span class="fas fa-sign-out-alt mr-2"></span>
+                          {gettext("Sign Out")}
+                        <% end %>
+                      </div>
                     </li>
                   </ul>
                 </div>

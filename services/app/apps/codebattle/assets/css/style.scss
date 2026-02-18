@@ -1172,6 +1172,12 @@ main {
   flex: 1 1 auto;
 }
 
+.navbar-brand img {
+  max-height: 32px;
+  height: auto;
+  width: auto;
+}
+
 .create-game-btn:hover {
   background: linear-gradient(to bottom, #f5f5f5 0%, #ededed 100%);
   text-shadow: 0 1px 0 #fff;
@@ -1246,6 +1252,12 @@ main {
 }
 
 @media (max-width: $sm) {
+  .navbar-brand img {
+    max-height: 28px !important;
+    height: auto !important;
+    width: auto !important;
+  }
+
   .cb-heading {
     font-size: 20px;
   }
@@ -1263,8 +1275,14 @@ main {
   }
 
   .main-nav {
-    margin-right: -15px;
-    margin-left: -15px;
+    margin-right: 0;
+    margin-left: 0;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  #navbarResponsive {
+    padding-top: 0.5rem;
   }
 }
 
@@ -2960,6 +2978,276 @@ a.cb-text-light:hover {
 
 .cb-subtle-background {
   background: radial-gradient(circle at 50% 0%, #3a3b40 0%, $cb-bg-panel 100%);
+}
+
+.cb-season-layout {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.cb-season-main-card,
+.cb-season-profile-card,
+.cb-nearby-card,
+.cb-lobby-chat-card,
+.cb-tournament-card {
+  width: 100%;
+  overflow: hidden;
+}
+
+.cb-tournament-grid {
+  gap: 8px;
+}
+
+.cb-tournament-card {
+  margin-right: 0 !important;
+  max-width: 350px;
+}
+
+.cb-tournament-title-wrap,
+.cb-tournament-meta-row {
+  width: 100%;
+}
+
+.cb-tournament-header {
+  gap: 8px;
+}
+
+.cb-tournament-title {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.cb-tournament-gold,
+.cb-tournament-points-value,
+.cb-tournament-starts-in {
+  color: $gold !important;
+}
+
+.cb-tournament-starts-in .text-warning {
+  color: $gold !important;
+}
+
+.cb-tournament-meta {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.cb-tournament-actions {
+  gap: 6px;
+}
+
+.cb-tournament-top-actions {
+  flex-shrink: 0;
+}
+
+.cb-tournament-main-action {
+  min-width: 84px;
+}
+
+.cb-tournament-info-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 !important;
+  font-size: 13px;
+}
+
+.cb-lobby-chat-main {
+  flex: 0 0 66.666%;
+  max-width: 66.666%;
+  min-width: 0;
+}
+
+.cb-lobby-chat-sidebar {
+  flex: 0 0 33.333%;
+  max-width: 33.333%;
+}
+
+.cb-season-actions .btn {
+  margin-bottom: 8px;
+}
+
+.cb-season-actions .btn:last-child {
+  margin-bottom: 0;
+}
+
+.cb-nearby-user-name {
+  min-width: 0;
+  max-width: 110px;
+}
+
+.cb-nearby-metric {
+  width: 72px;
+}
+
+.cb-league-description .btn-link {
+  white-space: normal;
+  text-align: left;
+}
+
+.cb-lobby-controls-primary {
+  gap: 8px;
+}
+
+@media (max-width: $lg) {
+  .cb-tournament-card {
+    max-width: 100%;
+  }
+
+  .cb-lobby-chat-main,
+  .cb-lobby-chat-sidebar {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+
+  .cb-lobby-chat-sidebar {
+    border-left: none !important;
+    border-top: 1px solid #3a3a45;
+    border-radius: 0 0 $cb-border-radius $cb-border-radius;
+  }
+}
+
+@media (max-width: $sm) {
+  .cb-season-main-card {
+    padding: 14px !important;
+  }
+
+  .cb-season-section-title .h4 {
+    font-size: 18px;
+    margin-bottom: 0;
+  }
+
+  .cb-season-actions {
+    padding-top: 8px !important;
+    margin-top: 6px !important;
+  }
+
+  .cb-season-actions .btn {
+    white-space: normal !important;
+    line-height: 1.2;
+    padding: 9px 12px;
+  }
+
+  .cb-lobby-controls-primary {
+    flex-direction: column;
+  }
+
+  .cb-lobby-controls-primary .btn {
+    margin-right: 0 !important;
+  }
+
+  .cb-lobby-bottom-layout > .col-12,
+  .cb-season-layout > .col-12 {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .cb-lobby-chat-card {
+    margin-top: 8px !important;
+  }
+
+  .cb-lobby-widget-container {
+    min-height: 320px;
+    max-height: none;
+  }
+
+  .cb-players-container {
+    max-height: 260px;
+  }
+
+  .cb-nearby-row {
+    padding-top: 7px !important;
+    padding-bottom: 7px !important;
+    margin-left: 4px !important;
+    margin-right: 4px !important;
+  }
+
+  .cb-nearby-user-name {
+    max-width: none;
+  }
+
+  .cb-nearby-metric {
+    width: auto;
+    min-width: 58px;
+  }
+
+  .cb-nearby-metric .stat-value {
+    font-size: 16px;
+  }
+
+  .cb-season-stats .stat-value {
+    font-size: 18px;
+  }
+
+  .clan-tag {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .cb-league-description {
+    margin-top: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  .cb-league-description .card-header .btn {
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 12px;
+  }
+
+  .cb-tournament-grid {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .cb-tournament-card {
+    margin: 4px 0 !important;
+  }
+
+  .cb-tournament-card-body {
+    padding: 12px !important;
+  }
+
+  .cb-tournament-meta-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cb-tournament-meta {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+
+  .cb-tournament-top-actions {
+    margin-left: auto;
+    flex: 0 0 auto;
+  }
+
+  .cb-tournament-actions {
+    justify-content: flex-end;
+  }
+
+  .cb-tournament-actions .btn {
+    min-width: 84px;
+  }
+
+  .cb-tournament-main-action {
+    min-width: 72px;
+  }
+
+  .cb-tournament-info-icon-btn {
+    width: 28px;
+    min-width: 28px;
+    height: 28px;
+  }
 }
 
 .cb-blur {

@@ -91,6 +91,7 @@ defmodule CodebattleWeb.Router do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     live("/", CodebattleWeb.Live.Admin.IndexView, :index)
+    live("/games", CodebattleWeb.Live.Admin.Game.IndexView, :index)
     live("/code-checks", CodebattleWeb.Live.Admin.CodeCheck.IndexView, :index)
     live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
     live("/users", CodebattleWeb.Live.Admin.User.IndexView, :index)

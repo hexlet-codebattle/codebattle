@@ -5,8 +5,8 @@ import React from "react";
 
 function CodebattleLeagueDescription() {
   return (
-    <section className="container my-3">
-      <div className="p-3 text-center">
+    <section className="w-100 my-2 cb-league-description">
+      <div className="px-2 px-md-3 py-3 text-center">
         <h2 className="text-white m-0">Codebattle League</h2>
         <p className="text-white mt-2 mb-3">
           Challenge the best! Participate in the Competition tournaments, defeat your rivals to earn

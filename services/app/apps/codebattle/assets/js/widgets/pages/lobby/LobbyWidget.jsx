@@ -198,8 +198,8 @@ function LobbyWidget() {
         user={currentUser}
         nearbyUsers={nearbyUsers}
         controls={
-          <div className="d-flex flex-column mt-2">
-            <div className="d-flex w-100">
+          <div className="d-flex flex-column mt-2 cb-lobby-controls">
+            <div className="d-flex w-100 cb-lobby-controls-primary">
               <CreateGameButton
                 onClick={handleCreateGameBtnClick}
                 isOnline={online}
@@ -225,15 +225,15 @@ function LobbyWidget() {
         }
       />
 
-      <div className="d-flex flex-column flex-lg-row flex-md-row p-0">
-        <div className="col-12 col-lg-8">
+      <div className="d-flex flex-column flex-lg-row p-0 cb-lobby-bottom-layout">
+        <div className="col-12 col-lg-8 p-0 pr-lg-2">
           <LobbyChat
             setOpenActionModalShowing={setActionModalShowing}
             presenceList={presenceList}
             inputRef={chatInputRef}
           />
         </div>
-        <div className="col-12 col-lg-4">
+        <div className="col-12 col-lg-4 p-0 pl-lg-2">
           <div className="mt-2">
             <Announcement />
           </div>

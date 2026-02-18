@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import axios from "axios";
 import cn from "classnames";
-import { camelizeKeys } from "humps";
 import { useDispatch, useSelector } from "react-redux";
 
 import { loadNearbyUsers } from "@/middlewares/Users";
@@ -19,13 +17,15 @@ const contestDatesText = "Season: Oct 16 - Dec 21";
 
 function OpponentInfo({ id }) {
   const user = useSelector(userByIdSelector(id));
-  const statColumnStyle = { width: "72px" };
 
   return (
-    <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line">
-      <div className="d-flex align-items-center flex-grow-1 pr-2" style={{ minWidth: 0 }}>
+    <div className="d-flex align-items-center py-2 px-2 my-1 mx-1 stat-line cb-nearby-row">
+      <div
+        className="d-flex align-items-center flex-grow-1 pr-2 cb-nearby-user"
+        style={{ minWidth: 0 }}
+      >
         <UserLogo user={user} size="25px" />
-        <div className="ml-2" style={{ maxWidth: "110px" }}>
+        <div className="ml-2 cb-nearby-user-name">
           {user ? (
             <UserInfo
               user={user}
@@ -40,10 +40,7 @@ function OpponentInfo({ id }) {
           )}
         </div>
       </div>
-      <div
-        className="d-flex flex-column text-center py-1 px-1 flex-shrink-0"
-        style={statColumnStyle}
-      >
+      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
         <a href="/hall_of_fame" className="stat-item py-1 w-100">
           <span
             className={cn("stat-value d-block cb-text-danger", {
@@ -55,10 +52,7 @@ function OpponentInfo({ id }) {
           <span className="stat-label text-uppercase">Place</span>
         </a>
       </div>
-      <div
-        className="d-flex flex-column text-center py-1 px-1 flex-shrink-0"
-        style={statColumnStyle}
-      >
+      <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
         <div className="stat-item py-1 w-100">
           <span
             className={cn("stat-value d-block cb-text-danger", {
@@ -107,7 +101,7 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
   }
 
   return (
-    <div className="cb-bg-panel cb-rounded mt-2">
+    <div className="cb-bg-panel cb-rounded mt-2 cb-nearby-card">
       <div className="d-flex flex-column">
         <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
           <span className="text-white text-uppercase py-2 d-block">Closest Opponents</span>
@@ -119,7 +113,7 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
               <OpponentInfo />
             </>
           ) : (
-            nearbyUsers.map((id) => <OpponentInfo id={id} />)
+            nearbyUsers.map((id) => <OpponentInfo key={id} id={id} />)
           )}
         </div>
       </div>
@@ -128,31 +122,8 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
 }
 
 function UserLogo({ user, size = "70px" }) {
-  const [userInfo, setUserInfo] = useState();
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
-  const avatarUrl = user?.avatarUrl || userInfo?.avatarUrl || defaultAvatarUrl;
-
-  useEffect(() => {
-    if (user) {
-      const userId = user.id;
-      const controller = new AbortController();
-
-      axios
-        .get(`/api/v1/user/${userId}/stats`, {
-          signal: controller.signal,
-        })
-        .then((response) => {
-          if (!controller.signal.aborted) {
-            setUserInfo(camelizeKeys(response.data.user));
-          }
-        });
-
-      return controller.abort;
-    }
-
-    return () => {};
-    // eslint-disable-next-line
-  }, [setUserInfo, user?.id]);
+  const avatarUrl = user?.avatarUrl || defaultAvatarUrl;
 
   return (
     <img
@@ -174,18 +145,18 @@ function SeasonProfilePanel({
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className="d-flex flex-column-reverse flex-lg-row flex-md-row my-0 my-lg-2 my-md-2">
-      <div className="col-12 col-lg-8 col-md-8 my-2 my-lg-0 my-md-0">
-        <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center">
+    <div className="d-flex flex-column-reverse flex-lg-row my-0 my-lg-2 cb-season-layout">
+      <div className="col-12 col-lg-8 p-0 pr-lg-2 my-2 my-lg-0">
+        <div className="cb-bg-panel cb-rounded d-flex flex-column p-3 h-100 w-100 text-center cb-season-main-card">
           <CodebattleLeagueDescription />
           {seasonTournaments?.length || liveTournaments?.length ? (
             <div>
               {liveTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center align-items-center pt-2">
+                  <div className="d-flex justify-content-center align-items-center pt-2 cb-season-section-title">
                     <span className="text-white text-uppercase h4">Live Tournaments</span>
                   </div>
-                  <div className="d-flex flex-wrap">
+                  <div className="d-flex flex-wrap cb-tournament-grid">
                     {liveTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -198,10 +169,10 @@ function SeasonProfilePanel({
               )}
               {seasonTournaments?.length !== 0 && (
                 <>
-                  <div className="d-flex justify-content-center pt-2">
+                  <div className="d-flex justify-content-center pt-2 cb-season-section-title">
                     <span className="text-white text-uppercase h4">Upcoming Tournaments</span>
                   </div>
-                  <div className="d-flex flex-wrap">
+                  <div className="d-flex flex-wrap cb-tournament-grid">
                     {seasonTournaments.map((tournament) => (
                       <TournamentListItem
                         isAdmin={isAdmin}
@@ -216,7 +187,7 @@ function SeasonProfilePanel({
           ) : (
             <div className="pt-2 mt-2">Competition not started yet</div>
           )}
-          <div className="d-flex flex-column flex-lg-row flex-md-row w-100 pt-2 mt-2">
+          <div className="d-flex flex-column flex-lg-row w-100 pt-2 mt-2 cb-season-actions">
             <a
               href="/schedule#contest"
               type="button"
@@ -241,8 +212,8 @@ function SeasonProfilePanel({
           </div>
         </div>
       </div>
-      <div className="col-12 col-lg-4 col-md-4 d-flex flex-column my-2 my-lg-0 my-md-0">
-        <div className="cb-bg-panel cb-rounded">
+      <div className="col-12 col-lg-4 p-0 pl-lg-2 d-flex flex-column my-2 my-lg-0">
+        <div className="cb-bg-panel cb-rounded cb-season-profile-card">
           <div className="text-center py-2">
             <UserLogo user={user} />
             <span className="clan-tag mt-2">{user.name}</span>
@@ -259,7 +230,7 @@ function SeasonProfilePanel({
             </span>
           </div>
 
-          <div className="cb-bg-highlight-panel d-flex py-2 px-1">
+          <div className="cb-bg-highlight-panel d-flex py-2 px-1 cb-season-stats">
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.rating}</span>
               <span className="stat-label text-uppercase">(Elo Rating)</span>
@@ -283,7 +254,7 @@ function SeasonProfilePanel({
           </div>
         </div>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
-        <div className="text-center mt-2">
+        <div className="text-center mt-2 cb-hof-link">
           <a href="/hall_of_fame" className="text-uppercase stat-label cb-rounded">
             {i18n.t("View Hall of Fame")}
           </a>

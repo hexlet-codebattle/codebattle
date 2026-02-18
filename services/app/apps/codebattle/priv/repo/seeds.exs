@@ -2,8 +2,9 @@ alias Codebattle.Clan
 alias Codebattle.Event
 alias Codebattle.Game
 alias Codebattle.Repo
+alias Codebattle.Season
 alias Codebattle.TaskPack
-alias Codebattle.Tournament.SeasonTournamentGeneratorRunner
+alias Codebattle.Tournament.SeasonTournamentGenerator
 alias Codebattle.User
 alias Codebattle.UserEvent
 alias Codebattle.UserGame
@@ -293,10 +294,36 @@ Enum.each(1..100, fn id ->
   Clan.find_or_create_by_clan("clan_#{id}", 1)
 end)
 
-SeasonTournamentGeneratorRunner.generate_season(0, 2025)
-SeasonTournamentGeneratorRunner.generate_season(1, 2026)
-SeasonTournamentGeneratorRunner.generate_season(2, 2026)
-SeasonTournamentGeneratorRunner.generate_season(3, 2026)
+current_season =
+  Season.get_current_season() ||
+    (fn today ->
+       year = today.year
+
+       cond do
+         Date.compare(today, Date.new!(year, 12, 21)) != :lt ->
+           %Season{name: "1", year: year + 1, starts_at: Date.new!(year, 12, 21), ends_at: Date.new!(year + 1, 3, 21)}
+
+         Date.compare(today, Date.new!(year, 9, 21)) != :lt ->
+           %Season{name: "0", year: year, starts_at: Date.new!(year, 9, 21), ends_at: Date.new!(year, 12, 21)}
+
+         Date.compare(today, Date.new!(year, 6, 21)) != :lt ->
+           %Season{name: "3", year: year, starts_at: Date.new!(year, 6, 21), ends_at: Date.new!(year, 9, 21)}
+
+         Date.compare(today, Date.new!(year, 3, 21)) != :lt ->
+           %Season{name: "2", year: year, starts_at: Date.new!(year, 3, 21), ends_at: Date.new!(year, 6, 21)}
+
+         true ->
+           %Season{name: "1", year: year, starts_at: Date.new!(year - 1, 12, 21), ends_at: Date.new!(year, 3, 21)}
+       end
+     end).(Date.utc_today())
+
+Logger.info("Generating tournaments for current season #{current_season.name} #{current_season.year}...")
+
+current_season
+|> SeasonTournamentGenerator.generate_season_tournaments()
+|> Enum.each(fn changeset ->
+  Repo.insert(changeset)
+end)
 
 try do
   tokens =
@@ -536,9 +563,9 @@ seasons = [
 
 created_seasons =
   Enum.map(seasons, fn season_params ->
-    case Repo.get_by(Codebattle.Season, starts_at: season_params.starts_at) do
+    case Repo.get_by(Season, starts_at: season_params.starts_at) do
       nil ->
-        {:ok, season} = Codebattle.Season.create(season_params)
+        {:ok, season} = Season.create(season_params)
         season
 
       existing ->

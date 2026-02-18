@@ -51,8 +51,7 @@ function TournamentTitle({ tournament }) {
     return (
       <span
         title={tournament.name}
-        className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block"
-        style={{ maxWidth: "210px", minWidth: "210px" }}
+        className="h5 mb-1 font-weight-bold text-white text-truncate d-inline-block cb-tournament-title"
       >
         {tournament.name}
       </span>
@@ -80,24 +79,30 @@ function TournamentAction({ tournament, isAdmin = false }) {
   };
 
   const infoClassName = cn(
-    "btn btn-outline-secondary cb-btn-outline-secondary",
-    "mx-2 px-3 cb-rounded border-0",
-    {
-      "btn-lg": !showTournamentLink,
-    },
+    "btn btn-outline-secondary cb-btn-outline-secondary cb-tournament-info-icon-btn",
+    "px-2 cb-rounded border-0",
   );
 
-  const actionClassName = cn("btn btn-secondary cb-btn-secondary", "text-nowrap px-2 cb-rounded");
+  const actionClassName = cn(
+    "btn btn-secondary cb-btn-secondary cb-tournament-main-action",
+    "text-nowrap px-2 cb-rounded",
+  );
 
   return (
-    <div className="align-content-center">
-      <div className="d-flex">
+    <div className="align-content-center cb-tournament-top-actions">
+      <div className="d-flex cb-tournament-actions">
         {showTournamentLink && (
           <a type="button" className={actionClassName} href={getTournamentUrl(tournament.id)}>
             {text}
           </a>
         )}
-        <button type="button" className={infoClassName} onClick={openTournamentInfo}>
+        <button
+          type="button"
+          className={infoClassName}
+          onClick={openTournamentInfo}
+          aria-label="Tournament details"
+          title="Tournament details"
+        >
           <FontAwesomeIcon icon="info" />
         </button>
       </div>
@@ -114,30 +119,26 @@ const showStartsAt = (state) =>
 
 function TournamentListItem({ tournament, isAdmin = false }) {
   return (
-    <div
-      className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2"
-      style={{ width: "350px" }}
-    >
-      <div className="d-flex flex-column p-3 align-content-center align-items-baseline">
-        <div className="d-flex align-items-center">
+    <div className="border cb-border-color cb-rounded cb-subtle-background my-2 mr-2 cb-tournament-card">
+      <div className="d-flex flex-column p-3 align-content-center align-items-baseline cb-tournament-card-body">
+        <div className="d-flex align-items-center cb-tournament-title-wrap">
           <div className="d-none d-lg-block d-md-block mr-2 mb-3">
             {getIconForGrade(tournament.grade)}
           </div>
           <TournamentTitle tournament={tournament} />
         </div>
         <div className="cb-separator mb-2" />
-        <div className="d-flex w-100 justify-content-between">
-          <div className="d-flex flex-column align-items-baseline">
+        <div className="d-flex w-100 justify-content-between cb-tournament-meta-row">
+          <div className="d-flex flex-column align-items-baseline cb-tournament-meta">
             {tournament.grade !== grades.open && (
-              <span
-                title={tournament.name}
-                className="text-nowrap d-inline-flex mt-2 text-white text-nowrap"
-              >
-                <span className="text-warning">{getRankingPoints(tournament.grade)[0]}</span>
+              <span title={tournament.name} className="d-inline-flex mt-2 text-white text-nowrap">
+                <span className="cb-tournament-points-value">
+                  {getRankingPoints(tournament.grade)[0]}
+                </span>
                 <span className="ml-1">Ranking Points</span>
               </span>
             )}
-            <span className="text-nowrap">
+            <span className="d-flex flex-wrap">
               {tournament.state !== "upcoming" && (
                 <span className="mr-2 d-inline-flex mt-2 text-white text-nowrap">
                   <FontAwesomeIcon
@@ -159,8 +160,12 @@ function TournamentListItem({ tournament, isAdmin = false }) {
             {showStartsAt(tournament.state) && (
               <>
                 {dayjs(tournament.startsAt).diff(dayjs(), "hours") <= 24 && (
-                  <span className="d-inline-flex mt-2 text-white text-nowrap">
-                    <FontAwesomeIcon icon="clock" className="mr-2 text-warning" style={iconSize} />
+                  <span className="d-inline-flex mt-2 text-nowrap cb-tournament-starts-in">
+                    <FontAwesomeIcon
+                      icon="clock"
+                      className="mr-2 cb-tournament-gold"
+                      style={iconSize}
+                    />
                     <TournamentTimer label="starts in" date={tournament.startsAt}>
                       {dayjs(tournament.startsAt).format(getDateFormat(tournament.grade))}
                     </TournamentTimer>
