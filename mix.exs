@@ -17,9 +17,9 @@ defmodule CodebattleUmbrella.MixProject do
       listeners: [Phoenix.CodeReloader],
       dialyzer: [
         paths: [
-          Path.join(File.cwd!(), "_build/dev/lib/codebattle/ebin"),
-          Path.join(File.cwd!(), "_build/dev/lib/phoenix_gon/ebin"),
-          Path.join(File.cwd!(), "_build/dev/lib/runner/ebin")
+          Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/codebattle/ebin"),
+          Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/phoenix_gon/ebin"),
+          Path.join(File.cwd!(), "_build/#{Mix.env()}/lib/runner/ebin")
         ],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         plt_add_apps: [:mix, :ex_unit]
