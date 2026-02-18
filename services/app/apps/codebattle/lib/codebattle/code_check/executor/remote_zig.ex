@@ -96,10 +96,9 @@ defmodule Codebattle.CodeCheck.Executor.RemoteZig do
     to_string(:rand.uniform(10_000_000))
   end
 
-  defp runner_url(_lang), do: "http://localhost:4040/run"
-
-  # defp runner_url(lang) do
-  #   namespace = Application.get_env(:codebattle, :k8s_namespace, "default")
-  #   "http://runner-#{lang}.#{namespace}.svc/run"
-  # end
+  defp runner_url(lang) do
+    namespace = Application.get_env(:codebattle, :k8s_namespace, "default")
+    "http://runner-#{lang}.#{namespace}.svc/run"
+    # "http://localhost:4040/run"
+  end
 end
