@@ -2553,6 +2553,10 @@ a.cb-text-light:hover {
     max-width: 100%;
   }
 
+  .cb-season-actions .btn {
+    flex: 0 0 auto;
+  }
+
   .cb-lobby-chat-main,
   .cb-lobby-chat-sidebar {
     flex: 1 1 auto;
