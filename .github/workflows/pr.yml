@@ -89,8 +89,12 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./services/app/apps/codebattle
 
-      - name: Eslint
+      - name: Oxlint
         run: pnpm lint
+        working-directory: ./services/app/apps/codebattle
+
+      - name: Oxfmt check
+        run: pnpm format:check
         working-directory: ./services/app/apps/codebattle
 
       - name: Run jest
