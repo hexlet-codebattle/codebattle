@@ -236,7 +236,7 @@ jobs:
         working-directory: ./apps/codebattle
 
   build_images:
-    needs: [changes]
+    needs: [changes, backend_tests, elixir_quality, frontend_quality]
     if: |
       github.repository == 'hexlet-codebattle/codebattle' &&
       (needs.changes.outputs.codebattle_image == 'true' || needs.changes.outputs.runner_image == 'true')
@@ -267,72 +267,6 @@ jobs:
         if: needs.changes.outputs.runner_image == 'true'
         run: |
           make BUILDX_OUTPUT=--load GIT_HASH=${{ github.sha }} build-runner
-
-      - name: Wait for required checks
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const required = ["backend_tests", "elixir_quality", "frontend_quality"];
-            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-            const deadline = Date.now() + 45 * 60 * 1000;
-
-            while (true) {
-              const jobs = await github.paginate(
-                github.rest.actions.listJobsForWorkflowRun,
-                {
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  run_id: context.runId,
-                  per_page: 100,
-                },
-                response => response.data.jobs,
-              );
-
-              const safeRuns = (jobs || []).filter(run => run && typeof run.name === "string");
-              const byName = new Map();
-              for (const run of safeRuns) {
-                const existing = byName.get(run.name);
-                if (!existing || (run.id ?? 0) > (existing.id ?? 0)) {
-                  byName.set(run.name, run);
-                }
-              }
-              const pending = [];
-              const failed = [];
-
-              for (const name of required) {
-                const run = byName.get(name);
-
-                if (!run || run.status !== "completed") {
-                  pending.push(name);
-                  continue;
-                }
-
-                if (run.conclusion !== "success") {
-                  failed.push(`${name}:${run.conclusion}`);
-                }
-              }
-
-              core.info(
-                `jobs_total=${(jobs || []).length}, jobs_named=${safeRuns.length}, pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`,
-              );
-
-              if (failed.length > 0) {
-                core.setFailed(`Required checks failed: ${failed.join(", ")}`);
-                return;
-              }
-
-              if (pending.length === 0) {
-                core.info("All required checks passed. Continue to push.");
-                return;
-              }
-
-              if (Date.now() > deadline) {
-                core.setFailed(`Timed out waiting for required checks: ${pending.join(", ")}`);
-                return;
-              }
-
-              await sleep(20_000);
-            }
 
       - name: Login to Github Container Registry (before push)
         uses: docker/login-action@v3
