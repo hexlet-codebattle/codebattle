@@ -7,8 +7,6 @@ defmodule Runner.AssertsExecutor do
 
   @tmp_basedir "/tmp/codebattle-runner"
   @container_cmd_template "podman run --rm --init --entrypoint= --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
-  @fake_container_run Application.compile_env(:runner, :fake_container_run, false)
-
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t(), String.t()) ::
           Runner.execution_result()
   def call(task, lang_meta, solution_text, arguments_generator_text) do
@@ -69,7 +67,7 @@ defmodule Runner.AssertsExecutor do
   end
 
   defp run_command([cmd | cmd_opts]) do
-    if @fake_container_run do
+    if fake_container_run?() do
       {"oi", 0}
     else
       Logger.info("Start container execution: #{inspect(cmd_opts)}")
@@ -78,10 +76,14 @@ defmodule Runner.AssertsExecutor do
   end
 
   defp get_seed do
-    if @fake_container_run do
+    if fake_container_run?() do
       "blz"
     else
       to_string(:rand.uniform(10_000_000))
     end
+  end
+
+  defp fake_container_run? do
+    Application.get_env(:runner, :fake_container_run, false)
   end
 end

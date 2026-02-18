@@ -2,6 +2,8 @@ defmodule Codebattle.TournamentTestHelpers do
   @moduledoc false
   import Codebattle.Tournament.Helpers
 
+  alias Codebattle.User
+
   def win_active_match(tournament, user, params \\ %{opponent_percent: 0, duration_sec: 30}) do
     match =
       tournament
@@ -33,7 +35,7 @@ defmodule Codebattle.TournamentTestHelpers do
 
   def check_game(game_id, user_id, percent, duration_sec) do
     params = %{
-      user: %{id: user_id},
+      user: User.get!(user_id),
       editor_text: "solve_percent_#{percent}",
       editor_lang: "js",
       duration_sec: duration_sec

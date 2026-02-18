@@ -179,9 +179,10 @@ defmodule Codebattle.Game.Context do
   end
 
   @spec check_result(game_id, %{
-          user: User.t(),
-          editor_text: String.t(),
-          editor_lang: String.t()
+          required(:user) => %{required(:id) => pos_integer()} | User.t(),
+          required(:editor_text) => String.t(),
+          required(:editor_lang) => String.t(),
+          optional(:duration_sec) => non_neg_integer()
         }) ::
           {:ok, Game.t(), %{check_result: CodeCheck.check_result(), solution_status: boolean}}
           | {:error, atom}

@@ -2,8 +2,6 @@ defmodule CodebattleWeb.HtmlImage do
   @moduledoc false
   import Plug.Conn
 
-  @fake_html_to_image Application.compile_env(:codebattle, :fake_html_to_image, false)
-
   @doc """
   Renders an image from the given HTML content. It first checks the cache (using the provided cache_key);
   if not found, it generates a PNG from the HTML, caches it, and sends it in the response.
@@ -30,7 +28,7 @@ defmodule CodebattleWeb.HtmlImage do
   If the fake HTML-to-image mode is enabled, it returns the HTML content instead.
   """
   def generate_png(html_content) do
-    if @fake_html_to_image do
+    if fake_html_to_image?() do
       html_content
     else
       {:html, html_content}
@@ -53,5 +51,9 @@ defmodule CodebattleWeb.HtmlImage do
       logo_path = CodebattleWeb.Vite.static_asset_path("images/logo.svg")
       "#{scheme}://#{host}#{logo_path}"
     end
+  end
+
+  defp fake_html_to_image? do
+    Application.get_env(:codebattle, :fake_html_to_image, false)
   end
 end
