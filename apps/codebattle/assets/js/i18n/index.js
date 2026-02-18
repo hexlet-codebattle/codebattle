@@ -1,4 +1,4 @@
-// services/app/apps/codebattle/assets/js/i18n/index.js
+// apps/codebattle/assets/js/i18n/index.js
 import Gon from "gon";
 import i18next from "i18next";
 

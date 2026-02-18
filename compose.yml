@@ -1,7 +1,7 @@
 services:
   app:
     build:
-      context: services/app
+      context: .
       dockerfile: Containerfile.dev
     working_dir: /app
     tty: true # allocates a pseudo-TTY for interactive IEx
@@ -16,7 +16,7 @@ services:
       - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
       - "8080:8080"
     volumes:
-      - "./services/app:/app:z"
+      - ".:/app:z"
       - "~/.bash_history:/root/.bash_history:z"
       - ".bashrc:/root/.bashrc:z"
       - "/var/tmp:/var/tmp:z"

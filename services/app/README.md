@@ -1,4 +1,0 @@
-# Codebattle
-
-Umbrella apps
-

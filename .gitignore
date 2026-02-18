@@ -34,7 +34,7 @@ runner_bin
 # Alternatively, you may comment the line below and commit the
 # secrets file as long as you replace its contents by environment
 # variables.
-services/app/config/prod.secret.exs
+config/prod.secret.exs
 tags
 .vagrant
 *.DS_Store
@@ -60,8 +60,8 @@ kubeconfig.yml
 
 stats.json
 *.hcl
-services/app/priv/plts/*.plt
-services/app/priv/plts/*.plt.hash
+priv/plts/*.plt
+priv/plts/*.plt.hash
 *.pnpm-store
 
 .customization/

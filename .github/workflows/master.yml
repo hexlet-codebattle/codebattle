@@ -46,8 +46,8 @@ jobs:
         id: deps-cache
         with:
           path: |
-            ./services/app/deps
-            ./services/app/_build
+            ./deps
+            ./_build
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-mix-
@@ -57,19 +57,19 @@ jobs:
           mix local.hex --force
           mix local.rebar --force
           mix deps.get
-        working-directory: ./services/app
+        working-directory: .
 
       - name: Mix deps.compile
         run: mix compile --warnings-as-errors
-        working-directory: ./services/app
+        working-directory: .
 
       - name: Mix format
         run: mix format --check-formatted
-        working-directory: ./services/app
+        working-directory: .
 
       - name: Mix credo
         run: mix credo
-        working-directory: ./services/app
+        working-directory: .
 
       # --- pnpm setup & caching ---
       - name: Setup pnpm
@@ -83,31 +83,31 @@ jobs:
         with:
           node-version: "24"
           cache: "pnpm"
-          cache-dependency-path: ./services/app/apps/codebattle/pnpm-lock.yaml
+          cache-dependency-path: ./apps/codebattle/pnpm-lock.yaml
 
       - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: ./services/app/apps/codebattle
+        working-directory: ./apps/codebattle
 
       - name: Oxlint
         run: pnpm run lint
-        working-directory: ./services/app/apps/codebattle
+        working-directory: ./apps/codebattle
 
       - name: Oxfmt check
         run: pnpm format:check
-        working-directory: ./services/app/apps/codebattle
+        working-directory: ./apps/codebattle
 
       - name: Run jest
         run: pnpm run test
-        working-directory: ./services/app/apps/codebattle
+        working-directory: ./apps/codebattle
 
       - name: Mix audit
         run: mix hex.audit
-        working-directory: ./services/app
+        working-directory: .
 
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
-        working-directory: ./services/app
+        working-directory: .
 
       - name: Mix tests
         run: make test
@@ -116,7 +116,7 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./services/app/assp/codebattle/cover/excoveralls.json
+          file: ./apps/codebattle/cover/excoveralls.json
           fail_ci_if_error: false
 
       - name: Login to Github Container Registry

@@ -4,9 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-TARGET_PREFIX="services/app/apps/codebattle/assets/js/"
-APP_DIR="services/app/apps/codebattle"
-APP_PREFIX="services/app/apps/codebattle/"
+TARGET_PREFIX="apps/codebattle/assets/js/"
+APP_DIR="apps/codebattle"
+APP_PREFIX="apps/codebattle/"
 
 STAGED_FILES=()
 while IFS= read -r file; do
