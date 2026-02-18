@@ -24,9 +24,7 @@ const gameUIPersistWhitelist = [
   "audioMuted",
   "videoMuted",
   "editorMode",
-
   "editorTheme",
-
   "streamMode",
   "followId",
   "followPaused",
