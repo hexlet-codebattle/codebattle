@@ -8,9 +8,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "#mix_env_dev?" do
     test "env" do
-      conn =
-        %Conn{}
-        |> with_gon(env: :dev)
+      conn = with_gon(%Conn{}, env: :dev)
 
       actual = mix_env_dev?(conn)
       expectation = true
@@ -21,9 +19,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "#mix_env_prod?" do
     test "prod" do
-      conn =
-        %Conn{}
-        |> with_gon(env: :prod)
+      conn = with_gon(%Conn{}, env: :prod)
 
       actual = mix_env_prod?(conn)
       expectation = true
@@ -34,9 +30,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "#variables" do
     test "conn" do
-      conn =
-        %Conn{}
-        |> with_gon(env: nil)
+      conn = with_gon(%Conn{}, env: nil)
 
       actual = variables(conn)
       expectation = %PhoenixGon.Storage{}
@@ -47,9 +41,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "#assets" do
     test "conn" do
-      conn =
-        %Conn{}
-        |> with_gon(env: nil)
+      conn = with_gon(%Conn{}, env: nil)
 
       actual = assets(conn)
       expectation = %{}
@@ -60,9 +52,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "settings" do
     test "conn" do
-      conn =
-        %Conn{}
-        |> with_gon(env: nil)
+      conn = with_gon(%Conn{}, env: nil)
 
       actual = settings(conn)
 
@@ -79,9 +69,7 @@ defmodule PhoenixGon.UtilsTest do
 
   describe "#namescpase" do
     test "conn" do
-      conn =
-        %Conn{}
-        |> with_gon(namespace: TestCase)
+      conn = with_gon(%Conn{}, namespace: TestCase)
 
       actual = namespace(conn)
       expectation = "TestCase"

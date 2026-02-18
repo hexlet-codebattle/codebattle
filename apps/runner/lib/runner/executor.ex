@@ -1,8 +1,9 @@
 defmodule Runner.Executor do
   @moduledoc false
 
-  require Logger
   alias Runner.CheckerGenerator
+
+  require Logger
 
   defp tmp_basedir do
     System.get_env("CODEBATTLE_RUNNER_TMP") ||
@@ -53,8 +54,6 @@ defmodule Runner.Executor do
     checker_text =
       if lang_meta.generate_checker? do
         CheckerGenerator.call(task, lang_meta, seed)
-      else
-        nil
       end
 
     asserts_text =
@@ -135,9 +134,7 @@ defmodule Runner.Executor do
 
       Logger.debug("Output: #{inspect(output)}")
 
-      Logger.error(
-        "#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs"
-      )
+      Logger.error("#{hostname} execution lang: #{lang_meta.slug}, time: #{div(execution_time, 1_000)} msecs")
 
       {output, "", status}
     end

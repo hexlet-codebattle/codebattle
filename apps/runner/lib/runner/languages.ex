@@ -110,7 +110,7 @@ defmodule Runner.Languages do
       # asserts genator params
       generator_dir: "asserts",
       arguments_generator_template:
-        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\nconst { faker } = require(\"@faker-js/faker\")\n\nconst generate = () => {\n  return [];\n}\n\nmodule.exports = generate;",
+        ~s|const _ = require("lodash");\nconst R = require("rambda");\nconst { faker } = require("@faker-js/faker")\n\nconst generate = () => {\n  return [];\n}\n\nmodule.exports = generate;|,
       arguments_generator_file_name: "arguments.js",
       asserts_generator_file_name: "generator.js"
     },

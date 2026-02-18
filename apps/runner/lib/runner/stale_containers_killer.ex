@@ -19,8 +19,7 @@ defmodule Runner.StaleContainersKiller do
   end
 
   def handle_info(:check_game_containers, state) do
-    list_containers()
-    |> Enum.each(fn game ->
+    Enum.each(list_containers(), fn game ->
       [game_id, uptime] = String.split(game, ":::", trim: true)
       {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
       time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)

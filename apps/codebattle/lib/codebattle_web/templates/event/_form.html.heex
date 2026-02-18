@@ -1,100 +1,100 @@
 <%= form_for @changeset, @action, [class: "col-8  offset-2"], fn f -> %>
-<div class="form-group">
-  <div>
-    <span>Slug</span>
-    <span class="ml-3 text-muted">Slug for an Event should be unique</span>
-  </div>
-  {text_input(f, :slug,
-    class: "form-control form-control-lg",
-    maxlength: "57",
-    required: false
-  )}
-  {error_tag(f, :slug)}
-</div>
-<div class="form-group">
-  <div>
-    <span>Title</span>
-  </div>
-  {text_input(f, :title,
-    class: "form-control form-control-lg",
-    maxlength: "157",
-    required: false
-  )}
-  {error_tag(f, :title)}
-</div>
-<div class="form-group">
-  <div>
-    <span>Description</span>
-  </div>
-  {textarea(f, :description, class: "form-control form-control-lg")}
-  {error_tag(f, :description)}
-</div>
-<div class="form-group">
-  {label(f, :type)}
-  {select(f, :type, Codebattle.Event.types(), class: "form-control form-control-lg")}
-  {error_tag(f, :type)}
-</div>
-<div class="d-flex flex-column justify-content-between w-auto">
-  <label>Starts at ({@user.timezone})</label>
-  {datetime_local_input(f, :starts_at,
-    class: "form-control",
-    required: true,
-    value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user.timezone), 5, :minute)
-  )}
-  {error_tag(f, :starts_at)}
-</div>
-<div class="form-group">
-  <div>
-    <span>Ticker Text</span>
-  </div>
-  {text_input(f, :ticker_text, class: "form-control form-control-lg")}
-  {error_tag(f, :ticker_text)}
-</div>
-<div class="form-group">
-  <div>
-    <span>Personal Tournament ID</span>
-  </div>
-  {number_input(f, :personal_tournament_id, class: "form-control form-control-lg")}
-  {error_tag(f, :personal_tournament_id)}
-</div>
-
-<div class="mb-4">
-  <h4>Event Stages</h4>
   <div class="form-group">
     <div>
-      <span>Stages (JSON format)</span>
+      <span>Slug</span>
+      <span class="ml-3 text-muted">Slug for an Event should be unique</span>
     </div>
-    {textarea(f, :stages_json,
+    {text_input(f, :slug,
       class: "form-control form-control-lg",
-      value: Jason.encode!(@changeset.data.stages || [], pretty: true),
-      rows: 15
+      maxlength: "57",
+      required: false
     )}
-    {error_tag(f, :stages_json)}
-    <div class="alert alert-info mt-2">
-      <p>Edit stages in JSON format. Each stage should include:</p>
-      <ul>
-        <li><code>slug</code>: Unique identifier for the stage</li>
-        <li><code>name</code>: Display name</li>
-        <li>
-          <code>status</code>: One of <code>pending</code>, <code>passed</code>,
-          <code>active</code>
-        </li>
-        <li><code>type</code>: One of <code>tournament</code>, <code>entrance</code></li>
-        <li><code>playing_type</code>: One of <code>single</code>, <code>global</code></li>
-        <li>
-          Optional: <code>action_button_text</code>, <code>confirmation_text</code>, <code>dates</code>,
-          <code>tournament_id</code>
-        </li>
-      </ul>
+    {error_tag(f, :slug)}
+  </div>
+  <div class="form-group">
+    <div>
+      <span>Title</span>
+    </div>
+    {text_input(f, :title,
+      class: "form-control form-control-lg",
+      maxlength: "157",
+      required: false
+    )}
+    {error_tag(f, :title)}
+  </div>
+  <div class="form-group">
+    <div>
+      <span>Description</span>
+    </div>
+    {textarea(f, :description, class: "form-control form-control-lg")}
+    {error_tag(f, :description)}
+  </div>
+  <div class="form-group">
+    {label(f, :type)}
+    {select(f, :type, Codebattle.Event.types(), class: "form-control form-control-lg")}
+    {error_tag(f, :type)}
+  </div>
+  <div class="d-flex flex-column justify-content-between w-auto">
+    <label>Starts at ({@user.timezone})</label>
+    {datetime_local_input(f, :starts_at,
+      class: "form-control",
+      required: true,
+      value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user.timezone), 5, :minute)
+    )}
+    {error_tag(f, :starts_at)}
+  </div>
+  <div class="form-group">
+    <div>
+      <span>Ticker Text</span>
+    </div>
+    {text_input(f, :ticker_text, class: "form-control form-control-lg")}
+    {error_tag(f, :ticker_text)}
+  </div>
+  <div class="form-group">
+    <div>
+      <span>Personal Tournament ID</span>
+    </div>
+    {number_input(f, :personal_tournament_id, class: "form-control form-control-lg")}
+    {error_tag(f, :personal_tournament_id)}
+  </div>
+
+  <div class="mb-4">
+    <h4>Event Stages</h4>
+    <div class="form-group">
+      <div>
+        <span>Stages (JSON format)</span>
+      </div>
+      {textarea(f, :stages_json,
+        class: "form-control form-control-lg",
+        value: Jason.encode!(@changeset.data.stages || [], pretty: true),
+        rows: 15
+      )}
+      {error_tag(f, :stages_json)}
+      <div class="alert alert-info mt-2">
+        <p>Edit stages in JSON format. Each stage should include:</p>
+        <ul>
+          <li><code>slug</code>: Unique identifier for the stage</li>
+          <li><code>name</code>: Display name</li>
+          <li>
+            <code>status</code>: One of <code>pending</code>, <code>passed</code>,
+            <code>active</code>
+          </li>
+          <li><code>type</code>: One of <code>tournament</code>, <code>entrance</code></li>
+          <li><code>playing_type</code>: One of <code>single</code>, <code>global</code></li>
+          <li>
+            Optional: <code>action_button_text</code>, <code>confirmation_text</code>, <code>dates</code>,
+            <code>tournament_id</code>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="d-flex">
-  {submit("Save",
-    phx_disable_with: "Saving...",
-    class: "btn btn-success text-white mb-2 rounded-lg"
-  )}
-  {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
-</div>
+  <div class="d-flex">
+    {submit("Save",
+      phx_disable_with: "Saving...",
+      class: "btn btn-success text-white mb-2 rounded-lg"
+    )}
+    {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
+  </div>
 <% end %>

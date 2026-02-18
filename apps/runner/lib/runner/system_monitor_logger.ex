@@ -5,7 +5,7 @@ defmodule Runner.SystemMonitorLogger do
 
   require Logger
 
-  @timeout_ms :timer.seconds(5)
+  @timeout_ms to_timeout(second: 5)
 
   @cpu_cmd ~c"vmstat 1 2|tail -1|awk '{print $15}'"
 

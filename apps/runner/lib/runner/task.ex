@@ -1,4 +1,5 @@
 defmodule Runner.Task do
+  @moduledoc false
   use Ecto.Schema
 
   import Ecto.Changeset
@@ -26,10 +27,9 @@ defmodule Runner.Task do
   end
 
   @spec new!(params :: map()) :: t()
-  def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
+  def new!(%_{} = params), do: params |> Map.from_struct() |> new!()
 
-  def new!(params = %{type: experiment_type})
-      when experiment_type in @experiment_types do
+  def new!(%{type: experiment_type} = params) when experiment_type in @experiment_types do
     %__MODULE__{}
     |> cast(params, @all_experiment_fields)
     |> validate_required(@required_experiment_fields)

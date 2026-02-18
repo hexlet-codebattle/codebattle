@@ -1,9 +1,9 @@
 defmodule PhoenixGon.Pipeline do
-  import Plug.Conn
-
   @moduledoc """
   Plug for initializing gon with settings.
   """
+
+  import Plug.Conn
 
   @doc """
   Initializer methods. Returns map wiith configuration settings.
@@ -46,7 +46,8 @@ defmodule PhoenixGon.Pipeline do
 
   @doc false
   @spec variables_with(map()) :: PhoenixGon.Storage.t()
-  defp variables_with(%{assets: fun} = defaults) when is_function(fun), do: variables_with(Map.merge(defaults, %{assets: fun.()}))
-  defp variables_with(defaults), do: Map.merge(%PhoenixGon.Storage{}, defaults)
+  defp variables_with(%{assets: fun} = defaults) when is_function(fun),
+    do: variables_with(Map.put(defaults, :assets, fun.()))
 
+  defp variables_with(defaults), do: Map.merge(%PhoenixGon.Storage{}, defaults)
 end

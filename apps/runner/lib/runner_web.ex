@@ -22,6 +22,7 @@ defmodule RunnerWeb do
       use Phoenix.Controller, formats: [:json]
 
       import Plug.Conn
+
       alias RunnerWeb.Router.Helpers, as: Routes
     end
   end
@@ -45,8 +46,8 @@ defmodule RunnerWeb do
     quote do
       use Phoenix.Router
 
-      import Plug.Conn
       import Phoenix.Controller
+      import Plug.Conn
     end
   end
 
@@ -60,8 +61,8 @@ defmodule RunnerWeb do
     quote do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
-
       import RunnerWeb.ErrorHelpers
+
       alias RunnerWeb.Router.Helpers, as: Routes
     end
   end

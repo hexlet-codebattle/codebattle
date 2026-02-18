@@ -1,7 +1,7 @@
 # Used by "mix format"
 [
-  import_deps: [:ecto, :ecto_sql, :phoenix],
+  import_deps: [:ecto, :phoenix],
   subdirectories: ["priv/*/migrations"],
-  plugins: [Phoenix.LiveView.HTMLFormatter],
+  plugins: [Styler, Phoenix.LiveView.HTMLFormatter],
   inputs: ["*.{heex,ex,exs}", "{config,lib,test}/**/*.{heex,ex,exs}", "priv/*/seeds.exs"]
 ]

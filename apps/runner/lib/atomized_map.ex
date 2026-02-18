@@ -25,19 +25,17 @@ defmodule Runner.AtomizedMap do
   def equal?(a, b), do: a == b
   def embed_as(_), do: :self
 
-  def atomize(map = %NaiveDateTime{}), do: map
+  def atomize(%NaiveDateTime{} = map), do: map
 
-  def atomize(map) when is_struct(map),
-    do: map |> Map.from_struct() |> atomize
+  def atomize(map) when is_struct(map), do: map |> Map.from_struct() |> atomize()
 
   def atomize(map) when is_map(map) do
     map
     |> Map.new(fn {k, v} -> {key_to_atom(k), atomize(v)} end)
-    |> Enum.into(%{})
+    |> Map.new()
   end
 
-  def atomize([head | rest] = list) when is_list(list),
-    do: [atomize(head) | atomize(rest)]
+  def atomize([head | rest] = list) when is_list(list), do: [atomize(head) | atomize(rest)]
 
   def atomize(not_a_map), do: not_a_map
 

@@ -1,12 +1,13 @@
 defmodule PhoenixGon.View do
-  import PhoenixGon.Utils
-  import Phoenix.HTML
-  use PhoenixHTMLHelpers
-  import PhoenixHTMLHelpers.Tag
-
   @moduledoc """
   Adds templates helpers for rendering and adding javascript code to browser.
   """
+
+  use PhoenixHTMLHelpers
+
+  import Phoenix.HTML
+  import PhoenixGon.Utils
+  import PhoenixHTMLHelpers.Tag
 
   @doc """
   Returns javascript code what adds phoenix variables to javascript and browser.
@@ -21,10 +22,10 @@ defmodule PhoenixGon.View do
   @spec escape_assets(Plug.Conn.t()) :: String.t()
   def escape_assets(conn) do
     conn
-    |> assets
+    |> assets()
     |> resolve_assets_case(conn)
     |> json_library().encode!
-    |> javascript_escape
+    |> javascript_escape()
   end
 
   @doc false
@@ -81,8 +82,7 @@ defmodule PhoenixGon.View do
     end
   end
 
-  defp to_camel_case(value),
-    do: value
+  defp to_camel_case(value), do: value
 
   defp json_library do
     Application.get_env(:phoenix_gon, :json_library, Jason)

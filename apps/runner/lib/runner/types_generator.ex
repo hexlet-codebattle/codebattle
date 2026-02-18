@@ -1,4 +1,5 @@
 defmodule Runner.TypesGenerator do
+  @moduledoc false
   def call(_signature, %{types: types}) when is_nil(types), do: ""
 
   def call(%{nested: nested, name: name}, meta) do

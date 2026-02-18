@@ -6,13 +6,13 @@ defmodule Runner.AssertsGenerator do
   @max_asserts 30
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t()) :: String.t()
-  def call(_task, _lang_meta = %{name: "ruby"}) do
+  def call(_task, %{name: "ruby"} = _lang_meta) do
     :runner
   end
 
   def call(task, lang_meta) do
     binding = [
-      arguments: task.asserts_examples |> Jason.encode!(),
+      arguments: Jason.encode!(task.asserts_examples),
       count: to_string(@max_asserts - length(task.asserts_examples))
     ]
 

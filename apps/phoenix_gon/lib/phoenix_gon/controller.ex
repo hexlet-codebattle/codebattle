@@ -1,17 +1,17 @@
 defmodule PhoenixGon.Controller do
-  import Plug.Conn
-  import PhoenixGon.Utils
-
   @moduledoc """
   Adds helpers for working with gon on elixir controller modules.
   """
+
+  import PhoenixGon.Utils
+  import Plug.Conn
 
   @doc """
   Put variables to gon.
   """
   @spec put_gon(Plug.Conn.t(), Keyword.t() | map()) :: Plug.Conn.t()
   def put_gon(conn, opts) when is_list(opts) do
-    put_gon(conn, Enum.into(opts, %{}))
+    put_gon(conn, Map.new(opts))
   end
 
   def put_gon(conn, opts) when is_map(opts) do

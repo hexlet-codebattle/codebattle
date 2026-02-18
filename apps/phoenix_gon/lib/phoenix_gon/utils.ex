@@ -51,7 +51,7 @@ defmodule PhoenixGon.Utils do
     if name == nil do
       "Gon"
     else
-      String.split(to_string(name), ".") |> List.last()
+      name |> to_string() |> String.split(".") |> List.last()
     end
   end
 end

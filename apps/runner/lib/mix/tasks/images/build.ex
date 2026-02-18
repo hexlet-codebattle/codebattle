@@ -1,7 +1,8 @@
 defmodule Mix.Tasks.Images.Build do
+  @shortdoc "Build runner images (multi-arch) into the exact <registry/org/name:tag>"
+
   @moduledoc false
   use Mix.Task
-  @shortdoc "Build runner images (multi-arch) into the exact <registry/org/name:tag>"
 
   @default_platforms "linux/amd64,linux/arm64"
 
@@ -30,7 +31,7 @@ defmodule Mix.Tasks.Images.Build do
     root = File.cwd!()
     dir = Path.join([root, "apps/runner/images", slug])
     file = Path.join(dir, "Containerfile")
-    unless File.exists?(file), do: Mix.raise("Containerfile not found: #{file}")
+    if !File.exists?(file), do: Mix.raise("Containerfile not found: #{file}")
 
     # --- PRE-CLEAN to avoid exit 125 name collisions ---
     # If this name is already bound to a single-arch image or an old manifest list, remove it.

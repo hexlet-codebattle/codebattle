@@ -64,11 +64,7 @@ defmodule Runner.SolutionGenerator do
     Map.put(binding, :typespec, typespec)
   end
 
-  defp add_expected(
-         binding,
-         %{expected_template: expected_template} = meta,
-         output_signature
-       )
+  defp add_expected(binding, %{expected_template: expected_template} = meta, output_signature)
        when is_binary(expected_template) do
     output_type = TypesGenerator.call(output_signature.type, meta)
     expected = EEx.eval_string(expected_template, type: output_type)
@@ -78,11 +74,7 @@ defmodule Runner.SolutionGenerator do
 
   defp add_expected(binding, _meta, _output_signature), do: binding
 
-  defp add_default_value(
-         binding,
-         meta,
-         output_signature
-       ) do
+  defp add_default_value(binding, meta, output_signature) do
     value = get_default_value(meta.default_values, output_signature.type)
 
     Map.put(binding, :default_value, value)

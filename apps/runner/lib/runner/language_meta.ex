@@ -1,5 +1,7 @@
 defmodule Runner.LanguageMeta do
+  @moduledoc false
   use TypedStruct
+
   @derive Jason.Encoder
 
   typedstruct do

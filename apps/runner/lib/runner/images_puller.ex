@@ -3,11 +3,11 @@ defmodule Runner.ImagesPuller do
 
   use GenServer
 
+  alias Mix.Tasks.Images
+
   require Logger
 
   @timeout Application.compile_env(:runner, Runner.ImagesPuller)[:timeout]
-
-  alias Mix.Tasks.Images
 
   # API
   def start_link(_) do
@@ -17,7 +17,7 @@ defmodule Runner.ImagesPuller do
   # SERVER
   def init(state) do
     Logger.info("Start Images Puller")
-    Process.send_after(self(), :start_pulling, :timer.seconds(100))
+    Process.send_after(self(), :start_pulling, to_timeout(second: 100))
     {:ok, state}
   end
 

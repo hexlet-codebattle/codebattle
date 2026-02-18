@@ -1,4 +1,5 @@
 defmodule RouterHelper do
+  @moduledoc false
   @session Plug.Session.init(
              store: :cookie,
              key: "_app",
@@ -8,8 +9,8 @@ defmodule RouterHelper do
 
   defmacro __using__(_) do
     quote do
-      import Plug.Test
       import Plug.Conn
+      import Plug.Test
       import RouterHelper
     end
   end

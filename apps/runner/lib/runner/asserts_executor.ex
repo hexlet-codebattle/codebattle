@@ -1,9 +1,9 @@
 defmodule Runner.AssertsExecutor do
   @moduledoc false
 
-  require Logger
-
   alias Runner.AssertsGenerator
+
+  require Logger
 
   @tmp_basedir "/tmp/codebattle-runner"
   @container_cmd_template "podman run --rm --init --entrypoint= --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent generate_asserts"
@@ -29,12 +29,7 @@ defmodule Runner.AssertsExecutor do
     %{container_output: output, container_stderr: "", exit_code: exit_code, seed: seed}
   end
 
-  defp prepare_tmp_dir!(
-         lang_meta,
-         solution_text,
-         arguments_generator_text,
-         runner_text
-       ) do
+  defp prepare_tmp_dir!(lang_meta, solution_text, arguments_generator_text, runner_text) do
     File.mkdir_p!(@tmp_basedir)
     tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: @tmp_basedir})
 
@@ -44,9 +39,7 @@ defmodule Runner.AssertsExecutor do
 
     Logger.debug("solution_file_name: #{inspect(lang_meta.solution_file_name)}")
 
-    Logger.debug(
-      "arguments_generator_file_name: #{inspect(lang_meta.arguments_generator_file_name)}"
-    )
+    Logger.debug("arguments_generator_file_name: #{inspect(lang_meta.arguments_generator_file_name)}")
 
     Logger.debug("asserts_generator_file_name: #{inspect(lang_meta.asserts_generator_file_name)}")
 
@@ -71,7 +64,7 @@ defmodule Runner.AssertsExecutor do
 
     @container_cmd_template
     |> :io_lib.format([volume, lang_meta.image])
-    |> to_string
+    |> to_string()
     |> String.split()
   end
 

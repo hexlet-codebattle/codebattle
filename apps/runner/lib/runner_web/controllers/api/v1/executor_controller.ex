@@ -3,11 +3,7 @@ defmodule RunnerWeb.Api.V1.ExecutorController do
 
   require Logger
 
-  def execute(conn, %{
-        "task" => task,
-        "solution_text" => solution_text,
-        "lang_slug" => lang_slug
-      }) do
+  def execute(conn, %{"task" => task, "solution_text" => solution_text, "lang_slug" => lang_slug}) do
     runner_task = Runner.Task.new!(task)
     lang_meta = Runner.Languages.meta(lang_slug)
     timeout_ms = Runner.Languages.get_timeout_ms(lang_meta)

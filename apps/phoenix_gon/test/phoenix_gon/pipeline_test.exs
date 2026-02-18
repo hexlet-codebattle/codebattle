@@ -24,9 +24,7 @@ defmodule PhoenixGon.PipelineTest do
 
   describe "connection" do
     test "call" do
-      conn =
-        %Conn{}
-        |> with_gon
+      conn = with_gon(%Conn{})
 
       actual = conn.private[:phoenix_gon].env
       expectation = Pipeline.init([]).env

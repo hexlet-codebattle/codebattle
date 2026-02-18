@@ -4,14 +4,12 @@ defmodule Runner.CheckerGenerator do
   alias Runner.TypesGenerator
 
   @spec call(Runner.Task.t() | map(), Runner.LanguageMeta.t(), String.t()) :: String.t()
-  def call(task, lang_meta = %{checker_version: 2}, _seed) do
+  def call(task, %{checker_version: 2} = lang_meta, _seed) do
     Runner.CheckerGenerator.V2.call(task, lang_meta)
   end
 
   def call(task, lang_meta, seed) do
-    binding =
-      [check_code: "\"__seed:#{seed}__\""]
-      |> Keyword.put(:checks, get_task_binding(task, lang_meta))
+    binding = Keyword.put([check_code: "\"__seed:#{seed}__\""], :checks, get_task_binding(task, lang_meta))
 
     :runner
     |> Application.app_dir("priv/templates/")
@@ -41,7 +39,7 @@ defmodule Runner.CheckerGenerator do
   defp get_arguments(
          {assert, index},
          %{input_signature: input_signature},
-         lang_meta = %{checker_meta: %{version: :static}}
+         %{checker_meta: %{version: :static}} = lang_meta
        ) do
     info =
       input_signature
@@ -60,11 +58,7 @@ defmodule Runner.CheckerGenerator do
     }
   end
 
-  defp get_arguments(
-         {assert, _index},
-         %{input_signature: input_signature},
-         lang_meta = %{checker_meta: checker_meta}
-       ) do
+  defp get_arguments({assert, _index}, %{input_signature: input_signature}, %{checker_meta: checker_meta} = lang_meta) do
     types = Enum.map(input_signature, &extract_type/1)
 
     types
@@ -72,11 +66,7 @@ defmodule Runner.CheckerGenerator do
     |> Enum.map_join(checker_meta.arguments_delimiter, &get_value(&1, lang_meta))
   end
 
-  defp get_expected(
-         {assert, index},
-         %{output_signature: signature},
-         lang_meta = %{checker_meta: %{version: :static}}
-       ) do
+  defp get_expected({assert, index}, %{output_signature: signature}, %{checker_meta: %{version: :static}} = lang_meta) do
     %{
       defining: get_defining(signature, index, lang_meta),
       value: get_value_expression(signature, assert.expected, lang_meta)
@@ -90,7 +80,7 @@ defmodule Runner.CheckerGenerator do
   defp get_variable_name(%{argument_name: name}, index, _meta), do: "#{name}#{index}"
   defp get_variable_name(_signature, index, _meta), do: ~s(expected#{index})
 
-  defp get_defining(signature, index, lang_meta = %{checker_meta: checker_meta}) do
+  defp get_defining(signature, index, %{checker_meta: checker_meta} = lang_meta) do
     name = get_variable_name(signature, index, lang_meta)
     type = TypesGenerator.call(signature.type, lang_meta)
 
@@ -106,19 +96,14 @@ defmodule Runner.CheckerGenerator do
     get_value({type, value}, lang_meta)
   end
 
-  defp get_value({%{name: "string"}, value}, %{name: "rust"}),
-    do: "String::from(\"#{double_backslashes(value, {})}\")"
+  defp get_value({%{name: "string"}, value}, %{name: "rust"}), do: "String::from(\"#{double_backslashes(value, {})}\")"
 
-  defp get_value({%{name: "string"}, value}, lang_meta),
-    do: ~s("#{double_backslashes(value, lang_meta)}")
+  defp get_value({%{name: "string"}, value}, lang_meta), do: ~s("#{double_backslashes(value, lang_meta)}")
 
   defp get_value({%{name: "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
 
-  defp get_value(
-         {%{name: "array", nested: nested}, value},
-         lang_meta = %{checker_meta: checker_meta}
-       ) do
+  defp get_value({%{name: "array", nested: nested}, value}, %{checker_meta: checker_meta} = lang_meta) do
     inner_type = TypesGenerator.call(nested, lang_meta)
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, lang_meta))
 
@@ -128,10 +113,7 @@ defmodule Runner.CheckerGenerator do
     )
   end
 
-  defp get_value(
-         {signature = %{name: "hash", nested: nested}, value},
-         lang_meta = %{checker_meta: checker_meta}
-       ) do
+  defp get_value({%{name: "hash", nested: nested} = signature, value}, %{checker_meta: checker_meta} = lang_meta) do
     list = Map.to_list(value)
     inner_type = TypesGenerator.call(nested, lang_meta)
 
@@ -154,7 +136,7 @@ defmodule Runner.CheckerGenerator do
 
   defp get_boolean_value(type_templates, false), do: type_templates.boolean_false
 
-  defp get_hash_inners({k, v}, %{nested: nested}, lang_meta = %{checker_meta: checker_meta}) do
+  defp get_hash_inners({k, v}, %{nested: nested}, %{checker_meta: checker_meta} = lang_meta) do
     binding = [key: k, value: get_value({nested, v}, lang_meta)]
     EEx.eval_string(checker_meta.type_templates.hash_inners, binding)
   end

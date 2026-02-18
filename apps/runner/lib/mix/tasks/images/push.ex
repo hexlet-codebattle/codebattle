@@ -1,7 +1,8 @@
 defmodule Mix.Tasks.Images.Push do
+  @shortdoc "Push images to GitHub Container Registry as multi-arch manifests"
+
   @moduledoc false
   use Mix.Task
-  @shortdoc "Push images to GitHub Container Registry as multi-arch manifests"
 
   def run([slug]) do
     {:ok, _} = Application.ensure_all_started(:porcelain)
@@ -38,7 +39,8 @@ defmodule Mix.Tasks.Images.Push do
 
     # Optionally push extra tags (comma-separated in EXTRA_TAGS)
     extra_tags =
-      System.get_env("EXTRA_TAGS", "")
+      "EXTRA_TAGS"
+      |> System.get_env("")
       |> String.split(",", trim: true)
       |> Enum.map(&String.trim/1)
       # skip current tag if included

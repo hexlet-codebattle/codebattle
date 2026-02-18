@@ -19,9 +19,9 @@ defmodule RunnerWeb.ConnCase do
 
   using do
     quote do
+      import Phoenix.ConnTest
       # Import conveniences for testing with connections
       import Plug.Conn
-      import Phoenix.ConnTest
       import RunnerWeb.ConnCase
 
       alias RunnerWeb.Router.Helpers, as: Routes

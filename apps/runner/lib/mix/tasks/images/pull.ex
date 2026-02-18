@@ -1,10 +1,11 @@
 defmodule Mix.Tasks.Images.Pull do
+  @shortdoc "Pull images from github container registry"
+
   @moduledoc false
 
-  require Logger
   use Mix.Task
 
-  @shortdoc "Pull images from github container registry"
+  require Logger
 
   def run([slug]) do
     {:ok, _started} = Application.ensure_all_started(:porcelain)
