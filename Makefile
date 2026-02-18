@@ -83,7 +83,7 @@ build-codebattle:
 	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target assets-image \
 				--file Containerfile.codebattle \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/codebattle:assets-image .
@@ -91,7 +91,7 @@ build-codebattle:
 				--file Containerfile.codebattle \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -101,7 +101,7 @@ build-codebattle:
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:assets-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/nginx-assets:buildcache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/nginx-assets:buildcache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/nginx-assets:buildcache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:assets-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/nginx-assets:latest \
@@ -112,7 +112,7 @@ build-codebattle:
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:compile-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:runtime-cache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:runtime-cache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/codebattle:runtime-cache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/codebattle:latest \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
@@ -169,7 +169,7 @@ build-runner:
 	DOCKER_BUILDKIT=1 docker buildx build $(BUILDX_OUTPUT) --target compile-image \
 				--file Containerfile.runner \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \
 				--tag ghcr.io/hexlet-codebattle/runner:compile-image .
@@ -178,7 +178,7 @@ build-runner:
 				--build-arg GIT_HASH=$(GIT_HASH) \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:compile-cache \
 				--cache-from type=registry,ref=ghcr.io/hexlet-codebattle/runner:runtime-cache \
-				--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:runtime-cache,mode=max \
+				$(if $(DISABLE_CACHE_EXPORT),,--cache-to type=registry,ref=ghcr.io/hexlet-codebattle/runner:runtime-cache,mode=max) \
 				--cache-from ghcr.io/hexlet-codebattle/runner:compile-image \
 				--cache-from ghcr.io/hexlet-codebattle/runner:latest \
 				--build-arg BUILDKIT_INLINE_CACHE=1 \

@@ -234,12 +234,12 @@ jobs:
         working-directory: ./apps/codebattle
 
   build_images:
-    needs: [changes, backend_tests, elixir_quality, frontend_quality]
+    needs: [changes]
     if: |
       github.repository == 'hexlet-codebattle/codebattle' &&
       (needs.changes.outputs.codebattle_image == 'true' || needs.changes.outputs.runner_image == 'true')
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 70
 
     steps:
       - uses: actions/checkout@v4
@@ -256,12 +256,86 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push codebattle image
+      - name: Build codebattle image layers
         if: needs.changes.outputs.codebattle_image == 'true'
         run: |
-          make BUILDX_OUTPUT=--push GIT_HASH=${{ github.sha }} build-codebattle
+          make BUILDX_OUTPUT=--load GIT_HASH=${{ github.sha }} build-codebattle
 
-      - name: Build and push runner image
+      - name: Build runner image layers
         if: needs.changes.outputs.runner_image == 'true'
         run: |
-          make BUILDX_OUTPUT=--push GIT_HASH=${{ github.sha }} build-runner
+          make BUILDX_OUTPUT=--load GIT_HASH=${{ github.sha }} build-runner
+
+      - name: Wait for required checks
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const required = ["backend_tests", "elixir_quality", "frontend_quality"];
+            const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+            const deadline = Date.now() + 45 * 60 * 1000;
+
+            while (true) {
+              const jobs = await github.paginate(
+                github.rest.actions.listJobsForWorkflowRun,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: context.runId,
+                  per_page: 100,
+                },
+                response => response.data.jobs,
+              );
+
+              const byName = new Map(jobs.map(job => [job.name, job]));
+              const pending = [];
+              const failed = [];
+
+              for (const name of required) {
+                const job = byName.get(name);
+
+                if (!job || job.status !== "completed") {
+                  pending.push(name);
+                  continue;
+                }
+
+                if (job.conclusion !== "success") {
+                  failed.push(`${name}:${job.conclusion}`);
+                }
+              }
+
+              core.info(`pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`);
+
+              if (failed.length > 0) {
+                core.setFailed(`Required checks failed: ${failed.join(", ")}`);
+                return;
+              }
+
+              if (pending.length === 0) {
+                core.info("All required checks passed. Continue to push.");
+                return;
+              }
+
+              if (Date.now() > deadline) {
+                core.setFailed(`Timed out waiting for required checks: ${pending.join(", ")}`);
+                return;
+              }
+
+              await sleep(20_000);
+            }
+
+      - name: Login to Github Container Registry (before push)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: vtm9
+          password: ${{ secrets.GH_REGISTRY_TOKEN }}
+
+      - name: Push codebattle image set
+        if: needs.changes.outputs.codebattle_image == 'true'
+        run: |
+          make push-codebattle
+
+      - name: Push runner image set
+        if: needs.changes.outputs.runner_image == 'true'
+        run: |
+          make push-runner
