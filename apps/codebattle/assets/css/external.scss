@@ -2,6 +2,8 @@
 // IMPORTS & VARIABLES
 // --------------------------------------------------
 
+@use "variables" as *;
+
 @font-face {
   font-family: 'External';
   src: url('https://yastatic.net/s3/lpc-ext/Young%20Con%202025/YangoHeadline-Black.ttf') format('truetype');
@@ -28,7 +30,6 @@ $dark-red: #b00020;
 
 // Bootstrap override must come *after* variables
 
-@import 'variables';
 @import "bootstrap/scss/bootstrap";
 
 // --------------------------------------------------

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 *,
 *::after,
 *::before {
@@ -101,9 +103,9 @@
   .progress-bar {
     background: linear-gradient(
       90deg,
-      darken($gold, 14%) 0%,
+      color.adjust($gold, $lightness: -14%) 0%,
       $gold 52%,
-      lighten($gold, 8%) 100%
+      color.adjust($gold, $lightness: 8%) 100%
     );
   }
 }

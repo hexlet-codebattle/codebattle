@@ -1,5 +1,5 @@
+@use "variables" as *;
 @import "fonts";
-@import "variables";
 @import "bootstrap/scss/bootstrap";
 
 .landing {
@@ -613,7 +613,9 @@
 }
 
 .btn:hover {
-  text-decoration: if($link-hover-decoration == underline, none, null);
+  @if $link-hover-decoration == underline {
+    text-decoration: none;
+  }
 }
 
 [data-reveal] {

@@ -1,3 +1,5 @@
+@use "variables" as *;
+
 $body-bg: #e5e5e5;
 $cb-text-color: #999;
 $cb-text-light-color: #ddd;
@@ -84,7 +86,6 @@ $cb-rookie-bg: $iron;
   --cb-grade-rookie: #{$cb-rookie-bg};
 }
 
-@import "variables";
 @import "bootstrap/scss/bootstrap";
 @import "nprogress/nprogress.css";
 @import "gamePreview";

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $item-bg: #15202B;
 
 .cb-text-skeleton {
@@ -5,7 +7,7 @@ $item-bg: #15202B;
 
   height: 1.2rem;
   border-radius: 0.25rem;
-  background-color: lighten($item-bg, 7%);
+  background-color: color.adjust($item-bg, $lightness: 7%);
 }
 
 @keyframes skeleton-loading {

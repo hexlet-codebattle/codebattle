@@ -162,7 +162,8 @@ export default defineConfig(({ command, mode }) => ({
     preprocessorOptions: {
       scss: {
         includePaths: [path.resolve(__dirname, "assets/css")],
-        silenceDeprecations: ["mixed-decls"],
+        quietDeps: true,
+        silenceDeprecations: ["import"],
       },
     },
     modules: {
