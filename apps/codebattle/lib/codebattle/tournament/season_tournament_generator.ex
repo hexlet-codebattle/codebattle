@@ -374,29 +374,16 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
   end
 
   # Get dates where higher priority tournaments run (for a given grade)
-  defp get_higher_priority_dates(start_date, end_date, grade) do
+  defp get_higher_priority_dates(start_date, end_date, _grade) do
     dates = MapSet.new()
 
+    # Pro, Elite, Masters, Grand Slam preempt Challenger
     dates =
-      case grade do
-        :challenger ->
-          # Pro, Elite, Masters, Grand Slam preempt Challenger
-          dates
-          |> add_pro_dates(start_date, end_date)
-          |> add_elite_dates(start_date, end_date)
-          |> add_masters_dates(start_date, end_date)
-          |> add_grand_slam_date(end_date)
-
-        :pro ->
-          # Elite, Masters, Grand Slam preempt Pro
-          dates
-          |> add_elite_dates(start_date, end_date)
-          |> add_masters_dates(start_date, end_date)
-          |> add_grand_slam_date(end_date)
-
-        _ ->
-          dates
-      end
+      dates
+      |> add_pro_dates(start_date, end_date)
+      |> add_elite_dates(start_date, end_date)
+      |> add_masters_dates(start_date, end_date)
+      |> add_grand_slam_date(end_date)
 
     dates
   end

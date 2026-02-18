@@ -6,7 +6,7 @@ defmodule CodebattleWeb.ClanController do
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   plug(:put_view, CodebattleWeb.ClanView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
     clans = Clan.get_all(:creator)

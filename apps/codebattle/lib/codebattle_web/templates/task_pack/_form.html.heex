@@ -1,4 +1,4 @@
-{f = form_for(@changeset, @action, class: ~c"col-8  offset-2")}
+<%= form_for @changeset, @action, [class: "col-8  offset-2"], fn f -> %>
 <div class="form-group">
   {render_base_errors(@changeset.errors[:base])}
 </div>
@@ -45,3 +45,4 @@
     class: "btn btn-link text-white ml-auto"
   )}
 </div>
+<% end %>

@@ -7,7 +7,7 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.User
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show, :edit])
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
     current_user = conn.assigns[:current_user]

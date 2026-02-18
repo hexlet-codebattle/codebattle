@@ -7,7 +7,7 @@ defmodule CodebattleWeb.HallOfFameController do
   alias Codebattle.SeasonResult
 
   plug(:put_view, CodebattleWeb.HallOfFameView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
     current_season = Season.get_current_season()

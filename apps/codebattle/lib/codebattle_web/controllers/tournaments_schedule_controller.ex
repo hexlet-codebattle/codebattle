@@ -5,7 +5,7 @@ defmodule CodebattleWeb.TournamentsScheduleController do
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index])
   plug(:put_view, CodebattleWeb.TournamentsScheduleView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _) do
     render(conn, "index.html")

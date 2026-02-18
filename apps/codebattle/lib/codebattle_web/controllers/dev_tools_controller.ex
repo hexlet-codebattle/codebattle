@@ -9,8 +9,8 @@ defmodule CodebattleWeb.DevToolsController do
   Change the editor below to match your preference.
   """
   def index(conn, _params) do
-    # Change this to your preferred editor: "vscode", "cursor", "zed", "webstorm", "idea"
-    editor = "cursor"
+    # Configure preferred editor with DEVTOOLS_EDITOR: vscode, cursor, zed, webstorm, idea
+    editor = System.get_env("DEVTOOLS_EDITOR", "cursor")
 
     config = %{
       "workspace" => %{

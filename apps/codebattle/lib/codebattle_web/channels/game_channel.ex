@@ -48,7 +48,7 @@ defmodule CodebattleWeb.GameChannel do
          active_game_id: active_game_id,
          game: GameView.render_game(game, score),
          current_player: current_player,
-         in_main_draw: current_player != nil && current_player.draw_index == current_player.max_draw_index,
+         in_main_draw: current_player.draw_index == current_player.max_draw_index,
          tournament: %{
            event_id: tournament.event_id,
            tournament_id: game.tournament_id,
@@ -68,7 +68,7 @@ defmodule CodebattleWeb.GameChannel do
        },
        assign(socket,
          tournament_id: game.tournament_id,
-         banned?: current_player != nil && current_player.state == "banned",
+         banned?: current_player.state == "banned",
          game_id: game_id,
          follow_id: follow_id
        )}

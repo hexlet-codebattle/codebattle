@@ -52,7 +52,7 @@ defmodule Codebattle.CodeCheck.Checker do
       tournament_id: meta[:tournament_id],
       lang: token.lang_meta.slug,
       started_at: started_at,
-      duration_ms: token.execution_time_msec || 0,
+      duration_ms: token.execution_time_msec,
       result: token.result.status
     })
   end
@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Checker do
   defp maybe_emit_telemetry(token, %{game_id: game_id}) when is_integer(game_id) do
     :telemetry.execute(
       [:codebattle, :code_check, :run],
-      %{count: 1, duration_ms: token.execution_time_msec || 0},
+      %{count: 1, duration_ms: token.execution_time_msec},
       %{lang: token.lang_meta.slug, result: token.result.status}
     )
   rescue

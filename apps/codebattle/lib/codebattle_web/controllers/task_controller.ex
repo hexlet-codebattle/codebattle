@@ -9,7 +9,7 @@ defmodule CodebattleWeb.TaskController do
 
   plug(CodebattleWeb.Plugs.RequireAuth)
   plug(:put_view, CodebattleWeb.TaskView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
     tasks =

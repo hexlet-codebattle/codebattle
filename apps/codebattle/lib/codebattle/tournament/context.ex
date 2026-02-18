@@ -368,18 +368,18 @@ defmodule Codebattle.Tournament.Context do
         nil ->
           :ok
 
-        ref when is_reference(ref) ->
-          case :ets.info(ref) do
-            :undefined -> :ok
-            _ -> :ets.delete(ref)
-          end
-
-        _ ->
-          :ok
+        table ->
+          safe_delete_tournament_table(table)
       end
     end)
   rescue
     _e -> :ok
+  end
+
+  defp safe_delete_tournament_table(table) do
+    :ets.delete(table)
+  catch
+    :error, :badarg -> :ok
   end
 
   defp prepare_tournament_params(params) do

@@ -16,7 +16,7 @@ defmodule CodebattleWeb.GameController do
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
   plug(:put_view, CodebattleWeb.GameView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   action_fallback(CodebattleWeb.FallbackController)
 

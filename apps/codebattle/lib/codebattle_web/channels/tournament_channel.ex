@@ -178,12 +178,7 @@ defmodule CodebattleWeb.TournamentChannel do
   def handle_in("tournament:matches:request_for_round", _params, socket) do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-    matches =
-      if tournament_info do
-        Helpers.get_matches(tournament_info, tournament_info.current_round_position)
-      else
-        []
-      end
+    matches = Helpers.get_matches(tournament_info, tournament_info.current_round_position)
 
     {:reply, {:ok, %{matches: matches}}, socket}
   end
@@ -297,25 +292,21 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
     socket =
-      if tournament_info do
-        assign(socket,
-          tournament_info:
-            Map.take(tournament_info, [
-              :id,
-              :ranking_type,
-              :players,
-              :matches,
-              :use_clan,
-              :players_table,
-              :ranking_table,
-              :clans_table,
-              :matches_table,
-              :tasks_table
-            ])
-        )
-      else
-        socket
-      end
+      assign(socket,
+        tournament_info:
+          Map.take(tournament_info, [
+            :id,
+            :ranking_type,
+            :players,
+            :matches,
+            :use_clan,
+            :players_table,
+            :ranking_table,
+            :clans_table,
+            :matches_table,
+            :tasks_table
+          ])
+      )
 
     push(socket, "tournament:restarted", payload)
 

@@ -241,7 +241,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
   end
 
   defp short_auth_token_label(auth_token) do
-    visible_part = String.slice(auth_token, 0, 2) || ""
+    visible_part = String.slice(auth_token, 0, 2)
     "?t=#{visible_part}..."
   end
 

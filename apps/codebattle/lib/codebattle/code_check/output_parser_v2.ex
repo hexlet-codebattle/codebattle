@@ -113,21 +113,6 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   defp compare_results_with_asserts(%{check_result: %{status: "error"}} = token), do: token
 
   defp compare_results_with_asserts(
-         %{solution_results: %{"type" => "error"} = item, container_stderr: container_stderr} = token
-       ) do
-    # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}
-    check_result = %Result.V2{
-      exit_code: token.exit_code,
-      status: "error",
-      output_error: """
-      STDERR:\n#{to_string(item["value"]) <> to_string(container_stderr)}
-      """
-    }
-
-    %{token | check_result: check_result}
-  end
-
-  defp compare_results_with_asserts(
          %{solution_results: [%{"type" => "error"} = item], container_stderr: container_stderr} = token
        ) do
     # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}

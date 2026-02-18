@@ -7,7 +7,7 @@ defmodule CodebattleWeb.SeasonController do
   alias Codebattle.SeasonResult
 
   plug(:put_view, CodebattleWeb.SeasonView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, _params) do
     seasons = Season.get_all()

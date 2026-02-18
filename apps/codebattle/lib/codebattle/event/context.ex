@@ -20,8 +20,7 @@ defmodule Codebattle.Event.Context do
     user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
     user_event_stage = UserEvent.get_stage(user_event, stage_slug)
 
-    with false <- is_nil(user_event),
-         false <- is_nil(event_stage),
+    with false <- is_nil(event_stage),
          false <- is_nil(user_event_stage),
          true <- event_stage.status in [:active],
          true <- user_event_stage.status in [:pending],

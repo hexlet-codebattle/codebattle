@@ -10,7 +10,7 @@ defmodule CodebattleWeb.StreamController do
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :stream_preset])
 
   plug(:put_view, CodebattleWeb.StreamView)
-  plug(:put_layout, {CodebattleWeb.LayoutView, "app.html"})
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def index(conn, %{"modern" => _}) do
     stream_configs =

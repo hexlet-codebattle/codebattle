@@ -360,10 +360,6 @@ defmodule Codebattle.Deployment do
 
       :no ->
         {:error, :handoff_in_progress}
-
-      other ->
-        step_warning(ctx, "handoff_lock", "skipped", %{reason: inspect(other)})
-        {:error, :handoff_in_progress}
     end
   end
 

@@ -6,21 +6,59 @@ on:
       - master
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  changes:
     if: github.repository == 'hexlet-codebattle/codebattle'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    outputs:
+      codebattle_image: ${{ steps.filter.outputs.codebattle_image }}
+      runner_image: ${{ steps.filter.outputs.runner_image }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Detect image-related changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            codebattle_image:
+              - 'Containerfile.codebattle'
+              - 'nginx.conf'
+              - 'nginx-assets-entrypoint.sh'
+              - 'mix.exs'
+              - 'mix.lock'
+              - 'apps/codebattle/**'
+              - 'config/**'
+            runner_image:
+              - 'Containerfile.runner'
+              - 'mix.exs'
+              - 'mix.lock'
+              - 'apps/runner/**'
+
+  backend_tests:
+    if: github.repository == 'hexlet-codebattle/codebattle'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     env:
       MIX_ENV: test
+      POSTGRES_PASSWORD: postgres
+      OTP_VERSION: "28.2"
+      ELIXIR_VERSION: "1.19.4"
 
     services:
       db:
         image: postgres:16-alpine
         ports: ["5432:5432"]
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
           POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
           --health-cmd pg_isready
@@ -33,24 +71,102 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: "28.2"
-          elixir-version: "1.19.4"
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
 
-      - name: Cache Dependencies
+      - name: Cache deps
         uses: actions/cache@v4
-        id: deps-cache
         with:
-          path: |
-            ./deps
-            ./_build
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          path: ./deps
+          key: ${{ runner.os }}-deps-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock') }}
           restore-keys: |
-            ${{ runner.os }}-mix-
+            ${{ runner.os }}-deps-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: ./_build
+          key: ${{ runner.os }}-build-${{ env.MIX_ENV }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock', 'mix.exs', 'apps/**/mix.exs', 'config/**/*.exs') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.MIX_ENV }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+
+      - name: Get deps
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+        working-directory: .
+
+      - name: Mix deps.compile
+        run: mix compile --warnings-as-errors
+        working-directory: .
+
+      - name: Setup db
+        run: mix ecto.create && mix ecto.migrate
+        working-directory: .
+
+      - name: Mix tests
+        run: make test
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./apps/codebattle/cover/excoveralls.json
+          fail_ci_if_error: false
+
+  elixir_quality:
+    if: github.repository == 'hexlet-codebattle/codebattle'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      MIX_ENV: test
+      OTP_VERSION: "28.2"
+      ELIXIR_VERSION: "1.19.4"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+
+      - name: Cache deps
+        uses: actions/cache@v4
+        with:
+          path: ./deps
+          key: ${{ runner.os }}-deps-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-deps-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: ./_build
+          key: ${{ runner.os }}-build-${{ env.MIX_ENV }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock', 'mix.exs', 'apps/**/mix.exs', 'config/**/*.exs') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.MIX_ENV }}-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
+
+      - name: Ensure Dialyzer PLT directory
+        run: mkdir -p priv/plts
+
+      - name: Cache Dialyzer PLT
+        uses: actions/cache@v4
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-dialyzer-plt-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock', 'mix.exs', 'apps/**/mix.exs') }}
+          restore-keys: |
+            ${{ runner.os }}-dialyzer-plt-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
 
       - name: Get deps
         run: |
@@ -71,7 +187,23 @@ jobs:
         run: mix credo
         working-directory: .
 
-      # --- pnpm setup & caching ---
+      - name: Mix audit
+        run: mix hex.audit
+        working-directory: .
+
+      - name: Mix dialyzer
+        run: make dialyzer
+
+  frontend_quality:
+    if: github.repository == 'hexlet-codebattle/codebattle'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -101,23 +233,18 @@ jobs:
         run: pnpm run test
         working-directory: ./apps/codebattle
 
-      - name: Mix audit
-        run: mix hex.audit
-        working-directory: .
+  build_images:
+    needs: [changes, backend_tests, elixir_quality, frontend_quality]
+    if: |
+      github.repository == 'hexlet-codebattle/codebattle' &&
+      (needs.changes.outputs.codebattle_image == 'true' || needs.changes.outputs.runner_image == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
 
-      - name: Setup db
-        run: mix ecto.create && mix ecto.migrate
-        working-directory: .
-
-      - name: Mix tests
-        run: make test
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+    steps:
+      - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./apps/codebattle/cover/excoveralls.json
-          fail_ci_if_error: false
+          fetch-depth: 1
 
       - name: Login to Github Container Registry
         uses: docker/login-action@v3
@@ -130,11 +257,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push codebattle image
+        if: needs.changes.outputs.codebattle_image == 'true'
         run: |
-          make GIT_HASH=${{ github.sha }} build-codebattle
-          make push-codebattle
+          make BUILDX_OUTPUT=--push GIT_HASH=${{ github.sha }} build-codebattle
 
       - name: Build and push runner image
+        if: needs.changes.outputs.runner_image == 'true'
         run: |
-          make GIT_HASH=${{ github.sha }} build-runner
-          make push-runner
+          make BUILDX_OUTPUT=--push GIT_HASH=${{ github.sha }} build-runner

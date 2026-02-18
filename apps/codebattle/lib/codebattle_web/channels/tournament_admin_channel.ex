@@ -196,12 +196,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     tournament_info =
       Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-    players =
-      if tournament_info do
-        Helpers.get_players(tournament_info)
-      else
-        []
-      end
+    players = Helpers.get_players(tournament_info)
 
     {:reply, {:ok, %{players: players}}, socket}
   end
@@ -210,12 +205,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     tournament_info =
       Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-    matches =
-      if tournament_info do
-        Helpers.get_round_matches(tournament_info, tournament_info.current_round_position)
-      else
-        []
-      end
+    matches = Helpers.get_round_matches(tournament_info, tournament_info.current_round_position)
 
     {:reply, {:ok, %{matches: matches}}, socket}
   end
@@ -360,12 +350,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   def handle_info(%{event: "tournament:restarted", payload: payload}, socket) do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
-    socket =
-      if tournament_info do
-        assign(socket, tournament_info: Helpers.tournament_info(tournament_info))
-      else
-        socket
-      end
+    socket = assign(socket, tournament_info: Helpers.tournament_info(tournament_info))
 
     push(socket, "tournament:restarted", payload)
 

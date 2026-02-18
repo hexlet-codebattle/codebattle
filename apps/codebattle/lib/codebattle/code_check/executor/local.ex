@@ -13,7 +13,7 @@ defmodule Codebattle.CodeCheck.Executor.Local do
       exit_code: exit_code,
       seed: seed
     } =
-      Runner.Executor.call(runner_taks, token.lang_meta, token.solution_text, nil)
+      Runner.Executor.call(runner_taks, token.lang_meta, token.solution_text, "")
 
     %{
       token

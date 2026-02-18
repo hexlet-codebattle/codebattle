@@ -1,4 +1,4 @@
-{f = form_for(@changeset, @action, class: "col-8  offset-2")}
+<%= form_for @changeset, @action, [class: "col-8  offset-2"], fn f -> %>
 <div class="form-group">
   <div>
     <span>Slug</span>
@@ -66,7 +66,7 @@
     </div>
     {textarea(f, :stages_json,
       class: "form-control form-control-lg",
-      value: JSON.encode_to_iodata!(@changeset.data.stages || [], pretty: true),
+      value: Jason.encode!(@changeset.data.stages || [], pretty: true),
       rows: 15
     )}
     {error_tag(f, :stages_json)}
@@ -97,3 +97,4 @@
   )}
   {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
 </div>
+<% end %>

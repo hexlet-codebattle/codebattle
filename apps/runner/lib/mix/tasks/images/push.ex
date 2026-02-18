@@ -70,7 +70,7 @@ defmodule Mix.Tasks.Images.Push do
   # If no tag is present, defaults to "latest".
   defp parse_ref(ref) do
     case Regex.run(~r/^(.+?)(?::([^:@]+))?(?:@.+)?$/, ref, capture: :all_but_first) do
-      [repo, nil] -> {repo, "latest"}
+      [repo] -> {repo, "latest"}
       [repo, tag] -> {repo, tag}
       _ -> raise "Invalid image reference: #{ref}"
     end

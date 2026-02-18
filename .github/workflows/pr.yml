@@ -17,6 +17,8 @@ jobs:
     env:
       MIX_ENV: test
       POSTGRES_PASSWORD: postgres
+      OTP_VERSION: "28.2"
+      ELIXIR_VERSION: "1.19.4"
 
     services:
       db:
@@ -40,8 +42,8 @@ jobs:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: "28.2"
-          elixir-version: "1.19.4"
+          otp-version: ${{ env.OTP_VERSION }}
+          elixir-version: ${{ env.ELIXIR_VERSION }}
 
       - name: Cache Dependencies
         uses: actions/cache@v4
@@ -53,6 +55,17 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-mix-
+
+      - name: Ensure Dialyzer PLT directory
+        run: mkdir -p priv/plts
+
+      - name: Cache Dialyzer PLT
+        uses: actions/cache@v4
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-dialyzer-plt-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-${{ hashFiles('mix.lock', 'mix.exs') }}
+          restore-keys: |
+            ${{ runner.os }}-dialyzer-plt-${{ env.OTP_VERSION }}-${{ env.ELIXIR_VERSION }}-
 
       - name: Get deps
         if: steps.deps-cache.outputs.cache-hit != 'true'
@@ -70,6 +83,9 @@ jobs:
       - name: Mix credo
         run: mix credo --strict
         working-directory: .
+
+      - name: Mix dialyzer
+        run: make dialyzer
 
       # --- pnpm setup & caching ---
       - name: Setup Node

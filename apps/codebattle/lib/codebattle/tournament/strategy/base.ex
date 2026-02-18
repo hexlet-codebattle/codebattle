@@ -409,11 +409,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def maybe_finish_round_after_finish_match(tournament) do
-        if finish_round_after_match?(tournament) do
-          finish_round_and_next_step(tournament)
-        else
-          tournament
-        end
+        finish_round_and_next_step(tournament)
       end
 
       def finish_round(tournament) do

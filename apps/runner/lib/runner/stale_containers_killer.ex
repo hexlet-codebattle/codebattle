@@ -41,7 +41,7 @@ defmodule Runner.StaleContainersKiller do
   end
 
   def pull_game_info(game) do
-    [head | _] = String.split(game, " +", trum: true)
+    [head | _] = String.split(game, " +", trim: true)
     head
   end
 
