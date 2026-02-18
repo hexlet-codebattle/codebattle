@@ -1,6 +1,6 @@
-@use "sass:color";
+@use 'sass:color';
 
-$item-bg: #15202B;
+$item-bg: #15202b;
 
 .cb-text-skeleton {
   animation: skeleton-loading 1s linear infinite alternate;
@@ -12,7 +12,7 @@ $item-bg: #15202B;
 
 @keyframes skeleton-loading {
   0% {
-    opacity: .2
+    opacity: 0.2;
   }
 
   80%,

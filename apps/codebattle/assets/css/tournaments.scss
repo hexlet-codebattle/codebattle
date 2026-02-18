@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 
 *,
 *::after,
@@ -10,7 +10,8 @@
   display: flex;
 }
 
-.round, .round-inner {
+.round,
+.round-inner {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
@@ -39,7 +40,7 @@
 }
 
 .match::before {
-  content: "";
+  content: '';
   display: block;
   height: 30px;
   border-left: 2px solid purple;
@@ -51,7 +52,7 @@
 }
 
 .match:nth-child(odd)::after {
-  content: "";
+  content: '';
   display: block;
   border: 2px solid transparent;
   border-top-color: purple;
@@ -64,7 +65,7 @@
 }
 
 .match:nth-child(even)::after {
-  content: "";
+  content: '';
   display: block;
   border: 2px solid transparent;
   border-bottom-color: purple;
@@ -83,7 +84,7 @@
 }
 
 .match__content::before {
-  content: "";
+  content: '';
   display: block;
   width: 10px;
   border-bottom: 2px solid purple;
@@ -94,7 +95,7 @@
 }
 
 .tournament-bg-active {
-  background-color:  #dedede !important;
+  background-color: #dedede !important;
 }
 
 .cb-match-confirmation-modal .cb-match-confirmation-progress {

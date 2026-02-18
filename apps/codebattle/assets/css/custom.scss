@@ -24,12 +24,6 @@
   color: #ec9d7c !important;
 }
 
-.cb-custom-event-tr-brown-border {
-  outline: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 98, 30, 0.22);
-  border-radius: 0.5rem;
-}
-
 .cb-custom-event-common-leaderboard-bg {
   background-color: #d9d9d9;
 }
@@ -50,7 +44,7 @@
 
 .cb-custom-event-td:not(:last-child)::after,
 .cb-custom-event-nav-item:not(:first-child)::after {
-  content: "";
+  content: '';
   position: absolute;
   height: 40%;
   width: 0.5px;
@@ -230,10 +224,14 @@
 }
 
 .cb-hof-podium-card::before {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(4, 6, 10, 0.35) 0%, rgba(4, 6, 10, 0.75) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(4, 6, 10, 0.35) 0%,
+    rgba(4, 6, 10, 0.75) 100%
+  );
   z-index: 0;
 }
 
@@ -247,7 +245,11 @@
 }
 
 .cb-season-leaderboard-filters {
-  background: linear-gradient(180deg, rgba(16, 22, 34, 0.82) 0%, rgba(14, 19, 29, 0.94) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(16, 22, 34, 0.82) 0%,
+    rgba(14, 19, 29, 0.94) 100%
+  );
 }
 
 .cb-season-leaderboard-filters .cb-season-filter-label {
@@ -266,7 +268,9 @@
 }
 
 .cb-season-leaderboard-filters .cb-season-filter-input-group:focus-within {
-  box-shadow: 0 0 0 0.2rem rgba(52, 180, 254, 0.2), inset 0 0 0 1px rgba(52, 180, 254, 0.45);
+  box-shadow:
+    0 0 0 0.2rem rgba(52, 180, 254, 0.2),
+    inset 0 0 0 1px rgba(52, 180, 254, 0.45);
 }
 
 .cb-season-leaderboard-filters .cb-season-filter-prefix {
@@ -284,7 +288,10 @@
   background-color: rgba(22, 29, 43, 0.94) !important;
   color: #f1f5f9 !important;
   font-size: 0.86rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .cb-season-leaderboard-filters select.cb-season-filter-control {
@@ -310,7 +317,9 @@
   background-color: rgba(28, 36, 52, 0.98) !important;
 }
 
-.cb-season-leaderboard-filters .cb-season-filter-input-group .cb-season-filter-control {
+.cb-season-leaderboard-filters
+  .cb-season-filter-input-group
+  .cb-season-filter-control {
   padding: 0.45rem 0.85rem;
   border: 0 !important;
   border-radius: 0 !important;
@@ -424,7 +433,7 @@
 }
 
 .cb-custom-event-title {
-  font-family: "External";
+  font-family: 'External';
   font-weight: 700;
   font-size: 74px;
   line-height: 100%;
@@ -604,280 +613,6 @@
   border-radius: 0.5rem;
 }
 
-.cb-custom-event-badge-success {
-  background-color: #23bd6a;
-}
-
-.cb-custom-event-badge-danger {
-  background-color: #ff621e;
-}
-
-.cb-custom-event-badge-primary {
-  color: #ffffff;
-  background-color: #34b4fe;
-}
-
-.cb-custom-event-badge-light {
-  background-color: var(--light);
-}
-
-.cb-custom-event-badge-warning,
-.cb-custom-event-draw-status,
-.cb-custom-event-active-status {
-  background-color: #ffe500;
-}
-
-.cb-custom-event-win-status {
-  background-color: #2ae881;
-}
-
-.cb-custom-event-lose-status {
-  background-color: #ff621e;
-}
-
-.cb-custom-event-btn-primary,
-.cb-custom-event-btn-secondary {
-  color: #ffffff;
-  background-color: #8566ff;
-  border-color: #8566ff;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #704dff;
-    border-color: #704dff;
-  }
-}
-
-.cb-custom-event-btn-warning {
-  color: #212529;
-  background-color: #ff621e;
-  border-color: #ff621e;
-
-  &:hover:not(:disabled) {
-    color: #212529;
-    background-color: #e64500;
-    border-color: #e64500;
-  }
-}
-
-.cb-custom-event-btn-outline-success {
-  color: #2ae881;
-  border-color: #2ae881;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #2ae881;
-    border-color: #2ae881;
-  }
-}
-
-.cb-custom-event-btn-outline-info {
-  color: #73ccfe;
-  border-color: #73ccfe;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #73ccfe;
-    border-color: #73ccfe;
-  }
-}
-
-.cb-custom-event-btn-outline-primary,
-.cb-custom-event-btn-outline-secondary {
-  color: #8566ff;
-  border-color: #8566ff;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #8566ff;
-    border-color: #8566ff;
-  }
-}
-
-.cb-custom-event-btn-outline-warning {
-  color: #ffe500;
-  border-color: #ffe500;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #ffe500;
-    border-color: #ffe500;
-  }
-}
-
-.cb-custom-event-btn-outline-danger {
-  color: #ff621e;
-  border-color: #ff621e;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #ff621e;
-    border-color: #ff621e;
-  }
-}
-
-.cb-custom-event-btn-outline-success:disabled,
-.cb-custom-event-btn-outline-secondary:disabled,
-.cb-custom-event-btn-outline-primary:disabled,
-.cb-custom-event-btn-outline-danger:disabled,
-.cb-custom-event-btn-outline-warning:disabled {
-  color: #c3c2bc;
-  border-color: #c3c2bc;
-}
-
-.cb-custom-event-badge-success,
-.cb-custom-event-badge-warning,
-.cb-custom-event-badge-danger,
-.cb-custom-event-badge-primary,
-.cb-custom-event-badge-light,
-.cb-custom-event-active-status,
-.cb-custom-event-draw-status,
-.cb-custom-event-win-status,
-.cb-custom-event-lose-status {
-  border-radius: 0.5rem;
-}
-
-.cb-custom-event-badge-success {
-  background-color: #23bd6a;
-}
-
-.cb-custom-event-badge-danger {
-  background-color: #ff621e;
-}
-
-.cb-custom-event-badge-primary {
-  color: #ffffff;
-  background-color: #34b4fe;
-}
-
-.cb-custom-event-badge-light {
-  background-color: var(--light);
-}
-
-.cb-custom-event-badge-warning,
-.cb-custom-event-draw-status,
-.cb-custom-event-active-status {
-  background-color: #ffe500;
-}
-
-.cb-custom-event-win-status {
-  background-color: #2ae881;
-}
-
-.cb-custom-event-lose-status {
-  background-color: #ff621e;
-}
-
-.cb-custom-event-btn-primary,
-.cb-custom-event-btn-secondary {
-  color: #ffffff;
-  background-color: #8566ff;
-  border-color: #8566ff;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #704dff;
-    border-color: #704dff;
-  }
-}
-
-.cb-custom-event-btn-warning {
-  color: #212529;
-  background-color: #ff621e;
-  border-color: #ff621e;
-
-  &:hover:not(:disabled) {
-    color: #212529;
-    background-color: #e64500;
-    border-color: #e64500;
-  }
-}
-
-.cb-custom-event-btn-outline-success {
-  color: #2ae881;
-  border-color: #2ae881;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #2ae881;
-    border-color: #2ae881;
-  }
-}
-
-.cb-custom-event-btn-outline-info {
-  color: #73ccfe;
-  border-color: #73ccfe;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #73ccfe;
-    border-color: #73ccfe;
-  }
-}
-
-.cb-custom-event-btn-outline-primary,
-.cb-custom-event-btn-outline-secondary {
-  color: #8566ff;
-  border-color: #8566ff;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #8566ff;
-    border-color: #8566ff;
-  }
-}
-
-.cb-custom-event-btn-outline-warning {
-  color: #ffe500;
-  border-color: #ffe500;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #ffe500;
-    border-color: #ffe500;
-  }
-}
-
-.cb-custom-event-btn-outline-danger {
-  color: #ff621e;
-  border-color: #ff621e;
-
-  &:hover:not(:disabled) {
-    color: #ffffff;
-    background-color: #ff621e;
-    border-color: #ff621e;
-  }
-}
-
-.cb-custom-event-btn-outline-success:disabled,
-.cb-custom-event-btn-outline-secondary:disabled,
-.cb-custom-event-btn-outline-primary:disabled,
-.cb-custom-event-btn-outline-danger:disabled,
-.cb-custom-event-btn-outline-warning:disabled {
-  color: #c3c2bc;
-  border-color: #c3c2bc;
-}
-
-.cb-custom-event-badge-success,
-.cb-custom-event-badge-warning,
-.cb-custom-event-badge-danger,
-.cb-custom-event-badge-primary,
-.cb-custom-event-badge-light,
-.cb-custom-event-active-status,
-.cb-custom-event-draw-status,
-.cb-custom-event-win-status,
-.cb-custom-event-lose-status {
-  border-radius: 0.5rem;
-}
-
-.cb-custom-event-badge-success {
-  background-color: #23bd6a;
-}
-
-.cb-custom-event-badge-danger {
-  background-color: #ff621e;
-}
-
 .cb-custom-event-badge-primary {
   color: #ffffff;
   background-color: #34b4fe;
@@ -938,7 +673,7 @@
 .cb-ticker-line-wrap {
   overflow: hidden;
   width: 100%;
-  background: url("../static/images/eventStripesPink.svg");
+  background: url('../static/images/eventStripesPink.svg');
   background-size: 200px 43px;
   background-position: bottom 0px right 25%;
   background-repeat: no-repeat;

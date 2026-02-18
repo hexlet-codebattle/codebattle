@@ -1,6 +1,6 @@
-@use "variables" as *;
-@import "fonts";
-@import "bootstrap/scss/bootstrap";
+@use 'variables' as *;
+@import 'fonts';
+@import 'bootstrap/scss/bootstrap';
 
 .landing {
   --bg: #0b0f1a;
@@ -14,11 +14,16 @@
   --accent-2: #ff9b50;
   --accent-3: #6ac2ff;
   --danger: #ff5c7b;
-  background: radial-gradient(circle at 10% 10%, #1a2238, transparent 55%),
-    radial-gradient(circle at 85% 15%, rgba(67, 230, 199, 0.2), transparent 48%),
+  background:
+    radial-gradient(circle at 10% 10%, #1a2238, transparent 55%),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(67, 230, 199, 0.2),
+      transparent 48%
+    ),
     var(--bg);
   color: var(--text);
-  font-family: "Montserrat", sans-serif;
+  font-family: 'Montserrat', sans-serif;
   position: relative;
   overflow: hidden;
   padding-bottom: 0;
@@ -52,9 +57,12 @@
 .orb-a {
   top: -120px;
   right: -80px;
-  background: radial-gradient(circle at 30% 30%, rgba(67, 230, 199, 0.9), rgba(67, 230, 199, 0));
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(67, 230, 199, 0.9),
+    rgba(67, 230, 199, 0)
+  );
 }
-
 
 .landing-nav {
   position: relative;
@@ -108,7 +116,7 @@
 }
 
 .hero-title {
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
   font-size: clamp(2.6rem, 3.8vw, 4.1rem);
   font-weight: 800;
   margin: 1.5rem 0 1rem;
@@ -220,7 +228,7 @@
   display: grid;
   place-items: center;
   font-weight: 700;
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
 }
 
 .leaderboard-player {
@@ -260,7 +268,7 @@
 .leaderboard-points {
   font-weight: 700;
   color: var(--accent-2);
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
   white-space: nowrap;
 }
 
@@ -268,7 +276,11 @@
   position: absolute;
   right: -20px;
   bottom: -18px;
-  background: linear-gradient(120deg, rgba(67, 230, 199, 0.2), rgba(106, 194, 255, 0.2));
+  background: linear-gradient(
+    120deg,
+    rgba(67, 230, 199, 0.2),
+    rgba(106, 194, 255, 0.2)
+  );
   border: 1px solid var(--border);
   padding: 0.6rem 1.3rem;
   border-radius: 999px;
@@ -292,8 +304,17 @@
 }
 
 .section-languages {
-  background: radial-gradient(circle at 20% 20%, rgba(67, 230, 199, 0.08), transparent 55%),
-    radial-gradient(circle at 80% 10%, rgba(106, 194, 255, 0.12), transparent 45%),
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(67, 230, 199, 0.08),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 10%,
+      rgba(106, 194, 255, 0.12),
+      transparent 45%
+    ),
     #10182a;
 }
 
@@ -328,7 +349,7 @@
 }
 
 .feature-card h3 {
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
   font-size: 1.2rem;
   margin-bottom: 0.6rem;
 }
@@ -366,22 +387,32 @@
 }
 
 .how-steps::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 30px;
   left: 32px;
   right: 32px;
   height: 1px;
-  background: linear-gradient(90deg, rgba(67, 230, 199, 0.2), rgba(106, 194, 255, 0.9), rgba(67, 230, 199, 0.2));
+  background: linear-gradient(
+    90deg,
+    rgba(67, 230, 199, 0.2),
+    rgba(106, 194, 255, 0.9),
+    rgba(67, 230, 199, 0.2)
+  );
   opacity: 0.8;
 }
 
 .how-steps::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: -10px;
   border-radius: 32px;
-  background: linear-gradient(120deg, rgba(67, 230, 199, 0.08), rgba(106, 194, 255, 0.12), rgba(255, 155, 80, 0.08));
+  background: linear-gradient(
+    120deg,
+    rgba(67, 230, 199, 0.08),
+    rgba(106, 194, 255, 0.12),
+    rgba(255, 155, 80, 0.08)
+  );
   opacity: 0.6;
   filter: blur(12px);
   animation: shimmer 8s ease-in-out infinite;
@@ -398,12 +429,14 @@
   position: relative;
   z-index: 1;
   min-height: 220px;
-  transition: transform 0.6s ease, box-shadow 0.6s ease;
+  transition:
+    transform 0.6s ease,
+    box-shadow 0.6s ease;
   box-shadow: 0 20px 40px rgba(6, 12, 22, 0.35);
 }
 
 .how-step h3 {
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
   font-size: 1.2rem;
   margin-bottom: 0.4rem;
   color: #f5f8ff;
@@ -424,13 +457,13 @@
   font-size: 1.1rem;
   display: grid;
   place-items: center;
-  font-family: "Source Code Pro", monospace;
+  font-family: 'Source Code Pro', monospace;
   position: relative;
   box-shadow: 0 0 18px rgba(67, 230, 199, 0.35);
 }
 
 .how-step-index::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: -8px;
   border-radius: 20px;
@@ -440,11 +473,15 @@
 }
 
 .how-step::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   border-radius: 20px;
-  background: radial-gradient(circle at top left, rgba(106, 194, 255, 0.25), transparent 55%);
+  background: radial-gradient(
+    circle at top left,
+    rgba(106, 194, 255, 0.25),
+    transparent 55%
+  );
   opacity: 0.2;
   transition: opacity 0.6s ease;
 }
@@ -471,7 +508,8 @@
 }
 
 .lang-highlight--elixir img {
-  filter: brightness(4.6) saturate(1.7) drop-shadow(0 0 18px rgba(147, 112, 219, 0.75));
+  filter: brightness(4.6) saturate(1.7)
+    drop-shadow(0 0 18px rgba(147, 112, 219, 0.75));
 }
 
 .lang-tooltip {
@@ -497,14 +535,16 @@
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   border: 1px solid rgba(67, 230, 199, 0.35);
   box-shadow: 0 10px 20px rgba(5, 10, 20, 0.4);
   z-index: 5;
 }
 
 .lang-tooltip::before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: calc(100% + 2px);
   left: 50%;
@@ -552,7 +592,6 @@
   vertical-align: middle;
 }
 
-
 .contributors img {
   width: 40px;
   margin-right: 0.4rem;
@@ -578,8 +617,17 @@
 
 .cta {
   padding: 4rem 0 2rem;
-  background: radial-gradient(circle at 15% 20%, rgba(67, 230, 199, 0.08), transparent 55%),
-    radial-gradient(circle at 85% 10%, rgba(106, 194, 255, 0.12), transparent 45%),
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(67, 230, 199, 0.08),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 85% 10%,
+      rgba(106, 194, 255, 0.12),
+      transparent 45%
+    ),
     var(--bg-2);
 }
 
@@ -621,7 +669,9 @@
 [data-reveal] {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
   transition-delay: var(--reveal-delay, 0ms);
 }
 
@@ -649,7 +699,6 @@
     transform: translateY(8px) translateX(18px);
   }
 }
-
 
 @keyframes ring {
   0% {
@@ -758,5 +807,4 @@
   .how-step {
     transform: none !important;
   }
-
 }

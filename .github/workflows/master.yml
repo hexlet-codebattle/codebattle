@@ -223,12 +223,12 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./apps/codebattle
 
-      - name: Oxlint
+      - name: Frontend lint (JS + SCSS)
         run: pnpm run lint
         working-directory: ./apps/codebattle
 
-      - name: Oxfmt check
-        run: pnpm format:check
+      - name: Frontend format check (JS + SCSS)
+        run: pnpm run format:check
         working-directory: ./apps/codebattle
 
       - name: Run jest
@@ -277,37 +277,43 @@ jobs:
             const deadline = Date.now() + 45 * 60 * 1000;
 
             while (true) {
-              const jobs = await github.paginate(
-                github.rest.actions.listJobsForWorkflowRun,
+              const checkRuns = await github.paginate(
+                github.rest.checks.listForRef,
                 {
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  run_id: context.runId,
+                  ref: context.sha,
                   per_page: 100,
                 },
-                response => response.data.jobs,
+                response => response.data.check_runs,
               );
 
-              const safeJobs = (jobs || []).filter(job => job && typeof job.name === "string");
-              const byName = new Map(safeJobs.map(job => [job.name, job]));
+              const safeRuns = (checkRuns || []).filter(run => run && typeof run.name === "string");
+              const byName = new Map();
+              for (const run of safeRuns) {
+                const existing = byName.get(run.name);
+                if (!existing || (run.id ?? 0) > (existing.id ?? 0)) {
+                  byName.set(run.name, run);
+                }
+              }
               const pending = [];
               const failed = [];
 
               for (const name of required) {
-                const job = byName.get(name);
+                const run = byName.get(name);
 
-                if (!job || job.status !== "completed") {
+                if (!run || run.status !== "completed") {
                   pending.push(name);
                   continue;
                 }
 
-                if (job.conclusion !== "success") {
-                  failed.push(`${name}:${job.conclusion}`);
+                if (run.conclusion !== "success") {
+                  failed.push(`${name}:${run.conclusion}`);
                 }
               }
 
               core.info(
-                `jobs_total=${(jobs || []).length}, jobs_named=${safeJobs.length}, pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`,
+                `checks_total=${(checkRuns || []).length}, checks_named=${safeRuns.length}, pending=[${pending.join(", ")}], failed=[${failed.join(", ")}]`,
               );
 
               if (failed.length > 0) {
