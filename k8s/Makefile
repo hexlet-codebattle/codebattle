@@ -18,7 +18,7 @@ kb-get-services:
 helm-init: helm-install-app
 
 helm-upgrade-app:
-	helm upgrade --install app $(PWD)/app-chart -f $(PWD)/envs/common/values.yaml -f $(PWD)/envs/simple/values.yaml
+	helm upgrade --install app --reset-values $(PWD)/app-chart -f $(PWD)/envs/common/values.yaml -f $(PWD)/envs/simple/values.yaml
 
 helm-rollback-app:
 	helm rollback app 108

@@ -1,4 +1,5 @@
-include make-compose.mk
+ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+include $(ROOT_DIR)make-compose.mk
 
 BUILDX_OUTPUT ?= --load
 

@@ -39,12 +39,12 @@ spec:
           matchLabels:
             app: "runner-{{ .name }}"
       {{- end }}
-      {{- if or $.Values.zigRunners.avoidCodebattleNode $.Values.zigRunners.affinity }}
+      {{- if or $.Values.zigRunners.affinity (and $.Values.zigRunners.avoidCodebattleNode (ne $.Values.zigRunners.strategy "simple")) }}
       affinity:
         {{- with $.Values.zigRunners.affinity }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- if $.Values.zigRunners.avoidCodebattleNode }}
+        {{- if and $.Values.zigRunners.avoidCodebattleNode (ne $.Values.zigRunners.strategy "simple") }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:

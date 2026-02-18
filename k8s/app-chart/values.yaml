@@ -52,6 +52,8 @@ codebattle:
 runner:
   enabled: true
   replicaCount: 1
+  antiAffinity:
+    required: true
   # Deployment or DaemonSet
   type: Deployment
   image:

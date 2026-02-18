@@ -19,6 +19,7 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
+          {{- if .Values.runner.antiAffinity.required }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -26,6 +27,17 @@ spec:
                     operator: In
                     values: ["runner"]
               topologyKey: "kubernetes.io/hostname"
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: ["runner"]
+                topologyKey: "kubernetes.io/hostname"
+          {{- end }}
       volumes:
         - name: users-code-path
           hostPath:

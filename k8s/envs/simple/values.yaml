@@ -18,6 +18,8 @@ codebattle:
 runner:
   enabled: true
   replicaCount: 1
+  antiAffinity:
+    required: false
 
 zigRunners:
   strategy: simple
