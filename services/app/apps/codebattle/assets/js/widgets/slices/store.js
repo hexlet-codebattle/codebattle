@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const storeLoaded = createSlice({
-  name: 'storeLoaded',
+  name: "storeLoaded",
   initialState: false,
   reducers: {
     finishStoreInit: () => true,

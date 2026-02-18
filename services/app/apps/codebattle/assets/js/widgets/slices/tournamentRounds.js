@@ -1,11 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import initial from './initial';
+import initial from "./initial";
 
 const initialState = initial.tournamentRounds;
 
 const tournament = createSlice({
-  name: 'tournamentRounds',
+  name: "tournamentRounds",
   initialState,
   reducers: {
     setActiveGameId: (state, { payload }) => {

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function StairwayTournamentApprovedListPanel({
   state,
@@ -8,7 +8,7 @@ function StairwayTournamentApprovedListPanel({
   players = [],
   notApprovedList = [],
 }) {
-  if (state !== 'waiting_participants') {
+  if (state !== "waiting_participants") {
     return;
   }
 

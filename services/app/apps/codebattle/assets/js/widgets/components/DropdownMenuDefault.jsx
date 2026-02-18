@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import i18n from '../../i18n';
-import levelToClass from '../config/levelToClass';
+import i18n from "../../i18n";
+import levelToClass from "../config/levelToClass";
 
 function DropdownItem({ level, setLevel, setLevelClass }) {
   return (
@@ -10,9 +10,9 @@ function DropdownItem({ level, setLevel, setLevelClass }) {
       className="dropdown-item"
       type="button"
       onClick={() => {
-      setLevel(level);
-      setLevelClass(levelToClass[level]);
-    }}
+        setLevel(level);
+        setLevelClass(levelToClass[level]);
+      }}
     >
       <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
       {i18n.t(level)}
@@ -21,15 +21,12 @@ function DropdownItem({ level, setLevel, setLevelClass }) {
 }
 
 const DropdownMenuDefault = ({ currentLevel, setLevel, setLevelClass }) => {
-  const orderedLevels = ['random', 'elementary', 'easy', 'medium', 'hard'].filter((level) => level !== currentLevel);
+  const orderedLevels = ["random", "elementary", "easy", "medium", "hard"].filter(
+    (level) => level !== currentLevel,
+  );
 
   return orderedLevels.map((level) => (
-    <DropdownItem
-      key={level}
-      level={level}
-      setLevel={setLevel}
-      setLevelClass={setLevelClass}
-    />
+    <DropdownItem key={level} level={level} setLevel={setLevel} setLevelClass={setLevelClass} />
   ));
 };
 

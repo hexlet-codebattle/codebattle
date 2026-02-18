@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
+import cn from "classnames";
 
 function SystemMessage({ text, meta }) {
-  const statusClassName = cn('text-small', {
-    'text-danger': ['error', 'failure'].includes(meta?.status),
-    'cb-text-success': meta?.status === 'success',
-    'text-muted': meta?.status === 'event',
+  const statusClassName = cn("text-small", {
+    "text-danger": ["error", "failure"].includes(meta?.status),
+    "cb-text-success": meta?.status === "success",
+    "text-muted": meta?.status === "event",
   });
 
   return (

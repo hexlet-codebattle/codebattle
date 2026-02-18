@@ -1,9 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {};
 
 const userInfo = createSlice({
-  name: 'userInfo',
+  name: "userInfo",
   initialState,
   reducers: {
     setUserInfo: (state, { payload: { user } }) => {

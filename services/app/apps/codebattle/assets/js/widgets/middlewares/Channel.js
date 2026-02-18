@@ -1,9 +1,9 @@
-import { decamelizeKeys, camelizeKeys } from 'humps';
-import map from 'lodash/map';
-import remove from 'lodash/remove';
-import { Presence } from 'phoenix';
+import { decamelizeKeys, camelizeKeys } from "humps";
+import map from "lodash/map";
+import remove from "lodash/remove";
+import { Presence } from "phoenix";
 
-import socket from '../../socket';
+import socket from "../../socket";
 
 const nonChannelErrorMessage = "Socket channel wasn't initialize";
 
@@ -27,10 +27,7 @@ export default class Channel {
       return this;
     }
 
-    const channel = socket.channel(
-      topic,
-      decamelizeKeys(params, { separator: '_' }),
-    );
+    const channel = socket.channel(topic, decamelizeKeys(params, { separator: "_" }));
 
     channel.onMessage = (event, payload) => {
       const result = this.onMessageHandler(event, camelizeKeys(payload));
@@ -60,9 +57,7 @@ export default class Channel {
 
   addListener(topic, cb, params = {}) {
     const currentListeners = this.listeners[topic];
-    const newRef = this.channel
-      ? this.channel.on(topic, cb)
-      : null;
+    const newRef = this.channel ? this.channel.on(topic, cb) : null;
     const newListener = { ref: newRef, callback: cb, params };
 
     if (!currentListeners) {
@@ -112,7 +107,7 @@ export default class Channel {
     const removedListeners = params
       ? this.filterListenerByParams(topic, params)
       : this.listeners[topic];
-    const removedRefs = map(removedListeners, 'ref');
+    const removedRefs = map(removedListeners, "ref");
 
     removedRefs.forEach((ref) => {
       this.channel.off(topic, ref);
@@ -186,8 +181,8 @@ export default class Channel {
   }
 
   onMessage(handler) {
-    if (typeof handler !== 'function') {
-      throw new Error('Value must be a function');
+    if (typeof handler !== "function") {
+      throw new Error("Value must be a function");
     }
 
     this.onMessageHandler = handler;
@@ -200,12 +195,9 @@ export default class Channel {
       throw new Error(nonChannelErrorMessage);
     }
 
-    const pushInstance = this.channel.push(
-      topic,
-      decamelizeKeys(params, { separator: '_' }),
-    );
+    const pushInstance = this.channel.push(topic, decamelizeKeys(params, { separator: "_" }));
 
-    pushInstance.receive('error', console.error);
+    pushInstance.receive("error", console.error);
 
     return pushInstance;
   }

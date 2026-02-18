@@ -1,27 +1,28 @@
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
-import includes from 'lodash/includes';
-import keys from 'lodash/keys';
+import includes from "lodash/includes";
+import keys from "lodash/keys";
 
-import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
+import taskDescriptionLanguages from "../config/taskDescriptionLanguages";
 
 const wrapExamplesInCodeBlock = (examples) => {
-  const safeExamples = typeof examples === 'string' ? examples : '';
+  const safeExamples = typeof examples === "string" ? examples : "";
   const trimmed = safeExamples.trim();
 
-  if (trimmed.startsWith('```') && trimmed.endsWith('```')) {
+  if (trimmed.startsWith("```") && trimmed.endsWith("```")) {
     return safeExamples;
   }
 
   return `\`\`\`\n${safeExamples}\n\`\`\``;
 };
 
-const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
+const useTaskDescriptionParams = (task, taskLanguage) =>
+  useMemo(() => {
     const safeTask = task || {};
     const normalizedTaskLanguage = taskLanguage || taskDescriptionLanguages.default;
     const avaibleLanguages = keys(safeTask)
-      .filter((key) => key.includes('description'))
-      .map((key) => key.split('description'))
+      .filter((key) => key.includes("description"))
+      .map((key) => key.split("description"))
       .map(([, language]) => language.toLowerCase());
 
     const displayLanguage = includes(avaibleLanguages, normalizedTaskLanguage)
@@ -32,8 +33,8 @@ const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
 
     // TODO: remove russian text from string (create ru/en templates of basic description)
     const taskDescriptionMapping = {
-      en: `${safeTask.descriptionEn || ''}\n\n**Examples:**\n${examples}`,
-      ru: `${safeTask.descriptionRu || ''}\n\n**Примеры:**\n${examples}`,
+      en: `${safeTask.descriptionEn || ""}\n\n**Examples:**\n${examples}`,
+      ru: `${safeTask.descriptionRu || ""}\n\n**Примеры:**\n${examples}`,
     };
 
     const description = taskDescriptionMapping[displayLanguage];

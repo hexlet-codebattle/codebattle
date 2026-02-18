@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import Markdown from 'react-markdown';
-import rehypeKatex from 'rehype-katex';
-import remarkMath from 'remark-math';
-import 'katex/dist/katex.min.css';
-import '../../../../css/_katex-fonts.scss';
+import Markdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import "katex/dist/katex.min.css";
+import "../../../../css/_katex-fonts.scss";
 
 function TaskDescriptionMarkdown({ description }) {
   return (

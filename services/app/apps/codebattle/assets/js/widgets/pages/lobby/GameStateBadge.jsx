@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 function GameStateBadge({ state }) {
   return (
@@ -6,9 +6,7 @@ function GameStateBadge({ state }) {
       alt={state}
       title={state}
       src={
-        state === 'playing'
-          ? '/assets/images/playing.svg'
-          : '/assets/images/waitingOpponent.svg'
+        state === "playing" ? "/assets/images/playing.svg" : "/assets/images/waitingOpponent.svg"
       }
     />
   );

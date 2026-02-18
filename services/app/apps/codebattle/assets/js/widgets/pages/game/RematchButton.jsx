@@ -1,23 +1,23 @@
-import React from 'react';
+import React from "react";
 
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { connect } from 'react-redux';
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { connect } from "react-redux";
 
-import i18n from '../../../i18n';
+import i18n from "../../../i18n";
 import {
   sendOfferToRematch,
   sendRejectToRematch,
   sendAcceptToRematch,
-} from '../../middlewares/Room';
-import * as selectors from '../../selectors';
+} from "../../middlewares/Room";
+import * as selectors from "../../selectors";
 
 const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
   if (rematchInitiatorId === null) {
     return null;
   }
-  return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
+  return rematchInitiatorId === currentUserId ? "initiator" : "acceptor";
 };
 
 const RematchButton = ({
@@ -27,27 +27,19 @@ const RematchButton = ({
   disabled,
 }) => {
   const renderBtnAfterReject = () => (
-    <button
-      type="button"
-      className="btn btn-danger btn-block"
-      disabled={disabled}
-    >
-      {i18n.t('Rejected Offer')}
+    <button type="button" className="btn btn-danger btn-block" disabled={disabled}>
+      {i18n.t("Rejected Offer")}
     </button>
   );
 
   const renderBtnAfterSendOffer = () => {
-    const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
-    const classNames = cn('btn btn-block', {
-      'btn-secondary cb-btn-secondary': isOpponentInGame,
-      'btn-warning': !isOpponentInGame,
+    const text = isOpponentInGame ? "Wait For An Answer..." : "Opponent Left The Game";
+    const classNames = cn("btn btn-block", {
+      "btn-secondary cb-btn-secondary": isOpponentInGame,
+      "btn-warning": !isOpponentInGame,
     });
     return (
-      <button
-        type="button"
-        className={classNames}
-        disabled
-      >
+      <button type="button" className={classNames} disabled>
         {i18n.t(text)}
       </button>
     );
@@ -63,9 +55,7 @@ const RematchButton = ({
           onClick={sendAcceptToRematch}
           title="Accept"
         >
-          <FontAwesomeIcon
-            icon={faCheck}
-          />
+          <FontAwesomeIcon icon={faCheck} />
         </button>
         <button
           className="btn btn-outline-secondary cb-btn-outline-secondary"
@@ -73,9 +63,7 @@ const RematchButton = ({
           onClick={sendRejectToRematch}
           title="Decline"
         >
-          <FontAwesomeIcon
-            icon={faXmark}
-          />
+          <FontAwesomeIcon icon={faXmark} />
         </button>
       </div>
     </div>
@@ -88,7 +76,7 @@ const RematchButton = ({
       onClick={sendOfferToRematch}
       disabled={disabled}
     >
-      {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
+      {disabled ? i18n.t("Opponent has left") : i18n.t("Rematch")}
     </button>
   );
 
@@ -102,8 +90,9 @@ const RematchButton = ({
 
   const playerStatus = getPlayerStatus(rematchInitiatorId, currentUserId);
 
-  return mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
-    || mapRematchStateToButtons.none;
+  return (
+    mapRematchStateToButtons[`${rematchState}_${playerStatus}`] || mapRematchStateToButtons.none
+  );
 };
 
 const mapStateToProps = (state) => {

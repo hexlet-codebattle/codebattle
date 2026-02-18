@@ -1,18 +1,18 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 
-import { selectDefaultAvatarUrl } from '@/selectors';
+import { selectDefaultAvatarUrl } from "@/selectors";
 
-import i18next from '../../i18n';
-import { followUser, unfollowUser } from '../middlewares/Main';
-import { redirectToNewGame } from '../slices';
+import i18next from "../../i18n";
+import { followUser, unfollowUser } from "../middlewares/Main";
+import { redirectToNewGame } from "../slices";
 
-import LanguageIcon from './LanguageIcon';
-import Loading from './Loading';
-import UserAchievements from './UserAchievements';
+import LanguageIcon from "./LanguageIcon";
+import Loading from "./Loading";
+import UserAchievements from "./UserAchievements";
 
 const defaultGameStats = { won: 0, lost: 0, gaveUp: 0 };
 
@@ -26,12 +26,12 @@ const defaultTournamentStats = {
 };
 
 const tournamentGrades = [
-  { key: 'grandSlamWins', label: 'GS' },
-  { key: 'mastersWins', label: 'Masters' },
-  { key: 'eliteWins', label: 'Elite' },
-  { key: 'proWins', label: 'Pro' },
-  { key: 'challengerWins', label: 'Challenger' },
-  { key: 'rookieWins', label: 'Rookie' },
+  { key: "grandSlamWins", label: "GS" },
+  { key: "mastersWins", label: "Masters" },
+  { key: "eliteWins", label: "Elite" },
+  { key: "proWins", label: "Pro" },
+  { key: "challengerWins", label: "Challenger" },
+  { key: "rookieWins", label: "Rookie" },
 ];
 
 function StatsRow({ items }) {
@@ -39,15 +39,15 @@ function StatsRow({ items }) {
     <div
       className="text-muted small mt-1"
       style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-        columnGap: '8px',
+        display: "grid",
+        gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+        columnGap: "8px",
       }}
     >
       {items.map(({ key, label, value }) => (
         <span key={key} className="text-nowrap">
           {label}
-          {': '}
+          {": "}
           <b className="text-white">{value}</b>
         </span>
       ))}
@@ -61,9 +61,10 @@ function UserStats({ data, user: userInfo }) {
 
   const activeGameId = data?.activeGameId;
   const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || defaultAvatarUrl;
-  const name = userInfo.name || data?.user?.name || 'Jon Doe';
-  const lang = userInfo.lang || data?.user?.lang || 'js';
-  const clan = userInfo.clan || data?.user?.clan || data?.user?.clanName || data?.user?.clanLongName;
+  const name = userInfo.name || data?.user?.name || "Jon Doe";
+  const lang = userInfo.lang || data?.user?.lang || "js";
+  const clan =
+    userInfo.clan || data?.user?.clan || data?.user?.clanName || data?.user?.clanLongName;
   const points = data?.user?.points || userInfo.points;
   const rating = data?.user?.rating || userInfo.rating;
   const rank = data?.user?.rank || userInfo.rank;
@@ -95,7 +96,7 @@ function UserStats({ data, user: userInfo }) {
               <div className="d-flex align-items-center text-white">
                 <img
                   className="img-fluid cb-rounded mr-2"
-                  style={{ maxHeight: '42px', width: '42px' }}
+                  style={{ maxHeight: "42px", width: "42px" }}
                   src={avatarUrl}
                   alt="User avatar"
                 />
@@ -111,13 +112,10 @@ function UserStats({ data, user: userInfo }) {
                 <button
                   type="button"
                   title="play active game"
-                  className={cn(
-                    'btn btn-sm text-primary border-0 cb-rounded',
-                    {
-                      'text-primary': !!activeGameId,
-                      'text-muted': !activeGameId,
-                    },
-                  )}
+                  className={cn("btn btn-sm text-primary border-0 cb-rounded", {
+                    "text-primary": !!activeGameId,
+                    "text-muted": !activeGameId,
+                  })}
                   onClick={handlePlayClick}
                   disabled={!activeGameId}
                 >
@@ -126,13 +124,10 @@ function UserStats({ data, user: userInfo }) {
                 <button
                   type="button"
                   title="follow user"
-                  className={cn(
-                    'btn btn-sm border-0 cb-rounded',
-                    {
-                      'text-primary': followId !== userInfo.id,
-                      'text-danger': followId === userInfo.id,
-                    },
-                  )}
+                  className={cn("btn btn-sm border-0 cb-rounded", {
+                    "text-primary": followId !== userInfo.id,
+                    "text-danger": followId === userInfo.id,
+                  })}
                   onClick={toggleFollowClick}
                 >
                   <FontAwesomeIcon icon="binoculars" />
@@ -141,9 +136,9 @@ function UserStats({ data, user: userInfo }) {
             </div>
             <StatsRow
               items={[
-                { key: 'place', label: i18next.t('Place'), value: rank ?? '####' },
-                { key: 'points', label: i18next.t('Points'), value: points ?? '####' },
-                { key: 'rating', label: i18next.t('Rating'), value: rating ?? '####' },
+                { key: "place", label: i18next.t("Place"), value: rank ?? "####" },
+                { key: "points", label: i18next.t("Points"), value: points ?? "####" },
+                { key: "rating", label: i18next.t("Rating"), value: rating ?? "####" },
               ]}
             />
             {data && (
@@ -164,9 +159,9 @@ function UserStats({ data, user: userInfo }) {
                 />
                 <StatsRow
                   items={[
-                    { key: 'won', label: i18next.t('Won'), value: gameStats.won },
-                    { key: 'lost', label: i18next.t('Lost'), value: gameStats.lost },
-                    { key: 'gaveUp', label: i18next.t('GaveUp'), value: gameStats.gaveUp },
+                    { key: "won", label: i18next.t("Won"), value: gameStats.won },
+                    { key: "lost", label: i18next.t("Lost"), value: gameStats.lost },
+                    { key: "gaveUp", label: i18next.t("GaveUp"), value: gameStats.gaveUp },
                   ]}
                 />
               </>
@@ -174,11 +169,7 @@ function UserStats({ data, user: userInfo }) {
           </div>
         </div>
       </div>
-      {!data ? (
-        <Loading small />
-      ) : (
-        <UserAchievements achievements={data.achievements} />
-      )}
+      {!data ? <Loading small /> : <UserAchievements achievements={data.achievements} />}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 // TODO: get active round algorithm
 const getActiveRoundId = () => 0;
@@ -12,7 +12,7 @@ const getActiveRoundId = () => 0;
 */
 
 function StairwayTournamentInfoPanel({
-  state = 'waiting_participants', // "waiting_participants", "active", "game_over"
+  state = "waiting_participants", // "waiting_participants", "active", "game_over"
   currentUserId,
   rounds,
   players,
@@ -21,7 +21,7 @@ function StairwayTournamentInfoPanel({
     rounds.length === 0 ? 0 : getActiveRoundId(rounds),
   );
 
-  if (state === 'waiting_participants') {
+  if (state === "waiting_participants") {
     return;
   }
 

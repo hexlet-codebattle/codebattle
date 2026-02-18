@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 const useTournamentPanel = (fetchData, state) => {
   useEffect(() => {
-    if (state === 'active') {
+    if (state === "active") {
       fetchData();
 
       const interval = setInterval(() => {
@@ -14,7 +14,7 @@ const useTournamentPanel = (fetchData, state) => {
       };
     }
 
-    if (state === 'finished') {
+    if (state === "finished") {
       fetchData();
     }
 

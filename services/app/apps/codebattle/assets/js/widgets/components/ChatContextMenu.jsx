@@ -1,33 +1,20 @@
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  memo,
-} from 'react';
+import React, { useState, useCallback, useMemo, memo } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import qs from 'qs';
-import {
-  Menu,
-  Item,
-  Separator,
-} from 'react-contexify';
-import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import qs from "qs";
+import { Menu, Item, Separator } from "react-contexify";
+import { useSelector, useDispatch } from "react-redux";
 
-import { pushCommand } from '@/middlewares/Chat';
-import { openDirect } from '@/middlewares/Lobby';
-import { followUser } from '@/middlewares/Main';
-import {
-  currentUserIsAdminSelector,
-  currentUserIdSelector,
-  lobbyDataSelector,
-} from '@/selectors';
-import { actions } from '@/slices';
-import { getLobbyUrl, getUserProfileUrl } from '@/utils/urlBuilders';
+import { pushCommand } from "@/middlewares/Chat";
+import { openDirect } from "@/middlewares/Lobby";
+import { followUser } from "@/middlewares/Main";
+import { currentUserIsAdminSelector, currentUserIdSelector, lobbyDataSelector } from "@/selectors";
+import { actions } from "@/slices";
+import { getLobbyUrl, getUserProfileUrl } from "@/utils/urlBuilders";
 
-const blackSwordSrc = '/assets/images/fight-black.png';
-const whiteSwordSrc = '/assets/images/fight-white.png';
+const blackSwordSrc = "/assets/images/fight-black.png";
+const whiteSwordSrc = "/assets/images/fight-white.png";
 
 function ChatContextMenu({
   request = {
@@ -50,19 +37,13 @@ function ChatContextMenu({
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
 
-  const {
-    isBot,
-    canInvite,
-    name,
-    userId,
-  } = request.user;
+  const { isBot, canInvite, name, userId } = request.user;
 
   const isCurrentUserHasActiveGames = useMemo(
-    () => (
+    () =>
       activeGames || activeGames.length > 0
         ? activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId))
-        : true
-    ),
+        : true,
     [activeGames, currentUserId],
   );
   const isCurrentUser = !!userId && currentUserId === userId;
@@ -103,9 +84,7 @@ function ChatContextMenu({
         opponent_id: userId,
       });
       if (`/${window.location.hash}`.startsWith(getLobbyUrl())) {
-        dispatch(
-          actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }),
-        );
+        dispatch(actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }));
       } else {
         window.location.href = getLobbyUrl(queryParamsString);
       }
@@ -127,7 +106,7 @@ function ChatContextMenu({
 
   const handleBanClick = () => {
     if (userId && name) {
-      pushCommand({ type: 'ban', name, user_id: userId });
+      pushCommand({ type: "ban", name, user_id: userId });
     }
   };
 
@@ -135,38 +114,17 @@ function ChatContextMenu({
     <>
       {children}
       <Menu className="cb-bg-panel cb-border-color cb-rounded text-white" role="menu" id={menuId}>
-        <Item
-          role="menuitem"
-          aria-label="Copy Name"
-          onClick={handleCopy}
-        >
-          <FontAwesomeIcon
-            className="mr-2 text-white"
-            icon="copy"
-          />
+        <Item role="menuitem" aria-label="Copy Name" onClick={handleCopy}>
+          <FontAwesomeIcon className="mr-2 text-white" icon="copy" />
           <span className="text-white">Copy Name</span>
         </Item>
-        <Item
-          role="menuitem"
-          aria-label="Info"
-          onClick={handleShowInfo}
-        >
-          <FontAwesomeIcon
-            className="mr-2 text-white"
-            icon="user"
-          />
+        <Item role="menuitem" aria-label="Info" onClick={handleShowInfo}>
+          <FontAwesomeIcon className="mr-2 text-white" icon="user" />
           <span className="text-white">Info</span>
         </Item>
         {!isCurrentUser && (
-          <Item
-            role="menuitem"
-            aria-label="Follow"
-            onClick={handleFollow}
-          >
-            <FontAwesomeIcon
-              className="mr-2 text-white"
-              icon="binoculars"
-            />
+          <Item role="menuitem" aria-label="Follow" onClick={handleFollow}>
+            <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />
             <span className="text-white">Follow</span>
           </Item>
         )}
@@ -177,10 +135,7 @@ function ChatContextMenu({
             onClick={handleOpenDirect}
             disabled={!canCreatePrivateRoom}
           >
-            <FontAwesomeIcon
-              className="mr-2 text-white"
-              icon="comment-alt"
-            />
+            <FontAwesomeIcon className="mr-2 text-white" icon="comment-alt" />
             <span className="text-white">Direct message</span>
           </Item>
         ) : null}
@@ -199,8 +154,8 @@ function ChatContextMenu({
               alt="invite"
               src={whiteSwordSrc}
               style={{ width: 14, height: 16 }}
-              className={cn('mr-2', {
-                'text-muted': !inviteSendDisabled,
+              className={cn("mr-2", {
+                "text-muted": !inviteSendDisabled,
               })}
             />
             <span className="text-white">Send an invite</span>
@@ -209,15 +164,8 @@ function ChatContextMenu({
         {currentUserIsAdmin ? (
           <>
             <Separator />
-            <Item
-              aria-label="Ban"
-              onClick={handleBanClick}
-              disabled={isBot}
-            >
-              <FontAwesomeIcon
-                className="mr-2 text-white"
-                icon="ban"
-              />
+            <Item aria-label="Ban" onClick={handleBanClick} disabled={isBot}>
+              <FontAwesomeIcon className="mr-2 text-white" icon="ban" />
               <span className="text-white">Ban</span>
             </Item>
           </>

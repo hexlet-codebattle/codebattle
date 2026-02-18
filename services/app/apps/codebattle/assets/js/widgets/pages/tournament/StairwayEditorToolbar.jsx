@@ -1,41 +1,35 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from "react";
 
-import find from 'lodash/find';
-import { useDispatch, useSelector } from 'react-redux';
+import find from "lodash/find";
+import { useDispatch, useSelector } from "react-redux";
 
-import LanguagePickerView from '../../components/LanguagePickerView';
-import { currentUserIdSelector } from '../../selectors';
-import { actions } from '../../slices';
-import DarkModeButton from '../game/DarkModeButton';
-import GameActionButtons from '../game/GameActionButtons';
+import LanguagePickerView from "../../components/LanguagePickerView";
+import { currentUserIdSelector } from "../../selectors";
+import { actions } from "../../slices";
+import DarkModeButton from "../game/DarkModeButton";
+import GameActionButtons from "../game/GameActionButtons";
 
-import PlayerPicker from './PlayerPicker';
+import PlayerPicker from "./PlayerPicker";
 
-const type = 'stairway';
-const toolbarClassNames = 'btn-toolbar justify-content-between align-items-center m-1';
-const editorSettingClassNames = 'btn-group align-items-center m-1';
-const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
+const type = "stairway";
+const toolbarClassNames = "btn-toolbar justify-content-between align-items-center m-1";
+const editorSettingClassNames = "btn-group align-items-center m-1";
+const userInfoClassNames = "btn-group align-items-center justify-content-end m-1";
 
 function ModeButtons({ player }) {
   return (
-    <div
-      className="btn-group align-items-center mr-auto"
-      role="group"
-      aria-label="Editor mode"
-    >
+    <div className="btn-group align-items-center mr-auto" role="group" aria-label="Editor mode">
       <DarkModeButton player={player} />
     </div>
   );
 }
 
-function StairwayEditorToolbar({
-  activePlayer,
-  setActivePlayerId,
-  players,
-}) {
+function StairwayEditorToolbar({ activePlayer, setActivePlayerId, players }) {
   const dispatch = useDispatch();
 
-  const playerData = useSelector((state) => find(state.stairwayGame.game?.players, { id: activePlayer.id }));
+  const playerData = useSelector((state) =>
+    find(state.stairwayGame.game?.players, { id: activePlayer.id }),
+  );
   const currentUserId = useSelector(currentUserIdSelector);
   const changeLang = useCallback(
     ({ label: { props } }) => dispatch(actions.changeEditorLang({ editorLang: props.slug })),
@@ -53,19 +47,15 @@ function StairwayEditorToolbar({
   const actionBtnsProps = {
     currentEditorLangSlug: playerData?.editorLang,
     checkResult: () => {},
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
+    checkBtnStatus: "disabled",
+    resetBtnStatus: "disabled",
+    giveUpBtnStatus: "disabled",
   };
 
   return (
     <div data-player-type={type}>
       <div className={toolbarClassNames} role="toolbar">
-        <div
-          className={editorSettingClassNames}
-          role="group"
-          aria-label="Editor settings"
-        >
+        <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
           <LanguagePickerView
             isDisabled={isDisabledLanguagePicker}
             currentLangSlug={playerData?.editorLang}
@@ -76,11 +66,7 @@ function StairwayEditorToolbar({
         <ModeButtons player={activePlayer} />
         <GameActionButtons {...actionBtnsProps} />
 
-        <div
-          className={userInfoClassNames}
-          role="group"
-          aria-label="User info"
-        >
+        <div className={userInfoClassNames} role="group" aria-label="User info">
           <PlayerPicker
             isDisabled={isDisabledPlayerPicker}
             players={players}

@@ -1,16 +1,14 @@
-import React, {
- memo, useMemo, useCallback, useEffect,
-} from 'react';
+import React, { memo, useMemo, useCallback, useEffect } from "react";
 
-import ReactPaginate from 'react-paginate';
-import { useDispatch, useSelector } from 'react-redux';
+import ReactPaginate from "react-paginate";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   currentUserIsAdminSelector,
   currentUserIsTournamentOwnerSelector,
   tournamentSelector,
-} from '../../selectors';
-import { actions } from '../../slices';
+} from "../../selectors";
+import { actions } from "../../slices";
 
 function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverride }) {
   const dispatch = useDispatch();
@@ -18,28 +16,24 @@ function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverrid
   const { players, topPlayerIds } = useSelector(tournamentSelector);
   const isAdmin = useSelector(currentUserIsAdminSelector);
   const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
-  const totalEntries = useMemo(
-    () => {
-      if (Number.isFinite(totalEntriesOverride)) {
-        return totalEntriesOverride;
-      }
-      if (topPlayerIds.length === 0 || isAdmin || isOwner) {
-        return Object.keys(players).length;
-      }
+  const totalEntries = useMemo(() => {
+    if (Number.isFinite(totalEntriesOverride)) {
+      return totalEntriesOverride;
+    }
+    if (topPlayerIds.length === 0 || isAdmin || isOwner) {
+      return Object.keys(players).length;
+    }
 
-      return topPlayerIds.length;
-    },
-    [players, isAdmin, isOwner, topPlayerIds, totalEntriesOverride],
-  );
+    return topPlayerIds.length;
+  }, [players, isAdmin, isOwner, topPlayerIds, totalEntriesOverride]);
 
   const normalizedPageSize = Number(pageSize);
   const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 20;
   const normalizedTotalEntries = Number(totalEntries);
   const safeTotalEntries = Number.isFinite(normalizedTotalEntries) ? normalizedTotalEntries : 0;
   const normalizedPageNumber = Number(pageNumber);
-  const safePageNumber = Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0
-    ? normalizedPageNumber
-    : 1;
+  const safePageNumber =
+    Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0 ? normalizedPageNumber : 1;
 
   const pageCount = Math.ceil(safeTotalEntries / safePageSize);
 
@@ -49,12 +43,15 @@ function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverrid
     }
   }, [dispatch, pageCount, safePageNumber]);
 
-  const onChangePageNumber = useCallback(({ selected }) => {
-    const nextPage = selected + 1;
-    if (nextPage !== safePageNumber) {
-      dispatch(actions.changeTournamentPageNumber(nextPage));
-    }
-  }, [dispatch, safePageNumber]);
+  const onChangePageNumber = useCallback(
+    ({ selected }) => {
+      const nextPage = selected + 1;
+      if (nextPage !== safePageNumber) {
+        dispatch(actions.changeTournamentPageNumber(nextPage));
+      }
+    },
+    [dispatch, safePageNumber],
+  );
 
   if (!Number.isFinite(pageCount) || pageCount <= 1) {
     return <></>;

@@ -1,28 +1,25 @@
-import React, {
-  memo,
-  useEffect,
-} from 'react';
+import React, { memo, useEffect } from "react";
 
-import NiceModal, { unregister } from '@ebay/nice-modal-react';
-import cn from 'classnames';
+import NiceModal, { unregister } from "@ebay/nice-modal-react";
+import cn from "classnames";
 // import i18next from 'i18next';
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 // import useSearchParams from '../../utils/useSearchParams';
 
-import Loading from '../../components/Loading';
-import loadingStatuses from '../../config/loadingStatuses';
-import ModalCodes from '../../config/modalCodes';
+import Loading from "../../components/Loading";
+import loadingStatuses from "../../config/loadingStatuses";
+import ModalCodes from "../../config/modalCodes";
 import {
   // currentUserClanIdSelector,
   // currentUserIdSelector,
   eventSelector,
-} from '../../selectors';
-import TournamentDescriptionModal from '../tournament/TournamentDescriptionModal';
+} from "../../selectors";
+import TournamentDescriptionModal from "../tournament/TournamentDescriptionModal";
 
 // import EventCalendarPanel from './EventCalendarPanel';
 // import EventRatingPanel from './EventRatingPanel';
-import ParticipantDashboard from './ParticipantDashboard';
+import ParticipantDashboard from "./ParticipantDashboard";
 // import TopLeaderboardPanel from './TopLeaderboardPanel';
 
 const useEventWidgetModals = () => {
@@ -53,17 +50,17 @@ function EventWidget() {
   // const currentUserClanId = useSelector(currentUserClanIdSelector);
 
   const contentClassName = cn(
-    'd-flex flex-column-reverse flex-lg-row',
-    'flex-md-column-reverse flex-sm-column-reverse',
+    "d-flex flex-column-reverse flex-lg-row",
+    "flex-md-column-reverse flex-sm-column-reverse",
     {
-      'cb-opacity-50': loading === loadingStatuses.LOADING,
+      "cb-opacity-50": loading === loadingStatuses.LOADING,
     },
   );
   const loadingClassName = cn(
-    'justify-content-center align-items-center',
-    'position-absolute w-100',
+    "justify-content-center align-items-center",
+    "position-absolute w-100",
     {
-      'd-flex': loading === loadingStatuses.LOADING,
+      "d-flex": loading === loadingStatuses.LOADING,
       hidden: loading !== loadingStatuses.LOADING,
     },
   );

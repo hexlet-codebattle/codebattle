@@ -1,13 +1,14 @@
-import React, {
-  useState, useCallback, useEffect, useMemo,
-} from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import shuffle from 'lodash/shuffle';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import shuffle from "lodash/shuffle";
 
-import MatchStates from '../../config/matchStates';
-import { createCustomRound } from '../../middlewares/TournamentAdmin';
-import { getCustomEventPlayerDefaultImgUrl, tournamentEmptyPlayerUrl } from '../../utils/urlBuilders';
+import MatchStates from "../../config/matchStates";
+import { createCustomRound } from "../../middlewares/TournamentAdmin";
+import {
+  getCustomEventPlayerDefaultImgUrl,
+  tournamentEmptyPlayerUrl,
+} from "../../utils/urlBuilders";
 
 const emptyPlayer = {};
 
@@ -26,12 +27,12 @@ function TournamentGameCreatePanel({
   const activeMatch = useMemo(() => {
     if (!selectedPlayer) return null;
 
-    const activeMatches = Object.values(matches)
-      .filter((match) => (
-        match.roundPosition === currentRoundPosition
-        && match.playerIds.includes(selectedPlayer.id)
-        && match.state === MatchStates.playing
-      ));
+    const activeMatches = Object.values(matches).filter(
+      (match) =>
+        match.roundPosition === currentRoundPosition &&
+        match.playerIds.includes(selectedPlayer.id) &&
+        match.state === MatchStates.playing,
+    );
 
     if (activeMatches.length === 0) {
       return null;
@@ -39,22 +40,27 @@ function TournamentGameCreatePanel({
     return activeMatches[0];
   }, [selectedPlayer, matches, currentRoundPosition]);
 
-  const availableTasks = useMemo(() => (
-    taskList.reduce((acc, task) => {
-      if (selectedPlayer && players[selectedPlayer.id]?.taskIds?.includes(task.id)) {
-        return acc;
-      }
+  const availableTasks = useMemo(
+    () =>
+      taskList.reduce(
+        (acc, task) => {
+          if (selectedPlayer && players[selectedPlayer.id]?.taskIds?.includes(task.id)) {
+            return acc;
+          }
 
-      acc[task.level].push(task);
+          acc[task.level].push(task);
 
-      return acc;
-    }, {
-      elementary: [],
-      easy: [],
-      medium: [],
-      hard: [],
-    })
-  ), [selectedPlayer, players, taskList]);
+          return acc;
+        },
+        {
+          elementary: [],
+          easy: [],
+          medium: [],
+          hard: [],
+        },
+      ),
+    [selectedPlayer, players, taskList],
+  );
 
   const clearSelectedPlayer = useCallback(() => {
     setSelectedPlayer();
@@ -67,8 +73,7 @@ function TournamentGameCreatePanel({
 
   useEffect(() => {
     if (selectedPlayer === emptyPlayer) {
-      const playersListWithoutBots = Object.values(players)
-        .filter((player) => !player.isBot);
+      const playersListWithoutBots = Object.values(players).filter((player) => !player.isBot);
 
       if (playersListWithoutBots.length === 1) {
         setSelectedPlayer(playersListWithoutBots[0]);
@@ -111,7 +116,7 @@ function TournamentGameCreatePanel({
         <>
           <div className="d-flex flex-column align-items-baseline flex-nowrap">
             <span className="h5">
-              {'Choose task level for '}
+              {"Choose task level for "}
               <span className="text-nowrap">{selectedPlayer.name}</span>
               {opponentPlayer?.name && (
                 <>
@@ -125,11 +130,10 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel('elementary')}
+                onClick={() => setSelectedTaskLevel("elementary")}
                 disabled={availableTasks.elementary.length < 1}
               >
-                Elementary
-                {' '}
+                Elementary{" "}
                 <span className="text-nowrap">
                   {`(${availableTasks.elementary.length} available)`}
                 </span>
@@ -137,32 +141,26 @@ function TournamentGameCreatePanel({
               <button
                 type="button"
                 className="btn btn-sm btn-secondary cb-btn-secondary py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel('easy')}
+                onClick={() => setSelectedTaskLevel("easy")}
                 disabled={availableTasks.easy.length < 1}
               >
-                Easy
-                {' '}
-                {availableTasks.easy.length}
+                Easy {availableTasks.easy.length}
               </button>
               <button
                 type="button"
                 className="btn btn-sm btn-warning py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel('medium')}
+                onClick={() => setSelectedTaskLevel("medium")}
                 disabled={availableTasks.medium.length < 1}
               >
-                Medium
-                {' '}
-                {availableTasks.medium.length}
+                Medium {availableTasks.medium.length}
               </button>
               <button
                 type="button"
                 className="btn btn-sm btn-danger py-1 m-1 cb-rounded"
-                onClick={() => setSelectedTaskLevel('hard')}
+                onClick={() => setSelectedTaskLevel("hard")}
                 disabled={availableTasks.hard.length < 1}
               >
-                Hard
-                {' '}
-                {availableTasks.hard.length}
+                Hard {availableTasks.hard.length}
               </button>
             </div>
           </div>
@@ -182,18 +180,20 @@ function TournamentGameCreatePanel({
                 src={selectedPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(selectedPlayer)}
                 className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar cb-rounded p-2"
               />
-              {
-                opponentPlayer && (
-                  <>
-                    vs
-                    <img
-                      alt={`${opponentPlayer.name} avatar`}
-                      src={opponentPlayer.avatarUrl || getCustomEventPlayerDefaultImgUrl(opponentPlayer) || tournamentEmptyPlayerUrl}
-                      className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
-                    />
-                  </>
-                )
-              }
+              {opponentPlayer && (
+                <>
+                  vs
+                  <img
+                    alt={`${opponentPlayer.name} avatar`}
+                    src={
+                      opponentPlayer.avatarUrl ||
+                      getCustomEventPlayerDefaultImgUrl(opponentPlayer) ||
+                      tournamentEmptyPlayerUrl
+                    }
+                    className="d-none d-md-block d-lg-block d-xl-block align-self-center cb-tournament-profile-avatar rounded p-2"
+                  />
+                </>
+              )}
             </div>
             <div className="d-flex flex-column justify-content-center">
               <span className="h6 p-1 text-nowrap">{`Player: ${selectedPlayer.name}`}</span>
@@ -204,11 +204,7 @@ function TournamentGameCreatePanel({
                 <span className="h6 text-nowrap">
                   {`Level: ${selectedTaskLevel} (${availableTasks[selectedTaskLevel].length} available)`}
                 </span>
-                <button
-                  type="button"
-                  className="btn btn-sm"
-                  onClick={clearSelectedTaskLevel}
-                >
+                <button type="button" className="btn btn-sm" onClick={clearSelectedTaskLevel}>
                   <FontAwesomeIcon icon="pen" />
                 </button>
               </div>
@@ -235,9 +231,7 @@ function TournamentGameCreatePanel({
                   }}
                   className="my-1 mr-1"
                 />
-                <label htmlFor="round-seconds">
-                  Match seconds
-                </label>
+                <label htmlFor="round-seconds">Match seconds</label>
               </div>
               {activeMatch ? (
                 <button

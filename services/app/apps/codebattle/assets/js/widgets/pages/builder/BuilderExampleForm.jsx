@@ -1,26 +1,20 @@
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  memo,
-  useContext,
-} from 'react';
+import React, { useRef, useState, useCallback, memo, useContext } from "react";
 
-import cn from 'classnames';
-import cloneDeep from 'lodash/cloneDeep';
-import { useDispatch, useSelector } from 'react-redux';
+import cn from "classnames";
+import cloneDeep from "lodash/cloneDeep";
+import { useDispatch, useSelector } from "react-redux";
 
-import RoomContext from '../../components/RoomContext';
-import { actions } from '../../slices';
-import { MAX_INPUT_ARGUMENTS_COUNT } from '../../utils/builder';
-import useKey from '../../utils/useKey';
+import RoomContext from "../../components/RoomContext";
+import { actions } from "../../slices";
+import { MAX_INPUT_ARGUMENTS_COUNT } from "../../utils/builder";
+import useKey from "../../utils/useKey";
 
-import ExamplesEditPanel from './ExamplesEditPanel';
-import InputSignatureEditPanel from './InputSignatureEditPanel';
-import OutputSignatureEditPanel from './OutputSignatureEditPanel';
-import PreviewAssertsPanel from './PreviewAssertsPanel';
+import ExamplesEditPanel from "./ExamplesEditPanel";
+import InputSignatureEditPanel from "./InputSignatureEditPanel";
+import OutputSignatureEditPanel from "./OutputSignatureEditPanel";
+import PreviewAssertsPanel from "./PreviewAssertsPanel";
 
-const navbarItemClassName = 'nav-item nav-link col-3 border-0 rounded-0 px-1 py-2';
+const navbarItemClassName = "nav-item nav-link col-3 border-0 rounded-0 px-1 py-2";
 
 function BuilderExampleForm() {
   const dispatch = useDispatch();
@@ -47,8 +41,8 @@ function BuilderExampleForm() {
     setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, [exampleEditTabRef, exampleArgumentsInputRef]);
 
-  useKey('Escape', () => {
-    if (!argumentsTabRef.current.classList.contains('active')) {
+  useKey("Escape", () => {
+    if (!argumentsTabRef.current.classList.contains("active")) {
       argumentsTabRef.current?.click();
     }
   });
@@ -62,25 +56,37 @@ function BuilderExampleForm() {
   const [exampleSuggest, setExampleSuggest] = useState();
 
   const createInputTypeSuggest = useCallback(() => {
-    setInputSuggest({ id: Date.now(), argumentName: '', type: { name: 'integer' } });
+    setInputSuggest({ id: Date.now(), argumentName: "", type: { name: "integer" } });
     setTimeout(() => inputEditTabRef.current?.click(), 10);
     setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [setInputSuggest]);
-  const editInputType = useCallback((item) => {
-    setInputSuggest(cloneDeep(item));
-    setTimeout(() => inputEditTabRef.current?.click(), 10);
-    setTimeout(() => inputSuggestRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    }), 10);
-  }, [setInputSuggest]);
-  const deleteInputType = useCallback((item) => {
-    dispatch(actions.removeTaskInputType({
-      typeId: item.id,
-    }));
-    taskService.send('CHANGES');
-  }, [dispatch, taskService]);
+  const editInputType = useCallback(
+    (item) => {
+      setInputSuggest(cloneDeep(item));
+      setTimeout(() => inputEditTabRef.current?.click(), 10);
+      setTimeout(
+        () =>
+          inputSuggestRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          }),
+        10,
+      );
+    },
+    [setInputSuggest],
+  );
+  const deleteInputType = useCallback(
+    (item) => {
+      dispatch(
+        actions.removeTaskInputType({
+          typeId: item.id,
+        }),
+      );
+      taskService.send("CHANGES");
+    },
+    [dispatch, taskService],
+  );
   const clearInputSuggest = useCallback(() => {
     setInputSuggest();
     argumentsTabRef.current?.click();
@@ -88,21 +94,23 @@ function BuilderExampleForm() {
   const submitNewInputSignature = useCallback(() => {
     setExampleSuggest();
 
-    taskService.send('CHANGES');
+    taskService.send("CHANGES");
 
     let inputSignatureTypeCount = inputSignature.length;
-    const existedInputType = inputSignature.find(
-      (item) => item.id === inputSuggest.id,
-    );
+    const existedInputType = inputSignature.find((item) => item.id === inputSuggest.id);
 
     if (existedInputType) {
-      dispatch(actions.updateTaskInputType({
-        newType: cloneDeep(inputSuggest),
-      }));
+      dispatch(
+        actions.updateTaskInputType({
+          newType: cloneDeep(inputSuggest),
+        }),
+      );
     } else {
-      dispatch(actions.addTaskInputType({
-        newType: cloneDeep(inputSuggest),
-      }));
+      dispatch(
+        actions.addTaskInputType({
+          newType: cloneDeep(inputSuggest),
+        }),
+      );
       inputSignatureTypeCount += 1;
     }
 
@@ -111,60 +119,84 @@ function BuilderExampleForm() {
     } else {
       createInputTypeSuggest();
     }
-  }, [createInputTypeSuggest, clearInputSuggest, inputSignature, inputSuggest, dispatch, taskService]);
+  }, [
+    createInputTypeSuggest,
+    clearInputSuggest,
+    inputSignature,
+    inputSuggest,
+    dispatch,
+    taskService,
+  ]);
 
-  const editOutputType = useCallback((newOutputSignature) => {
-    setOutputSuggest(cloneDeep(newOutputSignature));
-    setTimeout(() => outputEditTabRef.current?.click(), 10);
-  }, [setOutputSuggest]);
+  const editOutputType = useCallback(
+    (newOutputSignature) => {
+      setOutputSuggest(cloneDeep(newOutputSignature));
+      setTimeout(() => outputEditTabRef.current?.click(), 10);
+    },
+    [setOutputSuggest],
+  );
   const clearOutputSuggest = useCallback(() => {
     setOutputSuggest();
     argumentsTabRef.current?.click();
   }, [setOutputSuggest]);
   const submitNewOutputType = useCallback(() => {
-    dispatch(actions.updateTaskOutputType({
-      newType: cloneDeep(outputSuggest),
-    }));
+    dispatch(
+      actions.updateTaskOutputType({
+        newType: cloneDeep(outputSuggest),
+      }),
+    );
 
-    taskService.send('CHANGES');
+    taskService.send("CHANGES");
     clearOutputSuggest();
   }, [clearOutputSuggest, outputSuggest, dispatch, taskService]);
 
   const createExampleSuggest = useCallback(() => {
-    setExampleSuggest({ id: Date.now(), arguments: '', expected: '' });
+    setExampleSuggest({ id: Date.now(), arguments: "", expected: "" });
     setTimeout(() => exampleEditTabRef.current?.click(), 10);
     setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, []);
-  const editExample = useCallback((example) => {
-    setExampleSuggest(cloneDeep(example));
-    setTimeout(() => exampleEditTabRef.current?.click(), 10);
-    setTimeout(() => exampleSuggestRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    }), 10);
-  }, [setExampleSuggest]);
-  const deleteExample = useCallback((example) => {
-    dispatch(actions.removeTaskExample({
-      exampleId: example.id,
-    }));
-    taskService.send('CHANGES');
-  }, [dispatch, taskService]);
+  const editExample = useCallback(
+    (example) => {
+      setExampleSuggest(cloneDeep(example));
+      setTimeout(() => exampleEditTabRef.current?.click(), 10);
+      setTimeout(
+        () =>
+          exampleSuggestRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "start",
+          }),
+        10,
+      );
+    },
+    [setExampleSuggest],
+  );
+  const deleteExample = useCallback(
+    (example) => {
+      dispatch(
+        actions.removeTaskExample({
+          exampleId: example.id,
+        }),
+      );
+      taskService.send("CHANGES");
+    },
+    [dispatch, taskService],
+  );
   const clearExample = useCallback(() => {
     setExampleSuggest();
     argumentsTabRef.current?.click();
   }, [setExampleSuggest]);
   const submitNewExample = useCallback(() => {
-    const existingExample = examples.find((example) => (example.id === exampleSuggest.id));
+    const existingExample = examples.find((example) => example.id === exampleSuggest.id);
 
-    taskService.send('CHANGES');
-    const setExample = existingExample
-      ? actions.updateTaskExample
-      : actions.addTaskExample;
+    taskService.send("CHANGES");
+    const setExample = existingExample ? actions.updateTaskExample : actions.addTaskExample;
 
-    dispatch(setExample({
-      newExample: cloneDeep(exampleSuggest),
-    }));
+    dispatch(
+      setExample({
+        newExample: cloneDeep(exampleSuggest),
+      }),
+    );
 
     createExampleSuggest();
   }, [examples, exampleSuggest, createExampleSuggest, dispatch, taskService]);
@@ -198,7 +230,7 @@ function BuilderExampleForm() {
           <a
             ref={inputEditTabRef}
             className={cn(navbarItemClassName, {
-              'd-none': !inputSuggest,
+              "d-none": !inputSuggest,
             })}
             id="inputEdit-tab"
             data-toggle="tab"
@@ -212,7 +244,7 @@ function BuilderExampleForm() {
           <a
             ref={outputEditTabRef}
             className={cn(navbarItemClassName, {
-              'd-none': !outputSuggest,
+              "d-none": !outputSuggest,
             })}
             id="outputEdit-tab"
             data-toggle="tab"
@@ -226,7 +258,7 @@ function BuilderExampleForm() {
           <a
             ref={exampleEditTabRef}
             className={cn(navbarItemClassName, {
-              'd-none': !exampleSuggest,
+              "d-none": !exampleSuggest,
             })}
             id="exampleEdit-tab"
             data-toggle="tab"

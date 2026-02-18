@@ -1,10 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import SolutionTypeCodes from '../config/solutionTypes';
-import { addRecord, parse } from '../lib/player';
+import SolutionTypeCodes from "../config/solutionTypes";
+import { addRecord, parse } from "../lib/player";
 
-import { actions as editorActions } from './editor';
-import { actions as executionOutputActions } from './executionOutput';
+import { actions as editorActions } from "./editor";
+import { actions as executionOutputActions } from "./executionOutput";
 
 const initialState = {
   mainEvents: [],
@@ -16,11 +16,13 @@ const initialState = {
 };
 
 const playbook = createSlice({
-  name: 'playbook',
+  name: "playbook",
   initialState,
   reducers: {
     loadPlaybook: (state, { payload }) => {
-      const mainEvents = payload.records.filter((record) => parse(record).type === 'check_complete').map(parse);
+      const mainEvents = payload.records
+        .filter((record) => parse(record).type === "check_complete")
+        .map(parse);
       return { ...state, ...payload, mainEvents };
     },
     changeSolutionType: (state, { payload }) => ({ ...state, solutionType: payload.solutionType }),
@@ -31,7 +33,7 @@ const playbook = createSlice({
         const { players, records } = addRecord({
           ...state,
           payload,
-          type: 'update_editor_data',
+          type: "update_editor_data",
         });
 
         return {
@@ -44,7 +46,7 @@ const playbook = createSlice({
         const { players, records } = addRecord({
           ...state,
           payload,
-          type: 'check_complete',
+          type: "check_complete",
         });
 
         return {

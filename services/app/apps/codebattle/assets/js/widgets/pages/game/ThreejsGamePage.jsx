@@ -1,33 +1,28 @@
-import React, {
-  memo,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { memo, useEffect, useRef, useState } from "react";
 
-import MonacoEditor from '@monaco-editor/react';
-import Gon from 'gon';
-import i18next from 'i18next';
+import MonacoEditor from "@monaco-editor/react";
+import Gon from "gon";
+import i18next from "i18next";
 
-import '../../initEditor';
-import socket from '../../../socket';
-import languages from '../../config/languages';
+import "../../initEditor";
+import socket from "../../../socket";
+import languages from "../../config/languages";
 
 const loadThree = async () => {
-  const threeUrl = 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
+  const threeUrl = "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js";
   return import(/* @vite-ignore */ threeUrl);
 };
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
 const brand = {
-  gold: '#e0bf7a',
-  silver: '#c2c9d6',
-  bronze: '#c48a57',
-  platinum: '#a4aab3',
-  steel: '#8a919c',
-  red: '#ef4444',
-  cyan: '#38bdf8',
+  gold: "#e0bf7a",
+  silver: "#c2c9d6",
+  bronze: "#c48a57",
+  platinum: "#a4aab3",
+  steel: "#8a919c",
+  red: "#ef4444",
+  cyan: "#38bdf8",
 };
 
 const editorThemes = [
@@ -41,14 +36,14 @@ const editorThemes = [
   },
 ];
 
-const matrixCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const matrixCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
 const MATRIX_CELL_WIDTH = 14;
 const MATRIX_CELL_HEIGHT = 18;
 
 const getPlayerId = (player) => player?.id;
-const getPlayerName = (player) => player?.name || 'Unknown';
-const getPlayerLang = (player) => player?.editorLang || player?.editor_lang || 'js';
-const getPlayerText = (player) => player?.editorText || player?.editor_text || '';
+const getPlayerName = (player) => player?.name || "Unknown";
+const getPlayerLang = (player) => player?.editorLang || player?.editor_lang || "js";
+const getPlayerText = (player) => player?.editorText || player?.editor_text || "";
 
 const normalizePlayer = (player, fallback = {}) => {
   const editorText = getPlayerText(player) || getPlayerText(fallback);
@@ -63,7 +58,10 @@ const normalizePlayer = (player, fallback = {}) => {
 };
 
 const normalizePlayers = (players = [], prevPlayers = []) => {
-  const prevById = prevPlayers.reduce((acc, player) => ({ ...acc, [getPlayerId(player)]: player }), {});
+  const prevById = prevPlayers.reduce(
+    (acc, player) => ({ ...acc, [getPlayerId(player)]: player }),
+    {},
+  );
 
   return players.map((player) => {
     const id = getPlayerId(player);
@@ -71,7 +69,8 @@ const normalizePlayers = (players = [], prevPlayers = []) => {
   });
 };
 
-const updatePlayerEditorData = (players, userId, editorText, editorLang) => players.map((player) => {
+const updatePlayerEditorData = (players, userId, editorText, editorLang) =>
+  players.map((player) => {
     if (String(getPlayerId(player)) !== String(userId)) {
       return player;
     }
@@ -95,7 +94,8 @@ const pickPlayers = (payload = {}) => {
   return null;
 };
 
-const stateFromPayload = (payload = {}) => payload.state || payload.game_state || payload.gameState || null;
+const stateFromPayload = (payload = {}) =>
+  payload.state || payload.game_state || payload.gameState || null;
 
 const getTypingIntensity = (typingMeta, now) => {
   if (!typingMeta?.lastPulseAt) {
@@ -110,8 +110,8 @@ const getTypingIntensity = (typingMeta, now) => {
 };
 
 const getOutcomeIds = (players = []) => {
-  const winner = players.find((p) => p?.result === 'won');
-  const loser = players.find((p) => p?.result === 'lost' || p?.result === 'gave_up');
+  const winner = players.find((p) => p?.result === "won");
+  const loser = players.find((p) => p?.result === "lost" || p?.result === "gave_up");
 
   return {
     winnerId: winner?.id || null,
@@ -122,14 +122,13 @@ const getOutcomeIds = (players = []) => {
 const parseTestProgress = (payload = {}) => {
   const checkResult = payload.check_result || payload.checkResult || {};
 
-  const successCount = checkResult.success_count
-    || checkResult.successCount
-    || checkResult.success
-    || 0;
-  const assertsCount = checkResult.asserts_count
-    || checkResult.assertsCount
-    || (Array.isArray(checkResult.asserts) ? checkResult.asserts.length : 0)
-    || 0;
+  const successCount =
+    checkResult.success_count || checkResult.successCount || checkResult.success || 0;
+  const assertsCount =
+    checkResult.asserts_count ||
+    checkResult.assertsCount ||
+    (Array.isArray(checkResult.asserts) ? checkResult.asserts.length : 0) ||
+    0;
 
   return {
     successCount,
@@ -187,14 +186,10 @@ const initMatrixState = (canvas) => {
   }));
 };
 
-const drawMatrixBackground = ({
-  canvas,
-  ctx,
-  columns,
-}) => {
+const drawMatrixBackground = ({ canvas, ctx, columns }) => {
   const { width, height } = canvas;
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.09)';
+  ctx.fillStyle = "rgba(0, 0, 0, 0.09)";
   ctx.fillRect(0, 0, width, height);
 
   ctx.font = `bold ${MATRIX_CELL_HEIGHT}px Menlo, Monaco, Consolas, monospace`;
@@ -230,49 +225,43 @@ const editorOptions = {
   readOnly: true,
   automaticLayout: true,
   scrollBeyondLastLine: false,
-  lineNumbers: 'on',
+  lineNumbers: "on",
   fontSize: 32,
-  wordWrap: 'off',
-  renderWhitespace: 'none',
+  wordWrap: "off",
+  renderWhitespace: "none",
   contextmenu: false,
 };
 
-const initialGame = Gon.getAsset('game') || {};
+const initialGame = Gon.getAsset("game") || {};
 
-function MonacoPane({
-  player,
-  tests,
-  border,
-  accent,
-  onMount,
-}) {
+function MonacoPane({ player, tests, border, accent, onMount }) {
   const total = tests?.assertsCount || 0;
   const success = tests?.successCount || 0;
   const percent = total > 0 ? clamp((success / total) * 100, 0, 100) : 0;
 
-  const language = languages[getPlayerLang(player)] || 'javascript';
+  const language = languages[getPlayerLang(player)] || "javascript";
 
   const wrapperStyle = {
     border: `${border.width}px solid ${border.color}`,
     boxShadow: `0 0 28px rgba(224, 191, 122, ${border.alpha})`,
-    background: '#090d16',
-    borderRadius: '10px',
-    overflow: 'hidden',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
+    background: "#090d16",
+    borderRadius: "10px",
+    overflow: "hidden",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
   };
 
   return (
     <div style={wrapperStyle}>
       <div
         style={{
-          background: '#060a12',
-          color: '#fff',
-          fontFamily: 'Menlo, Monaco, Consolas, monospace',
+          background: "#060a12",
+          color: "#fff",
+          fontFamily: "Menlo, Monaco, Consolas, monospace",
           fontWeight: 700,
-          fontSize: '20px',
-          padding: '10px 14px',
+          fontSize: "20px",
+          padding: "10px 14px",
           borderBottom: `2px solid ${accent}`,
         }}
       >
@@ -290,27 +279,27 @@ function MonacoPane({
       </div>
       <div
         style={{
-          background: '#060a12',
-          padding: '10px 14px 12px',
-          borderTop: '1px solid #111827',
-          fontFamily: 'Menlo, Monaco, Consolas, monospace',
+          background: "#060a12",
+          padding: "10px 14px 12px",
+          borderTop: "1px solid #111827",
+          fontFamily: "Menlo, Monaco, Consolas, monospace",
         }}
       >
         <div
           style={{
-            color: '#fff',
-            fontSize: '20px',
-            marginBottom: '8px',
+            color: "#fff",
+            fontSize: "20px",
+            marginBottom: "8px",
             fontWeight: 700,
           }}
         >
           {`Tests: ${success}/${total}`}
         </div>
-        <div style={{ height: '16px', background: '#0f172a' }}>
+        <div style={{ height: "16px", background: "#0f172a" }}>
           <div
             style={{
               width: `${percent}%`,
-              height: '100%',
+              height: "100%",
               background: accent,
             }}
           />
@@ -331,7 +320,7 @@ function ThreejsGamePage() {
 
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [battleState, setBattleState] = useState({
-    gameState: initialGame.state || 'waiting_opponent',
+    gameState: initialGame.state || "waiting_opponent",
     players: normalizePlayers(initialGame.players || []),
     checking: {},
     typing: {},
@@ -351,17 +340,19 @@ function ThreejsGamePage() {
 
   useEffect(() => {
     const onFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement && document.fullscreenElement === arenaRef.current));
+      setIsFullscreen(
+        Boolean(document.fullscreenElement && document.fullscreenElement === arenaRef.current),
+      );
     };
 
-    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
-      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
     };
   }, []);
 
   useEffect(() => {
-    const gameId = Gon.getAsset('game_id');
+    const gameId = Gon.getAsset("game_id");
     if (!gameId) {
       return () => {};
     }
@@ -375,7 +366,7 @@ function ThreejsGamePage() {
       const applyRemoteCursor = (userId, offset) => {
         const editor = editorRefs.current[userId];
         const monaco = monacoApiRef.current;
-        if (!editor || !monaco || typeof offset !== 'number') {
+        if (!editor || !monaco || typeof offset !== "number") {
           return;
         }
 
@@ -396,7 +387,7 @@ function ThreejsGamePage() {
             position.lineNumber,
             position.column,
           ),
-          options: { className: 'cb-editor-remote-cursor cb-remote-opponent' },
+          options: { className: "cb-editor-remote-cursor cb-remote-opponent" },
         };
 
         store.cursor = editor.deltaDecorations(store.cursor, [cursorDecoration]);
@@ -406,7 +397,12 @@ function ThreejsGamePage() {
       const applyRemoteSelection = (userId, startOffset, endOffset) => {
         const editor = editorRefs.current[userId];
         const monaco = monacoApiRef.current;
-        if (!editor || !monaco || typeof startOffset !== 'number' || typeof endOffset !== 'number') {
+        if (
+          !editor ||
+          !monaco ||
+          typeof startOffset !== "number" ||
+          typeof endOffset !== "number"
+        ) {
           return;
         }
 
@@ -419,13 +415,8 @@ function ThreejsGamePage() {
         const finish = model.getPositionAt(endOffset);
         const store = remoteDecorationsRef.current[userId] || { cursor: [], selection: [] };
         const selectionDecoration = {
-          range: new monaco.Range(
-            start.lineNumber,
-            start.column,
-            finish.lineNumber,
-            finish.column,
-          ),
-          options: { className: 'cb-editor-remote-selection cb-remote-opponent' },
+          range: new monaco.Range(start.lineNumber, start.column, finish.lineNumber, finish.column),
+          options: { className: "cb-editor-remote-selection cb-remote-opponent" },
         };
 
         store.selection = editor.deltaDecorations(store.selection, [selectionDecoration]);
@@ -439,26 +430,26 @@ function ThreejsGamePage() {
           return;
         }
 
-        if (typeof scrollTop === 'number') {
+        if (typeof scrollTop === "number") {
           editor.setScrollTop(scrollTop);
         }
 
-        if (typeof scrollLeft === 'number') {
+        if (typeof scrollLeft === "number") {
           editor.setScrollLeft(scrollLeft);
         }
       };
 
-      if (event === 'editor:cursor_position') {
+      if (event === "editor:cursor_position") {
         applyRemoteCursor(eventUserId, payload.offset);
         return;
       }
 
-      if (event === 'editor:cursor_selection') {
+      if (event === "editor:cursor_selection") {
         applyRemoteSelection(eventUserId, payload.start_offset, payload.end_offset);
         return;
       }
 
-      if (event === 'editor:scroll_position') {
+      if (event === "editor:scroll_position") {
         applyRemoteScroll(eventUserId, payload.scroll_top, payload.scroll_left);
         return;
       }
@@ -475,14 +466,16 @@ function ThreejsGamePage() {
         const nextTyping = { ...prev.typing };
         const nextTests = { ...prev.tests };
         const nextFx = { ...prev.fx };
-        let nextPlayers = playersUpdate ? normalizePlayers(playersUpdate, prev.players) : prev.players;
+        let nextPlayers = playersUpdate
+          ? normalizePlayers(playersUpdate, prev.players)
+          : prev.players;
 
-        if (event === 'user:start_check' && userId) {
+        if (event === "user:start_check" && userId) {
           nextChecking[userId] = true;
           nextFx.checkAt = now;
         }
 
-        if (event === 'user:check_complete' && userId) {
+        if (event === "user:check_complete" && userId) {
           nextChecking[userId] = false;
           nextTests[userId] = parseTestProgress(payload);
 
@@ -497,7 +490,7 @@ function ThreejsGamePage() {
           }
         }
 
-        if (event === 'user:won' || event === 'user:give_up') {
+        if (event === "user:won" || event === "user:give_up") {
           const { winnerId, loserId } = getOutcomeIds(nextPlayers);
           if (winnerId) {
             nextFx.winAt = now;
@@ -509,9 +502,9 @@ function ThreejsGamePage() {
           }
         }
 
-        if (event === 'editor:data' && userId && typeof editorText === 'string') {
+        if (event === "editor:data" && userId && typeof editorText === "string") {
           const typingMeta = nextTyping[userId] || {};
-          const lastText = typingMeta.lastText || '';
+          const lastText = typingMeta.lastText || "";
           const lastTs = typingMeta.lastTs || now;
 
           const dt = Math.max(now - lastTs, 1);
@@ -546,17 +539,17 @@ function ThreejsGamePage() {
     };
 
     [
-      'game:user_joined',
-      'editor:data',
-      'editor:cursor_position',
-      'editor:cursor_selection',
-      'editor:scroll_position',
-      'user:start_check',
-      'user:check_complete',
-      'user:give_up',
-      'user:won',
-      'game:timeout',
-      'game:finished',
+      "game:user_joined",
+      "editor:data",
+      "editor:cursor_position",
+      "editor:cursor_selection",
+      "editor:scroll_position",
+      "user:start_check",
+      "user:check_complete",
+      "user:give_up",
+      "user:won",
+      "game:timeout",
+      "game:finished",
     ].forEach(addHandler);
 
     channel.join();
@@ -573,7 +566,7 @@ function ThreejsGamePage() {
       return () => {};
     }
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     let frameId;
     let matrixColumns = [];
 
@@ -581,7 +574,7 @@ function ThreejsGamePage() {
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
       matrixColumns = initMatrixState(canvas);
-      ctx.fillStyle = '#000';
+      ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     };
 
@@ -597,11 +590,11 @@ function ThreejsGamePage() {
     };
 
     frameId = window.requestAnimationFrame(loop);
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
@@ -634,7 +627,7 @@ function ThreejsGamePage() {
 
       const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       renderer.setClearColor(0x000000, 0);
-      container.innerHTML = '';
+      container.innerHTML = "";
       container.appendChild(renderer.domElement);
 
       const particles = [];
@@ -675,7 +668,7 @@ function ThreejsGamePage() {
       };
 
       resize();
-      window.addEventListener('resize', resize);
+      window.addEventListener("resize", resize);
 
       const loop = () => {
         if (!alive) {
@@ -728,14 +721,14 @@ function ThreejsGamePage() {
       frameId = window.requestAnimationFrame(loop);
 
       const cleanup = () => {
-        window.removeEventListener('resize', resize);
+        window.removeEventListener("resize", resize);
         particles.forEach((p) => {
           scene.remove(p.mesh);
           p.mesh.geometry.dispose();
           p.mesh.material.dispose();
         });
         renderer.dispose();
-        container.innerHTML = '';
+        container.innerHTML = "";
       };
 
       runtime.cleanup = cleanup;
@@ -816,21 +809,27 @@ function ThreejsGamePage() {
   };
 
   return (
-    <div className={isFullscreen ? '' : 'container-fluid px-2 py-2'}>
+    <div className={isFullscreen ? "" : "container-fluid px-2 py-2"}>
       <div className="row">
         <div className="col-12">
           <div
             ref={arenaRef}
-            className={isFullscreen ? '' : 'card shadow-sm border-0'}
-            style={{ minHeight: isFullscreen ? '100vh' : '78vh' }}
+            className={isFullscreen ? "" : "card shadow-sm border-0"}
+            style={{ minHeight: isFullscreen ? "100vh" : "78vh" }}
           >
             {!isFullscreen && (
               <div className="card-header d-flex justify-content-between align-items-center">
-                <strong>{i18next.t('Matrix Broadcast Arena')}</strong>
+                <strong>{i18next.t("Matrix Broadcast Arena")}</strong>
                 <div className="d-flex align-items-center">
-                  <span className="badge badge-secondary text-uppercase mr-2">{battleState.gameState}</span>
-                  <button type="button" className="btn btn-sm btn-outline-secondary" onClick={toggleFullscreen}>
-                    {i18next.t('Fullscreen')}
+                  <span className="badge badge-secondary text-uppercase mr-2">
+                    {battleState.gameState}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={toggleFullscreen}
+                  >
+                    {i18next.t("Fullscreen")}
                   </button>
                 </div>
               </div>
@@ -838,52 +837,52 @@ function ThreejsGamePage() {
 
             <div
               style={{
-                position: 'relative',
-                height: isFullscreen ? '100vh' : '68vh',
-                minHeight: isFullscreen ? '100vh' : '68vh',
-                background: '#000',
-                overflow: 'hidden',
+                position: "relative",
+                height: isFullscreen ? "100vh" : "68vh",
+                minHeight: isFullscreen ? "100vh" : "68vh",
+                background: "#000",
+                overflow: "hidden",
               }}
             >
               <canvas
                 ref={matrixRef}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
-                  width: '100%',
-                  height: '100%',
+                  width: "100%",
+                  height: "100%",
                 }}
               />
 
               <div
                 ref={fxRef}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 0,
                   left: 0,
-                  width: '100%',
-                  height: '100%',
-                  pointerEvents: 'none',
+                  width: "100%",
+                  height: "100%",
+                  pointerEvents: "none",
                   zIndex: 2,
                 }}
               />
 
               <div
                 style={{
-                  position: 'relative',
+                  position: "relative",
                   zIndex: 3,
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: '18px',
-                  width: '100%',
-                  height: isFullscreen ? '100vh' : '68vh',
-                  minHeight: isFullscreen ? '100vh' : '68vh',
-                  padding: isFullscreen ? '16px' : '14px',
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "18px",
+                  width: "100%",
+                  height: isFullscreen ? "100vh" : "68vh",
+                  minHeight: isFullscreen ? "100vh" : "68vh",
+                  padding: isFullscreen ? "16px" : "14px",
                 }}
               >
                 <MonacoPane
-                  key={`left-${getPlayerId(leftPlayer) || 'none'}`}
+                  key={`left-${getPlayerId(leftPlayer) || "none"}`}
                   player={leftPlayer}
                   tests={battleState.tests[getPlayerId(leftPlayer)]}
                   border={leftBorder}
@@ -892,7 +891,7 @@ function ThreejsGamePage() {
                 />
 
                 <MonacoPane
-                  key={`right-${getPlayerId(rightPlayer) || 'none'}`}
+                  key={`right-${getPlayerId(rightPlayer) || "none"}`}
                   player={rightPlayer}
                   tests={battleState.tests[getPlayerId(rightPlayer)]}
                   border={rightBorder}

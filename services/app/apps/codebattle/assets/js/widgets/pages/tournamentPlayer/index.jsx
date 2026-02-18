@@ -1,3 +1,3 @@
-import TournamentPlayerWidget from './TournamentPlayer';
+import TournamentPlayerWidget from "./TournamentPlayer";
 
 export default TournamentPlayerWidget;

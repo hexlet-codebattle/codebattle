@@ -10,12 +10,12 @@
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import 'core-js/stable';
-import 'bootstrap';
-import 'phoenix_html';
-import { renderEventPage } from './widgets';
+import "core-js/stable";
+import "bootstrap";
+import "phoenix_html";
+import { renderEventPage } from "./widgets";
 
-const eventWidgetRoot = document.getElementById('event-widget');
+const eventWidgetRoot = document.getElementById("event-widget");
 
 if (eventWidgetRoot) {
   renderEventPage(eventWidgetRoot);

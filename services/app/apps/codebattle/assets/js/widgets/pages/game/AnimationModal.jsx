@@ -1,30 +1,34 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect } from "react";
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import i18n from 'i18next';
-import Button from 'react-bootstrap/Button';
-import { useSelector } from 'react-redux';
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import i18n from "i18next";
+import Button from "react-bootstrap/Button";
+import { useSelector } from "react-redux";
 
-import Modal from '@/components/BootstrapModal';
-import Loading from '@/components/Loading';
+import Modal from "@/components/BootstrapModal";
+import Loading from "@/components/Loading";
 
-import gifs from '../../config/gifs';
-import ModalCodes from '../../config/modalCodes';
-import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
+import gifs from "../../config/gifs";
+import ModalCodes from "../../config/modalCodes";
+import { gamePlayersSelector, currentUserIdSelector } from "../../selectors";
 
 function TournamentInfoPanel() {
   const waitType = useSelector((state) => state.game.waitType);
 
   switch (waitType) {
-    case 'tournament': return i18n.t('Tournament is over');
-    case 'round': return i18n.t('Round is over, wait for the next round');
-    case 'rematch': return (
-      <div className="d-flex flex-row">
-        <Loading adaptive />
-        <span className="pl-2">{i18n.t('Loading next game')}</span>
-      </div>
-    );
-    default: return <></>;
+    case "tournament":
+      return i18n.t("Tournament is over");
+    case "round":
+      return i18n.t("Round is over, wait for the next round");
+    case "rematch":
+      return (
+        <div className="d-flex flex-row">
+          <Loading adaptive />
+          <span className="pl-2">{i18n.t("Loading next game")}</span>
+        </div>
+      );
+    default:
+      return <></>;
   }
 }
 
@@ -44,23 +48,20 @@ const AnimationModal = NiceModal.create(() => {
 
   const currentPlayer = players[currentUserId];
 
-  if (!currentPlayer || currentPlayer.result === 'undefined') {
+  if (!currentPlayer || currentPlayer.result === "undefined") {
     return null;
   }
 
   const { result } = currentPlayer;
 
-  const titleModal = result === 'won'
-    ? i18n.t("Woohoo, you're Champion!!!!!")
-    : i18n.t("If you read this you've lost the game");
-  const buttonText = result === 'won' ? i18n.t('GG') : i18n.t("I'll be back");
+  const titleModal =
+    result === "won"
+      ? i18n.t("Woohoo, you're Champion!!!!!")
+      : i18n.t("If you read this you've lost the game");
+  const buttonText = result === "won" ? i18n.t("GG") : i18n.t("I'll be back");
 
   return (
-    <Modal
-      show={modal.visible}
-      onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
-    >
+    <Modal show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
       <Modal.Header className="cb-border-color" closeButton>
         <Modal.Title>{titleModal}</Modal.Title>
       </Modal.Header>
@@ -68,7 +69,7 @@ const AnimationModal = NiceModal.create(() => {
         <div className="d-flex justify-content-center">
           <img
             className="w-100 cb-rounded"
-            style={{ maxWidth: '400px' }}
+            style={{ maxWidth: "400px" }}
             src={gifs[result]}
             alt="animation"
           />

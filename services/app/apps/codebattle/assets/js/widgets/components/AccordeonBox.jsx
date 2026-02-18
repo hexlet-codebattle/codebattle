@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import uniqueId from 'lodash/uniqueId';
-import Tooltip from 'react-bootstrap/Tooltip';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import uniqueId from "lodash/uniqueId";
+import Tooltip from "react-bootstrap/Tooltip";
 
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import OverlayTrigger from "@/components/OverlayTriggerCompat";
 
-import i18n from '../../i18n';
-import color from '../config/statusColor';
+import i18n from "../../i18n";
+import color from "../config/statusColor";
 
 const getMessage = (status) => {
   switch (status) {
-    case 'error':
-      return i18n.t('Solution cannot be executed');
-    case 'failure':
-      return i18n.t('Test failed');
-    case 'ok':
-      return i18n.t('Yay! All tests passed!!111');
+    case "error":
+      return i18n.t("Solution cannot be executed");
+    case "failure":
+      return i18n.t("Test failed");
+    case "ok":
+      return i18n.t("Yay! All tests passed!!111");
     default:
-      return i18n.t('Press Check solution or press Give up');
+      return i18n.t("Press Check solution or press Give up");
   }
 };
 
@@ -32,29 +32,34 @@ function AccordeonBox({ children }) {
 }
 
 const renderFirstAssert = (firstAssert) => (
-  <AccordeonBox.SubMenu statusColor={color[firstAssert.status]} assert={firstAssert} hasOutput={firstAssert.output}>
+  <AccordeonBox.SubMenu
+    statusColor={color[firstAssert.status]}
+    assert={firstAssert}
+    hasOutput={firstAssert.output}
+  >
     <AccordeonBox.Item output={firstAssert.output} />
   </AccordeonBox.SubMenu>
 );
 
-function Menu({
-  children, firstAssert, resultData, assertsCount, successCount,
-}) {
+function Menu({ children, firstAssert, resultData, assertsCount, successCount }) {
   const [show, setShow] = useState(true);
-  const isSyntaxError = resultData.status === 'error';
+  const isSyntaxError = resultData.status === "error";
   const statusColor = color[resultData.status];
   const message = getMessage(resultData.status);
-  const classCollapse = cn('collapse', { show });
+  const classCollapse = cn("collapse", { show });
   const handleClick = () => {
     setShow(!show);
   };
-  const uniqIndex = uniqueId('heading');
+  const uniqIndex = uniqueId("heading");
   const percent = (100 * successCount) / assertsCount;
-  const assertsStatusMessage = i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', {
-    successCount,
-    assertsCount,
-    percent,
-  });
+  const assertsStatusMessage = i18n.t(
+    "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)",
+    {
+      successCount,
+      assertsCount,
+      percent,
+    },
+  );
 
   useEffect(() => {
     setShow(isSyntaxError);
@@ -62,7 +67,7 @@ function Menu({
 
   return (
     <div className="card cb-card border-0 rounded-0">
-      {statusColor === 'warning' || statusColor === 'danger' ? (
+      {statusColor === "warning" || statusColor === "danger" ? (
         <>
           <div className="card-header" id={`heading${uniqIndex} `}>
             <button
@@ -73,9 +78,15 @@ function Menu({
               aria-expanded="true"
               aria-controls={`collapse${uniqIndex}`}
             >
-              {show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
+              {show ? (
+                <FontAwesomeIcon icon="arrow-circle-up" />
+              ) : (
+                <FontAwesomeIcon icon="arrow-circle-down" />
+              )}
             </button>
-            {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
+            {!isSyntaxError && (
+              <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>
+            )}
             <span className={`badge badge-${statusColor}`}>{message}</span>
           </div>
           {firstAssert && renderFirstAssert(firstAssert)}
@@ -83,24 +94,20 @@ function Menu({
       ) : (
         <span className={`badge badge-${statusColor}`}>{message}</span>
       )}
-      <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
+      <div
+        id={`collapse${uniqIndex}`}
+        className={classCollapse}
+        aria-labelledby={`heading${uniqIndex}`}
+      >
         <div className="list-group list-group-flush">{children}</div>
       </div>
     </div>
   );
 }
 
-function SubMenu({
-  children,
-  statusColor,
-  assert,
-  hasOutput,
-  uniqIndex,
-  executionTime,
-  fontSize,
-}) {
+function SubMenu({ children, statusColor, assert, hasOutput, uniqIndex, executionTime, fontSize }) {
   const [isShowLog, setIsShowLog] = useState(true);
-  const classCollapse = cn('collapse', {
+  const classCollapse = cn("collapse", {
     show: isShowLog,
   });
 
@@ -113,14 +120,14 @@ function SubMenu({
     h2: fontSize === 4,
     h1: fontSize > 4,
   });
-  const assertClassName = cn('d-block', fontClassName);
+  const assertClassName = cn("d-block", fontClassName);
 
   return (
     <div className="list-group-item border-left-0 cb-border-color border-right-0 cb-bg-highlight-panel text-white">
       <div id={`heading${uniqIndex}`}>
         <div>
           <div className="d-flex align-items-center">
-            {statusColor === 'success' ? (
+            {statusColor === "success" ? (
               <FontAwesomeIcon
                 className={`text-${statusColor} mr-2 ${fontClassName}`}
                 icon="check-circle"
@@ -131,14 +138,20 @@ function SubMenu({
                 icon="exclamation-circle"
               />
             )}
-            <span className={`badge badge-${statusColor} mr-3 ${fontClassName}`}>{assert.status}</span>
+            <span className={`badge badge-${statusColor} mr-3 ${fontClassName}`}>
+              {assert.status}
+            </span>
             <OverlayTrigger
               overlay={<Tooltip id={assert.id}>Execution Time</Tooltip>}
               placement="top"
             >
               {executionTime !== undefined && Number(executionTime) !== 0 ? (
-                <span className={`badge badge-secondary mr-3 ${fontClassName}`}>{executionTime}</span>
-              ) : (<></>)}
+                <span className={`badge badge-secondary mr-3 ${fontClassName}`}>
+                  {executionTime}
+                </span>
+              ) : (
+                <></>
+              )}
             </OverlayTrigger>
             {assert.output && (
               <button
@@ -150,27 +163,28 @@ function SubMenu({
                 aria-controls={`collapse${uniqIndex}`}
               >
                 <span className={fontClassName}>
-                  <FontAwesomeIcon icon={isShowLog ? 'arrow-circle-up' : 'arrow-circle-down'} className="mr-1" />
-                  {i18n.t('STDOUT')}
+                  <FontAwesomeIcon
+                    icon={isShowLog ? "arrow-circle-up" : "arrow-circle-down"}
+                    className="mr-1"
+                  />
+                  {i18n.t("STDOUT")}
                 </span>
               </button>
             )}
           </div>
         </div>
         <pre className="my-1">
-          <span className={assertClassName}>
-            {`${i18n.t('Receive:')} ${result}`}
-          </span>
-          <span className={assertClassName}>
-            {`${i18n.t('Expected:')} ${assert.expected}`}
-          </span>
-          <span className={assertClassName}>
-            {`${i18n.t('Arguments:')} ${assert.arguments}`}
-          </span>
+          <span className={assertClassName}>{`${i18n.t("Receive:")} ${result}`}</span>
+          <span className={assertClassName}>{`${i18n.t("Expected:")} ${assert.expected}`}</span>
+          <span className={assertClassName}>{`${i18n.t("Arguments:")} ${assert.arguments}`}</span>
         </pre>
         {hasOutput && (
-          <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
-              {children}
+          <div
+            id={`collapse${uniqIndex}`}
+            className={classCollapse}
+            aria-labelledby={`heading${uniqIndex}`}
+          >
+            {children}
           </div>
         )}
       </div>
@@ -179,7 +193,7 @@ function SubMenu({
 }
 
 function Item({ output, fontSize }) {
-  if (output === '') {
+  if (output === "") {
     return null;
   }
 
@@ -193,9 +207,7 @@ function Item({ output, fontSize }) {
 
   return (
     <div className={`alert text-white mb-0 ${fontClassName}`}>
-      <pre>
-        {output}
-      </pre>
+      <pre>{output}</pre>
     </div>
   );
 }

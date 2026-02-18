@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "jsx-a11y",
+    "jest"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "preserve-caught-error": "off",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-key": "off",
+    "react/iframe-missing-sandbox": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/prefer-tag-over-role": "off",
+    "jsx-a11y/role-has-required-aria-props": "off"
+  },
+  "settings": {},
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "globals": {},
+  "ignorePatterns": [
+    "assets/js/monaco-workers/*.js"
+  ]
+}

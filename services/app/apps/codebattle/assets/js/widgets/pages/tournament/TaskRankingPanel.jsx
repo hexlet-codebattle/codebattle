@@ -1,22 +1,23 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useState, useCallback } from "react";
 
-import cn from 'classnames';
-import i18next from 'i18next';
-import { useDispatch } from 'react-redux';
+import cn from "classnames";
+import i18next from "i18next";
+import { useDispatch } from "react-redux";
 
-import { getResults } from '../../middlewares/Tournament';
+import { getResults } from "../../middlewares/Tournament";
 
-import useTournamentPanel from './useTournamentPanel';
+import useTournamentPanel from "./useTournamentPanel";
 
-const getCustomEventTrClassName = (level) => cn('cb-text-light font-weight-bold cb-custom-event-tr cursor-pointer', {
-    'cb-custom-event-bg-success': level === 'easy',
-    'cb-custom-event-bg-orange': level === 'elementary',
-    'cb-custom-event-bg-blue': level === 'medium',
-    'cb-custom-event-bg-brown': level === 'hard',
+const getCustomEventTrClassName = (level) =>
+  cn("cb-text-light font-weight-bold cb-custom-event-tr cursor-pointer", {
+    "cb-custom-event-bg-success": level === "easy",
+    "cb-custom-event-bg-orange": level === "elementary",
+    "cb-custom-event-bg-blue": level === "medium",
+    "cb-custom-event-bg-brown": level === "hard",
   });
 
 const tableDataCellClassName = cn(
-  'p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0',
+  "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0",
 );
 
 function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
@@ -36,32 +37,30 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Task")}</th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Task')}
+              {i18next.t("Count of solutions")}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Count of solutions')}
+              {i18next.t("Fastest time to solve task (sec)")}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Fastest time to solve task (sec)')}
+              {i18next.t("%{percent}% (sec)", { percent: 25 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('%{percent}% (sec)', { percent: 25 })}
+              {i18next.t("%{percent}% (sec)", { percent: 50 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('%{percent}% (sec)', { percent: 50 })}
+              {i18next.t("%{percent}% (sec)", { percent: 75 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('%{percent}% (sec)', { percent: 75 })}
+              {i18next.t("%{percent}% (sec)", { percent: 85 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('%{percent}% (sec)', { percent: 85 })}
+              {i18next.t("%{percent}% (sec)", { percent: 95 })}
             </th>
             <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('%{percent}% (sec)', { percent: 95 })}
-            </th>
-            <th className="p-1 pl-4 font-weight-light border-0">
-              {i18next.t('Slowest time to solve task (sec)')}
+              {i18next.t("Slowest time to solve task (sec)")}
             </th>
           </tr>
         </thead>

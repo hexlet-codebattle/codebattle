@@ -1,21 +1,16 @@
-import React, {
- useState, useCallback, useRef, useEffect, memo,
-} from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo } from "react";
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import cn from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 
-import Modal from '@/components/BootstrapModal';
+import Modal from "@/components/BootstrapModal";
 
-import LoadingStatusCodes from '../../config/loadingStatuses';
-import ModalCodes from '../../config/modalCodes';
-import {
-  taskStateCodes,
-  taskVisibilityCodes as TaskVisibilityCodes,
-} from '../../config/task';
-import { updateTaskVisibility } from '../../middlewares/Room';
-import { actions } from '../../slices';
+import LoadingStatusCodes from "../../config/loadingStatuses";
+import ModalCodes from "../../config/modalCodes";
+import { taskStateCodes, taskVisibilityCodes as TaskVisibilityCodes } from "../../config/task";
+import { updateTaskVisibility } from "../../middlewares/Room";
+import { actions } from "../../slices";
 
 const TaskConfigurationModal = NiceModal.create(() => {
   const dispatch = useDispatch();
@@ -70,11 +65,9 @@ const TaskConfigurationModal = NiceModal.create(() => {
       </Modal.Header>
       <Modal.Body>
         <div
-          className={
-            cn('d-flex custom-control custom-switch', {
-              'text-muted': configState === LoadingStatusCodes.LOADING,
-            })
-          }
+          className={cn("d-flex custom-control custom-switch", {
+            "text-muted": configState === LoadingStatusCodes.LOADING,
+          })}
         >
           <input
             ref={visibilityInputRef}

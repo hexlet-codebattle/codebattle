@@ -1,16 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import { leftEditorSelector, rightEditorSelector } from '@/selectors';
+import { leftEditorSelector, rightEditorSelector } from "@/selectors";
 
-import ExtendedEditor from '../../components/Editor';
-import editorThemes from '../../config/editorThemes';
+import ExtendedEditor from "../../components/Editor";
+import editorThemes from "../../config/editorThemes";
 
-function StreamEditorPanel({
-  orientation, roomMachineState, fontSize, width = '60%',
-}) {
-  const editorSelector = orientation === 'left' ? leftEditorSelector : rightEditorSelector;
+function StreamEditorPanel({ orientation, roomMachineState, fontSize, width = "60%" }) {
+  const editorSelector = orientation === "left" ? leftEditorSelector : rightEditorSelector;
 
   const editor = useSelector(editorSelector(roomMachineState));
   const editorParams = {
@@ -19,16 +17,16 @@ function StreamEditorPanel({
     theme: editorThemes.dark,
     mute: true,
     loading: false,
-    value: editor?.text || '',
+    value: editor?.text || "",
     fontSize,
-    lineNumbers: 'off',
-    wordWrap: 'on',
+    lineNumbers: "off",
+    wordWrap: "on",
     // Add required props
     onChange: () => {},
-    mode: 'default',
-    roomMode: 'spectator',
+    mode: "default",
+    roomMode: "spectator",
     checkResult: () => {},
-    userType: 'spectator',
+    userType: "spectator",
     userId: 0,
   };
 

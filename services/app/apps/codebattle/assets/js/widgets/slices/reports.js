@@ -1,11 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import initial from './initial';
+import initial from "./initial";
 
 const initialState = initial.reports;
 
 const reports = createSlice({
-  name: 'reports',
+  name: "reports",
   initialState,
   reducers: {
     setReports: (_state, { payload }) => ({

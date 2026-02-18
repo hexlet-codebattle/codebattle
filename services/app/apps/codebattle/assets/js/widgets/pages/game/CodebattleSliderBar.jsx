@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
-import Tooltip from 'react-bootstrap/Tooltip';
+import cn from "classnames";
+import Tooltip from "react-bootstrap/Tooltip";
 
-import OverlayTrigger from '@/components/OverlayTriggerCompat';
+import OverlayTrigger from "@/components/OverlayTriggerCompat";
 
-const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
-const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
-const sliderBarClassnames = 'cb-slider-bar position-absolute cb-rounded';
+const handleClassnames = "cb-slider-handle position-absolute rounded-circle";
+const buttonClassnames = "cb-slider-handle-button position-absolute rounded-circle bg-danger";
+const sliderBarClassnames = "cb-slider-bar position-absolute cb-rounded";
 
 function SliderBar({ value, className }) {
   return (
@@ -20,21 +20,12 @@ function SliderBar({ value, className }) {
   );
 }
 
-function SliderAction({
-  value,
-  className,
-  event,
-  setGameState,
-}) {
+function SliderAction({ value, className, event, setGameState }) {
   return (
     <div>
       <OverlayTrigger
         placement="top"
-        overlay={(
-          <Tooltip id="tooltip-top">
-            {`Check started by ${event.userName}`}
-          </Tooltip>
-        )}
+        overlay={<Tooltip id="tooltip-top">{`Check started by ${event.userName}`}</Tooltip>}
       >
         <div
           role="button"
@@ -77,12 +68,10 @@ function CodebattleSliderBar({
     <>
       <div className="cb-slider-timeline position-absolute cb-rounded w-100 cb-bg-panel">
         <SliderBar
-          className={
-            cn(sliderBarClassnames, {
-              'x-intent-background': holded,
-              'bg-danger': !holded,
-            })
-          }
+          className={cn(sliderBarClassnames, {
+            "x-intent-background": holded,
+            "bg-danger": !holded,
+          })}
           value={holded ? lastIntent : handlerPosition}
         />
       </div>
@@ -95,10 +84,7 @@ function CodebattleSliderBar({
           setGameState={setGameState}
         />
       ))}
-      <SliderHandle
-        className={handleClassnames}
-        value={handlerPosition}
-      />
+      <SliderHandle className={handleClassnames} value={handlerPosition} />
     </>
   );
 }

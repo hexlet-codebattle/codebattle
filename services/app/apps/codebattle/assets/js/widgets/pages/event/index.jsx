@@ -1,3 +1,3 @@
-import EventWidget from './EventWidget';
+import EventWidget from "./EventWidget";
 
 export default EventWidget;

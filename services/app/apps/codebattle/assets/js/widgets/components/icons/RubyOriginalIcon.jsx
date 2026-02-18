@@ -1,14 +1,19 @@
 /* eslint-disable max-len */
-import React, { useId } from 'react';
+import React, { useId } from "react";
 
-function RubyOriginalIcon({ className, size = '1em' }) {
+function RubyOriginalIcon({ className, size = "1em" }) {
   const uid = useId();
   const id = (name) => `ruby-original-${uid}-${name}`;
 
   return (
-    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: size, height: size }}>
+    <svg
+      viewBox="0 0 128 128"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ width: size, height: size }}
+    >
       <linearGradient
-        id={id('a')}
+        id={id("a")}
         gradientUnits="userSpaceOnUse"
         x1="157.08"
         y1="2382.05"
@@ -23,7 +28,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#900" />
       </linearGradient>
       <linearGradient
-        id={id('b')}
+        id={id("b")}
         gradientUnits="userSpaceOnUse"
         x1="169.731"
         y1="2419.72"
@@ -37,7 +42,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#911209" />
       </linearGradient>
       <linearGradient
-        id={id('c')}
+        id={id("c")}
         gradientUnits="userSpaceOnUse"
         x1="143.542"
         y1="2380.69"
@@ -51,7 +56,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#911209" />
       </linearGradient>
       <linearGradient
-        id={id('d')}
+        id={id("d")}
         gradientUnits="userSpaceOnUse"
         x1="74.817"
         y1="2435.622"
@@ -67,7 +72,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#A60003" />
       </linearGradient>
       <linearGradient
-        id={id('e')}
+        id={id("e")}
         gradientUnits="userSpaceOnUse"
         x1="109.719"
         y1="2466.413"
@@ -83,7 +88,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#A80D00" />
       </linearGradient>
       <linearGradient
-        id={id('f')}
+        id={id("f")}
         gradientUnits="userSpaceOnUse"
         x1="140.691"
         y1="2497.523"
@@ -99,7 +104,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#A80D00" />
       </linearGradient>
       <linearGradient
-        id={id('g')}
+        id={id("g")}
         gradientUnits="userSpaceOnUse"
         x1="123.6"
         y1="2506.018"
@@ -114,7 +119,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#BF0905" />
       </linearGradient>
       <linearGradient
-        id={id('h')}
+        id={id("h")}
         gradientUnits="userSpaceOnUse"
         x1="53.674"
         y1="2444.028"
@@ -129,7 +134,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#BF190B" />
       </linearGradient>
       <linearGradient
-        id={id('i')}
+        id={id("i")}
         gradientUnits="userSpaceOnUse"
         x1="40.026"
         y1="2418.781"
@@ -149,7 +154,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#E82609" />
       </linearGradient>
       <linearGradient
-        id={id('j')}
+        id={id("j")}
         gradientUnits="userSpaceOnUse"
         x1="111.507"
         y1="2409.102"
@@ -164,7 +169,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#A80D0E" />
       </linearGradient>
       <linearGradient
-        id={id('k')}
+        id={id("k")}
         gradientUnits="userSpaceOnUse"
         x1="159.785"
         y1="2442.837"
@@ -178,7 +183,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#9E0C00" />
       </linearGradient>
       <linearGradient
-        id={id('l')}
+        id={id("l")}
         gradientUnits="userSpaceOnUse"
         x1="168.959"
         y1="2483.901"
@@ -192,7 +197,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#9E120B" />
       </linearGradient>
       <radialGradient
-        id={id('m')}
+        id={id("m")}
         cx="138.703"
         cy="2464.789"
         r="30.601"
@@ -205,7 +210,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#7E0E08" />
       </radialGradient>
       <radialGradient
-        id={id('n')}
+        id={id("n")}
         cx="96.325"
         cy="2424.465"
         r="40.679"
@@ -218,7 +223,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#800E08" />
       </radialGradient>
       <linearGradient
-        id={id('o')}
+        id={id("o")}
         gradientUnits="userSpaceOnUse"
         x1="67.509"
         y1="2393.115"
@@ -233,7 +238,7 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#B3100C" />
       </linearGradient>
       <linearGradient
-        id={id('p')}
+        id={id("p")}
         gradientUnits="userSpaceOnUse"
         x1="145.272"
         y1="2507.076"
@@ -247,36 +252,54 @@ function RubyOriginalIcon({ className, size = '1em' }) {
         <stop offset=".99" stopColor="#791C12" />
         <stop offset="1" stopColor="#791C12" />
       </linearGradient>
-      <path fill={`url(#${id('a')})`} d="M97.078 83.214L28.34 124.031l89.003-6.04 6.855-89.745z" />
-      <path fill={`url(#${id('b')})`} d="M117.488 117.93l-7.649-52.799-20.837 27.514z" />
-      <path fill={`url(#${id('c')})`} d="M117.592 117.93l-56.044-4.399-32.91 10.385z" />
-      <path fill={`url(#${id('d')})`} d="M28.717 123.928l14.001-45.867-30.81 6.588z" />
-      <path fill={`url(#${id('e')})`} d="M88.996 92.797l-12.882-50.46-36.866 34.558z" />
-      <path fill={`url(#${id('f')})`} d="M121.275 43.047L86.426 14.585l-9.704 31.373z" />
-      <path fill={`url(#${id('g')})`} d="M104.978 4.437L84.481 15.764 71.551 4.285z" />
-      <path fill={`url(#${id('h')})`} d="M3.802 100.034l8.586-15.659L5.442 65.72z" />
+      <path fill={`url(#${id("a")})`} d="M97.078 83.214L28.34 124.031l89.003-6.04 6.855-89.745z" />
+      <path fill={`url(#${id("b")})`} d="M117.488 117.93l-7.649-52.799-20.837 27.514z" />
+      <path fill={`url(#${id("c")})`} d="M117.592 117.93l-56.044-4.399-32.91 10.385z" />
+      <path fill={`url(#${id("d")})`} d="M28.717 123.928l14.001-45.867-30.81 6.588z" />
+      <path fill={`url(#${id("e")})`} d="M88.996 92.797l-12.882-50.46-36.866 34.558z" />
+      <path fill={`url(#${id("f")})`} d="M121.275 43.047L86.426 14.585l-9.704 31.373z" />
+      <path fill={`url(#${id("g")})`} d="M104.978 4.437L84.481 15.764 71.551 4.285z" />
+      <path fill={`url(#${id("h")})`} d="M3.802 100.034l8.586-15.659L5.442 65.72z" />
       <path
         fill="#fff"
         d="M4.981 65.131l6.987 19.821 30.365-6.812L77 45.922l9.783-31.075L71.38 3.969l-26.19 9.802c-8.252 7.675-24.263 22.86-24.84 23.146-.573.291-10.575 19.195-15.369 28.214z"
       />
       <path
-        fill={`url(#${id('i')})`}
+        fill={`url(#${id("i")})`}
         d="M29.519 29.521c17.882-17.73 40.937-28.207 49.785-19.28 8.843 8.926-.534 30.62-18.418 48.345-17.884 17.725-40.653 28.779-49.493 19.852-8.849-8.92.242-31.191 18.126-48.917z"
       />
-      <path fill={`url(#${id('j')})`} d="M28.717 123.909l13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192z" />
-      <path fill={`url(#${id('k')})`} d="M77.062 45.831l11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883l-44.407 2.972z" />
-      <path fill={`url(#${id('l')})`} d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13 34.856 28.505z" />
-      <path fill="#9E1209" d="M3.802 99.828c.656 23.608 17.689 23.959 24.945 24.167l-16.759-39.14-8.186 14.973z" />
       <path
-        fill={`url(#${id('m')})`}
+        fill={`url(#${id("j")})`}
+        d="M28.717 123.909l13.89-46.012 46.135 14.82c-16.68 15.642-35.233 28.865-60.025 31.192z"
+      />
+      <path
+        fill={`url(#${id("k")})`}
+        d="M77.062 45.831l11.844 46.911c13.934-14.65 26.439-30.401 32.563-49.883l-44.407 2.972z"
+      />
+      <path
+        fill={`url(#${id("l")})`}
+        d="M121.348 43.097c4.74-14.305 5.833-34.825-16.517-38.635l-18.339 10.13 34.856 28.505z"
+      />
+      <path
+        fill="#9E1209"
+        d="M3.802 99.828c.656 23.608 17.689 23.959 24.945 24.167l-16.759-39.14-8.186 14.973z"
+      />
+      <path
+        fill={`url(#${id("m")})`}
         d="M77.128 45.904c10.708 6.581 32.286 19.798 32.723 20.041.68.383 9.304-14.542 11.261-22.976l-43.984 2.935z"
       />
-      <path fill={`url(#${id('n')})`} d="M42.589 77.897l18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983L42.589 77.897z" />
       <path
-        fill={`url(#${id('o')})`}
+        fill={`url(#${id("n")})`}
+        d="M42.589 77.897l18.57 35.828c10.98-5.955 19.579-13.211 27.454-20.983L42.589 77.897z"
+      />
+      <path
+        fill={`url(#${id("o")})`}
         d="M11.914 84.904l-2.631 31.331c4.964 6.781 11.794 7.371 18.96 6.842-5.184-12.9-15.538-38.696-16.329-38.173z"
       />
-      <path fill={`url(#${id('p')})`} d="M86.384 14.67l36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41L86.384 14.67z" />
+      <path
+        fill={`url(#${id("p")})`}
+        d="M86.384 14.67l36.891 5.177c-1.969-8.343-8.015-13.727-18.32-15.41L86.384 14.67z"
+      />
     </svg>
   );
 }

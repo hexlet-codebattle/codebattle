@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
-import capitalize from 'lodash/capitalize';
-import remove from 'lodash/remove';
+import { createSlice } from "@reduxjs/toolkit";
+import capitalize from "lodash/capitalize";
+import remove from "lodash/remove";
 
 import {
   validateTaskName,
@@ -10,17 +10,17 @@ import {
   taskTemplatesStates,
   getExamplesFromAsserts,
   getTaskTemplates,
-} from '../utils/builder';
+} from "../utils/builder";
 
-import initial from './initial';
+import initial from "./initial";
 
 const getTaskAssertsStatus = (task) => ({
-  status: task.asserts.length > 0 ? 'ok' : 'none',
-  output: '',
+  status: task.asserts.length > 0 ? "ok" : "none",
+  output: "",
 });
 
 const builder = createSlice({
-  name: 'builder',
+  name: "builder",
   initialState: initial.builder,
   reducers: {
     setTask: (state, { payload: { task } }) => {
@@ -37,7 +37,10 @@ const builder = createSlice({
       state.validationStatuses.name = validateTaskName(task.name);
       state.validationStatuses.description = validateTaskName(task.descriptionEn);
       state.validationStatuses.inputSignature = validateInputSignatures(task.inputSignature);
-      state.validationStatuses.assertsExamples = validateExamples(task.assertsExamples, task.examples);
+      state.validationStatuses.assertsExamples = validateExamples(
+        task.assertsExamples,
+        task.examples,
+      );
     },
     setTaskName: (state, { payload: { name } }) => {
       state.task.name = name;
@@ -74,25 +77,37 @@ const builder = createSlice({
       };
       state.generatorLang = prevGeneratorLang;
 
-      if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
+      if (
+        !state.validationStatuses.solution[0] ||
+        !state.validationStatuses.argumentsGenerator[0]
+      ) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     rejectGeneratorAndSolution: (state) => {
-      state.templates.state = 'none';
+      state.templates.state = "none";
 
-      if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
+      if (
+        !state.validationStatuses.solution[0] ||
+        !state.validationStatuses.argumentsGenerator[0]
+      ) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     setTaskTemplatesState: (state, { payload }) => {
       state.templates.state = payload;
     },
-    setTaskAsserts: (state, { payload: { asserts, status, output = '' } }) => {
+    setTaskAsserts: (state, { payload: { asserts, status, output = "" } }) => {
       state.task.asserts = asserts;
       state.task.examples = getExamplesFromAsserts(state.task.assertsExamples);
       state.assertsStatus = {
@@ -104,27 +119,34 @@ const builder = createSlice({
       state.task.inputSignature = [...state.task.inputSignature, newType];
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
 
       state.validationStatuses.inputSignature = validateInputSignatures(state.task.inputSignature);
     },
     updateTaskInputType: (state, { payload: { newType } }) => {
-      state.task.inputSignature = state.task.inputSignature.map((item) => (
-        item.id === newType.id ? newType : item
-      ));
+      state.task.inputSignature = state.task.inputSignature.map((item) =>
+        item.id === newType.id ? newType : item,
+      );
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     removeTaskInputType: (state, { payload: { typeId } }) => {
-      remove(state.task.inputSignature, (item) => (
-        item.id === typeId
-      ));
+      remove(state.task.inputSignature, (item) => item.id === typeId);
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
 
       state.validationStatuses.inputSignature = validateInputSignatures(state.task.inputSignature);
@@ -137,27 +159,40 @@ const builder = createSlice({
     },
     addTaskExample: (state, { payload: { newExample } }) => {
       state.task.assertsExamples = [...state.task.assertsExamples, newExample];
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+      state.validationStatuses.assertsExamples = validateExamples(
+        state.task.assertsExamples,
+        state.task.examples,
+      );
     },
     updateTaskExample: (state, { payload: { newExample } }) => {
-      state.task.assertsExamples = state.task.assertsExamples.map((example) => (
-        example.id === newExample.id ? newExample : example
-      ));
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+      state.task.assertsExamples = state.task.assertsExamples.map((example) =>
+        example.id === newExample.id ? newExample : example,
+      );
+      state.validationStatuses.assertsExamples = validateExamples(
+        state.task.assertsExamples,
+        state.task.examples,
+      );
     },
     removeTaskExample: (state, { payload: { exampleId } }) => {
-      remove(state.task.assertsExamples, (item) => (
-        item.id === exampleId
-      ));
-      state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+      remove(state.task.assertsExamples, (item) => item.id === exampleId);
+      state.validationStatuses.assertsExamples = validateExamples(
+        state.task.assertsExamples,
+        state.task.examples,
+      );
     },
     setGeneratorsLang: (state, { payload: { lang } }) => {
       state.generatorLang = lang;
 
-      if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
+      if (
+        !state.validationStatuses.solution[0] ||
+        !state.validationStatuses.argumentsGenerator[0]
+      ) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     setTaskSolution: (state, { payload: { value } }) => {
@@ -166,7 +201,10 @@ const builder = createSlice({
       if (!state.validationStatuses.solution[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     setTaskArgumentsGenerator: (state, { payload: { value } }) => {
@@ -175,7 +213,10 @@ const builder = createSlice({
       if (!state.validationStatuses.argumentsGenerator[0]) {
         state.validationStatuses.solution = [true];
         state.validationStatuses.argumentsGenerator = [true];
-        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples, state.task.examples);
+        state.validationStatuses.assertsExamples = validateExamples(
+          state.task.assertsExamples,
+          state.task.examples,
+        );
       }
     },
     setTaskVisibility: (state, { payload }) => {

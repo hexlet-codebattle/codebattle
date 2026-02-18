@@ -1,21 +1,17 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
 import {
   tournamentSelector,
   currentTournamentPlayerSelector,
   tournamentMatchesSelector,
   gameStatusSelector,
-} from '@/selectors';
+} from "@/selectors";
 
-import GameStateCodes from '../config/gameStateCodes';
-import MatchStateCodes from '../config/matchStates';
+import GameStateCodes from "../config/gameStateCodes";
+import MatchStateCodes from "../config/matchStates";
 
 const getActiveGameId = (gameStatus, gameId) => {
-  if (
-    gameStatus?.state !== GameStateCodes.playing
-    && gameId
-    && gameStatus?.gameId === gameId
-  ) {
+  if (gameStatus?.state !== GameStateCodes.playing && gameId && gameStatus?.gameId === gameId) {
     return null;
   }
 
@@ -33,12 +29,12 @@ const useTournamentStats = ({ type }) => {
   const matches = useSelector(tournamentMatchesSelector);
 
   const taskCount = user?.taskIds?.length || 1;
-  const taskSolvedCount = user?.state === 'active' ? taskCount - 1 : taskCount;
+  const taskSolvedCount = user?.state === "active" ? taskCount - 1 : taskCount;
 
-  const activeGameId = type === 'tournament'
+  const activeGameId =
+    type === "tournament"
       ? Object.values(matches).find(
-          (match) => match.state === MatchStateCodes.playing
-            && match.playerIds.includes(user?.id),
+          (match) => match.state === MatchStateCodes.playing && match.playerIds.includes(user?.id),
         )?.gameId
       : getActiveGameId(gameStatus, gameId);
 

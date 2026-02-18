@@ -1,23 +1,18 @@
-import React from 'react';
+import React from "react";
 
-import i18next from 'i18next';
-import { useSelector } from 'react-redux';
+import i18next from "i18next";
+import { useSelector } from "react-redux";
 
-import * as selectors from '../../selectors';
+import * as selectors from "../../selectors";
 
-import ChatWidget from './ChatWidget';
-import Output from './Output';
-import OutputTab from './OutputTab';
-import TaskAssignment from './TaskAssignment';
-import TimerContainer from './TimerContainer';
-import TournamentCurrentPlayerRankingPanel from './TournamentCurrentPlayerRankingPanel';
+import ChatWidget from "./ChatWidget";
+import Output from "./Output";
+import OutputTab from "./OutputTab";
+import TaskAssignment from "./TaskAssignment";
+import TimerContainer from "./TimerContainer";
+import TournamentCurrentPlayerRankingPanel from "./TournamentCurrentPlayerRankingPanel";
 
-function InfoPanel({
-  idOutput = 'leftOutput',
-  canShowOutputPanel,
-  outputData,
-  taskPanelProps,
-}) {
+function InfoPanel({ idOutput = "leftOutput", canShowOutputPanel, outputData, taskPanelProps }) {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const isTournamentGame = !!tournamentId;
 
@@ -40,7 +35,7 @@ function InfoPanel({
                 aria-controls="task"
                 aria-selected="true"
               >
-                {i18next.t('Task')}
+                {i18next.t("Task")}
               </a>
               <a
                 className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
@@ -51,25 +46,24 @@ function InfoPanel({
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
               >
-                {i18next.t('Output')}
+                {i18next.t("Output")}
               </a>
-              <div
-                className="rounded-0 text-center border-left cb-border-color col-6 text-white px-1 py-2"
-              >
+              <div className="rounded-0 text-center border-left cb-border-color col-6 text-white px-1 py-2">
                 <TimerContainer />
               </div>
             </div>
           </nav>
-          <div className="tab-content flex-grow-1 rounded-bottom overflow-auto " id="nav-tabContent">
+          <div
+            className="tab-content flex-grow-1 rounded-bottom overflow-auto "
+            id="nav-tabContent"
+          >
             <div
               className="tab-pane fade show active h-100"
               id="task"
               role="tabpanel"
               aria-labelledby="task-tab"
             >
-              <TaskAssignment
-                {...taskPanelProps}
-              />
+              <TaskAssignment {...taskPanelProps} />
             </div>
             <div
               className="tab-pane h-100 user-select-none"
@@ -88,13 +82,8 @@ function InfoPanel({
         </div>
       </div>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        {isTournamentGame ? (
-          <TournamentCurrentPlayerRankingPanel />
-        ) : (
-          <ChatWidget />
-        )}
+        {isTournamentGame ? <TournamentCurrentPlayerRankingPanel /> : <ChatWidget />}
       </div>
-
     </>
   );
 }

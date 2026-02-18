@@ -1,17 +1,17 @@
-import React, { useContext, memo } from 'react';
+import React, { useContext, memo } from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import RoomContext from '../../components/RoomContext';
-import { taskStateSelector } from '../../machines/selectors';
+import RoomContext from "../../components/RoomContext";
+import { taskStateSelector } from "../../machines/selectors";
 import {
   validationStatuses,
   mapStateToValidationStatus,
   getGeneratorStatus,
-} from '../../machines/task';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+} from "../../machines/task";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
-import TaskPropStatusIcon from './TaskPropStatusIcon';
+import TaskPropStatusIcon from "./TaskPropStatusIcon";
 
 function BuilderStatus() {
   const { taskService } = useContext(RoomContext);
@@ -30,10 +30,9 @@ function BuilderStatus() {
   const [isValidExamples, invalidExamplesReason] = useSelector(
     (state) => state.builder.validationStatuses.assertsExamples,
   );
-  const [
-    isValidArgumentsGenerator,
-    invalidArgumentsGeneratorReason,
-  ] = useSelector((state) => state.builder.validationStatuses.argumentsGenerator);
+  const [isValidArgumentsGenerator, invalidArgumentsGeneratorReason] = useSelector(
+    (state) => state.builder.validationStatuses.argumentsGenerator,
+  );
   const [isValidSolution, invalidSolutionReason] = useSelector(
     (state) => state.builder.validationStatuses.solution,
   );
@@ -45,9 +44,7 @@ function BuilderStatus() {
       <p className="small">
         <TaskPropStatusIcon
           id="statusName"
-          status={
-            isValidName ? validationStatuses.valid : validationStatuses.invalid
-          }
+          status={isValidName ? validationStatuses.valid : validationStatuses.invalid}
           reason={invalidNameReason}
         />
         Name
@@ -55,11 +52,7 @@ function BuilderStatus() {
       <p className="small">
         <TaskPropStatusIcon
           id="statusDescription"
-          status={
-            isValidDescription
-              ? validationStatuses.valid
-              : validationStatuses.invalid
-          }
+          status={isValidDescription ? validationStatuses.valid : validationStatuses.invalid}
           reason={invalidDescriptionReason}
         />
         Description

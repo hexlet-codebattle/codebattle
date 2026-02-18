@@ -4,6 +4,7 @@ import environment from "vite-plugin-environment";
 import path from "path";
 import fs from "fs";
 import gettextParser from "gettext-parser";
+import { minifySync } from "oxc-minify";
 
 // --- tiny .po loader so your i18next-po-loader use keeps working
 function poLoader() {
@@ -116,6 +117,31 @@ function copyKatexFonts() {
   };
 }
 
+// --- minify JS chunks with OXC during production build
+function oxcMinifyChunks() {
+  return {
+    name: "oxc-minify-chunks",
+    apply: "build",
+    renderChunk(code, chunk) {
+      const result = minifySync(chunk.fileName, code, {
+        module: true,
+        compress: { target: "esnext" },
+        mangle: true,
+        codegen: { removeWhitespace: true },
+      });
+
+      if (result.errors.length > 0) {
+        this.error(`OXC minify failed for ${chunk.fileName}: ${result.errors[0].message}`);
+      }
+
+      return {
+        code: result.code,
+        map: null,
+      };
+    },
+  };
+}
+
 // Re-use your multiple entry points
 const input = {
   app: path.resolve(__dirname, "assets/js/app.js"),
@@ -151,6 +177,7 @@ export default defineConfig(({ command, mode }) => ({
     forceFullReload(), // always trigger full reload
     copyCodiconFont(), // copy codicon font for Phoenix to serve
     copyKatexFonts(), // copy KaTeX fonts for serving
+    oxcMinifyChunks(),
     environment(["NODE_ENV"]),
   ],
 
@@ -158,6 +185,8 @@ export default defineConfig(({ command, mode }) => ({
   base: command === "serve" ? "/" : "/assets/",
 
   build: {
+    minify: false,
+    cssMinify: "esbuild",
     outDir: "priv/static/assets",
     assetsDir: "",
     manifest: "manifest.json",

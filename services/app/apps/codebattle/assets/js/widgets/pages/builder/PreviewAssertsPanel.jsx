@@ -1,28 +1,28 @@
-import React from 'react';
+import React from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { useSelector } from "react-redux";
 
-import { taskStateCodes } from '../../config/task';
-import * as selectors from '../../selectors';
+import { taskStateCodes } from "../../config/task";
+import * as selectors from "../../selectors";
 import {
   itemActionClassName,
   itemClassName,
   itemAddClassName,
   MAX_INPUT_ARGUMENTS_COUNT,
   MIN_EXAMPLES_COUNT,
-} from '../../utils/builder';
+} from "../../utils/builder";
 
-import BuilderActions from './BuilderActions';
-import ExamplesTrack from './ExamplesTrack';
-import SignatureTrack from './SignatureTrack';
+import BuilderActions from "./BuilderActions";
+import ExamplesTrack from "./ExamplesTrack";
+import SignatureTrack from "./SignatureTrack";
 
 function TaskStateBadge({ state }) {
-  const className = cn('badge py-2 mb-2', {
-    'badge-danger': state === taskStateCodes.disabled,
-    'badge-success': state === taskStateCodes.active,
-    'badge-secondary': state === taskStateCodes.draft || state === taskStateCodes.blank,
+  const className = cn("badge py-2 mb-2", {
+    "badge-danger": state === taskStateCodes.disabled,
+    "badge-success": state === taskStateCodes.active,
+    "badge-secondary": state === taskStateCodes.draft || state === taskStateCodes.blank,
   });
 
   if (state === taskStateCodes.moderation) {
@@ -60,9 +60,7 @@ function PreviewAssertsPanel({
   const validInputSignature = useSelector(
     (state) => state.builder.validationStatuses.inputSignature[0],
   );
-  const validExamples = useSelector(
-    (state) => state.builder.validationStatuses.assertsExamples[0],
-  );
+  const validExamples = useSelector((state) => state.builder.validationStatuses.assertsExamples[0]);
 
   const editable = useSelector(selectors.canEditTask);
 
@@ -86,13 +84,11 @@ function PreviewAssertsPanel({
                 type="button"
                 title="Add input parameter"
                 className={cn(itemAddClassName, {
-                  'ml-1': inputSignature.length === 0,
+                  "ml-1": inputSignature.length === 0,
                 })}
-                onClick={
-                  haveInputSuggest ? openInputEditPanel : createInputTypeSuggest
-                }
+                onClick={haveInputSuggest ? openInputEditPanel : createInputTypeSuggest}
               >
-                <FontAwesomeIcon icon={haveInputSuggest ? 'edit' : 'plus'} />
+                <FontAwesomeIcon icon={haveInputSuggest ? "edit" : "plus"} />
               </button>
             </div>
           )}
@@ -102,10 +98,7 @@ function PreviewAssertsPanel({
           <div className="d-flex overflow-auto pb-2">
             {!!outputSignature && (
               <div className={itemClassName} role="group">
-                <div
-                  title={`(${outputSignature.type.name})`}
-                  className={itemActionClassName}
-                >
+                <div title={`(${outputSignature.type.name})`} className={itemActionClassName}>
                   {`(${outputSignature.type.name})`}
                 </div>
                 {editable && (
@@ -139,16 +132,12 @@ function PreviewAssertsPanel({
                 type="button"
                 title="Add example"
                 className={cn(itemAddClassName, {
-                  'ml-1': examples.length === 0,
+                  "ml-1": examples.length === 0,
                 })}
-                onClick={
-                  haveExampleSuggest
-                    ? openExampleEditPanel
-                    : createExampleSuggest
-                }
+                onClick={haveExampleSuggest ? openExampleEditPanel : createExampleSuggest}
                 disabled={inputSignature.length === 0}
               >
-                <FontAwesomeIcon icon={haveExampleSuggest ? 'edit' : 'plus'} />
+                <FontAwesomeIcon icon={haveExampleSuggest ? "edit" : "plus"} />
               </button>
             </div>
           )}
@@ -156,10 +145,7 @@ function PreviewAssertsPanel({
       </div>
       <div className="d-flex flex-column pl-1">
         <TaskStateBadge state={taskState} />
-        <BuilderActions
-          validExamples={validExamples}
-          clearSuggests={clearSuggests}
-        />
+        <BuilderActions validExamples={validExamples} clearSuggests={clearSuggests} />
       </div>
     </div>
   );

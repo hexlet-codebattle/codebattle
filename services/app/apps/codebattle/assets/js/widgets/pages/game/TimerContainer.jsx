@@ -1,14 +1,14 @@
-import React, { useContext, memo, useState } from 'react';
+import React, { useContext, memo, useState } from "react";
 
-import cn from 'classnames';
-import i18next from 'i18next';
-import moment from 'moment';
-import { useSelector } from 'react-redux';
+import cn from "classnames";
+import i18next from "i18next";
+import moment from "moment";
+import { useSelector } from "react-redux";
 
-import CountdownTimer from '../../components/CountdownTimer';
-import RoomContext from '../../components/RoomContext';
-import Timer from '../../components/Timer';
-import GameRoomModes from '../../config/gameModes';
+import CountdownTimer from "../../components/CountdownTimer";
+import RoomContext from "../../components/RoomContext";
+import Timer from "../../components/Timer";
+import GameRoomModes from "../../config/gameModes";
 import {
   roomStateSelector,
   taskStateSelector,
@@ -20,17 +20,17 @@ import {
   isSavedTaskSelector,
   isReadyTaskSelector,
   isInvalidTaskSelector,
-} from '../../machines/selectors';
-import * as selectors from '../../selectors';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+} from "../../machines/selectors";
+import * as selectors from "../../selectors";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
 const gameStatuses = {
-  stored: i18next.t('stored'),
-  game_over: i18next.t('game_over'),
-  timeout: i18next.t('game_over'),
+  stored: i18next.t("stored"),
+  game_over: i18next.t("game_over"),
+  timeout: i18next.t("game_over"),
 };
 
-const loadingTitle = i18next.t('Loading...');
+const loadingTitle = i18next.t("Loading...");
 
 function GameRoomTimer({ timeoutSeconds, time }) {
   if (timeoutSeconds === null) {
@@ -56,7 +56,7 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }) {
 
     if (durationSec !== null && durationSec !== undefined) {
       const remainingSec = Math.max(timeoutSeconds - durationSec, 0);
-      return moment.utc(remainingSec * 1000).format('HH:mm:ss');
+      return moment.utc(remainingSec * 1000).format("HH:mm:ss");
     }
 
     if (!time) {
@@ -66,30 +66,26 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }) {
     const diff = moment().diff(moment.utc(time));
     const remainingMs = Math.max(timeoutSeconds * 1000 - diff, 0);
 
-    return moment.utc(remainingMs).format('HH:mm:ss');
+    return moment.utc(remainingMs).format("HH:mm:ss");
   });
 
   if (!remaining) {
-    return i18next.t('game_over');
+    return i18next.t("game_over");
   }
 
-  const [hours, minutes, seconds] = remaining.split(':').map(Number);
-  const remainingSeconds = (hours * 3600) + (minutes * 60) + seconds;
-  const progress = timeoutSeconds
-    ? 100 - Math.ceil((remainingSeconds / timeoutSeconds) * 100)
-    : 0;
-  const progressBgColor = cn('cb-timer-progress', {
-    'bg-secondary': remainingSeconds > 45,
-    'bg-warning': remainingSeconds <= 45 && remainingSeconds >= 15,
-    'bg-danger': remainingSeconds < 15,
+  const [hours, minutes, seconds] = remaining.split(":").map(Number);
+  const remainingSeconds = hours * 3600 + minutes * 60 + seconds;
+  const progress = timeoutSeconds ? 100 - Math.ceil((remainingSeconds / timeoutSeconds) * 100) : 0;
+  const progressBgColor = cn("cb-timer-progress", {
+    "bg-secondary": remainingSeconds > 45,
+    "bg-warning": remainingSeconds <= 45 && remainingSeconds >= 15,
+    "bg-danger": remainingSeconds < 15,
   });
 
   return (
     <>
       <span className="text-monospace">
-        {i18next.t('game_over')}
-        :
-        {remaining}
+        {i18next.t("game_over")}:{remaining}
       </span>
       <div className={progressBgColor} style={{ width: `${progress}%` }} />
     </>
@@ -125,27 +121,27 @@ function TimerContainer() {
   }
 
   if (mode === GameRoomModes.history) {
-    return i18next.t('History');
+    return i18next.t("History");
   }
 
   if (isBuilderRoom) {
     if (isTaskSaved) {
-      return i18next.t('Task Saved');
+      return i18next.t("Task Saved");
     }
 
     if (isTaskReady) {
-      return i18next.t('Task Is Ready');
+      return i18next.t("Task Is Ready");
     }
 
     if (isInvalidTask) {
-      return i18next.t('Task Is Invalid');
+      return i18next.t("Task Is Invalid");
     }
 
-    return i18next.t('Task Builder');
+    return i18next.t("Task Builder");
   }
 
   if (isTestingRoom) {
-    return i18next.t('Task Testing');
+    return i18next.t("Task Testing");
   }
 
   if (isGameStored) {
@@ -153,13 +149,7 @@ function TimerContainer() {
   }
 
   if (isGameOver) {
-    return (
-      <GameOverTimer
-        timeoutSeconds={timeoutSeconds}
-        time={time}
-        durationSec={durationSec}
-      />
-    );
+    return <GameOverTimer timeoutSeconds={timeoutSeconds} time={time} durationSec={durationSec} />;
   }
 
   return <GameRoomTimer timeoutSeconds={timeoutSeconds} time={time} />;

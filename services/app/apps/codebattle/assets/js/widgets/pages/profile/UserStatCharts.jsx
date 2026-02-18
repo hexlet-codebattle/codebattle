@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 import {
   BarChart,
@@ -9,22 +9,22 @@ import {
   ResponsiveContainer,
   Tooltip,
   Cell,
-} from 'recharts';
+} from "recharts";
 
 const chartColors = {
-  gold: '#e0bf7a',
-  silver: '#c2c9d6',
-  bronze: '#c48a57',
-  platinum: '#a4aab3',
-  steel: '#8a919c',
-  iron: '#6f7782',
+  gold: "#e0bf7a",
+  silver: "#c2c9d6",
+  bronze: "#c48a57",
+  platinum: "#a4aab3",
+  steel: "#8a919c",
+  iron: "#6f7782",
 };
 
 const gameResultNames = {
-  won: 'Won',
-  lost: 'Lost',
-  gaveUp: 'Gave up',
-  gave_up: 'Gave up',
+  won: "Won",
+  lost: "Lost",
+  gaveUp: "Gave up",
+  gave_up: "Gave up",
 };
 
 const gameResultColorByKey = {
@@ -35,18 +35,18 @@ const gameResultColorByKey = {
 };
 
 const tournamentLabels = {
-  rookieWins: 'Rookie',
-  challengerWins: 'Challenger',
-  proWins: 'Pro',
-  eliteWins: 'Elite',
-  mastersWins: 'Masters',
-  grandSlamWins: 'Grand Slam',
-  rookie_wins: 'Rookie',
-  challenger_wins: 'Challenger',
-  pro_wins: 'Pro',
-  elite_wins: 'Elite',
-  masters_wins: 'Masters',
-  grand_slam_wins: 'Grand Slam',
+  rookieWins: "Rookie",
+  challengerWins: "Challenger",
+  proWins: "Pro",
+  eliteWins: "Elite",
+  mastersWins: "Masters",
+  grandSlamWins: "Grand Slam",
+  rookie_wins: "Rookie",
+  challenger_wins: "Challenger",
+  pro_wins: "Pro",
+  elite_wins: "Elite",
+  masters_wins: "Masters",
+  grand_slam_wins: "Grand Slam",
 };
 
 const tournamentColorByKey = {
@@ -65,34 +65,34 @@ const tournamentColorByKey = {
 };
 
 const tournamentOrder = [
-  'rookieWins',
-  'challengerWins',
-  'proWins',
-  'eliteWins',
-  'mastersWins',
-  'grandSlamWins',
-  'rookie_wins',
-  'challenger_wins',
-  'pro_wins',
-  'elite_wins',
-  'masters_wins',
-  'grand_slam_wins',
+  "rookieWins",
+  "challengerWins",
+  "proWins",
+  "eliteWins",
+  "mastersWins",
+  "grandSlamWins",
+  "rookie_wins",
+  "challenger_wins",
+  "pro_wins",
+  "elite_wins",
+  "masters_wins",
+  "grand_slam_wins",
 ];
 
 function UserStatCharts({ gameStats, tournamentStats }) {
   const tooltipStyle = {
-    backgroundColor: '#1c1c24',
-    border: '1px solid #4c4c5a',
-    borderRadius: '8px',
-    color: '#d7dbe6',
+    backgroundColor: "#1c1c24",
+    border: "1px solid #4c4c5a",
+    borderRadius: "8px",
+    color: "#d7dbe6",
   };
 
   const tooltipLabelStyle = {
-    color: '#d7dbe6',
+    color: "#d7dbe6",
   };
 
   const tooltipItemStyle = {
-    color: '#d7dbe6',
+    color: "#d7dbe6",
   };
 
   const resultDataForGameBar = Object.entries(gameStats)
@@ -103,8 +103,8 @@ function UserStatCharts({ gameStats, tournamentStats }) {
       fill: gameResultColorByKey[key] || chartColors.steel,
     }))
     .sort((a, b) => {
-      if (a.key === 'won') return -1;
-      if (b.key === 'won') return 1;
+      if (a.key === "won") return -1;
+      if (b.key === "won") return 1;
       return a.name.localeCompare(b.name);
     });
 
@@ -124,11 +124,20 @@ function UserStatCharts({ gameStats, tournamentStats }) {
     <div className="row justify-content-center pb-4 px-3">
       <div className="col-12 col-lg-6 mt-4 mb-4 mb-lg-0">
         <div className="small text-center text-muted mb-2">{`Total games: ${totalGames}`}</div>
-        <ResponsiveContainer className="text-white" width="100%" height={320} minWidth={1} minHeight={320}>
+        <ResponsiveContainer
+          className="text-white"
+          width="100%"
+          height={320}
+          minWidth={1}
+          minHeight={320}
+        >
           <BarChart
             data={resultDataForGameBar}
             margin={{
-              top: 8, right: 20, left: 8, bottom: 8,
+              top: 8,
+              right: 20,
+              left: 8,
+              bottom: 8,
             }}
             layout="vertical"
           >
@@ -136,7 +145,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
               contentStyle={tooltipStyle}
               labelStyle={tooltipLabelStyle}
               itemStyle={tooltipItemStyle}
-              cursor={{ fill: 'transparent' }}
+              cursor={{ fill: "transparent" }}
             />
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" allowDecimals={false} />
@@ -166,7 +175,10 @@ function UserStatCharts({ gameStats, tournamentStats }) {
           <BarChart
             data={resultDataForTournamentBar}
             margin={{
-              top: 8, right: 20, left: 8, bottom: 8,
+              top: 8,
+              right: 20,
+              left: 8,
+              bottom: 8,
             }}
             layout="vertical"
           >
@@ -174,7 +186,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
               contentStyle={tooltipStyle}
               labelStyle={tooltipLabelStyle}
               itemStyle={tooltipItemStyle}
-              cursor={{ fill: 'transparent' }}
+              cursor={{ fill: "transparent" }}
             />
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" allowDecimals={false} />

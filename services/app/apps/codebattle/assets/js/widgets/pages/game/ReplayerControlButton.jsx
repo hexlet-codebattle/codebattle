@@ -1,14 +1,14 @@
-import React, { useContext, useCallback } from 'react';
+import React, { useContext, useCallback } from "react";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 
-import i18n from '../../../i18n';
-import RoomContext from '../../components/RoomContext';
-import { replayerMachineStates, roomMachineStates } from '../../machines/game';
-import { inPreviewRoomSelector, roomStateSelector } from '../../machines/selectors';
-import { downloadPlaybook, openPlaybook } from '../../middlewares/Room';
-import { actions } from '../../slices';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+import i18n from "../../../i18n";
+import RoomContext from "../../components/RoomContext";
+import { replayerMachineStates, roomMachineStates } from "../../machines/game";
+import { inPreviewRoomSelector, roomStateSelector } from "../../machines/selectors";
+import { downloadPlaybook, openPlaybook } from "../../middlewares/Room";
+import { actions } from "../../slices";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
 function ReplayerControlButton() {
   const dispatch = useDispatch();
@@ -40,7 +40,7 @@ function ReplayerControlButton() {
           aria-label="Open Record Player"
           disabled={isPreviewRoom}
         >
-          {i18n.t('Open History')}
+          {i18n.t("Open History")}
         </button>
       );
     }
@@ -53,7 +53,7 @@ function ReplayerControlButton() {
           aria-label="Open Record Player"
           disabled={isPreviewRoom}
         >
-          {i18n.t('Open History')}
+          {i18n.t("Open History")}
         </button>
       );
     }
@@ -61,16 +61,16 @@ function ReplayerControlButton() {
       return (
         <button
           type="button"
-          onClick={() => mainService.send('CLOSE_REPLAYER')}
+          onClick={() => mainService.send("CLOSE_REPLAYER")}
           className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
           aria-label="Close Record Player"
         >
-          {i18n.t('Return to game')}
+          {i18n.t("Return to game")}
         </button>
       );
     }
     default: {
-      dispatch(actions.setError(new Error('unnexpected game machine state [ReplayerButton]')));
+      dispatch(actions.setError(new Error("unnexpected game machine state [ReplayerButton]")));
       return null;
     }
   }

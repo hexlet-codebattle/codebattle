@@ -1,24 +1,15 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useContext,
-  useState,
-} from 'react';
+import React, { memo, useCallback, useEffect, useContext, useState } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 
-import CustomEventStylesContext from '@/components/CustomEventStylesContext';
-import { requestMatchesByPlayerId } from '@/middlewares/Tournament';
-import {
-  currentUserIsAdminSelector,
-  currentUserIsTournamentOwnerSelector,
-} from '@/selectors';
+import CustomEventStylesContext from "@/components/CustomEventStylesContext";
+import { requestMatchesByPlayerId } from "@/middlewares/Tournament";
+import { currentUserIsAdminSelector, currentUserIsTournamentOwnerSelector } from "@/selectors";
 
 // import TournamentPlace from './TournamentPlace';
-import UsersMatchList from './UsersMatchList';
+import UsersMatchList from "./UsersMatchList";
 
 function TournamentUserPanel({
   matches,
@@ -41,30 +32,28 @@ function TournamentUserPanel({
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
-  const searchBadge = cn('badge mr-2', {
-    'badge-primary': !hasCustomEventStyles,
-    'cb-custom-event-badge-primary': hasCustomEventStyles,
+  const searchBadge = cn("badge mr-2", {
+    "badge-primary": !hasCustomEventStyles,
+    "cb-custom-event-badge-primary": hasCustomEventStyles,
   });
-  const playerBadge = cn('badge text-white mr-2', {
-    'badge-success': !hasCustomEventStyles,
-    'cb-custom-event-badge-success': hasCustomEventStyles,
+  const playerBadge = cn("badge text-white mr-2", {
+    "badge-success": !hasCustomEventStyles,
+    "cb-custom-event-badge-success": hasCustomEventStyles,
   });
   const panelClassName = cn(
-    'd-flex flex-column border cb-border-color shadow-sm rounded-lg mb-2 overflow-auto',
+    "d-flex flex-column border cb-border-color shadow-sm rounded-lg mb-2 overflow-auto",
     hasCustomEventStyles
       ? {
-        'cb-custom-event-border-success': userId === currentUserId,
-        'cb-custom-event-border-info': userId === searchedUserId,
-      }
+          "cb-custom-event-border-success": userId === currentUserId,
+          "cb-custom-event-border-info": userId === searchedUserId,
+        }
       : {
-        'border-success': userId === currentUserId,
-        'border-primary': userId === searchedUserId,
-      },
+          "border-success": userId === currentUserId,
+          "border-primary": userId === searchedUserId,
+        },
   );
 
-  const titleClassName = cn(
-    'd-flex align-items-center justify-content-start px-2 py-1',
-  );
+  const titleClassName = cn("d-flex align-items-center justify-content-start px-2 py-1");
 
   const handleOpenMatches = useCallback(
     (event) => {
@@ -97,25 +86,17 @@ function TournamentUserPanel({
           <div className="d-flex flex-column flex-xl-row flex-lg-row flex-md-row flex-sm-row">
             <div>
               <span className="text-nowrap" title={name}>
-                {searchedUserId === userId && (
-                  <span className={searchBadge}>Search</span>
-                )}
-                {currentUserId === userId && (
-                  <span className={playerBadge}>you</span>
-                )}
+                {searchedUserId === userId && <span className={searchBadge}>Search</span>}
+                {currentUserId === userId && <span className={playerBadge}>you</span>}
                 {name}
               </span>
-              {isBanned && (
-                <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
-              )}
-              <span className="d-none d-sm-inline d-md-inline d-lg-inline mx-1">
-                |
-              </span>
+              {isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
+              <span className="d-none d-sm-inline d-md-inline d-lg-inline mx-1">|</span>
             </div>
             <div className="d-flex align-items-center text-nowrap">
               <span title="Score" className="text-nowrap">
                 <FontAwesomeIcon className="text-warning" icon="star" />
-                {': '}
+                {": "}
                 {score}
               </span>
               {/* {place !== undefined && ( */}
@@ -141,15 +122,12 @@ function TournamentUserPanel({
         </div>
         <div className="d-flex ml-1">
           <button type="button" className="btn" onClick={handleOpenMatches}>
-            <FontAwesomeIcon className="cb-text" icon={open ? 'chevron-up' : 'chevron-down'} />
+            <FontAwesomeIcon className="cb-text" icon={open ? "chevron-up" : "chevron-down"} />
           </button>
         </div>
       </div>
       {open && (
-        <div
-          id={`collapse-matches-${userId}`}
-          className="border-top cb-border-color"
-        >
+        <div id={`collapse-matches-${userId}`} className="border-top cb-border-color">
           <UsersMatchList
             currentUserId={currentUserId}
             playerId={userId}

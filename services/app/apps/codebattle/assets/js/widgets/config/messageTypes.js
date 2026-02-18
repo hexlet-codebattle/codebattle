@@ -1,5 +1,5 @@
 export default {
-  private: 'private',
-  system: 'system',
-  general: 'general',
+  private: "private",
+  system: "system",
+  general: "general",
 };

@@ -1,36 +1,27 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { camelizeKeys, decamelizeKeys } from 'humps';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { camelizeKeys, decamelizeKeys } from "humps";
 
-import {
-  currentUserClanIdSelector,
-  currentUserIdSelector,
-} from '@/selectors';
+import { currentUserClanIdSelector, currentUserIdSelector } from "@/selectors";
 
-import loadingStatuses from '../config/loadingStatuses';
+import loadingStatuses from "../config/loadingStatuses";
 
-import initial from './initial';
+import initial from "./initial";
 
 const defaultPageSize = 15;
 
 const fetchCommonLeaderboard = createAsyncThunk(
-  'events/fetchLeaderboard',
-  async (
-    params,
-    {
-      getState,
-    },
-  ) => {
+  "events/fetchLeaderboard",
+  async (params, { getState }) => {
     const state = getState();
 
     params.pageSize = params.pageSize || defaultPageSize;
     params.clanId = params.clanId || currentUserClanIdSelector(state);
     params.userId = params.userId || currentUserIdSelector(state);
 
-    const response = await axios.get(
-      `/api/v1/events/${params.eventId}/leaderboard`,
-      { params: decamelizeKeys(params, { separator: '_' }) },
-    );
+    const response = await axios.get(`/api/v1/events/${params.eventId}/leaderboard`, {
+      params: decamelizeKeys(params, { separator: "_" }),
+    });
 
     // return {
     //   items: [
@@ -77,7 +68,7 @@ const fetchCommonLeaderboard = createAsyncThunk(
 );
 
 const eventSlice = createSlice({
-  name: 'event',
+  name: "event",
   initialState: initial.event,
   reducers: {
     initEvent: (_state, { payload }) => ({

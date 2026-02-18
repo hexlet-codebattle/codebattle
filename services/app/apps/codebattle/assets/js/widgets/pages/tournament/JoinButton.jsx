@@ -1,20 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
 
-import i18next from '../../../i18n';
-import CustomEventStylesContext from '../../components/CustomEventStylesContext';
-import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
+import i18next from "../../../i18n";
+import CustomEventStylesContext from "../../components/CustomEventStylesContext";
+import { leaveTournament, joinTournament } from "../../middlewares/Tournament";
 
 function JoinButton({
-  isShow, isParticipant, title, teamId, disabled = false, isShowLeave = true,
+  isShow,
+  isParticipant,
+  title,
+  teamId,
+  disabled = false,
+  isShowLeave = true,
 }) {
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 
   const onClick = isParticipant ? leaveTournament : joinTournament;
-  const text = isParticipant ? i18next.t('Leave') : i18next.t('Join');
-  const actionIcon = isParticipant ? 'user-minus' : 'user-plus';
+  const text = isParticipant ? i18next.t("Leave") : i18next.t("Join");
+  const actionIcon = isParticipant ? "user-minus" : "user-plus";
 
   if (isParticipant && !isShowLeave) {
     return null;
@@ -28,12 +33,12 @@ function JoinButton({
         onClick={() => {
           onClick(teamId);
         }}
-        className={cn('btn text-nowrap rounded-lg', {
-          'btn-outline-danger': isParticipant && !hasCustomEventStyles,
-          'btn-outline-secondary cb-btn-outline-secondary': !isParticipant && !hasCustomEventStyles,
-          'cb-custom-event-btn-outline-danger': isParticipant && hasCustomEventStyles,
-          'cb-custom-event-btn-outline-secondary': !isParticipant && hasCustomEventStyles,
-          'd-none': !isShow,
+        className={cn("btn text-nowrap rounded-lg", {
+          "btn-outline-danger": isParticipant && !hasCustomEventStyles,
+          "btn-outline-secondary cb-btn-outline-secondary": !isParticipant && !hasCustomEventStyles,
+          "cb-custom-event-btn-outline-danger": isParticipant && hasCustomEventStyles,
+          "cb-custom-event-btn-outline-secondary": !isParticipant && hasCustomEventStyles,
+          "d-none": !isShow,
         })}
         disabled={disabled}
       >

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+TARGET_PREFIX="services/app/apps/codebattle/assets/js/"
+APP_DIR="services/app/apps/codebattle"
+APP_PREFIX="services/app/apps/codebattle/"
+
+STAGED_FILES=()
+while IFS= read -r file; do
+  STAGED_FILES+=("$file")
+done < <(
+  git diff --cached --name-only --diff-filter=ACMR |
+    grep -E "^${TARGET_PREFIX}.*\\.(js|jsx|ts|tsx)$" || true
+)
+
+if [ "${#STAGED_FILES[@]}" -eq 0 ]; then
+  exit 0
+fi
+
+APP_FILES=()
+for file in "${STAGED_FILES[@]}"; do
+  APP_FILES+=("${file#${APP_PREFIX}}")
+done
+
+pnpm --dir "$APP_DIR" exec oxfmt --write "${APP_FILES[@]}"
+git add -- "${STAGED_FILES[@]}"
+pnpm --dir "$APP_DIR" exec oxlint "${APP_FILES[@]}"

@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import BlockBase from '../BlockBase/BlockBase';
-import './BlockTimer.css';
+import BlockBase from "../BlockBase/BlockBase";
+import "./BlockTimer.css";
 
 function BlockTimer({ time, ...props }) {
   return (
@@ -9,14 +9,14 @@ function BlockTimer({ time, ...props }) {
       <div
         className="block-timer"
         style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          textAlign: 'center',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          fontSize: "20px",
+          fontWeight: "600",
+          textAlign: "center",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         {time}

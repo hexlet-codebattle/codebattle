@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
-import useKey from '../utils/useKey';
+import useKey from "../utils/useKey";
 
 export default function EmojiPicker({ handleSelect, hide, disabled = false }) {
-  useKey('Escape', () => hide(), { event: 'keyup' });
+  useKey("Escape", () => hide(), { event: "keyup" });
 
   const handleOnClickOutside = () => hide();
 

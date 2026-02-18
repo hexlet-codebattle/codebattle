@@ -1,18 +1,12 @@
-import React, {
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useMemo, useCallback } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
 
-import {
-  argumentTypes,
-  defaultSignatureByType,
-} from '../../utils/builder';
+import { argumentTypes, defaultSignatureByType } from "../../utils/builder";
 
-import SignatureForm from './SignatureForm';
-import SignatureTrack from './SignatureTrack';
+import SignatureForm from "./SignatureForm";
+import SignatureTrack from "./SignatureTrack";
 
 function InputSignatureEditPanel({
   items = [],
@@ -26,14 +20,19 @@ function InputSignatureEditPanel({
   handleSubmit,
   handleClear,
 }) {
-  const handleChangeName = useCallback((event) => {
-    handleEdit({ ...suggest, argumentName: event.target.value });
-    if (suggestRef?.current) {
-      suggestRef.current.scrollIntoView({
-        behavior: 'smooth', block: 'nearest', inline: 'start',
-      });
-    }
-  }, [suggest, suggestRef, handleEdit]);
+  const handleChangeName = useCallback(
+    (event) => {
+      handleEdit({ ...suggest, argumentName: event.target.value });
+      if (suggestRef?.current) {
+        suggestRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
+        });
+      }
+    },
+    [suggest, suggestRef, handleEdit],
+  );
 
   const handleReset = useCallback(() => {
     const existedInputSignature = items.find((item) => item.id === suggest?.id);
@@ -49,30 +48,32 @@ function InputSignatureEditPanel({
 
   const [validName] = useMemo(() => {
     if (!suggest) {
-      return [true, ''];
+      return [true, ""];
     }
 
     if (suggest?.argumentName === undefined) {
-      return [false, ''];
+      return [false, ""];
     }
 
     if (suggest.argumentName.length === 0) {
-      return [false, ''];
+      return [false, ""];
     }
 
     if (suggest.argumentName.length > 20) {
-      return [false, 'Too more symbols'];
+      return [false, "Too more symbols"];
     }
 
     if (!/^[a-z]+$/.test(suggest.argumentName)) {
-      return [false, 'Only lowercase latin'];
+      return [false, "Only lowercase latin"];
     }
 
-    if (items.find((item) => item.id !== suggest.id && item.argumentName === suggest.argumentName)) {
-      return [false, 'Name must be unig'];
+    if (
+      items.find((item) => item.id !== suggest.id && item.argumentName === suggest.argumentName)
+    ) {
+      return [false, "Name must be unig"];
     }
 
-    return [true, ''];
+    return [true, ""];
   }, [suggest, items]);
 
   return (
@@ -102,14 +103,11 @@ function InputSignatureEditPanel({
               <div className="input-group position-relative">
                 <input
                   ref={argumentNameInputRef}
-                  className={cn(
-                    'form-control cb-builder-argument-input m-1 rounded-lg',
-                    {
-                      'is-invalid': !validName,
-                    },
-                  )}
+                  className={cn("form-control cb-builder-argument-input m-1 rounded-lg", {
+                    "is-invalid": !validName,
+                  })}
                   onChange={handleChangeName}
-                  value={suggest?.argumentName || ''}
+                  value={suggest?.argumentName || ""}
                 />
               </div>
             </div>
@@ -117,10 +115,7 @@ function InputSignatureEditPanel({
               <h6 className="pl-1">Type: </h6>
               <div className="d-flex">
                 <div className="overflow-auto d-flex pb-2">
-                  <SignatureForm
-                    signature={suggest}
-                    handleEdit={handleEdit}
-                  />
+                  <SignatureForm signature={suggest} handleEdit={handleEdit} />
                 </div>
                 <div className="d-flex btn-group pb-2 m-1">
                   <button

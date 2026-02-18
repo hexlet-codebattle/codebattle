@@ -1,6 +1,6 @@
 export const isSafari = () => {
-  const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
-  const haveSafariAgent = navigator.userAgent.indexOf('Safari') > -1;
+  const haveChromeAgent = navigator.userAgent.indexOf("Chrome") > -1;
+  const haveSafariAgent = navigator.userAgent.indexOf("Safari") > -1;
 
   if (haveSafariAgent && haveChromeAgent) {
     return false;
@@ -10,8 +10,8 @@ export const isSafari = () => {
 };
 
 export const isChrome = () => {
-  const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
+  const haveChromeAgent = navigator.userAgent.indexOf("Chrome") > -1;
   return haveChromeAgent;
 };
 
-export const isMacintosh = () => navigator.userAgent.indexOf('Macintosh; Intel Mac OS') > -1;
+export const isMacintosh = () => navigator.userAgent.indexOf("Macintosh; Intel Mac OS") > -1;

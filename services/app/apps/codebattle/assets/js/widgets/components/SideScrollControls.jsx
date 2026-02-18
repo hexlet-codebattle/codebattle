@@ -1,18 +1,13 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from "react";
 
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import noop from 'lodash/noop';
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import noop from "lodash/noop";
 
 const delta = 10;
-const commonClassName = 'position-relative overflow-auto';
-const commonControllsClassName = 'position-absolute h-100 z-3';
+const commonClassName = "position-relative overflow-auto";
+const commonControllsClassName = "position-absolute h-100 z-3";
 
 function HorizontalScrollControls({ children, className, onScroll = noop }) {
   const leftButtonRef = useRef(null);
@@ -50,39 +45,38 @@ function HorizontalScrollControls({ children, className, onScroll = noop }) {
   const handleScrollItemsLeft = useCallback(() => {
     scrolledListRef.current.scrollBy({
       left: -scrolledListRef.current.clientWidth,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleScroll = useCallback((event) => {
-    onScroll(event.currentTarget);
-    setScrollLeft(event.currentTarget.scrollLeft);
-  }, [onScroll, setScrollLeft]);
+  const handleScroll = useCallback(
+    (event) => {
+      onScroll(event.currentTarget);
+      setScrollLeft(event.currentTarget.scrollLeft);
+    },
+    [onScroll, setScrollLeft],
+  );
 
   const handleScrollItemsRight = useCallback(() => {
     scrolledListRef.current.scrollBy({
       left: scrolledListRef.current.clientWidth,
-      behavior: 'smooth',
+      behavior: "smooth",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const leftControlClassName = cn(
-    commonControllsClassName,
-    'cb-left-scroll-control pr-2 start-0',
-    {
-      'd-block': showLeftControl,
-      'd-none': !showLeftControl,
-    },
-  );
+  const leftControlClassName = cn(commonControllsClassName, "cb-left-scroll-control pr-2 start-0", {
+    "d-block": showLeftControl,
+    "d-none": !showLeftControl,
+  });
 
   const rightControlClassName = cn(
     commonControllsClassName,
-    'cb-right-scroll-control pl-2 top-0 end-0',
+    "cb-right-scroll-control pl-2 top-0 end-0",
     {
-      'd-block': showRightControl,
-      'd-none': !showRightControl,
+      "d-block": showRightControl,
+      "d-none": !showRightControl,
     },
   );
 

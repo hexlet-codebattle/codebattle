@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from "react";
 
 const useResizeListener = (editor, props) => {
   const handleResize = useCallback(() => {
@@ -12,10 +12,10 @@ const useResizeListener = (editor, props) => {
   }, [props.locked, handleResize]);
 
   useEffect(() => {
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, [handleResize]);
 

@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from "react";
 
-import axios from 'axios';
-import { camelizeKeys } from 'humps';
-import sum from 'lodash/sum';
-import { useDispatch } from 'react-redux';
+import axios from "axios";
+import { camelizeKeys } from "humps";
+import sum from "lodash/sum";
+import { useDispatch } from "react-redux";
 
-import LanguageIcon from '../../components/LanguageIcon';
-import Loading from '../../components/Loading';
-import { actions } from '../../slices';
-import CompletedGames from '../lobby/CompletedGames';
+import LanguageIcon from "../../components/LanguageIcon";
+import Loading from "../../components/Loading";
+import { actions } from "../../slices";
+import CompletedGames from "../lobby/CompletedGames";
 
-import Achievement from './Achievement';
-import Heatmap from './Heatmap';
-import UserStatCharts from './UserStatCharts';
-import UserTournaments from './UserTournaments';
+import Achievement from "./Achievement";
+import Heatmap from "./Heatmap";
+import UserStatCharts from "./UserStatCharts";
+import UserTournaments from "./UserTournaments";
 
-const hiddenAchievementTypes = new Set(['game_stats', 'tournaments_stats']);
+const hiddenAchievementTypes = new Set(["game_stats", "tournaments_stats"]);
 const seasonPlaceColors = {
-  gold: '#e0bf7a',
-  silver: '#c2c9d6',
-  bronze: '#c48a57',
-  platinum: '#a4aab3',
+  gold: "#e0bf7a",
+  silver: "#c2c9d6",
+  bronze: "#c48a57",
+  platinum: "#a4aab3",
 };
 
 const getSeasonPlaceColor = (place) => {
@@ -58,10 +58,10 @@ function HolopinTags({ name }) {
 function UserProfile() {
   const [userData, setUserData] = useState(null);
   const [topRivals, setTopRivals] = useState([]);
-  const [rivalsStatus, setRivalsStatus] = useState('idle');
-  const [activeTab, setActiveTab] = useState('statistics');
+  const [rivalsStatus, setRivalsStatus] = useState("idle");
+  const [activeTab, setActiveTab] = useState("statistics");
   const dispatch = useDispatch();
-  const userId = useMemo(() => window.location.pathname.split('/').pop(), []);
+  const userId = useMemo(() => window.location.pathname.split("/").pop(), []);
 
   useEffect(() => {
     axios
@@ -75,18 +75,18 @@ function UserProfile() {
   }, [dispatch, userId]);
 
   useEffect(() => {
-    setRivalsStatus('loading');
+    setRivalsStatus("loading");
 
     axios
       .get(`/api/v1/user/${userId}/rivals`)
       .then((response) => {
         const payload = camelizeKeys(response.data);
         setTopRivals(payload.topRivals || []);
-        setRivalsStatus('loaded');
+        setRivalsStatus("loaded");
       })
       .catch(() => {
         setTopRivals([]);
-        setRivalsStatus('error');
+        setRivalsStatus("error");
       });
   }, [userId]);
 
@@ -107,10 +107,10 @@ function UserProfile() {
     mastersWins: 0,
     grandSlamWins: 0,
   };
-  const userInsertedAt = new Date(user.insertedAt).toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const userInsertedAt = new Date(user.insertedAt).toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
   const hasClan = Boolean(user.clan && user.clan.trim().length > 0);
   const languageEntries = Object.entries(languageStats).sort((a, b) => b[1] - a[1]);
@@ -124,11 +124,7 @@ function UserProfile() {
       <div className="col-12 col-md-3 my-4">
         <div className="pl-md-2 text-center">
           <div className="mb-2 mb-sm-4">
-            <img
-              className="cb-profile-avatar rounded"
-              src={user.avatarUrl}
-              alt="User avatar"
-            />
+            <img className="cb-profile-avatar rounded" src={user.avatarUrl} alt="User avatar" />
           </div>
           <div>
             <h1 className="cb-heading text-break font-weight-bold">{user.name}</h1>
@@ -138,7 +134,7 @@ function UserProfile() {
               <LanguageIcon
                 className="ml-2"
                 lang={user.lang}
-                style={{ width: '30px', height: '30px' }}
+                style={{ width: "30px", height: "30px" }}
               />
             </h3>
             <hr className="cb-border-color" />
@@ -149,7 +145,7 @@ function UserProfile() {
                   {user.clanId ? (
                     <a
                       className="text-decoration-none"
-                      style={{ color: 'inherit' }}
+                      style={{ color: "inherit" }}
                       href={`/clans/${user.clanId}`}
                     >
                       {user.clan}
@@ -181,7 +177,9 @@ function UserProfile() {
                 <hr className="mt-2" />
                 <h3 className="text-break cb-heading">Achievements</h3>
                 <div className="cb-achievements-grid mt-3">
-                  {visibleAchievements.map((item) => <Achievement key={item.type} achievement={item} />)}
+                  {visibleAchievements.map((item) => (
+                    <Achievement key={item.type} achievement={item} />
+                  ))}
                 </div>
               </>
             )}
@@ -196,19 +194,22 @@ function UserProfile() {
                       className="mb-2 p-2 cb-rounded"
                       style={{
                         backgroundColor: getSeasonPlaceColor(result.place),
-                        border: '1px solid rgba(47, 52, 64, 0.25)',
+                        border: "1px solid rgba(47, 52, 64, 0.25)",
                       }}
                     >
                       <div className="font-weight-bold">
                         <a
                           href={`/seasons/${result.seasonId}`}
                           className="text-decoration-none"
-                          style={{ color: '#2f3440' }}
+                          style={{ color: "#2f3440" }}
                         >
                           {`${result.seasonName} ${result.seasonYear}`}
                         </a>
                       </div>
-                      <div className="small" style={{ color: '#2f3440' }}>{`Place: #${result.place}`}</div>
+                      <div
+                        className="small"
+                        style={{ color: "#2f3440" }}
+                      >{`Place: #${result.place}`}</div>
                     </div>
                   ))}
                 </div>
@@ -233,7 +234,7 @@ function UserProfile() {
                 role="tab"
                 aria-controls="statistics"
                 aria-selected="true"
-                onClick={() => setActiveTab('statistics')}
+                onClick={() => setActiveTab("statistics")}
               >
                 Statistics
               </a>
@@ -245,7 +246,7 @@ function UserProfile() {
                 role="tab"
                 aria-controls="tournaments"
                 aria-selected="false"
-                onClick={() => setActiveTab('tournaments')}
+                onClick={() => setActiveTab("tournaments")}
               >
                 Tournaments
               </a>
@@ -257,13 +258,16 @@ function UserProfile() {
                 role="tab"
                 aria-controls="completedGames"
                 aria-selected="false"
-                onClick={() => setActiveTab('completedGames')}
+                onClick={() => setActiveTab("completedGames")}
               >
                 Completed games
               </a>
             </div>
           </nav>
-          <div className="tab-content border cb-border-color border-top-0 rounded-bottom flex-grow-1 basis-0" id="nav-tabContent">
+          <div
+            className="tab-content border cb-border-color border-top-0 rounded-bottom flex-grow-1 basis-0"
+            id="nav-tabContent"
+          >
             <div
               className="tab-pane fade show active"
               id="statistics"
@@ -287,12 +291,9 @@ function UserProfile() {
                 </div>
               </div>
               {hasChartsData && (
-                <UserStatCharts
-                  gameStats={gameStats}
-                  tournamentStats={tournamentStats}
-                />
+                <UserStatCharts gameStats={gameStats} tournamentStats={tournamentStats} />
               )}
-              {rivalsStatus === 'loading' && (
+              {rivalsStatus === "loading" && (
                 <div className="row mt-5 px-3 justify-content-center">
                   <div className="col-12 col-lg-10">
                     <div className="small text-center text-muted mb-2">Rivals</div>
@@ -300,7 +301,7 @@ function UserProfile() {
                   </div>
                 </div>
               )}
-              {rivalsStatus === 'loaded' && topRivals.length > 0 && (
+              {rivalsStatus === "loaded" && topRivals.length > 0 && (
                 <div className="row mt-5 px-3 justify-content-center">
                   <div className="col-12 col-lg-10">
                     <div className="small text-center text-muted mb-2">Rivals</div>
@@ -311,15 +312,15 @@ function UserProfile() {
                           href={`/users/${rival.id}`}
                           className="m-1 px-3 py-2 cb-rounded font-weight-bold text-decoration-none d-block"
                           style={{
-                            backgroundColor: '#c2c9d6',
-                            border: '1px solid #a4aab3',
-                            color: '#2f3440',
-                            minWidth: '180px',
-                            textAlign: 'center',
+                            backgroundColor: "#c2c9d6",
+                            border: "1px solid #a4aab3",
+                            color: "#2f3440",
+                            minWidth: "180px",
+                            textAlign: "center",
                           }}
                         >
                           <div>{rival.name}</div>
-                          <div className="small">{`Clan: ${rival.clan || '-'}`}</div>
+                          <div className="small">{`Clan: ${rival.clan || "-"}`}</div>
                           <div className="small">{`W/L/T: ${rival.winsCount}/${rival.lossesCount}/${rival.timeoutsCount}`}</div>
                         </a>
                       ))}
@@ -337,11 +338,11 @@ function UserProfile() {
                           key={lang}
                           className="m-1 px-3 py-2 cb-rounded font-weight-bold"
                           style={{
-                            backgroundColor: '#c2c9d6',
-                            border: '1px solid #a4aab3',
-                            color: '#2f3440',
-                            minWidth: '88px',
-                            textAlign: 'center',
+                            backgroundColor: "#c2c9d6",
+                            border: "1px solid #a4aab3",
+                            color: "#2f3440",
+                            minWidth: "88px",
+                            textAlign: "center",
                           }}
                         >
                           {`${lang} · ${count}`}
@@ -365,7 +366,7 @@ function UserProfile() {
               aria-labelledby="tournaments-tab"
             >
               <div className="h-100 d-flex flex-column justify-content-center">
-                <UserTournaments isActive={activeTab === 'tournaments'} />
+                <UserTournaments isActive={activeTab === "tournaments"} />
               </div>
             </div>
             <div

@@ -1,4 +1,4 @@
-import { useSelector } from '@xstate/react';
+import { useSelector } from "@xstate/react";
 
 const useMachineStateSelector = useSelector;
 

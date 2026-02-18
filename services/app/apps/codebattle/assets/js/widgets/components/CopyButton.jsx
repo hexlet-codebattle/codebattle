@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 
-import copy from 'copy-to-clipboard';
-import i18n from 'i18next';
+import copy from "copy-to-clipboard";
+import i18n from "i18next";
 
 function CopyButton({ className, value, disabled = false }) {
   const [copied, setCopied] = useState(false);
@@ -11,7 +11,7 @@ function CopyButton({ className, value, disabled = false }) {
     setCopied(true);
   }, [value]);
 
-  const textButtonCopy = copied ? 'Copied' : 'Copy';
+  const textButtonCopy = copied ? "Copied" : "Copy";
 
   return (
     <button

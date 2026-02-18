@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import i18next from 'i18next';
-import { useSelector } from 'react-redux';
+import i18next from "i18next";
+import { useSelector } from "react-redux";
 
-import { gameStatusSelector } from '../../selectors';
+import { gameStatusSelector } from "../../selectors";
 
 function BackToTournamentButton() {
   const { tournamentId } = useSelector(gameStatusSelector);
@@ -11,7 +11,7 @@ function BackToTournamentButton() {
 
   return (
     <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={tournamentUrl}>
-      {i18next.t('Back to tournament')}
+      {i18next.t("Back to tournament")}
     </a>
   );
 }

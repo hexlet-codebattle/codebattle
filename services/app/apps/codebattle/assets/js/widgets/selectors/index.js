@@ -1,44 +1,45 @@
-import { createDraftSafeSelector } from '@reduxjs/toolkit';
-import find from 'lodash/find';
-import get from 'lodash/get';
-import isUndefined from 'lodash/isUndefined';
-import pick from 'lodash/pick';
-import moment from 'moment';
+import { createDraftSafeSelector } from "@reduxjs/toolkit";
+import find from "lodash/find";
+import get from "lodash/get";
+import isUndefined from "lodash/isUndefined";
+import pick from "lodash/pick";
+import moment from "moment";
 
-import i18n from '../../i18n';
-import BattleRoomViewModes from '../config/battleRoomViewModes';
-import editorModes from '../config/editorModes';
-import defaultEditorHeight from '../config/editorSettings';
-import editorThemes from '../config/editorThemes';
-import editorUserTypes from '../config/editorUserTypes';
-import GameStateCodes from '../config/gameStateCodes';
-import SubscriptionTypeCodes from '../config/subscriptionTypes';
-import { taskStateCodes } from '../config/task';
-import userTypes from '../config/userTypes';
-import { replayerMachineStates } from '../machines/game';
-import { makeEditorTextKey } from '../utils/gameRoom';
+import i18n from "../../i18n";
+import BattleRoomViewModes from "../config/battleRoomViewModes";
+import editorModes from "../config/editorModes";
+import defaultEditorHeight from "../config/editorSettings";
+import editorThemes from "../config/editorThemes";
+import editorUserTypes from "../config/editorUserTypes";
+import GameStateCodes from "../config/gameStateCodes";
+import SubscriptionTypeCodes from "../config/subscriptionTypes";
+import { taskStateCodes } from "../config/task";
+import userTypes from "../config/userTypes";
+import { replayerMachineStates } from "../machines/game";
+import { makeEditorTextKey } from "../utils/gameRoom";
 
-const logoSvg = '/assets/images/logo.svg';
+const logoSvg = "/assets/images/logo.svg";
 
 export const currentUserIdSelector = (state) => state.user.currentUserId;
 
-export const currentUserClanIdSelector = (state) => state.user.users[state.user.currentUserId].clanId;
+export const currentUserClanIdSelector = (state) =>
+  state.user.users[state.user.currentUserId].clanId;
 
-export const currentUserIsAdminSelector = (state) => state.user.users[state.user.currentUserId]
-  .subscriptionType === SubscriptionTypeCodes.admin;
-export const currentUserIsPremiumSelector = (state) => state.user.users[state.user.currentUserId].subscriptionType
-  === SubscriptionTypeCodes.premium;
+export const currentUserIsAdminSelector = (state) =>
+  state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.admin;
+export const currentUserIsPremiumSelector = (state) =>
+  state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.premium;
 
-export const currentUserIsGuestSelector = (state) => !!state.user.users[state.user.currentUserId].isGuest;
+export const currentUserIsGuestSelector = (state) =>
+  !!state.user.users[state.user.currentUserId].isGuest;
 
 export const userByIdSelector = (userId) => (state) => state.user.users[userId];
 
-export const userIsAdminSelector = (userId) => (state) => state.user.users[userId]?.subscriptionType
-  === SubscriptionTypeCodes.admin;
+export const userIsAdminSelector = (userId) => (state) =>
+  state.user.users[userId]?.subscriptionType === SubscriptionTypeCodes.admin;
 
-export const subscriptionTypeSelector = (state) => (currentUserIsAdminSelector(state)
-    ? SubscriptionTypeCodes.admin
-    : SubscriptionTypeCodes.premium);
+export const subscriptionTypeSelector = (state) =>
+  currentUserIsAdminSelector(state) ? SubscriptionTypeCodes.admin : SubscriptionTypeCodes.premium;
 
 export const isShowGuideSelector = (state) => !!state.gameUI.isShowGuide;
 
@@ -55,9 +56,7 @@ export const userIsGamePlayerSelector = (state) => {
 
 export const singleBattlePlayerSelector = (state) => {
   const players = gamePlayersSelector(state) || [];
-  const playersWithoutBot = Object.values(players).filter(
-    (player) => !player.isBot,
-  );
+  const playersWithoutBot = Object.values(players).filter((player) => !player.isBot);
 
   if (playersWithoutBot.length !== 1) {
     return null;
@@ -68,9 +67,11 @@ export const singleBattlePlayerSelector = (state) => {
 
 export const gamePlayerSelector = (id) => (state) => state.game.players[id];
 
-export const firstPlayerSelector = (state) => find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
+export const firstPlayerSelector = (state) =>
+  find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
-export const secondPlayerSelector = (state) => find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+export const secondPlayerSelector = (state) =>
+  find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 export const opponentPlayerSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
@@ -116,13 +117,14 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
   if (!meta) {
     return null;
   }
-  const text = roomMachineState
-    && roomMachineState.matches({ replayer: replayerMachineStates.on })
+  const text =
+    roomMachineState && roomMachineState.matches({ replayer: replayerMachineStates.on })
       ? editorTextsHistory[playerId]
       : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
 
-  const currentLangSlug = roomMachineState
-    && roomMachineState.matches({
+  const currentLangSlug =
+    roomMachineState &&
+    roomMachineState.matches({
       replayer: replayerMachineStates.on,
     })
       ? meta.historyCurrentLangSlug
@@ -137,7 +139,7 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
 
 export const editorHeightSelector = (roomMachineState, playerId) => (state) => {
   const editorData = editorDataSelector(playerId, roomMachineState)(state);
-  return get(editorData, 'editorHeight', defaultEditorHeight);
+  return get(editorData, "editorHeight", defaultEditorHeight);
 };
 
 export const editorTextHistorySelector = (state, { userId }) => state.editor.textHistory[userId];
@@ -156,24 +158,28 @@ export const secondEditorSelector = (state, roomMachineState) => {
   return editorDataSelector(playerId, roomMachineState)(state);
 };
 
-export const leftEditorSelector = (roomMachineState) => createDraftSafeSelector(
+export const leftEditorSelector = (roomMachineState) =>
+  createDraftSafeSelector(
     (state) => state,
     (state) => {
       const currentUserId = currentUserIdSelector(state);
       const player = get(gamePlayersSelector(state), currentUserId, false);
-      const editorSelector = !!player && player.type === userTypes.secondPlayer
+      const editorSelector =
+        !!player && player.type === userTypes.secondPlayer
           ? secondEditorSelector
           : firstEditorSelector;
       return editorSelector(state, roomMachineState);
     },
   );
 
-export const rightEditorSelector = (roomMachineState) => createDraftSafeSelector(
+export const rightEditorSelector = (roomMachineState) =>
+  createDraftSafeSelector(
     (state) => state,
     (state) => {
       const currentUserId = currentUserIdSelector(state);
       const player = get(gamePlayersSelector(state), currentUserId, false);
-      const editorSelector = !!player && player.type === userTypes.secondPlayer
+      const editorSelector =
+        !!player && player.type === userTypes.secondPlayer
           ? firstEditorSelector
           : secondEditorSelector;
       return editorSelector(state, roomMachineState);
@@ -186,7 +192,8 @@ export const currentPlayerTextByLangSelector = (lang) => (state) => {
   return editorTexts[makeEditorTextKey(userId, lang)];
 };
 
-export const userLangSelector = (userId) => (state) => get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
+export const userLangSelector = (userId) => (state) =>
+  get(editorsMetaSelector(state)[userId], "currentLangSlug", null);
 
 export const userGameScoreSelector = createDraftSafeSelector(
   (state) => state.game.gameStatus.score,
@@ -200,38 +207,40 @@ export const gameStatusTitleSelector = (state) => {
   const gameStatus = gameStatusSelector(state);
   switch (gameStatus.state) {
     case GameStateCodes.waitingOpponent:
-      return i18n.t('%{state}', { state: i18n.t('Waiting for an opponent') });
+      return i18n.t("%{state}", { state: i18n.t("Waiting for an opponent") });
     case GameStateCodes.playing:
-      return i18n.t('%{state}', { state: i18n.t('Playing') });
+      return i18n.t("%{state}", { state: i18n.t("Playing") });
     case GameStateCodes.gameOver:
-      return i18n.t('%{state}', { state: gameStatus.msg });
+      return i18n.t("%{state}", { state: gameStatus.msg });
     default:
-      return '';
+      return "";
   }
 };
 
 export const gameTaskSelector = (state) => state.game.task;
 
-export const canEditTask = (state) => state.builder.task.origin !== 'github'
-  && ((currentUserIdSelector(state) === state.builder.task.creatorId
-    && (state.builder.task.state === taskStateCodes.blank
-      || state.builder.task.state === taskStateCodes.draft))
-    || (currentUserIsAdminSelector(state)
-      && state.builder.task.state !== taskStateCodes.moderation));
+export const canEditTask = (state) =>
+  state.builder.task.origin !== "github" &&
+  ((currentUserIdSelector(state) === state.builder.task.creatorId &&
+    (state.builder.task.state === taskStateCodes.blank ||
+      state.builder.task.state === taskStateCodes.draft)) ||
+    (currentUserIsAdminSelector(state) && state.builder.task.state !== taskStateCodes.moderation));
 
-export const isTaskOwner = (state) => currentUserIdSelector(state) === state.builder.task?.creatorId
-  || currentUserIdSelector(state) === state.task?.creatorId;
+export const isTaskOwner = (state) =>
+  currentUserIdSelector(state) === state.builder.task?.creatorId ||
+  currentUserIdSelector(state) === state.task?.creatorId;
 
-export const canEditTaskGenerator = (state) => (currentUserIdSelector(state) === state.builder.task.creatorId
-    && state.builder.task.state !== taskStateCodes.moderation)
-  || (currentUserIsAdminSelector(state)
-    && state.builder.task.state !== taskStateCodes.moderation);
+export const canEditTaskGenerator = (state) =>
+  (currentUserIdSelector(state) === state.builder.task.creatorId &&
+    state.builder.task.state !== taskStateCodes.moderation) ||
+  (currentUserIsAdminSelector(state) && state.builder.task.state !== taskStateCodes.moderation);
 
-export const isValidTask = (state) => state.builder.validationStatuses.name[0]
-  && state.builder.validationStatuses.description[0]
-  && state.builder.validationStatuses.assertsExamples[0]
-  && state.builder.validationStatuses.solution[0]
-  && state.builder.validationStatuses.argumentsGenerator[0];
+export const isValidTask = (state) =>
+  state.builder.validationStatuses.name[0] &&
+  state.builder.validationStatuses.description[0] &&
+  state.builder.validationStatuses.assertsExamples[0] &&
+  state.builder.validationStatuses.solution[0] &&
+  state.builder.validationStatuses.argumentsGenerator[0];
 
 export const builderTaskSelector = (state) => state.builder.task;
 
@@ -245,11 +254,14 @@ export const taskAssertsSelector = (state) => state.builder.task.asserts;
 
 export const taskAssertsStatusSelector = (state) => state.builder.assertsStatus;
 
-export const taskTextSolutionSelector = (state) => state.builder.textSolution[state.builder.generatorLang];
+export const taskTextSolutionSelector = (state) =>
+  state.builder.textSolution[state.builder.generatorLang];
 
-export const taskTextArgumentsGeneratorSelector = (state) => state.builder.textArgumentsGenerator[state.builder.generatorLang];
+export const taskTextArgumentsGeneratorSelector = (state) =>
+  state.builder.textArgumentsGenerator[state.builder.generatorLang];
 
-export const taskParamsSelector = (params = { normalize: true }) => createDraftSafeSelector(
+export const taskParamsSelector = (params = { normalize: true }) =>
+  createDraftSafeSelector(
     (state) => state.builder.task,
     (state) => state.builder.task.inputSignature,
     (state) => state.builder.task.outputSignature,
@@ -269,12 +281,16 @@ export const taskParamsSelector = (params = { normalize: true }) => createDraftS
       textArgumentsGenerator,
     ) => ({
       ...task,
-      inputSignature: inputSignature.map((item) => (params.normalize ? pick(item, ['argumentName', 'type']) : item)),
-      outputSignature: params.normalize
-        ? pick(outputSignature, ['type'])
-        : outputSignature,
-      asserts: asserts.map((item) => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
-      assertsExamples: assertsExamples.map((item) => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
+      inputSignature: inputSignature.map((item) =>
+        params.normalize ? pick(item, ["argumentName", "type"]) : item,
+      ),
+      outputSignature: params.normalize ? pick(outputSignature, ["type"]) : outputSignature,
+      asserts: asserts.map((item) =>
+        params.normalize ? pick(item, ["arguments", "expected"]) : item,
+      ),
+      assertsExamples: assertsExamples.map((item) =>
+        params.normalize ? pick(item, ["arguments", "expected"]) : item,
+      ),
       generatorLang,
       solution: textSolution[generatorLang],
       argumentsGenerator: textArgumentsGenerator[generatorLang],
@@ -285,22 +301,24 @@ export const taskParamsTemplatesStateSelector = (state) => state.builder.templat
 
 export const taskSolutionSelector = (state, lang) => state.builder.textSolution[lang];
 
-export const taskArgumentsGeneratorSelector = (state, lang) => state.builder.textArgumentsGenerator[lang];
+export const taskArgumentsGeneratorSelector = (state, lang) =>
+  state.builder.textArgumentsGenerator[lang];
 
-export const isTestingReady = (state) => state.builder.validationStatuses.inputSignature[0]
-  && state.builder.validationStatuses.outputSignature[0]
-  && state.builder.validationStatuses.examples[0]
-  && state.builder.validationStatuses.solution[0]
-  && state.builder.validationStatuses.argumentsGenerator[0];
+export const isTestingReady = (state) =>
+  state.builder.validationStatuses.inputSignature[0] &&
+  state.builder.validationStatuses.outputSignature[0] &&
+  state.builder.validationStatuses.examples[0] &&
+  state.builder.validationStatuses.solution[0] &&
+  state.builder.validationStatuses.argumentsGenerator[0];
 
 export const editorLangsSelector = (state) => state.editor.langs;
 
 export const langInputSelector = (state) => state.editor.langInput;
 
-export const executionOutputSelector = (playerId, roomMachineState) => (state) => (roomMachineState
-    && roomMachineState.matches({ replayer: replayerMachineStates.on })
-      ? state.executionOutput.historyResults[playerId]
-      : state.executionOutput.results[playerId]);
+export const executionOutputSelector = (playerId, roomMachineState) => (state) =>
+  roomMachineState && roomMachineState.matches({ replayer: replayerMachineStates.on })
+    ? state.executionOutput.historyResults[playerId]
+    : state.executionOutput.results[playerId];
 
 export const firstExecutionOutputSelector = (roomMachineState) => (state) => {
   const playerId = firstPlayerSelector(state)?.id;
@@ -316,7 +334,8 @@ export const leftExecutionOutputSelector = (roomMachineState) => (state) => {
   const currentUserId = currentUserIdSelector(state);
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
-  const outputSelector = player.type === userTypes.secondPlayer
+  const outputSelector =
+    player.type === userTypes.secondPlayer
       ? secondExecutionOutputSelector
       : firstExecutionOutputSelector;
   return outputSelector(roomMachineState)(state);
@@ -326,117 +345,108 @@ export const rightExecutionOutputSelector = (roomMachineState) => (state) => {
   const currentUserId = currentUserIdSelector(state);
   const player = get(gamePlayersSelector(state), currentUserId, false);
 
-  const outputSelector = !!player && player.type === userTypes.secondPlayer
+  const outputSelector =
+    !!player && player.type === userTypes.secondPlayer
       ? firstExecutionOutputSelector
       : secondExecutionOutputSelector;
   return outputSelector(roomMachineState)(state);
 };
 
 export const singlePlayerExecutionOutputSelector = (roomMachineState) => (state) => {
-    const player = singleBattlePlayerSelector(state);
+  const player = singleBattlePlayerSelector(state);
 
-    return player
-      ? executionOutputSelector(player.id, roomMachineState)(state)
-      : {};
-  };
+  return player ? executionOutputSelector(player.id, roomMachineState)(state) : {};
+};
 
 export const infoPanelExecutionOutputSelector = (viewMode, roomMachineState) => (state) => {
-    if (viewMode === BattleRoomViewModes.duel) {
-      return leftExecutionOutputSelector(roomMachineState)(state);
-    }
+  if (viewMode === BattleRoomViewModes.duel) {
+    return leftExecutionOutputSelector(roomMachineState)(state);
+  }
 
-    if (viewMode === BattleRoomViewModes.single) {
-      return singlePlayerExecutionOutputSelector(roomMachineState)(state);
-    }
+  if (viewMode === BattleRoomViewModes.single) {
+    return singlePlayerExecutionOutputSelector(roomMachineState)(state);
+  }
 
-    throw new Error('Invalid view mode for battle room');
-  };
+  throw new Error("Invalid view mode for battle room");
+};
 
 export const editorsPanelOptionsSelector = (viewMode, roomMachineState) => (state) => {
-    const currentUserId = currentUserIdSelector(state);
-    const editorsMode = editorsModeSelector(state);
-    const theme = editorsThemeSelector(state);
+  const currentUserId = currentUserIdSelector(state);
+  const editorsMode = editorsModeSelector(state);
+  const theme = editorsThemeSelector(state);
 
-    if (viewMode === BattleRoomViewModes.duel) {
-      const leftEditor = leftEditorSelector(roomMachineState)(state);
-      const rightEditor = rightEditorSelector(roomMachineState)(state);
-      const leftUserId = leftEditor?.userId;
-      const rightUserId = rightEditor?.userId;
+  if (viewMode === BattleRoomViewModes.duel) {
+    const leftEditor = leftEditorSelector(roomMachineState)(state);
+    const rightEditor = rightEditorSelector(roomMachineState)(state);
+    const leftUserId = leftEditor?.userId;
+    const rightUserId = rightEditor?.userId;
 
-      const leftUserType = currentUserId === leftUserId
-          ? editorUserTypes.currentUser
-          : editorUserTypes.player;
-      const rightUserType = leftUserType === editorUserTypes.currentUser
-          ? editorUserTypes.opponent
-          : editorUserTypes.player;
-      const leftEditorHeight = editorHeightSelector(
-        roomMachineState,
-        leftUserId,
-      )(state);
-      const rightEditorHeight = editorHeightSelector(
-        roomMachineState,
-        rightUserId,
-      )(state);
-      const rightOutput = rightExecutionOutputSelector(roomMachineState)(state);
+    const leftUserType =
+      currentUserId === leftUserId ? editorUserTypes.currentUser : editorUserTypes.player;
+    const rightUserType =
+      leftUserType === editorUserTypes.currentUser
+        ? editorUserTypes.opponent
+        : editorUserTypes.player;
+    const leftEditorHeight = editorHeightSelector(roomMachineState, leftUserId)(state);
+    const rightEditorHeight = editorHeightSelector(roomMachineState, rightUserId)(state);
+    const rightOutput = rightExecutionOutputSelector(roomMachineState)(state);
 
-      const leftEditorParams = {
-        id: leftUserId,
-        type: leftUserType,
-        editorState: leftEditor,
-        editorHeight: leftEditorHeight,
-        theme,
-        editorMode: editorsMode,
-      };
-      const rightEditorParams = {
-        id: rightUserId,
-        type: rightUserType,
-        editorState: rightEditor,
-        editorHeight: rightEditorHeight,
-        theme,
-        editorMode: editorModes.default,
-        output: rightOutput,
-      };
+    const leftEditorParams = {
+      id: leftUserId,
+      type: leftUserType,
+      editorState: leftEditor,
+      editorHeight: leftEditorHeight,
+      theme,
+      editorMode: editorsMode,
+    };
+    const rightEditorParams = {
+      id: rightUserId,
+      type: rightUserType,
+      editorState: rightEditor,
+      editorHeight: rightEditorHeight,
+      theme,
+      editorMode: editorModes.default,
+      output: rightOutput,
+    };
 
-      return [leftEditorParams, rightEditorParams];
-    }
+    return [leftEditorParams, rightEditorParams];
+  }
 
-    if (viewMode === BattleRoomViewModes.single) {
-      const player = singleBattlePlayerSelector(state);
+  if (viewMode === BattleRoomViewModes.single) {
+    const player = singleBattlePlayerSelector(state);
 
-      if (!player) return [];
+    if (!player) return [];
 
-      const { id: userId } = player;
-      const userType = currentUserId === userId
-          ? editorUserTypes.currentUser
-          : editorUserTypes.player;
-      const editorState = editorDataSelector(userId, roomMachineState)(state);
-      const editorHeight = editorHeightSelector(
-        roomMachineState,
-        userId,
-      )(state);
+    const { id: userId } = player;
+    const userType =
+      currentUserId === userId ? editorUserTypes.currentUser : editorUserTypes.player;
+    const editorState = editorDataSelector(userId, roomMachineState)(state);
+    const editorHeight = editorHeightSelector(roomMachineState, userId)(state);
 
-      const editorParams = {
-        id: userId,
-        type: userType,
-        editorState,
-        editorHeight,
-        theme,
-        editorMode: editorsMode,
-      };
+    const editorParams = {
+      id: userId,
+      type: userType,
+      editorState,
+      editorHeight,
+      theme,
+      editorMode: editorsMode,
+    };
 
-      return [editorParams];
-    }
+    return [editorParams];
+  }
 
-    throw new Error('Invalid view mode for battle room');
-  };
+  throw new Error("Invalid view mode for battle room");
+};
 
-export const userRankingSelector = (userId) => (state) => (state.tournament.ranking?.entries || []).find(({ id }) => id === userId);
+export const userRankingSelector = (userId) => (state) =>
+  (state.tournament.ranking?.entries || []).find(({ id }) => id === userId);
 export const tournamentIdSelector = (state) => state.tournament.id;
 
 export const tournamentSelector = (state) => state.tournament;
 export const tournamentAdminSelector = (state) => state.tournamentAdmin;
 
-export const currentUserIsTournamentOwnerSelector = (state) => state.tournament.creatorId === state.user.currentUserId;
+export const currentUserIsTournamentOwnerSelector = (state) =>
+  state.tournament.creatorId === state.user.currentUserId;
 
 export const currentUserCanModerateTournament = createDraftSafeSelector(
   currentUserIsAdminSelector,
@@ -504,7 +514,7 @@ export const isOpponentInGameSelector = (state) => {
 export const currentUserNameSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   if (!currentUserId) {
-    return 'Anonymous user';
+    return "Anonymous user";
   }
   return state.user.users[currentUserId].name;
 };
@@ -542,21 +552,19 @@ export const reportsSelector = createDraftSafeSelector(
   (state) => state.reports.showOnlyPendingReports,
   (list, showOnlyPendingReports) => {
     const sortedList = [...(list || [])].sort((r1, r2) => {
-      if (r1.state === 'pending' && r2.state === 'pending') {
+      if (r1.state === "pending" && r2.state === "pending") {
         return moment(r1.insertedAt).diff(moment(r2.insertedAt));
       }
-      if (r1.state === 'pending') {
+      if (r1.state === "pending") {
         return -1;
       }
-      if (r2.state === 'pending') {
+      if (r2.state === "pending") {
         return 1;
       }
       return 0;
     });
 
-    return showOnlyPendingReports
-      ? sortedList.filter((r) => r.state === 'pending')
-      : sortedList;
+    return showOnlyPendingReports ? sortedList.filter((r) => r.state === "pending") : sortedList;
   },
 );
 
@@ -568,22 +576,18 @@ export const participantDataSelector = (state) => {
   const userEvent = eventUserSelector(state);
 
   // Map event stages to the format needed by the dashboard
-  const stages = event?.stages.map((eventStage) => {
-      const userStage = userEvent?.stages.find(
-        (stage) => stage.slug === eventStage.slug,
-      );
+  const stages =
+    event?.stages.map((eventStage) => {
+      const userStage = userEvent?.stages.find((stage) => stage.slug === eventStage.slug);
 
       // Determine status based on event stage status and user participation
       const isStageAvailableForUser = !!(
-        eventStage.status === 'active'
-        && ['pending', 'started', null].includes(userStage?.status)
+        eventStage.status === "active" && ["pending", "started", null].includes(userStage?.status)
       );
-      const isUserPassedStage = userStage?.entranceResult === 'passed';
-      const gamesCount = userStage?.gamesCount ? userStage.gamesCount : '-';
-      const zeroWinsCount = gamesCount === '-' ? '-' : '0';
-      const winsCount = userStage?.winsCount
-        ? userStage.winsCount
-        : zeroWinsCount;
+      const isUserPassedStage = userStage?.entranceResult === "passed";
+      const gamesCount = userStage?.gamesCount ? userStage.gamesCount : "-";
+      const zeroWinsCount = gamesCount === "-" ? "-" : "0";
+      const winsCount = userStage?.winsCount ? userStage.winsCount : zeroWinsCount;
 
       return {
         status: eventStage.status,
@@ -594,17 +598,13 @@ export const participantDataSelector = (state) => {
         isStageAvailableForUser,
         isUserPassedStage,
         slug: eventStage.slug,
-        placeInTotalRank: userStage?.placeInTotalRank
-          ? userStage.placeInTotalRank
-          : '-',
-        placeInCategoryRank: userStage?.placeInCategoryRank
-          ? userStage.placeInCategoryRank
-          : '-',
+        placeInTotalRank: userStage?.placeInTotalRank ? userStage.placeInTotalRank : "-",
+        placeInCategoryRank: userStage?.placeInCategoryRank ? userStage.placeInCategoryRank : "-",
         gamesCount,
         winsCount,
         timeSpent: userStage?.timeSpentInSeconds
-          ? moment.utc(userStage.timeSpentInSeconds * 1000).format('HH:mm:ss')
-          : '-',
+          ? moment.utc(userStage.timeSpentInSeconds * 1000).format("HH:mm:ss")
+          : "-",
         actionButtonText: eventStage.actionButtonText,
         confirmationText: eventStage.confirmationText,
         type: eventStage.type,

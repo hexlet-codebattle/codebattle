@@ -1,23 +1,21 @@
-import React, {
- useState, useContext, memo, useMemo,
-} from 'react';
+import React, { useState, useContext, memo, useMemo } from "react";
 
-import cn from 'classnames';
-import i18next from 'i18next';
-import isEqual from 'lodash/isEqual';
-import { useSelector } from 'react-redux';
+import cn from "classnames";
+import i18next from "i18next";
+import isEqual from "lodash/isEqual";
+import { useSelector } from "react-redux";
 
 // import ExtendedEditor from '../../components/ExtendedEditor';
-import ExtendedEditor from '../../components/Editor';
-import RoomContext from '../../components/RoomContext';
-import BattleRoomViewModes from '../../config/battleRoomViewModes';
-import { roomStateSelector } from '../../machines/selectors';
-import { editorsPanelOptionsSelector } from '../../selectors';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+import ExtendedEditor from "../../components/Editor";
+import RoomContext from "../../components/RoomContext";
+import BattleRoomViewModes from "../../config/battleRoomViewModes";
+import { roomStateSelector } from "../../machines/selectors";
+import { editorsPanelOptionsSelector } from "../../selectors";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
-import EditorContainer from './EditorContainer';
-import Output from './Output';
-import OutputTab from './OutputTab';
+import EditorContainer from "./EditorContainer";
+import Output from "./Output";
+import OutputTab from "./OutputTab";
 
 function EditorWrapper({ children, id, className }) {
   return (
@@ -28,47 +26,53 @@ function EditorWrapper({ children, id, className }) {
 }
 
 function RightSide({ output, children }) {
-  const [showTab, setShowTab] = useState('editor');
+  const [showTab, setShowTab] = useState("editor");
   const isShowOutput = output && output.status;
-  const content = showTab === 'editor' ? (
-    <EditorWrapper id="editor" className="d-flex flex-column flex-grow-1 position-relative cb-editor-height">
-      {children}
-    </EditorWrapper>
-  ) : (
-    <div className="d-flex flex-column flex-grow-1 overflow-auto" style={{ maxHeight: '375px' }}>
-      <div className="h-auto user-select-none">
-        {isShowOutput && <Output sideOutput={output} />}
+  const content =
+    showTab === "editor" ? (
+      <EditorWrapper
+        id="editor"
+        className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
+      >
+        {children}
+      </EditorWrapper>
+    ) : (
+      <div className="d-flex flex-column flex-grow-1 overflow-auto" style={{ maxHeight: "375px" }}>
+        <div className="h-auto user-select-none">
+          {isShowOutput && <Output sideOutput={output} />}
+        </div>
       </div>
-    </div>
-  );
+    );
 
   return (
     <>
       {content}
       <nav>
-        <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
+        <div
+          className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold"
+          id="nav-tab"
+          role="tablist"
+        >
           <a
-            className={cn(
-              'nav-item nav-link flex-grow-1 rounded-0 px-5',
-              { active: showTab === 'editor' },
-            )}
+            className={cn("nav-item nav-link flex-grow-1 rounded-0 px-5", {
+              active: showTab === "editor",
+            })}
             href="#Editor"
             onClick={(e) => {
               e.preventDefault();
-              setShowTab('editor');
+              setShowTab("editor");
             }}
           >
-            {i18next.t('Editor')}
+            {i18next.t("Editor")}
           </a>
           <a
-            className={cn(
-              'nav-item nav-link flex-grow-1 rounded-0 p-2 block',
-              { active: showTab === 'output' },
-            )}
+            className={cn("nav-item nav-link flex-grow-1 rounded-0 p-2 block", {
+              active: showTab === "output",
+            })}
             href="#Output"
             onClick={(e) => {
               e.preventDefault();
-              setShowTab('output');
+              setShowTab("output");
             }}
           >
             {isShowOutput && <OutputTab sideOutput={output} side="right" />}
@@ -102,7 +106,10 @@ function GameWidget({ viewMode, editorMachine }) {
             {...editors[0]}
           >
             {(params) => (
-              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative cb-editor-height">
+              <EditorWrapper
+                id="main-editor"
+                className="d-flex flex-column flex-grow-1 position-relative cb-editor-height"
+              >
                 <ExtendedEditor {...params} />
               </EditorWrapper>
             )}
@@ -125,7 +132,7 @@ function GameWidget({ viewMode, editorMachine }) {
       {viewMode === BattleRoomViewModes.single && (
         <div
           className="d-flex flex-column col-12 col-xl-8 col-lg-6 px-1"
-          style={{ height: 'calc(100vh - 92px)' }}
+          style={{ height: "calc(100vh - 92px)" }}
         >
           <EditorContainer
             orientation="side"
@@ -135,7 +142,10 @@ function GameWidget({ viewMode, editorMachine }) {
             {...editors[0]}
           >
             {(params) => (
-              <EditorWrapper id="main-editor" className="d-flex flex-column flex-grow-1 position-relative">
+              <EditorWrapper
+                id="main-editor"
+                className="d-flex flex-column flex-grow-1 position-relative"
+              >
                 <ExtendedEditor {...params} />
               </EditorWrapper>
             )}

@@ -1,6 +1,6 @@
 const pageNames = {
-  game: 'game',
-  builder: 'builder',
+  game: "game",
+  builder: "builder",
 };
 
 export default pageNames;

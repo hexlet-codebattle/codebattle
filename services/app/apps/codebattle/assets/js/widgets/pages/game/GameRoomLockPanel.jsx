@@ -1,9 +1,9 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from "react";
 
-import cn from 'classnames';
-import { useDispatch } from 'react-redux';
+import cn from "classnames";
+import { useDispatch } from "react-redux";
 
-import { sendPassCode } from '../../middlewares/Room';
+import { sendPassCode } from "../../middlewares/Room";
 
 function GameRoomLockPanel() {
   const dispatch = useDispatch();
@@ -18,14 +18,14 @@ function GameRoomLockPanel() {
     }
   }, [error, setError]);
   const onSubmitCode = useCallback(() => {
-    const value = (inputRef.current.value || '').replaceAll(' ', '');
+    const value = (inputRef.current.value || "").replaceAll(" ", "");
     const onError = (err) => setError(err);
 
     dispatch(sendPassCode(value, onError));
   }, [inputRef, setError, dispatch]);
 
-  const inputClassName = cn('form-control', {
-    'is-invalid': !!error,
+  const inputClassName = cn("form-control", {
+    "is-invalid": !!error,
   });
 
   return (

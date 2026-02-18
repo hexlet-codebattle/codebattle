@@ -1,22 +1,22 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import uniqueId from 'lodash/uniqueId';
+import uniqueId from "lodash/uniqueId";
 
-import AccordeonBox from '../../components/AccordeonBox';
-import assertsStatuses from '../../config/executionStatuses';
-import color from '../../config/statusColor';
+import AccordeonBox from "../../components/AccordeonBox";
+import assertsStatuses from "../../config/executionStatuses";
+import color from "../../config/statusColor";
 
 const AssertsOutput = memo(({ asserts, status, output }) => {
-  const uniqIndex = uniqueId('assertsOutput');
+  const uniqIndex = uniqueId("assertsOutput");
 
   return (
-    <div className="overflow-auto" style={{ maxHeight: '412px' }}>
-      {(status === assertsStatuses.error && asserts.length === 0)
-        || [assertsStatuses.memoryLeak, assertsStatuses.timeout].includes(status) ? (
-          <AccordeonBox.Item output={output} />
+    <div className="overflow-auto" style={{ maxHeight: "412px" }}>
+      {(status === assertsStatuses.error && asserts.length === 0) ||
+      [assertsStatuses.memoryLeak, assertsStatuses.timeout].includes(status) ? (
+        <AccordeonBox.Item output={output} />
       ) : (
-        asserts
-        && asserts.map((assert, index) => (
+        asserts &&
+        asserts.map((assert, index) => (
           <AccordeonBox.SubMenu
             key={assert.id || `assert-${index}`}
             statusColor={color[assert.status]}

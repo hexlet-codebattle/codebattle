@@ -1,17 +1,15 @@
-import React, {
-  useState, useCallback, memo,
-} from 'react';
+import React, { useState, useCallback, memo } from "react";
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from 'react-bootstrap/Button';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "react-bootstrap/Button";
+import { useDispatch, useSelector } from "react-redux";
 
-import Modal from '@/components/BootstrapModal';
-import { sendPremiumRequest } from '@/middlewares/Users';
-import { currentUserIdSelector, userSettingsSelector } from '@/selectors';
+import Modal from "@/components/BootstrapModal";
+import { sendPremiumRequest } from "@/middlewares/Users";
+import { currentUserIdSelector, userSettingsSelector } from "@/selectors";
 
-import ModalCodes from '../../config/modalCodes';
+import ModalCodes from "../../config/modalCodes";
 
 const PremiumRestrictionModal = NiceModal.create(() => {
   const dispatch = useDispatch();
@@ -22,14 +20,17 @@ const PremiumRestrictionModal = NiceModal.create(() => {
   const currentUserId = useSelector(currentUserIdSelector);
   const { alreadySendPremiumRequest } = useSelector(userSettingsSelector);
 
-  const handleSendRequest = useCallback((event) => {
-    const { premiumRequest, userId } = event.currentTarget.dataset;
+  const handleSendRequest = useCallback(
+    (event) => {
+      const { premiumRequest, userId } = event.currentTarget.dataset;
 
-    setSended(true);
-    setTimeout(() => setSended(false), 2000);
+      setSended(true);
+      setTimeout(() => setSended(false), 2000);
 
-    dispatch(sendPremiumRequest(premiumRequest, userId));
-  }, [dispatch, setSended]);
+      dispatch(sendPremiumRequest(premiumRequest, userId));
+    },
+    [dispatch, setSended],
+  );
 
   return (
     <Modal
@@ -97,10 +98,7 @@ const PremiumRestrictionModal = NiceModal.create(() => {
       </Modal.Body>
       <Modal.Footer className="cb-border-color">
         <div className="d-flex justify-content-end w-100">
-          <Button
-            onClick={modal.hide}
-            className="btn btn-secondary cb-btn-secondary cb-rounded"
-          >
+          <Button onClick={modal.hide} className="btn btn-secondary cb-btn-secondary cb-rounded">
             <FontAwesomeIcon icon="times" className="mr-2" />
             Close
           </Button>

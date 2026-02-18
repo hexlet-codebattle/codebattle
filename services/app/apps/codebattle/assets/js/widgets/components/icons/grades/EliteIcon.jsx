@@ -1,10 +1,8 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React from "react";
 
 const EliteIcon = React.forwardRef((props, ref) => {
-  const {
- color = 'gold', size = 60, title, ...rest
-} = props;
+  const { color = "gold", size = 60, title, ...rest } = props;
 
   return (
     <svg

@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import messageTypes from '../config/messageTypes';
-import { activeRoomSelector } from '../selectors';
-import { isGeneralRoom, isPrivateMessage } from '../utils/chat';
+import messageTypes from "../config/messageTypes";
+import { activeRoomSelector } from "../selectors";
+import { isGeneralRoom, isPrivateMessage } from "../utils/chat";
 
 function MessageTag({ messageType = messageTypes.general }) {
   const activeRoom = useSelector(activeRoomSelector);

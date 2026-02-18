@@ -1,14 +1,12 @@
-import React, {
- useState, useCallback, useRef, useEffect,
-} from 'react';
+import React, { useState, useCallback, useRef, useEffect } from "react";
 
-import BadWordsNext from 'bad-words-next';
+import BadWordsNext from "bad-words-next";
 
-import messageTypes from '../../config/messageTypes';
-import { addMessage } from '../../middlewares/Chat';
+import messageTypes from "../../config/messageTypes";
+import { addMessage } from "../../middlewares/Chat";
 
 export default function TournamentChatInput({ disabled }) {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [badwordsReady, setBadwordsReady] = useState(false);
 
   const inputRef = useRef(null);
@@ -29,7 +27,7 @@ export default function TournamentChatInput({ disabled }) {
         try {
           filteredText = badwordsRef.current.filter(filteredText);
         } catch (error) {
-          console.error('Error filtering text:', error);
+          console.error("Error filtering text:", error);
         }
       }
 
@@ -39,7 +37,7 @@ export default function TournamentChatInput({ disabled }) {
       };
 
       addMessage(msg);
-      setMessage('');
+      setMessage("");
     },
     [message, badwordsReady],
   );
@@ -48,9 +46,9 @@ export default function TournamentChatInput({ disabled }) {
     let mounted = true;
     async function loadBadwords() {
       try {
-        const enData = await import('bad-words-next/lib/en');
-        const ruData = await import('bad-words-next/lib/ru');
-        const rlData = await import('bad-words-next/lib/ru_lat');
+        const enData = await import("bad-words-next/lib/en");
+        const ruData = await import("bad-words-next/lib/ru");
+        const rlData = await import("bad-words-next/lib/ru_lat");
 
         if (mounted) {
           badwordsRef.current.add(enData.default || enData);
@@ -59,7 +57,7 @@ export default function TournamentChatInput({ disabled }) {
           setBadwordsReady(true);
         }
       } catch (error) {
-        console.error('Error loading bad words dictionaries:', error);
+        console.error("Error loading bad words dictionaries:", error);
       }
     }
 

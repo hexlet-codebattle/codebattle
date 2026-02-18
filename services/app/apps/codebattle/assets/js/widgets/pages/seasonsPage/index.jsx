@@ -1,3 +1,3 @@
-import SeasonsPage from './SeasonsPage';
+import SeasonsPage from "./SeasonsPage";
 
 export default SeasonsPage;

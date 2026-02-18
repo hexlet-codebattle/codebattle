@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { SearchIndex } from 'emoji-mart';
-import isEmpty from 'lodash/isEmpty';
+import { SearchIndex } from "emoji-mart";
+import isEmpty from "lodash/isEmpty";
 
-import useKey from '../utils/useKey';
+import useKey from "../utils/useKey";
 
 export default function EmojiTooltip({ colons, handleSelect, hide }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,33 +37,40 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
     });
   };
 
-  useKey('Escape', () => hide());
+  useKey("Escape", () => hide());
 
-  useKey('Enter', (e) => {
-    e.preventDefault();
-    handleSelect(emojis[activeIndex]);
-  }, {}, [activeIndex, emojis]);
+  useKey(
+    "Enter",
+    (e) => {
+      e.preventDefault();
+      handleSelect(emojis[activeIndex]);
+    },
+    {},
+    [activeIndex, emojis],
+  );
 
-  useKey('ArrowUp', () => decreaseIndex(), {}, [emojis]);
-  useKey('ArrowDown', () => increaseIndex(), {}, [emojis]);
+  useKey("ArrowUp", () => decreaseIndex(), {}, [emojis]);
+  useKey("ArrowDown", () => increaseIndex(), {}, [emojis]);
 
   return (
     <select
       value={activeIndex}
       className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75 custom-select mb-2"
-      onChange={(e) => { setActiveIndex(e.target.value); }}
-      onClick={() => { handleSelect(emojis[activeIndex]); }}
+      onChange={(e) => {
+        setActiveIndex(e.target.value);
+      }}
+      onClick={() => {
+        handleSelect(emojis[activeIndex]);
+      }}
       size="4"
     >
-      {!isEmpty(emojis) && emojis.map((emoji, i) => (
-        <option
-          key={emoji.id}
-          value={+i}
-        >
-          {emoji.native}
-          {emoji.colons}
-        </option>
-      ))}
+      {!isEmpty(emojis) &&
+        emojis.map((emoji, i) => (
+          <option key={emoji.id} value={+i}>
+            {emoji.native}
+            {emoji.colons}
+          </option>
+        ))}
     </select>
   );
 }

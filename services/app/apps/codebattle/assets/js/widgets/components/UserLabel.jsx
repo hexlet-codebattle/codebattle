@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { useSelector } from "react-redux";
 
-import * as selectors from '../selectors';
+import * as selectors from "../selectors";
 
 function UserLabel({ user }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
@@ -13,17 +13,14 @@ function UserLabel({ user }) {
     () => presenceList.some(({ id }) => id === user.id),
     [presenceList, user.id],
   );
-  const onlineIndicatorClassName = cn('mr-1', {
-    'cb-user-online': isOnline,
-    'cb-user-dark-offline': !isOnline,
+  const onlineIndicatorClassName = cn("mr-1", {
+    "cb-user-online": isOnline,
+    "cb-user-dark-offline": !isOnline,
   });
 
   return (
     <span className="text-truncate">
-      <FontAwesomeIcon
-        icon={['fa', 'circle']}
-        className={onlineIndicatorClassName}
-      />
+      <FontAwesomeIcon icon={["fa", "circle"]} className={onlineIndicatorClassName} />
       <span>{user.name}</span>
     </span>
   );

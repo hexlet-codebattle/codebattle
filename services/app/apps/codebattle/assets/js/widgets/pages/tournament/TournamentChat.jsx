@@ -1,21 +1,16 @@
-import React, {
-  memo,
-  useCallback,
-  useRef,
-  useEffect,
-} from 'react';
+import React, { memo, useCallback, useRef, useEffect } from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import ChatContextMenu from '../../components/ChatContextMenu';
-import Messages from '../../components/Messages';
-import Rooms from '../../components/Rooms';
-import { pushCommand, pushCommandTypes } from '../../middlewares/Chat';
-import * as selectors from '../../selectors';
-import useChatContextMenu from '../../utils/useChatContextMenu';
-import useChatRooms from '../../utils/useChatRooms';
+import ChatContextMenu from "../../components/ChatContextMenu";
+import Messages from "../../components/Messages";
+import Rooms from "../../components/Rooms";
+import { pushCommand, pushCommandTypes } from "../../middlewares/Chat";
+import * as selectors from "../../selectors";
+import useChatContextMenu from "../../utils/useChatContextMenu";
+import useChatRooms from "../../utils/useChatRooms";
 
-import TournamentChatInput from './TournamentChatInput';
+import TournamentChatInput from "./TournamentChatInput";
 
 function TournamentChat() {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
@@ -30,12 +25,12 @@ function TournamentChat() {
   const inputRef = useRef(null);
 
   const { menuId, menuRequest, displayMenu } = useChatContextMenu({
-    type: 'tournament',
+    type: "tournament",
     users,
     canInvite: false,
   });
 
-  useChatRooms('channel');
+  useChatRooms("channel");
 
   const messagesContainerRef = useRef(null);
 
@@ -49,7 +44,10 @@ function TournamentChat() {
 
   return (
     <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
-      <div className="my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column" style={{ height: '450px' }}>
+      <div
+        className="my-2 mt-lg-0 sticky-top cb-bg-panel cb-rounded position-relative d-flex flex-column"
+        style={{ height: "450px" }}
+      >
         <div className="d-flex border-bottom align-items-center cb-border-color">
           <Rooms disabled={!isOnline} />
           {currentUserIsAdmin && (
@@ -71,7 +69,7 @@ function TournamentChat() {
             ref={messagesContainerRef}
             className="overflow-auto h-100"
             id="new-chat-message"
-            style={{ scrollBehavior: 'smooth' }}
+            style={{ scrollBehavior: "smooth" }}
           >
             <Messages displayMenu={displayMenu} messages={messages} />
           </div>

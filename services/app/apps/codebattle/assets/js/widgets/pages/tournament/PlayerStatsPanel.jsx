@@ -1,47 +1,45 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import i18next from 'i18next';
-import capitalize from 'lodash/capitalize';
-import groupBy from 'lodash/groupBy';
-import reverse from 'lodash/reverse';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import i18next from "i18next";
+import capitalize from "lodash/capitalize";
+import groupBy from "lodash/groupBy";
+import reverse from "lodash/reverse";
 
-import Loading from '../../components/Loading';
-import MatchStatesCodes from '../../config/matchStates';
-import { getOpponentId } from '../../utils/matches';
+import Loading from "../../components/Loading";
+import MatchStatesCodes from "../../config/matchStates";
+import { getOpponentId } from "../../utils/matches";
 
-import StageCard from './StageCard';
-import StageTitle from './StageTitle';
-import StatisticsCard from './StatisticsCard';
-import UsersMatchList from './UsersMatchList';
+import StageCard from "./StageCard";
+import StageTitle from "./StageTitle";
+import StatisticsCard from "./StatisticsCard";
+import UsersMatchList from "./UsersMatchList";
 
 const navMatchesTabsClassName = cn(
-  'nav nav-tabs flex-nowrap text-center border-0',
-  'text-uppercase font-weight-bold pb-2',
-  'cb-overflow-x-auto cb-overflow-y-hidden',
+  "nav nav-tabs flex-nowrap text-center border-0",
+  "text-uppercase font-weight-bold pb-2",
+  "cb-overflow-x-auto cb-overflow-y-hidden",
 );
 
-const tabLinkClassName = (active) => cn(
-    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
-    {
-      active,
-    },
-  );
+const tabLinkClassName = (active) =>
+  cn("nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100", {
+    active,
+  });
 
-const tabContentClassName = (active) => cn('tab-pane fade', {
-    'd-flex flex-column show active': active,
+const tabContentClassName = (active) =>
+  cn("tab-pane fade", {
+    "d-flex flex-column show active": active,
   });
 
 const PlayerPanelCodes = {
-  review: 'review',
-  stages: 'stages',
-  matches: 'matches',
+  review: "review",
+  stages: "stages",
+  matches: "matches",
 };
 
-const getPlayerPanelCodes = () => Object.values(PlayerPanelCodes).filter(
-    (panel) => panel !== PlayerPanelCodes.stages,
-  );
+const getPlayerPanelCodes = () =>
+  Object.values(PlayerPanelCodes).filter((panel) => panel !== PlayerPanelCodes.stages);
 
 function PlayerStatsPanel({
   type,
@@ -57,13 +55,12 @@ function PlayerStatsPanel({
   const currentPlayer = players[currentUserId];
 
   const matchList = useMemo(
-    () => reverse(Object.values(matches)).filter((match) => match.playerIds.includes(currentUserId)),
+    () =>
+      reverse(Object.values(matches)).filter((match) => match.playerIds.includes(currentUserId)),
     [matches, currentUserId],
   );
   const [opponentId, matchId] = useMemo(() => {
-    const activeMatch = matchList.find(
-      (match) => match.state === MatchStatesCodes.playing,
-    );
+    const activeMatch = matchList.find((match) => match.state === MatchStatesCodes.playing);
     const lastMatch = matchList[0];
     const targetMatch = activeMatch || lastMatch;
 
@@ -75,10 +72,7 @@ function PlayerStatsPanel({
 
     return [];
   }, [matchList, currentUserId]);
-  const groupedMatchListByRound = useMemo(
-    () => groupBy(matchList, 'roundPosition'),
-    [matchList],
-  );
+  const groupedMatchListByRound = useMemo(() => groupBy(matchList, "roundPosition"), [matchList]);
   const stages = useMemo(
     () => reverse(Object.keys(groupedMatchListByRound)).map(Number),
     [groupedMatchListByRound],
@@ -94,18 +88,12 @@ function PlayerStatsPanel({
         <div>
           <span className="text-nowrap pr-1" title={currentPlayer.name}>
             {currentPlayer.name}
-            {currentPlayer.isBanned && (
-              <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
-            )}
+            {currentPlayer.isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
           </span>
         </div>
       </div>
       <nav>
-        <div
-          id="nav-player-panels-tab"
-          role="tablist"
-          className={navMatchesTabsClassName}
-        >
+        <div id="nav-player-panels-tab" role="tablist" className={navMatchesTabsClassName}>
           {getPlayerPanelCodes().map((panelName) => (
             <a
               className={tabLinkClassName(playerPanel === panelName)}
@@ -125,16 +113,11 @@ function PlayerStatsPanel({
           ))}
         </div>
 
-        <div
-          id="nav-player-panels-tabContent"
-          className="tab-content flex-grow-1"
-        >
+        <div id="nav-player-panels-tabContent" className="tab-content flex-grow-1">
           <div
             id={`player-panel-${PlayerPanelCodes.review}`}
             key={`player-panel-${PlayerPanelCodes.review}`}
-            className={tabContentClassName(
-              playerPanel === PlayerPanelCodes.review,
-            )}
+            className={tabContentClassName(playerPanel === PlayerPanelCodes.review)}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.review}`}
           >
@@ -163,23 +146,16 @@ function PlayerStatsPanel({
           <div
             id={`player-panel-${PlayerPanelCodes.stages}`}
             key={`player-panel-${PlayerPanelCodes.stages}`}
-            className={tabContentClassName(
-              playerPanel === PlayerPanelCodes.stages,
-            )}
+            className={tabContentClassName(playerPanel === PlayerPanelCodes.stages)}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.stages}`}
           >
             {stages.length < 2 ? (
-              <div className="d-flex justify-content-center p-1">
-                No stages statistics
-              </div>
+              <div className="d-flex justify-content-center p-1">No stages statistics</div>
             ) : (
               stages.map((stage) => {
                 const stageFirstMatch = groupedMatchListByRound[stage][0];
-                const stageOpponentId = getOpponentId(
-                  stageFirstMatch,
-                  currentUserId,
-                );
+                const stageOpponentId = getOpponentId(stageFirstMatch, currentUserId);
 
                 return (
                   <div
@@ -208,9 +184,7 @@ function PlayerStatsPanel({
           <div
             id={`player-panel-${PlayerPanelCodes.matches}`}
             key={`player-panel-${PlayerPanelCodes.matches}`}
-            className={tabContentClassName(
-              playerPanel === PlayerPanelCodes.matches,
-            )}
+            className={tabContentClassName(playerPanel === PlayerPanelCodes.matches)}
             role="tabpanel"
             aria-labelledby={`player-panel-tab-${PlayerPanelCodes.matches}`}
           >

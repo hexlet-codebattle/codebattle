@@ -1,28 +1,21 @@
-import React from 'react';
+import React from "react";
 
-import upperCase from 'lodash/upperCase';
-import { useSelector } from 'react-redux';
+import upperCase from "lodash/upperCase";
+import { useSelector } from "react-redux";
 
 import {
   firstPlayerSelector,
   leftExecutionOutputSelector,
   rightExecutionOutputSelector,
   secondPlayerSelector,
-} from '@/selectors';
+} from "@/selectors";
 
-import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
+import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
 
-function StreamTaskInfoPanel({
-  game,
-  orientation,
-  roomMachineState,
-  fontSize,
-  width = '40%',
-}) {
-  const outputSelector = orientation === 'left'
-      ? leftExecutionOutputSelector
-      : rightExecutionOutputSelector;
-  const playerSelector = orientation === 'left' ? firstPlayerSelector : secondPlayerSelector;
+function StreamTaskInfoPanel({ game, orientation, roomMachineState, fontSize, width = "40%" }) {
+  const outputSelector =
+    orientation === "left" ? leftExecutionOutputSelector : rightExecutionOutputSelector;
+  const playerSelector = orientation === "left" ? firstPlayerSelector : secondPlayerSelector;
 
   const output = useSelector(outputSelector(roomMachineState));
   const player = useSelector(playerSelector);
@@ -40,10 +33,7 @@ function StreamTaskInfoPanel({
     >
       <div className="d-flex pt-4 justify-content-between">
         <div>
-          <div
-            style={{ fontSize }}
-            className="cb-stream-tasks-stats cb-stream-widget-text"
-          >
+          <div style={{ fontSize }} className="cb-stream-tasks-stats cb-stream-widget-text">
             <span>3/8 ЗАДАЧ</span>
           </div>
         </div>
@@ -54,13 +44,10 @@ function StreamTaskInfoPanel({
         {/*   <span>3 / 8 Задача</span> */}
         {/* </div> */}
         <div className="d-flex flex-column align-items-center cb-stream-name cb-stream-widget-text">
-          <div style={{ fontSize }}>{upperCase(player?.name || 'Name')}</div>
+          <div style={{ fontSize }}>{upperCase(player?.name || "Name")}</div>
         </div>
       </div>
-      <div
-        className="cb-stream-task-description h-100 py-5"
-        style={{ fontSize }}
-      >
+      <div className="cb-stream-task-description h-100 py-5" style={{ fontSize }}>
         <TaskDescriptionMarkdown description={game?.task?.descriptionRu} />
       </div>
       <div className="d-flex flex-column">
@@ -69,25 +56,19 @@ function StreamTaskInfoPanel({
             <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
               Входные данные
             </div>
-            <div className="cb-stream-output-data align-content-around">
-              {args}
-            </div>
+            <div className="cb-stream-output-data align-content-around">{args}</div>
           </div>
           <div className="d-flex cb-stream-output mb-1">
             <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
               Ожидаемый результат
             </div>
-            <div className="cb-stream-output-data align-content-around">
-              {expected}
-            </div>
+            <div className="cb-stream-output-data align-content-around">{expected}</div>
           </div>
           <div className="d-flex cb-stream-output mt-1 mb-2">
             <div className="d-flex align-items-center cb-stream-output-title cb-stream-widget-text">
               Полученный результат
             </div>
-            <div className="cb-stream-output-data align-content-around">
-              {result}
-            </div>
+            <div className="cb-stream-output-data align-content-around">{result}</div>
           </div>
         </div>
       </div>

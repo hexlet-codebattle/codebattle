@@ -1,22 +1,20 @@
-import React, {
-  useEffect, useContext, useCallback, useRef,
-} from 'react';
+import React, { useEffect, useContext, useCallback, useRef } from "react";
 
-import { useInterpret } from '@xstate/react';
-import cn from 'classnames';
-import noop from 'lodash/noop';
-import { useDispatch, useSelector } from 'react-redux';
+import { useInterpret } from "@xstate/react";
+import cn from "classnames";
+import noop from "lodash/noop";
+import { useDispatch, useSelector } from "react-redux";
 
-import RoomContext from '../../components/RoomContext';
-import editorModes from '../../config/editorModes';
-import { gameRoomEditorStyles } from '../../config/editorSettings';
+import RoomContext from "../../components/RoomContext";
+import editorModes from "../../config/editorModes";
+import { gameRoomEditorStyles } from "../../config/editorSettings";
 import {
   editorBtnStatuses as EditorBtnStatuses,
   editorSettingsByUserType,
-} from '../../config/editorSettingsByUserType';
+} from "../../config/editorSettingsByUserType";
 // import editorThemes from '../../config/editorThemes';
-import editorUserTypes from '../../config/editorUserTypes';
-import GameModeCodes from '../../config/gameModes';
+import editorUserTypes from "../../config/editorUserTypes";
+import GameModeCodes from "../../config/gameModes";
 import {
   editorStateSelector,
   inBuilderRoomSelector,
@@ -26,34 +24,31 @@ import {
   isGameActiveSelector,
   isGameOverSelector,
   openedReplayerSelector,
-} from '../../machines/selectors';
-import * as GameActions from '../../middlewares/Room';
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+} from "../../machines/selectors";
+import * as GameActions from "../../middlewares/Room";
+import * as selectors from "../../selectors";
+import { actions } from "../../slices";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
-import EditorToolbar from './EditorToolbar';
+import EditorToolbar from "./EditorToolbar";
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
 
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
 
-  const inTestingRoom = useMachineStateSelector(
-    mainService,
-    inTestingRoomSelector,
-  );
+  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
 
   useEffect(() => {
     if (isPreview) {
-      return () => { };
+      return () => {};
     }
 
     if (inTestingRoom) {
-      editorService.send('load_testing_editor');
+      editorService.send("load_testing_editor");
 
-      return () => { };
+      return () => {};
     }
 
     const clearEditorListeners = GameActions.connectToEditor(
@@ -92,9 +87,7 @@ function EditorContainer({
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const currentEditorLangSlug = useSelector(
-    selectors.userLangSelector(currentUserId),
-  );
+  const currentEditorLangSlug = useSelector(selectors.userLangSelector(currentUserId));
 
   const updateEditorValue = useCallback(
     (data) => dispatch(GameActions.updateEditorText(data)),
@@ -110,27 +103,12 @@ function EditorContainer({
 
   const { mainService } = useContext(RoomContext);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
-  const isRestricted = useMachineStateSelector(
-    mainService,
-    isRestrictedContentSelector,
-  );
-  const inTestingRoom = useMachineStateSelector(
-    mainService,
-    inTestingRoomSelector,
-  );
-  const inBuilderRoom = useMachineStateSelector(
-    mainService,
-    inBuilderRoomSelector,
-  );
-  const isActiveGame = useMachineStateSelector(
-    mainService,
-    isGameActiveSelector,
-  );
+  const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
+  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
+  const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
-  const openedReplayer = useMachineStateSelector(
-    mainService,
-    openedReplayerSelector,
-  );
+  const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
 
   const isTournamentGame = !!tournamentId;
 
@@ -142,7 +120,7 @@ function EditorContainer({
     id: `editor_${id}`,
     actions: {
       userSendSolution: (ctx) => {
-        if (ctx.editorState === 'active') {
+        if (ctx.editorState === "active") {
           dispatch(GameActions.checkGameSolution());
         }
       },
@@ -150,8 +128,8 @@ function EditorContainer({
         dispatch(
           actions.updateExecutionOutput({
             userId: ctx.userId,
-            status: 'client_timeout',
-            output: '',
+            status: "client_timeout",
+            output: "",
             result: {},
             asserts: [],
           }),
@@ -162,13 +140,10 @@ function EditorContainer({
     },
   });
 
-  const editorCurrent = useMachineStateSelector(
-    editorService,
-    editorStateSelector,
-  );
+  const editorCurrent = useMachineStateSelector(editorService, editorStateSelector);
 
   const checkActiveTaskSolution = useCallback(
-    () => editorService.send('user_check_solution'),
+    () => editorService.send("user_check_solution"),
     [editorService],
   );
   const checkTestTaskSolution = useCallback(
@@ -176,9 +151,7 @@ function EditorContainer({
     [dispatch, editorService],
   );
 
-  const checkResult = inTestingRoom
-    ? checkTestTaskSolution
-    : checkActiveTaskSolution;
+  const checkResult = inTestingRoom ? checkTestTaskSolution : checkActiveTaskSolution;
 
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;
 
@@ -187,21 +160,21 @@ function EditorContainer({
   useEffect(() => {
     /** @param {KeyboardEvent} e */
     const check = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
         checkResult();
       }
     };
 
     if (isNeedHotKeys) {
-      window.addEventListener('keydown', check);
+      window.addEventListener("keydown", check);
 
       return () => {
-        window.removeEventListener('keydown', check);
+        window.removeEventListener("keydown", check);
       };
     }
 
-    return () => { };
+    return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inTestingRoom]);
 
@@ -216,9 +189,7 @@ function EditorContainer({
     currentEditorLangSlug,
     ...userSettings,
     showGiveUpBtn: !isTournamentGame && !inTestingRoom,
-    giveUpBtnStatus: isActiveGame
-      ? userSettings.giveUpBtnStatus
-      : EditorBtnStatuses.disabled,
+    giveUpBtnStatus: isActiveGame ? userSettings.giveUpBtnStatus : EditorBtnStatuses.disabled,
   };
 
   const toolbarParams = {
@@ -236,24 +207,22 @@ function EditorContainer({
   };
 
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
-  const editable = !openedReplayer
-    && userSettings.editable
-    && userSettings.editorState !== 'banned';
+  const editable =
+    !openedReplayer && userSettings.editable && userSettings.editorState !== "banned";
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
-  const updateEditor = editorCurrent.context.editorState === 'testing'
-    ? updateEditorValue
-    : updateAndSendEditorValue;
+  const updateEditor =
+    editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
 
   const editorParams = {
     roomMode: tournamentId ? GameModeCodes.tournament : gameMode,
     userId: id,
-    wordWrap: 'off',
-    lineNumbers: 'on',
+    wordWrap: "off",
+    lineNumbers: "on",
     fontSize: 16,
     hidingPanelControls: false,
     userType: type,
-    syntax: editorState?.currentLangSlug || 'js',
+    syntax: editorState?.currentLangSlug || "js",
     onChange,
     canSendCursor,
     checkResult,
@@ -264,14 +233,14 @@ function EditorContainer({
     theme,
     ...userSettings,
     editable,
-    loading: isPreview || editorCurrent.value === 'loading',
+    loading: isPreview || editorCurrent.value === "loading",
   };
 
-  const isWon = player?.result === 'won';
+  const isWon = player?.result === "won";
 
   const pannelBackground = cn(editorContainerClassName, {
-    'bg-warning': editorCurrent.matches('checking'),
-    'bg-winner': isGameOver && editorCurrent.matches('idle') && isWon,
+    "bg-warning": editorCurrent.matches("checking"),
+    "bg-winner": isGameOver && editorCurrent.matches("idle") && isWon,
   });
 
   const gameRoomEditorStylesVersion2 = {
@@ -283,12 +252,8 @@ function EditorContainer({
       <div
         // className={`${editorParams.theme === editorThemes.dark ? 'bg-dark ' : 'bg-white '}${cardClassName}`}
         className={cardClassName}
-        style={
-          orientation === 'side'
-            ? gameRoomEditorStylesVersion2
-            : gameRoomEditorStyles
-        }
-        data-guide-id={orientation === 'left' ? 'LeftEditor' : ''}
+        style={orientation === "side" ? gameRoomEditorStylesVersion2 : gameRoomEditorStyles}
+        data-guide-id={orientation === "left" ? "LeftEditor" : ""}
       >
         <EditorToolbar
           {...toolbarParams}

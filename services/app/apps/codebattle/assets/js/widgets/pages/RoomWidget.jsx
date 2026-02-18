@@ -1,37 +1,32 @@
-import React from 'react';
+import React from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import { CSSTransition, SwitchTransition } from "react-transition-group";
 
-import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
-import FeedbackWidget from '../components/FeedbackWidget';
+import FeedbackAlertNotification from "../components/FeedbackAlertNotification";
+import FeedbackWidget from "../components/FeedbackWidget";
 // import GameWidgetGuide from '../components/GameWidgetGuide';
-import RoomContext from '../components/RoomContext';
-import * as machineSelectors from '../machines/selectors';
-import useGameRoomMachine from '../utils/useGameRoomMachine';
-import useGameRoomModals from '../utils/useGameRoomModals';
-import useGameRoomSocketChannel from '../utils/useGameRoomSocketChannel';
-import useGameRoomSoundSettings from '../utils/useGameRoomSoundSettings';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
-import useRoomSettings from '../utils/useRoomSettings';
+import RoomContext from "../components/RoomContext";
+import * as machineSelectors from "../machines/selectors";
+import useGameRoomMachine from "../utils/useGameRoomMachine";
+import useGameRoomModals from "../utils/useGameRoomModals";
+import useGameRoomSocketChannel from "../utils/useGameRoomSocketChannel";
+import useGameRoomSoundSettings from "../utils/useGameRoomSoundSettings";
+import useMachineStateSelector from "../utils/useMachineStateSelector";
+import useRoomSettings from "../utils/useRoomSettings";
 
-import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
-import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
-import CodebattlePlayer from './game/CodebattlePlayer';
-import GameRoomLockPanel from './game/GameRoomLockPanel';
-import GameWidget from './game/GameWidget';
-import InfoWidget from './game/InfoWidget';
-import NetworkAlert from './game/NetworkAlert';
-import TimeoutGameInfo from './game/TimeoutGameInfo';
-import WaitingOpponentInfo from './game/WaitingOpponentInfo';
+import BuilderEditorsWidget from "./builder/BuilderEditorsWidget";
+import BuilderSettingsWidget from "./builder/BuilderSettingsWidget";
+import CodebattlePlayer from "./game/CodebattlePlayer";
+import GameRoomLockPanel from "./game/GameRoomLockPanel";
+import GameWidget from "./game/GameWidget";
+import InfoWidget from "./game/InfoWidget";
+import NetworkAlert from "./game/NetworkAlert";
+import TimeoutGameInfo from "./game/TimeoutGameInfo";
+import WaitingOpponentInfo from "./game/WaitingOpponentInfo";
 
-function RoomWidget({
-  pageName,
-  mainMachine,
-  taskMachine,
-  editorMachine,
-}) {
+function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }) {
   const machines = useGameRoomMachine({
     mainMachine,
     taskMachine,
@@ -72,7 +67,7 @@ function RoomWidget({
       <CSSTransition
         key={gameRoomKey}
         addEndListener={(node, done) => {
-          node.addEventListener('transitionend', done, false);
+          node.addEventListener("transitionend", done, false);
         }}
         classNames={`game-room-${gameRoomKey}`}
       >
@@ -82,8 +77,8 @@ function RoomWidget({
             <NetworkAlert />
             <FeedbackAlertNotification />
             <div
-              className={cn('container-fluid', {
-                'd-none': roomLocked,
+              className={cn("container-fluid", {
+                "d-none": roomLocked,
                 invisible: !visible,
               })}
             >
@@ -102,11 +97,7 @@ function RoomWidget({
                 )}
                 {mute && (
                   <div className="cb-rounded p-2 bg-dark cb-mute-icon">
-                    <FontAwesomeIcon
-                      size="lg"
-                      color="white"
-                      icon={['fas', 'volume-mute']}
-                    />
+                    <FontAwesomeIcon size="lg" color="white" icon={["fas", "volume-mute"]} />
                   </div>
                 )}
                 {!showReplayer && <FeedbackWidget />}
@@ -115,14 +106,11 @@ function RoomWidget({
             {showReplayer && <CodebattlePlayer roomMachineState={roomMachineState} />}
           </div>
           <div
-            style={{ minHeight: 'calc(100vh - 92px)' }}
-            className={cn(
-              'justify-content-center align-items-center',
-              {
-                'd-none': !roomLocked,
-                'd-flex': roomLocked,
-              },
-            )}
+            style={{ minHeight: "calc(100vh - 92px)" }}
+            className={cn("justify-content-center align-items-center", {
+              "d-none": !roomLocked,
+              "d-flex": roomLocked,
+            })}
           >
             <GameRoomLockPanel />
           </div>

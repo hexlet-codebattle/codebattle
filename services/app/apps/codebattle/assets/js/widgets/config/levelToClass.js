@@ -1,7 +1,7 @@
 export default {
-  random: 'secondary',
-  elementary: 'info',
-  easy: 'success',
-  medium: 'warning',
-  hard: 'danger',
+  random: "secondary",
+  elementary: "info",
+  easy: "success",
+  medium: "warning",
+  hard: "danger",
 };

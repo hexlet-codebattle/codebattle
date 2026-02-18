@@ -1,9 +1,9 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import Dropdown from "react-bootstrap/Dropdown";
+import { useDispatch } from "react-redux";
 
 import {
   cancelTournament,
@@ -11,21 +11,19 @@ import {
   finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
   showTournamentResults as handleShowResults,
-} from '../../middlewares/TournamentAdmin';
+} from "../../middlewares/TournamentAdmin";
 
-const CustomToggle = React.forwardRef(
-  ({ onClick, className, disabled }, ref) => (
-    <button
-      type="button"
-      ref={ref}
-      className={className.replace('dropdown-toggle', '')}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <FontAwesomeIcon icon="ellipsis-v" />
-    </button>
-  ),
-);
+const CustomToggle = React.forwardRef(({ onClick, className, disabled }, ref) => (
+  <button
+    type="button"
+    ref={ref}
+    className={className.replace("dropdown-toggle", "")}
+    onClick={onClick}
+    disabled={disabled}
+  >
+    <FontAwesomeIcon icon="ellipsis-v" />
+  </button>
+));
 
 function TournamentMainControlButtons({
   accessType,
@@ -47,26 +45,26 @@ function TournamentMainControlButtons({
   const dispatch = useDispatch();
 
   const handleStartTournament = useCallback(() => {
-    handleStartRound('firstRound');
+    handleStartRound("firstRound");
   }, [handleStartRound]);
   const handleCancelTournament = useCallback(() => {
     dispatch(cancelTournament());
   }, [dispatch]);
   const handleStartRoundTournament = useCallback(() => {
-    handleStartRound('nextRound');
+    handleStartRound("nextRound");
   }, [handleStartRound]);
 
   const restartBtnClassName = cn(
-    'btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary',
+    "btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary",
   );
   const roundBtnClassName = cn(
-    'btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white',
+    "btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white",
   );
 
-  const dropdownBtnClassName = cn('btn text-white rounded-right', {
-    'rounded-left': streamMode,
-    'btn-secondary cb-btn-secondary': canRestart,
-    'btn-success cb-btn-success text-white': !canRestart,
+  const dropdownBtnClassName = cn("btn text-white rounded-right", {
+    "rounded-left": streamMode,
+    "btn-secondary cb-btn-secondary": canRestart,
+    "btn-success cb-btn-success text-white": !canRestart,
   });
 
   return (
@@ -123,7 +121,7 @@ function TournamentMainControlButtons({
           as={CustomToggle}
           id="tournament-actions-dropdown-toggle"
           className={dropdownBtnClassName}
-          variant={canRestart ? 'info' : 'success'}
+          variant={canRestart ? "info" : "success"}
           disabled={disabled}
         />
         <Dropdown.Menu className="cb-dropdown-menu cb-bg-highlight-panel dropdown-menu-end">
@@ -137,12 +135,7 @@ function TournamentMainControlButtons({
             <FontAwesomeIcon className="mr-2" icon="edit" />
             Edit
           </Dropdown.Item>
-          <Dropdown.Item
-            as="a"
-            key="tournaments"
-            href="/tournaments"
-            className="cb-dropdown-item"
-          >
+          <Dropdown.Item as="a" key="tournaments" href="/tournaments" className="cb-dropdown-item">
             <FontAwesomeIcon className="mr-2" icon="trophy" />
             Tournaments
           </Dropdown.Item>
@@ -174,7 +167,7 @@ function TournamentMainControlButtons({
             onSelect={toggleShowBots}
           >
             <FontAwesomeIcon className="mr-2" icon="eye" />
-            {showBots ? 'Hide bots' : 'Show bots'}
+            {showBots ? "Hide bots" : "Show bots"}
           </Dropdown.Item>
           <Dropdown.Item
             as="button"
@@ -195,7 +188,7 @@ function TournamentMainControlButtons({
             <FontAwesomeIcon className="mr-2" icon="trash" />
             Cancel
           </Dropdown.Item>
-          {accessType === 'token' && (
+          {accessType === "token" && (
             <>
               <Dropdown.Divider className="cb-border-color" />
               <Dropdown.Item

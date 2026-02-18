@@ -1,17 +1,15 @@
-import React, { memo, useRef, useEffect } from 'react';
+import React, { memo, useRef, useEffect } from "react";
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import Button from 'react-bootstrap/Button';
-import { useSelector } from 'react-redux';
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import Button from "react-bootstrap/Button";
+import { useSelector } from "react-redux";
 
-import Modal from '@/components/BootstrapModal';
+import Modal from "@/components/BootstrapModal";
 
-import i18next from '../../../i18n';
-import ModalCodes from '../../config/modalCodes';
-import { startRoundTournament } from '../../middlewares/Room';
-import {
-  gameAwardSelector, gameStatusSelector, gameWaitTypeSelector,
-} from '../../selectors';
+import i18next from "../../../i18n";
+import ModalCodes from "../../config/modalCodes";
+import { startRoundTournament } from "../../middlewares/Room";
+import { gameAwardSelector, gameStatusSelector, gameWaitTypeSelector } from "../../selectors";
 
 let count = 0;
 
@@ -44,27 +42,18 @@ const TournamentAwardModal = NiceModal.create((params) => {
   }, [modal.visible, onlyShowAward]);
 
   return (
-    <Modal
-      centered
-      show={modal.visible}
-      onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
-    >
+    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
       <Modal.Header closeButton>
-        <Modal.Title>{i18next.t('Award')}</Modal.Title>
+        <Modal.Title>{i18next.t("Award")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="d-flex flex-row justify-content-center p-2">
-          {gameStatus?.state !== 'playing' && (
+          {gameStatus?.state !== "playing" && (
             <div className="d-flex flex-column align-items-center">
-              {award && award.startsWith('http') ? (
-                <img
-                  alt="Game award"
-                  src={award}
-                  style={{ width: '100%', height: '100%' }}
-                />
+              {award && award.startsWith("http") ? (
+                <img alt="Game award" src={award} style={{ width: "100%", height: "100%" }} />
               ) : (
-                <span style={{ fontSize: '10rem' }}>{award}</span>
+                <span style={{ fontSize: "10rem" }}>{award}</span>
               )}
             </div>
           )}
@@ -73,14 +62,8 @@ const TournamentAwardModal = NiceModal.create((params) => {
       {!onlyShowAward && (
         <Modal.Footer>
           <div className="d-flex justify-content-end w-100">
-            <Button
-              ref={submitBtnRef}
-              className="btn btn-primary cb-rounded"
-              onClick={modal.hide}
-            >
-              {waitType === 'tournament'
-                ? i18next.t('Close')
-                : i18next.t('Next game')}
+            <Button ref={submitBtnRef} className="btn btn-primary cb-rounded" onClick={modal.hide}>
+              {waitType === "tournament" ? i18next.t("Close") : i18next.t("Next game")}
             </Button>
           </div>
         </Modal.Footer>

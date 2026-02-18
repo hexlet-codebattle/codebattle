@@ -1,20 +1,12 @@
-import React, {
- memo, useState, useCallback, useRef,
-} from 'react';
+import React, { memo, useState, useCallback, useRef } from "react";
 
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Bubble } from 'react-chartjs-2';
-import { useDispatch } from 'react-redux';
+import { Chart as ChartJS, LinearScale, PointElement, Tooltip, Legend } from "chart.js";
+import { Bubble } from "react-chartjs-2";
+import { useDispatch } from "react-redux";
 
-import { getResults } from '../../middlewares/Tournament';
+import { getResults } from "../../middlewares/Tournament";
 
-import useTournamentPanel from './useTournamentPanel';
+import useTournamentPanel from "./useTournamentPanel";
 
 ChartJS.register(LinearScale, PointElement, Tooltip, Legend);
 
@@ -31,14 +23,7 @@ function ClansChartPanel({ type, state }) {
 
   useTournamentPanel(fetchData, state);
 
-  const colors = [
-    '#FF621E',
-    '#2AE881',
-    '#FFE500',
-    '#B6A4FF',
-    '#73CCFE',
-    '#FF9C41',
-  ];
+  const colors = ["#FF621E", "#2AE881", "#FFE500", "#B6A4FF", "#73CCFE", "#FF9C41"];
 
   const getBackgroundColor = (id) => {
     const index = id % colors.length;
@@ -48,7 +33,7 @@ function ClansChartPanel({ type, state }) {
   const config = {
     data: {
       datasets: items.slice(0, 6).map((item) => ({
-        label: `${item?.clanName || 'undefined'} [${item?.playerCount || 0}]`,
+        label: `${item?.clanName || "undefined"} [${item?.playerCount || 0}]`,
         data: [
           {
             x: item?.totalScore || 0,
@@ -63,7 +48,7 @@ function ClansChartPanel({ type, state }) {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
       },
     },

@@ -1,20 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import i18n from 'i18next';
+import i18n from "i18next";
 
-import CopyButton from '../../components/CopyButton';
+import CopyButton from "../../components/CopyButton";
 
 function WaitingOpponentInfo({ gameUrl }) {
   return (
     <div className="jumbotron container text-center shadow-sm">
       <div className="col-xl-8 col-lg-10 col-12 m-auto">
-        <h2 className="h2 font-weight-normal">
-          {i18n.t('Waiting for an opponent')}
-        </h2>
+        <h2 className="h2 font-weight-normal">{i18n.t("Waiting for an opponent")}</h2>
         <p className="lead mb-4">
-          {i18n.t(
-            'Please wait for someone to join or send an invite using the link below',
-          )}
+          {i18n.t("Please wait for someone to join or send an invite using the link below")}
         </p>
         <div>
           <div className="d-flex justify-content-center input-group mb-3">

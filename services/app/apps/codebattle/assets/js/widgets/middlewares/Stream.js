@@ -1,11 +1,11 @@
-import Gon from 'gon';
+import Gon from "gon";
 
-import { channelTopics } from '../../socket';
-import { actions } from '../slices';
+import { channelTopics } from "../../socket";
+import { actions } from "../slices";
 
-import Channel from './Channel';
+import Channel from "./Channel";
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = Gon.getAsset("tournament_id");
 
 const channel = new Channel();
 
@@ -23,14 +23,11 @@ const establishStream = (dispatch) => {
     // window.location.reload();
   };
 
-  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
+  channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
 
   const handleActiveGame = getDispatchActionHandler(actions.setGameId);
 
-  return channel.addListener(
-    channelTopics.streamActiveGameSelectedTopic,
-    handleActiveGame,
-  );
+  return channel.addListener(channelTopics.streamActiveGameSelectedTopic, handleActiveGame);
 };
 
 const connectToStream = () => (dispatch) => {

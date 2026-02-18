@@ -1,13 +1,17 @@
-import {
-  useMemo, useEffect,
-} from 'react';
+import { useMemo, useEffect } from "react";
 
-import TournamentStateCodes from '../config/tournament';
+import TournamentStateCodes from "../config/tournament";
 // import { subscribePlayers } from '../middlewares/Tournament';
 
 export default (players, tournamentState) => {
   const uniqKey = useMemo(
-    () => Number(players.map((p) => p.id).sort().join('') || '0'),
+    () =>
+      Number(
+        players
+          .map((p) => p.id)
+          .sort()
+          .join("") || "0",
+      ),
     [players],
   );
 
@@ -17,6 +21,6 @@ export default (players, tournamentState) => {
     }
 
     return () => {};
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniqKey, tournamentState]);
 };

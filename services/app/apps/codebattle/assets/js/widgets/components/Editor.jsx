@@ -1,23 +1,16 @@
-import React, { memo, useRef, useEffect } from 'react';
+import React, { memo, useRef, useEffect } from "react";
 
-import MonacoEditor from '@monaco-editor/react';
-import { initVimMode } from 'monaco-vim';
+import MonacoEditor from "@monaco-editor/react";
+import { initVimMode } from "monaco-vim";
 
-import '../initEditor';
-import languages from '../config/languages';
-import useEditor from '../utils/useEditor';
+import "../initEditor";
+import languages from "../config/languages";
+import useEditor from "../utils/useEditor";
 
-import EditorLoading from './EditorLoading';
+import EditorLoading from "./EditorLoading";
 
 function Editor(props) {
-  const {
-    value,
-    syntax = 'js',
-    onChange,
-    theme,
-    loading = false,
-    mode,
-  } = props;
+  const { value, syntax = "js", onChange, theme, loading = false, mode } = props;
 
   // Map your custom language key to an actual Monaco recognized language
   const mappedSyntax = languages[syntax];
@@ -41,7 +34,7 @@ function Editor(props) {
     (editor, monaco) => {
       editorRef.current = editor;
 
-      if (typeof originalEditorDidMount === 'function') {
+      if (typeof originalEditorDidMount === "function") {
         originalEditorDidMount(editor, monaco);
       }
     },
@@ -52,13 +45,10 @@ function Editor(props) {
     // If we haven't mounted the editor yet, exit
     if (!editorRef.current) return;
 
-    if (mode === 'vim') {
+    if (mode === "vim") {
       // If not already in Vim mode, enable it
       if (!vimModeRef.current) {
-        vimModeRef.current = initVimMode(
-          editorRef.current,
-          vimStatusRef.current,
-        );
+        vimModeRef.current = initVimMode(editorRef.current, vimStatusRef.current);
       }
     } else if (vimModeRef.current) {
       // If we're switching away from Vim mode, dispose it
@@ -88,9 +78,9 @@ function Editor(props) {
         className="bg-dark text-white"
         ref={vimStatusRef}
         style={{
-          padding: '4px 8px',
-          fontFamily: 'monospace',
-          borderTop: '1px solid #4c4c5a',
+          padding: "4px 8px",
+          fontFamily: "monospace",
+          borderTop: "1px solid #4c4c5a",
         }}
       />
 

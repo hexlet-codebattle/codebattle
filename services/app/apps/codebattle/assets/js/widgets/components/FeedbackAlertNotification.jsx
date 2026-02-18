@@ -1,26 +1,26 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import isEmpty from 'lodash/isEmpty';
-import Alert from 'react-bootstrap/Alert';
-import { useDispatch, useSelector } from 'react-redux';
+import isEmpty from "lodash/isEmpty";
+import Alert from "react-bootstrap/Alert";
+import { useDispatch, useSelector } from "react-redux";
 
-import i18n from '../../i18n';
-import AlertCodes from '../config/alertCodes';
-import { gameAlertsSelector } from '../selectors/index';
-import { actions } from '../slices';
+import i18n from "../../i18n";
+import AlertCodes from "../config/alertCodes";
+import { gameAlertsSelector } from "../selectors/index";
+import { actions } from "../slices";
 
 const getNotification = (status) => {
   switch (status) {
     case AlertCodes.feedbackSendSuccessful: {
       return {
-        status: 'success',
-        message: i18n.t('Feedback sent successfully.'),
+        status: "success",
+        message: i18n.t("Feedback sent successfully."),
       };
     }
     case AlertCodes.feedbackSendError: {
       return {
-        status: 'danger',
-        message: i18n.t('Feedback not sent.'),
+        status: "danger",
+        message: i18n.t("Feedback not sent."),
       };
     }
     default: {
@@ -33,9 +33,12 @@ function FeedbackAlertNotification() {
   const dispatch = useDispatch();
   const alerts = useSelector(gameAlertsSelector);
 
-  const handleClose = useCallback((id) => {
-    dispatch(actions.deleteAlert(id));
-  }, [dispatch]);
+  const handleClose = useCallback(
+    (id) => {
+      dispatch(actions.deleteAlert(id));
+    },
+    [dispatch],
+  );
 
   if (isEmpty(alerts)) {
     return <></>;

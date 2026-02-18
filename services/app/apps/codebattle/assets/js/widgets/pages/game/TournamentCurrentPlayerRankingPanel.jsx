@@ -1,13 +1,11 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import Notifications from './Notifications';
-import TournamentRankingTable from './TournamentRankingTable';
+import Notifications from "./Notifications";
+import TournamentRankingTable from "./TournamentRankingTable";
 
 function TournamentCurrentPlayerRankingPanel() {
   return (
-    <div
-      className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-panel text-white cb-rounded"
-    >
+    <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 cb-bg-panel text-white cb-rounded">
       <TournamentRankingTable />
       <div className="flex-shrink-1 p-0 border-left rounded-right cb-border-color cb-game-control-container">
         <div className="d-flex flex-column justify-content-start overflow-auto h-100">

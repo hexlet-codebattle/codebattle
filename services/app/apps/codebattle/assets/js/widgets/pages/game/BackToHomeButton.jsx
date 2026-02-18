@@ -1,15 +1,19 @@
-import React from 'react';
+import React from "react";
 
-import i18n from '../../../i18n';
+import i18n from "../../../i18n";
 
 export default function BackToHomeButton() {
-  const title = i18n.t('Back to Home');
+  const title = i18n.t("Back to Home");
   const handleClick = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   return (
-    <button className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" onClick={handleClick} type="button">
+    <button
+      className="btn btn-secondary cb-btn-secondary btn-block cb-rounded"
+      onClick={handleClick}
+      type="button"
+    >
       {title}
     </button>
   );

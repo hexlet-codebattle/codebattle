@@ -1,3 +1,3 @@
-import RatingList from './RatingList';
+import RatingList from "./RatingList";
 
 export default RatingList;

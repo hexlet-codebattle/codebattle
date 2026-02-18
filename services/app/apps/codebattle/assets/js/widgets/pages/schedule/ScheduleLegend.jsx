@@ -1,30 +1,27 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
-import { useSelector } from 'react-redux';
+import cn from "classnames";
+import { useSelector } from "react-redux";
 
-import { currentUserIsAdminSelector } from '@/selectors';
+import { currentUserIsAdminSelector } from "@/selectors";
 
 export const states = {
-  contest: '#contest',
-  my: '#my',
-  all: '#all',
+  contest: "#contest",
+  my: "#my",
+  all: "#all",
 };
 
-const sectionBtnClassName = cn(
-  'btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2',
-);
+const sectionBtnClassName = cn("btn btn-secondary cb-btn-secondary cb-rounded w-100 m-2");
 
 function ScheduleLegend({ onChangeContext, loading, context }) {
   const isAdmin = useSelector(currentUserIsAdminSelector);
 
   return (
-    <div className={
-      cn(
-        'align-items-center justify-content-center p-1 pb-4',
-        'd-flex flex-column flex-lg-row flex-md-row',
-      )
-    }
+    <div
+      className={cn(
+        "align-items-center justify-content-center p-1 pb-4",
+        "d-flex flex-column flex-lg-row flex-md-row",
+      )}
     >
       <button
         type="button"

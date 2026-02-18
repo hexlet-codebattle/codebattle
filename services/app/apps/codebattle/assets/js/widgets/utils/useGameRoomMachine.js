@@ -1,14 +1,14 @@
-import NiceModal from '@ebay/nice-modal-react';
-import { useInterpret } from '@xstate/react';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal from "@ebay/nice-modal-react";
+import { useInterpret } from "@xstate/react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { changePresenceState } from '@/middlewares/Main';
+import { changePresenceState } from "@/middlewares/Main";
 
-import ModalCodes from '../config/modalCodes';
-import speedModes from '../config/speedModes';
-import { modalModes, modalActions } from '../pages/builder/TaskParamsModal';
-import * as selectors from '../selectors';
-import { actions } from '../slices';
+import ModalCodes from "../config/modalCodes";
+import speedModes from "../config/speedModes";
+import { modalModes, modalActions } from "../pages/builder/TaskParamsModal";
+import * as selectors from "../selectors";
+import { actions } from "../slices";
 
 /**
  *
@@ -19,10 +19,7 @@ import { actions } from '../slices';
  * }}
  *
  */
-const useGameRoomMachine = ({
-  mainMachine,
-  taskMachine,
-}) => {
+const useGameRoomMachine = ({ mainMachine, taskMachine }) => {
   const dispatch = useDispatch();
 
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
@@ -31,16 +28,16 @@ const useGameRoomMachine = ({
     devTools: true,
     context: {
       errorMessage: null,
-      holding: 'none',
+      holding: "none",
       speedMode: speedModes.normal,
       subscriptionType,
     },
     actions: {
       handleOpenHistory: () => {
-        dispatch(changePresenceState('watching'));
+        dispatch(changePresenceState("watching"));
       },
       handleOpenActiveGame: () => {
-        dispatch(changePresenceState('playing'));
+        dispatch(changePresenceState("playing"));
       },
       showGameResultModal: (_ctx, { payload }) => {
         if (!payload.award) {
@@ -62,32 +59,41 @@ const useGameRoomMachine = ({
     devTools: true,
     actions: {
       openTesting: () => {
-        mainService.send('OPEN_TESTING');
+        mainService.send("OPEN_TESTING");
       },
       showTaskSaveConfirmation: () => {
-        NiceModal.show(ModalCodes.taskParamsModal, { action: modalActions.save, mode: modalModes.preview });
+        NiceModal.show(ModalCodes.taskParamsModal, {
+          action: modalActions.save,
+          mode: modalModes.preview,
+        });
       },
       closeTaskSaveConfirmation: () => {
         NiceModal.hide(ModalCodes.taskParamsModal);
       },
       onSuccess: () => {
-        dispatch(actions.setValidationStatuses({
-          solution: [true],
-          assertsExamples: [true],
-          argumentsGenerator: [true],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [true],
+            assertsExamples: [true],
+            argumentsGenerator: [true],
+          }),
+        );
       },
       onFailure: (_ctx, event) => {
-        dispatch(actions.setValidationStatuses({
-          solution: [false, event.message],
-          assertsExamples: [false, event.message],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [false, event.message],
+            assertsExamples: [false, event.message],
+          }),
+        );
       },
       onError: (_ctx, event) => {
-        dispatch(actions.setValidationStatuses({
-          solution: [false, event.message],
-          argumentsGenerator: [false, event.message],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [false, event.message],
+            argumentsGenerator: [false, event.message],
+          }),
+        );
       },
     },
   });

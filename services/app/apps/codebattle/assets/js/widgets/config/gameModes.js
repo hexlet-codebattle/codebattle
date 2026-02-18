@@ -1,8 +1,8 @@
 export default {
-  none: 'none',
-  training: 'training',
-  standard: 'standard',
-  tournament: 'tournament',
-  history: 'history',
-  builder: 'builder',
+  none: "none",
+  training: "training",
+  standard: "standard",
+  tournament: "tournament",
+  history: "history",
+  builder: "builder",
 };

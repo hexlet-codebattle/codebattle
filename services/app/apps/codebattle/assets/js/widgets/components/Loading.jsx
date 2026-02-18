@@ -1,11 +1,15 @@
-import React from 'react';
+import React from "react";
 
 const getSize = ({ small = false, large = false, adaptive = false }) => {
   switch (true) {
-    case adaptive: return 16;
-    case small: return 30;
-    case large: return 100;
-    default: return 50;
+    case adaptive:
+      return 16;
+    case small:
+      return 30;
+    case large:
+      return 100;
+    default:
+      return 50;
   }
 };
 

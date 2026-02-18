@@ -3,8 +3,8 @@
  * @enum {string}
  */
 const eventTypeCodes = {
-  PUBLIC: 'public',
-  PRIVATE: 'private',
+  PUBLIC: "public",
+  PRIVATE: "private",
 };
 
 export default eventTypeCodes;

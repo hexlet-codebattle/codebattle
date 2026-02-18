@@ -1,21 +1,19 @@
-import React from 'react';
+import React from "react";
 
 function GoToNextGame({ currentUserId, tournamentsInfo: { playerGames } }) {
   if (!playerGames) {
-    return (<></>);
+    return <></>;
   }
 
   const nextGame = playerGames.find(({ id }) => id === currentUserId);
 
   return (
     <>
-      {
-        nextGame && (
-          <a className="btn btn-success cb-btn-success btn-block" href={`/games/${nextGame.gameId}`}>
-            Go to next game
-          </a>
-        )
-      }
+      {nextGame && (
+        <a className="btn btn-success cb-btn-success btn-block" href={`/games/${nextGame.gameId}`}>
+          Go to next game
+        </a>
+      )}
     </>
   );
 }

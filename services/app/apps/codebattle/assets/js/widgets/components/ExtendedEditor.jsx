@@ -1,15 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
-import customTheme from '../config/customTheme.json';
-import {
-  gameIdSelector,
-  gameModeSelector,
-  gameLockedSelector,
-} from '../selectors/index';
-import { actions } from '../slices';
+import customTheme from "../config/customTheme.json";
+import { gameIdSelector, gameModeSelector, gameLockedSelector } from "../selectors/index";
+import { actions } from "../slices";
 
 class ExtendedEditor extends Component {
   static propTypes = {
@@ -18,7 +14,7 @@ class ExtendedEditor extends Component {
   };
 
   static defaultProps = {
-    monacoTheme: 'default',
+    monacoTheme: "default",
     fontFamily: undefined,
   };
 
@@ -39,13 +35,13 @@ class ExtendedEditor extends Component {
     const { monacoTheme } = this.props;
     const { monaco } = this;
 
-    if (monacoTheme === 'custom') {
+    if (monacoTheme === "custom") {
       monaco.editor.defineTheme(monacoTheme, customTheme);
       monaco.editor.setTheme(monacoTheme);
-    } else if (monacoTheme !== 'default') {
+    } else if (monacoTheme !== "default") {
       import(`monaco-themes/themes/${monacoTheme}.json`)
         .then((data) => {
-          const themeName = monacoTheme.split(' ').join('-');
+          const themeName = monacoTheme.split(" ").join("-");
           monaco.editor.defineTheme(themeName, data);
           monaco.editor.setTheme(themeName);
         })
@@ -63,21 +59,13 @@ class ExtendedEditor extends Component {
     const { monacoTheme } = this.props;
     const { monaco } = this;
 
-    if (
-      monacoTheme
-      && monacoTheme !== prevProps.monacoTheme
-      && monacoTheme === 'custom'
-    ) {
+    if (monacoTheme && monacoTheme !== prevProps.monacoTheme && monacoTheme === "custom") {
       monaco.editor.defineTheme(monacoTheme, customTheme);
       monaco.editor.setTheme(monacoTheme);
-    } else if (
-      monacoTheme
-      && monacoTheme !== prevProps.monacoTheme
-      && monacoTheme !== 'default'
-    ) {
+    } else if (monacoTheme && monacoTheme !== prevProps.monacoTheme && monacoTheme !== "default") {
       import(`monaco-themes/themes/${monacoTheme}.json`)
         .then((data) => {
-          const themeName = monacoTheme.split(' ').join('-');
+          const themeName = monacoTheme.split(" ").join("-");
           monaco.editor.defineTheme(themeName, data);
           monaco.editor.setTheme(themeName);
         })

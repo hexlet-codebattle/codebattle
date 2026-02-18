@@ -1,8 +1,8 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import find from 'lodash/find';
+import find from "lodash/find";
 
-import TaskAssignment from '../game/TaskAssignment';
+import TaskAssignment from "../game/TaskAssignment";
 
 function StairwayGameInfo({ tasks, currentTaskId }) {
   if (!tasks) {

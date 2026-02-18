@@ -1,15 +1,17 @@
-import React from 'react';
+import React from "react";
 
-import find from 'lodash/find';
-import { useSelector } from 'react-redux';
+import find from "lodash/find";
+import { useSelector } from "react-redux";
 
-import ExtendedEditer from '../../components/ExtendedEditor';
-import { currentUserIdSelector } from '../../selectors';
+import ExtendedEditer from "../../components/ExtendedEditor";
+import { currentUserIdSelector } from "../../selectors";
 
 function StairwayEditorContainer({ playerId }) {
   const editable = useSelector(currentUserIdSelector) === playerId;
   // TODO: create selector
-  const playerData = useSelector((state) => find(state.stairwayGame.game?.players, { id: playerId }));
+  const playerData = useSelector((state) =>
+    find(state.stairwayGame.game?.players, { id: playerId }),
+  );
 
   if (!playerData) {
     return null;

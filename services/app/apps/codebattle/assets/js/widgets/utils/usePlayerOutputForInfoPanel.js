@@ -1,6 +1,6 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import { infoPanelExecutionOutputSelector } from '../selectors';
+import { infoPanelExecutionOutputSelector } from "../selectors";
 
 const usePlayerOutputForInfoPanel = (viewMode, roomMachineState) => {
   const outputData = useSelector(infoPanelExecutionOutputSelector(viewMode, roomMachineState));

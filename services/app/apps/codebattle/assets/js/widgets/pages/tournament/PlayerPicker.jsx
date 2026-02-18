@@ -1,41 +1,40 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import Select from 'react-select';
+import Select from "react-select";
 
-import UserInfo from '../../components/UserInfo';
+import UserInfo from "../../components/UserInfo";
 
 const customStyle = {
   control: (provided) => ({
     ...provided,
-    height: '33px',
-    minHeight: '31px',
-    minWidth: '210px',
-    borderRadius: 'unset',
-    backgroundColor: 'hsl(0, 0%, 100%)',
+    height: "33px",
+    minHeight: "31px",
+    minWidth: "210px",
+    borderRadius: "unset",
+    backgroundColor: "hsl(0, 0%, 100%)",
   }),
   indicatorsContainer: (provided) => ({
     ...provided,
-    height: '29px',
+    height: "29px",
   }),
   clearIndicator: (provided) => ({
     ...provided,
-    padding: '5px',
+    padding: "5px",
   }),
   dropdownIndicator: (provided) => ({
     ...provided,
-    padding: '5px',
+    padding: "5px",
   }),
   input: (provided) => ({
     ...provided,
-    height: '21px',
+    height: "21px",
   }),
 };
 
-function PlayerPicker({
- players, activePlayer, changePlayer, isDisabled,
-}) {
+function PlayerPicker({ players, activePlayer, changePlayer, isDisabled }) {
   const options = useMemo(
-    () => players
+    () =>
+      players
         .filter((player) => player.id !== activePlayer.id)
         .map((player) => ({
           label: <UserInfo user={player} truncate />,

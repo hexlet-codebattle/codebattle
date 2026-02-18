@@ -1,30 +1,30 @@
-import React, { useState, useCallback, memo } from 'react';
+import React, { useState, useCallback, memo } from "react";
 
-import axios from 'axios';
-import cn from 'classnames';
-import { camelizeKeys } from 'humps';
-import qs from 'qs';
-import { useDispatch, useSelector } from 'react-redux';
-import AsyncSelect from 'react-select/async';
+import axios from "axios";
+import cn from "classnames";
+import { camelizeKeys } from "humps";
+import qs from "qs";
+import { useDispatch, useSelector } from "react-redux";
+import AsyncSelect from "react-select/async";
 
-import i18n from '../../../i18n';
-import UserLabel from '../../components/UserLabel';
-import levelRatio from '../../config/levelRatio';
-import * as invitesMiddleware from '../../middlewares/Invite';
-import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
+import i18n from "../../../i18n";
+import UserLabel from "../../components/UserLabel";
+import levelRatio from "../../config/levelRatio";
+import * as invitesMiddleware from "../../middlewares/Invite";
+import * as lobbyMiddlewares from "../../middlewares/Lobby";
+import * as selectors from "../../selectors";
+import { actions } from "../../slices";
 
-import TaskChoice from './TaskChoice';
+import TaskChoice from "./TaskChoice";
 
 const TIMEOUT = 480;
 const TIMEOUT_MIN = 1;
 const TIMEOUT_MAX = 60;
 const gameLevels = Object.keys(levelRatio);
 const gameTypeNames = {
-  other_user: i18n.t('With other user'),
-  invite: i18n.t('With a friend'),
-  bot: i18n.t('With a bot'),
+  other_user: i18n.t("With other user"),
+  invite: i18n.t("With a friend"),
+  bot: i18n.t("With a bot"),
 };
 const gameTypeCodes = Object.keys(gameTypeNames);
 const defaultGameOptions = {
@@ -36,52 +36,52 @@ const unchosenTask = { id: null };
 const opponentSelectStyles = {
   menu: (base) => ({
     ...base,
-    backgroundColor: '#1c1c24',
+    backgroundColor: "#1c1c24",
   }),
   container: (base) => ({
     ...base,
-    backgroundColor: '#1c1c24',
-    color: 'white',
+    backgroundColor: "#1c1c24",
+    color: "white",
   }),
   indicatorSeparator: (base) => ({
     ...base,
-    backgroundColor: '#dc3545',
+    backgroundColor: "#dc3545",
   }),
   dropdownIndicator: (base) => ({
     ...base,
-    color: '#dc3545',
-    ':hover': {
-      ...base[':hover'],
-      color: '#e04d5b',
+    color: "#dc3545",
+    ":hover": {
+      ...base[":hover"],
+      color: "#e04d5b",
     },
   }),
   control: (base, state) => ({
     ...base,
-    backgroundColor: '#1c1c24',
-    borderColor: state.isFocused ? '#e04d5b' : '#dc3545',
-    boxShadow: 'none',
-    ':hover': {
-      ...base[':hover'],
-      borderColor: '#e04d5b',
-      cursor: 'pointer',
+    backgroundColor: "#1c1c24",
+    borderColor: state.isFocused ? "#e04d5b" : "#dc3545",
+    boxShadow: "none",
+    ":hover": {
+      ...base[":hover"],
+      borderColor: "#e04d5b",
+      cursor: "pointer",
     },
   }),
   input: (base) => ({
     ...base,
-    color: 'white',
+    color: "white",
   }),
   singleValue: (base) => ({
     ...base,
-    color: 'white',
+    color: "white",
   }),
   option: (base, state) => ({
     ...base,
-    backgroundColor: state.isFocused ? '#2a2a35' : '#1c1c24',
-    color: 'white',
-    ':hover': {
-      ...base[':hover'],
-      cursor: 'pointer',
-      backgroundColor: '#2a2a35',
+    backgroundColor: state.isFocused ? "#2a2a35" : "#1c1c24",
+    color: "white",
+    ":hover": {
+      ...base[":hover"],
+      cursor: "pointer",
+      backgroundColor: "#2a2a35",
     },
   }),
 };
@@ -103,9 +103,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
         .get(`/api/v1/users?${queryParamsString}`)
         .then(({ data }) => {
           const { users: apiUsers } = camelizeKeys(data);
-          const filteredApiUsers = apiUsers.filter(
-            ({ id }) => id !== currentUserId,
-          );
+          const filteredApiUsers = apiUsers.filter(({ id }) => id !== currentUserId);
           const onlineUsersFromPresence = presenceList
             .map((p) => p.user)
             .filter((user) => user.id !== currentUserId);
@@ -172,9 +170,9 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
 const LevelButtonGroup = memo(({ value, onChange }) => {
   const getLevelClassName = (level) => {
     const isLevelActive = level === value;
-    return cn('btn border-0 mb-2 bg-gray cb-rounded', {
-      'bg-orange': isLevelActive,
-      'btn-outline-orange': !isLevelActive,
+    return cn("btn border-0 mb-2 bg-gray cb-rounded", {
+      "bg-orange": isLevelActive,
+      "btn-outline-orange": !isLevelActive,
     });
   };
 
@@ -205,9 +203,9 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
 const GameTypeButtonGroup = memo(({ value, onChange }) => {
   const getGameTypeClassName = (gameType) => {
     const isGameTypeActive = gameType === value;
-    return cn('btn mr-1 mb-1 mb-sm-0 cb-rounded text-nowrap', {
-      'bg-orange text-white': isGameTypeActive,
-      'btn-outline-orange': !isGameTypeActive,
+    return cn("btn mr-1 mb-1 mb-sm-0 cb-rounded text-nowrap", {
+      "bg-orange text-white": isGameTypeActive,
+      "btn-outline-orange": !isGameTypeActive,
     });
   };
 
@@ -229,9 +227,7 @@ const GameTypeButtonGroup = memo(({ value, onChange }) => {
 
 function CreateGameDialog({ hideModal }) {
   const dispatch = useDispatch();
-  const { gameOptions: givenGameOptions, opponentInfo } = useSelector(
-    selectors.modalSelector,
-  );
+  const { gameOptions: givenGameOptions, opponentInfo } = useSelector(selectors.modalSelector);
   const [opponent, setOpponent] = useState(opponentInfo);
   const [chosenTask, setChosenTask] = useState(unchosenTask);
   const [chosenTags, setChosenTags] = useState([]);
@@ -241,7 +237,7 @@ function CreateGameDialog({ hideModal }) {
   const [gameType, setGameType] = useState(gameOptions.type);
   const [gameTimeout, setGameTimeout] = useState(gameOptions.timeoutSeconds);
 
-  const isInvite = gameType === 'invite';
+  const isInvite = gameType === "invite";
   const isTaskChosen = chosenTask.id !== null;
 
   const handleTimeoutChange = useCallback(
@@ -285,32 +281,27 @@ function CreateGameDialog({ hideModal }) {
   const timeoutMinutes = gameTimeout / 60;
   const timeoutPercent = Math.min(
     100,
-    Math.max(
-      0,
-      ((timeoutMinutes - TIMEOUT_MIN) / (TIMEOUT_MAX - TIMEOUT_MIN)) * 100,
-    ),
+    Math.max(0, ((timeoutMinutes - TIMEOUT_MIN) / (TIMEOUT_MAX - TIMEOUT_MIN)) * 100),
   );
 
   return (
     <div className="cb-create-game">
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Level')}</h5>
+          <h5 className="mb-0">{i18n.t("Level")}</h5>
         </div>
         <LevelButtonGroup value={gameLevel} onChange={switchGameLevel} />
       </div>
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Game Type')}</h5>
+          <h5 className="mb-0">{i18n.t("Game Type")}</h5>
         </div>
         <GameTypeButtonGroup value={gameType} onChange={setGameType} />
       </div>
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title cb-create-game__section-title--with-value">
-          <h5 className="mb-0">{i18n.t('Time control')}</h5>
-          <span className="cb-create-game__time-value">
-            {i18n.t(`${timeoutMinutes} min`)}
-          </span>
+          <h5 className="mb-0">{i18n.t("Time control")}</h5>
+          <span className="cb-create-game__time-value">{i18n.t(`${timeoutMinutes} min`)}</span>
         </div>
         <div className="px-sm-3 px-md-5 mt-3">
           <input
@@ -322,14 +313,14 @@ function CreateGameDialog({ hideModal }) {
             max={TIMEOUT_MAX}
             step="1"
             id="customRange3"
-            style={{ '--range-progress': `${timeoutPercent}%` }}
+            style={{ "--range-progress": `${timeoutPercent}%` }}
           />
         </div>
       </div>
       {isInvite && (
         <div className="cb-create-game__section">
           <div className="cb-create-game__section-title">
-            <h5 className="mb-0">{i18n.t('Choose opponent')}</h5>
+            <h5 className="mb-0">{i18n.t("Choose opponent")}</h5>
           </div>
           <div className="px-sm-3 px-md-5 mt-3">
             <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
@@ -338,7 +329,7 @@ function CreateGameDialog({ hideModal }) {
       )}
       <div className="cb-create-game__section">
         <div className="cb-create-game__section-title">
-          <h5 className="mb-0">{i18n.t('Choose task by name or tags')}</h5>
+          <h5 className="mb-0">{i18n.t("Choose task by name or tags")}</h5>
         </div>
         <TaskChoice
           chosenTask={chosenTask}
@@ -355,7 +346,7 @@ function CreateGameDialog({ hideModal }) {
           onClick={createGame}
           disabled={isInvite && !opponent}
         >
-          {isInvite ? i18n.t('Create invite') : i18n.t('Create battle')}
+          {isInvite ? i18n.t("Create invite") : i18n.t("Create battle")}
         </button>
       </div>
     </div>

@@ -1,12 +1,10 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import moment from 'moment';
+import moment from "moment";
 
 function MessageTimestamp({ time }) {
   return (
-    <span className="text-muted">
-      {moment.utc(moment.unix(time)).local().format('hh:mm A')}
-    </span>
+    <span className="text-muted">{moment.utc(moment.unix(time)).local().format("hh:mm A")}</span>
   );
 }
 

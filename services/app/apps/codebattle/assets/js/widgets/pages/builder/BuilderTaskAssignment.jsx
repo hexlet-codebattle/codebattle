@@ -1,27 +1,27 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import NiceModal from '@ebay/nice-modal-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import capitalize from 'lodash/capitalize';
-import debounce from 'lodash/debounce';
-import isEmpty from 'lodash/isEmpty';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal from "@ebay/nice-modal-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import capitalize from "lodash/capitalize";
+import debounce from "lodash/debounce";
+import isEmpty from "lodash/isEmpty";
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 
-import i18n from '../../../i18n';
-import GameLevelBadge from '../../components/GameLevelBadge';
-import ModalCodes from '../../config/modalCodes';
-import PageNames from '../../config/pageNames';
-import { taskStateCodes } from '../../config/task';
-import { validateTaskName } from '../../middlewares/Room';
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
-import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
-import TaskLanguagesSelection from '../game/TaskLanguageSelection';
+import i18n from "../../../i18n";
+import GameLevelBadge from "../../components/GameLevelBadge";
+import ModalCodes from "../../config/modalCodes";
+import PageNames from "../../config/pageNames";
+import { taskStateCodes } from "../../config/task";
+import { validateTaskName } from "../../middlewares/Room";
+import * as selectors from "../../selectors";
+import { actions } from "../../slices";
+import useTaskDescriptionParams from "../../utils/useTaskDescriptionParams";
+import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
+import TaskLanguagesSelection from "../game/TaskLanguageSelection";
 
-const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map((level) => ({
+const defaultLevels = ["elementary", "easy", "medium", "hard"].map((level) => ({
   value: level,
   label: capitalize(level),
 }));
@@ -48,9 +48,9 @@ const renderGameLevelSelectButton = (level, handleSetLevel) => (
     <button
       type="button"
       title="level"
-      className={cn('btn border-gray dropdown-toggle rounded-lg', {
-        'p-0': level === 'hard' || level === 'medium',
-        'p-1': level === 'elementary' || level === 'easy',
+      className={cn("btn border-gray dropdown-toggle rounded-lg", {
+        "p-0": level === "hard" || level === "medium",
+        "p-1": level === "elementary" || level === "easy",
       })}
       data-toggle="dropdown"
       aria-expanded="false"
@@ -64,7 +64,7 @@ const renderGameLevelSelectButton = (level, handleSetLevel) => (
           key={value}
           type="button"
           aria-label={value}
-          className={cn('dropdown-item', { active: value === level })}
+          className={cn("dropdown-item", { active: value === level })}
           data-value={value}
           onClick={handleSetLevel}
         >
@@ -85,10 +85,13 @@ function BuilderTaskAssignment({
   const dispatch = useDispatch();
 
   const editable = useSelector(selectors.canEditTask);
-  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
+  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
+    task,
+    taskLanguage,
+  );
   const descriptionTextMapping = {
-    en: task?.descriptionEn || '',
-    ru: task?.descriptionRu || '',
+    en: task?.descriptionEn || "",
+    ru: task?.descriptionRu || "",
   };
   const taskDescriptionText = descriptionTextMapping[taskLanguage];
 
@@ -144,17 +147,14 @@ function BuilderTaskAssignment({
           {editable ? (
             <div className="d-flex align-items-center mb-2">
               {renderGameLevelSelectButton(task.level, handleSetLevel)}
-              <span className="h6 card-text mb-0 ml-2">{i18n.t('Task: ')}</span>
+              <span className="h6 card-text mb-0 ml-2">{i18n.t("Task: ")}</span>
               {task.state === taskStateCodes.blank ? (
                 <div className="position-relative">
                   <input
                     type="text"
-                    className={cn(
-                      'form-control form-control-sm rounded-lg ml-2',
-                      {
-                        'is-invalid': !validName && task.name.length > 0,
-                      },
-                    )}
+                    className={cn("form-control form-control-sm rounded-lg ml-2", {
+                      "is-invalid": !validName && task.name.length > 0,
+                    })}
                     placeholder="Enter name"
                     aria-label="Task Name"
                     aria-describedby="basic-addon1"
@@ -162,9 +162,7 @@ function BuilderTaskAssignment({
                     onChange={handleSetName}
                   />
                   {!validName && task.name.length > 0 && (
-                    <div className="invalid-tooltip ml-2">
-                      {invalidNameReason}
-                    </div>
+                    <div className="invalid-tooltip ml-2">{invalidNameReason}</div>
                   )}
                 </div>
               ) : (
@@ -174,7 +172,7 @@ function BuilderTaskAssignment({
           ) : (
             <h6 className="card-text d-flex align-items-center mb-2">
               <GameLevelBadge level={task.level} />
-              <span className="ml-2">{i18n.t('Task: ')}</span>
+              <span className="ml-2">{i18n.t("Task: ")}</span>
               <span className="ml-2 text-muted">{task.name}</span>
             </h6>
           )}

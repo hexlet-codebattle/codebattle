@@ -1,11 +1,11 @@
-import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter } from "@reduxjs/toolkit";
 
 const invitesAdapter = createEntityAdapter();
 
 const initialState = invitesAdapter.getInitialState();
 
 const invitesSlice = createSlice({
-  name: 'invites',
+  name: "invites",
   initialState,
   reducers: {
     setInvites: (state, action) => invitesAdapter.setAll(state, action.payload.invites),

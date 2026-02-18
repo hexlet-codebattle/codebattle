@@ -1,6 +1,6 @@
-import { networkMachineStates, replayerMachineStates, roomMachineStates } from './game';
-import { spectatorEditorMachineStates } from './spectator';
-import { taskMachineStates } from './task';
+import { networkMachineStates, replayerMachineStates, roomMachineStates } from "./game";
+import { spectatorEditorMachineStates } from "./spectator";
+import { taskMachineStates } from "./task";
 
 const stateSelector = (state) => state;
 
@@ -14,7 +14,8 @@ export const spectatorStateSelector = stateSelector;
 
 export const inPreviewRoomSelector = (state) => state.matches({ room: roomMachineStates.preview });
 
-export const isRestrictedContentSelector = (state) => state.matches({ room: roomMachineStates.restricted });
+export const isRestrictedContentSelector = (state) =>
+  state.matches({ room: roomMachineStates.restricted });
 
 export const inTestingRoomSelector = (state) => state.matches({ room: roomMachineStates.testing });
 
@@ -26,17 +27,22 @@ export const isStoredGameSelector = (state) => state.matches({ room: roomMachine
 
 export const inBuilderRoomSelector = (state) => state.matches({ room: roomMachineStates.builder });
 
-export const inWaitingOpponentStateSelector = (state) => state.matches({ room: roomMachineStates.waiting });
+export const inWaitingOpponentStateSelector = (state) =>
+  state.matches({ room: roomMachineStates.waiting });
 
-export const openedReplayerSelector = (state) => state.matches({ replayer: replayerMachineStates.on });
+export const openedReplayerSelector = (state) =>
+  state.matches({ replayer: replayerMachineStates.on });
 
-export const spectatorEditorIsIdle = (state) => state.matches({ editor: spectatorEditorMachineStates.idle });
+export const spectatorEditorIsIdle = (state) =>
+  state.matches({ editor: spectatorEditorMachineStates.idle });
 
-export const spectatorEditorIsLoading = (state) => state.matches({ editor: spectatorEditorMachineStates.loading });
+export const spectatorEditorIsLoading = (state) =>
+  state.matches({ editor: spectatorEditorMachineStates.loading });
 
-export const spectatorEditorIsChecking = (state) => state.matches({ editor: spectatorEditorMachineStates.checking });
+export const spectatorEditorIsChecking = (state) =>
+  state.matches({ editor: spectatorEditorMachineStates.checking });
 
-export const gameRoomKeySelector = () => ('game');
+export const gameRoomKeySelector = () => "game";
 
 export const isInvalidTaskSelector = (state) => state.matches(taskMachineStates.invalid);
 
@@ -46,15 +52,17 @@ export const isSavedTaskSelector = (state) => state.matches(taskMachineStates.sa
 
 export const isReadyTaskSelector = (state) => state.matches(taskMachineStates.ready);
 
-export const isTaskAssertsReadySelector = (state) => [taskMachineStates.ready, taskMachineStates.saved].some(state.matches);
+export const isTaskAssertsReadySelector = (state) =>
+  [taskMachineStates.ready, taskMachineStates.saved].some(state.matches);
 
-export const isTaskPrepareSavingSelector = (state) => state.matches(taskMachineStates.prepareSaving);
+export const isTaskPrepareSavingSelector = (state) =>
+  state.matches(taskMachineStates.prepareSaving);
 
-export const isTaskPrepareTestingSelector = (state) => state.matches(taskMachineStates.prepareTesting);
+export const isTaskPrepareTestingSelector = (state) =>
+  state.matches(taskMachineStates.prepareTesting);
 
-export const isTaskAssertsFormingSelector = (state) => [
-  taskMachineStates.prepareSaving,
-  taskMachineStates.prepareTesting,
-].some(state.matches);
+export const isTaskAssertsFormingSelector = (state) =>
+  [taskMachineStates.prepareSaving, taskMachineStates.prepareTesting].some(state.matches);
 
-export const isDisconnectedWithMessageSelector = (state) => state.matches({ network: networkMachineStates.disconnectedWithMessage });
+export const isDisconnectedWithMessageSelector = (state) =>
+  state.matches({ network: networkMachineStates.disconnectedWithMessage });

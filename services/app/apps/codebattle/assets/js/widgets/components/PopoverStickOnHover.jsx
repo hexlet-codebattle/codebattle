@@ -1,13 +1,13 @@
 // SEE: https://gist.github.com/lou/571b7c0e7797860d6c555a9fdc0496f9
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 
-import Overlay from 'react-bootstrap/Overlay';
-import Popover from 'react-bootstrap/Popover';
+import Overlay from "react-bootstrap/Overlay";
+import Popover from "react-bootstrap/Popover";
 
 function PopoverStickOnHover({
   id,
   delay = 0,
-  onMouseEnter = () => { },
+  onMouseEnter = () => {},
   children,
   component,
   placement,
@@ -34,27 +34,24 @@ function PopoverStickOnHover({
     setShowPopover(false);
   };
 
-  const displayChild = React.Children.map(children, (child) => React.cloneElement(child, {
-    onMouseEnter: handleMouseEnter,
-    onMouseLeave: handleMouseLeave,
-    ref: (node) => {
-      childNode.current = node;
-      const { ref } = child;
-      if (typeof ref === 'function') {
-        ref(node);
-      }
-    },
-  }))[0];
+  const displayChild = React.Children.map(children, (child) =>
+    React.cloneElement(child, {
+      onMouseEnter: handleMouseEnter,
+      onMouseLeave: handleMouseLeave,
+      ref: (node) => {
+        childNode.current = node;
+        const { ref } = child;
+        if (typeof ref === "function") {
+          ref(node);
+        }
+      },
+    }),
+  )[0];
 
   return (
     <>
       {displayChild}
-      <Overlay
-        show={showPopover}
-        placement={placement}
-        target={childNode}
-        shouldUpdatePosition
-      >
+      <Overlay show={showPopover} placement={placement} target={childNode} shouldUpdatePosition>
         <Popover
           className="cb-blur cb-text cb-rounded"
           trigger="click"

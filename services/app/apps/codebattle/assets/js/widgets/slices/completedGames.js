@@ -1,20 +1,20 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { camelizeKeys } from 'humps';
-import unionBy from 'lodash/unionBy';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { camelizeKeys } from "humps";
+import unionBy from "lodash/unionBy";
 
-import fetchionStatuses from '../config/fetchionStatuses';
+import fetchionStatuses from "../config/fetchionStatuses";
 
-import initial from './initial';
-import { actions as lobbyActions } from './lobby';
+import initial from "./initial";
+import { actions as lobbyActions } from "./lobby";
 
 export const fetchCompletedGames = createAsyncThunk(
-  'completedGames/fetchCompletedGames',
+  "completedGames/fetchCompletedGames",
   async () => {
-    const userId = window.location.pathname.split('/').pop() || null;
+    const userId = window.location.pathname.split("/").pop() || null;
     const route = userId
       ? `/api/v1/games/completed?user_id=${userId}&page_size=20`
-      : '/api/v1/games/completed?page_size=20';
+      : "/api/v1/games/completed?page_size=20";
 
     const response = await axios.get(route);
 
@@ -23,10 +23,12 @@ export const fetchCompletedGames = createAsyncThunk(
 );
 
 export const loadNextPage = createAsyncThunk(
-  'completedGames/loadNextPage',
+  "completedGames/loadNextPage",
   async (_, { getState }) => {
-    const userId = window.location.pathname.split('/').pop() || null;
-    const { completedGames: { currrentPage } } = getState();
+    const userId = window.location.pathname.split("/").pop() || null;
+    const {
+      completedGames: { currrentPage },
+    } = getState();
     const nextPage = currrentPage + 1;
     const route = userId
       ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${nextPage}`
@@ -38,14 +40,16 @@ export const loadNextPage = createAsyncThunk(
   },
   {
     condition: (_, { getState }) => {
-      const { completedGames: { currrentPage, totalPages, status } } = getState();
+      const {
+        completedGames: { currrentPage, totalPages, status },
+      } = getState();
       return status !== fetchionStatuses.loading && currrentPage !== totalPages;
     },
   },
 );
 
 const completedGames = createSlice({
-  name: 'completedGames',
+  name: "completedGames",
   initialState: {
     completedGames: initial.completedGames,
     currrentPage: null,
@@ -79,7 +83,7 @@ const completedGames = createSlice({
       .addCase(loadNextPage.fulfilled, (state, { payload }) => {
         state.status = fetchionStatuses.loaded;
         state.currrentPage = payload.pageInfo.pageNumber;
-        state.completedGames = unionBy(state.completedGames, payload.games, 'id');
+        state.completedGames = unionBy(state.completedGames, payload.games, "id");
       })
       .addCase(loadNextPage.rejected, (state, action) => {
         state.status = fetchionStatuses.rejected;

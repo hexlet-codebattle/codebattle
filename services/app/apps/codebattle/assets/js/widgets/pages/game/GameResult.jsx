@@ -1,14 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import find from 'lodash/find';
-import hasIn from 'lodash/hasIn';
-import Alert from 'react-bootstrap/Alert';
-import { useSelector } from 'react-redux';
+import find from "lodash/find";
+import hasIn from "lodash/hasIn";
+import Alert from "react-bootstrap/Alert";
+import { useSelector } from "react-redux";
 
-import i18n from '../../../i18n';
-import GameRoomModes from '../../config/gameModes';
-import GameStateCodes from '../../config/gameStateCodes';
-import * as selectors from '../../selectors';
+import i18n from "../../../i18n";
+import GameRoomModes from "../../config/gameModes";
+import GameStateCodes from "../../config/gameStateCodes";
+import * as selectors from "../../selectors";
 
 function GameResult() {
   const currentUserId = useSelector((state) => selectors.currentUserIdSelector(state));
@@ -19,47 +19,47 @@ function GameResult() {
 
   const result = useMemo(() => {
     if (gameStatus.state === GameStateCodes.timeout) {
-      return ({
-        alertStyle: 'danger',
-        msg: i18n.t('Time is up. There are no winners in the game'),
-      });
+      return {
+        alertStyle: "danger",
+        msg: i18n.t("Time is up. There are no winners in the game"),
+      };
     }
 
-    const winner = find(players, ['result', 'won']);
+    const winner = find(players, ["result", "won"]);
 
     if (!winner) {
       return null;
     }
 
     if (currentUserId === winner.id) {
-      const msg = gameMode === GameRoomModes.training
-        ? i18n.t('Win Training Message')
-        : i18n.t('Win Game Message');
+      const msg =
+        gameMode === GameRoomModes.training
+          ? i18n.t("Win Training Message")
+          : i18n.t("Win Game Message");
 
-      return ({
-        alertStyle: 'success',
+      return {
+        alertStyle: "success",
         msg,
         isWin: true,
-      });
-    } if (isCurrentUserPlayer) {
-      return ({
-        alertStyle: 'danger',
-        msg: i18n.t('Lose Game Message'),
-      });
+      };
+    }
+    if (isCurrentUserPlayer) {
+      return {
+        alertStyle: "danger",
+        msg: i18n.t("Lose Game Message"),
+      };
     }
 
     return null;
-  }, [
-    currentUserId,
-    players,
-    isCurrentUserPlayer,
-    gameStatus.state,
-    gameMode,
-  ]);
+  }, [currentUserId, players, isCurrentUserPlayer, gameStatus.state, gameMode]);
 
   if (result) {
-    const alertClassName = `mt-2 alert-dark-theme${result.isWin ? ' cb-game-win-alert' : ''}`;
-    return (<Alert className={alertClassName} variant={result.alertStyle}>{result.msg}</Alert>);
+    const alertClassName = `mt-2 alert-dark-theme${result.isWin ? " cb-game-win-alert" : ""}`;
+    return (
+      <Alert className={alertClassName} variant={result.alertStyle}>
+        {result.msg}
+      </Alert>
+    );
   }
   return null;
 }

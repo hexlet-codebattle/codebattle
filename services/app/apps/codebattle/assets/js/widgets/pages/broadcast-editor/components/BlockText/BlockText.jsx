@@ -1,13 +1,13 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React from "react";
 
-import BlockBase from '../BlockBase/BlockBase';
-import './BlockText.css';
+import BlockBase from "../BlockBase/BlockBase";
+import "./BlockText.css";
 
 function BlockText({ text, ...props }) {
-  const lines = text.split('\n');
-  const isChat = text.trim().startsWith('Чат');
-  const isTask = text.trim().startsWith('Задача');
+  const lines = text.split("\n");
+  const isChat = text.trim().startsWith("Чат");
+  const isTask = text.trim().startsWith("Задача");
 
   return (
     <BlockBase {...props}>
@@ -15,9 +15,9 @@ function BlockText({ text, ...props }) {
         <div
           style={{
             fontWeight: 600,
-            fontSize: '16px',
+            fontSize: "16px",
             marginBottom: 8,
-            display: 'block',
+            display: "block",
           }}
         >
           {lines[0]}
@@ -27,9 +27,9 @@ function BlockText({ text, ...props }) {
           <div
             style={{
               marginBottom: 8,
-              height: '1px',
-              width: '100%',
-              backgroundColor: '#ddd',
+              height: "1px",
+              width: "100%",
+              backgroundColor: "#ddd",
             }}
           />
         )}
@@ -37,9 +37,9 @@ function BlockText({ text, ...props }) {
         {lines.slice(1).map((line, i) => {
           const trimmed = line.trim().toLowerCase();
 
-          if (trimmed === 'failed') {
+          if (trimmed === "failed") {
             return (
-              <div key={i} style={{ color: '#e53935', fontWeight: 500 }}>
+              <div key={i} style={{ color: "#e53935", fontWeight: 500 }}>
                 {line}
               </div>
             );
@@ -48,14 +48,14 @@ function BlockText({ text, ...props }) {
           const passed = /(\d+)\s*\/\s*(\d+)\s*passed/i.exec(line);
           if (passed && passed[1] === passed[2]) {
             return (
-              <div key={i} style={{ color: '#22c55e', fontWeight: 500 }}>
+              <div key={i} style={{ color: "#22c55e", fontWeight: 500 }}>
                 {line}
               </div>
             );
           }
 
           return (
-            <div key={i} style={{ fontSize: '14px', whiteSpace: 'pre-wrap' }}>
+            <div key={i} style={{ fontSize: "14px", whiteSpace: "pre-wrap" }}>
               {line}
             </div>
           );

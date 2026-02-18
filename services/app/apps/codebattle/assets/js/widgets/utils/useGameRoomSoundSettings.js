@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 
-import sound from '../lib/sound';
-import { actions } from '../slices';
+import sound from "../lib/sound";
+import { actions } from "../slices";
 
 const useGameRoomSoundSettings = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const useGameRoomSoundSettings = () => {
 
   useEffect(() => {
     const muteSound = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "m") {
         e.preventDefault();
 
         if (mute) {
@@ -25,10 +25,10 @@ const useGameRoomSoundSettings = () => {
       }
     };
 
-    window.addEventListener('keydown', muteSound);
+    window.addEventListener("keydown", muteSound);
 
     return () => {
-      window.removeEventListener('keydown', muteSound);
+      window.removeEventListener("keydown", muteSound);
     };
   }, [dispatch, mute]);
 

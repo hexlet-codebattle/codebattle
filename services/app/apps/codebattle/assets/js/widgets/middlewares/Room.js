@@ -1,40 +1,38 @@
-import axios from 'axios';
-import Gon from 'gon';
-import { camelizeKeys, decamelizeKeys } from 'humps';
-import debounce from 'lodash/debounce';
-import find from 'lodash/find';
+import axios from "axios";
+import Gon from "gon";
+import { camelizeKeys, decamelizeKeys } from "humps";
+import debounce from "lodash/debounce";
+import find from "lodash/find";
 
-import { makeGameUrl } from '@/utils/urlBuilders';
+import { makeGameUrl } from "@/utils/urlBuilders";
 
-import { channelMethods, channelTopics } from '../../socket';
-import GameRoomModes from '../config/gameModes';
-import GameStateCodes from '../config/gameStateCodes';
-import PlaybookStatusCodes from '../config/playbookStatusCodes';
-import { taskStateCodes } from '../config/task';
-import {
-  parse, getFinalState, getText, resolveDiffs,
-} from '../lib/player';
-import * as selectors from '../selectors';
-import { actions, redirectToNewGame } from '../slices';
+import { channelMethods, channelTopics } from "../../socket";
+import GameRoomModes from "../config/gameModes";
+import GameStateCodes from "../config/gameStateCodes";
+import PlaybookStatusCodes from "../config/playbookStatusCodes";
+import { taskStateCodes } from "../config/task";
+import { parse, getFinalState, getText, resolveDiffs } from "../lib/player";
+import * as selectors from "../selectors";
+import { actions, redirectToNewGame } from "../slices";
 import {
   taskTemplatesStates,
   labelTaskParamsWithIds,
   MAX_NAME_LENGTH,
   MIN_NAME_LENGTH,
-} from '../utils/builder';
+} from "../utils/builder";
 import {
   getGamePlayers,
   getGameStatus,
   getPlayersExecutionData,
   getPlayersText,
-} from '../utils/gameRoom';
-import notification from '../utils/notification';
+} from "../utils/gameRoom";
+import notification from "../utils/notification";
 
-import Channel from './Channel';
+import Channel from "./Channel";
 
-const defaultLanguages = Gon.getAsset('langs');
-const gameId = Gon.getAsset('game_id');
-const isRecord = Gon.getAsset('is_record');
+const defaultLanguages = Gon.getAsset("langs");
+const gameId = Gon.getAsset("game_id");
+const isRecord = Gon.getAsset("is_record");
 const channel = new Channel();
 
 export const setGameChannel = (newGameId = gameId) => {
@@ -61,36 +59,38 @@ const initEditors = (dispatch) => (playbookStatusCode, players) => {
   });
 };
 
-const updateStore = (dispatch) => ({
-  firstPlayer,
-  secondPlayer,
-  task,
-  langs,
-  gameStatus,
-  playbookStatusCode,
-  award,
-  visible,
-  locked,
-}) => {
-  const players = getGamePlayers([firstPlayer, secondPlayer]);
+const updateStore =
+  (dispatch) =>
+  ({
+    firstPlayer,
+    secondPlayer,
+    task,
+    langs,
+    gameStatus,
+    playbookStatusCode,
+    award,
+    visible,
+    locked,
+  }) => {
+    const players = getGamePlayers([firstPlayer, secondPlayer]);
 
-  dispatch(actions.setAward(award));
-  dispatch(actions.setVisible(visible));
-  dispatch(actions.setLocked(locked));
+    dispatch(actions.setAward(award));
+    dispatch(actions.setVisible(visible));
+    dispatch(actions.setLocked(locked));
 
-  dispatch(actions.setLangs({ langs }));
-  dispatch(actions.updateGamePlayers({ players }));
+    dispatch(actions.setLangs({ langs }));
+    dispatch(actions.updateGamePlayers({ players }));
 
-  initEditors(dispatch)(playbookStatusCode, players);
+    initEditors(dispatch)(playbookStatusCode, players);
 
-  if (task) {
-    dispatch(actions.setGameTask({ task }));
-  }
+    if (task) {
+      dispatch(actions.setGameTask({ task }));
+    }
 
-  if (gameStatus) {
-    dispatch(actions.updateGameStatus(gameStatus));
-  }
-};
+    if (gameStatus) {
+      dispatch(actions.updateGameStatus(gameStatus));
+    }
+  };
 
 const initStoredGame = (dispatch) => (data) => {
   const mode = GameRoomModes.history;
@@ -110,7 +110,7 @@ const initStoredGame = (dispatch) => (data) => {
     locked: data.locked,
     visible: true,
     award: data.award,
-    awardStatus: 'idle',
+    awardStatus: "idle",
     playbookStatusCode: PlaybookStatusCodes.stored,
   });
 
@@ -126,13 +126,13 @@ const initPlaybook = (dispatch) => (data) => {
 
 const initGameChannel = (gameRoomService) => (dispatch) => {
   const onJoinFailure = (payload) => {
-    gameRoomService.send('REJECT_LOADING_GAME', { payload });
-    gameRoomService.send('FAILURE_JOIN', { payload });
+    gameRoomService.send("REJECT_LOADING_GAME", { payload });
+    gameRoomService.send("FAILURE_JOIN", { payload });
     window.location.reload();
   };
 
   channel.onError(() => {
-    gameRoomService.send('FAILURE');
+    gameRoomService.send("FAILURE");
   });
 
   const onJoinSuccess = (response) => {
@@ -157,7 +157,7 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
 
     const gameStatus = getGameStatus(normalizedResponse.game);
 
-    gameRoomService.send('LOAD_GAME', { payload: gameStatus });
+    gameRoomService.send("LOAD_GAME", { payload: gameStatus });
 
     if (activeGameId) {
       dispatch(actions.setActiveGameId({ activeGameId }));
@@ -186,24 +186,23 @@ const initGameChannel = (gameRoomService) => (dispatch) => {
     });
   };
 
-  channel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
 };
 
-export const updateEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
-  const state = getState();
-  const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
-  dispatch(
-    actions.updateEditorText({
-      userId,
-      editorText,
-      langSlug: currentLangSlug,
-    }),
-  );
-};
+export const updateEditorText =
+  (editorText, langSlug = null) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const userId = selectors.currentUserIdSelector(state);
+    const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+    dispatch(
+      actions.updateEditorText({
+        userId,
+        editorText,
+        langSlug: currentLangSlug,
+      }),
+    );
+  };
 
 export const sendEditorLang = (langSlug) => (_dispatch, getState) => {
   const state = getState();
@@ -215,21 +214,22 @@ export const sendEditorLang = (langSlug) => (_dispatch, getState) => {
   });
 };
 
-export const sendEditorText = (editorText, langSlug = null) => (_dispatch, getState) => {
-  const state = getState();
-  const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+export const sendEditorText =
+  (editorText, langSlug = null) =>
+  (_dispatch, getState) => {
+    const state = getState();
+    const userId = selectors.currentUserIdSelector(state);
+    const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
 
-  channel.push(channelMethods.editorData, {
-    editorText,
-    langSlug: currentLangSlug,
-  });
-};
+    channel.push(channelMethods.editorData, {
+      editorText,
+      langSlug: currentLangSlug,
+    });
+  };
 
 // TODO: only for show tournament
 export const startRoundTournament = () => {
-  channel
-    .push('tournament:start_round', {});
+  channel.push("tournament:start_round", {});
 };
 
 export const sendEditorCursorPosition = (offset) => {
@@ -253,10 +253,10 @@ export const sendEditorScrollPosition = (scrollTop, scrollLeft) => {
 export const sendPassCode = (passCode, onError) => (dispatch) => {
   channel
     .push(channelMethods.enterPassCode, { passCode })
-    .receive('ok', () => {
+    .receive("ok", () => {
       dispatch(actions.setLocked(false));
     })
-    .receive('error', (error) => {
+    .receive("error", (error) => {
       onError({ message: error.reason });
     });
 };
@@ -278,13 +278,13 @@ export const sendAcceptToRematch = () => {
 };
 
 export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
-  const payload = { user_id: userId, reason: 'cheat', comment: '' };
+  const payload = { user_id: userId, reason: "cheat", comment: "" };
 
   axios
     .post(`/api/v1/games/${gameId}/user_game_reports`, payload, {
       headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': window.csrf_token,
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
       },
     })
     .then((data) => {
@@ -347,10 +347,7 @@ export const resetTextToTemplateAndSend = (langSlug) => (dispatch, getState) => 
 export const soundNotification = notification();
 
 export const addCursorListeners = (params, onChangePosition, onChangeSelection, onChangeScroll) => {
-  const {
-    roomMode,
-    userId,
-  } = params;
+  const { roomMode, userId } = params;
 
   const isBuilder = roomMode === GameRoomModes.builder;
   const isHistory = roomMode === GameRoomModes.history;
@@ -358,7 +355,7 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection, 
   const canReceivedRemoteCursor = !isBuilder && !isHistory && !!userId && !isRecord;
 
   if (!canReceivedRemoteCursor) {
-    return () => { };
+    return () => {};
   }
 
   const handleNewCursorPosition = debounce((data) => {
@@ -377,7 +374,7 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection, 
 
   const handleNewScrollPosition = debounce((data) => {
     const { scrollTop, scrollLeft } = data;
-    if (userId === data.userId && typeof onChangeScroll === 'function') {
+    if (userId === data.userId && typeof onChangeScroll === "function") {
       onChangeScroll(scrollTop, scrollLeft);
     }
   }, 80);
@@ -385,37 +382,16 @@ export const addCursorListeners = (params, onChangePosition, onChangeSelection, 
   const listenerParams = { userId };
 
   channel
-    .addListener(
-      channelTopics.editorCursorPositionTopic,
-      handleNewCursorPosition,
-      listenerParams,
-    )
-    .addListener(
-      channelTopics.editorCursorSelectionTopic,
-      handleNewCursorSelection,
-      listenerParams,
-    )
-    .addListener(
-      channelTopics.editorScrollPositionTopic,
-      handleNewScrollPosition,
-      listenerParams,
-    );
+    .addListener(channelTopics.editorCursorPositionTopic, handleNewCursorPosition, listenerParams)
+    .addListener(channelTopics.editorCursorSelectionTopic, handleNewCursorSelection, listenerParams)
+    .addListener(channelTopics.editorScrollPositionTopic, handleNewScrollPosition, listenerParams);
 
   return () => {
     if (channel) {
       channel
-        .removeListeners(
-          channelTopics.editorCursorPositionTopic,
-          listenerParams,
-        )
-        .removeListeners(
-          channelTopics.editorCursorSelectionTopic,
-          listenerParams,
-        )
-        .removeListeners(
-          channelTopics.editorScrollPositionTopic,
-          listenerParams,
-        );
+        .removeListeners(channelTopics.editorCursorPositionTopic, listenerParams)
+        .removeListeners(channelTopics.editorCursorSelectionTopic, listenerParams)
+        .removeListeners(channelTopics.editorScrollPositionTopic, listenerParams);
     }
   };
 };
@@ -424,9 +400,9 @@ export const activeEditorReady = (service, isBanned) => {
   const listenerParams = { userId: service.machine.context.userId };
 
   if (isBanned) {
-    service.send('load_banned_editor');
+    service.send("load_banned_editor");
   } else {
-    service.send('load_active_editor');
+    service.send("load_active_editor");
   }
 
   // channel.on('editor:data', data => {
@@ -435,35 +411,26 @@ export const activeEditorReady = (service, isBanned) => {
   // });
 
   const handleUserBanned = (data) => {
-    service.send('banned_user', data);
+    service.send("banned_user", data);
   };
 
   const handleUserUnbanned = (data) => {
-    service.send('unbanned_user', data);
+    service.send("unbanned_user", data);
   };
 
   const handleStartsCheck = (data) => {
-    service.send('check_solution_received', data);
+    service.send("check_solution_received", data);
   };
 
   const handleNewCheckResult = (data) => {
-    service.send('receive_check_result', data);
+    service.send("receive_check_result", data);
   };
 
   channel
-    .addListener(
-      channelTopics.userBanned,
-      handleUserBanned,
-    )
-    .addListener(
-      channelTopics.userUnbanned,
-      handleUserUnbanned,
-    )
+    .addListener(channelTopics.userBanned, handleUserBanned)
+    .addListener(channelTopics.userUnbanned, handleUserUnbanned)
     .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
-    .addListener(
-      channelTopics.userCheckCompleteTopic,
-      handleNewCheckResult,
-    );
+    .addListener(channelTopics.userCheckCompleteTopic, handleNewCheckResult);
 
   return () => {
     channel
@@ -474,229 +441,194 @@ export const activeEditorReady = (service, isBanned) => {
   };
 };
 
-export const activeGameReady = (gameRoomService, { cancelRedirect = false }) => (dispatch) => {
-  initGameChannel(gameRoomService)(dispatch);
+export const activeGameReady =
+  (gameRoomService, { cancelRedirect = false }) =>
+  (dispatch) => {
+    initGameChannel(gameRoomService)(dispatch);
 
-  const handleNewEditorData = (data) => {
-    dispatch(actions.updateEditorText(data));
-  };
+    const handleNewEditorData = (data) => {
+      dispatch(actions.updateEditorText(data));
+    };
 
-  const handleStartsCheck = ({ user_id: userId }) => {
-    dispatch(actions.updateCheckStatus({ [userId]: true }));
-  };
+    const handleStartsCheck = ({ user_id: userId }) => {
+      dispatch(actions.updateCheckStatus({ [userId]: true }));
+    };
 
-  const handleNewCheckResult = (responseData) => {
-    const {
-      state, solutionStatus, checkResult, players, userId, award,
-    } = responseData;
-    if (solutionStatus) {
-      channel
-        .push(channelMethods.gameScore, {})
-        .receive('ok', (data) => dispatch(actions.setGameScore(data)));
-    }
-    dispatch(actions.updateGamePlayers({ players }));
+    const handleNewCheckResult = (responseData) => {
+      const { state, solutionStatus, checkResult, players, userId, award } = responseData;
+      if (solutionStatus) {
+        channel
+          .push(channelMethods.gameScore, {})
+          .receive("ok", (data) => dispatch(actions.setGameScore(data)));
+      }
+      dispatch(actions.updateGamePlayers({ players }));
 
-    dispatch(
-      actions.updateExecutionOutput({
-        ...checkResult,
-        userId,
-      }),
-    );
-    dispatch(actions.updateGameStatus({ state, solutionStatus }));
-    dispatch(actions.updateCheckStatus({ [userId]: false }));
+      dispatch(
+        actions.updateExecutionOutput({
+          ...checkResult,
+          userId,
+        }),
+      );
+      dispatch(actions.updateGameStatus({ state, solutionStatus }));
+      dispatch(actions.updateCheckStatus({ [userId]: false }));
 
-    const payload = { state, award };
-    gameRoomService.send(channelTopics.userCheckCompleteTopic, { payload });
-  };
+      const payload = { state, award };
+      gameRoomService.send(channelTopics.userCheckCompleteTopic, { payload });
+    };
 
-  const handleUserJoined = (data) => {
-    const {
-      state, startsAt, timeoutSeconds, langs, players, task,
-    } = data;
+    const handleUserJoined = (data) => {
+      const { state, startsAt, timeoutSeconds, langs, players, task } = data;
 
-    const gamePlayers = getGamePlayers(players);
-    const [firstPlayer, secondPlayer] = gamePlayers;
+      const gamePlayers = getGamePlayers(players);
+      const [firstPlayer, secondPlayer] = gamePlayers;
 
-    soundNotification.start();
-    dispatch(actions.updateGamePlayers({ players: gamePlayers }));
-    dispatch(actions.setGameTask({ task }));
-    dispatch(actions.setLangs({ langs }));
+      soundNotification.start();
+      dispatch(actions.updateGamePlayers({ players: gamePlayers }));
+      dispatch(actions.setGameTask({ task }));
+      dispatch(actions.setLangs({ langs }));
 
-    dispatch(
-      actions.updateEditorText({
-        userId: firstPlayer.id,
-        editorText: firstPlayer.editorText,
-        langSlug: firstPlayer.editorLang,
-      }),
-    );
-
-    dispatch(
-      actions.updateExecutionOutput({
-        ...firstPlayer.checkResult,
-        userId: firstPlayer.id,
-      }),
-    );
-
-    if (secondPlayer) {
       dispatch(
         actions.updateEditorText({
-          userId: secondPlayer.id,
-          editorText: secondPlayer.editorText,
-          langSlug: secondPlayer.editorLang,
+          userId: firstPlayer.id,
+          editorText: firstPlayer.editorText,
+          langSlug: firstPlayer.editorLang,
         }),
       );
 
       dispatch(
         actions.updateExecutionOutput({
-          ...secondPlayer.checkResult,
-          userId: secondPlayer.id,
+          ...firstPlayer.checkResult,
+          userId: firstPlayer.id,
         }),
       );
-    }
 
-    dispatch(
-      actions.updateGameStatus({
-        state,
-        startsAt,
-        timeoutSeconds,
-      }),
-    );
-    gameRoomService.send(channelTopics.gameUserJoinedTopic, {
-      payload: data,
-    });
+      if (secondPlayer) {
+        dispatch(
+          actions.updateEditorText({
+            userId: secondPlayer.id,
+            editorText: secondPlayer.editorText,
+            langSlug: secondPlayer.editorLang,
+          }),
+        );
+
+        dispatch(
+          actions.updateExecutionOutput({
+            ...secondPlayer.checkResult,
+            userId: secondPlayer.id,
+          }),
+        );
+      }
+
+      dispatch(
+        actions.updateGameStatus({
+          state,
+          startsAt,
+          timeoutSeconds,
+        }),
+      );
+      gameRoomService.send(channelTopics.gameUserJoinedTopic, {
+        payload: data,
+      });
+    };
+
+    const handleUserWon = (data) => {
+      const { players, state, msg } = data;
+      dispatch(actions.updateGamePlayers({ players }));
+      dispatch(actions.updateGameStatus({ state, msg }));
+      gameRoomService.send(channelTopics.userWonTopic, { payload: data });
+    };
+
+    const handleUserGiveUp = (data) => {
+      const { players, state, msg } = data;
+      dispatch(actions.updateGamePlayers({ players }));
+      dispatch(actions.updateGameStatus({ state, msg }));
+      channel
+        .push(channelMethods.gameScore, {})
+        .receive("ok", (response) => dispatch(actions.setGameScore(response)));
+      gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
+    };
+
+    const handleRematchStatusUpdate = (data) => {
+      dispatch(actions.updateRematchStatus(data));
+      gameRoomService.send(channelTopics.rematchStatusUpdatedTopic, {
+        payload: data,
+      });
+    };
+
+    const handleRematchAccepted = ({ gameId: newGameId }) => {
+      gameRoomService.send(channelTopics.rematchAcceptedTopic, { newGameId });
+      redirectToNewGame(newGameId);
+    };
+
+    const handleGameTimeout = (data) => {
+      const { gameState } = data;
+      const payload = { state: gameState };
+      dispatch(actions.updateGameStatus(payload));
+      gameRoomService.send(channelTopics.gameTimeoutTopic, { payload });
+    };
+
+    const handleGameToggleVisible = () => {
+      dispatch(actions.toggleVisible());
+    };
+
+    const handleGameUnlocked = () => {
+      dispatch(actions.setLocked(false));
+    };
+
+    const handleTournamentGameCreated = (data) => {
+      dispatch(actions.setTournamentsInfo(data));
+      gameRoomService.send(channelTopics.tournamentGameCreatedTopic, {
+        payload: data,
+      });
+      if (!cancelRedirect) {
+        setTimeout(() => {
+          window.location.replace(makeGameUrl(data.gameId));
+        }, 10);
+      }
+    };
+
+    const handleTournamentRoundCreated = (response) => {
+      dispatch(actions.updateTournamentData(response.tournament));
+    };
+
+    const handleTournamentRoundFinished = (response) => {
+      dispatch(actions.updateTournamentData(response.tournament));
+      dispatch(actions.updateTournamentMatches(response.matches || []));
+      gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
+        payload: response.tournament,
+      });
+    };
+
+    const handleTournamentGameWait = (response) => {
+      dispatch(actions.setTournamentWaitType(response.type));
+    };
+
+    return channel
+      .addListener(channelTopics.editorDataTopic, handleNewEditorData)
+      .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
+      .addListener(channelTopics.userCheckCompleteTopic, handleNewCheckResult)
+      .addListener(channelTopics.userWonTopic, handleUserWon)
+      .addListener(channelTopics.userGiveUpTopic, handleUserGiveUp)
+      .addListener(channelTopics.rematchStatusUpdatedTopic, handleRematchStatusUpdate)
+      .addListener(channelTopics.rematchAcceptedTopic, handleRematchAccepted)
+      .addListener(channelTopics.gameUserJoinedTopic, handleUserJoined)
+      .addListener(channelTopics.gameTimeoutTopic, handleGameTimeout)
+      .addListener(channelTopics.gameToggleVisibleTopic, handleGameToggleVisible)
+      .addListener(channelTopics.gameUnlockedTopic, handleGameUnlocked)
+      .addListener(channelTopics.tournamentGameCreatedTopic, handleTournamentGameCreated)
+      .addListener(channelTopics.tournamentRoundCreatedTopic, handleTournamentRoundCreated)
+      .addListener(channelTopics.tournamentRoundFinishedTopic, handleTournamentRoundFinished)
+      .addListener(channelTopics.tournamentGameWaitTopic, handleTournamentGameWait);
   };
-
-  const handleUserWon = (data) => {
-    const { players, state, msg } = data;
-    dispatch(actions.updateGamePlayers({ players }));
-    dispatch(actions.updateGameStatus({ state, msg }));
-    gameRoomService.send(channelTopics.userWonTopic, { payload: data });
-  };
-
-  const handleUserGiveUp = (data) => {
-    const { players, state, msg } = data;
-    dispatch(actions.updateGamePlayers({ players }));
-    dispatch(actions.updateGameStatus({ state, msg }));
-    channel
-      .push(channelMethods.gameScore, {})
-      .receive('ok', (response) => dispatch(actions.setGameScore(response)));
-    gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
-  };
-
-  const handleRematchStatusUpdate = (data) => {
-    dispatch(actions.updateRematchStatus(data));
-    gameRoomService.send(channelTopics.rematchStatusUpdatedTopic, {
-      payload: data,
-    });
-  };
-
-  const handleRematchAccepted = ({ gameId: newGameId }) => {
-    gameRoomService.send(channelTopics.rematchAcceptedTopic, { newGameId });
-    redirectToNewGame(newGameId);
-  };
-
-  const handleGameTimeout = (data) => {
-    const { gameState } = data;
-    const payload = { state: gameState };
-    dispatch(actions.updateGameStatus(payload));
-    gameRoomService.send(channelTopics.gameTimeoutTopic, { payload });
-  };
-
-  const handleGameToggleVisible = () => {
-    dispatch(actions.toggleVisible());
-  };
-
-  const handleGameUnlocked = () => {
-    dispatch(actions.setLocked(false));
-  };
-
-  const handleTournamentGameCreated = (data) => {
-    dispatch(actions.setTournamentsInfo(data));
-    gameRoomService.send(channelTopics.tournamentGameCreatedTopic, {
-      payload: data,
-    });
-    if (!cancelRedirect) {
-      setTimeout(() => {
-        window.location.replace(makeGameUrl(data.gameId));
-      }, 10);
-    }
-  };
-
-  const handleTournamentRoundCreated = (response) => {
-    dispatch(actions.updateTournamentData(response.tournament));
-  };
-
-  const handleTournamentRoundFinished = (response) => {
-    dispatch(actions.updateTournamentData(response.tournament));
-    dispatch(actions.updateTournamentMatches(response.matches || []));
-    gameRoomService.send(channelTopics.tournamentRoundFinishedTopic, {
-      payload: response.tournament,
-    });
-  };
-
-  const handleTournamentGameWait = (response) => {
-    dispatch(actions.setTournamentWaitType(response.type));
-  };
-
-  return channel
-    .addListener(channelTopics.editorDataTopic, handleNewEditorData)
-    .addListener(
-      channelTopics.userStartCheckTopic,
-      handleStartsCheck,
-    )
-    .addListener(
-      channelTopics.userCheckCompleteTopic,
-      handleNewCheckResult,
-    )
-    .addListener(channelTopics.userWonTopic, handleUserWon)
-    .addListener(channelTopics.userGiveUpTopic, handleUserGiveUp)
-    .addListener(
-      channelTopics.rematchStatusUpdatedTopic,
-      handleRematchStatusUpdate,
-    )
-    .addListener(
-      channelTopics.rematchAcceptedTopic,
-      handleRematchAccepted,
-    )
-    .addListener(
-      channelTopics.gameUserJoinedTopic,
-      handleUserJoined,
-    )
-    .addListener(channelTopics.gameTimeoutTopic, handleGameTimeout)
-    .addListener(
-      channelTopics.gameToggleVisibleTopic,
-      handleGameToggleVisible,
-    )
-    .addListener(
-      channelTopics.gameUnlockedTopic,
-      handleGameUnlocked,
-    )
-    .addListener(
-      channelTopics.tournamentGameCreatedTopic,
-      handleTournamentGameCreated,
-    )
-    .addListener(
-      channelTopics.tournamentRoundCreatedTopic,
-      handleTournamentRoundCreated,
-    )
-    .addListener(
-      channelTopics.tournamentRoundFinishedTopic,
-      handleTournamentRoundFinished,
-    )
-    .addListener(
-      channelTopics.tournamentGameWaitTopic,
-      handleTournamentGameWait,
-    );
-};
 
 const fetchOrCreateTask = (gameService, taskService) => (dispatch, getState) => {
   const currentTask = getState().builder.task;
 
-  taskService.send('SETUP_TASK', { payload: currentTask });
+  taskService.send("SETUP_TASK", { payload: currentTask });
 
   const state = GameStateCodes.builder;
   const message = { payload: { state } };
-  gameService.send('LOAD_GAME', message);
+  gameService.send("LOAD_GAME", message);
 };
 
 export const reloadGeneratorAndSolutionTemplates = (taskService) => (dispatch, getState) => {
@@ -705,20 +637,20 @@ export const reloadGeneratorAndSolutionTemplates = (taskService) => (dispatch, g
   const langs = selectors.editorLangsSelector(state);
 
   const solution = langs.reduce(
-    (acc, lang) => (lang.argumentsGeneratorTemplate
-      ? { ...acc, [lang.slug]: lang.solutionTemplate }
-      : acc),
+    (acc, lang) =>
+      lang.argumentsGeneratorTemplate ? { ...acc, [lang.slug]: lang.solutionTemplate } : acc,
     {},
   );
   const argumentsGenerator = langs.reduce(
-    (acc, lang) => (lang.argumentsGeneratorTemplate
-      ? { ...acc, [lang.slug]: lang.argumentsGeneratorTemplate }
-      : acc),
+    (acc, lang) =>
+      lang.argumentsGeneratorTemplate
+        ? { ...acc, [lang.slug]: lang.argumentsGeneratorTemplate }
+        : acc,
     {},
   );
 
   dispatch(actions.setTaskTemplates({ solution, argumentsGenerator }));
-  taskService.send('CHANGES');
+  taskService.send("CHANGES");
 };
 
 export const validateTaskName = (name) => (dispatch, getState) => {
@@ -729,8 +661,8 @@ export const validateTaskName = (name) => (dispatch, getState) => {
   axios
     .get(`/api/v1/tasks/${name}/unique`, {
       headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': window.csrf_token,
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
       },
     })
     .then((response) => {
@@ -746,7 +678,7 @@ export const validateTaskName = (name) => (dispatch, getState) => {
       } else {
         dispatch(
           actions.setValidationStatuses({
-            name: [false, 'Name must be unique'],
+            name: [false, "Name must be unique"],
           }),
         );
       }
@@ -763,8 +695,8 @@ export const updateTaskState = (id, state) => (dispatch) => {
       { task: { state } },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
+          "Content-Type": "application/json",
+          "x-csrf-token": window.csrf_token,
         },
       },
     )
@@ -780,9 +712,7 @@ export const updateTaskState = (id, state) => (dispatch) => {
 export const publishTask = (id) => (dispatch, getState) => {
   const state = getState();
   const isAdmin = selectors.currentUserIsAdminSelector(state);
-  const nextTaskState = isAdmin
-    ? taskStateCodes.active
-    : taskStateCodes.moderation;
+  const nextTaskState = isAdmin ? taskStateCodes.active : taskStateCodes.moderation;
 
   dispatch(updateTaskState(id, nextTaskState));
 };
@@ -794,8 +724,8 @@ export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
       { task: { visibility } },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
+          "Content-Type": "application/json",
+          "x-csrf-token": window.csrf_token,
         },
       },
     )
@@ -809,111 +739,115 @@ export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
     });
 };
 
-export const uploadTask = (taskParams, taskService, onSuccess = () => { }, onError = () => { }) => (dispatch) => {
-  const payload = {
-    task: decamelizeKeys(taskParams, { separator: '_' }),
-    options: {
-      next_state: taskStateCodes.blank,
-    },
+export const uploadTask =
+  (taskParams, taskService, onSuccess = () => {}, onError = () => {}) =>
+  (dispatch) => {
+    const payload = {
+      task: decamelizeKeys(taskParams, { separator: "_" }),
+      options: {
+        next_state: taskStateCodes.blank,
+      },
+    };
+
+    axios
+      .post("/api/v1/tasks", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": window.csrf_token,
+        },
+      })
+      .then((response) => {
+        const data = camelizeKeys(response.data);
+        const labledTask = labelTaskParamsWithIds(data.task);
+
+        dispatch(actions.setTask({ task: labledTask }));
+        taskService.send("CONFIRM");
+        onSuccess();
+      })
+      .catch((err) => {
+        onError(err);
+
+        dispatch(actions.setError(err));
+        console.error(err);
+      });
   };
 
-  axios
-    .post('/api/v1/tasks', payload, {
-      headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': window.csrf_token,
-      },
-    })
-    .then((response) => {
-      const data = camelizeKeys(response.data);
-      const labledTask = labelTaskParamsWithIds(data.task);
+export const saveTask =
+  (taskService, onSuccess = () => {}, onError = () => {}, newTaskParams) =>
+  (dispatch, getState) => {
+    try {
+      const state = getState();
 
-      dispatch(actions.setTask({ task: labledTask }));
-      taskService.send('CONFIRM');
-      onSuccess();
-    })
-    .catch((err) => {
+      const taskParams = newTaskParams || selectors.taskParamsSelector()(state);
+      const payload = {
+        task: decamelizeKeys(taskParams, { separator: "_" }),
+        options: {
+          next_state: newTaskParams?.state || taskStateCodes.draft,
+        },
+      };
+
+      if (taskParams.state === taskStateCodes.blank) {
+        axios
+          .post("/api/v1/tasks", payload, {
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": window.csrf_token,
+            },
+          })
+          .then((response) => {
+            const data = camelizeKeys(response.data);
+
+            taskService.send("CONFIRM");
+            window.location.href = `/tasks/${data.task.id}`;
+            onSuccess();
+          })
+          .catch((err) => {
+            onError(err);
+
+            dispatch(actions.setError(err));
+            console.error(err);
+          });
+      } else {
+        axios
+          .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
+            headers: {
+              "Content-Type": "application/json",
+              "x-csrf-token": window.csrf_token,
+            },
+          })
+          .then((response) => {
+            const data = camelizeKeys(response.data);
+            const labledTask = labelTaskParamsWithIds(data.task);
+
+            dispatch(actions.setTask({ task: labledTask }));
+            taskService.send("CONFIRM");
+            onSuccess();
+          })
+          .catch((err) => {
+            onError(err);
+
+            dispatch(actions.setError(err));
+            console.error(err);
+          });
+      }
+    } catch (err) {
       onError(err);
 
       dispatch(actions.setError(err));
       console.error(err);
-    });
-};
-
-export const saveTask = (taskService, onSuccess = () => { }, onError = () => { }, newTaskParams) => (dispatch, getState) => {
-  try {
-    const state = getState();
-
-    const taskParams = newTaskParams || selectors.taskParamsSelector()(state);
-    const payload = {
-      task: decamelizeKeys(taskParams, { separator: '_' }),
-      options: {
-        next_state: newTaskParams?.state || taskStateCodes.draft,
-      },
-    };
-
-    if (taskParams.state === taskStateCodes.blank) {
-      axios
-        .post('/api/v1/tasks', payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': window.csrf_token,
-          },
-        })
-        .then((response) => {
-          const data = camelizeKeys(response.data);
-
-          taskService.send('CONFIRM');
-          window.location.href = `/tasks/${data.task.id}`;
-          onSuccess();
-        })
-        .catch((err) => {
-          onError(err);
-
-          dispatch(actions.setError(err));
-          console.error(err);
-        });
-    } else {
-      axios
-        .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': window.csrf_token,
-          },
-        })
-        .then((response) => {
-          const data = camelizeKeys(response.data);
-          const labledTask = labelTaskParamsWithIds(data.task);
-
-          dispatch(actions.setTask({ task: labledTask }));
-          taskService.send('CONFIRM');
-          onSuccess();
-        })
-        .catch((err) => {
-          onError(err);
-
-          dispatch(actions.setError(err));
-          console.error(err);
-        });
     }
-  } catch (err) {
-    onError(err);
-
-    dispatch(actions.setError(err));
-    console.error(err);
-  }
-};
+  };
 
 export const deleteTask = (id) => (dispatch) => {
   axios
     .delete(`/api/v1/tasks/${id}`, {
       headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': window.csrf_token,
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
       },
     })
     .then(() => {
-      window.location.href = '/tasks';
+      window.location.href = "/tasks";
     })
     .catch((err) => {
       dispatch(actions.setError(err));
@@ -927,41 +861,36 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
   if (state.builder.templates.state !== taskTemplatesStates.init) {
     dispatch(
       actions.setTaskAsserts({
-        asserts: state.builder.task.assertsExamples.map(
-          ({ arguments: args, expected }) => ({
-            arguments: JSON.parse(args),
-            expected: JSON.parse(expected),
-          }),
-        ),
-        status: 'ok',
+        asserts: state.builder.task.assertsExamples.map(({ arguments: args, expected }) => ({
+          arguments: JSON.parse(args),
+          expected: JSON.parse(expected),
+        })),
+        status: "ok",
       }),
     );
 
-    taskService.send('SUCCESS');
+    taskService.send("SUCCESS");
     return;
   }
 
   const taskParams = selectors.taskParamsSelector({ normalize: false })(state);
   const editorLang = selectors.taskGeneratorLangSelector(state);
   const textSolution = selectors.taskSolutionSelector(state, editorLang);
-  const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(
-    state,
-    editorLang,
-  );
+  const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(state, editorLang);
 
   axios
     .post(
-      '/api/v1/tasks/build',
+      "/api/v1/tasks/build",
       {
-        task: decamelizeKeys(taskParams, { separator: '_' }),
+        task: decamelizeKeys(taskParams, { separator: "_" }),
         arguments_generator_text: textArgumentsGenerator,
         solution_text: textSolution,
         editor_lang: editorLang,
       },
       {
         headers: {
-          'Content-Type': 'application/json',
-          'x-csrf-token': window.csrf_token,
+          "Content-Type": "application/json",
+          "x-csrf-token": window.csrf_token,
         },
       },
     )
@@ -977,22 +906,22 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
       );
 
       switch (data.status) {
-        case 'ok': {
-          taskService.send('SUCCESS');
+        case "ok": {
+          taskService.send("SUCCESS");
           break;
         }
-        case 'failure':
-          taskService.send('FAILURE', {
+        case "failure":
+          taskService.send("FAILURE", {
             message: "Actual values doesn't match with expected values",
           });
           break;
-        case 'error': {
-          taskService.send('ERROR', { message: data.message });
+        case "error": {
+          taskService.send("ERROR", { message: data.message });
           break;
         }
         default: {
-          taskService.send('ERROR', {
-            message: data.message || 'Something Wrong',
+          taskService.send("ERROR", {
+            message: data.message || "Something Wrong",
           });
         }
       }
@@ -1001,11 +930,11 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
       dispatch(
         actions.setTaskAsserts({
           asserts: [],
-          status: 'error',
+          status: "error",
           output: err.message,
         }),
       );
-      taskService.send('ERROR', { message: err.message });
+      taskService.send("ERROR", { message: err.message });
 
       dispatch(actions.setError(err));
       console.error(err);
@@ -1013,25 +942,23 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
 };
 
 const fetchPlaybook = (service, init) => (dispatch) => {
-  service.send('START_LOADING_PLAYBOOK');
+  service.send("START_LOADING_PLAYBOOK");
 
   axios
     .get(`/api/v1/playbook/${gameId}`)
     .then((response) => {
       const data = camelizeKeys(response.data);
-      const type = isRecord
-        ? PlaybookStatusCodes.stored
-        : PlaybookStatusCodes.active;
+      const type = isRecord ? PlaybookStatusCodes.stored : PlaybookStatusCodes.active;
       const resolvedData = resolveDiffs(data, type);
 
       init(dispatch)(resolvedData);
 
-      service.send('LOAD_PLAYBOOK', { payload: resolvedData });
+      service.send("LOAD_PLAYBOOK", { payload: resolvedData });
     })
     .catch((err) => {
       console.error(err);
       dispatch(actions.setError(err));
-      service.send('REJECT_LOADING_PLAYBOOK', { payload: err });
+      service.send("REJECT_LOADING_PLAYBOOK", { payload: err });
     });
 };
 
@@ -1044,8 +971,8 @@ export const changePlaybookSolution = (method) => (dispatch) => {
       },
       {
         headers: {
-          'Content-type': 'application/json',
-          'x-csrf-token': window.csrf_token,
+          "Content-type": "application/json",
+          "x-csrf-token": window.csrf_token,
         },
       },
     )
@@ -1070,9 +997,9 @@ export const changePlaybookSolution = (method) => (dispatch) => {
 };
 
 export const storedEditorReady = (service) => {
-  service.send('load_stored_editor');
+  service.send("load_stored_editor");
 
-  return () => { };
+  return () => {};
 };
 
 export const downloadPlaybook = (service) => (dispatch) => {
@@ -1080,7 +1007,7 @@ export const downloadPlaybook = (service) => (dispatch) => {
 };
 
 export const openPlaybook = (service) => () => {
-  service.send('OPEN_REPLAYER');
+  service.send("OPEN_REPLAYER");
 };
 
 export const connectToTask = (gameService, taskService) => (dispatch) => {
@@ -1092,12 +1019,13 @@ export const connectToGame = (gameRoomService, options) => (dispatch) => {
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
   }
 
-  gameRoomService.send('JOIN');
+  gameRoomService.send("JOIN");
 
   return activeGameReady(gameRoomService, options)(dispatch);
 };
 
-export const connectToEditor = (service, isBanned) => () => (isRecord ? storedEditorReady(service) : activeEditorReady(service, isBanned));
+export const connectToEditor = (service, isBanned) => () =>
+  isRecord ? storedEditorReady(service) : activeEditorReady(service, isBanned);
 
 export const checkGameSolution = () => (dispatch, getState) => {
   const state = getState();
@@ -1129,18 +1057,18 @@ export const checkTaskSolution = (editorService) => (dispatch, getState) => {
   dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
 
   const payload = {
-    task: decamelizeKeys(task, { separator: '_' }),
+    task: decamelizeKeys(task, { separator: "_" }),
     editor_text: text,
     lang_slug: lang,
   };
 
-  editorService.send('user_check_solution');
+  editorService.send("user_check_solution");
 
   axios
-    .post('/api/v1/tasks/check', payload, {
+    .post("/api/v1/tasks/check", payload, {
       headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': window.csrf_token,
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
       },
     })
     .then((response) => {
@@ -1152,24 +1080,26 @@ export const checkTaskSolution = (editorService) => (dispatch, getState) => {
           userId: currentUserId,
         }),
       );
-      editorService.send('receive_check_result', { userId: currentUserId });
+      editorService.send("receive_check_result", { userId: currentUserId });
     })
     .catch((error) => {
       dispatch(
         actions.updateExecutionOutput({
-          status: 'error',
+          status: "error",
           outputError: error.message,
           asserts: [],
           version: 2,
           userId: currentUserId,
         }),
       );
-      editorService.send('receive_check_result', { userId: currentUserId });
+      editorService.send("receive_check_result", { userId: currentUserId });
     });
 };
 
-export const compressEditorHeight = (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }));
-export const expandEditorHeight = (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }));
+export const compressEditorHeight = (userId) => (dispatch) =>
+  dispatch(actions.compressEditorHeight({ userId }));
+export const expandEditorHeight = (userId) => (dispatch) =>
+  dispatch(actions.expandEditorHeight({ userId }));
 
 /*
  * Middleware actions for CodebattlePlayer
@@ -1212,15 +1142,9 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
   const nextRecord = parse(records[nextRecordId]) || {};
 
   switch (nextRecord.type) {
-    case 'update_editor_data': {
-      const editorText = selectors.editorTextHistorySelector(
-        state,
-        nextRecord,
-      );
-      const editorLang = selectors.editorLangHistorySelector(
-        state,
-        nextRecord,
-      );
+    case "update_editor_data": {
+      const editorText = selectors.editorTextHistorySelector(state, nextRecord);
+      const editorLang = selectors.editorLangHistorySelector(state, nextRecord);
       const newEditorText = getText(editorText, nextRecord.diff);
 
       dispatch(
@@ -1232,7 +1156,7 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
       );
       break;
     }
-    case 'check_complete':
+    case "check_complete":
       dispatch(
         actions.updateExecutionOutputHistory({
           ...nextRecord.checkResult,
@@ -1240,9 +1164,9 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
         }),
       );
       break;
-    case 'chat_message':
-    case 'join_chat':
-    case 'leave_chat':
+    case "chat_message":
+    case "join_chat":
+    case "leave_chat":
       dispatch(actions.updateChatDataHistory(nextRecord.chat));
       break;
     default:
@@ -1251,8 +1175,7 @@ export const updateGameHistoryState = (nextRecordId) => (dispatch, getState) => 
 };
 
 export const changeTaskImgDataUrl = (imgDataUrl) => () => {
-  channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl })
-    .receive('ok', () => {
-      window.location.reload();
-    });
+  channel.push(channelMethods.gameTaskChangeTarget, { imgDataUrl }).receive("ok", () => {
+    window.location.reload();
+  });
 };

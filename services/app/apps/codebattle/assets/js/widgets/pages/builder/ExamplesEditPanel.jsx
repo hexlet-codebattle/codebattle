@@ -1,14 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import cloneDeep from 'lodash/cloneDeep';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import cloneDeep from "lodash/cloneDeep";
 
-import { itemClassName, itemActionClassName } from '../../utils/builder';
-import useValidationExample from '../../utils/useValidationExample';
+import { itemClassName, itemActionClassName } from "../../utils/builder";
+import useValidationExample from "../../utils/useValidationExample";
 
-import ExamplesTrack from './ExamplesTrack';
-import SignatureTrack from './SignatureTrack';
+import ExamplesTrack from "./ExamplesTrack";
+import SignatureTrack from "./SignatureTrack";
 
 function ExampleForm({
   example,
@@ -26,7 +26,9 @@ function ExampleForm({
       const newExample = cloneDeep({ ...example, arguments: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
-          behavior: 'smooth', block: 'nearest', inline: 'start',
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
         });
       }
 
@@ -40,7 +42,9 @@ function ExampleForm({
       const newExample = cloneDeep({ ...example, expected: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
-          behavior: 'smooth', block: 'nearest', inline: 'start',
+          behavior: "smooth",
+          block: "nearest",
+          inline: "start",
         });
       }
 
@@ -55,33 +59,23 @@ function ExampleForm({
         <div className="d-flex position-relative">
           <input
             ref={argumentsInputRef}
-            className={cn(
-              'form-control cb-builder-argument-input m-1 rounded-lg',
-              {
-                'is-invalid': !validationStatus.arguments.valid,
-              },
-            )}
-            value={example?.arguments || ''}
+            className={cn("form-control cb-builder-argument-input m-1 rounded-lg", {
+              "is-invalid": !validationStatus.arguments.valid,
+            })}
+            value={example?.arguments || ""}
             onChange={handleArguments}
           />
-          <div className="invalid-tooltip">
-            {validationStatus.arguments.reason}
-          </div>
+          <div className="invalid-tooltip">{validationStatus.arguments.reason}</div>
         </div>
         <div className="d-flex position-relative">
           <input
-            className={cn(
-              'form-control cb-builder-argument-input m-1 rounded-lg',
-              {
-                'is-invalid': !validationStatus.expected.valid,
-              },
-            )}
-            value={example?.expected || ''}
+            className={cn("form-control cb-builder-argument-input m-1 rounded-lg", {
+              "is-invalid": !validationStatus.expected.valid,
+            })}
+            value={example?.expected || ""}
             onChange={handleExpected}
           />
-          <div className="invalid-tooltip">
-            {validationStatus.expected.reason}
-          </div>
+          <div className="invalid-tooltip">{validationStatus.expected.reason}</div>
         </div>
       </div>
       <div className="d-flex">
@@ -89,10 +83,7 @@ function ExampleForm({
           type="button"
           className="btn btn-sm m-1 text-white btn-success rounded-lg"
           onClick={handleSubmit}
-          disabled={
-            !validationStatus.arguments.valid
-            || !validationStatus.expected.valid
-          }
+          disabled={!validationStatus.arguments.valid || !validationStatus.expected.valid}
         >
           Submit
         </button>
@@ -151,14 +142,12 @@ function ExamplesEditPanel({
     <div className="d-flex justify-content-between h-100">
       <div className="d-flex flex-column justify-content-between overflow-auto">
         <div className="overflow-auto">
-          <h6 className="pl-1">{'Input -> Output'}</h6>
+          <h6 className="pl-1">{"Input -> Output"}</h6>
           <div className="d-flex mb-2">
             <SignatureTrack items={inputSignature} />
-            <div className="text-nowrap align-self-center mr-2">{'->'}</div>
+            <div className="text-nowrap align-self-center mr-2">{"->"}</div>
             <div className={itemClassName} role="group">
-              <div className={itemActionClassName}>
-                {`(${outputSignature.type.name})`}
-              </div>
+              <div className={itemActionClassName}>{`(${outputSignature.type.name})`}</div>
             </div>
           </div>
           <h6 className="pl-1">Examples: </h6>
@@ -193,11 +182,7 @@ function ExamplesEditPanel({
         </div>
       </div>
       <div>
-        <button
-          type="button"
-          className="btn btn-sm rounded-circle"
-          onClick={handleClear}
-        >
+        <button type="button" className="btn btn-sm rounded-circle" onClick={handleClear}>
           <FontAwesomeIcon icon="times" />
         </button>
       </div>

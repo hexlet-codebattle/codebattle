@@ -1,70 +1,70 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import capitalize from 'lodash/capitalize';
-import partition from 'lodash/partition';
-import { useSelector } from 'react-redux';
-import Select from 'react-select';
+import capitalize from "lodash/capitalize";
+import partition from "lodash/partition";
+import { useSelector } from "react-redux";
+import Select from "react-select";
 
-import * as selectors from '../selectors';
+import * as selectors from "../selectors";
 
-import LanguageIcon from './LanguageIcon';
+import LanguageIcon from "./LanguageIcon";
 
 export const customStyle = {
   control: (provided) => ({
     ...provided,
-    color: 'white',
-    height: '33px',
-    minHeight: '31px',
-    minWidth: '210px',
-    borderRadius: '0.3rem',
-    backgroundColor: '#2a2a35',
-    borderColor: '#3a3f50',
+    color: "white",
+    height: "33px",
+    minHeight: "31px",
+    minWidth: "210px",
+    borderRadius: "0.3rem",
+    backgroundColor: "#2a2a35",
+    borderColor: "#3a3f50",
 
-    ':hover': {
-      borderColor: '#4c4c5a',
+    ":hover": {
+      borderColor: "#4c4c5a",
     },
   }),
   singleValue: (provider) => ({
     ...provider,
-    color: 'white',
+    color: "white",
   }),
   indicatorsContainer: (provided) => ({
     ...provided,
-    height: '29px',
+    height: "29px",
   }),
   clearIndicator: (provided) => ({
     ...provided,
-    padding: '5px',
+    padding: "5px",
   }),
   dropdownIndicator: (provided) => ({
     ...provided,
-    color: 'white',
-    padding: '5px',
+    color: "white",
+    padding: "5px",
   }),
   input: (provided) => ({
     ...provided,
-    color: 'white',
-    height: '21px',
+    color: "white",
+    height: "21px",
   }),
   menu: (provided) => ({
     ...provided,
-    color: 'white',
-    backgroundColor: 'rgba(0, 0, 0, .3)',
-    backdropFilter: 'blur(16px)',
+    color: "white",
+    backgroundColor: "rgba(0, 0, 0, .3)",
+    backdropFilter: "blur(16px)",
   }),
   option: (provided) => ({
     ...provided,
-    color: 'white',
-    backgroundColor: 'transparent',
+    color: "white",
+    backgroundColor: "transparent",
 
-    ':hover': {
-      backgroundColor: '#3a3f50',
+    ":hover": {
+      backgroundColor: "#3a3f50",
     },
-    ':focus': {
-      backgroundColor: '#3a3f50',
+    ":focus": {
+      backgroundColor: "#3a3f50",
     },
-    ':active': {
-      backgroundColor: '#3a3f50',
+    ":active": {
+      backgroundColor: "#3a3f50",
     },
   }),
 };
@@ -87,16 +87,14 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
     [langs, currentLangSlug],
   );
   const options = useMemo(
-    () => otherLangs.map((lang) => ({
-      label: <LangTitle {...lang} />,
-      value: lang.name,
-    })),
+    () =>
+      otherLangs.map((lang) => ({
+        label: <LangTitle {...lang} />,
+        value: lang.name,
+      })),
     [otherLangs],
   );
-  const defaultLang = useMemo(
-    () => ({ label: <LangTitle {...currentLang} /> }),
-    [currentLang],
-  );
+  const defaultLang = useMemo(() => ({ label: <LangTitle {...currentLang} /> }), [currentLang]);
 
   if (isDisabled || options.length < 2) {
     return (

@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
-import copy from 'copy-to-clipboard';
-import Gon from 'gon';
-import { PlayerIcon } from 'react-player-controls';
-import { useDispatch } from 'react-redux';
+import cn from "classnames";
+import copy from "copy-to-clipboard";
+import Gon from "gon";
+import { PlayerIcon } from "react-player-controls";
+import { useDispatch } from "react-redux";
 
-import speedModes from '../../config/speedModes';
-import { replayerMachineStates } from '../../machines/game';
-import { actions } from '../../slices';
+import speedModes from "../../config/speedModes";
+import { replayerMachineStates } from "../../machines/game";
+import { actions } from "../../slices";
 
-const gameId = Gon.getAsset('game_id');
+const gameId = Gon.getAsset("game_id");
 
 function ControlPanel({
   roomMachineState,
@@ -25,9 +25,9 @@ function ControlPanel({
   const { speedMode } = roomMachineState.context;
   const isPaused = !roomMachineState.matches({ replayer: replayerMachineStates.playing });
 
-  const speedControlClassNames = cn('btn btn-sm cb-rounded ml-2 border cb-border-color', {
-    'btn-light': speedMode === speedModes.normal,
-    'btn-secondary cb-btn-secondary': speedMode === speedModes.fast,
+  const speedControlClassNames = cn("btn btn-sm cb-rounded ml-2 border cb-border-color", {
+    "btn-light": speedMode === speedModes.normal,
+    "btn-secondary cb-btn-secondary": speedMode === speedModes.fast,
   });
 
   const onControlButtonClick = () => {
@@ -40,7 +40,7 @@ function ControlPanel({
         onPauseClick();
         break;
       default:
-        dispatch(actions.setError(new Error('unexpected game state [players ControlPanel]')));
+        dispatch(actions.setError(new Error("unexpected game state [players ControlPanel]")));
     }
   };
 
@@ -72,7 +72,14 @@ function ControlPanel({
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <div className="d-flex">
-            <button type="button" className={speedControlClassNames} onClick={onChangeSpeed} aria-label="Toggle speed">x2</button>
+            <button
+              type="button"
+              className={speedControlClassNames}
+              onClick={onChangeSpeed}
+              aria-label="Toggle speed"
+            >
+              x2
+            </button>
             <button
               type="button"
               className="btn btn-sm ml-2 border btn-light cb-rounded"

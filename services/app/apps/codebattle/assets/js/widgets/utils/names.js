@@ -1,18 +1,18 @@
-import Gon from 'gon';
+import Gon from "gon";
 
-const chatId = Gon.getAsset('game_id');
-const tournamentId = Gon.getAsset('tournament_id');
+const chatId = Gon.getAsset("game_id");
+const tournamentId = Gon.getAsset("tournament_id");
 
 const prefixes = {
   page: {
-    lobby: 'lobby',
-    tournament: 'tournament',
-    game: 'game',
+    lobby: "lobby",
+    tournament: "tournament",
+    game: "game",
   },
   channel: {
-    lobby: 'chat:lobby',
-    tournament: 'chat:t',
-    game: 'chat:g',
+    lobby: "chat:lobby",
+    tournament: "chat:t",
+    game: "chat:g",
   },
 };
 

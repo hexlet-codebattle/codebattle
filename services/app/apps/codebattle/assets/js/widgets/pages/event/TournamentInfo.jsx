@@ -1,29 +1,25 @@
-import React from 'react';
+import React from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import i18next from 'i18next';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import i18next from "i18next";
 
-import TournamentStatus from './TournamentStatus';
+import TournamentStatus from "./TournamentStatus";
 
 function TournamentInfo({
   id,
   type,
-  name = i18next.t('Stage %{name}', { name: 1 }),
-  nameClassName = '',
-  data = '##.##',
-  time = '##:##',
-  handleOpenInstruction = () => { },
+  name = i18next.t("Stage %{name}", { name: 1 }),
+  nameClassName = "",
+  data = "##.##",
+  time = "##:##",
+  handleOpenInstruction = () => {},
 }) {
   return (
     <div className="d-flex flex-column flex-lg-row align-items-center py-2 cb-custom-event-tournaments-item cb-overflow-x-auto">
       <div className="d-flex align-items-center">
-        <span className={`${nameClassName} mx-3 font-weight-bold text-nowrap`}>
-          {name}
-        </span>
+        <span className={`${nameClassName} mx-3 font-weight-bold text-nowrap`}>{name}</span>
         <span className="align-content-center">
-          <TournamentStatus
-            type={type}
-          />
+          <TournamentStatus type={type} />
         </span>
       </div>
       <div className="d-flex align-items-center ml-2">
@@ -42,9 +38,9 @@ function TournamentInfo({
               </a>
             </span>
           </>
-      ) : (
-        <span>{data}</span>
-      )}
+        ) : (
+          <span>{data}</span>
+        )}
 
         <span className="mx-3 text-nowrap">{time}</span>
       </div>

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Rnd } from 'react-rnd';
-import './BlockBase.css';
-import '../../resize.css';
+import { Rnd } from "react-rnd";
+import "./BlockBase.css";
+import "../../resize.css";
 
 function BlockBase({
   id,
@@ -54,42 +54,39 @@ function BlockBase({
         className="block-wrapper"
         data-id={id}
         style={{
-          width: '100%',
-          height: '100%',
-          boxSizing: 'border-box',
-          position: 'relative',
-          border: isResizable ? '1px dashed #3b82f6' : '1px solid transparent',
+          width: "100%",
+          height: "100%",
+          boxSizing: "border-box",
+          position: "relative",
+          border: isResizable ? "1px dashed #3b82f6" : "1px solid transparent",
           borderRadius: 6,
-          transition: 'border 0.2s ease',
+          transition: "border 0.2s ease",
         }}
       >
         {children}
 
         {isResizable && (
           <>
-            {['tl', 'tr', 'bl', 'br'].map((pos) => (
+            {["tl", "tr", "bl", "br"].map((pos) => (
               <div key={pos} className={`resize-dot ${pos}`} />
             ))}
             <div
               style={{
-                position: 'absolute',
+                position: "absolute",
                 bottom: -26,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                fontSize: '14px',
-                color: '#3b82f6',
-                background: 'white',
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontSize: "14px",
+                color: "#3b82f6",
+                background: "white",
                 borderRadius: 8,
-                padding: '2px 10px',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                fontFamily: 'JetBrains Mono, monospace',
-                pointerEvents: 'none',
+                padding: "2px 10px",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                fontFamily: "JetBrains Mono, monospace",
+                pointerEvents: "none",
               }}
             >
-              {tempSize.width}
-              {' '}
-              ×
-              {tempSize.height}
+              {tempSize.width} ×{tempSize.height}
             </div>
           </>
         )}

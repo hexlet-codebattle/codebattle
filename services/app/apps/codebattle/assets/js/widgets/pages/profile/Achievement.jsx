@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import AchievementBadge from '../../components/AchievementBadge';
+import AchievementBadge from "../../components/AchievementBadge";
 
 function Achievement({ achievement }) {
   return <AchievementBadge achievement={achievement} />;

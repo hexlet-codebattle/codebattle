@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import './Toast.css';
+import React, { useEffect } from "react";
+import "./Toast.css";
 
 function Toast({ message, onClose, duration = 2000 }) {
   useEffect(() => {

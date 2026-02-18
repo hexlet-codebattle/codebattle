@@ -1,11 +1,11 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import BattleRoomViewModesCodes from '../config/battleRoomViewModes';
-import GameStateCodes from '../config/gameStateCodes';
-import GameTypeCodes from '../config/gameTypeCodes';
-import PageNames from '../config/pageNames';
-import * as machineSelectors from '../machines/selectors';
-import * as selectors from '../selectors';
+import BattleRoomViewModesCodes from "../config/battleRoomViewModes";
+import GameStateCodes from "../config/gameStateCodes";
+import GameTypeCodes from "../config/gameTypeCodes";
+import PageNames from "../config/pageNames";
+import * as machineSelectors from "../machines/selectors";
+import * as selectors from "../selectors";
 
 const mapGameTypeOnViewMode = {
   [GameTypeCodes.duo]: BattleRoomViewModesCodes.duel,
@@ -27,10 +27,12 @@ const useRoomSettings = (pageName, roomMachineState) => {
 
   const tournamentId = gameStatus?.tournamentId;
 
-  const showWaitingOpponent = inWaitingOpponent || gameStatus.state === GameStateCodes.waitingOpponent;
+  const showWaitingOpponent =
+    inWaitingOpponent || gameStatus.state === GameStateCodes.waitingOpponent;
   const showTaskBuilder = inBuilderRoom || (pageName === PageNames.builder && inPreviewRoom);
   const showBattleRoom = !showTaskBuilder;
-  const showTimeoutMessage = gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer);
+  const showTimeoutMessage =
+    gameStatus.state === GameStateCodes.timeout && !(firstPlayer && secondPlayer);
 
   return {
     tournamentId,

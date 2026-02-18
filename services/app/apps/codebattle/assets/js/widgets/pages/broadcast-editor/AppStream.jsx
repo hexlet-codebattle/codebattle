@@ -1,74 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import Canvas from './components/Canvas/Canvas';
-import './index.css';
-import './App.css';
+import Canvas from "./components/Canvas/Canvas";
+import "./index.css";
+import "./App.css";
 
 const defaultBlocks = [
   {
-    id: 'code-1',
-    type: 'code',
-    nick: 'Pavel',
-    color: 'red',
+    id: "code-1",
+    type: "code",
+    nick: "Pavel",
+    color: "red",
     x: 32,
     y: 32,
     width: 320,
     height: 256,
-    code: 'const x = 42;\nconsole.log(x);',
-    theme: 'vscDarkPlus',
+    code: "const x = 42;\nconsole.log(x);",
+    theme: "vscDarkPlus",
   },
   {
-    id: 'code-2',
-    type: 'code',
-    nick: 'Matvey',
-    color: '#4ade80',
+    id: "code-2",
+    type: "code",
+    nick: "Matvey",
+    color: "#4ade80",
     x: 32,
     y: 320,
     width: 320,
     height: 240,
-    code: 'const b = 27;\nconst c = 22;\nconst res = b + c;\nconsole.log(res);',
-    theme: 'vscDarkPlus',
+    code: "const b = 27;\nconst c = 22;\nconst res = b + c;\nconsole.log(res);",
+    theme: "vscDarkPlus",
   },
   {
-    id: 'text-1',
-    type: 'text',
-    text: 'Task description',
+    id: "text-1",
+    type: "text",
+    text: "Task description",
     x: 384,
     y: 32,
     width: 256,
     height: 256,
   },
   {
-    id: 'timer-1',
-    type: 'timer',
-    time: '00:29:37',
+    id: "timer-1",
+    type: "timer",
+    time: "00:29:37",
     x: 672,
     y: 32,
     width: 256,
     height: 64,
   },
   {
-    id: 'text-3',
-    type: 'text',
-    text: 'Chat\n😮‍💨 Pavel: oi\n💀 Matvey: blz.',
+    id: "text-3",
+    type: "text",
+    text: "Chat\n😮‍💨 Pavel: oi\n💀 Matvey: blz.",
     x: 672,
     y: 128,
     width: 256,
     height: 200,
   },
   {
-    id: 'text-2',
-    type: 'text',
-    text: 'Tests\n4 / 5 Passed\nFailed',
+    id: "text-2",
+    type: "text",
+    text: "Tests\n4 / 5 Passed\nFailed",
     x: 384,
     y: 320,
     width: 256,
     height: 96,
   },
   {
-    id: 'text-4',
-    type: 'text',
-    text: 'Tests 2\n5 / 5 Passed\nTrue',
+    id: "text-4",
+    type: "text",
+    text: "Tests 2\n5 / 5 Passed\nTrue",
     x: 384,
     y: 448,
     width: 256,
@@ -78,23 +78,23 @@ const defaultBlocks = [
 
 export default function App() {
   const [presets, setPresets] = useState({});
-  const [currentPreset, setCurrentPreset] = useState('default');
+  const [currentPreset, setCurrentPreset] = useState("default");
   const [showSaveField, setShowSaveField] = useState(false);
-  const [saveName, setSaveName] = useState('');
+  const [saveName, setSaveName] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('presets') || '{}');
+    const stored = JSON.parse(localStorage.getItem("presets") || "{}");
 
     if (!stored.default) {
       stored.default = defaultBlocks;
     }
 
     if (!stored.current || !stored[stored.current]) {
-      stored.current = 'default';
+      stored.current = "default";
     }
 
-    localStorage.setItem('presets', JSON.stringify(stored));
+    localStorage.setItem("presets", JSON.stringify(stored));
     setPresets(stored);
     setCurrentPreset(stored.current);
     setTimeout(() => setIsLoaded(true), 60);
@@ -105,11 +105,11 @@ export default function App() {
     const updated = { ...presets, current: name };
     setPresets(updated);
     setCurrentPreset(name);
-    localStorage.setItem('presets', JSON.stringify(updated));
+    localStorage.setItem("presets", JSON.stringify(updated));
   };
 
   const handleDeletePreset = () => {
-    if (currentPreset === 'default') {
+    if (currentPreset === "default") {
       // eslint-disable-next-line
       window.alert("Can't delete default preset");
       return;
@@ -117,11 +117,11 @@ export default function App() {
 
     const updated = { ...presets };
     delete updated[currentPreset];
-    updated.current = 'default';
+    updated.current = "default";
 
     setPresets(updated);
-    setCurrentPreset('default');
-    localStorage.setItem('presets', JSON.stringify(updated));
+    setCurrentPreset("default");
+    localStorage.setItem("presets", JSON.stringify(updated));
   };
 
   const handleSaveConfirm = () => {
@@ -133,21 +133,17 @@ export default function App() {
     };
     setPresets(updated);
     setCurrentPreset(saveName);
-    localStorage.setItem('presets', JSON.stringify(updated));
+    localStorage.setItem("presets", JSON.stringify(updated));
     setShowSaveField(false);
-    setSaveName('');
+    setSaveName("");
   };
 
   return (
     <>
       <div className="preset-bar">
-        <select
-          className="preset-select"
-          value={currentPreset}
-          onChange={handlePresetChange}
-        >
+        <select className="preset-select" value={currentPreset} onChange={handlePresetChange}>
           {Object.keys(presets)
-            .filter((k) => k !== 'current')
+            .filter((k) => k !== "current")
             .map((k) => (
               <option key={k} value={k}>
                 {k}
@@ -155,12 +151,8 @@ export default function App() {
             ))}
         </select>
 
-        {currentPreset !== 'default' && (
-          <button
-            type="button"
-            className="preset-delete-button"
-            onClick={handleDeletePreset}
-          >
+        {currentPreset !== "default" && (
+          <button type="button" className="preset-delete-button" onClick={handleDeletePreset}>
             🗑 Удалить
           </button>
         )}
@@ -173,13 +165,9 @@ export default function App() {
               placeholder="Preset name"
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSaveConfirm()}
+              onKeyDown={(e) => e.key === "Enter" && handleSaveConfirm()}
             />
-            <button
-              type="button"
-              className="preset-save-button"
-              onClick={handleSaveConfirm}
-            >
+            <button type="button" className="preset-save-button" onClick={handleSaveConfirm}>
               💾 Save
             </button>
           </>
@@ -188,11 +176,7 @@ export default function App() {
 
       {isLoaded && (
         <div className="fade-in">
-          <Canvas
-            initialBlocks={presets[currentPreset] || []}
-            onBlocksChange={() => {}}
-            readOnly
-          />
+          <Canvas initialBlocks={presets[currentPreset] || []} onBlocksChange={() => {}} readOnly />
         </div>
       )}
     </>

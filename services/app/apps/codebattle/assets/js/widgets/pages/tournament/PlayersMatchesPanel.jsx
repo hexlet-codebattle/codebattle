@@ -1,43 +1,41 @@
-import React, {
- useMemo, useState, useEffect, useRef, memo,
-} from 'react';
+import React, { useMemo, useState, useEffect, useRef, memo } from "react";
 
-import cn from 'classnames';
-import reverse from 'lodash/reverse';
-import { useDispatch } from 'react-redux';
+import cn from "classnames";
+import reverse from "lodash/reverse";
+import { useDispatch } from "react-redux";
 
-import i18n from '../../../i18n';
+import i18n from "../../../i18n";
 import {
   requestMatchesForRound as requestMatchesForRoundUser,
   uploadPlayersMatches as uploadPlayersMatchesUser,
-} from '../../middlewares/Tournament';
+} from "../../middlewares/Tournament";
 import {
   requestAllPlayers as requestAllPlayersAdmin,
   requestMatchesForRound as requestMatchesForRoundAdmin,
   uploadPlayersMatches as uploadPlayersMatchesAdmin,
-} from '../../middlewares/TournamentAdmin';
-import { actions } from '../../slices';
+} from "../../middlewares/TournamentAdmin";
+import { actions } from "../../slices";
 // import useSubscribeTournamentPlayers from '../../utils/useSubscribeTournamentPlayers';
 
-import TournamentPlayersPagination from './TournamentPlayersPagination';
-import TournamentUserPanel from './TournamentUserPanel';
+import TournamentPlayersPagination from "./TournamentPlayersPagination";
+import TournamentUserPanel from "./TournamentUserPanel";
 
 const filterControlsClassName = cn(
-  'd-flex flex-column flex-md-row align-items-md-center justify-content-between',
-  'border-top border-bottom-0 cb-border-color py-2 gap-2',
+  "d-flex flex-column flex-md-row align-items-md-center justify-content-between",
+  "border-top border-bottom-0 cb-border-color py-2 gap-2",
 );
 
 const searchLabelClassName = cn(
-  'text-nowrap mb-0 mr-2 font-weight-bold text-uppercase small',
-  'cb-text-light',
+  "text-nowrap mb-0 mr-2 font-weight-bold text-uppercase small",
+  "cb-text-light",
 );
 
 const searchInputClassName = cn(
-  'form-control form-control-sm',
-  'cb-bg-highlight-panel cb-border-color text-white',
+  "form-control form-control-sm",
+  "cb-bg-highlight-panel cb-border-color text-white",
 );
 
-const fuzzyBadgeClassName = cn('badge cb-text-light ml-2', 'cb-bg-panel');
+const fuzzyBadgeClassName = cn("badge cb-text-light ml-2", "cb-bg-panel");
 
 const isFuzzyMatch = (value, query) => {
   if (!query) return true;
@@ -56,31 +54,29 @@ const isFuzzyMatch = (value, query) => {
   return queryIndex === query.length;
 };
 
-const PlayersList = memo(
-  ({
- players, matchList, currentUserId, searchedUserId, hideBots,
-}) => players.map((player) => {
-      if (player.id === searchedUserId) {
-        return <></>;
-      }
+const PlayersList = memo(({ players, matchList, currentUserId, searchedUserId, hideBots }) =>
+  players.map((player) => {
+    if (player.id === searchedUserId) {
+      return <></>;
+    }
 
-      const userMatches = matchList.filter((match) => match.playerIds.includes(player.id));
+    const userMatches = matchList.filter((match) => match.playerIds.includes(player.id));
 
-      return (
-        <TournamentUserPanel
-          key={`user-panel-${player.id}`}
-          matches={userMatches}
-          currentUserId={currentUserId}
-          userId={player.id}
-          name={player.name}
-          score={player.score}
-          place={player.place}
-          isBanned={player.isBanned}
-          searchedUserId={searchedUserId}
-          hideBots={hideBots}
-        />
-      );
-    }),
+    return (
+      <TournamentUserPanel
+        key={`user-panel-${player.id}`}
+        matches={userMatches}
+        currentUserId={currentUserId}
+        userId={player.id}
+        name={player.name}
+        score={player.score}
+        place={player.place}
+        isBanned={player.isBanned}
+        searchedUserId={searchedUserId}
+        hideBots={hideBots}
+      />
+    );
+  }),
 );
 
 const SearchedUserPanel = memo(({ searchedUser, matchList, currentUserId }) => {
@@ -120,7 +116,7 @@ function PlayersMatchesPanel({
   canModerate,
 }) {
   const dispatch = useDispatch();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const requestedRoundMatches = useRef(false);
   const requestedAllPlayers = useRef(false);
   const requestAllPlayersInFlight = useRef(false);
@@ -135,35 +131,32 @@ function PlayersMatchesPanel({
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
 
   const basePlayersList = useMemo(() => {
-    const shouldUseAllPlayers = Object.keys(players).length > (topPlayerIds || []).length
-      || (topPlayerIds || []).length === 0;
+    const shouldUseAllPlayers =
+      Object.keys(players).length > (topPlayerIds || []).length ||
+      (topPlayerIds || []).length === 0;
     const sortedPlayers = shouldUseAllPlayers
       ? Object.values(players)
       : (topPlayerIds || []).map((id) => players[id]).filter(Boolean);
 
     return sortedPlayers
       .filter((player) => !(player.isBot && hideBots))
-      .filter((player) => isFuzzyMatch((player.name || '').toLowerCase(), normalizedSearch))
+      .filter((player) => isFuzzyMatch((player.name || "").toLowerCase(), normalizedSearch))
       .sort((a, b) => b.score - a.score);
   }, [players, topPlayerIds, hideBots, normalizedSearch]);
 
   const normalizedPageSize = Number(pageSize);
   const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 16;
-  const totalPages = Math.max(
-    1,
-    Math.ceil(basePlayersList.length / safePageSize),
-  );
+  const totalPages = Math.max(1, Math.ceil(basePlayersList.length / safePageSize));
   const normalizedPageNumber = Number(pageNumber);
-  const safePageNumber = Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0
+  const safePageNumber =
+    Number.isFinite(normalizedPageNumber) && normalizedPageNumber > 0
       ? Math.min(normalizedPageNumber, totalPages)
       : 1;
 
   const playersShowList = useMemo(
-    () => basePlayersList
-        .slice(
-          safePageSize * (safePageNumber - 1),
-          safePageSize * safePageNumber,
-        )
+    () =>
+      basePlayersList
+        .slice(safePageSize * (safePageNumber - 1), safePageSize * safePageNumber)
         .reduce((acc, player) => {
           if (player.id === currentUserId) {
             return [player, ...acc];
@@ -177,9 +170,7 @@ function PlayersMatchesPanel({
 
   useEffect(() => {
     if (searchedUser) {
-      const uploadMatches = canModerate
-        ? uploadPlayersMatchesAdmin
-        : uploadPlayersMatchesUser;
+      const uploadMatches = canModerate ? uploadPlayersMatchesAdmin : uploadPlayersMatchesUser;
       dispatch(uploadMatches(searchedUser?.id));
     }
   }, [dispatch, searchedUser, canModerate]);
@@ -195,9 +186,7 @@ function PlayersMatchesPanel({
       return;
     }
     requestedRoundMatches.current = true;
-    const requestMatches = canModerate
-      ? requestMatchesForRoundAdmin
-      : requestMatchesForRoundUser;
+    const requestMatches = canModerate ? requestMatchesForRoundAdmin : requestMatchesForRoundUser;
     dispatch(requestMatches());
   }, [dispatch, canModerate]);
 
@@ -244,30 +233,28 @@ function PlayersMatchesPanel({
       {showHideResultsNotice && (
         <div
           className={cn(
-            'flex text-center border-top border-bottom-0 cb-border-color',
-            'text-uppercase font-weight-bold pt-2',
+            "flex text-center border-top border-bottom-0 cb-border-color",
+            "text-uppercase font-weight-bold pt-2",
           )}
         >
-          {i18n.t('Wait reviling results')}
+          {i18n.t("Wait reviling results")}
         </div>
       )}
       <div className={filterControlsClassName}>
         <div className="d-flex align-items-center gap-2 w-100">
           <label htmlFor="players-search" className={searchLabelClassName}>
-            {i18n.t('Fuzzy search')}
+            {i18n.t("Fuzzy search")}
           </label>
           <input
             id="players-search"
             type="text"
             value={searchTerm}
-            placeholder={i18n.t('Type a player name')}
+            placeholder={i18n.t("Type a player name")}
             onChange={(event) => setSearchTerm(event.target.value)}
             className={searchInputClassName}
-            style={{ backgroundColor: 'transparent' }}
+            style={{ backgroundColor: "transparent" }}
           />
-          <span className={fuzzyBadgeClassName}>
-            {i18n.t('Matches letters in order')}
-          </span>
+          <span className={fuzzyBadgeClassName}>{i18n.t("Matches letters in order")}</span>
         </div>
       </div>
       {roundsLimit < 2 ? (

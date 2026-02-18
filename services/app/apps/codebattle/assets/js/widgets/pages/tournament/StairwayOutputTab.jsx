@@ -1,14 +1,12 @@
-import React from 'react';
+import React from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import Output from '../game/Output';
-import OutputTab from '../game/OutputTab';
+import Output from "../game/Output";
+import OutputTab from "../game/OutputTab";
 
 function StairwayOutputTab({ playerId }) {
-  const output = useSelector(
-    (state) => state.executionOutput.results[playerId],
-  );
+  const output = useSelector((state) => state.executionOutput.results[playerId]);
   const isShowOutput = output && output.status;
 
   return (

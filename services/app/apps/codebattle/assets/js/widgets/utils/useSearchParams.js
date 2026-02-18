@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useMemo,
-} from 'react';
+import { useEffect, useState, useMemo } from "react";
 
 const useSearchParams = () => {
   const [search, setSearch] = useState(document.location.search);

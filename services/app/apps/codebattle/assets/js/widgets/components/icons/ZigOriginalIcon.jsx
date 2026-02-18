@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React from "react";
 
-function ZigOriginalIcon({ className, size = '1em' }) {
+function ZigOriginalIcon({ className, size = "1em" }) {
   return (
     <svg
       viewBox="0 0 153 140"
@@ -20,15 +20,9 @@ function ZigOriginalIcon({ className, size = '1em' }) {
         </g>
         <g>
           <polygon points="56,22 62,36 37,44" />
-          <polygon
-            points="56,22 111,22 111,44 37,44 56,32"
-            shapeRendering="crispEdges"
-          />
+          <polygon points="56,22 111,22 111,44 37,44 56,32" shapeRendering="crispEdges" />
           <polygon points="116,95 97,117 90,104" />
-          <polygon
-            points="116,95 100,104 97,117 42,117 42,95"
-            shapeRendering="crispEdges"
-          />
+          <polygon points="116,95 100,104 97,117 42,117 42,95" shapeRendering="crispEdges" />
           <polygon points="150,0 52,117 3,140 101,22" />
         </g>
         <g>

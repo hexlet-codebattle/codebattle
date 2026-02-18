@@ -1,12 +1,9 @@
-import { assign } from 'xstate';
+import { assign } from "xstate";
 
-import {
-  editorBtnStatuses,
-  editorSettingsByUserType,
-} from '../config/editorSettingsByUserType';
-import editorUserTypes from '../config/editorUserTypes';
-import SubscriptionTypeCodes from '../config/subscriptionTypes';
-import sound from '../lib/sound';
+import { editorBtnStatuses, editorSettingsByUserType } from "../config/editorSettingsByUserType";
+import editorUserTypes from "../config/editorUserTypes";
+import SubscriptionTypeCodes from "../config/subscriptionTypes";
+import sound from "../lib/sound";
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -51,101 +48,99 @@ const settingsByState = {
 };
 
 // const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
-const initContextByState = (state) => assign(({ userId, type }) => ({
-  ...editorSettingsByUserType[type],
-  ...settingsByState[state],
-  userId,
-}));
+const initContextByState = (state) =>
+  assign(({ userId, type }) => ({
+    ...editorSettingsByUserType[type],
+    ...settingsByState[state],
+    userId,
+  }));
 
-const initActiveEditor = assign(() => ({ editorState: 'active' }));
-const initTestingEditor = assign(() => ({ editorState: 'testing' }));
-const initBannedEditor = assign(() => ({ editorState: 'banned' }));
+const initActiveEditor = assign(() => ({ editorState: "active" }));
+const initTestingEditor = assign(() => ({ editorState: "testing" }));
+const initBannedEditor = assign(() => ({ editorState: "banned" }));
 
 const timeoutCheckingActions = [
-  'soundFailureChecking',
-  'handleTimeoutFailureChecking',
-  'openCheckResultOutput',
+  "soundFailureChecking",
+  "handleTimeoutFailureChecking",
+  "openCheckResultOutput",
 ];
-const successCheckingActions = [
-  'soundFinishedChecking',
-  'openCheckResultOutput',
-];
+const successCheckingActions = ["soundFinishedChecking", "openCheckResultOutput"];
 
 const editor = {
-  initial: 'loading',
+  initial: "loading",
   states: {
     loading: {
       on: {
         load_active_editor: [
           {
-            target: 'idle',
-            cond: 'canSkipCharging',
+            target: "idle",
+            cond: "canSkipCharging",
             actions: [initActiveEditor],
           },
           {
-            target: 'charging',
+            target: "charging",
             actions: [initActiveEditor],
           },
         ],
-        load_testing_editor: { target: 'idle', actions: [initTestingEditor] },
-        load_banned_editor: { target: 'banned', actions: [initBannedEditor] },
-        load_stored_editor: 'history',
+        load_testing_editor: { target: "idle", actions: [initTestingEditor] },
+        load_banned_editor: { target: "banned", actions: [initBannedEditor] },
+        load_stored_editor: "history",
       },
     },
     history: {
-      type: 'final',
-      entry: initContextByState('history'),
+      type: "final",
+      entry: initContextByState("history"),
     },
     charging: {
       after: {
         3000: {
-          target: 'idle',
+          target: "idle",
         },
       },
-      entry: initContextByState('charging'),
+      entry: initContextByState("charging"),
       on: {
         check_solution_received: {
-          target: 'checking',
-          actions: ['soundStartChecking'],
-          cond: 'isUserEvent',
+          target: "checking",
+          actions: ["soundStartChecking"],
+          cond: "isUserEvent",
         },
-        unload_editor: 'loading',
+        unload_editor: "loading",
         banned_user: {
-          target: 'banned',
-          cond: 'isUserEvent',
+          target: "banned",
+          cond: "isUserEvent",
         },
       },
     },
     idle: {
-      entry: initContextByState('idle'),
+      entry: initContextByState("idle"),
       on: {
         user_check_solution: {
-          target: 'checking',
-          actions: ['soundStartChecking', 'userSendSolution'],
+          target: "checking",
+          actions: ["soundStartChecking", "userSendSolution"],
         },
         check_solution_received: {
-          target: 'checking',
-          actions: ['soundStartChecking'],
-          cond: 'isUserEvent',
+          target: "checking",
+          actions: ["soundStartChecking"],
+          cond: "isUserEvent",
         },
-        unload_editor: 'loading',
+        unload_editor: "loading",
         banned_user: {
-          target: 'banned',
-          cond: 'isUserEvent',
+          target: "banned",
+          cond: "isUserEvent",
         },
       },
     },
     checking: {
-      entry: initContextByState('checking'),
+      entry: initContextByState("checking"),
       after: {
         50000: [
           {
-            target: 'idle',
-            cond: 'canSkipCharging',
+            target: "idle",
+            cond: "canSkipCharging",
             actions: timeoutCheckingActions,
           },
           {
-            target: 'charging',
+            target: "charging",
             actions: timeoutCheckingActions,
           },
         ],
@@ -153,29 +148,29 @@ const editor = {
       on: {
         receive_check_result: [
           {
-            target: 'idle',
+            target: "idle",
             actions: successCheckingActions,
-            cond: 'isUserEventWhoCanSkipCharging',
+            cond: "isUserEventWhoCanSkipCharging",
           },
           {
-            target: 'charging',
+            target: "charging",
             actions: successCheckingActions,
-            cond: 'isUserEvent',
+            cond: "isUserEvent",
           },
         ],
-        unload_editor: 'loading',
+        unload_editor: "loading",
         banned_user: {
-          target: 'banned',
-          cond: 'isUserEvent',
+          target: "banned",
+          cond: "isUserEvent",
         },
       },
     },
     banned: {
-      entry: initContextByState('banned'),
+      entry: initContextByState("banned"),
       on: {
         unbanned_user: {
-          target: 'idle',
-          cond: 'isUserEvent',
+          target: "idle",
+          cond: "isUserEvent",
         },
       },
     },
@@ -186,20 +181,20 @@ const canSkipCharging = (type) => type !== SubscriptionTypeCodes.free;
 
 export const config = {
   actions: {
-    userSendSolution: () => { },
-    handleTimeoutFailureChecking: () => { },
+    userSendSolution: () => {},
+    handleTimeoutFailureChecking: () => {},
     openCheckResultOutput: (ctx) => {
-      const leftOutputNode = document.getElementById('leftOutput-tab');
+      const leftOutputNode = document.getElementById("leftOutput-tab");
       if (ctx.type === editorUserTypes.currentUser && leftOutputNode) {
         leftOutputNode.click();
       }
     },
     soundStartChecking: () => {
-      sound.play('check');
+      sound.play("check");
     },
     soundFailureChecking: () => {
       sound.stop();
-      sound.play('failure');
+      sound.play("failure");
     },
     soundFinishedChecking: () => {
       sound.stop();
@@ -207,10 +202,8 @@ export const config = {
   },
   guards: {
     isUserEvent: (ctx, { userId }) => ctx.userId === userId,
-    isUserEventWhoCanSkipCharging: (ctx, { userId }) => (
-      ctx.userId === userId
-      && canSkipCharging(ctx.subscriptionType)
-    ),
+    isUserEventWhoCanSkipCharging: (ctx, { userId }) =>
+      ctx.userId === userId && canSkipCharging(ctx.subscriptionType),
     canSkipCharging: (ctx) => canSkipCharging(ctx.subscriptionType),
   },
 };

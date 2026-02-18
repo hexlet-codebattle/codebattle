@@ -1,18 +1,16 @@
-import { createAction, createSlice } from '@reduxjs/toolkit';
-import omit from 'lodash/omit';
+import { createAction, createSlice } from "@reduxjs/toolkit";
+import omit from "lodash/omit";
 
-import TournamentTypes from '../config/tournamentTypes';
+import TournamentTypes from "../config/tournamentTypes";
 
-import initial from './initial';
+import initial from "./initial";
 
 const initialState = initial.tournament;
 
-export const updateTournamentStateAction = createAction(
-  'updateTournamentState',
-);
+export const updateTournamentStateAction = createAction("updateTournamentState");
 
 const tournament = createSlice({
-  name: 'tournament',
+  name: "tournament",
   initialState,
   reducers: {
     setTournamentData: (_state, { payload }) => ({
@@ -20,12 +18,10 @@ const tournament = createSlice({
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,
-      ...([
-        TournamentTypes.versus,
-        TournamentTypes.swiss,
-        TournamentTypes.show,
-      ].includes(payload.type)
-        ? omit(payload, ['matches', 'players'])
+      ...([TournamentTypes.versus, TournamentTypes.swiss, TournamentTypes.show].includes(
+        payload.type,
+      )
+        ? omit(payload, ["matches", "players"])
         : payload),
     }),
     updateTournamentMatches: (state, { payload }) => {

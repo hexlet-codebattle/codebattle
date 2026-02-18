@@ -1,11 +1,11 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import initial from './initial';
+import initial from "./initial";
 
 const initialState = initial.tournamentPlayer;
 
 const tournament = createSlice({
-  name: 'tournamentPlayer',
+  name: "tournamentPlayer",
   initialState,
   reducers: {
     setActiveTournamentId: (state, { payload }) => {

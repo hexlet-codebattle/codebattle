@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 
-import { compressEditorHeight, expandEditorHeight } from '../../middlewares/Room';
+import { compressEditorHeight, expandEditorHeight } from "../../middlewares/Room";
 
 function EditorHeightButtons({ editor: { userId } }) {
   const dispatch = useDispatch();

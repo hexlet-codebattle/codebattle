@@ -1,26 +1,24 @@
-import React from 'react';
+import React from "react";
 
-import cn from 'classnames';
+import cn from "classnames";
 
-import useHover from '../utils/useHover';
+import useHover from "../utils/useHover";
 
-import InfoMessage from './InfoMessage';
-import MessageTag from './MessageTag';
-import MessageTimestamp from './MessageTimestamp';
-import SystemMessage from './SystemMessage';
+import InfoMessage from "./InfoMessage";
+import MessageTag from "./MessageTag";
+import MessageTimestamp from "./MessageTimestamp";
+import SystemMessage from "./SystemMessage";
 
 function MessageHeader({ name, time, hovered }) {
   const playerClassName = cn(
-    'd-inline-block text-truncate align-top text-nowrap cb-username-max-length mr-1',
-    { 'text-primary': hovered },
+    "d-inline-block text-truncate align-top text-nowrap cb-username-max-length mr-1",
+    { "text-primary": hovered },
   );
 
   return (
     <>
       <span className="font-weight-bold">
-        <span className={playerClassName}>
-          {name}
-        </span>
+        <span className={playerClassName}>{name}</span>
       </span>
       <MessageTimestamp time={time} />
     </>
@@ -36,7 +34,7 @@ function MessagePart({ part, index, name }) {
     );
   }
 
-  if (part.startsWith('@')) {
+  if (part.startsWith("@")) {
     return (
       <span key={index} className="font-weight-bold text-primary">
         {part}
@@ -47,33 +45,25 @@ function MessagePart({ part, index, name }) {
   return part;
 }
 
-function Message({
-  text = '',
-  name = '',
-  userId,
-  type,
-  time,
-  meta,
-  displayMenu,
-}) {
+function Message({ text = "", name = "", userId, type, time, meta, displayMenu }) {
   const [chatHeaderRef, hoveredChatHeader] = useHover();
 
   if (!text) {
     return null;
   }
 
-  if (type === 'system') {
+  if (type === "system") {
     return <SystemMessage text={text} meta={meta} />;
   }
 
-  if (type === 'info') {
+  if (type === "info") {
     return <InfoMessage text={text} time={time} />;
   }
 
   const parts = text.split(/(@+[-a-zA-Z0-9_]+\b)/g);
 
-  const textPartsClassNames = cn('text-break', {
-    'cb-private-text': meta?.type === 'private',
+  const textPartsClassNames = cn("text-break", {
+    "cb-private-text": meta?.type === "private",
   });
 
   return (
@@ -96,12 +86,10 @@ function Message({
         <span>
           <MessageTag messageType={meta?.type} />
           <span className={textPartsClassNames}>
-            {parts.map(
-              (part, i) => (
-                /* eslint-disable react/no-array-index-key */
-                <MessagePart key={i} part={part} index={i} name={name} />
-              ),
-            )}
+            {parts.map((part, i) => (
+              /* eslint-disable react/no-array-index-key */
+              <MessagePart key={i} part={part} index={i} name={name} />
+            ))}
           </span>
         </span>
       </span>

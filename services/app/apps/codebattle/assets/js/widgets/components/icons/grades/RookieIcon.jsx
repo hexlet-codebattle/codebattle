@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React from "react";
 
 /**
  * RookieIcon
@@ -11,9 +11,7 @@ import React from 'react';
  * - `width`/`height` control the rendered size (default 820x820 to match the viewBox).
  */
 const RookieIcon = React.forwardRef((props, ref) => {
-  const {
- color = 'gold', size = 60, title, ...rest
-} = props;
+  const { color = "gold", size = 60, title, ...rest } = props;
 
   return (
     <svg

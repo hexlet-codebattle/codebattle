@@ -1,20 +1,20 @@
-import editorUserTypes from './editorUserTypes';
+import editorUserTypes from "./editorUserTypes";
 
 export const editorBtnStatuses = {
-  enabled: 'enabled',
-  disabled: 'disabled',
-  checking: 'checking',
-  charging: 'charging',
+  enabled: "enabled",
+  disabled: "disabled",
+  checking: "checking",
+  charging: "charging",
 };
 
 const defaultSettings = {
-    editable: false,
-    showControlBtns: false,
-    checkBtnStatus: editorBtnStatuses.disabled,
-    resetBtnStatus: editorBtnStatuses.disabled,
-    langPickerStatus: editorBtnStatuses.disabled,
-    giveUpBtnStatus: editorBtnStatuses.disabled,
-    modeBtnsStatus: editorBtnStatuses.disabled,
+  editable: false,
+  showControlBtns: false,
+  checkBtnStatus: editorBtnStatuses.disabled,
+  resetBtnStatus: editorBtnStatuses.disabled,
+  langPickerStatus: editorBtnStatuses.disabled,
+  giveUpBtnStatus: editorBtnStatuses.disabled,
+  modeBtnsStatus: editorBtnStatuses.disabled,
 };
 
 export const editorSettingsByUserType = {

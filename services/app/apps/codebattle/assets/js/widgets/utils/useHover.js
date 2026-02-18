@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from "react";
 
 function useHover() {
   const [hovering, setHovering] = useState(false);
@@ -15,19 +15,13 @@ function useHover() {
   const customRef = useCallback(
     (node) => {
       if (previousNode.current?.nodeType === Node.ELEMENT_NODE) {
-        previousNode.current.removeEventListener(
-          'mouseenter',
-          handleMouseEnter,
-        );
-        previousNode.current.removeEventListener(
-          'mouseleave',
-          handleMouseLeave,
-        );
+        previousNode.current.removeEventListener("mouseenter", handleMouseEnter);
+        previousNode.current.removeEventListener("mouseleave", handleMouseLeave);
       }
 
       if (node?.nodeType === Node.ELEMENT_NODE) {
-        node.addEventListener('mouseenter', handleMouseEnter);
-        node.addEventListener('mouseleave', handleMouseLeave);
+        node.addEventListener("mouseenter", handleMouseEnter);
+        node.addEventListener("mouseleave", handleMouseLeave);
       }
 
       previousNode.current = node;

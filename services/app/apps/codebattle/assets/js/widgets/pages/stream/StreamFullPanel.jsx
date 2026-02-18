@@ -1,18 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import ExtendedEditor from '@/components/Editor';
-import {
-  leftEditorSelector, rightEditorSelector,
-} from '@/selectors';
+import ExtendedEditor from "@/components/Editor";
+import { leftEditorSelector, rightEditorSelector } from "@/selectors";
 
-import editorThemes from '../../config/editorThemes';
-import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
+import editorThemes from "../../config/editorThemes";
+import TaskDescriptionMarkdown from "../game/TaskDescriptionMarkdown";
 
-function StreamFullPanel({
-  game, roomMachineState, fontSize, codeFontSize,
-}) {
+function StreamFullPanel({ game, roomMachineState, fontSize, codeFontSize }) {
   const leftEditor = useSelector(leftEditorSelector(roomMachineState));
   const rightEditor = useSelector(rightEditorSelector(roomMachineState));
   // const leftOutput = useSelector(leftExecutionOutputSelector(roomMachineState));
@@ -24,16 +20,16 @@ function StreamFullPanel({
     theme: editorThemes.dark,
     mute: true,
     loading: false,
-    value: leftEditor?.text || '',
+    value: leftEditor?.text || "",
     fontSize: codeFontSize,
     lineNumbers: false,
-    wordWrap: 'on',
+    wordWrap: "on",
     // Add required props
     onChange: () => {},
-    mode: 'default',
-    roomMode: 'spectator',
+    mode: "default",
+    roomMode: "spectator",
     checkResult: () => {},
-    userType: 'spectator',
+    userType: "spectator",
     userId: 0,
   };
   const editorRightParams = {
@@ -42,16 +38,16 @@ function StreamFullPanel({
     theme: editorThemes.dark,
     mute: true,
     loading: false,
-    value: rightEditor?.text || '',
+    value: rightEditor?.text || "",
     fontSize: codeFontSize,
     lineNumbers: false,
-    wordWrap: 'on',
+    wordWrap: "on",
     // Add required props
     onChange: () => {},
-    mode: 'default',
-    roomMode: 'spectator',
+    mode: "default",
+    roomMode: "spectator",
     checkResult: () => {},
-    userType: 'spectator',
+    userType: "spectator",
     userId: 0,
   };
 

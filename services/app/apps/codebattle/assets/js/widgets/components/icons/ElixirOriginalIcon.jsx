@@ -1,14 +1,19 @@
 /* eslint-disable max-len */
-import React, { useId } from 'react';
+import React, { useId } from "react";
 
-function ElixirOriginalIcon({ className, size = '1em' }) {
+function ElixirOriginalIcon({ className, size = "1em" }) {
   const uid = useId();
   const id = (name) => `elixir-original-${uid}-${name}`;
 
   return (
-    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: size, height: size }}>
+    <svg
+      viewBox="0 0 128 128"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ width: size, height: size }}
+    >
       <linearGradient
-        id={id('a')}
+        id={id("a")}
         gradientUnits="userSpaceOnUse"
         x1="835.592"
         y1="-36.546"
@@ -20,7 +25,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#fff" stopOpacity=".385" />
       </linearGradient>
       <linearGradient
-        id={id('b')}
+        id={id("b")}
         gradientUnits="userSpaceOnUse"
         x1="942.357"
         y1="-40.593"
@@ -32,7 +37,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#9f8daf" />
       </linearGradient>
       <linearGradient
-        id={id('c')}
+        id={id("c")}
         gradientUnits="userSpaceOnUse"
         x1="924.646"
         y1="120.513"
@@ -44,7 +49,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#b7b4b4" stopOpacity=".278" />
       </linearGradient>
       <linearGradient
-        id={id('d')}
+        id={id("d")}
         gradientUnits="userSpaceOnUse"
         x1="428.034"
         y1="198.448"
@@ -56,7 +61,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#32054f" stopOpacity=".54" />
       </linearGradient>
       <linearGradient
-        id={id('e')}
+        id={id("e")}
         gradientUnits="userSpaceOnUse"
         x1="907.895"
         y1="540.636"
@@ -68,7 +73,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#340a50" stopOpacity=".821" />
       </linearGradient>
       <linearGradient
-        id={id('f')}
+        id={id("f")}
         gradientUnits="userSpaceOnUse"
         x1="1102.297"
         y1="100.542"
@@ -80,7 +85,7 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
         <stop offset="1" stopColor="#f4f4f4" stopOpacity=".234" />
       </linearGradient>
       <linearGradient
-        id={id('g')}
+        id={id("g")}
         gradientUnits="userSpaceOnUse"
         x1="1354.664"
         y1="140.06"
@@ -94,43 +99,43 @@ function ElixirOriginalIcon({ className, size = '1em' }) {
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('a')})`}
+        fill={`url(#${id("a")})`}
         d="M64.4.5C36.7 13.9 1.9 83.4 30.9 113.9c26.8 33.5 85.4 1.3 68.4-40.5-21.5-36-35-37.9-34.9-72.9z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('b')})`}
+        fill={`url(#${id("b")})`}
         d="M64.4.2C36.8 13.6 1.9 82.9 31 113.5c10.7 12.4 28 16.5 37.7 9.1 26.4-18.8 7.4-53.1 10.4-78.5C68.1 33.9 64.2 11.3 64.4.2z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('c')})`}
+        fill={`url(#${id("c")})`}
         d="M56.7 4.3c-22.3 15.9-28.2 75-24.1 94.2 8.2 48.1 75.2 28.3 69.6-16.5-6-29.2-48.8-39.2-45.5-77.7z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('d')})`}
+        fill={`url(#${id("d")})`}
         d="M78.8 49.8c10.4 13.4 12.7 22.6 6.8 27.9-27.7 19.4-61.3 7.4-54-37.3C22.1 63 4.5 96.8 43.3 101.6c20.8 3.6 54 2 58.9-16.1-.2-15.9-10.8-22.9-23.4-35.7z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('e')})`}
+        fill={`url(#${id("e")})`}
         d="M38.1 36.4c-2.9 21.2 35.1 77.9 58.3 71-17.7 35.6-56.9-21.2-64-41.7 1.5-11 2.2-16.4 5.7-29.3z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('f')})`}
+        fill={`url(#${id("f")})`}
         d="M60.4 49.7c.8 7.9 3.9 20.5 0 28.8S38.7 102 43.6 115.3c11.4 24.8 37.1-4.4 36.9-19 1.1-11.8-6.6-38.7-1.8-52.5L76.5 41l-13.6-4c-2.2 3.2-3 7.5-2.5 12.7z"
       />
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        fill={`url(#${id('g')})`}
+        fill={`url(#${id("g")})`}
         d="M65.3 10.8C36 27.4 48 53.4 49.3 81.6l19.1-55.4c-1.4-5.7-2.3-9.5-3.1-15.4z"
       />
       <path

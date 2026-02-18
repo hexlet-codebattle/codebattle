@@ -23,7 +23,7 @@ Helper modules live alongside their domains:
 Use the Makefile targets for common workflows:
 - `make format` / `make lint`: format or check Elixir formatting.
 - `make credo`: run Credo static analysis.
-- `make lint-js`: ESLint for frontend assets.
+- `make lint-js`: OXC (`oxlint`) for frontend assets.
 - `make server`: start Phoenix (`iex -S mix phx.server`).
 - `make test`: ExUnit + coveralls JSON.
 - `make test-code-checkers`: image executor tests with `CODEBATTLE_EXECUTOR=local`.
@@ -36,7 +36,7 @@ For frontend-only tasks in `apps/codebattle/`:
 ## Coding Style & Naming Conventions
 - Elixir formatting is enforced via `mix format` (see `.formatter.exs`).
 - Credo rules live in `.credo.exs` (120-char line limit).
-- JavaScript/React linting uses ESLint (Airbnb config) via `pnpm run lint`.
+- JavaScript/React linting uses OXC (`oxlint`) via `pnpm run lint`.
 - Naming: descriptive Elixir modules; `camelCase`/`PascalCase` for JS files and components.
 
 ## Testing Guidelines

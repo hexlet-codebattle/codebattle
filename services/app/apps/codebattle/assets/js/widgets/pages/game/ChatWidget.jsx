@@ -2,32 +2,32 @@ import React, {
   useContext,
   // useMemo,
   useRef,
-} from 'react';
+} from "react";
 
-import cn from 'classnames';
+import cn from "classnames";
 // import filter from 'lodash/filter';
 // import uniqBy from 'lodash/uniqBy';
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import ChatContextMenu from '../../components/ChatContextMenu';
-import ChatHeader from '../../components/ChatHeader';
-import ChatInput from '../../components/ChatInput';
+import ChatContextMenu from "../../components/ChatContextMenu";
+import ChatHeader from "../../components/ChatHeader";
+import ChatInput from "../../components/ChatInput";
 // import ChatUserInfo from '../../components/ChatUserInfo';
-import Messages from '../../components/Messages';
-import RoomContext from '../../components/RoomContext';
-import GameRoomModes from '../../config/gameModes';
+import Messages from "../../components/Messages";
+import RoomContext from "../../components/RoomContext";
+import GameRoomModes from "../../config/gameModes";
 import {
   inTestingRoomSelector,
   isRestrictedContentSelector,
   openedReplayerSelector,
-} from '../../machines/selectors';
-import * as selectors from '../../selectors';
-import { shouldShowMessage } from '../../utils/chat';
-import useChatContextMenu from '../../utils/useChatContextMenu';
-import useChatRooms from '../../utils/useChatRooms';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+} from "../../machines/selectors";
+import * as selectors from "../../selectors";
+import { shouldShowMessage } from "../../utils/chat";
+import useChatContextMenu from "../../utils/useChatContextMenu";
+import useChatRooms from "../../utils/useChatRooms";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
-import Notifications from './Notifications';
+import Notifications from "./Notifications";
 
 function ChatWidget() {
   const { mainService } = useContext(RoomContext);
@@ -39,18 +39,9 @@ function ChatWidget() {
   const gameMode = useSelector(selectors.gameModeSelector);
   const useChat = useSelector(selectors.gameUseChatSelector);
 
-  const openedReplayer = useMachineStateSelector(
-    mainService,
-    openedReplayerSelector,
-  );
-  const isTestingRoom = useMachineStateSelector(
-    mainService,
-    inTestingRoomSelector,
-  );
-  const isRestricted = useMachineStateSelector(
-    mainService,
-    isRestrictedContentSelector,
-  );
+  const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
+  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
 
   // const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = gameMode === GameRoomModes.standard;
@@ -64,12 +55,12 @@ function ChatWidget() {
   const inputRef = useRef(null);
 
   const { menuId, menuRequest, displayMenu } = useChatContextMenu({
-    type: 'game',
+    type: "game",
     users,
     canInvite: isStandardGame,
   });
 
-  useChatRooms('page');
+  useChatRooms("page");
 
   // const listOfUsers = useMemo(() => {
   //   const uniqUsers = uniqBy(users, 'id');
@@ -84,24 +75,20 @@ function ChatWidget() {
       <div className="d-flex cb-bg-panel shadow-sm h-100 cb-rounded">
         <div
           className={cn(
-            'd-flex flex-column flex-grow-1 position-relative p-0 h-100 mh-100 rounded-left',
-            'cb-game-chat-container cb-messages-container cb-text',
+            "d-flex flex-column flex-grow-1 position-relative p-0 h-100 mh-100 rounded-left",
+            "cb-game-chat-container cb-messages-container cb-text",
           )}
         >
           <ChatHeader showRooms={isStandardGame} disabled={disabledChatHeader} />
-          {openedReplayer
-            ? (
-              <Messages
-                messages={historyMessages}
-                disabled={disabledChatMessages}
-              />
-            ) : (
-              <Messages
-                displayMenu={displayMenu}
-                messages={filteredMessages}
-                disabled={disabledChatMessages}
-              />
-            )}
+          {openedReplayer ? (
+            <Messages messages={historyMessages} disabled={disabledChatMessages} />
+          ) : (
+            <Messages
+              displayMenu={displayMenu}
+              messages={filteredMessages}
+              disabled={disabledChatMessages}
+            />
+          )}
           {showChatInput && <ChatInput inputRef={inputRef} disabled={disabledChatInput} />}
         </div>
         <div className="flex-shrink-1 p-0 border-left cb-border-color rounded-right cb-game-control-container">

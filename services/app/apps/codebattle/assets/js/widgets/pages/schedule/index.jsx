@@ -1,3 +1,3 @@
-import TournamentSchedule from './TournamentSchedule';
+import TournamentSchedule from "./TournamentSchedule";
 
 export default TournamentSchedule;

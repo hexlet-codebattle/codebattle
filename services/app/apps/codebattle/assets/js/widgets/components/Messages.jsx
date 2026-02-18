@@ -1,17 +1,11 @@
-import React, {
-  useRef,
-  useLayoutEffect,
-  useState,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect, useMemo } from "react";
 
-import cn from 'classnames';
+import cn from "classnames";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import useStayScrolled from '../utils/useStayScrolled';
+import useStayScrolled from "../utils/useStayScrolled";
 
-import Message from './Message';
+import Message from "./Message";
 
 const getKey = (id, time, name, index) => {
   if (!time || !name) {
@@ -21,9 +15,7 @@ const getKey = (id, time, name, index) => {
   return `${id}-${time}-${name}-${index}`;
 };
 
-function Messages({
-  messages, displayMenu = () => { }, disabled = false, className = '',
-}) {
+function Messages({ messages, displayMenu = () => {}, disabled = false, className = "" }) {
   const listRef = useRef();
   const minScrollHeight = 20;
   const [, setScrollHeight] = useState(0);
@@ -31,7 +23,7 @@ function Messages({
   const stayScrolledData = useStayScrolled(listRef);
   const { stayScrolled } = stayScrolledData;
   const scrollBottom = useMemo(
-    () => stayScrolledData.scrollBottom || (() => { }),
+    () => stayScrolledData.scrollBottom || (() => {}),
     [stayScrolledData.scrollBottom],
   );
   const [isNearBottom, setIsNearBottom] = useState(true);
@@ -49,9 +41,8 @@ function Messages({
 
   const scrollHandler = (e) => {
     const chatContainer = e.target;
-    const chatScrollHeight = chatContainer.scrollHeight
-      - chatContainer.scrollTop
-      - chatContainer.clientHeight;
+    const chatScrollHeight =
+      chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
 
     setScrollHeight(chatScrollHeight);
 
@@ -69,9 +60,8 @@ function Messages({
   useEffect(() => {
     if (listRef.current) {
       const chatContainer = listRef.current;
-      const chatScrollHeight = chatContainer.scrollHeight
-        - chatContainer.scrollTop
-        - chatContainer.clientHeight;
+      const chatScrollHeight =
+        chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight;
 
       setScrollHeight(chatScrollHeight);
       setIsNearBottom(chatScrollHeight <= minScrollHeight);
@@ -79,12 +69,12 @@ function Messages({
   }, []);
 
   const scrollButtonClass = cn(
-    'scroll-button',
-    'position-absolute',
-    'rounded-circle',
-    'cb-bg-secondary',
-    'p-0',
-    'border-0',
+    "scroll-button",
+    "position-absolute",
+    "rounded-circle",
+    "cb-bg-secondary",
+    "p-0",
+    "border-0",
     {
       invisible: !isScrollButtonVisible,
     },
@@ -92,17 +82,13 @@ function Messages({
 
   const messageClassName = cn(
     className,
-    'overflow-auto pt-0 pl-3 pr-2',
-    'position-relative cb-messages-list flex-grow-1',
+    "overflow-auto pt-0 pl-3 pr-2",
+    "position-relative cb-messages-list flex-grow-1",
   );
 
   if (disabled) {
     return (
-      <div
-        title="Chat is disabled"
-        className="h-100 position-relative"
-        ref={listRef}
-      >
+      <div title="Chat is disabled" className="h-100 position-relative" ref={listRef}>
         {/* <span className="d-flex text-muted position-absolute h-100 w-100 justify-content-center align-items-center"> */}
         {/*   <FontAwesomeIcon className="h-25 w-25" icon="comment-slash" /> */}
         {/* </span> */}
@@ -113,15 +99,9 @@ function Messages({
 
   return (
     <>
-      <ul
-        ref={listRef}
-        className={messageClassName}
-        onScroll={scrollHandler}
-      >
+      <ul ref={listRef} className={messageClassName} onScroll={scrollHandler}>
         {messages.map((message, index) => {
-          const {
-            id, userId, name, text, type, time, meta,
-          } = message;
+          const { id, userId, name, text, type, time, meta } = message;
 
           const key = getKey(id, time, name, messages.length - index);
 

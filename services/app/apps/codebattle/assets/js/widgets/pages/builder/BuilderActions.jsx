@@ -1,12 +1,12 @@
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext } from "react";
 
-import NiceModal from '@ebay/nice-modal-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal from "@ebay/nice-modal-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useDispatch, useSelector } from "react-redux";
 
-import RoomContext from '../../components/RoomContext';
-import ModalCodes from '../../config/modalCodes';
-import { taskStateCodes } from '../../config/task';
+import RoomContext from "../../components/RoomContext";
+import ModalCodes from "../../config/modalCodes";
+import { taskStateCodes } from "../../config/task";
 import {
   isIdleStateTaskSelector,
   isInvalidTaskSelector,
@@ -14,24 +14,14 @@ import {
   isTaskPrepareSavingSelector,
   isTaskPrepareTestingSelector,
   taskStateSelector,
-} from '../../machines/selectors';
-import {
-  buildTaskAsserts,
-  deleteTask,
-  publishTask,
-  updateTaskState,
-} from '../../middlewares/Room';
-import * as selectors from '../../selectors';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
+} from "../../machines/selectors";
+import { buildTaskAsserts, deleteTask, publishTask, updateTaskState } from "../../middlewares/Room";
+import * as selectors from "../../selectors";
+import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
-import { modalModes, modalActions } from './TaskParamsModal';
+import { modalModes, modalActions } from "./TaskParamsModal";
 
-function ModerationActions({
-  canPublish,
-  canUnpublish,
-  handlePublishTask,
-  handleUnpublishTask,
-}) {
+function ModerationActions({ canPublish, canUnpublish, handlePublishTask, handleUnpublishTask }) {
   return (
     <>
       <button
@@ -66,10 +56,7 @@ function ModerationActions({
   );
 }
 
-function BuilderActions({
-  validExamples,
-  clearSuggests,
-}) {
+function BuilderActions({ validExamples, clearSuggests }) {
   const dispatch = useDispatch();
 
   const { taskService } = useContext(RoomContext);
@@ -85,49 +72,43 @@ function BuilderActions({
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.isTaskOwner);
 
-  const task = useSelector(
-    (state) => state.builder.task,
-  );
+  const task = useSelector((state) => state.builder.task);
 
-  const notPublished = task.state === taskStateCodes.draft
-    && task.state === taskStateCodes.moderation;
+  const notPublished =
+    task.state === taskStateCodes.draft && task.state === taskStateCodes.moderation;
   const readyTesting = validExamples;
   const readySave = useSelector(selectors.isValidTask);
 
-  const disabledTestingBtn = (
+  const disabledTestingBtn =
     task.state === taskStateCodes.active || isSavedTask
       ? false
-      : !readyTesting || isInvalidTaskMachineState || isTestingPrepare
-  );
+      : !readyTesting || isInvalidTaskMachineState || isTestingPrepare;
   const disabledSaveBtn = !readySave || isInvalidTaskMachineState || isSavingPrepare || isSavedTask;
 
   const buildAsserts = useCallback(
     () => dispatch(buildTaskAsserts(taskService)),
     [taskService, dispatch],
   );
-  const finishPreparing = useCallback(
-    () => taskService.send('SUCCESS'),
-    [taskService],
-  );
+  const finishPreparing = useCallback(() => taskService.send("SUCCESS"), [taskService]);
   const prepareAsserts = isIdleTaskState ? buildAsserts : finishPreparing;
 
   const handleOpenTesting = useCallback(() => {
     clearSuggests();
 
-    taskService.send('START_TESTING');
+    taskService.send("START_TESTING");
     prepareAsserts();
   }, [taskService, prepareAsserts, clearSuggests]);
 
   const handleSaveTask = useCallback(() => {
     clearSuggests();
 
-    taskService.send('START_SAVING');
+    taskService.send("START_SAVING");
     prepareAsserts();
   }, [taskService, prepareAsserts, clearSuggests]);
 
   const handleDeleteTask = useCallback(() => {
     // eslint-disable-next-line no-alert
-    if (window.confirm('Are you sure you want to delete this task?')) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
       dispatch(deleteTask(task.id));
     }
   }, [task.id, dispatch]);
@@ -145,13 +126,22 @@ function BuilderActions({
   }, [task.id, dispatch]);
 
   const openUploadTaskModal = useCallback(() => {
-    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.editJSON, action: modalActions.upload });
+    NiceModal.show(ModalCodes.taskParamsModal, {
+      mode: modalModes.editJSON,
+      action: modalActions.upload,
+    });
   }, []);
   const openCopyTaskModal = useCallback(() => {
-    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.showJSON, action: modalActions.copy });
+    NiceModal.show(ModalCodes.taskParamsModal, {
+      mode: modalModes.showJSON,
+      action: modalActions.copy,
+    });
   }, []);
   const openEditTaskModal = useCallback(() => {
-    NiceModal.show(ModalCodes.taskParamsModal, { mode: modalModes.editJSON, action: modalActions.edit });
+    NiceModal.show(ModalCodes.taskParamsModal, {
+      mode: modalModes.editJSON,
+      action: modalActions.edit,
+    });
   }, []);
 
   if (!(isAdmin || isOwner)) {
@@ -222,7 +212,7 @@ function BuilderActions({
         ) : (
           <FontAwesomeIcon className="mr-2" icon="save" />
         )}
-        <span>{isSavedTask ? 'Saved' : 'Save'}</span>
+        <span>{isSavedTask ? "Saved" : "Save"}</span>
       </button>
       {notPublished && (
         <button

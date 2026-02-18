@@ -1,25 +1,13 @@
-import React, {
-  useCallback,
-} from 'react';
+import React, { useCallback } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import isEmpty from 'lodash/isEmpty';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import isEmpty from "lodash/isEmpty";
 
-import {
-  defaultSignatureByType,
-  argumentTypes,
-  itemActionClassName,
-} from '../../utils/builder';
+import { defaultSignatureByType, argumentTypes, itemActionClassName } from "../../utils/builder";
 
-import SignatureForm from './SignatureForm';
+import SignatureForm from "./SignatureForm";
 
-function OutputSignatureEditPanel({
-  item,
-  suggest,
-  handleEdit,
-  handleSubmit,
-  handleClear,
-}) {
+function OutputSignatureEditPanel({ item, suggest, handleEdit, handleSubmit, handleClear }) {
   const handleReset = useCallback(() => {
     if (item) {
       handleEdit(item);
@@ -38,11 +26,12 @@ function OutputSignatureEditPanel({
         <div className="d-flex flex-column ml-2 overflow-auto">
           <h6 className="pl-1">Output type: </h6>
           <div className="d-flex">
-            <div key={suggest.id} className="btn-group m-1 border-gray border-warning cb-rounded" role="group">
-              <div
-                title="New Output"
-                className={itemActionClassName}
-              >
+            <div
+              key={suggest.id}
+              className="btn-group m-1 border-gray border-warning cb-rounded"
+              role="group"
+            >
+              <div title="New Output" className={itemActionClassName}>
                 {`(${suggest.type.name})`}
               </div>
             </div>
@@ -60,7 +49,7 @@ function OutputSignatureEditPanel({
                 className="btn btn-sm text-white btn-success rounded-lg"
                 onClick={handleSubmit}
               >
-                {item ? 'Update' : 'Submit'}
+                {item ? "Update" : "Submit"}
               </button>
               <button
                 type="button"

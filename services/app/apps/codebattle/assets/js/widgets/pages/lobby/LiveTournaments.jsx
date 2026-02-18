@@ -1,23 +1,21 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import isEmpty from 'lodash/isEmpty';
-import orderBy from 'lodash/orderBy';
-import moment from 'moment';
+import isEmpty from "lodash/isEmpty";
+import orderBy from "lodash/orderBy";
+import moment from "moment";
 
-import HorizontalScrollControls from '../../components/SideScrollControls';
+import HorizontalScrollControls from "../../components/SideScrollControls";
 
-import ShowButton from './ShowButton';
-import TournamentCard from './TournamentCard';
+import ShowButton from "./ShowButton";
+import TournamentCard from "./TournamentCard";
 
 function LiveTournaments({ tournaments = [] }) {
-  const sortedTournaments = useMemo(() => orderBy(tournaments, 'startsAt', 'desc'), [tournaments]);
+  const sortedTournaments = useMemo(() => orderBy(tournaments, "startsAt", "desc"), [tournaments]);
 
   if (isEmpty(tournaments)) {
     return (
       <div className="d-flex flex-column text-center">
-        <span className="mb-0 mt-3 p-3 text-muted">
-          There are no active tournaments right now
-        </span>
+        <span className="mb-0 mt-3 p-3 text-muted">There are no active tournaments right now</span>
         <a className="text-primary" href="/tournaments/#create">
           <u>You may want to create one</u>
         </a>
@@ -42,10 +40,7 @@ function LiveTournaments({ tournaments = [] }) {
               <tr key={tournament.id}>
                 <td className="p-3 align-middle">{tournament.name}</td>
                 <td className="p-3 align-middle text-nowrap">
-                  {moment
-                    .utc(tournament.startsAt)
-                    .local()
-                    .format('YYYY-MM-DD HH:mm')}
+                  {moment.utc(tournament.startsAt).local().format("YYYY-MM-DD HH:mm")}
                 </td>
                 <td className="p-3 align-middle">
                   <ShowButton url={`/tournaments/${tournament.id}/`} />
@@ -57,11 +52,7 @@ function LiveTournaments({ tournaments = [] }) {
       </div>
       <HorizontalScrollControls className="d-md-none m-2">
         {sortedTournaments.map((tournament) => (
-          <TournamentCard
-            key={`card-${tournament.id}`}
-            type="active"
-            tournament={tournament}
-          />
+          <TournamentCard key={`card-${tournament.id}`} type="active" tournament={tournament} />
         ))}
       </HorizontalScrollControls>
       <div className="text-center mt-3">

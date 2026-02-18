@@ -1,20 +1,20 @@
-import React, { useCallback } from 'react';
+import React, { useCallback } from "react";
 
-import NiceModal from '@ebay/nice-modal-react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import isEmpty from 'lodash/isEmpty';
-import PropTypes from 'prop-types';
+import NiceModal from "@ebay/nice-modal-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import isEmpty from "lodash/isEmpty";
+import PropTypes from "prop-types";
 
-import i18n from '../../../i18n';
-import GameLevelBadge from '../../components/GameLevelBadge';
-import ModalCodes from '../../config/modalCodes';
-import PageNames from '../../config/pageNames';
-import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
+import i18n from "../../../i18n";
+import GameLevelBadge from "../../components/GameLevelBadge";
+import ModalCodes from "../../config/modalCodes";
+import PageNames from "../../config/pageNames";
+import useTaskDescriptionParams from "../../utils/useTaskDescriptionParams";
 
-import ContributorsList from './ContributorsList';
-import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
-import TaskLanguagesSelection from './TaskLanguageSelection';
+import ContributorsList from "./ContributorsList";
+import TaskDescriptionMarkdown from "./TaskDescriptionMarkdown";
+import TaskLanguagesSelection from "./TaskLanguageSelection";
 
 const renderTaskLink = (task) => {
   const link = `https://github.com/hexlet-codebattle/tasks/tree/master/tasks/${task.level}/${task.tags[0]}/${task.name}.toml`;
@@ -38,7 +38,10 @@ function TaskAssignment({
   hidingControls = false,
   fullSize = false,
 }) {
-  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
+  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
+    task,
+    taskLanguage,
+  );
   const handleTaskSizeIncrease = useCallback(() => {
     changeTaskDescriptionSizes(taskSize + 1);
   }, [taskSize, changeTaskDescriptionSizes]);
@@ -57,7 +60,7 @@ function TaskAssignment({
   }
 
   const cardClassName = cn({
-    'card cb-card border-0': !fullSize,
+    "card cb-card border-0": !fullSize,
     h5: taskSize === 1,
     h4: taskSize === 2,
     h3: taskSize === 3,
@@ -77,11 +80,11 @@ function TaskAssignment({
 
   return (
     <div className={cardClassName}>
-      <div className="px-3 py-3 h-100" data-guide-id={!fullSize && 'Task'}>
+      <div className="px-3 py-3 h-100" data-guide-id={!fullSize && "Task"}>
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text d-flex align-items-center">
             <GameLevelBadge level={task.level} />
-            <span className="ml-2">{i18n.t('Task: ')}</span>
+            <span className="ml-2">{i18n.t("Task: ")}</span>
             <span className="ml-2 text-muted">{task.name}</span>
           </h6>
           <div className="d-flex align-items-center">
@@ -98,7 +101,7 @@ function TaskAssignment({
                 onClick={handleOpenFullSizeTaskDescription}
               >
                 <FontAwesomeIcon className="mr-2" icon="expand" />
-                {i18n.t('Expand')}
+                {i18n.t("Expand")}
               </button>
             )}
             {changeTaskDescriptionSizes && !hidingControls && (
@@ -130,15 +133,13 @@ function TaskAssignment({
             <TaskDescriptionMarkdown description={description} />
           </div>
         </div>
-        {task.origin === 'github' && !hideContribution && (
+        {task.origin === "github" && !hideContribution && (
           <>
             <ContributorsList task={task} />
             <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
               <h6 className="card-text small font-italic">
                 <span className="mr-2">
-                  {i18n.t(
-                    'Found a mistake? Have something to add? Pull Requests are welcome: ',
-                  )}
+                  {i18n.t("Found a mistake? Have something to add? Pull Requests are welcome: ")}
                 </span>
                 {renderTaskLink(task)}
               </h6>

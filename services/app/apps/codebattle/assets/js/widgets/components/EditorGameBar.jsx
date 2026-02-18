@@ -1,26 +1,26 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import cn from 'classnames';
-import { useSelector } from 'react-redux';
+import cn from "classnames";
+import { useSelector } from "react-redux";
 
-import { getPregressbarClass, getPregressbarWidth } from '@/pages/lobby/GameProgressBar';
+import { getPregressbarClass, getPregressbarWidth } from "@/pages/lobby/GameProgressBar";
 
-import EditorThemeCodes from '../config/editorThemes';
-import * as selectors from '../selectors';
+import EditorThemeCodes from "../config/editorThemes";
+import * as selectors from "../selectors";
 
 function EditorGameBar({ userId, theme }) {
   const checkResult = useSelector(selectors.executionOutputSelector(userId));
 
-  const panelClassName = cn('d-flex position-absolute justify-content-center w-100', {
-    'bg-white': theme === EditorThemeCodes.light,
-    'bg-dark': theme === EditorThemeCodes.dark,
+  const panelClassName = cn("d-flex position-absolute justify-content-center w-100", {
+    "bg-white": theme === EditorThemeCodes.light,
+    "bg-dark": theme === EditorThemeCodes.dark,
   });
   const editorBar = cn(
-    'cb-editor-game-progress-bar rounded-bottom bg-light border-top-0',
-    'd-flex justify-content-center pb-2 pt-1 px-4',
+    "cb-editor-game-progress-bar rounded-bottom bg-light border-top-0",
+    "d-flex justify-content-center pb-2 pt-1 px-4",
     {
-      'bg-light': theme === EditorThemeCodes.light,
-      'bg-dark': theme === EditorThemeCodes.dark,
+      "bg-light": theme === EditorThemeCodes.light,
+      "bg-dark": theme === EditorThemeCodes.dark,
     },
   );
 

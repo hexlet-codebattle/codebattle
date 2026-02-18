@@ -1,38 +1,37 @@
-import React, {
-  useCallback, useEffect, useMemo, useRef, useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import axios from 'axios';
-import { camelizeKeys } from 'humps';
-import unionBy from 'lodash/unionBy';
-import moment from 'moment';
+import axios from "axios";
+import { camelizeKeys } from "humps";
+import unionBy from "lodash/unionBy";
+import moment from "moment";
 
-import Loading from '../../components/Loading';
+import Loading from "../../components/Loading";
 
 const gradeColors = {
-  grand_slam: '#e0bf7a',
-  masters: '#c2c9d6',
-  elite: '#c48a57',
-  pro: '#a4aab3',
-  challenger: '#8a919c',
-  rookie: '#6f7782',
-  open: '#8a919c',
+  grand_slam: "#e0bf7a",
+  masters: "#c2c9d6",
+  elite: "#c48a57",
+  pro: "#a4aab3",
+  challenger: "#8a919c",
+  rookie: "#6f7782",
+  open: "#8a919c",
 };
 
-const formatGrade = (grade) => grade.replaceAll('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+const formatGrade = (grade) =>
+  grade.replaceAll("_", " ").replace(/\b\w/g, (ch) => ch.toUpperCase());
 
 const formatTime = (seconds) => {
   const total = Number(seconds || 0);
 
   if (total < 3600) {
-    const mm = String(Math.floor(total / 60)).padStart(2, '0');
-    const ss = String(total % 60).padStart(2, '0');
+    const mm = String(Math.floor(total / 60)).padStart(2, "0");
+    const ss = String(total % 60).padStart(2, "0");
     return `${mm}:${ss}`;
   }
 
-  const hh = String(Math.floor(total / 3600)).padStart(2, '0');
-  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
-  const ss = String(total % 60).padStart(2, '0');
+  const hh = String(Math.floor(total / 3600)).padStart(2, "0");
+  const mm = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+  const ss = String(total % 60).padStart(2, "0");
   return `${hh}:${mm}:${ss}`;
 };
 
@@ -41,7 +40,7 @@ const navigateToTournament = (tournamentId) => {
 };
 
 function UserTournaments({ isActive = false }) {
-  const [status, setStatus] = useState('idle');
+  const [status, setStatus] = useState("idle");
   const [tournaments, setTournaments] = useState([]);
   const [pageInfo, setPageInfo] = useState({
     pageNumber: 1,
@@ -53,7 +52,7 @@ function UserTournaments({ isActive = false }) {
   const tableRef = useRef(null);
   const statusRef = useRef(status);
   const pageInfoRef = useRef(pageInfo);
-  const userId = useMemo(() => window.location.pathname.split('/').pop(), []);
+  const userId = useMemo(() => window.location.pathname.split("/").pop(), []);
 
   useEffect(() => {
     statusRef.current = status;
@@ -63,40 +62,43 @@ function UserTournaments({ isActive = false }) {
     pageInfoRef.current = pageInfo;
   }, [pageInfo]);
 
-  const fetchPage = useCallback(async (page, append = false) => {
-    if (statusRef.current === 'loading') {
-      return;
-    }
+  const fetchPage = useCallback(
+    async (page, append = false) => {
+      if (statusRef.current === "loading") {
+        return;
+      }
 
-    if (append && page > pageInfoRef.current.totalPages) {
-      return;
-    }
+      if (append && page > pageInfoRef.current.totalPages) {
+        return;
+      }
 
-    setStatus('loading');
+      setStatus("loading");
 
-    try {
-      const nextPageSize = pageInfoRef.current.pageSize;
-      const response = await axios.get(`/api/v1/user/${userId}/tournaments`, {
-        params: {
-          page,
-          page_size: nextPageSize,
-        },
-      });
-      const payload = camelizeKeys(response.data);
+      try {
+        const nextPageSize = pageInfoRef.current.pageSize;
+        const response = await axios.get(`/api/v1/user/${userId}/tournaments`, {
+          params: {
+            page,
+            page_size: nextPageSize,
+          },
+        });
+        const payload = camelizeKeys(response.data);
 
-      setPageInfo(payload.pageInfo || pageInfoRef.current);
-      setTournaments((prev) => {
-        const incoming = payload.tournaments || [];
-        return append ? unionBy(prev, incoming, 'tournamentId') : incoming;
-      });
-      setStatus('loaded');
-    } catch (_error) {
-      setStatus('error');
-    }
-  }, [userId]);
+        setPageInfo(payload.pageInfo || pageInfoRef.current);
+        setTournaments((prev) => {
+          const incoming = payload.tournaments || [];
+          return append ? unionBy(prev, incoming, "tournamentId") : incoming;
+        });
+        setStatus("loaded");
+      } catch (_error) {
+        setStatus("error");
+      }
+    },
+    [userId],
+  );
 
   useEffect(() => {
-    if (!isActive || tournaments.length > 0 || status !== 'idle') {
+    if (!isActive || tournaments.length > 0 || status !== "idle") {
       return;
     }
 
@@ -115,7 +117,7 @@ function UserTournaments({ isActive = false }) {
     }
 
     const onTableScroll = () => {
-      if (statusRef.current === 'loading') {
+      if (statusRef.current === "loading") {
         return;
       }
 
@@ -133,19 +135,19 @@ function UserTournaments({ isActive = false }) {
       }
     };
 
-    observableTable.addEventListener('scroll', onTableScroll);
+    observableTable.addEventListener("scroll", onTableScroll);
 
     return () => {
-      observableTable.removeEventListener('scroll', onTableScroll);
+      observableTable.removeEventListener("scroll", onTableScroll);
     };
   }, [fetchPage, isActive]);
 
   if (tournaments.length === 0) {
-    if (status === 'loading') {
+    if (status === "loading") {
       return <Loading />;
     }
 
-    if (status === 'error') {
+    if (status === "error") {
       return <div className="py-5 text-center text-muted">Failed to load tournaments</div>;
     }
 
@@ -175,10 +177,10 @@ function UserTournaments({ isActive = false }) {
                 key={item.tournamentId}
                 role="link"
                 tabIndex={0}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
                 onClick={() => navigateToTournament(item.tournamentId)}
                 onKeyDown={(event) => {
-                  if (event.key === 'Enter' || event.key === ' ') {
+                  if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
                     navigateToTournament(item.tournamentId);
                   }
@@ -188,12 +190,12 @@ function UserTournaments({ isActive = false }) {
                   <span
                     className="px-2 py-1 cb-rounded"
                     style={{
-                      backgroundColor: gradeColors[item.tournamentGrade] || '#8a919c',
-                      color: '#1f2530',
+                      backgroundColor: gradeColors[item.tournamentGrade] || "#8a919c",
+                      color: "#1f2530",
                       fontWeight: 700,
                     }}
                   >
-                    {formatGrade(item.tournamentGrade || 'open')}
+                    {formatGrade(item.tournamentGrade || "open")}
                   </span>
                 </td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">{`#${item.place}`}</td>
@@ -201,10 +203,14 @@ function UserTournaments({ isActive = false }) {
                 <td className="p-3 align-middle text-nowrap cb-border-color">{item.score}</td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">{item.gamesCount}</td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">{item.winsCount}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{formatTime(item.totalTime)}</td>
-                <td className="p-3 align-middle text-nowrap cb-border-color">{item.userLang || '-'}</td>
                 <td className="p-3 align-middle text-nowrap cb-border-color">
-                  {moment.utc(item.tournamentStartedAt).local().format('MM.DD HH:mm')}
+                  {formatTime(item.totalTime)}
+                </td>
+                <td className="p-3 align-middle text-nowrap cb-border-color">
+                  {item.userLang || "-"}
+                </td>
+                <td className="p-3 align-middle text-nowrap cb-border-color">
+                  {moment.utc(item.tournamentStartedAt).local().format("MM.DD HH:mm")}
                 </td>
               </tr>
             ))}

@@ -5,13 +5,13 @@
  * to create and edit tournaments via React instead of LiveView.
  */
 
-import React from 'react';
+import React from "react";
 
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
 
-import CreateTournament from './CreateTournament';
-import EditTournament from './EditTournament';
+import CreateTournament from "./CreateTournament";
+import EditTournament from "./EditTournament";
 
 /**
  * Example 1: Render Create Tournament Form
@@ -34,16 +34,13 @@ export const renderCreateTournament = (containerId, store) => {
     return;
   }
 
-  const taskPackNames = JSON.parse(container.dataset.taskPackNames || '[]');
-  const userTimezone = container.dataset.userTimezone || 'UTC';
+  const taskPackNames = JSON.parse(container.dataset.taskPackNames || "[]");
+  const userTimezone = container.dataset.userTimezone || "UTC";
 
   const root = createRoot(container);
   root.render(
     <Provider store={store}>
-      <CreateTournament
-        taskPackNames={taskPackNames}
-        userTimezone={userTimezone}
-      />
+      <CreateTournament taskPackNames={taskPackNames} userTimezone={userTimezone} />
     </Provider>,
   );
 };
@@ -71,11 +68,11 @@ export const renderEditTournament = (containerId, store) => {
   }
 
   const { tournamentId } = container.dataset;
-  const taskPackNames = JSON.parse(container.dataset.taskPackNames || '[]');
-  const userTimezone = container.dataset.userTimezone || 'UTC';
+  const taskPackNames = JSON.parse(container.dataset.taskPackNames || "[]");
+  const userTimezone = container.dataset.userTimezone || "UTC";
 
   if (!tournamentId) {
-    console.error('Tournament ID is required');
+    console.error("Tournament ID is required");
     return;
   }
 
@@ -101,17 +98,15 @@ export function TournamentCreatePage({ store, taskPackNames, userTimezone }) {
         taskPackNames={taskPackNames}
         userTimezone={userTimezone}
         onSuccess={(tournament) => {
-        console.log('Tournament created:', tournament);
-        // Custom success handler
-      }}
+          console.log("Tournament created:", tournament);
+          // Custom success handler
+        }}
       />
     </Provider>
   );
 }
 
-export function TournamentEditPage({
- store, tournamentId, taskPackNames, userTimezone,
-}) {
+export function TournamentEditPage({ store, tournamentId, taskPackNames, userTimezone }) {
   return (
     <Provider store={store}>
       <EditTournament
@@ -119,9 +114,9 @@ export function TournamentEditPage({
         taskPackNames={taskPackNames}
         userTimezone={userTimezone}
         onSuccess={(tournament) => {
-        console.log('Tournament updated:', tournament);
-        // Custom success handler
-      }}
+          console.log("Tournament updated:", tournament);
+          // Custom success handler
+        }}
       />
     </Provider>
   );

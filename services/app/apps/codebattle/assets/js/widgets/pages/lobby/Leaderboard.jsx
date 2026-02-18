@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from "react";
 
-import Table from 'react-bootstrap/Table';
-import { useSelector, useDispatch } from 'react-redux';
+import Table from "react-bootstrap/Table";
+import { useSelector, useDispatch } from "react-redux";
 
-import UserInfo from '../../components/UserInfo';
-import periodTypes from '../../config/periodTypes';
-import { actions } from '../../slices';
-import { leaderboardSelector } from '../../slices/leaderboard';
+import UserInfo from "../../components/UserInfo";
+import periodTypes from "../../config/periodTypes";
+import { actions } from "../../slices";
+import { leaderboardSelector } from "../../slices/leaderboard";
 
 function Leaderboard() {
   const dispatch = useDispatch();
@@ -20,7 +20,9 @@ function Leaderboard() {
   const anchorAllRef = useRef(null);
 
   const handlePeriodClick = (e) => {
-    const { currentTarget: { dataset } } = e;
+    const {
+      currentTarget: { dataset },
+    } = e;
     const periodValue = dataset.period || periodTypes.ALL;
     e.preventDefault();
 
@@ -56,14 +58,14 @@ function Leaderboard() {
     <Table striped className="cb-bg-panel cb-border-color rounded shadow-sm m-0">
       <thead>
         <tr>
-          <th scope="col" className="text-uppercase py-1 px-0 text-white cb-border-color" colSpan="2">
+          <th
+            scope="col"
+            className="text-uppercase py-1 px-0 text-white cb-border-color"
+            colSpan="2"
+          >
             <div className="d-flex flex-column align-items-center flex-nowrap">
               <div className="d-flex align-items-center">
-                <img
-                  alt="rating"
-                  src="/assets/images/topPlayers.svg"
-                  className="m-2"
-                />
+                <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
                 <span className="d-flex">Leaderboard</span>
               </div>
               <nav className="w-100">
@@ -113,17 +115,16 @@ function Leaderboard() {
       </thead>
       <tbody>
         {rating && rating.length > 0 ? (
-          rating
-            .map((item) => (
-              <tr key={item.name} className="cb-border-color">
-                <td className="cb-border-color pr-0">
-                  <div className="d-flex">
-                    <UserInfo user={item} mode="dark" truncate />
-                  </div>
-                </td>
-                <td className="border-bottom cb-border-color text-right pl-0">{item.rating}</td>
-              </tr>
-            ))
+          rating.map((item) => (
+            <tr key={item.name} className="cb-border-color">
+              <td className="cb-border-color pr-0">
+                <div className="d-flex">
+                  <UserInfo user={item} mode="dark" truncate />
+                </div>
+              </td>
+              <td className="border-bottom cb-border-color text-right pl-0">{item.rating}</td>
+            </tr>
+          ))
         ) : (
           <tr className="text-center cb-border-color">
             <td className="cb-border-color">No rating</td>

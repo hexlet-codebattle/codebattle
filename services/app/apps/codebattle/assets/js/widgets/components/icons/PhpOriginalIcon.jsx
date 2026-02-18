@@ -1,35 +1,40 @@
 /* eslint-disable max-len */
-import React, { useId } from 'react';
+import React, { useId } from "react";
 
-function PhpOriginalIcon({ className, size = '1em' }) {
+function PhpOriginalIcon({ className, size = "1em" }) {
   const uid = useId();
   const id = (name) => `php-original-${uid}-${name}`;
 
   return (
-    <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" className={className} style={{ width: size, height: size }}>
+    <svg
+      viewBox="0 0 128 128"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ width: size, height: size }}
+    >
       <defs>
         <path
-          id={id('a')}
+          id={id("a")}
           d="M64.026 96.076c33.676 0 60.976-14.361 60.976-32.076s-27.3-32.075-60.976-32.075S3.051 46.285 3.051 64s27.3 32.076 60.975 32.076"
         />
       </defs>
       <defs>
-        <path id={id('c')} d="M2.998 31.924h122.004v64.1H2.998z" />
+        <path id={id("c")} d="M2.998 31.924h122.004v64.1H2.998z" />
       </defs>
-      <clipPath id={id('b')}>
-        <use xlinkHref={`#${id('a')}`} overflow="visible" />
+      <clipPath id={id("b")}>
+        <use xlinkHref={`#${id("a")}`} overflow="visible" />
       </clipPath>
-      <clipPath id={id('d')} clipPath={`url(#${id('b')})`}>
-        <use xlinkHref={`#${id('c')}`} overflow="visible" />
+      <clipPath id={id("d")} clipPath={`url(#${id("b")})`}>
+        <use xlinkHref={`#${id("c")}`} overflow="visible" />
       </clipPath>
-      <g clipPath={`url(#${id('d')})`}>
+      <g clipPath={`url(#${id("d")})`}>
         <defs>
-          <path id={id('e')} d="M2.998 31.924h122.004v64.1H2.998z" />
+          <path id={id("e")} d="M2.998 31.924h122.004v64.1H2.998z" />
         </defs>
-        <clipPath id={id('f')}>
-          <use xlinkHref={`#${id('e')}`} overflow="visible" />
+        <clipPath id={id("f")}>
+          <use xlinkHref={`#${id("e")}`} overflow="visible" />
         </clipPath>
-        <g clipPath={`url(#${id('f')})`}>
+        <g clipPath={`url(#${id("f")})`}>
           <image
             overflow="visible"
             width="1160"

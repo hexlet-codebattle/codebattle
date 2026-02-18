@@ -1,6 +1,6 @@
 const alertCodes = {
-  feedbackSendSuccessful: 'feedbackSendSuccessful',
-  feedbackSendError: 'feedbackSendError',
+  feedbackSendSuccessful: "feedbackSendSuccessful",
+  feedbackSendError: "feedbackSendError",
 };
 
 export default alertCodes;

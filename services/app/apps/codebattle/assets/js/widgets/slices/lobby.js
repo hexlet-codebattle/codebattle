@@ -1,13 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
-import find from 'lodash/find';
-import reject from 'lodash/reject';
+import { createSlice } from "@reduxjs/toolkit";
+import find from "lodash/find";
+import reject from "lodash/reject";
 
-import dayjs from '../../i18n/dayjs';
+import dayjs from "../../i18n/dayjs";
 
-import initial from './initial';
-import { actions as tournamentActions } from './tournament';
+import initial from "./initial";
+import { actions as tournamentActions } from "./tournament";
 
-const sortByStartsAt = (a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), 'millisecond');
+const sortByStartsAt = (a, b) => dayjs(a.startsAt).diff(dayjs(b.startsAt), "millisecond");
 
 const initialState = {
   activeGames: initial.activeGames,
@@ -35,19 +35,12 @@ const initialState = {
 };
 
 const lobby = createSlice({
-  name: 'lobby',
+  name: "lobby",
   initialState,
   reducers: {
     initGameList: (
       state,
-      {
-        payload: {
-          activeGames,
-          tournaments,
-          liveTournaments,
-          seasonTournaments,
-        },
-      },
+      { payload: { activeGames, tournaments, liveTournaments, seasonTournaments } },
     ) => ({
       ...state,
       activeGames,
@@ -59,9 +52,9 @@ const lobby = createSlice({
     updateEditorLang: (state, { payload }) => {
       state.activeGames = state.activeGames.map((game) => {
         if (game.id === payload.gameId) {
-          const newPlayers = game.players.map((player) => (player.id === payload.userId
-              ? { ...player, editorLang: payload.editorLang }
-              : player));
+          const newPlayers = game.players.map((player) =>
+            player.id === payload.userId ? { ...player, editorLang: payload.editorLang } : player,
+          );
 
           return { ...game, players: newPlayers };
         }
@@ -72,9 +65,9 @@ const lobby = createSlice({
     updateCheckResult: (state, { payload }) => {
       state.activeGames = state.activeGames.map((game) => {
         if (game.id === payload.gameId) {
-          const newPlayers = game.players.map((player) => (player.id === payload.userId
-              ? { ...player, checkResult: payload.checkResult }
-              : player));
+          const newPlayers = game.players.map((player) =>
+            player.id === payload.userId ? { ...player, checkResult: payload.checkResult } : player,
+          );
 
           return { ...game, players: newPlayers };
         }
@@ -121,7 +114,7 @@ const lobby = createSlice({
     },
     showCreateGameInviteModal: (state, { payload: { opponentInfo } }) => {
       state.createGameModal.show = true;
-      state.createGameModal.gameOptions = { type: 'invite' };
+      state.createGameModal.gameOptions = { type: "invite" };
       state.createGameModal.opponentInfo = opponentInfo;
     },
     updateLobbyChannelState: (state, { payload }) => {
@@ -136,17 +129,11 @@ const lobby = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(tournamentActions.changeTournamentState, (state, { payload }) => {
-      const seasonTournament = state.seasonTournaments.find(
-        (t) => t.id === payload.id,
-      );
-      const liveTournament = state.liveTournaments.find(
-        (t) => t.id === payload.id,
-      );
+      const seasonTournament = state.seasonTournaments.find((t) => t.id === payload.id);
+      const liveTournament = state.liveTournaments.find((t) => t.id === payload.id);
 
       if (seasonTournament) {
-        state.seasonTournaments = state.seasonTournaments.filter(
-          (t) => t.id !== payload.id,
-        );
+        state.seasonTournaments = state.seasonTournaments.filter((t) => t.id !== payload.id);
         state.liveTournaments = [
           ...state.liveTournaments,
           { ...seasonTournament, state: payload.state },
@@ -154,7 +141,9 @@ const lobby = createSlice({
       }
 
       if (liveTournament) {
-        state.liveTournaments = state.liveTournaments.map((t) => (t.id === payload.id ? { ...t, state: payload.state } : t));
+        state.liveTournaments = state.liveTournaments.map((t) =>
+          t.id === payload.id ? { ...t, state: payload.state } : t,
+        );
       }
     });
   },

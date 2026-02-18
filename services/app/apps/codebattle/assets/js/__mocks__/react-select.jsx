@@ -1,28 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-const { createFilter } = jest.requireActual('react-select');
+const { createFilter } = jest.requireActual("react-select");
 
 function Select({ options, onChange, filterOption }) {
-  const [selectInput, setSelectInput] = useState('task');
+  const [selectInput, setSelectInput] = useState("task");
 
   return (
     <div>
       {options
-        .filter(({ name }) => (filterOption({ data: { name } }, selectInput)))
+        .filter(({ name }) => filterOption({ data: { name } }, selectInput))
         .map((option) => (
-          <button
-            type="button"
-            onClick={() => onChange(option)}
-            key={option.name}
-          >
+          <button type="button" onClick={() => onChange(option)} key={option.name}>
             {option.name}
           </button>
-      ))}
-      <button
-        type="button"
-        onClick={() => setSelectInput('nAme')}
-        key="filterOption"
-      >
+        ))}
+      <button type="button" onClick={() => setSelectInput("nAme")} key="filterOption">
         filter tasks by name
       </button>
     </div>

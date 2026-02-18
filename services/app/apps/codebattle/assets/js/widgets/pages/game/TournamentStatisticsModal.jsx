@@ -1,21 +1,19 @@
-import React, {
-  useEffect, memo, useMemo, useState,
-} from 'react';
+import React, { useEffect, memo, useMemo, useState } from "react";
 
-import NiceModal, { useModal } from '@ebay/nice-modal-react';
-import { useSelector } from 'react-redux';
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { useSelector } from "react-redux";
 
-import Modal from '@/components/BootstrapModal';
+import Modal from "@/components/BootstrapModal";
 import {
   tournamentSelector,
   firstPlayerSelector,
   secondPlayerSelector,
   gameIdSelector,
-} from '@/selectors';
-import useMatchesStatistics from '@/utils/useMatchesStatistics';
+} from "@/selectors";
+import useMatchesStatistics from "@/utils/useMatchesStatistics";
 
-import ModalCodes from '../../config/modalCodes';
-import TournamentStateCodes from '../../config/tournament';
+import ModalCodes from "../../config/modalCodes";
+import TournamentStateCodes from "../../config/tournament";
 
 const TournamentStatisticsModal = NiceModal.create(() => {
   const modal = useModal(ModalCodes.tournamentStatisticsModal);
@@ -36,16 +34,18 @@ const TournamentStatisticsModal = NiceModal.create(() => {
       ({ roundPosition }) => roundPosition === tournament.currentRoundPosition,
     );
   }, [tournament.matches, tournament.currentRoundPosition, showFullStatistics]);
-  const gameRound = useMemo(() => (
-    Object.values(tournament?.matches || {}).find((match) => match.gameId === gameId)?.round
-  ), [tournament.matches, gameId]);
+  const gameRound = useMemo(
+    () => Object.values(tournament?.matches || {}).find((match) => match.gameId === gameId)?.round,
+    [tournament.matches, gameId],
+  );
 
   const [player, opponent] = useMatchesStatistics(firstPlayer.id, matches);
 
-  const showTournamentStatistics = tournament.type === 'swiss'
-    && secondPlayer.id === opponent.playerId
-    && (tournament.breakState === 'on' || tournament.state === TournamentStateCodes.finished)
-    && tournament.currentRoundPosition === gameRound;
+  const showTournamentStatistics =
+    tournament.type === "swiss" &&
+    secondPlayer.id === opponent.playerId &&
+    (tournament.breakState === "on" || tournament.state === TournamentStateCodes.finished) &&
+    tournament.currentRoundPosition === gameRound;
 
   useEffect(() => {
     if (modal.visible) {
@@ -61,17 +61,10 @@ const TournamentStatisticsModal = NiceModal.create(() => {
     }
   }, [modal.visible, showTournamentStatistics]);
 
-  const title = showFullStatistics
-    ? 'Tournament statistics'
-    : 'Tournament round statistics';
+  const title = showFullStatistics ? "Tournament statistics" : "Tournament round statistics";
 
   return (
-    <Modal
-      centered
-      show={modal.visible}
-      onHide={modal.hide}
-      contentClassName="cb-bg-panel cb-text"
-    >
+    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -80,13 +73,10 @@ const TournamentStatisticsModal = NiceModal.create(() => {
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">{firstPlayer?.name}</span>
             <span className="h4 mb-2">{player.winMatches.length}</span>
-            <span className="h4 mb-2">
-              {Math.ceil(player.avgTests)}
-              %
-            </span>
+            <span className="h4 mb-2">{Math.ceil(player.avgTests)}%</span>
             <span className="h4 mb-2">
               {Math.ceil(player.avgDuration)}
-              {' sec'}
+              {" sec"}
             </span>
           </div>
           <div className="d-flex flex-column align-items-center p-2">
@@ -98,13 +88,10 @@ const TournamentStatisticsModal = NiceModal.create(() => {
           <div className="d-flex flex-column align-items-center p-2">
             <span className="h4 mb-2">{secondPlayer?.name}</span>
             <span className="h4 mb-2">{opponent.winMatches.length}</span>
-            <span className="h4 mb-2">
-              {Math.ceil(opponent.avgTests)}
-              %
-            </span>
+            <span className="h4 mb-2">{Math.ceil(opponent.avgTests)}%</span>
             <span className="h4 mb-2">
               {Math.ceil(opponent.avgDuration)}
-              {' sec'}
+              {" sec"}
             </span>
           </div>
         </div>

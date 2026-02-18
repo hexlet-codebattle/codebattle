@@ -1,6 +1,6 @@
-import sortBy from 'lodash/sortBy';
+import sortBy from "lodash/sortBy";
 
-import userTypes from '../config/userTypes';
+import userTypes from "../config/userTypes";
 
 export const getGameStatus = ({
   id,
@@ -31,7 +31,7 @@ export const getGameStatus = ({
 });
 
 export const getGamePlayers = (players) => {
-  const [firstPlayer, secondPlayer] = sortBy(players, (player) => (player?.id));
+  const [firstPlayer, secondPlayer] = sortBy(players, (player) => player?.id);
   const typedPlayers = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {

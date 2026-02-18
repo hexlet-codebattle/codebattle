@@ -1,20 +1,17 @@
-import { toPng } from 'html-to-image';
+import { toPng } from "html-to-image";
 
-const messageType = 'cssbattle';
+const messageType = "cssbattle";
 
 // if (event.origin.startsWith('https://codebattle.hexlet.io/games/')) {
 window.addEventListener(
-  'message',
+  "message",
   (event) => {
     try {
-      if (event.data.type !== 'cssbattle') {
+      if (event.data.type !== "cssbattle") {
         return;
       }
 
-      window.parent.postMessage(
-        { type: messageType, data: event.data },
-        event.origin,
-      );
+      window.parent.postMessage({ type: messageType, data: event.data }, event.origin);
 
       if (event.data?.userId) {
         const { bodyStr, userId } = event.data;
@@ -22,10 +19,7 @@ window.addEventListener(
         document.body.innerHTML = bodyStr;
 
         toPng(document.body).then((dataUrl) => {
-          window.parent.postMessage(
-            { type: messageType, dataUrl, userId },
-            event.origin,
-          );
+          window.parent.postMessage({ type: messageType, dataUrl, userId }, event.origin);
         });
       }
     } catch (e) {

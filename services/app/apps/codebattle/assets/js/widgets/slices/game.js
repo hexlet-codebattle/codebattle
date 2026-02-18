@@ -1,14 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
-import omit from 'lodash/omit';
+import { createSlice } from "@reduxjs/toolkit";
+import omit from "lodash/omit";
 
-import { setPlayerToSliceState } from '../utils/gameRoom';
+import { setPlayerToSliceState } from "../utils/gameRoom";
 
-import initial, { defaultGameStatusState } from './initial';
+import initial, { defaultGameStatusState } from "./initial";
 
 const initialState = initial.game;
 
 const game = createSlice({
-  name: 'game',
+  name: "game",
   initialState,
   reducers: {
     setGameId: (state, { payload: { id } }) => {
@@ -32,10 +32,7 @@ const game = createSlice({
       }
     },
     updateGamePlayers: (state, { payload: { players: playersList } }) => {
-      const newPlayersState = playersList.reduce(
-        setPlayerToSliceState,
-        state.players,
-      );
+      const newPlayersState = playersList.reduce(setPlayerToSliceState, state.players);
       state.players = newPlayersState;
     },
     updateCheckStatus: (state, { payload }) => {

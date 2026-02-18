@@ -1,14 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-import editorModes from '../config/editorModes';
-import editorThemes from '../config/editorThemes';
-import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
+import editorModes from "../config/editorModes";
+import editorThemes from "../config/editorThemes";
+import taskDescriptionLanguages from "../config/taskDescriptionLanguages";
 
 const initialState = {
   followId: undefined,
   followPaused: false,
   streamMode: false,
-  tournamentVisibleMode: 'full', // 'full', 'without_info_and_controls'
+  tournamentVisibleMode: "full", // 'full', 'without_info_and_controls'
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
@@ -21,7 +21,7 @@ const initialState = {
 };
 
 const gameUI = createSlice({
-  name: 'gameUI',
+  name: "gameUI",
   initialState,
   reducers: {
     setEditorsMode: (state, { payload }) => {

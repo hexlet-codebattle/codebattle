@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import axios from 'axios';
-import CalendarHeatmap from 'react-calendar-heatmap';
-import { useDispatch } from 'react-redux';
+import axios from "axios";
+import CalendarHeatmap from "react-calendar-heatmap";
+import { useDispatch } from "react-redux";
 
-import { actions } from '../slices';
+import { actions } from "../slices";
 
-import Loading from './Loading';
+import Loading from "./Loading";
 
 function GamesHeatmap() {
   const [activities, setActivities] = useState(null);
@@ -15,7 +15,7 @@ function GamesHeatmap() {
 
   useEffect(() => {
     axios
-      .get('/api/v1/game_activity')
+      .get("/api/v1/game_activity")
       .then((response) => {
         setActivities(response.data.activities);
       })
@@ -35,13 +35,13 @@ function GamesHeatmap() {
           values={activities}
           classForValue={(value) => {
             if (!value) {
-              return 'color-empty';
+              return "color-empty";
             }
             return GamesHeatmap.colorScale(value.count);
           }}
           titleForValue={(value) => {
             if (!value) {
-              return 'No games';
+              return "No games";
             }
             return `${value.count} games on ${value.date}`;
           }}
@@ -53,15 +53,15 @@ function GamesHeatmap() {
 
 GamesHeatmap.colorScale = (count) => {
   if (count >= 5) {
-    return 'color-huge';
+    return "color-huge";
   }
   if (count >= 3) {
-    return 'color-large';
+    return "color-large";
   }
   if (count >= 1) {
-    return 'color-small';
+    return "color-small";
   }
-  return 'color-empty';
+  return "color-empty";
 };
 
 export default GamesHeatmap;

@@ -21,7 +21,7 @@ lint-js:
 	cd apps/codebattle && pnpm run lint
 
 lint-js-fix:
-	cd apps/codebattle && pnpm run lint --fix
+	cd apps/codebattle && pnpm run lint-fix
 
 start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"

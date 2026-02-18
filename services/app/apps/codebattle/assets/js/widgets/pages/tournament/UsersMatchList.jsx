@@ -1,28 +1,28 @@
-import React, { memo } from 'react';
+import React, { memo } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import moment from "moment";
+import { useSelector } from "react-redux";
 
-import useMatchesStatistics from '@/utils/useMatchesStatistics';
+import useMatchesStatistics from "@/utils/useMatchesStatistics";
 
-import Loading from '../../components/Loading';
-import UserInfo from '../../components/UserInfo';
+import Loading from "../../components/Loading";
+import UserInfo from "../../components/UserInfo";
 
-import MatchAction from './MatchAction';
-import TournamentMatchBadge from './TournamentMatchBadge';
+import MatchAction from "./MatchAction";
+import TournamentMatchBadge from "./TournamentMatchBadge";
 
-export const toLocalTime = (time) => moment.utc(time).local().format('HH:mm:ss');
+export const toLocalTime = (time) => moment.utc(time).local().format("HH:mm:ss");
 
 const matchClassName = cn(
-  'd-flex flex-column flex-xl-row flex-lg-row flex-md-row',
-  'justify-content-between border-bottom cb-border-color p-2',
+  "d-flex flex-column flex-xl-row flex-lg-row flex-md-row",
+  "justify-content-between border-bottom cb-border-color p-2",
 );
 const matchInfoClassName = cn(
-  'd-flex',
-  'flex-column flex-xl-row flex-lg-row flex-md-row',
-  'align-items-center justify-content-between',
+  "d-flex",
+  "flex-column flex-xl-row flex-lg-row flex-md-row",
+  "align-items-center justify-content-between",
 );
 
 function UserTournamentInfo({ userId }) {
@@ -47,9 +47,7 @@ function UsersMatchList({
 
   if (matches.length === 0) {
     return (
-      <div
-        className="d-flex flex-colum justify-content-center align-items-center p-2"
-      >
+      <div className="d-flex flex-colum justify-content-center align-items-center p-2">
         No Matches Yet
       </div>
     );
@@ -60,39 +58,31 @@ function UsersMatchList({
       {!hideStats && matches.length > 0 && (
         <div className="d-flex py-2 border-bottom cb-border-color align-items-center overflow-auto">
           <span className="ml-2">
-            {'Wins: '}
+            {"Wins: "}
             {player.winMatches.length}
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {'AVG Tests: '}
-            {Math.ceil(player.avgTests)}
-            %
+            {"AVG Tests: "}
+            {Math.ceil(player.avgTests)}%
           </span>
           <span className="ml-1 pl-1 border-left cb-border-color">
-            {'AVG Duration: '}
+            {"AVG Duration: "}
             {Math.ceil(player.avgDuration)}
-            {' sec'}
+            {" sec"}
           </span>
         </div>
       )}
       {matches.map((match) => {
-        const currentUserIsPlayer = currentUserId === match.playerIds[0]
-          || currentUserId === match.playerIds[1];
+        const currentUserIsPlayer =
+          currentUserId === match.playerIds[0] || currentUserId === match.playerIds[1];
         const isWinner = playerId === match.winnerId;
-        const matchPlayerIds = hideBots
-          ? match.playerIds.filter((id) => id >= 0)
-          : match.playerIds;
+        const matchPlayerIds = hideBots ? match.playerIds.filter((id) => id >= 0) : match.playerIds;
         const matchResult = match.playerResults[playerId];
 
         return (
-          <div
-            key={match.id}
-            className={matchClassName}
-          >
+          <div key={match.id} className={matchClassName}>
             <div className={matchInfoClassName}>
-              <div
-                className="d-flex align-items-center justify-content-center w-100 p-0 px-2 p-sm-1"
-              >
+              <div className="d-flex align-items-center justify-content-center w-100 p-0 px-2 p-sm-1">
                 <span className="d-flex align-items-center">
                   <TournamentMatchBadge
                     matchState={match.state}
@@ -130,41 +120,27 @@ function UsersMatchList({
                   )}
                 </div>
               </div>
-              {matchResult && matchResult.result !== 'undefined' && (
-                <div
-                  className="d-flex align-items-center justify-content-center w-100 p-0 p-sm-1"
-                >
-                  <span
-                    title="Match success tests percent"
-                    className="text-nowrap mx-2"
-                  >
+              {matchResult && matchResult.result !== "undefined" && (
+                <div className="d-flex align-items-center justify-content-center w-100 p-0 p-sm-1">
+                  <span title="Match success tests percent" className="text-nowrap mx-2">
                     <FontAwesomeIcon className="text-success mr-2" icon="tasks" />
                     {matchResult.resultPercent}
                   </span>
                   {match.durationSec && (
-                    <span
-                      title="Match duration seconds"
-                      className="text-nowrap mx-2"
-                    >
+                    <span title="Match duration seconds" className="text-nowrap mx-2">
                       <FontAwesomeIcon className="text-primary mr-2" icon="stopwatch" />
                       {match.durationSec}
                     </span>
                   )}
 
                   {match.startedAt && (
-                    <span
-                      title="Match finished at"
-                      className="text-nowrap ml-2"
-                    >
+                    <span title="Match finished at" className="text-nowrap ml-2">
                       <FontAwesomeIcon className="text-primary mr-2" icon="flag-checkered" />
                       {toLocalTime(match.startedAt)}
                     </span>
                   )}
                   {match.finishedAt && (
-                    <span
-                      title="Match finished at"
-                      className="text-nowrap mr-2"
-                    >
+                    <span title="Match finished at" className="text-nowrap mr-2">
                       <span className="mx-2">-</span>
                       {toLocalTime(match.finishedAt)}
                     </span>

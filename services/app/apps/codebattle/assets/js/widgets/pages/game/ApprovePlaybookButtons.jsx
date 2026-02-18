@@ -1,17 +1,17 @@
-import React, { useCallback, memo } from 'react';
+import React, { useCallback, memo } from "react";
 
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
 
-import SolutionTypeCodes from '../../config/solutionTypes';
-import { changePlaybookSolution } from '../../middlewares/Room';
+import SolutionTypeCodes from "../../config/solutionTypes";
+import { changePlaybookSolution } from "../../middlewares/Room";
 
 function ApprovePlaybookButtons({ playbookSolutionType }) {
   const dispatch = useDispatch();
   const approve = useCallback(() => {
-    dispatch(changePlaybookSolution('approve'));
+    dispatch(changePlaybookSolution("approve"));
   }, [dispatch]);
   const reject = useCallback(() => {
-    dispatch(changePlaybookSolution('reject'));
+    dispatch(changePlaybookSolution("reject"));
   }, [dispatch]);
 
   switch (playbookSolutionType) {

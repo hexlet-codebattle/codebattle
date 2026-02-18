@@ -1,12 +1,10 @@
-import React from 'react';
+import React from "react";
 
-import useHover from '../utils/useHover';
+import useHover from "../utils/useHover";
 
-import UserInfo from './UserInfo';
+import UserInfo from "./UserInfo";
 
-function ChatUserInfo({
- user, displayMenu, className = '', mode,
-}) {
+function ChatUserInfo({ user, displayMenu, className = "", mode }) {
   const [ref, hovered] = useHover();
 
   return (

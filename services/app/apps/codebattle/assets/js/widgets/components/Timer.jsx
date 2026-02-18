@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import useTimer from '../utils/useTimer';
+import useTimer from "../utils/useTimer";
 
 function Timer({ time }) {
   const [duration] = useTimer(time);

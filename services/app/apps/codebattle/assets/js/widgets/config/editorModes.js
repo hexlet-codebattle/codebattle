@@ -1,4 +1,4 @@
 export default {
-  default: 'default',
-  vim: 'vim',
+  default: "default",
+  vim: "vim",
 };

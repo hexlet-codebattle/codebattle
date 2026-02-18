@@ -1,10 +1,10 @@
 // assets/js/monaco.setup.js
 
-import CssWorker from './monaco-workers/css.worker?worker&inline';
-import EditorWorker from './monaco-workers/editor.worker?worker&inline';
-import HtmlWorker from './monaco-workers/html.worker?worker&inline';
-import JsonWorker from './monaco-workers/json.worker?worker&inline';
-import TsWorker from './monaco-workers/ts.worker?worker&inline';
+import CssWorker from "./monaco-workers/css.worker?worker&inline";
+import EditorWorker from "./monaco-workers/editor.worker?worker&inline";
+import HtmlWorker from "./monaco-workers/html.worker?worker&inline";
+import JsonWorker from "./monaco-workers/json.worker?worker&inline";
+import TsWorker from "./monaco-workers/ts.worker?worker&inline";
 
 // Monaco ESM falls back to FileAccess.asBrowserUri(...), which requires this root.
 if (import.meta.env.DEV) {
@@ -16,16 +16,16 @@ if (import.meta.env.DEV) {
 self.MonacoEnvironment = {
   getWorker(_, label) {
     switch (label) {
-      case 'json':
+      case "json":
         return new JsonWorker();
-      case 'css':
-      case 'scss':
-      case 'less':
+      case "css":
+      case "scss":
+      case "less":
         return new CssWorker();
-      case 'html':
+      case "html":
         return new HtmlWorker();
-      case 'typescript':
-      case 'javascript':
+      case "typescript":
+      case "javascript":
         return new TsWorker();
       default:
         return new EditorWorker();

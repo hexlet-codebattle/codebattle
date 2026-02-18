@@ -1,28 +1,26 @@
-import React, {
- useState, useEffect, useCallback, useRef,
-} from 'react';
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
-import data from '@emoji-mart/data';
-import BadWordsNext from 'bad-words-next';
-import cn from 'classnames';
-import { SearchIndex, init } from 'emoji-mart';
-import i18next from 'i18next';
-import isEmpty from 'lodash/isEmpty';
-import { useSelector } from 'react-redux';
+import data from "@emoji-mart/data";
+import BadWordsNext from "bad-words-next";
+import cn from "classnames";
+import { SearchIndex, init } from "emoji-mart";
+import i18next from "i18next";
+import isEmpty from "lodash/isEmpty";
+import { useSelector } from "react-redux";
 
-import messageTypes from '../config/messageTypes';
-import { addMessage } from '../middlewares/Chat';
-import * as selectors from '../selectors';
-import useClickAway from '../utils/useClickAway';
+import messageTypes from "../config/messageTypes";
+import { addMessage } from "../middlewares/Chat";
+import * as selectors from "../selectors";
+import useClickAway from "../utils/useClickAway";
 
-import EmojiPicker from './EmojiPicker';
-import EmojiToolTip from './EmojiTooltip';
+import EmojiPicker from "./EmojiPicker";
+import EmojiToolTip from "./EmojiTooltip";
 
 const MAX_MESSAGE_LENGTH = 1024;
 
-const trimColons = (message) => message.slice(0, message.lastIndexOf(':'));
+const trimColons = (message) => message.slice(0, message.lastIndexOf(":"));
 
-const getColons = (message) => message.slice(message.lastIndexOf(':') + 1);
+const getColons = (message) => message.slice(message.lastIndexOf(":") + 1);
 
 const getTooltipVisibility = async (msg) => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
@@ -35,32 +33,32 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isMaxLengthExceeded, setMaxLengthExceeded] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [badwordsReady, setBadwordsReady] = useState(false);
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const badwordsRef = useRef(new BadWordsNext());
 
   const sendBtnClassName = cn(
-    'btn btn-secondary cb-btn-secondary border-gray border-left rounded-right',
+    "btn btn-secondary cb-btn-secondary border-gray border-left rounded-right",
     {
-      'cb-border-color': true,
+      "cb-border-color": true,
     },
   );
-  const inputClassName = cn('form-control h-auto border-right-0 rounded-left', {
-    'bg-dark cb-border-color text-white': true,
-    'is-invalid': isMaxLengthExceeded,
+  const inputClassName = cn("form-control h-auto border-right-0 rounded-left", {
+    "bg-dark cb-border-color text-white": true,
+    "is-invalid": isMaxLengthExceeded,
   });
-  const emojiBtnClassName = cn('btn border-left-0 border-right-0 px-2 py-0', {
-    'cb-border-color border': true,
+  const emojiBtnClassName = cn("btn border-left-0 border-right-0 px-2 py-0", {
+    "cb-border-color border": true,
   });
 
   useEffect(() => {
     let mounted = true;
     async function loadBadwords() {
       try {
-        const enData = await import('bad-words-next/lib/en');
-        const ruData = await import('bad-words-next/lib/ru');
-        const rlData = await import('bad-words-next/lib/ru_lat');
+        const enData = await import("bad-words-next/lib/en");
+        const ruData = await import("bad-words-next/lib/ru");
+        const rlData = await import("bad-words-next/lib/ru_lat");
 
         if (mounted) {
           badwordsRef.current.add(enData.default || enData);
@@ -69,7 +67,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           setBadwordsReady(true);
         }
       } catch (error) {
-        console.error('Error loading bad words dictionaries:', error);
+        console.error("Error loading bad words dictionaries:", error);
       }
     }
 
@@ -106,22 +104,20 @@ export default function ChatInput({ inputRef, disabled = false }) {
         try {
           filteredText = badwordsRef.current.filter(text);
         } catch (error) {
-          console.error('Error filtering text:', error);
+          console.error("Error filtering text:", error);
         }
       }
 
       const message = {
         text: filteredText,
         meta: {
-          type: activeRoom.targetUserId
-            ? messageTypes.private
-            : messageTypes.general,
+          type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
           targetUserId: activeRoom.targetUserId,
         },
       };
 
       addMessage(message);
-      setText('');
+      setText("");
     }
   };
 
@@ -147,25 +143,19 @@ export default function ChatInput({ inputRef, disabled = false }) {
     hideTooltip();
     await setText(`${before}${native}${after}`);
     input.focus();
-    input.setSelectionRange(
-      caretPosition + native.length,
-      caretPosition + native.length,
-    );
+    input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
   };
 
   useClickAway(inputRef, () => {
     hideTooltip();
-  }, ['click']);
+  }, ["click"]);
 
   useEffect(() => {
     init({ data });
   }, []);
 
   return (
-    <form
-      className="border-top cb-border-color input-group mb-0 p-2"
-      onSubmit={handleSubmit}
-    >
+    <form className="border-top cb-border-color input-group mb-0 p-2" onSubmit={handleSubmit}>
       <input
         className={inputClassName}
         placeholder="Be nice in chat!"
@@ -176,11 +166,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
       />
       {isMaxLengthExceeded && (
         <div className="invalid-tooltip">
-          Message length cannot exceed
-          {' '}
-          {MAX_MESSAGE_LENGTH}
-          {' '}
-          characters.
+          Message length cannot exceed {MAX_MESSAGE_LENGTH} characters.
         </div>
       )}
       {isTooltipVisible && (
@@ -191,11 +177,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
         />
       )}
       {isPickerVisible && (
-        <EmojiPicker
-          handleSelect={handleSelectEmodji}
-          hide={hidePicker}
-          disabled={disabled}
-        />
+        <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} disabled={disabled} />
       )}
       <div className="input-group-append border-left rounded-right">
         <button
@@ -212,7 +194,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           onClick={handleSubmit}
           disabled={disabled || isMaxLengthExceeded || isMessageBlank}
         >
-          {i18next.t('Send')}
+          {i18next.t("Send")}
         </button>
       </div>
     </form>

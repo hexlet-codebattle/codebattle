@@ -1,17 +1,14 @@
-import React, {
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useMemo, useCallback } from "react";
 
-import isEmpty from 'lodash/isEmpty';
-import reverse from 'lodash/reverse';
+import isEmpty from "lodash/isEmpty";
+import reverse from "lodash/reverse";
 
 import {
   haveNestedType,
   argumentTypes,
   argumentTypeNames,
   MAX_NESTED_TYPE_LEVEL,
-} from '../../utils/builder';
+} from "../../utils/builder";
 
 const resolveSignatureToTypes = (signature) => {
   if (!signature) {
@@ -32,18 +29,21 @@ const resolveSignatureToTypes = (signature) => {
 function SignatureForm({ signature, handleEdit }) {
   const types = useMemo(() => resolveSignatureToTypes(signature), [signature]);
 
-  const handleSelect = useCallback((newType, nestedIndex) => {
-    const newTypes = types.map((type, index) => (index === nestedIndex ? newType : type));
-    const newSuggestType = reverse(newTypes).reduce((acc, type) => {
-      if (haveNestedType(type)) {
-        const nested = isEmpty(acc) ? { name: argumentTypes.integer } : acc;
-        return { name: type, nested };
-      }
+  const handleSelect = useCallback(
+    (newType, nestedIndex) => {
+      const newTypes = types.map((type, index) => (index === nestedIndex ? newType : type));
+      const newSuggestType = reverse(newTypes).reduce((acc, type) => {
+        if (haveNestedType(type)) {
+          const nested = isEmpty(acc) ? { name: argumentTypes.integer } : acc;
+          return { name: type, nested };
+        }
 
-      return { name: type };
-    }, {});
-    handleEdit({ argumentName: signature.argumentName, id: signature.id, type: newSuggestType });
-  }, [handleEdit, types, signature]);
+        return { name: type };
+      }, {});
+      handleEdit({ argumentName: signature.argumentName, id: signature.id, type: newSuggestType });
+    },
+    [handleEdit, types, signature],
+  );
 
   if (isEmpty(signature)) {
     return null;
@@ -55,15 +55,13 @@ function SignatureForm({ signature, handleEdit }) {
       key={`${typeName}-${index}`}
       className="form-control custom-select rounded-lg m-1 cb-builder-type-selector"
       value={typeName}
-      onChange={(e) => { handleSelect(e.target.value, index); }}
+      onChange={(e) => {
+        handleSelect(e.target.value, index);
+      }}
       size={1}
     >
       {argumentTypeNames.map((t) => (
-        <option
-          key={t}
-          value={t}
-          disabled={haveNestedType(t) && index + 1 > MAX_NESTED_TYPE_LEVEL}
-        >
+        <option key={t} value={t} disabled={haveNestedType(t) && index + 1 > MAX_NESTED_TYPE_LEVEL}>
           {t}
         </option>
       ))}

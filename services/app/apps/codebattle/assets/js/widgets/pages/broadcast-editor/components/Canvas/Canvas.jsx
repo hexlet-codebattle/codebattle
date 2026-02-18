@@ -1,79 +1,79 @@
 // src/components/Canvas/Canvas.jsx
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import BlockCode from '../BlockCode/BlockCode';
-import BlockText from '../BlockText/BlockText';
-import BlockTimer from '../BlockTimer/BlockTimer';
-import ContextMenu from '../ContextMenu/ContextMenu';
-import Toast from '../Toast/Toast';
-import './Canvas.css';
+import BlockCode from "../BlockCode/BlockCode";
+import BlockText from "../BlockText/BlockText";
+import BlockTimer from "../BlockTimer/BlockTimer";
+import ContextMenu from "../ContextMenu/ContextMenu";
+import Toast from "../Toast/Toast";
+import "./Canvas.css";
 
 const defaultBlocks = [
   {
-    id: 'code-1',
-    type: 'code',
-    nick: 'Pavel',
-    color: 'red',
+    id: "code-1",
+    type: "code",
+    nick: "Pavel",
+    color: "red",
     x: 32,
     y: 32,
     width: 320,
     height: 256,
-    code: 'const x = 42;\nconsole.log(x);',
-    theme: 'vscDarkPlus',
+    code: "const x = 42;\nconsole.log(x);",
+    theme: "vscDarkPlus",
   },
   {
-    id: 'code-2',
-    type: 'code',
-    nick: 'Matvey',
-    color: '#4ade80',
+    id: "code-2",
+    type: "code",
+    nick: "Matvey",
+    color: "#4ade80",
     x: 32,
     y: 320,
     width: 320,
     height: 240,
-    code: 'const b = 27;\nconst c = 22;\nconst res = b + c;\nconsole.log(res);',
-    theme: 'vscDarkPlus',
+    code: "const b = 27;\nconst c = 22;\nconst res = b + c;\nconsole.log(res);",
+    theme: "vscDarkPlus",
   },
   {
-    id: 'text-1',
-    type: 'text',
-    text: 'Task description....',
+    id: "text-1",
+    type: "text",
+    text: "Task description....",
     x: 384,
     y: 32,
     width: 256,
     height: 256,
   },
   {
-    id: 'timer-1',
-    type: 'timer',
-    time: '00:29:37',
+    id: "timer-1",
+    type: "timer",
+    time: "00:29:37",
     x: 672,
     y: 32,
     width: 256,
     height: 64,
   },
   {
-    id: 'text-3',
-    type: 'text',
-    text: 'Chat\n😮‍💨 Pavel: Oi\n💀 Matvey: Blz!',
+    id: "text-3",
+    type: "text",
+    text: "Chat\n😮‍💨 Pavel: Oi\n💀 Matvey: Blz!",
     x: 672,
     y: 128,
     width: 256,
     height: 200,
   },
   {
-    id: 'text-2',
-    type: 'text',
-    text: 'Tests\n4 / 5 Passed\nFailed',
+    id: "text-2",
+    type: "text",
+    text: "Tests\n4 / 5 Passed\nFailed",
     x: 384,
     y: 320,
     width: 256,
     height: 96,
   },
   {
-    id: 'text-4',
-    type: 'text',
-    text: 'Tests 2\n5 / 5 Passed\nTrue',
+    id: "text-4",
+    type: "text",
+    text: "Tests 2\n5 / 5 Passed\nTrue",
     x: 384,
     y: 448,
     width: 256,
@@ -81,12 +81,10 @@ const defaultBlocks = [
   },
 ];
 
-function Canvas({
-  initialBlocks = [],
-  onBlocksChange = () => {},
-  readOnly = false,
-}) {
-  const [blocks, setBlocks] = useState(() => (initialBlocks.length ? [...initialBlocks] : defaultBlocks));
+function Canvas({ initialBlocks = [], onBlocksChange = () => {}, readOnly = false }) {
+  const [blocks, setBlocks] = useState(() =>
+    initialBlocks.length ? [...initialBlocks] : defaultBlocks,
+  );
 
   useEffect(() => {
     setBlocks(initialBlocks.length ? [...initialBlocks] : defaultBlocks);
@@ -112,11 +110,11 @@ function Canvas({
       if (e.altKey) setSnapEnabled(false);
     };
     const handleKeyUp = () => setSnapEnabled(true);
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
@@ -143,7 +141,7 @@ function Canvas({
     if (readOnly) return;
     const newBlocks = blocks.filter((block) => block.id !== id);
     setBlocks(newBlocks);
-    setToast('🗑 Block deleted');
+    setToast("🗑 Block deleted");
     onBlocksChange(newBlocks);
     closeContextMenu();
   };
@@ -155,10 +153,10 @@ function Canvas({
     if (templates[id] && !hasBlock(id)) {
       const newBlocks = [...blocks, templates[id]];
       setBlocks(newBlocks);
-      setToast('✅ Block added');
+      setToast("✅ Block added");
       onBlocksChange(newBlocks);
     } else {
-      setToast('⚠️ Block already exists');
+      setToast("⚠️ Block already exists");
     }
     closeContextMenu();
   };
@@ -168,7 +166,7 @@ function Canvas({
       className="canvas"
       role="presentation"
       onClick={(e) => {
-        if (!e.target.closest('.context-menu')) closeContextMenu();
+        if (!e.target.closest(".context-menu")) closeContextMenu();
       }}
     >
       {blocks.map((block) => {
@@ -180,15 +178,18 @@ function Canvas({
           width: block.width,
           height: block.height,
           onContextMenu: (e) => handleContextMenu(e, block.id),
-          onMove: (x, y) => updateBlock(block.id, {
+          onMove: (x, y) =>
+            updateBlock(block.id, {
               x: snapEnabled ? snap(x) : x,
               y: snapEnabled ? snap(y) : y,
             }),
-          onDrag: (x, y) => updateBlock(block.id, {
+          onDrag: (x, y) =>
+            updateBlock(block.id, {
               x: snapEnabled ? snap(x) : x,
               y: snapEnabled ? snap(y) : y,
             }),
-          onResize: (w, h) => updateBlock(block.id, {
+          onResize: (w, h) =>
+            updateBlock(block.id, {
               width: snapEnabled ? snap(w) : w,
               height: snapEnabled ? snap(h) : h,
             }),
@@ -204,23 +205,23 @@ function Canvas({
           },
         };
 
-        if (block.type === 'code') {
+        if (block.type === "code") {
           return (
             <BlockCode
               key={block.id}
               {...common}
               nick={block.nick}
               color={block.color}
-              code={block.code || ''}
-              theme={block.theme || 'vscDarkPlus'}
+              code={block.code || ""}
+              theme={block.theme || "vscDarkPlus"}
               onThemeChange={(newTheme) => updateBlock(block.id, { theme: newTheme })}
             />
           );
         }
-        if (block.type === 'text') {
+        if (block.type === "text") {
           return <BlockText key={block.id} {...common} text={block.text} />;
         }
-        if (block.type === 'timer') {
+        if (block.type === "timer") {
           return <BlockTimer key={block.id} {...common} time={block.time} />;
         }
         return null;

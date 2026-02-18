@@ -1,16 +1,13 @@
-import { createSlice, current } from '@reduxjs/toolkit';
+import { createSlice, current } from "@reduxjs/toolkit";
 
-import defaultRooms from '../config/rooms';
-import {
-  isMessageForCurrentUser,
-  isMessageForCurrentPrivateRoom,
-} from '../utils/chat';
-import { ttl, filterPrivateRooms } from '../utils/chatRoom';
+import defaultRooms from "../config/rooms";
+import { isMessageForCurrentUser, isMessageForCurrentPrivateRoom } from "../utils/chat";
+import { ttl, filterPrivateRooms } from "../utils/chatRoom";
 
 const initialState = {
   users: [],
   messages: [],
-  page: 'lobby',
+  page: "lobby",
   activeRoom: defaultRooms.general,
   rooms: [defaultRooms.general, defaultRooms.system],
   history: {
@@ -22,7 +19,7 @@ const initialState = {
 };
 
 const chat = createSlice({
-  name: 'chat',
+  name: "chat",
   initialState,
   reducers: {
     updateChatData: (state, { payload }) => ({
@@ -43,19 +40,17 @@ const chat = createSlice({
     },
     newChatMessage: (state, { payload }) => {
       if (isMessageForCurrentUser(payload)) {
-        state.rooms = state.rooms.map((room) => (
+        state.rooms = state.rooms.map((room) =>
           isMessageForCurrentPrivateRoom(room, payload)
             ? { ...room, expireTo: room.expireTo + ttl }
-            : room
-        ));
+            : room,
+        );
       }
 
       state.messages = [...state.messages, payload];
     },
     banUserChat: (state, { payload }) => {
-      state.messages = [
-        ...state.messages.filter((message) => message.name !== payload.name),
-      ];
+      state.messages = [...state.messages.filter((message) => message.name !== payload.name)];
     },
     setActiveRoom: (state, { payload }) => {
       state.activeRoom = payload;
@@ -63,9 +58,9 @@ const chat = createSlice({
     createPrivateRoom: (state, { payload }) => {
       const rooms = current(state.rooms);
       const privateRooms = filterPrivateRooms(rooms);
-      const existingPrivateRoom = privateRooms.find((room) => (
-        room.targetUserId === payload.targetUserId
-      ));
+      const existingPrivateRoom = privateRooms.find(
+        (room) => room.targetUserId === payload.targetUserId,
+      );
       if (existingPrivateRoom) {
         state.activeRoom = existingPrivateRoom;
         return;

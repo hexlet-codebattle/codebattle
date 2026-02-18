@@ -1,16 +1,16 @@
-import 'phoenix_html';
-import 'bootstrap';
+import "phoenix_html";
+import "bootstrap";
 
-const revealItems = Array.from(document.querySelectorAll('[data-reveal]'));
-const parallaxItems = Array.from(document.querySelectorAll('[data-parallax]'));
+const revealItems = Array.from(document.querySelectorAll("[data-reveal]"));
+const parallaxItems = Array.from(document.querySelectorAll("[data-parallax]"));
 
 if (revealItems.length > 0) {
-  if ('IntersectionObserver' in window) {
+  if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries, currentObserver) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+            entry.target.classList.add("is-visible");
             currentObserver.unobserve(entry.target);
           }
         });
@@ -20,7 +20,7 @@ if (revealItems.length > 0) {
 
     revealItems.forEach((item) => observer.observe(item));
   } else {
-    revealItems.forEach((item) => item.classList.add('is-visible'));
+    revealItems.forEach((item) => item.classList.add("is-visible"));
   }
 }
 
@@ -50,6 +50,6 @@ if (parallaxItems.length > 0) {
   };
 
   updateParallax();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
 }

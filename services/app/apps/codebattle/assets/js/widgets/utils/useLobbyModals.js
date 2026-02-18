@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-import NiceModal, { unregister } from '@ebay/nice-modal-react';
+import NiceModal, { unregister } from "@ebay/nice-modal-react";
 
-import TournamentModal from '@/pages/lobby/TournamentModal';
+import TournamentModal from "@/pages/lobby/TournamentModal";
 
-import ModalCodes from '../config/modalCodes';
+import ModalCodes from "../config/modalCodes";
 
 const useLobbyModals = () => {
   useEffect(() => {

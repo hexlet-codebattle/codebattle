@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import cn from 'classnames';
-import moment from 'moment';
-import ReactPaginate from 'react-paginate';
-import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cn from "classnames";
+import moment from "moment";
+import ReactPaginate from "react-paginate";
+import { useSelector, useDispatch } from "react-redux";
 
-import UserInfo from '../../components/UserInfo';
-import { getUsersRatingPage } from '../../middlewares/Users';
-import { usersListSelector } from '../../selectors';
+import UserInfo from "../../components/UserInfo";
+import { getUsersRatingPage } from "../../middlewares/Users";
+import { usersListSelector } from "../../selectors";
 
-const decorateJoinedDate = (str) => moment.utc(str).format('LL');
+const decorateJoinedDate = (str) => moment.utc(str).format("LL");
 
 const renderSortArrow = (attribute, sortParams) => {
   const { attribute: currentAttribute, direction } = sortParams;
-  const classes = attribute === currentAttribute
-      ? `cb-sort-arrow ${direction}`
-      : 'sort-arrows';
+  const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : "sort-arrows";
 
   return <span className={`d-inline-block ${classes}`} />;
 };
@@ -24,24 +22,15 @@ const renderSortArrow = (attribute, sortParams) => {
 const renderUser = (page, pageSize, user, index) => (
   <tr key={user.id}>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">
-      #
-      {(page - 1) * pageSize + index + 1}
+      #{(page - 1) * pageSize + index + 1}
     </td>
     <td className="tex-left p-3 align-middle text-nowrap text-white cb-border-color">
       <UserInfo user={user} truncate />
     </td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
-      {user.rank}
-    </td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
-      {user.points}
-    </td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
-      {user.rating}
-    </td>
-    <td className="p-3 align-middle text-nowrap text-white cb-border-color">
-      {user.gamesPlayed}
-    </td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rank}</td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.points}</td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.rating}</td>
+    <td className="p-3 align-middle text-nowrap text-white cb-border-color">{user.gamesPlayed}</td>
     <td className="p-3 align-middle text-nowrap text-white cb-border-color">
       {decorateJoinedDate(user.insertedAt)}
     </td>
@@ -65,10 +54,7 @@ const renderUser = (page, pageSize, user, index) => (
   </tr>
 );
 
-const renderPagination = (
-  { pageInfo: { pageNumber, pageSize, totalEntries } },
-  setPage,
-) => {
+const renderPagination = ({ pageInfo: { pageNumber, pageSize, totalEntries } }, setPage) => {
   const pageCount = Math.ceil(totalEntries / pageSize);
 
   return (
@@ -82,7 +68,7 @@ const renderPagination = (
       breakLabel="..."
       onPageChange={({ selected }) => {
         setPage(selected + 1);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }}
       pageClassName="page-item"
       pageLinkClassName="page-link"
@@ -97,15 +83,10 @@ const renderPagination = (
   );
 };
 
-const renderFilterPeriodButtons = (
-  period,
-  filterParams,
-  setFilterParams,
-  setPage,
-) => {
+const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPage) => {
   const classes = cn(
-    'mr-1 btn nav-link',
-    filterParams.period === period ? 'nav-link active' : 'btn-link',
+    "mr-1 btn nav-link",
+    filterParams.period === period ? "nav-link active" : "btn-link",
   );
 
   return (
@@ -124,7 +105,7 @@ const renderFilterPeriodButtons = (
   );
 };
 
-const periods = ['weekly', 'monthly', 'total'];
+const periods = ["weekly", "monthly", "total"];
 
 function UsersRating() {
   const usersRatingPage = useSelector(usersListSelector);
@@ -137,17 +118,17 @@ function UsersRating() {
   } = usersRatingPage;
 
   const [sortParams, setSortParams] = useState({
-    attribute: 'rank',
-    direction: 'asc',
+    attribute: "rank",
+    direction: "asc",
   });
 
   const [filterParams, setFilterParams] = useState({
-    name: '',
-    period: 'total',
+    name: "",
+    period: "total",
     withBots: false,
   });
 
-  const [pageSize, setPageSize] = useState('20');
+  const [pageSize, setPageSize] = useState("20");
 
   const [page, setPage] = useState(1);
 
@@ -157,7 +138,7 @@ function UsersRating() {
   }, [filterParams, sortParams, page, pageSize]);
 
   const triggerSort = (attribute) => {
-    const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
+    const direction = sortParams.direction === "desc" ? "asc" : "desc";
 
     setSortParams({
       attribute,
@@ -172,12 +153,9 @@ function UsersRating() {
       <p>{`Total entries: ${totalEntries}`}</p>
 
       <ul className="nav nav-pills justify-content-center mb-3">
-        {periods.map((period) => renderFilterPeriodButtons(
-            period,
-            filterParams,
-            setFilterParams,
-            setPage,
-          ))}
+        {periods.map((period) =>
+          renderFilterPeriodButtons(period, filterParams, setFilterParams, setPage),
+        )}
       </ul>
 
       <div className="form-inline justify-content-between">
@@ -253,38 +231,38 @@ function UsersRating() {
               <th className="p-3 text-nowrap border-0">User</th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
-                onClick={() => triggerSort('rank')}
+                onClick={() => triggerSort("rank")}
               >
                 Rank &nbsp;
-                {renderSortArrow('rank', sortParams)}
+                {renderSortArrow("rank", sortParams)}
               </th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
-                onClick={() => triggerSort('points')}
+                onClick={() => triggerSort("points")}
               >
                 Points &nbsp;
-                {renderSortArrow('points', sortParams)}
+                {renderSortArrow("points", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort('rating')}
+                onClick={() => triggerSort("rating")}
               >
                 Rating &nbsp;
-                {renderSortArrow('rating', sortParams)}
+                {renderSortArrow("rating", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort('games_played')}
+                onClick={() => triggerSort("games_played")}
               >
                 Games played &nbsp;
-                {renderSortArrow('games_played', sortParams)}
+                {renderSortArrow("games_played", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
-                onClick={() => triggerSort('id')}
+                onClick={() => triggerSort("id")}
               >
                 Joined &nbsp;
-                {renderSortArrow('id', sortParams)}
+                {renderSortArrow("id", sortParams)}
               </th>
               <th className="p-3 text-nowrap border-0">Github</th>
             </tr>

@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React from "react";
 
 const GrandSlamIcon = React.forwardRef((props, ref) => {
   const {
-    color = 'gold',
-    glowColor = 'gold',
+    color = "gold",
+    glowColor = "gold",
     size = 80,
     title,
     animate = true,
@@ -49,11 +49,7 @@ const GrandSlamIcon = React.forwardRef((props, ref) => {
           colorInterpolationFilters="sRGB"
         >
           {/* blur the source to create outer glow */}
-          <feGaussianBlur
-            in="SourceGraphic"
-            stdDeviation={4 * intensity}
-            result="blur1"
-          >
+          <feGaussianBlur in="SourceGraphic" stdDeviation={4 * intensity} result="blur1">
             {animate && (
               <animate
                 attributeName="stdDeviation"
@@ -85,19 +81,10 @@ const GrandSlamIcon = React.forwardRef((props, ref) => {
               />
             )}
           </feFlood>
-          <feComposite
-            in="glowFlood"
-            in2="alphaOnly"
-            operator="in"
-            result="glowColored"
-          />
+          <feComposite in="glowFlood" in2="alphaOnly" operator="in" result="glowColored" />
 
           {/* stack a couple of blurs to intensify the glow */}
-          <feGaussianBlur
-            in="glowColored"
-            stdDeviation={6 * intensity}
-            result="blur2"
-          />
+          <feGaussianBlur in="glowColored" stdDeviation={6 * intensity} result="blur2" />
           <feMerge>
             <feMergeNode in="blur2" />
             <feMergeNode in="glowColored" />
@@ -107,12 +94,7 @@ const GrandSlamIcon = React.forwardRef((props, ref) => {
       </defs>
 
       {/* Apply the filter to the ICON CONTENT (not an empty group) */}
-      <g
-        filter={`url(#${filterId})`}
-        stroke={glowColor}
-        strokeOpacity="0.25"
-        strokeWidth="2"
-      >
+      <g filter={`url(#${filterId})`} stroke={glowColor} strokeOpacity="0.25" strokeWidth="2">
         <path
           fillRule="evenodd"
           clipRule="evenodd"

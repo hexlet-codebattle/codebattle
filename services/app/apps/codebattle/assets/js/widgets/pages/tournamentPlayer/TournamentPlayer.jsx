@@ -1,35 +1,31 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 
-import NiceModal, { unregister } from '@ebay/nice-modal-react';
+import NiceModal, { unregister } from "@ebay/nice-modal-react";
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useInterpret } from '@xstate/react';
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import { useInterpret } from "@xstate/react";
+import cn from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  connectToEditor,
-  connectToGame,
-  setGameChannel,
-} from '@/middlewares/Room';
-import { connectToSpectator } from '@/middlewares/Spectator';
-import { connectToTournament } from '@/middlewares/Tournament';
+import { connectToEditor, connectToGame, setGameChannel } from "@/middlewares/Room";
+import { connectToSpectator } from "@/middlewares/Spectator";
+import { connectToTournament } from "@/middlewares/Tournament";
 
-import CountdownTimer from '../../components/CountdownTimer';
-import EditorUserTypes from '../../config/editorUserTypes';
-import GameStateCodes from '../../config/gameStateCodes';
-import ModalCodes from '../../config/modalCodes';
+import CountdownTimer from "../../components/CountdownTimer";
+import EditorUserTypes from "../../config/editorUserTypes";
+import GameStateCodes from "../../config/gameStateCodes";
+import ModalCodes from "../../config/modalCodes";
 // import MatchStatesCodes from '../../config/matchStates';
-import TournamentStates from '../../config/tournament';
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import useSearchParams from '../../utils/useSearchParams';
+import TournamentStates from "../../config/tournament";
+import * as selectors from "../../selectors";
+import { actions } from "../../slices";
+import useSearchParams from "../../utils/useSearchParams";
 // import useMatchesStatistics from '../../utils/useMatchesStatistics';
 // import Output from '../game/Output';
-import OutputTab from '../game/OutputTab';
-import TaskAssignment from '../game/TaskAssignment';
-import TournamentAwardModal from '../game/TournamentAwardModal';
+import OutputTab from "../game/OutputTab";
+import TaskAssignment from "../game/TaskAssignment";
+import TournamentAwardModal from "../game/TournamentAwardModal";
 
-import SpectatorEditor from './SpectatorEditor';
+import SpectatorEditor from "./SpectatorEditor";
 
 // const RoundStatus = ({ playerId, matches }) => {
 //   const [
@@ -120,28 +116,25 @@ import SpectatorEditor from './SpectatorEditor';
 const getSpectatorStatus = (state, task, gameId) => {
   switch (state) {
     case TournamentStates.finished:
-      return 'Tournament is finished';
+      return "Tournament is finished";
     case TournamentStates.waitingParticipants:
-      return 'Tournament is waiting to start';
+      return "Tournament is waiting to start";
     case TournamentStates.canceled:
-      return 'Tournament is canceled';
+      return "Tournament is canceled";
     default:
       break;
   }
 
   if (!task || !gameId) {
-    return 'Game is loading';
+    return "Game is loading";
   }
 
-  return '';
+  return "";
 };
 
-const taskSizeDefault = Number(
-  window.localStorage.getItem('CodebattleSpectatorTaskSize') || '0',
-);
-const setTaskSizeDefault = (size) => (
-  window.localStorage.setItem('CodebattleSpectatorTaskSize', size)
-);
+const taskSizeDefault = Number(window.localStorage.getItem("CodebattleSpectatorTaskSize") || "0");
+const setTaskSizeDefault = (size) =>
+  window.localStorage.setItem("CodebattleSpectatorTaskSize", size);
 
 function TournamentPlayer({ spectatorMachine }) {
   const dispatch = useDispatch();
@@ -152,8 +145,8 @@ function TournamentPlayer({ spectatorMachine }) {
   const [switchedWidgetsStatus, setSwitchedWidgetsStatus] = useState(false);
   const [taskSize, setTaskSize] = useState(taskSizeDefault);
 
-  const activeEditorMode = searchParams.has('editor');
-  const activeTimerMode = searchParams.has('timer');
+  const activeEditorMode = searchParams.has("editor");
+  const activeTimerMode = searchParams.has("timer");
 
   const changeTaskDescriptionSizes = useCallback(
     (size) => {
@@ -199,12 +192,9 @@ function TournamentPlayer({ spectatorMachine }) {
     () => setSwitchedWidgetsStatus((state) => !state),
     [setSwitchedWidgetsStatus],
   );
-  const handleSwitchHidingControls = useCallback(
-    () => {
-      setHidingControls((state) => !state);
-    },
-    [setHidingControls],
-  );
+  const handleSwitchHidingControls = useCallback(() => {
+    setHidingControls((state) => !state);
+  }, [setHidingControls]);
 
   const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
@@ -231,7 +221,7 @@ function TournamentPlayer({ spectatorMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
   }, [playerId, dispatch]);
 
   useEffect(() => {
@@ -243,7 +233,7 @@ function TournamentPlayer({ spectatorMachine }) {
       };
     }
 
-    return () => { };
+    return () => {};
   }, [tournament.id, dispatch]);
 
   useEffect(() => {
@@ -263,67 +253,59 @@ function TournamentPlayer({ spectatorMachine }) {
       };
     }
 
-    return () => {
-
-    };
+    return () => {};
   }, [gameId, spectatorService, dispatch]);
 
-  const spectatorDisplayClassName = cn(
-    'd-flex flex-column vh-100',
-    'vh-100',
-{
+  const spectatorDisplayClassName = cn("d-flex flex-column vh-100", "vh-100", {
     // 'flex-xl-row flex-lg-row': !switchedWidgetsStatus,
     // 'flex-xl-row-reverse flex-lg-row-reverse': switchedWidgetsStatus,
-  },
-  );
+  });
 
   const spectatorGameStatusClassName = cn(
-    'd-flex justify-content-around align-items-center w-100 p-2',
+    "d-flex justify-content-around align-items-center w-100 p-2",
     {
       // 'flex-row-reverse': switchedWidgetsStatus,
     },
   );
 
   function GamePanel() {
-  return !spectatorStatus ? (
-    <>
-      <div className="card cb-card border-0 shadow-sm">
-        <TaskAssignment
-          task={task}
-          taskSize={taskSize}
-          taskLanguage={taskLanguage}
-          handleSetLanguage={handleSetLanguage}
-          changeTaskDescriptionSizes={changeTaskDescriptionSizes}
-          hideContribution
-          hidingControls={hidingControls}
-          fullSize
-        />
-      </div>
-      <div
-        className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto"
-      >
-        <div className={spectatorGameStatusClassName}>
-          {/* {GameStateCodes.playing !== gameState && <h3>Game Over</h3>} */}
-          {/* {startsAt && gameState === GameStateCodes.playing && ( */}
-          {/*   <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} /> */}
-          {/* )} */}
-          <OutputTab sideOutput={output} large />
+    return !spectatorStatus ? (
+      <>
+        <div className="card cb-card border-0 shadow-sm">
+          <TaskAssignment
+            task={task}
+            taskSize={taskSize}
+            taskLanguage={taskLanguage}
+            handleSetLanguage={handleSetLanguage}
+            changeTaskDescriptionSizes={changeTaskDescriptionSizes}
+            hideContribution
+            hidingControls={hidingControls}
+            fullSize
+          />
         </div>
-        {/* <div */}
-        {/*   className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto" */}
-        {/* > */}
-        {/*   <Output fontSize={taskSize} sideOutput={output} /> */}
-        {/* </div> */}
+        <div className="card cb-card border-0 shadow-sm mt-1 cb-overflow-y-auto">
+          <div className={spectatorGameStatusClassName}>
+            {/* {GameStateCodes.playing !== gameState && <h3>Game Over</h3>} */}
+            {/* {startsAt && gameState === GameStateCodes.playing && ( */}
+            {/*   <CountdownTimer time={startsAt} timeoutSeconds={timeoutSeconds} /> */}
+            {/* )} */}
+            <OutputTab sideOutput={output} large />
+          </div>
+          {/* <div */}
+          {/*   className="d-flex flex-column w-100 h-100 user-select-none cb-overflow-y-auto" */}
+          {/* > */}
+          {/*   <Output fontSize={taskSize} sideOutput={output} /> */}
+          {/* </div> */}
+        </div>
+      </>
+    ) : (
+      <div className="card cb-card border-0 w-100">
+        <div className="d-flex justify-content-center align-items-center w-100">
+          {spectatorStatus}
+        </div>
       </div>
-    </>
-  ) : (
-    <div className="card cb-card border-0 w-100">
-      <div className="d-flex justify-content-center align-items-center w-100">
-        {spectatorStatus}
-      </div>
-    </div>
-  );
-}
+    );
+  }
 
   // const MatchesPannel = () => {
   //   const groupedMatches = groupBy(Object.values(tournament.matches), 'round');
@@ -413,9 +395,7 @@ function TournamentPlayer({ spectatorMachine }) {
   return (
     <div className="container-fluid d-flex flex-column">
       <div className={spectatorDisplayClassName}>
-        <div
-          className="d-flex flex-column p-1"
-        >
+        <div className="d-flex flex-column p-1">
           <GamePanel />
           {/* <MatchesPannel /> */}
         </div>

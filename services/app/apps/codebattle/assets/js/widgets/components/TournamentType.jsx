@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import TournamentTypeCodes from '../config/tournamentTypes';
+import TournamentTypeCodes from "../config/tournamentTypes";
 
 function TournamentType({ type }) {
   if (type === TournamentTypeCodes.versus) {
-    return 'Versus';
+    return "Versus";
   }
 
   if (type === TournamentTypeCodes.swiss) {
-    return 'Swiss';
+    return "Swiss";
   }
 
   if (type === TournamentTypeCodes.individual) {
@@ -40,9 +40,7 @@ function TournamentType({ type }) {
     return <FontAwesomeIcon icon="wine-bottle" />;
   }
 
-  return (
-    <FontAwesomeIcon title="Unknown tournament type" icon="question-circle" />
-  );
+  return <FontAwesomeIcon title="Unknown tournament type" icon="question-circle" />;
 }
 
 export default TournamentType;

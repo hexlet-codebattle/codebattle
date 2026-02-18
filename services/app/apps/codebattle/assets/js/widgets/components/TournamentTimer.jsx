@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import dayjs from '../../i18n/dayjs';
+import dayjs from "../../i18n/dayjs";
 
 function TournamentTimer({ date = new Date(), label, children }) {
   const [duration, setDuration] = useState(0);
@@ -8,7 +8,7 @@ function TournamentTimer({ date = new Date(), label, children }) {
 
   useEffect(() => {
     if (stoped) {
-      return () => { };
+      return () => {};
     }
 
     const interval = setInterval(() => {
@@ -31,9 +31,10 @@ function TournamentTimer({ date = new Date(), label, children }) {
 
   return (
     <span className="d-inline-flex">
-      {label}
-      {' '}
-      <span className="text-monospace text-warning ml-2">{dayjs.duration(duration).format('HH:mm:ss')}</span>
+      {label}{" "}
+      <span className="text-monospace text-warning ml-2">
+        {dayjs.duration(duration).format("HH:mm:ss")}
+      </span>
     </span>
   );
 }

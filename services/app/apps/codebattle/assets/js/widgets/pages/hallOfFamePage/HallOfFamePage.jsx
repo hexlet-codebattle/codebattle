@@ -1,22 +1,22 @@
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from "react";
 
-import cn from 'classnames';
-import Gon from 'gon';
+import cn from "classnames";
+import Gon from "gon";
 
-import LanguageIcon from '../../components/LanguageIcon';
-import PlayerInsightsModal from '../../components/PlayerInsightsModal';
+import LanguageIcon from "../../components/LanguageIcon";
+import PlayerInsightsModal from "../../components/PlayerInsightsModal";
 import {
   LeaderboardTable,
   useLeaderboardState,
   getPlaceBadgeClass,
   getMedalEmoji,
-} from '../../components/SeasonLeaderboard';
-import UserInfo from '../../components/UserInfo';
+} from "../../components/SeasonLeaderboard";
+import UserInfo from "../../components/UserInfo";
 
 function StatBox({ label, value, highlight = false }) {
   return (
     <div className="text-center">
-      <div className={cn('fw-bold', highlight ? 'fs-3 text-warning' : 'fs-5 text-white')}>
+      <div className={cn("fw-bold", highlight ? "fs-3 text-warning" : "fs-5 text-white")}>
         {value}
       </div>
       <div className="text-muted small text-uppercase">{label}</div>
@@ -24,9 +24,8 @@ function StatBox({ label, value, highlight = false }) {
   );
 }
 
-const truncateText = (text, maxLength = 12) => (
-  text && text.length > maxLength ? text.slice(0, maxLength) : text
-);
+const truncateText = (text, maxLength = 12) =>
+  text && text.length > maxLength ? text.slice(0, maxLength) : text;
 
 function PodiumCard({ result, isFirst = false }) {
   const displayName = truncateText(result.user_name);
@@ -43,25 +42,23 @@ function PodiumCard({ result, isFirst = false }) {
 
   return (
     <div
-      className={cn('card h-100 border-0 shadow-lg cb-hof-podium-card', {
-        'cb-gold-place-bg': result.place === 1,
-        'cb-silver-place-bg': result.place === 2,
-        'cb-bronze-place-bg': result.place === 3,
+      className={cn("card h-100 border-0 shadow-lg cb-hof-podium-card", {
+        "cb-gold-place-bg": result.place === 1,
+        "cb-silver-place-bg": result.place === 2,
+        "cb-bronze-place-bg": result.place === 3,
       })}
     >
-      <div className={cn('card-body text-center', isFirst ? 'py-4' : 'py-3')}>
-        <div className={cn('mb-2', isFirst ? 'fs-1' : 'fs-2')}>
-          {getMedalEmoji(result.place)}
-        </div>
+      <div className={cn("card-body text-center", isFirst ? "py-4" : "py-3")}>
+        <div className={cn("mb-2", isFirst ? "fs-1" : "fs-2")}>{getMedalEmoji(result.place)}</div>
         {result.avatar_url && (
-        <img
-          src={result.avatar_url}
-          alt={result.user_name}
-          className="rounded-circle mb-2"
-          style={{ width: isFirst ? '64px' : '48px', height: isFirst ? '64px' : '48px' }}
-        />
-      )}
-        <div className={cn('card-title text-white mb-2', isFirst && 'fs-3')}>
+          <img
+            src={result.avatar_url}
+            alt={result.user_name}
+            className="rounded-circle mb-2"
+            style={{ width: isFirst ? "64px" : "48px", height: isFirst ? "64px" : "48px" }}
+          />
+        )}
+        <div className={cn("card-title text-white mb-2", isFirst && "fs-3")}>
           <div className="d-flex justify-content-center">
             <UserInfo
               user={user}
@@ -76,21 +73,31 @@ function PodiumCard({ result, isFirst = false }) {
         </div>
         <div className="mb-3">
           {result.user_lang && (
-          <span className="mr-2">
-            <LanguageIcon lang={result.user_lang} style={{ width: '20px', height: '20px' }} />
-          </span>
-        )}
+            <span className="mr-2">
+              <LanguageIcon lang={result.user_lang} style={{ width: "20px", height: "20px" }} />
+            </span>
+          )}
           {result.clan_name && (
-            <span className="text-muted" title={result.clan_name}>{displayClan}</span>
+            <span className="text-muted" title={result.clan_name}>
+              {displayClan}
+            </span>
           )}
         </div>
-        <div className={cn('d-flex justify-content-center', isFirst ? 'mt-4' : 'mt-3')}>
-          <div className="px-3"><StatBox label="Points" value={result.total_points} highlight={isFirst} /></div>
-          <div className="px-3"><StatBox label="Wins" value={result.total_wins_count} /></div>
+        <div className={cn("d-flex justify-content-center", isFirst ? "mt-4" : "mt-3")}>
+          <div className="px-3">
+            <StatBox label="Points" value={result.total_points} highlight={isFirst} />
+          </div>
+          <div className="px-3">
+            <StatBox label="Wins" value={result.total_wins_count} />
+          </div>
         </div>
         <div className="d-flex justify-content-center mt-3">
-          <div className="px-3"><StatBox label="Score" value={result.total_score} /></div>
-          <div className="px-3"><StatBox label="Tournaments" value={result.tournaments_count} /></div>
+          <div className="px-3">
+            <StatBox label="Score" value={result.total_score} />
+          </div>
+          <div className="px-3">
+            <StatBox label="Tournaments" value={result.tournaments_count} />
+          </div>
         </div>
       </div>
     </div>
@@ -111,21 +118,19 @@ function ChampionsPodium({ top3 }) {
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
           {second && (
-            <div style={{ marginTop: '2rem' }}>
+            <div style={{ marginTop: "2rem" }}>
               <PodiumCard result={second} />
             </div>
           )}
         </div>
 
         {/* First place - center, elevated */}
-        <div className="col-md-4 col-lg-3">
-          {first && <PodiumCard result={first} isFirst />}
-        </div>
+        <div className="col-md-4 col-lg-3">{first && <PodiumCard result={first} isFirst />}</div>
 
         {/* Third place - right */}
         <div className="col-md-4 col-lg-3">
           {third && (
-            <div style={{ marginTop: '3rem' }}>
+            <div style={{ marginTop: "3rem" }}>
               <PodiumCard result={third} />
             </div>
           )}
@@ -152,20 +157,15 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
           key={season.id}
           className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light mb-4"
           style={{
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
+            background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
           }}
         >
           <div className="card-body">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h4 className="card-title text-warning mb-0">
-                {season.name}
-                {' '}
-                {season.year}
+                {season.name} {season.year}
               </h4>
-              <a
-                href={`/seasons/${season.id}`}
-                className="btn btn-sm btn-outline-gold"
-              >
+              <a href={`/seasons/${season.id}`} className="btn btn-sm btn-outline-gold">
                 Full Results
               </a>
             </div>
@@ -187,15 +187,15 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                 return (
                   <div key={winner.user_id} className="col-md-4 mb-3">
                     <div
-                      className={cn('card h-100 border-0 cb-hof-podium-card', {
-                        'cb-gold-place-bg': winner.place === 1,
-                        'cb-silver-place-bg': winner.place === 2,
-                        'cb-bronze-place-bg': winner.place === 3,
+                      className={cn("card h-100 border-0 cb-hof-podium-card", {
+                        "cb-gold-place-bg": winner.place === 1,
+                        "cb-silver-place-bg": winner.place === 2,
+                        "cb-bronze-place-bg": winner.place === 3,
                       })}
                     >
                       <div className="card-body">
                         <div className="d-flex align-items-center mb-2">
-                          <span className={cn('badge mr-2', getPlaceBadgeClass(winner.place))}>
+                          <span className={cn("badge mr-2", getPlaceBadgeClass(winner.place))}>
                             {getMedalEmoji(winner.place)}
                           </span>
                           {winner.avatar_url && (
@@ -203,7 +203,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                               src={winner.avatar_url}
                               alt={winner.user_name}
                               className="rounded-circle mr-2"
-                              style={{ width: '32px', height: '32px' }}
+                              style={{ width: "32px", height: "32px" }}
                             />
                           )}
                           <UserInfo
@@ -220,11 +220,16 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                           <div className="d-flex align-items-center mb-1">
                             {winner.user_lang && (
                               <span className="mr-2">
-                                <LanguageIcon lang={winner.user_lang} style={{ width: '16px', height: '16px' }} />
+                                <LanguageIcon
+                                  lang={winner.user_lang}
+                                  style={{ width: "16px", height: "16px" }}
+                                />
                               </span>
                             )}
                             {winner.clan_name && (
-                              <span className="text-muted" title={winner.clan_name}>{displayClan}</span>
+                              <span className="text-muted" title={winner.clan_name}>
+                                {displayClan}
+                              </span>
                             )}
                           </div>
                           <div className="d-flex justify-content-between">
@@ -246,12 +251,13 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
 }
 
 function HallOfFamePage() {
-  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset('current_season')) || null;
+  const currentSeason = (Gon && Gon.getAsset && Gon.getAsset("current_season")) || null;
   const currentSeasonResults = useMemo(
-    () => (Gon && Gon.getAsset && Gon.getAsset('current_season_results')) || [],
+    () => (Gon && Gon.getAsset && Gon.getAsset("current_season_results")) || [],
     [],
   );
-  const previousSeasonsWinners = (Gon && Gon.getAsset && Gon.getAsset('previous_seasons_winners')) || [];
+  const previousSeasonsWinners =
+    (Gon && Gon.getAsset && Gon.getAsset("previous_seasons_winners")) || [];
 
   // Use the shared leaderboard state hook
   const leaderboardState = useLeaderboardState(currentSeasonResults);
@@ -284,20 +290,14 @@ function HallOfFamePage() {
                 <div className="d-flex justify-content-between align-items-center">
                   <div>
                     <h5 className="card-title mb-2 text-gold">
-                      {currentSeason.name}
-                      {' '}
-                      {currentSeason.year}
+                      {currentSeason.name} {currentSeason.year}
                     </h5>
                     <div className="d-flex flex-wrap small text-muted">
                       <span className="mr-3">
-                        <strong>Starts:</strong>
-                        {' '}
-                        {currentSeason.starts_at}
+                        <strong>Starts:</strong> {currentSeason.starts_at}
                       </span>
                       <span>
-                        <strong>Ends:</strong>
-                        {' '}
-                        {currentSeason.ends_at}
+                        <strong>Ends:</strong> {currentSeason.ends_at}
                       </span>
                     </div>
                   </div>
@@ -311,14 +311,16 @@ function HallOfFamePage() {
             <ChampionsPodium top3={top3} />
 
             {currentSeasonResults.length > 0 && (
-              <div className={cn('card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light')}>
+              <div
+                className={cn(
+                  "card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light",
+                )}
+              >
                 <div className="card-header bg-transparent border-bottom border-secondary py-3">
                   <div className="d-flex justify-content-between align-items-center">
                     <h2 className="mb-0 text-gold fs-4">Current Season Leaderboard</h2>
                     <span className="badge bg-secondary">
-                      {currentSeasonResults.length}
-                      {' '}
-                      players
+                      {currentSeasonResults.length} players
                     </span>
                   </div>
                 </div>

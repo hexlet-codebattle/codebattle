@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import cn from 'classnames';
-import i18n from 'i18next';
-import moment from 'moment';
-import PropTypes from 'prop-types';
+import cn from "classnames";
+import i18n from "i18next";
+import moment from "moment";
+import PropTypes from "prop-types";
 
 const getProgress = (a, b) => 100 - Math.ceil((a / b) * 100);
 
@@ -20,10 +20,10 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }) {
   const seconds = duration / 1000;
   const progress = getProgress(seconds, timeoutSeconds);
 
-  const progressBgColor = cn('cb-timer-progress', {
-    'bg-secondary': colorized && seconds > 45,
-    'bg-warning': colorized && seconds <= 45 && seconds >= 15,
-    'bg-danger': colorized && seconds < 15,
+  const progressBgColor = cn("cb-timer-progress", {
+    "bg-secondary": colorized && seconds > 45,
+    "bg-warning": colorized && seconds <= 45 && seconds >= 15,
+    "bg-danger": colorized && seconds < 15,
   });
 
   const updateTimer = () => {
@@ -46,10 +46,10 @@ function CountdownTimer({ time, timeoutSeconds, colorized = false }) {
         {timeoutSeconds && (
           <span>
             {duration <= 0
-              ? i18n.t('Time is Over')
-              : i18n.t('Timeout in: %{time}', {
-                time: moment.utc(duration).format('HH:mm:ss'),
-              })}
+              ? i18n.t("Time is Over")
+              : i18n.t("Timeout in: %{time}", {
+                  time: moment.utc(duration).format("HH:mm:ss"),
+                })}
           </span>
         )}
       </span>

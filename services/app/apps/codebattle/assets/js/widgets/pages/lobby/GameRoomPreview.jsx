@@ -1,22 +1,22 @@
-import React from 'react';
+import React from "react";
 
-import Gon from 'gon';
-import { useSelector } from 'react-redux';
+import Gon from "gon";
+import { useSelector } from "react-redux";
 
-import { selectDefaultAvatarUrl } from '@/selectors';
+import { selectDefaultAvatarUrl } from "@/selectors";
 
-import LanguageIcon from '../../components/LanguageIcon';
+import LanguageIcon from "../../components/LanguageIcon";
 
-const defaultPreviewAvatarUrl = 'https://avatars.githubusercontent.com/u/35539033?v=4';
-const fightSvg = '/assets/images/fight.svg';
+const defaultPreviewAvatarUrl = "https://avatars.githubusercontent.com/u/35539033?v=4";
+const fightSvg = "/assets/images/fight.svg";
 
-const players = Gon.getAsset('players');
+const players = Gon.getAsset("players");
 
 // TODO : user user.avatarUrl
 function GameRoomPreview({ pageName }) {
   const defaultAvatarUrl = useSelector(selectDefaultAvatarUrl);
 
-  if (pageName === 'builder') {
+  if (pageName === "builder") {
     return (
       <div className="preview container-fluid slideInLeft">
         <div className="preview__container w-100 d-flex align-items-center">
@@ -27,10 +27,10 @@ function GameRoomPreview({ pageName }) {
   }
 
   const defaultPlayer = {
-    name: 'John Doe',
+    name: "John Doe",
     avatar_url: defaultAvatarUrl,
-    lang: 'js',
-    rating: '0',
+    lang: "js",
+    rating: "0",
   };
 
   const player1 = players[0] || defaultPlayer;
@@ -49,11 +49,7 @@ function GameRoomPreview({ pageName }) {
           <div className="player1__status">
             <LanguageIcon className="preview__icon" lang={player1.lang} />
             <span className="preview__info">{player1.lang}</span>
-            <img
-              className="preview__icon"
-              src="/assets/images/rating.svg"
-              alt="rating"
-            />
+            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
             <span className="preview__info">{player1.rating}</span>
           </div>
         </div>
@@ -72,11 +68,7 @@ function GameRoomPreview({ pageName }) {
           <div className="player2__status">
             <LanguageIcon className="preview__icon" lang={player2.lang} />
             <span className="preview__info">{player2.lang}</span>
-            <img
-              className="preview__icon"
-              src="/assets/images/rating.svg"
-              alt="rating"
-            />
+            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
             <span className="preview__info">{player2.rating}</span>
           </div>
         </div>

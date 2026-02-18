@@ -1,22 +1,23 @@
-import { camelizeKeys } from 'humps';
-import some from 'lodash/some';
+import { camelizeKeys } from "humps";
+import some from "lodash/some";
 
-import { channelMethods, channelTopics } from '../../socket';
-import { actions } from '../slices';
-import { getSystemMessage } from '../utils/chat';
-import { calculateExpireDate } from '../utils/chatRoom';
+import { channelMethods, channelTopics } from "../../socket";
+import { actions } from "../slices";
+import { getSystemMessage } from "../utils/chat";
+import { calculateExpireDate } from "../utils/chatRoom";
 
-import Channel from './Channel';
+import Channel from "./Channel";
 
 const channel = new Channel();
 
 export const fetchState = (currentUserId) => (dispatch) => {
-  const channelName = 'lobby';
+  const channelName = "lobby";
   channel.setupChannel(channelName);
 
-  const camelizeKeysAndDispatch = (actionCreator) => (data) => dispatch(actionCreator(camelizeKeys(data)));
+  const camelizeKeysAndDispatch = (actionCreator) => (data) =>
+    dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  channel.join().receive("ok", camelizeKeysAndDispatch(actions.initGameList));
 
   channel.onError(() => {
     dispatch(actions.updateLobbyChannelState(false));
@@ -27,11 +28,8 @@ export const fetchState = (currentUserId) => (dispatch) => {
       game: { players, id, state: gameState },
     } = data;
     const currentPlayerId = currentUserId;
-    const isGameStarted = gameState === 'playing';
-    const isCurrentUserInGame = some(
-      players,
-      ({ id: playerId }) => playerId === currentPlayerId,
-    );
+    const isGameStarted = gameState === "playing";
+    const isCurrentUserInGame = some(players, ({ id: playerId }) => playerId === currentPlayerId);
 
     if (isGameStarted && isCurrentUserInGame) {
       window.location.href = `/games/${id}`;
@@ -46,7 +44,7 @@ export const fetchState = (currentUserId) => (dispatch) => {
 
   const handleGameCheckStarted = (data) => {
     const { gameId, userId } = data;
-    const payload = { gameId, userId, checkResult: { status: 'started' } };
+    const payload = { gameId, userId, checkResult: { status: "started" } };
 
     dispatch(actions.updateCheckResult(payload));
   };
@@ -63,10 +61,7 @@ export const fetchState = (currentUserId) => (dispatch) => {
       channelTopics.lobbyGameRemoveTopic,
       camelizeKeysAndDispatch(actions.removeGameLobby),
     )
-    .addListener(
-      channelTopics.lobbyGameFinishedTopic,
-      camelizeKeysAndDispatch(actions.finishGame),
-    );
+    .addListener(channelTopics.lobbyGameFinishedTopic, camelizeKeysAndDispatch(actions.finishGame));
 };
 
 export const openDirect = (userId, name) => (dispatch) => {
@@ -86,37 +81,31 @@ export const openDirect = (userId, name) => (dispatch) => {
 };
 
 export const cancelGame = (gameId) => () => {
-  channel
-    .push(channelMethods.gameCancel, { gameId });
+  channel.push(channelMethods.gameCancel, { gameId });
 };
 
 export const createGame = (params) => {
-  channel
-    .push(channelMethods.gameCreate, params);
+  channel.push(channelMethods.gameCreate, params);
 };
 
 export const createExperimentGame = (params) => {
   channel
     .push(channelMethods.experimentGameCreate, params)
-    .receive('error', (error) => console.error(error));
+    .receive("error", (error) => console.error(error));
 };
 
 export const createInvite = (invite) => {
-  channel
-    .push(channelMethods.gameCreateInvite, invite);
+  channel.push(channelMethods.gameCreateInvite, invite);
 };
 
 export const acceptInvite = (invite) => () => {
-  channel
-    .push(channelMethods.gameAcceptInvite, invite);
+  channel.push(channelMethods.gameAcceptInvite, invite);
 };
 
 export const declineInvite = (invite) => () => {
-  channel
-    .push(channelMethods.gameDeclineInvite, invite);
+  channel.push(channelMethods.gameDeclineInvite, invite);
 };
 
 export const cancelInvite = (invite) => () => {
-  channel
-    .push(channelMethods.gameCancelInvite, invite);
+  channel.push(channelMethods.gameCancelInvite, invite);
 };

@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { camelizeKeys } from 'humps';
-import moment from 'moment';
-import qs from 'qs';
+import axios from "axios";
+import { camelizeKeys } from "humps";
+import moment from "moment";
+import qs from "qs";
 
-import { actions } from '../slices';
+import { actions } from "../slices";
 
 export const loadUser = (dispatch) => async (user) => {
   try {
@@ -27,50 +27,49 @@ export const loadUserStats = (dispatch) => async (user) => {
 
 export const loadNearbyUsers = (abortController, onSuccess, onFailure) => {
   axios
-    .get('/api/v1/user/nearby_users', { signal: abortController.signal })
+    .get("/api/v1/user/nearby_users", { signal: abortController.signal })
     .then(camelizeKeys)
     .then(onSuccess)
     .catch(onFailure);
 };
 
 export const loadSimpleUserStats = (onSuccess, onFailure) => (user) => {
-  axios
-    .get(`/api/v1/user/${user.id}/simple_stats`)
-    .then(onSuccess)
-    .catch(onFailure);
+  axios.get(`/api/v1/user/${user.id}/simple_stats`).then(onSuccess).catch(onFailure);
 };
 
 export const sendPremiumRequest = (requestStatus, userId) => async (dispatch) => {
-    try {
-      await axios.post(
-        `/api/v1/user/${userId}/send_premium_request`,
-        { status: requestStatus },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-csrf-token': window.csrf_token,
-          },
+  try {
+    await axios.post(
+      `/api/v1/user/${userId}/send_premium_request`,
+      { status: requestStatus },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-csrf-token": window.csrf_token,
         },
-      );
-      dispatch(actions.togglePremiumRequestStatus());
-    } catch (error) {
-      dispatch(actions.setError(error));
-    }
-  };
+      },
+    );
+    dispatch(actions.togglePremiumRequestStatus());
+  } catch (error) {
+    dispatch(actions.setError(error));
+  }
+};
 
 const periodToTimeUnit = {
-  weekly: 'week',
-  monthly: 'month',
+  weekly: "week",
+  monthly: "month",
 };
 
 const getDateByPeriod = (period) => {
-  if (period === 'total') {
+  if (period === "total") {
     return null;
   }
-  return moment().startOf(periodToTimeUnit[period]).utc().format('YYYY-MM-DD');
+  return moment().startOf(periodToTimeUnit[period]).utc().format("YYYY-MM-DD");
 };
 
-export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page, pageSize) => (dispatch) => {
+export const getUsersRatingPage =
+  ({ name, period, withBots }, { attribute, direction }, page, pageSize) =>
+  (dispatch) => {
     const queryParamsString = qs.stringify({
       page,
       page_size: pageSize,

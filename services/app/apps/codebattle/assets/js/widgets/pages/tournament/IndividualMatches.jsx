@@ -1,20 +1,18 @@
-import React, {
- memo, useMemo,
-} from 'react';
+import React, { memo, useMemo } from "react";
 
-import cn from 'classnames';
-import capitalize from 'lodash/capitalize';
+import cn from "classnames";
+import capitalize from "lodash/capitalize";
 
-import UserInfo from '../../components/UserInfo';
+import UserInfo from "../../components/UserInfo";
 
 const RoundTypes = {
-  one: 'one',
-  two: 'two',
-  three: 'three',
-  four: 'four',
-  quarter: 'quarter',
-  semi: 'semi',
-  final: 'final',
+  one: "one",
+  two: "two",
+  three: "three",
+  four: "four",
+  quarter: "quarter",
+  semi: "semi",
+  final: "final",
 };
 
 const maxPlayersPerRoundType = {
@@ -30,43 +28,42 @@ const maxPlayersPerRoundType = {
 const roundTypesValues = Object.values(RoundTypes);
 const maxRoundsCount = roundTypesValues.length;
 
-const getRoundCounts = (playersCount) => (
-  roundTypesValues.filter((type) => maxPlayersPerRoundType[type] / 2 < playersCount).length
-);
+const getRoundCounts = (playersCount) =>
+  roundTypesValues.filter((type) => maxPlayersPerRoundType[type] / 2 < playersCount).length;
 
 const getTitleByRoundType = (type, playersCount) => {
   switch (type) {
     case RoundTypes.one:
-      return 'Round 1';
+      return "Round 1";
     case RoundTypes.two: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 2';
+        return "Round 2";
       }
 
-      return 'Round 1';
+      return "Round 1";
     }
     case RoundTypes.three: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 3';
+        return "Round 3";
       }
       if (maxPlayersPerRoundType[RoundTypes.three] < playersCount) {
-        return 'Round 2';
+        return "Round 2";
       }
 
-      return 'Round 1';
+      return "Round 1";
     }
     case RoundTypes.four: {
       if (maxPlayersPerRoundType[RoundTypes.two] < playersCount) {
-        return 'Round 4';
+        return "Round 4";
       }
       if (maxPlayersPerRoundType[RoundTypes.three] < playersCount) {
-        return 'Round 3';
+        return "Round 3";
       }
       if (maxPlayersPerRoundType[RoundTypes.four] < playersCount) {
-        return 'Round 2';
+        return "Round 2";
       }
 
-      return 'Round 1';
+      return "Round 1";
     }
     default:
       return capitalize(type);
@@ -76,31 +73,29 @@ const getTitleByRoundType = (type, playersCount) => {
 const getLinkParams = (match, currentUserId) => {
   const isWinner = match.winnerId === currentUserId;
   const isParticipant = match.playerIds.includes(currentUserId);
-  const cardClassName = 'p-1 border rounded-lg';
+  const cardClassName = "p-1 border rounded-lg";
 
   switch (true) {
-    case match.state === 'waiting' && isParticipant:
-      return ['Wait', cn(cardClassName, 'border-warning')];
-    case (match.state === 'playing' && isParticipant):
-      return ['Join', cn(cardClassName, 'border-winner')];
+    case match.state === "waiting" && isParticipant:
+      return ["Wait", cn(cardClassName, "border-warning")];
+    case match.state === "playing" && isParticipant:
+      return ["Join", cn(cardClassName, "border-winner")];
     case isWinner:
-      return ['Show', cn(cardClassName, 'border-winner')];
+      return ["Show", cn(cardClassName, "border-winner")];
     case isParticipant:
-      return ['Show', cn(cardClassName, 'x-bg-gray border-secondary')];
+      return ["Show", cn(cardClassName, "x-bg-gray border-secondary")];
     default:
-      return ['Show', cn(cardClassName, 'border-gray')];
+      return ["Show", cn(cardClassName, "border-gray")];
   }
 };
 
-const getMatchesByRoundPosition = (matches, round) => (
-  Object.values(matches).filter((match) => match.roundPosition === round)
-);
+const getMatchesByRoundPosition = (matches, round) =>
+  Object.values(matches).filter((match) => match.roundPosition === round);
 
-const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy text-warning' : '');
+const getResultClass = (match, playerId) =>
+  match.winnerId === playerId ? "fa fa-trophy text-warning" : "";
 
-function Round({
- matches, players, playersCount, type, round, currentUserId,
-}) {
+function Round({ matches, players, playersCount, type, round, currentUserId }) {
   const showRound = playersCount > maxPlayersPerRoundType[type] / 2;
 
   const matchesPerRound = useMemo(
@@ -114,9 +109,7 @@ function Round({
 
   return (
     <div className="round">
-      <div className="h4 text-center">
-        {getTitleByRoundType(type, playersCount)}
-      </div>
+      <div className="h4 text-center">{getTitleByRoundType(type, playersCount)}</div>
       <div className="round-inner">
         {matchesPerRound.map((match) => (
           <div key={match.gameId} className="match">
@@ -158,12 +151,7 @@ function Round({
   );
 }
 
-function IndividualMatches({
-  matches,
-  players,
-  playersCount = 0,
-  currentUserId,
-}) {
+function IndividualMatches({ matches, players, playersCount = 0, currentUserId }) {
   const roundsCount = useMemo(() => getRoundCounts(playersCount), [playersCount]);
 
   return (
@@ -178,7 +166,7 @@ function IndividualMatches({
             type={type}
             currentUserId={currentUserId}
           />
-          ))}
+        ))}
       </div>
     </div>
   );

@@ -1,16 +1,16 @@
-import Gon from 'gon';
-import { Howl, Howler } from 'howler';
-import isUndefined from 'lodash/isUndefined';
+import Gon from "gon";
+import { Howl, Howler } from "howler";
+import isUndefined from "lodash/isUndefined";
 
-import cs from '../config/sound/cs';
-import dendy from '../config/sound/dendy';
-import standard from '../config/sound/standard';
+import cs from "../config/sound/cs";
+import dendy from "../config/sound/dendy";
+import standard from "../config/sound/standard";
 
 const audioPaths = {
-  standard: '/assets/audio/audioSprites/standardSpritesAudio.wav',
-  cs: '/assets/audio/audioSprites/csSpritesAudio.wav',
-  dendy: '/assets/audio/audioSprites/dendySpritesAudio.wav',
-  silent: '',
+  standard: "/assets/audio/audioSprites/standardSpritesAudio.wav",
+  cs: "/assets/audio/audioSprites/csSpritesAudio.wav",
+  dendy: "/assets/audio/audioSprites/dendySpritesAudio.wav",
+  silent: "",
 };
 
 const audioConfigs = {
@@ -20,18 +20,19 @@ const audioConfigs = {
   silent: {},
 };
 
-const soundSettings = Gon.getAsset('current_user').sound_settings;
+const soundSettings = Gon.getAsset("current_user").sound_settings;
 const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 const tournamentSoundLevel = isUndefined(soundSettings.tournament_level)
   ? defaultSoundLevel
   : soundSettings.tournament_level * 0.1;
 
-const audio = (type = soundType, volume = defaultSoundLevel) => new Howl({
-  src: audioPaths[type],
-  sprite: audioConfigs[type]?.sprite,
-  volume,
-});
+const audio = (type = soundType, volume = defaultSoundLevel) =>
+  new Howl({
+    src: audioPaths[type],
+    sprite: audioConfigs[type]?.sprite,
+    volume,
+  });
 
 const assetPlayers = {};
 const getAssetPlayer = (path) => {
@@ -47,21 +48,21 @@ const getAssetPlayer = (path) => {
 
 const sound = {
   play: (type, soundLevel) => {
-    const isMute = JSON.parse(localStorage.getItem('ui_mute_sound') || false);
+    const isMute = JSON.parse(localStorage.getItem("ui_mute_sound") || false);
     const soundEffect = audio();
-    if (soundType === 'silent' || isMute) return;
+    if (soundType === "silent" || isMute) return;
     Howler.volume(isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
     soundEffect.play(type);
   },
   playAsset: (path, soundLevel) => {
-    const isMute = JSON.parse(localStorage.getItem('ui_mute_sound') || false);
-    if (soundType === 'silent' || isMute) return;
+    const isMute = JSON.parse(localStorage.getItem("ui_mute_sound") || false);
+    if (soundType === "silent" || isMute) return;
     Howler.volume(isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
     getAssetPlayer(path).play();
   },
   playTournamentAsset: (path) => {
-    const isMute = JSON.parse(localStorage.getItem('ui_mute_sound') || false);
-    if (soundType === 'silent' || isMute) return;
+    const isMute = JSON.parse(localStorage.getItem("ui_mute_sound") || false);
+    if (soundType === "silent" || isMute) return;
     Howler.volume(tournamentSoundLevel);
     const player = getAssetPlayer(path);
     player.volume(1);
@@ -81,9 +82,9 @@ const createSound = (slug) => ({
 });
 
 const createPlayer = () => ({
-  dendy: createSound('dendy'),
-  cs: createSound('cs'),
-  standard: createSound('standard'),
+  dendy: createSound("dendy"),
+  cs: createSound("cs"),
+  standard: createSound("standard"),
   silent: null,
   stop: () => Howler.stop(),
 });

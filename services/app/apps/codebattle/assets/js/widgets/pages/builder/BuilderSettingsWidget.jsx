@@ -1,15 +1,15 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback } from "react";
 
-import NiceModal from '@ebay/nice-modal-react';
-import { useDispatch, useSelector } from 'react-redux';
+import NiceModal from "@ebay/nice-modal-react";
+import { useDispatch, useSelector } from "react-redux";
 
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import TimerContainer from '../game/TimerContainer';
+import * as selectors from "../../selectors";
+import { actions } from "../../slices";
+import TimerContainer from "../game/TimerContainer";
 
-import BuilderExampleForm from './BuilderExampleForm';
-import BuilderStatus from './BuilderStatus';
-import BuilderTaskAssignment from './BuilderTaskAssignment';
+import BuilderExampleForm from "./BuilderExampleForm";
+import BuilderStatus from "./BuilderStatus";
+import BuilderTaskAssignment from "./BuilderTaskAssignment";
 
 function BuilderSettingsWidget() {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ function BuilderSettingsWidget() {
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector);
 
   const openTaskConfiguration = useCallback(() => {
-    NiceModal.show('task_configuration_modal');
+    NiceModal.show("task_configuration_modal");
   }, []);
 
   const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
