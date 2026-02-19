@@ -195,8 +195,12 @@ jobs:
         run: mix credo
         working-directory: .
 
-      - name: Mix audit
+      - name: Hex audit
         run: mix hex.audit
+        working-directory: .
+
+      - name: Deps audit
+        run: mix deps.audit
         working-directory: .
 
       - name: Mix dialyzer
@@ -227,6 +231,10 @@ jobs:
 
       - name: Install pnpm dependencies
         run: pnpm install --frozen-lockfile
+        working-directory: ./apps/codebattle
+
+      - name: Frontend deps audit
+        run: pnpm audit --audit-level high
         working-directory: ./apps/codebattle
 
       - name: Frontend lint (JS + SCSS)
