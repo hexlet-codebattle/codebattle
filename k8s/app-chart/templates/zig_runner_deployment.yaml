@@ -18,6 +18,8 @@ spec:
     metadata:
       labels:
         app: "runner-{{ .name }}"
+      annotations:
+        codebattle.io/rollout-revision: "{{ $.Release.Revision }}"
     spec:
       {{- if or (eq $.Values.zigRunners.strategy "robust") (eq $.Values.zigRunners.strategy "hard") }}
       nodeSelector:
@@ -65,19 +67,9 @@ spec:
           env:
             - name: DEBUG
               value: {{ $.Values.zigRunners.env.DEBUG | quote }}
-            {{- if eq .name "csharp" }}
-            - name: HOME
-              value: /tmp
-            - name: DOTNET_CLI_HOME
-              value: /tmp
-            - name: NUGET_PACKAGES
-              value: /tmp/.nuget/packages
-            - name: NUGET_HTTP_CACHE_PATH
-              value: /tmp/.nuget/http-cache
-            {{- end }}
           resources:
             {{- toYaml $.Values.zigRunners.resources | nindent 12 }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $.Values.zigRunners.imagePullPolicy | default "Always" }}
           image: "{{ .image }}"
           readinessProbe:
             httpGet:

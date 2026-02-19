@@ -118,7 +118,7 @@ defmodule Runner.CheckerGenerator do
     inner_type = TypesGenerator.call(nested, lang_meta)
 
     if Enum.empty?(list) do
-      checker_meta.type_templates.hash_empty
+      EEx.eval_string(checker_meta.type_templates.hash_empty, inner_type: inner_type)
     else
       hash_entries =
         Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, lang_meta) end)

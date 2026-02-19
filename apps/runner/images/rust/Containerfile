@@ -7,6 +7,12 @@ FROM --platform=$TARGETPLATFORM rust:${RUST_TAG}
 
 RUN apk add --no-cache make libc-dev
 
+ENV CARGO_HOME=/tmp/cargo-home \
+  CARGO_TARGET_DIR=/tmp/cargo-target
+
+RUN mkdir -p /tmp/cargo-home /tmp/cargo-target \
+  && chmod -R 777 /tmp/cargo-home /tmp/cargo-target
+
 RUN addgroup -S app -g 10001 \
   && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
 

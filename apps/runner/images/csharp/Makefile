@@ -1,4 +1,4 @@
-DOTNET_FLAGS = --nologo -p:BaseIntermediateOutputPath=/tmp/obj/ -p:BaseOutputPath=/tmp/bin/
+DOTNET_FLAGS = --nologo -p:BaseIntermediateOutputPath=obj/ -p:BaseOutputPath=bin/
 
 test-runtime:
 	dotnet run $(DOTNET_FLAGS)

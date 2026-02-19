@@ -114,6 +114,7 @@ nginx:
 
 zigRunners:
   enabled: false
+  imagePullPolicy: Always
   strategy: simple # simple | robust
   avoidCodebattleNode: false
   appNodeSelector:

@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
-    <BaseIntermediateOutputPath>/tmp/obj/</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>/tmp/obj/</IntermediateOutputPath>
-    <BaseOutputPath>/tmp/bin/</BaseOutputPath>
+    <BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj/</IntermediateOutputPath>
+    <BaseOutputPath>bin/</BaseOutputPath>
   </PropertyGroup>
 </Project>
