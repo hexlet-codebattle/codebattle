@@ -20,6 +20,7 @@ checker_executor =
 
 runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
 runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+
 db_ssl_enabled =
   System.get_env(
     "CODEBATTLE_DB_SSL",
@@ -127,6 +128,10 @@ config :codebattle,
 config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL")
 config :codebattle, host: codebattle_host
 config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
+
+config :codebattle,
+  sentry_fe_dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
+
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,
@@ -184,6 +189,3 @@ config :sentry,
   environment_name: :prod,
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()]
-
-config :codebattle,
-  sentry_fe_dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
