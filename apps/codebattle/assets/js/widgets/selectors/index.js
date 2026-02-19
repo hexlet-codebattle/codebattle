@@ -124,9 +124,9 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
 
   const currentLangSlug =
     roomMachineState &&
-    roomMachineState.matches({
-      replayer: replayerMachineStates.on,
-    })
+      roomMachineState.matches({
+        replayer: replayerMachineStates.on,
+      })
       ? meta.historyCurrentLangSlug
       : meta.currentLangSlug;
 
@@ -456,7 +456,7 @@ export const currentUserCanModerateTournament = createDraftSafeSelector(
 
 export const tournamentHideResultsSelector = (state) => !state.tournament.showResults;
 
-export const tournamentOwnerIdSelector = (state) => state.tournament.ownerId;
+export const tournamentOwnerIdSelector = (state) => state.tournament.creatorId;
 
 export const currentTournamentPlayerSelector = (state) => state.tournamentPlayer;
 

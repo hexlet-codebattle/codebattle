@@ -24,7 +24,7 @@ const views = {
 };
 
 const haveSeasonGrade = (t) => t.grade !== grades.open;
-const filterMyTournaments = (userId) => (t) => t.ownerId === userId;
+const filterMyTournaments = (userId) => (t) => t.creatorId === userId;
 
 const getEndOffsetParams = (t) => {
   if (t.finished && t.lastRoundEndedAt) {
