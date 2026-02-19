@@ -34,18 +34,20 @@ db_ssl =
     false
   end
 
-config :codebattle, Codebattle.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  ssl: db_ssl,
-  port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
-  username: System.get_env("CODEBATTLE_DB_USERNAME"),
-  password: System.get_env("CODEBATTLE_DB_PASSWORD"),
-  hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
-  database: System.get_env("CODEBATTLE_DB_NAME"),
-  pool_size: "CODEBATTLE_POOL_SIZE" |> System.get_env("20") |> String.to_integer(),
-  queue_target: "CODEBATTLE_DB_QUEUE_TARGET" |> System.get_env("2000") |> String.to_integer(),
-  queue_interval: "CODEBATTLE_DB_QUEUE_INTERVAL" |> System.get_env("5000") |> String.to_integer(),
-  log_level: :error
+if config_env() == :prod do
+  config :codebattle, Codebattle.Repo,
+    adapter: Ecto.Adapters.Postgres,
+    ssl: db_ssl,
+    port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
+    username: System.get_env("CODEBATTLE_DB_USERNAME"),
+    password: System.get_env("CODEBATTLE_DB_PASSWORD"),
+    hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
+    database: System.get_env("CODEBATTLE_DB_NAME"),
+    pool_size: "CODEBATTLE_POOL_SIZE" |> System.get_env("20") |> String.to_integer(),
+    queue_target: "CODEBATTLE_DB_QUEUE_TARGET" |> System.get_env("2000") |> String.to_integer(),
+    queue_interval: "CODEBATTLE_DB_QUEUE_INTERVAL" |> System.get_env("5000") |> String.to_integer(),
+    log_level: :error
+end
 
 config :codebattle, CodebattleWeb.BotEndpoint,
   http: [:inet6, port: "4002"],
