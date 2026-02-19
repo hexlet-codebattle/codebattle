@@ -23,7 +23,8 @@ COPY check ./check
 COPY Makefile .
 
 RUN cargo build
-RUN chown -R app:app /usr/src/app
+RUN chown -R app:app /usr/src/app /tmp/cargo-home /tmp/cargo-target \
+  && chmod -R a+rwX /tmp/cargo-home /tmp/cargo-target
 
 USER app
 

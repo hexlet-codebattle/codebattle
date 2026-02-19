@@ -14,9 +14,10 @@ ENV DOTNET_NOLOGO=1 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1 \
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
   DOTNET_EnableWriteXorExecute=0 \
-  HOME=/home/runneruser \
-  DOTNET_CLI_HOME=/home/runneruser \
-  NUGET_PACKAGES=/home/runneruser/.nuget/packages
+  HOME=/tmp/dotnet-home \
+  DOTNET_CLI_HOME=/tmp/dotnet-home \
+  NUGET_PACKAGES=/tmp/nuget/packages \
+  NUGET_CONFIG_FILE=/tmp/nuget/NuGet.Config
 
 WORKDIR /usr/src/app
 
@@ -26,10 +27,12 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Create user + writable HOME and workdir
-RUN groupadd -r runneruser \
-  && useradd -r -g runneruser -d /home/runneruser -s /usr/sbin/nologin runneruser \
-  && mkdir -p /home/runneruser/.nuget/packages /home/runneruser/.nuget/NuGet /usr/src/app \
-  && chown -R runneruser:runneruser /home/runneruser /usr/src/app
+RUN groupadd -g 10001 -r runneruser \
+  && useradd -r -g runneruser -u 10001 -m -d /home/runneruser -s /usr/sbin/nologin runneruser \
+  && mkdir -p /tmp/dotnet-home /tmp/nuget/packages /tmp/nuget /usr/src/app \
+  && touch /tmp/nuget/NuGet.Config \
+  && chown -R runneruser:runneruser /home/runneruser /usr/src/app /tmp/dotnet-home /tmp/nuget \
+  && chmod -R a+rwX /tmp/dotnet-home /tmp/nuget /usr/src/app
 
 # Switch to non-root BEFORE restore so any generated dirs are owned correctly
 USER runneruser
