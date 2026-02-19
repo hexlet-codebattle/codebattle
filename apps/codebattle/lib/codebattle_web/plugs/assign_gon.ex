@@ -25,7 +25,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
             starts_at: current_season.starts_at,
             ends_at: current_season.ends_at
           },
-      sentry_data_source_name: Application.get_env(:sentry_fe, :dsn),
+      sentry_data_source_name: Application.get_env(:codebattle, :sentry_fe_dsn),
       user_token: user_token,
       current_user: prepare_user(current_user)
     )

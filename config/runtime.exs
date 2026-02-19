@@ -20,13 +20,22 @@ checker_executor =
 
 runner_port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
 runner_host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+db_ssl_enabled =
+  System.get_env(
+    "CODEBATTLE_DB_SSL",
+    if(config_env() == :prod, do: "true", else: "false")
+  ) == "true"
+
+db_ssl =
+  if db_ssl_enabled do
+    [verify: :verify_none]
+  else
+    false
+  end
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  ssl: true,
-  ssl_opts: [
-    verify: :verify_none
-  ],
+  ssl: db_ssl,
   port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
@@ -176,4 +185,5 @@ config :sentry,
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()]
 
-config :sentry_fe, dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
+config :codebattle,
+  sentry_fe_dsn: System.get_env("SENTRY_FE_DNS_URL") || System.get_env("SENTRY_DNS_URL")
