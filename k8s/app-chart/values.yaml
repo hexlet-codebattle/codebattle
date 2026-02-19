@@ -54,6 +54,11 @@ runner:
   replicaCount: 1
   antiAffinity:
     required: true
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   # Deployment or DaemonSet
   type: Deployment
   image:

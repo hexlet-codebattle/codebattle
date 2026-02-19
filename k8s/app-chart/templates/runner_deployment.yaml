@@ -9,9 +9,12 @@ spec:
     matchLabels:
       app: "runner"
   strategy:
+    type: {{ default "RollingUpdate" .Values.runner.updateStrategy.type }}
+    {{- if eq (default "RollingUpdate" .Values.runner.updateStrategy.type) "RollingUpdate" }}
     rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+      maxUnavailable: {{ default 0 .Values.runner.updateStrategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ default 1 .Values.runner.updateStrategy.rollingUpdate.maxSurge }}
+    {{- end }}
   template:
     metadata:
       labels:

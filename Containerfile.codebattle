@@ -83,4 +83,4 @@ EXPOSE ${PORT}
 WORKDIR /opt/app
 COPY --from=compile-image /opt/release .
 COPY Makefile Makefile
-CMD exec /opt/app/bin/codebattle start
+CMD ["/opt/app/bin/codebattle", "start"]

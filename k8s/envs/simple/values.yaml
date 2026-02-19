@@ -20,6 +20,8 @@ runner:
   replicaCount: 1
   antiAffinity:
     required: false
+  updateStrategy:
+    type: Recreate
 
 zigRunners:
   strategy: simple

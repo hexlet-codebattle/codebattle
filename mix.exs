@@ -27,10 +27,12 @@ defmodule CodebattleUmbrella.MixProject do
       releases: [
         codebattle: [
           applications: [codebattle: :permanent],
+          runtime_config_path: "config/runtime.exs",
           validate_compile_env: false
         ],
         runner: [
           applications: [runner: :permanent],
+          runtime_config_path: "config/runtime.exs",
           validate_compile_env: false
         ]
       ]
