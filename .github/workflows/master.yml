@@ -52,6 +52,11 @@ jobs:
     env:
       MIX_ENV: test
       POSTGRES_PASSWORD: postgres
+      CODEBATTLE_DB_HOSTNAME: localhost
+      CODEBATTLE_DB_PORT: "5432"
+      CODEBATTLE_DB_USERNAME: postgres
+      CODEBATTLE_DB_PASSWORD: postgres
+      CODEBATTLE_DB_NAME: codebattle_test
       OTP_VERSION: "28.2"
       ELIXIR_VERSION: "1.19.4"
 
