@@ -75,13 +75,16 @@ defmodule Codebattle.CodeCheck.Checker do
   defp maybe_emit_telemetry(_token, _meta), do: :ok
 
   defp run_error_description(%{status: status} = result) when status in @failure_results do
+    output_error = Map.get(result, :output_error)
+    output = Map.get(result, :output)
+
     description =
       cond do
-        is_binary(result[:output_error]) and String.trim(result[:output_error]) != "" ->
-          result[:output_error]
+        is_binary(output_error) and String.trim(output_error) != "" ->
+          output_error
 
-        is_binary(result[:output]) and String.trim(result[:output]) != "" ->
-          result[:output]
+        is_binary(output) and String.trim(output) != "" ->
+          output
 
         status in ["service_timeout", "timeout"] ->
           "Code check execution timed out"

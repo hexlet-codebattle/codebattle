@@ -42,7 +42,9 @@ config :codebattle, Codebattle.Repo,
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
   database: System.get_env("CODEBATTLE_DB_NAME"),
-  pool_size: "CODEBATTLE_POOL_SIZE" |> System.get_env("10") |> String.to_integer(),
+  pool_size: "CODEBATTLE_POOL_SIZE" |> System.get_env("20") |> String.to_integer(),
+  queue_target: "CODEBATTLE_DB_QUEUE_TARGET" |> System.get_env("2000") |> String.to_integer(),
+  queue_interval: "CODEBATTLE_DB_QUEUE_INTERVAL" |> System.get_env("5000") |> String.to_integer(),
   log_level: :error
 
 config :codebattle, CodebattleWeb.BotEndpoint,

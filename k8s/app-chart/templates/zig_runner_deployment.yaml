@@ -55,9 +55,26 @@ spec:
       {{- end }}
       containers:
         - name: "runner"
+          securityContext:
+            privileged: true
+            allowPrivilegeEscalation: true
+            runAsUser: 0
+            runAsGroup: 0
+            seccompProfile:
+              type: Unconfined
           env:
             - name: DEBUG
               value: {{ $.Values.zigRunners.env.DEBUG | quote }}
+            {{- if eq .name "csharp" }}
+            - name: HOME
+              value: /tmp
+            - name: DOTNET_CLI_HOME
+              value: /tmp
+            - name: NUGET_PACKAGES
+              value: /tmp/.nuget/packages
+            - name: NUGET_HTTP_CACHE_PATH
+              value: /tmp/.nuget/http-cache
+            {{- end }}
           resources:
             {{- toYaml $.Values.zigRunners.resources | nindent 12 }}
           imagePullPolicy: Always
