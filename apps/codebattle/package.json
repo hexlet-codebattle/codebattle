@@ -178,7 +178,8 @@
       "test-exclude>minimatch": "^10.2.1",
       "js-yaml": "^4.1.1",
       "lodash-es": "^4.17.22",
-      "qs": "^6.14.2"
+      "qs": "^6.14.2",
+      "rollup": "^4.59.0"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
