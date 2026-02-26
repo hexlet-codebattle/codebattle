@@ -18,6 +18,12 @@ import JoinButton from "./JoinButton";
 import TournamentMainControlButtons from "./TournamentMainControlButtons";
 
 const getIconByAccessType = (accessType) => (accessType === "token" ? "lock" : "unlock");
+export const buildTournamentAccessUrl = (tournamentId, accessToken) => {
+  const url = new URL(`/tournaments/${tournamentId}`, window.location.origin);
+  url.searchParams.set("access_token", accessToken);
+
+  return url.toString();
+};
 
 const getBadgeTitle = (state, breakState, hideResults) => {
   if (hideResults && state === TournamentStates.finished) {
@@ -192,6 +198,10 @@ function TournamentHeader({
     state === TournamentStates.finished ||
     state === TournamentStates.canceled;
   const canToggleShowBots = type === TournamentTypes.show;
+  const tournamentAccessUrl = useMemo(
+    () => buildTournamentAccessUrl(tournamentId, accessToken),
+    [tournamentId, accessToken],
+  );
 
   return (
     <>
@@ -305,7 +315,7 @@ function TournamentHeader({
                   </div>
                   <CopyButton
                     className={copyBtnClassName}
-                    value={accessToken}
+                    value={tournamentAccessUrl}
                     disabled={!isLive || !isOnline}
                   />
                 </div>

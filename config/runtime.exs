@@ -1,7 +1,7 @@
 import Config
 
 codebattle_port = System.get_env("CODEBATTLE_PORT", "4000")
-codebattle_host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
+codebattle_host = System.get_env("CODEBATTLE_HOST", "codebattle.hexlet.io")
 codebattle_url = "https://#{codebattle_host}"
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")

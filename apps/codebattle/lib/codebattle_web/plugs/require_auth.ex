@@ -11,7 +11,11 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
 
   def call(conn, _) do
     if conn.assigns.current_user.is_guest do
-      next_path = String.replace(conn.request_path, "join", "")
+      next_path =
+        conn.request_path
+        |> String.replace("join", "")
+        |> append_query_string(conn.query_string)
+
       url = Routes.session_path(conn, :new, next: next_path)
 
       conn
@@ -22,4 +26,7 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
       conn
     end
   end
+
+  defp append_query_string(path, ""), do: path
+  defp append_query_string(path, query_string), do: "#{path}?#{query_string}"
 end

@@ -11,10 +11,11 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def join("tournament:" <> tournament_id, payload, socket) do
     current_user = socket.assigns.current_user
+    auth_payload = merge_access_token(payload, socket.assigns[:access_token])
 
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get_tournament_info(tournament_id),
-         true <- user_authorized?(tournament, current_user, payload) do
+         true <- user_authorized?(tournament, current_user, auth_payload) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:player:#{current_user.id}")
 
@@ -400,6 +401,14 @@ defmodule CodebattleWeb.TournamentChannel do
       Helpers.can_access?(tournament, current_user, payload)
     end
   end
+
+  defp merge_access_token(payload, nil), do: payload
+
+  defp merge_access_token(payload, access_token) when is_map(payload) do
+    Map.put_new(payload, "access_token", access_token)
+  end
+
+  defp merge_access_token(_payload, _access_token), do: %{}
 
   defp parse_pos_integer(nil, default), do: default
 

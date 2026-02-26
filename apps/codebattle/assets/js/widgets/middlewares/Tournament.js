@@ -11,6 +11,7 @@ import tournamentSounds from "../config/tournamentSounds";
 import TournamentTypes from "../config/tournamentTypes";
 import sound from "../lib/sound";
 import { actions } from "../slices";
+import { getTournamentJoinPayload } from "../utils/tournamentAccess";
 
 import Channel from "./Channel";
 
@@ -19,7 +20,10 @@ const channel = new Channel();
 
 export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
-  channel.setupChannel(newChannelName);
+  channel.setupChannel(
+    newChannelName,
+    getTournamentJoinPayload(window.location.search, Gon.getAsset("tournament_access_token")),
+  );
   return channel;
 };
 

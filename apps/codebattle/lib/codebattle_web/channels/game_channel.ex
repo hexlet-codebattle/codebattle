@@ -15,74 +15,101 @@ defmodule CodebattleWeb.GameChannel do
     Codebattle.PubSub.subscribe("game:#{game.id}")
 
     if game.tournament_id && !socket.assigns.current_user.is_bot do
-      player_ids = Enum.map(game.players, & &1.id)
-      user_id = socket.assigns.current_user.id
-      tournament = Tournament.Context.get_tournament_info(game.tournament_id)
-
-      {follow_id, active_game_id} =
-        if user_id in player_ids do
-          Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:player:#{user_id}")
-
-          active_game_id = Tournament.Helpers.get_active_game_id(tournament, user_id)
-
-          {user_id, active_game_id}
-        else
-          {nil, nil}
-        end
-
-      Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
-      current_player = Tournament.Helpers.get_player(tournament, user_id)
-
-      ranking =
-        tournament
-        |> Tournament.Ranking.get_first(5)
-        |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
-        |> Enum.filter(& &1)
-        |> Enum.uniq_by(& &1.id)
-        |> then(fn ranking ->
-          %{entries: ranking}
-        end)
-
-      {:ok,
-       %{
-         active_game_id: active_game_id,
-         game: GameView.render_game(game, score),
-         current_player: current_player,
-         in_main_draw: current_player.draw_index == current_player.max_draw_index,
-         tournament: %{
-           event_id: tournament.event_id,
-           tournament_id: game.tournament_id,
-           ranking: ranking,
-           #  clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
-           state: tournament.state,
-           type: tournament.type,
-           meta: tournament.meta,
-           break_state: tournament.break_state,
-           last_round_started_at: tournament.last_round_started_at,
-           last_round_ended_at: tournament.last_round_ended_at,
-           break_duration_seconds: tournament.break_duration_seconds,
-           round_timeout_seconds: tournament.round_timeout_seconds,
-           task_ids: tournament.task_ids,
-           current_round_position: tournament.current_round_position
-         }
-       },
-       assign(socket,
-         tournament_id: game.tournament_id,
-         banned?: current_player.state == "banned",
-         game_id: game_id,
-         follow_id: follow_id
-       )}
+      join_tournament_game(game, score, socket, game_id)
     else
-      {:ok,
-       %{
-         game: GameView.render_game(game, score)
-       }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil, banned?: false)}
+      join_regular_game(game, score, socket, game_id)
     end
   rescue
     e ->
       Logger.error(inspect(e))
       Logger.error(Exception.format_stacktrace(__STACKTRACE__))
       {:ok, %{error: "Game not found"}, socket}
+  end
+
+  defp join_regular_game(game, score, socket, game_id) do
+    {:ok,
+     %{
+       game: GameView.render_game(game, score)
+     }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil, banned?: false)}
+  end
+
+  defp join_tournament_game(game, score, socket, game_id) do
+    player_ids = Enum.map(game.players, & &1.id)
+    user_id = socket.assigns.current_user.id
+    tournament = Tournament.Context.get_tournament_info(game.tournament_id)
+
+    case tournament do
+      nil ->
+        join_regular_game(game, score, socket, game_id)
+
+      tournament ->
+        {follow_id, active_game_id} =
+          get_follow_and_active_game_id(tournament, user_id, player_ids, game.tournament_id)
+
+        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
+        current_player = Tournament.Helpers.get_player(tournament, user_id)
+
+        ranking =
+          tournament
+          |> Tournament.Ranking.get_first(5)
+          |> Enum.concat([Tournament.Ranking.get_by_player(tournament, current_player)])
+          |> Enum.filter(& &1)
+          |> Enum.uniq_by(& &1.id)
+          |> then(fn ranking ->
+            %{entries: ranking}
+          end)
+
+        in_main_draw =
+          case current_player do
+            %{draw_index: draw_index, max_draw_index: max_draw_index} ->
+              draw_index == max_draw_index
+
+            _ ->
+              false
+          end
+
+        {:ok,
+         %{
+           active_game_id: active_game_id,
+           game: GameView.render_game(game, score),
+           current_player: current_player,
+           in_main_draw: in_main_draw,
+           tournament: %{
+             event_id: tournament.event_id,
+             tournament_id: game.tournament_id,
+             ranking: ranking,
+             #  clans: Tournament.Helpers.get_clans_by_ranking(tournament, ranking),
+             state: tournament.state,
+             type: tournament.type,
+             meta: tournament.meta,
+             break_state: tournament.break_state,
+             last_round_started_at: tournament.last_round_started_at,
+             last_round_ended_at: tournament.last_round_ended_at,
+             break_duration_seconds: tournament.break_duration_seconds,
+             round_timeout_seconds: tournament.round_timeout_seconds,
+             task_ids: tournament.task_ids,
+             current_round_position: tournament.current_round_position
+           }
+         },
+         assign(socket,
+           tournament_id: game.tournament_id,
+           banned?: match?(%{state: "banned"}, current_player),
+           game_id: game_id,
+           follow_id: follow_id
+         )}
+    end
+  end
+
+  defp get_follow_and_active_game_id(tournament, user_id, player_ids, tournament_id) do
+    if user_id in player_ids do
+      Codebattle.PubSub.subscribe("tournament:#{tournament_id}:player:#{user_id}")
+
+      active_game_id = Tournament.Helpers.get_active_game_id(tournament, user_id)
+
+      {user_id, active_game_id}
+    else
+      {nil, nil}
+    end
   end
 
   def terminate(_reason, socket) do

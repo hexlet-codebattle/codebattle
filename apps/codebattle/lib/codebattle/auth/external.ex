@@ -15,6 +15,8 @@ defmodule Codebattle.Auth.External do
     body =
       URI.encode_query(%{
         grant_type: "authorization_code",
+        response_type: "code",
+        force_confirm: "yes",
         code: code,
         client_id: client_id(),
         client_secret: client_secret(),

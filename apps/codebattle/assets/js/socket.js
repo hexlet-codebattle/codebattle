@@ -1,8 +1,22 @@
 import Gon from "gon";
 import { Socket } from "phoenix";
 
+const getAccessToken = () => {
+  const tokenFromQuery = new URLSearchParams(window.location.search).get("access_token");
+  const tokenFromGon = Gon.getAsset("tournament_access_token");
+
+  return tokenFromQuery || tokenFromGon || "";
+};
+
+const socketParams = { token: Gon.getAsset("user_token") };
+const accessToken = getAccessToken();
+
+if (accessToken) {
+  socketParams.access_token = accessToken;
+}
+
 const socket = new Socket("/ws", {
-  params: { token: Gon.getAsset("user_token") },
+  params: socketParams,
 });
 
 export const channelTopics = {

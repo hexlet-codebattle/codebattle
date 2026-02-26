@@ -28,11 +28,11 @@ codebattle:
     port: 4000
   resources:
     requests:
-      cpu: "250m"
-      memory: "512Mi"
+      cpu: "100m"
+      memory: "128Mi"
     limits:
-      cpu: "2"
-      memory: "2Gi"
+      cpu: "48"
+      memory: "48Gi"
   probes:
     readiness:
       initialDelaySeconds: 5
@@ -66,8 +66,8 @@ runner:
     imagePullPolicy: Always
   resources:
     requests:
-      cpu: "150m"
-      memory: "256Mi"
+      cpu: "50m"
+      memory: "64Mi"
     limits:
       cpu: "2"
       memory: "2Gi"
@@ -130,11 +130,11 @@ zigRunners:
     whenUnsatisfiable: ScheduleAnyway
   resources:
     limits:
-      cpu: "2"
-      memory: "2Gi"
+      cpu: "4"
+      memory: "4Gi"
     requests:
-      cpu: "50m"
-      memory: "64Mi"
+      cpu: "40m"
+      memory: "32Mi"
   probes:
     readiness:
       initialDelaySeconds: 5

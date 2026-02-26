@@ -25,8 +25,8 @@ defmodule Codebattle.Tournament.SeasonTournamentGenerator do
   @default_tournament_params %{
     creator_id: nil,
     break_duration_seconds: 10,
-    round_timeout_seconds: 300,
-    match_timeout_seconds: 300,
+    round_timeout_seconds: nil,
+    match_timeout_seconds: nil,
     state: "upcoming",
     type: "swiss",
     access_type: "public",

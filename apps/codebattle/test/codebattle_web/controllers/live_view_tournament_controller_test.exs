@@ -70,6 +70,39 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
     assert new_conn.status == 302
   end
 
+  test "keeps private tournament token in login redirect", %{conn: conn} do
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Private Tournament",
+        "description" => "Private tournament description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "access_type" => "token",
+        "access_token" => "access_token",
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    new_conn =
+      get(
+        conn,
+        Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
+      )
+
+    assert redirected_to(new_conn, 302) ==
+             Routes.session_path(
+               CodebattleWeb.Endpoint,
+               :new,
+               next: Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
+             )
+  end
+
   test "renders not found", %{conn: conn} do
     user = insert(:user)
 

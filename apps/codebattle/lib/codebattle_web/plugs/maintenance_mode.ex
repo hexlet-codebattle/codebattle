@@ -7,6 +7,10 @@ defmodule CodebattleWeb.Plugs.MaintenanceMode do
 
   alias Codebattle.User
 
+  @allowed_paths [
+    ~r{^\/auth\/token\/?$}
+  ]
+
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
 
@@ -14,6 +18,9 @@ defmodule CodebattleWeb.Plugs.MaintenanceMode do
   def call(conn, _opts) do
     cond do
       User.admin?(conn.assigns.current_user) ->
+        conn
+
+      Enum.any?(@allowed_paths, &Regex.match?(&1, conn.request_path)) ->
         conn
 
       FunWithFlags.enabled?(:maintenance_mode) ->

@@ -11,6 +11,7 @@ defmodule CodebattleWeb.GameChannelTest do
   setup do
     user1 = insert(:user, rating: 1001)
     user2 = insert(:user, rating: 1002)
+    spectator = insert(:admin)
     insert(:task, level: "easy")
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
@@ -19,7 +20,18 @@ defmodule CodebattleWeb.GameChannelTest do
     user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
+    spectator_token = Phoenix.Token.sign(socket(UserSocket), "user_token", spectator.id)
+    {:ok, spectator_socket} = connect(UserSocket, %{"token" => spectator_token})
+
+    {:ok,
+     %{
+       user1: user1,
+       user2: user2,
+       spectator: spectator,
+       socket1: socket1,
+       socket2: socket2,
+       spectator_socket: spectator_socket
+     }}
   end
 
   describe "join/3" do
@@ -33,6 +45,30 @@ defmodule CodebattleWeb.GameChannelTest do
       assert created.task.level == "easy"
       assert created.mode == "standard"
       assert created.type == "duo"
+    end
+
+    test "sends tournament game info for spectator who is not participant", %{
+      user1: user1,
+      user2: user2,
+      spectator_socket: spectator_socket
+    } do
+      tournament = insert(:tournament, players: %{}, matches: %{}, players_count: 0)
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "playing",
+          players: [user1, user2],
+          level: "easy",
+          tournament_id: tournament.id
+        })
+
+      {:ok, response, _socket} =
+        subscribe_and_join(spectator_socket, GameChannel, game_topic(game))
+
+      assert response.game.id == game.id
+      assert response.current_player == nil
+      assert response.in_main_draw == false
+      assert response.tournament.tournament_id == tournament.id
     end
   end
 
