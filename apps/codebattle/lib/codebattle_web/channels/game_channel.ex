@@ -36,13 +36,18 @@ defmodule CodebattleWeb.GameChannel do
   defp join_tournament_game(game, score, socket, game_id) do
     player_ids = Enum.map(game.players, & &1.id)
     user_id = socket.assigns.current_user.id
+    is_player? = user_id in player_ids
     tournament = Tournament.Context.get_tournament_info(game.tournament_id)
 
     {follow_id, active_game_id} =
       get_follow_and_active_game_id(tournament, user_id, player_ids, game.tournament_id)
 
     Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}:common")
-    current_player = Tournament.Helpers.get_player(tournament, user_id)
+
+    current_player =
+      if is_player? do
+        Tournament.Helpers.get_player(tournament, user_id)
+      end
 
     ranking =
       tournament
@@ -54,7 +59,7 @@ defmodule CodebattleWeb.GameChannel do
         %{entries: ranking}
       end)
 
-    in_main_draw = current_player.draw_index == current_player.max_draw_index
+    in_main_draw = is_player? and current_player.draw_index == current_player.max_draw_index
 
     {:ok,
      %{
