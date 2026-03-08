@@ -174,8 +174,9 @@
   "proxy": "http://localhost:8080",
   "pnpm": {
     "overrides": {
-      "glob>minimatch": "^10.2.1",
-      "test-exclude>minimatch": "^10.2.1",
+      "glob>minimatch": "^10.2.3",
+      "test-exclude>minimatch": "^10.2.3",
+      "immutable": "^5.1.5",
       "js-yaml": "^4.1.1",
       "lodash-es": "^4.17.22",
       "qs": "^6.14.2",

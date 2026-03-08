@@ -353,7 +353,8 @@ function UserProfile() {
                 </div>
               )}
               <div className="row mt-5 mb-md-3 mb-lg-4">
-                <div className="col-md-11 col-lg-10 mx-auto">
+                <div className="col-12">
+                  <div className="small text-center text-muted mb-2">Activity</div>
                   <Heatmap />
                 </div>
               </div>

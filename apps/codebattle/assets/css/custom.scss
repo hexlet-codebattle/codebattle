@@ -333,14 +333,117 @@
   background: linear-gradient(135deg, rgba(42, 42, 53, 0.92) 0%, rgba(23, 23, 32, 0.98) 100%);
 }
 
-@media (max-width: 991.98px) {
-  .cb-seasons-card-title {
-    font-size: 1.75rem;
-  }
+.cb-profile-heatmap-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
 
-  .cb-seasons-card-body {
-    min-height: 220px;
-  }
+.cb-profile-heatmap-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #8f98a8;
+}
+
+.cb-profile-heatmap-range {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #8f98a8;
+}
+
+.cb-profile-heatmap-separator {
+  font-size: 0.78rem;
+  opacity: 0.6;
+  flex: 0 0 auto;
+}
+
+.cb-profile-heatmap-controls {
+  min-width: 176px;
+  margin-right: 0.75rem;
+}
+
+.cb-profile-heatmap-select {
+  min-width: 176px;
+  height: 30px;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  font-size: 0.76rem;
+  color: #aeb8c8 !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+  background-color: rgba(26, 30, 42, 0.82) !important;
+}
+
+.cb-profile-heatmap-grid-wrapper {
+  position: relative;
+}
+
+.cb-profile-heatmap-grid {
+  width: 100%;
+  overflow: hidden;
+  padding: 0 14px 0.25rem 6px;
+}
+
+.cb-profile-heatmap-grid svg {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+.cb-profile-heatmap-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(18, 21, 30, 0.38);
+  z-index: 1;
+}
+
+.cb-profile-heatmap-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  padding: 0.3rem 0.55rem;
+  border-radius: 6px;
+  background-color: rgba(12, 15, 24, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  color: #d6deeb;
+  font-size: 0.74rem;
+  line-height: 1.2;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.cb-profile-heatmap .react-calendar-heatmap text {
+  font-size: 6px;
+}
+
+.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-month-label {
+  font-size: 7px;
+  font-weight: 600;
+}
+
+.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-weekday-label {
+  font-size: 7px;
+  font-weight: 500;
+}
+
+.cb-profile-heatmap .react-calendar-heatmap rect {
+  width: 9px;
+  height: 9px;
+  rx: 2px;
+  ry: 2px;
 }
 
 @media (max-width: 575.98px) {
@@ -387,7 +490,26 @@
   .cb-seasons-podium-offset-third {
     margin-top: 1rem;
   }
+
+  .cb-profile-heatmap-controls {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .cb-profile-heatmap-heading {
+    width: 100%;
+  }
+
+  .cb-profile-heatmap-title {
+    font-size: 0.68rem;
+  }
+
+  .cb-profile-heatmap-range {
+    font-size: 0.68rem;
+  }
 }
+
 
 .cb-season-leaderboard-filters .cb-season-filter-input-group {
   border-radius: 999px;
