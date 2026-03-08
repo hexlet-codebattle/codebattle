@@ -45,12 +45,15 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
   end
 
   def set_ranking(tournament) do
-    ranking = tournament |> TournamentResult.get_user_ranking() |> Map.values()
+    round_position = tournament.current_round_position
+    round_deltas = TournamentResult.get_user_round_delta(tournament, round_position)
 
-    if tournament.current_round_position == 0 or Enum.empty?(ranking) do
+    if Enum.empty?(round_deltas) do
       # Keep existing ETS ranking (seeded on join) when there are no results yet.
       tournament
     else
+      apply_round_deltas(tournament, round_deltas, round_position)
+      ranking = build_ranking(tournament)
       set_places_with_score_to_players(tournament, ranking)
       Ranking.put_ranking(tournament, ranking)
       tournament
@@ -92,6 +95,49 @@ defmodule Codebattle.Tournament.Ranking.ByUser do
         player ->
           Players.put_player(tournament, %{player | place: place, score: score})
       end
+    end)
+  end
+
+  defp apply_round_deltas(tournament, round_deltas, round_position) do
+    Enum.each(round_deltas, fn {player_id, %{score: score, total_duration_sec: total_duration_sec}} ->
+      tournament
+      |> Players.get_player(player_id)
+      |> case do
+        %{last_ranked_round_position: ^round_position} ->
+          :noop
+
+        nil ->
+          :noop
+
+        player ->
+          Players.put_player(tournament, %{
+            player
+            | score: (player.score || 0) + score,
+              total_duration_sec: (player.total_duration_sec || 0) + (total_duration_sec || 0),
+              last_ranked_round_position: round_position
+          })
+      end
+    end)
+  end
+
+  defp build_ranking(tournament) do
+    tournament
+    |> Players.get_players()
+    |> Enum.reject(&(&1.is_bot || &1.state == "banned"))
+    |> Enum.sort_by(fn player ->
+      {-(player.score || 0), player.total_duration_sec || 0, player.id}
+    end)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {player, place} ->
+      %{
+        id: player.id,
+        place: place,
+        score: player.score || 0,
+        lang: player.lang,
+        name: player.name,
+        clan_id: player.clan_id,
+        clan: player.clan
+      }
     end)
   end
 end

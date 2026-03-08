@@ -260,13 +260,27 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec handle_event(Tournament.t() | tournament_id(), atom(), map()) :: :ok
+  @spec handle_event(Tournament.t() | tournament_id(), atom(), map()) ::
+          Tournament.t() | {:error, :not_found | :handoff_in_progress}
   def handle_event(%Tournament{id: id}, event_type, params) do
     handle_event(id, event_type, params)
   end
 
   def handle_event(tournament_id, event_type, params) do
     Tournament.Server.handle_event(tournament_id, event_type, params)
+  end
+
+  def recalculate_results(tournament_id) do
+    case Tournament.Server.get_tournament(tournament_id) do
+      nil ->
+        tournament_id
+        |> get_from_db!()
+        |> add_module()
+        |> rebuild_finished_results_from_db()
+
+      _tournament ->
+        Tournament.Server.handle_event(tournament_id, :recalculate_results, %{})
+    end
   end
 
   @spec get_live_tournament_players(Tournament.t()) :: [Tournament.Player.t()]
@@ -445,4 +459,21 @@ defmodule Codebattle.Tournament.Context do
   defp generate_access_token do
     17 |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, 17)
   end
+
+  defp rebuild_finished_results_from_db(%Tournament{state: "finished"} = tournament) do
+    Tournament.TournamentResult.clean_results(tournament.id)
+
+    Enum.each(0..tournament.current_round_position, fn round_position ->
+      tournament
+      |> Map.put(:current_round_position, round_position)
+      |> Tournament.TournamentResult.upsert_results()
+    end)
+
+    Tournament.TournamentUserResult.clean_results(tournament.id)
+    Tournament.TournamentUserResult.upsert_results(tournament)
+
+    tournament
+  end
+
+  defp rebuild_finished_results_from_db(tournament), do: tournament
 end

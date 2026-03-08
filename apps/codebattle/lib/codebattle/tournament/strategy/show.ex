@@ -57,6 +57,10 @@ defmodule Codebattle.Tournament.Show do
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: true
 
+  def maybe_finish_round_after_finish_match(tournament) do
+    finish_round_and_next_step(tournament)
+  end
+
   # defp final_round?(
   #   tournament = %{
   #     task_provider: "task_pack",

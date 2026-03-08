@@ -5,8 +5,12 @@ defmodule Codebattle.Tournament.TournamentUserResult do
 
   import Ecto.Query
 
+  alias Codebattle.Clan
   alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
+  alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.User
 
   @type t :: %__MODULE__{}
 
@@ -74,143 +78,161 @@ defmodule Codebattle.Tournament.TournamentUserResult do
   end
 
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
-  def upsert_results(%{type: "swiss", ranking_type: "by_user", score_strategy: "75_percentile"} = tournament) do
+  def upsert_results(%{type: "swiss", ranking_type: "by_user"} = tournament) do
     clean_results(tournament.id)
 
-    Repo.query!("""
-      WITH grade_points AS (
-        SELECT 'rookie' as grade, UNNEST(ARRAY[8, 4, 2]) as points, GENERATE_SERIES(1, 3) as position
-        UNION ALL
-        SELECT 'challenger' as grade, UNNEST(ARRAY[16, 8, 4, 2]) as points, GENERATE_SERIES(1, 6) as position
-        UNION ALL
-        SELECT 'pro' as grade, UNNEST(ARRAY[128, 64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 7) as position
-        UNION ALL
-        SELECT 'elite' as grade, UNNEST(ARRAY[256, 128, 64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 8) as position
-        UNION ALL
-        SELECT 'masters' as grade, UNNEST(ARRAY[1024, 512, 256, 128, 64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 10) as position
-        UNION ALL
-        SELECT 'grand_slam' as grade, UNNEST(ARRAY[2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2]) as points, GENERATE_SERIES(1, 11) as position
-      ),
-      aggregated_results AS (
-        SELECT
-          tr.tournament_id,
-          tr.user_id,
-          tr.clan_id,
-          MAX(tr.user_name) AS user_name,
-          (
-            SELECT user_lang
-            FROM tournament_results tr2
-            WHERE tr2.tournament_id = tr.tournament_id
-              AND tr2.user_id = tr.user_id
-            GROUP BY user_lang
-            ORDER BY COUNT(*) DESC, user_lang DESC
-            LIMIT 1
-          ) AS user_lang,
-          SUM(tr.score)::integer AS score,
-          COUNT(*)::integer AS games_count,
-          SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END)::integer AS wins_count,
-          SUM(tr.duration_sec)::integer AS total_time,
-          BOOL_OR(tr.was_cheated) AS is_cheater,
-          AVG(tr.result_percent)::numeric(5,1) AS avg_result_percent
-        FROM tournament_results tr
-        WHERE tr.tournament_id = #{tournament.id}
-        GROUP BY tr.tournament_id, tr.user_id, tr.clan_id
-      ),
-      ranked_results AS (
-        SELECT
-          ar.tournament_id,
-          ar.user_id,
-          ar.clan_id,
-          ar.user_name,
-          ar.user_lang,
-          ar.score,
-          ar.games_count,
-          ar.wins_count,
-          ar.total_time,
-          ar.is_cheater,
-          ar.avg_result_percent,
-          c.name AS clan_name,
-          ROW_NUMBER() OVER (ORDER BY ar.score DESC, ar.total_time ASC) AS place,
-          t.grade
-        FROM aggregated_results ar
-        JOIN tournaments t ON t.id = ar.tournament_id and t.grade != 'open'
-        LEFT JOIN clans c ON c.id = ar.clan_id
-      ),
-      results_with_points AS (
-        SELECT
-          rr.tournament_id,
-          rr.user_id,
-          rr.clan_id,
-          rr.clan_name,
-          rr.user_name,
-          rr.user_lang,
-          rr.score,
-          rr.place,
-          rr.games_count,
-          rr.wins_count,
-          rr.total_time,
-          rr.is_cheater,
-          rr.avg_result_percent,
-          COALESCE(gp.points, 2) AS points
-        FROM ranked_results rr
-        LEFT JOIN grade_points gp ON gp.grade = rr.grade AND gp.position = rr.place
+    timestamp = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+    rows =
+      from(tr in TournamentResult,
+        where: tr.tournament_id == ^tournament.id and tr.was_cheated == false,
+        where: tr.user_id not in ^(tournament.cheater_ids || []),
+        left_join: c in Clan,
+        on: c.id == tr.clan_id,
+        group_by: [tr.tournament_id, tr.user_id, tr.clan_id, c.name],
+        order_by: [desc: sum(tr.score), asc: sum(tr.duration_sec), asc: tr.user_id],
+        select: %{
+          tournament_id: tr.tournament_id,
+          user_id: tr.user_id,
+          clan_id: tr.clan_id,
+          clan_name: c.name,
+          user_name: max(tr.user_name),
+          user_lang: max(tr.user_lang),
+          score: sum(tr.score),
+          games_count: count(tr.id),
+          wins_count:
+            fragment(
+              "SUM(CASE WHEN ? = 100.0 THEN 1 ELSE 0 END)::integer",
+              tr.result_percent
+            ),
+          total_time: sum(tr.duration_sec),
+          avg_result_percent: type(avg(tr.result_percent), :decimal)
+        }
       )
-      INSERT INTO tournament_user_results (
-        tournament_id,
-        user_id,
-        clan_id,
-        clan_name,
-        user_name,
-        user_lang,
-        score,
-        points,
-        place,
-        games_count,
-        wins_count,
-        total_time,
-        is_cheater,
-        avg_result_percent,
-        inserted_at
-      )
-      SELECT
-        tournament_id,
-        user_id,
-        clan_id,
-        clan_name,
-        user_name,
-        user_lang,
-        score,
-        points,
-        place,
-        games_count,
-        wins_count,
-        total_time,
-        is_cheater,
-        avg_result_percent,
-        NOW()
-      FROM results_with_points
-      ON CONFLICT (tournament_id, user_id)
-      DO UPDATE SET
-        user_name = EXCLUDED.user_name,
-        clan_id = EXCLUDED.clan_id,
-        clan_name = EXCLUDED.clan_name,
-        user_lang = EXCLUDED.user_lang,
-        score = EXCLUDED.score,
-        points = EXCLUDED.points,
-        place = EXCLUDED.place,
-        games_count = EXCLUDED.games_count,
-        wins_count = EXCLUDED.wins_count,
-        total_time = EXCLUDED.total_time,
-        is_cheater = EXCLUDED.is_cheater,
-        avg_result_percent = EXCLUDED.avg_result_percent
-    """)
+      |> Repo.all()
+      |> Enum.with_index(1)
+      |> Enum.map(fn {row, place} ->
+        Map.merge(row, %{
+          place: place,
+          points: grade_points(tournament.grade, place),
+          is_cheater: false,
+          inserted_at: timestamp
+        })
+      end)
+
+    if rows != [] do
+      Repo.insert_all(__MODULE__, rows)
+    end
+
+    upsert_cheater_results(tournament)
 
     tournament
   end
+
+  def upsert_results(tournament), do: tournament
 
   def clean_results(tournament_id) do
     __MODULE__
     |> where([tr], tr.tournament_id == ^tournament_id)
     |> Repo.delete_all()
   end
+
+  defp upsert_cheater_results(%{cheater_ids: cheater_ids} = tournament) when is_list(cheater_ids) do
+    cheater_ids = cheater_ids |> Enum.uniq() |> Enum.sort()
+
+    if cheater_ids == [] do
+      :ok
+    else
+      fair_count =
+        __MODULE__
+        |> where([tr], tr.tournament_id == ^tournament.id)
+        |> Repo.aggregate(:count, :user_id)
+
+      timestamp = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+      rows =
+        tournament
+        |> Helpers.get_players(cheater_ids)
+        |> Enum.map(fn
+          nil -> nil
+          player -> player
+        end)
+        |> Enum.zip(cheater_ids)
+        |> Enum.map(fn
+          {nil, user_id} ->
+            user = User.get!(user_id)
+
+            %{
+              id: user.id,
+              clan_id: user.clan_id,
+              clan: user.clan,
+              lang: user.lang,
+              name: user.name
+            }
+
+          {player, _user_id} ->
+            player
+        end)
+        |> Enum.sort_by(& &1.id)
+        |> Enum.with_index(fair_count + 1)
+        |> Enum.map(fn {player, place} ->
+          %{
+            tournament_id: tournament.id,
+            user_id: player.id,
+            clan_id: player.clan_id,
+            clan_name: player.clan,
+            user_name: player.name,
+            user_lang: player.lang,
+            score: 0,
+            points: 0,
+            place: place,
+            games_count: 0,
+            wins_count: 0,
+            total_time: 0,
+            is_cheater: true,
+            avg_result_percent: Decimal.new("0.0"),
+            inserted_at: timestamp
+          }
+        end)
+
+      if rows != [] do
+        Repo.insert_all(
+          __MODULE__,
+          rows,
+          on_conflict:
+            {:replace,
+             [
+               :clan_id,
+               :clan_name,
+               :user_name,
+               :user_lang,
+               :score,
+               :points,
+               :place,
+               :games_count,
+               :wins_count,
+               :total_time,
+               :is_cheater,
+               :avg_result_percent
+             ]},
+          conflict_target: [:tournament_id, :user_id]
+        )
+      end
+    end
+  end
+
+  defp upsert_cheater_results(_tournament), do: :ok
+
+  defp grade_points("rookie", place) when place <= 3, do: Enum.at([8, 4, 2], place - 1)
+  defp grade_points("challenger", place) when place <= 4, do: Enum.at([16, 8, 4, 2], place - 1)
+  defp grade_points("pro", place) when place <= 7, do: Enum.at([128, 64, 32, 16, 8, 4, 2], place - 1)
+  defp grade_points("elite", place) when place <= 8, do: Enum.at([256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+
+  defp grade_points("masters", place) when place <= 10, do: Enum.at([1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+
+  defp grade_points("grand_slam", place) when place <= 11,
+    do: Enum.at([2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+
+  defp grade_points("open", _place), do: 0
+  defp grade_points(_grade, _place), do: 2
 end

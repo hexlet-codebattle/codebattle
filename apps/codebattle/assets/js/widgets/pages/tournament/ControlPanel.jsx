@@ -17,6 +17,7 @@ import { tournamentPlayersSelector } from "../../selectors";
 export const PanelModeCodes = {
   ratingMode: "ratingMode",
   reportsMode: "reportsMode",
+  cheatersMode: "cheatersMode",
   leaderboardMode: "leaderboardMode",
   playerMode: "playerMode",
   topUserByClansMode: "top_users_by_clan_ranking",
@@ -30,6 +31,7 @@ export const PanelModeCodes = {
 export const mapPanelModeToTitle = {
   [PanelModeCodes.ratingMode]: i18next.t("Players & Matches"),
   [PanelModeCodes.reportsMode]: i18next.t("Reports Panel"),
+  [PanelModeCodes.cheatersMode]: i18next.t("Cheaters Panel"),
   [PanelModeCodes.playerMode]: i18next.t("Player Panel"),
   [PanelModeCodes.leaderboardMode]: i18next.t("Leaderboard"),
   [PanelModeCodes.topUserByClansMode]: i18next.t("Top users by clan ranking"),

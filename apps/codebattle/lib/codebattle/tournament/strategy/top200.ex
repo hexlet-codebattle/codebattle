@@ -497,6 +497,10 @@ defmodule Codebattle.Tournament.Top200 do
   @impl Tournament.Base
   def finish_round_after_match?(_tournament), do: true
 
+  def maybe_finish_round_after_finish_match(tournament) do
+    finish_round_and_next_step(tournament)
+  end
+
   defp get_wait_type(tournament, game_params) do
     # min_seconds_to_rematch = 7 + round(timeout_ms / 1000)
 

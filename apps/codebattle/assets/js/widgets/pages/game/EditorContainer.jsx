@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useCallback, useRef } from "react";
 
 import { useInterpret } from "@xstate/react";
 import cn from "classnames";
+import i18next from "i18next";
 import noop from "lodash/noop";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -213,6 +214,7 @@ function EditorContainer({
   const updateEditor =
     editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
+  const showBannedMessage = type === editorUserTypes.currentUser && player?.isBanned;
 
   const editorParams = {
     roomMode: tournamentId ? GameModeCodes.tournament : gameMode,
@@ -261,6 +263,13 @@ function EditorContainer({
           editorSettingClassNames="btn-group align-items-center m-1"
           userInfoClassNames="btn-group align-items-center justify-content-end m-1"
         />
+        {showBannedMessage && (
+          <div className="alert alert-warning mx-2 mb-2" role="alert">
+            {i18next.t(
+              "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.",
+            )}
+          </div>
+        )}
         {children({
           ...editorParams,
         })}

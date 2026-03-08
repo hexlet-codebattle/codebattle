@@ -436,3 +436,24 @@ msgstr "Failed"
 
 msgid "Go to"
 msgstr "Go to"
+
+msgid "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+msgstr "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+
+msgid "Cheaters Panel"
+msgstr "Cheaters Panel"
+
+msgid "Cheaters"
+msgstr "Cheaters"
+
+msgid "No cheaters marked yet"
+msgstr "No cheaters marked yet"
+
+msgid "All reports"
+msgstr "All reports"
+
+msgid "No reports yet"
+msgstr "No reports yet"
+
+msgid "Unban"
+msgstr "Unban"

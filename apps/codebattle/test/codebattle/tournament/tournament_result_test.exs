@@ -1,10 +1,70 @@
 defmodule Codebattle.Tournament.TournamenResultTest do
   use Codebattle.DataCase, async: false
 
+  import Ecto.Query
+
   alias Codebattle.Repo
   alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.Tournament.TournamentUserResult
 
   describe "get_player_results" do
+    test "upsert_results updates only current round and keeps previous rounds" do
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "win_loss",
+          current_round_position: 1
+        )
+
+      user1 = insert(:user, name: "u1")
+      user2 = insert(:user, name: "u2")
+      task = insert(:task, level: "easy")
+
+      insert(:tournament_result,
+        tournament_id: tournament.id,
+        user_id: user1.id,
+        user_name: user1.name,
+        user_lang: "js",
+        score: 10,
+        duration_sec: 10,
+        round_position: 0,
+        game_id: 100,
+        task_id: task.id,
+        level: "easy",
+        result_percent: Decimal.new("100"),
+        clan_id: nil,
+        was_cheated: false
+      )
+
+      insert(:game,
+        tournament_id: tournament.id,
+        task: task,
+        round_position: 1,
+        state: "game_over",
+        duration_sec: 15,
+        players: [
+          %{id: user1.id, name: user1.name, clan_id: nil, lang: "js", result_percent: 100.0, is_bot: false},
+          %{id: user2.id, name: user2.name, clan_id: nil, lang: "js", result_percent: 50.0, is_bot: false}
+        ]
+      )
+
+      TournamentResult.upsert_results(tournament)
+
+      round0_count =
+        TournamentResult
+        |> where([tr], tr.tournament_id == ^tournament.id and tr.round_position == 0)
+        |> Repo.aggregate(:count)
+
+      round1_count =
+        TournamentResult
+        |> where([tr], tr.tournament_id == ^tournament.id and tr.round_position == 1)
+        |> Repo.aggregate(:count)
+
+      assert round0_count == 1
+      assert round1_count == 2
+    end
+
     test "aggregates ranking by user when language changes" do
       tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
       user = insert(:user, name: "u1")
@@ -44,6 +104,109 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       ])
 
       assert %{^user_id => %{score: 300, place: 1}} = TournamentResult.get_user_ranking(tournament)
+    end
+
+    test "upsert_results marks games involving cheater ids as cheated and zeroes their scores" do
+      task = insert(:task, level: "easy")
+      user1 = insert(:user, name: "cheater")
+      user2 = insert(:user, name: "fair-1")
+      user3 = insert(:user, name: "fair-2")
+      user4 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "win_loss",
+          current_round_position: 0,
+          cheater_ids: [user1.id]
+        )
+
+      insert_game(task, tournament, user1, user2, 10, 100.0, 0.0)
+      insert_game(task, tournament, user3, user4, 15, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      assert results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      assert [
+               %{user_id: user1_id, was_cheated: true, score: 0},
+               %{user_id: user2_id, was_cheated: true, score: 0},
+               %{user_id: user3_id, was_cheated: false, score: 1},
+               %{user_id: user4_id, was_cheated: false, score: 0}
+             ] = results
+
+      assert [user1.id, user2.id, user3.id, user4.id] == [user1_id, user2_id, user3_id, user4_id]
+    end
+
+    test "recalculate_results rebuilds all rounds with zeroed cheaters at the bottom" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      user2 = insert(:user, name: "fair-1")
+      user3 = insert(:user, name: "fair-2")
+      user4 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "win_loss",
+          state: "finished",
+          current_round_position: 1,
+          cheater_ids: [cheater.id]
+        )
+
+      insert(:tournament_result,
+        tournament_id: tournament.id,
+        user_id: cheater.id,
+        user_name: cheater.name,
+        user_lang: "js",
+        score: 1,
+        duration_sec: 10,
+        round_position: 0,
+        result_percent: Decimal.new("100"),
+        game_id: 1,
+        task_id: task.id,
+        level: "easy",
+        clan_id: nil,
+        was_cheated: false
+      )
+
+      insert_game(task, tournament, cheater, user2, 10, 100.0, 0.0)
+
+      insert(:game,
+        state: "game_over",
+        level: task.level,
+        duration_sec: 20,
+        players: build_players(user3, user4, 100.0, 0.0),
+        tournament_id: tournament.id,
+        task: task,
+        round_position: 1
+      )
+
+      Codebattle.Tournament.Context.recalculate_results(tournament.id)
+
+      assert [
+               %{round_position: 0, user_id: cheater_id, was_cheated: true},
+               %{round_position: 0, user_id: user2_id, was_cheated: true},
+               %{round_position: 1, user_id: user3_id, was_cheated: false},
+               %{round_position: 1, user_id: user4_id, was_cheated: false}
+             ] =
+               TournamentResult
+               |> Repo.all()
+               |> Enum.sort_by(&{&1.round_position, &1.user_id})
+
+      assert [cheater.id, user2.id, user3.id, user4.id] == [cheater_id, user2_id, user3_id, user4_id]
+
+      assert [
+               %{user_id: ^user3_id, place: 1, score: 1, total_time: 20, is_cheater: false},
+               %{user_id: ^user4_id, place: 2, score: 0, total_time: 20, is_cheater: false},
+               %{user_id: ^cheater_id, place: 3, score: 0, total_time: 0, is_cheater: true}
+             ] =
+               TournamentUserResult
+               |> where([tur], tur.tournament_id == ^tournament.id)
+               |> order_by([tur], asc: tur.place)
+               |> Repo.all()
     end
 
     test "calculates results correctly by_percentile" do

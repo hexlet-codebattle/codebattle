@@ -35,7 +35,10 @@ defmodule Codebattle.Application do
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
         {Codebattle.InvitesKillerServer, []},
-        %{id: Codebattle.Chat.Lobby, start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}}
+        %{
+          id: Codebattle.Chat.Lobby,
+          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: to_timeout(hour: 8)}]}
+        }
       ] ++ [{CodebattleWeb.Endpoint, []}]
 
     # PubSub for internal messages

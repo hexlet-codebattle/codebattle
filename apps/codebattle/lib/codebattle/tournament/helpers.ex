@@ -287,6 +287,7 @@ defmodule Codebattle.Tournament.Helpers do
       :__meta__,
       :clans_table,
       :creator,
+      :cheater_ids,
       :matches,
       :players,
       :event,

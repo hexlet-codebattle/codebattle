@@ -17,6 +17,7 @@ defmodule Codebattle.Tournament do
              :access_type,
              :break_duration_seconds,
              :break_state,
+             :cheater_ids,
              :creator_id,
              :current_round_id,
              :current_round_position,
@@ -76,6 +77,7 @@ defmodule Codebattle.Tournament do
     field(:access_type, :string, default: "public")
     field(:break_duration_seconds, :integer, default: 42)
     field(:break_state, :string, default: "off")
+    field(:cheater_ids, {:array, :integer}, default: [])
     field(:current_round_id, :integer)
     field(:current_round_position, :integer, default: 0)
     field(:description, :string)
@@ -121,6 +123,9 @@ defmodule Codebattle.Tournament do
 
     field(:is_live, :boolean, virtual: true, default: false)
     field(:module, :any, virtual: true, default: Swiss)
+    field(:round_op_id, :integer, virtual: true)
+    field(:round_op_status, :string, virtual: true, default: "idle")
+    field(:round_state, :string, virtual: true, default: "active")
     field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:players_count, :integer, virtual: true, default: 0)
     field(:event_ranking, :map, virtual: true, default: %{})
@@ -136,6 +141,7 @@ defmodule Codebattle.Tournament do
       :access_type,
       :break_duration_seconds,
       :break_state,
+      :cheater_ids,
       :current_round_id,
       :current_round_position,
       :description,

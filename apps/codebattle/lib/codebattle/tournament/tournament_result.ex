@@ -61,7 +61,9 @@ defmodule Codebattle.Tournament.TournamentResult do
   @spec upsert_results(tounament :: Tournament.t() | map()) :: Tournament.t()
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
       when type in ["swiss", "top200"] do
-    clean_results(tournament.id)
+    round_position = tournament.current_round_position || 0
+    cheated_game_sql = cheated_game_sql("g", tournament)
+    clean_results(tournament.id, round_position)
 
     Repo.query!("""
       with duration_percentile_for_tasks
@@ -77,8 +79,10 @@ defmodule Codebattle.Tournament.TournamentResult do
       FROM
       games g
       where tournament_id = #{tournament.id}
+      and COALESCE(round_position, 0) = #{round_position}
       and state = 'game_over'
       and bot_won = FALSE
+      and not (#{cheated_game_sql})
       GROUP BY
       task_id, level),
       stats as (
@@ -91,12 +95,14 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.duration_sec,
       g.tournament_id,
       g.id as game_id,
-      g.round_position,
-      g.was_cheated,
+      COALESCE(g.round_position, 0) as round_position,
+      (#{cheated_game_sql}) AS was_cheated,
       COALESCE(dt.base_score, 0) AS base_score,
       COALESCE(dt.min_duration, 0) AS min_duration,
       COALESCE(dt.max_duration, 0) AS max_duration,
       CASE
+      WHEN (#{cheated_game_sql}) THEN
+        0
       -- Handle timeout case where both players lost
       WHEN g.state = 'timeout' THEN
         0.5 * COALESCE(dt.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
@@ -114,6 +120,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       left join duration_percentile_for_tasks dt
       on dt.task_id = g.task_id
       where g.tournament_id = #{tournament.id}
+      and COALESCE(g.round_position, 0) = #{round_position}
       and (p.player_info->>'is_bot')::boolean = 'f'
       and state in ('game_over', 'timeout')
       )
@@ -155,7 +162,9 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "win_loss"} = tournament)
       when type in ["swiss"] do
-    clean_results(tournament.id)
+    round_position = tournament.current_round_position || 0
+    cheated_game_sql = cheated_game_sql("g", tournament)
+    clean_results(tournament.id, round_position)
 
     Repo.query!("""
       with stats as (
@@ -170,9 +179,11 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.tournament_id,
       g.task_id,
       g.id as game_id,
-      g.round_position,
-      g.was_cheated,
-      CASE WHEN (p.player_info->'result_percent')::numeric = 100.0
+      COALESCE(g.round_position, 0) as round_position,
+      (#{cheated_game_sql}) AS was_cheated,
+      CASE
+        WHEN (#{cheated_game_sql}) THEN 0
+        WHEN (p.player_info->'result_percent')::numeric = 100.0
         THEN #{@win_score}
         ELSE #{@loss_score}
       END AS score
@@ -180,6 +191,7 @@ defmodule Codebattle.Tournament.TournamentResult do
       CROSS JOIN LATERAL
       jsonb_array_elements(g.players) AS p(player_info)
       where g.tournament_id = #{tournament.id}
+      and COALESCE(g.round_position, 0) = #{round_position}
       and (p.player_info->>'is_bot')::boolean = 'f'
       )
       insert into tournament_results
@@ -220,10 +232,46 @@ defmodule Codebattle.Tournament.TournamentResult do
 
   def upsert_results(t), do: t
 
-  def clean_results(tournament_id) do
+  def get_wins_count_by_user(tournament) do
+    __MODULE__
+    |> where([tr], tr.tournament_id == ^tournament.id and tr.result_percent == ^Decimal.new("100.0"))
+    |> group_by([tr], tr.user_id)
+    |> select([tr], {tr.user_id, count(tr.id)})
+    |> Repo.all()
+    |> Map.new()
+  end
+
+  def clean_results(%{id: tournament_id}), do: clean_results(tournament_id)
+
+  def clean_results(tournament_id) when is_integer(tournament_id) do
     __MODULE__
     |> where([tr], tr.tournament_id == ^tournament_id)
     |> Repo.delete_all()
+  end
+
+  def clean_results(tournament_id, round_position) do
+    __MODULE__
+    |> where([tr], tr.tournament_id == ^tournament_id and tr.round_position == ^round_position)
+    |> Repo.delete_all()
+  end
+
+  defp cheated_game_sql(game_alias, %{cheater_ids: []}), do: "COALESCE(#{game_alias}.was_cheated, FALSE)"
+  defp cheated_game_sql(game_alias, %{cheater_ids: nil}), do: "COALESCE(#{game_alias}.was_cheated, FALSE)"
+
+  defp cheated_game_sql(game_alias, %{cheater_ids: cheater_ids}) do
+    cheater_ids_sql =
+      cheater_ids
+      |> Enum.uniq()
+      |> Enum.join(",")
+
+    """
+    COALESCE(#{game_alias}.was_cheated, FALSE)
+    or exists (
+      select 1
+      from jsonb_array_elements(#{game_alias}.players) as cheater_player(player_info)
+      where (cheater_player.player_info->>'id')::integer = any(array[#{cheater_ids_sql}]::integer[])
+    )
+    """
   end
 
   def get_users_history(tournament, user_ids) do
@@ -296,6 +344,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
+        where: r.was_cheated == false,
         group_by: [r.user_id, r.user_name, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
@@ -323,6 +372,7 @@ defmodule Codebattle.Tournament.TournamentResult do
           place: over(row_number(), :overall_partition)
         },
         where: r.tournament_id == ^tournament.id,
+        where: r.was_cheated == false,
         group_by: [r.user_id, r.user_name, c.id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec)],
         windows: [overall_partition: [order_by: [desc: sum(r.score), asc: sum(r.duration_sec)]]]
@@ -345,6 +395,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         },
         where: r.tournament_id == ^tournament.id,
         where: r.round_position == ^round_position,
+        where: r.was_cheated == false,
         group_by: [r.user_id],
         order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id],
         windows: [
@@ -352,6 +403,27 @@ defmodule Codebattle.Tournament.TournamentResult do
             order_by: [desc: sum(r.score), asc: sum(r.duration_sec), asc: r.user_id]
           ]
         ]
+      )
+
+    query
+    |> Repo.all()
+    |> Enum.reduce(%{}, fn %{id: id} = value, acc ->
+      Map.put(acc, id, value)
+    end)
+  end
+
+  def get_user_round_delta(tournament, round_position) do
+    query =
+      from(r in __MODULE__,
+        select: %{
+          id: r.user_id,
+          score: sum(r.score),
+          total_duration_sec: sum(r.duration_sec)
+        },
+        where: r.tournament_id == ^tournament.id,
+        where: r.round_position == ^round_position,
+        where: r.was_cheated == false,
+        group_by: [r.user_id]
       )
 
     query

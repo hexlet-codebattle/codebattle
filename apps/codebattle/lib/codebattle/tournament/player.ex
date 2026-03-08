@@ -25,9 +25,11 @@ defmodule Codebattle.Tournament.Player do
     :rank,
     :rating,
     :score,
+    :total_duration_sec,
     :team_id,
     :draw_index,
     :max_draw_index,
+    :last_ranked_round_position,
     :wr_joined_at,
     :wins_count
   ]
@@ -61,7 +63,9 @@ defmodule Codebattle.Tournament.Player do
     field(:state, :string, default: "active")
     field(:task_ids, {:array, :integer}, default: [])
     field(:team_id, :integer)
+    field(:total_duration_sec, :integer, default: 0)
     field(:wins_count, :integer, default: 0)
+    field(:last_ranked_round_position, :integer, default: -1)
     field(:wr_joined_at, :integer)
   end
 

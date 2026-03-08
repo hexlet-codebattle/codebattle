@@ -299,8 +299,10 @@ export const sendMatchGameOver = (matchId) => {
 
 export const toggleBanUser = (userId, isBanned) => (dispatch) => {
   channel
-    .push("tournament:ban:player", { userId })
-    .receive("ok", () => dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned }])));
+    .push("tournament:cheater:toggle", { userId })
+    .receive("ok", (payload) =>
+      dispatch(actions.updateTournamentPlayers([{ id: userId, isBanned, state: payload.state }])),
+    );
 };
 
 export const sendNewReportState = (reportId, state) => (dispatch) => {

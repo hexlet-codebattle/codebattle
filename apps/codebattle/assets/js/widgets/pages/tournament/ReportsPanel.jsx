@@ -9,7 +9,11 @@ import Select from "react-select";
 import { customStyle } from "@/components/LanguagePickerView";
 import UserInfo from "@/components/UserInfo";
 import { sendNewReportState } from "@/middlewares/TournamentAdmin";
-import { tournamentPlayersSelector, reportsSelector, userIsAdminSelector } from "@/selectors";
+import {
+  tournamentPlayersSelector,
+  reportsSelector,
+  currentUserIsAdminSelector,
+} from "@/selectors";
 
 import i18next from "../../../i18n";
 
@@ -45,7 +49,7 @@ function ReportsPanel() {
   const dispatch = useDispatch();
   const reports = useSelector(reportsSelector);
   const players = useSelector(tournamentPlayersSelector);
-  const isAdmin = useSelector(userIsAdminSelector);
+  const isAdmin = useSelector(currentUserIsAdminSelector);
 
   const changeReportState =
     (reportId) =>

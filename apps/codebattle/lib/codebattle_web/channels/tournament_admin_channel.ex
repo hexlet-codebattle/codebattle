@@ -44,7 +44,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get!(tournament_id),
-         true <- Helpers.can_moderate?(tournament, current_user) do
+         true <- Codebattle.User.admin?(current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
 
@@ -78,13 +78,28 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   end
 
   def handle_in("tournament:ban:player", %{"user_id" => user_id}, socket) do
+    handle_in("tournament:cheater:toggle", %{"user_id" => user_id}, socket)
+  end
+
+  def handle_in("tournament:cheater:toggle", %{"user_id" => user_id}, socket) do
     tournament_id = socket.assigns.tournament_info.id
 
-    Tournament.Context.handle_event(tournament_id, :ban_player, %{
-      user_id: user_id
-    })
+    tournament =
+      Tournament.Context.handle_event(tournament_id, :toggle_cheater_player, %{
+        user_id: user_id
+      })
 
-    {:reply, {:ok, :banned}, socket}
+    player = Helpers.get_player(tournament, user_id)
+
+    {:reply, {:ok, %{state: player.state}}, socket}
+  end
+
+  def handle_in("tournament:cheater:recalculate", _params, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+
+    Tournament.Context.recalculate_results(tournament_id)
+
+    {:reply, {:ok, :recalculated}, socket}
   end
 
   def handle_in("tournament:restart", _params, socket) do

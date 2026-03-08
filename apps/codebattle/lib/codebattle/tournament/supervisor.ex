@@ -11,6 +11,11 @@ defmodule Codebattle.Tournament.Supervisor do
   def init([tournament]) do
     children = [
       %{
+        id: "Codebattle.Tournament.TaskSupervisor.#{tournament.id}",
+        restart: :transient,
+        start: {Task.Supervisor, :start_link, [[name: task_supervisor_name(tournament.id)]]}
+      },
+      %{
         id: "Codebattle.Tournament.Server.#{tournament.id}",
         restart: :transient,
         start: {Codebattle.Tournament.Server, :start_link, [tournament.id]}
@@ -26,4 +31,8 @@ defmodule Codebattle.Tournament.Supervisor do
   end
 
   defp supervisor_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_sup:#{id}"}}
+
+  def task_supervisor_name(id) do
+    {:via, Registry, {Codebattle.Registry, "tournament_task_sup:#{id}"}}
+  end
 end

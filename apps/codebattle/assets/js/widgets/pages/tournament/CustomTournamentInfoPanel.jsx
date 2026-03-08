@@ -1,12 +1,13 @@
-import React, { memo, useState, useEffect, useCallback, useRef } from "react";
+import React, { memo, useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 import { useSelector } from "react-redux";
 
 // import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import TournamentStates from "../../config/tournament";
-import { tournamentPlayersSelector } from "../../selectors";
+import { currentUserIsAdminSelector, tournamentPlayersSelector } from "../../selectors";
 
 import ClansChartPanel from "./ClansChartPanel";
+import CheatersPanel from "./CheatersPanel";
 import ControlPanel, { PanelModeCodes } from "./ControlPanel";
 import LeaderboardPanel from "./LeaderboardPanel";
 import PlayersMatchesPanel from "./PlayersMatchesPanel";
@@ -16,6 +17,31 @@ import ReportsPanel from "./ReportsPanel";
 import TaskRankingAdvancedPanel from "./TaskRankingAdvancedPanel";
 import TaskRankingPanel from "./TaskRankingPanel";
 import TournamentGameCreatePanel from "./TournamentGameCreatePanel";
+
+const basePanelModes = [PanelModeCodes.playerMode, PanelModeCodes.leaderboardMode];
+const finishedPanelModes = [
+  ...basePanelModes,
+  PanelModeCodes.topUserByClansMode,
+  PanelModeCodes.taskRatingMode,
+  PanelModeCodes.clansBubbleDistributionMode,
+  PanelModeCodes.taskRatingAdvanced,
+  PanelModeCodes.taskDurationDistributionMode,
+  PanelModeCodes.topUserByTasksMode,
+];
+
+const replacePanelHash = (panel) => {
+  const nextHash = `#${panel}`;
+
+  if (window.location.hash === nextHash) {
+    return;
+  }
+
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}${nextHash}`,
+  );
+};
 
 function CustomTournamentInfoPanel({
   canModerate = false,
@@ -37,7 +63,7 @@ function CustomTournamentInfoPanel({
   topPlayerIds,
   type,
 }) {
-  const getDefaultPanelMode = () => {
+  const getDefaultPanelMode = useCallback(() => {
     if (state === TournamentStates.finished) {
       return { panel: PanelModeCodes.leaderboardMode };
     }
@@ -46,7 +72,7 @@ function CustomTournamentInfoPanel({
     }
 
     return { panel: PanelModeCodes.ratingMode };
-  };
+  }, [state, players, currentUserId]);
 
   const infoPanelRef = useRef();
   const [searchedUser, setSearchedUser] = useState();
@@ -63,6 +89,7 @@ function CustomTournamentInfoPanel({
   }, [players[currentUserId]?.id]);
 
   const allPlayers = useSelector(tournamentPlayersSelector);
+  const isAdmin = useSelector(currentUserIsAdminSelector);
 
   const handleUserSelectClick = useCallback(
     (event) => {
@@ -94,22 +121,65 @@ function CustomTournamentInfoPanel({
   //   }
   // }, [infoPanelRef.current?.style]);
 
-  const basePanelModes = [PanelModeCodes.playerMode, PanelModeCodes.leaderboardMode];
-  const finishedPanelModes = [
-    ...basePanelModes,
-    PanelModeCodes.topUserByClansMode,
-    PanelModeCodes.taskRatingMode,
-    PanelModeCodes.clansBubbleDistributionMode,
-    PanelModeCodes.taskRatingAdvanced,
-    PanelModeCodes.taskDurationDistributionMode,
-    PanelModeCodes.topUserByTasksMode,
-  ];
-  let allowedPanelModes = basePanelModes;
-  if (canModerate) {
-    allowedPanelModes = Object.values(PanelModeCodes);
-  } else if (state === TournamentStates.finished) {
-    allowedPanelModes = finishedPanelModes;
-  }
+  const allowedPanelModes = useMemo(() => {
+    if (canModerate) {
+      return isAdmin
+        ? Object.values(PanelModeCodes)
+        : Object.values(PanelModeCodes).filter(
+            (mode) => ![PanelModeCodes.reportsMode, PanelModeCodes.cheatersMode].includes(mode),
+          );
+    }
+
+    if (state === TournamentStates.finished) {
+      return finishedPanelModes;
+    }
+
+    return basePanelModes;
+  }, [canModerate, isAdmin, state]);
+
+  const getPanelModeFromHash = useCallback(() => {
+    const panel = window.location.hash.replace(/^#/, "");
+
+    if (allowedPanelModes.includes(panel)) {
+      return { panel };
+    }
+
+    return getDefaultPanelMode();
+  }, [allowedPanelModes, getDefaultPanelMode]);
+
+  useEffect(() => {
+    const syncPanelModeFromHash = () => {
+      const nextPanelMode = getPanelModeFromHash();
+
+      setPanelMode((currentPanelMode) => {
+        if (currentPanelMode.panel === nextPanelMode.panel) {
+          return currentPanelMode;
+        }
+
+        return nextPanelMode;
+      });
+
+      replacePanelHash(nextPanelMode.panel);
+    };
+
+    syncPanelModeFromHash();
+    window.addEventListener("hashchange", syncPanelModeFromHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncPanelModeFromHash);
+    };
+  }, [getPanelModeFromHash]);
+
+  useEffect(() => {
+    if (!allowedPanelModes.includes(panelMode.panel)) {
+      const nextPanelMode = getDefaultPanelMode();
+      setPanelMode(nextPanelMode);
+      replacePanelHash(nextPanelMode.panel);
+      return;
+    }
+
+    replacePanelHash(panelMode.panel);
+  }, [panelMode.panel, allowedPanelModes, getDefaultPanelMode]);
 
   return (
     <>
@@ -197,6 +267,9 @@ function CustomTournamentInfoPanel({
           />
         )}
         {panelMode.panel === PanelModeCodes.reportsMode && <ReportsPanel />}
+        {panelMode.panel === PanelModeCodes.cheatersMode && (
+          <CheatersPanel canModerate={canModerate && isAdmin} />
+        )}
       </div>
       {/*   </CSSTransition> */}
       {/* </SwitchTransition> */}

@@ -97,7 +97,6 @@ function Tournament() {
   const streamMode = useSelector((state) => state.gameUI.streamMode);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-  const isOwner = useSelector(selectors.currentUserIsTournamentOwnerSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 
@@ -114,7 +113,7 @@ function Tournament() {
     () => [TournamentStates.finished, TournamentStates.canceled].includes(tournament.state),
     [tournament.state],
   );
-  const canModerate = useMemo(() => isOwner || isAdmin, [isOwner, isAdmin]);
+  const canModerate = useMemo(() => isAdmin, [isAdmin]);
   const hiddenSidePanel =
     streamMode ||
     (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
@@ -146,7 +145,7 @@ function Tournament() {
   useEffect(() => {
     const tournamentChannel = dispatch(connectToTournament(tournament?.id));
 
-    if (canModerate) {
+    if (isAdmin) {
       const tournamentAdminChannel = dispatch(connectToTournamentAdmin(tournament?.id, true));
 
       return () => {
@@ -159,7 +158,7 @@ function Tournament() {
       tournamentChannel.leave();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canModerate]);
+  }, [isAdmin]);
 
   useEffect(() => {
     if (tournament.isLive) {

@@ -88,10 +88,19 @@ function PlayerStatsPanel({
         <div>
           <span className="text-nowrap pr-1" title={currentPlayer.name}>
             {currentPlayer.name}
-            {currentPlayer.isBanned && <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />}
+            {currentPlayer.state === "banned" && (
+              <FontAwesomeIcon className="ml-2 text-danger" icon="ban" />
+            )}
           </span>
         </div>
       </div>
+      {currentPlayer.state === "banned" && (
+        <div className="alert alert-warning m-2 mb-0" role="alert">
+          {i18next.t(
+            "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support.",
+          )}
+        </div>
+      )}
       <nav>
         <div id="nav-player-panels-tab" role="tablist" className={navMatchesTabsClassName}>
           {getPlayerPanelCodes().map((panelName) => (
@@ -132,13 +141,13 @@ function PlayerStatsPanel({
                 lastGameId={matches[matchId]?.gameId}
                 lastMatchState={matches[matchId]?.state}
                 matchList={groupedMatchListByRound[currentRoundPosition]}
-                isBanned={currentPlayer.isBanned}
+                isBanned={currentPlayer.state === "banned"}
               />
               <StatisticsCard
                 type={type}
                 playerId={currentUserId}
                 taskIds={currentPlayer.taskIds}
-                isBanned={currentPlayer.isBanned}
+                isBanned={currentPlayer.state === "banned"}
                 matchList={matchList}
               />
             </div>

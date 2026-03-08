@@ -367,17 +367,59 @@ defmodule Codebattle.Tournament.Server do
     else
       match = get_match(tournament, payload.ref)
 
-      if tournament.current_round_position == match.round_position and
-           not in_break?(tournament) and
-           not finished?(tournament) do
+      case match do
+        nil ->
+          defer_message(
+            %{topic: "game:tournament:#{tournament.id}", event: "game:tournament:finished", payload: payload},
+            "game_tournament_match_missing",
+            state
+          )
+
+        %{state: "playing"} = match ->
+          maybe_finish_live_match(state, tournament, match, payload)
+
+        _match ->
+          {:noreply, %{state | tournament: tournament}}
+      end
+    end
+  end
+
+  def handle_info({:round_finish_completed, op_id, finished_tournament}, %{tournament: tournament} = state) do
+    if state.frozen do
+      defer_message({:round_finish_completed, op_id, finished_tournament}, "round_finish_completed", state)
+    else
+      if tournament.round_op_id == op_id and tournament.round_state == "round_finishing" do
         new_tournament =
-          tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+          finished_tournament
+          |> tournament.module.complete_round_finish()
+          |> Map.put(:round_op_status, "done")
+          |> Map.put(:round_op_id, nil)
 
         update_tournament_info_cache(new_tournament)
-
         {:noreply, %{state | tournament: new_tournament}}
       else
-        {:noreply, %{state | tournament: tournament}}
+        {:noreply, state}
+      end
+    end
+  end
+
+  def handle_info({:round_finish_failed, op_id, reason}, %{tournament: tournament} = state) do
+    if state.frozen do
+      defer_message({:round_finish_failed, op_id, reason}, "round_finish_failed", state)
+    else
+      if tournament.round_op_id == op_id and tournament.round_state == "round_finishing" do
+        Logger.error("Round finishing failed for tournament #{tournament.id}, op_id=#{op_id}, reason=#{inspect(reason)}")
+
+        new_tournament =
+          tournament
+          |> Map.put(:round_state, "active")
+          |> Map.put(:round_op_status, "failed")
+          |> Map.put(:round_op_id, nil)
+
+        update_tournament_info_cache(new_tournament)
+        {:noreply, %{state | tournament: new_tournament}}
+      else
+        {:noreply, state}
       end
     end
   end
@@ -528,5 +570,80 @@ defmodule Codebattle.Tournament.Server do
 
     Process.send_after(self(), message, @freeze_retry_ms)
     {:noreply, state}
+  end
+
+  defp should_schedule_round_finish?(%{round_state: "round_finishing"}), do: false
+
+  defp should_schedule_round_finish?(tournament) do
+    tournament.module.finish_round_after_match?(tournament)
+  end
+
+  defp schedule_round_finish(%{tournament: %{round_state: "round_finishing"}} = state) do
+    {:noreply, state}
+  end
+
+  defp schedule_round_finish(%{tournament: tournament} = state) do
+    op_id = System.unique_integer([:positive, :monotonic])
+    server_pid = self()
+
+    in_progress_tournament =
+      tournament
+      |> Map.put(:round_state, "round_finishing")
+      |> Map.put(:round_op_status, "running")
+      |> Map.put(:round_op_id, op_id)
+
+    update_tournament_info_cache(in_progress_tournament)
+
+    {:ok, _pid} =
+      Task.Supervisor.start_child(
+        Tournament.Supervisor.task_supervisor_name(in_progress_tournament.id),
+        fn ->
+          run_round_finish_job(server_pid, in_progress_tournament, op_id)
+        end
+      )
+
+    {:noreply, %{state | tournament: in_progress_tournament}}
+  end
+
+  defp run_round_finish_job(server_pid, tournament, op_id) do
+    result =
+      try do
+        {:ok, tournament.module.prepare_round_finish(tournament)}
+      rescue
+        error ->
+          {:error, {error, __STACKTRACE__}}
+      catch
+        kind, value ->
+          {:error, {kind, value}}
+      end
+
+    case result do
+      {:ok, finished_tournament} ->
+        send(server_pid, {:round_finish_completed, op_id, finished_tournament})
+
+      {:error, reason} ->
+        send(server_pid, {:round_finish_failed, op_id, reason})
+    end
+  end
+
+  defp maybe_finish_live_match(state, tournament, match, payload) do
+    if tournament.current_round_position == match.round_position and
+         not in_break?(tournament) and
+         not finished?(tournament) do
+      new_tournament =
+        tournament.module.finish_match(tournament, Map.put(payload, :game_id, match.game_id))
+
+      update_tournament_info_cache(new_tournament)
+
+      updated_state = %{state | tournament: new_tournament}
+
+      if should_schedule_round_finish?(new_tournament) do
+        schedule_round_finish(updated_state)
+      else
+        {:noreply, updated_state}
+      end
+    else
+      {:noreply, %{state | tournament: tournament}}
+    end
   end
 end

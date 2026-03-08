@@ -1025,3 +1025,24 @@ msgstr "Ожидайте результатов соревнования"
 
 msgid "Leaderboard"
 msgstr "Рейтинг"
+
+msgid "Your tournament access is temporarily restricted due to a fair-play review. You cannot be paired into new games right now. If you believe this is a mistake, please contact tournament support."
+msgstr "Ваш доступ к турниру временно ограничен из-за проверки на нарушение правил честной игры. Сейчас вы не можете получать новые матчи. Если вы считаете, что это ошибка, пожалуйста, свяжитесь с поддержкой турнира."
+
+msgid "Cheaters Panel"
+msgstr "Панель читеров"
+
+msgid "Cheaters"
+msgstr "Читеры"
+
+msgid "No cheaters marked yet"
+msgstr "Пока нет отмеченных читеров"
+
+msgid "All reports"
+msgstr "Все жалобы"
+
+msgid "No reports yet"
+msgstr "Жалоб пока нет"
+
+msgid "Unban"
+msgstr "Разбанить"

@@ -42,7 +42,7 @@ defmodule CodebattleWeb.Vite do
   In dev, returns the original path. In prod, looks up the hashed filename from manifest.
   """
   def static_asset_path(asset_path) do
-    # The manifest key for static assets imported in JS is "assets/static/..." 
+    # The manifest key for static assets imported in JS is "assets/static/..."
     manifest_key = "assets/static/" <> asset_path
 
     path =
