@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import cn from "classnames";
+import dayjs from "dayjs";
+import Gon from "gon";
 import { useDispatch, useSelector } from "react-redux";
 
 import { loadNearbyUsers } from "@/middlewares/Users";
@@ -13,7 +15,10 @@ import { actions } from "../../slices";
 import CodebattleLeagueDescription from "./CodebattleLeagueDescription";
 import TournamentListItem from "./TournamentListItem";
 
-const contestDatesText = "Season: Oct 16 - Dec 21";
+const currentSeason = Gon.getAsset("current_season");
+const contestDatesText = currentSeason
+  ? `Season ${currentSeason.name} ${currentSeason.year}: ${dayjs(currentSeason.starts_at).format("MMM D")} - ${dayjs(currentSeason.ends_at).format("MMM D")}`
+  : null;
 
 function OpponentInfo({ id }) {
   const user = useSelector(userByIdSelector(id));
@@ -249,9 +254,11 @@ function SeasonProfilePanel({
             </div>
           </div>
 
-          <div className="d-flex justify-content-center cb-font-size-small px-3 py-2 text-white">
-            <span className="d-block">{contestDatesText}</span>
-          </div>
+          {contestDatesText && (
+            <div className="d-flex justify-content-center cb-font-size-small px-3 py-2 text-white">
+              <span className="d-block">{contestDatesText}</span>
+            </div>
+          )}
         </div>
         <SeasonNearbyUsers user={user} nearbyUsers={nearbyUsers} />
         <div className="text-center mt-2 cb-hof-link">

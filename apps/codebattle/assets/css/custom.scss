@@ -260,6 +260,135 @@
   text-transform: uppercase;
 }
 
+.cb-seasons-hero {
+  background:
+    radial-gradient(circle at top, rgba(201, 165, 108, 0.12), transparent 42%),
+    linear-gradient(135deg, rgba(42, 42, 53, 0.96) 0%, rgba(23, 23, 32, 0.98) 100%);
+  border: 1px solid rgba(201, 165, 108, 0.12);
+}
+
+.cb-seasons-eyebrow {
+  letter-spacing: 0.12em;
+}
+
+.cb-seasons-title {
+  font-size: clamp(2.1rem, 4vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.cb-seasons-subtitle {
+  max-width: 36rem;
+}
+
+.cb-seasons-hero-action,
+.cb-seasons-action {
+  min-width: 148px;
+  justify-content: center;
+}
+
+.cb-seasons-card {
+  background:
+    radial-gradient(circle at top, rgba(201, 165, 108, 0.08), transparent 35%),
+    linear-gradient(135deg, rgba(26, 26, 26, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+}
+
+.cb-seasons-card-header {
+  gap: 12px;
+}
+
+.cb-seasons-card-kicker {
+  letter-spacing: 0.08em;
+}
+
+.cb-seasons-card-title {
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.cb-seasons-card-dates {
+  font-size: 1rem;
+}
+
+.cb-seasons-card-body {
+  min-height: 250px;
+}
+
+.cb-seasons-podium-row {
+  margin-bottom: -4px;
+}
+
+.cb-seasons-podium-offset-second {
+  margin-top: 1.5rem;
+}
+
+.cb-seasons-podium-offset-third {
+  margin-top: 2rem;
+}
+
+.cb-seasons-podium-card {
+  min-height: 176px;
+}
+
+.cb-seasons-empty {
+  background: linear-gradient(135deg, rgba(42, 42, 53, 0.92) 0%, rgba(23, 23, 32, 0.98) 100%);
+}
+
+@media (max-width: 991.98px) {
+  .cb-seasons-card-title {
+    font-size: 1.75rem;
+  }
+
+  .cb-seasons-card-body {
+    min-height: 220px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .cb-seasons-hero {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .cb-seasons-title {
+    font-size: 2rem;
+  }
+
+  .cb-seasons-card-title {
+    font-size: 1.5rem;
+  }
+
+  .cb-seasons-hero-action,
+  .cb-seasons-action {
+    width: 100%;
+  }
+
+  .cb-seasons-card-body {
+    min-height: 0;
+  }
+
+  .cb-seasons-podium-row {
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+  }
+
+  .cb-seasons-podium-row > [class*='col-'] {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .cb-seasons-podium-card {
+    min-height: 148px;
+  }
+
+  .cb-seasons-podium-offset-second {
+    margin-top: 0.75rem;
+  }
+
+  .cb-seasons-podium-offset-third {
+    margin-top: 1rem;
+  }
+}
+
 .cb-season-leaderboard-filters .cb-season-filter-input-group {
   border-radius: 999px;
   overflow: hidden;

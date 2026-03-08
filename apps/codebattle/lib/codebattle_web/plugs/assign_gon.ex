@@ -34,6 +34,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   defp prepare_user(user) do
     user
     |> Map.take([
+      :avatar_url,
       :clan,
       :clan_id,
       :discord_avatar,

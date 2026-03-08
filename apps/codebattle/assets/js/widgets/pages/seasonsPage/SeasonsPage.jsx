@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 
 import cn from "classnames";
+import dayjs from "dayjs";
 import Gon from "gon";
 
 const getMedalEmoji = (place) => {
@@ -16,12 +17,15 @@ const getMedalEmoji = (place) => {
   }
 };
 
+const formatSeasonDates = (season) =>
+  `${dayjs(season.starts_at).format("MMM D, YYYY")} - ${dayjs(season.ends_at).format("MMM D, YYYY")}`;
+
 function PodiumPlace({ result, size = "normal" }) {
   const isLarge = size === "large";
 
   return (
     <div
-      className={cn("card h-100 border-0 cb-hof-podium-card", {
+      className={cn("card h-100 border-0 shadow-sm cb-hof-podium-card cb-seasons-podium-card", {
         "cb-gold-place-bg": result.place === 1,
         "cb-silver-place-bg": result.place === 2,
         "cb-bronze-place-bg": result.place === 3,
@@ -46,7 +50,7 @@ function PodiumPlace({ result, size = "normal" }) {
 
 function Top3Podium({ top3 }) {
   if (!top3 || top3.length === 0) {
-    return <div className="text-muted text-center py-4">No results yet</div>;
+    return <div className="text-muted text-center py-5">No results yet</div>;
   }
 
   const first = top3.find((r) => r.place === 1);
@@ -54,23 +58,20 @@ function Top3Podium({ top3 }) {
   const third = top3.find((r) => r.place === 3);
 
   return (
-    <div className="row g-2 align-items-end">
-      {/* Second place - left */}
-      <div className="col-4">
+    <div className="row mx-n2 align-items-end cb-seasons-podium-row">
+      <div className="col-4 px-2">
         {second && (
-          <div style={{ marginTop: "1.5rem" }}>
+          <div className="cb-seasons-podium-offset cb-seasons-podium-offset-second">
             <PodiumPlace result={second} />
           </div>
         )}
       </div>
 
-      {/* First place - center, elevated */}
-      <div className="col-4">{first && <PodiumPlace result={first} size="large" />}</div>
+      <div className="col-4 px-2">{first && <PodiumPlace result={first} size="large" />}</div>
 
-      {/* Third place - right */}
-      <div className="col-4">
+      <div className="col-4 px-2">
         {third && (
-          <div style={{ marginTop: "2rem" }}>
+          <div className="cb-seasons-podium-offset cb-seasons-podium-offset-third">
             <PodiumPlace result={third} />
           </div>
         )}
@@ -81,30 +82,27 @@ function Top3Podium({ top3 }) {
 
 function SeasonCard({ season }) {
   return (
-    <div
-      className="card cb-bg-panel cb-border-color cb-rounded shadow-lg border-0 text-light h-100"
-      style={{
-        background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
-      }}
-    >
-      <div className="card-body d-flex flex-column">
-        <div className="d-flex justify-content-between align-items-start mb-3">
-          <div>
-            <h3 className="card-title text-gold mb-1 fs-4">
+    <div className="cb-bg-panel cb-border-color cb-rounded shadow-sm border text-light h-100 cb-seasons-card">
+      <div className="p-3 p-lg-4 d-flex flex-column h-100">
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start mb-3 cb-seasons-card-header">
+          <div className="pr-sm-3">
+            <div className="text-uppercase small text-muted cb-seasons-card-kicker">Season</div>
+            <h3 className="card-title text-gold mb-2 cb-seasons-card-title">
               {season.name} {season.year}
             </h3>
-            <div className="text-muted small">
-              {season.starts_at}
-              {" — "}
-              {season.ends_at}
+            <div className="text-muted small cb-seasons-card-dates">
+              {formatSeasonDates(season)}
             </div>
           </div>
-          <a href={`/seasons/${season.id}`} className="btn btn-sm btn-outline-gold">
+          <a
+            href={`/seasons/${season.id}`}
+            className="btn btn-sm btn-outline-gold mt-3 mt-sm-0 cb-seasons-action"
+          >
             View Results
           </a>
         </div>
 
-        <div className="flex-grow-1 d-flex flex-column justify-content-center">
+        <div className="flex-grow-1 d-flex flex-column justify-content-center cb-seasons-card-body">
           <Top3Podium top3={season.top3} />
         </div>
       </div>
@@ -116,33 +114,37 @@ function SeasonsPage() {
   const seasons = (Gon && Gon.getAsset && Gon.getAsset("seasons")) || [];
 
   return (
-    <div className="cb-bg-panel cb-text min-vh-100 py-5">
+    <div className="cb-bg-panel cb-text min-vh-100 py-5 cb-seasons-page">
       <div className="container">
-        <div className="position-relative mb-5 text-center">
-          <h1 className="text-gold fw-bold mb-0">Seasons</h1>
-          <a
-            href="/hall_of_fame"
-            className="btn btn-outline-gold d-none d-md-inline-flex position-absolute top-50 end-0 translate-middle-y"
-          >
-            Hall of Fame
-          </a>
-          <div className="d-md-none mt-3">
-            <a href="/hall_of_fame" className="btn btn-outline-gold">
-              Hall of Fame
-            </a>
+        <div className="cb-bg-panel cb-rounded shadow-sm px-3 px-lg-4 py-4 mb-4 cb-seasons-hero">
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div className="text-center text-md-left">
+              <div className="text-uppercase small text-muted cb-seasons-eyebrow">
+                Competition archive
+              </div>
+              <h1 className="text-gold fw-bold mb-2 cb-seasons-title">Seasons</h1>
+              <p className="text-muted mb-0 cb-seasons-subtitle">
+                Browse finished seasons and open the full leaderboard for each one.
+              </p>
+            </div>
+            <div className="mt-3 mt-md-0">
+              <a href="/hall_of_fame" className="btn btn-outline-gold cb-seasons-hero-action">
+                Hall of Fame
+              </a>
+            </div>
           </div>
         </div>
 
         {seasons.length === 0 ? (
-          <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
+          <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light cb-seasons-empty">
             <div className="card-body text-center py-5">
               <p className="text-muted mb-0">No seasons found</p>
             </div>
           </div>
         ) : (
-          <div className="row g-4">
+          <div className="row">
             {seasons.map((season) => (
-              <div key={season.id} className="col-lg-6">
+              <div key={season.id} className="col-12 col-xl-6 mb-4">
                 <SeasonCard season={season} />
               </div>
             ))}
