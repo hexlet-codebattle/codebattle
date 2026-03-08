@@ -170,7 +170,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
 const LevelButtonGroup = memo(({ value, onChange }) => {
   const getLevelClassName = (level) => {
     const isLevelActive = level === value;
-    return cn("btn border-0 mb-2 bg-gray cb-rounded", {
+    return cn("btn border-0 bg-gray cb-rounded w-100", {
       "bg-orange": isLevelActive,
       "btn-outline-orange": !isLevelActive,
     });
@@ -182,19 +182,20 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
   };
 
   return (
-    <div className="d-flex justify-content-around px-sm-3 px-md-5">
+    <div className="row px-sm-3 px-md-5 mx-n1">
       {gameLevels.map((level) => (
-        <button
-          key={level}
-          type="button"
-          className={getLevelClassName(level)}
-          onClick={() => changeGameLevel(level)}
-          data-toggle="tooltip"
-          data-placement="right"
-          title={level}
-        >
-          <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-        </button>
+        <div key={level} className="col-6 col-sm-3 px-1 mb-2">
+          <button
+            type="button"
+            className={getLevelClassName(level)}
+            onClick={() => changeGameLevel(level)}
+            data-toggle="tooltip"
+            data-placement="right"
+            title={level}
+          >
+            <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+          </button>
+        </div>
       ))}
     </div>
   );
@@ -203,23 +204,24 @@ const LevelButtonGroup = memo(({ value, onChange }) => {
 const GameTypeButtonGroup = memo(({ value, onChange }) => {
   const getGameTypeClassName = (gameType) => {
     const isGameTypeActive = gameType === value;
-    return cn("btn mr-1 mb-1 mb-sm-0 cb-rounded text-nowrap", {
+    return cn("btn cb-rounded w-100", {
       "bg-orange text-white": isGameTypeActive,
       "btn-outline-orange": !isGameTypeActive,
     });
   };
 
   return (
-    <div className="d-flex flex-wrap flex-sm-nowrap justify-content-around px-sm-3 px-md-5 mt-3">
+    <div className="row px-sm-3 px-md-5 mt-3 mx-n1">
       {gameTypeCodes.map((gameTypeCode) => (
-        <button
-          key={gameTypeCode}
-          type="button"
-          className={getGameTypeClassName(gameTypeCode)}
-          onClick={() => onChange(gameTypeCode)}
-        >
-          {gameTypeNames[gameTypeCode]}
-        </button>
+        <div key={gameTypeCode} className="col-12 col-md-4 px-1 mb-2">
+          <button
+            type="button"
+            className={getGameTypeClassName(gameTypeCode)}
+            onClick={() => onChange(gameTypeCode)}
+          >
+            {gameTypeNames[gameTypeCode]}
+          </button>
+        </div>
       ))}
     </div>
   );
