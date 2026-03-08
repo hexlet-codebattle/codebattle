@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 
-import axios from "axios";
 import cn from "classnames";
 import { camelizeKeys } from "humps";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,13 +22,18 @@ function UserPopoverContent({ user }) {
     const userId = user.id;
     const controller = new AbortController();
 
-    axios
-      .get(`/api/v1/user/${userId}/achievements`, {
-        signal: controller.signal,
-      })
-      .then((response) => {
+    fetch(`/api/v1/user/${userId}/achievements`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+
         if (!controller.signal.aborted) {
-          setStats(camelizeKeys(response.data));
+          setStats(camelizeKeys(data));
         }
       })
       .catch((error) => {

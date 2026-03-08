@@ -1,6 +1,5 @@
 import React, { cloneElement, useEffect, useMemo, useRef, useState } from "react";
 
-import axios from "axios";
 import dayjs from "dayjs";
 import CalendarHeatmap from "react-calendar-heatmap";
 import { useDispatch } from "react-redux";
@@ -46,12 +45,20 @@ function Heatmap() {
   useEffect(() => {
     setIsLoading(true);
 
-    axios
-      .get(`/api/v1/${userId}/activity`, {
-        params: selectedPeriod === latestValue ? {} : { year: Number(selectedPeriod) },
+    const query = new URLSearchParams(
+      selectedPeriod === latestValue ? {} : { year: Number(selectedPeriod) },
+    ).toString();
+
+    fetch(`/api/v1/${userId}/activity${query ? `?${query}` : ""}`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response.json();
       })
-      .then((response) => {
-        setActivityData(response.data);
+      .then((data) => {
+        setActivityData(data);
       })
       .catch((error) => {
         dispatch(actions.setError(error));

@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
 
-import axios from "axios";
 import cn from "classnames";
 import Spinner from "react-bootstrap/Spinner";
 import {
@@ -288,10 +287,14 @@ function PlayerInsightsModal({ show, onHide, player, allResults, season }) {
       setLoading(true);
       setError(null);
 
-      axios
-        .get(`/api/v1/seasons/${season.id}/players/${player.user_id}/stats`)
-        .then((response) => {
-          setDetailedStats(response.data);
+      fetch(`/api/v1/seasons/${season.id}/players/${player.user_id}/stats`)
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          const data = await response.json();
+          setDetailedStats(data);
           setLoading(false);
         })
         .catch((err) => {

@@ -4,7 +4,6 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import axios from "axios";
 import noop from "lodash/noop";
 import omit from "lodash/omit";
 import { Provider } from "react-redux";
@@ -29,8 +28,6 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock("axios");
-
 const {
   elementaryTasksFromBackend,
   easyTasksFromBackend,
@@ -51,14 +48,6 @@ const users = [
   { name: "user2", id: -2 },
 ];
 const userData = { avatarUrl: "" };
-
-axios.get.mockResolvedValue({
-  data: {
-    tasks: [...elementaryTasksFromBackend, ...easyTasksFromBackend],
-    users,
-    user: userData,
-  },
-});
 
 jest.mock("react-select");
 jest.mock("react-select/async");
@@ -118,6 +107,25 @@ const defaultGameParams = {
 let vdom;
 
 beforeAll(() => {
+  global.fetch = jest.fn((url) => {
+    if (String(url).includes("/api/v1/tasks")) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          tasks: [...elementaryTasksFromBackend, ...easyTasksFromBackend],
+        }),
+      });
+    }
+
+    return Promise.resolve({
+      ok: true,
+      json: async () => ({
+        users,
+        user: userData,
+      }),
+    });
+  });
+
   vdom = (
     <Provider store={store}>
       <CreateGameDialog hideModal={noop} />

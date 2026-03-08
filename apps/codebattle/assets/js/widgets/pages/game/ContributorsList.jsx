@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import axios from "axios";
 import uniqBy from "lodash/uniqBy";
 import { useDispatch } from "react-redux";
 
@@ -39,10 +38,16 @@ function ContributorsList({ task: { name, tags, level } }) {
       setAvatars(null);
       return;
     }
-    axios
-      .get(url)
-      .then((res) => {
-        const authors = res.data.filter((item) => item.author);
+    fetch(url)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        const authors = data.filter((item) => item.author);
         const contributorsList = authors.map((el) => ({
           avatarLink: el.author.avatar_url,
           link: el.author.html_url,

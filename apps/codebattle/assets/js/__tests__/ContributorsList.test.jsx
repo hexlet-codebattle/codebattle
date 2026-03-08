@@ -3,7 +3,6 @@
 // import { configureStore, combineReducers } from '@reduxjs/toolkit';
 // import { render } from '@testing-library/react';
 import "@testing-library/jest-dom";
-import axios from "axios";
 // import { Provider } from 'react-redux';
 //
 // import ContributorsList from '../widgets/pages/game/ContributorsList';
@@ -18,9 +17,13 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock("axios");
 const users = [];
-axios.get.mockResolvedValue({ data: users });
+beforeAll(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => users,
+  });
+});
 //
 test("rendering ContributorsList", async () => {
   //   const reducer = combineReducers(reducers);

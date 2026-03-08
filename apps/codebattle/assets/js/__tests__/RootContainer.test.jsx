@@ -5,7 +5,6 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import axios from "axios";
 import { Provider } from "react-redux";
 import { createMachine } from "xstate";
 
@@ -89,8 +88,6 @@ jest.mock(
   { virtual: true },
 );
 
-jest.mock("axios");
-
 jest.mock(
   "../widgets/pages/game/EditorContainer",
   () =>
@@ -111,7 +108,12 @@ jest.mock("../widgets/utils/useStayScrolled", () => () => ({ stayScrolled: () =>
   virtual: true,
 });
 
-axios.get.mockResolvedValue({ data: {} });
+beforeAll(() => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({}),
+  });
+});
 
 jest.mock("phoenix", () => {
   const originalModule = jest.requireActual("phoenix");

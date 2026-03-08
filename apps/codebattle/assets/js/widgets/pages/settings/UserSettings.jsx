@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import cn from "classnames";
 import { camelizeKeys, decamelizeKeys } from "humps";
 import capitalize from "lodash/capitalize";
@@ -27,6 +26,25 @@ const notifications = {
 };
 
 const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute("content");
+const updateSettings = async (values) => {
+  const response = await fetch("/api/v1/settings", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": csrfToken,
+    },
+    body: JSON.stringify(decamelizeKeys(values)),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
 
 function Notification({ notification, onClose }) {
   const { variant, message } = notification;
@@ -40,7 +58,7 @@ function Notification({ notification, onClose }) {
   }, [onClose, message]);
 
   return (
-    <Alert show={!!message} variant={variant}>
+    <Alert show={!!message} variant={variant} className="alert-dark-theme rounded shadow-sm mb-2">
       {message}
     </Alert>
   );
@@ -91,12 +109,7 @@ function UserSettings() {
   const handleUpdateUserSettings = useCallback(
     async (values, { setErrors }) => {
       try {
-        const { data } = await axios.patch("/api/v1/settings", decamelizeKeys(values), {
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": csrfToken,
-          },
-        });
+        const data = await updateSettings(values);
 
         dispatch(actions.updateUserSettings(camelizeKeys(data)));
         setNotification(notifications.success);

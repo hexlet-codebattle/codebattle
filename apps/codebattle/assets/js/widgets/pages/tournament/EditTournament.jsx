@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
 
-import axios from "axios";
 import { decamelizeKeys, camelizeKeys } from "humps";
 import noop from "lodash/noop";
 import Alert from "react-bootstrap/Alert";
@@ -27,7 +26,7 @@ function Notification({ notification, onClose }) {
   }, [onClose, message]);
 
   return (
-    <Alert show={!!message} variant={variant}>
+    <Alert show={!!message} variant={variant} className="alert-dark-theme rounded shadow-sm mb-2">
       {message}
     </Alert>
   );
@@ -43,12 +42,18 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
   useEffect(() => {
     const fetchTournament = async () => {
       try {
-        const response = await axios.get(`/api/v1/tournaments/${tournamentId}`, {
+        const response = await fetch(`/api/v1/tournaments/${tournamentId}`, {
           headers: {
             "x-csrf-token": window.csrf_token,
           },
         });
-        const data = camelizeKeys(response.data);
+        const responseData = await response.json();
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = camelizeKeys(responseData);
         setTournament(data.tournament);
         setLoading(false);
       } catch (error) {
@@ -78,17 +83,23 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
           },
         };
 
-        const response = await axios.put(
-          `/api/v1/tournaments/${tournamentId}`,
-          decamelizeKeys(payload),
-          {
-            headers: {
-              "x-csrf-token": window.csrf_token,
-            },
+        const response = await fetch(`/api/v1/tournaments/${tournamentId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": window.csrf_token,
           },
-        );
+          body: JSON.stringify(decamelizeKeys(payload)),
+        });
+        const responseData = await response.json();
 
-        const data = camelizeKeys(response.data);
+        if (!response.ok) {
+          const error = new Error(`Request failed with status ${response.status}`);
+          error.response = { data: responseData, status: response.status };
+          throw error;
+        }
+
+        const data = camelizeKeys(responseData);
 
         // Update local tournament state
         if (data.tournament) {

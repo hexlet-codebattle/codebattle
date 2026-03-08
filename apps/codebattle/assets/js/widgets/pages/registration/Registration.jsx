@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import cn from "classnames";
 import { useFormik } from "formik";
 import { Button } from "react-bootstrap";
@@ -13,6 +12,25 @@ import schemas from "../../formik";
 
 const getCsrfToken = () =>
   document.querySelector("meta[name='csrf-token']").getAttribute("content"); // validation token
+const postJson = async (url, payload) => {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": getCsrfToken(),
+    },
+    body: JSON.stringify(payload),
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
 
 const isShowInvalidMessage = (formik, typeValue) =>
   formik.submitCount !== 0 && !!formik.errors[typeValue];
@@ -184,13 +202,7 @@ function SignIn() {
     onSubmit: ({ email, password }) => {
       const data = { email, password };
 
-      axios
-        .post("/api/v1/session", data, {
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": getCsrfToken(),
-          },
-        })
+      postJson("/api/v1/session", data)
         .then(() => {
           window.location.href = getNextLocation();
         })
@@ -246,13 +258,7 @@ function SignUp() {
     },
     validationSchema: Yup.object().shape(schemas.signUp),
     onSubmit: (formData) => {
-      axios
-        .post("/api/v1/users", formData, {
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": getCsrfToken(),
-          },
-        })
+      postJson("/api/v1/users", formData)
         .then(() => {
           window.location.href = getNextLocation();
         })
@@ -303,17 +309,7 @@ function ResetPassword() {
     },
     validationSchema: Yup.object().shape(schemas.resetPassword),
     onSubmit: ({ email }) => {
-      axios
-        .post(
-          "/api/v1/reset_password",
-          { email },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "x-csrf-token": getCsrfToken(),
-            },
-          },
-        )
+      postJson("/api/v1/reset_password", { email })
         .then(() => {
           setIsSend(true);
         })

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 
-import axios from "axios";
 import { camelizeKeys } from "humps";
 import sum from "lodash/sum";
 import { useDispatch } from "react-redux";
@@ -64,10 +63,14 @@ function UserProfile() {
   const userId = useMemo(() => window.location.pathname.split("/").pop(), []);
 
   useEffect(() => {
-    axios
-      .get(`/api/v1/user/${userId}/stats`)
-      .then((response) => {
-        setUserData(camelizeKeys(response.data));
+    fetch(`/api/v1/user/${userId}/stats`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        setUserData(camelizeKeys(data));
       })
       .catch((error) => {
         dispatch(actions.setError(error));
@@ -77,10 +80,14 @@ function UserProfile() {
   useEffect(() => {
     setRivalsStatus("loading");
 
-    axios
-      .get(`/api/v1/user/${userId}/rivals`)
-      .then((response) => {
-        const payload = camelizeKeys(response.data);
+    fetch(`/api/v1/user/${userId}/rivals`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        const payload = camelizeKeys(data);
         setTopRivals(payload.topRivals || []);
         setRivalsStatus("loaded");
       })

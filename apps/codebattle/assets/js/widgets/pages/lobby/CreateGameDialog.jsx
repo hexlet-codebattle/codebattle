@@ -1,6 +1,5 @@
 import React, { useState, useCallback, memo } from "react";
 
-import axios from "axios";
 import cn from "classnames";
 import { camelizeKeys } from "humps";
 import qs from "qs";
@@ -99,9 +98,15 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
         },
       });
 
-      axios
-        .get(`/api/v1/users?${queryParamsString}`)
-        .then(({ data }) => {
+      fetch(`/api/v1/users?${queryParamsString}`)
+        .then(async (response) => {
+          if (!response.ok) {
+            throw new Error(`Request failed with status ${response.status}`);
+          }
+
+          return response.json();
+        })
+        .then((data) => {
           const { users: apiUsers } = camelizeKeys(data);
           const filteredApiUsers = apiUsers.filter(({ id }) => id !== currentUserId);
           const onlineUsersFromPresence = presenceList

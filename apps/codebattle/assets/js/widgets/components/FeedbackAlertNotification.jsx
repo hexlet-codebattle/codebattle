@@ -53,7 +53,7 @@ function FeedbackAlertNotification() {
         onClose={() => handleClose(key)}
         key={key}
         variant={result.status}
-        className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show"
+        className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show alert-dark-theme"
       >
         {result.message}
       </Alert>

@@ -6,6 +6,7 @@ import { Field, Form, Formik, useField } from "formik";
 import capitalize from "lodash/capitalize";
 import omit from "lodash/omit";
 import pick from "lodash/pick";
+import Dropdown from "react-bootstrap/Dropdown";
 import * as Icon from "react-feather";
 import * as Yup from "yup";
 
@@ -108,6 +109,44 @@ function LanguageSelect({ lang, view, currentView, items }) {
   );
 }
 
+const locales = [
+  ["en", "Eng"],
+  ["ru", "Ru"],
+];
+
+function LocaleSelect() {
+  const [field, , helpers] = useField("locale");
+  const currentLocaleLabel = locales.find(([value]) => value === field.value)?.[1] || locales[0][1];
+
+  return (
+    <Dropdown>
+      <Dropdown.Toggle
+        id="locale-dropdown"
+        data-testid="localeSelect"
+        aria-label="Locale"
+        type="button"
+        className="btn cb-bg-panel cb-border-color text-white w-100 text-left"
+      >
+        {currentLocaleLabel}
+      </Dropdown.Toggle>
+      <Dropdown.Menu className="w-100 cb-bg-highlight-panel">
+        {locales.map(([value, label]) => (
+          <Dropdown.Item
+            key={value}
+            as="button"
+            type="button"
+            active={field.value === value}
+            className="cb-dropdown-item"
+            onClick={() => helpers.setValue(value)}
+          >
+            {label}
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+}
+
 function UserSettingsForm({ onSubmit, settings }) {
   const initialValues = useMemo(
     () => ({
@@ -169,20 +208,7 @@ function UserSettingsForm({ onSubmit, settings }) {
                 </div>
                 <div className="mt-2">
                   <div className="h6">Locale</div>
-                  <Field
-                    as="select"
-                    data-testid="localeSelect"
-                    aria-label="Locale"
-                    name="locale"
-                    className="cb-bg-panel cb-border-color text-white custom-select"
-                  >
-                    <option key="en" value="en">
-                      Eng
-                    </option>
-                    <option key="ru" value="ru">
-                      Ru
-                    </option>
-                  </Field>
+                  <LocaleSelect />
                 </div>
               </div>
               <LanguageSelect

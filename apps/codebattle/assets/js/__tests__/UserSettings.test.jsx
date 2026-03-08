@@ -4,7 +4,6 @@ import "@testing-library/jest-dom";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import axios from "axios";
 import { Provider } from "react-redux";
 
 import UserSettings from "../widgets/pages/settings";
@@ -25,8 +24,6 @@ jest.mock("react-bootstrap/Alert", () => ({
       </div>
     ) : null,
 }));
-
-jest.mock("axios");
 
 const reducer = combineReducers(reducers);
 
@@ -73,6 +70,10 @@ describe("UserSettings test cases", () => {
     };
   }
 
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
   test("render main component", () => {
     const { getByText } = setup(
       <Provider store={store}>
@@ -83,7 +84,10 @@ describe("UserSettings test cases", () => {
   });
 
   test("successfull user settings update", async () => {
-    const settingUpdaterSpy = jest.spyOn(axios, "patch").mockResolvedValueOnce({ data: {} });
+    const settingUpdaterSpy = global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
     const { getByRole, getByLabelText, getByTestId, user } = setup(
       <Provider store={store}>
         <UserSettings />
@@ -100,24 +104,52 @@ describe("UserSettings test cases", () => {
 
     await waitFor(() => {
       expect(settingUpdaterSpy).toHaveBeenCalledWith(
-        expect.anything(),
-        {
-          clan: "",
-          name: "Dmitry",
-          lang: "js",
-          locale: undefined,
-          lang_view: "code",
-          db_type: "",
-          style_lang: "",
-          sound_settings: {
-            level: 6,
-            tournament_level: 4,
-            type: "standard",
-          },
-        },
-        expect.anything(),
+        "/api/v1/settings",
+        expect.objectContaining({
+          method: "PATCH",
+        }),
       );
+
+      const [, requestOptions] = settingUpdaterSpy.mock.calls[0];
+      expect(JSON.parse(requestOptions.body)).toEqual({
+        clan: "",
+        name: "Dmitry",
+        lang: "js",
+        lang_view: "code",
+        db_type: "",
+        style_lang: "",
+        sound_settings: {
+          level: 6,
+          tournament_level: 4,
+          type: "standard",
+        },
+      });
       expect(getByRole("alert")).toHaveClass("alert-success");
+    });
+  });
+
+  test("successfull locale change", async () => {
+    const settingUpdaterSpy = global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+    const { getByLabelText, getByTestId, findByText, user } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+    const submitButton = getByLabelText("SubmitForm");
+    const localeSelect = getByTestId("localeSelect");
+
+    await user.click(localeSelect);
+    await user.click(await findByText("Ru"));
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      const [, requestOptions] = settingUpdaterSpy.mock.calls[0];
+      expect(JSON.parse(requestOptions.body)).toMatchObject({
+        locale: "ru",
+      });
     });
   });
 
@@ -144,14 +176,14 @@ describe("UserSettings test cases", () => {
     ).toBeInTheDocument();
     expect(submitButton).toBeDisabled();
 
-    axios.patch.mockRejectedValueOnce({
-      response: {
-        data: {
-          errors: {
-            name: ["has already been taken"],
-          },
+    global.fetch.mockResolvedValueOnce({
+      ok: false,
+      status: 422,
+      json: async () => ({
+        errors: {
+          name: ["has already been taken"],
         },
-      },
+      }),
     });
 
     await user.clear(nameInput);
@@ -163,10 +195,7 @@ describe("UserSettings test cases", () => {
 
     expect(await findByText(/Has already been taken/i)).toBeInTheDocument();
 
-    axios.patch.mockRejectedValueOnce({
-      response: undefined,
-      message: "Network Error",
-    });
+    global.fetch.mockRejectedValueOnce(new Error("Network Error"));
 
     await user.clear(nameInput);
     await user.type(nameInput, "CoolUserName");

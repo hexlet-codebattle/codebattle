@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import axios from "axios";
 import CalendarHeatmap from "react-calendar-heatmap";
 import { useDispatch } from "react-redux";
 
@@ -14,10 +13,14 @@ function GamesHeatmap() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    axios
-      .get("/api/v1/game_activity")
-      .then((response) => {
-        setActivities(response.data.activities);
+    fetch("/api/v1/game_activity")
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        setActivities(data.activities);
       })
       .catch((error) => {
         dispatch(actions.setError(error));

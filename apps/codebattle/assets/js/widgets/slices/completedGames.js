@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import { camelizeKeys } from "humps";
 import unionBy from "lodash/unionBy";
 
@@ -16,9 +15,13 @@ export const fetchCompletedGames = createAsyncThunk(
       ? `/api/v1/games/completed?user_id=${userId}&page_size=20`
       : "/api/v1/games/completed?page_size=20";
 
-    const response = await axios.get(route);
+    const response = await fetch(route);
 
-    return camelizeKeys(response.data);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    return camelizeKeys(await response.json());
   },
 );
 
@@ -34,9 +37,13 @@ export const loadNextPage = createAsyncThunk(
       ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${nextPage}`
       : `/api/v1/games/completed?page_size=20&page=${nextPage}`;
 
-    const response = await axios.get(route);
+    const response = await fetch(route);
 
-    return camelizeKeys(response.data);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+
+    return camelizeKeys(await response.json());
   },
   {
     condition: (_, { getState }) => {

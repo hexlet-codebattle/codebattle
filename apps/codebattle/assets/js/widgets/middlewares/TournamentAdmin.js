@@ -1,4 +1,3 @@
-import axios from "axios";
 import Gon from "gon";
 import { camelizeKeys } from "humps";
 import compact from "lodash/compact";
@@ -12,6 +11,18 @@ import Channel from "./Channel";
 
 const tournamentId = Gon.getAsset("tournament_id");
 const channel = new Channel();
+const requestJson = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
 
 export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament_admin:${newTournamentId}`;
@@ -186,13 +197,12 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   } else {
     const playerIdsStr = playerIds.join(",");
 
-    axios
-      .get(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      })
+    requestJson(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
+      },
+    })
       .then((response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })
@@ -241,13 +251,12 @@ export const uploadPlayersMatches = (playerId) => (dispatch, getState) => {
   if (isLive) {
     requestMatchesByPlayerId(playerId)(dispatch);
   } else {
-    axios
-      .get(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      })
+    requestJson(`/api/v1/tournaments/${id}/matches?player_id=${playerId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
+      },
+    })
       .then((response) => {
         dispatch(actions.updateTournamentMatches(response.matches));
       })

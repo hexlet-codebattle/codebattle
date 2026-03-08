@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import axios from "axios";
 import { camelizeKeys } from "humps";
 import unionBy from "lodash/unionBy";
 import moment from "moment";
@@ -76,13 +75,17 @@ function UserTournaments({ isActive = false }) {
 
       try {
         const nextPageSize = pageInfoRef.current.pageSize;
-        const response = await axios.get(`/api/v1/user/${userId}/tournaments`, {
-          params: {
-            page,
-            page_size: nextPageSize,
-          },
-        });
-        const payload = camelizeKeys(response.data);
+        const query = new URLSearchParams({
+          page,
+          page_size: nextPageSize,
+        }).toString();
+        const response = await fetch(`/api/v1/user/${userId}/tournaments?${query}`);
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const payload = camelizeKeys(await response.json());
 
         setPageInfo(payload.pageInfo || pageInfoRef.current);
         setTournaments((prev) => {

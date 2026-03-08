@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
 import moment from "moment";
 
 import loadingStatuses from "../config/loadingStatuses";
@@ -35,9 +34,14 @@ const fetchUsers = createAsyncThunk("users/fetchUsers", async ({ periodType }, {
           date_from: moment().startOf(periodMapping[periodType]).utc().format("YYYY-MM-DD"),
         };
 
-  const response = await axios.get("/api/v1/users", { params });
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`/api/v1/users?${query}`);
 
-  return response.data;
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`);
+  }
+
+  return response.json();
 });
 
 const leaderboardSlice = createSlice({

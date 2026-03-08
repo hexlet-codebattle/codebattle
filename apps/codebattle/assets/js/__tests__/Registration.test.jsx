@@ -7,13 +7,10 @@ import React from "react";
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import axios from "axios";
 
 import Registration from "../widgets/pages/registration";
 
 import { getTestData } from "./helpers";
-
-jest.mock("axios");
 
 const { invalidData, validData } = getTestData("signUpData.json");
 const { data, route, headers } = validData;
@@ -39,6 +36,10 @@ describe("sign up", () => {
     document.head.innerHTML = '<meta name="csrf-token" content="test-csrf-token">';
   });
 
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
   test("render", () => {
     const { getByText } = setup(<Registration />);
 
@@ -62,7 +63,11 @@ describe("sign up", () => {
   test("successful sign up", async () => {
     const { getByLabelText, user } = setup(<Registration />);
 
-    const signUpSpy = jest.spyOn(axios, "post").mockResolvedValueOnce({ data: {} });
+    const signUpSpy = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({}),
+    });
+    global.fetch.mockImplementation(signUpSpy);
 
     await userEvent.type(getByLabelText("name"), data.name);
     await userEvent.type(getByLabelText("email"), data.email);
@@ -73,7 +78,11 @@ describe("sign up", () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(signUpSpy).toHaveBeenCalledWith(route, data, headers);
+      expect(signUpSpy).toHaveBeenCalledWith(route, {
+        method: "POST",
+        headers: headers.headers,
+        body: JSON.stringify(data),
+      });
     });
   });
 });

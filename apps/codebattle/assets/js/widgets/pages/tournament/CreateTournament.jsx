@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from "react";
 
-import axios from "axios";
 import { decamelizeKeys, camelizeKeys } from "humps";
 
 import TournamentForm from "./TournamentForm";
@@ -22,13 +21,23 @@ function CreateTournament({ taskPackNames = [], userTimezone = "UTC", onSuccess 
           },
         };
 
-        const response = await axios.post("/api/v1/tournaments", decamelizeKeys(payload), {
+        const response = await fetch("/api/v1/tournaments", {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             "x-csrf-token": window.csrf_token,
           },
+          body: JSON.stringify(decamelizeKeys(payload)),
         });
+        const responseData = await response.json();
 
-        const data = camelizeKeys(response.data);
+        if (!response.ok) {
+          const error = new Error(`Request failed with status ${response.status}`);
+          error.response = { data: responseData, status: response.status };
+          throw error;
+        }
+
+        const data = camelizeKeys(responseData);
 
         // Redirect to the tournament page on success
         if (data.tournament && data.tournament.id) {

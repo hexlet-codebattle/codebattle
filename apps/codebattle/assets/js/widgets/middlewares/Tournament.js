@@ -1,4 +1,3 @@
-import axios from "axios";
 import Gon from "gon";
 import { camelizeKeys } from "humps";
 import compact from "lodash/compact";
@@ -17,6 +16,18 @@ import Channel from "./Channel";
 
 const tournamentId = Gon.getAsset("tournament_id");
 const channel = new Channel();
+const requestJson = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
 
 export const setTournamentChannel = (newTournamentId = tournamentId) => {
   const newChannelName = `tournament:${newTournamentId}`;
@@ -174,18 +185,16 @@ export const connectToTournament = (newTournamentId) => (dispatch) => {
 };
 
 export const uploadTournamentsByFilter = (from, to) =>
-  axios
-    .get(`api/v1/tournaments?from=${from}&to=${to}`, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-    })
-    .then((response) => {
-      const data = camelizeKeys(response.data);
+  requestJson(`api/v1/tournaments?from=${from}&to=${to}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+  }).then((response) => {
+    const data = camelizeKeys(response);
 
-      return [data.seasonTournaments, data.userTournaments];
-    });
+    return [data.seasonTournaments, data.userTournaments];
+  });
 
 // TODO (tournaments): request matches by searched player id
 export const uploadPlayers = (playerIds) => (dispatch, getState) => {
@@ -200,13 +209,12 @@ export const uploadPlayers = (playerIds) => (dispatch, getState) => {
   } else {
     const playerIdsStr = playerIds.join(",");
 
-    axios
-      .get(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      })
+    requestJson(`/api/v1/tournaments/${id}/players?player_ids=${playerIdsStr}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
+      },
+    })
       .then((response) => {
         dispatch(actions.updateTournamentPlayers(response.players));
       })

@@ -2,7 +2,6 @@ import React, { useState, useEffect, memo } from "react";
 
 import { faShuffle, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
 import cn from "classnames";
 import Gon from "gon";
 import { camelizeKeys } from "humps";
@@ -59,10 +58,14 @@ function TaskSelect({ value, onChange, options }) {
   const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
-    axios
-      .get(`/api/v1/user/${currentUserId}/stats`)
-      .then((response) => {
-        setAvatarUrl(response.data.user.avatar_url);
+    fetch(`/api/v1/user/${currentUserId}/stats`)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const data = await response.json();
+        setAvatarUrl(data.user.avatar_url);
       })
       .catch((error) => {
         dispatch(actions.setError(error));
@@ -205,9 +208,15 @@ const TaskChoice = memo(({ chosenTask, setChosenTask, chosenTags, setChosenTags,
   const [groupedTasks, setGroupedTasks] = useState({});
 
   useEffect(() => {
-    axios
-      .get("/api/v1/tasks")
-      .then(({ data }) => {
+    fetch("/api/v1/tasks")
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((data) => {
         const { tasks } = camelizeKeys(data);
         setGroupedTasks(groupTasksByLevelByTags(tasks, taskTags));
       })

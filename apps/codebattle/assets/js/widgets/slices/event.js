@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import { camelizeKeys, decamelizeKeys } from "humps";
 
 import { currentUserClanIdSelector, currentUserIdSelector } from "@/selectors";
@@ -19,9 +18,12 @@ const fetchCommonLeaderboard = createAsyncThunk(
     params.clanId = params.clanId || currentUserClanIdSelector(state);
     params.userId = params.userId || currentUserIdSelector(state);
 
-    const response = await axios.get(`/api/v1/events/${params.eventId}/leaderboard`, {
-      params: decamelizeKeys(params, { separator: "_" }),
-    });
+    const query = new URLSearchParams(decamelizeKeys(params, { separator: "_" })).toString();
+    const response = await fetch(`/api/v1/events/${params.eventId}/leaderboard?${query}`);
+
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
 
     // return {
     //   items: [
@@ -63,7 +65,7 @@ const fetchCommonLeaderboard = createAsyncThunk(
     //   ],
     //   pageInfo: { pageNumber: 1, pageSize: 10, totalEntries: 1000 },
     // };
-    return camelizeKeys(response.data);
+    return camelizeKeys(await response.json());
   },
 );
 

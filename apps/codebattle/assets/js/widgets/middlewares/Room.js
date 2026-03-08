@@ -1,4 +1,3 @@
-import axios from "axios";
 import Gon from "gon";
 import { camelizeKeys, decamelizeKeys } from "humps";
 import debounce from "lodash/debounce";
@@ -34,6 +33,18 @@ const defaultLanguages = Gon.getAsset("langs");
 const gameId = Gon.getAsset("game_id");
 const isRecord = Gon.getAsset("is_record");
 const channel = new Channel();
+const requestJson = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return data;
+};
 
 export const setGameChannel = (newGameId = gameId) => {
   const newChannelName = `game:${newGameId}`;
@@ -280,13 +291,14 @@ export const sendAcceptToRematch = () => {
 export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
   const payload = { user_id: userId, reason: "cheat", comment: "" };
 
-  axios
-    .post(`/api/v1/games/${gameId}/user_game_reports`, payload, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-    })
+  requestJson(`/api/v1/games/${gameId}/user_game_reports`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify(payload),
+  })
     .then((data) => {
       onSuccess(camelizeKeys(data));
     })
@@ -658,15 +670,14 @@ export const validateTaskName = (name) => (dispatch, getState) => {
     return;
   }
 
-  axios
-    .get(`/api/v1/tasks/${name}/unique`, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-    })
+  requestJson(`/api/v1/tasks/${name}/unique`, {
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+  })
     .then((response) => {
-      const data = camelizeKeys(response.data);
+      const data = camelizeKeys(response);
       const { name: currentTaskName } = selectors.builderTaskSelector(getState());
 
       if (currentTaskName !== name) {
@@ -689,17 +700,14 @@ export const validateTaskName = (name) => (dispatch, getState) => {
 };
 
 export const updateTaskState = (id, state) => (dispatch) => {
-  axios
-    .patch(
-      `/api/v1/tasks/${id}`,
-      { task: { state } },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      },
-    )
+  requestJson(`/api/v1/tasks/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify({ task: { state } }),
+  })
     .then(() => {
       dispatch(actions.setTaskState(state));
     })
@@ -718,17 +726,14 @@ export const publishTask = (id) => (dispatch, getState) => {
 };
 
 export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
-  axios
-    .patch(
-      `/api/v1/tasks/${id}`,
-      { task: { visibility } },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      },
-    )
+  requestJson(`/api/v1/tasks/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify({ task: { visibility } }),
+  })
     .then(() => {
       dispatch(actions.setTaskVisibility(visibility));
     })
@@ -749,15 +754,16 @@ export const uploadTask =
       },
     };
 
-    axios
-      .post("/api/v1/tasks", payload, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      })
+    requestJson("/api/v1/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token,
+      },
+      body: JSON.stringify(payload),
+    })
       .then((response) => {
-        const data = camelizeKeys(response.data);
+        const data = camelizeKeys(response);
         const labledTask = labelTaskParamsWithIds(data.task);
 
         dispatch(actions.setTask({ task: labledTask }));
@@ -787,15 +793,16 @@ export const saveTask =
       };
 
       if (taskParams.state === taskStateCodes.blank) {
-        axios
-          .post("/api/v1/tasks", payload, {
-            headers: {
-              "Content-Type": "application/json",
-              "x-csrf-token": window.csrf_token,
-            },
-          })
+        requestJson("/api/v1/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": window.csrf_token,
+          },
+          body: JSON.stringify(payload),
+        })
           .then((response) => {
-            const data = camelizeKeys(response.data);
+            const data = camelizeKeys(response);
 
             taskService.send("CONFIRM");
             window.location.href = `/tasks/${data.task.id}`;
@@ -808,15 +815,16 @@ export const saveTask =
             console.error(err);
           });
       } else {
-        axios
-          .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
-            headers: {
-              "Content-Type": "application/json",
-              "x-csrf-token": window.csrf_token,
-            },
-          })
+        requestJson(`/api/v1/tasks/${taskParams.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": window.csrf_token,
+          },
+          body: JSON.stringify(payload),
+        })
           .then((response) => {
-            const data = camelizeKeys(response.data);
+            const data = camelizeKeys(response);
             const labledTask = labelTaskParamsWithIds(data.task);
 
             dispatch(actions.setTask({ task: labledTask }));
@@ -839,13 +847,13 @@ export const saveTask =
   };
 
 export const deleteTask = (id) => (dispatch) => {
-  axios
-    .delete(`/api/v1/tasks/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-    })
+  requestJson(`/api/v1/tasks/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+  })
     .then(() => {
       window.location.href = "/tasks";
     })
@@ -878,24 +886,21 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
   const textSolution = selectors.taskSolutionSelector(state, editorLang);
   const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(state, editorLang);
 
-  axios
-    .post(
-      "/api/v1/tasks/build",
-      {
-        task: decamelizeKeys(taskParams, { separator: "_" }),
-        arguments_generator_text: textArgumentsGenerator,
-        solution_text: textSolution,
-        editor_lang: editorLang,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      },
-    )
+  requestJson("/api/v1/tasks/build", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify({
+      task: decamelizeKeys(taskParams, { separator: "_" }),
+      arguments_generator_text: textArgumentsGenerator,
+      solution_text: textSolution,
+      editor_lang: editorLang,
+    }),
+  })
     .then((response) => {
-      const data = camelizeKeys(response.data);
+      const data = camelizeKeys(response);
 
       dispatch(
         actions.setTaskAsserts({
@@ -944,10 +949,9 @@ export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
 const fetchPlaybook = (service, init) => (dispatch) => {
   service.send("START_LOADING_PLAYBOOK");
 
-  axios
-    .get(`/api/v1/playbook/${gameId}`)
+  requestJson(`/api/v1/playbook/${gameId}`)
     .then((response) => {
-      const data = camelizeKeys(response.data);
+      const data = camelizeKeys(response);
       const type = isRecord ? PlaybookStatusCodes.stored : PlaybookStatusCodes.active;
       const resolvedData = resolveDiffs(data, type);
 
@@ -963,21 +967,18 @@ const fetchPlaybook = (service, init) => (dispatch) => {
 };
 
 export const changePlaybookSolution = (method) => (dispatch) => {
-  axios
-    .post(
-      `/api/v1/playbooks/${method}`,
-      {
-        game_id: gameId,
-      },
-      {
-        headers: {
-          "Content-type": "application/json",
-          "x-csrf-token": window.csrf_token,
-        },
-      },
-    )
+  requestJson(`/api/v1/playbooks/${method}`, {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify({
+      game_id: gameId,
+    }),
+  })
     .then((response) => {
-      const data = camelizeKeys(response.data);
+      const data = camelizeKeys(response);
 
       if (data.errors) {
         console.error(data.errors);
@@ -1064,15 +1065,16 @@ export const checkTaskSolution = (editorService) => (dispatch, getState) => {
 
   editorService.send("user_check_solution");
 
-  axios
-    .post("/api/v1/tasks/check", payload, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-    })
+  requestJson("/api/v1/tasks/check", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+    body: JSON.stringify(payload),
+  })
     .then((response) => {
-      const { checkResult } = camelizeKeys(response.data);
+      const { checkResult } = camelizeKeys(response);
 
       dispatch(
         actions.updateExecutionOutput({
