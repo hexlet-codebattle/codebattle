@@ -29,13 +29,15 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
       )
 
     activities = Repo.all(query)
+
     earliest_activity_date =
-      from(ug in UserGame,
-        where: ug.user_id == ^user_id,
-        where: ug.result in ["won", "lost", "gave_up"],
-        select: type(fragment("min(?::date)", ug.inserted_at), :date)
+      Repo.one(
+        from(ug in UserGame,
+          where: ug.user_id == ^user_id,
+          where: ug.result in ["won", "lost", "gave_up"],
+          select: type(fragment("min(?::date)", ug.inserted_at), :date)
+        )
       )
-      |> Repo.one()
 
     json(conn, %{
       activities: activities,
@@ -43,8 +45,7 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
         year: year,
         start_date: Date.to_iso8601(start_date),
         end_date: Date.to_iso8601(end_date),
-        earliest_activity_date:
-          earliest_activity_date && Date.to_iso8601(earliest_activity_date)
+        earliest_activity_date: earliest_activity_date && Date.to_iso8601(earliest_activity_date)
       }
     })
   end

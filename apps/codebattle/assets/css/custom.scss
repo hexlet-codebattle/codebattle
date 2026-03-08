@@ -263,7 +263,11 @@
 .cb-seasons-hero {
   background:
     radial-gradient(circle at top, rgba(201, 165, 108, 0.12), transparent 42%),
-    linear-gradient(135deg, rgba(42, 42, 53, 0.96) 0%, rgba(23, 23, 32, 0.98) 100%);
+    linear-gradient(
+      135deg,
+      rgba(42, 42, 53, 0.96) 0%,
+      rgba(23, 23, 32, 0.98) 100%
+    );
   border: 1px solid rgba(201, 165, 108, 0.12);
 }
 
@@ -289,7 +293,11 @@
 .cb-seasons-card {
   background:
     radial-gradient(circle at top, rgba(201, 165, 108, 0.08), transparent 35%),
-    linear-gradient(135deg, rgba(26, 26, 26, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+    linear-gradient(
+      135deg,
+      rgba(26, 26, 26, 0.98) 0%,
+      rgba(10, 10, 10, 0.98) 100%
+    );
 }
 
 .cb-seasons-card-header {
@@ -330,7 +338,11 @@
 }
 
 .cb-seasons-empty {
-  background: linear-gradient(135deg, rgba(42, 42, 53, 0.92) 0%, rgba(23, 23, 32, 0.98) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(42, 42, 53, 0.92) 0%,
+    rgba(23, 23, 32, 0.98) 100%
+  );
 }
 
 .cb-profile-heatmap-heading {
@@ -429,12 +441,16 @@
   font-size: 6px;
 }
 
-.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-month-label {
+.cb-profile-heatmap
+  .react-calendar-heatmap
+  .react-calendar-heatmap-month-label {
   font-size: 7px;
   font-weight: 600;
 }
 
-.cb-profile-heatmap .react-calendar-heatmap .react-calendar-heatmap-weekday-label {
+.cb-profile-heatmap
+  .react-calendar-heatmap
+  .react-calendar-heatmap-weekday-label {
   font-size: 7px;
   font-weight: 500;
 }
@@ -509,7 +525,6 @@
     font-size: 0.68rem;
   }
 }
-
 
 .cb-season-leaderboard-filters .cb-season-filter-input-group {
   border-radius: 999px;

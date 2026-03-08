@@ -3,6 +3,7 @@
   "name": "css-checker",
   "version": "0.0.1",
   "overrides": {
+    "basic-ftp": "^5.2.0",
     "tar-fs": "^3.1.1",
     "js-yaml": "^4.1.1"
   },
