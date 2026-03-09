@@ -36,7 +36,7 @@ function UserSimpleStats({ user }) {
 
   const load = () => {
     const onSuccess = (payload) => {
-      setData(payload.data.stats.games);
+      setData(payload.stats.games);
       setState("opened");
     };
     const onFailure = () => {

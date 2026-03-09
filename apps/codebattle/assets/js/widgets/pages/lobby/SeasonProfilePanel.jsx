@@ -83,8 +83,8 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
 
       const onSuccess = (payload) => {
         if (!abortController.signal.aborted) {
-          dispatch(actions.setNearbyUsers(payload.data));
-          dispatch(actions.updateUsers(payload.data));
+          dispatch(actions.setNearbyUsers(payload));
+          dispatch(actions.updateUsers(payload));
           setLoading(false);
         }
       };

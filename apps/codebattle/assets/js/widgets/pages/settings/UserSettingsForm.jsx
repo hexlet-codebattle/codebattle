@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 
-import Slider from "calcite-react/Slider";
 import cn from "classnames";
 import { Field, Form, Formik, useField } from "formik";
 import capitalize from "lodash/capitalize";
@@ -144,6 +143,27 @@ function LocaleSelect() {
         ))}
       </Dropdown.Menu>
     </Dropdown>
+  );
+}
+
+function RangeInput({ className, min = 0, max = 100, style, ...props }) {
+  const [field] = useField(props.name);
+  const currentValue = Number(field.value ?? min);
+  const minValue = Number(min);
+  const maxValue = Number(max);
+  const progress =
+    maxValue === minValue ? 0 : ((currentValue - minValue) / (maxValue - minValue)) * 100;
+
+  return (
+    <input
+      {...field}
+      {...props}
+      min={min}
+      max={max}
+      value={currentValue}
+      className={cn("form-range w-100 cb-range", className)}
+      style={{ ...style, "--range-progress": `${progress}%` }}
+    />
   );
 }
 
@@ -292,8 +312,7 @@ function UserSettingsForm({ onSubmit, settings }) {
           <div className="h6 ml-2">Select sound level</div>
           <div className="ml-2 mb-3 d-flex align-items-center">
             <Icon.VolumeX />
-            <Field
-              component={Slider}
+            <RangeInput
               type="range"
               min={0}
               max={10}
@@ -303,7 +322,7 @@ function UserSettingsForm({ onSubmit, settings }) {
                 handleChange(e);
                 playSound(values.soundSettings.type, e.target.value * 0.1);
               }}
-              className="ml-3 mr-3 form-control"
+              className="mx-3"
             />
             <Icon.Volume2 />
           </div>
@@ -311,8 +330,7 @@ function UserSettingsForm({ onSubmit, settings }) {
           <div className="h6 ml-2">Select tournament sound level</div>
           <div className="ml-2 mb-3 d-flex align-items-center">
             <Icon.VolumeX />
-            <Field
-              component={Slider}
+            <RangeInput
               type="range"
               min={0}
               max={10}
@@ -322,7 +340,7 @@ function UserSettingsForm({ onSubmit, settings }) {
                 handleChange(e);
                 playSound(values.soundSettings.type, e.target.value * 0.1);
               }}
-              className="ml-3 mr-3 form-control"
+              className="mx-3"
             />
             <Icon.Volume2 />
           </div>
