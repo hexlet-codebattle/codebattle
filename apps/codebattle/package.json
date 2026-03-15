@@ -172,6 +172,7 @@
   "proxy": "http://localhost:8080",
   "pnpm": {
     "overrides": {
+      "flatted": "^3.4.0",
       "glob>minimatch": "^10.2.3",
       "test-exclude>minimatch": "^10.2.3",
       "immutable": "^5.1.5",

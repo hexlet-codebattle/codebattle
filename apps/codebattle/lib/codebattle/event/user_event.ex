@@ -140,37 +140,53 @@ defmodule Codebattle.UserEvent do
   def mark_stage_as_completed(event_id, user_id, tournament_info) do
     with %__MODULE__{} = user_event <- get_by_user_id_and_event_id(user_id, event_id),
          %{} = stage <- Enum.find(user_event.stages, &(&1.tournament_id == tournament_info.id)) do
-      stage_params =
-        Enum.map(user_event.stages, fn user_stage ->
-          if user_stage.id == stage.id do
-            %{
-              id: user_stage.id,
-              slug: user_stage.slug,
-              status: :completed,
-              tournament_id: user_stage.tournament_id,
-              entrance_result: user_stage.entrance_result,
-              place_in_total_rank: user_stage.place_in_total_rank,
-              place_in_category_rank: user_stage.place_in_category_rank,
-              games_count: tournament_info.games_count,
-              score: tournament_info[:score],
-              time_spent_in_seconds: tournament_info.time_spent_in_seconds,
-              wins_count: tournament_info.wins_count,
-              started_at: user_stage.started_at,
-              finished_at: DateTime.utc_now()
-            }
-          else
-            Map.from_struct(user_stage)
-          end
-        end)
-
+      stage_params = build_completed_stage_params(user_event.stages, stage, tournament_info)
       completed? = Enum.all?(stage_params, &(to_string(&1.status) == "completed"))
 
-      __MODULE__.update(user_event, %{
-        status: if(completed?, do: "completed", else: "in_progress"),
-        finished_at: if(completed?, do: DateTime.utc_now()),
-        stages: stage_params
-      })
+      __MODULE__.update(user_event, completed_stage_attrs(stage_params, completed?))
     end
+  end
+
+  defp build_completed_stage_params(stages, completed_stage, tournament_info) do
+    finished_at = DateTime.utc_now()
+
+    Enum.map(stages, fn user_stage ->
+      if user_stage.id == completed_stage.id do
+        %{
+          id: user_stage.id,
+          slug: user_stage.slug,
+          status: :completed,
+          tournament_id: user_stage.tournament_id,
+          entrance_result: user_stage.entrance_result,
+          place_in_total_rank: user_stage.place_in_total_rank,
+          place_in_category_rank: user_stage.place_in_category_rank,
+          games_count: tournament_info.games_count,
+          score: tournament_info[:score],
+          time_spent_in_seconds: tournament_info.time_spent_in_seconds,
+          wins_count: tournament_info.wins_count,
+          started_at: user_stage.started_at,
+          finished_at: finished_at
+        }
+      else
+        Map.from_struct(user_stage)
+      end
+    end)
+  end
+
+  defp completed_stage_attrs(stage_params, true) do
+    %{
+      status: "completed",
+      finished_at: DateTime.utc_now(),
+      stages: stage_params
+    }
+  end
+
+  defp completed_stage_attrs(stage_params, false) do
+    %{
+      status: "in_progress",
+      finished_at: nil,
+      stages: stage_params
+    }
   end
 
   @spec upsert_stages(t(), list(map())) :: {:ok, t()} | {:error, term()}

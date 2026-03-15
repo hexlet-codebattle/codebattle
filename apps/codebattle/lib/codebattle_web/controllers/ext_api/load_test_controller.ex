@@ -61,31 +61,35 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
 
   def task_solutions(conn, %{"id" => id}) do
     with :ok <- ensure_load_tests_enabled(conn) do
-      case Repo.get(Task, id) do
-        nil ->
-          conn
-          |> put_status(:not_found)
-          |> json(%{error: "task_not_found"})
+      Task
+      |> Repo.get(id)
+      |> render_task_solutions(conn)
+    end
+  end
 
-        task ->
-          case resolve_task_solutions(task.solutions) do
-            {:ok, solutions} ->
-              json(conn, %{
-                task_id: task.id,
-                task_name: task.name,
-                solutions: solutions
-              })
+  defp render_task_solutions(nil, conn) do
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "task_not_found"})
+  end
 
-            {:error, reason} ->
-              conn
-              |> put_status(:unprocessable_entity)
-              |> json(%{
-                error: "task_solutions_unavailable",
-                reason: reason,
-                task_id: task.id
-              })
-          end
-      end
+  defp render_task_solutions(task, conn) do
+    case resolve_task_solutions(task.solutions) do
+      {:ok, solutions} ->
+        json(conn, %{
+          task_id: task.id,
+          task_name: task.name,
+          solutions: solutions
+        })
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          error: "task_solutions_unavailable",
+          reason: reason,
+          task_id: task.id
+        })
     end
   end
 
