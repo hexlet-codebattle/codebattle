@@ -20,11 +20,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
       id ->
         case User.get(id) do
           nil ->
-            conn
-            |> clear_session()
-            |> put_flash(:danger, "You must be logged in to access that page")
-            |> redirect(to: Routes.session_path(conn, :new))
-            |> halt()
+            handle_missing_user(conn)
 
           %User{subscription_type: :banned} ->
             html = Phoenix.View.render_to_string(CodebattleWeb.LayoutView, "banned.html", conn: conn)
@@ -37,6 +33,19 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
           user ->
             assign(conn, :current_user, user)
         end
+    end
+  end
+
+  defp handle_missing_user(conn) do
+    conn = clear_session(conn)
+
+    if get_format(conn) == "html" do
+      conn
+      |> put_flash(:danger, "You must be logged in to access that page")
+      |> redirect(to: Routes.session_path(conn, :new))
+      |> halt()
+    else
+      assign(conn, :current_user, User.build_guest())
     end
   end
 end

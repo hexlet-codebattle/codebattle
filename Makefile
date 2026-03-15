@@ -122,6 +122,22 @@ server:
 console:
 	iex -S mix
 
+ARS_ARGS ?=
+ARS_GOCACHE ?= $(CURDIR)/tmp/ars-go-build
+ARS_GOPATH ?= $(CURDIR)/tmp/ars-go
+ARS_BIN ?= $(CURDIR)/tmp/ars
+
+ars:
+	@command -v go >/dev/null 2>&1 || { \
+		echo "go is required for ars. Install it first, for example:"; \
+		echo "  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"; \
+		echo "  asdf install golang 1.22.12"; \
+		echo "  asdf global golang 1.22.12"; \
+		exit 127; \
+	}
+	@mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH)
+	cd tools/ars && GOCACHE=$(ARS_GOCACHE) GOPATH=$(ARS_GOPATH) go build -o $(ARS_BIN) ./cmd/ars && exec $(ARS_BIN) $(ARS_ARGS)
+
 test:
 	mix coveralls.json --exclude image_executor --max-failures 1
 

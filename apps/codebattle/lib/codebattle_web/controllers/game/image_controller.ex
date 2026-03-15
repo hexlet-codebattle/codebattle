@@ -153,6 +153,29 @@ defmodule CodebattleWeb.Game.ImageController do
     """
   end
 
+  defp render_game_preview(%{players: []} = game) do
+    level = Gettext.gettext(CodebattleWeb.Gettext, "Level: #{game.level}")
+    state = Gettext.gettext(CodebattleWeb.Gettext, "Game state: #{game.state}")
+
+    """
+    <!-- Center Logo -->
+    <div class="center-logo">
+      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
+    </div>
+
+    <!-- Game info -->
+    <center>
+    <h3>#{"Game info"}</h3>
+    <p>#{state}</p>
+    <p>#{level}</p>
+    </center>
+
+    <div class="center-logo">
+      <img src="#{HtmlImage.logo_url()}" alt="Main Logo">
+    </div>
+    """
+  end
+
   defp render_game_preview(%{players: [player1, player2 | _]}) do
     """
     <!-- Player 1 -->

@@ -2,6 +2,8 @@ defmodule CodebattleWeb.HtmlImage do
   @moduledoc false
   import Plug.Conn
 
+  require Logger
+
   @doc """
   Renders an image from the given HTML content. It first checks the cache (using the provided cache_key);
   if not found, it generates a PNG from the HTML, caches it, and sends it in the response.
@@ -11,7 +13,7 @@ defmodule CodebattleWeb.HtmlImage do
       case Codebattle.ImageCache.get_image(cache_key) do
         nil ->
           new_image = generate_png(html_content)
-          Codebattle.ImageCache.put_image(cache_key, new_image)
+          cache_image(cache_key, new_image)
           new_image
 
         image ->
@@ -27,13 +29,11 @@ defmodule CodebattleWeb.HtmlImage do
   Generates a PNG image from the given HTML content.
   If the fake HTML-to-image mode is enabled, it returns the HTML content instead.
   """
-  def generate_png(html_content) do
+  def generate_png(html_content, renderer \\ &capture_png/1) do
     if fake_html_to_image?() do
       html_content
     else
-      {:html, html_content}
-      |> ChromicPDF.capture_screenshot(capture_screenshot: %{format: "png"})
-      |> then(fn {:ok, image} -> Base.decode64!(image) end)
+      safe_generate_png(html_content, renderer)
     end
   end
 
@@ -56,4 +56,25 @@ defmodule CodebattleWeb.HtmlImage do
   defp fake_html_to_image? do
     Application.get_env(:codebattle, :fake_html_to_image, false)
   end
+
+  defp safe_generate_png(html_content, renderer) do
+    renderer.(html_content)
+  rescue
+    error ->
+      Logger.warning("Image generation failed: #{Exception.message(error)}")
+      ""
+  catch
+    kind, reason ->
+      Logger.warning("Image generation failed: #{Exception.format_banner(kind, reason)}")
+      ""
+  end
+
+  defp capture_png(html_content) do
+    {:html, html_content}
+    |> ChromicPDF.capture_screenshot(capture_screenshot: %{format: "png"})
+    |> then(fn {:ok, image} -> Base.decode64!(image) end)
+  end
+
+  defp cache_image(_cache_key, ""), do: :ok
+  defp cache_image(cache_key, image), do: Codebattle.ImageCache.put_image(cache_key, image)
 end

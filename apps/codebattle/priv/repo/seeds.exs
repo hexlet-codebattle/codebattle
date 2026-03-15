@@ -13,6 +13,11 @@ require Logger
 
 levels = ["elementary", "easy", "medium", "hard"]
 
+task_solutions = %{
+  "python" => "def solution(a, b):\n    return a + b\n",
+  "cpp" => "int solution(int a, int b) {\n  return a + b;\n}\n"
+}
+
 Enum.each(1..10, fn x ->
   for level <- levels do
     task_params = %{
@@ -42,7 +47,8 @@ Enum.each(1..10, fn x ->
         %{argument_name: "a", type: %{name: "integer"}},
         %{argument_name: "b", type: %{name: "integer"}}
       ],
-      output_signature: %{type: %{name: "integer"}}
+      output_signature: %{type: %{name: "integer"}},
+      solutions: task_solutions
     }
 
     task = Codebattle.Task.upsert!(task_params)

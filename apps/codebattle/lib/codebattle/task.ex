@@ -29,7 +29,6 @@ defmodule Codebattle.Task do
              :name,
              :origin,
              :output_signature,
-             :solution,
              :state,
              :tags,
              :time_to_solve_sec,
@@ -82,6 +81,7 @@ defmodule Codebattle.Task do
     field(:origin, :string)
     field(:creator_id, :integer)
     field(:solution, :string, default: "")
+    field(:solutions, :map, default: %{})
     field(:arguments_generator, :string, default: "")
     field(:generator_lang, :string, default: "js")
     field(:time_to_solve_sec, :integer)
@@ -107,6 +107,7 @@ defmodule Codebattle.Task do
       :origin,
       :output_signature,
       :solution,
+      :solutions,
       :state,
       :tags,
       :time_to_solve_sec,
@@ -142,6 +143,7 @@ defmodule Codebattle.Task do
           origin: params.origin,
           output_signature: params.output_signature,
           solution: Map.get(params, :solution, ""),
+          solutions: Map.get(params, :solutions, %{}),
           state: params.state,
           tags: Map.get(params, :tags, []),
           updated_at: DateTime.utc_now(),
@@ -295,6 +297,7 @@ defmodule Codebattle.Task do
       origin: "user",
       creator_id: creator_id,
       solution: "",
+      solutions: %{},
       arguments_generator: "",
       generator_lang: "js"
     }

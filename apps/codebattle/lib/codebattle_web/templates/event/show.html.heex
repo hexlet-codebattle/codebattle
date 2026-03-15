@@ -1,107 +1,106 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">
     <span>{@event.title}</span>
   </h1>
 
-  <h3 class="text-center mt-4">Event Details</h3>
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6">
-          <p><strong>Slug:</strong> {@event.slug}</p>
-          <p><strong>Type:</strong> {@event.type}</p>
-          <p><strong>Title:</strong> {@event.title}</p>
-          <p><strong>Ticker Text:</strong> {@event.ticker_text}</p>
-        </div>
-        <div class="col-md-6">
-          <p><strong>Created By:</strong> {@event.creator_id}</p>
-          <p>
-            <strong>Starts At:</strong> {@event.starts_at && format_datetime(@event.starts_at)}
-          </p>
-          <p><strong>Personal Tournament ID:</strong> {@event.personal_tournament_id}</p>
-        </div>
+  <h3 class="text-center text-white mt-4">Event Details</h3>
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Slug:</strong> {@event.slug}</p>
+        <p><strong>Type:</strong> {@event.type}</p>
+        <p><strong>Title:</strong> {@event.title}</p>
+        <p><strong>Ticker Text:</strong> {@event.ticker_text}</p>
       </div>
-      <div class="row mt-2">
-        <div class="col-12">
-          <p><strong>Description:</strong></p>
-          <div class="p-3 bg-light rounded">
-            {@event.description}
-          </div>
+      <div class="col-md-6">
+        <p><strong>Created By:</strong> {@event.creator_id}</p>
+        <p>
+          <strong>Starts At:</strong> {@event.starts_at && format_datetime(@event.starts_at)}
+        </p>
+        <p><strong>Personal Tournament ID:</strong> {@event.personal_tournament_id}</p>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <p><strong>Description:</strong></p>
+        <div class="p-3 cb-bg-panel cb-border-color border cb-rounded">
+          {@event.description}
         </div>
       </div>
     </div>
   </div>
 
-  <h3 class="text-center">Event Stages</h3>
-  <div class="card mb-4">
-    <div class="card-body">
-      <%= if @event.stages && length(@event.stages) > 0 do %>
-        <div class="table-responsive">
-          <table class="table table-bordered table-sm">
-            <thead>
+  <h3 class="text-center text-white">Event Stages</h3>
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <%= if @event.stages && length(@event.stages) > 0 do %>
+      <div class="table-responsive">
+        <table class="table table-sm">
+          <thead class="cb-text">
+            <tr>
+              <th class="cb-border-color border-bottom">Name</th>
+              <th class="cb-border-color border-bottom">Slug</th>
+              <th class="cb-border-color border-bottom">Dates</th>
+              <th class="cb-border-color border-bottom">Status</th>
+              <th class="cb-border-color border-bottom">Type</th>
+              <th class="cb-border-color border-bottom">Playing Type</th>
+              <th class="cb-border-color border-bottom">Button Text</th>
+              <th class="cb-border-color border-bottom">Confirmation Text</th>
+              <th class="cb-border-color border-bottom">Tournament ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= for stage <- @event.stages do %>
               <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Dates</th>
-                <th>Status</th>
-                <th>Type</th>
-                <th>Playing Type</th>
-                <th>Button Text</th>
-                <th>Confirmation Text</th>
-                <th>Tournament ID</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%= for stage <- @event.stages do %>
-                <tr>
-                  <td>{stage.name}</td>
-                  <td>{stage.slug}</td>
-                  <td>{stage.dates}</td>
-                  <td>
-                    <span class={"badge #{case stage.status do
-                      :pending -> "badge-warning"
-                      :active -> "badge-success"
-                      :passed -> "badge-secondary"
-                      _ -> "badge-light"
+                <td class="text-white cb-border-color">{stage.name}</td>
+                <td class="text-white cb-border-color">{stage.slug}</td>
+                <td class="text-white cb-border-color">{stage.dates}</td>
+                <td class="cb-border-color">
+                  <span class={"badge #{case stage.status do
+                      :pending -> "bg-warning text-dark"
+                      :active -> "bg-success"
+                      :passed -> "bg-secondary"
+                      _ -> "bg-light text-dark"
                     end}"}>
-                      {stage.status}
-                    </span>
-                  </td>
-                  <td>
-                    <span class={"badge #{if stage.type == :tournament, do: "badge-primary", else: "badge-info"}"}>
-                      {stage.type}
-                    </span>
-                  </td>
-                  <td>
-                    <span class={"badge #{if stage.playing_type == :single, do: "badge-dark", else: "badge-secondary"}"}>
-                      {stage.playing_type}
-                    </span>
-                  </td>
-                  <td>{stage.action_button_text}</td>
-                  <td>
-                    <%= if stage.confirmation_text && String.length(stage.confirmation_text) > 200 do %>
-                      {String.slice(stage.confirmation_text, 0, 200)}
-                      <span class="text-muted">...</span>
-                    <% else %>
-                      {stage.confirmation_text}
-                    <% end %>
-                  </td>
-                  <td>{stage.tournament_id}</td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <div class="alert alert-info alert-dark-theme">
-          No stages configured for this event yet. Event stages will be automatically configured when needed.
-        </div>
-      <% end %>
-    </div>
+                    {stage.status}
+                  </span>
+                </td>
+                <td class="cb-border-color">
+                  <span class={"badge #{if stage.type == :tournament, do: "bg-primary", else: "bg-info text-dark"}"}>
+                    {stage.type}
+                  </span>
+                </td>
+                <td class="cb-border-color">
+                  <span class={"badge #{if stage.playing_type == :single, do: "bg-dark", else: "bg-secondary"}"}>
+                    {stage.playing_type}
+                  </span>
+                </td>
+                <td class="text-white cb-border-color">{stage.action_button_text}</td>
+                <td class="text-white cb-border-color">
+                  <%= if stage.confirmation_text && String.length(stage.confirmation_text) > 200 do %>
+                    {String.slice(stage.confirmation_text, 0, 200)}
+                    <span class="cb-text">...</span>
+                  <% else %>
+                    {stage.confirmation_text}
+                  <% end %>
+                </td>
+                <td class="text-white cb-border-color">{stage.tournament_id}</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="alert alert-info alert-dark-theme mb-0">
+        No stages configured for this event yet. Event stages will be automatically configured when needed.
+      </div>
+    <% end %>
   </div>
 
   <div class="d-flex mt-4">
-    {link("Edit", to: Routes.event_path(@conn, :edit, @event), class: "btn btn-primary")}
-    {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
+    {link("Edit",
+      to: Routes.event_path(@conn, :edit, @event),
+      class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+    )}
+    {link("Back", to: "/admin/events", class: "btn btn-link cb-text ml-auto")}
   </div>
 </div>

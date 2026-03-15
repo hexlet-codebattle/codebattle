@@ -58,6 +58,29 @@ defmodule CodebattleWeb.TaskPackControllerTest do
     assert new_conn.status == 200
   end
 
+  test ".new", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.task_pack_path(conn, :new))
+
+    assert html_response(conn, 200) =~ "Create your own task pack"
+  end
+
+  test ".edit", %{conn: conn} do
+    user = insert(:user)
+    task_pack = insert(:task_pack, creator_id: user.id)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.task_pack_path(conn, :edit, task_pack))
+
+    assert html_response(conn, 200) =~ "Edit task pack"
+  end
+
   test ".create", %{conn: conn} do
     user = insert(:user)
 

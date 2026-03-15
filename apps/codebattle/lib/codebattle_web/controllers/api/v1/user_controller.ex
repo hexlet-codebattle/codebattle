@@ -68,24 +68,30 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def stats(conn, %{"id" => id}) do
-    %{
-      user: user,
-      active_game_id: active_game_id,
-      achievements: achievements,
-      metrics: metrics,
-      stats: stats,
-      season_results: season_results
-    } =
-      get_achievements_payload(id, include_stats: true, include_season_results: true)
+    case get_achievements_payload(id, include_stats: true, include_season_results: true) do
+      {:ok,
+       %{
+         user: user,
+         active_game_id: active_game_id,
+         achievements: achievements,
+         metrics: metrics,
+         stats: stats,
+         season_results: season_results
+       }} ->
+        json(conn, %{
+          active_game_id: active_game_id,
+          stats: stats,
+          season_results: season_results,
+          metrics: metrics,
+          user: user,
+          achievements: achievements
+        })
 
-    json(conn, %{
-      active_game_id: active_game_id,
-      stats: stats,
-      season_results: season_results,
-      metrics: metrics,
-      user: user,
-      achievements: achievements
-    })
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "NOT_FOUND"})
+    end
   end
 
   def rivals(conn, %{"id" => "0"}) do
@@ -118,8 +124,15 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def achievements(conn, %{"id" => id}) do
-    payload = get_achievements_payload(id)
-    json(conn, payload)
+    case get_achievements_payload(id) do
+      {:ok, payload} ->
+        json(conn, payload)
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "NOT_FOUND"})
+    end
   end
 
   def nearby_users(conn, _) do
@@ -253,30 +266,39 @@ defmodule CodebattleWeb.Api.V1.UserController do
   defp get_achievements_payload(id, opts) do
     include_stats = Keyword.get(opts, :include_stats, false)
     include_season_results = Keyword.get(opts, :include_season_results, false)
-    user = User.get!(id)
-    active_game_id = Game.Context.get_active_game_id(id)
-    stats = UserStats.get_game_stats(id)
-    achievements = Achievements.get_user_achievements(id)
-    metrics = build_metrics_from_achievements(achievements, stats)
 
-    payload = %{
-      user: user,
-      active_game_id: active_game_id,
-      achievements: achievements,
-      metrics: metrics
-    }
+    case User.get(id) do
+      nil ->
+        {:error, :not_found}
 
-    payload =
-      if include_stats do
-        Map.put(payload, :stats, stats)
-      else
-        payload
-      end
+      user ->
+        active_game_id = Game.Context.get_active_game_id(id)
+        stats = UserStats.get_game_stats(id)
+        achievements = Achievements.get_user_achievements(id)
+        metrics = build_metrics_from_achievements(achievements, stats)
 
-    if include_season_results do
-      Map.put(payload, :season_results, SeasonResult.get_by_user_history(user.id))
-    else
-      payload
+        payload = %{
+          user: user,
+          active_game_id: active_game_id,
+          achievements: achievements,
+          metrics: metrics
+        }
+
+        payload =
+          if include_stats do
+            Map.put(payload, :stats, stats)
+          else
+            payload
+          end
+
+        payload =
+          if include_season_results do
+            Map.put(payload, :season_results, SeasonResult.get_by_user_history(user.id))
+          else
+            payload
+          end
+
+        {:ok, payload}
     end
   end
 end

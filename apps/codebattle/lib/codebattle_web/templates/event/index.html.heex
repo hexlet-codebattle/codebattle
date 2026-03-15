@@ -1,49 +1,53 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Events</h1>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Events</h1>
   {link("Create new event",
     to: Routes.event_path(@conn, :new),
-    class: "btn btn-success text-white mt-2 rounded-lg"
+    class: "btn btn-success text-white mt-2 cb-rounded"
   )}
   <div class="table-responsive mt-4">
     <table class="table table-sm">
-      <thead>
+      <thead class="cb-text">
         <tr>
-          <th>slug</th>
-          <th>type</th>
-          <th>title</th>
-          <th>starts_at</th>
-          <th>description</th>
+          <th class="cb-border-color border-bottom">slug</th>
+          <th class="cb-border-color border-bottom">type</th>
+          <th class="cb-border-color border-bottom">title</th>
+          <th class="cb-border-color border-bottom">starts_at</th>
+          <th class="cb-border-color border-bottom">description</th>
         </tr>
       </thead>
       <tbody>
         <%= for event <- @events do %>
           <tr>
-            <td class="align-middle text">{event.slug}</td>
-            <td class="align-middle text">{event.type}</td>
-            <td class="align-middle text">{event.title}</td>
-            <td class="align-middle text">{format_datetime(event.starts_at)}</td>
-            <td class="align-middle text">
+            <td class="align-middle text-white cb-border-color">{event.slug}</td>
+            <td class="align-middle text-white cb-border-color">{event.type}</td>
+            <td class="align-middle text-white cb-border-color">{event.title}</td>
+            <td class="align-middle text-white cb-border-color">
+              {format_datetime(event.starts_at)}
+            </td>
+            <td class="align-middle text-white cb-border-color">
               {event.description && String.slice(event.description, 1..10)}
             </td>
-            <td class="align-middle text-nowrap">
+            <td class="align-middle text-nowrap cb-border-color">
               <div class="d-flex">
                 {link("Preview",
                   to: "/e/#{event.slug}",
-                  class: "btn btn-sm btn-info rounded-lg"
+                  class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
                 )}
                 {link("Show",
                   to: Routes.event_path(@conn, :show, event.id),
-                  class: "btn btn-sm btn-info rounded-lg"
+                  class:
+                    "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
                 )}
                 {link("Edit",
                   to: Routes.event_path(@conn, :edit, event.id),
-                  class: "btn btn-sm btn-primary rounded-lg ml-2"
+                  class:
+                    "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
                 )}
                 {link("Delete",
                   to: Routes.event_path(@conn, :delete, event.id),
                   method: :delete,
                   data: [confirm: "Are you sure you want to delete this event?"],
-                  class: "btn btn-sm btn-danger rounded-lg ml-2"
+                  class: "btn btn-sm btn-outline-danger cb-rounded ml-2"
                 )}
               </div>
             </td>

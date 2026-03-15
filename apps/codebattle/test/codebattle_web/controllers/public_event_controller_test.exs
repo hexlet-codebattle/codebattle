@@ -72,11 +72,12 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       user: user,
       event: event
     } do
-      insert(:user_event,
-        user_id: user.id,
-        event_id: event.id,
-        stages: [%{slug: "q", status: :pending}]
-      )
+      {:ok, _user_event} =
+        UserEvent.create(%{
+          user_id: user.id,
+          event_id: event.id,
+          stages: [%{slug: "q", status: :pending}]
+        })
 
       insert(:task_pack, name: "7_elementary")
 
@@ -105,7 +106,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
       assert redirected_to(conn) == Routes.tournament_path(conn, :show, tournament_id)
 
-      assert [user_event] = Repo.all(UserEvent)
+      assert [user_event] = UserEvent.get_all()
 
       assert [stage = %{slug: "q", status: :started, tournament_id: ^tournament_id}] =
                user_event.stages
@@ -133,11 +134,12 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       user: user,
       event: event
     } do
-      insert(:user_event,
-        user_id: user.id,
-        event_id: event.id,
-        stages: [%{"slug" => "q", "status" => :passed}]
-      )
+      {:ok, _user_event} =
+        UserEvent.create(%{
+          user_id: user.id,
+          event_id: event.id,
+          stages: [%{"slug" => "q", "status" => :passed}]
+        })
 
       conn =
         conn

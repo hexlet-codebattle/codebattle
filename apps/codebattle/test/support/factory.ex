@@ -222,7 +222,7 @@ defmodule CodebattleWeb.Factory do
   end
 
   def user_event_factory do
-    %Codebattle.UserEvent{state: %Codebattle.UserEvent.State{}}
+    %Codebattle.UserEvent{status: "pending"}
   end
 
   def clan_factory do

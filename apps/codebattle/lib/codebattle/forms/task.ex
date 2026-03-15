@@ -66,6 +66,7 @@ defmodule Codebattle.TaskForm do
       :description_ru,
       :description_en,
       :solution,
+      :solutions,
       :arguments_generator,
       :generator_lang,
       :visibility,

@@ -192,7 +192,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
     test "finds or creates user with user_event", %{conn: conn} do
       Application.put_env(:codebattle, :main_event_slug, "e")
 
-      insert(:event, slug: "e")
+      event = insert(:event, slug: "e")
 
       conn
       |> put_req_header("x-auth-key", "x-key")
@@ -207,7 +207,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       |> json_response(200)
 
       user = Repo.get_by(User, name: "lol")
-      user_event = Repo.get_by(UserEvent, user_id: user.id)
+      user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
 
       assert user_event
       assert user_event.stages == []
@@ -224,7 +224,7 @@ defmodule CodebattleWeb.ExtApi.UserControllerTest do
       )
       |> json_response(200)
 
-      user_event = Repo.get_by(UserEvent, user_id: user.id)
+      user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
 
       assert user_event.stages == []
 

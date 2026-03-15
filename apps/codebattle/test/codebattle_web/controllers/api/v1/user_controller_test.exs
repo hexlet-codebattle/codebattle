@@ -299,6 +299,15 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       refute Map.has_key?(resp_body, "stats")
       assert is_list(achievements)
     end
+
+    test "returns 404 for missing user", %{conn: conn} do
+      resp_body =
+        conn
+        |> get(Routes.api_v1_user_path(conn, :achievements, -9))
+        |> json_response(404)
+
+      assert resp_body == %{"error" => "NOT_FOUND"}
+    end
   end
 
   describe "tournaments" do

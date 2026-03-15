@@ -60,7 +60,13 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
 
   describe ".show" do
     test "shows visible task", %{conn: conn} do
-      task = insert(:task, visibility: "public", level: "easy")
+      task =
+        insert(:task,
+          visibility: "public",
+          level: "easy",
+          solution: "legacy solution",
+          solutions: %{"python" => %{"solution_text" => "def solution(): pass"}}
+        )
 
       conn = get(conn, Routes.api_v1_task_path(conn, :show, task.id))
 
@@ -81,6 +87,9 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                  "tags" => ^tags
                }
              } = resp_body
+
+      refute get_in(resp_body, ["task", "solution"])
+      refute get_in(resp_body, ["task", "solutions"])
     end
 
     test "shows hidden task only for creator", %{conn: conn} do

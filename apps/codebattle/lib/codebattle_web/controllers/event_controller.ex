@@ -4,6 +4,8 @@ defmodule CodebattleWeb.EventController do
   alias Codebattle.Event
 
   plug(CodebattleWeb.Plugs.AdminOnly)
+  plug(:put_view, CodebattleWeb.EventView)
+  plug(:put_layout, html: {CodebattleWeb.LayoutView, :admin})
 
   def index(conn, _params) do
     conn

@@ -77,7 +77,6 @@ defmodule Codebattle.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:timex, "~> 3.6"},
       {:typed_struct, "~> 0.3"},
-      {:yaml_elixir, "~> 2.4"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

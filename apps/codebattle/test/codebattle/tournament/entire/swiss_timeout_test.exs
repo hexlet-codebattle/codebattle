@@ -55,23 +55,24 @@ defmodule Codebattle.Tournament.Entire.SwissTimeoutTest do
         "players_limit" => 2
       })
 
-    insert(:user_event,
-      event: event,
-      user: user1,
-      stages: [
-        %{
-          slug: "qualification",
-          status: :pending,
-          place_in_total_rank: nil,
-          place_in_category_rank: nil,
-          score: nil,
-          wins_count: nil,
-          games_count: nil,
-          tournament_id: tournament.id,
-          time_spent_in_seconds: nil
-        }
-      ]
-    )
+    {:ok, _user_event} =
+      UserEvent.create(%{
+        event_id: event.id,
+        user_id: user1.id,
+        stages: [
+          %{
+            slug: "qualification",
+            status: :pending,
+            place_in_total_rank: nil,
+            place_in_category_rank: nil,
+            score: nil,
+            wins_count: nil,
+            games_count: nil,
+            tournament_id: tournament.id,
+            time_spent_in_seconds: nil
+          }
+        ]
+      })
 
     users = [%{id: p1_id} = user1]
 

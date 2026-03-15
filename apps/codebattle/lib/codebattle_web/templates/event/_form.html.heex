@@ -1,11 +1,11 @@
-<%= form_for @changeset, @action, [class: "col-8  offset-2"], fn f -> %>
+<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
   <div class="form-group">
     <div>
-      <span>Slug</span>
-      <span class="ml-3 text-muted">Slug for an Event should be unique</span>
+      <span class="text-white">Slug</span>
+      <span class="ml-3 cb-text">Slug for an Event should be unique</span>
     </div>
     {text_input(f, :slug,
-      class: "form-control form-control-lg",
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
       maxlength: "57",
       required: false
     )}
@@ -13,10 +13,10 @@
   </div>
   <div class="form-group">
     <div>
-      <span>Title</span>
+      <span class="text-white">Title</span>
     </div>
     {text_input(f, :title,
-      class: "form-control form-control-lg",
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
       maxlength: "157",
       required: false
     )}
@@ -24,20 +24,24 @@
   </div>
   <div class="form-group">
     <div>
-      <span>Description</span>
+      <span class="text-white">Description</span>
     </div>
-    {textarea(f, :description, class: "form-control form-control-lg")}
+    {textarea(f, :description,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
     {error_tag(f, :description)}
   </div>
   <div class="form-group">
-    {label(f, :type)}
-    {select(f, :type, Codebattle.Event.types(), class: "form-control form-control-lg")}
+    {label(f, :type, class: "text-white")}
+    {select(f, :type, Codebattle.Event.types(),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
     {error_tag(f, :type)}
   </div>
   <div class="d-flex flex-column justify-content-between w-auto">
-    <label>Starts at ({@user.timezone})</label>
+    <label class="text-white">Starts at ({@user.timezone})</label>
     {datetime_local_input(f, :starts_at,
-      class: "form-control",
+      class: "form-control cb-bg-panel cb-border-color text-white",
       required: true,
       value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user.timezone), 5, :minute)
     )}
@@ -45,27 +49,31 @@
   </div>
   <div class="form-group">
     <div>
-      <span>Ticker Text</span>
+      <span class="text-white">Ticker Text</span>
     </div>
-    {text_input(f, :ticker_text, class: "form-control form-control-lg")}
+    {text_input(f, :ticker_text,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
     {error_tag(f, :ticker_text)}
   </div>
   <div class="form-group">
     <div>
-      <span>Personal Tournament ID</span>
+      <span class="text-white">Personal Tournament ID</span>
     </div>
-    {number_input(f, :personal_tournament_id, class: "form-control form-control-lg")}
+    {number_input(f, :personal_tournament_id,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
     {error_tag(f, :personal_tournament_id)}
   </div>
 
   <div class="mb-4">
-    <h4>Event Stages</h4>
+    <h4 class="text-white">Event Stages</h4>
     <div class="form-group">
       <div>
-        <span>Stages (JSON format)</span>
+        <span class="text-white">Stages (JSON format)</span>
       </div>
       {textarea(f, :stages_json,
-        class: "form-control form-control-lg",
+        class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
         value: Jason.encode!(@changeset.data.stages || [], pretty: true),
         rows: 15
       )}
@@ -93,8 +101,8 @@
   <div class="d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",
-      class: "btn btn-success text-white mb-2 rounded-lg"
+      class: "btn btn-success text-white mb-2 cb-rounded"
     )}
-    {link("Back", to: Routes.event_path(@conn, :index), class: "btn btn-link ml-auto")}
+    {link("Back", to: "/admin/events", class: "btn btn-link cb-text ml-auto")}
   </div>
-<% end %>
+<% end) %>

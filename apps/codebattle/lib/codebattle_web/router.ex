@@ -73,6 +73,8 @@ defmodule CodebattleWeb.Router do
     post("/tasks", TaskController, :create)
     post("/task_packs", TaskPackController, :create)
     get("/tournaments/:id", TournamentController, :show)
+    post("/load_tests/scenarios", LoadTestController, :create_scenario)
+    get("/load_tests/tasks/:id/solutions", LoadTestController, :task_solutions)
   end
 
   scope "/", CodebattleWeb do
@@ -91,6 +93,7 @@ defmodule CodebattleWeb.Router do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
     live("/", CodebattleWeb.Live.Admin.IndexView, :index)
+    live("/events", CodebattleWeb.Live.Admin.EventIndexView, :index)
     live("/games", CodebattleWeb.Live.Admin.Game.IndexView, :index)
     live("/code-checks", CodebattleWeb.Live.Admin.CodeCheck.IndexView, :index)
     live("/feedback", CodebattleWeb.Live.Admin.Feedback.IndexView, :index)
@@ -99,6 +102,7 @@ defmodule CodebattleWeb.Router do
     live("/seasons", CodebattleWeb.Live.Admin.Season.IndexView, :index)
     live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
+    resources("/events", CodebattleWeb.EventController, except: [:index])
   end
 
   scope "/auth", CodebattleWeb do
@@ -213,7 +217,6 @@ defmodule CodebattleWeb.Router do
 
     resources("/clans", ClanController, only: [:index, :show])
 
-    resources("/events", EventController)
     get("/e/:slug", PublicEventController, :show)
     post("/e/:slug/stage", PublicEventController, :stage)
 

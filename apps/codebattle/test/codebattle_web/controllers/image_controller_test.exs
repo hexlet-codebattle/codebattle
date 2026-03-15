@@ -38,4 +38,14 @@ defmodule CodebattleWeb.ImageControllerTest do
 
     assert response == ""
   end
+
+  test "returns 200 with no players", %{conn: conn} do
+    game = insert(:game, level: "elementary", state: "waiting_opponent", players: [])
+
+    conn = get(conn, Routes.game_image_path(conn, :show, game.id))
+
+    assert conn.status == 200
+    assert conn.resp_body =~ game.state
+    assert conn.resp_body =~ game.level
+  end
 end
