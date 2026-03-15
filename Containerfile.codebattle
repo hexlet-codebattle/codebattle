@@ -52,6 +52,8 @@ COPY nginx-assets-entrypoint.sh /opt/nginx-assets-entrypoint.sh
 
 COPY --from=compile-image /opt/release/lib/codebattle-0.1.0/priv/static/assets/ /var/www/assets
 
+RUN nginx -t
+
 RUN find /var/www/assets -type f \( \
     -name "*.js" -o \
     -name "*.mjs" -o \
