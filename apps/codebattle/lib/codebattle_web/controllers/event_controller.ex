@@ -84,7 +84,7 @@ defmodule CodebattleWeb.EventController do
 
     conn
     |> put_flash(:info, gettext("Event deleted!"))
-    |> redirect(to: Routes.event_path(conn, :index))
+    |> redirect(to: "/admin/events")
   end
 
   # Process stages Jason data from form
