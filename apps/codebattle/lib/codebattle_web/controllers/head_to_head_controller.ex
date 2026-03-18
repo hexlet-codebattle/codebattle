@@ -5,6 +5,7 @@ defmodule CodebattleWeb.HeadToHeadController do
 
   alias Codebattle.Game.Context
 
+  plug(CodebattleWeb.Plugs.RequireAuth)
   plug(:put_view, CodebattleWeb.HeadToHeadView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
