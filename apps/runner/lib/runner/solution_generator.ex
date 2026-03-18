@@ -75,15 +75,20 @@ defmodule Runner.SolutionGenerator do
   defp add_expected(binding, _meta, _output_signature), do: binding
 
   defp add_default_value(binding, meta, output_signature) do
-    value = get_default_value(meta.default_values, output_signature.type)
+    value = get_default_value(meta.default_values, output_signature.type, meta)
 
     Map.put(binding, :default_value, value)
   end
 
-  defp get_default_value(default_values, %{name: name, nested: nested}) do
+  defp get_default_value(default_values, %{name: name, nested: nested}, meta) do
     default = Map.get(default_values, name)
-    EEx.eval_string(default, value: get_default_value(default_values, nested))
+    inner_type = TypesGenerator.call(nested, meta)
+
+    EEx.eval_string(default,
+      value: get_default_value(default_values, nested, meta),
+      inner_type: inner_type
+    )
   end
 
-  defp get_default_value(default_values, %{name: name}), do: Map.get(default_values, name)
+  defp get_default_value(default_values, %{name: name}, _meta), do: Map.get(default_values, name)
 end

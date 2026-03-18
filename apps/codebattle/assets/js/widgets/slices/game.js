@@ -20,8 +20,8 @@ const game = createSlice({
     updateGameStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },
-    setGameScore: (state, { payload }) => {
-      state.gameStatus.score = payload.score;
+    setGameHeadToHead: (state, { payload }) => {
+      state.gameStatus.headToHead = payload.headToHead;
     },
     updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);

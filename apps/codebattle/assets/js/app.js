@@ -41,6 +41,7 @@ import {
   renderGameThreejsPage,
   renderGameWidget,
   renderHallOfFame,
+  renderHeadToHeadPage,
   renderHeatmapWidget,
   renderInvitesWidget,
   renderLobby,
@@ -121,6 +122,7 @@ const eventWidgetRoot = document.getElementById("event-widget");
 const userPageRoot = document.getElementById("user-page-root");
 const tournamentsScheduleRoot = document.getElementById("tournaments-schedule-root");
 const hallOfFameRoot = document.getElementById("hall-of-fame-root");
+const headToHeadRoot = document.getElementById("head-to-head-root");
 const seasonsRoot = document.getElementById("seasons-root");
 const seasonShowRoot = document.getElementById("season-show-root");
 
@@ -202,6 +204,10 @@ if (tournamentsScheduleRoot) {
 
 if (hallOfFameRoot) {
   renderHallOfFame(hallOfFameRoot);
+}
+
+if (headToHeadRoot) {
+  renderHeadToHeadPage(headToHeadRoot);
 }
 
 if (seasonsRoot) {

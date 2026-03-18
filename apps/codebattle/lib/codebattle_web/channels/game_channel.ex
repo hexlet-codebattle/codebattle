@@ -10,14 +10,17 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     game = Context.get_game!(game_id)
-    score = Context.fetch_score_by_game_id(game_id)
 
     Codebattle.PubSub.subscribe("game:#{game.id}")
 
+    if FunWithFlags.enabled?(:async_game_score_on_join) do
+      send(self(), :load_head_to_head)
+    end
+
     if game.tournament_id && !socket.assigns.current_user.is_bot do
-      join_tournament_game(game, score, socket, game_id)
+      join_tournament_game(game, socket, game_id)
     else
-      join_regular_game(game, score, socket, game_id)
+      join_regular_game(game, socket, game_id)
     end
   rescue
     e ->
@@ -26,18 +29,21 @@ defmodule CodebattleWeb.GameChannel do
       {:ok, %{error: "Game not found"}, socket}
   end
 
-  defp join_regular_game(game, score, socket, game_id) do
+  defp join_regular_game(game, socket, game_id) do
+    head_to_head = maybe_fetch_head_to_head(game_id)
+
     {:ok,
      %{
-       game: GameView.render_game(game, score)
+       game: GameView.render_game(game, head_to_head)
      }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil, banned?: false)}
   end
 
-  defp join_tournament_game(game, score, socket, game_id) do
+  defp join_tournament_game(game, socket, game_id) do
     player_ids = Enum.map(game.players, & &1.id)
     user_id = socket.assigns.current_user.id
     is_player? = user_id in player_ids
     tournament = Tournament.Context.get_tournament_info(game.tournament_id)
+    head_to_head = maybe_fetch_head_to_head(game_id)
 
     {follow_id, active_game_id} =
       get_follow_and_active_game_id(tournament, user_id, player_ids, game.tournament_id)
@@ -64,7 +70,7 @@ defmodule CodebattleWeb.GameChannel do
     {:ok,
      %{
        active_game_id: active_game_id,
-       game: GameView.render_game(game, score),
+       game: GameView.render_game(game, head_to_head),
        current_player: current_player,
        in_main_draw: in_main_draw,
        tournament: %{
@@ -90,6 +96,14 @@ defmodule CodebattleWeb.GameChannel do
        game_id: game_id,
        follow_id: follow_id
      )}
+  end
+
+  defp maybe_fetch_head_to_head(game_id) do
+    if FunWithFlags.enabled?(:async_game_score_on_join) do
+      nil
+    else
+      Context.fetch_head_to_head_by_game_id(game_id)
+    end
   end
 
   defp get_follow_and_active_game_id(tournament, user_id, player_ids, tournament_id) do
@@ -239,11 +253,11 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-  def handle_in("game:score", _, socket) do
+  def handle_in("game:head_to_head", _, socket) do
     game_id = socket.assigns.game_id
-    score = Context.fetch_score_by_game_id(game_id)
+    head_to_head = Context.fetch_head_to_head_by_game_id(game_id)
 
-    {:reply, {:ok, %{score: score}}, socket}
+    {:reply, {:ok, %{head_to_head: head_to_head}}, socket}
   end
 
   def handle_in("rematch:send_offer", _, socket) do
@@ -428,6 +442,14 @@ defmodule CodebattleWeb.GameChannel do
     if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:load_head_to_head, socket) do
+    game_id = socket.assigns.game_id
+    head_to_head = Context.fetch_head_to_head_by_game_id(game_id)
+    push(socket, "game:head_to_head", %{head_to_head: head_to_head})
 
     {:noreply, socket}
   end

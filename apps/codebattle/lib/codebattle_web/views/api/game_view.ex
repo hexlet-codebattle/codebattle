@@ -6,11 +6,12 @@ defmodule CodebattleWeb.Api.GameView do
   alias Codebattle.CodeCheck
   alias Runner.Languages
 
-  def render_game(game, score) do
+  def render_game(game, head_to_head) do
     %{
       id: get_game_id(game),
       inserted_at: Map.get(game, :inserted_at),
       award: game.award,
+      head_to_head: head_to_head,
       langs: get_langs_with_templates(game),
       level: game.level,
       locked: game.locked,
@@ -18,7 +19,6 @@ defmodule CodebattleWeb.Api.GameView do
       players: game.players,
       rematch_initiator_id: Map.get(game, :rematch_initiator_id),
       rematch_state: Map.get(game, :rematch_state, "none"),
-      score: score,
       starts_at: Map.get(game, :starts_at),
       state: game.state,
       status: game.state,

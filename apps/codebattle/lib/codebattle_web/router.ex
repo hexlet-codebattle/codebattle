@@ -200,6 +200,7 @@ defmodule CodebattleWeb.Router do
     get("/schedule", TournamentsScheduleController, :index)
     get("/stream/preset", StreamController, :stream_preset)
     get("/hall_of_fame", HallOfFameController, :index)
+    get("/h2h/:user_id/:opponent_id", HeadToHeadController, :show)
 
     resources("/seasons", SeasonController, only: [:index, :show])
 

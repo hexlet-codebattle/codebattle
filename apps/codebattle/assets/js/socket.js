@@ -40,6 +40,7 @@ export const channelTopics = {
   gameTimeoutTopic: "game:timeout",
   gameToggleVisibleTopic: "game:toggle_visible",
   gameUnlockedTopic: "game:unlocked",
+  gameHeadToHead: "game:head_to_head",
 
   chatUserJoinedTopic: "chat:user_joined",
   chatUserLeftTopic: "chat:user_left",
@@ -81,7 +82,7 @@ export const channelTopics = {
 };
 
 export const channelMethods = {
-  gameScore: "game:score",
+  gameHeadToHead: "game:head_to_head",
   gameCancel: "game:cancel",
   gameCreate: "game:create",
   experimentGameCreate: "game:experiment:create",

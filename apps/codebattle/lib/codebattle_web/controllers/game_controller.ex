@@ -38,8 +38,8 @@ defmodule CodebattleWeb.GameController do
     game = Context.get_game!(id)
 
     if can_access_game?(game, user) do
-      score = Context.fetch_score_by_game_id(game.id)
-      game_params = GameView.render_game(game, score)
+      head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+      game_params = GameView.render_game(game, head_to_head)
 
       conn
       |> put_gon(
@@ -93,8 +93,8 @@ defmodule CodebattleWeb.GameController do
   defp show_game(game, user, conn) do
     case game do
       %Game{is_live: true} = game ->
-        score = Context.fetch_score_by_game_id(game.id)
-        game_params = GameView.render_game(game, score)
+        head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+        game_params = GameView.render_game(game, head_to_head)
 
         conn =
           put_gon(conn,
@@ -121,11 +121,11 @@ defmodule CodebattleWeb.GameController do
 
       game ->
         if Playbook.Context.exists?(game.id) && can_access_game?(game, user) do
-          score = Context.fetch_score_by_game_id(game.id)
+          head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
 
           game_params =
             game
-            |> GameView.render_game(score)
+            |> GameView.render_game(head_to_head)
             |> Map.put(:mode, "history")
 
           conn

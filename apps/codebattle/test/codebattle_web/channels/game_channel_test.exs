@@ -45,6 +45,7 @@ defmodule CodebattleWeb.GameChannelTest do
       assert created.task.level == "easy"
       assert created.mode == "standard"
       assert created.type == "duo"
+      assert created.head_to_head == nil
     end
 
     test "sends tournament game info for spectator who is not participant", %{
@@ -66,9 +67,27 @@ defmodule CodebattleWeb.GameChannelTest do
         subscribe_and_join(spectator_socket, GameChannel, game_topic(game))
 
       assert response.game.id == game.id
+      assert response.game.head_to_head == nil
       assert response.current_player == nil
       assert response.in_main_draw == false
       assert response.tournament.tournament_id == tournament.id
+    end
+
+    test "pushes head to head after join", %{user1: user1, socket1: socket1} do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
+
+      {:ok, _response, _socket1} =
+        subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      assert_receive %Phoenix.Socket.Message{
+        topic: topic,
+        event: "game:head_to_head",
+        payload: %{head_to_head: head_to_head}
+      }
+
+      assert topic == game_topic(game)
+      assert head_to_head == nil
     end
   end
 
@@ -178,7 +197,7 @@ defmodule CodebattleWeb.GameChannelTest do
       }
     end
 
-    test "show score", %{user1: user1, user2: user2, socket1: socket1} do
+    test "show head to head", %{user1: user1, user2: user2, socket1: socket1} do
       players = [Player.build(user1), Player.build(user2)]
       game1 = insert(:game, state: "game_over", players: players)
       insert(:user_game, user: user1, creator: false, game: game1, result: "won")
@@ -191,11 +210,16 @@ defmodule CodebattleWeb.GameChannelTest do
       Mix.Shell.Process.flush()
 
       user1_id = user1.id
-      push(socket1, "game:score", %{})
+      push(socket1, "game:head_to_head", %{})
 
       assert_receive %Reply{
         topic: ^game_topic,
-        payload: %{score: %{game_results: [%{}], player_results: %{}, winner_id: ^user1_id}}
+        payload: %{
+          head_to_head: %{
+            players: [%{id: ^user1_id, wins: 1}, %{id: _, wins: 0}],
+            winner_id: ^user1_id
+          }
+        }
       }
     end
   end

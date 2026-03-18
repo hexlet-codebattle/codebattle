@@ -103,7 +103,7 @@ export const defaultGameStatusState = {
   type: null,
   mode: GameRoomModes.none,
   startsAt: null,
-  score: null,
+  headToHead: null,
   timeoutSeconds: null,
   durationSec: null,
   finishesAt: null,

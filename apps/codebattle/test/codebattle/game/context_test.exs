@@ -57,7 +57,7 @@ defmodule Codebattle.Game.ContextTest do
     end
   end
 
-  describe "fetch_score_by_game_id/1" do
+  describe "fetch_head_to_head_by_game_id/1" do
     test "works" do
       user1 = insert(:user)
       user2 = insert(:user)
@@ -77,14 +77,9 @@ defmodule Codebattle.Game.ContextTest do
       insert(:user_game, user: user2, creator: true, game: game4, result: "lost")
 
       assert %{
-               game_results: [
-                 %{game_id: game1.id, inserted_at: game1.inserted_at, winner_id: user1.id},
-                 %{game_id: game2.id, inserted_at: game2.inserted_at, winner_id: user2.id},
-                 %{game_id: game4.id, inserted_at: game4.inserted_at, winner_id: user1.id}
-               ],
-               player_results: %{to_string(user2.id) => 1, to_string(user1.id) => 2},
+               players: [%{id: user1.id, wins: 2}, %{id: user2.id, wins: 1}],
                winner_id: user1.id
-             } == Game.Context.fetch_score_by_game_id(game3.id)
+             } == Game.Context.fetch_head_to_head_by_game_id(game3.id)
     end
   end
 end

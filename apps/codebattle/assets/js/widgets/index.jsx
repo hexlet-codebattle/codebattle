@@ -8,6 +8,7 @@ import {
   Game,
   GameThreejsPage,
   HallOfFamePage,
+  HeadToHeadPage,
   Invites,
   Lobby,
   Online,
@@ -44,6 +45,8 @@ export const renderStairwayGamePage = (domElement) =>
   createRoot(domElement).render(<StairwayGamePage />);
 export const renderStreamPage = (domElement) => createRoot(domElement).render(<StreamPage />);
 export const renderHallOfFame = (domElement) => createRoot(domElement).render(<HallOfFamePage />);
+export const renderHeadToHeadPage = (domElement) =>
+  createRoot(domElement).render(<HeadToHeadPage />);
 export const renderSeasonsPage = (domElement) => createRoot(domElement).render(<SeasonsPage />);
 export const renderSeasonShowPage = (domElement) =>
   createRoot(domElement).render(<SeasonShowPage />);

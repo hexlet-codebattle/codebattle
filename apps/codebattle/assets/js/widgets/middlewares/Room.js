@@ -466,12 +466,16 @@ export const activeGameReady =
       dispatch(actions.updateCheckStatus({ [userId]: true }));
     };
 
+    const handleGameHeadToHead = (data) => {
+      dispatch(actions.setGameHeadToHead(data));
+    };
+
     const handleNewCheckResult = (responseData) => {
       const { state, solutionStatus, checkResult, players, userId, award } = responseData;
       if (solutionStatus) {
         channel
-          .push(channelMethods.gameScore, {})
-          .receive("ok", (data) => dispatch(actions.setGameScore(data)));
+          .push(channelMethods.gameHeadToHead, {})
+          .receive("ok", (data) => dispatch(actions.setGameHeadToHead(data)));
       }
       dispatch(actions.updateGamePlayers({ players }));
 
@@ -555,8 +559,8 @@ export const activeGameReady =
       dispatch(actions.updateGamePlayers({ players }));
       dispatch(actions.updateGameStatus({ state, msg }));
       channel
-        .push(channelMethods.gameScore, {})
-        .receive("ok", (response) => dispatch(actions.setGameScore(response)));
+        .push(channelMethods.gameHeadToHead, {})
+        .receive("ok", (response) => dispatch(actions.setGameHeadToHead(response)));
       gameRoomService.send(channelTopics.userGiveUpTopic, { payload: data });
     };
 
@@ -617,6 +621,7 @@ export const activeGameReady =
 
     return channel
       .addListener(channelTopics.editorDataTopic, handleNewEditorData)
+      .addListener(channelTopics.gameHeadToHead, handleGameHeadToHead)
       .addListener(channelTopics.userStartCheckTopic, handleStartsCheck)
       .addListener(channelTopics.userCheckCompleteTopic, handleNewCheckResult)
       .addListener(channelTopics.userWonTopic, handleUserWon)

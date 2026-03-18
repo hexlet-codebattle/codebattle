@@ -30,6 +30,7 @@ defmodule Codebattle.DataCase do
   """
   def setup_sandbox(tags) do
     pid = Sandbox.start_owner!(Repo, shared: not tags[:async])
+    FunWithFlags.enable(:async_game_score_on_join)
     on_exit(fn -> Sandbox.stop_owner(pid) end)
   end
 end

@@ -12,7 +12,7 @@ import GameActionButtons from "./GameActionButtons";
 import GameBanPlayerButton from "./GameBanPlayerButton";
 import GameReportButton from "./GameReportButton";
 import GameResultIcon from "./GameResultIcon";
-import UserGameScore from "./UserGameScore";
+import UserHeadToHead from "./UserHeadToHead";
 import VimModeButton from "./VimModeButton";
 
 function ModeButtons({ player }) {
@@ -79,7 +79,7 @@ function EditorToolbar({
             )}
             <div className={userInfoClassNames} role="group" aria-label="User info">
               <UserInfo mode="dark" user={player} placement={Placements.bottomEnd} />
-              {mode === GameRoomModes.standard && <UserGameScore userId={player.id} />}
+              {mode === GameRoomModes.standard && <UserHeadToHead userId={player.id} />}
             </div>
           </div>
         </div>
