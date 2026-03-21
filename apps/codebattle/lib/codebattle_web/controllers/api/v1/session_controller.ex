@@ -10,6 +10,7 @@ defmodule CodebattleWeb.Api.V1.SessionController do
     case Codebattle.Auth.User.find_by_firebase(user_attrs) do
       {:ok, user} ->
         conn
+        |> configure_session(renew: true)
         |> put_session(:user_id, user.id)
         |> json(%{status: :created})
 

@@ -16,6 +16,10 @@ defmodule CodebattleWeb.SessionController do
     end
   end
 
+  def new(%{assigns: %{current_user: %{is_guest: false}}} = conn, params) do
+    redirect(conn, to: Map.get(params, "next", "/"))
+  end
+
   def new(conn, _params) do
     conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
 
@@ -44,6 +48,7 @@ defmodule CodebattleWeb.SessionController do
 
       user ->
         conn
+        |> configure_session(renew: true)
         |> put_flash(:info, gettext("Welcome to Codebattle!"))
         |> put_session(:user_id, user.id)
         |> redirect(to: "/")

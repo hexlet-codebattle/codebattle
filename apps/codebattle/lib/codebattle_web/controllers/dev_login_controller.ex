@@ -18,6 +18,7 @@ defmodule CodebattleWeb.DevLoginController do
       case Codebattle.Auth.User.create_dev_user(params) do
         {:ok, user} ->
           conn
+          |> configure_session(renew: true)
           |> put_flash(:success, gettext("Successfully authenticated."))
           |> put_session(:user_id, user.id)
           |> redirect(to: "/")

@@ -14,6 +14,7 @@ defmodule CodebattleWeb.AuthController do
     case Codebattle.Auth.User.find_by_token(token) do
       {:ok, user} ->
         conn
+        |> configure_session(renew: true)
         |> put_flash(:info, gettext("Successfully authenticated"))
         |> put_session(:user_id, user.id)
         |> redirect(to: "/")
@@ -79,6 +80,7 @@ defmodule CodebattleWeb.AuthController do
     case case_result do
       {:ok, user} ->
         conn
+        |> configure_session(renew: true)
         |> put_flash(:info, gettext("Successfully authenticated"))
         |> put_session(:user_id, user.id)
         |> redirect(to: next_path)

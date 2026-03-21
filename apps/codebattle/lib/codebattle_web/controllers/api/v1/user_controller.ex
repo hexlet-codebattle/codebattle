@@ -34,6 +34,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
     case Codebattle.Auth.User.create_in_firebase(user_attrs) do
       {:ok, user} ->
         conn
+        |> configure_session(renew: true)
         |> put_session(:user_id, user.id)
         |> json(%{status: :created})
 

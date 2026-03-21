@@ -4,7 +4,10 @@ codebattle_port = System.get_env("CODEBATTLE_PORT", "4000")
 codebattle_host = System.get_env("CODEBATTLE_HOST", "codebattle.hexlet.io")
 codebattle_url = "https://#{codebattle_host}"
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
-live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
+session_signing_salt = System.get_env("CODEBATTLE_SESSION_SIGNING_SALT", "7k9BuL99")
+live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT", session_signing_salt)
+session_max_age =
+  "CODEBATTLE_SESSION_MAX_AGE" |> System.get_env("#{60 * 60 * 24 * 365}") |> String.to_integer()
 app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
 logo_title = System.get_env("CODEBATTLE_LOGO_TITLE", "Hexlet Codebattle")
 app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")
@@ -74,6 +77,15 @@ config :codebattle, CodebattleWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_view_salt],
+  session_options: [
+    store: :cookie,
+    key: "_codebattle_key",
+    signing_salt: session_signing_salt,
+    same_site: "Lax",
+    http_only: true,
+    secure: config_env() == :prod,
+    max_age: session_max_age
+  ],
   server: true
 
 config :codebattle, :api_key, System.get_env("CODEBATTLE_API_AUTH_KEY")

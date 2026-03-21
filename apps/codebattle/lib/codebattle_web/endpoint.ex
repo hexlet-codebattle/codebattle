@@ -2,11 +2,22 @@ defmodule CodebattleWeb.Endpoint do
   use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :codebattle
 
-  @session_options [
+  @default_session_options [
     store: :cookie,
     key: "_codebattle_key",
-    signing_salt: "7k9BuL99"
+    signing_salt: "7k9BuL99",
+    same_site: "Lax",
+    http_only: true,
+    secure: false,
+    max_age: 31_536_000
   ]
+
+  def session_options do
+    :codebattle
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:session_options, @default_session_options)
+    |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+  end
 
   socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity, compress: true])
 
@@ -17,7 +28,7 @@ defmodule CodebattleWeb.Endpoint do
         :trace_context_headers,
         :x_headers,
         :uri,
-        session: @session_options
+        session: {__MODULE__, :session_options, []}
       ]
     ]
   )
@@ -120,7 +131,7 @@ defmodule CodebattleWeb.Endpoint do
   plug(Plug.MethodOverride)
   plug(Plug.Head)
 
-  plug(Plug.Session, @session_options)
+  plug(CodebattleWeb.Plugs.Session)
 
   plug(CodebattleWeb.Router)
 end
