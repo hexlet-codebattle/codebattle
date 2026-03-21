@@ -13,6 +13,7 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
 
   @default_user_count 10
   @default_user_lang "python"
+  @ars_tournament_players_limit 26_000
 
   def create_scenario(conn, params) do
     with :ok <- ensure_load_tests_enabled(conn) do
@@ -21,7 +22,7 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
       lang_mix = normalize_lang_mix(params["lang_mix"] || params["languages"])
 
       with {:ok, creator} <- find_or_create_creator(),
-           {:ok, tournament} <- create_tournament(creator, tournament_params, users_count),
+           {:ok, tournament} <- create_tournament(creator, tournament_params),
            {:ok, users} <- create_users(users_count, lang_mix) do
         json(conn, %{
           creator: %{
@@ -121,23 +122,21 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
     end
   end
 
-  defp create_tournament(creator, tournament_params, users_count) do
+  defp create_tournament(creator, tournament_params) do
     params =
-      Map.merge(
-        %{
-          "name" => "Load test swiss #{System.unique_integer([:positive])}",
-          "description" => "Load test tournament",
-          "type" => "swiss",
-          "state" => "waiting_participants",
-          "user_timezone" => "Etc/UTC",
-          "starts_at" => default_starts_at(),
-          "creator" => creator,
-          "players_limit" => users_count,
-          "break_duration_seconds" => 0,
-          "access_type" => "token"
-        },
-        tournament_params
-      )
+      %{
+        "name" => "Load test swiss #{System.unique_integer([:positive])}",
+        "description" => "Load test tournament",
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "user_timezone" => "Etc/UTC",
+        "starts_at" => default_starts_at(),
+        "creator" => creator,
+        "break_duration_seconds" => 0,
+        "access_type" => "token"
+      }
+      |> Map.merge(tournament_params)
+      |> Map.put("players_limit", @ars_tournament_players_limit)
 
     Tournament.Context.create(params)
   end

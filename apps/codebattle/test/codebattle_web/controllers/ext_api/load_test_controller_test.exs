@@ -56,6 +56,7 @@ defmodule CodebattleWeb.ExtApi.LoadTestControllerTest do
 
       tournament = Repo.get(Tournament, tournament_id)
       assert tournament.name == "Scenario tournament"
+      assert tournament.players_limit == 26_000
 
       langs = Enum.map(response["users"], & &1["lang"])
       assert langs == ["python", "cpp", "python"]
