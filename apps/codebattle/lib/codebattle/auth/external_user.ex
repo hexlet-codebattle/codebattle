@@ -16,6 +16,7 @@ defmodule Codebattle.Auth.User.ExternalUser do
 
         params = %{
           external_oauth_id: profile.id,
+          external_oauth_login: profile.login,
           name: name,
           subscription_type: :free,
           lang: Application.get_env(:codebattle, :default_lang_slug),
@@ -27,7 +28,10 @@ defmodule Codebattle.Auth.User.ExternalUser do
         |> Repo.insert()
 
       user ->
-        params = %{avatar_url: external_avatar_url(profile)}
+        params = %{
+          avatar_url: external_avatar_url(profile),
+          external_oauth_login: profile.login
+        }
 
         user
         |> User.changeset(params)

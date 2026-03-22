@@ -61,7 +61,7 @@ defmodule Codebattle.Auth.External do
     |> Keyword.get(:external_user_info_url)
     |> Req.get!(opts)
     |> Map.get(:body)
-    |> Map.take(["default_avatar_id", "id", "is_avatar_empty"])
+    |> Map.take(["default_avatar_id", "id", "is_avatar_empty", "login"])
     |> Runner.AtomizedMap.atomize()
   end
 end

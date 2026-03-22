@@ -55,7 +55,12 @@ config :codebattle, :oauth,
   github_client_id: "GITHUB_CLIENT_ID",
   github_client_secret: "GITHUB_CLIENT_SECRET",
   discord_client_id: "DISCORD_CLIENT_ID",
-  discord_client_secret: "DISCORD_CLIENT_SECRET"
+  discord_client_secret: "DISCORD_CLIENT_SECRET",
+  external_client_id: "EXTERNAL_CLIENT_ID",
+  external_client_secret: "EXTERNAL_CLIENT_SECRET",
+  external_auth_url: "https://external.test/oauth/token",
+  external_user_info_url: "https://external.test/api/user",
+  external_avatar_url_template: "https://external.test/avatars/AVATAR_ID"
 
 config :codebattle, :start_create_bot_timeout, to_timeout(hour: 1)
 config :codebattle, app_version: "fc426ea537962d8e5af5e31e515f7000deeedc68"

@@ -27,6 +27,18 @@ defmodule Codebattle.OauthTestHelpers do
     "verified" => true
   }
 
+  @valid_external_token_body %{
+    "access_token" => "external-token"
+  }
+
+  @valid_external_body %{
+    "client_id" => "external-client-id",
+    "default_avatar_id" => "test-avatar-id",
+    "id" => "external-user-id",
+    "is_avatar_empty" => false,
+    "login" => "external_test_login"
+  }
+
   def stub_github_oauth_requests do
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do
@@ -47,6 +59,18 @@ defmodule Codebattle.OauthTestHelpers do
 
         %{request_path: "/api/users/@me", method: "GET", host: "discord.com"} ->
           Req.Test.json(req, @valid_discord_body)
+      end
+    end)
+  end
+
+  def stub_external_oauth_requests do
+    Req.Test.stub(Codebattle.Auth, fn req ->
+      case req do
+        %{request_path: "/oauth/token", method: "POST", host: "external.test"} ->
+          Req.Test.json(req, @valid_external_token_body)
+
+        %{request_path: "/api/user", method: "GET", host: "external.test"} ->
+          Req.Test.json(req, @valid_external_body)
       end
     end)
   end

@@ -114,6 +114,27 @@ defmodule CodebattleWeb.AuthControllerTest do
       assert redirected_to(conn) == "/next_path"
     end
 
+    test "/auth/external/callback creates user with external login", %{conn: conn} do
+      stub_external_oauth_requests()
+
+      conn = get(conn, "/auth/external/callback", %{"code" => "asfd", "next" => "/next_path"})
+      user = Repo.get_by(User, external_oauth_id: "external-user-id")
+
+      assert %User{
+               avatar_url: "https://external.test/avatars/test-avatar-id",
+               external_oauth_id: "external-user-id",
+               external_oauth_login: "external_test_login",
+               lang: "js",
+               name: "External-external-user-id",
+               rank: 5432,
+               rating: 1200,
+               subscription_type: :free
+             } = user
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/next_path"
+    end
+
     test "/auth/github/lol", %{conn: conn} do
       conn = get(conn, "/auth/lol/callback")
 

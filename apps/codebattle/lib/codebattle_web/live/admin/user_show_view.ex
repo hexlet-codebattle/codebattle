@@ -504,7 +504,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                   </div>
                   <div class="d-flex justify-content-between px-3 py-3">
                     <span class="cb-text">External OAuth</span>
-                    <span class="text-white text-end">{label_value(@user.external_oauth_id)}</span>
+                    <span class="text-white text-end">
+                      {label_value(@user.external_oauth_login || @user.external_oauth_id)}
+                    </span>
                   </div>
                 </div>
 

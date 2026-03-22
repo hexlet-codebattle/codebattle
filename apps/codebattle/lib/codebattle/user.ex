@@ -64,6 +64,7 @@ defmodule Codebattle.User do
     field(:editor_theme, :string)
     field(:email, :string)
     field(:external_oauth_id, :string)
+    field(:external_oauth_login, :string)
     field(:firebase_uid, :string)
     field(:github_id, :integer)
     field(:github_name, :string)
@@ -105,6 +106,7 @@ defmodule Codebattle.User do
       :editor_theme,
       :email,
       :external_oauth_id,
+      :external_oauth_login,
       :firebase_uid,
       :github_id,
       :github_name,
@@ -136,7 +138,7 @@ defmodule Codebattle.User do
 
   def token_changeset(user, params \\ %{}) do
     user
-    |> cast(params, [:external_oauth_id, :category, :name, :clan, :subscription_type])
+    |> cast(params, [:external_oauth_id, :external_oauth_login, :category, :name, :clan, :subscription_type])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 2, max: 39)
