@@ -143,7 +143,7 @@ config :codebattle, default_locale: System.get_env("CODEBATTLE_DEFAULT_LOCALE", 
 config :codebattle,
   deployed_at: System.get_env("DEPLOYED_AT") || Calendar.strftime(DateTime.utc_now(), "%c")
 
-config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL")
+config :codebattle, free_users_redirect_url: System.get_env("CODEBATTLE_FREE_USERS_REDIRECT_URL", "/")
 config :codebattle, host: codebattle_host
 config :codebattle, k8s_namespace: System.get_env("KUBERNETES_NAMESPACE", "default")
 

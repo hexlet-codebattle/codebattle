@@ -130,9 +130,11 @@
                         />
                       </a>
                       <div class="dropdown-menu dropdown-menu-right" style="z-index:1030">
-                        <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
-                          <span class="fas fa-sign-out-alt mr-2"></span>
-                          {gettext("Sign Out")}
+                        <%= form_for @conn, session_path(@conn, :delete), [as: :session, method: :delete], fn _f -> %>
+                          <button type="submit" class="dropdown-item">
+                            <span class="fas fa-sign-out-alt mr-2"></span>
+                            {gettext("Sign Out")}
+                          </button>
                         <% end %>
                       </div>
                     </li>

@@ -18,8 +18,10 @@
       {Application.get_env(:codebattle, :external)[:app_signup_button]}
     <% end %>
 
-    <%= link to: Routes.session_path(@conn, :delete), method: "delete", class: "btn btn-gray" do %>
-      {Application.get_env(:codebattle, :external)[:app_relogin_button]}
+    <%= form_for @conn, Routes.session_path(@conn, :delete), [as: :session, method: :delete], fn _f -> %>
+      <button type="submit" class="btn btn-gray">
+        {Application.get_env(:codebattle, :external)[:app_relogin_button]}
+      </button>
     <% end %>
   </div>
 </div>
