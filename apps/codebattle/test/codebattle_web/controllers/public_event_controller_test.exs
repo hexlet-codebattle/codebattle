@@ -12,7 +12,14 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
     test "renders event page when user is authenticated", %{conn: conn} do
       user = insert(:user)
-      event = insert(:event, slug: "q", ticker_text: "Test Event")
+      event =
+        insert(:event,
+          slug: "q",
+          ticker_text: "Test Event",
+          title: "Spring Challenge",
+          description: "Compete in the spring qualification stage"
+        )
+
       insert(:user_event, user_id: user.id, event_id: event.id)
 
       conn =
@@ -20,7 +27,13 @@ defmodule CodebattleWeb.PublicEventControllerTest do
         |> put_session(:user_id, user.id)
         |> get(Routes.public_event_path(conn, :show, event.slug))
 
-      assert html_response(conn, 200) =~ event.ticker_text
+      response = html_response(conn, 200)
+
+      assert response =~ event.ticker_text
+      assert response =~ event.title
+      assert response =~ event.description
+      assert response =~ Routes.public_event_url(conn, :show, event.slug)
+      assert response =~ Routes.static_url(conn, "/assets/images/event/trophy.png")
     end
 
     test "redirects to login when user is not authenticated", %{conn: conn} do

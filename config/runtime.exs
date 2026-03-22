@@ -13,6 +13,18 @@ session_max_age =
 app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
 logo_title = System.get_env("CODEBATTLE_LOGO_TITLE", "Hexlet Codebattle")
 app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")
+opengraph_title = System.get_env("CODEBATTLE_OPENGRAPH_TITLE", "Hexlet Codebattle • Game for programmers")
+
+opengraph_description =
+  System.get_env(
+    "CODEBATTLE_OPENGRAPH_DESCRIPTION",
+    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
+  )
+
+opengraph_image =
+  System.get_env("CODEBATTLE_OPENGRAPH_IMAGE") ||
+    System.get_env("CODEBATTLE_OPENGRAPH_URL") ||
+    "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
 
 tournament_rematch_timeout_ms =
   "CODEBATTLE_TOURNAMENT_REMATCH_TIMEOUT_MS" |> System.get_env("5000") |> String.to_integer()
@@ -153,18 +165,10 @@ config :codebattle,
 config :codebattle, tournament_rematch_timeout_ms: tournament_rematch_timeout_ms
 
 config :phoenix_meta_tags,
-  title: System.get_env("CODEBATTLE_OPENGRAPH_TITLE", "Hexlet Codebattle • Game for programmers"),
-  description:
-    System.get_env(
-      "CODEBATTLE_OPENGRAPH_DESCRIPTION",
-      "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players."
-    ),
+  title: opengraph_title,
+  description: opengraph_description,
   url: codebattle_url,
-  image:
-    System.get_env(
-      "CODEBATTLE_OPENGRAPH_URL",
-      "https://codebattle.hexlet.io/assets/images/opengraph-main.png"
-    ),
+  image: opengraph_image,
   "og:type": "website",
   fb: %{
     size: %{

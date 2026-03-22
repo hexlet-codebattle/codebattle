@@ -19,9 +19,8 @@ defmodule CodebattleWeb.PublicEventController do
       event = Event.get_by_slug!(slug)
       user_event = UserEvent.get_by_user_id_and_event_id(user.id, event.id)
 
-      conn = put_meta_tags(conn, Application.get_all_env(:phoenix_meta_tags))
-
       conn
+      |> put_meta_tags(public_event_meta_tags(conn, event))
       |> assign(:ticker_text, event.ticker_text)
       |> assign(:show_header, true)
       |> put_gon(
@@ -62,4 +61,36 @@ defmodule CodebattleWeb.PublicEventController do
   defp event_allowed?(user) do
     FunWithFlags.enabled?(:allow_event_page, for: user) or User.admin?(user)
   end
+
+  defp public_event_meta_tags(conn, event) do
+    defaults = Application.get_all_env(:phoenix_meta_tags)
+
+    title =
+      event.title
+      |> blank_to_nil()
+      |> Kernel.||(event.ticker_text)
+      |> blank_to_nil()
+      |> Kernel.||(defaults[:title])
+
+    description =
+      event.description
+      |> blank_to_nil()
+      |> Kernel.||(event.ticker_text)
+      |> blank_to_nil()
+      |> Kernel.||(defaults[:description])
+
+    image = Routes.static_url(conn, "/assets/images/event/trophy.png")
+
+    defaults
+    |> Keyword.merge(
+      title: title,
+      description: description,
+      image: image,
+      url: Routes.public_event_url(conn, :show, event.slug)
+    )
+  end
+
+  defp blank_to_nil(nil), do: nil
+  defp blank_to_nil(""), do: nil
+  defp blank_to_nil(value), do: value
 end
