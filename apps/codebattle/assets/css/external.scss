@@ -395,7 +395,10 @@ $dark-red: #b00020;
 
 .cb-custom-event-stage-grid {
   display: grid;
-  grid-template-columns: minmax(170px, 1.05fr) minmax(110px, 0.7fr) repeat(4, minmax(90px, 0.9fr));
+  grid-template-columns: minmax(170px, 1.05fr) minmax(110px, 0.7fr) repeat(
+      4,
+      minmax(90px, 0.9fr)
+    );
   align-items: center;
   column-gap: 1rem;
 }
