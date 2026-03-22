@@ -32,6 +32,21 @@ defmodule CodebattleWeb.PublicEventControllerTest do
     end
   end
 
+  describe ".show for premium users" do
+    test "renders event page without allow_event_page flag", %{conn: conn} do
+      user = insert(:user, subscription_type: :premium)
+      event = insert(:event, slug: "q", ticker_text: "Test Event")
+      insert(:user_event, user_id: user.id, event_id: event.id)
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get(Routes.public_event_path(conn, :show, event.slug))
+
+      assert html_response(conn, 200) =~ event.ticker_text
+    end
+  end
+
   describe ".stage" do
     setup do
       FunWithFlags.enable(:allow_event_page)

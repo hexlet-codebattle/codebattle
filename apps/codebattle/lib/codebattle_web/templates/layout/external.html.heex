@@ -41,18 +41,20 @@
     <title>{Application.get_env(:codebattle, :app_title)}</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
 
-    <link
-      phx-track-static
-      rel="stylesheet"
-      href={CodebattleWeb.Vite.asset_path("external.css")}
-    />
-    <script
-      defer
-      phx-track-static
-      type="text/javascript"
-      src={CodebattleWeb.Vite.asset_path("external.js")}
-    >
-    </script>
+    <%= if CodebattleWeb.Vite.dev?() do %>
+      <script type="module" src="http://localhost:8080/@vite/client">
+      </script>
+      <script type="module" src="http://localhost:8080/assets/js/external.js">
+      </script>
+      <link rel="stylesheet" href="http://localhost:8080/assets/css/external.scss" />
+    <% else %>
+      <link phx-track-static rel="stylesheet" href={CodebattleWeb.Vite.asset_path("external.css")} />
+      <%= for href <- CodebattleWeb.Vite.css_paths("external.js") do %>
+        <link rel="stylesheet" href={href} />
+      <% end %>
+      <script phx-track-static type="module" src={CodebattleWeb.Vite.asset_path("external.js")}>
+      </script>
+    <% end %>
   </head>
   <body>
     <div class="d-flex flex-column min-vh-100 cb-bg-dark">
