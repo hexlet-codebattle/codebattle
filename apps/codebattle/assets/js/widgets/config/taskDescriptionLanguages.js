@@ -1,3 +1,5 @@
+import Gon from "gon";
+
 export default {
-  default: "en",
+  default: Gon?.getAsset?.("locale") || "en",
 };

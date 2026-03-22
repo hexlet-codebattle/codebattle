@@ -78,12 +78,63 @@ defmodule CodebattleWeb.LayoutView do
   end
 
   def avatar_url(user) do
-    user.avatar_url ||
-      "https://ui-avatars.com/api/?name=#{user.name}&background=#{get_background_color(user)}&color=ffffff"
+    case user.avatar_url do
+      avatar_url when is_binary(avatar_url) and avatar_url != "" -> avatar_url
+      _ -> default_avatar_url(user.name)
+    end
   end
 
-  defp get_background_color(user) do
-    Enum.at(@colors, rem(String.length(user.name), length(@colors)))
+  defp default_avatar_url(name) do
+    normalized_name = normalize_name(name)
+    background_color = get_background_color(normalized_name)
+    initials = normalized_name |> get_initials() |> escape_xml_text()
+
+    svg = """
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'>
+      <rect width='128' height='128' fill='##{background_color}' />
+      <text x='50%' y='50%' dy='.1em' fill='#ffffff' font-family='Arial,sans-serif' font-size='48' font-weight='700' text-anchor='middle'>#{initials}</text>
+    </svg>
+    """
+
+    "data:image/svg+xml," <> URI.encode(svg, &URI.char_unreserved?/1)
+  end
+
+  defp get_background_color(name) do
+    Enum.at(@colors, rem(String.length(name), length(@colors)))
+  end
+
+  defp normalize_name(name) when is_binary(name) do
+    case String.trim(name) do
+      "" -> "?"
+      normalized_name -> normalized_name
+    end
+  end
+
+  defp normalize_name(_name), do: "?"
+
+  defp get_initials(name) do
+    case_result =
+      case String.split(name, ~r/\s+/u, trim: true) do
+        [] ->
+          "?"
+
+        [single_name] ->
+          String.slice(single_name, 0, 2)
+
+        name_parts ->
+          name_parts
+          |> Enum.take(2)
+          |> Enum.map_join(&String.first/1)
+      end
+
+    String.upcase(case_result)
+  end
+
+  defp escape_xml_text(value) do
+    value
+    |> String.replace("&", "&amp;")
+    |> String.replace("<", "&lt;")
+    |> String.replace(">", "&gt;")
   end
 
   defp app_version do

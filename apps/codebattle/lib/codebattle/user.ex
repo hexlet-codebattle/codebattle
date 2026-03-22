@@ -152,7 +152,7 @@ defmodule Codebattle.User do
       subscription_type: :free,
       lang: Application.get_env(:codebattle, :default_lang_slug),
       rating: 0,
-      locale: "en",
+      locale: Application.get_env(:codebattle, :default_locale, "en"),
       points: 0,
       rank: 0,
       sound_settings: %SoundSettings{}

@@ -17,8 +17,34 @@ const getBackgroundColor = (name) => {
   return colors[index];
 };
 
+const normalizeName = (name) => {
+  const trimmedName = (name || "").trim();
+  return trimmedName || "?";
+};
+
+const getInitials = (name) => {
+  const nameParts = normalizeName(name).split(/\s+/).filter(Boolean);
+
+  if (nameParts.length === 1) {
+    return nameParts[0].slice(0, 2).toUpperCase();
+  }
+
+  return nameParts
+    .slice(0, 2)
+    .map((part) => part[0] || "")
+    .join("")
+    .toUpperCase();
+};
+
+const escapeXmlText = (value) =>
+  value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+
 export const getCustomEventPlayerDefaultImgUrl = (user) => {
-  const color = getBackgroundColor(user.name);
-  return `https://ui-avatars.com/api/?name=${user.name}&background=${color}&color=ffffff`;
+  const normalizedName = normalizeName(user.name);
+  const color = getBackgroundColor(normalizedName);
+  const initials = escapeXmlText(getInitials(normalizedName));
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' fill='#${color}' /><text x='50%' y='50%' dy='.1em' fill='#ffffff' font-family='Arial,sans-serif' font-size='48' font-weight='700' text-anchor='middle'>${initials}</text></svg>`;
+
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 export const tournamentEmptyPlayerUrl = "/assets/images/question-mark-50.png";
