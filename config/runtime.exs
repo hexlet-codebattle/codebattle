@@ -6,8 +6,10 @@ codebattle_url = "https://#{codebattle_host}"
 secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
 session_signing_salt = System.get_env("CODEBATTLE_SESSION_SIGNING_SALT", "7k9BuL99")
 live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT", session_signing_salt)
+
 session_max_age =
   "CODEBATTLE_SESSION_MAX_AGE" |> System.get_env("#{60 * 60 * 24 * 365}") |> String.to_integer()
+
 app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
 logo_title = System.get_env("CODEBATTLE_LOGO_TITLE", "Hexlet Codebattle")
 app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")

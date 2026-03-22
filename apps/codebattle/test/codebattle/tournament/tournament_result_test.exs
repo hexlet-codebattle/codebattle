@@ -480,62 +480,62 @@ defmodule Codebattle.Tournament.TournamenResultTest do
              ] = TournamentResult.get_top_users_by_clan_ranking(tournament)
 
       assert [
-              %{
-                level: "medium",
-                max: Decimal.new("260.00"),
-                min: Decimal.new("100.00"),
-                name: "t3",
+               %{
+                 level: "medium",
+                 max: Decimal.new("260.00"),
+                 min: Decimal.new("100.00"),
+                 name: "t3",
                  p25: Decimal.new("140.00"),
                  p5: Decimal.new("108.00"),
-                p50: Decimal.new("180.00"),
-                p75: Decimal.new("236.00"),
-                p95: Decimal.new("252.00"),
-                round_position: 0,
-                task_id: task3.id,
-                wins_count: 9
-              },
-              %{
-                level: "hard",
+                 p50: Decimal.new("180.00"),
+                 p75: Decimal.new("236.00"),
+                 p95: Decimal.new("252.00"),
+                 round_position: 0,
+                 task_id: task3.id,
+                 wins_count: 9
+               },
+               %{
+                 level: "hard",
                  max: Decimal.new("1200.00"),
                  min: Decimal.new("100.00"),
                  name: "t4",
                  p25: Decimal.new("300.00"),
                  p5: Decimal.new("130.00"),
-                p50: Decimal.new("600.00"),
-                p75: Decimal.new("1020.00"),
-                p95: Decimal.new("1140.00"),
-                round_position: 0,
-                task_id: task4.id,
-                wins_count: 7
-              },
-              %{
-                level: "easy",
+                 p50: Decimal.new("600.00"),
+                 p75: Decimal.new("1020.00"),
+                 p95: Decimal.new("1140.00"),
+                 round_position: 0,
+                 task_id: task4.id,
+                 wins_count: 7
+               },
+               %{
+                 level: "easy",
                  max: Decimal.new("20.00"),
                  min: Decimal.new("10.00"),
                  name: "t2",
                  p25: Decimal.new("12.50"),
                  p5: Decimal.new("10.50"),
-                p50: Decimal.new("15.00"),
-                p75: Decimal.new("18.50"),
-                p95: Decimal.new("19.50"),
-                round_position: 0,
-                task_id: task2.id,
-                wins_count: 6
-              },
-              %{
-                level: "elementary",
+                 p50: Decimal.new("15.00"),
+                 p75: Decimal.new("18.50"),
+                 p95: Decimal.new("19.50"),
+                 round_position: 0,
+                 task_id: task2.id,
+                 wins_count: 6
+               },
+               %{
+                 level: "elementary",
                  max: Decimal.new("100.00"),
                  min: Decimal.new("100.00"),
                  name: "t1",
                  p25: Decimal.new("100.00"),
                  p5: Decimal.new("100.00"),
-                p50: Decimal.new("100.00"),
-                p75: Decimal.new("100.00"),
-                p95: Decimal.new("100.00"),
-                round_position: 0,
-                task_id: task1.id,
-                wins_count: 1
-              }
+                 p50: Decimal.new("100.00"),
+                 p75: Decimal.new("100.00"),
+                 p95: Decimal.new("100.00"),
+                 round_position: 0,
+                 task_id: task1.id,
+                 wins_count: 1
+               }
              ] == TournamentResult.get_tasks_ranking(tournament)
 
       assert [

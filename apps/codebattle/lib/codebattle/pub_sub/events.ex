@@ -82,8 +82,7 @@ defmodule Codebattle.PubSub.Events do
         payload: %{
           tournament: %{
             last_round_ended_at: params.tournament.last_round_ended_at,
-            current_round_timeout_seconds:
-              Tournament.Helpers.current_round_timeout_seconds(params.tournament),
+            current_round_timeout_seconds: Tournament.Helpers.current_round_timeout_seconds(params.tournament),
             match_timeout_seconds: params.tournament.match_timeout_seconds,
             break_duration_seconds: params.tournament.break_duration_seconds,
             last_round_started_at: params.tournament.last_round_started_at,

@@ -39,9 +39,7 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
   end
 
   defp handle_missing_user(conn) do
-    Logger.warning(
-      "Clearing invalid session: user_id=#{inspect(get_session(conn, :user_id))} path=#{conn.request_path}"
-    )
+    Logger.warning("Clearing invalid session: user_id=#{inspect(get_session(conn, :user_id))} path=#{conn.request_path}")
 
     conn = clear_session(conn)
 

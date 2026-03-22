@@ -571,9 +571,7 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_set_task_ids(tournament), do: tournament
 
       defp set_current_round_timeout_seconds(tournament, round_params) do
-        task =
-          tournament
-          |> get_task(get_task_id_by_params(round_params))
+        task = get_task(tournament, get_task_id_by_params(round_params))
 
         update_struct(tournament, %{
           current_round_timeout_seconds: get_round_game_timeout(tournament, task)
