@@ -24,6 +24,8 @@ defmodule CodebattleWeb.PublicEventController do
       |> assign(:ticker_text, event.ticker_text)
       |> assign(:show_header, true)
       |> put_gon(
+        external_platform_login_url: Application.get_env(:codebattle, :external_platform_login_url),
+        external_platform_profile_url_template: Application.get_env(:codebattle, :external_platform_profile_url_template),
         event: %{
           event: event,
           user_event: user_event

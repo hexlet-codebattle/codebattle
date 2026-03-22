@@ -46,6 +46,8 @@ config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4003],
   server: true
 
+config :codebattle, :external_platform_service_url, "https://ext.test"
+
 config :codebattle, :firebase,
   sender_id: "ASDF",
   api_key: "ASDF",
@@ -58,8 +60,8 @@ config :codebattle, :oauth,
   discord_client_secret: "DISCORD_CLIENT_SECRET",
   external_client_id: "EXTERNAL_CLIENT_ID",
   external_client_secret: "EXTERNAL_CLIENT_SECRET",
-  external_auth_url: "https://external.test/oauth/token",
-  external_user_info_url: "https://external.test/api/user",
+  external_auth_url: "https://oauth.test/oauth/token",
+  external_user_info_url: "https://oauth.test/api/user",
   external_avatar_url_template: "https://external.test/avatars/AVATAR_ID"
 
 config :codebattle, :start_create_bot_timeout, to_timeout(hour: 1)

@@ -124,6 +124,7 @@ defmodule CodebattleWeb.AuthControllerTest do
                avatar_url: "https://external.test/avatars/test-avatar-id",
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
+               external_platform_id: "external-platform-test-id",
                lang: "js",
                name: "External-external-user-id",
                rank: 5432,

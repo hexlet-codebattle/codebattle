@@ -42,6 +42,8 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :discord_name,
       :editor_mode,
       :editor_theme,
+      :external_oauth_login,
+      :external_platform_id,
       :games_played,
       :github_id,
       :github_name,

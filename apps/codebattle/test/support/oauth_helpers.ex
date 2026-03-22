@@ -39,6 +39,10 @@ defmodule Codebattle.OauthTestHelpers do
     "login" => "external_test_login"
   }
 
+  @valid_external_platform_body %{
+    "id" => "external-platform-test-id"
+  }
+
   def stub_github_oauth_requests do
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do
@@ -66,11 +70,14 @@ defmodule Codebattle.OauthTestHelpers do
   def stub_external_oauth_requests do
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do
-        %{request_path: "/oauth/token", method: "POST", host: "external.test"} ->
+        %{request_path: "/oauth/token", method: "POST", host: "oauth.test"} ->
           Req.Test.json(req, @valid_external_token_body)
 
-        %{request_path: "/api/user", method: "GET", host: "external.test"} ->
+        %{request_path: "/api/user", method: "GET", host: "oauth.test"} ->
           Req.Test.json(req, @valid_external_body)
+
+        %{request_path: "/v1/users/id", method: "GET", host: "ext.test"} ->
+          Req.Test.json(req, @valid_external_platform_body)
       end
     end)
   end

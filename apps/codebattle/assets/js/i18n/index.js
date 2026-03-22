@@ -6,9 +6,12 @@ import i18next from "i18next";
 import en from "../../../priv/gettext/en/LC_MESSAGES/default.po";
 import ru from "../../../priv/gettext/ru/LC_MESSAGES/default.po";
 
-const lng = Gon?.getAsset?.("locale") || "en";
+const supportedLocales = ["en", "ru"];
+const normalizeLocale = (locale) => (supportedLocales.includes(locale) ? locale : "en");
+const lng = normalizeLocale(Gon?.getAsset?.("locale"));
 
 export const getLocale = () => lng;
+export const getSupportedLocale = normalizeLocale;
 
 i18next.init({
   nsSeparator: false,

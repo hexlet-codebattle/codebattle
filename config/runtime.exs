@@ -125,6 +125,27 @@ config :codebattle, :external,
       "Login with External system to play with your friends"
     )
 
+config :codebattle,
+       :external_platform_login_url,
+       System.get_env(
+         "CODEBATTLE_EXTERNAL_PLATFORM_LOGIN_URL",
+         "value"
+       )
+
+config :codebattle,
+       :external_platform_profile_url_template,
+       System.get_env(
+         "CODEBATTLE_EXTERNAL_PLATFORM_PROFILE_URL_TEMPLATE",
+         "value"
+       )
+
+config :codebattle,
+       :external_platform_service_url,
+       System.get_env(
+         "CODEBATTLE_EXTERNAL_PLATFORM_SERVICE_URL",
+         "value"
+       )
+
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),

@@ -8,7 +8,7 @@ import noop from "lodash/noop";
 import Alert from "react-bootstrap/Alert";
 import { useDispatch, useSelector } from "react-redux";
 
-import i18n from "../../../i18n";
+import i18n, { getSupportedLocale } from "../../../i18n";
 import { userSettingsSelector } from "../../selectors";
 import { actions } from "../../slices";
 
@@ -111,6 +111,7 @@ function UserSettings() {
       try {
         const data = await updateSettings(values);
 
+        await i18n.changeLanguage(getSupportedLocale(data.locale));
         dispatch(actions.updateUserSettings(camelizeKeys(data)));
         setNotification(notifications.success);
       } catch (error) {

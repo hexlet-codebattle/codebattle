@@ -25,6 +25,15 @@ jest.mock("react-bootstrap/Alert", () => ({
     ) : null,
 }));
 
+jest.mock("../i18n", () => ({
+  __esModule: true,
+  getSupportedLocale: jest.fn((locale) => (["en", "ru"].includes(locale) ? locale : "en")),
+  default: {
+    t: jest.fn((key) => key),
+    changeLanguage: jest.fn(() => Promise.resolve()),
+  },
+}));
+
 const reducer = combineReducers(reducers);
 
 const preloadedState = {
@@ -131,7 +140,7 @@ describe("UserSettings test cases", () => {
   test("successfull locale change", async () => {
     const settingUpdaterSpy = global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({}),
+      json: async () => ({ locale: "ru" }),
     });
     const { getByLabelText, getByTestId, findByText, user } = setup(
       <Provider store={store}>
@@ -151,6 +160,9 @@ describe("UserSettings test cases", () => {
         locale: "ru",
       });
     });
+
+    const i18n = jest.requireMock("../i18n").default;
+    expect(i18n.changeLanguage).toHaveBeenCalledWith("ru");
   });
 
   test("failed user settings update", async () => {

@@ -3,6 +3,8 @@ defmodule Codebattle.Auth.External do
   Module that handles External OAuth
   """
 
+  @http_timeout_ms 7_000
+
   def client_id do
     Application.get_env(:codebattle, :oauth)[:external_client_id]
   end
@@ -27,15 +29,21 @@ defmodule Codebattle.Auth.External do
 
     opts =
       Keyword.merge(
-        Application.get_env(:codebattle, :auth_req_options, []),
+        request_opts(),
         body: body,
         headers: headers
       )
 
-    external_auth_url()
-    |> Req.post!(opts)
-    |> Map.get(:body)
-    |> check_authenticated()
+    case Req.post(external_auth_url(), opts) do
+      {:ok, %{status: status, body: response_body}} when status in 200..299 ->
+        check_authenticated(response_body)
+
+      {:ok, %{status: status, body: response_body}} ->
+        {:error, {:external_auth_failed, status, response_body}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   defp external_auth_url do
@@ -51,17 +59,37 @@ defmodule Codebattle.Auth.External do
   defp get_user_details(access_token) do
     opts =
       Keyword.put(
-        Application.get_env(:codebattle, :auth_req_options, []),
+        request_opts(),
         :headers,
         authorization: "OAuth #{access_token}"
       )
 
+    case Req.get(external_user_info_url(), opts) do
+      {:ok, %{status: status, body: response_body}} when status in 200..299 ->
+        response_body
+        |> Map.take(["default_avatar_id", "id", "is_avatar_empty", "login"])
+        |> Runner.AtomizedMap.atomize()
+        |> then(&{:ok, &1})
+
+      {:ok, %{status: status, body: response_body}} ->
+        {:error, {:external_user_info_failed, status, response_body}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp external_user_info_url do
     :codebattle
     |> Application.get_env(:oauth)
     |> Keyword.get(:external_user_info_url)
-    |> Req.get!(opts)
-    |> Map.get(:body)
-    |> Map.take(["default_avatar_id", "id", "is_avatar_empty", "login"])
-    |> Runner.AtomizedMap.atomize()
+  end
+
+  defp request_opts do
+    Keyword.merge(
+      Application.get_env(:codebattle, :auth_req_options, []),
+      connect_options: [timeout: @http_timeout_ms],
+      receive_timeout: @http_timeout_ms
+    )
   end
 end

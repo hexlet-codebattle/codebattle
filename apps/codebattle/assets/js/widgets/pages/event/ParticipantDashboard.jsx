@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 
 import NiceModal, { unregister } from "@ebay/nice-modal-react";
 import cn from "classnames";
+import Gon from "gon";
 import upperCase from "lodash/upperCase";
 import { useSelector } from "react-redux";
 
@@ -12,6 +13,53 @@ import { currentUserSelector, participantDataSelector, eventSelector } from "../
 import EventStageConfirmationModal from "./EventStageConfirmationModal";
 import NotPassedIcon from "./NotPassedIcon";
 import PassedIcon from "./PassedIcon";
+
+const externalPlatformLoginUrl = Gon.getAsset("external_platform_login_url");
+const externalPlatformProfileUrlTemplate = Gon.getAsset("external_platform_profile_url_template");
+
+const getExternalPlatformProfileUrl = (login) => {
+  if (!login || !externalPlatformProfileUrlTemplate) {
+    return null;
+  }
+
+  return externalPlatformProfileUrlTemplate.replace("USER_LOGIN", login);
+};
+
+const renderExternalPlatformLink = (user) => {
+  if (user.externalPlatformId) {
+    const profileUrl = getExternalPlatformProfileUrl(user.externalOauthLogin);
+
+    if (!profileUrl) {
+      return <span className="cb-custom-event-profile-data ms-2">{user.externalPlatformId}</span>;
+    }
+
+    return (
+      <a
+        className="cb-custom-event-profile-data ms-2"
+        href={profileUrl}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {i18n.t("View profile")}
+      </a>
+    );
+  }
+
+  if (!externalPlatformLoginUrl) {
+    return <span className="cb-custom-event-profile-data ms-2">-</span>;
+  }
+
+  return (
+    <a
+      className="cb-custom-event-profile-data ms-2"
+      href={externalPlatformLoginUrl}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {i18n.t("Link profile")}
+    </a>
+  );
+};
 
 function ParticipantDashboard() {
   useEffect(() => {
@@ -65,6 +113,10 @@ function ParticipantDashboard() {
               <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
                 {i18n.t("Category")}
                 <span className="cb-custom-event-profile-data ms-2">{user.category}</span>
+              </div>
+              <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
+                {i18n.t("External platform")}
+                {renderExternalPlatformLink(user)}
               </div>
             </div>
           </div>

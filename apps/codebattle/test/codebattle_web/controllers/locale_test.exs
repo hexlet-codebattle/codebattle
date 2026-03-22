@@ -1,13 +1,31 @@
 defmodule CodebattleWeb.LocaleTest do
   use CodebattleWeb.ConnCase, async: true
 
-  # test "get en locale as default", %{conn: conn} do
-  #   conn = get(conn, Routes.root_path(conn, :index))
-  #   assert html_response(conn, 200) =~ "Welcome to Codebattle!"
-  # end
+  test "uses current user locale when available", %{conn: conn} do
+    user = insert(:user, locale: "ru")
 
-  # test "get ru locale when it is specified", %{conn: conn} do
-  #   conn = get(conn, Routes.root_path(conn, :index), locale: "ru")
-  #   assert html_response(conn, 200) =~ "Добро пожаловать в Codebattle"
-  # end
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.root_path(conn, :index))
+
+    assert get_session(conn, :locale) == "ru"
+  end
+
+  test "falls back to default locale for anonymous user", %{conn: conn} do
+    conn = get(conn, Routes.root_path(conn, :index))
+
+    assert get_session(conn, :locale) == "en"
+  end
+
+  test "falls back to default locale for unsupported user locale", %{conn: conn} do
+    user = insert(:user, locale: "de")
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.root_path(conn, :index))
+
+    assert get_session(conn, :locale) == "en"
+  end
 end

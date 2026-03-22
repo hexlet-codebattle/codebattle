@@ -42,6 +42,12 @@
     <%= if CodebattleWeb.Vite.dev?() do %>
       <script type="module" src="http://localhost:8080/@vite/client">
       </script>
+      <script type="module">
+        import { injectIntoGlobalHook } from "http://localhost:8080/@react-refresh";
+        injectIntoGlobalHook(window);
+        window.$RefreshReg$ = () => {};
+        window.$RefreshSig$ = () => (type) => type;
+      </script>
       <script type="module" src="http://localhost:8080/assets/js/landing.js">
       </script>
       <link rel="stylesheet" href="http://localhost:8080/assets/css/landing.scss" />

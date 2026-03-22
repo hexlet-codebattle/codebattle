@@ -73,8 +73,10 @@ defmodule CodebattleWeb.AuthController do
 
         "external" ->
           redirect_uri = Routes.auth_url(conn, :callback, provider_name)
-          profile = External.external_auth(code, redirect_uri)
-          Codebattle.Auth.User.ExternalUser.find_or_create(profile)
+
+          with {:ok, profile} <- External.external_auth(code, redirect_uri) do
+            Codebattle.Auth.User.ExternalUser.find_or_create(profile)
+          end
       end
 
     case case_result do
