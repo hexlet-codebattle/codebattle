@@ -12,6 +12,7 @@ defmodule CodebattleWeb.PublicEventControllerTest do
 
     test "renders event page when user is authenticated", %{conn: conn} do
       user = insert(:user)
+
       event =
         insert(:event,
           slug: "q",

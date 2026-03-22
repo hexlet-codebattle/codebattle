@@ -7,24 +7,41 @@ cd "$ROOT_DIR"
 TARGET_PREFIX="apps/codebattle/assets/js/"
 APP_DIR="apps/codebattle"
 APP_PREFIX="apps/codebattle/"
+ELIXIR_PATTERN='(^mix\.exs$|^\.formatter\.exs$|^config/.*\.exs$|.*\.(ex|exs)$)'
 
-STAGED_FILES=()
+JS_STAGED_FILES=()
 while IFS= read -r file; do
-  STAGED_FILES+=("$file")
+  JS_STAGED_FILES+=("$file")
 done < <(
   git diff --cached --name-only --diff-filter=ACMR |
     grep -E "^${TARGET_PREFIX}.*\\.(js|jsx|ts|tsx)$" || true
 )
 
-if [ "${#STAGED_FILES[@]}" -eq 0 ]; then
+ELIXIR_STAGED_FILES=()
+while IFS= read -r file; do
+  ELIXIR_STAGED_FILES+=("$file")
+done < <(
+  git diff --cached --name-only --diff-filter=ACMR |
+    grep -E "${ELIXIR_PATTERN}" || true
+)
+
+if [ "${#JS_STAGED_FILES[@]}" -eq 0 ] && [ "${#ELIXIR_STAGED_FILES[@]}" -eq 0 ]; then
   exit 0
 fi
 
-APP_FILES=()
-for file in "${STAGED_FILES[@]}"; do
-  APP_FILES+=("${file#${APP_PREFIX}}")
-done
+if [ "${#ELIXIR_STAGED_FILES[@]}" -gt 0 ]; then
+  mix format "${ELIXIR_STAGED_FILES[@]}"
+  git add -- "${ELIXIR_STAGED_FILES[@]}"
+  mix credo
+fi
 
-pnpm --dir "$APP_DIR" exec oxfmt --write "${APP_FILES[@]}"
-git add -- "${STAGED_FILES[@]}"
-pnpm --dir "$APP_DIR" exec oxlint "${APP_FILES[@]}"
+if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
+  APP_FILES=()
+  for file in "${JS_STAGED_FILES[@]}"; do
+    APP_FILES+=("${file#${APP_PREFIX}}")
+  done
+
+  pnpm --dir "$APP_DIR" exec oxfmt --write "${APP_FILES[@]}"
+  git add -- "${JS_STAGED_FILES[@]}"
+  pnpm --dir "$APP_DIR" exec oxlint "${APP_FILES[@]}"
+fi

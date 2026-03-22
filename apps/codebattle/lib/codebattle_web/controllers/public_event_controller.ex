@@ -81,8 +81,7 @@ defmodule CodebattleWeb.PublicEventController do
 
     image = Routes.static_url(conn, "/assets/images/event/trophy.png")
 
-    defaults
-    |> Keyword.merge(
+    Keyword.merge(defaults,
       title: title,
       description: description,
       image: image,
