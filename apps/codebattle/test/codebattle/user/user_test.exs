@@ -17,4 +17,8 @@ defmodule Codebattle.UserTest do
     assert %{valid?: false, errors: [rating: {"must be greater than or equal to %{number}", _}]} =
              User.rating_changeset(user, %{rating: -1})
   end
+
+  test "guest user defaults to base rating" do
+    assert %{is_guest: true, rating: 1200} = User.build_guest()
+  end
 end

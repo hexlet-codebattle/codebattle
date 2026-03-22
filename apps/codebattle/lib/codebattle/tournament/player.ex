@@ -7,6 +7,7 @@ defmodule Codebattle.Tournament.Player do
   @type t :: %__MODULE__{}
 
   @primary_key false
+  @default_rating 1200
 
   @derive Jason.Encoder
 
@@ -58,7 +59,7 @@ defmodule Codebattle.Tournament.Player do
     field(:name, :string)
     field(:place, :integer, default: 0)
     field(:rank, :integer, default: 5432)
-    field(:rating, :integer)
+    field(:rating, :integer, default: @default_rating)
     field(:score, :integer, default: 0)
     field(:state, :string, default: "active")
     field(:task_ids, {:array, :integer}, default: [])

@@ -171,7 +171,7 @@ defmodule Codebattle.User do
       name: "John Doe",
       subscription_type: :free,
       lang: Application.get_env(:codebattle, :default_lang_slug),
-      rating: 0,
+      rating: 1200,
       locale: Application.get_env(:codebattle, :default_locale, "en"),
       points: 0,
       rank: 0,

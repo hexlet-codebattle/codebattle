@@ -15,6 +15,7 @@ defmodule Codebattle.Game.Player do
   alias Runner.Languages
 
   @primary_key false
+  @default_rating 1200
   @default_editor_text ~s|const _ = require("lodash");\nconst R = require("rambda");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;|
 
   @derive {Jason.Encoder,
@@ -70,7 +71,7 @@ defmodule Codebattle.Game.Player do
     field(:name, :string, default: "Ada Lovelace")
     field(:playbook_id, :integer, default: nil)
     field(:rank, :integer, default: -1)
-    field(:rating, :integer, default: 0)
+    field(:rating, :integer, default: @default_rating)
     field(:rating_diff, :integer, default: 0)
     field(:result, :string, default: "undefined")
     field(:result_percent, :float, default: 0.0)
@@ -119,7 +120,7 @@ defmodule Codebattle.Game.Player do
             clan_id: user.clan_id,
             name: user.name,
             avatar_url: user.avatar_url,
-            rating: user_game.rating,
+            rating: default_rating(user_game.rating, user.rating),
             rating_diff: user_game.rating_diff,
             editor_lang: get_editor_lang(user, params),
             lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
@@ -141,7 +142,7 @@ defmodule Codebattle.Game.Player do
       is_guest: false,
       clan_id: player.clan_id,
       name: player.name,
-      rating: player.rating,
+      rating: default_rating(player.rating),
       rank: player.rank,
       avatar_url: player.avatar_url,
       editor_lang: get_editor_lang(player, params),
@@ -167,7 +168,7 @@ defmodule Codebattle.Game.Player do
       is_guest: player.is_guest,
       clan_id: player.clan_id,
       name: player.name,
-      rating: player.rating,
+      rating: default_rating(player.rating),
       rank: player.rank,
       editor_lang: get_editor_lang(player, params),
       lang: player.lang || Application.get_env(:codebattle, :default_lang_slug),
@@ -198,7 +199,7 @@ defmodule Codebattle.Game.Player do
             is_guest: user.is_guest,
             name: user.name,
             clan_id: user.clan_id,
-            rating: user.rating,
+            rating: default_rating(user.rating),
             rank: user.rank,
             editor_lang: get_editor_lang(user, params),
             lang: user.lang || Application.get_env(:codebattle, :default_lang_slug),
@@ -277,4 +278,10 @@ defmodule Codebattle.Game.Player do
     do: user.style_lang || Application.get_env(:codebattle, :default_style_lang_slug)
 
   defp get_editor_lang(user, _params), do: user.lang || Application.get_env(:codebattle, :default_lang_slug)
+
+  defp default_rating(nil), do: @default_rating
+  defp default_rating(rating), do: rating
+
+  defp default_rating(nil, fallback), do: default_rating(fallback)
+  defp default_rating(rating, _fallback), do: rating
 end

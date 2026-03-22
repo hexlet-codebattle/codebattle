@@ -1,6 +1,7 @@
 defmodule Codebattle.Game.ContextTest do
   use Codebattle.DataCase
 
+  alias Codebattle.Game.GlobalSupervisor
   alias Codebattle.Game.Player
   alias Codebattle.Game.Server
   alias Codebattle.PubSub.Message
@@ -54,6 +55,18 @@ defmodule Codebattle.Game.ContextTest do
       assert :ok == Server.freeze(game_id)
       assert {:error, :handoff_in_progress} = Game.Context.trigger_timeout(game_id)
       assert :ok == Server.unfreeze(game_id)
+    end
+
+    test "preserves player ratings when reloading timed out game from db", %{user1: user1, user2: user2} do
+      {:ok, %{id: game_id}} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      assert {:ok, _new_game} = Game.Context.trigger_timeout(game_id)
+      assert :ok = GlobalSupervisor.terminate_game(game_id)
+
+      reloaded_game = Game.Context.get_game!(game_id)
+
+      assert Enum.map(reloaded_game.players, & &1.rating) == [user1.rating, user2.rating]
     end
   end
 

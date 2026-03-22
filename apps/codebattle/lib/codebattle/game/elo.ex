@@ -94,8 +94,8 @@ defmodule Codebattle.Game.Elo do
       end
 
     {
-      round(winner_rating + k * (s_winner - e_winner)),
-      round(loser_rating + k * (s_loser - e_loser))
+      (winner_rating + k * (s_winner - e_winner)) |> round() |> max(0),
+      (loser_rating + k * (s_loser - e_loser)) |> round() |> max(0)
     }
   end
 
