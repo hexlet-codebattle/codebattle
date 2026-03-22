@@ -133,6 +133,13 @@ config :codebattle,
        )
 
 config :codebattle,
+       :external_platform_name,
+       System.get_env(
+         "CODEBATTLE_EXTERNAL_PLATFORM_NAME",
+         "External platform"
+       )
+
+config :codebattle,
        :external_platform_profile_url_template,
        System.get_env(
          "CODEBATTLE_EXTERNAL_PLATFORM_PROFILE_URL_TEMPLATE",

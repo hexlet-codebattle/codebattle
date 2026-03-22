@@ -25,6 +25,7 @@ defmodule CodebattleWeb.PublicEventController do
       |> assign(:show_header, true)
       |> put_gon(
         external_platform_login_url: Application.get_env(:codebattle, :external_platform_login_url),
+        external_platform_name: Application.get_env(:codebattle, :external_platform_name),
         external_platform_profile_url_template: Application.get_env(:codebattle, :external_platform_profile_url_template),
         event: %{
           event: event,

@@ -64,6 +64,9 @@ msgstr "Введите ваш пароль"
 msgid "Sign in with %{name}"
 msgstr "Войти через %{name}"
 
+msgid "Sign in"
+msgstr "Войти"
+
 #: lib/codebattle_web/templates/game/index.html.slim:1
 msgid "Listing games"
 msgstr "Список игр"
@@ -497,7 +500,7 @@ msgid "Duration (sec)"
 msgstr "Время (сек)"
 
 msgid "Clan"
-msgstr "Клан"
+msgstr "ВУЗ"
 
 msgid "Count of solutions"
 msgstr "Количество успешных решений"
@@ -524,13 +527,13 @@ msgid "Event rating"
 msgstr "Таблица Участников"
 
 msgid "Clans rating"
-msgstr "Рейтинг кланов"
+msgstr "Рейтинг ВУЗов"
 
 msgid "Players rating"
 msgstr "Рейтинг участников"
 
 msgid "Clan players rating"
-msgstr "Рейтинг участников клана"
+msgstr "Рейтинг участников ВУЗа"
 
 msgid "Clan players_count/registrations"
 msgstr "Участники/Регистрации"
@@ -653,7 +656,7 @@ msgid "Opponent"
 msgstr "Соперник"
 
 msgid "Opponent clan"
-msgstr "Клан соперника"
+msgstr "ВУЗ соперника"
 
 msgid "Status"
 msgstr "Статус задачи"
@@ -716,10 +719,10 @@ msgid "Your score"
 msgstr "Твой балл"
 
 msgid "Your clan place"
-msgstr "Место твоего клана"
+msgstr "Место твоего ВУЗа"
 
 msgid "Your clan score"
-msgstr "Балл твоего клана"
+msgstr "Балл твоего ВУЗа"
 
 msgid "Statistics"
 msgstr "Статистика"
@@ -818,13 +821,13 @@ msgid "Player Panel"
 msgstr "Панель участника"
 
 msgid "Top users by clan ranking"
-msgstr "Лучшие игроки в рейтинге кланов"
+msgstr "Лучшие игроки в рейтинге ВУЗов"
 
 msgid "Tasks ranking"
 msgstr "Рейтинг задач"
 
 msgid "Clans bubble distribution"
-msgstr "График распределения лучших кланов"
+msgstr "График распределения лучших ВУЗов"
 
 msgid "Duration distribution and top users by task"
 msgstr "Статистика по задаче"

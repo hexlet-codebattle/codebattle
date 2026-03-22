@@ -15,6 +15,7 @@ import NotPassedIcon from "./NotPassedIcon";
 import PassedIcon from "./PassedIcon";
 
 const externalPlatformLoginUrl = Gon.getAsset("external_platform_login_url");
+const externalPlatformName = Gon.getAsset("external_platform_name") || "External platform";
 const externalPlatformProfileUrlTemplate = Gon.getAsset("external_platform_profile_url_template");
 
 const getExternalPlatformProfileUrl = (login) => {
@@ -28,9 +29,10 @@ const getExternalPlatformProfileUrl = (login) => {
 const renderExternalPlatformLink = (user) => {
   if (user.externalPlatformId) {
     const profileUrl = getExternalPlatformProfileUrl(user.externalOauthLogin);
+    const linkLabel = user.externalOauthLogin || user.externalPlatformId;
 
     if (!profileUrl) {
-      return <span className="cb-custom-event-profile-data ms-2">{user.externalPlatformId}</span>;
+      return <span className="cb-custom-event-profile-data ms-2">{linkLabel}</span>;
     }
 
     return (
@@ -40,13 +42,13 @@ const renderExternalPlatformLink = (user) => {
         target="_blank"
         rel="noreferrer"
       >
-        {i18n.t("View profile")}
+        {linkLabel}
       </a>
     );
   }
 
   if (!externalPlatformLoginUrl) {
-    return <span className="cb-custom-event-profile-data ms-2">-</span>;
+    return <span className="cb-custom-event-profile-data ms-2">{i18n.t("Sign in")}</span>;
   }
 
   return (
@@ -56,7 +58,7 @@ const renderExternalPlatformLink = (user) => {
       target="_blank"
       rel="noreferrer"
     >
-      {i18n.t("Link profile")}
+      {i18n.t("Sign in")}
     </a>
   );
 };
@@ -93,9 +95,9 @@ function ParticipantDashboard() {
   }
 
   return (
-    <div className="container-fluid position-relative">
+    <div className="container-fluid position-relative overflow-hidden">
       <div className="cup cup-aside" />
-      <div className="d-flex flex-column">
+      <div className="cb-custom-event-content d-flex flex-column mx-auto w-100">
         <div className="row my-5">
           <div className="col-12 col-lg-9 col-md-8 col-sm-12">
             <h1 className="text-white cb-custom-event-title">
@@ -115,7 +117,7 @@ function ParticipantDashboard() {
                 <span className="cb-custom-event-profile-data ms-2">{user.category}</span>
               </div>
               <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
-                {i18n.t("External platform")}
+                {externalPlatformName}
                 {renderExternalPlatformLink(user)}
               </div>
             </div>
@@ -123,35 +125,20 @@ function ParticipantDashboard() {
         </div>
 
         <div className="row my-3">
-          <div className="col-12 cb-custom-event-stage-header cb-custom-event-stage-section">
-            <div className="d-flex cb-custom-event-staget-header text-white w-100">
-              <div
-                style={{ width: "20%" }}
-                className="d-flex justify-content-center align-items-center py-3"
-              />
-              <div className="d-flex justify-content-center align-items-center py-3 cb-custom-event-table-action-button" />
-              <div
-                style={{ minWidth: "15%", maxWidth: "60%" }}
-                className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3"
-              >
+          <div className="col-12 cb-custom-event-stage-header cb-custom-event-stage-section d-none d-xl-block">
+            <div className="cb-custom-event-stage-grid cb-custom-event-stage-grid-header text-white w-100 py-3">
+              <div />
+              <div />
+              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Place in total")}
               </div>
-              <div
-                style={{ minWidth: "15%" }}
-                className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3"
-              >
+              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Place in category")}
               </div>
-              <div
-                style={{ minWidth: "15%" }}
-                className="d-none d-lg-flex d-md-flex justify-content-center align-items-center py-3"
-              >
+              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Score/Total")}
               </div>
-              <div
-                style={{ minWidth: "15%" }}
-                className="d-none d-lg-flex justify-content-center align-items-center py-3"
-              >
+              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Time spent")}
               </div>
             </div>
@@ -159,14 +146,14 @@ function ParticipantDashboard() {
           {participantData.stages.map((stage) => (
             <div key={stage.slug} className="col-12 cb-custom-event-stage-section">
               <div className="text-white">
-                <div className="d-flex flex-column flex-md-row py-3">
-                  <div style={{ width: "20%" }} className="d-flex">
-                    <div className="me-3" style={{ minWidth: "200px" }}>
+                <div className="cb-custom-event-stage-grid py-3">
+                  <div className="d-flex">
+                    <div className="cb-custom-event-stage-name">
                       <div>{stage.name}</div>
                       {stage.dates && <div>{stage.dates}</div>}
                     </div>
                   </div>
-                  <div className="d-flex justify-content-center cb-custom-event-table-action-button">
+                  <div className="d-flex justify-content-center cb-custom-event-stage-action">
                     {stage.isStageAvailableForUser && stage.type === "tournament" && (
                       <div className="action-button">
                         {stage.userStatus === "started" && stage.tournamentId ? (
@@ -215,49 +202,45 @@ function ParticipantDashboard() {
                   {stage.type === "tournament" && (
                     <>
                       <div
-                        style={{ minWidth: "15%" }}
                         className={cn(
-                          "d-flex d-sm-flex",
-                          "justify-content-center align-items-center text-center me-5",
+                          "d-flex d-sm-flex cb-custom-event-stage-cell",
+                          "justify-content-center align-items-center text-center",
                         )}
                       >
-                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                        <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Place in total")}:
                         </div>
                         {stage.placeInTotalRank}
                       </div>
                       <div
-                        style={{ minWidth: "15%" }}
                         className={cn(
-                          "d-flex d-sm-flex",
-                          "justify-content-center align-items-center text-center me-5",
+                          "d-flex d-sm-flex cb-custom-event-stage-cell",
+                          "justify-content-center align-items-center text-center",
                         )}
                       >
-                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                        <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Place in category")}:
                         </div>
                         {stage.placeInCategoryRank}
                       </div>
                       <div
-                        style={{ minWidth: "15%" }}
                         className={cn(
-                          "d-flex d-sm-flex",
-                          "justify-content-center align-items-center text-center me-5",
+                          "d-flex d-sm-flex cb-custom-event-stage-cell",
+                          "justify-content-center align-items-center text-center",
                         )}
                       >
-                        <div className="d-block d-lg-none d-md-none me-2 font-weight-bold">
+                        <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Score/Total")}:
                         </div>
                         {stage.winsCount}/{stage.gamesCount}
                       </div>
                       <div
-                        style={{ minWidth: "15%" }}
                         className={cn(
-                          "d-flex d-sm-flex",
-                          "justify-content-center align-items-center text-center me-5",
+                          "d-flex d-sm-flex cb-custom-event-stage-cell",
+                          "justify-content-center align-items-center text-center",
                         )}
                       >
-                        <div className="d-block d-lg-none me-2 font-weight-bold">
+                        <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Time spent")}:
                         </div>
                         {stage.timeSpent}

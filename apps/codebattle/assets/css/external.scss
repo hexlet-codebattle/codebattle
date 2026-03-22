@@ -46,6 +46,20 @@ $dark-red: #b00020;
   background: linear-gradient(135deg, #242424 0%, #151515 100%);
 }
 
+.navbar-brand img {
+  max-height: 32px;
+  height: auto;
+  width: auto;
+}
+
+@media screen and (min-width: $md) {
+  .navbar-brand img {
+    max-height: clamp(28px, 5vw, 36px);
+    height: auto;
+    width: auto;
+  }
+}
+
 /* Example custom classes for your text*/
 .battle-title {
   color: $warning; /* or #fffb47 if you want a brighter yellow*/
@@ -373,6 +387,71 @@ $dark-red: #b00020;
   padding-bottom: 16px;
 }
 
+.cb-custom-event-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+}
+
+.cb-custom-event-stage-grid {
+  display: grid;
+  grid-template-columns: minmax(170px, 1.05fr) minmax(110px, 0.7fr) repeat(4, minmax(90px, 0.9fr));
+  align-items: center;
+  column-gap: 1rem;
+}
+
+.cb-custom-event-stage-grid-header {
+  font-size: 0.95rem;
+  column-gap: 2rem;
+}
+
+.cb-custom-event-stage-grid-header > div {
+  white-space: nowrap;
+  justify-self: center;
+}
+
+.cb-custom-event-stage-name {
+  min-width: 0;
+}
+
+.cb-custom-event-stage-action {
+  min-width: 0;
+}
+
+.cb-custom-event-stage-cell {
+  min-width: 0;
+}
+
+@media (max-width: $lg) {
+  .cb-custom-event-stage-grid {
+    grid-template-columns: minmax(180px, 1.3fr) minmax(140px, 1fr);
+    row-gap: 0.75rem;
+  }
+
+  .cb-custom-event-stage-action {
+    justify-content: flex-end !important;
+  }
+
+  .cb-custom-event-stage-cell {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+@media (max-width: $md) {
+  .cb-custom-event-stage-grid {
+    grid-template-columns: 1fr;
+    row-gap: 0.75rem;
+  }
+
+  .cb-custom-event-stage-name,
+  .cb-custom-event-stage-action,
+  .cb-custom-event-stage-cell {
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+}
+
 .cb-custom-event-text-success {
   color: #2ae881;
 }
@@ -540,6 +619,8 @@ $dark-red: #b00020;
 
 .cup {
   position: absolute;
+  z-index: 0;
+  pointer-events: none;
   background-image: url(https://avatars.mds.yandex.net/get-lpc/9736426/457f402a-5ab5-439a-bd13-2c0d18bce25b/orig?width=1066&height=1397);
   background-repeat: no-repeat;
   transform: rotate(8deg);
@@ -547,7 +628,7 @@ $dark-red: #b00020;
   width: 700px;
   height: 845px;
 
-  @media (max-width: $md) {
+  @media (max-width: $lg) {
     & {
       display: none;
     }
@@ -558,8 +639,8 @@ $dark-red: #b00020;
   background-size: 600px 745px;
   width: 600px;
   height: 745px;
-  bottom: -15%;
-  right: -5%;
+  bottom: -18%;
+  right: -12%;
 }
 
 @keyframes ticker {
