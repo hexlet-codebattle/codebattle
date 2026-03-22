@@ -117,7 +117,6 @@ defmodule Codebattle.User do
       :lang,
       :locale,
       :name,
-      :rating,
       :style_lang,
       :subscription_type
     ])
@@ -127,6 +126,13 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 2, max: 39)
     |> validate_inclusion(:locale, @valid_locales)
     |> assign_clan(params, 1)
+  end
+
+  def rating_changeset(user, params \\ %{}) do
+    user
+    |> cast(params, [:rating, :lang, :style_lang, :db_type])
+    |> validate_required([:rating])
+    |> validate_number(:rating, greater_than_or_equal_to: 0)
   end
 
   def settings_changeset(user, params \\ %{}) do

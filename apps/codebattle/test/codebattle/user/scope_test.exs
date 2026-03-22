@@ -53,5 +53,20 @@ defmodule Codebattle.User.ScopeTest do
       assert result_1.id == user1.id
       assert result_2.id == user2.id
     end
+
+    test "keeps persisted rating for filtered periods" do
+      user =
+        insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
+
+      game = insert(:game, starts_at: ~N[2026-03-22 10:00:00], state: "game_over")
+      insert(:user_game, user: user, game: game, inserted_at: ~N[2026-03-22 10:00:00], rating_diff: nil)
+
+      params = %{"date_from" => "2026-03-21"}
+      query = Scope.list_users(params)
+
+      [result] = Repo.all(query)
+      assert result.id == user.id
+      assert result.rating == 2400
+    end
   end
 end

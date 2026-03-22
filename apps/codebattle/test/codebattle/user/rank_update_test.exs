@@ -44,15 +44,15 @@ defmodule Codebattle.User.RankUpdateTest do
     # rating has been updated
 
     user1
-    |> User.changeset(%{rating: 10_000})
+    |> User.rating_changeset(%{rating: 10_000})
     |> Repo.update!()
 
     user5
-    |> User.changeset(%{rating: 100_100})
+    |> User.rating_changeset(%{rating: 100_100})
     |> Repo.update!()
 
     user6
-    |> User.changeset(%{rating: 100_200})
+    |> User.rating_changeset(%{rating: 100_200})
     |> Repo.update!()
 
     User.RankUpdate.call()

@@ -420,7 +420,7 @@ defmodule Codebattle.Game.Engine do
   defp update_user!(player, %Game{task_type: "sql"}) do
     User
     |> Repo.get!(player.id)
-    |> User.changeset(%{
+    |> User.rating_changeset(%{
       rating: player.rating,
       db_type: player.editor_lang
     })
@@ -430,7 +430,7 @@ defmodule Codebattle.Game.Engine do
   defp update_user!(player, %Game{task_type: "css"}) do
     User
     |> Repo.get!(player.id)
-    |> User.changeset(%{
+    |> User.rating_changeset(%{
       rating: player.rating,
       style_lang: player.editor_lang
     })
@@ -440,7 +440,7 @@ defmodule Codebattle.Game.Engine do
   defp update_user!(player, _game) do
     User
     |> Repo.get!(player.id)
-    |> User.changeset(%{
+    |> User.rating_changeset(%{
       rating: player.rating,
       lang: player.editor_lang
     })

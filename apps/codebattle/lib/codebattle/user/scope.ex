@@ -41,9 +41,7 @@ defmodule Codebattle.User.Scope do
   defp filter_by_date(query, %{"date_from" => date_from}) when date_from !== "" do
     starts_at = date_from |> Date.from_iso8601!() |> NaiveDateTime.new!(~T[00:00:00])
 
-    query
-    |> where([ug: ug], ug.inserted_at >= type(^starts_at, :naive_datetime))
-    |> select_merge([ug: ug], %{rating: sum(ug.rating_diff)})
+    where(query, [ug: ug], ug.inserted_at >= type(^starts_at, :naive_datetime))
   end
 
   defp filter_by_date(query, _params), do: query
