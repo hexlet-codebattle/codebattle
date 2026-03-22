@@ -39,10 +39,10 @@ defmodule Codebattle.User.ScopeTest do
 
     test "sorts users by permitted attributes in asc order" do
       user1 =
-        insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: -2400})
+        insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 0})
 
       user2 =
-        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: -2310})
+        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 10})
 
       _user3 =
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
