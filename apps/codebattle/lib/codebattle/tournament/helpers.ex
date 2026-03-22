@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Helpers do
   @moduledoc false
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.TaskProvider
   alias Codebattle.User
 
   @spec get_player(tournament :: Tournament.t(), id :: String.t() | non_neg_integer()) ::
@@ -282,7 +283,8 @@ defmodule Codebattle.Tournament.Helpers do
   def to_id(id) when is_atom(id), do: id
 
   def prepare_to_json(tournament) do
-    Map.drop(tournament, [
+    tournament
+    |> Map.drop([
       :__struct__,
       :__meta__,
       :clans_table,
@@ -297,6 +299,35 @@ defmodule Codebattle.Tournament.Helpers do
       :ranking_table,
       :tasks_table
     ])
+    |> Map.put(:current_round_timeout_seconds, current_round_timeout_seconds(tournament))
+  end
+
+  def current_round_timeout_seconds(tournament) do
+    cond do
+      is_integer(Map.get(tournament, :current_round_timeout_seconds)) ->
+        tournament.current_round_timeout_seconds
+
+      tournament.tournament_timeout_seconds && tournament.started_at ->
+        max(
+          tournament.tournament_timeout_seconds -
+            DateTime.diff(DateTime.utc_now(), tournament.started_at),
+          10
+        )
+
+      tournament.timeout_mode == "per_round" and is_integer(tournament.round_timeout_seconds) ->
+        tournament.round_timeout_seconds
+
+      true ->
+        tournament
+        |> TaskProvider.get_task(nil)
+        |> case do
+          %{time_to_solve_sec: time_to_solve_sec} when is_integer(time_to_solve_sec) ->
+            time_to_solve_sec
+
+          _ ->
+            300
+        end
+    end
   end
 
   def tournament_info(tournament) do

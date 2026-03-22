@@ -192,6 +192,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
     tags: tournament.tags || "",
     players_limit: tournament.playersLimit || 64,
     rounds_limit: tournament.roundsLimit || 7,
+    timeout_mode: tournament.timeoutMode || "per_task",
     round_timeout_seconds: tournament.roundTimeoutSeconds ?? null,
     break_duration_seconds: tournament.breakDurationSeconds || 42,
     use_chat: tournament.useChat !== undefined ? tournament.useChat : true,

@@ -34,14 +34,13 @@ function TournamentRankingTable() {
   const {
     breakDurationSeconds,
     breakState,
+    currentRoundTimeoutSeconds,
     currentRoundPosition,
     lastRoundEndedAt,
     lastRoundStartedAt,
-    matchTimeoutSeconds,
     ranking,
     state,
     taskIds,
-    roundTimeoutSeconds,
   } = useSelector(tournamentSelector);
   const tasksCount = taskIds?.length || 0;
   const isLastRound = tasksCount > 0 && currentRoundPosition + 1 >= tasksCount;
@@ -142,13 +141,14 @@ function TournamentRankingTable() {
       <div className="d-flex justify-content-around align-items-center mt-1">
         {currentRoundPosition + 1 !== (taskIds?.length || 0) &&
           gameStatus.state !== GameStateCodes.playing &&
+          Number.isInteger(currentRoundTimeoutSeconds) &&
           breakState === "off" && (
             <span className="font-weight-bold me-3 cb-text">
               {i18next.t("Round ends in ")}
               <TournamentRemainingTimer
                 key={lastRoundStartedAt}
                 startsAt={lastRoundStartedAt}
-                duration={roundTimeoutSeconds || matchTimeoutSeconds}
+                duration={currentRoundTimeoutSeconds}
               />
             </span>
           )}

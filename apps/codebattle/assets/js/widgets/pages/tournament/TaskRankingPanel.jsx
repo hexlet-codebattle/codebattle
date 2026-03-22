@@ -37,6 +37,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
       <table className="table table-striped cb-custom-event-table">
         <thead className="text-muted">
           <tr>
+            <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Round")}</th>
             <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Task")}</th>
             <th className="p-1 pl-4 font-weight-light border-0">
               {i18next.t("Count of solutions")}
@@ -73,6 +74,7 @@ function TaskRankingPanel({ type, state, handleTaskSelectClick }) {
                 data-task-id={item.taskId}
                 className={getCustomEventTrClassName(item.level)}
               >
+                <td className={tableDataCellClassName}>{item.roundPosition + 1}</td>
                 <td title={item.name} className={tableDataCellClassName}>
                   <div className="cb-custom-event-name mr-1">{item.name}</div>
                 </td>

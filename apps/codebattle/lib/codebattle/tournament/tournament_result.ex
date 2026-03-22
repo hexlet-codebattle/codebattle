@@ -541,6 +541,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         ROUND(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY duration_sec)::numeric, 2) AS p95,
         ROUND(MAX(duration_sec)::numeric, 2) AS max,
         tr.task_id,
+        COALESCE(tr.round_position, 0) AS round_position,
         SUM(CASE WHEN tr.result_percent = 100.0 THEN 1 ELSE 0 END) AS wins_count
     FROM
         tournament_results tr
@@ -548,7 +549,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tr.tournament_id = #{tournament.id}
         and result_percent = 100.0
     GROUP BY
-        tr.task_id
+        tr.task_id, COALESCE(tr.round_position, 0)
     )
     SELECT
         t.name, t.level, td.*
@@ -556,7 +557,7 @@ defmodule Codebattle.Tournament.TournamentResult do
         tasks_data td
     INNER JOIN
         tasks t ON t.id = td.task_id
-    ORDER BY wins_count DESC
+    ORDER BY round_position ASC, wins_count DESC, td.task_id ASC
     """
     |> Repo.query!()
     |> map_repo_result()
@@ -661,7 +662,7 @@ defmodule Codebattle.Tournament.TournamentResult do
   def get_top_user_by_task_ranking(tournament, task_id, limit \\ 30) do
     query =
       from(r in __MODULE__,
-        join: c in Clan,
+        left_join: c in Clan,
         on: r.clan_id == c.id,
         group_by: [r.user_id, c.id, r.duration_sec, r.score, r.game_id],
         where: r.tournament_id == ^tournament.id,

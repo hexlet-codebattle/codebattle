@@ -17,7 +17,6 @@ import useSearchParams from "../../utils/useSearchParams";
 
 import CustomTournamentInfoPanel from "./CustomTournamentInfoPanel";
 import DetailsModal from "./DetailsModal";
-import IndividualMatches from "./IndividualMatches";
 import JoinButton from "./JoinButton";
 import MatchConfirmationModal from "./MatchConfirmationModal";
 import PlayersRankingPanel from "./PlayersRankingPanel";
@@ -35,55 +34,77 @@ const getTournamentPresentationStatus = (state) => {
   }
 };
 
-function InfoPanel({ currentUserId, tournament, hideResults, canModerate }) {
-  if (tournament.state === TournamentStates.waitingParticipants && tournament.type !== "team") {
+function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnline }) {
+  const showJoinCta = [TournamentStates.waitingParticipants, TournamentStates.active].includes(
+    tournament.state,
+  );
+  const isParticipant = !!tournament.players[currentUserId];
+
+  const joinCta =
+    showJoinCta && !canModerate ? (
+      <div className="mb-3 pb-2 border-bottom cb-border-color">
+        <p className="mb-2 text-muted">
+          {isParticipant
+            ? "You are registered for this tournament. You can leave before it starts."
+            : "Join this tournament to take part in the matches."}
+        </p>
+        <JoinButton
+          isShow
+          isShowLeave={tournament.state === TournamentStates.waitingParticipants}
+          isParticipant={isParticipant}
+          disabled={!isOnline}
+        />
+      </div>
+    ) : null;
+
+  if (tournament.state === TournamentStates.waitingParticipants) {
     return (
       <div className="h-100">
+        {joinCta}
         <Markdown>{tournament.description}</Markdown>
       </div>
     );
   }
 
-  switch (tournament.type) {
-    case "individual":
-      return (
-        <IndividualMatches
-          matches={tournament.matches}
-          players={tournament.players}
-          playersCount={tournament.playersCount}
-          currentUserId={currentUserId}
-        />
-      );
-    default: {
-      if (isEmpty(tournament.players)) return <></>;
-
-      return (
-        <CustomTournamentInfoPanel
-          canModerate={canModerate}
-          currentRoundPosition={tournament.currentRoundPosition}
-          currentUserId={currentUserId}
-          hideBots={!tournament.showBots}
-          hideResults={hideResults}
-          matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-          matches={tournament.matches}
-          pageNumber={tournament.playersPageNumber}
-          pageSize={tournament.playersPageSize}
-          players={tournament.players}
-          playersCount={tournament.playersCount}
-          ranking={tournament.ranking}
-          roundsLimit={tournament.roundsLimit}
-          state={tournament.state}
-          taskList={tournament.taskList}
-          topPlayerIds={tournament.topPlayerIds}
-          tournamentId={tournament.id}
-          type={tournament.type}
-          hideCustomGameConsole={
-            tournament.type !== "versus" || tournament.state !== TournamentStates.active
-          }
-        />
-      );
-    }
+  if (tournament.state === TournamentStates.active && !isParticipant && !canModerate) {
+    return (
+      <div className="h-100">
+        {joinCta}
+        <Markdown>{tournament.description}</Markdown>
+      </div>
+    );
   }
+
+  if (isEmpty(tournament.players)) return <></>;
+
+  return (
+    <>
+      {!isParticipant && joinCta}
+      <CustomTournamentInfoPanel
+        canModerate={canModerate}
+        currentRoundPosition={tournament.currentRoundPosition}
+        currentUserId={currentUserId}
+        hideBots={!tournament.showBots}
+        hideResults={hideResults}
+        matchTimeoutSeconds={tournament.matchTimeoutSeconds}
+        matches={tournament.matches}
+        pageNumber={tournament.playersPageNumber}
+        pageSize={tournament.playersPageSize}
+        players={tournament.players}
+        playersCount={tournament.playersCount}
+        ranking={tournament.ranking}
+        roundsLimit={tournament.roundsLimit}
+        state={tournament.state}
+        taskList={tournament.taskList}
+        topPlayerIds={tournament.topPlayerIds}
+        tournamentId={tournament.id}
+        type={tournament.type}
+        hideCustomGameConsole={
+          tournament.type !== "versus" || tournament.state !== TournamentStates.active
+        }
+      />
+    </>
+  );
 }
 
 function Tournament() {
@@ -285,8 +306,7 @@ function Tournament() {
             lastRoundEndedAt={tournament.lastRoundEndedAt}
             lastRoundStartedAt={tournament.lastRoundStartedAt}
             level={tournament.level}
-            matchTimeoutSeconds={tournament.matchTimeoutSeconds}
-            roundTimeoutSeconds={tournament.roundTimeoutSeconds}
+            currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
             name={tournament.name}
             players={tournament.players}
             playersCount={tournament.playersCount}
@@ -316,6 +336,7 @@ function Tournament() {
                   currentUserId={currentUserId}
                   hideResults={hideResults}
                   canModerate={canModerate}
+                  isOnline={tournament.channel?.online ?? false}
                 />
               </div>
             </div>

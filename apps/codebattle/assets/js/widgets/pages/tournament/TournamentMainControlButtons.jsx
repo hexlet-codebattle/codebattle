@@ -1,9 +1,13 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useContext, useRef, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cn from "classnames";
+import Button from "react-bootstrap/Button";
 import Dropdown from "react-bootstrap/Dropdown";
 import { useDispatch } from "react-redux";
+
+import Modal from "@/components/BootstrapModal";
+import CustomEventStylesContext from "@/components/CustomEventStylesContext";
 
 import {
   cancelTournament,
@@ -43,6 +47,9 @@ function TournamentMainControlButtons({
   toggleStreamMode,
 }) {
   const dispatch = useDispatch();
+  const confirmBtnRef = useRef(null);
+  const hasCustomEventStyle = useContext(CustomEventStylesContext);
+  const [restartConfirmationModalShowing, setRestartConfirmationModalShowing] = useState(false);
 
   const handleStartTournament = useCallback(() => {
     handleStartRound("firstRound");
@@ -53,6 +60,16 @@ function TournamentMainControlButtons({
   const handleStartRoundTournament = useCallback(() => {
     handleStartRound("nextRound");
   }, [handleStartRound]);
+  const openRestartConfirmationModal = useCallback(() => {
+    setRestartConfirmationModalShowing(true);
+  }, []);
+  const closeRestartConfirmationModal = useCallback(() => {
+    setRestartConfirmationModalShowing(false);
+  }, []);
+  const confirmRestartTournament = useCallback(() => {
+    handleRestartTournament();
+    closeRestartConfirmationModal();
+  }, [closeRestartConfirmationModal]);
 
   const restartBtnClassName = cn(
     "btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary",
@@ -60,6 +77,14 @@ function TournamentMainControlButtons({
   const roundBtnClassName = cn(
     "btn text-nowrap ml-lg-2 rounded-left btn-success cb-btn-success text-white",
   );
+  const cancelBtnClassName = cn("btn cb-rounded", {
+    "btn-secondary cb-btn-secondary": !hasCustomEventStyle,
+    "cb-custom-event-btn-secondary": hasCustomEventStyle,
+  });
+  const confirmBtnClassName = cn("btn text-white cb-rounded", {
+    "btn-danger": !hasCustomEventStyle,
+    "cb-custom-event-btn-danger": hasCustomEventStyle,
+  });
 
   const dropdownBtnClassName = cn("btn text-white rounded-right", {
     "rounded-left": streamMode,
@@ -69,6 +94,38 @@ function TournamentMainControlButtons({
 
   return (
     <>
+      <Modal
+        show={restartConfirmationModalShowing}
+        onHide={closeRestartConfirmationModal}
+        contentClassName="cb-bg-panel cb-text"
+      >
+        <Modal.Header className="cb-border-color" closeButton>
+          <Modal.Title>Reset tournament progress</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="cb-border-color">
+          <div className="d-flex flex-column">
+            <h4 className="mb-3">Are you sure you want to reset this tournament?</h4>
+            <p className="mb-0 text-muted">
+              This action is destructive. All tournament progress, matches, and results will be
+              lost.
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="cb-border-color">
+          <div className="d-flex justify-content-between w-100">
+            <Button onClick={closeRestartConfirmationModal} className={cancelBtnClassName}>
+              Cancel
+            </Button>
+            <Button
+              ref={confirmBtnRef}
+              onClick={confirmRestartTournament}
+              className={confirmBtnClassName}
+            >
+              Reset tournament
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
       {!streamMode && (
         <>
           {canStartRound ? (
@@ -97,7 +154,7 @@ function TournamentMainControlButtons({
             <button
               type="button"
               className={restartBtnClassName}
-              onClick={handleRestartTournament}
+              onClick={openRestartConfirmationModal}
               disabled={!canRestart || disabled}
             >
               <FontAwesomeIcon className="mr-2" icon="sync" />

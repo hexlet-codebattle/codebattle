@@ -549,6 +549,7 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> maybe_preload_tasks()
           |> maybe_set_task_ids()
+          |> set_current_round_timeout_seconds(round_params)
           |> maybe_start_round_timer()
 
         # Build matches - this is the most time-consuming part
@@ -568,6 +569,16 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_set_task_ids(tournament), do: tournament
+
+      defp set_current_round_timeout_seconds(tournament, round_params) do
+        task =
+          tournament
+          |> get_task(get_task_id_by_params(round_params))
+
+        update_struct(tournament, %{
+          current_round_timeout_seconds: get_round_game_timeout(tournament, task)
+        })
+      end
 
       defp build_round_matches(tournament, round_params) do
         tournament
@@ -819,7 +830,7 @@ defmodule Codebattle.Tournament.Base do
       # We don't want to run a timer for the swiss type, because all games already have a timeout
       defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
 
-      defp maybe_start_round_timer(%{round_timeout_seconds: nil} = tournament), do: tournament
+      defp maybe_start_round_timer(%{timeout_mode: "per_task"} = tournament), do: tournament
 
       defp maybe_start_round_timer(%{state: "active", type: "top200"} = tournament), do: tournament
 
@@ -868,8 +879,7 @@ defmodule Codebattle.Tournament.Base do
               10
             )
 
-          # nil means "per task timeout mode"
-          is_integer(tournament.round_timeout_seconds) ->
+          tournament.timeout_mode == "per_round" and is_integer(tournament.round_timeout_seconds) ->
             tournament.round_timeout_seconds
 
           true ->
@@ -880,7 +890,11 @@ defmodule Codebattle.Tournament.Base do
       defp get_rematch_game_timeout(tournament), do: get_round_timeout_seconds(tournament)
 
       defp get_round_timeout_seconds(tournament) do
-        tournament.round_timeout_seconds || tournament.match_timeout_seconds
+        if tournament.timeout_mode == "per_round" do
+          tournament.round_timeout_seconds
+        else
+          tournament.match_timeout_seconds
+        end
       end
 
       defp broadcast_tournament_update(tournament) do

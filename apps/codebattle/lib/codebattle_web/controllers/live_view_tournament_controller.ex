@@ -65,7 +65,14 @@ defmodule CodebattleWeb.LiveViewTournamentController do
 
   def show_timer(conn, params) do
     current_user = conn.assigns[:current_user]
-    tournament = Tournament.Context.get!(params["id"])
+    raw_tournament = Tournament.Context.get!(params["id"])
+
+    tournament =
+      Map.put(
+        raw_tournament,
+        :current_round_timeout_seconds,
+        Tournament.Helpers.current_round_timeout_seconds(raw_tournament)
+      )
 
     if Tournament.Helpers.can_access?(tournament, current_user, params) do
       conn

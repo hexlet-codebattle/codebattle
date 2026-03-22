@@ -20,6 +20,7 @@ defmodule Codebattle.Tournament do
              :cheater_ids,
              :creator_id,
              :current_round_id,
+             :current_round_timeout_seconds,
              :current_round_position,
              :description,
              :event_id,
@@ -46,6 +47,7 @@ defmodule Codebattle.Tournament do
              :task_pack_name,
              :task_provider,
              :task_strategy,
+             :timeout_mode,
              :tournament_timeout_seconds,
              :type,
              :use_chat,
@@ -65,6 +67,7 @@ defmodule Codebattle.Tournament do
   @states ~w(upcoming waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack all)
   @task_strategies ~w(random sequential)
+  @timeout_modes ~w(per_task per_round)
   @types ~w(swiss)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
@@ -80,6 +83,7 @@ defmodule Codebattle.Tournament do
     field(:cheater_ids, {:array, :integer}, default: [])
     field(:current_round_id, :integer)
     field(:current_round_position, :integer, default: 0)
+    field(:current_round_timeout_seconds, :integer, virtual: true)
     field(:description, :string)
     field(:finished_at, :utc_datetime)
     field(:grade, :string, default: "open")
@@ -105,6 +109,7 @@ defmodule Codebattle.Tournament do
     field(:task_pack_name, :string)
     field(:task_provider, :string, default: "level")
     field(:task_strategy, :string, default: "random")
+    field(:timeout_mode, :string, default: "per_task")
     field(:tournament_timeout_seconds, :integer)
     field(:type, :string, default: "swiss")
     field(:use_chat, :boolean, default: true)
@@ -170,6 +175,7 @@ defmodule Codebattle.Tournament do
       :task_pack_name,
       :task_provider,
       :task_strategy,
+      :timeout_mode,
       :tournament_timeout_seconds,
       :type,
       :use_chat,
@@ -187,13 +193,25 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
+    |> validate_inclusion(:timeout_mode, @timeout_modes)
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_number(:round_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at, :description])
+    |> validate_round_timeout_for_mode()
     |> validate_length(:description, min: 3, max: 7531)
     |> validate_event_id(params["event_id"] || params[:event_id])
     |> add_creator(params["creator"] || params[:creator])
+  end
+
+  defp validate_round_timeout_for_mode(%Ecto.Changeset{} = changeset) do
+    case get_field(changeset, :timeout_mode) do
+      "per_round" ->
+        validate_required(changeset, [:round_timeout_seconds])
+
+      _ ->
+        changeset
+    end
   end
 
   defp validate_event_id(changeset, nil), do: changeset
@@ -219,5 +237,6 @@ defmodule Codebattle.Tournament do
   def score_strategies, do: @score_strategies
   def task_providers, do: @task_providers
   def task_strategies, do: @task_strategies
+  def timeout_modes, do: @timeout_modes
   def types, do: @types
 end

@@ -6,7 +6,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
   alias Codebattle.Game.Context, as: GameContext
   alias Codebattle.Tournament
 
-  test "uses task timeout when round_timeout_seconds is nil" do
+  test "uses task timeout in per_task mode" do
     task = insert(:task, level: "easy", time_to_solve_sec: 123)
     insert(:task_pack, name: "tp-task-timeout", task_ids: [task.id])
 
@@ -28,6 +28,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
         "ranking_type" => "by_user",
         "type" => "swiss",
         "state" => "waiting_participants",
+        "timeout_mode" => "per_task",
         "round_timeout_seconds" => nil,
         "rounds_limit" => "1",
         "players_limit" => 2
@@ -43,7 +44,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
     assert game.timeout_seconds == 123
   end
 
-  test "uses 300 seconds fallback when round_timeout_seconds and task timeout are nil" do
+  test "uses 300 seconds fallback in per_task mode when task timeout is nil" do
     task = insert(:task, level: "easy", time_to_solve_sec: nil)
     insert(:task_pack, name: "tp-task-timeout-fallback", task_ids: [task.id])
 
@@ -65,6 +66,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
         "ranking_type" => "by_user",
         "type" => "swiss",
         "state" => "waiting_participants",
+        "timeout_mode" => "per_task",
         "round_timeout_seconds" => nil,
         "rounds_limit" => "1",
         "players_limit" => 2
@@ -80,7 +82,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
     assert game.timeout_seconds == 300
   end
 
-  test "uses round timeout when round_timeout_seconds is set" do
+  test "uses round timeout in per_round mode" do
     task = insert(:task, level: "easy", time_to_solve_sec: 123)
     insert(:task_pack, name: "tp-round-timeout", task_ids: [task.id])
 
@@ -102,6 +104,7 @@ defmodule Codebattle.Tournament.TimeoutModeTest do
         "ranking_type" => "by_user",
         "type" => "swiss",
         "state" => "waiting_participants",
+        "timeout_mode" => "per_round",
         "round_timeout_seconds" => "240",
         "rounds_limit" => "1",
         "players_limit" => 2

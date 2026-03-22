@@ -1020,7 +1020,7 @@ msgstr "Рейтинг"
 msgid "Sended"
 msgstr "Отправлено"
 
-msgid "Wait reviling results"
+msgid "Wait revealing results"
 msgstr "Ожидайте результатов соревнования"
 
 msgid "Leaderboard"

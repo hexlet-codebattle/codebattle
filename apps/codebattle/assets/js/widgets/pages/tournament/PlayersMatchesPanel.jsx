@@ -237,7 +237,7 @@ function PlayersMatchesPanel({
             "text-uppercase font-weight-bold pt-2",
           )}
         >
-          {i18n.t("Wait reviling results")}
+          {i18n.t("Wait revealing results")}
         </div>
       )}
       <div className={filterControlsClassName}>

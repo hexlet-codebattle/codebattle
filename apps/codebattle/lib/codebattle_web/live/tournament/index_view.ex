@@ -136,14 +136,8 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_info(_, socket), do: {:noreply, socket}
 
   defp normalize_timeout_mode_params(%{"timeout_mode" => "per_task"} = params) do
-    params
-    |> Map.put("round_timeout_seconds", nil)
-    |> Map.delete("timeout_mode")
+    Map.put(params, "round_timeout_seconds", nil)
   end
 
-  defp normalize_timeout_mode_params(%{"timeout_mode" => "per_round"} = params) do
-    Map.delete(params, "timeout_mode")
-  end
-
-  defp normalize_timeout_mode_params(params), do: Map.delete(params, "timeout_mode")
+  defp normalize_timeout_mode_params(params), do: params
 end

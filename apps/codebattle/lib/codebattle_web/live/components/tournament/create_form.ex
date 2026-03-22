@@ -334,12 +334,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
   def render_base_errors(nil), do: nil
   def render_base_errors(errors), do: elem(errors, 0)
 
-  defp get_timeout_mode(%{params: %{"timeout_mode" => mode}}) when mode in ["per_task", "per_round"], do: mode
+  defp get_timeout_mode(%{params: %{"timeout_mode" => mode}}) when mode in ["per_task", "per_round"],
+    do: mode
 
-  defp get_timeout_mode(%{params: %{"round_timeout_seconds" => timeout}}) when timeout in [nil, ""], do: "per_task"
+  defp get_timeout_mode(%{data: %{timeout_mode: mode}}) when mode in ["per_task", "per_round"],
+    do: mode
 
-  defp get_timeout_mode(%{params: %{"round_timeout_seconds" => _timeout}}), do: "per_round"
-
-  defp get_timeout_mode(%{data: %{round_timeout_seconds: nil}}), do: "per_task"
-  defp get_timeout_mode(_changeset), do: "per_round"
+  defp get_timeout_mode(_changeset), do: "per_task"
 end

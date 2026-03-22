@@ -81,8 +81,7 @@ function TournamentStateDescription({
   startsAt,
   breakState,
   breakDurationSeconds,
-  matchTimeoutSeconds,
-  roundTimeoutSeconds,
+  currentRoundTimeoutSeconds,
   lastRoundStartedAt,
   lastRoundEndedAt,
   isOnline,
@@ -92,13 +91,17 @@ function TournamentStateDescription({
   }
 
   if (state === TournamentStates.active && breakState === "off") {
+    if (!Number.isInteger(currentRoundTimeoutSeconds)) {
+      return null;
+    }
+
     return (
       <span>
         {i18next.t("Round ends in ")}
         <TournamentRemainingTimer
           key={lastRoundStartedAt}
           startsAt={lastRoundStartedAt}
-          duration={roundTimeoutSeconds || matchTimeoutSeconds}
+          duration={currentRoundTimeoutSeconds}
         />
       </span>
     );
@@ -126,8 +129,7 @@ function TournamentHeader({
   streamMode,
   breakState,
   breakDurationSeconds,
-  matchTimeoutSeconds,
-  roundTimeoutSeconds,
+  currentRoundTimeoutSeconds,
   lastRoundStartedAt,
   lastRoundEndedAt,
   startsAt,
@@ -187,16 +189,14 @@ function TournamentHeader({
 
   const canStart = isLive && state === TournamentStates.waitingParticipants && playersCount > 0;
   const canStartRound = isLive && state === TournamentStates.active && breakState === "on";
-  const canFinishRound =
-    isLive &&
-    state === TournamentStates.active &&
-    !["individual", "team"].includes(type) &&
-    breakState === "off";
+  const canFinishRound = isLive && state === TournamentStates.active && breakState === "off";
   const canRestart =
     !isLive ||
     state === TournamentStates.active ||
     state === TournamentStates.finished ||
     state === TournamentStates.canceled;
+  const showAdminJoinButton =
+    canModerate && [TournamentStates.waitingParticipants, TournamentStates.active].includes(state);
   const canToggleShowBots = type === TournamentTypes.show;
   const tournamentAccessUrl = useMemo(
     () => buildTournamentAccessUrl(tournamentId, accessToken),
@@ -245,22 +245,19 @@ function TournamentHeader({
                     {i18next.t("Back to tournaments")}
                   </a>
                 )} */}
-                {type !== "team" && !isOver && (
-                  <div className="d-flex mr-2 mr-lg-0">
-                    <JoinButton
-                      isShow={
-                        state === TournamentStates.waitingParticipants ||
-                        state === TournamentStates.active
-                      }
-                      isShowLeave={state === TournamentStates.waitingParticipants}
-                      isParticipant={!!players[currentUserId]}
-                      disabled={!isOnline}
-                    />
-                  </div>
-                )}
               </div>
             )}
             <div className="d-flex justify-items-center pb-2">
+              {showAdminJoinButton && (
+                <div className="mr-2">
+                  <JoinButton
+                    isShow
+                    isShowLeave={state === TournamentStates.waitingParticipants}
+                    isParticipant={!!players[currentUserId]}
+                    disabled={!isOnline}
+                  />
+                </div>
+              )}
               {canModerate && (
                 <TournamentMainControlButtons
                   accessType={accessType}
@@ -338,8 +335,7 @@ function TournamentHeader({
               startsAt={startsAt}
               breakState={breakState}
               breakDurationSeconds={breakDurationSeconds}
-              matchTimeoutSeconds={matchTimeoutSeconds}
-              roundTimeoutSeconds={roundTimeoutSeconds}
+              currentRoundTimeoutSeconds={currentRoundTimeoutSeconds}
               lastRoundStartedAt={lastRoundStartedAt}
               lastRoundEndedAt={lastRoundEndedAt}
               isLive={isLive}

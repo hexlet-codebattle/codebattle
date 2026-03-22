@@ -479,6 +479,7 @@ defmodule Codebattle.Tournament.SeasonTournamentGeneratorTest do
         assert Ecto.Changeset.get_field(changeset, :access_type) == "public"
         assert Ecto.Changeset.get_field(changeset, :use_chat) == true
         assert Ecto.Changeset.get_field(changeset, :use_timer) == true
+        assert Ecto.Changeset.get_field(changeset, :timeout_mode) == "per_task"
         assert Ecto.Changeset.get_field(changeset, :round_timeout_seconds) == nil
         assert Ecto.Changeset.get_field(changeset, :match_timeout_seconds) == nil
       end)

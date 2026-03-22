@@ -229,7 +229,7 @@ defmodule Codebattle.Tournament.Context do
   @spec validate(map(), Tournament.t()) :: Ecto.Changeset.t()
   def validate(params, tournament \\ %Tournament{}) do
     tournament
-    |> Tournament.changeset(params)
+    |> Tournament.changeset(prepare_tournament_params(params))
     |> Map.put(:action, :validate)
   end
 
@@ -403,6 +403,16 @@ defmodule Codebattle.Tournament.Context do
       |> AtomizedMap.atomize()
       |> Map.put(:creator, params["creator"] || %{})
 
+    timeout_mode =
+      params[:timeout_mode] ||
+        if params[:round_timeout_seconds] in [nil, ""], do: "per_task", else: "per_round"
+
+    params =
+      case timeout_mode do
+        "per_task" -> Map.put(params, :round_timeout_seconds, nil)
+        _ -> params
+      end
+
     cond_result =
       if params[:starts_at] do
         params[:starts_at] <> ":00"
@@ -430,6 +440,7 @@ defmodule Codebattle.Tournament.Context do
     Map.merge(params, %{
       access_token: access_token,
       match_timeout_seconds: match_timeout_seconds,
+      timeout_mode: timeout_mode,
       starts_at: starts_at,
       meta: %{},
       show_results: show_results

@@ -29,7 +29,7 @@ defmodule CodebattleWeb.Live.Tournament.TimerView do
       {render_remaining_time(
         @tournament.break_state,
         @tournament.last_round_started_at,
-        @tournament.round_timeout_seconds,
+        @tournament.current_round_timeout_seconds,
         @now
       )}
     </div>

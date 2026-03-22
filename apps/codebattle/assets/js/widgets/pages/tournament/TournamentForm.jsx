@@ -56,10 +56,6 @@ function TournamentForm({
   cancelButtonText = "Cancel",
   onCancel,
 }) {
-  const hasRoundTimeout =
-    initialValues.round_timeout_seconds !== null &&
-    initialValues.round_timeout_seconds !== undefined;
-
   const [formData, setFormData] = useState({
     name: initialValues.name || "",
     description: initialValues.description || "",
@@ -72,8 +68,8 @@ function TournamentForm({
     tags: initialValues.tags || "",
     players_limit: initialValues.players_limit || 64,
     rounds_limit: initialValues.rounds_limit || 7,
-    timeout_mode: hasRoundTimeout ? "per_round" : "per_task",
-    round_timeout_seconds: hasRoundTimeout ? initialValues.round_timeout_seconds : 177,
+    timeout_mode: initialValues.timeout_mode || "per_task",
+    round_timeout_seconds: initialValues.round_timeout_seconds ?? 177,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
     use_chat: initialValues.use_chat !== undefined ? initialValues.use_chat : true,
     use_clan: initialValues.use_clan !== undefined ? initialValues.use_clan : false,
@@ -103,8 +99,6 @@ function TournamentForm({
       const payload = { ...formData };
       payload.round_timeout_seconds =
         formData.timeout_mode === "per_round" ? formData.round_timeout_seconds : null;
-
-      delete payload.timeout_mode;
 
       onSubmit(payload);
     },

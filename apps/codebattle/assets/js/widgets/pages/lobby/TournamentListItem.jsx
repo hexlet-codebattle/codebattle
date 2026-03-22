@@ -10,6 +10,7 @@ import { getRankingPoints, grades } from "@/config/grades";
 import ModalCodes from "@/config/modalCodes";
 import { getTournamentUrl } from "@/utils/urlBuilders";
 
+import i18n from "../../../i18n";
 import dayjs from "../../../i18n/dayjs";
 import tournamentStates from "../../config/tournament";
 
@@ -31,20 +32,7 @@ const getDateFormat = (grade) => {
   }
 };
 
-const getActionText = (tournament) => {
-  switch (tournament.state) {
-    case tournamentStates.waitingParticipants:
-      return "Join";
-    case tournamentStates.active:
-      return "Join";
-    case tournamentStates.canceled:
-      return "Show";
-    case tournamentStates.finished:
-      return "Results";
-    default:
-      return "Show";
-  }
-};
+const getActionText = () => i18n.t("Show");
 
 function TournamentTitle({ tournament }) {
   if (tournament.grade === grades.open) {
@@ -71,7 +59,7 @@ function TournamentTitle({ tournament }) {
 }
 
 function TournamentAction({ tournament, isAdmin = false }) {
-  const text = getActionText(tournament);
+  const text = getActionText();
   const showTournamentLink = tournament.state !== tournamentStates.upcoming || isAdmin;
 
   const openTournamentInfo = () => {

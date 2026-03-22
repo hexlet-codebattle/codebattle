@@ -32,6 +32,14 @@ const gameStatuses = {
 
 const loadingTitle = i18next.t("Loading...");
 
+function formatDuration(durationSec) {
+  if (durationSec === null || durationSec === undefined) {
+    return null;
+  }
+
+  return moment.utc(durationSec * 1000).format("HH:mm:ss");
+}
+
 function GameRoomTimer({ timeoutSeconds, time }) {
   if (timeoutSeconds === null) {
     return loadingTitle;
@@ -121,7 +129,13 @@ function TimerContainer() {
   }
 
   if (mode === GameRoomModes.history) {
-    return i18next.t("History");
+    const duration = formatDuration(durationSec);
+
+    if (!duration) {
+      return i18next.t("History");
+    }
+
+    return <span className="text-monospace">{`${i18next.t("Duration")}: ${duration}`}</span>;
   }
 
   if (isBuilderRoom) {

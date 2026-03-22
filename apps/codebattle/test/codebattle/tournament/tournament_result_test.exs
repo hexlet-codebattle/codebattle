@@ -480,58 +480,62 @@ defmodule Codebattle.Tournament.TournamenResultTest do
              ] = TournamentResult.get_top_users_by_clan_ranking(tournament)
 
       assert [
-               %{
-                 level: "medium",
-                 max: Decimal.new("260.00"),
-                 min: Decimal.new("100.00"),
-                 name: "t3",
+              %{
+                level: "medium",
+                max: Decimal.new("260.00"),
+                min: Decimal.new("100.00"),
+                name: "t3",
                  p25: Decimal.new("140.00"),
                  p5: Decimal.new("108.00"),
-                 p50: Decimal.new("180.00"),
-                 p75: Decimal.new("236.00"),
-                 p95: Decimal.new("252.00"),
-                 task_id: task3.id,
-                 wins_count: 9
-               },
-               %{
-                 level: "hard",
+                p50: Decimal.new("180.00"),
+                p75: Decimal.new("236.00"),
+                p95: Decimal.new("252.00"),
+                round_position: 0,
+                task_id: task3.id,
+                wins_count: 9
+              },
+              %{
+                level: "hard",
                  max: Decimal.new("1200.00"),
                  min: Decimal.new("100.00"),
                  name: "t4",
                  p25: Decimal.new("300.00"),
                  p5: Decimal.new("130.00"),
-                 p50: Decimal.new("600.00"),
-                 p75: Decimal.new("1020.00"),
-                 p95: Decimal.new("1140.00"),
-                 task_id: task4.id,
-                 wins_count: 7
-               },
-               %{
-                 level: "easy",
+                p50: Decimal.new("600.00"),
+                p75: Decimal.new("1020.00"),
+                p95: Decimal.new("1140.00"),
+                round_position: 0,
+                task_id: task4.id,
+                wins_count: 7
+              },
+              %{
+                level: "easy",
                  max: Decimal.new("20.00"),
                  min: Decimal.new("10.00"),
                  name: "t2",
                  p25: Decimal.new("12.50"),
                  p5: Decimal.new("10.50"),
-                 p50: Decimal.new("15.00"),
-                 p75: Decimal.new("18.50"),
-                 p95: Decimal.new("19.50"),
-                 task_id: task2.id,
-                 wins_count: 6
-               },
-               %{
-                 level: "elementary",
+                p50: Decimal.new("15.00"),
+                p75: Decimal.new("18.50"),
+                p95: Decimal.new("19.50"),
+                round_position: 0,
+                task_id: task2.id,
+                wins_count: 6
+              },
+              %{
+                level: "elementary",
                  max: Decimal.new("100.00"),
                  min: Decimal.new("100.00"),
                  name: "t1",
                  p25: Decimal.new("100.00"),
                  p5: Decimal.new("100.00"),
-                 p50: Decimal.new("100.00"),
-                 p75: Decimal.new("100.00"),
-                 p95: Decimal.new("100.00"),
-                 task_id: task1.id,
-                 wins_count: 1
-               }
+                p50: Decimal.new("100.00"),
+                p75: Decimal.new("100.00"),
+                p95: Decimal.new("100.00"),
+                round_position: 0,
+                task_id: task1.id,
+                wins_count: 1
+              }
              ] == TournamentResult.get_tasks_ranking(tournament)
 
       assert [
@@ -666,6 +670,82 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                %{clan_name: "c8", performance: 32, player_count: 1, radius: 1, total_score: 32},
                %{clan_name: "c6", performance: 9, player_count: 2, radius: 2, total_score: 18}
              ] = TournamentResult.get_clans_bubble_distribution(tournament)
+    end
+
+    test "get_top_user_by_task_ranking includes users without clan" do
+      task = insert(:task, level: "easy", name: "solo")
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+
+      user_with_clan = insert(:user, name: "with-clan", clan_id: insert(:clan, name: "c1", long_name: "l1").id)
+      user_without_clan = insert(:user, name: "without-clan")
+      opponent = insert(:user, name: "opponent")
+
+      insert_game(task, tournament, user_without_clan, opponent, 10, 100.0, 0.0)
+      insert_game(task, tournament, user_with_clan, opponent, 20, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      assert [
+               %{
+                 user_name: "without-clan",
+                 clan_id: nil,
+                 clan_name: nil,
+                 clan_long_name: nil
+               },
+               %{
+                 user_name: "with-clan",
+                 clan_id: _,
+                 clan_name: "c1",
+                 clan_long_name: "l1"
+               }
+             ] = TournamentResult.get_top_user_by_task_ranking(tournament, task.id)
+    end
+
+    test "get_tasks_ranking sorts tasks by round position" do
+      tournament = insert(:tournament, type: "swiss", ranking_type: "by_user", use_clan: false)
+      task_round_1 = insert(:task, level: "easy", name: "round-1")
+      task_round_2 = insert(:task, level: "medium", name: "round-2")
+
+      Repo.insert_all(TournamentResult, [
+        %{
+          tournament_id: tournament.id,
+          user_id: 1,
+          user_name: "u1",
+          user_lang: "js",
+          score: 10,
+          duration_sec: 10,
+          round_position: 1,
+          game_id: 1,
+          task_id: task_round_2.id,
+          level: "medium",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        },
+        %{
+          tournament_id: tournament.id,
+          user_id: 2,
+          user_name: "u2",
+          user_lang: "js",
+          score: 20,
+          duration_sec: 20,
+          round_position: 0,
+          game_id: 2,
+          task_id: task_round_1.id,
+          level: "easy",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        }
+      ])
+
+      task_round_1_id = task_round_1.id
+      task_round_2_id = task_round_2.id
+
+      assert [
+               %{name: "round-1", round_position: 0, task_id: ^task_round_1_id},
+               %{name: "round-2", round_position: 1, task_id: ^task_round_2_id}
+             ] = TournamentResult.get_tasks_ranking(tournament)
     end
 
     defp insert_game(task, tournament, user1, user2, duration_sec, percent1, percent2) do
