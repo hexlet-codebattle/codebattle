@@ -48,7 +48,11 @@
       </script>
       <link rel="stylesheet" href="http://localhost:8080/assets/css/external.scss" />
     <% else %>
-      <link phx-track-static rel="stylesheet" href={CodebattleWeb.Vite.asset_path("external.css")} />
+      <link
+        phx-track-static
+        rel="stylesheet"
+        href={CodebattleWeb.Vite.asset_path("external.css")}
+      />
       <%= for href <- CodebattleWeb.Vite.css_paths("external.js") do %>
         <link rel="stylesheet" href={href} />
       <% end %>
