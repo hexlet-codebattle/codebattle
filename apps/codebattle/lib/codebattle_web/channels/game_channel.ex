@@ -65,7 +65,8 @@ defmodule CodebattleWeb.GameChannel do
         %{entries: ranking}
       end)
 
-    in_main_draw = is_player? and current_player.draw_index == current_player.max_draw_index
+    in_main_draw =
+      match?(%{draw_index: draw_index, max_draw_index: draw_index}, current_player)
 
     {:ok,
      %{

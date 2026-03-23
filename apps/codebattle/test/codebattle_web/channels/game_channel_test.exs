@@ -73,6 +73,31 @@ defmodule CodebattleWeb.GameChannelTest do
       assert response.tournament.tournament_id == tournament.id
     end
 
+    test "sends tournament game info for player missing from tournament roster", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1
+    } do
+      tournament = insert(:tournament, players: %{}, matches: %{}, players_count: 0)
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "playing",
+          players: [user1, user2],
+          level: "easy",
+          tournament_id: tournament.id
+        })
+
+      {:ok, response, _socket} =
+        subscribe_and_join(socket1, GameChannel, game_topic(game))
+
+      assert response.game.id == game.id
+      assert response.current_player == nil
+      assert response.in_main_draw == false
+      assert response.active_game_id == nil
+      assert response.tournament.tournament_id == tournament.id
+    end
+
     test "pushes head to head after join", %{user1: user1, socket1: socket1} do
       {:ok, game} =
         Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
