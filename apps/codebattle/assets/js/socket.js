@@ -31,6 +31,7 @@ export const channelTopics = {
   editorCursorPositionTopic: "editor:cursor_position",
   editorCursorSelectionTopic: "editor:cursor_selection",
   editorScrollPositionTopic: "editor:scroll_position",
+  editorSummaryTopic: "editor:summary",
 
   rematchStatusUpdatedTopic: "rematch:status_updated",
   rematchAcceptedTopic: "rematch:accepted",
@@ -101,6 +102,7 @@ export const channelMethods = {
   giveUp: "give_up",
 
   editorData: "editor:data",
+  editorSummary: channelTopics.editorSummaryTopic,
   editorLang: "editor:lang",
   editorCursorPosition: channelTopics.editorCursorPositionTopic,
   editorCursorSelection: channelTopics.editorCursorSelectionTopic,

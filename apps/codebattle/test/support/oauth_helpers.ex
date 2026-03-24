@@ -40,7 +40,8 @@ defmodule Codebattle.OauthTestHelpers do
   }
 
   @valid_external_platform_body %{
-    "id" => "external-platform-test-id"
+    "id" => "external-platform-test-id",
+    "login" => "external-platform-test-login"
   }
 
   def stub_github_oauth_requests do

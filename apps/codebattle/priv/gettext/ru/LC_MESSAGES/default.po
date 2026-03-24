@@ -1049,3 +1049,534 @@ msgstr "Жалоб пока нет"
 
 msgid "Unban"
 msgstr "Разбанить"
+
+msgid "Grand Slam"
+msgstr "Гранд-слэм"
+
+msgid "Masters"
+msgstr "Мастерс"
+
+msgid "Elite"
+msgstr "Элита"
+
+msgid "Pro"
+msgstr "Про"
+
+msgid "Challenger"
+msgstr "Челленджер"
+
+msgid "Rookie"
+msgstr "Новичок"
+
+msgid "Sort by %{label}"
+msgstr "Сортировать по %{label}"
+
+msgid "of %{count} players"
+msgstr "из %{count} игроков"
+
+msgid "Leaderboard pagination"
+msgstr "Пагинация таблицы лидеров"
+
+msgid "Search player"
+msgstr "Поиск игрока"
+
+msgid "Search by name..."
+msgstr "Поиск по имени..."
+
+msgid "Filter by clan"
+msgstr "Фильтр по клану"
+
+msgid "All Clans"
+msgstr "Все кланы"
+
+msgid "Filter by language"
+msgstr "Фильтр по языку"
+
+msgid "All Languages"
+msgstr "Все языки"
+
+msgid "Clear Filters"
+msgstr "Сбросить фильтры"
+
+msgid "View player insights"
+msgstr "Посмотреть статистику игрока"
+
+msgid "Stats"
+msgstr "Статистика"
+
+msgid "No results yet"
+msgstr "Пока нет результатов"
+
+msgid "No players match your filters"
+msgstr "Нет игроков, соответствующих фильтрам"
+
+msgid "Avg Place"
+msgstr "Среднее место"
+
+msgid "Insights"
+msgstr "Статистика"
+
+msgid "Top 3"
+msgstr "Топ 3"
+
+msgid "Previous Seasons Champions"
+msgstr "Чемпионы прошлых сезонов"
+
+msgid "View All Seasons"
+msgstr "Все сезоны"
+
+msgid "Full Results"
+msgstr "Полные результаты"
+
+msgid "Hall of Fame"
+msgstr "Зал славы"
+
+msgid "Starts"
+msgstr "Начало"
+
+msgid "Ends"
+msgstr "Конец"
+
+msgid "Current Season Leaderboard"
+msgstr "Таблица лидеров текущего сезона"
+
+msgid "%{count} players"
+msgstr "%{count} игроков"
+
+msgid "points"
+msgstr "очков"
+
+msgid "Season"
+msgstr "Сезон"
+
+msgid "View Results"
+msgstr "Посмотреть результаты"
+
+msgid "Competition archive"
+msgstr "Архив соревнований"
+
+msgid "Seasons"
+msgstr "Сезоны"
+
+msgid "Browse finished seasons and open the full leaderboard for each one."
+msgstr "Просматривайте завершённые сезоны и открывайте полную таблицу лидеров для каждого."
+
+msgid "No seasons found"
+msgstr "Сезоны не найдены"
+
+msgid "Champions"
+msgstr "Чемпионы"
+
+msgid "Season not found"
+msgstr "Сезон не найден"
+
+msgid "Upcoming"
+msgstr "Скоро"
+
+msgid "Completed"
+msgstr "Завершён"
+
+msgid "All Seasons"
+msgstr "Все сезоны"
+
+msgid "Full Leaderboard"
+msgstr "Полная таблица лидеров"
+
+msgid "n/a"
+msgstr "н/д"
+
+msgid "Playing"
+msgstr "Идёт"
+
+msgid "Unknown"
+msgstr "Неизвестно"
+
+msgid "Pending"
+msgstr "Ожидание"
+
+msgid "Won"
+msgstr "Победа"
+
+msgid "%{count} pts"
+msgstr "%{count} очк."
+
+msgid "Leading"
+msgstr "Лидирует"
+
+msgid "Contender"
+msgstr "Соперник"
+
+msgid "%{count} wins"
+msgstr "%{count} побед"
+
+msgid "Game"
+msgstr "Игра"
+
+msgid "Open game"
+msgstr "Открыть игру"
+
+msgid "Duration: %{duration}"
+msgstr "Длительность: %{duration}"
+
+msgid "Finished %{date}"
+msgstr "Завершено %{date}"
+
+msgid "Still in progress"
+msgstr "Ещё идёт"
+
+msgid "H2H Arena"
+msgstr "H2H арена"
+
+msgid "Direct duel history with profile links, live status, and every shared game."
+msgstr "История личных дуэлей со ссылками на профили, текущим статусом и всеми общими играми."
+
+msgid "Total games"
+msgstr "Всего игр"
+
+msgid "Draws"
+msgstr "Ничьи"
+
+msgid "All games"
+msgstr "Все игры"
+
+msgid "%{count} records"
+msgstr "%{count} записей"
+
+msgid "No games found for this pair."
+msgstr "Для этой пары игр не найдено."
+
+msgid "Total games: %{count}"
+msgstr "Всего игр: %{count}"
+
+msgid "Total tournament wins: %{count}"
+msgstr "Всего побед в турнирах: %{count}"
+
+msgid "Total tournament wins"
+msgstr "Всего побед в турнирах"
+
+msgid "Failed to load tournaments"
+msgstr "Не удалось загрузить турниры"
+
+msgid "No tournaments played yet"
+msgstr "Пока нет сыгранных турниров"
+
+msgid "Grade"
+msgstr "Уровень"
+
+msgid "Time"
+msgstr "Время"
+
+msgid "Lang"
+msgstr "Язык"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Total tournaments: %{count}"
+msgstr "Всего турниров: %{count}"
+
+msgid "Last 365 days"
+msgstr "Последние 365 дней"
+
+msgid "%{count} games in %{year}"
+msgstr "%{count} игр в %{year}"
+
+msgid "%{count} games in the last 365 days"
+msgstr "%{count} игр за последние 365 дней"
+
+msgid "%{count} games on %{date}"
+msgstr "%{count} игр %{date}"
+
+msgid "No games"
+msgstr "Нет игр"
+
+msgid "User avatar"
+msgstr "Аватар пользователя"
+
+msgid "No clan"
+msgstr "Без клана"
+
+msgid "joined at %{date}"
+msgstr "зарегистрирован %{date}"
+
+msgid "Github account"
+msgstr "Аккаунт Github"
+
+msgid "Place: #%{place}"
+msgstr "Место: #%{place}"
+
+msgid "Completed games"
+msgstr "Завершённые игры"
+
+msgid "(Elo Rating)"
+msgstr "(рейтинг Elo)"
+
+msgid "Rivals"
+msgstr "Соперники"
+
+msgid "Clan: %{clan}"
+msgstr "Клан: %{clan}"
+
+msgid "W/L/T: %{wins}/%{losses}/%{timeouts}"
+msgstr "П/П/Т: %{wins}/%{losses}/%{timeouts}"
+
+msgid "Languages"
+msgstr "Языки"
+
+msgid "Activity"
+msgstr "Активность"
+
+msgid "Total entries: %{count}"
+msgstr "Всего записей: %{count}"
+
+msgid "Username contains..."
+msgstr "Имя пользователя содержит..."
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Users per page"
+msgstr "Пользователей на странице"
+
+msgid "With bots"
+msgstr "С ботами"
+
+msgid "Season %{name} %{year}: %{start} - %{end}"
+msgstr "Сезон %{name} %{year}: %{start} - %{end}"
+
+msgid "Closest Opponents"
+msgstr "Ближайшие соперники"
+
+msgid "Avatar Logo"
+msgstr "Аватар"
+
+msgid "Live Tournaments"
+msgstr "Идущие турниры"
+
+msgid "Upcoming Tournaments"
+msgstr "Предстоящие турниры"
+
+msgid "Competition not started yet"
+msgstr "Соревнование ещё не началось"
+
+msgid "add clan"
+msgstr "добавить клан"
+
+msgid "Codebattle League"
+msgstr "Лига Codebattle"
+
+msgid "Challenge the best! Participate in the Competition tournaments, defeat your rivals to earn points, and claim the first place in the programmer ranking."
+msgstr "Бросьте вызов сильнейшим! Участвуйте в турнирах Competition, побеждайте соперников, набирайте очки и занимайте первое место в рейтинге программистов."
+
+msgid "See Rules & Details"
+msgstr "Правила и детали"
+
+msgid "Seasons, Grades, Points — Overview"
+msgstr "Сезоны, уровни и очки"
+
+msgid "Season 0: Sep 21 – Dec 21"
+msgstr "Сезон 0: 21 сен - 21 дек"
+
+msgid "Season 1: Dec 21 – Mar 21"
+msgstr "Сезон 1: 21 дек - 21 мар"
+
+msgid "Season 2: Mar 21 – Jun 21"
+msgstr "Сезон 2: 21 мар - 21 июн"
+
+msgid "Season 3: Jun 21 – Sep 21"
+msgstr "Сезон 3: 21 июн - 21 сен"
+
+msgid "On the season end date (the 21st), we run a Grand Slam at 16:00 UTC."
+msgstr "В день окончания сезона, 21-го числа, проводится Grand Slam в 16:00 UTC."
+
+msgid "Season Points reset each season. Elo never resets (lifetime)."
+msgstr "Сезонные очки сбрасываются каждый сезон. Elo не сбрасывается никогда."
+
+msgid "Grades"
+msgstr "Уровни"
+
+msgid "open, rookie, challenger, pro, elite, masters, grand_slam — determine prestige, task pools, points, schedules, and limits."
+msgstr "open, rookie, challenger, pro, elite, masters, grand_slam определяют престиж, набор задач, очки, расписание и лимиты."
+
+msgid "Tournament Scheduling & Preemption"
+msgstr "Расписание турниров и приоритеты"
+
+msgid "Daily/Hourly (UTC)"
+msgstr "Ежедневно/ежечасно (UTC)"
+
+msgid "Rookie: every 4 hours — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (no 16:00 slot)."
+msgstr "Rookie: каждые 4 часа — 03:00, 07:00, 11:00, 15:00, 19:00, 23:00 UTC (без слота 16:00)."
+
+msgid "Challenger: daily 16:00 UTC; preempted by higher grades that day/week."
+msgstr "Challenger: ежедневно в 16:00 UTC; может быть вытеснен более высоким уровнем в этот день или неделю."
+
+msgid "Weekly 16:00 UTC priority"
+msgstr "Недельный приоритет на 16:00 UTC"
+
+msgid "grand_slam > masters > elite > pro."
+msgstr "grand_slam > masters > elite > pro."
+
+msgid "In any week, exactly one of these runs at 16:00. Grand Slam week -> only GS at 16:00. Masters week -> no pro/elite. Otherwise pro (Tue) and elite (Wed) alternate as backbone."
+msgstr "В любую неделю в 16:00 запускается только один из них. В неделю Grand Slam идет только GS в 16:00. В неделю Masters нет pro/elite. Иначе pro (вт) и elite (ср) чередуются."
+
+msgid "Player Limits & Rounds per Grade"
+msgstr "Лимиты игроков и раунды по уровню"
+
+msgid "Players limit"
+msgstr "Лимит игроков"
+
+msgid "rookie: 8"
+msgstr "rookie: 8"
+
+msgid "challenger: 16"
+msgstr "challenger: 16"
+
+msgid "pro: 32"
+msgstr "pro: 32"
+
+msgid "elite: 64"
+msgstr "elite: 64"
+
+msgid "masters: 128"
+msgstr "masters: 128"
+
+msgid "grand_slam: 256"
+msgstr "grand_slam: 256"
+
+msgid "Rounds per grade"
+msgstr "Раунды по уровню"
+
+msgid "rookie: 4"
+msgstr "rookie: 4"
+
+msgid "challenger: 6"
+msgstr "challenger: 6"
+
+msgid "pro: 8"
+msgstr "pro: 8"
+
+msgid "elite: 10"
+msgstr "elite: 10"
+
+msgid "masters: 12"
+msgstr "masters: 12"
+
+msgid "grand_slam: 14"
+msgstr "grand_slam: 14"
+
+msgid "For each finished tournament (grade != open), award Season Points by final place using the tables below. All remaining participants (outside prize slots) receive 2 points each. Prize points do not stack with participation points."
+msgstr "За каждый завершённый турнир (grade != open) начисляются сезонные очки по итоговому месту по таблицам ниже. Все остальные участники получают по 2 очка. Призовые очки не суммируются с очками за участие."
+
+msgid "rookie: [8, 4, 2] - top-3"
+msgstr "rookie: [8, 4, 2] - топ-3"
+
+msgid "challenger: [16, 8, 4, 2] - top-6"
+msgstr "challenger: [16, 8, 4, 2] - топ-6"
+
+msgid "pro: [128, 64, 32, 16, 8, 4, 2] - top-7"
+msgstr "pro: [128, 64, 32, 16, 8, 4, 2] - топ-7"
+
+msgid "elite: [256, 128, 64, 32, 16, 8, 4, 2] - top-8"
+msgstr "elite: [256, 128, 64, 32, 16, 8, 4, 2] - топ-8"
+
+msgid "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-10"
+msgstr "masters: [1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - топ-10"
+
+msgid "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - top-11"
+msgstr "grand_slam: [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2] - топ-11"
+
+msgid "Season Leaderboard Tie-Breakers"
+msgstr "Тай-брейки сезонного рейтинга"
+
+msgid "Total Season Points (desc)"
+msgstr "Сумма сезонных очков (по убыванию)"
+
+msgid "Tournament wins in season (desc)"
+msgstr "Победы в турнирах за сезон (по убыванию)"
+
+msgid "Tournament participations in season (desc)"
+msgstr "Участия в турнирах за сезон (по убыванию)"
+
+msgid "Maintain a HoF for Season Champions and Grand Slam Champions (participants page optional later)."
+msgstr "Поддерживается зал славы для чемпионов сезонов и чемпионов Grand Slam."
+
+msgid "Codebattle - Overview & Key Concepts"
+msgstr "Codebattle - обзор и ключевые понятия"
+
+msgid "Competitive Programming Game"
+msgstr "Игра по спортивному программированию"
+
+msgid "Codebattle (codebattle.hexlet.io) is a real-time coding duel platform. Two players solve the same task in parallel; whoever solves it first wins the match."
+msgstr "Codebattle (codebattle.hexlet.io) — это платформа для кодинг-дуэлей в реальном времени. Два игрока параллельно решают одну задачу; кто решит первым, тот и побеждает."
+
+msgid "Swiss Tournaments"
+msgstr "Швейцарские турниры"
+
+msgid "Multiple rounds; in each round, players are paired vs players with similar cumulative score; no repeat pairings (unless unavoidable on round 1 bootstrap or via bot fill-ins)."
+msgstr "Несколько раундов; в каждом раунде игроки попадают против соперников с близким суммарным счётом; повторные пары не допускаются, если только это не неизбежно."
+
+msgid "16 supported - clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+msgstr "Поддерживаются 16 языков: clojure, cpp, csharp, dart, elixir, golang, java, js, kotlin, php, python, ruby, rust, swift, zig, ts."
+
+msgid "Create a CSS Game"
+msgstr "Создать CSS-игру"
+
+msgid "Create a SQL Game"
+msgstr "Создать SQL-игру"
+
+msgid "Join a battle"
+msgstr "Присоединиться к битве"
+
+msgid "Continue battle"
+msgstr "Продолжить битву"
+
+msgid "Create a battle"
+msgstr "Создать битву"
+
+msgid "Join a game"
+msgstr "Присоединиться к игре"
+
+msgid "Online players: %{count}"
+msgstr "Игроков онлайн: %{count}"
+
+msgid "Send message"
+msgstr "Отправить сообщение"
+
+msgid "Send fight invite"
+msgstr "Отправить приглашение в бой"
+
+msgid "fight"
+msgstr "бой"
+
+msgid "Be nice in chat!"
+msgstr "Будь вежлив в чате!"
+
+msgid "Message length cannot exceed %{count} characters."
+msgstr "Длина сообщения не может превышать %{count} символов."
+
+msgid "Open emoji picker"
+msgstr "Открыть выбор эмодзи"
+
+msgid "Clean banned"
+msgstr "Очистить бан"
+
+msgid "Joined channel: %{name}"
+msgstr "Подключён к каналу: %{name}"
+
+msgid "%{count} Online"
+msgstr "Онлайн: %{count}"
+
+msgid "Watching"
+msgstr "Смотрят"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "Edit task"
+msgstr "Редактируют задачу"
+
+msgid "General"
+msgstr "Общий"
+
+msgid "Notification"
+msgstr "Уведомления"

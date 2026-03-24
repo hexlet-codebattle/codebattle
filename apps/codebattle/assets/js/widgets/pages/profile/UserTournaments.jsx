@@ -4,6 +4,7 @@ import { camelizeKeys } from "humps";
 import unionBy from "lodash/unionBy";
 import moment from "moment";
 
+import i18n from "../../../i18n";
 import Loading from "../../components/Loading";
 
 const gradeColors = {
@@ -151,10 +152,12 @@ function UserTournaments({ isActive = false }) {
     }
 
     if (status === "error") {
-      return <div className="py-5 text-center text-muted">Failed to load tournaments</div>;
+      return (
+        <div className="py-5 text-center text-muted">{i18n.t("Failed to load tournaments")}</div>
+      );
     }
 
-    return <div className="py-5 text-center text-muted">No tournaments played yet</div>;
+    return <div className="py-5 text-center text-muted">{i18n.t("No tournaments played yet")}</div>;
   }
 
   return (
@@ -163,15 +166,15 @@ function UserTournaments({ isActive = false }) {
         <table className="table table-striped mb-0">
           <thead className="cb-text sticky-top">
             <tr>
-              <th className="p-3 border-0">Grade</th>
-              <th className="p-3 border-0">Place</th>
-              <th className="p-3 border-0">Points</th>
-              <th className="p-3 border-0">Score</th>
-              <th className="p-3 border-0">Games</th>
-              <th className="p-3 border-0">Wins</th>
-              <th className="p-3 border-0">Time</th>
-              <th className="p-3 border-0">Lang</th>
-              <th className="p-3 border-0">Date</th>
+              <th className="p-3 border-0">{i18n.t("Grade")}</th>
+              <th className="p-3 border-0">{i18n.t("Place")}</th>
+              <th className="p-3 border-0">{i18n.t("Points")}</th>
+              <th className="p-3 border-0">{i18n.t("Score")}</th>
+              <th className="p-3 border-0">{i18n.t("Games")}</th>
+              <th className="p-3 border-0">{i18n.t("Wins")}</th>
+              <th className="p-3 border-0">{i18n.t("Time")}</th>
+              <th className="p-3 border-0">{i18n.t("Lang")}</th>
+              <th className="p-3 border-0">{i18n.t("Date")}</th>
             </tr>
           </thead>
           <tbody className="cb-text">
@@ -221,7 +224,7 @@ function UserTournaments({ isActive = false }) {
         </table>
       </div>
       <div className="mt-auto border-top cb-border-color py-2 px-3 font-weight-bold text-muted rounded-bottom">
-        {`Total tournaments: ${pageInfo.totalEntries}`}
+        {i18n.t("Total tournaments: %{count}", { count: pageInfo.totalEntries })}
       </div>
     </div>
   );

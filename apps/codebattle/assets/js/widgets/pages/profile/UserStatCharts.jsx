@@ -11,6 +11,8 @@ import {
   Cell,
 } from "recharts";
 
+import i18n from "../../../i18n";
+
 const chartColors = {
   gold: "#e0bf7a",
   silver: "#c2c9d6",
@@ -21,10 +23,10 @@ const chartColors = {
 };
 
 const gameResultNames = {
-  won: "Won",
-  lost: "Lost",
-  gaveUp: "Gave up",
-  gave_up: "Gave up",
+  won: i18n.t("Won"),
+  lost: i18n.t("Lost"),
+  gaveUp: i18n.t("Gave up"),
+  gave_up: i18n.t("Gave up"),
 };
 
 const gameResultColorByKey = {
@@ -35,18 +37,18 @@ const gameResultColorByKey = {
 };
 
 const tournamentLabels = {
-  rookieWins: "Rookie",
-  challengerWins: "Challenger",
-  proWins: "Pro",
-  eliteWins: "Elite",
-  mastersWins: "Masters",
-  grandSlamWins: "Grand Slam",
-  rookie_wins: "Rookie",
-  challenger_wins: "Challenger",
-  pro_wins: "Pro",
-  elite_wins: "Elite",
-  masters_wins: "Masters",
-  grand_slam_wins: "Grand Slam",
+  rookieWins: i18n.t("Rookie"),
+  challengerWins: i18n.t("Challenger"),
+  proWins: i18n.t("Pro"),
+  eliteWins: i18n.t("Elite"),
+  mastersWins: i18n.t("Masters"),
+  grandSlamWins: i18n.t("Grand Slam"),
+  rookie_wins: i18n.t("Rookie"),
+  challenger_wins: i18n.t("Challenger"),
+  pro_wins: i18n.t("Pro"),
+  elite_wins: i18n.t("Elite"),
+  masters_wins: i18n.t("Masters"),
+  grand_slam_wins: i18n.t("Grand Slam"),
 };
 
 const tournamentColorByKey = {
@@ -123,7 +125,9 @@ function UserStatCharts({ gameStats, tournamentStats }) {
   return (
     <div className="row justify-content-center pb-4 px-3">
       <div className="col-12 col-lg-6 mt-4 mb-4 mb-lg-0">
-        <div className="small text-center text-muted mb-2">{`Total games: ${totalGames}`}</div>
+        <div className="small text-center text-muted mb-2">
+          {i18n.t("Total games: %{count}", { count: totalGames })}
+        </div>
         <ResponsiveContainer
           className="text-white"
           width="100%"
@@ -152,7 +156,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
             <YAxis type="category" dataKey="name" width={100} />
             <Bar
               dataKey="value"
-              name="Total games"
+              name={i18n.t("Total games")}
               radius={[0, 8, 8, 0]}
               isAnimationActive
               animationDuration={900}
@@ -169,7 +173,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
 
       <div className="col-12 col-lg-6 mt-4">
         <div className="small text-center text-muted mb-2">
-          {`Total tournament wins: ${totalTournamentWins}`}
+          {i18n.t("Total tournament wins: %{count}", { count: totalTournamentWins })}
         </div>
         <ResponsiveContainer width="100%" height={320} minWidth={1} minHeight={320}>
           <BarChart
@@ -193,7 +197,7 @@ function UserStatCharts({ gameStats, tournamentStats }) {
             <YAxis type="category" dataKey="name" width={95} />
             <Bar
               dataKey="value"
-              name="Total tournament wins"
+              name={i18n.t("Total tournament wins")}
               radius={[0, 8, 8, 0]}
               isAnimationActive
               animationDuration={900}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 
 import cn from "classnames";
-import dayjs from "dayjs";
 import Gon from "gon";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -9,6 +8,7 @@ import { loadNearbyUsers } from "@/middlewares/Users";
 import { selectDefaultAvatarUrl, currentUserIsAdminSelector, userByIdSelector } from "@/selectors";
 
 import i18n from "../../../i18n";
+import dayjs from "../../../i18n/dayjs";
 import UserInfo from "../../components/UserInfo";
 import { actions } from "../../slices";
 
@@ -17,7 +17,12 @@ import TournamentListItem from "./TournamentListItem";
 
 const currentSeason = Gon.getAsset("current_season");
 const contestDatesText = currentSeason
-  ? `Season ${currentSeason.name} ${currentSeason.year}: ${dayjs(currentSeason.starts_at).format("MMM D")} - ${dayjs(currentSeason.ends_at).format("MMM D")}`
+  ? i18n.t("Season %{name} %{year}: %{start} - %{end}", {
+      name: currentSeason.name,
+      year: currentSeason.year,
+      start: dayjs(currentSeason.starts_at).format("MMM D"),
+      end: dayjs(currentSeason.ends_at).format("MMM D"),
+    })
   : null;
 
 function OpponentInfo({ id }) {
@@ -54,7 +59,7 @@ function OpponentInfo({ id }) {
           >
             #{user ? user.rank : ""}
           </span>
-          <span className="stat-label text-uppercase">Place</span>
+          <span className="stat-label text-uppercase">{i18n.t("Place")}</span>
         </a>
       </div>
       <div className="d-flex flex-column text-center py-1 px-1 flex-shrink-0 cb-nearby-metric">
@@ -66,7 +71,7 @@ function OpponentInfo({ id }) {
           >
             {user ? user.points : ""}
           </span>
-          <span className="stat-label text-uppercase">Points</span>
+          <span className="stat-label text-uppercase">{i18n.t("Points")}</span>
         </div>
       </div>
     </div>
@@ -109,7 +114,9 @@ function SeasonNearbyUsers({ user, nearbyUsers }) {
     <div className="cb-bg-panel cb-rounded mt-2 cb-nearby-card">
       <div className="d-flex flex-column">
         <div className="cb-bg-highlight-panel text-center cb-rounded-top px-2">
-          <span className="text-white text-uppercase py-2 d-block">Closest Opponents</span>
+          <span className="text-white text-uppercase py-2 d-block">
+            {i18n.t("Closest Opponents")}
+          </span>
         </div>
         <div className="px-1 pb-1">
           {loading ? (
@@ -133,7 +140,7 @@ function UserLogo({ user, size = "70px" }) {
   return (
     <img
       style={{ width: size, height: size }}
-      alt="Avatar Logo"
+      alt={i18n.t("Avatar Logo")}
       className="rounded-circle"
       src={avatarUrl}
     />
@@ -159,7 +166,9 @@ function SeasonProfilePanel({
               {liveTournaments?.length !== 0 && (
                 <>
                   <div className="d-flex justify-content-center align-items-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">Live Tournaments</span>
+                    <span className="text-white text-uppercase h4">
+                      {i18n.t("Live Tournaments")}
+                    </span>
                   </div>
                   <div className="d-flex flex-wrap cb-tournament-grid">
                     {liveTournaments.map((tournament) => (
@@ -175,7 +184,9 @@ function SeasonProfilePanel({
               {seasonTournaments?.length !== 0 && (
                 <>
                   <div className="d-flex justify-content-center pt-2 cb-season-section-title">
-                    <span className="text-white text-uppercase h4">Upcoming Tournaments</span>
+                    <span className="text-white text-uppercase h4">
+                      {i18n.t("Upcoming Tournaments")}
+                    </span>
                   </div>
                   <div className="d-flex flex-wrap cb-tournament-grid">
                     {seasonTournaments.map((tournament) => (
@@ -190,7 +201,7 @@ function SeasonProfilePanel({
               )}
             </div>
           ) : (
-            <div className="pt-2 mt-2">Competition not started yet</div>
+            <div className="pt-2 mt-2">{i18n.t("Competition not started yet")}</div>
           )}
           <div className="d-flex flex-column flex-lg-row w-100 pt-2 mt-2 cb-season-actions">
             <a
@@ -223,13 +234,13 @@ function SeasonProfilePanel({
             <UserLogo user={user} />
             <span className="clan-tag mt-2">{user.name}</span>
             <span className="h1 clan-title m-0 text-white text-uppercase">
-              Clan
+              {i18n.t("Clan")}
               {": "}
               {user.clanId ? (
                 user.clan
               ) : (
                 <a href="/settings" className="text-lowercase text-primary">
-                  <small>add clan</small>
+                  <small>{i18n.t("add clan")}</small>
                 </a>
               )}
             </span>
@@ -238,7 +249,7 @@ function SeasonProfilePanel({
           <div className="cb-bg-highlight-panel d-flex py-2 px-1 cb-season-stats">
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.rating}</span>
-              <span className="stat-label text-uppercase">(Elo Rating)</span>
+              <span className="stat-label text-uppercase">{i18n.t("(Elo Rating)")}</span>
             </div>
             <a href="/hall_of_fame" className="stat-item py-1 w-100">
               {user.points ? (
@@ -246,11 +257,11 @@ function SeasonProfilePanel({
               ) : (
                 <span className="stat-value d-block cb-text-danger">#0</span>
               )}
-              <span className="stat-label text-uppercase">Place</span>
+              <span className="stat-label text-uppercase">{i18n.t("Place")}</span>
             </a>
             <div className="stat-item py-1 w-100">
               <span className="stat-value d-block cb-text-danger">{user.points || 0}</span>
-              <span className="stat-label text-uppercase">Points</span>
+              <span className="stat-label text-uppercase">{i18n.t("Points")}</span>
             </div>
           </div>
 

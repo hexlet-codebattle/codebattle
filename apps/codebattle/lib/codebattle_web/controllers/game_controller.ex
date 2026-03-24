@@ -99,6 +99,7 @@ defmodule CodebattleWeb.GameController do
         conn =
           put_gon(conn,
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
+            editor_summary_enabled: FunWithFlags.enabled?(:editor_summary),
             game: game_params,
             game_id: game.id,
             tournament_id: Helpers.get_tournament_id(game),

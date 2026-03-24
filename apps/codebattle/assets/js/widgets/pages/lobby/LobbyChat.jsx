@@ -6,6 +6,7 @@ import cn from "classnames";
 import groupBy from "lodash/groupBy";
 import { useDispatch, useSelector } from "react-redux";
 
+import i18n from "../../../i18n";
 import ChatContextMenu from "../../components/ChatContextMenu";
 import ChatHeader from "../../components/ChatHeader";
 import ChatInput from "../../components/ChatInput";
@@ -23,7 +24,7 @@ const fightSvg = "/assets/images/fight.svg";
 function UsersList({ list, title, displayMenu, mode }) {
   return (
     <>
-      {list.length !== 0 && <div>{`${title}: `}</div>}
+      {list.length !== 0 && <div>{`${i18n.t(title)}: `}</div>}
       {list.map((player) => (
         <ChatUserInfo
           mode={mode}
@@ -124,7 +125,7 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
             <div className="d-flex justify-content-between">
               {isOnline ? (
                 <p className="px-3 pt-2 mb-2 text-nowrap">
-                  {`Online players: ${presenceList.length}`}
+                  {i18n.t("Online players: %{count}", { count: presenceList.length })}
                 </p>
               ) : (
                 <div className="px-3 pt-2 mb-2 text-nowrap">
@@ -138,7 +139,11 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
                   onClick={openSendMessageModal}
                   disabled={!isOnline || presenceList.length <= 1}
                 >
-                  <FontAwesomeIcon title="Send message" className="text-white" icon={faEnvelope} />
+                  <FontAwesomeIcon
+                    title={i18n.t("Send message")}
+                    className="text-white"
+                    icon={faEnvelope}
+                  />
                 </button>
                 <button
                   type="button"
@@ -147,8 +152,8 @@ function LobbyChat({ mode = "dark", presenceList, setOpenActionModalShowing, inp
                   disabled={!isOnline || presenceList.length <= 1}
                 >
                   <img
-                    title="Send fight invite"
-                    alt="fight"
+                    title={i18n.t("Send fight invite")}
+                    alt={i18n.t("fight")}
                     style={{ width: "16px", height: "16px" }}
                     src={fightSvg}
                   />

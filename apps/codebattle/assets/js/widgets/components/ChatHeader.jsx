@@ -3,6 +3,7 @@ import React from "react";
 import cn from "classnames";
 import { useSelector } from "react-redux";
 
+import i18n from "../../i18n";
 import { pushCommand, pushCommandTypes } from "../middlewares/Chat";
 import * as selectors from "../selectors";
 
@@ -33,7 +34,7 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
           }}
           disabled={disabled}
         >
-          Clean banned
+          {i18n.t("Clean banned")}
         </button>
       )}
     </div>

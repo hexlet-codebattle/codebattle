@@ -148,11 +148,101 @@ const useEditor = (props) => {
 
     // currentMonaco.editor.setTheme('code-theme-dark');
 
-    const { editable, roomMode, checkResult, toggleMuteSound } = props;
+    const {
+      editable,
+      roomMode,
+      checkResult,
+      toggleMuteSound,
+      onTelemetryEvent,
+      syntax,
+      gameStartTimeMs,
+    } = props;
+
+    const emitTelemetry = (payload) => {
+      if (typeof onTelemetryEvent !== "function") {
+        return;
+      }
+
+      const model = currentEditor.getModel();
+      const selectionRange = currentEditor.getSelection();
+      const position = currentEditor.getPosition();
+      const selectionStartPosition = selectionRange?.getStartPosition?.();
+      const selectionEndPosition = selectionRange?.getEndPosition?.();
+
+      const nowMs = Date.now();
+      const offsetMs =
+        Number.isFinite(gameStartTimeMs) && gameStartTimeMs > 0
+          ? Math.max(0, nowMs - gameStartTimeMs)
+          : 0;
+
+      onTelemetryEvent({
+        offset_ms: offsetMs,
+        lang_slug: syntax,
+        selection_start:
+          model && selectionStartPosition ? model.getOffsetAt(selectionStartPosition) : undefined,
+        selection_end:
+          model && selectionEndPosition ? model.getOffsetAt(selectionEndPosition) : undefined,
+        position_offset: model && position ? model.getOffsetAt(position) : undefined,
+        text_length: model ? model.getValueLength() : undefined,
+        ...payload,
+      });
+    };
+
+    currentEditor.onDidChangeModelContent((event) => {
+      const contentMetrics = event.changes.reduce(
+        (acc, change) => {
+          const insertedChars = change.text.length;
+          const deletedChars = change.rangeLength;
+          const insertedLines = change.text ? change.text.split("\n").length - 1 : 0;
+
+          return {
+            inserted_chars: acc.inserted_chars + insertedChars,
+            deleted_chars: acc.deleted_chars + deletedChars,
+            max_single_insert_len: Math.max(acc.max_single_insert_len, insertedChars),
+            max_single_delete_len: Math.max(acc.max_single_delete_len, deletedChars),
+            multi_char_insert_count: acc.multi_char_insert_count + (insertedChars > 1 ? 1 : 0),
+            multi_char_delete_count: acc.multi_char_delete_count + (deletedChars > 1 ? 1 : 0),
+            multi_line_insert_count: acc.multi_line_insert_count + (insertedLines > 0 ? 1 : 0),
+            large_insert_count: acc.large_insert_count + (insertedChars >= 50 ? 1 : 0),
+          };
+        },
+        {
+          inserted_chars: 0,
+          deleted_chars: 0,
+          max_single_insert_len: 0,
+          max_single_delete_len: 0,
+          multi_char_insert_count: 0,
+          multi_char_delete_count: 0,
+          multi_line_insert_count: 0,
+          large_insert_count: 0,
+        },
+      );
+
+      emitTelemetry({
+        type: "content_change",
+        change_count: event.changes.length,
+        net_text_delta: contentMetrics.inserted_chars - contentMetrics.deleted_chars,
+        ...contentMetrics,
+      });
+    });
 
     // Intercept keydown for custom Copy, Cut, and Paste logic.
     currentEditor.onKeyDown((e) => {
       const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+      const browserEvent = e.browserEvent || {};
+
+      emitTelemetry({
+        type: "keydown",
+        key: browserEvent.key,
+        code: browserEvent.code,
+        key_code: e.keyCode,
+        alt_key: !!e.altKey,
+        ctrl_key: !!e.ctrlKey,
+        meta_key: !!e.metaKey,
+        shift_key: !!e.shiftKey,
+        repeat: !!browserEvent.repeat,
+        is_composing: !!browserEvent.isComposing,
+      });
 
       // COPY (Ctrl+C / Cmd+C)
       if (isCtrlOrCmd && e.code === "KeyC") {
@@ -225,6 +315,14 @@ const useEditor = (props) => {
     domNode.addEventListener(
       "paste",
       (e) => {
+        emitTelemetry({
+          type: "paste_blocked",
+          clipboard_text_length: e.clipboardData?.getData("text")?.length,
+          alt_key: !!e.altKey,
+          ctrl_key: !!e.ctrlKey,
+          meta_key: !!e.metaKey,
+          shift_key: !!e.shiftKey,
+        });
         e.preventDefault();
         e.stopPropagation();
         return false;
@@ -235,6 +333,13 @@ const useEditor = (props) => {
     domNode.addEventListener(
       "drop",
       (e) => {
+        emitTelemetry({
+          type: "drop_blocked",
+          alt_key: !!e.altKey,
+          ctrl_key: !!e.ctrlKey,
+          meta_key: !!e.metaKey,
+          shift_key: !!e.shiftKey,
+        });
         e.preventDefault();
         e.stopPropagation();
         return false;

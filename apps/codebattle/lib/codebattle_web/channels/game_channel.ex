@@ -8,6 +8,10 @@ defmodule CodebattleWeb.GameChannel do
 
   require Logger
 
+  @telemetry_limit_window_ms 10_000
+  @max_editor_summaries_per_window 20
+  @max_editor_summary_events_per_window 2_000
+
   def join("game:" <> game_id, _payload, socket) do
     game = Context.get_game!(game_id)
 
@@ -35,7 +39,10 @@ defmodule CodebattleWeb.GameChannel do
     {:ok,
      %{
        game: GameView.render_game(game, head_to_head)
-     }, assign(socket, game_id: game_id, tournament_id: nil, follow_id: nil, banned?: false)}
+     },
+     socket
+     |> assign(game_id: game_id, tournament_id: nil, follow_id: nil, banned?: false)
+     |> assign_editor_summary_rate_limit()}
   end
 
   defp join_tournament_game(game, socket, game_id) do
@@ -91,12 +98,14 @@ defmodule CodebattleWeb.GameChannel do
          current_round_position: tournament.current_round_position
        }
      },
-     assign(socket,
+     socket
+     |> assign(
        tournament_id: game.tournament_id,
        banned?: match?(%{state: "banned"}, current_player),
        game_id: game_id,
        follow_id: follow_id
-     )}
+     )
+     |> assign_editor_summary_rate_limit()}
   end
 
   defp maybe_fetch_head_to_head(game_id) do
@@ -157,6 +166,18 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  def handle_in("editor:summary", payload, socket) do
+    with true <- FunWithFlags.enabled?(:editor_summary),
+         %{summary: summary, lang_slug: lang_slug, summary_event_count: summary_event_count} <-
+           parse_editor_summary_payload(payload),
+         {:ok, socket} <- allow_editor_summary?(socket, summary_event_count) do
+      store_editor_summary(socket, summary, lang_slug)
+    else
+      false -> {:noreply, socket}
+      {:error, :editor_summary_rate_limited} -> {:reply, {:error, %{reason: :editor_summary_rate_limited}}, socket}
     end
   end
 
@@ -260,6 +281,86 @@ defmodule CodebattleWeb.GameChannel do
 
     {:reply, {:ok, %{head_to_head: head_to_head}}, socket}
   end
+
+  defp assign_editor_summary_rate_limit(socket) do
+    now_ms = System.monotonic_time(:millisecond)
+
+    assign(socket, :editor_summary_rate_limit, %{
+      window_started_at_ms: now_ms,
+      summary_count: 0,
+      event_count: 0
+    })
+  end
+
+  defp allow_editor_summary?(socket, summary_event_count) do
+    now_ms = System.monotonic_time(:millisecond)
+    state = socket.assigns[:editor_summary_rate_limit] || %{}
+    window_started_at_ms = Map.get(state, :window_started_at_ms, now_ms)
+
+    state =
+      if now_ms - window_started_at_ms >= @telemetry_limit_window_ms do
+        %{
+          window_started_at_ms: now_ms,
+          summary_count: 0,
+          event_count: 0
+        }
+      else
+        state
+      end
+
+    next_summary_count = Map.get(state, :summary_count, 0) + 1
+    next_event_count = Map.get(state, :event_count, 0) + summary_event_count
+
+    if next_summary_count > @max_editor_summaries_per_window ||
+         next_event_count > @max_editor_summary_events_per_window do
+      {:error, :editor_summary_rate_limited}
+    else
+      {:ok,
+       assign(socket, :editor_summary_rate_limit, %{
+         state
+         | summary_count: next_summary_count,
+           event_count: next_event_count
+       })}
+    end
+  end
+
+  defp parse_editor_summary_payload(payload) do
+    summary = payload["summary"] || %{}
+
+    %{
+      summary: summary,
+      lang_slug: payload["lang_slug"] || payload["langSlug"],
+      summary_event_count: normalize_non_negative_integer(summary["event_count"] || summary["eventCount"])
+    }
+  end
+
+  defp store_editor_summary(socket, summary, lang_slug) do
+    game_id = socket.assigns.game_id
+    user = socket.assigns.current_user
+
+    case Context.store_editor_summary(game_id, user, summary, lang_slug) do
+      {:ok, _result} ->
+        {:noreply, socket}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        Logger.warning("Failed to persist editor summary: #{inspect(changeset.errors)}")
+        {:reply, {:error, %{reason: :invalid_editor_summary}}, socket}
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  defp normalize_non_negative_integer(value) when is_integer(value) and value >= 0, do: value
+
+  defp normalize_non_negative_integer(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {integer, ""} when integer >= 0 -> integer
+      _ -> 0
+    end
+  end
+
+  defp normalize_non_negative_integer(_value), do: 0
 
   def handle_in("rematch:send_offer", _, socket) do
     game_id = socket.assigns.game_id

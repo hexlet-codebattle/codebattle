@@ -11,6 +11,7 @@ import { actions } from "@/slices";
 import { getLobbyUrl, makeGameUrl } from "@/utils/urlBuilders";
 import useLobbyModals from "@/utils/useLobbyModals";
 
+import i18n from "../../../i18n";
 import ActiveGames from "./ActiveGames";
 import Announcement from "./Announcement";
 import ChatActionModal from "./ChatActionModal";
@@ -41,7 +42,7 @@ function CreateExperimentalGameButton({ onClick, isOnline, type = "css" }) {
       onClick={onClick}
       disabled={!isOnline}
     >
-      {type === "css" ? "Create a CSS Game" : "Create a SQL Game"}
+      {type === "css" ? i18n.t("Create a CSS Game") : i18n.t("Create a SQL Game")}
     </button>
   );
 }
@@ -49,7 +50,7 @@ function CreateExperimentalGameButton({ onClick, isOnline, type = "css" }) {
 function JoinGameButton({ onClick }) {
   return (
     <button type="button" className={joinGameBtnClassName} onClick={onClick}>
-      Join a battle
+      {i18n.t("Join a battle")}
     </button>
   );
 }
@@ -62,7 +63,7 @@ function CreateGameButton({ onClick, isOnline, isContinue }) {
       onClick={onClick}
       disabled={!isOnline}
     >
-      {isContinue ? "Continue battle" : "Create a battle"}
+      {isContinue ? i18n.t("Continue battle") : i18n.t("Create a battle")}
     </button>
   );
 }
@@ -163,7 +164,7 @@ function LobbyWidget() {
         contentClassName="cb-bg-panel"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title className="w-100 text-center pr-4">Create a game</Modal.Title>
+          <Modal.Title className="w-100 text-center pr-4">{i18n.t("Create a game")}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <CreateGameDialog hideModal={handleCloseCreateGameModal} />
@@ -175,7 +176,7 @@ function LobbyWidget() {
         contentClassName="cb-bg-panel cb-join-game-modal"
       >
         <Modal.Header className="cb-border-color text-white" closeButton>
-          <Modal.Title>Join a game</Modal.Title>
+          <Modal.Title>{i18n.t("Join a game")}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-white">
           <ActiveGames

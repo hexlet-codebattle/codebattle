@@ -1,6 +1,7 @@
 import Gon from "gon";
 import capitalize from "lodash/capitalize";
 
+import i18n from "../../i18n";
 import { channelMethods, channelTopics } from "../../socket";
 import { actions } from "../slices";
 import { getSystemMessage } from "../utils/chat";
@@ -21,7 +22,7 @@ const establishChat = (page) => (dispatch) => {
 
   channel.join().receive("ok", (data) => {
     const greetingMessage = getSystemMessage({
-      text: `Joined channel: ${capitalize(page)}`,
+      text: i18n.t("Joined channel: %{name}", { name: capitalize(page) }),
       status: "success",
     });
     const messages = [greetingMessage, ...data.messages];

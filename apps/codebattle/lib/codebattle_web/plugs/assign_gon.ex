@@ -44,6 +44,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :editor_theme,
       :external_oauth_login,
       :external_platform_id,
+      :external_platform_login,
       :games_played,
       :github_id,
       :github_name,

@@ -158,7 +158,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     <form className="border-top cb-border-color input-group mb-0 p-2" onSubmit={handleSubmit}>
       <input
         className={inputClassName}
-        placeholder="Be nice in chat!"
+        placeholder={i18next.t("Be nice in chat!")}
         value={text}
         onChange={handleChange}
         ref={inputRef}
@@ -166,7 +166,9 @@ export default function ChatInput({ inputRef, disabled = false }) {
       />
       {isMaxLengthExceeded && (
         <div className="invalid-tooltip">
-          Message length cannot exceed {MAX_MESSAGE_LENGTH} characters.
+          {i18next.t("Message length cannot exceed %{count} characters.", {
+            count: MAX_MESSAGE_LENGTH,
+          })}
         </div>
       )}
       {isTooltipVisible && (
@@ -184,7 +186,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           type="button"
           className={emojiBtnClassName}
           onClick={togglePickerVisibility}
-          aria-label="Open emoji picker"
+          aria-label={i18next.t("Open emoji picker")}
         >
           <em-emoji id="grinning" size={20} />
         </button>

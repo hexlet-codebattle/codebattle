@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useCallback, useRef } from "react";
 
 import { useInterpret } from "@xstate/react";
 import cn from "classnames";
+import Gon from "gon";
 import i18next from "i18next";
 import noop from "lodash/noop";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,11 +30,18 @@ import {
 import * as GameActions from "../../middlewares/Room";
 import * as selectors from "../../selectors";
 import { actions } from "../../slices";
+import {
+  createTelemetryWindow,
+  editorSummaryConfig,
+  finalizeTelemetryWindow,
+  updateTelemetryWindow,
+} from "../../utils/editorSummary";
 import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
 import EditorToolbar from "./EditorToolbar";
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
+const editorSummaryEnabled = !!Gon.getAsset("editor_summary_enabled");
 
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
@@ -78,13 +86,15 @@ function EditorContainer({
   const dispatch = useDispatch();
 
   const toolbarRef = useRef();
+  const editorTelemetryWindowRef = useRef(null);
+  const editorTelemetryTimerRef = useRef(null);
 
   const player = useSelector(selectors.gamePlayerSelector(id));
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
   const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
-  const { tournamentId } = useSelector(selectors.gameStatusSelector);
+  const { tournamentId, startsAt } = useSelector(selectors.gameStatusSelector);
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -211,10 +221,99 @@ function EditorContainer({
   const editable =
     !openedReplayer && userSettings.editable && userSettings.editorState !== "banned";
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
+  const canCaptureEditorTelemetry =
+    editorSummaryEnabled &&
+    canChange &&
+    editable &&
+    isActiveGame &&
+    !inTestingRoom &&
+    !inBuilderRoom &&
+    !isPreview;
   const updateEditor =
     editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;
   const showBannedMessage = type === editorUserTypes.currentUser && player?.isBanned;
+
+  const flushEditorTelemetry = useCallback(() => {
+    if (!canCaptureEditorTelemetry) {
+      editorTelemetryWindowRef.current = null;
+      return;
+    }
+
+    const summary = finalizeTelemetryWindow(editorTelemetryWindowRef.current);
+    editorTelemetryWindowRef.current = null;
+
+    if (summary) {
+      dispatch(
+        GameActions.sendEditorSummary(summary, summary.langSlug || editorState?.currentLangSlug),
+      );
+    }
+  }, [canCaptureEditorTelemetry, dispatch, editorState?.currentLangSlug]);
+
+  useEffect(() => {
+    return () => {
+      if (editorTelemetryTimerRef.current) {
+        window.clearTimeout(editorTelemetryTimerRef.current);
+        editorTelemetryTimerRef.current = null;
+      }
+
+      flushEditorTelemetry();
+    };
+  }, [flushEditorTelemetry]);
+
+  useEffect(() => {
+    if (!canCaptureEditorTelemetry) {
+      if (editorTelemetryTimerRef.current) {
+        window.clearTimeout(editorTelemetryTimerRef.current);
+        editorTelemetryTimerRef.current = null;
+      }
+
+      editorTelemetryWindowRef.current = null;
+    }
+  }, [canCaptureEditorTelemetry]);
+
+  const onTelemetryEvent = useCallback(
+    (event) => {
+      if (!canCaptureEditorTelemetry) {
+        return;
+      }
+
+      const currentWindow = editorTelemetryWindowRef.current;
+      const shouldRotateWindow =
+        currentWindow &&
+        event.lang_slug &&
+        currentWindow.langSlug &&
+        currentWindow.langSlug !== event.lang_slug;
+
+      if (shouldRotateWindow) {
+        if (editorTelemetryTimerRef.current) {
+          window.clearTimeout(editorTelemetryTimerRef.current);
+          editorTelemetryTimerRef.current = null;
+        }
+
+        flushEditorTelemetry();
+      }
+
+      editorTelemetryWindowRef.current = updateTelemetryWindow(
+        editorTelemetryWindowRef.current,
+        event,
+      );
+
+      if (!editorTelemetryTimerRef.current) {
+        editorTelemetryTimerRef.current = window.setTimeout(() => {
+          editorTelemetryTimerRef.current = null;
+          flushEditorTelemetry();
+        }, editorSummaryConfig.windowMs);
+      }
+
+      if (editorTelemetryWindowRef.current.eventCount >= editorSummaryConfig.eventLimit) {
+        window.clearTimeout(editorTelemetryTimerRef.current);
+        editorTelemetryTimerRef.current = null;
+        flushEditorTelemetry();
+      }
+    },
+    [canCaptureEditorTelemetry, flushEditorTelemetry],
+  );
 
   const editorParams = {
     roomMode: tournamentId ? GameModeCodes.tournament : gameMode,
@@ -226,6 +325,8 @@ function EditorContainer({
     userType: type,
     syntax: editorState?.currentLangSlug || "js",
     onChange,
+    onTelemetryEvent,
+    gameStartTimeMs: startsAt ? new Date(startsAt).getTime() : null,
     canSendCursor,
     checkResult,
     value: isRestricted ? restrictedText : editorState?.text,

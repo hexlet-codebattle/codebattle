@@ -4,6 +4,7 @@ import Gon from "gon";
 import { camelizeKeys } from "humps";
 import { useDispatch } from "react-redux";
 
+import i18n from "../../../i18n";
 import LanguageIcon from "../../components/LanguageIcon";
 import PopoverStickOnHover from "../../components/PopoverStickOnHover";
 import Placements from "../../config/placements";
@@ -24,7 +25,7 @@ const colors = {
 };
 
 const formatDate = (value) =>
-  new Intl.DateTimeFormat("en", {
+  new Intl.DateTimeFormat(i18n.language, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -34,7 +35,7 @@ const formatDate = (value) =>
 
 const formatDuration = (seconds) => {
   if (!seconds) {
-    return "n/a";
+    return i18n.t("n/a");
   }
 
   const minutes = Math.floor(seconds / 60);
@@ -104,27 +105,27 @@ function HeadToHeadUserLink({ user, placement, className = "" }) {
 
 const formatGameState = (state) => {
   if (state === "game_over") {
-    return "Finished";
+    return i18n.t("Finished");
   }
 
   if (state === "waiting_opponent") {
-    return "Waiting";
+    return i18n.t("Waiting");
   }
 
   if (state === "timeout") {
-    return "Timeout";
+    return i18n.t("Timeout");
   }
 
   if (state === "playing") {
-    return "Playing";
+    return i18n.t("Playing");
   }
 
   if (state === "canceled") {
-    return "Canceled";
+    return i18n.t("Canceled");
   }
 
   if (!state) {
-    return "Unknown";
+    return i18n.t("Unknown");
   }
 
   return state.replaceAll("_", " ");
@@ -169,7 +170,7 @@ const getPlayerAccent = (winnerId, playerId, index) => {
 const getResultTone = (result) => {
   if (!result) {
     return {
-      label: "Pending",
+      label: i18n.t("Pending"),
       background: "rgba(138, 145, 156, 0.14)",
       color: colors.steel,
       borderColor: "rgba(138, 145, 156, 0.3)",
@@ -178,7 +179,7 @@ const getResultTone = (result) => {
 
   if (result === "won") {
     return {
-      label: "Won",
+      label: i18n.t("Won"),
       background: "rgba(224, 191, 122, 0.18)",
       color: colors.gold,
       borderColor: "rgba(224, 191, 122, 0.35)",
@@ -187,7 +188,7 @@ const getResultTone = (result) => {
 
   if (result === "lost") {
     return {
-      label: "Lost",
+      label: i18n.t("Lost"),
       background: "rgba(196, 138, 87, 0.18)",
       color: colors.bronze,
       borderColor: "rgba(196, 138, 87, 0.35)",
@@ -195,7 +196,7 @@ const getResultTone = (result) => {
   }
 
   return {
-    label: "Draw",
+    label: i18n.t("Draw"),
     background: "rgba(162, 170, 179, 0.16)",
     color: colors.platinum,
     borderColor: "rgba(162, 170, 179, 0.28)",
@@ -216,7 +217,7 @@ function PlayerCard({ player, winnerId, index }) {
   }
 
   if (player.points || player.points === 0) {
-    metaItems.push(`${player.points} pts`);
+    metaItems.push(i18n.t("%{count} pts", { count: player.points }));
   }
 
   return (
@@ -234,7 +235,7 @@ function PlayerCard({ player, winnerId, index }) {
             className="text-uppercase small font-weight-bold"
             style={{ color: accent, letterSpacing: "0.12em" }}
           >
-            {winnerId === player.id ? "Leading" : "Contender"}
+            {winnerId === player.id ? i18n.t("Leading") : i18n.t("Contender")}
           </span>
           <span
             className="px-2 py-1 cb-rounded small font-weight-bold"
@@ -244,7 +245,7 @@ function PlayerCard({ player, winnerId, index }) {
               backgroundColor: "rgba(255, 255, 255, 0.02)",
             }}
           >
-            {player.wins} wins
+            {i18n.t("%{count} wins", { count: player.wins })}
           </span>
         </div>
         <div className="d-flex align-items-center">
@@ -348,7 +349,7 @@ function MatchRow({ game, players }) {
             className="small text-uppercase font-weight-bold"
             style={{ color: colors.steel, letterSpacing: "0.12em" }}
           >
-            Game #{game.id}
+            {i18n.t("Game")} #{game.id}
           </div>
           <div className="h5 mb-0 text-white">
             {game.mode} • {game.level} • {game.task_type}
@@ -361,7 +362,7 @@ function MatchRow({ game, players }) {
             className="small text-uppercase font-weight-bold text-decoration-none"
             style={{ color: colors.gold, letterSpacing: "0.12em" }}
           >
-            Open game
+            {i18n.t("Open game")}
           </a>
         </div>
       </div>
@@ -413,10 +414,14 @@ function MatchRow({ game, players }) {
         style={{ borderTop: `1px solid ${colors.line}` }}
       >
         <span className="small" style={{ color: colors.platinum }}>
-          {`Duration: ${formatDuration(game.duration_sec || game.timeout_seconds)}`}
+          {i18n.t("Duration: %{duration}", {
+            duration: formatDuration(game.duration_sec || game.timeout_seconds),
+          })}
         </span>
         <span className="small" style={{ color: colors.iron }}>
-          {game.finishes_at ? `Finished ${formatDate(game.finishes_at)}` : "Still in progress"}
+          {game.finishes_at
+            ? i18n.t("Finished %{date}", { date: formatDate(game.finishes_at) })
+            : i18n.t("Still in progress")}
         </span>
       </div>
     </div>
@@ -478,30 +483,36 @@ function HeadToHeadPage() {
                 className="small text-uppercase font-weight-bold mb-2"
                 style={{ color: colors.gold, letterSpacing: "0.18em" }}
               >
-                H2H Arena
+                {i18n.t("H2H Arena")}
               </div>
               <h1 className="mb-2" style={{ color: "#fff" }}>
                 {players.map((player) => player.name).join(" vs ")}
               </h1>
               <div style={{ color: colors.platinum }}>
-                Direct duel history with profile links, live status, and every shared game.
+                {i18n.t(
+                  "Direct duel history with profile links, live status, and every shared game.",
+                )}
               </div>
             </div>
           </div>
 
           <div className="row mb-4">
             <div className="col-12 col-md-4 mb-3">
-              <SummaryStat label="Total games" value={headToHead.total_games} tone={colors.gold} />
+              <SummaryStat
+                label={i18n.t("Total games")}
+                value={headToHead.total_games}
+                tone={colors.gold}
+              />
             </div>
             <div className="col-12 col-md-4 mb-3">
               <SummaryStat
-                label="Completed"
+                label={i18n.t("Completed")}
                 value={headToHead.completed_games}
                 tone={colors.silver}
               />
             </div>
             <div className="col-12 col-md-4 mb-3">
-              <SummaryStat label="Draws" value={headToHead.draws} tone={colors.bronze} />
+              <SummaryStat label={i18n.t("Draws")} value={headToHead.draws} tone={colors.bronze} />
             </div>
           </div>
 
@@ -516,10 +527,10 @@ function HeadToHeadPage() {
 
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <h2 className="mb-0" style={{ color: colors.silver }}>
-            All games
+            {i18n.t("All games")}
           </h2>
           <div className="small" style={{ color: colors.steel }}>
-            {headToHead.games.length} records
+            {i18n.t("%{count} records", { count: headToHead.games.length })}
           </div>
         </div>
 
@@ -531,7 +542,7 @@ function HeadToHeadPage() {
               border: `1px solid ${colors.line}`,
             }}
           >
-            No games found for this pair.
+            {i18n.t("No games found for this pair.")}
           </div>
         ) : (
           headToHead.games.map((game) => <MatchRow key={game.id} game={game} players={players} />)

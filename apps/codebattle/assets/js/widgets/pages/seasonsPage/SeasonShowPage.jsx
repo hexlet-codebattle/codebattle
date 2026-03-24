@@ -3,6 +3,7 @@ import React, { memo, useState, useMemo } from "react";
 import cn from "classnames";
 import Gon from "gon";
 
+import i18n from "../../../i18n";
 import LanguageIcon from "../../components/LanguageIcon";
 import PlayerInsightsModal from "../../components/PlayerInsightsModal";
 import {
@@ -52,18 +53,18 @@ function PodiumCard({ result, isFirst = false }) {
         </div>
         <div className={cn("d-flex justify-content-center", isFirst ? "mt-4" : "mt-3")}>
           <div className="px-3">
-            <StatBox label="Points" value={result.total_points} highlight={isFirst} />
+            <StatBox label={i18n.t("Points")} value={result.total_points} highlight={isFirst} />
           </div>
           <div className="px-3">
-            <StatBox label="Wins" value={result.total_wins_count} />
+            <StatBox label={i18n.t("Wins")} value={result.total_wins_count} />
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3">
           <div className="px-3">
-            <StatBox label="Score" value={result.total_score} />
+            <StatBox label={i18n.t("Score")} value={result.total_score} />
           </div>
           <div className="px-3">
-            <StatBox label="Tournaments" value={result.tournaments_count} />
+            <StatBox label={i18n.t("Tournaments")} value={result.tournaments_count} />
           </div>
         </div>
       </div>
@@ -80,7 +81,7 @@ function ChampionsPodium({ top3 }) {
 
   return (
     <div className="mb-5">
-      <h2 className="text-gold mb-4 text-center">Champions</h2>
+      <h2 className="text-gold mb-4 text-center">{i18n.t("Champions")}</h2>
       <div className="row align-items-end justify-content-center">
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
@@ -136,7 +137,7 @@ function SeasonShowPage() {
         <div className="container">
           <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
             <div className="card-body text-center py-5">
-              <p className="text-muted mb-0">Season not found</p>
+              <p className="text-muted mb-0">{i18n.t("Season not found")}</p>
             </div>
           </div>
         </div>
@@ -159,9 +160,9 @@ function SeasonShowPage() {
   }
 
   const statusBadge = {
-    upcoming: { class: "bg-info", text: "Upcoming" },
-    active: { class: "bg-success", text: "Active" },
-    completed: { class: "bg-secondary", text: "Completed" },
+    upcoming: { class: "bg-info", text: i18n.t("Upcoming") },
+    active: { class: "bg-success", text: i18n.t("Active") },
+    completed: { class: "bg-secondary", text: i18n.t("Completed") },
   }[seasonStatus];
 
   return (
@@ -185,10 +186,10 @@ function SeasonShowPage() {
           </div>
           <div className="d-flex mt-3 mt-md-0">
             <a href="/seasons" className="btn btn-outline-gold mr-2">
-              All Seasons
+              {i18n.t("All Seasons")}
             </a>
             <a href="/hall_of_fame" className="btn btn-outline-gold">
-              Hall of Fame
+              {i18n.t("Hall of Fame")}
             </a>
           </div>
         </div>
@@ -200,8 +201,10 @@ function SeasonShowPage() {
         <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light">
           <div className="card-header bg-transparent border-bottom border-secondary py-3">
             <div className="d-flex justify-content-between align-items-center">
-              <h2 className="mb-0 text-gold fs-4">Full Leaderboard</h2>
-              <span className="badge bg-secondary">{results.length} players</span>
+              <h2 className="mb-0 text-gold fs-4">{i18n.t("Full Leaderboard")}</h2>
+              <span className="badge bg-secondary">
+                {i18n.t("%{count} players", { count: results.length })}
+              </span>
             </div>
           </div>
           <div className="card-body p-0">

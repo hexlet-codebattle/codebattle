@@ -3,6 +3,7 @@ import React, { memo, useMemo, useState } from "react";
 import cn from "classnames";
 import Gon from "gon";
 
+import i18n from "../../../i18n";
 import LanguageIcon from "../../components/LanguageIcon";
 import PlayerInsightsModal from "../../components/PlayerInsightsModal";
 import {
@@ -85,18 +86,18 @@ function PodiumCard({ result, isFirst = false }) {
         </div>
         <div className={cn("d-flex justify-content-center", isFirst ? "mt-4" : "mt-3")}>
           <div className="px-3">
-            <StatBox label="Points" value={result.total_points} highlight={isFirst} />
+            <StatBox label={i18n.t("Points")} value={result.total_points} highlight={isFirst} />
           </div>
           <div className="px-3">
-            <StatBox label="Wins" value={result.total_wins_count} />
+            <StatBox label={i18n.t("Wins")} value={result.total_wins_count} />
           </div>
         </div>
         <div className="d-flex justify-content-center mt-3">
           <div className="px-3">
-            <StatBox label="Score" value={result.total_score} />
+            <StatBox label={i18n.t("Score")} value={result.total_score} />
           </div>
           <div className="px-3">
-            <StatBox label="Tournaments" value={result.tournaments_count} />
+            <StatBox label={i18n.t("Tournaments")} value={result.tournaments_count} />
           </div>
         </div>
       </div>
@@ -113,7 +114,7 @@ function ChampionsPodium({ top3 }) {
 
   return (
     <div className="mb-5">
-      <h2 className="text-gold mb-4 text-center">Top 3</h2>
+      <h2 className="text-gold mb-4 text-center">{i18n.t("Top 3")}</h2>
       <div className="row align-items-end justify-content-center">
         {/* Second place - left */}
         <div className="col-md-4 col-lg-3">
@@ -146,9 +147,9 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
   return (
     <div className="mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="text-gold">Previous Seasons Champions</h2>
+        <h2 className="text-gold">{i18n.t("Previous Seasons Champions")}</h2>
         <a href="/seasons" className="btn btn-outline-gold btn-sm">
-          View All Seasons
+          {i18n.t("View All Seasons")}
         </a>
       </div>
 
@@ -166,7 +167,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                 {season.name} {season.year}
               </h4>
               <a href={`/seasons/${season.id}`} className="btn btn-sm btn-outline-gold">
-                Full Results
+                {i18n.t("Full Results")}
               </a>
             </div>
 
@@ -233,7 +234,7 @@ function PreviousSeasonWinners({ previousSeasonsWinners }) {
                             )}
                           </div>
                           <div className="d-flex justify-content-between">
-                            <span className="text-muted">Points:</span>
+                            <span className="text-muted">{i18n.t("Points")}:</span>
                             <span className="text-white fw-bold">{winner.total_points}</span>
                           </div>
                         </div>
@@ -281,7 +282,7 @@ function HallOfFamePage() {
   return (
     <div className="cb-bg-panel cb-text min-vh-100 py-5">
       <div className="container">
-        <h1 className="text-center text-gold mb-5 fw-bold">Hall of Fame</h1>
+        <h1 className="text-center text-gold mb-5 fw-bold">{i18n.t("Hall of Fame")}</h1>
 
         {currentSeason && (
           <>
@@ -294,15 +295,15 @@ function HallOfFamePage() {
                     </h5>
                     <div className="d-flex flex-wrap small text-muted">
                       <span className="mr-3">
-                        <strong>Starts:</strong> {currentSeason.starts_at}
+                        <strong>{i18n.t("Starts")}:</strong> {currentSeason.starts_at}
                       </span>
                       <span>
-                        <strong>Ends:</strong> {currentSeason.ends_at}
+                        <strong>{i18n.t("Ends")}:</strong> {currentSeason.ends_at}
                       </span>
                     </div>
                   </div>
                   <a href="/seasons" className="btn btn-outline-gold">
-                    View All Seasons
+                    {i18n.t("View All Seasons")}
                   </a>
                 </div>
               </div>
@@ -318,9 +319,9 @@ function HallOfFamePage() {
               >
                 <div className="card-header bg-transparent border-bottom border-secondary py-3">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="mb-0 text-gold fs-4">Current Season Leaderboard</h2>
+                    <h2 className="mb-0 text-gold fs-4">{i18n.t("Current Season Leaderboard")}</h2>
                     <span className="badge bg-secondary">
-                      {currentSeasonResults.length} players
+                      {i18n.t("%{count} players", { count: currentSeasonResults.length })}
                     </span>
                   </div>
                 </div>

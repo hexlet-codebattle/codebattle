@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias Codebattle.Game
+  alias Codebattle.Game.EditorEventBatch
   alias Codebattle.Game.Player
   alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
@@ -9,6 +10,8 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Phoenix.Socket.Reply
 
   setup do
+    FunWithFlags.enable(:editor_summary)
+
     user1 = insert(:user, rating: 1001)
     user2 = insert(:user, rating: 1002)
     spectator = insert(:admin)
@@ -170,6 +173,151 @@ defmodule CodebattleWeb.GameChannelTest do
         event: "editor:data",
         payload: ^payload4
       }
+    end
+  end
+
+  describe "handle_in(editor:summary)" do
+    test "persists editor anticheat summaries for live games", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      game_topic = game_topic(game)
+
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+
+      push(socket1, "editor:summary", %{
+        summary: %{
+          event_count: 37,
+          window_start_offset_ms: 0,
+          window_end_offset_ms: 10_000,
+          lang_slug: "js",
+          key_event_count: 25,
+          printable_key_count: 18,
+          modifier_shortcut_count: 3,
+          paste_shortcut_attempt_count: 1,
+          paste_blocked_count: 1,
+          content_change_count: 12,
+          chars_inserted: 84,
+          chars_deleted: 9,
+          net_text_delta: 75,
+          max_single_insert_len: 61,
+          max_single_delete_len: 3,
+          multi_char_insert_count: 3,
+          multi_line_insert_count: 1,
+          large_insert_count: 1,
+          final_text_length: 75,
+          key_delta_sample_count: 24,
+          avg_key_delta_ms: 114,
+          min_key_delta_ms: 12,
+          max_key_delta_ms: 2_440,
+          idle_pause_over_2s_count: 1
+        },
+        lang_slug: "js"
+      })
+
+      :timer.sleep(50)
+
+      [batch] = EditorEventBatch.list_by_game(game.id)
+
+      assert batch.user_id == user1.id
+      assert batch.game_id == game.id
+      assert batch.lang == "js"
+      assert batch.event_count == 37
+      assert batch.tournament_id == nil
+      assert batch.window_start_offset_ms == 0
+      assert batch.window_end_offset_ms == 10_000
+      assert batch.summary["paste_blocked_count"] == 1
+      assert batch.summary["large_insert_count"] == 1
+      assert batch.summary["max_single_insert_len"] == 61
+      assert batch.summary["avg_key_delta_ms"] == 114
+    end
+
+    test "rate limits too many editor summaries in a short window", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      game_topic = game_topic(game)
+
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+
+      Enum.each(1..20, fn idx ->
+        push(socket1, "editor:summary", %{
+          summary: %{
+            event_count: 1,
+            window_start_offset_ms: idx * 10,
+            window_end_offset_ms: idx * 10 + 10,
+            lang_slug: "js",
+            key_event_count: 1
+          },
+          lang_slug: "js"
+        })
+      end)
+
+      ref =
+        push(socket1, "editor:summary", %{
+          summary: %{
+            event_count: 1,
+            window_start_offset_ms: 1_000,
+            window_end_offset_ms: 1_010,
+            lang_slug: "js",
+            key_event_count: 1
+          },
+          lang_slug: "js"
+        })
+
+      assert_reply(ref, :error, %{reason: :editor_summary_rate_limited})
+    end
+
+    test "rate limits too many claimed events in a short window", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      game_topic = game_topic(game)
+
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+
+      push(socket1, "editor:summary", %{
+        summary: %{
+          event_count: 1_500,
+          window_start_offset_ms: 0,
+          window_end_offset_ms: 10_000,
+          lang_slug: "js",
+          key_event_count: 800
+        },
+        lang_slug: "js"
+      })
+
+      ref2 =
+        push(socket1, "editor:summary", %{
+          summary: %{
+            event_count: 600,
+            window_start_offset_ms: 10_000,
+            window_end_offset_ms: 20_000,
+            lang_slug: "js",
+            key_event_count: 300
+          },
+          lang_slug: "js"
+        })
+
+      assert_reply(ref2, :error, %{reason: :editor_summary_rate_limited})
     end
   end
 

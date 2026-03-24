@@ -1,8 +1,10 @@
 import React, { memo } from "react";
 
 import cn from "classnames";
-import dayjs from "dayjs";
 import Gon from "gon";
+
+import i18n from "../../../i18n";
+import dayjs from "../../../i18n/dayjs";
 
 const getMedalEmoji = (place) => {
   switch (place) {
@@ -42,7 +44,7 @@ function PodiumPlace({ result, size = "normal" }) {
         <div className={cn("fw-bold", isLarge ? "fs-4 text-warning" : "fs-5 text-white")}>
           {result.total_points}
         </div>
-        <div className="text-muted small">points</div>
+        <div className="text-muted small">{i18n.t("points")}</div>
       </div>
     </div>
   );
@@ -50,7 +52,7 @@ function PodiumPlace({ result, size = "normal" }) {
 
 function Top3Podium({ top3 }) {
   if (!top3 || top3.length === 0) {
-    return <div className="text-muted text-center py-5">No results yet</div>;
+    return <div className="text-muted text-center py-5">{i18n.t("No results yet")}</div>;
   }
 
   const first = top3.find((r) => r.place === 1);
@@ -86,7 +88,9 @@ function SeasonCard({ season }) {
       <div className="p-3 p-lg-4 d-flex flex-column h-100">
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start mb-3 cb-seasons-card-header">
           <div className="pr-sm-3">
-            <div className="text-uppercase small text-muted cb-seasons-card-kicker">Season</div>
+            <div className="text-uppercase small text-muted cb-seasons-card-kicker">
+              {i18n.t("Season")}
+            </div>
             <h3 className="card-title text-gold mb-2 cb-seasons-card-title">
               {season.name} {season.year}
             </h3>
@@ -98,7 +102,7 @@ function SeasonCard({ season }) {
             href={`/seasons/${season.id}`}
             className="btn btn-sm btn-outline-gold mt-3 mt-sm-0 cb-seasons-action"
           >
-            View Results
+            {i18n.t("View Results")}
           </a>
         </div>
 
@@ -120,16 +124,16 @@ function SeasonsPage() {
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <div className="text-center text-md-left">
               <div className="text-uppercase small text-muted cb-seasons-eyebrow">
-                Competition archive
+                {i18n.t("Competition archive")}
               </div>
-              <h1 className="text-gold fw-bold mb-2 cb-seasons-title">Seasons</h1>
+              <h1 className="text-gold fw-bold mb-2 cb-seasons-title">{i18n.t("Seasons")}</h1>
               <p className="text-muted mb-0 cb-seasons-subtitle">
-                Browse finished seasons and open the full leaderboard for each one.
+                {i18n.t("Browse finished seasons and open the full leaderboard for each one.")}
               </p>
             </div>
             <div className="mt-3 mt-md-0">
               <a href="/hall_of_fame" className="btn btn-outline-gold cb-seasons-hero-action">
-                Hall of Fame
+                {i18n.t("Hall of Fame")}
               </a>
             </div>
           </div>
@@ -138,7 +142,7 @@ function SeasonsPage() {
         {seasons.length === 0 ? (
           <div className="card cb-bg-panel cb-border-color cb-rounded shadow-sm border-0 text-light cb-seasons-empty">
             <div className="card-body text-center py-5">
-              <p className="text-muted mb-0">No seasons found</p>
+              <p className="text-muted mb-0">{i18n.t("No seasons found")}</p>
             </div>
           </div>
         ) : (

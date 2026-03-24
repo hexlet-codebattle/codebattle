@@ -6,6 +6,7 @@ import moment from "moment";
 import ReactPaginate from "react-paginate";
 import { useSelector, useDispatch } from "react-redux";
 
+import i18n from "../../../i18n";
 import UserInfo from "../../components/UserInfo";
 import { getUsersRatingPage } from "../../middlewares/Users";
 import { usersListSelector } from "../../selectors";
@@ -149,8 +150,8 @@ function UsersRating() {
 
   return (
     <div className="text-center cb-bg-panel cb-rounded p-3">
-      <h2 className="font-weight-normal">Users rating</h2>
-      <p>{`Total entries: ${totalEntries}`}</p>
+      <h2 className="font-weight-normal">{i18n.t("Users rating")}</h2>
+      <p>{i18n.t("Total entries: %{count}", { count: totalEntries })}</p>
 
       <ul className="nav nav-pills justify-content-center mb-3">
         {periods.map((period) =>
@@ -171,8 +172,8 @@ function UsersRating() {
           <input
             type="text"
             className="form-control cb-bg-panel cb-border-color text-white"
-            placeholder="Username contains…"
-            aria-label="Username"
+            placeholder={i18n.t("Username contains...")}
+            aria-label={i18n.t("Username")}
             aria-describedby="basic-addon1"
             value={filterParams.name}
             onChange={(e) => {
@@ -198,7 +199,7 @@ function UsersRating() {
                 <option>40</option>
                 <option>50</option>
               </select>
-              <span className="ml-2 text-nowrap">Users per page</span>
+              <span className="ml-2 text-nowrap">{i18n.t("Users per page")}</span>
             </label>
           </div>
           {/** end select */}
@@ -218,7 +219,7 @@ function UsersRating() {
                 }}
                 defaultChecked={withBots}
               />
-              With bots
+              {i18n.t("With bots")}
             </label>
           </div>
         </div>
@@ -228,40 +229,40 @@ function UsersRating() {
           <thead className="text-left cb-text-light">
             <tr>
               <th className="p-3 text-nowrap border-0">№</th>
-              <th className="p-3 text-nowrap border-0">User</th>
+              <th className="p-3 text-nowrap border-0">{i18n.t("User")}</th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
                 onClick={() => triggerSort("rank")}
               >
-                Rank &nbsp;
+                {i18n.t("Rank")} &nbsp;
                 {renderSortArrow("rank", sortParams)}
               </th>
               <th
                 className="p-3 border-0 text-nowrap cursor-pointer"
                 onClick={() => triggerSort("points")}
               >
-                Points &nbsp;
+                {i18n.t("Points")} &nbsp;
                 {renderSortArrow("points", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
                 onClick={() => triggerSort("rating")}
               >
-                Rating &nbsp;
+                {i18n.t("Rating")} &nbsp;
                 {renderSortArrow("rating", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
                 onClick={() => triggerSort("games_played")}
               >
-                Games played &nbsp;
+                {i18n.t("Games played")} &nbsp;
                 {renderSortArrow("games_played", sortParams)}
               </th>
               <th
                 className="p-3 text-nowrap border-0 cursor-pointer"
                 onClick={() => triggerSort("id")}
               >
-                Joined &nbsp;
+                {i18n.t("Joined")} &nbsp;
                 {renderSortArrow("id", sortParams)}
               </th>
               <th className="p-3 text-nowrap border-0">Github</th>

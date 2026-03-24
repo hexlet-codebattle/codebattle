@@ -238,6 +238,23 @@ export const sendEditorText =
     });
   };
 
+export const sendEditorSummary =
+  (summary, langSlug = null) =>
+  (_dispatch, getState) => {
+    if (!summary || typeof summary !== "object") {
+      return;
+    }
+
+    const state = getState();
+    const userId = selectors.currentUserIdSelector(state);
+    const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+
+    channel.push(channelMethods.editorSummary, {
+      summary,
+      langSlug: currentLangSlug,
+    });
+  };
+
 // TODO: only for show tournament
 export const startRoundTournament = () => {
   channel.push("tournament:start_round", {});

@@ -1,9 +1,10 @@
 import React, { cloneElement, useEffect, useMemo, useRef, useState } from "react";
 
-import dayjs from "dayjs";
 import CalendarHeatmap from "react-calendar-heatmap";
 import { useDispatch } from "react-redux";
 
+import i18n from "../../../i18n";
+import dayjs from "../../../i18n/dayjs";
 import Loading from "../../components/Loading";
 import { actions } from "../../slices";
 
@@ -75,8 +76,8 @@ function Heatmap() {
   const { activities, meta } = activityData;
   const totalGames = activities.reduce((sum, activity) => sum + activity.count, 0);
   const title = meta.year
-    ? `${totalGames} games in ${meta.year}`
-    : `${totalGames} games in the last 365 days`;
+    ? i18n.t("%{count} games in %{year}", { count: totalGames, year: meta.year })
+    : i18n.t("%{count} games in the last 365 days", { count: totalGames });
   const range = `${dayjs(meta.start_date).format("MMM D, YYYY")} - ${dayjs(meta.end_date).format("MMM D, YYYY")}`;
 
   const showTooltip = (event, value) => {
@@ -88,7 +89,9 @@ function Heatmap() {
     }
 
     setTooltip({
-      text: value ? `${value.count} games on ${value.date}` : "No games",
+      text: value
+        ? i18n.t("%{count} games on %{date}", { count: value.count, date: value.date })
+        : i18n.t("No games"),
       x: targetRect.left - wrapperRect.left + targetRect.width / 2,
       y: targetRect.top - wrapperRect.top - 8,
     });
@@ -115,7 +118,7 @@ function Heatmap() {
             onChange={(event) => setSelectedPeriod(event.target.value)}
             disabled={isLoading}
           >
-            <option value={latestValue}>Last 365 days</option>
+            <option value={latestValue}>{i18n.t("Last 365 days")}</option>
             {years.map((year) => (
               <option key={year} value={String(year)}>
                 {year}

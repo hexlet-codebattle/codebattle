@@ -125,11 +125,39 @@ defmodule CodebattleWeb.AuthControllerTest do
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
                external_platform_id: "external-platform-test-id",
+               external_platform_login: "external-platform-test-login",
                lang: "js",
                name: "External-external-user-id",
                rank: 5432,
                rating: 1200,
                subscription_type: :free
+             } = user
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/next_path"
+    end
+
+    test "/auth/external/callback upserts external platform fields for existing user", %{conn: conn} do
+      insert(
+        :user,
+        external_oauth_id: "external-user-id",
+        external_oauth_login: "old_external_login",
+        external_platform_id: "old-platform-id",
+        external_platform_login: "old-platform-login",
+        avatar_url: "https://external.test/avatars/old-avatar-id"
+      )
+
+      stub_external_oauth_requests()
+
+      conn = get(conn, "/auth/external/callback", %{"code" => "asfd", "next" => "/next_path"})
+      user = Repo.get_by(User, external_oauth_id: "external-user-id")
+
+      assert %User{
+               avatar_url: "https://external.test/avatars/test-avatar-id",
+               external_oauth_id: "external-user-id",
+               external_oauth_login: "external_test_login",
+               external_platform_id: "external-platform-test-id",
+               external_platform_login: "external-platform-test-login"
              } = user
 
       assert conn.state == :sent

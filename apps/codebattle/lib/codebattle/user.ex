@@ -29,6 +29,7 @@ defmodule Codebattle.User do
              :editor_theme,
              :external_oauth_login,
              :external_platform_id,
+             :external_platform_login,
              :games_played,
              :github_id,
              :github_name,
@@ -68,6 +69,7 @@ defmodule Codebattle.User do
     field(:external_oauth_id, :string)
     field(:external_oauth_login, :string)
     field(:external_platform_id, :string)
+    field(:external_platform_login, :string)
     field(:firebase_uid, :string)
     field(:github_id, :integer)
     field(:github_name, :string)
@@ -111,6 +113,7 @@ defmodule Codebattle.User do
       :external_oauth_id,
       :external_oauth_login,
       :external_platform_id,
+      :external_platform_login,
       :firebase_uid,
       :github_id,
       :github_name,
@@ -152,6 +155,7 @@ defmodule Codebattle.User do
       :external_oauth_id,
       :external_oauth_login,
       :external_platform_id,
+      :external_platform_login,
       :category,
       :name,
       :clan,

@@ -11,6 +11,7 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Bot
   alias Codebattle.CodeCheck
   alias Codebattle.Game
+  alias Codebattle.Game.EditorEventBatch
   alias Codebattle.Game.Engine
   alias Codebattle.Game.Player
   alias Codebattle.Repo
@@ -23,6 +24,41 @@ defmodule Codebattle.Game.Context do
   @type raw_game_id :: String.t() | non_neg_integer()
   @type game_id :: non_neg_integer()
   @type tournament_id :: non_neg_integer()
+  @type editor_summary :: map()
+
+  @allowed_summary_integer_fields ~w(
+    key_event_count
+    printable_key_count
+    modifier_shortcut_count
+    copy_shortcut_count
+    cut_shortcut_count
+    paste_shortcut_attempt_count
+    undo_shortcut_count
+    redo_shortcut_count
+    backspace_count
+    delete_count
+    enter_count
+    tab_count
+    arrow_key_count
+    paste_blocked_count
+    drop_blocked_count
+    content_change_count
+    chars_inserted
+    chars_deleted
+    net_text_delta
+    max_single_insert_len
+    max_single_delete_len
+    multi_char_insert_count
+    multi_char_delete_count
+    multi_line_insert_count
+    large_insert_count
+    final_text_length
+    key_delta_sample_count
+    avg_key_delta_ms
+    min_key_delta_ms
+    max_key_delta_ms
+    idle_pause_over_2s_count
+  )
 
   @type game_params :: %{
           :players => nonempty_list(User.t()) | nonempty_list(Tournament.Player.t()),
@@ -179,6 +215,50 @@ defmodule Codebattle.Game.Context do
     end
   end
 
+  @spec store_editor_summary(game_id, User.t(), editor_summary, String.t() | nil) ::
+          {:ok, EditorEventBatch.t() | :skipped} | {:error, atom | Ecto.Changeset.t()}
+  def store_editor_summary(game_id, user, summary, editor_lang \\ nil)
+
+  def store_editor_summary(_game_id, _user, nil, _editor_lang), do: {:ok, :skipped}
+
+  def store_editor_summary(game_id, user, summary, editor_lang) when is_map(summary) do
+    case get_game!(game_id) do
+      %{is_live: true} = game ->
+        sanitized_summary = sanitize_editor_summary(summary)
+
+        case sanitized_summary do
+          nil ->
+            {:ok, :skipped}
+
+          sanitized_summary ->
+            start_offset = Map.get(sanitized_summary, "window_start_offset_ms", 0)
+            end_offset = Map.get(sanitized_summary, "window_end_offset_ms", start_offset)
+            {batch_started_at, batch_ended_at} = get_editor_batch_bounds(game, start_offset, end_offset)
+
+            lang =
+              editor_lang ||
+                Map.get(sanitized_summary, "lang_slug") ||
+                "unknown"
+
+            EditorEventBatch.create(%{
+              user_id: user.id,
+              game_id: game.id,
+              tournament_id: game.tournament_id,
+              lang: lang,
+              event_count: Map.get(sanitized_summary, "event_count", 0),
+              window_start_offset_ms: start_offset,
+              window_end_offset_ms: end_offset,
+              batch_started_at: batch_started_at,
+              batch_ended_at: batch_ended_at,
+              summary: Map.delete(sanitized_summary, "lang_slug")
+            })
+        end
+
+      _ ->
+        {:error, :game_is_dead}
+    end
+  end
+
   @spec check_result(game_id, %{
           required(:user) => %{required(:id) => pos_integer()} | User.t(),
           required(:editor_text) => String.t(),
@@ -250,6 +330,105 @@ defmodule Codebattle.Game.Context do
   def trigger_timeout(game_id) do
     game_id |> get_game!() |> Engine.trigger_timeout()
   end
+
+  defp sanitize_editor_summary(summary) do
+    event_count = summary |> map_get("event_count") |> normalize_non_negative_integer()
+    start_offset = summary |> map_get("window_start_offset_ms") |> normalize_non_negative_integer()
+    end_offset = summary |> map_get("window_end_offset_ms") |> normalize_non_negative_integer()
+
+    cond do
+      event_count <= 0 ->
+        nil
+
+      end_offset < start_offset ->
+        nil
+
+      true ->
+        @allowed_summary_integer_fields
+        |> Enum.reduce(
+          %{
+            "event_count" => event_count,
+            "window_start_offset_ms" => start_offset,
+            "window_end_offset_ms" => end_offset
+          },
+          fn key, acc ->
+            Map.put(acc, key, summary |> map_get(key) |> normalize_non_negative_integer())
+          end
+        )
+        |> maybe_put_string("lang_slug", map_get(summary, "lang_slug"), 32)
+    end
+  end
+
+  defp get_editor_batch_bounds(game, start_offset_ms, end_offset_ms) do
+    anchor = get_editor_batch_anchor(game)
+
+    started_at = offset_ms_to_datetime(start_offset_ms, anchor)
+    ended_at = offset_ms_to_datetime(end_offset_ms, anchor)
+
+    {started_at, ended_at}
+  end
+
+  defp get_editor_batch_anchor(%{starts_at: %NaiveDateTime{} = starts_at}),
+    do: starts_at |> DateTime.from_naive!("Etc/UTC") |> DateTime.truncate(:microsecond)
+
+  defp get_editor_batch_anchor(_game), do: DateTime.truncate(DateTime.utc_now(), :microsecond)
+
+  defp normalize_non_negative_integer(value) when is_integer(value) and value >= 0, do: value
+
+  defp normalize_non_negative_integer(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {integer, ""} when integer >= 0 -> integer
+      _ -> 0
+    end
+  end
+
+  defp normalize_non_negative_integer(_value), do: 0
+
+  defp offset_ms_to_datetime(value, anchor) when is_integer(value) and value >= 0,
+    do: anchor |> DateTime.add(value, :millisecond) |> DateTime.truncate(:microsecond)
+
+  defp offset_ms_to_datetime(value, anchor) when is_binary(value) do
+    value
+    |> normalize_non_negative_integer()
+    |> offset_ms_to_datetime(anchor)
+  end
+
+  defp offset_ms_to_datetime(_value, anchor), do: anchor
+
+  defp maybe_put_string(data, key, value, max_length) do
+    case sanitize_string(value, max_length) do
+      nil -> data
+      sanitized -> Map.put(data, key, sanitized)
+    end
+  end
+
+  defp sanitize_string(value, max_length) when is_binary(value) do
+    value
+    |> String.trim()
+    |> String.slice(0, max_length)
+    |> case do
+      "" -> nil
+      sanitized -> sanitized
+    end
+  end
+
+  defp sanitize_string(_value, _max_length), do: nil
+
+  defp map_get(data, key) when is_map(data) do
+    Map.get(data, key) ||
+      case safe_to_existing_atom(key) do
+        nil -> nil
+        atom_key -> Map.get(data, atom_key)
+      end
+  end
+
+  defp safe_to_existing_atom(key) when is_binary(key) do
+    String.to_existing_atom(key)
+  rescue
+    ArgumentError -> nil
+  end
+
+  defp safe_to_existing_atom(_key), do: nil
 
   @spec terminate_tournament_games(tournament_id) :: :ok
   def terminate_tournament_games(tournament_id) do

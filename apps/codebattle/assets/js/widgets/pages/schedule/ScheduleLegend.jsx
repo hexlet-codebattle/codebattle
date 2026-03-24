@@ -3,6 +3,7 @@ import React from "react";
 import cn from "classnames";
 import { useSelector } from "react-redux";
 
+import i18n from "../../../i18n";
 import { currentUserIsAdminSelector } from "@/selectors";
 
 export const states = {
@@ -32,7 +33,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
         onClick={onChangeContext}
         disabled={loading}
       >
-        Contests History
+        {i18n.t("Contests History")}
       </button>
       <button
         type="button"
@@ -41,7 +42,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
         onClick={onChangeContext}
         disabled={loading}
       >
-        My Tournaments
+        {i18n.t("My Tournaments")}
       </button>
       {isAdmin && (
         <button
@@ -53,7 +54,7 @@ function ScheduleLegend({ onChangeContext, loading, context }) {
           onClick={onChangeContext}
           disabled={loading}
         >
-          All Tournaments
+          {i18n.t("All Tournaments")}
         </button>
       )}
     </div>

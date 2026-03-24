@@ -2,6 +2,7 @@ import React, { memo, useMemo, useCallback } from "react";
 
 import cn from "classnames";
 
+import i18n from "../../../i18n";
 import UserInfo from "../UserInfo";
 
 // Constants
@@ -86,12 +87,12 @@ export const formatTime = (seconds) => {
 
 export const formatGradeName = (grade) => {
   const names = {
-    grand_slam: "Grand Slam",
-    masters: "Masters",
-    elite: "Elite",
-    pro: "Pro",
-    challenger: "Challenger",
-    rookie: "Rookie",
+    grand_slam: i18n.t("Grand Slam"),
+    masters: i18n.t("Masters"),
+    elite: i18n.t("Elite"),
+    pro: i18n.t("Pro"),
+    challenger: i18n.t("Challenger"),
+    rookie: i18n.t("Rookie"),
   };
   return names[grade] || grade;
 };
@@ -99,7 +100,7 @@ export const formatGradeName = (grade) => {
 export const formatDate = (dateStr) => {
   if (!dateStr) return "";
   const date = new Date(dateStr);
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return date.toLocaleDateString(i18n.language, { month: "short", day: "numeric" });
 };
 
 // Sortable column header component
@@ -113,7 +114,7 @@ export function SortableHeader({ label, sortKey, currentSort, onSort }) {
       className="cursor-pointer user-select-none"
       style={{ cursor: "pointer" }}
       onClick={() => onSort(sortKey, nextDirection)}
-      title={`Sort by ${label}`}
+      title={i18n.t("Sort by %{label}", { label })}
     >
       <div className="d-flex align-items-center">
         {label}
@@ -157,7 +158,7 @@ export function Pagination({
   return (
     <div className="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top border-secondary">
       <div className="d-flex align-items-center mb-2 mb-md-0">
-        <span className="text-muted small mr-2">Show</span>
+        <span className="text-muted small mr-2">{i18n.t("Show")}</span>
         <select
           className="form-select form-select-sm bg-dark text-light border-secondary mx-2"
           style={{ width: "auto" }}
@@ -170,11 +171,13 @@ export function Pagination({
             </option>
           ))}
         </select>
-        <span className="text-muted small">of {totalItems} players</span>
+        <span className="text-muted small">
+          {i18n.t("of %{count} players", { count: totalItems })}
+        </span>
       </div>
 
       {totalPages > 1 && (
-        <nav aria-label="Leaderboard pagination">
+        <nav aria-label={i18n.t("Leaderboard pagination")}>
           <ul className="pagination pagination-sm mb-0">
             <li className={cn("page-item", { disabled: currentPage === 1 })}>
               <button
@@ -272,9 +275,9 @@ export function SearchFilterBar({
             <input
               id="search-player"
               type="text"
-              aria-label="Search player"
+              aria-label={i18n.t("Search player")}
               className="form-control bg-dark text-light border-secondary cb-season-filter-control"
-              placeholder="Search by name..."
+              placeholder={i18n.t("Search by name...")}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
             />
@@ -292,12 +295,12 @@ export function SearchFilterBar({
         <div className="col-6 col-md-3">
           <select
             id="filter-clan"
-            aria-label="Filter by clan"
+            aria-label={i18n.t("Filter by clan")}
             className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={clanFilter}
             onChange={(e) => onClanFilterChange(e.target.value)}
           >
-            <option value="">All Clans</option>
+            <option value="">{i18n.t("All Clans")}</option>
             {uniqueClans.map((clan) => (
               <option key={clan} value={clan}>
                 {clan}
@@ -308,12 +311,12 @@ export function SearchFilterBar({
         <div className="col-6 col-md-3">
           <select
             id="filter-lang"
-            aria-label="Filter by language"
+            aria-label={i18n.t("Filter by language")}
             className="form-select form-select-sm bg-dark text-light border-secondary cb-season-filter-control"
             value={langFilter}
             onChange={(e) => onLangFilterChange(e.target.value)}
           >
-            <option value="">All Languages</option>
+            <option value="">{i18n.t("All Languages")}</option>
             {uniqueLangs.map((lang) => (
               <option key={lang} value={lang}>
                 {lang}
@@ -328,7 +331,7 @@ export function SearchFilterBar({
               className="btn btn-sm btn-outline-secondary w-100 cb-season-filter-reset-btn"
               onClick={onReset}
             >
-              Clear Filters
+              {i18n.t("Clear Filters")}
             </button>
           )}
         </div>
@@ -408,9 +411,9 @@ const LeaderboardRow = memo(({ result, onShowInsights, showInsightsButton }) => 
             type="button"
             className="btn btn-sm btn-outline-light"
             onClick={() => onShowInsights(result)}
-            title="View player insights"
+            title={i18n.t("View player insights")}
           >
-            <i className="bi bi-bar-chart-line" /> Stats
+            <i className="bi bi-bar-chart-line" /> {i18n.t("Stats")}
           </button>
         </td>
       )}
@@ -447,7 +450,7 @@ export function LeaderboardTable({
   if (results.length === 0) {
     return (
       <div className="text-center py-5">
-        <p className="text-muted mb-0">No results yet</p>
+        <p className="text-muted mb-0">{i18n.t("No results yet")}</p>
       </div>
     );
   }
@@ -468,13 +471,13 @@ export function LeaderboardTable({
 
       {displayedResults.length === 0 ? (
         <div className="text-center py-5">
-          <p className="text-muted mb-0">No players match your filters</p>
+          <p className="text-muted mb-0">{i18n.t("No players match your filters")}</p>
           <button
             type="button"
             className="btn btn-sm btn-outline-secondary mt-2"
             onClick={onResetFilters}
           >
-            Clear Filters
+            {i18n.t("Clear Filters")}
           </button>
         </div>
       ) : (
@@ -489,50 +492,50 @@ export function LeaderboardTable({
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Player"
+                  label={i18n.t("Player")}
                   sortKey="user_name"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Clan"
+                  label={i18n.t("Clan")}
                   sortKey="clan_name"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Points"
+                  label={i18n.t("Points")}
                   sortKey="total_points"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Wins"
+                  label={i18n.t("Wins")}
                   sortKey="total_wins_count"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Score"
+                  label={i18n.t("Score")}
                   sortKey="total_score"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Tournaments"
+                  label={i18n.t("Tournaments")}
                   sortKey="tournaments_count"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 <SortableHeader
-                  label="Avg Place"
+                  label={i18n.t("Avg Place")}
                   sortKey="avg_place"
                   currentSort={sortConfig}
                   onSort={onSort}
                 />
                 {showInsightsButton && (
                   <th scope="col" className="text-center">
-                    Insights
+                    {i18n.t("Insights")}
                   </th>
                 )}
               </tr>
