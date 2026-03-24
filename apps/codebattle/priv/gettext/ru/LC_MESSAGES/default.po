@@ -322,9 +322,6 @@ msgstr "Тесты"
 msgid "Send"
 msgstr "Отправить"
 
-msgid "Notification"
-msgstr "Нотификация"
-
 msgid "Run"
 msgstr "Запустить"
 
