@@ -27,6 +27,7 @@ jest.mock("react-bootstrap/Alert", () => ({
 
 jest.mock("../i18n", () => ({
   __esModule: true,
+  getLocale: jest.fn(() => "en"),
   getSupportedLocale: jest.fn((locale) => (["en", "ru"].includes(locale) ? locale : "en")),
   default: {
     t: jest.fn((key) => key),
