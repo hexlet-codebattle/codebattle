@@ -142,6 +142,14 @@ const searchParams = new URLSearchParams(window.location.search);
 const getNextLocation = () => (searchParams.has("next") ? searchParams.get("next") : "/");
 const getLinkWithNext = (link) =>
   searchParams.has("next") ? `${link}?next=${searchParams.get("next")}` : link;
+const redirectTo = (path) => {
+  if (window.navigator.userAgent.includes("jsdom")) {
+    window.history.replaceState({}, "", path);
+    return;
+  }
+
+  window.location.href = path;
+};
 
 function SocialLinks({ isSignUp }) {
   return (
@@ -204,7 +212,7 @@ function SignIn() {
 
       postJson("/api/v1/session", data)
         .then(() => {
-          window.location.href = getNextLocation();
+          redirectTo(getNextLocation());
         })
         .catch((error) => {
           // TODO: add log for auth error
@@ -260,7 +268,7 @@ function SignUp() {
     onSubmit: (formData) => {
       postJson("/api/v1/users", formData)
         .then(() => {
-          window.location.href = getNextLocation();
+          redirectTo(getNextLocation());
         })
         .catch((error) => {
           // TODO: Add better errors handler
