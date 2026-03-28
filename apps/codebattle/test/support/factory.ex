@@ -4,6 +4,9 @@ defmodule CodebattleWeb.Factory do
 
   alias Codebattle.Feedback
   alias Codebattle.Game
+  alias Codebattle.GroupTask
+  alias Codebattle.GroupTaskSolution
+  alias Codebattle.GroupTaskToken
   alias Codebattle.Playbook
   alias Codebattle.Task
   alias Codebattle.TaskPack
@@ -234,6 +237,30 @@ defmodule CodebattleWeb.Factory do
 
   def feedback_factory do
     %Feedback{author_name: "name", status: "proposal", text: "text", title_link: "title_link"}
+  end
+
+  def group_task_factory do
+    %GroupTask{
+      slug: sequence(:group_task_slug, &"group-task-#{&1}"),
+      time_to_solve_sec: 600
+    }
+  end
+
+  def group_task_token_factory do
+    %GroupTaskToken{
+      user: build(:user),
+      group_task: build(:group_task),
+      token: sequence(:group_task_token, &"group-task-token-#{&1}-abcdefghijklmnopqrstuvwxyz")
+    }
+  end
+
+  def group_task_solution_factory do
+    %GroupTaskSolution{
+      user: build(:user),
+      group_task: build(:group_task),
+      lang: "python",
+      solution: "print('ok')"
+    }
   end
 
   defp unique(prefix), do: "#{prefix}#{System.unique_integer([:positive, :monotonic])}"

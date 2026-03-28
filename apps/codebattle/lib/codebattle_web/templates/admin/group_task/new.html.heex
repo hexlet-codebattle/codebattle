@@ -1,0 +1,4 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">New Group Task</h1>
+  {render("_form.html", assigns |> Map.put(:action, Routes.group_task_path(@conn, :create)))}
+</div>

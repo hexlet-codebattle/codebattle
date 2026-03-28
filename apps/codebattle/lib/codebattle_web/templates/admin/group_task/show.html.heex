@@ -1,0 +1,112 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">
+    <span>{@group_task.slug}</span>
+  </h1>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>ID:</strong> {@group_task.id}</p>
+        <p><strong>Slug:</strong> {@group_task.slug}</p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Time To Solve:</strong> {@group_task.time_to_solve_sec} sec</p>
+        <p><strong>Created At:</strong> {format_datetime(@group_task.inserted_at)}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <h3 class="text-white">Generate Token</h3>
+    <%= form_for(@token_changeset, Routes.group_task_token_path(@conn, :create, @group_task), [as: :group_task_token], fn f -> %>
+      <div class="form-group">
+        <span class="text-white">User ID</span>
+        {number_input(f, :user_id,
+          class: "form-control cb-bg-panel cb-border-color text-white mt-2",
+          min: "1",
+          required: true
+        )}
+        {error_tag(f, :user_id)}
+      </div>
+      {submit("Generate / Rotate Token",
+        phx_disable_with: "Saving...",
+        class: "btn btn-success text-white cb-rounded"
+      )}
+    <% end) %>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="text-white mb-0">Latest Tokens</h3>
+      <span class="cb-text">showing {length(@tokens)} most recent</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead class="cb-text">
+          <tr>
+            <th class="cb-border-color border-bottom">user_id</th>
+            <th class="cb-border-color border-bottom">user</th>
+            <th class="cb-border-color border-bottom">token</th>
+            <th class="cb-border-color border-bottom">updated_at</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for token <- @tokens do %>
+            <tr>
+              <td class="text-white cb-border-color">{token.user_id}</td>
+              <td class="text-white cb-border-color">{token.user && token.user.name}</td>
+              <td class="text-white cb-border-color"><code>{token.token}</code></td>
+              <td class="text-white cb-border-color">{format_datetime(token.updated_at)}</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="text-white mb-0">Latest Solutions</h3>
+      <span class="cb-text">showing {length(@solutions)} most recent</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead class="cb-text">
+          <tr>
+            <th class="cb-border-color border-bottom">inserted_at</th>
+            <th class="cb-border-color border-bottom">user_id</th>
+            <th class="cb-border-color border-bottom">user</th>
+            <th class="cb-border-color border-bottom">lang</th>
+            <th class="cb-border-color border-bottom">solution</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for solution <- @solutions do %>
+            <tr>
+              <td class="text-white cb-border-color">{format_datetime(solution.inserted_at)}</td>
+              <td class="text-white cb-border-color">{solution.user_id}</td>
+              <td class="text-white cb-border-color">{solution.user && solution.user.name}</td>
+              <td class="text-white cb-border-color">{solution.lang}</td>
+              <td class="text-white cb-border-color">
+                <pre class="mb-0 text-white"><code>{solution.solution}</code></pre>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="d-flex mt-4">
+    {link("Edit",
+      to: Routes.group_task_path(@conn, :edit, @group_task),
+      class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+    )}
+    {link("Back",
+      to: Routes.group_task_path(@conn, :index),
+      class: "btn btn-link cb-text ml-auto"
+    )}
+  </div>
+</div>

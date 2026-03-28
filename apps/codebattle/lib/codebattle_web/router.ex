@@ -103,6 +103,12 @@ defmodule CodebattleWeb.Router do
     live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
     resources("/events", CodebattleWeb.EventController, except: [:index])
+
+    post("/group_tasks/:group_task_id/tokens", CodebattleWeb.Admin.GroupTaskTokenController, :create,
+      as: :group_task_token
+    )
+
+    resources("/group_tasks", CodebattleWeb.Admin.GroupTaskController)
   end
 
   scope "/auth", CodebattleWeb do
@@ -172,6 +178,14 @@ defmodule CodebattleWeb.Router do
       scope("/games") do
         resources("/:game_id/user_game_reports", UserGameReportController, only: [:create])
       end
+    end
+  end
+
+  scope "/api", CodebattleWeb.Api, as: :api do
+    pipe_through(:public_api)
+
+    scope "/v1", V1, as: :v1 do
+      post("/group_task_solutions", GroupTaskSolutionController, :create)
     end
   end
 

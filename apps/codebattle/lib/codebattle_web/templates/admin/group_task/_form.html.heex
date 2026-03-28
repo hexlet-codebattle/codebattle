@@ -1,0 +1,37 @@
+<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
+  <div class="form-group">
+    <div>
+      <span class="text-white">Slug</span>
+      <span class="ml-3 cb-text">Unique identifier for API token batches and admin lookup</span>
+    </div>
+    {text_input(f, :slug,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "255",
+      required: true
+    )}
+    {error_tag(f, :slug)}
+  </div>
+
+  <div class="form-group">
+    <div>
+      <span class="text-white">Time to solve (sec)</span>
+    </div>
+    {number_input(f, :time_to_solve_sec,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1",
+      required: true
+    )}
+    {error_tag(f, :time_to_solve_sec)}
+  </div>
+
+  <div class="d-flex">
+    {submit("Save",
+      phx_disable_with: "Saving...",
+      class: "btn btn-success text-white mb-2 cb-rounded"
+    )}
+    {link("Back",
+      to: Routes.group_task_path(@conn, :index),
+      class: "btn btn-link cb-text ml-auto"
+    )}
+  </div>
+<% end) %>

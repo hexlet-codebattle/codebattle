@@ -1,0 +1,52 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Group Tasks</h1>
+  {link("Create new group task",
+    to: Routes.group_task_path(@conn, :new),
+    class: "btn btn-success text-white mt-2 cb-rounded"
+  )}
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead class="cb-text">
+        <tr>
+          <th class="cb-border-color border-bottom">id</th>
+          <th class="cb-border-color border-bottom">slug</th>
+          <th class="cb-border-color border-bottom">time_to_solve_sec</th>
+          <th class="cb-border-color border-bottom">inserted_at</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for group_task <- @group_tasks do %>
+          <tr>
+            <td class="align-middle text-white cb-border-color">{group_task.id}</td>
+            <td class="align-middle text-white cb-border-color">{group_task.slug}</td>
+            <td class="align-middle text-white cb-border-color">
+              {group_task.time_to_solve_sec}
+            </td>
+            <td class="align-middle text-white cb-border-color">
+              {format_datetime(group_task.inserted_at)}
+            </td>
+            <td class="align-middle text-nowrap cb-border-color">
+              <div class="d-flex">
+                {link("Show",
+                  to: Routes.group_task_path(@conn, :show, group_task),
+                  class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                )}
+                {link("Edit",
+                  to: Routes.group_task_path(@conn, :edit, group_task),
+                  class:
+                    "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                )}
+                {link("Delete",
+                  to: Routes.group_task_path(@conn, :delete, group_task),
+                  method: :delete,
+                  data: [confirm: "Are you sure you want to delete this group task?"],
+                  class: "btn btn-sm btn-outline-danger cb-rounded ml-2"
+                )}
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
