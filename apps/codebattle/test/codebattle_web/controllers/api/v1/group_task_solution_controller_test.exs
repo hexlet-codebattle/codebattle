@@ -18,7 +18,10 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
     response =
       conn
       |> put_req_header("authorization", "Bearer some-token")
-      |> post("/api/v1/group_task_solutions", %{"solution" => "print(1)", "lang" => "python"})
+      |> post("/api/v1/group_task_solutions", %{
+        "solution" => Base.encode64("print(1)"),
+        "lang" => "python"
+      })
       |> json_response(403)
 
     assert response["error"] == "group_tasks_api_disabled"
@@ -30,7 +33,10 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
     response =
       conn
       |> put_req_header("authorization", "Bearer missing-token")
-      |> post("/api/v1/group_task_solutions", %{"solution" => "print(1)", "lang" => "python"})
+      |> post("/api/v1/group_task_solutions", %{
+        "solution" => Base.encode64("print(1)"),
+        "lang" => "python"
+      })
       |> json_response(401)
 
     assert response["error"] == "unauthorized"
@@ -47,7 +53,7 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
       conn
       |> put_req_header("authorization", "Bearer #{token.token}")
       |> post("/api/v1/group_task_solutions", %{
-        "solution" => "def solution():\n    return 42\n",
+        "solution" => Base.encode64("def solution():\n    return 42\n"),
         "lang" => "Python"
       })
       |> json_response(201)
@@ -71,11 +77,34 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
     response =
       conn
       |> put_req_header("authorization", "Bearer #{token.token}")
-      |> post("/api/v1/group_task_solutions", %{"solution" => "   ", "lang" => ""})
+      |> post("/api/v1/group_task_solutions", %{
+        "solution" => Base.encode64("   "),
+        "lang" => ""
+      })
       |> json_response(422)
 
     assert response["errors"]["solution"] == ["can't be blank"]
     assert response["errors"]["lang"] == ["can't be blank"]
+    assert Repo.aggregate(Codebattle.GroupTaskSolution, :count, :id) == 0
+  end
+
+  test "returns validation error for malformed solution base64", %{conn: conn} do
+    FunWithFlags.enable(:group_tasks_api)
+
+    user = insert(:user)
+    group_task = insert(:group_task)
+    {:ok, token} = Context.create_or_rotate_token(group_task, user.id)
+
+    response =
+      conn
+      |> put_req_header("authorization", "Bearer #{token.token}")
+      |> post("/api/v1/group_task_solutions", %{
+        "solution" => "***not-base64***",
+        "lang" => "python"
+      })
+      |> json_response(422)
+
+    assert response["errors"]["solution"] == ["is invalid base64"]
     assert Repo.aggregate(Codebattle.GroupTaskSolution, :count, :id) == 0
   end
 end

@@ -120,15 +120,42 @@ defmodule Codebattle.GroupTask.Context do
         {:error, :invalid_token}
 
       group_task_token ->
-        %GroupTaskSolution{}
-        |> GroupTaskSolution.changeset(%{
-          user_id: group_task_token.user_id,
-          group_task_id: group_task_token.group_task_id,
-          solution: Map.get(attrs, "solution") || Map.get(attrs, :solution),
-          lang: Map.get(attrs, "lang") || Map.get(attrs, :lang)
-        })
-        |> Repo.insert()
+        create_solution(group_task_token, attrs)
     end
+  end
+
+  defp create_solution(group_task_token, attrs) do
+    params = %{
+      user_id: group_task_token.user_id,
+      group_task_id: group_task_token.group_task_id,
+      lang: Map.get(attrs, "lang") || Map.get(attrs, :lang)
+    }
+
+    case decode_solution(Map.get(attrs, "solution") || Map.get(attrs, :solution)) do
+      {:ok, decoded_solution} ->
+        %GroupTaskSolution{}
+        |> GroupTaskSolution.changeset(Map.put(params, :solution, decoded_solution))
+        |> Repo.insert()
+
+      :error ->
+        {:error, invalid_solution_encoding_changeset(params)}
+    end
+  end
+
+  defp decode_solution(solution) when is_binary(solution) do
+    case Base.decode64(String.trim(solution)) do
+      {:ok, decoded_solution} -> {:ok, decoded_solution}
+      :error -> :error
+    end
+  end
+
+  defp decode_solution(_solution), do: :error
+
+  defp invalid_solution_encoding_changeset(params) do
+    %GroupTaskSolution{}
+    |> GroupTaskSolution.changeset(Map.put(params, :solution, "placeholder"))
+    |> Ecto.Changeset.delete_change(:solution)
+    |> Ecto.Changeset.add_error(:solution, "is invalid base64")
   end
 
   defp generate_token do
