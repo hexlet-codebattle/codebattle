@@ -1,0 +1,40 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Edit Group Task Solution</h1>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
+    <p><strong>Group Task:</strong> {@group_task.slug}</p>
+    <p><strong>User ID:</strong> {@solution.user_id}</p>
+  </div>
+
+  <%= form_for(@changeset, Routes.update_group_task_solution_path(@conn, :update_solution, @group_task, @solution.id), [class: "col-8 offset-2"], fn f -> %>
+    <div class="form-group">
+      <span class="text-white">Lang</span>
+      {text_input(f, :lang,
+        class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+        required: true
+      )}
+      {error_tag(f, :lang)}
+    </div>
+
+    <div class="form-group">
+      <span class="text-white">Solution</span>
+      {textarea(f, :solution,
+        class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+        rows: 18,
+        required: true
+      )}
+      {error_tag(f, :solution)}
+    </div>
+
+    <div class="d-flex">
+      {submit("Save",
+        phx_disable_with: "Saving...",
+        class: "btn btn-success text-white mb-2 cb-rounded"
+      )}
+      {link("Back",
+        to: Routes.group_task_path(@conn, :show, @group_task),
+        class: "btn btn-link cb-text ml-auto"
+      )}
+    </div>
+  <% end) %>
+</div>

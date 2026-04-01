@@ -114,7 +114,7 @@ defmodule Codebattle.Tournament.TournamentUserResult do
       |> Enum.map(fn {row, place} ->
         Map.merge(row, %{
           place: place,
-          points: grade_points(tournament.grade, place),
+          points: grade_points(tournament.grade, place, row),
           is_cheater: false,
           inserted_at: timestamp
         })
@@ -223,16 +223,19 @@ defmodule Codebattle.Tournament.TournamentUserResult do
 
   defp upsert_cheater_results(_tournament), do: :ok
 
-  defp grade_points("rookie", place) when place <= 3, do: Enum.at([8, 4, 2], place - 1)
-  defp grade_points("challenger", place) when place <= 4, do: Enum.at([16, 8, 4, 2], place - 1)
-  defp grade_points("pro", place) when place <= 7, do: Enum.at([128, 64, 32, 16, 8, 4, 2], place - 1)
-  defp grade_points("elite", place) when place <= 8, do: Enum.at([256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+  defp grade_points(_grade, _place, %{wins_count: wins_count, score: score}) when wins_count <= 0 or score <= 0, do: 0
 
-  defp grade_points("masters", place) when place <= 10, do: Enum.at([1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+  defp grade_points("rookie", place, _row) when place <= 3, do: Enum.at([8, 4, 2], place - 1)
+  defp grade_points("challenger", place, _row) when place <= 4, do: Enum.at([16, 8, 4, 2], place - 1)
+  defp grade_points("pro", place, _row) when place <= 7, do: Enum.at([128, 64, 32, 16, 8, 4, 2], place - 1)
+  defp grade_points("elite", place, _row) when place <= 8, do: Enum.at([256, 128, 64, 32, 16, 8, 4, 2], place - 1)
 
-  defp grade_points("grand_slam", place) when place <= 11,
+  defp grade_points("masters", place, _row) when place <= 10,
+    do: Enum.at([1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], place - 1)
+
+  defp grade_points("grand_slam", place, _row) when place <= 11,
     do: Enum.at([2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2], place - 1)
 
-  defp grade_points("open", _place), do: 0
-  defp grade_points(_grade, _place), do: 2
+  defp grade_points("open", _place, _row), do: 0
+  defp grade_points(_grade, _place, _row), do: 2
 end

@@ -24,6 +24,21 @@
     {error_tag(f, :time_to_solve_sec)}
   </div>
 
+  <div class="form-group">
+    <div>
+      <span class="text-white">Runner URL</span>
+      <span class="ml-3 cb-text">
+        HTTP endpoint that will receive selected latest player solutions
+      </span>
+    </div>
+    {text_input(f, :runner_url,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "500",
+      required: false
+    )}
+    {error_tag(f, :runner_url)}
+  </div>
+
   <div class="d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",

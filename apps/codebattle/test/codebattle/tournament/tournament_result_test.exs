@@ -209,6 +209,81 @@ defmodule Codebattle.Tournament.TournamenResultTest do
                |> Repo.all()
     end
 
+    test "graded tournaments do not award points to users without wins or score" do
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          grade: "rookie"
+        )
+
+      winner = insert(:user, name: "winner")
+      no_wins = insert(:user, name: "no-wins")
+      no_score = insert(:user, name: "no-score")
+
+      Repo.insert_all(TournamentResult, [
+        %{
+          tournament_id: tournament.id,
+          user_id: winner.id,
+          user_name: winner.name,
+          user_lang: "js",
+          score: 100,
+          duration_sec: 30,
+          round_position: 0,
+          game_id: 1,
+          task_id: 1,
+          level: "easy",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        },
+        %{
+          tournament_id: tournament.id,
+          user_id: no_wins.id,
+          user_name: no_wins.name,
+          user_lang: "rb",
+          score: 60,
+          duration_sec: 40,
+          round_position: 0,
+          game_id: 2,
+          task_id: 2,
+          level: "easy",
+          result_percent: Decimal.new("50"),
+          clan_id: nil,
+          was_cheated: false
+        },
+        %{
+          tournament_id: tournament.id,
+          user_id: no_score.id,
+          user_name: no_score.name,
+          user_lang: "py",
+          score: 0,
+          duration_sec: 50,
+          round_position: 0,
+          game_id: 3,
+          task_id: 3,
+          level: "easy",
+          result_percent: Decimal.new("100"),
+          clan_id: nil,
+          was_cheated: false
+        }
+      ])
+
+      TournamentUserResult.upsert_results(tournament)
+
+      assert [
+               %{user_id: winner_id, place: 1, points: 8, score: 100, wins_count: 1},
+               %{user_id: no_wins_id, place: 2, points: 0, score: 60, wins_count: 0},
+               %{user_id: no_score_id, place: 3, points: 0, score: 0, wins_count: 1}
+             ] =
+               TournamentUserResult
+               |> where([tur], tur.tournament_id == ^tournament.id)
+               |> order_by([tur], asc: tur.place)
+               |> Repo.all()
+
+      assert [winner.id, no_wins.id, no_score.id] == [winner_id, no_wins_id, no_score_id]
+    end
+
     test "calculates results correctly by_percentile" do
       [clan1, clan2, clan3, clan4, clan5, clan6, clan7, clan8] =
         Enum.map(1..8, fn i -> insert(:clan, name: "c#{i}", long_name: "l#{i}") end)

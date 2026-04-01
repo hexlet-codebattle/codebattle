@@ -38,7 +38,9 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
 
     render(conn, "show.html",
       group_task: group_task,
+      run_changeset: run_changeset(%{}),
       token_changeset: token_changeset(%{}),
+      runs: Context.list_runs(group_task),
       solutions: Context.list_solutions(group_task),
       tokens: Context.list_tokens(group_task),
       user: conn.assigns.current_user
@@ -83,6 +85,96 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
     |> redirect(to: Routes.group_task_path(conn, :index))
   end
 
+  def download_run_part(conn, %{"id" => group_task_id, "run_id" => run_id, "part" => part}) do
+    group_task = Context.get_group_task!(group_task_id)
+    run = Context.get_run!(run_id)
+
+    if run.group_task_id == group_task.id and part in ["history", "summary"] do
+      data = Map.get(run.result, part, %{})
+
+      conn
+      |> put_resp_content_type("application/json")
+      |> put_resp_header(
+        "content-disposition",
+        ~s(attachment; filename="#{group_task.slug}_run_#{run.id}_#{part}.json")
+      )
+      |> send_resp(200, Jason.encode_to_iodata!(data, pretty: true))
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Group task run part not found")})
+    end
+  end
+
+  def edit_solution(conn, %{"id" => group_task_id, "solution_id" => solution_id}) do
+    group_task = Context.get_group_task!(group_task_id)
+    solution = Context.get_solution!(solution_id)
+
+    if solution.group_task_id == group_task.id do
+      render(conn, "edit_solution.html",
+        group_task: group_task,
+        solution: solution,
+        changeset: Context.change_solution(solution),
+        user: conn.assigns.current_user
+      )
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Group task solution not found")})
+    end
+  end
+
+  def update_solution(conn, %{
+        "id" => group_task_id,
+        "solution_id" => solution_id,
+        "group_task_solution" => solution_params
+      }) do
+    group_task = Context.get_group_task!(group_task_id)
+    solution = Context.get_solution!(solution_id)
+
+    if solution.group_task_id == group_task.id do
+      case Context.update_solution(solution, solution_params) do
+        {:ok, _solution} ->
+          conn
+          |> put_flash(:info, "Group task solution updated successfully.")
+          |> redirect(to: Routes.group_task_path(conn, :show, group_task))
+
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit_solution.html",
+            group_task: group_task,
+            solution: solution,
+            changeset: changeset,
+            user: conn.assigns.current_user
+          )
+      end
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Group task solution not found")})
+    end
+  end
+
+  def delete_solution(conn, %{"id" => group_task_id, "solution_id" => solution_id}) do
+    group_task = Context.get_group_task!(group_task_id)
+    solution = Context.get_solution!(solution_id)
+
+    if solution.group_task_id == group_task.id do
+      Context.delete_solution(solution)
+
+      conn
+      |> put_flash(:info, "Group task solution deleted successfully.")
+      |> redirect(to: Routes.group_task_path(conn, :show, group_task))
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Group task solution not found")})
+    end
+  end
+
   defp token_changeset(attrs) do
     types = %{user_id: :integer}
 
@@ -90,5 +182,13 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
     |> Ecto.Changeset.cast(attrs, Map.keys(types))
     |> Ecto.Changeset.validate_required([:user_id])
     |> Ecto.Changeset.validate_number(:user_id, greater_than: 0)
+  end
+
+  defp run_changeset(attrs) do
+    types = %{player_ids: :string}
+
+    {%{}, types}
+    |> Ecto.Changeset.cast(attrs, Map.keys(types))
+    |> Ecto.Changeset.validate_required([:player_ids])
   end
 end

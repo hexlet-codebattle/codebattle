@@ -5,6 +5,7 @@ defmodule Codebattle.GroupTask do
 
   import Ecto.Changeset
 
+  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTaskToken
 
@@ -12,8 +13,10 @@ defmodule Codebattle.GroupTask do
 
   schema "group_tasks" do
     field(:slug, :string)
+    field(:runner_url, :string)
     field(:time_to_solve_sec, :integer)
 
+    has_many(:runs, GroupTaskRun)
     has_many(:solutions, GroupTaskSolution)
     has_many(:tokens, GroupTaskToken)
 
@@ -22,14 +25,25 @@ defmodule Codebattle.GroupTask do
 
   def changeset(group_task, attrs \\ %{}) do
     group_task
-    |> cast(attrs, [:slug, :time_to_solve_sec])
+    |> cast(attrs, [:slug, :time_to_solve_sec, :runner_url])
     |> validate_required([:slug, :time_to_solve_sec])
     |> update_change(:slug, &normalize_slug/1)
+    |> update_change(:runner_url, &normalize_runner_url/1)
     |> validate_length(:slug, min: 2, max: 255)
+    |> validate_length(:runner_url, max: 500)
     |> validate_number(:time_to_solve_sec, greater_than: 0)
     |> unique_constraint(:slug)
   end
 
   defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()
+
+  defp normalize_runner_url(nil), do: nil
+
+  defp normalize_runner_url(runner_url) do
+    case String.trim(runner_url) do
+      "" -> nil
+      value -> value
+    end
+  end
 end

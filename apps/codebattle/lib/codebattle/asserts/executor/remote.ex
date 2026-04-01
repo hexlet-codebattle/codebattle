@@ -36,8 +36,8 @@ defmodule Codebattle.AssertsService.Executor.Remote do
     case Req.post("#{runner_url()}/api/v1/generate",
            body: body,
            headers: headers,
-           timeout: 30_000,
-           recv_timeout: 30_000
+           receive_timeout: 30_000,
+           connect_options: [timeout: 30_000]
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         AtomizedMap.load(body)

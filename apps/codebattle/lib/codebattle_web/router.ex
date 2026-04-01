@@ -4,6 +4,7 @@ defmodule CodebattleWeb.Router do
 
   import Phoenix.LiveDashboard.Router
 
+  alias CodebattleWeb.Admin.GroupTaskController
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
   alias CodebattleWeb.Plugs.RescrictAccess
@@ -103,12 +104,25 @@ defmodule CodebattleWeb.Router do
     live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
     resources("/events", CodebattleWeb.EventController, except: [:index])
+    get("/group_tasks/:id/runs/:run_id/:part", GroupTaskController, :download_run_part, as: :group_task_run_part)
+
+    get("/group_tasks/:id/solutions/:solution_id/edit", GroupTaskController, :edit_solution,
+      as: :edit_group_task_solution
+    )
+
+    patch("/group_tasks/:id/solutions/:solution_id", GroupTaskController, :update_solution,
+      as: :update_group_task_solution
+    )
+
+    delete("/group_tasks/:id/solutions/:solution_id", GroupTaskController, :delete_solution, as: :group_task_solution)
+
+    post("/group_tasks/:group_task_id/runs", CodebattleWeb.Admin.GroupTaskRunController, :create, as: :group_task_run)
 
     post("/group_tasks/:group_task_id/tokens", CodebattleWeb.Admin.GroupTaskTokenController, :create,
       as: :group_task_token
     )
 
-    resources("/group_tasks", CodebattleWeb.Admin.GroupTaskController)
+    resources("/group_tasks", GroupTaskController)
   end
 
   scope "/auth", CodebattleWeb do

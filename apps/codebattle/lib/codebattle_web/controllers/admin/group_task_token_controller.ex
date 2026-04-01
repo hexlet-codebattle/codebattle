@@ -39,7 +39,9 @@ defmodule CodebattleWeb.Admin.GroupTaskTokenController do
     |> put_layout(html: {CodebattleWeb.LayoutView, :admin})
     |> render("show.html",
       group_task: group_task,
+      run_changeset: run_changeset(%{}),
       token_changeset: token_changeset,
+      runs: Context.list_runs(group_task),
       solutions: Context.list_solutions(group_task),
       tokens: Context.list_tokens(group_task),
       user: conn.assigns.current_user
@@ -63,5 +65,13 @@ defmodule CodebattleWeb.Admin.GroupTaskTokenController do
     {%{}, types}
     |> Ecto.Changeset.cast(attrs, Map.keys(types))
     |> Ecto.Changeset.validate_required([:user_id])
+  end
+
+  defp run_changeset(attrs) do
+    types = %{player_ids: :string}
+
+    {%{}, types}
+    |> Ecto.Changeset.cast(attrs, Map.keys(types))
+    |> Ecto.Changeset.validate_required([:player_ids])
   end
 end

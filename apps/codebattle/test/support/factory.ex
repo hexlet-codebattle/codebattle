@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Factory do
   alias Codebattle.Feedback
   alias Codebattle.Game
   alias Codebattle.GroupTask
+  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTaskToken
   alias Codebattle.Playbook
@@ -242,7 +243,8 @@ defmodule CodebattleWeb.Factory do
   def group_task_factory do
     %GroupTask{
       slug: sequence(:group_task_slug, &"group-task-#{&1}"),
-      time_to_solve_sec: 600
+      time_to_solve_sec: 600,
+      runner_url: "http://runner.example/api/v1/group_tasks/run"
     }
   end
 
@@ -260,6 +262,15 @@ defmodule CodebattleWeb.Factory do
       group_task: build(:group_task),
       lang: "python",
       solution: "print('ok')"
+    }
+  end
+
+  def group_task_run_factory do
+    %GroupTaskRun{
+      group_task: build(:group_task),
+      player_ids: [1, 2],
+      status: "success",
+      result: %{"winner_id" => 1}
     }
   end
 

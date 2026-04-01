@@ -1,6 +1,12 @@
+import Ecto.Query
+
 alias Codebattle.Clan
 alias Codebattle.Event
 alias Codebattle.Game
+alias Codebattle.GroupTask
+alias Codebattle.GroupTask.Context, as: GroupTaskContext
+alias Codebattle.GroupTaskSolution
+alias Codebattle.GroupTaskToken
 alias Codebattle.Repo
 alias Codebattle.Season
 alias Codebattle.TaskPack
@@ -293,6 +299,107 @@ for level <- levels do
     }
     |> TaskPack.changeset()
     |> Repo.insert!()
+end
+
+seed_group_task = fn slug, time_to_solve_sec ->
+  case Repo.get_by(GroupTask, slug: slug) do
+    nil ->
+      {:ok, group_task} =
+        GroupTaskContext.create_group_task(%{
+          slug: slug,
+          time_to_solve_sec: time_to_solve_sec
+        })
+
+      group_task
+
+    group_task ->
+      group_task
+      |> GroupTask.changeset(%{time_to_solve_sec: time_to_solve_sec})
+      |> Repo.update!()
+  end
+end
+
+seed_group_task_token = fn group_task, user ->
+  case Repo.get_by(GroupTaskToken, group_task_id: group_task.id, user_id: user.id) do
+    nil ->
+      {:ok, token} = GroupTaskContext.create_or_rotate_token(group_task, user.id)
+      token
+
+    token ->
+      token
+  end
+end
+
+seed_group_task_solution = fn group_task, user, lang, solution_text ->
+  encoded_solution = Base.encode64(solution_text)
+
+  token = seed_group_task_token.(group_task, user)
+
+  existing_solution =
+    Repo.get_by(GroupTaskSolution,
+      group_task_id: group_task.id,
+      user_id: user.id,
+      lang: String.downcase(lang),
+      solution: solution_text
+    )
+
+  if is_nil(existing_solution) do
+    {:ok, _solution} =
+      GroupTaskContext.create_solution_from_token(token.token, %{
+        "lang" => lang,
+        "solution" => encoded_solution
+      })
+  end
+end
+
+sample_group_task_users =
+  Repo.all(
+    from(u in User,
+      order_by: [asc: u.id],
+      limit: 3
+    )
+  )
+
+if length(sample_group_task_users) >= 3 do
+  sprint_group_task = seed_group_task.("group-task-sprint-demo", 900)
+  finals_group_task = seed_group_task.("group-task-finals-demo", 1_200)
+
+  [user_1, user_2, user_3] = sample_group_task_users
+
+  seed_group_task_solution.(
+    sprint_group_task,
+    user_1,
+    "python",
+    "def solution(nums):\n    return sum(nums)\n"
+  )
+
+  seed_group_task_solution.(
+    sprint_group_task,
+    user_2,
+    "javascript",
+    "const solution = (nums) => nums.reduce((acc, value) => acc + value, 0);\n"
+  )
+
+  seed_group_task_solution.(
+    sprint_group_task,
+    user_3,
+    "elixir",
+    "def solution(nums), do: Enum.sum(nums)\n"
+  )
+
+  seed_group_task_solution.(
+    finals_group_task,
+    user_1,
+    "python",
+    "def solution(matrix):\n    return [sum(row) for row in matrix]\n"
+  )
+
+  seed_group_task_solution.(
+    finals_group_task,
+    user_2,
+    "typescript",
+    "export const solution = (matrix: number[][]): number[] => matrix.map(row => row.reduce((a, b) => a + b, 0));\n"
+  )
 end
 
 # Build users for load tests with clans
