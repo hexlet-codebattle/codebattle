@@ -11,6 +11,9 @@ defmodule Codebattle.GroupTask.Context do
 
   require Logger
 
+  @group_task_runner_receive_timeout_ms 180_000
+  @group_task_runner_connect_timeout_ms 30_000
+
   @admin_recent_tokens_limit 100
   @admin_recent_runs_limit 50
   @admin_recent_solutions_limit 100
@@ -279,8 +282,8 @@ defmodule Codebattle.GroupTask.Context do
     case runner_http_client().post(request_url,
            json: payload,
            headers: [{"content-type", "application/json"}],
-           receive_timeout: 30_000,
-           connect_options: [timeout: 30_000]
+           receive_timeout: @group_task_runner_receive_timeout_ms,
+           connect_options: [timeout: @group_task_runner_connect_timeout_ms]
          ) do
       {:ok, %Req.Response{status: 200, body: body}} ->
         result = normalize_result_body(body)
