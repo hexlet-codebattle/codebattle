@@ -1,0 +1,8 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Edit Group Tournament</h1>
+  {render(
+    "_form.html",
+    assigns
+    |> Map.put(:action, Routes.admin_group_tournament_path(@conn, :update, @group_tournament))
+  )}
+</div>

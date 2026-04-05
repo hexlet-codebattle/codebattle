@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import {
   Builder,
   EventPage,
+  GroupTournamentPage,
   Game,
   GameThreejsPage,
   HallOfFamePage,
@@ -31,6 +32,8 @@ const Heatmap = React.lazy(() => import("./pages/profile/Heatmap"));
 
 export const renderBuilderWidget = (domElement) => createRoot(domElement).render(<Builder />);
 export const renderEventPage = (domElement) => createRoot(domElement).render(<EventPage />);
+export const renderGroupTournamentPage = (domElement) =>
+  createRoot(domElement).render(<GroupTournamentPage />);
 export const renderGameWidget = (domElement) => createRoot(domElement).render(<Game />);
 export const renderGameThreejsPage = (domElement) =>
   createRoot(domElement).render(<GameThreejsPage />);

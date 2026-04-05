@@ -38,11 +38,8 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
 
     render(conn, "show.html",
       group_task: group_task,
-      run_changeset: run_changeset(%{}),
-      token_changeset: token_changeset(%{}),
-      runs: Context.list_runs(group_task),
-      solutions: Context.list_solutions(group_task),
-      tokens: Context.list_tokens(group_task),
+      runs: Context.list_runs(group_task, limit: 20),
+      solutions: Context.list_solutions(group_task, limit: 20),
       user: conn.assigns.current_user
     )
   end
@@ -89,16 +86,8 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
     group_task = Context.get_group_task!(group_task_id)
     run = Context.get_run!(run_id)
 
-    if run.group_task_id == group_task.id and part in ["history", "summary"] do
-      data = Map.get(run.result, part, %{})
-
-      conn
-      |> put_resp_content_type("application/json")
-      |> put_resp_header(
-        "content-disposition",
-        ~s(attachment; filename="#{group_task.slug}_run_#{run.id}_#{part}.json")
-      )
-      |> send_resp(200, Jason.encode_to_iodata!(data, pretty: true))
+    if run.group_task_id == group_task.id and part in ["history", "summary", "viewer"] do
+      send_run_part(conn, group_task, run, part)
     else
       conn
       |> put_status(:not_found)
@@ -175,20 +164,35 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
     end
   end
 
-  defp token_changeset(attrs) do
-    types = %{user_id: :integer}
+  defp send_run_part(conn, group_task, run, "viewer") do
+    html = Map.get(run.result, "viewer_html") || Map.get(run.result, :viewer_html)
 
-    {%{}, types}
-    |> Ecto.Changeset.cast(attrs, Map.keys(types))
-    |> Ecto.Changeset.validate_required([:user_id])
-    |> Ecto.Changeset.validate_number(:user_id, greater_than: 0)
+    if is_binary(html) and html != "" do
+      conn
+      |> put_resp_content_type("text/html")
+      |> put_resp_header("content-disposition", ~s(inline; filename="#{group_task.slug}_run_#{run.id}_viewer.html"))
+      |> send_resp(200, html)
+    else
+      render_group_task_run_part_not_found(conn)
+    end
   end
 
-  defp run_changeset(attrs) do
-    types = %{player_ids: :string}
+  defp send_run_part(conn, group_task, run, part) do
+    data = Map.get(run.result, part, %{})
 
-    {%{}, types}
-    |> Ecto.Changeset.cast(attrs, Map.keys(types))
-    |> Ecto.Changeset.validate_required([:player_ids])
+    conn
+    |> put_resp_content_type("application/json")
+    |> put_resp_header(
+      "content-disposition",
+      ~s(attachment; filename="#{group_task.slug}_run_#{run.id}_#{part}.json")
+    )
+    |> send_resp(200, Jason.encode_to_iodata!(data, pretty: true))
+  end
+
+  defp render_group_task_run_part_not_found(conn) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(CodebattleWeb.ErrorView)
+    |> render("404.html", %{msg: gettext("Group task run part not found")})
   end
 end

@@ -71,6 +71,7 @@ const Tournament = React.lazy(() => import("./pages/tournament"));
 const TournamentAdmin = React.lazy(() => import("./pages/tournament/TournamentAdminWidget"));
 const TournamentEdit = React.lazy(() => import("./pages/tournament/EditTournament"));
 const TournamentPlayer = React.lazy(() => import("./pages/tournamentPlayer"));
+const GroupTournament = React.lazy(() => import("./pages/groupTournament"));
 const TournamentsSchedule = React.lazy(() => import("./pages/schedule"));
 const UserProfile = React.lazy(() => import("./pages/profile"));
 const UserSettings = React.lazy(() => import("./pages/settings"));
@@ -231,6 +232,18 @@ export function TournamentPage() {
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
           <Tournament />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export function GroupTournamentPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <GroupTournament />
         </Suspense>
       </PersistGate>
     </Provider>

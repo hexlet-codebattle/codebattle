@@ -1,0 +1,89 @@
+<%= form_for(@changeset, @action, [class: "col-8 offset-2"], fn f -> %>
+  <div class="form-group">
+    <div><span class="text-white">Name</span></div>
+    {text_input(f, :name,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "255",
+      required: true
+    )}
+    {error_tag(f, :name)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Slug</span></div>
+    {text_input(f, :slug,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "255",
+      required: true
+    )}
+    {error_tag(f, :slug)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Description</span></div>
+    {textarea(f, :description,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      rows: 6,
+      required: true
+    )}
+    {error_tag(f, :description)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Group Task</span></div>
+    {select(f, :group_task_id, Enum.map(@group_tasks, &{&1.slug, &1.id}),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      required: true,
+      prompt: "Select group task"
+    )}
+    {error_tag(f, :group_task_id)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Starts At (UTC)</span></div>
+    {datetime_local_input(f, :starts_at,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      required: true
+    )}
+    {error_tag(f, :starts_at)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Rounds Count</span></div>
+    {number_input(f, :rounds_count,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1",
+      required: true
+    )}
+    {error_tag(f, :rounds_count)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Round Timeout (sec)</span></div>
+    {number_input(f, :round_timeout_seconds,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1",
+      required: true
+    )}
+    {error_tag(f, :round_timeout_seconds)}
+  </div>
+
+  <div class="form-group form-check mb-4">
+    {checkbox(f, :include_bots, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :include_bots)}>
+      Include Bots
+    </label>
+    {error_tag(f, :include_bots)}
+  </div>
+
+  <div class="d-flex">
+    {submit("Save",
+      phx_disable_with: "Saving...",
+      class: "btn btn-success text-white mb-2 cb-rounded"
+    )}
+    {link("Back",
+      to: Routes.admin_group_tournament_path(@conn, :index),
+      class: "btn btn-link cb-text ml-auto"
+    )}
+  </div>
+<% end) %>

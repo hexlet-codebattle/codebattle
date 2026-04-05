@@ -38,6 +38,7 @@ import "./widgets/lib/sentry";
 import {
   renderBuilderWidget,
   renderEventPage,
+  renderGroupTournamentPage,
   renderGameThreejsPage,
   renderGameWidget,
   renderHallOfFame,
@@ -119,6 +120,7 @@ const tournamentRoot = document.getElementById("tournament-root");
 const tournamentEditRoot = document.getElementById("tournament-edit-root");
 const adminTournamentRoot = document.getElementById("tournament-admin-root");
 const eventWidgetRoot = document.getElementById("event-widget");
+const groupTournamentRoot = document.getElementById("group-tournament-root");
 const userPageRoot = document.getElementById("user-page-root");
 const tournamentsScheduleRoot = document.getElementById("tournaments-schedule-root");
 const hallOfFameRoot = document.getElementById("hall-of-fame-root");
@@ -184,6 +186,10 @@ if (adminTournamentRoot) {
 
 if (eventWidgetRoot) {
   renderEventPage(eventWidgetRoot);
+}
+
+if (groupTournamentRoot) {
+  renderGroupTournamentPage(groupTournamentRoot);
 }
 
 if (onlineRoot) {

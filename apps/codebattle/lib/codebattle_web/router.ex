@@ -123,6 +123,32 @@ defmodule CodebattleWeb.Router do
     )
 
     resources("/group_tasks", GroupTaskController)
+
+    post("/group_tournaments/:id/start", CodebattleWeb.Admin.GroupTournamentController, :start,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/finish", CodebattleWeb.Admin.GroupTournamentController, :finish,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/cancel", CodebattleWeb.Admin.GroupTournamentController, :cancel,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/check", CodebattleWeb.Admin.GroupTournamentController, :check,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/reset", CodebattleWeb.Admin.GroupTournamentController, :reset,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/tokens", CodebattleWeb.Admin.GroupTournamentController, :create_token,
+      as: :admin_group_tournament
+    )
+
+    resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
   end
 
   scope "/auth", CodebattleWeb do
@@ -181,6 +207,10 @@ defmodule CodebattleWeb.Router do
       post("/playbooks/reject", PlaybookController, :reject)
       get("/events/:id/leaderboard", Event.LeaderboardController, :show)
       get("/seasons/:season_id/players/:user_id/stats", SeasonResultController, :player_stats)
+      get("/group_tournaments/:id", GroupTournamentController, :show)
+      post("/group_tournaments/:id/join", GroupTournamentController, :join)
+      post("/group_tournaments/:id/submit_solution", GroupTournamentController, :submit_solution)
+      post("/group_tournaments/:id/tokens", GroupTournamentController, :create_token)
     end
 
     scope "/v1", V1, as: :v1 do
@@ -223,6 +253,8 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit])
+    get("/group_tournaments/:id", GroupTournamentController, :show)
+    get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 
     get("/stream", StreamController, :index)
     get("/schedule", TournamentsScheduleController, :index)

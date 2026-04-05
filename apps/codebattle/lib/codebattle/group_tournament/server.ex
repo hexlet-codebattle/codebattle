@@ -1,0 +1,276 @@
+defmodule Codebattle.GroupTournament.Server do
+  @moduledoc false
+  use GenServer
+
+  alias Codebattle.GroupTask.Context, as: GroupTaskContext
+  alias Codebattle.GroupTournament
+  alias Codebattle.GroupTournament.Context
+  alias Codebattle.Repo
+
+  require Logger
+
+  def start_link(group_tournament_id) do
+    GenServer.start_link(__MODULE__, group_tournament_id, name: server_name(group_tournament_id))
+  end
+
+  def get_group_tournament(id) do
+    GenServer.call(server_name(id), :get_group_tournament)
+  catch
+    :exit, _ -> nil
+  end
+
+  def update_group_tournament(%GroupTournament{id: id} = group_tournament) do
+    GenServer.call(server_name(id), {:update, group_tournament})
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def join(id, user, lang) do
+    GenServer.call(server_name(id), {:join, user, lang}, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def start_now(id) do
+    GenServer.call(server_name(id), :start_now, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def finish_tournament(id) do
+    GenServer.call(server_name(id), :finish_tournament, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def cancel_tournament(id) do
+    GenServer.call(server_name(id), :cancel_tournament, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  @impl true
+  def init(group_tournament_id) do
+    group_tournament = group_tournament_id |> Context.get_group_tournament!() |> Map.put(:is_live, true)
+    state = %{group_tournament: group_tournament, start_timer_ref: nil, finish_timer_ref: nil}
+    {:ok, schedule_start(state, group_tournament)}
+  end
+
+  @impl true
+  def handle_call(:get_group_tournament, _from, state) do
+    {:reply, state.group_tournament, state}
+  end
+
+  def handle_call(:start_now, _from, %{group_tournament: %{state: "waiting_participants"} = group_tournament} = state) do
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{starts_at: DateTime.utc_now()})
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    send(self(), :start_tournament)
+
+    {:reply, {:ok, updated}, %{cancel_start_timer(state) | group_tournament: updated}}
+  end
+
+  def handle_call(:start_now, _from, state) do
+    {:reply, {:error, :invalid_state}, state}
+  end
+
+  def handle_call(:finish_tournament, _from, %{group_tournament: %{state: "active"} = group_tournament} = state) do
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{
+        state: "finished",
+        finished_at: DateTime.utc_now(:second),
+        last_round_ended_at: NaiveDateTime.utc_now(:second)
+      })
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    next_state =
+      state
+      |> cancel_finish_timer()
+      |> Map.put(:group_tournament, updated)
+
+    {:reply, {:ok, updated}, next_state}
+  end
+
+  def handle_call(:finish_tournament, _from, state) do
+    {:reply, {:error, :invalid_state}, state}
+  end
+
+  def handle_call(:cancel_tournament, _from, %{group_tournament: group_tournament} = state) do
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{
+        state: "canceled",
+        finished_at: DateTime.utc_now(:second)
+      })
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    next_state =
+      state
+      |> cancel_start_timer()
+      |> cancel_finish_timer()
+      |> Map.put(:group_tournament, updated)
+
+    {:reply, {:ok, updated}, next_state}
+  end
+
+  def handle_call({:update, group_tournament}, _from, state) do
+    next_state =
+      state
+      |> cancel_start_timer()
+      |> cancel_finish_timer()
+      |> Map.put(:group_tournament, Map.put(group_tournament, :is_live, true))
+      |> schedule_start(group_tournament)
+
+    {:reply, :ok, next_state}
+  end
+
+  def handle_call({:join, user, lang}, _from, %{group_tournament: group_tournament} = state) do
+    Logger.info("Group tournament setup group_tournament_id=#{group_tournament.id} user_id=#{user.id} lang=#{lang}")
+
+    result =
+      Context.create_or_update_player(group_tournament, user.id, %{
+        lang: lang,
+        state: "active",
+        last_setup_at: DateTime.utc_now(:second)
+      })
+
+    case result do
+      {:ok, _player} ->
+        updated = group_tournament.id |> Context.get_group_tournament!() |> Map.put(:is_live, true)
+        {:reply, {:ok, updated}, %{state | group_tournament: updated}}
+
+      {:error, _} = error ->
+        {:reply, error, state}
+    end
+  end
+
+  @impl true
+  def handle_info(:start_tournament, %{group_tournament: %{state: "waiting_participants"} = group_tournament} = state) do
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{
+        state: "active",
+        started_at: DateTime.utc_now(:second),
+        current_round_position: 1,
+        last_round_started_at: NaiveDateTime.utc_now(:second),
+        last_round_ended_at: nil
+      })
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    next_state =
+      state
+      |> Map.put(:group_tournament, updated)
+      |> Map.put(:start_timer_ref, nil)
+      |> schedule_round_finish(updated)
+
+    {:noreply, next_state}
+  end
+
+  def handle_info(:finish_round, %{group_tournament: %{state: "active"} = group_tournament} = state) do
+    player_ids = Enum.map(group_tournament.players, & &1.user_id)
+
+    run_result =
+      GroupTaskContext.run_group_task(
+        group_tournament.group_task,
+        player_ids,
+        %{group_tournament_id: group_tournament.id, include_bots: group_tournament.include_bots}
+      )
+
+    {last_run_id, last_run_status, last_run_result} =
+      case run_result do
+        {:ok, run} -> {run.id, run.status, run.result}
+        {:error, changeset} -> {nil, "error", %{errors: changeset.errors}}
+      end
+
+    finished_round_at = NaiveDateTime.utc_now(:second)
+
+    attrs = %{
+      last_round_ended_at: finished_round_at,
+      meta:
+        Map.merge(group_tournament.meta || %{}, %{
+          "last_run_id" => last_run_id,
+          "last_run_status" => last_run_status,
+          "last_run_result" => last_run_result
+        })
+    }
+
+    attrs =
+      if group_tournament.current_round_position >= group_tournament.rounds_count do
+        Map.merge(attrs, %{
+          state: "finished",
+          finished_at: DateTime.utc_now(:second)
+        })
+      else
+        Map.merge(attrs, %{
+          current_round_position: group_tournament.current_round_position + 1,
+          last_round_started_at: finished_round_at
+        })
+      end
+
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(attrs)
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    next_state =
+      state
+      |> Map.put(:group_tournament, updated)
+      |> Map.put(:finish_timer_ref, nil)
+
+    next_state =
+      if updated.state == "active" do
+        schedule_round_finish(next_state, updated)
+      else
+        next_state
+      end
+
+    {:noreply, next_state}
+  end
+
+  def handle_info(_message, state) do
+    {:noreply, state}
+  end
+
+  defp schedule_start(state, %{state: "waiting_participants", starts_at: starts_at}) do
+    timeout_ms = max(DateTime.diff(starts_at, DateTime.utc_now(), :millisecond), 0)
+    %{state | start_timer_ref: Process.send_after(self(), :start_tournament, timeout_ms)}
+  end
+
+  defp schedule_start(state, _group_tournament), do: state
+
+  defp schedule_round_finish(state, group_tournament) do
+    timeout_seconds =
+      group_tournament.round_timeout_seconds || group_tournament.group_task.time_to_solve_sec || 300
+
+    %{state | finish_timer_ref: Process.send_after(self(), :finish_round, to_timeout(second: timeout_seconds))}
+  end
+
+  defp cancel_start_timer(%{start_timer_ref: ref} = state) when is_reference(ref) do
+    _ = Process.cancel_timer(ref, async: false, info: false)
+    %{state | start_timer_ref: nil}
+  end
+
+  defp cancel_start_timer(state), do: state
+
+  defp cancel_finish_timer(%{finish_timer_ref: ref} = state) when is_reference(ref) do
+    _ = Process.cancel_timer(ref, async: false, info: false)
+    %{state | finish_timer_ref: nil}
+  end
+
+  defp cancel_finish_timer(state), do: state
+
+  defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "group_tournament_srv:#{id}"}}
+end

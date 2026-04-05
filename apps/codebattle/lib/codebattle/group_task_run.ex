@@ -6,6 +6,7 @@ defmodule Codebattle.GroupTaskRun do
   import Ecto.Changeset
 
   alias Codebattle.GroupTask
+  alias Codebattle.GroupTournament
 
   @statuses ~w(pending success error)
 
@@ -13,6 +14,7 @@ defmodule Codebattle.GroupTaskRun do
 
   schema "group_task_runs" do
     belongs_to(:group_task, GroupTask)
+    belongs_to(:group_tournament, GroupTournament)
 
     field(:player_ids, {:array, :integer}, default: [])
     field(:status, :string)
@@ -23,10 +25,11 @@ defmodule Codebattle.GroupTaskRun do
 
   def changeset(group_task_run, attrs \\ %{}) do
     group_task_run
-    |> cast(attrs, [:group_task_id, :player_ids, :status, :result])
+    |> cast(attrs, [:group_task_id, :group_tournament_id, :player_ids, :status, :result])
     |> validate_required([:group_task_id, :player_ids, :status, :result])
     |> validate_length(:player_ids, min: 1)
     |> validate_inclusion(:status, @statuses)
     |> foreign_key_constraint(:group_task_id)
+    |> foreign_key_constraint(:group_tournament_id)
   end
 end

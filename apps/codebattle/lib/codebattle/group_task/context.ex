@@ -30,6 +30,11 @@ defmodule Codebattle.GroupTask.Context do
     Repo.get!(GroupTask, id)
   end
 
+  @spec get_group_task(String.t() | pos_integer()) :: GroupTask.t() | nil
+  def get_group_task(id) do
+    Repo.get(GroupTask, id)
+  end
+
   @spec create_group_task(map()) :: {:ok, GroupTask.t()} | {:error, Ecto.Changeset.t()}
   def create_group_task(attrs) do
     %GroupTask{}
@@ -87,6 +92,48 @@ defmodule Codebattle.GroupTask.Context do
   @spec get_solution!(String.t() | pos_integer()) :: GroupTaskSolution.t()
   def get_solution!(id) do
     Repo.get!(GroupTaskSolution, id)
+  end
+
+  @spec get_latest_solution(pos_integer(), pos_integer()) :: GroupTaskSolution.t() | nil
+  def get_latest_solution(group_task_id, user_id) do
+    GroupTaskSolution
+    |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id == ^user_id)
+    |> preload(:user)
+    |> order_by([solution], desc: solution.id)
+    |> limit(1)
+    |> Repo.one()
+  end
+
+  @spec list_user_solutions(pos_integer(), pos_integer(), keyword()) :: list(GroupTaskSolution.t())
+  def list_user_solutions(group_task_id, user_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, @admin_recent_solutions_limit)
+
+    GroupTaskSolution
+    |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id == ^user_id)
+    |> preload(:user)
+    |> order_by([solution], desc: solution.inserted_at, desc: solution.id)
+    |> limit(^limit)
+    |> Repo.all()
+  end
+
+  @spec create_solution(pos_integer(), pos_integer(), map()) ::
+          {:ok, GroupTaskSolution.t()} | {:error, Ecto.Changeset.t()}
+  def create_solution(group_task_id, user_id, attrs) do
+    params = %{
+      user_id: user_id,
+      group_task_id: group_task_id,
+      lang: Map.get(attrs, "lang") || Map.get(attrs, :lang),
+      solution: Map.get(attrs, "solution") || Map.get(attrs, :solution)
+    }
+
+    %GroupTaskSolution{}
+    |> GroupTaskSolution.changeset(params)
+    |> Repo.insert()
+  end
+
+  @spec list_latest_solutions(pos_integer(), list(pos_integer())) :: list(GroupTaskSolution.t())
+  def list_latest_solutions(group_task_id, player_ids) do
+    do_list_latest_solutions(group_task_id, player_ids)
   end
 
   @spec change_solution(GroupTaskSolution.t(), map()) :: Ecto.Changeset.t()
@@ -174,16 +221,20 @@ defmodule Codebattle.GroupTask.Context do
     end
   end
 
-  @spec run_group_task(GroupTask.t(), list(pos_integer())) ::
+  @spec run_group_task(GroupTask.t(), list(pos_integer()), map()) ::
           {:ok, GroupTaskRun.t()} | {:error, Ecto.Changeset.t()}
-  def run_group_task(%GroupTask{} = group_task, player_ids) do
+  def run_group_task(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
     normalized_player_ids = normalize_player_ids(player_ids)
 
-    case create_pending_run(group_task, normalized_player_ids) do
+    case create_pending_run(group_task, normalized_player_ids, attrs) do
       {:ok, group_task_run} ->
-        with {:ok, payload} <- build_run_payload(group_task, normalized_player_ids) do
-          run_result = execute_run(group_task.runner_url, payload)
-          persist_group_task_run_result(group_task_run, run_result)
+        case build_run_payload(group_task, normalized_player_ids, attrs) do
+          {:ok, payload} ->
+            run_result = execute_run(group_task.runner_url, payload)
+            persist_group_task_run_result(group_task_run, run_result)
+
+          {:run_error, result} ->
+            persist_group_task_run_result(group_task_run, {:run_error, result})
         end
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -231,10 +282,11 @@ defmodule Codebattle.GroupTask.Context do
     |> Base.url_encode64(padding: false)
   end
 
-  defp create_pending_run(group_task, player_ids) do
+  defp create_pending_run(group_task, player_ids, attrs) do
     %GroupTaskRun{}
     |> GroupTaskRun.changeset(%{
       group_task_id: group_task.id,
+      group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id"),
       player_ids: player_ids,
       status: "pending",
       result: %{}
@@ -242,14 +294,16 @@ defmodule Codebattle.GroupTask.Context do
     |> Repo.insert()
   end
 
-  defp build_run_payload(%GroupTask{} = group_task, player_ids) do
-    latest_solutions = list_latest_solutions(group_task.id, player_ids)
+  defp build_run_payload(%GroupTask{} = group_task, player_ids, attrs) do
+    latest_solutions = do_list_latest_solutions(group_task.id, player_ids)
     solution_user_ids = MapSet.new(Enum.map(latest_solutions, & &1.user_id))
     missing_player_ids = Enum.reject(player_ids, &MapSet.member?(solution_user_ids, &1))
 
     if missing_player_ids == [] do
       {:ok,
        %{
+         include_bots: Map.get(attrs, :include_bots) || Map.get(attrs, "include_bots") || false,
+         include_viewer_html: true,
          solutions:
            Enum.map(latest_solutions, fn solution ->
              %{
@@ -321,7 +375,7 @@ defmodule Codebattle.GroupTask.Context do
     end
   end
 
-  defp list_latest_solutions(group_task_id, player_ids) do
+  defp do_list_latest_solutions(group_task_id, player_ids) do
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id in ^player_ids)
     |> preload(:user)
@@ -353,7 +407,10 @@ defmodule Codebattle.GroupTask.Context do
   defp normalize_result_body(body), do: %{"body" => body}
 
   defp build_runner_run_url(runner_url) do
-    trimmed_runner_url = String.trim(runner_url)
+    trimmed_runner_url =
+      runner_url
+      |> String.trim()
+      |> String.trim_trailing("/")
 
     if String.ends_with?(trimmed_runner_url, "/run") do
       trimmed_runner_url

@@ -33,6 +33,7 @@ defmodule Codebattle.Application do
         {Finch, name: CodebattleHTTP, pools: %{default: [size: 300, count: 5]}},
         {Codebattle.Game.TasksQueuesServer, []},
         {Codebattle.Game.GlobalSupervisor, []},
+        {Codebattle.GroupTournament.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
         {Codebattle.InvitesKillerServer, []},
         %{
