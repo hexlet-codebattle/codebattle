@@ -134,7 +134,17 @@ function Tournament() {
     () => [TournamentStates.finished, TournamentStates.canceled].includes(tournament.state),
     [tournament.state],
   );
-  const canModerate = useMemo(() => isAdmin, [isAdmin]);
+  const canModerate = useMemo(() => {
+    if (!currentUserId) {
+      return false;
+    }
+
+    return (
+      isAdmin ||
+      tournament.creatorId === currentUserId ||
+      (tournament.moderatorIds || []).includes(currentUserId)
+    );
+  }, [currentUserId, isAdmin, tournament.creatorId, tournament.moderatorIds]);
   const hiddenSidePanel =
     streamMode ||
     (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
@@ -166,7 +176,7 @@ function Tournament() {
   useEffect(() => {
     const tournamentChannel = dispatch(connectToTournament(tournament?.id));
 
-    if (isAdmin) {
+    if (canModerate) {
       const tournamentAdminChannel = dispatch(connectToTournamentAdmin(tournament?.id, true));
 
       return () => {
@@ -179,7 +189,7 @@ function Tournament() {
       tournamentChannel.leave();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAdmin]);
+  }, [canModerate]);
 
   useEffect(() => {
     if (tournament.isLive) {

@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  alias Codebattle.Tournament.Context
+
   describe "#index" do
     test "shows empty tournaments", %{conn: conn} do
       user = insert(:user)
@@ -465,6 +467,106 @@ defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
 
       within_default_range_id = within_default_range.id
       assert [%{"id" => ^within_default_range_id}] = season_tournaments
+    end
+  end
+
+  describe "#update" do
+    test "allows a moderator to update a tournament", %{conn: conn} do
+      creator = insert(:user)
+      moderator = insert(:user)
+
+      tournament =
+        insert(:tournament,
+          creator_id: creator.id,
+          moderator_ids: [moderator.id],
+          name: "Before update",
+          description: "Old description",
+          starts_at: DateTime.add(DateTime.utc_now(), 1, :day)
+        )
+
+      conn =
+        conn
+        |> put_session(:user_id, moderator.id)
+        |> put(
+          Routes.api_v1_tournament_path(conn, :update, tournament.id),
+          %{
+            "tournament" => %{
+              "name" => "After update",
+              "description" => "Updated description",
+              "starts_at" => "2026-02-25T06:00",
+              "user_timezone" => "Etc/UTC"
+            }
+          }
+        )
+
+      assert %{"tournament" => %{"name" => "After update"}} = json_response(conn, 200)
+    end
+
+    test "updates moderator ids in db and live tournament state", %{conn: conn} do
+      creator = insert(:user)
+      moderator = insert(:user)
+      new_moderator = insert(:user)
+
+      {:ok, tournament} =
+        Context.create(%{
+          "starts_at" => "2026-02-24T06:00",
+          "name" => "Moderator update",
+          "description" => "Moderator update",
+          "user_timezone" => "Etc/UTC",
+          "level" => "easy",
+          "creator" => creator,
+          "moderator_ids" => [moderator.id],
+          "break_duration_seconds" => 0,
+          "type" => "swiss",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
+
+      conn =
+        conn
+        |> put_session(:user_id, moderator.id)
+        |> put(
+          Routes.api_v1_tournament_path(conn, :update, tournament.id),
+          %{
+            "tournament" => %{
+              "name" => tournament.name,
+              "description" => tournament.description,
+              "starts_at" => "2026-02-25T06:00",
+              "moderator_ids" => ["#{new_moderator.id}", "#{creator.id}", "#{new_moderator.id}"],
+              "user_timezone" => "Etc/UTC"
+            }
+          }
+        )
+
+      assert %{"tournament" => %{"moderator_ids" => [updated_moderator_id]}} = json_response(conn, 200)
+      assert updated_moderator_id == new_moderator.id
+
+      updated_tournament = Context.get!(tournament.id)
+      live_tournament = Codebattle.Tournament.Server.get_tournament(tournament.id)
+
+      assert updated_tournament.moderator_ids == [new_moderator.id]
+      assert live_tournament.moderator_ids == [new_moderator.id]
+    end
+
+    test "includes moderator tournaments in user tournaments list", %{conn: conn} do
+      moderator = insert(:user)
+
+      moderated_tournament =
+        insert(:tournament,
+          moderator_ids: [moderator.id],
+          grade: "open",
+          starts_at: DateTime.add(DateTime.utc_now(), 1, :day)
+        )
+
+      conn =
+        conn
+        |> put_session(:user_id, moderator.id)
+        |> get(Routes.api_v1_tournament_path(conn, :index))
+
+      assert %{"user_tournaments" => user_tournaments} = json_response(conn, 200)
+
+      moderated_tournament_id = moderated_tournament.id
+      assert Enum.any?(user_tournaments, &(&1["id"] == moderated_tournament_id))
     end
   end
 end

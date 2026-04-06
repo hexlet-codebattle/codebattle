@@ -44,7 +44,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
 
     with tournament when not is_nil(tournament) <-
            Tournament.Context.get!(tournament_id),
-         true <- Codebattle.User.admin?(current_user) do
+         true <- Helpers.can_moderate?(tournament, current_user) do
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}")
       Codebattle.PubSub.subscribe("tournament:#{tournament.id}:common")
 

@@ -163,6 +163,8 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     end
   end
 
+  defp parse_user_id(_user_id), do: :error
+
   defp create_token_for_user(conn, group_tournament, user_id) do
     case parse_user_id(user_id) do
       {:ok, parsed_user_id} ->
@@ -186,6 +188,4 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
         |> json(%{errors: translate_errors(changeset)})
     end
   end
-
-  defp parse_user_id(_user_id), do: :error
 end

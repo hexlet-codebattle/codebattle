@@ -4,6 +4,7 @@ defmodule CodebattleWeb.TournamentController do
   import PhoenixGon.Controller
 
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Helpers
   alias Codebattle.User
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:index, :show, :edit])
@@ -24,7 +25,7 @@ defmodule CodebattleWeb.TournamentController do
     current_user = conn.assigns[:current_user]
     tournament = Tournament.Context.get!(params["id"])
 
-    if Tournament.Helpers.can_access?(tournament, current_user, params) do
+    if Helpers.can_access?(tournament, current_user, params) do
       handle_tournament_for_user(conn, tournament, current_user, params)
     else
       conn
@@ -39,7 +40,7 @@ defmodule CodebattleWeb.TournamentController do
     tournament = Tournament.Context.get!(id)
 
     # Check if user has permission to edit
-    if tournament.creator_id == current_user.id || User.admin?(current_user) do
+    if Helpers.can_moderate?(tournament, current_user) do
       user_timezone = get_in(conn.private, [:connect_params, "timezone"]) || "UTC"
 
       task_pack_names =

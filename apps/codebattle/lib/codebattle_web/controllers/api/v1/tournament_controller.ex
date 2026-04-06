@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
   use CodebattleWeb, :controller
 
   alias Codebattle.Tournament
-  alias Codebattle.User
+  alias Codebattle.Tournament.Helpers
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
@@ -54,7 +54,7 @@ defmodule CodebattleWeb.Api.V1.TournamentController do
     tournament = Tournament.Context.get!(id)
 
     # Check if user has permission to update
-    if tournament.creator_id == current_user.id || User.admin?(current_user) do
+    if Helpers.can_moderate?(tournament, current_user) do
       params =
         Map.put(
           tournament_params,

@@ -110,6 +110,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
         })
 
       creator = build(:user, id: 10)
+      moderator = build(:user, id: 11)
       admin = %Codebattle.User{id: 500, subscription_type: :admin}
       outsider = build(:user, id: 999)
       player_user = build(:user, id: 1)
@@ -117,6 +118,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       assert can_be_started?(tournament)
       refute can_be_started?(%{tournament | state: "active"})
       assert can_moderate?(tournament, creator)
+      assert can_moderate?(%{tournament | moderator_ids: [11]}, moderator)
       assert can_moderate?(tournament, admin)
       refute can_moderate?(tournament, outsider)
 
@@ -140,6 +142,7 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
       assert player?(tournament, 1, 7)
       refute player?(tournament, 1, 8)
       assert creator?(tournament, creator)
+      assert moderator?(%{tournament | moderator_ids: [11]}, moderator)
       refute creator?(tournament, outsider)
 
       assert calc_round_result([

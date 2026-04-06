@@ -59,6 +59,7 @@ function TournamentForm({
   const [formData, setFormData] = useState({
     name: initialValues.name || "",
     description: initialValues.description || "",
+    moderator_ids: initialValues.moderator_ids || "",
     starts_at: initialValues.starts_at || "",
     access_type: initialValues.access_type || "public",
     task_provider: initialValues.task_provider || "level",
@@ -97,6 +98,10 @@ function TournamentForm({
       e.preventDefault();
 
       const payload = { ...formData };
+      payload.moderator_ids = formData.moderator_ids
+        .split(/[\s,]+/)
+        .map((id) => id.trim())
+        .filter(Boolean);
       payload.round_timeout_seconds =
         formData.timeout_mode === "per_round" ? formData.round_timeout_seconds : null;
 
@@ -167,6 +172,28 @@ function TournamentForm({
               required
             />
             {renderError("description")}
+          </div>
+
+          <div className="form-group mb-0">
+            <label htmlFor="moderator_ids" className="form-label text-white">
+              Moderator IDs
+            </label>
+            <textarea
+              id="moderator_ids"
+              name="moderator_ids"
+              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
+                "is-invalid": errors.moderator_ids,
+              })}
+              value={formData.moderator_ids}
+              onChange={handleChange}
+              rows={3}
+              placeholder="42, 1337"
+            />
+            <div className="form-text text-muted">
+              Enter user IDs separated by commas or spaces. The creator is always treated as a
+              moderator and does not need to be listed here.
+            </div>
+            {renderError("moderator_ids")}
           </div>
         </div>
       </div>
@@ -609,6 +636,7 @@ TournamentForm.propTypes = {
   initialValues: PropTypes.shape({
     name: PropTypes.string,
     description: PropTypes.string,
+    moderator_ids: PropTypes.string,
     starts_at: PropTypes.string,
     access_type: PropTypes.string,
     task_provider: PropTypes.string,
@@ -633,6 +661,7 @@ TournamentForm.propTypes = {
     base: PropTypes.string,
     name: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     description: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    moderator_ids: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     starts_at: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     access_type: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     task_provider: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),

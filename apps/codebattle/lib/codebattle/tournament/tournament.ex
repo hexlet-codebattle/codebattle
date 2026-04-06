@@ -32,6 +32,7 @@ defmodule Codebattle.Tournament do
              :match_timeout_seconds,
              :matches,
              :meta,
+             :moderator_ids,
              :name,
              :players,
              :players_count,
@@ -94,6 +95,7 @@ defmodule Codebattle.Tournament do
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:matches, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
+    field(:moderator_ids, {:array, :integer}, default: [])
     field(:name, :string)
     field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
@@ -158,6 +160,7 @@ defmodule Codebattle.Tournament do
       :match_timeout_seconds,
       :matches,
       :meta,
+      :moderator_ids,
       :name,
       :played_pair_ids,
       :players,

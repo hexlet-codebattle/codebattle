@@ -191,7 +191,9 @@ defmodule Codebattle.Tournament.Context do
           where:
             t.starts_at >= ^datetime_from and
               t.starts_at <= ^datetime_to and
-              (t.creator_id == ^user_id or fragment("? = ANY(?)", ^user_id, t.winner_ids))
+              (t.creator_id == ^user_id or
+                 fragment("? = ANY(?)", ^user_id, t.moderator_ids) or
+                 fragment("? = ANY(?)", ^user_id, t.winner_ids))
         )
       )
     end
@@ -402,6 +404,7 @@ defmodule Codebattle.Tournament.Context do
       |> Map.delete("creator")
       |> AtomizedMap.atomize()
       |> Map.put(:creator, params["creator"] || %{})
+      |> normalize_moderator_ids()
 
     timeout_mode =
       params[:timeout_mode] ||
@@ -446,6 +449,38 @@ defmodule Codebattle.Tournament.Context do
       show_results: show_results
     })
   end
+
+  defp normalize_moderator_ids(%{moderator_ids: moderator_ids} = params) do
+    creator_id = get_in(params, [:creator, :id])
+
+    normalized_moderator_ids =
+      moderator_ids
+      |> List.wrap()
+      |> Enum.map(fn
+        id when is_integer(id) -> id
+        id when is_binary(id) -> String.trim(id)
+        _ -> nil
+      end)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.reject(&(&1 == ""))
+      |> Enum.map(fn
+        id when is_integer(id) ->
+          id
+
+        id when is_binary(id) ->
+          case Integer.parse(id) do
+            {parsed_id, ""} -> parsed_id
+            _ -> nil
+          end
+      end)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.reject(&(&1 == creator_id))
+      |> Enum.uniq()
+
+    Map.put(params, :moderator_ids, normalized_moderator_ids)
+  end
+
+  defp normalize_moderator_ids(params), do: Map.put(params, :moderator_ids, [])
 
   def get_tournament_for_restore do
     @states_from_restore
