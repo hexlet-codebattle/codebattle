@@ -292,6 +292,8 @@ defmodule Codebattle.Tournament.Context do
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def update(tournament, params) do
+    params = Map.put_new(params, "creator_id", tournament.creator_id)
+
     tournament
     |> Tournament.changeset(prepare_tournament_params(params))
     |> Repo.update()
@@ -451,7 +453,13 @@ defmodule Codebattle.Tournament.Context do
   end
 
   defp normalize_moderator_ids(%{moderator_ids: moderator_ids} = params) do
-    creator_id = get_in(params, [:creator, :id])
+    creator_id =
+      params
+      |> Map.get(:creator)
+      |> case do
+        nil -> Map.get(params, :creator_id)
+        creator -> Map.get(creator, :id) || Map.get(params, :creator_id)
+      end
 
     normalized_moderator_ids =
       moderator_ids

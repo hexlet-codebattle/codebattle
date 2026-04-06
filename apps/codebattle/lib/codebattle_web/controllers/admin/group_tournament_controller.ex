@@ -173,11 +173,6 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
         |> put_flash(:error, "Group tournament checker failed.")
         |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
 
-      {:run_error, result} ->
-        conn
-        |> put_flash(:error, "Group tournament checker failed: #{format_run_error(result)}")
-        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
-
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_flash(:error, "Group tournament checker failed: #{inspect(changeset.errors)}")
@@ -245,11 +240,6 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     player_ids = Enum.map(group_tournament.players, & &1.user_id)
     GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids)
   end
-
-  defp format_run_error(%{"body" => %{"error" => error}}) when is_binary(error), do: error
-  defp format_run_error(%{"error" => error}) when is_binary(error), do: error
-  defp format_run_error(%{errors: errors}), do: inspect(errors)
-  defp format_run_error(result), do: inspect(result)
 
   defp parse_user_id(user_id) when is_integer(user_id) and user_id > 0, do: {:ok, user_id}
 

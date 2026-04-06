@@ -1,4 +1,4 @@
-defmodule Codebattle.UserTest do
+defmodule Codebattle.User.ModelTest do
   use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.User

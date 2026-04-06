@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.Api.V1.TournamentControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: false
 
   alias Codebattle.Tournament.Context
 

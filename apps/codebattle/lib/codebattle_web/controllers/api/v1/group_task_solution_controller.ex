@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.GroupTournament.Context
+  alias Codebattle.GroupTask.Context
 
   def create(conn, params) do
     if FunWithFlags.enabled?(:group_tasks_api) do
