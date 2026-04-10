@@ -73,35 +73,25 @@ defmodule CodebattleWeb.TournamentController do
       if latest_game_id do
         redirect(conn, to: Routes.game_path(conn, :show, latest_game_id))
       else
-        redirect(conn,
-          to:
-            Routes.tournament_path(
-              conn,
-              :show,
-              tournament.id,
-              tournament_access_params(params)
-            )
-        )
+        render_tournament(conn, tournament, params)
       end
     else
-      conn
-      |> put_view(CodebattleWeb.TournamentView)
-      |> put_meta_tags(%{
-        title: tournament.name,
-        description: tournament.description,
-        image: Routes.tournament_image_url(conn, :show, tournament.id),
-        url: Routes.tournament_url(conn, :show, tournament.id)
-      })
-      |> put_gon(tournament_id: tournament.id)
-      |> put_gon(event_id: tournament.event_id)
-      |> put_gon(tournament_access_token: params["access_token"])
-      |> render("show.html")
+      render_tournament(conn, tournament, params)
     end
   end
 
-  defp tournament_access_params(%{"access_token" => access_token}) when is_binary(access_token) do
-    [access_token: access_token]
+  defp render_tournament(conn, tournament, params) do
+    conn
+    |> put_view(CodebattleWeb.TournamentView)
+    |> put_meta_tags(%{
+      title: tournament.name,
+      description: tournament.description,
+      image: Routes.tournament_image_url(conn, :show, tournament.id),
+      url: Routes.tournament_url(conn, :show, tournament.id)
+    })
+    |> put_gon(tournament_id: tournament.id)
+    |> put_gon(event_id: tournament.event_id)
+    |> put_gon(tournament_access_token: params["access_token"])
+    |> render("show.html")
   end
-
-  defp tournament_access_params(_params), do: []
 end

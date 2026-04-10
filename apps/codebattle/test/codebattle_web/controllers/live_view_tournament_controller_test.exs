@@ -112,4 +112,37 @@ defmodule CodebattleWeb.LiveViewTournamentControllerTest do
       |> get(Routes.tournament_path(conn, :show, 12_313_221))
     end
   end
+
+  test "renders tournament page when redirect-to-latest-game is enabled and user has no latest game", %{conn: conn} do
+    FunWithFlags.enable(:tournament_redirect_to_latest_game)
+
+    on_exit(fn ->
+      FunWithFlags.disable(:tournament_redirect_to_latest_game)
+    end)
+
+    creator = insert(:user)
+
+    {:ok, tournament} =
+      Tournament.Context.create(%{
+        "starts_at" => "2022-02-24T06:00",
+        "name" => "Redirect Guard Tournament",
+        "description" => "Redirect Guard Tournament description",
+        "user_timezone" => "Etc/UTC",
+        "level" => "easy",
+        "creator" => creator,
+        "access_type" => "token",
+        "access_token" => "access_token",
+        "break_duration_seconds" => 0,
+        "type" => "swiss",
+        "state" => "waiting_participants",
+        "players_limit" => 200
+      })
+
+    new_conn =
+      conn
+      |> put_session(:user_id, creator.id)
+      |> get(Routes.tournament_path(conn, :show, tournament.id))
+
+    assert new_conn.status == 200
+  end
 end
