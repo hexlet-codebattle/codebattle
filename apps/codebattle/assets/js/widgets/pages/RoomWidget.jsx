@@ -16,8 +16,6 @@ import useGameRoomSoundSettings from "../utils/useGameRoomSoundSettings";
 import useMachineStateSelector from "../utils/useMachineStateSelector";
 import useRoomSettings from "../utils/useRoomSettings";
 
-import BuilderEditorsWidget from "./builder/BuilderEditorsWidget";
-import BuilderSettingsWidget from "./builder/BuilderSettingsWidget";
 import CodebattlePlayer from "./game/CodebattlePlayer";
 import GameRoomLockPanel from "./game/GameRoomLockPanel";
 import GameWidget from "./game/GameWidget";
@@ -44,7 +42,6 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }) {
     viewMode,
     showWaitingOpponent,
     showBattleRoom,
-    showTaskBuilder,
     showTimeoutMessage,
     showReplayer,
     roomLocked = false,
@@ -83,12 +80,6 @@ function RoomWidget({ pageName, mainMachine, taskMachine, editorMachine }) {
               })}
             >
               <div className="row no-gutter cb-game px-1">
-                {showTaskBuilder && (
-                  <>
-                    <BuilderSettingsWidget />
-                    <BuilderEditorsWidget />
-                  </>
-                )}
                 {showBattleRoom && (
                   <>
                     <InfoWidget viewMode={viewMode} />

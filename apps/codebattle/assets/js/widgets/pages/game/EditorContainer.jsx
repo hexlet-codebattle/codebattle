@@ -19,10 +19,8 @@ import editorUserTypes from "../../config/editorUserTypes";
 import GameModeCodes from "../../config/gameModes";
 import {
   editorStateSelector,
-  inBuilderRoomSelector,
   inPreviewRoomSelector,
   isRestrictedContentSelector,
-  inTestingRoomSelector,
   isGameActiveSelector,
   isGameOverSelector,
   openedReplayerSelector,
@@ -46,17 +44,10 @@ const editorSummaryEnabled = !!Gon.getAsset("editor_summary_enabled");
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
 
-  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
 
   useEffect(() => {
     if (isPreview) {
-      return () => {};
-    }
-
-    if (inTestingRoom) {
-      editorService.send("load_testing_editor");
-
       return () => {};
     }
 
@@ -117,8 +108,6 @@ function EditorContainer({
   const { mainService } = useContext(RoomContext);
   const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
   const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
-  const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
-  const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
   const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
@@ -159,12 +148,7 @@ function EditorContainer({
     () => editorService.send("user_check_solution"),
     [editorService],
   );
-  const checkTestTaskSolution = useCallback(
-    () => dispatch(GameActions.checkTaskSolution(editorService)),
-    [dispatch, editorService],
-  );
-
-  const checkResult = inTestingRoom ? checkTestTaskSolution : checkActiveTaskSolution;
+  const checkResult = checkActiveTaskSolution;
 
   const isNeedHotKeys = editorCurrent.context.type === editorUserTypes.currentUser;
 
@@ -189,7 +173,7 @@ function EditorContainer({
 
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inTestingRoom]);
+  }, []);
 
   const userSettings = {
     type,
@@ -201,7 +185,7 @@ function EditorContainer({
     checkResult,
     currentEditorLangSlug,
     ...userSettings,
-    showGiveUpBtn: !isTournamentGame && !inTestingRoom,
+    showGiveUpBtn: !isTournamentGame,
     giveUpBtnStatus: isActiveGame ? userSettings.giveUpBtnStatus : EditorBtnStatuses.disabled,
   };
 
@@ -223,15 +207,9 @@ function EditorContainer({
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
   const editable =
     !openedReplayer && userSettings.editable && userSettings.editorState !== "banned";
-  const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
+  const canSendCursor = canChange;
   const canCaptureEditorTelemetry =
-    editorSummaryEnabled &&
-    canChange &&
-    editable &&
-    isActiveGame &&
-    !inTestingRoom &&
-    !inBuilderRoom &&
-    !isPreview;
+    editorSummaryEnabled && canChange && editable && isActiveGame && !isPreview;
   const updateEditor =
     editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;

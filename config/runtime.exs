@@ -174,7 +174,6 @@ config :codebattle, :oauth,
 
 config :codebattle, :tournament_run_upcoming, true
 config :codebattle, app_version: System.get_env("APP_VERSION", "")
-config :codebattle, asserts_executor: Codebattle.AssertsService.Executor.Remote
 config :codebattle, checker_executor: checker_executor
 config :codebattle, collab_logo: System.get_env("CODEBATTLE_COLLAB_LOGO")
 config :codebattle, collab_logo_minor: System.get_env("CODEBATTLE_COLLAB_LOGO_MINOR")

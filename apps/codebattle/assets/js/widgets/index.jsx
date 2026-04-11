@@ -3,7 +3,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 
 import {
-  Builder,
   EventPage,
   GroupTournamentPage,
   Game,
@@ -16,6 +15,7 @@ import {
   RegistrationPage,
   SeasonsPage,
   SeasonShowPage,
+  TaskPreviewPage,
   SettingsPage,
   StairwayGamePage,
   StreamPage,
@@ -30,7 +30,6 @@ import {
 
 const Heatmap = React.lazy(() => import("./pages/profile/Heatmap"));
 
-export const renderBuilderWidget = (domElement) => createRoot(domElement).render(<Builder />);
 export const renderEventPage = (domElement) => createRoot(domElement).render(<EventPage />);
 export const renderGroupTournamentPage = (domElement) =>
   createRoot(domElement).render(<GroupTournamentPage />);
@@ -53,6 +52,8 @@ export const renderHeadToHeadPage = (domElement) =>
 export const renderSeasonsPage = (domElement) => createRoot(domElement).render(<SeasonsPage />);
 export const renderSeasonShowPage = (domElement) =>
   createRoot(domElement).render(<SeasonShowPage />);
+export const renderTaskPreviewPage = (domElement) =>
+  createRoot(domElement).render(<TaskPreviewPage />);
 export const renderTournamentAdminPage = (domElement) =>
   createRoot(domElement).render(<TournamentAdminPage />);
 export const renderTournamentPage = (domElement) =>

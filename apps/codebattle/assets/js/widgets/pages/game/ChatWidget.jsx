@@ -16,11 +16,7 @@ import ChatInput from "../../components/ChatInput";
 import Messages from "../../components/Messages";
 import RoomContext from "../../components/RoomContext";
 import GameRoomModes from "../../config/gameModes";
-import {
-  inTestingRoomSelector,
-  isRestrictedContentSelector,
-  openedReplayerSelector,
-} from "../../machines/selectors";
+import { isRestrictedContentSelector, openedReplayerSelector } from "../../machines/selectors";
 import * as selectors from "../../selectors";
 import { shouldShowMessage } from "../../utils/chat";
 import useChatContextMenu from "../../utils/useChatContextMenu";
@@ -40,17 +36,15 @@ function ChatWidget() {
   const useChat = useSelector(selectors.gameUseChatSelector);
 
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
-  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const isRestricted = useMachineStateSelector(mainService, isRestrictedContentSelector);
 
   // const isTournamentGame = (gameMode === GameRoomModes.tournament);
   const isStandardGame = gameMode === GameRoomModes.standard;
-  const showChatInput = !openedReplayer && !isTestingRoom && !isRestricted && useChat;
-  // const showChatParticipants = !isTestingRoom && useChat && !isRestricted;
+  const showChatInput = !openedReplayer && !isRestricted && useChat;
 
-  const disabledChatHeader = isTestingRoom || !isOnline || !useChat;
-  const disabledChatMessages = isTestingRoom || !useChat || isRestricted;
-  const disabledChatInput = isTestingRoom || !isOnline;
+  const disabledChatHeader = !isOnline || !useChat;
+  const disabledChatMessages = !useChat || isRestricted;
+  const disabledChatInput = !isOnline;
 
   const inputRef = useRef(null);
 

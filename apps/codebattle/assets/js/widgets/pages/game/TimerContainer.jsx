@@ -11,15 +11,9 @@ import Timer from "../../components/Timer";
 import GameRoomModes from "../../config/gameModes";
 import {
   roomStateSelector,
-  taskStateSelector,
-  inBuilderRoomSelector,
   inPreviewRoomSelector,
-  inTestingRoomSelector,
   isGameOverSelector,
   isStoredGameSelector,
-  isSavedTaskSelector,
-  isReadyTaskSelector,
-  isInvalidTaskSelector,
 } from "../../machines/selectors";
 import * as selectors from "../../selectors";
 import useMachineStateSelector from "../../utils/useMachineStateSelector";
@@ -101,7 +95,7 @@ function GameOverTimer({ timeoutSeconds, time, durationSec }) {
 }
 
 function TimerContainer() {
-  const { mainService, taskService } = useContext(RoomContext);
+  const { mainService } = useContext(RoomContext);
 
   const {
     startsAt: time,
@@ -112,17 +106,10 @@ function TimerContainer() {
   } = useSelector(selectors.gameStatusSelector);
 
   const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
-  const taskMachineState = useMachineStateSelector(taskService, taskStateSelector);
 
   const isPreviewRoom = inPreviewRoomSelector(roomMachineState);
-  const isBuilderRoom = inBuilderRoomSelector(roomMachineState);
-  const isTestingRoom = inTestingRoomSelector(roomMachineState);
   const isGameOver = isGameOverSelector(roomMachineState);
   const isGameStored = isStoredGameSelector(roomMachineState);
-
-  const isTaskSaved = isSavedTaskSelector(taskMachineState);
-  const isTaskReady = isReadyTaskSelector(taskMachineState);
-  const isInvalidTask = isInvalidTaskSelector(taskMachineState);
 
   if (isPreviewRoom) {
     return loadingTitle;
@@ -136,26 +123,6 @@ function TimerContainer() {
     }
 
     return <span className="text-monospace">{`${i18next.t("Duration")}: ${duration}`}</span>;
-  }
-
-  if (isBuilderRoom) {
-    if (isTaskSaved) {
-      return i18next.t("Task Saved");
-    }
-
-    if (isTaskReady) {
-      return i18next.t("Task Is Ready");
-    }
-
-    if (isInvalidTask) {
-      return i18next.t("Task Is Invalid");
-    }
-
-    return i18next.t("Task Builder");
-  }
-
-  if (isTestingRoom) {
-    return i18next.t("Task Testing");
   }
 
   if (isGameStored) {

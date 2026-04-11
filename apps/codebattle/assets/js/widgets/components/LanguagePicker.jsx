@@ -2,11 +2,8 @@ import React, { useContext } from "react";
 
 import { useDispatch } from "react-redux";
 
-import { inTestingRoomSelector, openedReplayerSelector } from "../machines/selectors";
-import {
-  sendCurrentLangAndSetTemplate,
-  updateCurrentLangAndSetTemplate,
-} from "../middlewares/Room";
+import { openedReplayerSelector } from "../machines/selectors";
+import { sendCurrentLangAndSetTemplate } from "../middlewares/Room";
 import useMachineStateSelector from "../utils/useMachineStateSelector";
 
 import LanguagePickerView from "./LanguagePickerView";
@@ -17,13 +14,8 @@ function LanguagePicker({ status, editor }) {
 
   const { mainService } = useContext(RoomContext);
   const isOpenedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
-  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const changeLang = ({ label: { props } }) => {
-    if (isTestingRoom) {
-      dispatch(updateCurrentLangAndSetTemplate(props.slug));
-    } else {
-      dispatch(sendCurrentLangAndSetTemplate(props.slug));
-    }
+    dispatch(sendCurrentLangAndSetTemplate(props.slug));
   };
 
   return (

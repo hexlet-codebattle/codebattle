@@ -1,9 +1,5 @@
 <div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mb-3">
   <h1 class="text-center text-white">Tasks</h1>
-  {link("Create new task",
-    to: CodebattleWeb.Router.Helpers.task_path(@conn, :new),
-    class: "btn btn-success cb-btn-success mt-2 cb-rounded"
-  )}
   {link("Task packs",
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index),
     class: "btn btn-secondary cb-btn-secondary mt-2 ml-2 cb-rounded"

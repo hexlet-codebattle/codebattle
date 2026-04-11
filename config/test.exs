@@ -8,13 +8,6 @@ checker_executor =
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
-asserts_executor =
-  case System.get_env("CODEBATTLE_EXECUTOR") do
-    "local" -> Codebattle.AssertsService.Executor.Local
-    "remote" -> Codebattle.AssertsService.Executor.Remote
-    _ -> Codebattle.AssertsService.Executor.Fake
-  end
-
 config :codebattle, ChromicPDF, on_demand: true
 
 config :codebattle, Codebattle.Bot,
@@ -66,7 +59,6 @@ config :codebattle, :oauth,
 
 config :codebattle, :start_create_bot_timeout, to_timeout(hour: 1)
 config :codebattle, app_version: "fc426ea537962d8e5af5e31e515f7000deeedc68"
-config :codebattle, asserts_executor: asserts_executor
 
 config :codebattle,
   auth_req_options: [

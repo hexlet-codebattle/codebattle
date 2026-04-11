@@ -73,6 +73,7 @@ const TournamentEdit = React.lazy(() => import("./pages/tournament/EditTournamen
 const TournamentPlayer = React.lazy(() => import("./pages/tournamentPlayer"));
 const GroupTournament = React.lazy(() => import("./pages/groupTournament"));
 const TournamentsSchedule = React.lazy(() => import("./pages/schedule"));
+const TaskPreview = React.lazy(() => import("./pages/taskPreview"));
 const UserProfile = React.lazy(() => import("./pages/profile"));
 const UserSettings = React.lazy(() => import("./pages/settings"));
 
@@ -117,25 +118,6 @@ export function GameThreejsPage() {
       <Suspense>
         <ThreejsGamePage />
       </Suspense>
-    </Provider>
-  );
-}
-
-export function Builder() {
-  return (
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <Suspense>
-          <NiceModal.Provider>
-            <RoomWidget
-              pageName={PageNames.builder}
-              mainMachine={mainMachine}
-              taskMachine={taskMachine}
-              editorMachine={editorMachine}
-            />
-          </NiceModal.Provider>
-        </Suspense>
-      </PersistGate>
     </Provider>
   );
 }
@@ -359,6 +341,16 @@ export function SeasonsPage() {
           <Seasons />
         </Suspense>
       </PersistGate>
+    </Provider>
+  );
+}
+
+export function TaskPreviewPage() {
+  return (
+    <Provider store={store}>
+      <Suspense>
+        <TaskPreview />
+      </Suspense>
     </Provider>
   );
 }

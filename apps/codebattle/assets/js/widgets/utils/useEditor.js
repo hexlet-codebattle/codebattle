@@ -347,8 +347,7 @@ const useEditor = (props) => {
       true,
     );
 
-    // Focus editor if it is editable and not in builder mode
-    if (editable && roomMode !== GameRoomModes.builder) {
+    if (editable) {
       currentEditor.focus();
     }
 

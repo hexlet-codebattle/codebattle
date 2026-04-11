@@ -26,7 +26,6 @@ function ReplayerControlButton() {
   );
 
   switch (true) {
-    case roomMachineState.matches({ room: roomMachineStates.testing }):
     case roomMachineState.matches({ room: roomMachineStates.restricted }):
     case roomMachineState.matches({ room: roomMachineStates.stored }): {
       return null;

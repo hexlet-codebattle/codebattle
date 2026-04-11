@@ -1,5 +1,5 @@
 import Gon from "gon";
-import { camelizeKeys, decamelizeKeys } from "humps";
+import { camelizeKeys } from "humps";
 import debounce from "lodash/debounce";
 import find from "lodash/find";
 
@@ -9,16 +9,9 @@ import { channelMethods, channelTopics } from "../../socket";
 import GameRoomModes from "../config/gameModes";
 import GameStateCodes from "../config/gameStateCodes";
 import PlaybookStatusCodes from "../config/playbookStatusCodes";
-import { taskStateCodes } from "../config/task";
 import { parse, getFinalState, getText, resolveDiffs } from "../lib/player";
 import * as selectors from "../selectors";
 import { actions, redirectToNewGame } from "../slices";
-import {
-  taskTemplatesStates,
-  labelTaskParamsWithIds,
-  MAX_NAME_LENGTH,
-  MIN_NAME_LENGTH,
-} from "../utils/builder";
 import {
   getGamePlayers,
   getGameStatus,
@@ -327,15 +320,6 @@ export const sendReportOnUser = (userId, onSuccess, onError) => (dispatch) => {
     });
 };
 
-export const updateCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) => {
-  const state = getState();
-  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-  const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
-  const { solutionTemplate: template } = find(langs, { slug: langSlug });
-  const textToSet = currentText || template;
-  dispatch(updateEditorText(textToSet, langSlug));
-};
-
 export const sendCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
@@ -358,13 +342,6 @@ export const sendCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) 
   dispatch(sendEditorLang(langSlug));
 };
 
-export const resetTextToTemplate = (langSlug) => (dispatch, getState) => {
-  const state = getState();
-  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-  const { solutionTemplate: template } = find(langs, { slug: langSlug });
-  dispatch(updateEditorText(template, langSlug));
-};
-
 export const resetTextToTemplateAndSend = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
@@ -378,10 +355,9 @@ export const soundNotification = notification();
 export const addCursorListeners = (params, onChangePosition, onChangeSelection, onChangeScroll) => {
   const { roomMode, userId } = params;
 
-  const isBuilder = roomMode === GameRoomModes.builder;
   const isHistory = roomMode === GameRoomModes.history;
 
-  const canReceivedRemoteCursor = !isBuilder && !isHistory && !!userId && !isRecord;
+  const canReceivedRemoteCursor = !isHistory && !!userId && !isRecord;
 
   if (!canReceivedRemoteCursor) {
     return () => {};
@@ -655,319 +631,6 @@ export const activeGameReady =
       .addListener(channelTopics.tournamentGameWaitTopic, handleTournamentGameWait);
   };
 
-const fetchOrCreateTask = (gameService, taskService) => (dispatch, getState) => {
-  const currentTask = getState().builder.task;
-
-  taskService.send("SETUP_TASK", { payload: currentTask });
-
-  const state = GameStateCodes.builder;
-  const message = { payload: { state } };
-  gameService.send("LOAD_GAME", message);
-};
-
-export const reloadGeneratorAndSolutionTemplates = (taskService) => (dispatch, getState) => {
-  const state = getState();
-
-  const langs = selectors.editorLangsSelector(state);
-
-  const solution = langs.reduce(
-    (acc, lang) =>
-      lang.argumentsGeneratorTemplate ? { ...acc, [lang.slug]: lang.solutionTemplate } : acc,
-    {},
-  );
-  const argumentsGenerator = langs.reduce(
-    (acc, lang) =>
-      lang.argumentsGeneratorTemplate
-        ? { ...acc, [lang.slug]: lang.argumentsGeneratorTemplate }
-        : acc,
-    {},
-  );
-
-  dispatch(actions.setTaskTemplates({ solution, argumentsGenerator }));
-  taskService.send("CHANGES");
-};
-
-export const validateTaskName = (name) => (dispatch, getState) => {
-  if (name.length < MIN_NAME_LENGTH || name.length > MAX_NAME_LENGTH) {
-    return;
-  }
-
-  requestJson(`/api/v1/tasks/${name}/unique`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-  })
-    .then((response) => {
-      const data = camelizeKeys(response);
-      const { name: currentTaskName } = selectors.builderTaskSelector(getState());
-
-      if (currentTaskName !== name) {
-        return;
-      }
-
-      if (data.unique) {
-        dispatch(actions.setValidationStatuses({ name: [true] }));
-      } else {
-        dispatch(
-          actions.setValidationStatuses({
-            name: [false, "Name must be unique"],
-          }),
-        );
-      }
-    })
-    .catch((error) => {
-      dispatch(actions.setValidationStatuses({ name: [false, error.message] }));
-    });
-};
-
-export const updateTaskState = (id, state) => (dispatch) => {
-  requestJson(`/api/v1/tasks/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-    body: JSON.stringify({ task: { state } }),
-  })
-    .then(() => {
-      dispatch(actions.setTaskState(state));
-    })
-    .catch((error) => {
-      dispatch(actions.setError(error));
-      console.error(error);
-    });
-};
-
-export const publishTask = (id) => (dispatch, getState) => {
-  const state = getState();
-  const isAdmin = selectors.currentUserIsAdminSelector(state);
-  const nextTaskState = isAdmin ? taskStateCodes.active : taskStateCodes.moderation;
-
-  dispatch(updateTaskState(id, nextTaskState));
-};
-
-export const updateTaskVisibility = (id, visibility, onError) => (dispatch) => {
-  requestJson(`/api/v1/tasks/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-    body: JSON.stringify({ task: { visibility } }),
-  })
-    .then(() => {
-      dispatch(actions.setTaskVisibility(visibility));
-    })
-    .catch((error) => {
-      dispatch(actions.setError(error));
-      console.error(error);
-      onError(error);
-    });
-};
-
-export const uploadTask =
-  (taskParams, taskService, onSuccess = () => {}, onError = () => {}) =>
-  (dispatch) => {
-    const payload = {
-      task: decamelizeKeys(taskParams, { separator: "_" }),
-      options: {
-        next_state: taskStateCodes.blank,
-      },
-    };
-
-    requestJson("/api/v1/tasks", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-csrf-token": window.csrf_token,
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        const data = camelizeKeys(response);
-        const labledTask = labelTaskParamsWithIds(data.task);
-
-        dispatch(actions.setTask({ task: labledTask }));
-        taskService.send("CONFIRM");
-        onSuccess();
-      })
-      .catch((err) => {
-        onError(err);
-
-        dispatch(actions.setError(err));
-        console.error(err);
-      });
-  };
-
-export const saveTask =
-  (taskService, onSuccess = () => {}, onError = () => {}, newTaskParams) =>
-  (dispatch, getState) => {
-    try {
-      const state = getState();
-
-      const taskParams = newTaskParams || selectors.taskParamsSelector()(state);
-      const payload = {
-        task: decamelizeKeys(taskParams, { separator: "_" }),
-        options: {
-          next_state: newTaskParams?.state || taskStateCodes.draft,
-        },
-      };
-
-      if (taskParams.state === taskStateCodes.blank) {
-        requestJson("/api/v1/tasks", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": window.csrf_token,
-          },
-          body: JSON.stringify(payload),
-        })
-          .then((response) => {
-            const data = camelizeKeys(response);
-
-            taskService.send("CONFIRM");
-            window.location.href = `/tasks/${data.task.id}`;
-            onSuccess();
-          })
-          .catch((err) => {
-            onError(err);
-
-            dispatch(actions.setError(err));
-            console.error(err);
-          });
-      } else {
-        requestJson(`/api/v1/tasks/${taskParams.id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-csrf-token": window.csrf_token,
-          },
-          body: JSON.stringify(payload),
-        })
-          .then((response) => {
-            const data = camelizeKeys(response);
-            const labledTask = labelTaskParamsWithIds(data.task);
-
-            dispatch(actions.setTask({ task: labledTask }));
-            taskService.send("CONFIRM");
-            onSuccess();
-          })
-          .catch((err) => {
-            onError(err);
-
-            dispatch(actions.setError(err));
-            console.error(err);
-          });
-      }
-    } catch (err) {
-      onError(err);
-
-      dispatch(actions.setError(err));
-      console.error(err);
-    }
-  };
-
-export const deleteTask = (id) => (dispatch) => {
-  requestJson(`/api/v1/tasks/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-  })
-    .then(() => {
-      window.location.href = "/tasks";
-    })
-    .catch((err) => {
-      dispatch(actions.setError(err));
-      console.error(err);
-    });
-};
-
-export const buildTaskAsserts = (taskService) => (dispatch, getState) => {
-  const state = getState();
-
-  if (state.builder.templates.state !== taskTemplatesStates.init) {
-    dispatch(
-      actions.setTaskAsserts({
-        asserts: state.builder.task.assertsExamples.map(({ arguments: args, expected }) => ({
-          arguments: JSON.parse(args),
-          expected: JSON.parse(expected),
-        })),
-        status: "ok",
-      }),
-    );
-
-    taskService.send("SUCCESS");
-    return;
-  }
-
-  const taskParams = selectors.taskParamsSelector({ normalize: false })(state);
-  const editorLang = selectors.taskGeneratorLangSelector(state);
-  const textSolution = selectors.taskSolutionSelector(state, editorLang);
-  const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(state, editorLang);
-
-  requestJson("/api/v1/tasks/build", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-    body: JSON.stringify({
-      task: decamelizeKeys(taskParams, { separator: "_" }),
-      arguments_generator_text: textArgumentsGenerator,
-      solution_text: textSolution,
-      editor_lang: editorLang,
-    }),
-  })
-    .then((response) => {
-      const data = camelizeKeys(response);
-
-      dispatch(
-        actions.setTaskAsserts({
-          asserts: data.asserts || [],
-          status: data.status,
-          output: data.message,
-        }),
-      );
-
-      switch (data.status) {
-        case "ok": {
-          taskService.send("SUCCESS");
-          break;
-        }
-        case "failure":
-          taskService.send("FAILURE", {
-            message: "Actual values doesn't match with expected values",
-          });
-          break;
-        case "error": {
-          taskService.send("ERROR", { message: data.message });
-          break;
-        }
-        default: {
-          taskService.send("ERROR", {
-            message: data.message || "Something Wrong",
-          });
-        }
-      }
-    })
-    .catch((err) => {
-      dispatch(
-        actions.setTaskAsserts({
-          asserts: [],
-          status: "error",
-          output: err.message,
-        }),
-      );
-      taskService.send("ERROR", { message: err.message });
-
-      dispatch(actions.setError(err));
-      console.error(err);
-    });
-};
-
 const fetchPlaybook = (service, init) => (dispatch) => {
   service.send("START_LOADING_PLAYBOOK");
 
@@ -1033,10 +696,6 @@ export const openPlaybook = (service) => () => {
   service.send("OPEN_REPLAYER");
 };
 
-export const connectToTask = (gameService, taskService) => (dispatch) => {
-  dispatch(fetchOrCreateTask(gameService, taskService));
-};
-
 export const connectToGame = (gameRoomService, options) => (dispatch) => {
   if (isRecord) {
     return fetchPlaybook(gameRoomService, initStoredGame)(dispatch);
@@ -1066,58 +725,6 @@ export const checkGameSolution = () => (dispatch, getState) => {
   };
 
   channel.push(channelMethods.checkResult, payload);
-};
-
-export const checkTaskSolution = (editorService) => (dispatch, getState) => {
-  const state = getState();
-  const currentUserId = selectors.currentUserIdSelector(state);
-  const { text, lang } = selectors.getSolution(currentUserId)(state);
-  const task = selectors.builderTaskSelector(state);
-
-  // FIXME: create actions for this state transitions
-  // FIXME: create statuses for solutionStatus
-  dispatch(actions.updateGameStatus({ solutionStatus: null }));
-  dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
-
-  const payload = {
-    task: decamelizeKeys(task, { separator: "_" }),
-    editor_text: text,
-    lang_slug: lang,
-  };
-
-  editorService.send("user_check_solution");
-
-  requestJson("/api/v1/tasks/check", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-    body: JSON.stringify(payload),
-  })
-    .then((response) => {
-      const { checkResult } = camelizeKeys(response);
-
-      dispatch(
-        actions.updateExecutionOutput({
-          ...checkResult,
-          userId: currentUserId,
-        }),
-      );
-      editorService.send("receive_check_result", { userId: currentUserId });
-    })
-    .catch((error) => {
-      dispatch(
-        actions.updateExecutionOutput({
-          status: "error",
-          outputError: error.message,
-          asserts: [],
-          version: 2,
-          userId: currentUserId,
-        }),
-      );
-      editorService.send("receive_check_result", { userId: currentUserId });
-    });
 };
 
 export const compressEditorHeight = (userId) => (dispatch) =>

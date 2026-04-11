@@ -17,15 +17,11 @@ export const inPreviewRoomSelector = (state) => state.matches({ room: roomMachin
 export const isRestrictedContentSelector = (state) =>
   state.matches({ room: roomMachineStates.restricted });
 
-export const inTestingRoomSelector = (state) => state.matches({ room: roomMachineStates.testing });
-
 export const isGameActiveSelector = (state) => state.matches({ room: roomMachineStates.active });
 
 export const isGameOverSelector = (state) => state.matches({ room: roomMachineStates.gameOver });
 
 export const isStoredGameSelector = (state) => state.matches({ room: roomMachineStates.stored });
-
-export const inBuilderRoomSelector = (state) => state.matches({ room: roomMachineStates.builder });
 
 export const inWaitingOpponentStateSelector = (state) =>
   state.matches({ room: roomMachineStates.waiting });

@@ -2,7 +2,7 @@ import { createDraftSafeSelector } from "@reduxjs/toolkit";
 import find from "lodash/find";
 import get from "lodash/get";
 import isUndefined from "lodash/isUndefined";
-import pick from "lodash/pick";
+
 import moment from "moment";
 
 import i18n from "../../i18n";
@@ -13,7 +13,7 @@ import editorThemes from "../config/editorThemes";
 import editorUserTypes from "../config/editorUserTypes";
 import GameStateCodes from "../config/gameStateCodes";
 import SubscriptionTypeCodes from "../config/subscriptionTypes";
-import { taskStateCodes } from "../config/task";
+
 import userTypes from "../config/userTypes";
 import { replayerMachineStates } from "../machines/game";
 import { makeEditorTextKey } from "../utils/gameRoom";
@@ -218,98 +218,6 @@ export const gameStatusTitleSelector = (state) => {
 };
 
 export const gameTaskSelector = (state) => state.game.task;
-
-export const canEditTask = (state) =>
-  state.builder.task.origin !== "github" &&
-  ((currentUserIdSelector(state) === state.builder.task.creatorId &&
-    (state.builder.task.state === taskStateCodes.blank ||
-      state.builder.task.state === taskStateCodes.draft)) ||
-    (currentUserIsAdminSelector(state) && state.builder.task.state !== taskStateCodes.moderation));
-
-export const isTaskOwner = (state) =>
-  currentUserIdSelector(state) === state.builder.task?.creatorId ||
-  currentUserIdSelector(state) === state.task?.creatorId;
-
-export const canEditTaskGenerator = (state) =>
-  (currentUserIdSelector(state) === state.builder.task.creatorId &&
-    state.builder.task.state !== taskStateCodes.moderation) ||
-  (currentUserIsAdminSelector(state) && state.builder.task.state !== taskStateCodes.moderation);
-
-export const isValidTask = (state) =>
-  state.builder.validationStatuses.name[0] &&
-  state.builder.validationStatuses.description[0] &&
-  state.builder.validationStatuses.assertsExamples[0] &&
-  state.builder.validationStatuses.solution[0] &&
-  state.builder.validationStatuses.argumentsGenerator[0];
-
-export const builderTaskSelector = (state) => state.builder.task;
-
-export const taskTemplatesStateSelector = (state) => state.builder.templates.state;
-
-export const taskGeneratorLangSelector = (state) => state.builder.generatorLang;
-
-export const taskOriginSelector = (state) => state.builder.task.origin;
-
-export const taskAssertsSelector = (state) => state.builder.task.asserts;
-
-export const taskAssertsStatusSelector = (state) => state.builder.assertsStatus;
-
-export const taskTextSolutionSelector = (state) =>
-  state.builder.textSolution[state.builder.generatorLang];
-
-export const taskTextArgumentsGeneratorSelector = (state) =>
-  state.builder.textArgumentsGenerator[state.builder.generatorLang];
-
-export const taskParamsSelector = (params = { normalize: true }) =>
-  createDraftSafeSelector(
-    (state) => state.builder.task,
-    (state) => state.builder.task.inputSignature,
-    (state) => state.builder.task.outputSignature,
-    (state) => state.builder.task.asserts,
-    (state) => state.builder.task.assertsExamples,
-    (state) => state.builder.generatorLang,
-    (state) => state.builder.textSolution,
-    (state) => state.builder.textArgumentsGenerator,
-    (
-      task,
-      inputSignature,
-      outputSignature,
-      asserts,
-      assertsExamples,
-      generatorLang,
-      textSolution,
-      textArgumentsGenerator,
-    ) => ({
-      ...task,
-      inputSignature: inputSignature.map((item) =>
-        params.normalize ? pick(item, ["argumentName", "type"]) : item,
-      ),
-      outputSignature: params.normalize ? pick(outputSignature, ["type"]) : outputSignature,
-      asserts: asserts.map((item) =>
-        params.normalize ? pick(item, ["arguments", "expected"]) : item,
-      ),
-      assertsExamples: assertsExamples.map((item) =>
-        params.normalize ? pick(item, ["arguments", "expected"]) : item,
-      ),
-      generatorLang,
-      solution: textSolution[generatorLang],
-      argumentsGenerator: textArgumentsGenerator[generatorLang],
-    }),
-  );
-
-export const taskParamsTemplatesStateSelector = (state) => state.builder.templates.state;
-
-export const taskSolutionSelector = (state, lang) => state.builder.textSolution[lang];
-
-export const taskArgumentsGeneratorSelector = (state, lang) =>
-  state.builder.textArgumentsGenerator[lang];
-
-export const isTestingReady = (state) =>
-  state.builder.validationStatuses.inputSignature[0] &&
-  state.builder.validationStatuses.outputSignature[0] &&
-  state.builder.validationStatuses.examples[0] &&
-  state.builder.validationStatuses.solution[0] &&
-  state.builder.validationStatuses.argumentsGenerator[0];
 
 export const editorLangsSelector = (state) => state.editor.langs;
 

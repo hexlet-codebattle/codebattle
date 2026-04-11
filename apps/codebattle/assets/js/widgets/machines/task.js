@@ -1,7 +1,6 @@
 import { assign } from "xstate";
 
 import { taskStateCodes } from "../config/task";
-import { taskTemplatesStates } from "../utils/builder";
 
 const states = {
   none: "none",
@@ -32,11 +31,6 @@ export const mapStateToValidationStatus = {
   [states.prepareSaving]: validationStatuses.validation,
   [states.prepareTesting]: validationStatuses.validation,
 };
-
-export const getGeneratorStatus = (templateState, current) =>
-  templateState === taskTemplatesStates.none
-    ? validationStatuses.none
-    : mapStateToValidationStatus[current.value];
 
 const machine = {
   id: "task",

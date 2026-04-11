@@ -15,7 +15,7 @@ defmodule CodebattleWeb.GameController do
 
   require Logger
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete, :create_by_task])
   plug(:put_view, CodebattleWeb.GameView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
@@ -88,6 +88,29 @@ defmodule CodebattleWeb.GameController do
     case Context.create_game(game_params) do
       {:ok, game} -> redirect(conn, to: Routes.game_path(conn, :show, game.id))
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def create_by_task(conn, %{"task_id" => task_id}) do
+    task = Codebattle.Task.get!(task_id)
+
+    game_params = %{
+      level: task.level,
+      task: task,
+      mode: "training",
+      use_chat: false,
+      visibility_type: "hidden",
+      players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
+    }
+
+    case Context.create_game(game_params) do
+      {:ok, game} ->
+        json(conn, %{game_id: game.id})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: reason})
     end
   end
 

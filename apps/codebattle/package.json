@@ -16,7 +16,7 @@
     "lint:js": "oxlint ./assets/js",
     "lint:scss": "stylelint \"assets/css/**/*.scss\"",
     "lint-fix": "pnpm run lint-fix:js && pnpm run lint-fix:scss",
-    "lint-fix:js": "oxlint --fix ./assets/js",
+    "lint-fix:js": "oxlint --fix ./assets/js || true",
     "lint-fix:scss": "stylelint --fix \"assets/css/**/*.scss\"",
     "format": "pnpm run format:js && pnpm run format:scss",
     "format:js": "oxfmt \"assets/js/**/*.{js,jsx,ts,tsx}\"",

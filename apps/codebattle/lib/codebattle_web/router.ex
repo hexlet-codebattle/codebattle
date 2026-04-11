@@ -196,11 +196,9 @@ defmodule CodebattleWeb.Router do
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
-      resources("/tasks", TaskController)
+      resources("/tasks", TaskController, only: [:index, :show, :update])
+      get("/tasks/:id/stats", TaskController, :stats)
       resources("/tournaments", TournamentController, only: [:index, :show, :create, :update])
-      post("/tasks/build", TaskController, :build)
-      post("/tasks/check", TaskController, :check)
-      get("/tasks/:name/unique", TaskController, :unique)
       get("/stream_configs", StreamConfigController, :index)
       put("/stream_configs", StreamConfigController, :put_all)
       post("/playbooks/approve", PlaybookController, :approve)
@@ -290,7 +288,7 @@ defmodule CodebattleWeb.Router do
       patch("/disable", TaskPackController, :disable, as: :disable)
     end
 
-    resources("/tasks", TaskController) do
+    resources("/tasks", TaskController, only: [:index, :show, :delete]) do
       patch("/activate", TaskController, :activate, as: :activate)
       patch("/disable", TaskController, :disable, as: :disable)
     end
@@ -303,6 +301,7 @@ defmodule CodebattleWeb.Router do
 
     scope "/games" do
       post("/training", GameController, :create_training)
+      post("/create_by_task", GameController, :create_by_task)
       post("/:id/join", GameController, :join)
     end
   end

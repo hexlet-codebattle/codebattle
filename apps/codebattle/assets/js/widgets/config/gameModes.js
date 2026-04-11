@@ -4,5 +4,4 @@ export default {
   standard: "standard",
   tournament: "tournament",
   history: "history",
-  builder: "builder",
 };

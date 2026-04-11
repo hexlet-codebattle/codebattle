@@ -1,4 +1,3 @@
-import builder, { actions as builderActions } from "./builder";
 import chat, { actions as chatActions } from "./chat";
 import completedGames, { actions as completedGamesActions } from "./completedGames";
 import editor, { actions as editorActions } from "./editor";
@@ -27,7 +26,6 @@ const setError = (error) => ({
 
 export const actions = {
   setError,
-  ...builderActions,
   ...chatActions,
   ...completedGamesActions,
   ...editorActions,
@@ -54,7 +52,6 @@ export const redirectToNewGame = (gameId) => {
 };
 
 export default {
-  builder,
   chat,
   completedGames,
   editor,

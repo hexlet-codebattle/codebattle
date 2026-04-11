@@ -5,15 +5,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import RoomContext from "../../components/RoomContext";
 import BattleRoomViewModes from "../../config/battleRoomViewModes";
-import {
-  inTestingRoomSelector,
-  isRestrictedContentSelector,
-  roomStateSelector,
-} from "../../machines/selectors";
+import { isRestrictedContentSelector, roomStateSelector } from "../../machines/selectors";
 import {
   gameTaskSelector,
   gameStatusSelector,
-  builderTaskSelector,
   taskDescriptionLanguageSelector,
 } from "../../selectors";
 import { actions } from "../../slices";
@@ -146,9 +141,7 @@ function InfoWidget({ viewMode }) {
   const { mainService } = useContext(RoomContext);
   const roomMachineState = useMachineStateSelector(mainService, roomStateSelector);
 
-  const isTestingRoom = inTestingRoomSelector(roomMachineState);
-
-  const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
+  const task = useSelector(gameTaskSelector);
   const { outputData, canShowOutput } = usePlayerOutputForInfoPanel(viewMode, roomMachineState);
 
   if (task?.type === "css") {

@@ -6,9 +6,7 @@ import { changePresenceState } from "@/middlewares/Main";
 
 import ModalCodes from "../config/modalCodes";
 import speedModes from "../config/speedModes";
-import { modalModes, modalActions } from "../pages/builder/TaskParamsModal";
 import * as selectors from "../selectors";
-import { actions } from "../slices";
 
 /**
  *
@@ -58,43 +56,12 @@ const useGameRoomMachine = ({ mainMachine, taskMachine }) => {
   const taskService = useInterpret(taskMachine, {
     devTools: true,
     actions: {
-      openTesting: () => {
-        mainService.send("OPEN_TESTING");
-      },
-      showTaskSaveConfirmation: () => {
-        NiceModal.show(ModalCodes.taskParamsModal, {
-          action: modalActions.save,
-          mode: modalModes.preview,
-        });
-      },
-      closeTaskSaveConfirmation: () => {
-        NiceModal.hide(ModalCodes.taskParamsModal);
-      },
-      onSuccess: () => {
-        dispatch(
-          actions.setValidationStatuses({
-            solution: [true],
-            assertsExamples: [true],
-            argumentsGenerator: [true],
-          }),
-        );
-      },
-      onFailure: (_ctx, event) => {
-        dispatch(
-          actions.setValidationStatuses({
-            solution: [false, event.message],
-            assertsExamples: [false, event.message],
-          }),
-        );
-      },
-      onError: (_ctx, event) => {
-        dispatch(
-          actions.setValidationStatuses({
-            solution: [false, event.message],
-            argumentsGenerator: [false, event.message],
-          }),
-        );
-      },
+      openTesting: () => {},
+      showTaskSaveConfirmation: () => {},
+      closeTaskSaveConfirmation: () => {},
+      onSuccess: () => {},
+      onFailure: () => {},
+      onError: () => {},
     },
   });
 

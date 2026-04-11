@@ -344,6 +344,12 @@ defmodule Codebattle.Task do
     (task.creator_id == user.id || User.admin?(user)) && task.origin == "user"
   end
 
+  def update(task, params) do
+    task
+    |> changeset(params)
+    |> Repo.update()
+  end
+
   def change_state(task, state) do
     task
     |> changeset(%{state: state})

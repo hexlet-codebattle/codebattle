@@ -22,9 +22,6 @@ const states = {
     gameOver: "game_over",
 
     stored: "stored",
-
-    builder: "builder.idle",
-    testing: "builder.testing",
   },
   replayer: {
     empty: "empty",
@@ -174,7 +171,6 @@ const machine = {
           on: {
             LOAD_GAME: [
               { target: "waiting", cond: "isWaitingGame" },
-              { target: "builder", cond: "isTaskBuilder" },
               { target: "active", cond: "isActiveGame" },
               {
                 target: "game_over",
@@ -254,28 +250,6 @@ const machine = {
         failure: {
           type: "final",
         },
-        builder: {
-          initial: "idle",
-          states: {
-            idle: {
-              on: {
-                OPEN_TESTING: [
-                  {
-                    target: "idle",
-                    cond: "haveOnlyFreeAccess",
-                    actions: ["showPremiumSubscribeRequestModal"],
-                  },
-                  { target: "testing" },
-                ],
-              },
-            },
-            testing: {
-              on: {
-                OPEN_TASK_BUILDER: "idle",
-              },
-            },
-          },
-        },
       },
     },
     replayer: {
@@ -352,7 +326,6 @@ export const config = {
   guards: {
     // game guards
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
-    isTaskBuilder: (_ctx, { payload }) => payload.state === GameStateCodes.builder,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
     haveOnlyFreeAccess: (ctx) => ctx.subscriptionType === "free",
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,

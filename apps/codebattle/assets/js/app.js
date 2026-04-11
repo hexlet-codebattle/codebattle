@@ -36,7 +36,6 @@ import { LiveSocket } from "phoenix_live_view";
 
 import "./widgets/lib/sentry";
 import {
-  renderBuilderWidget,
   renderEventPage,
   renderGroupTournamentPage,
   renderGameThreejsPage,
@@ -53,6 +52,7 @@ import {
   renderSettingPage,
   renderStairwayGamePage,
   renderStreamPage,
+  renderTaskPreviewPage,
   renderTournamentAdminPage,
   renderTournamentPage,
   renderTournamentEditPage,
@@ -103,7 +103,6 @@ window.addEventListener("phx:page-loading-stop", (_info) => NProgress.done());
 
 liveSocket.connect();
 
-const builderWidgetRoot = document.getElementById("builder-widget-root");
 const gameWidgetRoot = document.getElementById("game-widget-root");
 const gameThreejsRoot = document.getElementById("game-threejs-root");
 const heatmapRoot = document.getElementById("heatmap-root");
@@ -127,6 +126,7 @@ const hallOfFameRoot = document.getElementById("hall-of-fame-root");
 const headToHeadRoot = document.getElementById("head-to-head-root");
 const seasonsRoot = document.getElementById("seasons-root");
 const seasonShowRoot = document.getElementById("season-show-root");
+const taskPreviewRoot = document.getElementById("task-preview-root");
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -134,10 +134,6 @@ if (gameWidgetRoot) {
 
 if (gameThreejsRoot) {
   renderGameThreejsPage(gameThreejsRoot);
-}
-
-if (builderWidgetRoot) {
-  renderBuilderWidget(builderWidgetRoot);
 }
 
 if (heatmapRoot) {
@@ -222,4 +218,8 @@ if (seasonsRoot) {
 
 if (seasonShowRoot) {
   renderSeasonShowPage(seasonShowRoot);
+}
+
+if (taskPreviewRoot) {
+  renderTaskPreviewPage(taskPreviewRoot);
 }

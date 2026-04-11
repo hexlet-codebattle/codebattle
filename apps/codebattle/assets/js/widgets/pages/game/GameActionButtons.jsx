@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dropdown } from "react-bootstrap";
@@ -8,15 +8,8 @@ import { useDispatch } from "react-redux";
 import Modal from "@/components/BootstrapModal";
 
 import i18next from "../../../i18n";
-import RoomContext from "../../components/RoomContext";
-import { inTestingRoomSelector } from "../../machines/selectors";
-import {
-  sendGiveUp,
-  resetTextToTemplateAndSend,
-  resetTextToTemplate,
-} from "../../middlewares/Room";
+import { sendGiveUp, resetTextToTemplateAndSend } from "../../middlewares/Room";
 import { actions } from "../../slices";
-import useMachineStateSelector from "../../utils/useMachineStateSelector";
 
 function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();
@@ -132,9 +125,6 @@ function GameActionButtons({
 }) {
   const dispatch = useDispatch();
 
-  const { mainService } = useContext(RoomContext);
-  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
-
   const [modalShowing, setModalShowing] = useState(false);
 
   const modalHide = () => {
@@ -151,11 +141,7 @@ function GameActionButtons({
   };
 
   const handleReset = () => {
-    if (isTestingRoom) {
-      dispatch(resetTextToTemplate(currentEditorLangSlug));
-    } else {
-      dispatch(resetTextToTemplateAndSend(currentEditorLangSlug));
-    }
+    dispatch(resetTextToTemplateAndSend(currentEditorLangSlug));
   };
 
   const renderModal = () => (

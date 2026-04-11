@@ -8,8 +8,6 @@ import { roomMachineStates, replayerMachineStates } from "../../machines/game";
 import { roomStateSelector } from "../../machines/selectors";
 import * as selectors from "../../selectors";
 import useMachineStateSelector from "../../utils/useMachineStateSelector";
-import BackToTaskBuilderButton from "../builder/BackToTaskBuilderButton";
-
 import ActionsAfterGame from "./ActionsAfterGame";
 import ApprovePlaybookButtons from "./ApprovePlaybookButtons";
 import BackToEventButton from "./BackToEventButton";
@@ -37,7 +35,6 @@ function Notifications() {
 
   return (
     <>
-      {roomMachineState.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
       <ReplayerControlButton />
       {isCurrentUserPlayer && roomMachineState.matches({ room: roomMachineStates.gameOver }) && (
         <>
@@ -53,9 +50,7 @@ function Notifications() {
       )}
       {isTournamentGame && !isEventTournament && <BackToTournamentButton />}
       {isTournamentGame && isEventTournament && <BackToEventButton eventId={tournament?.eventId} />}
-      {!isTournamentGame && !roomMachineState.matches({ room: roomMachineStates.testing }) && (
-        <BackToHomeButton />
-      )}
+      {!isTournamentGame && <BackToHomeButton />}
     </>
   );
 }

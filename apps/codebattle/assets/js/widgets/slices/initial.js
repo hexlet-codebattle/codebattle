@@ -5,17 +5,8 @@ import GameRoomModes from "../config/gameModes";
 import GameStateCodes from "../config/gameStateCodes";
 import loadingStatuses from "../config/loadingStatuses";
 import periodTypes from "../config/periodTypes";
-import { taskStateCodes, taskVisibilityCodes } from "../config/task";
 import tournamentStates from "../config/tournament";
 import userTypes from "../config/userTypes";
-import {
-  validateTaskName,
-  validateInputSignatures,
-  validateExamples,
-  taskTemplatesStates,
-  labelTaskParamsWithIds,
-  getTaskTemplates,
-} from "../utils/builder";
 import {
   getGamePlayers,
   getGameStatus,
@@ -37,7 +28,6 @@ const currentUserData = Gon.getAsset("current_user");
 const gameData = Gon.getAsset("game");
 const isRecord = Gon.getAsset("is_record") || false;
 const playerId = Gon.getAsset("player_id");
-const taskData = Gon.getAsset("task");
 const tournamentData = Gon.getAsset("tournament");
 const tournamentId = Gon.getAsset("tournament_id");
 const tournamentsData = Gon.getAsset("tournaments");
@@ -56,7 +46,6 @@ const seasonProfileData = Gon.getAsset("season_profile");
 // ******************************
 
 const gameParams = gameData ? camelizeKeys(gameData) : undefined;
-const taskParams = taskData ? camelizeKeys(taskData) : undefined;
 const tournamentParams = tournamentData ? camelizeKeys(tournamentData) : undefined;
 const completedGamesParams = completedGamesData ? camelizeKeys(completedGamesData) : [];
 const initialActiveGames = activeGamesData ? camelizeKeys(activeGamesData) : [];
@@ -175,64 +164,6 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 const initialResults = gameParams
   ? gameParams.players.map(getPlayersExecutionData).reduce(setPlayersResultsToSliceState, {})
   : {};
-
-const defaultTaskParams = {
-  name: "",
-  level: "elementary",
-  state: taskStateCodes.none,
-  descriptionEn: "",
-  descriptionRu: "",
-  inputSignature: [],
-  outputSignature: { type: { name: "integer" } },
-  assertsExamples: [],
-  asserts: [],
-  examples: "",
-  solution: "",
-  argumentsGenerator: "",
-  generatorLang: "js",
-  visibility: taskVisibilityCodes.hidden,
-};
-
-const defaultTaskTemplates = {
-  state: taskTemplatesStates.loading,
-  solution: {},
-  argumentsGenerator: {},
-};
-
-const defaultTaskAssertsStatus = {
-  status: "none",
-  output: "",
-};
-
-const defaultValidationStatuses = {
-  name: [false],
-  description: [false],
-  solution: [true],
-  argumentsGenerator: [true],
-  inputSignature: [false],
-  outputSignature: [true],
-  assertsExamples: [false],
-};
-
-const getTaskValidationStatuses = (task) => ({
-  ...defaultValidationStatuses,
-  name: validateTaskName(task.name),
-  description: validateTaskName(task.descriptionEn),
-  inputSignature: validateInputSignatures(task.inputSignature),
-  assertsExamples: validateExamples(task.assertsExamples),
-});
-
-const initialTask = taskParams ? labelTaskParamsWithIds(taskParams) : defaultTaskParams;
-const initialTemplates = taskParams ? getTaskTemplates(taskParams) : defaultTaskTemplates;
-const initialAssertsStatus = taskParams
-  ? {
-      status: taskParams.asserts.length > 0 ? "ok" : "none",
-      output: "",
-    }
-  : defaultTaskAssertsStatus;
-const initialValidationStatuses = taskParams
-  ? getTaskValidationStatuses(taskParams)
-  : defaultValidationStatuses;
 
 const defaultReportsParams = {
   list: [],
@@ -512,15 +443,6 @@ export default {
   executionOutput: {
     results: initialResults,
     historyResults: isRecord ? initialResults : {},
-  },
-  builder: {
-    task: initialTask,
-    templates: initialTemplates,
-    assertsStatus: initialAssertsStatus,
-    validationStatuses: initialValidationStatuses,
-    textArgumentsGenerator: initialTemplates.argumentsGenerator,
-    textSolution: initialTemplates.solution,
-    generatorLang: initialTask.generatorLang,
   },
   activeGames: initialActiveGames,
   completedGames: completedGamesParams,
