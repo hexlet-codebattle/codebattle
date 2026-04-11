@@ -25,7 +25,7 @@ defmodule Codebattle.Tournament.Storage.Clans do
   end
 
   def get_clan(tournament, clan_id) do
-    :ets.lookup_element(tournament.clans_table, clan_id, 3)
+    :ets.lookup_element(tournament.clans_table, clan_id, 2)
   rescue
     _e ->
       nil
