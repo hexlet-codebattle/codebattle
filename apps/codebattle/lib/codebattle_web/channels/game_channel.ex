@@ -75,10 +75,15 @@ defmodule CodebattleWeb.GameChannel do
     in_main_draw =
       match?(%{draw_index: draw_index, max_draw_index: draw_index}, current_player)
 
+    game_params =
+      game
+      |> GameView.render_game(head_to_head)
+      |> Map.put(:hide_banned_player_controls, !!Map.get(tournament, :exclude_banned_players))
+
     {:ok,
      %{
        active_game_id: active_game_id,
-       game: GameView.render_game(game, head_to_head),
+       game: game_params,
        current_player: current_player,
        in_main_draw: in_main_draw,
        tournament: %{
