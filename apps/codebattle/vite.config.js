@@ -216,7 +216,11 @@ export default defineConfig(({ command, mode }) => ({
           }
           return "[name].[ext]";
         },
-        manualChunks: { monaco: ["monaco-editor"] },
+        manualChunks(id) {
+          if (id.includes("monaco-editor")) {
+            return "monaco";
+          }
+        },
       },
     },
     emptyOutDir: true,
