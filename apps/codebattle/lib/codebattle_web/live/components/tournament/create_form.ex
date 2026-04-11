@@ -120,6 +120,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                     {label(f, :use_clan, class: "form-check-label text-white")}
                     {error_tag(f, :use_clan)}
                   </div>
+                  <div class="form-check mb-2 pr-2">
+                    {checkbox(f, :exclude_banned_players, class: "form-check-input")}
+                    {label(f, :exclude_banned_players, class: "form-check-label text-white")}
+                    {error_tag(f, :exclude_banned_players)}
+                  </div>
                 </div>
               </div>
             </div>

@@ -94,7 +94,9 @@ function EditorContainer({
   const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
   const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
-  const { tournamentId, startsAt } = useSelector(selectors.gameStatusSelector);
+  const { tournamentId, startsAt, hideBannedPlayerControls } = useSelector(
+    selectors.gameStatusSelector,
+  );
   const subscriptionType = useSelector(selectors.subscriptionTypeSelector);
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -214,6 +216,7 @@ function EditorContainer({
     isAdmin,
     isPremium,
     actionBtnsProps,
+    hideToolbarControls: hideBannedPlayerControls,
     ...userSettings,
   };
 

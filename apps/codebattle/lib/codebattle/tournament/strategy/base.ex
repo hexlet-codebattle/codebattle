@@ -48,6 +48,12 @@ defmodule Codebattle.Tournament.Base do
         Enum.reduce(users, tournament, &add_player(&2, &1))
       end
 
+      defp maybe_add_player_clan(tournament, player) do
+        if tournament.use_clan do
+          Tournament.Clans.add_players_clan(tournament, player)
+        end
+      end
+
       def join(%{state: "waiting_participants"} = tournament, %{users: users} = params) do
         player_params = Map.delete(params, :users)
         Enum.reduce(users, tournament, &join(&2, Map.put(player_params, :user, &1)))
@@ -317,6 +323,46 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def restart(tournament, _user), do: tournament
+
+      def retry(tournament, %{user: user}) do
+        if can_moderate?(tournament, user) do
+          Tournament.Round.disable_all_rounds(tournament.id)
+
+          reset_players = reset_players_for_retry(tournament)
+
+          Enum.each(reset_players, fn player ->
+            Tournament.Players.put_player(tournament, player)
+            Tournament.Ranking.add_new_player(tournament, player)
+            maybe_add_player_clan(tournament, player)
+          end)
+
+          tournament
+          |> update_struct(%{
+            meta: reset_meta(tournament.meta),
+            matches: %{},
+            break_state: "off",
+            cheater_ids: [],
+            players_count: Enum.count(reset_players),
+            current_round_position: 0,
+            current_round: nil,
+            current_round_id: nil,
+            last_round_ended_at: nil,
+            last_round_started_at: nil,
+            finished_at: nil,
+            started_at: nil,
+            starts_at: :second |> DateTime.utc_now() |> DateTime.add(300, :second),
+            winner_ids: [],
+            top_player_ids: [],
+            state: "waiting_participants"
+          })
+          |> db_save!(:with_ets)
+          |> tap(&broadcast_tournament_update/1)
+        else
+          tournament
+        end
+      end
+
+      def retry(tournament, _user), do: tournament
 
       def start(tournament, params \\ %{})
 
@@ -796,6 +842,33 @@ defmodule Codebattle.Tournament.Base do
         end)
 
         tournament
+      end
+
+      defp reset_players_for_retry(tournament) do
+        tournament.players
+        |> Map.values()
+        |> Enum.reject(& &1.is_bot)
+        |> Enum.map(&reset_player_for_retry/1)
+      end
+
+      defp reset_player_for_retry(player) do
+        player
+        |> Map.merge(%{
+          draw_index: 1,
+          last_ranked_round_position: -1,
+          matches_ids: [],
+          max_draw_index: 0,
+          place: 0,
+          rank: 5432,
+          rating: 1200,
+          score: 0,
+          state: "active",
+          task_ids: [],
+          total_duration_sec: 0,
+          wins_count: 0,
+          wr_joined_at: nil
+        })
+        |> Tournament.Player.new!()
       end
 
       defp recalculate_player_wins_count(tournament) do

@@ -40,6 +40,7 @@ function EditorToolbar({
   langPickerStatus,
   actionBtnsProps,
   showControlBtns,
+  hideToolbarControls = false,
   isAdmin = false,
   isHistory = false,
 }) {
@@ -53,16 +54,18 @@ function EditorToolbar({
         <div className={toolbarClassNames} role="toolbar">
           <div className="d-flex justify-content-between">
             <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
-              <LanguagePicker editor={editor} status={langPickerStatus} />
+              {!hideToolbarControls && <LanguagePicker editor={editor} status={langPickerStatus} />}
             </div>
-            {showControlBtns && !isHistory && <ModeButtons player={player} />}
+            {showControlBtns && !isHistory && !hideToolbarControls && (
+              <ModeButtons player={player} />
+            )}
           </div>
 
           <div className="d-flex justify-content-between">
-            {showControlBtns && !isHistory && editorState !== "banned" && (
+            {showControlBtns && !isHistory && !hideToolbarControls && editorState !== "banned" && (
               <GameActionButtons {...actionBtnsProps} />
             )}
-            {!showControlBtns && (
+            {!showControlBtns && !hideToolbarControls && (
               <div className="py-2" role="group" aria-label="Report actions">
                 <GameReportButton userId={player.id} gameId={gameId} />
                 {isAdmin && (

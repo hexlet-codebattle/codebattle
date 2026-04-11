@@ -2,8 +2,10 @@ defmodule CodebattleWeb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
+  import PhoenixGon.Controller
 
   alias Codebattle.Game
+  alias Codebattle.Tournament.Player
 
   describe "GET games/:id" do
     test "shows live waiting_opponent game", %{conn: conn} do
@@ -36,6 +38,62 @@ defmodule CodebattleWeb.GameControllerTest do
       conn
       |> get(Routes.game_path(conn, :show, game.id))
       |> html_response(200)
+    end
+
+    test "marks game payload to hide controls for tournament games when tournament excludes banned players", %{
+      conn: conn
+    } do
+      current_user = insert(:user, name: "alice")
+      opponent = insert(:user, name: "bob")
+      task = insert(:task, level: "easy")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          state: "active",
+          exclude_banned_players: true
+        )
+
+      players = [
+        %{
+          Player.new!(%{
+            id: current_user.id,
+            name: current_user.name,
+            lang: current_user.lang,
+            avatar_url: current_user.avatar_url,
+            clan_id: current_user.clan_id,
+            style_lang: current_user.style_lang,
+            db_type: current_user.db_type
+          })
+          | state: "banned"
+        },
+        Player.new!(%{
+          id: opponent.id,
+          name: opponent.name,
+          lang: opponent.lang,
+          avatar_url: opponent.avatar_url,
+          clan_id: opponent.clan_id,
+          style_lang: opponent.style_lang,
+          db_type: opponent.db_type,
+          state: "active"
+        })
+      ]
+
+      {:ok, game} =
+        Game.Context.create_game(%{
+          state: "playing",
+          players: players,
+          task: task,
+          tournament_id: tournament.id
+        })
+
+      conn =
+        conn
+        |> put_session(:user_id, current_user.id)
+        |> get(Routes.game_path(conn, :show, game.id))
+
+      assert html_response(conn, 200)
+      assert %{hide_banned_player_controls: true} = get_gon(conn, :game)
     end
 
     test "return 200 when game is not live", %{conn: conn} do

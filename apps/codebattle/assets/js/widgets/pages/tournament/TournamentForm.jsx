@@ -74,6 +74,10 @@ function TournamentForm({
     break_duration_seconds: initialValues.break_duration_seconds || 42,
     use_chat: initialValues.use_chat !== undefined ? initialValues.use_chat : true,
     use_clan: initialValues.use_clan !== undefined ? initialValues.use_clan : false,
+    exclude_banned_players:
+      initialValues.exclude_banned_players !== undefined
+        ? initialValues.exclude_banned_players
+        : false,
     ranking_type: initialValues.ranking_type || "by_user",
     score_strategy: initialValues.score_strategy || "75_percentile",
     meta_json: initialValues.meta_json || "{}",
@@ -281,6 +285,20 @@ function TournamentForm({
               />
               <label htmlFor="use_clan" className="form-check-label text-white">
                 Use Clan
+              </label>
+            </div>
+
+            <div className="form-check">
+              <input
+                type="checkbox"
+                id="exclude_banned_players"
+                name="exclude_banned_players"
+                className="form-check-input"
+                checked={formData.exclude_banned_players}
+                onChange={handleChange}
+              />
+              <label htmlFor="exclude_banned_players" className="form-check-label text-white">
+                Exclude Banned Players
               </label>
             </div>
           </div>
@@ -651,6 +669,7 @@ TournamentForm.propTypes = {
     break_duration_seconds: PropTypes.number,
     use_chat: PropTypes.bool,
     use_clan: PropTypes.bool,
+    exclude_banned_players: PropTypes.bool,
     ranking_type: PropTypes.string,
     score_strategy: PropTypes.string,
     meta_json: PropTypes.string,

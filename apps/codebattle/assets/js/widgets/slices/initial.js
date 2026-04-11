@@ -107,6 +107,7 @@ export const defaultGameStatusState = {
   timeoutSeconds: null,
   durationSec: null,
   finishesAt: null,
+  hideBannedPlayerControls: false,
   rematchState: null,
   rematchInitiatorId: null,
   checking: {},

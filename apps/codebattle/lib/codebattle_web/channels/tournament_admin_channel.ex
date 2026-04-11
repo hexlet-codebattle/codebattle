@@ -118,6 +118,22 @@ defmodule CodebattleWeb.TournamentAdminChannel do
     {:noreply, assign(socket, tournament_info: Helpers.tournament_info(tournament))}
   end
 
+  def handle_in("tournament:retry", _params, socket) do
+    tournament_id = socket.assigns.tournament_info.id
+    tournament = Tournament.Context.get!(tournament_id)
+
+    Tournament.Context.retry(tournament)
+    Tournament.Context.handle_event(tournament_id, :retry, %{user: socket.assigns.current_user})
+
+    tournament = Tournament.Context.get!(tournament_id)
+
+    broadcast!(socket, "tournament:restarted", %{
+      tournament: Helpers.prepare_to_json(tournament)
+    })
+
+    {:noreply, assign(socket, tournament_info: Helpers.tournament_info(tournament))}
+  end
+
   def handle_in("tournament:open_up", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
 

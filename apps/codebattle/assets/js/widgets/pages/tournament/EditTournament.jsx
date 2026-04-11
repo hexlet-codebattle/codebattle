@@ -198,6 +198,8 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
     break_duration_seconds: tournament.breakDurationSeconds || 42,
     use_chat: tournament.useChat !== undefined ? tournament.useChat : true,
     use_clan: tournament.useClan !== undefined ? tournament.useClan : false,
+    exclude_banned_players:
+      tournament.excludeBannedPlayers !== undefined ? tournament.excludeBannedPlayers : false,
     ranking_type: tournament.rankingType || "by_user",
     score_strategy: tournament.scoreStrategy || "75_percentile",
     meta_json: tournament.meta ? JSON.stringify(tournament.meta, null, 2) : "{}",

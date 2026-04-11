@@ -24,6 +24,7 @@ defmodule Codebattle.Tournament do
              :current_round_position,
              :description,
              :event_id,
+             :exclude_banned_players,
              :grade,
              :id,
              :is_live,
@@ -87,6 +88,7 @@ defmodule Codebattle.Tournament do
     field(:current_round_timeout_seconds, :integer, virtual: true)
     field(:description, :string)
     field(:finished_at, :utc_datetime)
+    field(:exclude_banned_players, :boolean, default: false)
     field(:grade, :string, default: "open")
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
@@ -153,6 +155,7 @@ defmodule Codebattle.Tournament do
       :current_round_position,
       :description,
       :event_id,
+      :exclude_banned_players,
       :grade,
       :last_round_ended_at,
       :last_round_started_at,

@@ -7,6 +7,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.Game.Context
   alias Codebattle.Game.Helpers
   alias Codebattle.Playbook
+  alias Codebattle.Tournament
   alias Codebattle.User
   alias Codebattle.UserGameReport
   alias CodebattleWeb.Api.GameView
@@ -94,7 +95,11 @@ defmodule CodebattleWeb.GameController do
     case game do
       %Game{is_live: true} = game ->
         head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
-        game_params = GameView.render_game(game, head_to_head)
+
+        game_params =
+          game
+          |> GameView.render_game(head_to_head)
+          |> maybe_put_tournament_player_restrictions(game, user)
 
         conn =
           put_gon(conn,
@@ -207,6 +212,18 @@ defmodule CodebattleWeb.GameController do
 
         acc |> Map.put("label#{i}", label) |> Map.put("data#{i}", data)
     end)
+  end
+
+  defp maybe_put_tournament_player_restrictions(game_params, %{tournament_id: nil}, _user), do: game_params
+
+  defp maybe_put_tournament_player_restrictions(game_params, game, _user) do
+    tournament = Tournament.Context.get(game.tournament_id)
+
+    Map.put(
+      game_params,
+      :hide_banned_player_controls,
+      !!(tournament && tournament.exclude_banned_players)
+    )
   end
 
   defp game_meta_description(%{state: "waiting_opponent", players: [player]} = game) do

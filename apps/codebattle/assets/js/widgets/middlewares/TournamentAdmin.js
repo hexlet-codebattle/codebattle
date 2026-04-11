@@ -282,6 +282,10 @@ export const restartTournament = () => {
   channel.push("tournament:restart", {});
 };
 
+export const retryTournament = () => {
+  channel.push("tournament:retry", {});
+};
+
 export const startRoundTournament = () => {
   channel.push("tournament:start_round", {});
 };

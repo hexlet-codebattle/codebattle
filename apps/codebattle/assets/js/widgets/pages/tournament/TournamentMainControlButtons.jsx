@@ -12,6 +12,7 @@ import CustomEventStylesContext from "@/components/CustomEventStylesContext";
 import {
   cancelTournament,
   restartTournament as handleRestartTournament,
+  retryTournament as handleRetryTournament,
   finishRoundTournament as handleFinishRoundTournament,
   openUpTournament as handleOpenUpTournament,
   showTournamentResults as handleShowResults,
@@ -50,6 +51,7 @@ function TournamentMainControlButtons({
   const confirmBtnRef = useRef(null);
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
   const [restartConfirmationModalShowing, setRestartConfirmationModalShowing] = useState(false);
+  const [retryConfirmationModalShowing, setRetryConfirmationModalShowing] = useState(false);
 
   const handleStartTournament = useCallback(() => {
     handleStartRound("firstRound");
@@ -70,6 +72,16 @@ function TournamentMainControlButtons({
     handleRestartTournament();
     closeRestartConfirmationModal();
   }, [closeRestartConfirmationModal]);
+  const openRetryConfirmationModal = useCallback(() => {
+    setRetryConfirmationModalShowing(true);
+  }, []);
+  const closeRetryConfirmationModal = useCallback(() => {
+    setRetryConfirmationModalShowing(false);
+  }, []);
+  const confirmRetryTournament = useCallback(() => {
+    handleRetryTournament();
+    closeRetryConfirmationModal();
+  }, [closeRetryConfirmationModal]);
 
   const restartBtnClassName = cn(
     "btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary",
@@ -122,6 +134,33 @@ function TournamentMainControlButtons({
               className={confirmBtnClassName}
             >
               Reset tournament
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        show={retryConfirmationModalShowing}
+        onHide={closeRetryConfirmationModal}
+        contentClassName="cb-bg-panel cb-text"
+      >
+        <Modal.Header className="cb-border-color" closeButton>
+          <Modal.Title>Retry tournament</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="cb-border-color">
+          <div className="d-flex flex-column">
+            <h4 className="mb-3">Are you sure you want to retry this tournament?</h4>
+            <p className="mb-0 text-muted">
+              This will clear tournament games and results, then restore the current player roster.
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="cb-border-color">
+          <div className="d-flex justify-content-between w-100">
+            <Button onClick={closeRetryConfirmationModal} className={cancelBtnClassName}>
+              Cancel
+            </Button>
+            <Button onClick={confirmRetryTournament} className={confirmBtnClassName}>
+              Retry tournament
             </Button>
           </div>
         </Modal.Footer>
@@ -234,6 +273,16 @@ function TournamentMainControlButtons({
           >
             <FontAwesomeIcon className="mr-2" icon="cog" />
             Tournament details
+          </Dropdown.Item>
+          <Dropdown.Item
+            as="button"
+            disabled={disabled}
+            key="retry"
+            className="cb-dropdown-item"
+            onSelect={openRetryConfirmationModal}
+          >
+            <FontAwesomeIcon className="mr-2" icon="redo" />
+            Retry
           </Dropdown.Item>
           <Dropdown.Item
             as="button"

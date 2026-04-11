@@ -7,7 +7,9 @@ defmodule Codebattle.Tournament.Context do
   alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Round
   alias Codebattle.User
+  alias Codebattle.UserGameReport
   alias Runner.AtomizedMap
 
   @type tournament_id :: pos_integer() | String.t()
@@ -354,6 +356,23 @@ defmodule Codebattle.Tournament.Context do
     :ok
   end
 
+  @spec retry(Tournament.t()) :: :ok
+  def retry(tournament) do
+    tournament_info = Tournament.Server.get_tournament_info(tournament.id)
+
+    Game.Context.terminate_tournament_games(tournament.id)
+
+    :timer.sleep(59)
+
+    Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    drop_tournament_tables(tournament_info)
+    clear_tournament_info_cache(tournament.id)
+    clear_tournament_history(tournament.id)
+    Tournament.GlobalSupervisor.start_tournament(tournament)
+    Codebattle.PubSub.broadcast("tournament:restarted", %{tournament: tournament})
+    :ok
+  end
+
   @spec move_upcoming_to_live(Tournament.t()) :: :ok
   def move_upcoming_to_live(tournament) do
     tournament =
@@ -498,6 +517,14 @@ defmodule Codebattle.Tournament.Context do
       |> add_module()
       |> mark_as_live()
     end)
+  end
+
+  defp clear_tournament_history(tournament_id) do
+    Repo.delete_all(from(ugr in UserGameReport, where: ugr.tournament_id == ^tournament_id))
+    Tournament.TournamentResult.clean_results(tournament_id)
+    Tournament.TournamentUserResult.clean_results(tournament_id)
+    Repo.delete_all(from(g in Game, where: g.tournament_id == ^tournament_id))
+    Repo.delete_all(from(r in Round, where: r.tournament_id == ^tournament_id))
   end
 
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)

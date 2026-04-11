@@ -1,7 +1,14 @@
 defmodule Codebattle.Tournament.ContextTest do
   use Codebattle.DataCase, async: false
 
+  alias Codebattle.Game
+  alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.Tournament.Player
+  alias Codebattle.Tournament.Round
+  alias Codebattle.Tournament.TournamentResult
+  alias Codebattle.Tournament.TournamentUserResult
+  alias Codebattle.UserGameReport
 
   describe "get_upcoming_to_live_candidate/1" do
     test "returns tournament that starts within the delay window" do
@@ -332,6 +339,172 @@ defmodule Codebattle.Tournament.ContextTest do
       # Should not be returned with smaller window
       result = Tournament.Context.get_upcoming_to_live_candidate(90)
       assert result == nil
+    end
+  end
+
+  describe "retry/1" do
+    test "clears tournament history and keeps players in the roster" do
+      creator = insert(:user, name: "creator", lang: "js")
+      player_1 = insert(:user, name: "alice", lang: "js")
+      player_2 = insert(:user, name: "bob", lang: "elixir")
+      bot = insert(:user, name: "helper-bot", lang: "js", is_bot: true)
+
+      players = %{
+        player_1.id =>
+          Player.new!(%{
+            id: player_1.id,
+            name: player_1.name,
+            lang: player_1.lang,
+            score: 42,
+            rating: 1337,
+            rank: 11,
+            place: 2,
+            matches_ids: [1001],
+            task_ids: [2001],
+            total_duration_sec: 99,
+            wins_count: 4,
+            last_ranked_round_position: 3,
+            state: "finished_round"
+          }),
+        player_2.id =>
+          Player.new!(%{
+            id: player_2.id,
+            name: player_2.name,
+            lang: player_2.lang,
+            score: 21,
+            rating: 1250,
+            rank: 12,
+            place: 3,
+            matches_ids: [1002],
+            task_ids: [2002],
+            total_duration_sec: 120,
+            wins_count: 2,
+            last_ranked_round_position: 3,
+            state: "banned"
+          }),
+        bot.id =>
+          Player.new!(%{
+            id: bot.id,
+            name: bot.name,
+            lang: bot.lang,
+            is_bot: true,
+            score: 77,
+            rating: 1800,
+            rank: 1,
+            place: 1,
+            matches_ids: [1003],
+            task_ids: [2003],
+            total_duration_sec: 12,
+            wins_count: 5,
+            last_ranked_round_position: 3,
+            state: "active"
+          })
+      }
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          creator_id: creator.id,
+          state: "finished",
+          players: players,
+          players_count: 3,
+          matches: %{1 => %{id: 1}},
+          cheater_ids: [player_2.id],
+          current_round_id: 777,
+          current_round_position: 3,
+          started_at: DateTime.add(DateTime.utc_now(), -20, :minute),
+          finished_at: DateTime.add(DateTime.utc_now(), -5, :minute)
+        )
+
+      Repo.insert!(%Round{
+        tournament_id: tournament.id,
+        state: "active",
+        name: "Round 1",
+        level: "easy",
+        task_provider: "level",
+        task_strategy: "random",
+        round_timeout_seconds: 120,
+        tournament_type: "swiss"
+      })
+
+      game = insert(:game, tournament_id: tournament.id, state: "game_over", round_position: 1)
+
+      insert(:tournament_result,
+        tournament_id: tournament.id,
+        user_id: player_1.id,
+        score: 1,
+        duration_sec: 10
+      )
+
+      Repo.insert!(%TournamentUserResult{
+        tournament_id: tournament.id,
+        user_id: player_1.id,
+        user_name: player_1.name,
+        user_lang: player_1.lang,
+        score: 1,
+        wins_count: 1,
+        games_count: 1,
+        total_time: 10,
+        avg_result_percent: Decimal.new("100.0"),
+        inserted_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+      })
+
+      Repo.insert!(%UserGameReport{
+        tournament_id: tournament.id,
+        game_id: game.id,
+        reporter_id: creator.id,
+        offender_id: player_2.id,
+        reason: :cheater,
+        comment: "suspicious"
+      })
+
+      on_exit(fn -> Tournament.GlobalSupervisor.terminate_tournament(tournament.id) end)
+
+      tournament = Tournament.Context.get_from_db!(tournament.id)
+
+      Tournament.Context.retry(tournament)
+      Tournament.Context.handle_event(tournament.id, :retry, %{user: creator})
+
+      tournament = Tournament.Context.get!(tournament.id)
+      players = Tournament.Helpers.get_players(tournament)
+
+      assert [] == TournamentResult.get_by(tournament.id)
+      assert [] == TournamentUserResult.get_by(tournament.id)
+      assert [] == UserGameReport.list_by_tournament(tournament.id)
+
+      assert 0 ==
+               Repo.aggregate(from(g in Game, where: g.tournament_id == ^tournament.id), :count, :id)
+
+      assert 0 ==
+               Repo.aggregate(
+                 from(r in Round, where: r.tournament_id == ^tournament.id),
+                 :count,
+                 :id
+               )
+
+      assert tournament.state == "waiting_participants"
+      assert tournament.current_round_id == nil
+      assert tournament.current_round_position == 0
+      assert tournament.started_at == nil
+      assert tournament.finished_at == nil
+      assert tournament.cheater_ids == []
+      assert Tournament.Helpers.players_count(tournament) == 2
+      assert Enum.sort(Enum.map(players, & &1.id)) == Enum.sort([player_1.id, player_2.id])
+
+      Enum.each(players, fn player ->
+        assert player.state == "active"
+        assert player.rating == 1200
+        assert player.rank == 5432
+        assert player.place == 0
+        assert player.score == 0
+        assert player.matches_ids == []
+        assert player.task_ids == []
+        assert player.total_duration_sec == 0
+        assert player.wins_count == 0
+        assert player.last_ranked_round_position == -1
+      end)
+
+      assert DateTime.diff(tournament.starts_at, DateTime.utc_now(), :second) in 240..300
     end
   end
 end
