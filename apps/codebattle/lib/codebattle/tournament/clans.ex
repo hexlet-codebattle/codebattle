@@ -5,7 +5,7 @@ defmodule Codebattle.Tournament.Clans do
 
   @spec add_players_clan(tournament :: Tournament.t(), player :: Tournament.Player.t()) :: :ok
   def add_players_clan(tournament, %{clan_id: nil}) do
-    Clans.put_clans(tournament, [%{id: -1, name: "UndifinedClan", long_name: "UndifinedClan"}])
+    Clans.put_clans(tournament, [%{id: -1, name: "UndefinedClan", long_name: "UndefinedClan"}])
   end
 
   def add_players_clan(tournament, player) do

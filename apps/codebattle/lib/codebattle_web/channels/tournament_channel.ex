@@ -289,7 +289,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info(%{event: "tournament:restarted", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:restarted", payload: _payload}, socket) do
     tournament_info = Tournament.Context.get_tournament_info(socket.assigns.tournament_info.id)
 
     socket =
@@ -309,7 +309,13 @@ defmodule CodebattleWeb.TournamentChannel do
           ])
       )
 
-    push(socket, "tournament:restarted", payload)
+    current_player = Helpers.get_player(tournament_info, socket.assigns.current_user.id)
+    players = if current_player, do: [current_player], else: []
+
+    push(socket, "tournament:restarted", %{
+      tournament: Helpers.prepare_to_json(tournament_info),
+      players: players
+    })
 
     {:noreply, socket}
   end

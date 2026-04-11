@@ -54,15 +54,13 @@ function EditorToolbar({
         <div className={toolbarClassNames} role="toolbar">
           <div className="d-flex justify-content-between">
             <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
-              {!hideToolbarControls && <LanguagePicker editor={editor} status={langPickerStatus} />}
+              <LanguagePicker editor={editor} status={langPickerStatus} />
             </div>
-            {showControlBtns && !isHistory && !hideToolbarControls && (
-              <ModeButtons player={player} />
-            )}
+            {showControlBtns && !isHistory && <ModeButtons player={player} />}
           </div>
 
           <div className="d-flex justify-content-between">
-            {showControlBtns && !isHistory && !hideToolbarControls && editorState !== "banned" && (
+            {showControlBtns && !isHistory && editorState !== "banned" && (
               <GameActionButtons {...actionBtnsProps} />
             )}
             {!showControlBtns && !hideToolbarControls && (

@@ -32,17 +32,12 @@ defmodule Codebattle.Tournament.Storage.Clans do
   end
 
   def get_clans(tournament, ids) do
-    :ets.foldl(
-      fn {id, clan}, acc ->
-        if id in ids do
-          Map.put(acc, id, clan)
-        else
-          acc
-        end
-      end,
-      %{},
-      tournament.clans_table
-    )
+    Enum.reduce(ids, %{}, fn id, acc ->
+      case get_clan(tournament, id) do
+        nil -> acc
+        clan -> Map.put(acc, id, clan)
+      end
+    end)
   end
 
   def count(tournament) do

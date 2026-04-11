@@ -443,8 +443,9 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_info(:terminate, %{tournament: tournament}) do
+  def handle_info(:terminate, %{tournament: tournament} = state) do
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    {:noreply, state}
   end
 
   def handle_info(_message, state) do

@@ -32,7 +32,6 @@ function PlayersRankingPanel({ playersCount, ranking }) {
   const currentUserClanId = useSelector(currentUserClanIdSelector);
   const currentUserId = useSelector(currentUserIdSelector);
   const requestedNearestPage = useRef(false);
-  const requestedFirstPage = useRef(false);
   const manualPageChange = useRef(false);
 
   const rankingItems = useMemo(() => ranking?.entries || [], [ranking?.entries]);
@@ -85,12 +84,11 @@ function PlayersRankingPanel({ playersCount, ranking }) {
   }, [effectivePageNumber, isServerPaged, totalPages]);
 
   useEffect(() => {
-    if (requestedFirstPage.current || manualPageChange.current) {
+    if (manualPageChange.current) {
       return;
     }
 
     if (rankingItems.length === 0 && playersCount > 0) {
-      requestedFirstPage.current = true;
       dispatch(requestRankingPage(1, effectivePageSize));
     }
   }, [dispatch, effectivePageSize, playersCount, rankingItems.length]);
@@ -136,96 +134,94 @@ function PlayersRankingPanel({ playersCount, ranking }) {
         {playersCount === 0 ? (
           <p className="text-nowrap text-muted">{i18next.t("No players yet")}.</p>
         ) : (
-          rankingItems.length !== 0 && (
-            <div
-              className={cn(
-                "d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left",
-              )}
-            >
-              <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
-                <span className="font-weight-bold">{i18next.t("Ranking")}</span>
-                <span className="text-muted small">
-                  {i18next.t("Page")} {effectivePageNumber} {i18next.t("of")} {totalPages}
-                </span>
-              </div>
-              <div className="d-flex cb-overflow-x-auto">
-                <table className="table cb-text-light table-striped cb-custom-event-table m-1">
-                  <colgroup>
-                    <col style={{ width: "12%" }} />
-                    <col style={{ width: "40%" }} />
-                    <col style={{ width: "30%" }} />
-                    <col style={{ width: "18%" }} />
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
-                      <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
-                      <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
-                      <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {pagedRankingItems.map((item) => (
-                      <React.Fragment key={item.id}>
-                        <tr className="cb-custom-event-empty-space-tr" />
-                        <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
-                          <td
-                            style={{
-                              borderTopLeftRadius: "0.5rem",
-                              borderBottomLeftRadius: "0.5rem",
-                            }}
-                            className={tableDataCellClassName}
-                          >
-                            {item.place}
-                          </td>
-                          <td className={tableDataCellClassName}>
-                            <div
-                              title={item?.name}
-                              className="cb-custom-event-name"
-                              style={{
-                                textOverflow: "ellipsis",
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                maxWidth: "20ch",
-                              }}
-                            >
-                              {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
-                              {(item?.name ?? "").slice(0, 10) +
-                                ((item?.name?.length ?? 0) > 10 ? ".." : "")}
-                            </div>
-                          </td>
-                          <td className={tableDataCellClassName}>
-                            <div
-                              title={item?.clan}
-                              className="cb-custom-event-name"
-                              style={{
-                                textOverflow: "ellipsis",
-                                overflow: "hidden",
-                                whiteSpace: "nowrap",
-                                maxWidth: "20ch",
-                              }}
-                            >
-                              {(item?.clan ?? "").slice(0, 10) +
-                                ((item?.clan?.length ?? 0) > 10 ? "..." : "")}
-                            </div>
-                          </td>
-                          <td className={tableDataCellClassName}>{item.score}</td>
-                          <td
-                            style={{
-                              borderTopRightRadius: "0.5rem",
-                              borderBottomRightRadius: "0.5rem",
-                            }}
-                            className={tableDataCellClassName}
-                            aria-label={i18next.t("Row spacer")}
-                          />
-                        </tr>
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+          <div
+            className={cn(
+              "d-flex flex-column flex-grow-1 postion-relative py-2 mh-100 rounded-left",
+            )}
+          >
+            <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
+              <span className="font-weight-bold">{i18next.t("Ranking")}</span>
+              <span className="text-muted small">
+                {i18next.t("Page")} {effectivePageNumber} {i18next.t("of")} {totalPages}
+              </span>
             </div>
-          )
+            <div className="d-flex cb-overflow-x-auto">
+              <table className="table cb-text-light table-striped cb-custom-event-table m-1">
+                <colgroup>
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "40%" }} />
+                  <col style={{ width: "30%" }} />
+                  <col style={{ width: "18%" }} />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Place")}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Player")}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Clan")}</th>
+                    <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pagedRankingItems.map((item) => (
+                    <React.Fragment key={item.id}>
+                      <tr className="cb-custom-event-empty-space-tr" />
+                      <tr className={getCustomEventTrClassName(item, currentUserClanId)}>
+                        <td
+                          style={{
+                            borderTopLeftRadius: "0.5rem",
+                            borderBottomLeftRadius: "0.5rem",
+                          }}
+                          className={tableDataCellClassName}
+                        >
+                          {item.place}
+                        </td>
+                        <td className={tableDataCellClassName}>
+                          <div
+                            title={item?.name}
+                            className="cb-custom-event-name"
+                            style={{
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              maxWidth: "20ch",
+                            }}
+                          >
+                            {item?.lang && <LanguageIcon className="mr-1" lang={item.lang} />}
+                            {(item?.name ?? "").slice(0, 10) +
+                              ((item?.name?.length ?? 0) > 10 ? ".." : "")}
+                          </div>
+                        </td>
+                        <td className={tableDataCellClassName}>
+                          <div
+                            title={item?.clan}
+                            className="cb-custom-event-name"
+                            style={{
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              maxWidth: "20ch",
+                            }}
+                          >
+                            {(item?.clan ?? "").slice(0, 10) +
+                              ((item?.clan?.length ?? 0) > 10 ? "..." : "")}
+                          </div>
+                        </td>
+                        <td className={tableDataCellClassName}>{item.score}</td>
+                        <td
+                          style={{
+                            borderTopRightRadius: "0.5rem",
+                            borderBottomRightRadius: "0.5rem",
+                          }}
+                          className={tableDataCellClassName}
+                          aria-label={i18next.t("Row spacer")}
+                        />
+                      </tr>
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         )}
       </div>
       <div className="d-flex align-items-center flex-wrap justify-content-start">

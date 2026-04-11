@@ -35,7 +35,6 @@ defmodule Codebattle.Tournament.Match do
       :finished_at,
       :game_id,
       :id,
-      :integer,
       :level,
       :player_ids,
       :rematch,

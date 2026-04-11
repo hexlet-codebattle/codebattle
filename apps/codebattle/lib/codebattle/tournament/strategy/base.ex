@@ -62,20 +62,20 @@ defmodule Codebattle.Tournament.Base do
       def join(%{state: "waiting_participants"} = tournament, params) do
         player = Map.put(params.user, :lang, params.user.lang)
 
-        if players_count(tournament) < tournament.players_limit do
-          add_player(tournament, player)
-        else
+        if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
           tournament
+        else
+          add_player(tournament, player)
         end
       end
 
       def join(%{state: "active", type: "swiss"} = tournament, params) do
         player = Map.put(params.user, :lang, params.user.lang)
 
-        if players_count(tournament) < tournament.players_limit do
-          add_player(tournament, player)
-        else
+        if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
           tournament
+        else
+          add_player(tournament, player)
         end
       end
 
@@ -328,33 +328,31 @@ defmodule Codebattle.Tournament.Base do
         if can_moderate?(tournament, user) do
           Tournament.Round.disable_all_rounds(tournament.id)
 
-          reset_players = reset_players_for_retry(tournament)
+          players_for_retry = reset_players_for_retry(tournament)
 
-          Enum.each(reset_players, fn player ->
-            Tournament.Players.put_player(tournament, player)
-            Tournament.Ranking.add_new_player(tournament, player)
-            maybe_add_player_clan(tournament, player)
-          end)
+          tournament =
+            update_struct(tournament, %{
+              meta: reset_meta(tournament.meta),
+              matches: %{},
+              break_state: "off",
+              cheater_ids: [],
+              players_count: 0,
+              current_round_position: 0,
+              current_round: nil,
+              current_round_id: nil,
+              last_round_ended_at: nil,
+              last_round_started_at: nil,
+              finished_at: nil,
+              started_at: nil,
+              starts_at: :second |> DateTime.utc_now() |> DateTime.add(300, :second),
+              winner_ids: [],
+              top_player_ids: [],
+              state: "waiting_participants"
+            })
+
+          tournament = Enum.reduce(players_for_retry, tournament, &add_player(&2, &1))
 
           tournament
-          |> update_struct(%{
-            meta: reset_meta(tournament.meta),
-            matches: %{},
-            break_state: "off",
-            cheater_ids: [],
-            players_count: Enum.count(reset_players),
-            current_round_position: 0,
-            current_round: nil,
-            current_round_id: nil,
-            last_round_ended_at: nil,
-            last_round_started_at: nil,
-            finished_at: nil,
-            started_at: nil,
-            starts_at: :second |> DateTime.utc_now() |> DateTime.add(300, :second),
-            winner_ids: [],
-            top_player_ids: [],
-            state: "waiting_participants"
-          })
           |> db_save!(:with_ets)
           |> tap(&broadcast_tournament_update/1)
         else
@@ -845,15 +843,19 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp reset_players_for_retry(tournament) do
-        tournament.players
-        |> Map.values()
+        players =
+          case get_players(tournament) do
+            [] -> Map.values(tournament.players)
+            ets_players -> ets_players
+          end
+
+        players
         |> Enum.reject(& &1.is_bot)
         |> Enum.map(&reset_player_for_retry/1)
       end
 
       defp reset_player_for_retry(player) do
-        player
-        |> Map.merge(%{
+        Map.merge(player, %{
           draw_index: 1,
           last_ranked_round_position: -1,
           matches_ids: [],
@@ -868,7 +870,6 @@ defmodule Codebattle.Tournament.Base do
           wins_count: 0,
           wr_joined_at: nil
         })
-        |> Tournament.Player.new!()
       end
 
       defp recalculate_player_wins_count(tournament) do

@@ -145,8 +145,11 @@ export const connectToTournament =
           playersPageSize: 16,
           matches: {},
           players: {},
+          ranking: { entries: [] },
         }),
       );
+
+      dispatch(actions.updateTournamentPlayers(compact(response.players || [])));
     };
 
     const handlePlayerJoined = (response) => {

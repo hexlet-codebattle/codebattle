@@ -52,7 +52,7 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_matches(tournament, ids) when is_list(ids), do: Enum.map(ids, &get_match(tournament, &1))
 
-  def get_matches(tournament, state) when is_binary(state) do
+  def get_matches(%{matches_table: nil} = tournament, state) when is_binary(state) do
     tournament |> get_matches() |> Enum.filter(&(&1.state == state))
   end
 
@@ -386,7 +386,7 @@ defmodule Codebattle.Tournament.Helpers do
     total_top_8_score = top_8_players |> Enum.map(& &1.score) |> Enum.sum()
 
     win_probs =
-      if tournament.current_round_position >= 3 do
+      if tournament.current_round_position >= 3 and total_top_8_score > 0 do
         Enum.reduce(top_8_players, %{}, fn player, acc ->
           win_prob = round((player.score || 0) * 100.0 / (total_top_8_score * 1.0))
           Map.put(acc, player.id, win_prob)

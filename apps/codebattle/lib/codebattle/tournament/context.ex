@@ -459,7 +459,7 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
-    show_results = params[:show_results] || true
+    show_results = if is_nil(params[:show_results]), do: true, else: params[:show_results]
 
     Map.merge(params, %{
       access_token: access_token,
