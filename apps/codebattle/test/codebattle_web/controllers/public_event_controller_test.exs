@@ -133,7 +133,13 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert [_bot, player] = Enum.sort_by(players, & &1.id)
       assert player.id == user.id
 
-      assert redirected_to(conn) == Routes.tournament_path(conn, :show, tournament_id)
+      assert redirected_to(conn) ==
+               Routes.tournament_path(
+                 conn,
+                 :show,
+                 tournament_id,
+                 access_token: db_tournament.access_token
+               )
 
       assert [user_event] = UserEvent.get_all()
 
