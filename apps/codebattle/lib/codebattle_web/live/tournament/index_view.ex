@@ -111,9 +111,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @impl true
   def handle_event("create", %{"tournament" => params}, socket) do
     params =
-      params
-      |> normalize_timeout_mode_params()
-      |> Map.merge(%{
+      Map.merge(params, %{
         "creator" => socket.assigns.current_user,
         "user_timezone" => socket.assigns.user_timezone
       })
@@ -130,14 +128,9 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @impl true
   def handle_info(%{topic: "tournaments"}, socket) do
     user = socket.assigns.current_user
-    {:noreply, assign(socket, tournaments: Tournament.Context.list_live_and_finished(user))}
+    tournaments = user |> Tournament.Context.list_live_and_finished() |> Enum.take(5)
+    {:noreply, assign(socket, tournaments: tournaments)}
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
-
-  defp normalize_timeout_mode_params(%{"timeout_mode" => "per_task"} = params) do
-    Map.put(params, "round_timeout_seconds", nil)
-  end
-
-  defp normalize_timeout_mode_params(params), do: params
 end

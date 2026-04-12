@@ -4,6 +4,8 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
 
   import CodebattleWeb.ErrorHelpers
 
+  @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
+
   @impl true
   def mount(socket) do
     {:ok, assign(socket, initialized: false)}
@@ -25,7 +27,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
     ~H"""
     <div class="container-xl cb-bg-panel shadow-lg cb-rounded py-5">
       <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
+        <div class="col-12 col-lg-10 col-xl-10">
           <h2 class="text-center mb-4 font-weight-bold text-white">Create a New Tournament</h2>
 
           <.form :let={f} for={@changeset} phx-change="validate" phx-submit="create" class="w-100">
@@ -258,7 +260,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                 </div>
               </div>
             </div>
-            <!-- Rounds-->
+            <!-- Rounds & Break -->
             <div class="row mb-4">
               <div class="col-12 col-md-4">
                 <div class="form-group">
@@ -273,40 +275,8 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               </div>
               <div class="col-12 col-md-4">
                 <div class="form-group">
-                  <label class="form-label text-white font-weight-semibold">Timeout Mode</label>
-                  {select(
-                    f,
-                    :timeout_mode,
-                    [{"Per task timeout", "per_task"}, {"Per round timeout", "per_round"}],
-                    class:
-                      "form-control form-control-lg custom-select cb-bg-panel cb-border-color text-white",
-                    value: @timeout_mode
-                  )}
-                </div>
-              </div>
-              <%= if @timeout_mode == "per_round" do %>
-                <div class="col-12 col-md-4">
-                  <div class="form-group">
-                    {label(f, :round_timeout_seconds,
-                      class: "form-label text-white font-weight-semibold"
-                    )}
-                    {number_input(
-                      f,
-                      :round_timeout_seconds,
-                      class:
-                        "form-control form-control-lg cb-bg-panel cb-border-color custom-control text-white",
-                      value: f.params["round_timeout_seconds"] || "177",
-                      min: "100",
-                      max: "10000"
-                    )}
-                    {error_tag(f, :round_timeout_seconds)}
-                  </div>
-                </div>
-              <% end %>
-              <div class="col-12 col-md-4">
-                <div class="form-group">
                   {label(f, :break_duration_seconds,
-                    class: "form-label text-white font-weight-semibold text-white"
+                    class: "form-label text-white font-weight-semibold"
                   )}
                   {number_input(
                     f,
@@ -318,6 +288,81 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
                     max: "100000"
                   )}
                   {error_tag(f, :break_duration_seconds)}
+                </div>
+              </div>
+            </div>
+            <!-- Timeout Configuration -->
+            <h4 class="mb-3 font-weight-semibold text-white border-bottom cb-border-color pb-2 mt-5">
+              Timeout Configuration
+            </h4>
+            <div class="row mb-3">
+              <div class="col-12">
+                <p class="text-white-50 small mb-0">{timeout_description(@timeout_mode)}</p>
+              </div>
+            </div>
+            <div class="row mb-4">
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  <label class="form-label text-white font-weight-semibold">Timeout Mode</label>
+                  {select(
+                    f,
+                    :timeout_mode,
+                    [
+                      {"Per task", "per_task"},
+                      {"Per round (fixed)", "per_round_fixed"},
+                      {"Per round (rematch)", "per_round_with_rematch"},
+                      {"Per tournament", "per_tournament"}
+                    ],
+                    class:
+                      "form-control form-control-lg custom-select cb-bg-panel cb-border-color text-white",
+                    value: @timeout_mode
+                  )}
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  {label(f, :round_timeout_seconds,
+                    class:
+                      "form-label font-weight-semibold #{if @timeout_mode in ["per_round_fixed", "per_round_with_rematch"], do: "text-white", else: "text-white-50"}"
+                  )}
+                  {number_input(
+                    f,
+                    :round_timeout_seconds,
+                    class:
+                      "form-control form-control-lg cb-bg-panel cb-border-color custom-control text-white",
+                    value:
+                      if(@timeout_mode in ["per_round_fixed", "per_round_with_rematch"],
+                        do: f.params["round_timeout_seconds"] || "177",
+                        else: nil
+                      ),
+                    min: "10",
+                    max: "10000",
+                    disabled: @timeout_mode not in ["per_round_fixed", "per_round_with_rematch"]
+                  )}
+                  {error_tag(f, :round_timeout_seconds)}
+                </div>
+              </div>
+              <div class="col-12 col-md-4">
+                <div class="form-group">
+                  {label(f, :tournament_timeout_seconds,
+                    class:
+                      "form-label font-weight-semibold #{if @timeout_mode == "per_tournament", do: "text-white", else: "text-white-50"}"
+                  )}
+                  {number_input(
+                    f,
+                    :tournament_timeout_seconds,
+                    class:
+                      "form-control form-control-lg cb-bg-panel cb-border-color custom-control text-white",
+                    value:
+                      if(@timeout_mode == "per_tournament",
+                        do: f.params["tournament_timeout_seconds"] || "3600",
+                        else: nil
+                      ),
+                    min: "60",
+                    max: "36000",
+                    disabled: @timeout_mode != "per_tournament"
+                  )}
+                  {error_tag(f, :tournament_timeout_seconds)}
                 </div>
               </div>
             </div>
@@ -339,9 +384,23 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
   def render_base_errors(nil), do: nil
   def render_base_errors(errors), do: elem(errors, 0)
 
-  defp get_timeout_mode(%{params: %{"timeout_mode" => mode}}) when mode in ["per_task", "per_round"], do: mode
+  defp timeout_description("per_task"),
+    do: "Each game uses the task's own time limit. Different tasks may have different timeouts."
 
-  defp get_timeout_mode(%{data: %{timeout_mode: mode}}) when mode in ["per_task", "per_round"], do: mode
+  defp timeout_description("per_round_fixed"), do: "All games in a round share a fixed timeout. One task per round."
+
+  defp timeout_description("per_round_with_rematch"),
+    do: "Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out."
+
+  defp timeout_description("per_tournament"),
+    do:
+      "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires."
+
+  defp timeout_description(_), do: ""
+
+  defp get_timeout_mode(%{params: %{"timeout_mode" => mode}}) when mode in @timeout_modes, do: mode
+
+  defp get_timeout_mode(%{data: %{timeout_mode: mode}}) when mode in @timeout_modes, do: mode
 
   defp get_timeout_mode(_changeset), do: "per_task"
 end

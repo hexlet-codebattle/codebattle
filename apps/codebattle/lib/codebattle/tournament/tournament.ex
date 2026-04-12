@@ -69,7 +69,7 @@ defmodule Codebattle.Tournament do
   @states ~w(upcoming waiting_participants canceled active timeout finished)
   @task_providers ~w(level task_pack all)
   @task_strategies ~w(random sequential)
-  @timeout_modes ~w(per_task per_round)
+  @timeout_modes ~w(per_task per_round_fixed per_round_with_rematch per_tournament)
   @types ~w(swiss)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
@@ -203,6 +203,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_number(:round_timeout_seconds, greater_than_or_equal_to: 1)
+    |> validate_number(:tournament_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at, :description])
     |> validate_round_timeout_for_mode()
     |> validate_length(:description, min: 3, max: 7531)
@@ -212,8 +213,11 @@ defmodule Codebattle.Tournament do
 
   defp validate_round_timeout_for_mode(%Ecto.Changeset{} = changeset) do
     case get_field(changeset, :timeout_mode) do
-      "per_round" ->
+      mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
         validate_required(changeset, [:round_timeout_seconds])
+
+      "per_tournament" ->
+        validate_required(changeset, [:tournament_timeout_seconds])
 
       _ ->
         changeset

@@ -429,12 +429,28 @@ defmodule Codebattle.Tournament.Context do
 
     timeout_mode =
       params[:timeout_mode] ||
-        if params[:round_timeout_seconds] in [nil, ""], do: "per_task", else: "per_round"
+        cond do
+          params[:tournament_timeout_seconds] not in [nil, ""] -> "per_tournament"
+          params[:round_timeout_seconds] not in [nil, ""] -> "per_round_fixed"
+          true -> "per_task"
+        end
 
     params =
       case timeout_mode do
-        "per_task" -> Map.put(params, :round_timeout_seconds, nil)
-        _ -> params
+        "per_task" ->
+          params
+          |> Map.put(:round_timeout_seconds, nil)
+          |> Map.put(:tournament_timeout_seconds, nil)
+
+        mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
+          Map.put(params, :tournament_timeout_seconds, nil)
+
+        "per_tournament" ->
+          Map.put(params, :round_timeout_seconds, nil)
+
+        # Pass through unknown modes — changeset validation will reject them
+        _ ->
+          params
       end
 
     cond_result =

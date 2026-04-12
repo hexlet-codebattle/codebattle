@@ -16,7 +16,7 @@ defmodule CodebattleWeb.TournamentController do
     live_render(conn, CodebattleWeb.Live.Tournament.IndexView,
       session: %{
         "current_user" => current_user,
-        "tournaments" => Tournament.Context.list_live_and_finished(current_user)
+        "tournaments" => current_user |> Tournament.Context.list_live_and_finished() |> Enum.take(5)
       }
     )
   end

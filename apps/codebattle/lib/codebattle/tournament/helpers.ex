@@ -324,7 +324,8 @@ defmodule Codebattle.Tournament.Helpers do
           10
         )
 
-      tournament.timeout_mode == "per_round" and is_integer(tournament.round_timeout_seconds) ->
+      tournament.timeout_mode in ["per_round_fixed", "per_round_with_rematch"] and
+          is_integer(tournament.round_timeout_seconds) ->
         tournament.round_timeout_seconds
 
       true ->

@@ -896,13 +896,16 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_start_global_timer(tournament), do: tournament
 
-      # We don't want to run a timer for the swiss type, because all games already have a timeout
-      defp maybe_start_round_timer(%{state: "active", type: "swiss"} = tournament), do: tournament
-
+      # per_task: no round timer, games timeout individually
       defp maybe_start_round_timer(%{timeout_mode: "per_task"} = tournament), do: tournament
+      # per_tournament: global timer handles it
+      defp maybe_start_round_timer(%{timeout_mode: "per_tournament"} = tournament), do: tournament
+      # per_round_fixed: swiss/top200 don't need round timer (games have individual timeouts,
+      # rounds finish when all games complete)
+      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "swiss"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "top200"} = tournament), do: tournament
 
-      defp maybe_start_round_timer(%{state: "active", type: "top200"} = tournament), do: tournament
-
+      # per_round_with_rematch and per_round_fixed (for show type) need the round timer
       defp maybe_start_round_timer(tournament) do
         Process.send_after(
           self(),
@@ -940,26 +943,31 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp get_round_game_timeout(tournament, task) do
-        cond do
-          tournament.tournament_timeout_seconds ->
+        case tournament.timeout_mode do
+          "per_tournament" ->
             max(
               tournament.tournament_timeout_seconds -
                 DateTime.diff(DateTime.utc_now(), tournament.started_at),
               10
             )
 
-          tournament.timeout_mode == "per_round" and is_integer(tournament.round_timeout_seconds) ->
+          mode when mode in ["per_round_fixed", "per_round_with_rematch"] ->
             tournament.round_timeout_seconds
 
-          true ->
+          _per_task ->
             (task && task.time_to_solve_sec) || 300
         end
+      end
+
+      defp get_rematch_game_timeout(%{timeout_mode: "per_round_with_rematch"} = tournament) do
+        elapsed = NaiveDateTime.diff(NaiveDateTime.utc_now(), tournament.last_round_started_at)
+        max(tournament.round_timeout_seconds - elapsed, 10)
       end
 
       defp get_rematch_game_timeout(tournament), do: get_round_timeout_seconds(tournament)
 
       defp get_round_timeout_seconds(tournament) do
-        if tournament.timeout_mode == "per_round" do
+        if tournament.timeout_mode in ["per_round_fixed", "per_round_with_rematch"] do
           tournament.round_timeout_seconds
         else
           tournament.match_timeout_seconds

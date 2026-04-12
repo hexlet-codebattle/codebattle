@@ -171,7 +171,10 @@ defmodule Codebattle.Tournament.HelpersBehaviorTest do
         %{tournament | tournament_timeout_seconds: 40, started_at: DateTime.add(DateTime.utc_now(), -35, :second)}
 
       assert current_round_timeout_seconds(running) == 10
-      assert current_round_timeout_seconds(%{tournament | timeout_mode: "per_round", round_timeout_seconds: 123}) == 123
+
+      assert current_round_timeout_seconds(%{tournament | timeout_mode: "per_round_fixed", round_timeout_seconds: 123}) ==
+               123
+
       assert current_round_timeout_seconds(tournament) == 45
       assert current_round_timeout_seconds(%{tournament | task_ids: []}) == 300
     end

@@ -140,7 +140,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
     return (
       <div
         className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-        style={{ maxWidth: "1100px" }}
+        style={{ maxWidth: "1400px" }}
       >
         <div
           className="d-flex justify-content-center align-items-center"
@@ -156,7 +156,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
     return (
       <div
         className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-        style={{ maxWidth: "1100px" }}
+        style={{ maxWidth: "1400px" }}
       >
         <div className="alert alert-danger" role="alert">
           Tournament not found or you don&apos;t have permission to edit it.
@@ -195,6 +195,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
     rounds_limit: tournament.roundsLimit || 7,
     timeout_mode: tournament.timeoutMode || "per_task",
     round_timeout_seconds: tournament.roundTimeoutSeconds ?? null,
+    tournament_timeout_seconds: tournament.tournamentTimeoutSeconds ?? null,
     break_duration_seconds: tournament.breakDurationSeconds || 42,
     use_chat: tournament.useChat !== undefined ? tournament.useChat : true,
     use_clan: tournament.useClan !== undefined ? tournament.useClan : false,
@@ -208,7 +209,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
   return (
     <div
       className="w-100 mx-auto cb-bg-panel cb-text shadow-sm cb-rounded py-4 px-3 px-md-4 mb-3"
-      style={{ maxWidth: "1100px" }}
+      style={{ maxWidth: "1400px" }}
     >
       <Notification notification={notification} onClose={setNotification} />
       <h1 className="text-center mb-2">Edit Tournament</h1>
@@ -216,7 +217,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
         {tournament.creator && <>Creator: {tournament.creator.name}</>}
       </h3>
       <div className="row justify-content-center">
-        <div className="col-12 col-md-10 col-lg-8 col-xl-7">
+        <div className="col-12 col-lg-10 col-xl-10">
           <TournamentForm
             initialValues={initialValues}
             onSubmit={handleSubmit}

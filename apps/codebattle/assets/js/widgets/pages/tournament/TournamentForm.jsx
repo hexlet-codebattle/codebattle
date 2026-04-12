@@ -38,8 +38,20 @@ const SCORE_STRATEGIES = [
 
 const TIMEOUT_MODES = [
   { value: "per_task", label: "Per task timeout" },
-  { value: "per_round", label: "Per round timeout" },
+  { value: "per_round_fixed", label: "Per round (fixed)" },
+  { value: "per_round_with_rematch", label: "Per round (with rematch)" },
+  { value: "per_tournament", label: "Per tournament timeout" },
 ];
+
+const TIMEOUT_DESCRIPTIONS = {
+  per_task:
+    "Each game uses the task's own time limit. Different tasks may have different timeouts.",
+  per_round_fixed: "All games in a round share a fixed timeout. One task per round.",
+  per_round_with_rematch:
+    "Each round has a fixed timeout. Players play multiple tasks (rematches) within the round until time runs out.",
+  per_tournament:
+    "One global timeout for the entire tournament. Games use the remaining tournament time. Tournament ends automatically when time expires.",
+};
 
 const PLAYERS_LIMITS = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384];
 
@@ -71,6 +83,7 @@ function TournamentForm({
     rounds_limit: initialValues.rounds_limit || 7,
     timeout_mode: initialValues.timeout_mode || "per_task",
     round_timeout_seconds: initialValues.round_timeout_seconds ?? 177,
+    tournament_timeout_seconds: initialValues.tournament_timeout_seconds ?? 3600,
     break_duration_seconds: initialValues.break_duration_seconds || 42,
     use_chat: initialValues.use_chat !== undefined ? initialValues.use_chat : true,
     use_clan: initialValues.use_clan !== undefined ? initialValues.use_clan : false,
@@ -106,8 +119,13 @@ function TournamentForm({
         .split(/[\s,]+/)
         .map((id) => id.trim())
         .filter(Boolean);
-      payload.round_timeout_seconds =
-        formData.timeout_mode === "per_round" ? formData.round_timeout_seconds : null;
+      payload.round_timeout_seconds = ["per_round_fixed", "per_round_with_rematch"].includes(
+        formData.timeout_mode,
+      )
+        ? formData.round_timeout_seconds
+        : null;
+      payload.tournament_timeout_seconds =
+        formData.timeout_mode === "per_tournament" ? formData.tournament_timeout_seconds : null;
 
       onSubmit(payload);
     },
@@ -536,50 +554,6 @@ function TournamentForm({
             </div>
 
             <div className="col-md-4 mb-3">
-              <label htmlFor="timeout_mode" className="form-label text-white">
-                Timeout Mode
-              </label>
-              <select
-                id="timeout_mode"
-                name="timeout_mode"
-                className={cn(
-                  "form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded",
-                )}
-                value={formData.timeout_mode}
-                onChange={handleChange}
-              >
-                {TIMEOUT_MODES.map((mode) => (
-                  <option key={mode.value} value={mode.value}>
-                    {mode.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {formData.timeout_mode === "per_round" && (
-              <div className="col-md-4 mb-3">
-                <label htmlFor="round_timeout_seconds" className="form-label text-white">
-                  Round Timeout (seconds)
-                </label>
-                <input
-                  type="number"
-                  id="round_timeout_seconds"
-                  name="round_timeout_seconds"
-                  className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
-                    "is-invalid": errors.round_timeout_seconds,
-                  })}
-                  value={formData.round_timeout_seconds}
-                  onChange={handleChange}
-                  min={10}
-                  max={10000}
-                />
-                {renderError("round_timeout_seconds")}
-              </div>
-            )}
-          </div>
-
-          <div className="row">
-            <div className="col-md-4 mb-3">
               <label htmlFor="break_duration_seconds" className="form-label text-white">
                 Break Duration (seconds)
               </label>
@@ -596,6 +570,102 @@ function TournamentForm({
                 max={100000}
               />
               {renderError("break_duration_seconds")}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Timeout Configuration Section */}
+      <div className="card cb-card mb-4">
+        <div className="card-header">
+          <h5 className="mb-0">Timeout Configuration</h5>
+        </div>
+        <div className="card-body">
+          <p className="text-muted small mb-3">{TIMEOUT_DESCRIPTIONS[formData.timeout_mode]}</p>
+          <div className="row">
+            <div className="col-md-4 mb-3">
+              <label htmlFor="timeout_mode" className="form-label text-white">
+                Timeout Mode
+              </label>
+              <select
+                id="timeout_mode"
+                name="timeout_mode"
+                className="form-select custom-select cb-bg-panel cb-border-color text-white cb-rounded"
+                value={formData.timeout_mode}
+                onChange={handleChange}
+              >
+                {TIMEOUT_MODES.map((mode) => (
+                  <option key={mode.value} value={mode.value}>
+                    {mode.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-4 mb-3">
+              <label
+                htmlFor="round_timeout_seconds"
+                className={cn("form-label", {
+                  "text-white": ["per_round_fixed", "per_round_with_rematch"].includes(
+                    formData.timeout_mode,
+                  ),
+                  "text-muted": !["per_round_fixed", "per_round_with_rematch"].includes(
+                    formData.timeout_mode,
+                  ),
+                })}
+              >
+                Round Timeout (seconds)
+              </label>
+              <input
+                type="number"
+                id="round_timeout_seconds"
+                name="round_timeout_seconds"
+                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
+                  "is-invalid": errors.round_timeout_seconds,
+                })}
+                value={
+                  ["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode)
+                    ? formData.round_timeout_seconds
+                    : ""
+                }
+                onChange={handleChange}
+                min={10}
+                max={10000}
+                disabled={
+                  !["per_round_fixed", "per_round_with_rematch"].includes(formData.timeout_mode)
+                }
+              />
+              {renderError("round_timeout_seconds")}
+            </div>
+
+            <div className="col-md-4 mb-3">
+              <label
+                htmlFor="tournament_timeout_seconds"
+                className={cn("form-label", {
+                  "text-white": formData.timeout_mode === "per_tournament",
+                  "text-muted": formData.timeout_mode !== "per_tournament",
+                })}
+              >
+                Tournament Timeout (seconds)
+              </label>
+              <input
+                type="number"
+                id="tournament_timeout_seconds"
+                name="tournament_timeout_seconds"
+                className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
+                  "is-invalid": errors.tournament_timeout_seconds,
+                })}
+                value={
+                  formData.timeout_mode === "per_tournament"
+                    ? formData.tournament_timeout_seconds
+                    : ""
+                }
+                onChange={handleChange}
+                min={60}
+                max={36000}
+                disabled={formData.timeout_mode !== "per_tournament"}
+              />
+              {renderError("tournament_timeout_seconds")}
             </div>
           </div>
         </div>
@@ -664,8 +734,14 @@ TournamentForm.propTypes = {
     tags: PropTypes.string,
     players_limit: PropTypes.number,
     rounds_limit: PropTypes.number,
-    timeout_mode: PropTypes.oneOf(["per_task", "per_round"]),
+    timeout_mode: PropTypes.oneOf([
+      "per_task",
+      "per_round_fixed",
+      "per_round_with_rematch",
+      "per_tournament",
+    ]),
     round_timeout_seconds: PropTypes.number,
+    tournament_timeout_seconds: PropTypes.number,
     break_duration_seconds: PropTypes.number,
     use_chat: PropTypes.bool,
     use_clan: PropTypes.bool,
