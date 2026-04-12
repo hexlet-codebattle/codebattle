@@ -176,7 +176,7 @@ defmodule Codebattle.Tournament.Server do
       Process.send_after(self(), :start_grade_tournament, max(time_diff_ms, 0))
     end
 
-    {:ok, %{tournament: tournament, frozen: false}}
+    {:ok, %{tournament: tournament, frozen: false, break_timer_expired: false}}
   end
 
   def handle_cast({:fire_event, event_type, params}, state) do
@@ -313,10 +313,7 @@ defmodule Codebattle.Tournament.Server do
       if tournament.current_round_position == round_position and
            in_break?(tournament) and
            not finished?(tournament) do
-        new_tournament = tournament.module.start_round_force(tournament)
-        update_tournament_info_cache(new_tournament)
-
-        {:noreply, %{state | tournament: new_tournament}}
+        process_stop_round_break(state, tournament)
       else
         {:noreply, %{state | tournament: tournament}}
       end
@@ -389,14 +386,7 @@ defmodule Codebattle.Tournament.Server do
       defer_message({:round_finish_completed, op_id, finished_tournament}, "round_finish_completed", state)
     else
       if tournament.round_op_id == op_id and tournament.round_state == "round_finishing" do
-        new_tournament =
-          finished_tournament
-          |> tournament.module.complete_round_finish()
-          |> Map.put(:round_op_status, "done")
-          |> Map.put(:round_op_id, nil)
-
-        update_tournament_info_cache(new_tournament)
-        {:noreply, %{state | tournament: new_tournament}}
+        process_round_finish_completed(state, tournament, finished_tournament)
       else
         {:noreply, state}
       end
@@ -564,6 +554,48 @@ defmodule Codebattle.Tournament.Server do
 
   defp restore_info_cache(_tournament_id, _value), do: :ok
 
+  defp process_stop_round_break(state, tournament) do
+    if tournament.round_op_status == "done" do
+      # Computation already finished — start next round now
+      new_tournament = tournament.module.start_round_force(tournament)
+      update_tournament_info_cache(new_tournament)
+
+      {:noreply, %{state | tournament: new_tournament, break_timer_expired: false}}
+    else
+      # Computation still running — mark break as expired, wait for {:round_finish_completed}
+      {:noreply, %{state | break_timer_expired: true}}
+    end
+  end
+
+  defp process_round_finish_completed(state, tournament, finished_tournament) do
+    if_result =
+      if tournament.module.finish_tournament?(finished_tournament) do
+        tournament.module.maybe_finish_tournament(finished_tournament)
+      else
+        tournament.module.broadcast_round_finished(finished_tournament)
+      end
+
+    new_tournament =
+      if_result
+      |> Map.put(:round_op_status, "done")
+      |> Map.put(:round_op_id, nil)
+
+    if state.break_timer_expired do
+      # Break already expired while we were computing — start next round now
+      new_tournament =
+        if finished?(new_tournament), do: new_tournament, else: tournament.module.start_round_force(new_tournament)
+
+      update_tournament_info_cache(new_tournament)
+      {:noreply, %{state | tournament: new_tournament, break_timer_expired: false}}
+    else
+      # Break still running — wait for {:stop_round_break} to start next round
+      new_tournament = Map.put(new_tournament, :round_state, "break")
+      broadcast_tournament_update(new_tournament)
+      update_tournament_info_cache(new_tournament)
+      {:noreply, %{state | tournament: new_tournament}}
+    end
+  end
+
   defp defer_message(message, reason, state) do
     Logger.info(
       "[handoff] #{inspect(%{phase: "tournament_defer", reason: reason, tournament_id: state.tournament.id}, limit: :infinity, printable_limit: :infinity)}"
@@ -587,11 +619,22 @@ defmodule Codebattle.Tournament.Server do
     op_id = System.unique_integer([:positive, :monotonic])
     server_pid = self()
 
+    # Start break timer immediately alongside computation
+    min_break = Application.get_env(:codebattle, :min_break_duration_seconds, 5)
+    break_seconds = max(tournament.break_duration_seconds || min_break, min_break)
+
+    Process.send_after(
+      self(),
+      {:stop_round_break, tournament.current_round_position},
+      to_timeout(second: break_seconds)
+    )
+
     in_progress_tournament =
       tournament
       |> Map.put(:round_state, "round_finishing")
       |> Map.put(:round_op_status, "running")
       |> Map.put(:round_op_id, op_id)
+      |> Map.put(:break_state, "on")
 
     update_tournament_info_cache(in_progress_tournament)
 
@@ -603,7 +646,7 @@ defmodule Codebattle.Tournament.Server do
         end
       )
 
-    {:noreply, %{state | tournament: in_progress_tournament}}
+    {:noreply, %{state | tournament: in_progress_tournament, break_timer_expired: false}}
   end
 
   defp run_round_finish_job(server_pid, tournament, op_id) do

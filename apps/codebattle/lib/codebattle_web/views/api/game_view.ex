@@ -25,7 +25,7 @@ defmodule CodebattleWeb.Api.GameView do
       task: render_task(game),
       duration_sec: Map.get(game, :duration_sec),
       finishes_at: Map.get(game, :finishes_at),
-      hide_banned_player_controls: false,
+      hide_banned_player_controls: true,
       timeout_seconds: game.timeout_seconds,
       tournament_id: Map.get(game, :tournament_id),
       type: game.type,

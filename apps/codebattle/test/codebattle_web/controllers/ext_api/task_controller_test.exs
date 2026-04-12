@@ -210,6 +210,22 @@ defmodule CodebattleWeb.ExtApi.TaskControllerTest do
       assert response["errors"]["payload"] == "Invalid gzipped payload format"
     end
 
+    test "returns 404 when payload is missing", %{conn: conn} do
+      response =
+        conn
+        |> put_req_header("x-auth-key", "x-key")
+        |> post(
+          Routes.ext_api_task_path(conn, :create, %{
+            origin: "external_api",
+            visibility: "public",
+            task: %{name: "direct-task"}
+          })
+        )
+        |> json_response(404)
+
+      assert response["errors"]["payload"] == "Payload not found"
+    end
+
     test "returns error for invalid JSON in payload", %{conn: conn} do
       gzipped_data = :zlib.gzip("not valid json")
       payload = Base.encode64(gzipped_data)

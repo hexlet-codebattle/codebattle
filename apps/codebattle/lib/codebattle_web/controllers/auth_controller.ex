@@ -63,13 +63,16 @@ defmodule CodebattleWeb.AuthController do
     case_result =
       case provider_name do
         "github" ->
-          {:ok, profile} = Github.github_auth(code)
-          Codebattle.Auth.User.GithubUser.find_or_create(profile)
+          with {:ok, profile} <- Github.github_auth(code) do
+            Codebattle.Auth.User.GithubUser.find_or_create(profile)
+          end
 
         "discord" ->
           redirect_uri = Routes.auth_url(conn, :callback, provider_name)
-          {:ok, profile} = Discord.discord_auth(code, redirect_uri)
-          Codebattle.Auth.User.DiscordUser.find_or_create(profile)
+
+          with {:ok, profile} <- Discord.discord_auth(code, redirect_uri) do
+            Codebattle.Auth.User.DiscordUser.find_or_create(profile)
+          end
 
         "external" ->
           redirect_uri = Routes.auth_url(conn, :callback, provider_name)

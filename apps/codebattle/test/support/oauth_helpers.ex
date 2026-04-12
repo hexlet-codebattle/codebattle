@@ -56,6 +56,13 @@ defmodule Codebattle.OauthTestHelpers do
     end)
   end
 
+  def stub_github_oauth_error(error_body) do
+    Req.Test.stub(Codebattle.Auth, fn req ->
+      %{request_path: "/login/oauth/access_token", method: "POST", host: "github.com"} = req
+      Req.Test.text(req, URI.encode_query(error_body))
+    end)
+  end
+
   def stub_discord_oauth_requests do
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do

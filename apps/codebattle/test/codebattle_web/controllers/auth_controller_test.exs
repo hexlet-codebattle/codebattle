@@ -68,6 +68,19 @@ defmodule CodebattleWeb.AuthControllerTest do
       assert redirected_to(conn) == "/next_path"
     end
 
+    test "/auth/github/callback handles expired oauth code", %{conn: conn} do
+      stub_github_oauth_error(%{
+        "error" => "bad_verification_code",
+        "error_description" => "The code passed is incorrect or expired."
+      })
+
+      conn = get(conn, "/auth/github/callback", %{"code" => "expired-code", "next" => "/next_path"})
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/"
+      assert Phoenix.Flash.get(conn.assigns.flash, :danger) =~ "bad_verification_code"
+    end
+
     test "/auth/discord/callback creates user", %{conn: conn} do
       stub_discord_oauth_requests()
 

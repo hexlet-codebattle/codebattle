@@ -23,37 +23,47 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    game = Context.get_game!(id)
 
-    if can_access_game?(game, user) do
-      show_game(game, user, conn)
-    else
-      conn
-      |> put_flash(:danger, gettext("You don't have access to this game"))
-      |> redirect(to: Routes.root_path(conn, :index))
+    case Context.fetch_game(id) do
+      {:ok, game} ->
+        if can_access_game?(game, user) do
+          show_game(game, user, conn)
+        else
+          conn
+          |> put_flash(:danger, gettext("You don't have access to this game"))
+          |> redirect(to: Routes.root_path(conn, :index))
+        end
+
+      {:error, :not_found} ->
+        render_game_not_found(conn)
     end
   end
 
   def threejs(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    game = Context.get_game!(id)
 
-    if can_access_game?(game, user) do
-      head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
-      game_params = GameView.render_game(game, head_to_head)
+    case Context.fetch_game(id) do
+      {:ok, game} ->
+        if can_access_game?(game, user) do
+          head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+          game_params = GameView.render_game(game, head_to_head)
 
-      conn
-      |> put_gon(
-        game: game_params,
-        game_id: game.id,
-        players: present_users_for_gon(Helpers.get_players(game))
-      )
-      |> put_game_meta_tags(game)
-      |> render("threejs.html", %{game: game, user: user})
-    else
-      conn
-      |> put_flash(:danger, gettext("You don't have access to this game"))
-      |> redirect(to: Routes.root_path(conn, :index))
+          conn
+          |> put_gon(
+            game: game_params,
+            game_id: game.id,
+            players: present_users_for_gon(Helpers.get_players(game))
+          )
+          |> put_game_meta_tags(game)
+          |> render("threejs.html", %{game: game, user: user})
+        else
+          conn
+          |> put_flash(:danger, gettext("You don't have access to this game"))
+          |> redirect(to: Routes.root_path(conn, :index))
+        end
+
+      {:error, :not_found} ->
+        render_game_not_found(conn)
     end
   end
 
@@ -222,6 +232,13 @@ defmodule CodebattleWeb.GameController do
     })
   end
 
+  defp render_game_not_found(conn) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(CodebattleWeb.ErrorView)
+    |> render("404.html", %{msg: gettext("Game not found")})
+  end
+
   defp get_twitter_labels_meta(players) do
     players
     |> Enum.with_index(1)
@@ -237,7 +254,8 @@ defmodule CodebattleWeb.GameController do
     end)
   end
 
-  defp maybe_put_tournament_player_restrictions(game_params, %{tournament_id: nil}, _user), do: game_params
+  defp maybe_put_tournament_player_restrictions(game_params, %{tournament_id: nil}, _user),
+    do: Map.put(game_params, :hide_banned_player_controls, true)
 
   defp maybe_put_tournament_player_restrictions(game_params, game, _user) do
     tournament = Tournament.Context.get(game.tournament_id)

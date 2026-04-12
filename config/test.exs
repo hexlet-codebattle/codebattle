@@ -74,6 +74,7 @@ config :codebattle, code_check_timeout: 35_000
 config :codebattle, env: :test
 config :codebattle, fake_html_to_image: true
 config :codebattle, freeze_time: true
+config :codebattle, min_break_duration_seconds: 1
 config :codebattle, store_playbook_async: false
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 config :codebattle, tournament_finish_timeout_ms: 0

@@ -42,13 +42,16 @@ defmodule CodebattleWeb.AuthBindController do
     case_result =
       case params["provider"] do
         "github" ->
-          {:ok, profile} = Github.github_auth(code)
-          GithubUser.bind(current_user, profile)
+          with {:ok, profile} <- Github.github_auth(code) do
+            GithubUser.bind(current_user, profile)
+          end
 
         "discord" ->
           redirect_uri = Routes.auth_bind_url(conn, :callback, "discord")
-          {:ok, profile} = Discord.discord_auth(code, redirect_uri)
-          DiscordUser.bind(current_user, profile)
+
+          with {:ok, profile} <- Discord.discord_auth(code, redirect_uri) do
+            DiscordUser.bind(current_user, profile)
+          end
       end
 
     case case_result do

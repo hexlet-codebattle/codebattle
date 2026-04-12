@@ -108,9 +108,15 @@ defmodule CodebattleWeb.GameControllerTest do
     end
 
     test "return 404 when game over does not exists", %{conn: conn} do
-      assert_error_sent(:not_found, fn ->
-        get(conn, Routes.game_path(conn, :show, 1_231_223))
-      end)
+      conn = get(conn, Routes.game_path(conn, :show, 1_231_223))
+
+      assert html_response(conn, 404) =~ "Game not found"
+    end
+
+    test "return 404 when game id is not an integer", %{conn: conn} do
+      conn = get(conn, "/games/training")
+
+      assert html_response(conn, 404) =~ "Game not found"
     end
   end
 

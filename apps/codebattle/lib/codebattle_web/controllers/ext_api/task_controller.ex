@@ -10,6 +10,18 @@ defmodule CodebattleWeb.ExtApi.TaskController do
     origin = Map.get(params, "origin")
     visibility = Map.get(params, "visibility")
 
+    case payload do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{errors: %{payload: "Payload not found"}})
+
+      _ ->
+        process_payload(conn, payload, origin, visibility)
+    end
+  end
+
+  defp process_payload(conn, payload, origin, visibility) do
     with {:ok, gzipped_data} <- decode_base64(payload),
          {:ok, json_data} <- decompress_gzip(gzipped_data),
          {:ok, tasks_list} <- Jason.decode(json_data) do

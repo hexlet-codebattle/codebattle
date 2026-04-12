@@ -62,7 +62,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "75_percentile"} = tournament)
       when type in ["swiss", "top200"] do
     round_position = tournament.current_round_position || 0
-    cheated_game_sql = cheated_game_sql("g", tournament)
+    player_cheater_sql = player_cheater_sql(tournament)
+    game_has_cheater_sql = game_has_cheater_sql("g", tournament)
     clean_results(tournament.id, round_position)
 
     Repo.query!("""
@@ -82,7 +83,8 @@ defmodule Codebattle.Tournament.TournamentResult do
       and COALESCE(round_position, 0) = #{round_position}
       and state = 'game_over'
       and bot_won = FALSE
-      and not (#{cheated_game_sql})
+      and not COALESCE(g.was_cheated, FALSE)
+      and not (#{cheater_won_game_sql("g", tournament)})
       GROUP BY
       task_id, level),
       stats as (
@@ -96,16 +98,21 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.tournament_id,
       g.id as game_id,
       COALESCE(g.round_position, 0) as round_position,
-      (#{cheated_game_sql}) AS was_cheated,
+      (COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql})) AS was_cheated,
       COALESCE(dt.base_score, 0) AS base_score,
       COALESCE(dt.min_duration, 0) AS min_duration,
       COALESCE(dt.max_duration, 0) AS max_duration,
       CASE
-      WHEN (#{cheated_game_sql}) THEN
+      -- Game-level cheated flag or this player is a cheater
+      WHEN COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql}) THEN
         0
-      -- Handle timeout case where both players lost
+      -- Opponent of cheater who lost (cheater won) — give base_score as compensation
+      WHEN (#{game_has_cheater_sql}) AND g.state = 'game_over' AND (p.player_info->>'result_percent')::numeric < 100.0 THEN
+        COALESCE(dt.base_score, 0)
+      -- Handle timeout case where both players lost (including opponent of cheater in timeout)
       WHEN g.state = 'timeout' THEN
         0.5 * COALESCE(dt.base_score, 0) * COALESCE((p.player_info->>'result_percent')::numeric, 0) / 100.0
+      -- Normal scoring (includes opponent of cheater who won — gets normal win score)
       ELSE
         COALESCE(dt.base_score, 0) * (
           2 - ((g.duration_sec - COALESCE(dt.min_duration, 0))::numeric / GREATEST(COALESCE(dt.max_duration - COALESCE(dt.min_duration, 0), 1), 1))
@@ -163,7 +170,8 @@ defmodule Codebattle.Tournament.TournamentResult do
   def upsert_results(%{type: type, ranking_type: "by_user", score_strategy: "win_loss"} = tournament)
       when type in ["swiss"] do
     round_position = tournament.current_round_position || 0
-    cheated_game_sql = cheated_game_sql("g", tournament)
+    player_cheater_sql = player_cheater_sql(tournament)
+    game_has_cheater_sql = game_has_cheater_sql("g", tournament)
     clean_results(tournament.id, round_position)
 
     Repo.query!("""
@@ -180,9 +188,11 @@ defmodule Codebattle.Tournament.TournamentResult do
       g.task_id,
       g.id as game_id,
       COALESCE(g.round_position, 0) as round_position,
-      (#{cheated_game_sql}) AS was_cheated,
+      (COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql})) AS was_cheated,
       CASE
-        WHEN (#{cheated_game_sql}) THEN 0
+        WHEN COALESCE(g.was_cheated, FALSE) OR (#{player_cheater_sql}) THEN 0
+        WHEN (#{game_has_cheater_sql}) AND g.state = 'game_over'
+        THEN #{@win_score}
         WHEN (p.player_info->'result_percent')::numeric = 100.0
         THEN #{@win_score}
         ELSE #{@loss_score}
@@ -255,21 +265,41 @@ defmodule Codebattle.Tournament.TournamentResult do
     |> Repo.delete_all()
   end
 
-  defp cheated_game_sql(game_alias, %{cheater_ids: []}), do: "COALESCE(#{game_alias}.was_cheated, FALSE)"
-  defp cheated_game_sql(game_alias, %{cheater_ids: nil}), do: "COALESCE(#{game_alias}.was_cheated, FALSE)"
+  # Checks if the winner of the game is a cheater (for excluding from percentile calculation)
+  defp cheater_won_game_sql(_game_alias, %{cheater_ids: ids}) when ids in [[], nil], do: "FALSE"
 
-  defp cheated_game_sql(game_alias, %{cheater_ids: cheater_ids}) do
-    cheater_ids_sql =
-      cheater_ids
-      |> Enum.uniq()
-      |> Enum.join(",")
+  defp cheater_won_game_sql(game_alias, %{cheater_ids: cheater_ids}) do
+    cheater_ids_sql = cheater_ids |> Enum.uniq() |> Enum.join(",")
 
     """
-    COALESCE(#{game_alias}.was_cheated, FALSE)
-    or exists (
+    exists (
       select 1
-      from jsonb_array_elements(#{game_alias}.players) as cheater_player(player_info)
-      where (cheater_player.player_info->>'id')::integer = any(array[#{cheater_ids_sql}]::integer[])
+      from jsonb_array_elements(#{game_alias}.players) as wp(player_info)
+      where (wp.player_info->>'result_percent')::numeric = 100.0
+      and (wp.player_info->>'id')::integer = any(array[#{cheater_ids_sql}]::integer[])
+    )
+    """
+  end
+
+  # Checks if THIS specific player (from lateral join) is a cheater
+  defp player_cheater_sql(%{cheater_ids: ids}) when ids in [[], nil], do: "FALSE"
+
+  defp player_cheater_sql(%{cheater_ids: cheater_ids}) do
+    cheater_ids_sql = cheater_ids |> Enum.uniq() |> Enum.join(",")
+    "(p.player_info->>'id')::integer = any(array[#{cheater_ids_sql}]::integer[])"
+  end
+
+  # Checks if the game has any identified cheater (by cheater_ids only, not game-level flag)
+  defp game_has_cheater_sql(_game_alias, %{cheater_ids: ids}) when ids in [[], nil], do: "FALSE"
+
+  defp game_has_cheater_sql(game_alias, %{cheater_ids: cheater_ids}) do
+    cheater_ids_sql = cheater_ids |> Enum.uniq() |> Enum.join(",")
+
+    """
+    exists (
+      select 1
+      from jsonb_array_elements(#{game_alias}.players) as cp(player_info)
+      where (cp.player_info->>'id')::integer = any(array[#{cheater_ids_sql}]::integer[])
     )
     """
   end

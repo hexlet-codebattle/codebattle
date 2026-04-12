@@ -68,5 +68,20 @@ defmodule CodebattleWeb.ExtApi.TaskPackControllerTest do
       assert updated_task_pack.visibility == "hidden"
       assert updated_task_pack.task_ids == [task1.id, task2.id, task3.id]
     end
+
+    test "returns 401 when task_pack wrapper is missing", %{conn: conn} do
+      conn =
+        conn
+        |> put_req_header("x-auth-key", "x-key")
+        |> post(
+          Routes.ext_api_task_pack_path(conn, :create, %{
+            name: "final_full",
+            visibility: "hidden",
+            task_names: ["sum of two", "tasks"]
+          })
+        )
+
+      assert json_response(conn, 401) == %{"error" => "Invalid task_pack payload"}
+    end
   end
 end

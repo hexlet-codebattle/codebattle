@@ -144,7 +144,16 @@ defmodule Codebattle.Tournament.SwissCheaterRecalculationTest do
       |> Repo.all()
 
     assert cheated_rows != []
-    assert Enum.all?(cheated_rows, & &1.was_cheated)
+
+    # Only the cheater's rows should have was_cheated=true, not their opponents
+    Enum.each(cheated_rows, fn row ->
+      if row.user_id in cheater_ids do
+        assert row.was_cheated, "cheater #{row.user_id} should have was_cheated=true"
+        assert row.score == 0, "cheater #{row.user_id} should have score=0"
+      else
+        refute row.was_cheated, "opponent #{row.user_id} should have was_cheated=false"
+      end
+    end)
   end
 
   defp resolve_match(tournament, match, round_position, match_index) do

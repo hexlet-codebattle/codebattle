@@ -106,12 +106,12 @@ defmodule Codebattle.Tournament.TournamenResultTest do
       assert %{^user_id => %{score: 300, place: 1}} = TournamentResult.get_user_ranking(tournament)
     end
 
-    test "upsert_results marks games involving cheater ids as cheated and zeroes their scores" do
+    test "win_loss: cheater gets 0, opponent gets win as compensation" do
       task = insert(:task, level: "easy")
-      user1 = insert(:user, name: "cheater")
-      user2 = insert(:user, name: "fair-1")
-      user3 = insert(:user, name: "fair-2")
-      user4 = insert(:user, name: "fair-3")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
 
       tournament =
         insert(:tournament,
@@ -119,32 +119,277 @@ defmodule Codebattle.Tournament.TournamenResultTest do
           ranking_type: "by_user",
           score_strategy: "win_loss",
           current_round_position: 0,
-          cheater_ids: [user1.id]
+          cheater_ids: [cheater.id]
         )
 
-      insert_game(task, tournament, user1, user2, 10, 100.0, 0.0)
-      insert_game(task, tournament, user3, user4, 15, 100.0, 0.0)
+      # Cheater won against fair1
+      insert_game(task, tournament, cheater, fair1, 10, 100.0, 0.0)
+      # Normal game
+      insert_game(task, tournament, fair2, fair3, 15, 100.0, 0.0)
 
       TournamentResult.upsert_results(tournament)
 
-      assert results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
 
       assert [
-               %{user_id: user1_id, was_cheated: true, score: 0},
-               %{user_id: user2_id, was_cheated: true, score: 0},
-               %{user_id: user3_id, was_cheated: false, score: 1},
-               %{user_id: user4_id, was_cheated: false, score: 0}
+               %{user_id: cheater_id, was_cheated: true, score: 0},
+               %{user_id: fair1_id, was_cheated: false, score: 1},
+               %{user_id: fair2_id, was_cheated: false, score: 1},
+               %{user_id: fair3_id, was_cheated: false, score: 0}
              ] = results
 
-      assert [user1.id, user2.id, user3.id, user4.id] == [user1_id, user2_id, user3_id, user4_id]
+      assert [cheater.id, fair1.id, fair2.id, fair3.id] == [cheater_id, fair1_id, fair2_id, fair3_id]
     end
 
-    test "recalculate_results rebuilds all rounds with zeroed cheaters at the bottom" do
+    test "win_loss: opponent who beat cheater gets normal win" do
       task = insert(:task, level: "easy")
       cheater = insert(:user, name: "cheater")
-      user2 = insert(:user, name: "fair-1")
-      user3 = insert(:user, name: "fair-2")
-      user4 = insert(:user, name: "fair-3")
+      fair1 = insert(:user, name: "fair-1")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "win_loss",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Fair player won against cheater
+      insert_game(task, tournament, fair1, cheater, 10, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      assert [
+               %{user_id: cheater_id, was_cheated: true, score: 0},
+               %{user_id: fair1_id, was_cheated: false, score: 1}
+             ] = results
+
+      assert [cheater.id, fair1.id] == [cheater_id, fair1_id]
+    end
+
+    test "win_loss: timeout with cheater gives opponent normal loss score" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "win_loss",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Timeout — neither won
+      insert_game(task, tournament, cheater, fair1, 60, 40.0, 50.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      assert [
+               %{user_id: cheater_id, was_cheated: true, score: 0},
+               %{user_id: fair1_id, was_cheated: false, score: 0}
+             ] = results
+
+      assert [cheater.id, fair1.id] == [cheater_id, fair1_id]
+    end
+
+    test "75_percentile: cheater gets 0, opponent who won gets normal score" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Fair1 won against cheater
+      insert_game(task, tournament, fair1, cheater, 20, 100.0, 0.0)
+      # Normal game for base_score reference
+      insert_game(task, tournament, fair2, fair3, 30, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      cheater_result = Enum.find(results, &(&1.user_id == cheater.id))
+      fair1_result = Enum.find(results, &(&1.user_id == fair1.id))
+      fair2_result = Enum.find(results, &(&1.user_id == fair2.id))
+
+      # Cheater always gets 0
+      assert cheater_result.was_cheated == true
+      assert cheater_result.score == 0
+
+      # Fair1 beat cheater — gets normal win score, not penalized
+      assert fair1_result.was_cheated == false
+      assert fair1_result.score > 0
+
+      # Fair2 won normally — also gets score
+      assert fair2_result.was_cheated == false
+      assert fair2_result.score > 0
+    end
+
+    test "75_percentile: opponent who lost to cheater gets base_score compensation" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Cheater won against fair1
+      insert_game(task, tournament, cheater, fair1, 20, 100.0, 30.0)
+      # Normal game to establish base_score
+      insert_game(task, tournament, fair2, fair3, 30, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      cheater_result = Enum.find(results, &(&1.user_id == cheater.id))
+      fair1_result = Enum.find(results, &(&1.user_id == fair1.id))
+
+      assert cheater_result.was_cheated == true
+      assert cheater_result.score == 0
+
+      # Fair1 lost to cheater — gets base_score as compensation
+      assert fair1_result.was_cheated == false
+      assert fair1_result.score > 0
+    end
+
+    test "75_percentile: timeout with cheater gives opponent normal timeout score" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Timeout with cheater — fair1 had some progress
+      insert_game(task, tournament, cheater, fair1, 60, 40.0, 50.0)
+      # Normal game to establish base_score
+      insert_game(task, tournament, fair2, fair3, 30, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      cheater_result = Enum.find(results, &(&1.user_id == cheater.id))
+      fair1_result = Enum.find(results, &(&1.user_id == fair1.id))
+
+      assert cheater_result.was_cheated == true
+      assert cheater_result.score == 0
+
+      # Fair1 in timeout with cheater — gets normal timeout score based on their result_percent
+      assert fair1_result.was_cheated == false
+      assert fair1_result.score > 0
+    end
+
+    test "75_percentile: cheater win excluded from percentile, honest win included" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0,
+          cheater_ids: [cheater.id]
+        )
+
+      # Cheater won in 5s — should NOT count in percentile (would skew base_score)
+      insert_game(task, tournament, cheater, fair1, 5, 100.0, 30.0)
+      # Fair2 won in 100s — this counts in percentile
+      insert_game(task, tournament, fair2, fair3, 100, 100.0, 0.0)
+
+      TournamentResult.upsert_results(tournament)
+
+      results = Repo.all(TournamentResult)
+
+      fair2_result = Enum.find(results, &(&1.user_id == fair2.id))
+
+      # With only 1 winner in percentile (fair2 at 100s), base_score = 100
+      # If cheater's 5s were included, base_score would be ~28.75 (much lower)
+      # fair2 is the sole winner, so score = base_score * 2 (fastest = max multiplier)
+      # base_score = 100, score = 100 * 2 * 100/100 = 200
+      assert fair2_result.score == 200
+    end
+
+    test "75_percentile: game-level was_cheated flag penalizes both players" do
+      task = insert(:task, level: "easy")
+      user1 = insert(:user, name: "user-1")
+      user2 = insert(:user, name: "user-2")
+
+      tournament =
+        insert(:tournament,
+          type: "swiss",
+          ranking_type: "by_user",
+          score_strategy: "75_percentile",
+          current_round_position: 0,
+          cheater_ids: []
+        )
+
+      # Game-level cheated flag (e.g. match-fixing) — both players penalized
+      insert(:game,
+        state: "game_over",
+        level: task.level,
+        duration_sec: 10,
+        was_cheated: true,
+        players: build_players(user1, user2, 100.0, 0.0),
+        tournament_id: tournament.id,
+        task: task
+      )
+
+      TournamentResult.upsert_results(tournament)
+
+      results = TournamentResult |> Repo.all() |> Enum.sort_by(& &1.user_id)
+
+      assert [
+               %{user_id: u1_id, was_cheated: true, score: 0},
+               %{user_id: u2_id, was_cheated: true, score: 0}
+             ] = results
+
+      assert [user1.id, user2.id] == [u1_id, u2_id]
+    end
+
+    test "recalculate_results rebuilds all rounds with cheater penalized and opponent compensated" do
+      task = insert(:task, level: "easy")
+      cheater = insert(:user, name: "cheater")
+      fair1 = insert(:user, name: "fair-1")
+      fair2 = insert(:user, name: "fair-2")
+      fair3 = insert(:user, name: "fair-3")
 
       tournament =
         insert(:tournament,
@@ -156,6 +401,7 @@ defmodule Codebattle.Tournament.TournamenResultTest do
           cheater_ids: [cheater.id]
         )
 
+      # Stale result from before cheater was flagged
       insert(:tournament_result,
         tournament_id: tournament.id,
         user_id: cheater.id,
@@ -172,13 +418,15 @@ defmodule Codebattle.Tournament.TournamenResultTest do
         was_cheated: false
       )
 
-      insert_game(task, tournament, cheater, user2, 10, 100.0, 0.0)
+      # Round 1: cheater won against fair1
+      insert_game(task, tournament, cheater, fair1, 10, 100.0, 0.0)
 
+      # Round 1: normal game
       insert(:game,
         state: "game_over",
         level: task.level,
         duration_sec: 20,
-        players: build_players(user3, user4, 100.0, 0.0),
+        players: build_players(fair2, fair3, 100.0, 0.0),
         tournament_id: tournament.id,
         task: task,
         round_position: 1
@@ -186,27 +434,34 @@ defmodule Codebattle.Tournament.TournamenResultTest do
 
       Codebattle.Tournament.Context.recalculate_results(tournament.id)
 
-      assert [
-               %{round_position: 0, user_id: cheater_id, was_cheated: true},
-               %{round_position: 0, user_id: user2_id, was_cheated: true},
-               %{round_position: 1, user_id: user3_id, was_cheated: false},
-               %{round_position: 1, user_id: user4_id, was_cheated: false}
-             ] =
-               TournamentResult
-               |> Repo.all()
-               |> Enum.sort_by(&{&1.round_position, &1.user_id})
+      results =
+        TournamentResult
+        |> Repo.all()
+        |> Enum.sort_by(&{&1.round_position, &1.user_id})
 
-      assert [cheater.id, user2.id, user3.id, user4.id] == [cheater_id, user2_id, user3_id, user4_id]
-
+      # Cheater penalized, opponent NOT penalized
       assert [
-               %{user_id: ^user3_id, place: 1, score: 1, total_time: 20, is_cheater: false},
-               %{user_id: ^user4_id, place: 2, score: 0, total_time: 20, is_cheater: false},
-               %{user_id: ^cheater_id, place: 3, score: 0, total_time: 0, is_cheater: true}
-             ] =
-               TournamentUserResult
-               |> where([tur], tur.tournament_id == ^tournament.id)
-               |> order_by([tur], asc: tur.place)
-               |> Repo.all()
+               %{round_position: 0, user_id: cheater_id, was_cheated: true, score: 0},
+               %{round_position: 0, user_id: fair1_id, was_cheated: false, score: 1},
+               %{round_position: 1, user_id: fair2_id, was_cheated: false, score: 1},
+               %{round_position: 1, user_id: fair3_id, was_cheated: false, score: 0}
+             ] = results
+
+      assert [cheater.id, fair1.id, fair2.id, fair3.id] == [cheater_id, fair1_id, fair2_id, fair3_id]
+
+      user_results =
+        TournamentUserResult
+        |> where([tur], tur.tournament_id == ^tournament.id)
+        |> order_by([tur], asc: tur.place)
+        |> Repo.all()
+
+      # fair1 gets compensation win, ranks alongside fair2
+      assert [
+               %{user_id: _, place: 1, is_cheater: false},
+               %{user_id: _, place: 2, is_cheater: false},
+               %{user_id: _, place: 3, is_cheater: false},
+               %{user_id: ^cheater_id, place: 4, score: 0, is_cheater: true}
+             ] = user_results
     end
 
     test "graded tournaments do not award points to users without wins or score" do

@@ -11,11 +11,22 @@ defmodule CodebattleWeb.ExtApi.TaskPackController do
   plug(CodebattleWeb.Plugs.TokenAuth)
 
   def create(conn, params) do
+    case Map.get(params, "task_pack") do
+      task_pack_params when is_map(task_pack_params) ->
+        process_task_pack(conn, params, task_pack_params)
+
+      _ ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Invalid task_pack payload"})
+    end
+  end
+
+  defp process_task_pack(conn, params, task_pack_params) do
     visibility = Map.get(params, "visibility", "public")
-    tp_params = Map.get(params, "task_pack", %{})
 
     params =
-      tp_params
+      task_pack_params
       |> AtomizedMap.atomize()
       |> Map.put(:visibility, visibility)
       |> Map.put(:state, "active")

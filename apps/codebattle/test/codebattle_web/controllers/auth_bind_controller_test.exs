@@ -77,6 +77,24 @@ defmodule CodebattleWeb.AuthBindControllerTest do
       assert conn.state == :sent
       assert redirected_to(conn) == "/settings"
     end
+
+    test "GET /auth/github/callback/bind handles expired oauth code", %{conn: conn} do
+      stub_github_oauth_error(%{
+        "error" => "bad_verification_code",
+        "error_description" => "The code passed is incorrect or expired."
+      })
+
+      user = insert(:user, github_id: 1, discord_id: 1, name: "lol-kek")
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get("/auth/github/callback/bind", %{"code" => "expired-code"})
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :danger) =~ "bad_verification_code"
+    end
   end
 
   describe "DELETE /auth/:provider/" do

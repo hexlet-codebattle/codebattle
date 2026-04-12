@@ -509,11 +509,16 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def complete_round_finish(tournament) do
-        tournament
-        |> broadcast_round_finished()
-        |> maybe_finish_tournament()
-        |> maybe_start_round_or_break_or_finish()
-        |> then(fn tournament ->
+        if_result =
+          if finish_tournament?(tournament) do
+            maybe_finish_tournament(tournament)
+          else
+            tournament
+            |> broadcast_round_finished()
+            |> maybe_start_round_or_break_or_finish()
+          end
+
+        then(if_result, fn tournament ->
           broadcast_tournament_update(tournament)
           tournament
         end)
@@ -548,25 +553,17 @@ defmodule Codebattle.Tournament.Base do
         update_struct(tournament, %{break_state: "on", round_state: "break"})
       end
 
-      defp maybe_start_round_or_break_or_finish(
-             %{
-               state: "active",
-               break_duration_seconds: break_duration_seconds,
-               current_round_position: current_round_position
-             } = tournament
-           )
-           when break_duration_seconds not in [nil, 0] do
+      defp maybe_start_round_or_break_or_finish(%{state: "active"} = tournament) do
+        min_break = Application.get_env(:codebattle, :min_break_duration_seconds, 5)
+        break_seconds = max(tournament.break_duration_seconds || min_break, min_break)
+
         Process.send_after(
           self(),
           {:stop_round_break, tournament.current_round_position},
-          to_timeout(second: break_duration_seconds)
+          to_timeout(second: break_seconds)
         )
 
         update_struct(tournament, %{break_state: "on", round_state: "break"})
-      end
-
-      defp maybe_start_round_or_break_or_finish(tournament) do
-        start_round_force(tournament)
       end
 
       defp increment_current_round(tournament) do
@@ -770,7 +767,7 @@ defmodule Codebattle.Tournament.Base do
         })
       end
 
-      defp maybe_finish_tournament(tournament) do
+      def maybe_finish_tournament(tournament) do
         if finish_tournament?(tournament) do
           finish_tournament(tournament)
         else
@@ -922,7 +919,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp broadcast_round_finished(tournament) do
+      def broadcast_round_finished(tournament) do
         Codebattle.PubSub.broadcast("tournament:round_finished", %{tournament: tournament})
         tournament
       end
