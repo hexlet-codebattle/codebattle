@@ -64,15 +64,19 @@ defmodule CodebattleWeb.AuthBindController do
   end
 
   def unbind(conn, params) do
-    current_user = conn.assigns.current_user
+    current_user = Codebattle.Repo.reload(conn.assigns.current_user)
 
     case_result =
-      case params["provider"] do
-        "github" ->
-          GithubUser.unbind(current_user)
+      if Codebattle.User.can_unlink_social?(current_user) do
+        case params["provider"] do
+          "github" ->
+            GithubUser.unbind(current_user)
 
-        "discord" ->
-          DiscordUser.unbind(current_user)
+          "discord" ->
+            DiscordUser.unbind(current_user)
+        end
+      else
+        {:error, gettext("You need at least one authentication method to sign in.")}
       end
 
     case case_result do

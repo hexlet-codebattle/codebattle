@@ -49,6 +49,7 @@ const preloadedState = {
       name: "Diman",
       lang: "ts",
       avatarUrl: "/assets/images/logo.svg",
+      canUnlinkSocial: false,
       discordName: null,
       discordId: null,
       error: "",
@@ -215,5 +216,57 @@ describe("UserSettings test cases", () => {
     await user.click(submitButton);
 
     expect(await findByRole("alert")).toHaveClass("alert-danger");
+  });
+
+  test("unlink button is disabled when it is the last sign-in method", () => {
+    const customStore = configureStore({
+      reducer,
+      preloadedState: {
+        user: {
+          settings: {
+            ...preloadedState.user.settings,
+            githubId: 19,
+            githubName: "octocat",
+            canUnlinkSocial: false,
+            discordId: null,
+            discordName: null,
+          },
+        },
+      },
+    });
+
+    const { getByRole } = setup(
+      <Provider store={customStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(getByRole("button", { name: "Unlink Github" })).toBeDisabled();
+  });
+
+  test("unlink button stays enabled when another sign-in method exists", () => {
+    const customStore = configureStore({
+      reducer,
+      preloadedState: {
+        user: {
+          settings: {
+            ...preloadedState.user.settings,
+            githubId: 19,
+            githubName: "octocat",
+            canUnlinkSocial: true,
+            discordId: null,
+            discordName: null,
+          },
+        },
+      },
+    });
+
+    const { getByRole } = setup(
+      <Provider store={customStore}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    expect(getByRole("button", { name: "Unlink Github" })).toBeEnabled();
   });
 });

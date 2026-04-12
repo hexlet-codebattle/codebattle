@@ -65,10 +65,6 @@ function Notification({ notification, onClose }) {
 }
 
 function SocialButtons({ settings }) {
-  const onlyOneProviderLinked =
-    providers.filter((provider) => !!settings[mapUserPropNameByProviderName[provider]]).length ===
-    1;
-
   return providers.map((provider) => {
     const providerPropName = mapUserPropNameByProviderName[provider];
     const isLinked = !!settings[providerPropName];
@@ -87,7 +83,7 @@ function SocialButtons({ settings }) {
             data-method="delete"
             data-csrf={csrfToken}
             data-to={`/auth/${provider}`}
-            disabled={onlyOneProviderLinked}
+            disabled={!settings.canUnlinkSocial}
           >
             {`Unlink ${formatedProviderName}`}
           </button>

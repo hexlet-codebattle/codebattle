@@ -120,5 +120,31 @@ defmodule CodebattleWeb.AuthBindControllerTest do
       assert user.github_id == nil
       assert user.github_name == nil
     end
+
+    test "does not unbind the last available social sign-in method", %{conn: conn} do
+      user =
+        insert(:user,
+          github_id: 42,
+          github_name: "octocat",
+          discord_id: nil,
+          discord_name: nil,
+          discord_avatar: nil,
+          firebase_uid: nil,
+          password_hash: nil,
+          external_oauth_id: nil
+        )
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> delete("/auth/github")
+
+      user = Repo.reload!(user)
+
+      assert user.github_id == 42
+      assert user.github_name == "octocat"
+      assert redirected_to(conn) == "/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :danger) =~ "at least one authentication method"
+    end
   end
 end

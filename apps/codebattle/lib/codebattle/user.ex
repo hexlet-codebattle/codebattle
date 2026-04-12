@@ -263,6 +263,10 @@ defmodule Codebattle.User do
     |> Repo.update()
   end
 
+  def can_unlink_social?(user) do
+    available_login_methods_count(user) > 1
+  end
+
   def update_subscription_type(user_id, type) do
     user_id
     |> get!()
@@ -302,6 +306,20 @@ defmodule Codebattle.User do
   end
 
   def subscription_types, do: @subscription_types
+
+  defp available_login_methods_count(user) do
+    Enum.count(
+      [
+        present?(user.github_id),
+        present?(user.discord_id),
+        present?(user.firebase_uid) or present?(user.password_hash),
+        present?(user.external_oauth_id)
+      ],
+      & &1
+    )
+  end
+
+  defp present?(value), do: not is_nil(value) and value != ""
 
   defp assign_clan(changeset, %{:clan => clan}, _user_id) when clan in ["", nil],
     do: change(changeset, %{clan: nil, clan_id: nil})

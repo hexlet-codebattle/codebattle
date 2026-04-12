@@ -35,6 +35,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
     user
     |> Map.take([
       :avatar_url,
+      :can_unlink_social,
       :clan,
       :clan_id,
       :discord_avatar,
@@ -65,6 +66,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :subscription_type,
       :sound_settings
     ])
+    |> Map.put(:can_unlink_social, Codebattle.User.can_unlink_social?(user))
     |> Map.put(:is_admin, Codebattle.User.admin?(user))
   end
 end
