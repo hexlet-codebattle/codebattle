@@ -9,6 +9,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         insert(:user, %{
           name: "first",
           email: "test1@test.test",
+          discord_id: 5_246_840,
+          discord_name: "discord_name782",
           github_id: 1,
           github_name: "g_name",
           clan: "abc",
@@ -24,10 +26,13 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         |> get(Routes.api_v1_settings_path(conn, :show))
 
       assert json_response(conn, 200) == %{
+               "can_unlink_social" => true,
                "name" => "first",
                "lang" => "dart",
                "locale" => "en",
                "clan" => "abc",
+               "discord_id" => 5_246_840,
+               "discord_name" => "discord_name782",
                "sound_settings" => %{"level" => 7, "tournament_level" => 7, "type" => "dendy"},
                "db_type" => "mongodb",
                "style_lang" => "less",
@@ -58,7 +63,10 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
         |> put_session(:user_id, user.id)
         |> patch(Routes.api_v1_settings_path(conn, :update, new_settings))
 
-      assert json_response(conn, 200) == Map.put(new_settings, "clan", "Bca")
+      assert json_response(conn, 200) ==
+               new_settings
+               |> Map.put("clan", "Bca")
+               |> Map.put("can_unlink_social", true)
 
       updated = Repo.get!(Codebattle.User, user.id)
 

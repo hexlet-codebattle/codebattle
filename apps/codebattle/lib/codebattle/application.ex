@@ -18,7 +18,8 @@ defmodule Codebattle.Application do
     children =
       [
         {ChromicPDF, chromic_pdf_opts()},
-        {Cachex, name: :season_cache},
+        Supervisor.child_spec({Cachex, name: :season_cache}, id: :season_cache),
+        Supervisor.child_spec({Cachex, name: :github_stats_cache}, id: :github_stats_cache),
         {Codebattle.UsersPointsAndRankServer, []},
         {Codebattle.UserAchievementsServer, []},
         {Codebattle.Bot.GameCreator, []},

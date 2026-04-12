@@ -46,6 +46,9 @@ defmodule CodebattleWeb.ConnCase do
   setup tags do
     Codebattle.DataCase.setup_sandbox(tags)
 
+    Cachex.put(:github_stats_cache, :codebattle_stars, 0)
+    Cachex.put(:github_stats_cache, :codebattle_stars_last_successful, 0)
+
     conn =
       Phoenix.ConnTest.build_conn()
       |> Plug.Session.call(@session)

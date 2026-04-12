@@ -1236,6 +1236,54 @@ main {
   width: auto;
 }
 
+.github-stars-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #dce2ea;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.github-stars-badge__main,
+.github-stars-badge__count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.34rem 0.74rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  background: linear-gradient(180deg, #2d3138 0%, #24282e 100%);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+}
+
+.github-stars-badge__main {
+  gap: 0.1rem;
+}
+
+.github-stars-badge__icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.32rem;
+  filter: brightness(0) invert(0.92);
+}
+
+.github-stars-badge__label,
+.github-stars-badge__count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.github-stars-badge__count {
+  justify-content: center;
+  min-width: 3rem;
+  padding-left: 0.62rem;
+  padding-right: 0.62rem;
+  color: #ffffff;
+  background: linear-gradient(180deg, #343a42 0%, #2b3037 100%);
+}
+
 .create-game-btn:hover {
   background: linear-gradient(to bottom, #f5f5f5 0%, #ededed 100%);
   text-shadow: 0 1px 0 #fff;
@@ -1261,10 +1309,19 @@ main {
     font-size: clamp(0.75rem, 1vw, 0.875rem);
   }
 
-  .main-nav img[src*='shields.io'] {
-    max-width: 100%;
-    width: clamp(60px, 10vw, 80px);
-    height: auto;
+  .main-nav .github-stars-badge {
+    gap: 0.28rem;
+  }
+
+  .main-nav .github-stars-badge__main,
+  .main-nav .github-stars-badge__count {
+    min-height: 26px;
+    padding-top: 0.28rem;
+    padding-bottom: 0.28rem;
+  }
+
+  .main-nav .github-stars-badge__count {
+    min-width: clamp(2.6rem, 4vw, 3.2rem);
   }
 
   .navbar-brand img {

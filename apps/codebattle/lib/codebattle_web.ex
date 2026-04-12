@@ -56,6 +56,7 @@ defmodule CodebattleWeb do
 
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.FormHelpers
+      import CodebattleWeb.GithubStarsHelpers
       import Phoenix.Controller, only: [view_module: 1]
       import Phoenix.HTML
       import Phoenix.HTML.Form
