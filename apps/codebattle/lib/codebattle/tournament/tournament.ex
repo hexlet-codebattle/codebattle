@@ -15,6 +15,7 @@ defmodule Codebattle.Tournament do
            only: [
              :access_token,
              :access_type,
+             :auto_redirect_to_game,
              :break_duration_seconds,
              :break_state,
              :cheater_ids,
@@ -25,6 +26,7 @@ defmodule Codebattle.Tournament do
              :description,
              :event_id,
              :exclude_banned_players,
+             :group_tournament_id,
              :grade,
              :id,
              :is_live,
@@ -80,6 +82,7 @@ defmodule Codebattle.Tournament do
 
     field(:access_token, :string)
     field(:access_type, :string, default: "public")
+    field(:auto_redirect_to_game, :boolean, default: false)
     field(:break_duration_seconds, :integer, default: 42)
     field(:break_state, :string, default: "off")
     field(:cheater_ids, {:array, :integer}, default: [])
@@ -90,6 +93,7 @@ defmodule Codebattle.Tournament do
     field(:finished_at, :utc_datetime)
     field(:exclude_banned_players, :boolean, default: false)
     field(:grade, :string, default: "open")
+    field(:group_tournament_id, :integer)
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
@@ -148,6 +152,7 @@ defmodule Codebattle.Tournament do
     |> cast(params, [
       :access_token,
       :access_type,
+      :auto_redirect_to_game,
       :break_duration_seconds,
       :break_state,
       :cheater_ids,
@@ -157,6 +162,7 @@ defmodule Codebattle.Tournament do
       :event_id,
       :exclude_banned_players,
       :grade,
+      :group_tournament_id,
       :last_round_ended_at,
       :last_round_started_at,
       :level,

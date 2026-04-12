@@ -539,6 +539,12 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:finished", payload: payload}, socket) do
+    push(socket, "tournament:finished", %{tournament: payload.tournament})
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:game:wait", payload: payload}, socket) do
     push(socket, "tournament:game:wait", %{type: payload.type})
 

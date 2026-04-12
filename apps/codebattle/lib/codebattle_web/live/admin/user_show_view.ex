@@ -3,6 +3,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
   import Ecto.Query
 
+  alias Codebattle.Event
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserEvent
@@ -16,16 +17,22 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
 
+    enrolled_event_ids = MapSet.new(user_events, & &1.id)
+    all_events = Event.get_all()
+    available_events = Enum.reject(all_events, &MapSet.member?(enrolled_event_ids, &1.id))
+
     {:ok,
      assign(socket,
        user: user,
        user_events: user_events,
        user_games: user_games,
+       available_events: available_events,
        show_modal: false,
        current_user_event: nil,
        user_event_form: %{},
        stages_json: "",
        progress: user_progress(user),
+       event_page_enabled: FunWithFlags.enabled?(:allow_event_page, for: user),
        layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
@@ -63,6 +70,93 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       {:error, _reason} ->
         {:noreply, socket}
     end
+  end
+
+  def handle_event(
+        "update_stage_status",
+        %{"status" => status, "user-event-id" => user_event_id, "stage-slug" => stage_slug},
+        socket
+      ) do
+    user_event = UserEvent.get!(user_event_id)
+
+    stages_params =
+      Enum.map(user_event.stages, fn stage ->
+        if stage.slug == stage_slug do
+          stage |> Map.from_struct() |> Map.put(:status, String.to_existing_atom(status))
+        else
+          Map.from_struct(stage)
+        end
+      end)
+
+    case UserEvent.upsert_stages(user_event, stages_params) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> assign(user_events: get_user_events(socket.assigns.user.id))
+         |> put_flash(:info, "Stage \"#{stage_slug}\" updated to #{status}")}
+
+      {:error, changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update stage: #{inspect(changeset.errors)}")}
+    end
+  end
+
+  def handle_event("reset_stage", %{"user-event-id" => user_event_id, "stage-slug" => stage_slug}, socket) do
+    user_event = UserEvent.get!(user_event_id)
+
+    stages_params =
+      Enum.map(user_event.stages, fn stage ->
+        if stage.slug == stage_slug do
+          %{slug: stage.slug, status: :pending}
+        else
+          Map.from_struct(stage)
+        end
+      end)
+
+    case UserEvent.upsert_stages(user_event, stages_params) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> assign(user_events: get_user_events(socket.assigns.user.id))
+         |> put_flash(:info, "Stage \"#{stage_slug}\" reset to pending")}
+
+      {:error, changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to reset stage: #{inspect(changeset.errors)}")}
+    end
+  end
+
+  def handle_event("add_to_event", %{"event_id" => event_id}, socket) do
+    user = socket.assigns.user
+    event = Event.get!(event_id)
+    first_stage_slug = event.stages |> List.first() |> Map.get(:slug)
+
+    case UserEvent.create(%{user_id: user.id, event_id: event.id, status: "pending"}) do
+      {:ok, user_event} ->
+        UserEvent.upsert_stages(user_event, [%{slug: first_stage_slug, status: :pending}])
+
+        user_events = get_user_events(user.id)
+        enrolled_event_ids = MapSet.new(user_events, & &1.id)
+        available_events = Enum.reject(Event.get_all(), &MapSet.member?(enrolled_event_ids, &1.id))
+
+        {:noreply,
+         socket
+         |> assign(user_events: user_events, available_events: available_events)
+         |> put_flash(:info, "User added to event \"#{event.title}\"")}
+
+      {:error, changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to add user to event: #{inspect(changeset.errors)}")}
+    end
+  end
+
+  def handle_event("toggle_event_page", _, socket) do
+    user = socket.assigns.user
+
+    if socket.assigns.event_page_enabled do
+      FunWithFlags.disable(:allow_event_page, for_actor: user)
+    else
+      FunWithFlags.enable(:allow_event_page, for_actor: user)
+    end
+
+    {:noreply, assign(socket, event_page_enabled: !socket.assigns.event_page_enabled)}
   end
 
   def handle_event("open_edit_modal", %{"user-event-id" => user_event_id}, socket) do
@@ -256,6 +350,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       finished_at: format_input_datetime(user_event.finished_at)
     }
   end
+
+  defp stage_status_class(:completed), do: "text-success"
+  defp stage_status_class(:started), do: "text-info"
+  defp stage_status_class(:failed), do: "text-danger"
+  defp stage_status_class(:passed), do: "text-success"
+  defp stage_status_class(_), do: "text-white"
 
   defp format_input_datetime(nil), do: ""
   defp format_input_datetime(%DateTime{} = datetime), do: DateTime.to_iso8601(datetime)
@@ -541,8 +641,34 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       <div class="row">
         <div class="col-md-12 mb-4">
           <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
-            <div class="mb-3 text-white">
-              <i class="bi bi-calendar-event"></i> User Events
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="text-white">
+                <i class="bi bi-calendar-event"></i> User Events
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <%= if @available_events != [] do %>
+                  <form phx-submit="add_to_event" class="d-flex align-items-center gap-2">
+                    <select
+                      name="event_id"
+                      class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
+                    >
+                      <%= for event <- @available_events do %>
+                        <option value={event.id}>{event.title} ({event.slug})</option>
+                      <% end %>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-warning cb-rounded text-nowrap">
+                      Add to Event
+                    </button>
+                  </form>
+                <% end %>
+                <span class="cb-text small">Event Page:</span>
+                <button
+                  class={"btn btn-sm cb-rounded " <> if(@event_page_enabled, do: "btn-success", else: "btn-outline-secondary cb-btn-outline-secondary")}
+                  phx-click="toggle_event_page"
+                >
+                  {if @event_page_enabled, do: "Enabled", else: "Disabled"}
+                </button>
+              </div>
             </div>
             <%= if @user_events == [] do %>
               <p class="cb-text">No events participated in yet.</p>
@@ -632,19 +758,34 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                   {event_stage.status}
                                 </span>
                               </td>
-                              <td>
+                              <td class="cb-border-color">
                                 <%= if user_stage do %>
-                                  <span class={"badge " <> (
-                                      case user_stage.status do
-                                        :completed -> "bg-success"
-                                        :started -> "bg-info"
-                                        :failed -> "bg-danger"
-                                        :passed -> "bg-success"
-                                        _ -> "bg-secondary"
-                                      end
-                                    )}>
-                                    {user_stage.status}
-                                  </span>
+                                  <div class="d-flex align-items-center gap-1">
+                                    <select
+                                      class={"form-select form-select-sm cb-bg-panel cb-border-color cb-rounded " <> stage_status_class(user_stage.status)}
+                                      phx-change="update_stage_status"
+                                      phx-value-user-event-id={event.user_event.id}
+                                      phx-value-stage-slug={user_stage.slug}
+                                      name="status"
+                                      style="width: auto; min-width: 120px;"
+                                    >
+                                      <%= for status <- ~w(pending started completed failed passed)a do %>
+                                        <option value={status} selected={status == user_stage.status}>
+                                          {status}
+                                        </option>
+                                      <% end %>
+                                    </select>
+                                    <%= if user_stage.status != :pending do %>
+                                      <button
+                                        class="btn btn-sm btn-outline-warning cb-rounded text-nowrap"
+                                        phx-click="reset_stage"
+                                        phx-value-user-event-id={event.user_event.id}
+                                        phx-value-stage-slug={user_stage.slug}
+                                      >
+                                        Reset
+                                      </button>
+                                    <% end %>
+                                  </div>
                                 <% else %>
                                   <span class="cb-text">–</span>
                                 <% end %>
@@ -660,9 +801,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                                           user_stage.tournament_id
                                         )
                                       }
-                                      class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                                      class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded text-nowrap"
                                     >
-                                      <i class="fa fa-trophy"></i>
+                                      #{user_stage.tournament_id}
                                     </a>
                                   <% else %>
                                     <span class="cb-text">{user_stage.entrance_result}</span>

@@ -46,6 +46,7 @@
               <th class="cb-border-color border-bottom">Button Text</th>
               <th class="cb-border-color border-bottom">Confirmation Text</th>
               <th class="cb-border-color border-bottom">Tournament ID</th>
+              <th class="cb-border-color border-bottom">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -84,6 +85,17 @@
                   <% end %>
                 </td>
                 <td class="text-white cb-border-color">{stage.tournament_id}</td>
+                <td class="cb-border-color">
+                  {link("Enroll All Users",
+                    to:
+                      Routes.event_enroll_all_path(@conn, :enroll_all, @event,
+                        stage_slug: stage.slug
+                      ),
+                    method: :post,
+                    data: [confirm: "Enroll all non-bot users into stage \"#{stage.slug}\"?"],
+                    class: "btn btn-sm btn-warning cb-rounded text-nowrap"
+                  )}
+                </td>
               </tr>
             <% end %>
           </tbody>
@@ -96,7 +108,7 @@
     <% end %>
   </div>
 
-  <div class="d-flex mt-4">
+  <div class="d-flex mt-4 gap-2">
     {link("Edit",
       to: Routes.event_path(@conn, :edit, @event),
       class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"

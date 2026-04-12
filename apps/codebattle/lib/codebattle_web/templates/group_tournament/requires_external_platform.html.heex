@@ -1,0 +1,38 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-5 text-center">
+        <h2 class="text-white mb-4">{@group_tournament.name}</h2>
+        <h3 class="text-white mb-3">External Platform Registration Required</h3>
+        <p class="cb-text mb-4">
+          To participate in this stage, you need to link your
+          <strong class="text-white">{@external_platform_name}</strong>
+          account.
+        </p>
+        <div class="d-flex flex-column align-items-center gap-3">
+          {link("Request Organization Invite",
+            to: Routes.group_tournament_path(@conn, :request_invite, @group_tournament.id),
+            method: :post,
+            class: "btn btn-lg btn-success cb-rounded"
+          )}
+          <%= if @external_platform_login_url && String.starts_with?(to_string(@external_platform_login_url), "http") do %>
+            <a
+              href={@external_platform_login_url}
+              class="btn btn-lg btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+              target="_blank"
+              rel="noopener"
+            >
+              Sign in to {@external_platform_name}
+            </a>
+          <% end %>
+          <a
+            href={Routes.group_tournament_path(@conn, :show, @group_tournament.id)}
+            class="btn btn-lg btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+          >
+            Check my external ID
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

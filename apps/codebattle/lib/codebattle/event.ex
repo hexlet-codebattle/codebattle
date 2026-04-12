@@ -43,10 +43,12 @@ defmodule Codebattle.Event do
                  :action_button_text,
                  :confirmation_text,
                  :dates,
+                 :group_tournament_meta,
                  :name,
                  :slug,
                  :status,
                  :tournament_id,
+                 :tournament_meta,
                  :playing_type,
                  :type
                ]}
@@ -60,6 +62,7 @@ defmodule Codebattle.Event do
       field(:tournament_id, :integer)
       field(:playing_type, Ecto.Enum, values: [:single, :global])
       field(:tournament_meta, AtomizedMap)
+      field(:group_tournament_meta, AtomizedMap)
       field(:type, Ecto.Enum, values: [:tournament, :entrance])
     end
 
@@ -142,6 +145,7 @@ defmodule Codebattle.Event do
       :action_button_text,
       :confirmation_text,
       :dates,
+      :group_tournament_meta,
       :name,
       :slug,
       :status,

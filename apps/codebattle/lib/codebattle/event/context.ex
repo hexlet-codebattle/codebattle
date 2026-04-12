@@ -1,12 +1,64 @@
 defmodule Codebattle.Event.Context do
   @moduledoc false
+
+  import Ecto.Query
+
   alias Codebattle.Event
+  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Server
   alias Codebattle.User
   alias Codebattle.UserEvent
 
   require Logger
+
+  @spec enroll_all_users_for_stage(Event.t(), String.t()) :: {:ok, non_neg_integer()}
+  def enroll_all_users_for_stage(event, stage_slug) do
+    non_bot_user_ids =
+      User
+      |> where([u], u.is_bot == false)
+      |> select([u], u.id)
+      |> Repo.all()
+
+    existing_user_events =
+      UserEvent
+      |> where([ue], ue.event_id == ^event.id)
+      |> preload(:stages)
+      |> Repo.all()
+      |> Map.new(&{&1.user_id, &1})
+
+    enrolled_count =
+      Enum.reduce(non_bot_user_ids, 0, fn user_id, count ->
+        case Map.get(existing_user_events, user_id) do
+          nil -> enroll_new_user(event, user_id, stage_slug, count)
+          user_event -> maybe_enroll_existing_user(user_event, stage_slug, count)
+        end
+      end)
+
+    {:ok, enrolled_count}
+  end
+
+  defp enroll_new_user(event, user_id, stage_slug, count) do
+    {:ok, user_event} =
+      UserEvent.create(%{user_id: user_id, event_id: event.id, status: "pending"})
+
+    UserEvent.upsert_stages(user_event, [%{slug: stage_slug, status: :pending}])
+    count + 1
+  end
+
+  defp maybe_enroll_existing_user(user_event, stage_slug, count) do
+    if Enum.any?(user_event.stages, &(&1.slug == stage_slug)) do
+      count
+    else
+      UserEvent.upsert_stages(user_event, build_stage_params(user_event, stage_slug))
+      count + 1
+    end
+  end
+
+  defp build_stage_params(user_event, stage_slug) do
+    Enum.map(user_event.stages, &Map.from_struct/1) ++
+      [%{slug: stage_slug, status: :pending}]
+  end
 
   @spec start_stage_for_user(
           user :: User.t(),
@@ -45,24 +97,22 @@ defmodule Codebattle.Event.Context do
         status: :active,
         playing_type: :single
       } = event_stage ->
-        case Tournament.Context.create(%{
-               type: "swiss",
-               event_id: event.id,
-               access_type: "token",
-               use_chat: false,
-               use_clan: false,
-               state: "waiting_participants",
-               break_duration_seconds: 5,
-               tournament_timeout_seconds: event_stage.tournament_meta.tournament_timeout_seconds,
-               players_limit: event_stage.tournament_meta.players_limit,
-               ranking_type: event_stage.tournament_meta.ranking_type,
-               task_provider: event_stage.tournament_meta.task_provider,
-               task_strategy: event_stage.tournament_meta.task_strategy,
-               task_pack_name: event_stage.tournament_meta.task_pack_name,
-               name: event_stage.name,
-               description: "#{event_stage.name} stage tournament",
-               meta: event_stage.tournament_meta
-             }) do
+        tournament_params =
+          Map.merge(event_stage.tournament_meta, %{
+            type: "swiss",
+            event_id: event.id,
+            access_type: "token",
+            use_chat: false,
+            use_clan: false,
+            state: "waiting_participants",
+            break_duration_seconds: 5,
+            grade: "open",
+            name: event_stage.name,
+            description: "#{event_stage.name} stage tournament",
+            auto_redirect_to_game: true
+          })
+
+        case Tournament.Context.create(tournament_params) do
           {:ok, tournament} ->
             Server.handle_event(tournament.id, :join, %{user: user})
             Server.handle_event(tournament.id, :start, %{run_via: :admin})

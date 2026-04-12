@@ -1127,10 +1127,17 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp maybe_save_event_results(%{event_id: event_id} = tournament) when not is_nil(event_id) do
-        tournament
-        |> get_players()
-        |> Enum.each(fn player ->
-          if !player.is_bot do
+        event = Event.get!(event_id)
+        event_stage = find_event_stage_for_tournament(event, tournament)
+
+        has_group_tournament =
+          match?(%{group_tournament_meta: meta} when is_map(meta) and map_size(meta) > 0, event_stage)
+
+        if !has_group_tournament do
+          tournament
+          |> get_players()
+          |> Enum.reject(& &1.is_bot)
+          |> Enum.each(fn player ->
             UserEvent.mark_stage_as_completed(event_id, player.id, %{
               id: tournament.id,
               wins_count: player.wins_count,
@@ -1141,13 +1148,72 @@ defmodule Codebattle.Tournament.Base do
                 |> Enum.map(&(&1.duration_sec || 0))
                 |> Enum.sum()
             })
-          end
-        end)
+          end)
+        end
 
-        tournament
+        maybe_create_group_tournament(tournament, event, event_stage)
       end
 
       defp maybe_save_event_results(t), do: t
+
+      defp maybe_create_group_tournament(tournament, _event, %{group_tournament_meta: meta})
+           when is_map(meta) and map_size(meta) > 0 do
+        create_group_tournament_for_stage(tournament, meta)
+      end
+
+      defp maybe_create_group_tournament(tournament, _event, _stage), do: tournament
+
+      defp find_event_stage_for_tournament(event, tournament) do
+        # For global tournaments, the event stage has tournament_id set
+        stage = Enum.find(event.stages, &(&1.tournament_id == tournament.id))
+
+        if stage, do: stage, else: find_event_stage_by_slug(event, tournament)
+      end
+
+      defp find_event_stage_by_slug(event, tournament) do
+        # For single play tournaments, find via user_event_stage
+        case find_stage_slug_from_user_event(tournament) do
+          nil -> nil
+          slug -> Event.get_stage(event, slug)
+        end
+      end
+
+      defp find_stage_slug_from_user_event(tournament) do
+        import Ecto.Query, only: [where: 3, select: 3, limit: 2]
+
+        Codebattle.UserEvent.Stage
+        |> where([s], s.tournament_id == ^tournament.id)
+        |> select([s], s.slug)
+        |> limit(1)
+        |> Codebattle.Repo.one()
+      end
+
+      defp create_group_tournament_for_stage(tournament, meta) do
+        attrs = %{
+          creator_id: tournament.creator_id,
+          group_task_id: meta[:group_task_id],
+          name: meta[:name] || "#{tournament.name} - Review",
+          slug: meta[:slug] || "event-#{tournament.event_id}-t-#{tournament.id}",
+          description: meta[:description] || tournament.description,
+          starts_at: DateTime.utc_now(),
+          rounds_count: meta[:rounds_count] || 1,
+          round_timeout_seconds: meta[:round_timeout_seconds] || 3600,
+          run_on_external_platform: meta[:run_on_external_platform] || false
+        }
+
+        case Codebattle.GroupTournament.Context.create_group_tournament(attrs) do
+          {:ok, group_tournament} ->
+            Tournament.Context.update(tournament, %{
+              "group_tournament_id" => group_tournament.id
+            })
+
+            update_struct(tournament, %{group_tournament_id: group_tournament.id})
+
+          {:error, reason} ->
+            Logger.error("Failed to create group tournament: #{inspect(reason)}")
+            tournament
+        end
+      end
 
       defp maybe_activate_players(%{current_round_position: 0} = t), do: t
 

@@ -67,17 +67,41 @@ defmodule CodebattleWeb.TournamentController do
   end
 
   defp handle_tournament_for_user(conn, tournament, current_user, params) do
-    if FunWithFlags.enabled?(:tournament_redirect_to_latest_game) and !User.admin?(current_user) do
-      latest_game_id = Tournament.Context.get_user_latest_game_id(tournament, current_user.id)
+    auto_redirect =
+      tournament.auto_redirect_to_game ||
+        FunWithFlags.enabled?(:tournament_redirect_to_latest_game)
 
-      if latest_game_id do
-        redirect(conn, to: Routes.game_path(conn, :show, latest_game_id))
-      else
+    if auto_redirect and !User.admin?(current_user),
+      do: maybe_redirect_tournament(conn, tournament, current_user, params),
+      else: render_tournament(conn, tournament, params)
+  end
+
+  defp maybe_redirect_tournament(conn, tournament, current_user, params) do
+    case tournament.state do
+      state when state in ["active", "waiting_participants"] ->
+        redirect_to_latest_game_or_tournament(conn, tournament, current_user, params)
+
+      "finished" ->
+        redirect_finished_tournament(conn, tournament)
+
+      _ ->
         render_tournament(conn, tournament, params)
-      end
-    else
-      render_tournament(conn, tournament, params)
     end
+  end
+
+  defp redirect_to_latest_game_or_tournament(conn, tournament, current_user, params) do
+    case Tournament.Context.get_user_latest_game_id(tournament, current_user.id) do
+      nil -> render_tournament(conn, tournament, params)
+      latest_game_id -> redirect(conn, to: Routes.game_path(conn, :show, latest_game_id))
+    end
+  end
+
+  defp redirect_finished_tournament(conn, %{group_tournament_id: nil}) do
+    redirect(conn, to: Routes.root_path(conn, :index))
+  end
+
+  defp redirect_finished_tournament(conn, tournament) do
+    redirect(conn, to: Routes.group_tournament_path(conn, :show, tournament.group_tournament_id))
   end
 
   defp render_tournament(conn, tournament, params) do

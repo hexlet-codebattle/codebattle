@@ -2,6 +2,7 @@ defmodule CodebattleWeb.EventController do
   use CodebattleWeb, :controller
 
   alias Codebattle.Event
+  alias Codebattle.Event.Context, as: EventContext
 
   plug(CodebattleWeb.Plugs.AdminOnly)
   plug(:put_view, CodebattleWeb.EventView)
@@ -75,6 +76,15 @@ defmodule CodebattleWeb.EventController do
 
     changeset = Event.changeset(event)
     render(conn, "edit.html", event: event, changeset: changeset, user: conn.assigns.current_user)
+  end
+
+  def enroll_all(conn, %{"id" => id, "stage_slug" => stage_slug}) do
+    event = Event.get!(id)
+    {:ok, count} = EventContext.enroll_all_users_for_stage(event, stage_slug)
+
+    conn
+    |> put_flash(:info, "Enrolled #{count} users into stage \"#{stage_slug}\".")
+    |> redirect(to: Routes.event_path(conn, :show, event))
   end
 
   def delete(conn, %{"id" => id}) do

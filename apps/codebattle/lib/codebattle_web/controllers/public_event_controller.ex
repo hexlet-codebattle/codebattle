@@ -44,7 +44,9 @@ defmodule CodebattleWeb.PublicEventController do
 
       case Event.Context.start_stage_for_user(user, slug, stage_slug) do
         {:ok, %Tournament{} = tournament} ->
-          redirect(conn, to: Routes.tournament_path(conn, :show, tournament.id))
+          redirect(conn,
+            to: Routes.tournament_path(conn, :show, tournament.id, access_token: tournament.access_token)
+          )
 
         # {:ok, tournament_id} when is_integer(tournament_id) ->
         #   redirect(conn, to: Routes.tournament_path(conn, :show, tournament_id))

@@ -104,6 +104,7 @@ defmodule CodebattleWeb.Router do
     live("/seasons/:id/edit", CodebattleWeb.Live.Admin.Season.EditView, :edit)
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
     resources("/events", CodebattleWeb.EventController, except: [:index])
+    post("/events/:id/enroll_all", CodebattleWeb.EventController, :enroll_all, as: :event_enroll_all)
     get("/group_tasks/:id/runs/:run_id/:part", GroupTaskController, :download_run_part, as: :group_task_run_part)
 
     get("/group_tasks/:id/solutions/:solution_id/edit", GroupTaskController, :edit_solution,
@@ -252,6 +253,7 @@ defmodule CodebattleWeb.Router do
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit])
     get("/group_tournaments/:id", GroupTournamentController, :show)
+    post("/group_tournaments/:id/request_invite", GroupTournamentController, :request_invite)
     get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 
     get("/stream", StreamController, :index)

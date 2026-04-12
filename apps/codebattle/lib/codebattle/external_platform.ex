@@ -4,7 +4,9 @@ defmodule Codebattle.ExternalPlatform do
   require Logger
 
   @http_timeout_ms 7_000
+  @invite_timeout_ms 35_000
   @lookup_path "/v1/users/id"
+  @invite_path "/v1/invites"
 
   def get_user_by_login(login) when is_binary(login) do
     login = String.trim(login)
@@ -26,6 +28,42 @@ defmodule Codebattle.ExternalPlatform do
   end
 
   def get_user_id_by_login(_), do: nil
+
+  def create_invite(alias_name) when is_binary(alias_name) do
+    alias_name = String.trim(alias_name)
+
+    if alias_name == "" do
+      {:error, :empty_alias}
+    else
+      do_create_invite(alias_name)
+    end
+  end
+
+  def create_invite(_), do: {:error, :invalid_alias}
+
+  defp do_create_invite(alias_name) do
+    opts =
+      Keyword.merge(
+        request_opts(),
+        json: %{alias: alias_name},
+        connect_options: [timeout: @invite_timeout_ms],
+        receive_timeout: @invite_timeout_ms
+      )
+
+    case Req.post(external_platform_service_url() <> @invite_path, opts) do
+      {:ok, %{status: 200, body: body}} ->
+        Logger.info("External platform invite created alias=#{alias_name} body=#{inspect(body)}")
+        {:ok, body}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.warning("External platform invite failed alias=#{alias_name} status=#{status} body=#{inspect(body)}")
+        {:error, body}
+
+      {:error, reason} ->
+        Logger.warning("External platform invite request failed alias=#{alias_name} reason=#{inspect(reason)}")
+        {:error, reason}
+    end
+  end
 
   defp do_get_user_by_login(login) do
     opts =

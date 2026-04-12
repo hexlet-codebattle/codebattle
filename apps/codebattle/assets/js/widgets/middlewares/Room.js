@@ -612,6 +612,12 @@ export const activeGameReady =
       dispatch(actions.setTournamentWaitType(response.type));
     };
 
+    const handleTournamentFinished = (response) => {
+      if (response.tournament.groupTournamentId) {
+        window.location.href = `/group_tournaments/${response.tournament.groupTournamentId}`;
+      }
+    };
+
     return channel
       .addListener(channelTopics.editorDataTopic, handleNewEditorData)
       .addListener(channelTopics.gameHeadToHead, handleGameHeadToHead)
@@ -628,7 +634,8 @@ export const activeGameReady =
       .addListener(channelTopics.tournamentGameCreatedTopic, handleTournamentGameCreated)
       .addListener(channelTopics.tournamentRoundCreatedTopic, handleTournamentRoundCreated)
       .addListener(channelTopics.tournamentRoundFinishedTopic, handleTournamentRoundFinished)
-      .addListener(channelTopics.tournamentGameWaitTopic, handleTournamentGameWait);
+      .addListener(channelTopics.tournamentGameWaitTopic, handleTournamentGameWait)
+      .addListener(channelTopics.tournamentFinishedTopic, handleTournamentFinished);
   };
 
 const fetchPlaybook = (service, init) => (dispatch) => {

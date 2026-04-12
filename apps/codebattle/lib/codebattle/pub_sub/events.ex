@@ -176,7 +176,8 @@ defmodule Codebattle.PubSub.Events do
             last_round_ended_at: params.tournament.last_round_ended_at,
             last_round_started_at: params.tournament.last_round_started_at,
             current_round_position: params.tournament.current_round_position,
-            break_state: "off"
+            break_state: "off",
+            group_tournament_id: params.tournament.group_tournament_id
           }
         }
       }

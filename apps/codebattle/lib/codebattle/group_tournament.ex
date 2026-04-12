@@ -32,7 +32,8 @@ defmodule Codebattle.GroupTournament do
              :include_bots,
              :last_round_started_at,
              :last_round_ended_at,
-             :meta
+             :meta,
+             :run_on_external_platform
            ]}
 
   schema "group_tournaments" do
@@ -50,6 +51,7 @@ defmodule Codebattle.GroupTournament do
     field(:rounds_count, :integer, default: 1)
     field(:round_timeout_seconds, :integer)
     field(:include_bots, :boolean, default: false)
+    field(:run_on_external_platform, :boolean, default: false)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -80,6 +82,7 @@ defmodule Codebattle.GroupTournament do
       :rounds_count,
       :round_timeout_seconds,
       :include_bots,
+      :run_on_external_platform,
       :last_round_started_at,
       :last_round_ended_at,
       :meta
