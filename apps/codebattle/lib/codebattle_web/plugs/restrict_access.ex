@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     # ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
-    ~r{^\/user\/current\/?$}
+    ~r{^\/api\/v1\/user\/current\/?$}
     # ~r{^\/api\/v1\/settings\/?$},
     # ~r{^\/api\/v1\/events\/.+$},
     # ~r{^\/api\/v1\/playbook\/\d+\/?$}
@@ -108,7 +108,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
            [
              ~r{^\/authorized\/?$},
              ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
-             ~r{^\/user\/current\/?$}
+             ~r{^\/api\/v1\/user\/current\/?$}
            ],
            &Regex.match?(&1, request_path)
          ))
