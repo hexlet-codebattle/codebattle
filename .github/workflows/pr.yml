@@ -113,9 +113,11 @@ jobs:
         run: pnpm install --frozen-lockfile
         working-directory: ./apps/codebattle
 
-      - name: Frontend deps audit
-        run: pnpm audit --audit-level high
-        working-directory: ./apps/codebattle
+      # TODO: uncomment when pnpm fixes audit for new npm bulk advisory endpoint
+      # https://github.com/pnpm/pnpm/issues/11265
+      # - name: Frontend deps audit
+      #   run: pnpm audit --audit-level high
+      #   working-directory: ./apps/codebattle
 
       - name: Oxlint
         run: pnpm lint
