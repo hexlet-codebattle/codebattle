@@ -27,6 +27,10 @@ export const currentUserClanIdSelector = (state) =>
 
 export const currentUserIsAdminSelector = (state) =>
   state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.admin;
+export const currentUserIsModeratorSelector = (state) =>
+  state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.moderator;
+export const currentUserIsAdminOrModeratorSelector = (state) =>
+  currentUserIsAdminSelector(state) || currentUserIsModeratorSelector(state);
 export const currentUserIsPremiumSelector = (state) =>
   state.user.users[state.user.currentUserId].subscriptionType === SubscriptionTypeCodes.premium;
 
@@ -39,7 +43,9 @@ export const userIsAdminSelector = (userId) => (state) =>
   state.user.users[userId]?.subscriptionType === SubscriptionTypeCodes.admin;
 
 export const subscriptionTypeSelector = (state) =>
-  currentUserIsAdminSelector(state) ? SubscriptionTypeCodes.admin : SubscriptionTypeCodes.premium;
+  currentUserIsAdminOrModeratorSelector(state)
+    ? SubscriptionTypeCodes.admin
+    : SubscriptionTypeCodes.premium;
 
 export const isShowGuideSelector = (state) => !!state.gameUI.isShowGuide;
 
@@ -357,9 +363,9 @@ export const currentUserIsTournamentOwnerSelector = (state) =>
   state.tournament.creatorId === state.user.currentUserId;
 
 export const currentUserCanModerateTournament = createDraftSafeSelector(
-  currentUserIsAdminSelector,
+  currentUserIsAdminOrModeratorSelector,
   currentUserIsTournamentOwnerSelector,
-  (isAdmin, isOwner) => isAdmin || isOwner,
+  (isAdminOrModerator, isOwner) => isAdminOrModerator || isOwner,
 );
 
 export const tournamentHideResultsSelector = (state) => !state.tournament.showResults;

@@ -138,6 +138,7 @@ defmodule CodebattleWeb.GameController do
           put_gon(conn,
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
             editor_summary_enabled: FunWithFlags.enabled?(:editor_summary),
+            can_manage_game: User.admin_or_moderator?(user),
             game: game_params,
             game_id: game.id,
             tournament_id: Helpers.get_tournament_id(game),
@@ -202,10 +203,8 @@ defmodule CodebattleWeb.GameController do
     )
   end
 
-  defp can_access_game?(_game, %{subscription_type: :admin}), do: true
-
   defp can_access_game?(game, user) do
-    if FunWithFlags.enabled?(:allow_moderator_tournaments, for: user) do
+    if User.admin_or_moderator?(user) do
       true
     else
       if FunWithFlags.enabled?(:user_only_see_own_games) do
@@ -216,10 +215,8 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  # defp can_see_history_game?(_user, _game), do: false
-
   defp maybe_get_reports(user, game_id) do
-    if User.admin?(user) do
+    if User.admin_or_moderator?(user) do
       UserGameReport.list_by_game(game_id)
     else
       []

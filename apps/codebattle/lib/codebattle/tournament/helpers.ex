@@ -144,7 +144,8 @@ defmodule Codebattle.Tournament.Helpers do
   def can_moderate?(_tournament, nil), do: false
 
   def can_moderate?(tournament, user) do
-    creator?(tournament, user) || moderator?(tournament, user) || User.admin?(user)
+    creator?(tournament, user) || User.admin_or_moderator?(user) ||
+      user.id in (tournament.moderator_ids || [])
   end
 
   def can_access?(%{access_type: "token"} = tournament, user, params) do
@@ -190,7 +191,7 @@ defmodule Codebattle.Tournament.Helpers do
   def moderator?(_tournament, nil), do: false
 
   def moderator?(tournament, user) do
-    user.id in (tournament.moderator_ids || [])
+    User.moderator?(user) || user.id in (tournament.moderator_ids || [])
   end
 
   def calc_round_result(round_position) do

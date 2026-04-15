@@ -92,7 +92,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
   end
 
   defp can_moderate?(group_tournament, user) do
-    group_tournament.creator_id == user.id || User.admin?(user)
+    group_tournament.creator_id == user.id || User.admin_or_moderator?(user)
   end
 
   defp serialize_group_tournament(group_tournament) do

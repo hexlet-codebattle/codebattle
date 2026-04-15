@@ -36,14 +36,9 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
     assert redirected_to(conn) == "/"
   end
 
-  test "allows moderator-flagged user to access any tournaments path in mini mode", %{conn: conn} do
-    user = insert(:user)
+  test "allows moderator user to access any tournaments path in mini mode", %{conn: conn} do
+    user = insert(:user, subscription_type: :moderator)
     insert(:tournament, id: 23, creator_id: user.id)
-    FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
-
-    on_exit(fn ->
-      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
-    end)
 
     conn =
       conn
@@ -53,13 +48,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
     assert conn.status != 302
   end
 
-  test "allows moderator-flagged user to access user stats path in mini mode", %{conn: conn} do
-    user = insert(:user)
-    FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
-
-    on_exit(fn ->
-      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
-    end)
+  test "allows moderator user to access user stats path in mini mode", %{conn: conn} do
+    user = insert(:user, subscription_type: :moderator)
 
     conn =
       conn
@@ -69,13 +59,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
     assert conn.status != 302
   end
 
-  test "allows moderator-flagged user to access current user path in mini mode", %{conn: conn} do
-    user = insert(:user)
-    FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
-
-    on_exit(fn ->
-      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
-    end)
+  test "allows moderator user to access current user path in mini mode", %{conn: conn} do
+    user = insert(:user, subscription_type: :moderator)
 
     conn =
       conn

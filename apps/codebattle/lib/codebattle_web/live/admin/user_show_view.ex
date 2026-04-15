@@ -33,7 +33,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        stages_json: "",
        progress: user_progress(user),
        event_page_enabled: FunWithFlags.enabled?(:allow_event_page, for: user),
-       moderator_tournaments_enabled: FunWithFlags.enabled?(:allow_moderator_tournaments, for: user),
+       is_moderator: User.moderator?(user),
        layout: {CodebattleWeb.LayoutView, :admin}
      )}
   end
@@ -160,16 +160,13 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     {:noreply, assign(socket, event_page_enabled: !socket.assigns.event_page_enabled)}
   end
 
-  def handle_event("toggle_moderator_tournaments", _, socket) do
+  def handle_event("toggle_moderator", _, socket) do
     user = socket.assigns.user
 
-    if socket.assigns.moderator_tournaments_enabled do
-      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
-    else
-      FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
-    end
+    new_type = if User.moderator?(user), do: :premium, else: :moderator
+    {:ok, updated_user} = User.update_subscription_type(user.id, new_type)
 
-    {:noreply, assign(socket, moderator_tournaments_enabled: !socket.assigns.moderator_tournaments_enabled)}
+    {:noreply, assign(socket, user: updated_user, is_moderator: User.moderator?(updated_user))}
   end
 
   def handle_event("open_edit_modal", %{"user-event-id" => user_event_id}, socket) do
@@ -681,12 +678,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 >
                   {if @event_page_enabled, do: "Enabled", else: "Disabled"}
                 </button>
-                <span class="cb-text small">Moderator Tournaments:</span>
+                <span class="cb-text small">Moderator Role:</span>
                 <button
-                  class={"btn btn-sm cb-rounded " <> if(@moderator_tournaments_enabled, do: "btn-success", else: "btn-outline-secondary cb-btn-outline-secondary")}
-                  phx-click="toggle_moderator_tournaments"
+                  class={"btn btn-sm cb-rounded " <> if(@is_moderator, do: "btn-success", else: "btn-outline-secondary cb-btn-outline-secondary")}
+                  phx-click="toggle_moderator"
                 >
-                  {if @moderator_tournaments_enabled, do: "Enabled", else: "Disabled"}
+                  {if @is_moderator, do: "Enabled", else: "Disabled"}
                 </button>
               </div>
             </div>

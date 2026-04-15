@@ -82,6 +82,7 @@ function EditorContainer({
 
   const player = useSelector(selectors.gamePlayerSelector(id));
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const isAdminOrModerator = useSelector(selectors.currentUserIsAdminOrModeratorSelector);
   const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
   const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
@@ -197,7 +198,7 @@ function EditorContainer({
     player,
     editor: editorState,
     status: editorCurrent.value,
-    isAdmin,
+    isAdmin: isAdminOrModerator,
     isPremium,
     actionBtnsProps,
     hideToolbarControls: hideBannedPlayerControls,

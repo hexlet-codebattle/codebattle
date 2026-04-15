@@ -16,7 +16,7 @@ defmodule Codebattle.User do
 
   @guest_id 0
 
-  @subscription_types ~w(banned free premium admin)a
+  @subscription_types ~w(banned free premium moderator admin)a
   @valid_locales ~w(en ru)
   @derive {Jason.Encoder,
            only: [
@@ -186,6 +186,15 @@ defmodule Codebattle.User do
   @spec admin?(t()) :: boolean()
   def admin?(%__MODULE__{subscription_type: :admin}), do: true
   def admin?(_user), do: false
+
+  @spec moderator?(t()) :: boolean()
+  def moderator?(%__MODULE__{subscription_type: :moderator}), do: true
+  def moderator?(_user), do: false
+
+  @spec admin_or_moderator?(t()) :: boolean()
+  def admin_or_moderator?(%__MODULE__{subscription_type: :admin}), do: true
+  def admin_or_moderator?(%__MODULE__{subscription_type: :moderator}), do: true
+  def admin_or_moderator?(_user), do: false
 
   @spec guest_id() :: integer()
   def guest_id, do: @guest_id

@@ -297,6 +297,10 @@ export const finishRoundTournament = () => {
   channel.push("tournament:finish_round", {});
 };
 
+export const finishTournament = () => {
+  channel.push("tournament:finish", {});
+};
+
 export const toggleVisibleGameResult = (gameId) => {
   channel.push("tournament:toggle_match_visible", { gameId });
 };

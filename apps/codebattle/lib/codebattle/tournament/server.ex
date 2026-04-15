@@ -21,6 +21,24 @@ defmodule Codebattle.Tournament.Server do
     :stats,
     :played_pair_ids
   ]
+
+  @virtual_fields [
+    :clans_table,
+    :matches_table,
+    :players_table,
+    :ranking_table,
+    :tasks_table,
+    :is_live,
+    :module,
+    :round_op_id,
+    :round_op_status,
+    :round_state,
+    :played_pair_ids,
+    :players_count,
+    :event_ranking,
+    :task_ids,
+    :current_round_timeout_seconds
+  ]
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
@@ -189,10 +207,17 @@ defmodule Codebattle.Tournament.Server do
     if state.frozen do
       {:reply, {:error, :handoff_in_progress}, state}
     else
-      update_tournament_info_cache(new_tournament)
+      persisted_fields =
+        new_tournament
+        |> Map.from_struct()
+        |> Map.drop([:__meta__] ++ @virtual_fields)
 
-      broadcast_tournament_update(new_tournament)
-      {:reply, :ok, %{state | tournament: new_tournament}}
+      merged_tournament = Map.merge(state.tournament, persisted_fields)
+
+      update_tournament_info_cache(merged_tournament)
+
+      broadcast_tournament_update(merged_tournament)
+      {:reply, :ok, %{state | tournament: merged_tournament}}
     end
   end
 

@@ -45,8 +45,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     current_user = conn.assigns.current_user
 
     cond do
-      # allow admins to access any page
-      User.admin?(current_user) ->
+      # allow admins and moderators to access any page
+      User.admin_or_moderator?(current_user) ->
         conn
 
       # allow guests to access test games if enabled feature flag
@@ -78,9 +78,6 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         |> redirect(to: "/session/external/signup")
         |> halt()
 
-      moderator_tournaments_access?(current_user, conn.request_path) ->
-        conn
-
       # redirect to root if we use mini version of codebattle
       FunWithFlags.enabled?(:codebattle_mini_version) &&
           !Enum.any?(
@@ -95,24 +92,5 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
       true ->
         conn
     end
-  end
-
-  defp moderator_tournaments_path?(request_path) do
-    String.starts_with?(request_path, "/tournaments")
-  end
-
-  defp moderator_tournaments_access?(current_user, request_path) do
-    FunWithFlags.enabled?(:allow_moderator_tournaments, for: current_user) &&
-      (moderator_tournaments_path?(request_path) ||
-         Enum.any?(
-           [
-             ~r{^\/authorized\/?$},
-             ~r{^\/games\/\d+\/?$},
-             ~r{^\/api\/v1\/tournaments\/\d+\/?$},
-             ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
-             ~r{^\/api\/v1\/user\/current\/?$}
-           ],
-           &Regex.match?(&1, request_path)
-         ))
   end
 end

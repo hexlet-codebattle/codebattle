@@ -71,7 +71,7 @@ defmodule CodebattleWeb.TournamentController do
       tournament.auto_redirect_to_game ||
         FunWithFlags.enabled?(:tournament_redirect_to_latest_game)
 
-    if auto_redirect and !User.admin?(current_user),
+    if auto_redirect and !User.admin_or_moderator?(current_user),
       do: maybe_redirect_tournament(conn, tournament, current_user, params),
       else: render_tournament(conn, tournament, params)
   end

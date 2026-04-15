@@ -11,6 +11,7 @@ import CustomEventStylesContext from "@/components/CustomEventStylesContext";
 
 import {
   cancelTournament,
+  finishTournament,
   restartTournament as handleRestartTournament,
   retryTournament as handleRetryTournament,
   finishRoundTournament as handleFinishRoundTournament,
@@ -52,6 +53,7 @@ function TournamentMainControlButtons({
   const hasCustomEventStyle = useContext(CustomEventStylesContext);
   const [restartConfirmationModalShowing, setRestartConfirmationModalShowing] = useState(false);
   const [retryConfirmationModalShowing, setRetryConfirmationModalShowing] = useState(false);
+  const [finishConfirmationModalShowing, setFinishConfirmationModalShowing] = useState(false);
 
   const handleStartTournament = useCallback(() => {
     handleStartRound("firstRound");
@@ -82,6 +84,16 @@ function TournamentMainControlButtons({
     handleRetryTournament();
     closeRetryConfirmationModal();
   }, [closeRetryConfirmationModal]);
+  const openFinishConfirmationModal = useCallback(() => {
+    setFinishConfirmationModalShowing(true);
+  }, []);
+  const closeFinishConfirmationModal = useCallback(() => {
+    setFinishConfirmationModalShowing(false);
+  }, []);
+  const confirmFinishTournament = useCallback(() => {
+    finishTournament();
+    closeFinishConfirmationModal();
+  }, [closeFinishConfirmationModal]);
 
   const restartBtnClassName = cn(
     "btn text-nowrap ml-lg-2 rounded-left btn-secondary cb-btn-secondary",
@@ -165,6 +177,33 @@ function TournamentMainControlButtons({
           </div>
         </Modal.Footer>
       </Modal>
+      <Modal
+        show={finishConfirmationModalShowing}
+        onHide={closeFinishConfirmationModal}
+        contentClassName="cb-bg-panel cb-text"
+      >
+        <Modal.Header className="cb-border-color" closeButton>
+          <Modal.Title>Finish tournament</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="cb-border-color">
+          <div className="d-flex flex-column">
+            <h4 className="mb-3">Are you sure you want to finish this tournament?</h4>
+            <p className="mb-0 text-muted">
+              This will end the tournament and finalize all results.
+            </p>
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="cb-border-color">
+          <div className="d-flex justify-content-between w-100">
+            <Button onClick={closeFinishConfirmationModal} className={cancelBtnClassName}>
+              Cancel
+            </Button>
+            <Button onClick={confirmFinishTournament} className={confirmBtnClassName}>
+              Finish tournament
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
       {!streamMode && (
         <>
           {canStartRound ? (
@@ -187,6 +226,17 @@ function TournamentMainControlButtons({
             >
               <FontAwesomeIcon className="mr-2" icon="arrow-right" />
               Finish Round
+            </button>
+          ) : null}
+          {canRestart ? (
+            <button
+              type="button"
+              className={restartBtnClassName}
+              onClick={openFinishConfirmationModal}
+              disabled={disabled}
+            >
+              <FontAwesomeIcon className="mr-2" icon="flag-checkered" />
+              Finish
             </button>
           ) : null}
           {canRestart ? (

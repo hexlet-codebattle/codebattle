@@ -4,7 +4,7 @@ import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 
 import { reportOnPlayer } from "@/middlewares/Main";
-import { currentUserIsAdminSelector, userIsGamePlayerSelector } from "@/selectors";
+import { currentUserIsAdminOrModeratorSelector, userIsGamePlayerSelector } from "@/selectors";
 
 import i18n from "../../../i18n";
 
@@ -33,7 +33,7 @@ function GameReportButton({ userId, gameId }) {
   const dispatch = useDispatch();
   const [state, setState] = useState(states.idle);
 
-  const isAdmin = useSelector(currentUserIsAdminSelector);
+  const isAdmin = useSelector(currentUserIsAdminOrModeratorSelector);
   const isPlayer = useSelector(userIsGamePlayerSelector);
 
   const onSuccess = () => setState(states.success);

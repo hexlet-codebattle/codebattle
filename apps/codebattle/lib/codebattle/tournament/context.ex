@@ -177,7 +177,7 @@ defmodule Codebattle.Tournament.Context do
   def get_user_tournaments(filter) do
     %{from: datetime_from, to: datetime_to, user: %{id: user_id} = user} = filter
 
-    if User.admin?(user) do
+    if User.admin_or_moderator?(user) do
       Repo.all(
         from(t in Tournament,
           order_by: t.id,
@@ -194,8 +194,8 @@ defmodule Codebattle.Tournament.Context do
             t.starts_at >= ^datetime_from and
               t.starts_at <= ^datetime_to and
               (t.creator_id == ^user_id or
-                 fragment("? = ANY(?)", ^user_id, t.moderator_ids) or
-                 fragment("? = ANY(?)", ^user_id, t.winner_ids))
+                 fragment("? = ANY(?)", ^user_id, t.winner_ids) or
+                 fragment("? = ANY(?)", ^user_id, t.moderator_ids))
         )
       )
     end
@@ -523,7 +523,7 @@ defmodule Codebattle.Tournament.Context do
     Map.put(params, :moderator_ids, normalized_moderator_ids)
   end
 
-  defp normalize_moderator_ids(params), do: Map.put(params, :moderator_ids, [])
+  defp normalize_moderator_ids(params), do: params
 
   def get_tournament_for_restore do
     @states_from_restore
