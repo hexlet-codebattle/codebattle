@@ -4,8 +4,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   import Ecto.Query
 
   alias Codebattle.Event
+  alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
+  alias Codebattle.GroupTournament
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserEvent
@@ -19,6 +21,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
     platform_invites = get_platform_invites(user.id)
+    group_tournaments = get_group_tournaments()
 
     enrolled_event_ids = MapSet.new(user_events, & &1.id)
     all_events = Event.get_all()
@@ -31,6 +34,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        user_games: user_games,
        platform_invites: platform_invites,
        expanded_invite_id: nil,
+       group_tournaments: group_tournaments,
+       fork_result: nil,
+       role_result: nil,
        available_events: available_events,
        show_modal: false,
        current_user_event: nil,
@@ -80,6 +86,51 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       {:error, _reason} ->
         {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
     end
+  end
+
+  def handle_event("fork_repo", params, socket) do
+    user = socket.assigns.user
+    tournament_id = params["group_tournament_id"]
+    target_org_slug = String.trim(params["target_org_slug"] || "")
+
+    tournament = Enum.find(socket.assigns.group_tournaments, &(to_string(&1.id) == tournament_id))
+
+    if tournament do
+      repo_slug = tournament.slug
+      login = user.external_platform_login || user.name
+      fork_slug = "#{repo_slug}-#{login}"
+
+      result = ExternalPlatform.fork_repo(repo_slug, target_org_slug, slug: fork_slug)
+      {:noreply, assign(socket, fork_result: result)}
+    else
+      {:noreply, assign(socket, fork_result: {:error, :no_tournament_selected})}
+    end
+  end
+
+  def handle_event("add_repo_role", params, socket) do
+    user = socket.assigns.user
+    tournament_id = params["group_tournament_id"]
+    target_org_slug = String.trim(params["target_org_slug"] || "")
+    user_platform_id = String.trim(params["user_platform_id"] || "")
+
+    tournament = Enum.find(socket.assigns.group_tournaments, &(to_string(&1.id) == tournament_id))
+
+    if tournament do
+      login = user.external_platform_login || user.name
+      repo_slug = "#{tournament.slug}-#{login}"
+
+      result = ExternalPlatform.add_repo_role(target_org_slug, repo_slug, user_platform_id, "developer")
+      {:noreply, assign(socket, role_result: result)}
+    else
+      {:noreply, assign(socket, role_result: {:error, :no_tournament_selected})}
+    end
+  end
+
+  def handle_event("delete_platform_invite", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    invite = Repo.get!(ExternalPlatformInvite, id)
+    Repo.delete(invite)
+    {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
   end
 
   def handle_event("toggle_invite_details", %{"id" => id}, socket) do
@@ -331,6 +382,12 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       result: ug.result,
       task_name: t.name
     })
+    |> Repo.all()
+  end
+
+  defp get_group_tournaments do
+    GroupTournament
+    |> order_by([gt], desc: gt.id)
     |> Repo.all()
   end
 
@@ -817,6 +874,15 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           >
                             Response
                           </button>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-danger cb-rounded ms-1"
+                            phx-click="delete_platform_invite"
+                            phx-value-id={invite.id}
+                            data-confirm="Delete this invite?"
+                          >
+                            Delete
+                          </button>
                         </td>
                       </tr>
                       <%= if @expanded_invite_id == invite.id do %>
@@ -834,6 +900,102 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </table>
               </div>
             <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
+            <div class="d-flex align-items-center mb-3">
+              <div class="text-white">
+                <i class="bi bi-git"></i> External Platform Repos
+              </div>
+            </div>
+
+            <div class="cb-text small mb-3">
+              Fork slug: <code>{"{tournament.slug}-{user.external_platform_login}"}</code>
+              &rarr;
+              <code class="text-white">
+                *-{@user.external_platform_login || @user.name}
+              </code>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
+                  <h6 class="text-white mb-3">Fork Repository</h6>
+                  <form phx-submit="fork_repo" class="d-flex flex-column gap-2">
+                    <select
+                      name="group_tournament_id"
+                      required
+                      class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
+                    >
+                      <option value="">Select tournament (source repo)</option>
+                      <%= for gt <- @group_tournaments do %>
+                        <option value={gt.id}>{gt.name} ({gt.slug})</option>
+                      <% end %>
+                    </select>
+                    <input
+                      type="text"
+                      name="target_org_slug"
+                      placeholder="Target org slug"
+                      required
+                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+                    />
+                    <button type="submit" class="btn btn-sm btn-success cb-rounded">
+                      Fork Repo
+                    </button>
+                  </form>
+                  <%= if @fork_result do %>
+                    <div class={"mt-2 small " <> if(match?({:ok, _}, @fork_result), do: "text-success", else: "text-danger")}>
+                      <pre class="mb-0" style="white-space: pre-wrap;">{inspect(elem(@fork_result, 1), pretty: true)}</pre>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
+                  <h6 class="text-white mb-3">Grant Repo Access (developer)</h6>
+                  <form phx-submit="add_repo_role" class="d-flex flex-column gap-2">
+                    <select
+                      name="group_tournament_id"
+                      required
+                      class="form-select form-select-sm cb-bg-panel cb-border-color text-white"
+                    >
+                      <option value="">Select tournament (repo = slug-login)</option>
+                      <%= for gt <- @group_tournaments do %>
+                        <option value={gt.id}>{gt.name} ({gt.slug})</option>
+                      <% end %>
+                    </select>
+                    <input
+                      type="text"
+                      name="target_org_slug"
+                      placeholder="Target org slug"
+                      required
+                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+                    />
+                    <input
+                      type="text"
+                      name="user_platform_id"
+                      value={@user.external_platform_id}
+                      placeholder="User platform ID"
+                      required
+                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
+                    />
+                    <button type="submit" class="btn btn-sm btn-warning cb-rounded">
+                      Grant Access
+                    </button>
+                  </form>
+                  <%= if @role_result do %>
+                    <div class={"mt-2 small " <> if(match?({:ok, _}, @role_result), do: "text-success", else: "text-danger")}>
+                      <pre class="mb-0" style="white-space: pre-wrap;">{inspect(elem(@role_result, 1), pretty: true)}</pre>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

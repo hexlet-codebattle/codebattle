@@ -135,6 +135,105 @@ defmodule Codebattle.ExternalPlatform do
 
   def poll_invite_status(_), do: {:error, :invalid_operation_id}
 
+  @doc """
+  Forks a repository into the target organization.
+  POST /repos/{org_slug}/{repo_slug}/fork
+  """
+  @spec fork_repo(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def fork_repo(repo_slug, target_org_slug, opts \\ []) do
+    source_org_slug = Keyword.get(opts, :source_org_slug, default_org_slug())
+
+    body = %{org_slug: target_org_slug}
+    body = if opts[:slug], do: Map.put(body, :slug, opts[:slug]), else: body
+
+    body =
+      if Keyword.has_key?(opts, :default_branch_only),
+        do: Map.put(body, :default_branch_only, opts[:default_branch_only]),
+        else: body
+
+    url = "#{external_platform_service_url()}/repos/#{source_org_slug}/#{repo_slug}/fork"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @invite_timeout_ms],
+        receive_timeout: @invite_timeout_ms
+      )
+
+    case Req.post(url, req_opts) do
+      {:ok, %{status: status, body: resp_body}} when status in [200, 201] ->
+        Logger.info(
+          "External platform fork created org=#{source_org_slug} repo=#{repo_slug} target=#{target_org_slug} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "External platform fork failed org=#{source_org_slug} repo=#{repo_slug} status=#{status} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "External platform fork request failed org=#{source_org_slug} repo=#{repo_slug} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  @doc """
+  Adds a role for a user on a repository.
+  POST /repos/{org_slug}/{repo_slug}/roles
+  """
+  @spec add_repo_role(String.t(), String.t(), String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def add_repo_role(org_slug, repo_slug, user_id, role, _opts \\ []) do
+    body = %{
+      subject_roles: [
+        %{
+          role: role,
+          subject: %{type: "user", id: user_id}
+        }
+      ]
+    }
+
+    url = "#{external_platform_service_url()}/repos/#{org_slug}/#{repo_slug}/roles"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @http_timeout_ms],
+        receive_timeout: @http_timeout_ms
+      )
+
+    case Req.post(url, req_opts) do
+      {:ok, %{status: 200, body: resp_body}} ->
+        Logger.info(
+          "External platform role added org=#{org_slug} repo=#{repo_slug} user=#{user_id} role=#{role} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "External platform role failed org=#{org_slug} repo=#{repo_slug} user=#{user_id} status=#{status} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "External platform role request failed org=#{org_slug} repo=#{repo_slug} user=#{user_id} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
   defp do_get_user_by_login(login) do
     opts =
       Keyword.put(
