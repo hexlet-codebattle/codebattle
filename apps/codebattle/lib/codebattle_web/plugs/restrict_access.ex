@@ -28,7 +28,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
     ~r{^\/tournaments\/(?:[2-9]|1\d|2[0-2])\/?$},
     # ~r{^\/e\/\w+\/?$},
     # ~r{^\/e\/\w+\/stage\/?$},
-    # ~r{^\/games\/\d+\/?$},
+    ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
     ~r{^\/api\/v1\/user\/current\/?$}
@@ -107,6 +107,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
          Enum.any?(
            [
              ~r{^\/authorized\/?$},
+             ~r{^\/games\/\d+\/?$},
+             ~r{^\/api\/v1\/tournaments\/\d+\/?$},
              ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
              ~r{^\/api\/v1\/user\/current\/?$}
            ],

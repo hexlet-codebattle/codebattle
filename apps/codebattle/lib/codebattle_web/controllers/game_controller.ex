@@ -204,12 +204,15 @@ defmodule CodebattleWeb.GameController do
 
   defp can_access_game?(_game, %{subscription_type: :admin}), do: true
 
-  # defp can_see_game?(%{subscription_type: :premium} = user, game) do
   defp can_access_game?(game, user) do
-    if FunWithFlags.enabled?(:user_only_see_own_games) do
-      Enum.any?(game.players, &(&1.id == user.id))
-    else
+    if FunWithFlags.enabled?(:allow_moderator_tournaments, for: user) do
       true
+    else
+      if FunWithFlags.enabled?(:user_only_see_own_games) do
+        Enum.any?(game.players, &(&1.id == user.id))
+      else
+        true
+      end
     end
   end
 
