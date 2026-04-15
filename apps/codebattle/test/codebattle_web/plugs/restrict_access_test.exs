@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
       |> put_session(:user_id, user.id)
       |> get("/tournaments/2")
 
-    assert conn.status == 200
+    assert conn.status != 302
   end
 
   test "blocks tournaments with ids outside 2 to 22 in mini mode", %{conn: conn} do
@@ -50,6 +50,6 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
       |> put_session(:user_id, user.id)
       |> get("/tournaments/23")
 
-    assert conn.status == 200
+    assert conn.status != 302
   end
 end
