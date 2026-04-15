@@ -52,4 +52,36 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
 
     assert conn.status != 302
   end
+
+  test "allows moderator-flagged user to access user stats path in mini mode", %{conn: conn} do
+    user = insert(:user)
+    FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
+
+    on_exit(fn ->
+      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
+    end)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get("/api/v1/user/123/stats")
+
+    assert conn.status != 302
+  end
+
+  test "allows moderator-flagged user to access current user path in mini mode", %{conn: conn} do
+    user = insert(:user)
+    FunWithFlags.enable(:allow_moderator_tournaments, for_actor: user)
+
+    on_exit(fn ->
+      FunWithFlags.disable(:allow_moderator_tournaments, for_actor: user)
+    end)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get("/api/v1/user/current")
+
+    assert conn.status != 302
+  end
 end
