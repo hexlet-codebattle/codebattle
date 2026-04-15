@@ -19,6 +19,14 @@
         <p><strong>Rounds Count:</strong> {@group_tournament.rounds_count}</p>
         <p><strong>Round Timeout:</strong> {@group_tournament.round_timeout_seconds} sec</p>
         <p><strong>Include Bots:</strong> {inspect(@group_tournament.include_bots)}</p>
+        <p>
+          <strong>Run on External Platform:</strong> {inspect(
+            @group_tournament.run_on_external_platform
+          )}
+        </p>
+        <p>
+          <strong>Require Invitation:</strong> {inspect(@group_tournament.require_invitation)}
+        </p>
         <p><strong>Current Round:</strong> {@group_tournament.current_round_position}</p>
         <p><strong>Starts At:</strong> {format_datetime(@group_tournament.starts_at)}</p>
       </div>

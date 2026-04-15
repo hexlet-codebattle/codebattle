@@ -4,6 +4,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   import Ecto.Query
 
   alias Codebattle.Event
+  alias Codebattle.ExternalPlatformInvite
+  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserEvent
@@ -16,6 +18,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user = User.get!(id, preload: [:clan])
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
+    platform_invites = get_platform_invites(user.id)
 
     enrolled_event_ids = MapSet.new(user_events, & &1.id)
     all_events = Event.get_all()
@@ -26,6 +29,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        user: user,
        user_events: user_events,
        user_games: user_games,
+       platform_invites: platform_invites,
+       expanded_invite_id: nil,
        available_events: available_events,
        show_modal: false,
        current_user_event: nil,
@@ -47,6 +52,43 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       {:error, _reason} ->
         {:noreply, socket}
     end
+  end
+
+  def handle_event("create_platform_invite", _params, socket) do
+    user = socket.assigns.user
+    alias_name = user.external_oauth_login || user.name
+
+    invite = InviteContext.get_or_create_invite(user.id)
+
+    case InviteContext.send_invite(invite, alias_name) do
+      {:ok, _updated_invite} ->
+        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+
+      {:error, _reason} ->
+        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+    end
+  end
+
+  def handle_event("poll_invite_status", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    invite = Repo.get!(ExternalPlatformInvite, id)
+
+    case InviteContext.poll_status(invite) do
+      {:ok, _updated} ->
+        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+
+      {:error, _reason} ->
+        {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+    end
+  end
+
+  def handle_event("toggle_invite_details", %{"id" => id}, socket) do
+    invite_id = String.to_integer(id)
+
+    new_id =
+      if socket.assigns.expanded_invite_id == invite_id, do: nil, else: invite_id
+
+    {:noreply, assign(socket, expanded_invite_id: new_id)}
   end
 
   def handle_event("delete_token", %{"id" => id}, socket) do
@@ -292,6 +334,14 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> Repo.all()
   end
 
+  defp get_platform_invites(user_id) do
+    ExternalPlatformInvite
+    |> where([i], i.user_id == ^user_id)
+    |> order_by([i], desc: i.updated_at)
+    |> preload(:group_tournament)
+    |> Repo.all()
+  end
+
   defp user_progress(user) do
     Float.round(user.rating / @max_rating * 100, 1)
   end
@@ -334,6 +384,24 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
   defp format_short_datetime(%DateTime{} = datetime) do
     Timex.format!(datetime, "%d %b %Y", :strftime)
+  end
+
+  defp invite_state_badge("pending"), do: "badge bg-secondary"
+  defp invite_state_badge("creating"), do: "badge bg-info text-dark"
+  defp invite_state_badge("invited"), do: "badge bg-primary"
+  defp invite_state_badge("accepted"), do: "badge bg-success"
+  defp invite_state_badge("failed"), do: "badge bg-danger"
+  defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
+  defp invite_state_badge(_), do: "badge bg-secondary"
+
+  defp format_invite_datetime(nil), do: "–"
+
+  defp format_invite_datetime(%DateTime{} = dt) do
+    Timex.format!(dt, "%d %b %Y %H:%M", :strftime)
+  end
+
+  defp format_invite_datetime(%NaiveDateTime{} = dt) do
+    dt |> DateTime.from_naive!("UTC") |> format_invite_datetime()
   end
 
   defp normalize_auth_token(nil), do: ""
@@ -651,6 +719,121 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="text-white">
+                <i class="bi bi-envelope"></i>
+                External Platform Invites
+                <span class="badge bg-secondary ms-2">{length(@platform_invites)}</span>
+              </div>
+              <button
+                class="btn btn-sm btn-success cb-rounded"
+                phx-click="create_platform_invite"
+              >
+                Create Invite
+              </button>
+            </div>
+            <%= if @platform_invites == [] do %>
+              <div class="cb-text">No platform invites.</div>
+            <% else %>
+              <div class="table-responsive">
+                <table class="table table-sm table-dark table-bordered align-middle mb-0">
+                  <thead>
+                    <tr class="cb-text small">
+                      <th>ID</th>
+                      <th>Tournament</th>
+                      <th>State</th>
+                      <th>Operation ID</th>
+                      <th>Invite Link</th>
+                      <th>Expires At</th>
+                      <th>Updated At</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for invite <- @platform_invites do %>
+                      <tr>
+                        <td class="text-white">{invite.id}</td>
+                        <td class="text-white">
+                          <%= if invite.group_tournament do %>
+                            <a
+                              href={"/admin/group_tournaments/#{invite.group_tournament_id}"}
+                              class="text-info"
+                            >
+                              {invite.group_tournament.name}
+                            </a>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td>
+                          <span class={invite_state_badge(invite.state)}>{invite.state}</span>
+                        </td>
+                        <td class="text-white small text-break" style="max-width: 180px;">
+                          {label_value(invite.operation_id)}
+                        </td>
+                        <td class="small" style="max-width: 200px;">
+                          <%= if invite.invite_link do %>
+                            <a
+                              href={invite.invite_link}
+                              target="_blank"
+                              rel="noopener"
+                              class="text-info text-break"
+                            >
+                              {String.slice(invite.invite_link, 0..60)}...
+                            </a>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td class="text-white small">
+                          {format_invite_datetime(invite.expires_at)}
+                        </td>
+                        <td class="text-white small">
+                          {format_invite_datetime(invite.updated_at)}
+                        </td>
+                        <td class="text-nowrap">
+                          <%= if invite.state == "creating" do %>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
+                              phx-click="poll_invite_status"
+                              phx-value-id={invite.id}
+                            >
+                              Poll Status
+                            </button>
+                          <% end %>
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-info cb-rounded"
+                            phx-click="toggle_invite_details"
+                            phx-value-id={invite.id}
+                          >
+                            Response
+                          </button>
+                        </td>
+                      </tr>
+                      <%= if @expanded_invite_id == invite.id do %>
+                        <tr>
+                          <td colspan="8" class="p-3">
+                            <pre
+                              class="text-white mb-0 small"
+                              style="max-height: 300px; overflow: auto; white-space: pre-wrap;"
+                            ><code>{Jason.encode!(invite.response || %{}, pretty: true)}</code></pre>
+                          </td>
+                        </tr>
+                      <% end %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% end %>
           </div>
         </div>
       </div>

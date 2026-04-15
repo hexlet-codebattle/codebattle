@@ -78,6 +78,35 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     end
   end
 
+  def confirm_invitation(conn, %{"id" => id}) do
+    current_user = conn.assigns.current_user
+
+    case Context.confirm_invitation(id, current_user) do
+      {:ok, group_tournament} ->
+        json(conn, %{ok: true, group_tournament: serialize_group_tournament(group_tournament)})
+
+      {:error, :invitation_not_accepted} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "invitation_not_accepted"})
+
+      {:error, :invitation_not_required} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "invitation_not_required"})
+
+      {:error, :invalid_state} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "invalid_state"})
+
+      _ ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "not_found"})
+    end
+  end
+
   def create_token(conn, %{"id" => id, "user_id" => user_id}) do
     current_user = conn.assigns.current_user
     group_tournament = Context.get_group_tournament!(id)

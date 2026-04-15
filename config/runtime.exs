@@ -140,6 +140,13 @@ config :codebattle,
        )
 
 config :codebattle,
+       :external_platform_org_slug,
+       System.get_env(
+         "CODEBATTLE_EXTERNAL_PLATFORM_ORG_SLUG",
+         "value"
+       )
+
+config :codebattle,
        :external_platform_profile_url_template,
        System.get_env(
          "CODEBATTLE_EXTERNAL_PLATFORM_PROFILE_URL_TEMPLATE",

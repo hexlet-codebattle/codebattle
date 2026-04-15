@@ -76,6 +76,22 @@
     {error_tag(f, :include_bots)}
   </div>
 
+  <div class="form-group form-check mb-4">
+    {checkbox(f, :run_on_external_platform, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :run_on_external_platform)}>
+      Run on External Platform
+    </label>
+    {error_tag(f, :run_on_external_platform)}
+  </div>
+
+  <div class="form-group form-check mb-4">
+    {checkbox(f, :require_invitation, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :require_invitation)}>
+      Require Invitation (gate start on external platform invite acceptance)
+    </label>
+    {error_tag(f, :require_invitation)}
+  </div>
+
   <div class="d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",

@@ -14,6 +14,8 @@
           <th class="cb-border-color border-bottom">group_task</th>
           <th class="cb-border-color border-bottom">state</th>
           <th class="cb-border-color border-bottom">include_bots</th>
+          <th class="cb-border-color border-bottom">ext_platform</th>
+          <th class="cb-border-color border-bottom">req_invite</th>
           <th class="cb-border-color border-bottom">players</th>
           <th class="cb-border-color border-bottom">starts_at</th>
         </tr>
@@ -30,6 +32,12 @@
             <td class="align-middle text-white cb-border-color">{group_tournament.state}</td>
             <td class="align-middle text-white cb-border-color">
               {inspect(group_tournament.include_bots)}
+            </td>
+            <td class="align-middle text-white cb-border-color">
+              {inspect(group_tournament.run_on_external_platform)}
+            </td>
+            <td class="align-middle text-white cb-border-color">
+              {inspect(group_tournament.require_invitation)}
             </td>
             <td class="align-middle text-white cb-border-color">
               {group_tournament.players_count}

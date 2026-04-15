@@ -2,6 +2,7 @@ defmodule Codebattle.GroupTournament.Server do
   @moduledoc false
   use GenServer
 
+  alias Codebattle.ExternalPlatform
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
@@ -27,6 +28,12 @@ defmodule Codebattle.GroupTournament.Server do
 
   def join(id, user, lang) do
     GenServer.call(server_name(id), {:join, user, lang}, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def confirm_invitation(id, user) do
+    GenServer.call(server_name(id), {:confirm_invitation, user}, 30_000)
   catch
     :exit, _ -> {:error, :not_found}
   end
@@ -75,6 +82,39 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_call(:start_now, _from, state) do
+    {:reply, {:error, :invalid_state}, state}
+  end
+
+  def handle_call(
+        {:confirm_invitation, user},
+        _from,
+        %{group_tournament: %{state: "waiting_participants", require_invitation: true} = group_tournament} = state
+      ) do
+    login = user.external_oauth_login || user.name
+
+    case ExternalPlatform.check_invite(login) do
+      {:ok, _user_data} ->
+        updated =
+          group_tournament
+          |> GroupTournament.changeset(%{starts_at: DateTime.utc_now()})
+          |> Repo.update!()
+          |> Repo.preload([:creator, :group_task, players: [:user]])
+          |> Map.put(:is_live, true)
+
+        send(self(), :start_tournament)
+
+        {:reply, {:ok, updated}, %{cancel_start_timer(state) | group_tournament: updated}}
+
+      {:error, :not_accepted} ->
+        {:reply, {:error, :invitation_not_accepted}, state}
+    end
+  end
+
+  def handle_call({:confirm_invitation, _user}, _from, %{group_tournament: %{require_invitation: false}} = state) do
+    {:reply, {:error, :invitation_not_required}, state}
+  end
+
+  def handle_call({:confirm_invitation, _user}, _from, state) do
     {:reply, {:error, :invalid_state}, state}
   end
 
@@ -242,6 +282,12 @@ defmodule Codebattle.GroupTournament.Server do
 
   def handle_info(_message, state) do
     {:noreply, state}
+  end
+
+  defp schedule_start(state, %{state: "waiting_participants", require_invitation: true}) do
+    # When require_invitation is set, don't auto-start on timer.
+    # Tournament starts via confirm_invitation (automatic) or start_now (manual by admin).
+    state
   end
 
   defp schedule_start(state, %{state: "waiting_participants", starts_at: starts_at}) do

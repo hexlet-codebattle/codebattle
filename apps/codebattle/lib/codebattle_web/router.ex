@@ -215,6 +215,7 @@ defmodule CodebattleWeb.Router do
       post("/group_tournaments/:id/join", GroupTournamentController, :join)
       post("/group_tournaments/:id/submit_solution", GroupTournamentController, :submit_solution)
       post("/group_tournaments/:id/tokens", GroupTournamentController, :create_token)
+      post("/group_tournaments/:id/confirm_invitation", GroupTournamentController, :confirm_invitation)
     end
 
     scope "/v1", V1, as: :v1 do
