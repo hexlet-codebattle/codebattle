@@ -190,7 +190,7 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
                     class="m-0"
                   >
                     {hidden_input(f, :user_id, value: user.id)}
-                    {select(f, :subscription_type, Codebattle.User.subscription_types(),
+                    {select(f, :subscription_type, subscription_type_options(),
                       class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
                     )}
                   </.form>
@@ -252,5 +252,11 @@ defmodule CodebattleWeb.Live.Admin.User.IndexView do
       [base, _token] -> "#{base}#{token_part}"
       _other -> "#{auth_link} #{token_part}"
     end
+  end
+
+  defp subscription_type_options do
+    Enum.map(User.subscription_types(), fn type ->
+      {Atom.to_string(type), type}
+    end)
   end
 end

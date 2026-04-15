@@ -313,9 +313,16 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   defp label_value(value), do: value
 
   defp subscription_badge_class(:admin), do: "bg-info text-dark"
+  defp subscription_badge_class(:moderator), do: "bg-success"
   defp subscription_badge_class(:premium), do: "bg-warning text-dark"
   defp subscription_badge_class(:banned), do: "bg-danger"
   defp subscription_badge_class(_), do: "bg-secondary"
+
+  defp subscription_type_options do
+    Enum.map(User.subscription_types(), fn type ->
+      {Atom.to_string(type), type}
+    end)
+  end
 
   defp format_short_datetime(nil), do: "–"
 
@@ -476,7 +483,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       class="m-0"
                     >
                       {hidden_input(f, :user_id, value: @user.id)}
-                      {select(f, :subscription_type, Codebattle.User.subscription_types(),
+                      {select(f, :subscription_type, subscription_type_options(),
                         class: "custom-select cb-bg-panel cb-border-color text-white cb-rounded"
                       )}
                     </.form>

@@ -1,8 +1,23 @@
 defmodule CodebattleWeb.AdminUserShowLiveTest do
   use CodebattleWeb.ConnCase, async: false
 
+  import Phoenix.LiveViewTest
+
   alias Codebattle.UserEvent
   alias CodebattleWeb.Live.Admin.UserShowView
+
+  test "admin edit user selector includes moderator", %{conn: conn} do
+    admin = insert(:admin)
+    user = insert(:user)
+
+    {:ok, _view, html} =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> live(Routes.admin_user_show_view_path(conn, :show, user.id))
+
+    assert html =~ ~s(value="moderator")
+    assert html =~ ">moderator</option>"
+  end
 
   test "admin can see all user events for a user", %{conn: conn} do
     admin = insert(:admin)
