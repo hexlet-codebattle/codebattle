@@ -77,6 +77,10 @@ defmodule CodebattleWeb.RootController do
     render(conn, "waiting.html", layout: {LayoutView, "landing.html"})
   end
 
+  def authorized(conn, _) do
+    render(conn, "authorized.html", layout: {LayoutView, "landing.html"})
+  end
+
   def feedback(conn, _) do
     render(conn, "feedback.xml")
   end

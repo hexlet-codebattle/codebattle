@@ -387,3 +387,9 @@ msgstr "Your settings has been changed"
 
 msgid "Something went wrong"
 msgstr "Oops, something has gone wrong"
+
+msgid "Welcome"
+msgstr ""
+
+msgid "You successfully authorized to the platform. Open your tournament link to start."
+msgstr ""

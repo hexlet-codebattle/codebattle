@@ -16,4 +16,10 @@ defmodule Codebattle.RootControllerTest do
 
     assert conn.status == 200
   end
+
+  test "authorized page", %{conn: conn} do
+    conn = get(conn, "/authorized")
+
+    assert html_response(conn, 200) =~ "You successfully authorized to the platform. Wait for tournament start."
+  end
 end

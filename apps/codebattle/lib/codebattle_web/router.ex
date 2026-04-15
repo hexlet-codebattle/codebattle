@@ -246,6 +246,7 @@ defmodule CodebattleWeb.Router do
     get("/", RootController, :index)
     get("/maintenance", RootController, :maintenance)
     get("/waiting", RootController, :waiting)
+    get("/authorized", RootController, :authorized)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new, :create])
     get("/session/external/signup", SessionController, :external_signup)

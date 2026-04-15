@@ -1577,3 +1577,9 @@ msgstr "Общий"
 
 msgid "Notification"
 msgstr "Уведомления"
+
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+msgid "You successfully authorized to the platform. Open your tournament link to start."
+msgstr "Вы успешно авторизовались на платформе. Откройте ссылку на ваш турнир, чтобы начать."

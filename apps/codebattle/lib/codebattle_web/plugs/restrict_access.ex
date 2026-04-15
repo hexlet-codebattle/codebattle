@@ -24,9 +24,10 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
 
   @allowed_mini_paths [
     ~r{^\/$},
-    # ~r{^\/tournaments\/\d+\/?$},
-    ~r{^\/e\/\w+\/?$},
-    ~r{^\/e\/\w+\/stage\/?$},
+    ~r{^\/authorized\/?$},
+    ~r{^\/tournaments\/(?:[2-9]|1\d|2[0-2])\/?$},
+    # ~r{^\/e\/\w+\/?$},
+    # ~r{^\/e\/\w+\/stage\/?$},
     # ~r{^\/games\/\d+\/?$},
     ~r{^\/api\/v1\/user\/\d+\/stats\/?$},
     # ~r{^\/settings\/?$},
@@ -77,6 +78,10 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
         |> redirect(to: "/session/external/signup")
         |> halt()
 
+      FunWithFlags.enabled?(:allow_moderator_tournaments, for: current_user) &&
+          moderator_tournaments_path?(conn.request_path) ->
+        conn
+
       # redirect to root if we use mini version of codebattle
       FunWithFlags.enabled?(:codebattle_mini_version) &&
           !Enum.any?(
@@ -91,5 +96,9 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
       true ->
         conn
     end
+  end
+
+  defp moderator_tournaments_path?(request_path) do
+    String.starts_with?(request_path, "/tournaments")
   end
 end

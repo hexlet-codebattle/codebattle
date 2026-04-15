@@ -1003,3 +1003,9 @@ msgstr "General"
 
 msgid "Notification"
 msgstr "Notification"
+
+msgid "Welcome"
+msgstr "Welcome"
+
+msgid "You successfully authorized to the platform. Open your tournament link to start."
+msgstr "You successfully authorized to the platform. Open your tournament link to start."
