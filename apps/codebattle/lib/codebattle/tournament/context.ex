@@ -264,6 +264,91 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  @duplicated_fields [
+    :access_type,
+    :auto_redirect_to_game,
+    :break_duration_seconds,
+    :break_state,
+    :description,
+    :event_id,
+    :exclude_banned_players,
+    :grade,
+    :group_tournament_id,
+    :labels,
+    :level,
+    :match_timeout_seconds,
+    :moderator_ids,
+    :players_limit,
+    :ranking_type,
+    :round_timeout_seconds,
+    :rounds_limit,
+    :score_strategy,
+    :show_results,
+    :task_pack_name,
+    :task_provider,
+    :task_strategy,
+    :timeout_mode,
+    :tournament_timeout_seconds,
+    :type,
+    :use_chat,
+    :use_clan,
+    :use_event_ranking,
+    :use_infinite_break,
+    :use_timer
+  ]
+
+  @spec duplicate(Tournament.t(), User.t(), pos_integer()) ::
+          {:ok, [Tournament.t()]} | {:error, term()}
+  def duplicate(%Tournament{} = tournament, creator, count \\ 1) do
+    base_params =
+      tournament
+      |> Map.take(@duplicated_fields)
+      |> Map.put(:creator, creator)
+      |> Map.put(:starts_at, tournament.starts_at)
+
+    results =
+      Enum.map(1..count, fn index ->
+        params =
+          base_params
+          |> Map.put(:name, "#{tournament.name} ##{index}")
+          |> maybe_generate_access_token()
+
+        changeset = Tournament.changeset(%Tournament{}, params)
+
+        changeset
+        |> Repo.insert()
+        |> case do
+          {:ok, new_tournament} ->
+            {:ok, _pid} =
+              new_tournament
+              |> add_module()
+              |> mark_as_live()
+              |> Tournament.GlobalSupervisor.start_tournament()
+
+            Codebattle.PubSub.broadcast("tournament:created", %{tournament: new_tournament})
+
+            {:ok, new_tournament}
+
+          {:error, changeset} ->
+            {:error, changeset}
+        end
+      end)
+
+    errors = Enum.filter(results, &match?({:error, _}, &1))
+
+    if Enum.empty?(errors) do
+      {:ok, Enum.map(results, fn {:ok, t} -> t end)}
+    else
+      {:error, errors}
+    end
+  end
+
+  defp maybe_generate_access_token(%{access_type: "token"} = params) do
+    Map.put(params, :access_token, generate_access_token())
+  end
+
+  defp maybe_generate_access_token(params), do: params
+
   @spec handle_event(Tournament.t() | tournament_id(), atom(), map()) ::
           Tournament.t() | {:error, :not_found | :handoff_in_progress}
   def handle_event(%Tournament{id: id}, event_type, params) do

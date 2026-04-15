@@ -1,0 +1,52 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Duplicated Tournaments</h1>
+  <p class="text-center cb-text">
+    Created {length(@tournaments)} tournament(s) from
+    <strong class="text-white">{@source.name}</strong>
+    (ID: {@source.id})
+  </p>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead class="cb-text">
+        <tr>
+          <th class="cb-border-color border-bottom">ID</th>
+          <th class="cb-border-color border-bottom">Name</th>
+          <th class="cb-border-color border-bottom">Access Type</th>
+          <th class="cb-border-color border-bottom">Access Token</th>
+          <th class="cb-border-color border-bottom">Starts At</th>
+          <th class="cb-border-color border-bottom">Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for tournament <- @tournaments do %>
+          <tr>
+            <td class="align-middle text-white cb-border-color">{tournament.id}</td>
+            <td class="align-middle text-white cb-border-color">{tournament.name}</td>
+            <td class="align-middle text-white cb-border-color">{tournament.access_type}</td>
+            <td class="align-middle text-white cb-border-color">
+              {tournament.access_token || "—"}
+            </td>
+            <td class="align-middle text-white cb-border-color">{tournament.starts_at}</td>
+            <td class="align-middle cb-border-color">
+              <a
+                href={"/tournaments/#{tournament.id}"}
+                class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                target="_blank"
+              >
+                Open
+              </a>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="mt-3">
+    <a
+      href={Routes.admin_tournament_duplicator_path(@conn, :new)}
+      class="btn btn-secondary cb-btn-secondary cb-rounded"
+    >
+      Duplicate more
+    </a>
+  </div>
+</div>

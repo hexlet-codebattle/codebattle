@@ -1,0 +1,41 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white">Duplicate Tournament</h1>
+  <p class="text-center cb-text">
+    Enter a tournament ID and the number of copies to create.
+    Each copy will have the same settings; token-based tournaments get fresh tokens.
+  </p>
+  <div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+      <form action={Routes.admin_tournament_duplicator_path(@conn, :create)} method="post">
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-3">
+          <label class="cb-text" for="tournament_id">Tournament ID</label>
+          <input
+            type="number"
+            name="tournament_id"
+            id="tournament_id"
+            class="form-control cb-bg-highlight-panel cb-text cb-border-color"
+            required
+            min="1"
+          />
+        </div>
+        <div class="form-group mb-3">
+          <label class="cb-text" for="count">Number of copies</label>
+          <input
+            type="number"
+            name="count"
+            id="count"
+            class="form-control cb-bg-highlight-panel cb-text cb-border-color"
+            required
+            min="1"
+            max="100"
+            value="20"
+          />
+        </div>
+        <button type="submit" class="btn btn-success text-white cb-rounded">
+          Duplicate
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

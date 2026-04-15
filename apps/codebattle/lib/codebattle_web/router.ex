@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Router do
   import Phoenix.LiveDashboard.Router
 
   alias CodebattleWeb.Admin.GroupTaskController
+  alias CodebattleWeb.Admin.TournamentDuplicatorController
   alias CodebattleWeb.Plugs.AssignCurrentUser
   alias CodebattleWeb.Plugs.MaintenanceMode
   alias CodebattleWeb.Plugs.RescrictAccess
@@ -150,6 +151,10 @@ defmodule CodebattleWeb.Router do
     )
 
     resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
+
+    get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)
+
+    post("/tournament_duplicator", TournamentDuplicatorController, :create, as: :admin_tournament_duplicator)
   end
 
   scope "/auth", CodebattleWeb do
