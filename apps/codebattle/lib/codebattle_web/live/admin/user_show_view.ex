@@ -144,6 +144,13 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
   end
 
+  def handle_event("refresh_invite_via_api", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    invite = Repo.get!(ExternalPlatformInvite, id)
+    _ = InviteContext.refresh_status_via_api(invite)
+    {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+  end
+
   def handle_event("mark_invite_accepted", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
@@ -909,16 +916,20 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                         <td class="text-white small text-break" style="max-width: 180px;">
                           {label_value(invite.operation_id)}
                         </td>
-                        <td class="small" style="max-width: 200px;">
+                        <td class="small" style="max-width: 220px;">
                           <%= if invite.invite_link do %>
-                            <a
-                              href={invite.invite_link}
-                              target="_blank"
-                              rel="noopener"
-                              class="text-info text-break"
-                            >
-                              {String.slice(invite.invite_link, 0..60)}...
-                            </a>
+                            <div class="d-flex flex-column gap-1">
+                              <a
+                                href={invite.invite_link}
+                                target="_blank"
+                                rel="noopener"
+                                class="btn btn-sm btn-success cb-rounded"
+                                title={invite.invite_link}
+                              >
+                                Open Invite
+                              </a>
+                              <code class="text-info text-break small">{invite.invite_link}</code>
+                            </div>
                           <% else %>
                             <span class="cb-text">–</span>
                           <% end %>
@@ -938,6 +949,17 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               phx-value-id={invite.id}
                             >
                               Poll Status
+                            </button>
+                          <% end %>
+                          <%= if invite.state in ["invited", "creating"] do %>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-primary cb-rounded me-1"
+                              phx-click="refresh_invite_via_api"
+                              phx-value-id={invite.id}
+                              title="Fetch latest status from SourceCraft (GET /invites/{id})"
+                            >
+                              Check on Platform
                             </button>
                           <% end %>
                           <%= if invite.state != "accepted" do %>

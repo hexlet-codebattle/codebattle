@@ -5,20 +5,15 @@ import cn from "classnames";
 import i18next from "i18next";
 import { useSelector } from "react-redux";
 
-import {
-  currentUserIsAdminSelector,
-  currentUserIsTournamentOwnerSelector,
-  tournamentHideResultsSelector,
-} from "@/selectors";
+import { currentUserCanModerateTournament, tournamentHideResultsSelector } from "@/selectors";
 
 function TournamentPlace({ place, title = "", withIcon = false }) {
   const hideResults = useSelector(tournamentHideResultsSelector);
-  const isAdmin = useSelector(currentUserIsAdminSelector);
-  const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
+  const canModerate = useSelector(currentUserCanModerateTournament);
 
-  const text = !hideResults || isAdmin || isOwner ? place : "?";
+  const text = !hideResults || canModerate ? place : "?";
   const prefix = title.length > 0 || withIcon ? ": " : "";
-  const muteResults = (isAdmin || isOwner) && hideResults;
+  const muteResults = canModerate && hideResults;
 
   const className = cn({ "p-1 bg-light rounded-lg": muteResults });
   const iconClassName = "text-warninG";

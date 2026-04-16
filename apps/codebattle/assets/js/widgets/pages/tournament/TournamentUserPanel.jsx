@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import CustomEventStylesContext from "@/components/CustomEventStylesContext";
 import { requestMatchesByPlayerId } from "@/middlewares/Tournament";
-import { currentUserIsAdminSelector, currentUserIsTournamentOwnerSelector } from "@/selectors";
+import { currentUserCanModerateTournament } from "@/selectors";
 
 // import TournamentPlace from './TournamentPlace';
 import UsersMatchList from "./UsersMatchList";
@@ -26,9 +26,7 @@ function TournamentUserPanel({
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
 
-  const isAdmin = useSelector(currentUserIsAdminSelector);
-  const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
-  const canModerate = isAdmin || isOwner;
+  const canModerate = useSelector(currentUserCanModerateTournament);
 
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
 

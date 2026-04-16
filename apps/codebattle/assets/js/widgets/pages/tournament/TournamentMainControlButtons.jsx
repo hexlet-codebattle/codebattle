@@ -38,6 +38,7 @@ function TournamentMainControlButtons({
   canStart,
   canStartRound,
   canFinishRound,
+  canFinishTournament,
   canToggleShowBots,
   canRestart,
   showBots,
@@ -228,7 +229,7 @@ function TournamentMainControlButtons({
               Finish Round
             </button>
           ) : null}
-          {canRestart ? (
+          {canFinishTournament ? (
             <button
               type="button"
               className={restartBtnClassName}

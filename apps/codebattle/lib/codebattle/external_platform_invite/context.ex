@@ -140,6 +140,88 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     {:error, {:invalid_transition, state, "accepted"}}
   end
 
+  @doc """
+  Re-fetches the invite from SourceCraft (using the new GET /invites/{id} endpoint)
+  and updates our state machine based on the platform-reported status.
+
+  Maps the platform's invite status to our state machine:
+    "creating" → no change (still being created on the platform)
+    "pending"  → "invited"   (link is ready, user hasn't accepted yet)
+    "accepted" → "accepted"  (and we mirror invitee.id/slug onto the User record)
+    "rejected" → "failed"
+  """
+  @spec refresh_status_via_api(ExternalPlatformInvite.t()) ::
+          {:ok, ExternalPlatformInvite.t()} | {:error, term()}
+  def refresh_status_via_api(%ExternalPlatformInvite{} = invite) do
+    case extract_platform_invite_id(invite) do
+      nil ->
+        {:error, :no_platform_invite_id}
+
+      invite_id ->
+        case ExternalPlatform.get_invite(invite_id) do
+          {:ok, body} ->
+            apply_platform_invite_status(invite, body)
+
+          {:error, reason} ->
+            {:error, reason}
+        end
+    end
+  end
+
+  defp extract_platform_invite_id(%ExternalPlatformInvite{response: response}) when is_map(response) do
+    cond do
+      id = get_in(response, ["response", "invites", Access.at(0), "id"]) -> id
+      id = Map.get(response, "id") -> id
+      true -> nil
+    end
+  end
+
+  defp extract_platform_invite_id(_), do: nil
+
+  defp apply_platform_invite_status(invite, %{"status" => "accepted"} = body) do
+    invitee = Map.get(body, "invitee") || %{}
+
+    user_data = %{
+      id: Map.get(invitee, "id"),
+      login: Map.get(invitee, "slug")
+    }
+
+    _ = persist_platform_user(invite.user_id, user_data)
+    update_invite(invite, %{state: "accepted", response: merge_response(invite.response, body)})
+  end
+
+  defp apply_platform_invite_status(invite, %{"status" => "pending"} = body) do
+    attrs =
+      %{
+        state: "invited",
+        response: merge_response(invite.response, body)
+      }
+      |> maybe_put(:invite_link, Map.get(body, "invite_link"))
+      |> maybe_put(:expires_at, parse_datetime(Map.get(body, "expires_at")))
+
+    update_invite(invite, attrs)
+  end
+
+  defp apply_platform_invite_status(invite, %{"status" => "rejected"} = body) do
+    update_invite(invite, %{state: "failed", response: merge_response(invite.response, body)})
+  end
+
+  defp apply_platform_invite_status(invite, %{"status" => "creating"} = body) do
+    # Platform still creating - just update the response, don't transition.
+    update_invite(invite, %{response: merge_response(invite.response, body)})
+  end
+
+  defp apply_platform_invite_status(invite, body) do
+    # Unknown status - store body, no transition.
+    update_invite(invite, %{response: merge_response(invite.response, body)})
+  end
+
+  defp merge_response(existing, new) when is_map(existing) and is_map(new) do
+    Map.put(existing, "platform_invite", new)
+  end
+
+  defp merge_response(_existing, new), do: %{"platform_invite" => new}
+
   # -- Private --
 
   defp transition_to_creating(invite, body) do

@@ -154,6 +154,52 @@ defmodule Codebattle.ExternalPlatform do
   def poll_invite_status(_), do: {:error, :invalid_operation_id}
 
   @doc """
+  Fetches an organization invite by its ID.
+  Hits the local sc proxy: GET /v1/invites/{invite_id}
+  The org is configured server-side (single-org deployment).
+  Returns the invite payload (including `status` field: "creating" | "pending" | "accepted" | "rejected").
+  """
+  @spec get_invite(String.t()) :: {:ok, map()} | {:error, term()}
+  def get_invite(invite_id) when is_binary(invite_id) and invite_id != "" do
+    url = "#{external_platform_service_url()}/v1/invites/#{invite_id}"
+
+    opts =
+      Keyword.merge(
+        request_opts(),
+        connect_options: [timeout: @http_timeout_ms],
+        receive_timeout: @http_timeout_ms
+      )
+
+    Logger.info("ExternalPlatform.get_invite START method=GET url=#{url} invite_id=#{invite_id}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.get(url, opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: 200, body: body}} ->
+        Logger.info("ExternalPlatform.get_invite OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(body)}")
+        {:ok, body}
+
+      {:ok, %{status: status, body: body}} ->
+        Logger.warning(
+          "ExternalPlatform.get_invite FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(body)}"
+        )
+
+        {:error, body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.get_invite ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  def get_invite(_), do: {:error, :invalid_invite_id}
+
+  @doc """
   Forks a repository into the target organization.
   POST /repos/{org_slug}/{repo_slug}/fork
   """

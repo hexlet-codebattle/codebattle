@@ -393,3 +393,6 @@ msgstr ""
 
 msgid "You successfully authorized to the platform. Open your tournament link to start."
 msgstr ""
+
+msgid "Tournament process is dead. Click Restart to make it live again so users can join."
+msgstr ""

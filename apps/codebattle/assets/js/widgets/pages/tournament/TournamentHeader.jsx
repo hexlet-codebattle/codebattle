@@ -190,6 +190,7 @@ function TournamentHeader({
   const canStart = isLive && state === TournamentStates.waitingParticipants && playersCount > 0;
   const canStartRound = isLive && state === TournamentStates.active && breakState === "on";
   const canFinishRound = isLive && state === TournamentStates.active && breakState === "off";
+  const canFinishTournament = state === TournamentStates.active;
   const canRestart =
     !isLive ||
     state === TournamentStates.active ||
@@ -202,6 +203,7 @@ function TournamentHeader({
     () => buildTournamentAccessUrl(tournamentId, accessToken),
     [tournamentId, accessToken],
   );
+  const showDeadTournamentWarning = canModerate && !isLive;
 
   return (
     <>
@@ -266,6 +268,7 @@ function TournamentHeader({
                   canStart={canStart}
                   canStartRound={canStartRound}
                   canFinishRound={canFinishRound}
+                  canFinishTournament={canFinishTournament}
                   canRestart={canRestart}
                   canToggleShowBots={canToggleShowBots}
                   showBots={showBots}
@@ -317,6 +320,20 @@ function TournamentHeader({
                   />
                 </div>
               </>
+            )}
+          </div>
+        )}
+        {showDeadTournamentWarning && (
+          <div
+            className={cn(
+              "mt-2 px-3 py-2 rounded small font-weight-bold border",
+              hasCustomEventStyle
+                ? "cb-bg-highlight-panel cb-border-color cb-text"
+                : "border-warning text-warning",
+            )}
+          >
+            {i18next.t(
+              "Tournament process is dead. Click Restart to make it live again so users can join.",
             )}
           </div>
         )}

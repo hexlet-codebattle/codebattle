@@ -3,29 +3,24 @@ import React, { memo, useMemo, useCallback, useEffect } from "react";
 import ReactPaginate from "react-paginate";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  currentUserIsAdminSelector,
-  currentUserIsTournamentOwnerSelector,
-  tournamentSelector,
-} from "../../selectors";
+import { currentUserCanModerateTournament, tournamentSelector } from "../../selectors";
 import { actions } from "../../slices";
 
 function TournamentPlayersPagination({ pageNumber, pageSize, totalEntriesOverride }) {
   const dispatch = useDispatch();
 
   const { players, topPlayerIds } = useSelector(tournamentSelector);
-  const isAdmin = useSelector(currentUserIsAdminSelector);
-  const isOwner = useSelector(currentUserIsTournamentOwnerSelector);
+  const canModerate = useSelector(currentUserCanModerateTournament);
   const totalEntries = useMemo(() => {
     if (Number.isFinite(totalEntriesOverride)) {
       return totalEntriesOverride;
     }
-    if (topPlayerIds.length === 0 || isAdmin || isOwner) {
+    if (topPlayerIds.length === 0 || canModerate) {
       return Object.keys(players).length;
     }
 
     return topPlayerIds.length;
-  }, [players, isAdmin, isOwner, topPlayerIds, totalEntriesOverride]);
+  }, [players, canModerate, topPlayerIds, totalEntriesOverride]);
 
   const normalizedPageSize = Number(pageSize);
   const safePageSize = normalizedPageSize > 0 ? normalizedPageSize : 20;

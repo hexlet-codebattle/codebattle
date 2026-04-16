@@ -1583,3 +1583,6 @@ msgstr "Добро пожаловать"
 
 msgid "You successfully authorized to the platform. Open your tournament link to start."
 msgstr "Вы успешно авторизовались на платформе. Откройте ссылку на ваш турнир, чтобы начать."
+
+msgid "Tournament process is dead. Click Restart to make it live again so users can join."
+msgstr "Процесс турнира остановлен. Нажмите Restart, чтобы снова запустить его и дать пользователям возможность присоединиться."

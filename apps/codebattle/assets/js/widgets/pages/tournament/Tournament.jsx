@@ -117,7 +117,7 @@ function Tournament() {
 
   const streamMode = useSelector((state) => state.gameUI.streamMode);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const canModerateTournament = useSelector(selectors.currentUserCanModerateTournament);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
 
@@ -139,12 +139,8 @@ function Tournament() {
       return false;
     }
 
-    return (
-      isAdmin ||
-      tournament.creatorId === currentUserId ||
-      (tournament.moderatorIds || []).includes(currentUserId)
-    );
-  }, [currentUserId, isAdmin, tournament.creatorId, tournament.moderatorIds]);
+    return canModerateTournament || (tournament.moderatorIds || []).includes(currentUserId);
+  }, [currentUserId, canModerateTournament, tournament.moderatorIds]);
   const hiddenSidePanel =
     streamMode ||
     (tournament.state === TournamentStates.finished && !tournament.useChat && !tournament.useClan);
