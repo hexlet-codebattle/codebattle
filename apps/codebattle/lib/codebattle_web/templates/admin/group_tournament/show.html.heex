@@ -100,6 +100,58 @@
   </div>
 
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <h3 class="text-white">Add User to Tournament</h3>
+    <form
+      action={Routes.admin_group_tournament_path(@conn, :add_user, @group_tournament)}
+      method="post"
+    >
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <div class="form-group">
+        <span class="text-white">User ID</span>
+        <input
+          type="number"
+          name="add_user[user_id]"
+          class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          min="1"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-success text-white cb-rounded">
+        Add User
+      </button>
+    </form>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h3 class="text-white mb-0">Tournament Users</h3>
+      <span class="cb-text">{length(@tournament_users)} users with access</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead class="cb-text">
+          <tr>
+            <th class="cb-border-color border-bottom">user_id</th>
+            <th class="cb-border-color border-bottom">user</th>
+            <th class="cb-border-color border-bottom">state</th>
+            <th class="cb-border-color border-bottom">added_at</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for record <- @tournament_users do %>
+            <tr>
+              <td class="text-white cb-border-color">{record.user_id}</td>
+              <td class="text-white cb-border-color">{record.user && record.user.name}</td>
+              <td class="text-white cb-border-color">{record.state}</td>
+              <td class="text-white cb-border-color">{format_datetime(record.inserted_at)}</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="text-white mb-0">Players</h3>
       <span class="cb-text">{@group_tournament.players_count} joined</span>

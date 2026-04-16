@@ -20,6 +20,15 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Repo.one()
   end
 
+  @spec list_users(pos_integer()) :: list(UserGroupTournament.t())
+  def list_users(group_tournament_id) do
+    UserGroupTournament
+    |> where([record], record.group_tournament_id == ^group_tournament_id)
+    |> preload(:user)
+    |> order_by([record], desc: record.inserted_at)
+    |> Repo.all()
+  end
+
   @spec get_or_create(User.t(), GroupTournament.t()) :: UserGroupTournament.t()
   def get_or_create(%User{id: user_id} = user, %GroupTournament{id: group_tournament_id} = group_tournament) do
     case get(user_id, group_tournament_id) do
@@ -277,7 +286,8 @@ defmodule Codebattle.UserGroupTournament.Context do
       repo_url: nil,
       role: @default_repo_role,
       secret_key: @default_secret_key,
-      secret_group: @default_secret_group
+      secret_group: @default_secret_group,
+      token: generate_token()
     }
   end
 

@@ -150,6 +150,10 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/add_user", CodebattleWeb.Admin.GroupTournamentController, :add_user,
+      as: :admin_group_tournament
+    )
+
     resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
 
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)

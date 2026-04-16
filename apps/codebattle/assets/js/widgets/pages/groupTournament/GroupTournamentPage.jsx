@@ -11,7 +11,7 @@ import * as selectors from "../../selectors";
 import Loading from "@/components/Loading";
 import { requestInviteUpdate } from "@/middlewares/GroupTournament";
 
-function GroupTournamentPage({ tournamentId }) {
+function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescription }) {
   const dispatch = useDispatch();
 
   const [showInviteWindow, setShowInviteWindow] = useState(false);
@@ -57,64 +57,61 @@ function GroupTournamentPage({ tournamentId }) {
 
   if (invite.state === "creating" || invite.state === "pending") {
     return (
-      <>
-        <div className="container-fluid h-100">
-          <div className="row justify-content-center h-100">
-            <div className="col-lg-5 col-md-5 col-sm-5 px-md-4 align-content-center">
-              <div className="card cb-card border cb-border-color cb-rounded shadow-sm p-5">
-                <div className="d-flex">
-                  <button
-                    type="button"
-                    className="btn btn-success text-white cb-rounded w-100"
-                    onClick={openExternalRegistrationWindow}
-                  >
-                    Registration
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary cb-rounded w-100 ml-2"
-                    onClick={requestInviteUpdates}
-                  >
-                    Next Step
-                  </button>
-                </div>
-                <small className="text-center mt-3">
-                  For this stage you need registrated on a new platform
-                </small>
+      <div className="container-fluid h-100">
+        <div className="row justify-content-center h-100">
+          <div className="col-lg-5 col-md-6 col-sm-8 px-md-4 align-content-center">
+            <div className="cb-bg-panel shadow-sm cb-rounded p-5">
+              {tournamentName && <h5 className="text-center mb-4">{tournamentName}</h5>}
+              <div className="d-flex">
+                <button
+                  type="button"
+                  className="btn btn-success text-white cb-rounded w-100"
+                  onClick={openExternalRegistrationWindow}
+                >
+                  Registration
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary cb-rounded w-100 ml-2"
+                  onClick={requestInviteUpdates}
+                >
+                  Next Step
+                </button>
               </div>
+              <small className="text-center d-block mt-3">
+                For this stage you need to register on the external platform
+              </small>
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-12">
-            <Header />
-          </div>
-        </div>
-        <div className="row mt-1">
-          <div className="col-lg-3 col-md-3 col-12">
-            <EvolutionPanel
-              items={solutionEvolution}
-              tournamentStatus={status}
-              setRunId={setRunId}
-            />
-          </div>
-          <div className="col-lg-6 col-md-6 col-12">
-            <MainPanel status={status} externalSetup={externalSetup} />
-          </div>
-          <div className="col-lg-3 col-md-3 col-12">
-            <EditorPanel text={code} lang={langSlug} />
-            <LogPanel logs={logs} className="mt-1" />
-          </div>
+    <div className="container-fluid py-3">
+      <div className="row">
+        <div className="col-12">
+          <Header name={tournamentName} status={status} />
         </div>
       </div>
-    </>
+      <div className="row mt-3">
+        <div className="col-lg-3 col-md-4 col-12 mb-3 mb-md-0">
+          <EvolutionPanel items={solutionEvolution} tournamentStatus={status} setRunId={setRunId} />
+        </div>
+        <div className="col-lg-6 col-md-4 col-12 mb-3 mb-md-0">
+          <MainPanel
+            status={status}
+            externalSetup={externalSetup}
+            description={tournamentDescription}
+          />
+        </div>
+        <div className="col-lg-3 col-md-4 col-12">
+          <EditorPanel text={code} lang={langSlug} />
+          <LogPanel logs={logs} className="mt-3" />
+        </div>
+      </div>
+    </div>
   );
 }
 

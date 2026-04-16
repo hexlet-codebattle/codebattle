@@ -225,12 +225,18 @@ export function GroupTournamentPage() {
     document.getElementById("group-tournament-root") ||
     document.getElementById("group-tournament-admin-root");
   const tournamentId = container?.dataset?.groupTournamentId;
+  const tournamentName = container?.dataset?.groupTournamentName;
+  const tournamentDescription = container?.dataset?.groupTournamentDescription;
 
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <GroupTournament tournamentId={tournamentId} />
+          <GroupTournament
+            tournamentId={tournamentId}
+            tournamentName={tournamentName}
+            tournamentDescription={tournamentDescription}
+          />
         </Suspense>
       </PersistGate>
     </Provider>

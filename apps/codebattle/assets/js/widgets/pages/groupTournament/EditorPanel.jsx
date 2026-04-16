@@ -4,10 +4,8 @@ import languages from "../../config/languages";
 import useEditor from "../../utils/useEditor";
 
 function EditorPanel({ text, lang }) {
-  // Map language slug to Monaco language
   const mappedLanguage = lang ? languages[lang] || lang : "javascript";
 
-  // Props for useEditor in readOnly mode with empty handlers
   const editorProps = {
     wordWrap: "on",
     lineNumbers: "on",
@@ -31,12 +29,12 @@ function EditorPanel({ text, lang }) {
   const { options, handleEditorWillMount, handleEditorDidMount } = useEditor(editorProps);
 
   return (
-    <div className="card border rounded max-vh-66 h-100">
-      <div className="card-header py-2">
+    <div className="cb-bg-panel shadow-sm cb-rounded max-vh-66 h-100">
+      <div className="p-3 border-bottom cb-border-color d-flex align-items-center justify-content-between">
         <h6 className="mb-0">Editor</h6>
-        <small>{lang ? `Language: ${lang}` : ""}</small>
+        {lang && <small className="text-muted">{lang}</small>}
       </div>
-      <div className="card-body p-3 border-top">
+      <div className="p-3">
         <MonacoEditor
           theme="vs-dark"
           language={mappedLanguage}

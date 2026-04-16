@@ -1,32 +1,37 @@
 import React from "react";
 
-function MainPanel({ status, externalSetup }) {
+function MainPanel({ status, externalSetup, description }) {
   return (
-    <div className="card border rounded">
-      <div className="card-header py-2">
+    <div className="cb-bg-panel shadow-sm cb-rounded">
+      <div className="p-3 border-bottom cb-border-color">
         <h6 className="mb-0">Tournament Overview</h6>
-        <small className="text-muted">Current status and controls</small>
       </div>
-      <div className="card-body p-3 border-top max-vh-50 overflow-auto">
-        <p className="text-muted mb-3">Main content area for tournament information and actions.</p>
+      <div className="p-3 cb-overflow-y-auto max-vh-50">
+        {description && (
+          <div className="mb-3">
+            <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
+              {description}
+            </p>
+          </div>
+        )}
         {externalSetup ? (
           <div className="small">
-            <div>
+            <div className="mb-1">
               <strong>External setup:</strong> {externalSetup.state}
             </div>
-            <div>
+            <div className="mb-1">
               <strong>Repo:</strong> {externalSetup.repoState}
             </div>
-            <div>
+            <div className="mb-1">
               <strong>Role:</strong> {externalSetup.roleState}
             </div>
-            <div>
+            <div className="mb-1">
               <strong>Secret:</strong> {externalSetup.secretState}
             </div>
-            <div>
+            <div className="mb-1">
               <strong>Repo slug:</strong> {externalSetup.repoSlug || "n/a"}
             </div>
-            <div>
+            <div className="mb-1">
               <strong>Repo URL:</strong>{" "}
               {externalSetup.repoUrl ? (
                 <a href={externalSetup.repoUrl} target="_blank" rel="noreferrer">
@@ -43,9 +48,11 @@ function MainPanel({ status, externalSetup }) {
             ) : null}
           </div>
         ) : (
-          <div className="text-muted small">
-            External setup is not required for this tournament.
-          </div>
+          !description && (
+            <div className="small text-muted">
+              No additional setup is required for this tournament.
+            </div>
+          )
         )}
       </div>
     </div>

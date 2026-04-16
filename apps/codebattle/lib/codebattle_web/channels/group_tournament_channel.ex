@@ -12,25 +12,34 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     case parse_tournament_id(tournament_id) do
       {:ok, parsed_tournament_id} ->
         current_user = socket.assigns.current_user
-        alias_name = current_user.external_oauth_login || current_user.name
         group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
 
-        invite =
-          current_user.id
-          |> InviteContext.get_or_create_invite(parsed_tournament_id)
-          |> maybe_send_invite_on_join(alias_name)
-
-        external_setup = maybe_ensure_external_setup(current_user, group_tournament, invite)
-
-        {:ok,
-         %{
-           invite: serialize_invite(invite),
-           external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
-         }, socket}
+        if has_access?(current_user, group_tournament) do
+          join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
+        else
+          {:error, %{reason: "not_authorized"}}
+        end
 
       :error ->
         {:error, %{reason: "invalid_tournament_id"}}
     end
+  end
+
+  defp join_tournament(socket, current_user, group_tournament, tournament_id) do
+    alias_name = current_user.external_oauth_login || current_user.name
+
+    invite =
+      current_user.id
+      |> InviteContext.get_or_create_invite(tournament_id)
+      |> maybe_send_invite_on_join(alias_name)
+
+    external_setup = maybe_ensure_external_setup(current_user, group_tournament, invite)
+
+    {:ok,
+     %{
+       invite: serialize_invite(invite),
+       external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
+     }, socket}
   end
 
   def handle_in("request_invite_update", _, socket) do
@@ -149,6 +158,12 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
   defp can_lookup_platform_identity?(user) do
     UserGroupTournamentContext.can_lookup_platform_identity?(user)
+  end
+
+  defp has_access?(user, group_tournament) do
+    group_tournament.creator_id == user.id ||
+      Codebattle.User.admin_or_moderator?(user) ||
+      UserGroupTournamentContext.get(user.id, group_tournament.id) != nil
   end
 
   defp parse_tournament_id(tournament_id) do

@@ -2,11 +2,11 @@ import React from "react";
 
 function EvolutionPanel({ items, tournamentStatus, setRunId }) {
   return (
-    <div className="card border rounded">
-      <div className="card-header py-2">
+    <div className="cb-bg-panel shadow-sm cb-rounded">
+      <div className="p-3 border-bottom cb-border-color">
         <h6 className="mb-0">Executions History</h6>
       </div>
-      <div className="card-body p-3 border-top">
+      <div className="p-3">
         <div className="cb-overflow-y-auto max-vh-50">
           {tournamentStatus !== "finished" && <a href="_blank">+ Add Solution</a>}
           {items && items.length > 0 && (

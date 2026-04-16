@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
   alias Codebattle.GroupTournament.Server
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   plug(CodebattleWeb.Plugs.AdminOnly)
   plug(:put_view, CodebattleWeb.Admin.GroupTournamentView)
@@ -52,6 +53,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
       runs: Context.list_runs(group_tournament),
       solutions: latest_solutions(group_tournament),
       tokens: Context.list_tokens(group_tournament),
+      tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
       token_changeset: token_changeset(%{}),
       user: conn.assigns.current_user
     )
@@ -196,6 +198,32 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def add_user(conn, %{"id" => id, "add_user" => %{"user_id" => user_id_param}}) do
+    group_tournament = Context.get_group_tournament!(id)
+
+    case parse_user_id(user_id_param) do
+      {:ok, user_id} ->
+        case Codebattle.Repo.get(Codebattle.User, user_id) do
+          nil ->
+            conn
+            |> put_flash(:error, "User with ID #{user_id} not found.")
+            |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+          user ->
+            UserGroupTournamentContext.get_or_create(user, group_tournament)
+
+            conn
+            |> put_flash(:info, "User #{user.name} (ID: #{user.id}) added to tournament.")
+            |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+        end
+
+      :error ->
+        conn
+        |> put_flash(:error, "Invalid user ID.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
   def create_token(conn, %{"id" => id, "group_tournament_token" => token_params}) do
     group_tournament = Context.get_group_tournament!(id)
 
@@ -231,6 +259,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
       runs: Context.list_runs(group_tournament),
       solutions: latest_solutions(group_tournament),
       tokens: Context.list_tokens(group_tournament),
+      tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
       token_changeset: token_changeset,
       user: conn.assigns.current_user
     )

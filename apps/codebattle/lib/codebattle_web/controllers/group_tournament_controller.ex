@@ -14,6 +14,18 @@ defmodule CodebattleWeb.GroupTournamentController do
     group_tournament = GroupTournamentContext.get_group_tournament!(id)
     current_user = conn.assigns.current_user
 
+    if has_access?(current_user, group_tournament) do
+      render_show(conn, group_tournament, current_user)
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html")
+      |> halt()
+    end
+  end
+
+  defp render_show(conn, group_tournament, current_user) do
     cond do
       group_tournament.run_on_external_platform && !can_lookup_platform_identity?(current_user) ->
         render_requires_external_platform(conn, group_tournament)
@@ -187,6 +199,11 @@ defmodule CodebattleWeb.GroupTournamentController do
       |> json(%{error: "NOT_FOUND"})
       |> halt()
     end
+  end
+
+  defp has_access?(user, group_tournament) do
+    can_moderate?(group_tournament, user) ||
+      UserGroupTournamentContext.get(user.id, group_tournament.id) != nil
   end
 
   defp can_moderate?(group_tournament, user) do
