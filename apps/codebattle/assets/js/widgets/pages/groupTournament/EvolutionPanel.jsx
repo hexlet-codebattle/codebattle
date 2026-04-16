@@ -7,7 +7,7 @@ function EvolutionPanel({ items, tournamentStatus, setRunId }) {
         <h6 className="mb-0">Executions History</h6>
       </div>
       <div className="card-body p-3 border-top">
-        <div className="cb-overflow-y-auto">
+        <div className="cb-overflow-y-auto max-vh-50">
           {tournamentStatus !== "finished" && (
             <a href="_blank">+ Add Solution</a>
           )}

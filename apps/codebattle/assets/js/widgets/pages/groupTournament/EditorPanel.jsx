@@ -35,7 +35,7 @@ function EditorPanel({ text, lang }) {
   } = useEditor(editorProps);
 
   return (
-    <div className="card border rounded">
+    <div className="card border rounded max-vh-66 h-100">
       <div className="card-header py-2">
         <h6 className="mb-0">Editor</h6>
         <small>{lang ? `Language: ${lang}` : ""}</small>
