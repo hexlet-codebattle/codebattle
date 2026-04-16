@@ -17,7 +17,11 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     end)
 
     user = insert(:user, name: "invite-user")
-    topic = "group_tournament:#{insert_group_tournament!().id}"
+    group_tournament = insert_group_tournament!()
+    topic = "group_tournament:#{group_tournament.id}"
+
+    # Grant the user access to the tournament
+    Codebattle.UserGroupTournament.Context.get_or_create(user, group_tournament)
 
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
