@@ -73,21 +73,32 @@ defmodule Codebattle.ExternalPlatform do
         receive_timeout: @invite_timeout_ms
       )
 
-    case Req.post(url, opts) do
-      {:ok, %{status: 200, body: resp_body}} ->
-        Logger.info("External platform invite created org=#{org_slug} alias=#{alias_name} body=#{inspect(resp_body)}")
+    Logger.info(
+      "ExternalPlatform.create_invite START method=POST url=#{url} org=#{org_slug} alias=#{alias_name} body=#{inspect(body)}"
+    )
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.post(url, opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: status, body: resp_body}} when status in [200, 202] ->
+        Logger.info(
+          "ExternalPlatform.create_invite OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
         {:ok, resp_body}
 
       {:ok, %{status: status, body: resp_body}} ->
         Logger.warning(
-          "External platform invite failed org=#{org_slug} alias=#{alias_name} status=#{status} body=#{inspect(resp_body)}"
+          "ExternalPlatform.create_invite FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:error, resp_body}
 
       {:error, reason} ->
         Logger.warning(
-          "External platform invite request failed org=#{org_slug} alias=#{alias_name} reason=#{inspect(reason)}"
+          "ExternalPlatform.create_invite ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
         )
 
         {:error, reason}
@@ -112,21 +123,28 @@ defmodule Codebattle.ExternalPlatform do
         receive_timeout: @invite_timeout_ms
       )
 
-    case Req.get(url, opts) do
+    Logger.info("ExternalPlatform.poll_invite_status START method=GET url=#{url} operation_id=#{operation_id}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.get(url, opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
       {:ok, %{status: 200, body: body}} ->
-        Logger.info("External platform invite poll operation_id=#{operation_id} body=#{inspect(body)}")
+        Logger.info("ExternalPlatform.poll_invite_status OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(body)}")
+
         {:ok, body}
 
       {:ok, %{status: status, body: body}} ->
         Logger.warning(
-          "External platform invite poll failed operation_id=#{operation_id} status=#{status} body=#{inspect(body)}"
+          "ExternalPlatform.poll_invite_status FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(body)}"
         )
 
         {:error, body}
 
       {:error, reason} ->
         Logger.warning(
-          "External platform invite poll request failed operation_id=#{operation_id} reason=#{inspect(reason)}"
+          "ExternalPlatform.poll_invite_status ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
         )
 
         {:error, reason}
@@ -161,25 +179,29 @@ defmodule Codebattle.ExternalPlatform do
         receive_timeout: @invite_timeout_ms
       )
 
-    case Req.post(url, req_opts) do
+    Logger.info("ExternalPlatform.fork_repo START method=POST url=#{url} body=#{inspect(body)}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.post(url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
       {:ok, %{status: status, body: resp_body}} when status in [200, 201] ->
         Logger.info(
-          "External platform fork created org=#{source_org_slug} repo=#{repo_slug} target=#{target_org_slug} body=#{inspect(resp_body)}"
+          "ExternalPlatform.fork_repo OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:ok, resp_body}
 
       {:ok, %{status: status, body: resp_body}} ->
         Logger.warning(
-          "External platform fork failed org=#{source_org_slug} repo=#{repo_slug} status=#{status} body=#{inspect(resp_body)}"
+          "ExternalPlatform.fork_repo FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:error, resp_body}
 
       {:error, reason} ->
-        Logger.warning(
-          "External platform fork request failed org=#{source_org_slug} repo=#{repo_slug} reason=#{inspect(reason)}"
-        )
+        Logger.warning("ExternalPlatform.fork_repo ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}")
 
         {:error, reason}
     end
@@ -210,24 +232,28 @@ defmodule Codebattle.ExternalPlatform do
         receive_timeout: @http_timeout_ms
       )
 
-    case Req.post(url, req_opts) do
+    Logger.info("ExternalPlatform.add_repo_role START method=POST url=#{url} body=#{inspect(body)}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.post(url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
       {:ok, %{status: 200, body: resp_body}} ->
-        Logger.info(
-          "External platform role added org=#{org_slug} repo=#{repo_slug} user=#{user_id} role=#{role} body=#{inspect(resp_body)}"
-        )
+        Logger.info("ExternalPlatform.add_repo_role OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(resp_body)}")
 
         {:ok, resp_body}
 
       {:ok, %{status: status, body: resp_body}} ->
         Logger.warning(
-          "External platform role failed org=#{org_slug} repo=#{repo_slug} user=#{user_id} status=#{status} body=#{inspect(resp_body)}"
+          "ExternalPlatform.add_repo_role FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:error, resp_body}
 
       {:error, reason} ->
         Logger.warning(
-          "External platform role request failed org=#{org_slug} repo=#{repo_slug} user=#{user_id} reason=#{inspect(reason)}"
+          "ExternalPlatform.add_repo_role ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
         )
 
         {:error, reason}
@@ -235,6 +261,8 @@ defmodule Codebattle.ExternalPlatform do
   end
 
   defp do_get_user_by_login(login) do
+    url = external_platform_service_url() <> @lookup_path
+
     opts =
       Keyword.put(
         request_opts(),
@@ -242,26 +270,46 @@ defmodule Codebattle.ExternalPlatform do
         login: login
       )
 
-    case Req.get(external_platform_service_url() <> @lookup_path, opts) do
+    Logger.info("ExternalPlatform.get_user_by_login START method=GET url=#{url} login=#{login}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = Req.get(url, opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
       {:ok, %{status: 200, body: %{"id" => id} = body}} when is_binary(id) and id != "" ->
+        Logger.info(
+          "ExternalPlatform.get_user_by_login OK url=#{url} duration_ms=#{duration_ms} id=#{id} body=#{inspect(body)}"
+        )
+
         %{
           id: id,
           login: normalize_login(Map.get(body, "login"))
         }
 
       {:ok, %{status: 200, body: body}} ->
-        Logger.warning("External platform lookup returned invalid body=#{inspect(body)}")
+        Logger.warning(
+          "ExternalPlatform.get_user_by_login INVALID url=#{url} duration_ms=#{duration_ms} body=#{inspect(body)}"
+        )
+
         nil
 
       {:ok, %{status: status}} when status in [400, 404] ->
+        Logger.info("ExternalPlatform.get_user_by_login NOT_FOUND url=#{url} status=#{status} duration_ms=#{duration_ms}")
         nil
 
       {:ok, %{status: status, body: body}} ->
-        Logger.warning("External platform lookup failed status=#{status} body=#{inspect(body)}")
+        Logger.warning(
+          "ExternalPlatform.get_user_by_login FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(body)}"
+        )
+
         nil
 
       {:error, reason} ->
-        Logger.warning("External platform lookup failed reason=#{inspect(reason)}")
+        Logger.warning(
+          "ExternalPlatform.get_user_by_login ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
         nil
     end
   end
