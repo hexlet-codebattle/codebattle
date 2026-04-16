@@ -130,9 +130,9 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
 
   const currentLangSlug =
     roomMachineState &&
-    roomMachineState.matches({
-      replayer: replayerMachineStates.on,
-    })
+      roomMachineState.matches({
+        replayer: replayerMachineStates.on,
+      })
       ? meta.historyCurrentLangSlug
       : meta.currentLangSlug;
 
@@ -377,6 +377,8 @@ export const currentTournamentPlayerSelector = (state) => state.tournamentPlayer
 export const tournamentPlayersSelector = (state) => state.tournament.players;
 
 export const tournamentMatchesSelector = (state) => state.tournament.matches;
+
+export const groupTournamentSelector = (state) => state.groupTournament;
 
 export const usersInfoSelector = (state) => state.usersInfo;
 

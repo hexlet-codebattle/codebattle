@@ -1,6 +1,7 @@
 import chat, { actions as chatActions } from "./chat";
 import completedGames, { actions as completedGamesActions } from "./completedGames";
 import editor, { actions as editorActions } from "./editor";
+import groupTournament, { actions as groupTournamentActions } from './groupTournament';
 import event, { actions as eventActions } from "./event";
 import executionOutput, { actions as executionOutputActions } from "./executionOutput";
 import game, { actions as gameActions } from "./game";
@@ -41,6 +42,7 @@ export const actions = {
   ...tournamentActions,
   ...tournamentAdminActions,
   ...tournamentPlayerActions,
+  ...groupTournamentActions,
   ...userActions,
   ...usersInfoActions,
   ...eventActions,
@@ -56,6 +58,7 @@ export default {
   completedGames,
   editor,
   executionOutput,
+  groupTournament,
   game,
   gameUI,
   invites,
