@@ -10,11 +10,11 @@ const channel = new Channel();
 export const setTournamentChannel = (tournamentId) => {
   const newChannelName = `group_tournament:${tournamentId}`;
   return channel.setupChannel(newChannelName);
-}
+};
 
 export const connectToTournament = () => (dispatch) => {
   if (!channel) {
-    console.error('Channel not initialized');
+    console.error("Channel not initialized");
     return;
   }
 
@@ -35,11 +35,15 @@ export const connectToTournament = () => (dispatch) => {
       projectStatus,
       projectLink,
       invite,
+      externalSetup,
       solutionEvolution,
       logs,
       code,
       langSlug,
     } = normalizedResponse;
+
+    console.log("group tournament join invite", invite);
+    console.log("group tournament external setup", externalSetup);
 
     dispatch(
       actions.setGroupTournamentData({
@@ -47,36 +51,44 @@ export const connectToTournament = () => (dispatch) => {
         projectStatus,
         projectLink,
         invite,
+        externalSetup,
         solutionEvolution,
         logs,
         code,
         langSlug,
       }),
     );
-  }
+  };
 
   channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
 
   return channel;
-}
+};
 
 export const requestInviteUpdate = () => (dispatch) => {
   if (!channel) {
-    console.error('Channel not initialized');
+    console.error("Channel not initialized");
     return;
   }
 
-  channel.push(channelMethods.requestInviteUpdate, {})
-    .receive('ok', (data) => {
-      const invite = data;
+  channel
+    .push(channelMethods.requestInviteUpdate, {})
+    .receive("ok", (data) => {
+      const normalizedData = camelizeKeys(data);
+      const invite = normalizedData.invite;
+      const externalSetup = normalizedData.externalSetup;
 
-      dispatch(actions.updateInviteStatus(invite.state));
+      dispatch(actions.updateInviteState(invite.state));
 
       if (invite.inviteLink) {
         dispatch(actions.updateInviteLink(invite.inviteLink));
       }
+
+      if (externalSetup) {
+        dispatch(actions.updateGroupTournamentData({ externalSetup }));
+      }
     })
-    .receive('error', (error) => {
-      console.error('Request invite update failed', error);
+    .receive("error", (error) => {
+      console.error("Request invite update failed", error);
     });
 };

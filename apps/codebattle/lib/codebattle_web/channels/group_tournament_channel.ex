@@ -2,45 +2,43 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
+  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
+  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
+
   require Logger
 
-  alias Codebattle.ExternalPlatformInvite.Context
-  alias Codebattle.ExternalPlatform
+  def join("group_tournament:" <> tournament_id, _payload, socket) do
+    case parse_tournament_id(tournament_id) do
+      {:ok, parsed_tournament_id} ->
+        current_user = socket.assigns.current_user
+        alias_name = current_user.external_oauth_login || current_user.name
+        group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
 
-  def join("group_tournament:" <> _tournament_id, _payload, socket) do
-    {:ok, %{}, socket}
+        invite =
+          current_user.id
+          |> InviteContext.get_or_create_invite(parsed_tournament_id)
+          |> maybe_send_invite_on_join(alias_name)
+
+        external_setup = maybe_ensure_external_setup(current_user, group_tournament, invite)
+
+        {:ok,
+         %{
+           invite: serialize_invite(invite),
+           external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
+         }, socket}
+
+      :error ->
+        {:error, %{reason: "invalid_tournament_id"}}
+    end
   end
 
   def handle_in("request_invite_update", _, socket) do
     current_user = socket.assigns.current_user
-    tournament_id = extract_tournament_id(socket.topic)
 
-    alias_name = current_user.external_oauth_login || current_user.name
-
-    case Context.get_or_create_invite(current_user.id, tournament_id) do
-      %{state: "pending"} = invite ->
-        case Context.send_invite(invite, alias_name) do
-          {:ok, updated_invite} ->
-            {:reply, {:ok, serialize_invite(updated_invite)}, socket}
-
-          {:error, reason} ->
-            Logger.error("Failed to send invite: #{inspect(reason)}")
-            {:reply, {:error, %{reason: "failed_to_send_invite"}}, socket}
-        end
-
-      %{state: "failed"} = invite ->
-        # retry sending invite
-        case Context.send_invite(invite, alias_name) do
-          {:ok, updated_invite} ->
-            {:reply, {:ok, serialize_invite(updated_invite)}, socket}
-
-          {:error, reason} ->
-            Logger.error("Failed to send invite: #{inspect(reason)}")
-            {:reply, {:error, %{reason: "failed_to_send_invite"}}, socket}
-        end
-
-      invite ->
-        {:reply, {:ok, serialize_invite(invite)}, socket}
+    case extract_tournament_id(socket.topic) do
+      nil -> {:reply, {:error, %{reason: "invalid_tournament_id"}}, socket}
+      tournament_id -> reply_with_invite_update(current_user, tournament_id, socket)
     end
   end
 
@@ -52,8 +50,34 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {:noreply, socket}
   end
 
+  defp reply_with_invite_update(current_user, tournament_id, socket) do
+    alias_name = current_user.external_oauth_login || current_user.name
+    group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
+    invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
+
+    if invite.state in ["pending", "failed"] do
+      retry_send_invite(invite, alias_name, current_user, group_tournament, socket)
+    else
+      {:reply, {:ok, serialize_invite_reply(current_user, group_tournament, invite)}, socket}
+    end
+  end
+
+  defp retry_send_invite(invite, alias_name, current_user, group_tournament, socket) do
+    case InviteContext.send_invite(invite, alias_name) do
+      {:ok, updated_invite} ->
+        {:reply, {:ok, serialize_invite_reply(current_user, group_tournament, updated_invite)}, socket}
+
+      {:error, reason} ->
+        Logger.error("Failed to send invite: #{inspect(reason)}")
+        {:reply, {:error, %{reason: "failed_to_send_invite"}}, socket}
+    end
+  end
+
   defp extract_tournament_id("group_tournament:" <> tournament_id) do
-    String.to_integer(tournament_id)
+    case parse_tournament_id(tournament_id) do
+      {:ok, parsed_tournament_id} -> parsed_tournament_id
+      :error -> nil
+    end
   end
 
   defp serialize_invite(invite) do
@@ -64,5 +88,73 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       expires_at: invite.expires_at,
       response: invite.response
     }
+  end
+
+  defp serialize_external_setup(nil, _user, _group_tournament), do: nil
+
+  defp serialize_external_setup(external_setup, user, group_tournament) do
+    %{
+      state: external_setup.state,
+      repo_state: external_setup.repo_state,
+      role_state: external_setup.role_state,
+      secret_state: external_setup.secret_state,
+      repo_slug: UserGroupTournamentContext.repo_slug_for(user, group_tournament),
+      repo_url: external_setup.repo_url,
+      role: external_setup.role,
+      secret_key: external_setup.secret_key,
+      secret_group: external_setup.secret_group,
+      last_error: external_setup.last_error
+    }
+  end
+
+  defp serialize_invite_reply(user, group_tournament, invite) do
+    external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
+
+    %{
+      invite: serialize_invite(invite),
+      external_setup: serialize_external_setup(external_setup, user, group_tournament)
+    }
+  end
+
+  defp maybe_send_invite_on_join(%{state: "pending"} = invite, alias_name) do
+    case InviteContext.send_invite(invite, alias_name) do
+      {:ok, updated_invite} ->
+        updated_invite
+
+      {:error, reason} ->
+        Logger.error("Failed to send invite during join: #{inspect(reason)}")
+        invite
+    end
+  end
+
+  defp maybe_send_invite_on_join(invite, _alias_name), do: invite
+
+  defp maybe_ensure_external_setup(_user, %{run_on_external_platform: false}, _invite), do: nil
+
+  defp maybe_ensure_external_setup(user, group_tournament, %{state: "accepted"}) do
+    case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
+      {:ok, record} -> record
+      {:error, _reason, record} -> record
+    end
+  end
+
+  defp maybe_ensure_external_setup(user, group_tournament, _invite) do
+    if can_lookup_platform_identity?(user) and !group_tournament.require_invitation do
+      case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
+        {:ok, record} -> record
+        {:error, _reason, record} -> record
+      end
+    end
+  end
+
+  defp can_lookup_platform_identity?(user) do
+    UserGroupTournamentContext.can_lookup_platform_identity?(user)
+  end
+
+  defp parse_tournament_id(tournament_id) do
+    case Integer.parse(tournament_id) do
+      {parsed_tournament_id, ""} -> {:ok, parsed_tournament_id}
+      _ -> :error
+    end
   end
 end

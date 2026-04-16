@@ -8,6 +8,10 @@ const useGroupTournamentChannel = (tournamentId) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (!tournamentId) {
+      return undefined;
+    }
+
     const channel = TournamentActions.setTournamentChannel(tournamentId);
 
     const clearTournamentChannel = () => {
@@ -20,7 +24,7 @@ const useGroupTournamentChannel = (tournamentId) => {
 
     return clearTournamentChannel;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch, tournamentId]);
 };
 
 export default useGroupTournamentChannel;

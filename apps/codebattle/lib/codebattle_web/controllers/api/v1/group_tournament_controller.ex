@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
   alias Codebattle.GroupTournament.Context
   alias Codebattle.GroupTournament.Server
   alias Codebattle.User
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
   alias Runner.Languages
 
   def show(conn, %{"id" => id}) do
@@ -13,6 +14,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
 
     player_ids = Enum.map(group_tournament.players, & &1.user_id)
     latest_solutions = GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids)
+    external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
 
     current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
     current_user_solutions = GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id)
@@ -27,7 +29,8 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       latest_solution: serialize_solution(latest_solution),
       runs: Enum.map(Context.list_runs(group_tournament, limit: 20), &serialize_run/1),
       langs: Languages.get_langs(),
-      can_moderate: can_moderate?(group_tournament, current_user)
+      can_moderate: can_moderate?(group_tournament, current_user),
+      external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
     })
   end
 
@@ -181,6 +184,38 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       result: run.result,
       inserted_at: run.inserted_at
     }
+  end
+
+  defp serialize_external_setup(nil, _user, _group_tournament), do: nil
+
+  defp serialize_external_setup(external_setup, user, group_tournament) do
+    %{
+      state: external_setup.state,
+      repo_state: external_setup.repo_state,
+      role_state: external_setup.role_state,
+      secret_state: external_setup.secret_state,
+      repo_slug: UserGroupTournamentContext.repo_slug_for(user, group_tournament),
+      repo_url: external_setup.repo_url,
+      role: external_setup.role,
+      secret_key: external_setup.secret_key,
+      secret_group: external_setup.secret_group,
+      last_error: external_setup.last_error
+    }
+  end
+
+  defp ensure_external_setup_if_needed(_user, %{run_on_external_platform: false}), do: nil
+
+  defp ensure_external_setup_if_needed(user, group_tournament) do
+    if can_lookup_platform_identity?(user) do
+      case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
+        {:ok, record} -> record
+        {:error, _reason, record} -> record
+      end
+    end
+  end
+
+  defp can_lookup_platform_identity?(user) do
+    UserGroupTournamentContext.can_lookup_platform_identity?(user)
   end
 
   defp parse_user_id(user_id) when is_integer(user_id) and user_id > 0, do: {:ok, user_id}

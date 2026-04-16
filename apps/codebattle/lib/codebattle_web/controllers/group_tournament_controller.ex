@@ -3,24 +3,27 @@ defmodule CodebattleWeb.GroupTournamentController do
 
   alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
-  alias Codebattle.GroupTournament.Context
+  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.User
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   plug(CodebattleWeb.Plugs.RequireAuth)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def show(conn, %{"id" => id}) do
-    group_tournament = Context.get_group_tournament!(id)
+    group_tournament = GroupTournamentContext.get_group_tournament!(id)
     current_user = conn.assigns.current_user
 
     cond do
-      group_tournament.run_on_external_platform && !has_external_platform_login?(current_user) ->
+      group_tournament.run_on_external_platform && !can_lookup_platform_identity?(current_user) ->
         render_requires_external_platform(conn, group_tournament)
 
       group_tournament.require_invitation && !invite_accepted?(current_user, group_tournament) ->
         render_invitation_flow(conn, group_tournament, current_user)
 
       true ->
+        _external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
+
         conn
         |> put_view(CodebattleWeb.GroupTournamentView)
         |> put_meta_tags(%{
@@ -34,7 +37,7 @@ defmodule CodebattleWeb.GroupTournamentController do
 
   # Legacy endpoint kept for templates that still POST here.
   def request_invite(conn, %{"id" => id}) do
-    group_tournament = Context.get_group_tournament!(id)
+    group_tournament = GroupTournamentContext.get_group_tournament!(id)
     current_user = conn.assigns.current_user
 
     alias_name = current_user.external_oauth_login || current_user.name
@@ -81,6 +84,8 @@ defmodule CodebattleWeb.GroupTournamentController do
 
     # If we transitioned to accepted inside advance_invite, show the tournament directly.
     if invite.state == "accepted" do
+      _external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
+
       conn
       |> put_view(CodebattleWeb.GroupTournamentView)
       |> put_meta_tags(%{
@@ -152,12 +157,24 @@ defmodule CodebattleWeb.GroupTournamentController do
 
   defp extract_invite_link(_), do: nil
 
-  defp has_external_platform_login?(%{external_platform_login: login}) when is_binary(login) and login != "", do: true
-  defp has_external_platform_login?(_), do: false
+  defp ensure_external_setup_if_needed(_user, %{run_on_external_platform: false}), do: nil
+
+  defp ensure_external_setup_if_needed(user, group_tournament) do
+    if can_lookup_platform_identity?(user) do
+      case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
+        {:ok, record} -> record
+        {:error, _reason, record} -> record
+      end
+    end
+  end
+
+  defp can_lookup_platform_identity?(user) do
+    UserGroupTournamentContext.can_lookup_platform_identity?(user)
+  end
 
   def admin(conn, %{"id" => id}) do
     current_user = conn.assigns.current_user
-    group_tournament = Context.get_group_tournament!(id)
+    group_tournament = GroupTournamentContext.get_group_tournament!(id)
 
     if can_moderate?(group_tournament, current_user) do
       conn

@@ -5,9 +5,10 @@ const initialState = {
   projectStatus: "loading", // "created" | "loading",
   projectLink: null, // string | null
   invite: {
-    status: "pending", // "creating" | "pending" | "accepted" | "rejected" | "loading"
+    state: "loading", // "creating" | "pending" | "accepted" | "failed" | "loading"
     inviteLink: null,
   },
+  externalSetup: null,
   solutionEvolution: [], // Array<{ id: string, status: "creating" | "finished" }>
   logs: [], // Array<object>
   code: "",
@@ -18,9 +19,13 @@ const groupTournament = createSlice({
   name: "groupTournament",
   initialState,
   reducers: {
-    setGroupTournamentData: (_state, { payload }) => ({
-      ..._state
-      // ...payload,
+    setGroupTournamentData: (state, { payload }) => ({
+      ...state,
+      ...payload,
+      invite: {
+        ...state.invite,
+        ...(payload.invite || {}),
+      },
     }),
     updateGroupTournamentData: (state, { payload }) => ({
       ...state,
@@ -29,8 +34,8 @@ const groupTournament = createSlice({
     updateGroupTournamentStatus: (state, { payload }) => {
       state.status = payload;
     },
-    updateInviteStatus: (state, { payload }) => {
-      state.invite.status = payload;
+    updateInviteState: (state, { payload }) => {
+      state.invite.state = payload;
     },
     updateInviteLink: (state, { payload }) => {
       state.invite.inviteLink = payload;
@@ -40,9 +45,9 @@ const groupTournament = createSlice({
     },
     updateSolutionEvolutionStatus: (state, { payload }) => {
       const { id, status } = payload;
-      const item = state.solutionEvolution.find(item => item.id === id);
-      if (item) {
-        item.status = status;
+      const solutionEvolutionItem = state.solutionEvolution.find((item) => item.id === id);
+      if (solutionEvolutionItem) {
+        solutionEvolutionItem.status = status;
       }
     },
     addLog: (state, { payload }) => {

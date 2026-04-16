@@ -10,8 +10,9 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.GroupTournament.GlobalSupervisor
   alias Codebattle.GroupTournament.Server
   alias Codebattle.GroupTournamentPlayer
-  alias Codebattle.GroupTournamentToken
   alias Codebattle.Repo
+  alias Codebattle.UserGroupTournament
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   @spec list_group_tournaments() :: list(GroupTournament.t())
   def list_group_tournaments do
@@ -91,8 +92,8 @@ defmodule Codebattle.GroupTournament.Context do
       Repo.transaction(fn ->
         player_ids = Enum.map(group_tournament.players, & &1.user_id)
 
-        GroupTournamentToken
-        |> where([token], token.group_tournament_id == ^group_tournament.id)
+        UserGroupTournament
+        |> where([record], record.group_tournament_id == ^group_tournament.id)
         |> Repo.delete_all()
 
         GroupTaskRun
@@ -175,56 +176,28 @@ defmodule Codebattle.GroupTournament.Context do
     |> Repo.all()
   end
 
-  @spec list_tokens(GroupTournament.t() | pos_integer(), keyword()) :: list(GroupTournamentToken.t())
+  @spec list_tokens(GroupTournament.t() | pos_integer(), keyword()) :: list(UserGroupTournament.t())
   def list_tokens(group_tournament_or_id, opts \\ [])
 
   def list_tokens(%GroupTournament{id: id}, opts), do: list_tokens(id, opts)
-
-  def list_tokens(group_tournament_id, opts) do
-    limit = Keyword.get(opts, :limit, 100)
-
-    GroupTournamentToken
-    |> where([token], token.group_tournament_id == ^group_tournament_id)
-    |> preload(:user)
-    |> order_by([token], desc: token.updated_at, desc: token.id)
-    |> limit(^limit)
-    |> Repo.all()
-  end
+  def list_tokens(group_tournament_id, opts), do: UserGroupTournamentContext.list_tokens(group_tournament_id, opts)
 
   @spec create_or_rotate_token(GroupTournament.t() | pos_integer(), pos_integer()) ::
-          {:ok, GroupTournamentToken.t()} | {:error, Ecto.Changeset.t()}
+          {:ok, UserGroupTournament.t()} | {:error, Ecto.Changeset.t()}
   def create_or_rotate_token(%GroupTournament{id: id}, user_id), do: create_or_rotate_token(id, user_id)
 
-  def create_or_rotate_token(group_tournament_id, user_id) do
-    token_value = generate_token()
+  def create_or_rotate_token(group_tournament_id, user_id),
+    do: UserGroupTournamentContext.create_or_rotate_token(group_tournament_id, user_id)
 
-    case Repo.get_by(GroupTournamentToken, group_tournament_id: group_tournament_id, user_id: user_id) do
-      nil ->
-        %GroupTournamentToken{}
-        |> GroupTournamentToken.changeset(%{
-          group_tournament_id: group_tournament_id,
-          user_id: user_id,
-          token: token_value
-        })
-        |> Repo.insert()
+  @spec get_or_create_token(GroupTournament.t() | pos_integer(), pos_integer()) ::
+          {:ok, UserGroupTournament.t()} | {:error, Ecto.Changeset.t()}
+  def get_or_create_token(%GroupTournament{id: id}, user_id), do: get_or_create_token(id, user_id)
 
-      token ->
-        token
-        |> GroupTournamentToken.changeset(%{token: token_value})
-        |> Repo.update()
-    end
-  end
+  def get_or_create_token(group_tournament_id, user_id),
+    do: UserGroupTournamentContext.get_or_create_token(group_tournament_id, user_id)
 
-  @spec get_token_by_value(String.t()) :: GroupTournamentToken.t() | nil
-  def get_token_by_value(token) when is_binary(token) do
-    token = String.trim(token)
-
-    GroupTournamentToken
-    |> preload(group_tournament: :group_task)
-    |> Repo.get_by(token: token)
-  end
-
-  def get_token_by_value(_token), do: nil
+  @spec get_token_by_value(String.t()) :: UserGroupTournament.t() | nil
+  def get_token_by_value(token), do: UserGroupTournamentContext.get_token_by_value(token)
 
   @spec create_solution_from_token(String.t(), map()) ::
           {:ok, GroupTaskSolution.t()} | {:error, :invalid_token | Ecto.Changeset.t()}
@@ -280,11 +253,5 @@ defmodule Codebattle.GroupTournament.Context do
       :gt -> starts_at
       _ -> DateTime.add(now, 5 * 60, :second)
     end
-  end
-
-  defp generate_token do
-    32
-    |> :crypto.strong_rand_bytes()
-    |> Base.url_encode64(padding: false)
   end
 end

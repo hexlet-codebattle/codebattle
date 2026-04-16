@@ -12,6 +12,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   alias Codebattle.User
   alias Codebattle.UserEvent
   alias Codebattle.UserGame
+  alias Codebattle.UserGroupTournament
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   @max_rating 2000
 
@@ -21,6 +23,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user_events = get_user_events(user.id)
     user_games = get_user_games(user.id)
     platform_invites = get_platform_invites(user.id)
+    user_group_tournaments = get_user_group_tournaments(user.id)
     group_tournaments = get_group_tournaments()
 
     enrolled_event_ids = MapSet.new(user_events, & &1.id)
@@ -33,7 +36,9 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
        user_events: user_events,
        user_games: user_games,
        platform_invites: platform_invites,
+       user_group_tournaments: user_group_tournaments,
        expanded_invite_id: nil,
+       expanded_user_group_tournament_id: nil,
        group_tournaments: group_tournaments,
        fork_result: nil,
        role_result: nil,
@@ -183,6 +188,17 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       if socket.assigns.expanded_invite_id == invite_id, do: nil, else: invite_id
 
     {:noreply, assign(socket, expanded_invite_id: new_id)}
+  end
+
+  def handle_event("toggle_user_group_tournament_details", %{"id" => id}, socket) do
+    user_group_tournament_id = String.to_integer(id)
+
+    new_id =
+      if socket.assigns.expanded_user_group_tournament_id == user_group_tournament_id,
+        do: nil,
+        else: user_group_tournament_id
+
+    {:noreply, assign(socket, expanded_user_group_tournament_id: new_id)}
   end
 
   def handle_event("delete_token", %{"id" => id}, socket) do
@@ -434,7 +450,15 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> Repo.all()
   end
 
-  # Returns {:ok, sourcecraft_uuid} or {:error, atom}.
+  defp get_user_group_tournaments(user_id) do
+    UserGroupTournament
+    |> where([ugt], ugt.user_id == ^user_id)
+    |> order_by([ugt], desc: ugt.updated_at, desc: ugt.id)
+    |> preload(:group_tournament)
+    |> Repo.all()
+  end
+
+  # Returns {:ok, external_platform_uuid} or {:error, atom}.
   # Prefers the cached external_platform_id on the user record.
   # Falls back to looking up by slug via the platform service.
   defp resolve_platform_user_id(%{external_platform_id: id}) when is_binary(id) and id != "" do
@@ -531,6 +555,17 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   defp invite_state_badge("failed"), do: "badge bg-danger"
   defp invite_state_badge("expired"), do: "badge bg-warning text-dark"
   defp invite_state_badge(_), do: "badge bg-secondary"
+
+  defp user_group_tournament_state_badge("pending"), do: "badge bg-secondary"
+  defp user_group_tournament_state_badge("provisioning"), do: "badge bg-info text-dark"
+  defp user_group_tournament_state_badge("ready"), do: "badge bg-success"
+  defp user_group_tournament_state_badge("failed"), do: "badge bg-danger"
+  defp user_group_tournament_state_badge(_), do: "badge bg-secondary"
+
+  defp provisioning_step_badge("pending"), do: "badge bg-secondary"
+  defp provisioning_step_badge("completed"), do: "badge bg-success"
+  defp provisioning_step_badge("failed"), do: "badge bg-danger"
+  defp provisioning_step_badge(_), do: "badge bg-secondary"
 
   defp format_invite_datetime(nil), do: "–"
 
@@ -857,6 +892,177 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 mb-4">
+          <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="text-white">
+                <i class="bi bi-diagram-3"></i>
+                User Group Tournaments
+                <span class="badge bg-secondary ms-2">{length(@user_group_tournaments)}</span>
+              </div>
+            </div>
+            <%= if @user_group_tournaments == [] do %>
+              <div class="cb-text">No external setup records.</div>
+            <% else %>
+              <div class="table-responsive">
+                <table class="table table-sm table-dark table-bordered align-middle mb-0">
+                  <thead>
+                    <tr class="cb-text small">
+                      <th>ID</th>
+                      <th>Tournament</th>
+                      <th>State</th>
+                      <th>Repo</th>
+                      <th>Role</th>
+                      <th>Secret</th>
+                      <th>Repo Slug</th>
+                      <th>Token</th>
+                      <th>Repo URL</th>
+                      <th>Config</th>
+                      <th>Updated At</th>
+                      <th>Details</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%= for user_group_tournament <- @user_group_tournaments do %>
+                      <tr>
+                        <td class="text-white">{user_group_tournament.id}</td>
+                        <td class="text-white">
+                          <%= if user_group_tournament.group_tournament do %>
+                            <a
+                              href={"/admin/group_tournaments/#{user_group_tournament.group_tournament_id}"}
+                              class="text-info"
+                            >
+                              {user_group_tournament.group_tournament.name}
+                            </a>
+                            <div class="cb-text small">
+                              {user_group_tournament.group_tournament.slug}
+                            </div>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td>
+                          <span class={user_group_tournament_state_badge(user_group_tournament.state)}>
+                            {user_group_tournament.state}
+                          </span>
+                        </td>
+                        <td>
+                          <span class={provisioning_step_badge(user_group_tournament.repo_state)}>
+                            {user_group_tournament.repo_state}
+                          </span>
+                        </td>
+                        <td>
+                          <span class={provisioning_step_badge(user_group_tournament.role_state)}>
+                            {user_group_tournament.role_state}
+                          </span>
+                        </td>
+                        <td>
+                          <span class={provisioning_step_badge(user_group_tournament.secret_state)}>
+                            {user_group_tournament.secret_state}
+                          </span>
+                        </td>
+                        <td class="text-white small text-break" style="max-width: 220px;">
+                          <%= if user_group_tournament.group_tournament do %>
+                            <code class="text-info">
+                              {UserGroupTournamentContext.repo_slug_for(
+                                @user,
+                                user_group_tournament.group_tournament
+                              )}
+                            </code>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td class="text-white small text-break" style="max-width: 220px;">
+                          <%= if user_group_tournament.token do %>
+                            <code>{user_group_tournament.token}</code>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td class="text-white small text-break" style="max-width: 220px;">
+                          <%= if user_group_tournament.repo_url do %>
+                            <a
+                              href={user_group_tournament.repo_url}
+                              target="_blank"
+                              rel="noopener"
+                              class="text-info"
+                            >
+                              {user_group_tournament.repo_url}
+                            </a>
+                          <% else %>
+                            <span class="cb-text">–</span>
+                          <% end %>
+                        </td>
+                        <td class="text-white small">
+                          <div><strong>role:</strong> {label_value(user_group_tournament.role)}</div>
+                          <div>
+                            <strong>secret:</strong> {label_value(user_group_tournament.secret_key)}
+                          </div>
+                          <div>
+                            <strong>group:</strong> {label_value(user_group_tournament.secret_group)}
+                          </div>
+                        </td>
+                        <td class="text-white small">
+                          {format_invite_datetime(user_group_tournament.updated_at)}
+                        </td>
+                        <td class="text-nowrap">
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-outline-info cb-rounded"
+                            phx-click="toggle_user_group_tournament_details"
+                            phx-value-id={user_group_tournament.id}
+                          >
+                            Payloads
+                          </button>
+                        </td>
+                      </tr>
+                      <%= if @expanded_user_group_tournament_id == user_group_tournament.id do %>
+                        <tr>
+                          <td colspan="12" class="p-3">
+                            <div class="row g-3">
+                              <div class="col-lg-6">
+                                <div class="cb-text text-uppercase small mb-2">Repo Response</div>
+                                <pre
+                                  class="text-white mb-0 small"
+                                  style="max-height: 240px; overflow: auto; white-space: pre-wrap;"
+                                ><code>{Jason.encode!(user_group_tournament.repo_response || %{}, pretty: true)}</code></pre>
+                              </div>
+                              <div class="col-lg-6">
+                                <div class="cb-text text-uppercase small mb-2">Role Response</div>
+                                <pre
+                                  class="text-white mb-0 small"
+                                  style="max-height: 240px; overflow: auto; white-space: pre-wrap;"
+                                ><code>{Jason.encode!(user_group_tournament.role_response || %{}, pretty: true)}</code></pre>
+                              </div>
+                              <div class="col-lg-6">
+                                <div class="cb-text text-uppercase small mb-2">Secret Response</div>
+                                <pre
+                                  class="text-white mb-0 small"
+                                  style="max-height: 240px; overflow: auto; white-space: pre-wrap;"
+                                ><code>{Jason.encode!(user_group_tournament.secret_response || %{}, pretty: true)}</code></pre>
+                              </div>
+                              <div class="col-lg-6">
+                                <div class="cb-text text-uppercase small mb-2">Last Error</div>
+                                <pre
+                                  class="text-white mb-0 small"
+                                  style="max-height: 240px; overflow: auto; white-space: pre-wrap;"
+                                ><code>{Jason.encode!(user_group_tournament.last_error || %{}, pretty: true)}</code></pre>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      <% end %>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            <% end %>
           </div>
         </div>
       </div>

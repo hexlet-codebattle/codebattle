@@ -221,11 +221,16 @@ export function TournamentPage() {
 }
 
 export function GroupTournamentPage() {
+  const container =
+    document.getElementById("group-tournament-root") ||
+    document.getElementById("group-tournament-admin-root");
+  const tournamentId = container?.dataset?.groupTournamentId;
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
-          <GroupTournament />
+          <GroupTournament tournamentId={tournamentId} />
         </Suspense>
       </PersistGate>
     </Provider>

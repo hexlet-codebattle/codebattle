@@ -47,17 +47,5 @@ defmodule Codebattle.Repo.Migrations.CreateGroupTournaments do
     end
 
     create(index(:group_task_runs, [:group_tournament_id]))
-
-    create table(:group_tournament_tokens) do
-      add(:user_id, references(:users), null: false)
-      add(:group_tournament_id, references(:group_tournaments, on_delete: :delete_all), null: false)
-      add(:token, :string, null: false)
-
-      timestamps()
-    end
-
-    create(unique_index(:group_tournament_tokens, [:token]))
-    create(unique_index(:group_tournament_tokens, [:user_id, :group_tournament_id]))
-    create(index(:group_tournament_tokens, [:group_tournament_id]))
   end
 end

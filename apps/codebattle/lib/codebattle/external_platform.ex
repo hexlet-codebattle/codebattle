@@ -78,7 +78,7 @@ defmodule Codebattle.ExternalPlatform do
     )
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.post(url, opts)
+    result = safe_request(:post, url, opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -126,7 +126,7 @@ defmodule Codebattle.ExternalPlatform do
     Logger.info("ExternalPlatform.poll_invite_status START method=GET url=#{url} operation_id=#{operation_id}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.get(url, opts)
+    result = safe_request(:get, url, opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -173,7 +173,7 @@ defmodule Codebattle.ExternalPlatform do
     Logger.info("ExternalPlatform.get_invite START method=GET url=#{url} invite_id=#{invite_id}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.get(url, opts)
+    result = safe_request(:get, url, opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -228,7 +228,7 @@ defmodule Codebattle.ExternalPlatform do
     Logger.info("ExternalPlatform.fork_repo START method=POST url=#{url} body=#{inspect(body)}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.post(url, req_opts)
+    result = safe_request(:post, url, req_opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -281,7 +281,7 @@ defmodule Codebattle.ExternalPlatform do
     Logger.info("ExternalPlatform.add_repo_role START method=POST url=#{url} body=#{inspect(body)}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.post(url, req_opts)
+    result = safe_request(:post, url, req_opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -306,6 +306,60 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
+  @doc """
+  Creates or updates a repository secret.
+  PUT /repos/{org_slug}/{repo_slug}/secrets/{key}
+  """
+  def upsert_secret(org_slug, repo_slug, key, value, opts \\ [])
+
+  @spec upsert_secret(String.t(), String.t(), String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def upsert_secret(org_slug, repo_slug, key, value, opts)
+      when is_binary(org_slug) and is_binary(repo_slug) and is_binary(key) and is_binary(value) do
+    body = %{value: value}
+
+    url = "#{external_platform_service_url()}/repos/#{org_slug}/#{repo_slug}/secrets/#{key}"
+    url = maybe_put_secret_group(url, Keyword.get(opts, :secret_group))
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @http_timeout_ms],
+        receive_timeout: @http_timeout_ms
+      )
+
+    Logger.info("ExternalPlatform.upsert_secret START method=PUT url=#{url} key=#{key}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:put, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: status, body: resp_body}} when status in [200, 201, 202] ->
+        Logger.info(
+          "ExternalPlatform.upsert_secret OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.upsert_secret FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.upsert_secret ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  def upsert_secret(_, _, _, _, _), do: {:error, :invalid_secret_request}
+
   defp do_get_user_by_login(login) do
     url = external_platform_service_url() <> @lookup_path
 
@@ -319,7 +373,7 @@ defmodule Codebattle.ExternalPlatform do
     Logger.info("ExternalPlatform.get_user_by_login START method=GET url=#{url} login=#{login}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = Req.get(url, opts)
+    result = safe_request(:get, url, opts)
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
@@ -374,6 +428,35 @@ defmodule Codebattle.ExternalPlatform do
       connect_options: [timeout: @http_timeout_ms],
       receive_timeout: @http_timeout_ms
     )
+  end
+
+  defp safe_request(:get, url, opts) do
+    Req.get(url, opts)
+  rescue
+    exception ->
+      {:error, {:request_exception, Exception.message(exception)}}
+  end
+
+  defp safe_request(:post, url, opts) do
+    Req.post(url, opts)
+  rescue
+    exception ->
+      {:error, {:request_exception, Exception.message(exception)}}
+  end
+
+  defp safe_request(:put, url, opts) do
+    Req.put(url, opts)
+  rescue
+    exception ->
+      {:error, {:request_exception, Exception.message(exception)}}
+  end
+
+  defp maybe_put_secret_group(url, nil), do: url
+  defp maybe_put_secret_group(url, ""), do: url
+
+  defp maybe_put_secret_group(url, secret_group) do
+    separator = if String.contains?(url, "?"), do: "&", else: "?"
+    url <> "#{separator}secret_group=#{URI.encode_www_form(secret_group)}"
   end
 
   defp normalize_login(login) when is_binary(login) and login != "", do: login

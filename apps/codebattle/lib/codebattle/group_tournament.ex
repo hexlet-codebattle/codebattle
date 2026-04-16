@@ -7,7 +7,6 @@ defmodule Codebattle.GroupTournament do
 
   alias Codebattle.GroupTask
   alias Codebattle.GroupTournamentPlayer
-  alias Codebattle.GroupTournamentToken
   alias Codebattle.User
 
   @states ~w(waiting_participants active finished canceled)
@@ -63,7 +62,6 @@ defmodule Codebattle.GroupTournament do
     field(:current_round, :map, virtual: true)
 
     has_many(:players, GroupTournamentPlayer)
-    has_many(:tokens, GroupTournamentToken)
 
     timestamps()
   end
@@ -107,7 +105,6 @@ defmodule Codebattle.GroupTournament do
     |> validate_length(:description, min: 3, max: 7531)
     |> validate_number(:rounds_count, greater_than: 0)
     |> validate_number(:round_timeout_seconds, greater_than: 0)
-    |> unique_constraint(:slug)
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:group_task_id)
   end
