@@ -23,6 +23,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite
   alias Codebattle.Repo
+  alias Codebattle.User
 
   require Logger
 
@@ -125,7 +126,8 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
       update_invite(invite, %{state: "expired"})
     else
       case ExternalPlatform.check_invite(login) do
-        {:ok, _user_data} ->
+        {:ok, user_data} ->
+          _ = persist_platform_user(invite.user_id, user_data)
           update_invite(invite, %{state: "accepted"})
 
         {:error, :not_accepted} ->
@@ -187,6 +189,31 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     |> ExternalPlatformInvite.changeset(attrs)
     |> Repo.update()
   end
+
+  # When the SourceCraft platform confirms an invite acceptance, mirror the user's
+  # platform identity (id + login) onto our User record so future checks and joins
+  # can use it without round-tripping the platform.
+  defp persist_platform_user(user_id, %{id: platform_id} = user_data) when is_binary(platform_id) and platform_id != "" do
+    case Repo.get(User, user_id) do
+      nil ->
+        :ok
+
+      user ->
+        attrs = maybe_put(%{external_platform_id: platform_id}, :external_platform_login, Map.get(user_data, :login))
+
+        user
+        |> User.changeset(attrs)
+        |> Repo.update()
+
+        :ok
+    end
+  end
+
+  defp persist_platform_user(_user_id, _user_data), do: :ok
+
+  defp maybe_put(map, _key, nil), do: map
+  defp maybe_put(map, _key, ""), do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
   defp expired?(%ExternalPlatformInvite{expires_at: nil}), do: false
 

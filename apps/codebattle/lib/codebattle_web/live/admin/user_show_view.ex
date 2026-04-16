@@ -95,15 +95,18 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
     tournament = Enum.find(socket.assigns.group_tournaments, &(to_string(&1.id) == tournament_id))
 
-    if tournament do
-      repo_slug = tournament.slug
-      login = user.external_platform_login || user.name
-      fork_slug = "#{repo_slug}-#{login}"
+    cond do
+      is_nil(tournament) ->
+        {:noreply, assign(socket, fork_result: {:error, :no_tournament_selected})}
 
-      result = ExternalPlatform.fork_repo(repo_slug, target_org_slug, slug: fork_slug)
-      {:noreply, assign(socket, fork_result: result)}
-    else
-      {:noreply, assign(socket, fork_result: {:error, :no_tournament_selected})}
+      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
+        {:noreply, assign(socket, fork_result: {:error, :user_has_no_platform_login})}
+
+      true ->
+        repo_slug = tournament.slug
+        fork_slug = "#{repo_slug}-#{user.external_platform_login}"
+        result = ExternalPlatform.fork_repo(repo_slug, target_org_slug, slug: fork_slug)
+        {:noreply, assign(socket, fork_result: result)}
     end
   end
 
@@ -111,18 +114,26 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user = socket.assigns.user
     tournament_id = params["group_tournament_id"]
     target_org_slug = String.trim(params["target_org_slug"] || "")
-    user_platform_id = String.trim(params["user_platform_id"] || "")
 
     tournament = Enum.find(socket.assigns.group_tournaments, &(to_string(&1.id) == tournament_id))
 
-    if tournament do
-      login = user.external_platform_login || user.name
-      repo_slug = "#{tournament.slug}-#{login}"
+    cond do
+      is_nil(tournament) ->
+        {:noreply, assign(socket, role_result: {:error, :no_tournament_selected})}
 
-      result = ExternalPlatform.add_repo_role(target_org_slug, repo_slug, user_platform_id, "developer")
-      {:noreply, assign(socket, role_result: result)}
-    else
-      {:noreply, assign(socket, role_result: {:error, :no_tournament_selected})}
+      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
+        {:noreply, assign(socket, role_result: {:error, :user_has_no_platform_login})}
+
+      true ->
+        case resolve_platform_user_id(user) do
+          {:ok, platform_user_id} ->
+            repo_slug = "#{tournament.slug}-#{user.external_platform_login}"
+            result = ExternalPlatform.add_repo_role(target_org_slug, repo_slug, platform_user_id, "developer")
+            {:noreply, assign(socket, role_result: result)}
+
+          {:error, reason} ->
+            {:noreply, assign(socket, role_result: {:error, reason})}
+        end
     end
   end
 
@@ -131,6 +142,31 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     invite = Repo.get!(ExternalPlatformInvite, id)
     Repo.delete(invite)
     {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+  end
+
+  def handle_event("mark_invite_accepted", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    invite = Repo.get!(ExternalPlatformInvite, id)
+
+    # Try to look up the user on the platform so we can mirror their slug onto our User record.
+    # If lookup fails (e.g., user not yet there), still mark the invite accepted as the admin commanded.
+    login = user.external_oauth_login || user.name
+
+    case ExternalPlatform.check_invite(login) do
+      {:ok, user_data} ->
+        update_user_platform_identity(user, user_data)
+
+      _ ->
+        :ok
+    end
+
+    invite
+    |> ExternalPlatformInvite.changeset(%{state: "accepted"})
+    |> Repo.update!()
+
+    refreshed_user = User.get!(user.id, preload: [:clan])
+
+    {:noreply, assign(socket, user: refreshed_user, platform_invites: get_platform_invites(user.id))}
   end
 
   def handle_event("toggle_invite_details", %{"id" => id}, socket) do
@@ -390,6 +426,44 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> order_by([gt], desc: gt.id)
     |> Repo.all()
   end
+
+  # Returns {:ok, sourcecraft_uuid} or {:error, atom}.
+  # Prefers the cached external_platform_id on the user record.
+  # Falls back to looking up by slug via the platform service.
+  defp resolve_platform_user_id(%{external_platform_id: id}) when is_binary(id) and id != "" do
+    {:ok, id}
+  end
+
+  defp resolve_platform_user_id(%{external_platform_login: login} = user) when is_binary(login) and login != "" do
+    case ExternalPlatform.get_user_by_login(login) do
+      %{id: id} = user_data when is_binary(id) and id != "" ->
+        # Cache the id on the user record so we don't have to look it up again.
+        update_user_platform_identity(user, user_data)
+        {:ok, id}
+
+      _ ->
+        {:error, :platform_user_not_found}
+    end
+  end
+
+  defp resolve_platform_user_id(_user), do: {:error, :user_has_no_platform_login}
+
+  defp update_user_platform_identity(user, %{id: platform_id} = user_data)
+       when is_binary(platform_id) and platform_id != "" do
+    attrs = %{external_platform_id: platform_id}
+
+    attrs =
+      case Map.get(user_data, :login) do
+        login when is_binary(login) and login != "" -> Map.put(attrs, :external_platform_login, login)
+        _ -> attrs
+      end
+
+    user
+    |> User.changeset(attrs)
+    |> Repo.update()
+  end
+
+  defp update_user_platform_identity(_user, _user_data), do: :ok
 
   defp get_platform_invites(user_id) do
     ExternalPlatformInvite
@@ -866,6 +940,17 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               Poll Status
                             </button>
                           <% end %>
+                          <%= if invite.state != "accepted" do %>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-success cb-rounded me-1"
+                              phx-click="mark_invite_accepted"
+                              phx-value-id={invite.id}
+                              data-confirm="Mark this invite as accepted?"
+                            >
+                              Mark Accepted
+                            </button>
+                          <% end %>
                           <button
                             type="button"
                             class="btn btn-sm btn-outline-info cb-rounded"
@@ -976,14 +1061,19 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       required
                       class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
                     />
-                    <input
-                      type="text"
-                      name="user_platform_id"
-                      value={@user.external_platform_id}
-                      placeholder="User platform ID"
-                      required
-                      class="form-control form-control-sm cb-bg-panel cb-border-color text-white"
-                    />
+                    <div class="cb-text small">
+                      <%= if @user.external_platform_login do %>
+                        Subject UUID resolved automatically from
+                        <code class="text-white">{@user.external_platform_login}</code>
+                        <%= if @user.external_platform_id do %>
+                          (cached: <code class="text-white">{@user.external_platform_id}</code>)
+                        <% end %>
+                      <% else %>
+                        <span class="text-warning">
+                          User has no <code>external_platform_login</code> — accept an invite first.
+                        </span>
+                      <% end %>
+                    </div>
                     <button type="submit" class="btn btn-sm btn-warning cb-rounded">
                       Grant Access
                     </button>

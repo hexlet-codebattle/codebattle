@@ -1,0 +1,90 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="cb-bg-panel cb-border-color border shadow-sm cb-rounded p-5">
+        <h2 class="text-white mb-4 text-center">{@group_tournament.name}</h2>
+        <h3 class="text-white mb-3 text-center">
+          Invitation Required
+        </h3>
+        <p class="cb-text mb-4 text-center">
+          To join this tournament you must accept an invitation to <strong class="text-white">{@external_platform_name}</strong>.
+        </p>
+
+        <%= case @invite.state do %>
+          <% "pending" -> %>
+            <div class="alert alert-info cb-rounded">
+              <strong>Preparing your invite…</strong>
+              <div class="small cb-text mt-2">
+                Refresh the page in a few seconds.
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <a
+                href={Routes.group_tournament_path(@conn, :show, @group_tournament.id)}
+                class="btn btn-lg btn-success cb-rounded"
+              >
+                Refresh
+              </a>
+            </div>
+          <% "creating" -> %>
+            <div class="alert alert-info cb-rounded">
+              <strong>Creating invite…</strong>
+              <div class="small cb-text mt-2">
+                Operation ID: <code class="text-white">{@invite.operation_id}</code>
+              </div>
+              <div class="small cb-text mt-1">
+                This usually takes a few seconds. Refresh to check status.
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <a
+                href={Routes.group_tournament_path(@conn, :show, @group_tournament.id)}
+                class="btn btn-lg btn-success cb-rounded"
+              >
+                Refresh
+              </a>
+            </div>
+          <% "invited" -> %>
+            <div class="alert alert-success cb-rounded">
+              <strong>Your invite is ready!</strong>
+              <div class="small cb-text mt-2">
+                <%= if @invite.expires_at do %>
+                  Expires at <code class="text-white">{Calendar.strftime(@invite.expires_at, "%Y-%m-%d %H:%M UTC")}</code>.
+                <% end %>
+              </div>
+            </div>
+
+            <div class="d-flex flex-column align-items-center gap-3">
+              <%= if @invite.invite_link do %>
+                <a
+                  href={@invite.invite_link}
+                  target="_blank"
+                  rel="noopener"
+                  class="btn btn-lg btn-success cb-rounded"
+                >
+                  Open Invite on {@external_platform_name}
+                </a>
+              <% end %>
+              <a
+                href={Routes.group_tournament_path(@conn, :show, @group_tournament.id)}
+                class="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+              >
+                Refresh Status
+              </a>
+            </div>
+          <% state when state in ["failed", "expired"] -> %>
+            <div class="alert alert-danger cb-rounded">
+              <strong>Invite {state}.</strong>
+              <%= if is_map(@invite.response) && @invite.response["error"] do %>
+                <pre class="mb-0 small mt-2 text-white" style="white-space: pre-wrap;"><code>{@invite.response["error"]}</code></pre>
+              <% end %>
+            </div>
+          <% _ -> %>
+            <div class="alert alert-warning cb-rounded">
+              <strong>Unexpected state:</strong> <code>{@invite.state}</code>
+            </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
