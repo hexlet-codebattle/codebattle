@@ -366,7 +366,7 @@ function GroupTournamentPage() {
                     {data.groupTournament.name}
                     <span className="cb-text ml-2">{data.groupTournament.state}</span>
                     {data.groupTournament.state === "waiting_participants" &&
-                      timeline.startsInSeconds !== null
+                    timeline.startsInSeconds !== null
                       ? ` • starts in ${formatDuration(timeline.startsInSeconds)}`
                       : ""}
                   </div>

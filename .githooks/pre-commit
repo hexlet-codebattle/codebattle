@@ -4,7 +4,8 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-TARGET_PREFIX="apps/codebattle/assets/js/"
+JS_PREFIX="apps/codebattle/assets/js/"
+SCSS_PREFIX="apps/codebattle/assets/css/"
 APP_DIR="apps/codebattle"
 APP_PREFIX="apps/codebattle/"
 ELIXIR_PATTERN='(^mix\.exs$|^\.formatter\.exs$|^config/.*\.exs$|.*\.(ex|exs)$)'
@@ -14,7 +15,15 @@ while IFS= read -r file; do
   JS_STAGED_FILES+=("$file")
 done < <(
   git diff --cached --name-only --diff-filter=ACMR |
-    grep -E "^${TARGET_PREFIX}.*\\.(js|jsx|ts|tsx)$" || true
+    grep -E "^${JS_PREFIX}.*\\.(js|jsx|ts|tsx)$" || true
+)
+
+SCSS_STAGED_FILES=()
+while IFS= read -r file; do
+  SCSS_STAGED_FILES+=("$file")
+done < <(
+  git diff --cached --name-only --diff-filter=ACMR |
+    grep -E "^${SCSS_PREFIX}.*\\.scss$" || true
 )
 
 ELIXIR_STAGED_FILES=()
@@ -25,7 +34,9 @@ done < <(
     grep -E "${ELIXIR_PATTERN}" || true
 )
 
-if [ "${#JS_STAGED_FILES[@]}" -eq 0 ] && [ "${#ELIXIR_STAGED_FILES[@]}" -eq 0 ]; then
+if [ "${#JS_STAGED_FILES[@]}" -eq 0 ] \
+  && [ "${#SCSS_STAGED_FILES[@]}" -eq 0 ] \
+  && [ "${#ELIXIR_STAGED_FILES[@]}" -eq 0 ]; then
   exit 0
 fi
 
@@ -36,12 +47,23 @@ if [ "${#ELIXIR_STAGED_FILES[@]}" -gt 0 ]; then
 fi
 
 if [ "${#JS_STAGED_FILES[@]}" -gt 0 ]; then
-  APP_FILES=()
+  JS_APP_FILES=()
   for file in "${JS_STAGED_FILES[@]}"; do
-    APP_FILES+=("${file#${APP_PREFIX}}")
+    JS_APP_FILES+=("${file#${APP_PREFIX}}")
   done
 
-  pnpm --dir "$APP_DIR" exec oxfmt --write "${APP_FILES[@]}"
+  pnpm --dir "$APP_DIR" exec oxfmt --write "${JS_APP_FILES[@]}"
+  pnpm --dir "$APP_DIR" exec oxlint --fix "${JS_APP_FILES[@]}" || true
   git add -- "${JS_STAGED_FILES[@]}"
-  pnpm --dir "$APP_DIR" exec oxlint "${APP_FILES[@]}"
+fi
+
+if [ "${#SCSS_STAGED_FILES[@]}" -gt 0 ]; then
+  SCSS_APP_FILES=()
+  for file in "${SCSS_STAGED_FILES[@]}"; do
+    SCSS_APP_FILES+=("${file#${APP_PREFIX}}")
+  done
+
+  pnpm --dir "$APP_DIR" exec prettier --write "${SCSS_APP_FILES[@]}"
+  pnpm --dir "$APP_DIR" exec stylelint --fix "${SCSS_APP_FILES[@]}" || true
+  git add -- "${SCSS_STAGED_FILES[@]}"
 fi

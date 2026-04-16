@@ -12,7 +12,9 @@ function LogPanel({ logs, className }) {
           <div className="mt-2 small">
             <ul className="list-unstyled mb-0">
               {logs.slice(0, 3).map((log, idx) => (
-                <li key={idx} className="text-truncate">• {log}</li>
+                <li key={idx} className="text-truncate">
+                  • {log}
+                </li>
               ))}
               {logs.length > 3 && <li>... and {logs.length - 3} more</li>}
             </ul>

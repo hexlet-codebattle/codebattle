@@ -130,9 +130,9 @@ export const editorDataSelector = (playerId, roomMachineState) => (state) => {
 
   const currentLangSlug =
     roomMachineState &&
-      roomMachineState.matches({
-        replayer: replayerMachineStates.on,
-      })
+    roomMachineState.matches({
+      replayer: replayerMachineStates.on,
+    })
       ? meta.historyCurrentLangSlug
       : meta.currentLangSlug;
 

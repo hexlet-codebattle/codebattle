@@ -14,25 +14,21 @@ function EditorPanel({ text, lang }) {
     fontSize: 14,
     editable: false,
     roomMode: "group_tournament",
-    checkResult: () => { },
-    toggleMuteSound: () => { },
+    checkResult: () => {},
+    toggleMuteSound: () => {},
     mute: false,
     userType: "spectator",
     userId: 0,
-    onChangeCursorSelection: () => { },
-    onChangeCursorPosition: () => { },
+    onChangeCursorSelection: () => {},
+    onChangeCursorPosition: () => {},
     syntax: lang || "javascript",
     gameStartTimeMs: 0,
-    onTelemetryEvent: () => { },
+    onTelemetryEvent: () => {},
     loading: false,
     canSendCursor: false,
   };
 
-  const {
-    options,
-    handleEditorWillMount,
-    handleEditorDidMount,
-  } = useEditor(editorProps);
+  const { options, handleEditorWillMount, handleEditorDidMount } = useEditor(editorProps);
 
   return (
     <div className="card border rounded max-vh-66 h-100">
