@@ -85,14 +85,21 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   def poll_status(%ExternalPlatformInvite{state: "creating", operation_id: operation_id} = invite)
       when is_binary(operation_id) do
     case ExternalPlatform.poll_invite_status(operation_id) do
-      {:ok, %{"status" => "completed"} = body} ->
+      {:ok, %{"status" => status} = body} when status in ["completed", "success"] ->
         transition_from_creating(invite, body)
 
       {:ok, %{"status" => status} = body} when status in ["scheduled", "running"] ->
         update_invite(invite, %{response: body})
 
+      {:ok, %{"status" => status} = body} when status in ["failed", "cancel", "canceled"] ->
+        transition_to_failed(invite, body)
+
       {:ok, %{"error" => _} = body} ->
         transition_to_failed(invite, body)
+
+      {:ok, body} ->
+        # Unknown status - store body but don't transition, so poll can be retried.
+        update_invite(invite, %{response: body})
 
       {:error, reason} ->
         transition_to_failed(invite, reason)
