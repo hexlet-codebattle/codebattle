@@ -36,6 +36,7 @@ defmodule Codebattle.Application do
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.GroupTournament.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
+        {Codebattle.Tournament.Restorer, []},
         {Codebattle.InvitesKillerServer, []},
         %{
           id: Codebattle.Chat.Lobby,

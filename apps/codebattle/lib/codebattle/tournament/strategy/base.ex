@@ -28,6 +28,7 @@ defmodule Codebattle.Tournament.Base do
 
       alias Codebattle.Bot
       alias Tournament.Round.Context
+      alias Tournament.Storage.Ranking
 
       require Logger
 
@@ -65,7 +66,9 @@ defmodule Codebattle.Tournament.Base do
         if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
           tournament
         else
-          add_player(tournament, player)
+          tournament
+          |> add_player(player)
+          |> db_save!(:with_ets)
         end
       end
 
@@ -75,7 +78,9 @@ defmodule Codebattle.Tournament.Base do
         if player?(tournament, player.id) or players_count(tournament) >= tournament.players_limit do
           tournament
         else
-          add_player(tournament, player)
+          tournament
+          |> add_player(player)
+          |> db_save!(:with_ets)
         end
       end
 
@@ -88,7 +93,10 @@ defmodule Codebattle.Tournament.Base do
       def leave(tournament, %{user_id: user_id}) do
         Tournament.Players.drop_player(tournament, user_id)
         Tournament.Ranking.drop_player(tournament, user_id)
-        Map.put(tournament, :players_count, players_count(tournament))
+
+        tournament
+        |> Map.put(:players_count, players_count(tournament))
+        |> db_save!(:with_ets)
       end
 
       def leave(tournament, _user_id), do: tournament
@@ -403,6 +411,43 @@ defmodule Codebattle.Tournament.Base do
         |> start_round(new_round_params)
       end
 
+      def restore_active_round(tournament, params) do
+        target_round_position = tournament.current_round_position
+
+        tournament
+        |> restore_previous_round_state(Map.get(params, :completed_round_position, target_round_position - 1))
+        |> update_struct(%{
+          break_state: "off",
+          current_round_id: nil,
+          current_round_position: target_round_position,
+          played_pair_ids: Map.get(params, :played_pair_ids, MapSet.new()),
+          round_op_id: nil,
+          round_op_status: "idle",
+          round_state: "active"
+        })
+        |> restore_round(params)
+        |> db_save!(:with_ets)
+        |> tap(&broadcast_tournament_update/1)
+      end
+
+      def restore_active_break(tournament, params) do
+        target_round_position = tournament.current_round_position
+
+        tournament
+        |> restore_previous_round_state(Map.get(params, :completed_round_position, target_round_position))
+        |> update_struct(%{
+          break_state: "on",
+          current_round_id: nil,
+          current_round_position: target_round_position,
+          played_pair_ids: Map.get(params, :played_pair_ids, MapSet.new()),
+          round_op_id: nil,
+          round_op_status: "done",
+          round_state: "break"
+        })
+        |> db_save!(:with_ets)
+        |> tap(&broadcast_tournament_update/1)
+      end
+
       def finish_match(%{state: "timeout"} = tournament, params) do
         handle_game_result(tournament, params)
       end
@@ -573,11 +618,13 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp start_round(tournament, round_params \\ %{}) do
+        started_at = Map.get(round_params, :started_at, NaiveDateTime.utc_now(:second))
+
         # Perform initial updates in a single operation
         tournament =
           update_struct(tournament, %{
             break_state: "off",
-            last_round_started_at: NaiveDateTime.utc_now(:second),
+            last_round_started_at: started_at,
             match_timeout_seconds: Map.get(round_params, :timeout_seconds, tournament.match_timeout_seconds),
             round_state: "round_starting"
           })
@@ -591,7 +638,7 @@ defmodule Codebattle.Tournament.Base do
           |> maybe_preload_tasks()
           |> maybe_set_task_ids()
           |> set_current_round_timeout_seconds(round_params)
-          |> maybe_start_round_timer()
+          |> maybe_start_round_timer(round_params)
 
         # Build matches - this is the most time-consuming part
         tournament = build_round_matches(tournament, round_params)
@@ -620,9 +667,21 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp build_round_matches(tournament, round_params) do
+        case Map.get(round_params, :match_blueprints) do
+          blueprints when is_list(blueprints) and blueprints != [] ->
+            build_round_matches_from_blueprints(tournament, blueprints)
+
+          _ ->
+            tournament
+            |> build_round_pairs()
+            |> bulk_insert_round_games(round_params)
+        end
+      end
+
+      defp build_round_matches_from_blueprints(tournament, match_blueprints) do
+        Enum.each(match_blueprints, &create_round_match_from_blueprint(tournament, &1))
+
         tournament
-        |> build_round_pairs()
-        |> bulk_insert_round_games(round_params)
       end
 
       defp bulk_insert_round_games({tournament, player_pairs}, round_params) do
@@ -748,6 +807,34 @@ defmodule Codebattle.Tournament.Base do
           tournament: tournament,
           match: match
         })
+      end
+
+      defp create_round_match_from_blueprint(tournament, blueprint) do
+        players = tournament |> get_players(blueprint.player_ids) |> Enum.reject(&is_nil/1)
+
+        task = get_task(tournament, blueprint.task_id) || Codebattle.Task.get!(blueprint.task_id)
+
+        {:ok, game} =
+          %{
+            grade: tournament.grade,
+            level: blueprint.level || task.level,
+            players: players,
+            ref: blueprint.id,
+            round_id: tournament.current_round_id,
+            round_position: tournament.current_round_position,
+            state: "playing",
+            task: task,
+            task_id: blueprint.task_id,
+            timeout_seconds: get_round_game_timeout(tournament, task),
+            tournament_id: tournament.id,
+            type: game_type(),
+            use_chat: tournament.use_chat,
+            use_timer: tournament.use_timer
+          }
+          |> maybe_add_award(tournament)
+          |> Game.Context.create_game()
+
+        build_and_run_match(tournament, players, game, false)
       end
 
       def update_struct(tournament, params) do
@@ -897,23 +984,138 @@ defmodule Codebattle.Tournament.Base do
       defp maybe_start_global_timer(tournament), do: tournament
 
       # per_task: no round timer, games timeout individually
-      defp maybe_start_round_timer(%{timeout_mode: "per_task"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{timeout_mode: "per_task"} = tournament, _round_params), do: tournament
       # per_tournament: global timer handles it
-      defp maybe_start_round_timer(%{timeout_mode: "per_tournament"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{timeout_mode: "per_tournament"} = tournament, _round_params), do: tournament
       # per_round_fixed: swiss/top200 don't need round timer (games have individual timeouts,
       # rounds finish when all games complete)
-      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "swiss"} = tournament), do: tournament
-      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "top200"} = tournament), do: tournament
+      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "swiss"} = tournament, _round_params),
+        do: tournament
+
+      defp maybe_start_round_timer(%{timeout_mode: "per_round_fixed", type: "top200"} = tournament, _round_params),
+        do: tournament
 
       # per_round_with_rematch and per_round_fixed (for show type) need the round timer
-      defp maybe_start_round_timer(tournament) do
+      defp maybe_start_round_timer(tournament, round_params) do
+        timeout_seconds =
+          Map.get(round_params, :remaining_timeout_seconds, tournament.round_timeout_seconds)
+
         Process.send_after(
           self(),
           {:finish_round_force, tournament.current_round_position},
-          to_timeout(second: tournament.round_timeout_seconds)
+          to_timeout(second: max(timeout_seconds || 0, 0))
         )
 
         tournament
+      end
+
+      defp restore_round(tournament, params) do
+        tournament
+        |> build_and_save_round!()
+        |> maybe_preload_tasks()
+        |> maybe_set_task_ids()
+        |> set_current_round_timeout_seconds(params)
+        |> maybe_start_round_timer(params)
+        |> build_round_matches(params)
+        |> update_struct(%{round_state: "active"})
+        |> broadcast_round_created()
+      end
+
+      defp restore_previous_round_state(tournament, completed_round_position) do
+        tournament
+        |> reset_players_for_restore()
+        |> rebuild_player_history_from_matches()
+        |> rebuild_ranking_for_restore(completed_round_position)
+        |> recalculate_player_wins_count()
+      end
+
+      defp reset_players_for_restore(tournament) do
+        tournament
+        |> get_players()
+        |> Enum.each(fn player ->
+          restored_state = if(player.state == "banned", do: "banned", else: "active")
+
+          Tournament.Players.put_player(tournament, %{
+            player
+            | last_ranked_round_position: -1,
+              matches_ids: [],
+              place: 0,
+              score: 0,
+              state: restored_state,
+              task_ids: [],
+              total_duration_sec: 0,
+              wins_count: 0
+          })
+        end)
+
+        Ranking.put_ranking(tournament, [])
+        tournament
+      end
+
+      defp rebuild_player_history_from_matches(tournament) do
+        tournament
+        |> get_matches()
+        |> Enum.sort_by(&{&1.round_position, &1.id})
+        |> Enum.each(fn match ->
+          Enum.each(match.player_ids, fn player_id ->
+            rebuild_player_history_from_match(tournament, match, player_id)
+          end)
+        end)
+
+        tournament
+      end
+
+      defp rebuild_player_history_from_match(tournament, match, player_id) do
+        case Tournament.Players.get_player(tournament, player_id) do
+          nil ->
+            :noop
+
+          player ->
+            Tournament.Players.put_player(tournament, %{
+              player
+              | matches_ids: [match.id | player.matches_ids],
+                task_ids: [match.task_id | player.task_ids]
+            })
+        end
+      end
+
+      defp rebuild_ranking_for_restore(tournament, completed_round_position) when completed_round_position < 0 do
+        ranking =
+          tournament
+          |> get_players()
+          |> Enum.reject(&(&1.is_bot || &1.state == "banned"))
+          |> Enum.sort_by(& &1.id)
+          |> Enum.with_index(1)
+          |> Enum.map(fn {player, place} ->
+            Tournament.Players.put_player(tournament, %{player | place: place})
+
+            %{
+              id: player.id,
+              place: place,
+              score: 0,
+              lang: player.lang,
+              name: player.name,
+              clan_id: player.clan_id,
+              clan: player.clan
+            }
+          end)
+
+        Ranking.put_ranking(tournament, ranking)
+        tournament
+      end
+
+      defp rebuild_ranking_for_restore(tournament, completed_round_position) do
+        target_round_position = tournament.current_round_position
+
+        tournament =
+          Enum.reduce(0..completed_round_position, tournament, fn round_position, acc ->
+            acc
+            |> update_struct(%{current_round_position: round_position})
+            |> Tournament.TournamentResult.upsert_results()
+            |> Tournament.Ranking.set_ranking()
+          end)
+
+        update_struct(tournament, %{current_round_position: target_round_position})
       end
 
       defp broadcast_round_created(tournament) do
@@ -1099,7 +1301,7 @@ defmodule Codebattle.Tournament.Base do
             }
           end)
 
-        Tournament.Storage.Ranking.put_ranking(tournament, ranking)
+        Ranking.put_ranking(tournament, ranking)
 
         tournament
         |> get_players()
