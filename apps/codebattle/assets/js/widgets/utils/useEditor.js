@@ -56,7 +56,7 @@ const useOption = (
     renderLineHighlight,
     hideCursorInOverviewRuler = false,
     overviewRulerBorder = true,
-    placeholder = defaultEditorPlaceholder
+    placeholder = defaultEditorPlaceholder,
   },
 ) => {
   const options = useMemo(
@@ -91,7 +91,20 @@ const useOption = (
       userType,
       canSendCursor,
     }),
-    [placeholder, hideCursorInOverviewRuler, renderLineHighlight, overviewRulerBorder, userType, canSendCursor, wordWrap, lineNumbers, syntax, fontSize, editable, loading],
+    [
+      placeholder,
+      hideCursorInOverviewRuler,
+      renderLineHighlight,
+      overviewRulerBorder,
+      userType,
+      canSendCursor,
+      wordWrap,
+      lineNumbers,
+      syntax,
+      fontSize,
+      editable,
+      loading,
+    ],
   );
 
   useEffect(() => {
@@ -142,7 +155,7 @@ const useEditor = (props) => {
     };
   }, [handleEnterCtrPlusS]);
 
-  const handleEditorWillMount = () => { };
+  const handleEditorWillMount = () => {};
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);
