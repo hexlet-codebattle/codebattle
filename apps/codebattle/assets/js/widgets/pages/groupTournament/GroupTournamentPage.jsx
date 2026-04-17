@@ -107,7 +107,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
       <div className="row mt-3 h-100">
         <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
           <EvolutionPanel
-            items={solutionEvolution}
+            items={data?.runs}
             tournamentStatus={status}
             runId={runId}
             setRunId={setRunId}
