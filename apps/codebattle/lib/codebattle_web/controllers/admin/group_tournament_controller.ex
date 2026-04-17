@@ -267,7 +267,10 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp latest_solutions(group_tournament) do
     player_ids = Enum.map(group_tournament.players, & &1.user_id)
-    GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids)
+
+    GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
+      group_tournament_id: group_tournament.id
+    )
   end
 
   defp parse_user_id(user_id) when is_integer(user_id) and user_id > 0, do: {:ok, user_id}

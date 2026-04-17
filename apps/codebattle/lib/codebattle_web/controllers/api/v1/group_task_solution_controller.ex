@@ -1,7 +1,8 @@
 defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.GroupTask.Context
+  alias Codebattle.GroupTask.Context, as: GroupTaskContext
+  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
 
   def create(conn, params) do
     if FunWithFlags.enabled?(:group_tasks_api) do
@@ -23,7 +24,7 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
   end
 
   defp create_solution({:ok, token}, conn, params) do
-    case Context.create_solution_from_token(token, params) do
+    case create_solution_from_token(token, params) do
       {:ok, solution} ->
         conn
         |> put_status(:created)
@@ -48,6 +49,16 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
   end
 
   defp create_solution(:error, conn, _params), do: unauthorized(conn)
+
+  defp create_solution_from_token(token, params) do
+    case GroupTournamentContext.create_solution_from_token(token, params) do
+      {:error, :invalid_token} ->
+        GroupTaskContext.create_solution_from_token(token, params)
+
+      result ->
+        result
+    end
+  end
 
   defp unauthorized(conn) do
     conn

@@ -102,10 +102,7 @@ defmodule Codebattle.GroupTournament.Context do
 
         if player_ids != [] do
           GroupTaskSolution
-          |> where(
-            [solution],
-            solution.group_task_id == ^group_tournament.group_task_id and solution.user_id in ^player_ids
-          )
+          |> where([solution], solution.group_tournament_id == ^group_tournament.id and solution.user_id in ^player_ids)
           |> Repo.delete_all()
         end
 
@@ -207,7 +204,11 @@ defmodule Codebattle.GroupTournament.Context do
         {:error, :invalid_token}
 
       %{group_tournament: %{group_task_id: group_task_id}} = token_record ->
-        GroupTaskContext.create_solution(group_task_id, token_record.user_id, attrs)
+        GroupTaskContext.create_solution_from_submission(group_task_id, token_record.user_id, %{
+          group_tournament_id: token_record.group_tournament_id,
+          lang: Map.get(attrs, "lang") || Map.get(attrs, :lang),
+          solution: Map.get(attrs, "solution") || Map.get(attrs, :solution)
+        })
     end
   end
 

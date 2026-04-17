@@ -13,11 +13,21 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     group_tournament = Context.get_current(id) || Context.get_group_tournament!(id)
 
     player_ids = Enum.map(group_tournament.players, & &1.user_id)
-    latest_solutions = GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids)
+
+    latest_solutions =
+      GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
+        group_tournament_id: group_tournament.id
+      )
+
     external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
 
     current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
-    current_user_solutions = GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id)
+
+    current_user_solutions =
+      GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id,
+        group_tournament_id: group_tournament.id
+      )
+
     latest_solution = List.first(current_user_solutions)
 
     json(conn, %{
@@ -67,6 +77,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       |> json(%{error: "join_tournament_first"})
     else
       case GroupTaskContext.create_solution(group_tournament.group_task_id, current_user.id, %{
+             group_tournament_id: group_tournament.id,
              lang: current_player.lang,
              solution: solution
            }) do

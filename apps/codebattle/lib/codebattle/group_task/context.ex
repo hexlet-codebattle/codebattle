@@ -80,9 +80,11 @@ defmodule Codebattle.GroupTask.Context do
 
   def list_solutions(group_task_id, opts) do
     limit = Keyword.get(opts, :limit, @admin_recent_solutions_limit)
+    group_tournament_id = Keyword.get(opts, :group_tournament_id)
 
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id)
+    |> maybe_filter_by_group_tournament(group_tournament_id)
     |> preload(:user)
     |> order_by([solution], desc: solution.inserted_at, desc: solution.id)
     |> limit(^limit)
@@ -94,10 +96,13 @@ defmodule Codebattle.GroupTask.Context do
     Repo.get!(GroupTaskSolution, id)
   end
 
-  @spec get_latest_solution(pos_integer(), pos_integer()) :: GroupTaskSolution.t() | nil
-  def get_latest_solution(group_task_id, user_id) do
+  @spec get_latest_solution(pos_integer(), pos_integer(), keyword()) :: GroupTaskSolution.t() | nil
+  def get_latest_solution(group_task_id, user_id, opts \\ []) do
+    group_tournament_id = Keyword.get(opts, :group_tournament_id)
+
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id == ^user_id)
+    |> maybe_filter_by_group_tournament(group_tournament_id)
     |> preload(:user)
     |> order_by([solution], desc: solution.id)
     |> limit(1)
@@ -107,9 +112,11 @@ defmodule Codebattle.GroupTask.Context do
   @spec list_user_solutions(pos_integer(), pos_integer(), keyword()) :: list(GroupTaskSolution.t())
   def list_user_solutions(group_task_id, user_id, opts \\ []) do
     limit = Keyword.get(opts, :limit, @admin_recent_solutions_limit)
+    group_tournament_id = Keyword.get(opts, :group_tournament_id)
 
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id == ^user_id)
+    |> maybe_filter_by_group_tournament(group_tournament_id)
     |> preload(:user)
     |> order_by([solution], desc: solution.inserted_at, desc: solution.id)
     |> limit(^limit)
@@ -122,6 +129,7 @@ defmodule Codebattle.GroupTask.Context do
     params = %{
       user_id: user_id,
       group_task_id: group_task_id,
+      group_tournament_id: Map.get(attrs, "group_tournament_id") || Map.get(attrs, :group_tournament_id),
       lang: Map.get(attrs, "lang") || Map.get(attrs, :lang),
       solution: Map.get(attrs, "solution") || Map.get(attrs, :solution)
     }
@@ -131,9 +139,30 @@ defmodule Codebattle.GroupTask.Context do
     |> Repo.insert()
   end
 
-  @spec list_latest_solutions(pos_integer(), list(pos_integer())) :: list(GroupTaskSolution.t())
-  def list_latest_solutions(group_task_id, player_ids) do
-    do_list_latest_solutions(group_task_id, player_ids)
+  @spec create_solution_from_submission(pos_integer(), pos_integer(), map()) ::
+          {:ok, GroupTaskSolution.t()} | {:error, Ecto.Changeset.t()}
+  def create_solution_from_submission(group_task_id, user_id, attrs) do
+    params = %{
+      user_id: user_id,
+      group_task_id: group_task_id,
+      group_tournament_id: Map.get(attrs, "group_tournament_id") || Map.get(attrs, :group_tournament_id),
+      lang: Map.get(attrs, "lang") || Map.get(attrs, :lang)
+    }
+
+    case decode_solution(Map.get(attrs, "solution") || Map.get(attrs, :solution)) do
+      {:ok, decoded_solution} ->
+        %GroupTaskSolution{}
+        |> GroupTaskSolution.changeset(Map.put(params, :solution, decoded_solution))
+        |> Repo.insert()
+
+      :error ->
+        {:error, invalid_solution_encoding_changeset(params)}
+    end
+  end
+
+  @spec list_latest_solutions(pos_integer(), list(pos_integer()), keyword()) :: list(GroupTaskSolution.t())
+  def list_latest_solutions(group_task_id, player_ids, opts \\ []) do
+    do_list_latest_solutions(group_task_id, player_ids, opts)
   end
 
   @spec change_solution(GroupTaskSolution.t(), map()) :: Ecto.Changeset.t()
@@ -243,21 +272,7 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp create_solution(group_task_token, attrs) do
-    params = %{
-      user_id: group_task_token.user_id,
-      group_task_id: group_task_token.group_task_id,
-      lang: Map.get(attrs, "lang") || Map.get(attrs, :lang)
-    }
-
-    case decode_solution(Map.get(attrs, "solution") || Map.get(attrs, :solution)) do
-      {:ok, decoded_solution} ->
-        %GroupTaskSolution{}
-        |> GroupTaskSolution.changeset(Map.put(params, :solution, decoded_solution))
-        |> Repo.insert()
-
-      :error ->
-        {:error, invalid_solution_encoding_changeset(params)}
-    end
+    create_solution_from_submission(group_task_token.group_task_id, group_task_token.user_id, attrs)
   end
 
   defp decode_solution(solution) when is_binary(solution) do
@@ -295,7 +310,11 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp build_run_payload(%GroupTask{} = group_task, player_ids, attrs) do
-    latest_solutions = do_list_latest_solutions(group_task.id, player_ids)
+    latest_solutions =
+      do_list_latest_solutions(group_task.id, player_ids,
+        group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id")
+      )
+
     solution_user_ids = MapSet.new(Enum.map(latest_solutions, & &1.user_id))
     missing_player_ids = Enum.reject(player_ids, &MapSet.member?(solution_user_ids, &1))
 
@@ -375,13 +394,22 @@ defmodule Codebattle.GroupTask.Context do
     end
   end
 
-  defp do_list_latest_solutions(group_task_id, player_ids) do
+  defp do_list_latest_solutions(group_task_id, player_ids, opts) do
+    group_tournament_id = Keyword.get(opts, :group_tournament_id)
+
     GroupTaskSolution
     |> where([solution], solution.group_task_id == ^group_task_id and solution.user_id in ^player_ids)
+    |> maybe_filter_by_group_tournament(group_tournament_id)
     |> preload(:user)
     |> distinct([solution], solution.user_id)
     |> order_by([solution], asc: solution.user_id, desc: solution.id)
     |> Repo.all()
+  end
+
+  defp maybe_filter_by_group_tournament(query, nil), do: query
+
+  defp maybe_filter_by_group_tournament(query, group_tournament_id) do
+    where(query, [solution], solution.group_tournament_id == ^group_tournament_id)
   end
 
   defp normalize_player_ids(player_ids) do

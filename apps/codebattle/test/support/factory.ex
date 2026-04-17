@@ -8,6 +8,7 @@ defmodule CodebattleWeb.Factory do
   alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTaskToken
+  alias Codebattle.GroupTournament
   alias Codebattle.Playbook
   alias Codebattle.Task
   alias Codebattle.TaskPack
@@ -262,6 +263,19 @@ defmodule CodebattleWeb.Factory do
       group_task: build(:group_task),
       lang: "python",
       solution: "print('ok')"
+    }
+  end
+
+  def group_tournament_factory do
+    %GroupTournament{
+      creator: build(:user),
+      group_task: build(:group_task),
+      name: sequence(:group_tournament_name, &"Group Tournament #{&1}"),
+      slug: sequence(:group_tournament_slug, &"group-tournament-#{&1}"),
+      description: "Group tournament description",
+      starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+      rounds_count: 1,
+      round_timeout_seconds: 60
     }
   end
 

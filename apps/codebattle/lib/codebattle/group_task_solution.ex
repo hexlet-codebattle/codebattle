@@ -6,6 +6,7 @@ defmodule Codebattle.GroupTaskSolution do
   import Ecto.Changeset
 
   alias Codebattle.GroupTask
+  alias Codebattle.GroupTournament
   alias Codebattle.User
 
   @type t :: %__MODULE__{}
@@ -13,6 +14,7 @@ defmodule Codebattle.GroupTaskSolution do
   schema "group_task_solutions" do
     belongs_to(:user, User)
     belongs_to(:group_task, GroupTask)
+    belongs_to(:group_tournament, GroupTournament)
 
     field(:solution, :string)
     field(:lang, :string)
@@ -22,7 +24,7 @@ defmodule Codebattle.GroupTaskSolution do
 
   def changeset(group_task_solution, attrs \\ %{}) do
     group_task_solution
-    |> cast(attrs, [:user_id, :group_task_id, :solution, :lang])
+    |> cast(attrs, [:user_id, :group_task_id, :group_tournament_id, :solution, :lang])
     |> validate_required([:user_id, :group_task_id, :solution, :lang])
     |> update_change(:solution, &String.trim/1)
     |> update_change(:lang, &normalize_lang/1)
@@ -30,6 +32,7 @@ defmodule Codebattle.GroupTaskSolution do
     |> validate_length(:lang, min: 1, max: 100)
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:group_task_id)
+    |> foreign_key_constraint(:group_tournament_id)
   end
 
   defp normalize_lang(nil), do: nil
