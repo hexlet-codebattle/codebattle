@@ -146,6 +146,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       players_count: group_tournament.players_count,
       group_task_id: group_tournament.group_task_id,
       group_task_slug: group_tournament.group_task && group_tournament.group_task.slug,
+      template_id: Map.get(group_tournament, :template_id),
       meta: group_tournament.meta
     }
   end

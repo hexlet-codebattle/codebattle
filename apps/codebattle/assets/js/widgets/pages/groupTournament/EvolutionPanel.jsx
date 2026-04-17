@@ -2,6 +2,45 @@ import React from "react";
 
 const getExternalUrl = (url) => `${url}/browse/README.md?rev=main&chatMessage=""`;
 
+const formatInsertedAt = (insertedAt) => {
+  if (!insertedAt) {
+    return null;
+  }
+
+  const date = new Date(insertedAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toLocaleString();
+};
+
+const buildRunSummary = (item, idx) => {
+  if (!item || typeof item !== "object") {
+    return {
+      key: idx,
+      title: `v${idx + 1}`,
+      meta: item ? String(item) : null,
+    };
+  }
+
+  const playersCount = item.playerIds?.length;
+  const meta = [
+    item.status,
+    playersCount ? `${playersCount} players` : null,
+    formatInsertedAt(item.insertedAt),
+  ]
+    .filter(Boolean)
+    .join(" • ");
+
+  return {
+    key: item.id ?? idx,
+    title: `Run #${item.id ?? idx + 1}`,
+    meta,
+  };
+};
+
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   return (
     <div className="card cb-card border cb-border-color rounded h-100">
@@ -18,17 +57,32 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
           {items && items.length > 0 && (
             <div className="mt-2 small">
               <div className="list-group list-group-flush">
-                {items.map((item, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setRunId(item.id)}
-                    className="list-group-item list-group-item-action px-0 py-1 border-0 text-left bg-transparent"
-                  >
-                    <span className="badge badge-secondary mr-2">v{idx + 1}</span>
-                    <span className="text-truncate">{item}</span>
-                  </button>
-                ))}
+                {items.map((item, idx) => {
+                  const summary = buildRunSummary(item, idx);
+
+                  return (
+                    <button
+                      key={summary.key}
+                      type="button"
+                      onClick={() => setRunId(item?.id)}
+                      className="list-group-item list-group-item-action px-0 py-1 border-0 text-left bg-transparent"
+                      style={{
+                        backgroundColor:
+                          runId === item?.id ? "rgba(40, 167, 69, 0.14)" : "transparent",
+                      }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <span className="badge badge-secondary mr-2">v{idx + 1}</span>
+                        <span className="text-truncate">{summary.title}</span>
+                      </div>
+                      {summary.meta ? (
+                        <small className="d-block text-muted text-truncate mt-1">
+                          {summary.meta}
+                        </small>
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

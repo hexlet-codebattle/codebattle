@@ -84,6 +84,15 @@
     {error_tag(f, :run_on_external_platform)}
   </div>
 
+  <div class="form-group">
+    <div><span class="text-white">Template Repo ID</span></div>
+    {text_input(f, :template_id,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      maxlength: "255"
+    )}
+    {error_tag(f, :template_id)}
+  </div>
+
   <div class="form-group form-check mb-4">
     {checkbox(f, :require_invitation, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :require_invitation)}>

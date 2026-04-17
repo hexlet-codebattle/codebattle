@@ -173,7 +173,9 @@ defmodule Codebattle.UserGroupTournament.Context do
   defp ensure_repo(%UserGroupTournament{repo_state: "completed"} = record, _group_tournament, _user), do: {:ok, record}
 
   defp ensure_repo(%UserGroupTournament{} = record, %GroupTournament{} = group_tournament, %User{} = user) do
-    case ExternalPlatform.fork_repo(group_tournament.slug, target_org_slug(), slug: repo_slug_for(user, group_tournament)) do
+    repo_slug = repo_slug_for(user, group_tournament)
+
+    case create_repo_for_tournament(group_tournament, repo_slug) do
       {:ok, response} ->
         {:ok,
          update!(record, %{
@@ -301,6 +303,19 @@ defmodule Codebattle.UserGroupTournament.Context do
   defp repo_slug(group_tournament_slug, ""), do: group_tournament_slug
   defp repo_slug(group_tournament_slug, login), do: "#{group_tournament_slug}-#{login}"
 
+  defp create_repo_for_tournament(%GroupTournament{template_id: template_id} = group_tournament, repo_slug)
+       when is_binary(template_id) and template_id != "" do
+    ExternalPlatform.create_repo_from_template(
+      target_org_slug(),
+      name: repo_slug,
+      slug: repo_slug,
+      description: group_tournament.description,
+      template_id: template_id
+    )
+  end
+
+  defp create_repo_for_tournament(_group_tournament, _repo_slug), do: {:error, %{error: "template_id is required"}}
+
   defp ensure_platform_identity(%User{} = user) do
     lookup_login = platform_identity_lookup_login(user)
 
@@ -352,6 +367,8 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Repo.update!()
   end
 
+  defp extract_repo_url(%{"web_url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+  defp extract_repo_url(%{web_url: repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
   defp extract_repo_url(%{"repo_url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
   defp extract_repo_url(%{repo_url: repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
   defp extract_repo_url(%{"url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url

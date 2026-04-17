@@ -200,22 +200,45 @@ defmodule Codebattle.ExternalPlatform do
   def get_invite(_), do: {:error, :invalid_invite_id}
 
   @doc """
-  Forks a repository into the target organization.
-  POST /repos/{org_slug}/{repo_slug}/fork
+  Creates a repository in the target organization from a template repository.
+  POST /orgs/{org_slug}/repos
   """
-  @spec fork_repo(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
-  def fork_repo(repo_slug, target_org_slug, opts \\ []) do
-    source_org_slug = Keyword.get(opts, :source_org_slug, default_org_slug())
+  @spec create_repo_from_template(String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def create_repo_from_template(target_org_slug, opts \\ []) do
+    slug = opts[:slug]
+    template_id = opts[:template_id]
 
-    body = %{org_slug: target_org_slug}
-    body = if opts[:slug], do: Map.put(body, :slug, opts[:slug]), else: body
+    cond do
+      !is_binary(target_org_slug) || String.trim(target_org_slug) == "" ->
+        {:error, :invalid_org_slug}
+
+      !is_binary(slug) || String.trim(slug) == "" ->
+        {:error, :invalid_repo_slug}
+
+      !is_binary(template_id) || String.trim(template_id) == "" ->
+        {:error, :invalid_template_id}
+
+      true ->
+        do_create_repo_from_template(String.trim(target_org_slug), opts)
+    end
+  end
+
+  defp do_create_repo_from_template(target_org_slug, opts) do
+    slug = String.trim(opts[:slug])
+    template_id = String.trim(opts[:template_id])
 
     body =
-      if Keyword.has_key?(opts, :default_branch_only),
-        do: Map.put(body, :default_branch_only, opts[:default_branch_only]),
-        else: body
+      %{
+        name: Keyword.get(opts, :name, slug),
+        slug: slug,
+        description: opts[:description],
+        visibility: Keyword.get(opts, :visibility, "public"),
+        templating_options: %{template_id: template_id}
+      }
+      |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+      |> Map.new()
 
-    url = "#{external_platform_service_url()}/repos/#{source_org_slug}/#{repo_slug}/fork"
+    url = "#{external_platform_service_url()}/orgs/#{target_org_slug}/repos"
 
     req_opts =
       Keyword.merge(
@@ -225,7 +248,7 @@ defmodule Codebattle.ExternalPlatform do
         receive_timeout: @invite_timeout_ms
       )
 
-    Logger.info("ExternalPlatform.fork_repo START method=POST url=#{url} body=#{inspect(body)}")
+    Logger.info("ExternalPlatform.create_repo_from_template START method=POST url=#{url} body=#{inspect(body)}")
 
     started_at = System.monotonic_time(:millisecond)
     result = safe_request(:post, url, req_opts)
@@ -234,20 +257,22 @@ defmodule Codebattle.ExternalPlatform do
     case result do
       {:ok, %{status: status, body: resp_body}} when status in [200, 201] ->
         Logger.info(
-          "ExternalPlatform.fork_repo OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+          "ExternalPlatform.create_repo_from_template OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:ok, resp_body}
 
       {:ok, %{status: status, body: resp_body}} ->
         Logger.warning(
-          "ExternalPlatform.fork_repo FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+          "ExternalPlatform.create_repo_from_template FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
         )
 
         {:error, resp_body}
 
       {:error, reason} ->
-        Logger.warning("ExternalPlatform.fork_repo ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}")
+        Logger.warning(
+          "ExternalPlatform.create_repo_from_template ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
 
         {:error, reason}
     end

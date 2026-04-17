@@ -127,7 +127,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
-  def handle_event("fork_repo", %{"id" => ugt_id}, socket) do
+  def handle_event("create_repo", %{"id" => ugt_id}, socket) do
     user = socket.assigns.user
     ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
     org_slug = default_org_slug()
@@ -139,17 +139,27 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
       is_nil(user.external_platform_login) || user.external_platform_login == "" ->
         {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
 
+      is_nil(ugt.group_tournament.template_id) || ugt.group_tournament.template_id == "" ->
+        {:noreply, assign(socket, action_result: {:error, ugt.id, "Group tournament has no template_id"})}
+
       true ->
-        repo_slug = ugt.group_tournament.slug
-        fork_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
-        result = ExternalPlatform.fork_repo(repo_slug, org_slug, slug: fork_slug)
+        repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
+
+        result =
+          ExternalPlatform.create_repo_from_template(
+            org_slug,
+            name: repo_slug,
+            slug: repo_slug,
+            description: ugt.group_tournament.description,
+            template_id: ugt.group_tournament.template_id
+          )
 
         ugt = update_ugt_from_result(ugt, :repo, result)
 
         {:noreply,
          assign(socket,
            user_group_tournaments: get_user_group_tournaments(user.id),
-           action_result: format_action_result(ugt.id, "Fork repo", result)
+           action_result: format_action_result(ugt.id, "Create repo", result)
          )}
     end
   end
@@ -689,6 +699,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
   defp maybe_finalize_ready(_ugt, attrs), do: attrs
 
+  defp extract_repo_url(%{"web_url" => url}) when is_binary(url) and url != "", do: url
+  defp extract_repo_url(%{web_url: url}) when is_binary(url) and url != "", do: url
   defp extract_repo_url(%{"repo_url" => url}) when is_binary(url) and url != "", do: url
   defp extract_repo_url(%{repo_url: url}) when is_binary(url) and url != "", do: url
   defp extract_repo_url(%{"url" => url}) when is_binary(url) and url != "", do: url
@@ -1213,11 +1225,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <button
                         type="button"
                         class="btn btn-sm btn-outline-success cb-rounded"
-                        phx-click="fork_repo"
+                        phx-click="create_repo"
                         phx-value-id={ugt.id}
-                        data-confirm="Fork repository for this tournament?"
+                        data-confirm="Create repository for this tournament from template?"
                       >
-                        Fork Repo
+                        Create Repo
                       </button>
                       <button
                         type="button"

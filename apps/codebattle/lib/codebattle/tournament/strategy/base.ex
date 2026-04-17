@@ -1400,7 +1400,8 @@ defmodule Codebattle.Tournament.Base do
           starts_at: DateTime.utc_now(),
           rounds_count: meta[:rounds_count] || 1,
           round_timeout_seconds: meta[:round_timeout_seconds] || 3600,
-          run_on_external_platform: meta[:run_on_external_platform] || false
+          run_on_external_platform: meta[:run_on_external_platform] || false,
+          template_id: meta[:template_id]
         }
 
         case Codebattle.GroupTournament.Context.create_group_tournament(attrs) do

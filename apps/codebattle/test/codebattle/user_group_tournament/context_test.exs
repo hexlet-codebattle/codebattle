@@ -11,10 +11,10 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
         %{request_path: "/v1/users/id", method: "GET", host: "ext.test"} ->
           Req.Test.json(req, %{"id" => "platform-user-id", "login" => "ext-user"})
 
-        %{request_path: "/repos/test-org/source-repo/fork", method: "POST", host: "ext.test"} ->
+        %{request_path: "/orgs/test-org/repos", method: "POST", host: "ext.test"} = req ->
           Req.Test.json(req, %{
-            "status" => "forked",
-            "repo_url" => "https://external.platform/test-org/source-repo-ext-user"
+            "status" => "created",
+            "web_url" => "https://external.platform/test-org/source-repo-ext-user"
           })
 
         %{request_path: "/repos/test-org/source-repo-ext-user/roles", method: "POST", host: "ext.test"} ->
@@ -45,7 +45,8 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
         starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
         rounds_count: 1,
         round_timeout_seconds: 60,
-        run_on_external_platform: true
+        run_on_external_platform: true,
+        template_id: "template-repo-id"
       })
       |> Repo.insert!()
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Header from "./Header";
@@ -10,6 +10,47 @@ import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
 import * as selectors from "../../selectors";
 import Loading from "@/components/Loading";
 import { load, requestInviteUpdate } from "@/middlewares/GroupTournament";
+
+const getDateTimestamp = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  const timestamp = new Date(value).getTime();
+
+  return Number.isNaN(timestamp) ? null : timestamp;
+};
+
+const findSolutionForRun = (run, solutionHistory) => {
+  if (!run || !solutionHistory?.length) {
+    return null;
+  }
+
+  const solutionWithSameId = solutionHistory.find((solution) => solution.id === run.id);
+
+  if (solutionWithSameId) {
+    return solutionWithSameId;
+  }
+
+  const runInsertedAtTimestamp = getDateTimestamp(run.insertedAt);
+
+  if (runInsertedAtTimestamp === null) {
+    return solutionHistory[0] || null;
+  }
+
+  return (
+    solutionHistory.find((solution) => {
+      const solutionInsertedAtTimestamp = getDateTimestamp(solution.insertedAt);
+
+      return (
+        solutionInsertedAtTimestamp !== null &&
+        solutionInsertedAtTimestamp <= runInsertedAtTimestamp
+      );
+    }) ||
+    solutionHistory[solutionHistory.length - 1] ||
+    null
+  );
+};
 
 function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescription }) {
   const dispatch = useDispatch();
@@ -34,6 +75,14 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     langSlug,
     data,
   } = useSelector(selectors.groupTournamentSelector);
+
+  const solutionHistory = useMemo(() => data?.solutionHistory || [], [data?.solutionHistory]);
+  const selectedRunSolution = useMemo(
+    () => findSolutionForRun(selectedRun, solutionHistory),
+    [selectedRun, solutionHistory],
+  );
+  const editorText = selectedRunSolution?.solution || code;
+  const editorLang = selectedRunSolution?.lang || langSlug;
 
   const openExternalRegistrationWindow = () => {
     setShowInviteWindow(true);
@@ -60,7 +109,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     if (tournamentId) {
       load(tournamentId)(dispatch);
     }
-  }, [tournamentId, dispatch])
+  }, [tournamentId, dispatch]);
 
   if (invite.state === "loading" && requireInvitation) {
     return <Loading />;
@@ -124,7 +173,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
           />
         </div>
         <div className="col-lg-4 col-md-4 col-12 p-1 pb-4">
-          <EditorPanel text={code} lang={langSlug} />
+          <EditorPanel text={editorText} lang={editorLang} />
           <LogPanel logs={logs} />
         </div>
       </div>

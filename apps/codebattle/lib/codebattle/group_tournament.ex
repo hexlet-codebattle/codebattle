@@ -33,7 +33,8 @@ defmodule Codebattle.GroupTournament do
              :last_round_ended_at,
              :meta,
              :require_invitation,
-             :run_on_external_platform
+             :run_on_external_platform,
+             :template_id
            ]}
 
   schema "group_tournaments" do
@@ -53,6 +54,7 @@ defmodule Codebattle.GroupTournament do
     field(:include_bots, :boolean, default: false)
     field(:require_invitation, :boolean, default: false)
     field(:run_on_external_platform, :boolean, default: false)
+    field(:template_id, :string)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -84,6 +86,7 @@ defmodule Codebattle.GroupTournament do
       :include_bots,
       :require_invitation,
       :run_on_external_platform,
+      :template_id,
       :last_round_started_at,
       :last_round_ended_at,
       :meta
@@ -99,12 +102,15 @@ defmodule Codebattle.GroupTournament do
       :round_timeout_seconds
     ])
     |> update_change(:slug, &normalize_slug/1)
+    |> update_change(:template_id, &normalize_optional_string/1)
     |> validate_inclusion(:state, @states)
     |> validate_length(:name, min: 2, max: 255)
     |> validate_length(:slug, min: 2, max: 255)
     |> validate_length(:description, min: 3, max: 7531)
+    |> validate_length(:template_id, max: 255)
     |> validate_number(:rounds_count, greater_than: 0)
     |> validate_number(:round_timeout_seconds, greater_than: 0)
+    |> validate_template_id()
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:group_task_id)
   end
@@ -113,4 +119,23 @@ defmodule Codebattle.GroupTournament do
 
   defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()
+
+  defp normalize_optional_string(nil), do: nil
+
+  defp normalize_optional_string(value) when is_binary(value) do
+    case String.trim(value) do
+      "" -> nil
+      trimmed -> trimmed
+    end
+  end
+
+  defp normalize_optional_string(value), do: value
+
+  defp validate_template_id(changeset) do
+    if get_field(changeset, :run_on_external_platform) do
+      validate_required(changeset, [:template_id])
+    else
+      changeset
+    end
+  end
 end

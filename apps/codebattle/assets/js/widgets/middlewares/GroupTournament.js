@@ -116,6 +116,7 @@ export const load = (groupTournamentId) => async (dispatch) => {
       "x-csrf-token": window.csrf_token,
     },
   });
+  console.log(response);
 
   dispatch(actions.setData(response));
-}
+};
