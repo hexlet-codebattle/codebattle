@@ -1,6 +1,6 @@
 import React from "react";
 
-function EvolutionPanel({ items, tournamentStatus, setRunId }) {
+function EvolutionPanel({ items, tournamentStatus, setRunId, repoUrl }) {
   return (
     <div className="cb-bg-panel shadow-sm cb-rounded">
       <div className="p-3 border-bottom cb-border-color">
@@ -8,7 +8,11 @@ function EvolutionPanel({ items, tournamentStatus, setRunId }) {
       </div>
       <div className="p-3">
         <div className="cb-overflow-y-auto max-vh-50">
-          {tournamentStatus !== "finished" && <a href="_blank">+ Add Solution</a>}
+          {tournamentStatus !== "finished" && repoUrl && (
+            <a href={repoUrl} target="_blank" rel="noopener noreferrer">
+              + Add Solution
+            </a>
+          )}
           {items && items.length > 0 && (
             <div className="mt-2 small">
               <div className="list-group list-group-flush">

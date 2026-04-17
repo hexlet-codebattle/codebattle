@@ -219,6 +219,22 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("update_ugt_repo_url", %{"ugt_id" => id, "repo_url" => repo_url}, socket) do
+    user = socket.assigns.user
+    ugt = Repo.get!(UserGroupTournament, id)
+    repo_url = String.trim(repo_url)
+    attrs = if repo_url == "", do: %{repo_url: nil}, else: %{repo_url: repo_url, repo_state: "completed"}
+
+    ugt
+    |> UserGroupTournament.changeset(attrs)
+    |> Repo.update!()
+
+    {:noreply,
+     socket
+     |> assign(user_group_tournaments: get_user_group_tournaments(user.id))
+     |> put_flash(:info, "Repo URL updated")}
+  end
+
   def handle_event("delete_platform_invite", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
@@ -1284,19 +1300,40 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           <% end %>
                         </div>
                         <div class="mb-1">
-                          <span class="cb-text">Repo URL:</span>
-                          <%= if ugt.repo_url do %>
-                            <a
-                              href={ugt.repo_url}
-                              target="_blank"
-                              rel="noopener"
-                              class="text-info text-break"
+                          <form
+                            phx-submit="update_ugt_repo_url"
+                            class="d-flex align-items-center gap-1"
+                          >
+                            <input type="hidden" name="ugt_id" value={ugt.id} />
+                            <span class="cb-text text-nowrap">Repo URL:</span>
+                            <input
+                              type="text"
+                              name="repo_url"
+                              value={ugt.repo_url || ""}
+                              placeholder="https://..."
+                              class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white py-0"
+                              style="font-size: 0.75rem;"
+                            />
+                            <button
+                              type="submit"
+                              class="btn btn-sm btn-outline-success cb-rounded py-0 px-1"
+                              style="font-size: 0.7rem;"
                             >
-                              {ugt.repo_url}
-                            </a>
-                          <% else %>
-                            <span class="cb-text">–</span>
-                          <% end %>
+                              Save
+                            </button>
+                            <%= if ugt.repo_url do %>
+                              <a
+                                href={ugt.repo_url}
+                                target="_blank"
+                                rel="noopener"
+                                class="btn btn-sm btn-outline-info cb-rounded py-0 px-1"
+                                style="font-size: 0.7rem;"
+                                title={ugt.repo_url}
+                              >
+                                Open
+                              </a>
+                            <% end %>
+                          </form>
                         </div>
                         <div>
                           <span class="cb-text">Token:</span>

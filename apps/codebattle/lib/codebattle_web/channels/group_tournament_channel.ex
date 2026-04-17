@@ -26,6 +26,14 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp join_tournament(socket, current_user, group_tournament, tournament_id) do
+    if group_tournament.require_invitation do
+      join_with_invite(socket, current_user, group_tournament, tournament_id)
+    else
+      join_without_invite(socket, current_user, group_tournament)
+    end
+  end
+
+  defp join_with_invite(socket, current_user, group_tournament, tournament_id) do
     alias_name = current_user.external_oauth_login || current_user.name
 
     invite =
@@ -37,7 +45,19 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
     {:ok,
      %{
+       status: group_tournament.state,
        invite: serialize_invite(invite),
+       external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
+     }, socket}
+  end
+
+  defp join_without_invite(socket, current_user, group_tournament) do
+    external_setup = maybe_ensure_external_setup(current_user, group_tournament, %{state: "accepted"})
+
+    {:ok,
+     %{
+       status: group_tournament.state,
+       invite: %{state: "accepted"},
        external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
      }, socket}
   end
@@ -138,7 +158,9 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
   defp maybe_send_invite_on_join(invite, _alias_name), do: invite
 
-  defp maybe_ensure_external_setup(_user, %{run_on_external_platform: false}, _invite), do: nil
+  defp maybe_ensure_external_setup(user, %{run_on_external_platform: false} = group_tournament, _invite) do
+    UserGroupTournamentContext.get(user.id, group_tournament.id)
+  end
 
   defp maybe_ensure_external_setup(user, group_tournament, %{state: "accepted"}) do
     case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
