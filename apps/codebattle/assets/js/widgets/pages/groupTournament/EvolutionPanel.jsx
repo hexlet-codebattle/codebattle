@@ -1,5 +1,7 @@
 import React from "react";
 
+const getExternalUrl = (url) => `${url}/browse/README.md?rev=main&chatMessage=""`;
+
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   return (
     <div className="card cb-card border cb-border-color rounded h-100">
@@ -9,7 +11,7 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
       <div className="card-body p-1 border-top cb-border-color">
         <div className="cb-overflow-y-auto">
           {tournamentStatus !== "finished" && repoUrl && (
-            <a href={repoUrl} rel="noopener noreferrer">
+            <a href={getExternalUrl(repoUrl)} target="_blank" rel="noopener noreferrer">
               <div className="border cb-border-color rounded p-3">+ Add Solution</div>
             </a>
           )}

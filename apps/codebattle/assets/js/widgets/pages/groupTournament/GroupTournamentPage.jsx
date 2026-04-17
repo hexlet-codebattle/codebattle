@@ -102,7 +102,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   return (
     <>
       <div className="row">
-        <Header name={name} status={status} />
+        <Header name={tournamentName} status={status} />
       </div>
       <div className="row mt-3 h-100">
         <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
@@ -120,7 +120,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
             run={selectedRun}
             externalSetup={externalSetup}
             description={tournamentDescription}
-            openFullScreen={setViewerFullscreen}
+            setViewerFullscreen={setViewerFullscreen}
           />
         </div>
         <div className="col-lg-4 col-md-4 col-12 p-1 pb-4">
