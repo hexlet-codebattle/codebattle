@@ -1,16 +1,16 @@
 import React from "react";
 
-function EvolutionPanel({ items, tournamentStatus, setRunId, repoUrl }) {
+function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   return (
-    <div className="cb-bg-panel shadow-sm cb-rounded">
-      <div className="p-3 border-bottom cb-border-color">
-        <h6 className="mb-0">Executions History</h6>
+    <div className="card cb-card border cb-border-color rounded h-100">
+      <div className="card-header py-2">
+        <h6 className="cb-text mb-0">Execution History</h6>
       </div>
-      <div className="p-3">
-        <div className="cb-overflow-y-auto max-vh-50">
+      <div className="card-body p-1 border-top cb-border-color">
+        <div className="cb-overflow-y-auto">
           {tournamentStatus !== "finished" && repoUrl && (
-            <a href={repoUrl} target="_blank" rel="noopener noreferrer">
-              + Add Solution
+            <a href={repoUrl} rel="noopener noreferrer">
+              <div className="border cb-border-color rounded p-3">+ Add Solution</div>
             </a>
           )}
           {items && items.length > 0 && (

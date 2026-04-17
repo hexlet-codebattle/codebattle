@@ -1,20 +1,20 @@
 import React from "react";
 
-function MainPanel({ status, externalSetup, description }) {
+function MainPanel({ status, run, externalSetup, description }) {
   return (
-    <div className="cb-bg-panel shadow-sm cb-rounded">
-      <div className="p-3 border-bottom cb-border-color">
-        <h6 className="mb-0">Tournament Overview</h6>
+    <div className="card cb-card cb-border-color border rounded h-100">
+      <div className="card-header py-2">
+        <h6 className="cb-text mb-0">Tournament Overview</h6>
       </div>
-      <div className="p-3 cb-overflow-y-auto max-vh-50">
-        {description && (
+      <div className="card-body p-3 border-top cb-border-color overflow-auto">
+        {description && !run && (
           <div className="mb-3">
             <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
               {description}
             </p>
           </div>
         )}
-        {externalSetup ? (
+        {run ? (
           <div className="small">
             <div className="mb-1">
               <strong>External setup:</strong> {externalSetup.state}

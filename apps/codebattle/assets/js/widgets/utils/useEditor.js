@@ -32,25 +32,44 @@ let selection = "";
  *   userType: string,
  *   canSendCursor: boolean,
  *   wordWrap: string,
+ *   placeholder: string,
  *   lineNumbers: string,
  *   syntax: string,
  *   fontSize: number,
  *   editable: boolean,
+ *   renderLineHighlight: string
+ *   overviewRulerBorder: boolean
  *   loading: boolean
  * }} props
  */
 const useOption = (
   editor,
-  { userType, canSendCursor, wordWrap, lineNumbers, syntax, fontSize, editable, loading },
+  {
+    userType,
+    canSendCursor,
+    wordWrap,
+    lineNumbers,
+    syntax,
+    fontSize,
+    editable,
+    loading,
+    renderLineHighlight,
+    hideCursorInOverviewRuler = false,
+    overviewRulerBorder = true,
+    placeholder = defaultEditorPlaceholder
+  },
 ) => {
   const options = useMemo(
     () => ({
-      placeholder: defaultEditorPlaceholder,
+      placeholder,
       wordWrap,
       lineNumbers,
       stickyScroll: { enabled: false },
       tabSize: getLanguageTabSize(syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(syntax),
+      hideCursorInOverviewRuler,
+      renderLineHighlight,
+      overviewRulerBorder,
       lineNumbersMinChars: 3,
       fontSize,
       scrollBeyondLastLine: false,
@@ -72,7 +91,7 @@ const useOption = (
       userType,
       canSendCursor,
     }),
-    [userType, canSendCursor, wordWrap, lineNumbers, syntax, fontSize, editable, loading],
+    [placeholder, hideCursorInOverviewRuler, renderLineHighlight, overviewRulerBorder, userType, canSendCursor, wordWrap, lineNumbers, syntax, fontSize, editable, loading],
   );
 
   useEffect(() => {
@@ -123,7 +142,7 @@ const useEditor = (props) => {
     };
   }, [handleEnterCtrPlusS]);
 
-  const handleEditorWillMount = () => {};
+  const handleEditorWillMount = () => { };
 
   const handleEditorDidMount = (currentEditor, currentMonaco) => {
     setEditor(currentEditor);

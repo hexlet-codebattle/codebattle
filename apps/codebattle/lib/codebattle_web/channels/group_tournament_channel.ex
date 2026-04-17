@@ -47,6 +47,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
      %{
        status: group_tournament.state,
        invite: serialize_invite(invite),
+       require_invitation: true,
        external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
      }, socket}
   end
@@ -58,6 +59,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
      %{
        status: group_tournament.state,
        invite: %{state: "accepted"},
+       require_invitation: false,
        external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
      }, socket}
   end

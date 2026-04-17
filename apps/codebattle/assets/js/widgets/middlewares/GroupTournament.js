@@ -37,11 +37,13 @@ export const connectToTournament = () => (dispatch) => {
       invite,
       externalSetup,
       solutionEvolution,
+      requireInvitation,
       logs,
       code,
       langSlug,
     } = normalizedResponse;
 
+    console.log(normalizedResponse);
     console.log("group tournament join invite", invite);
     console.log("group tournament external setup", externalSetup);
 
@@ -52,6 +54,7 @@ export const connectToTournament = () => (dispatch) => {
         projectLink,
         invite,
         externalSetup,
+        requireInvitation,
         solutionEvolution,
         logs,
         code,
@@ -92,3 +95,27 @@ export const requestInviteUpdate = () => (dispatch) => {
       console.error("Request invite update failed", error);
     });
 };
+
+const requestJson = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(`Request failed with status ${response.status}`);
+    error.response = { data, status: response.status };
+    throw error;
+  }
+
+  return camelizeKeys(data);
+};
+
+export const load = (groupTournamentId) => async (dispatch) => {
+  const response = await requestJson(`/api/v1/group_tournaments/${groupTournamentId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "x-csrf-token": window.csrf_token,
+    },
+  });
+
+  dispatch(actions.setData(response));
+}

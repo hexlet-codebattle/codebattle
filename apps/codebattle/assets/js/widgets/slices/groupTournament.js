@@ -8,11 +8,13 @@ const initialState = {
     state: "loading", // "creating" | "pending" | "accepted" | "failed" | "loading"
     inviteLink: null,
   },
+  requireInvitation: true,
   externalSetup: null,
   solutionEvolution: [], // Array<{ id: string, status: "creating" | "finished" }>
   logs: [], // Array<object>
   code: "",
   langSlug: "",
+  data: {},
 };
 
 const groupTournament = createSlice({
@@ -58,6 +60,9 @@ const groupTournament = createSlice({
     },
     updateLangSlug: (state, { payload }) => {
       state.langSlug = payload;
+    },
+    setData: (state, { payload }) => {
+      state.data = payload;
     },
     resetGroupTournament: () => initialState,
   },

@@ -9,12 +9,14 @@ import LogPanel from "./LogPanel";
 import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
 import * as selectors from "../../selectors";
 import Loading from "@/components/Loading";
-import { requestInviteUpdate } from "@/middlewares/GroupTournament";
+import { load, requestInviteUpdate } from "@/middlewares/GroupTournament";
 
 function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescription }) {
   const dispatch = useDispatch();
 
+  const [viewerFullscreen, setViewerFullscreen] = useState(false);
   const [showInviteWindow, setShowInviteWindow] = useState(false);
+  const [selectedRun, setSelectedRun] = useState();
   const [runId, setRunId] = useState();
 
   useGroupTournamentChannel(tournamentId);
@@ -26,9 +28,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     invite,
     externalSetup,
     solutionEvolution,
+    requireInvitation,
     logs,
     code,
     langSlug,
+    data,
   } = useSelector(selectors.groupTournamentSelector);
 
   const openExternalRegistrationWindow = () => {
@@ -40,10 +44,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   };
 
   useEffect(() => {
-    if (runId) {
-      console.log(runId);
+    if (runId && data.runs) {
+      const r = data.runs.find((run) => run.id === runId);
+      setSelectedRun(r || data.runs[0]);
     }
-  }, [runId]);
+  }, [runId, data.runs]);
 
   useEffect(() => {
     if (showInviteWindow) {
@@ -51,11 +56,17 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     }
   }, [invite.inviteLink, showInviteWindow]);
 
-  if (invite.state === "loading") {
+  useEffect(() => {
+    if (tournamentId) {
+      load(tournamentId)(dispatch);
+    }
+  }, [tournamentId, dispatch])
+
+  if (invite.state === "loading" && requireInvitation) {
     return <Loading />;
   }
 
-  if (invite.state === "creating" || invite.state === "pending") {
+  if ((invite.state === "creating" || invite.state === "pending") && requireInvitation) {
     return (
       <div className="container-fluid h-100">
         <div className="row justify-content-center h-100">
@@ -89,34 +100,73 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   }
 
   return (
-    <div className="container-fluid py-3">
+    <>
       <div className="row">
-        <div className="col-12">
-          <Header name={tournamentName} status={status} />
-        </div>
+        <Header name={name} status={status} />
       </div>
-      <div className="row mt-3">
-        <div className="col-lg-3 col-md-4 col-12 mb-3 mb-md-0">
+      <div className="row mt-3 h-100">
+        <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
           <EvolutionPanel
             items={solutionEvolution}
             tournamentStatus={status}
+            runId={runId}
             setRunId={setRunId}
             repoUrl={externalSetup?.repoUrl}
           />
         </div>
-        <div className="col-lg-6 col-md-4 col-12 mb-3 mb-md-0">
+        <div className="col-lg-5 col-md-5 col-12 p-1 pb-4">
           <MainPanel
             status={status}
+            run={selectedRun}
             externalSetup={externalSetup}
             description={tournamentDescription}
+            openFullScreen={setViewerFullscreen}
           />
         </div>
-        <div className="col-lg-3 col-md-4 col-12">
+        <div className="col-lg-4 col-md-4 col-12 p-1 pb-4">
           <EditorPanel text={code} lang={langSlug} />
-          <LogPanel logs={logs} className="mt-3" />
+          <LogPanel logs={logs} />
         </div>
       </div>
-    </div>
+      {viewerFullscreen && selectedRun?.result?.viewerHtml ? (
+        <div
+          className="position-fixed d-flex flex-column"
+          style={{
+            inset: 0,
+            zIndex: 2000,
+            backgroundColor: "rgba(15, 23, 42, 0.96)",
+            padding: "16px",
+          }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="text-white">
+              Run Viewer Fullscreen{selectedRun ? ` • Run #${selectedRun.id}` : ""}
+            </div>
+            <button
+              type="button"
+              className="btn btn-outline-light cb-rounded"
+              onClick={() => setViewerFullscreen(false)}
+            >
+              Close Fullscreen
+            </button>
+          </div>
+          <div className="flex-grow-1">
+            <iframe
+              title={`run-viewer-fullscreen-${selectedRun.id}`}
+              srcDoc={selectedRun.result.viewerHtml}
+              sandbox="allow-scripts"
+              style={{
+                width: "100%",
+                height: "100%",
+                border: 0,
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+              }}
+            />
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 

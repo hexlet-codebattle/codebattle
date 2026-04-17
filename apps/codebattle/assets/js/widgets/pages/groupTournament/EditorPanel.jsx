@@ -4,24 +4,28 @@ import languages from "../../config/languages";
 import useEditor from "../../utils/useEditor";
 
 function EditorPanel({ text, lang }) {
-  const mappedLanguage = lang ? languages[lang] || lang : "javascript";
+  const mappedSyntax = lang ? languages[lang] : "javascript";
 
   const editorProps = {
     wordWrap: "on",
-    lineNumbers: "on",
+    placeholder: "",
+    lineNumbers: text ? "on" : "off",
     fontSize: 14,
     editable: false,
+    renderLineHighlight: "none",
+    hideCursorInOverviewRuler: true,
+    overviewRulerBorder: false,
     roomMode: "group_tournament",
-    checkResult: () => {},
-    toggleMuteSound: () => {},
+    checkResult: () => { },
+    toggleMuteSound: () => { },
     mute: false,
     userType: "spectator",
     userId: 0,
-    onChangeCursorSelection: () => {},
-    onChangeCursorPosition: () => {},
-    syntax: lang || "javascript",
+    onChangeCursorSelection: () => { },
+    onChangeCursorPosition: () => { },
+    syntax: mappedSyntax,
     gameStartTimeMs: 0,
-    onTelemetryEvent: () => {},
+    onTelemetryEvent: () => { },
     loading: false,
     canSendCursor: false,
   };
@@ -29,15 +33,18 @@ function EditorPanel({ text, lang }) {
   const { options, handleEditorWillMount, handleEditorDidMount } = useEditor(editorProps);
 
   return (
-    <div className="cb-bg-panel shadow-sm cb-rounded max-vh-66 h-100">
-      <div className="p-3 border-bottom cb-border-color d-flex align-items-center justify-content-between">
-        <h6 className="mb-0">Editor</h6>
-        {lang && <small className="text-muted">{lang}</small>}
+    <div
+      className="card cb-card border cb-border-color rounded shadow-sm"
+      style={{ height: "70%" }}
+    >
+      <div className="card-header d-flex justify-content-between py-2">
+        <h6 className="cb-text mb-0">Editor</h6>
+        <h6 className="cb-text mb-0">{lang ? `Language: ${mappedSyntax}` : ""}</h6>
       </div>
-      <div className="p-3">
+      <div className="card-body p-0 pb-1 border-top cb-border-color">
         <MonacoEditor
           theme="vs-dark"
-          language={mappedLanguage}
+          language={mappedSyntax}
           value={text || ""}
           options={options}
           beforeMount={handleEditorWillMount}
