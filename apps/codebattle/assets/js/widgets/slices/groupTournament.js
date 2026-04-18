@@ -65,14 +65,14 @@ const groupTournament = createSlice({
       state.data = payload;
     },
     applyRunUpdate: (state, { payload }) => {
-      const { groupTournament, run, solution, latestSolutionEntry } = payload;
+      const { groupTournament: groupTournamentData, run, solution, latestSolutionEntry } = payload;
 
       state.data = state.data || {};
 
-      if (groupTournament) {
+      if (groupTournamentData) {
         state.data.groupTournament = {
           ...(state.data.groupTournament || {}),
-          ...groupTournament,
+          ...groupTournamentData,
         };
       }
 
