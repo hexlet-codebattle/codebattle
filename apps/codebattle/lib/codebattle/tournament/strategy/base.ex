@@ -7,7 +7,6 @@ defmodule Codebattle.Tournament.Base do
   alias Codebattle.Event
   alias Codebattle.Game
   alias Codebattle.Tournament
-  alias Codebattle.UserEvent
   alias Codebattle.UserGameReport
 
   @callback build_round_pairs(Tournament.t()) :: {Tournament.t(), list(list(pos_integer()))}
@@ -1328,95 +1327,12 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp maybe_save_event_results(%{event_id: event_id} = tournament) when not is_nil(event_id) do
-        event = Event.get!(event_id)
-        event_stage = find_event_stage_for_tournament(event, tournament)
-
-        has_group_tournament =
-          match?(%{group_tournament_meta: meta} when is_map(meta) and map_size(meta) > 0, event_stage)
-
-        if !has_group_tournament do
-          tournament
-          |> get_players()
-          |> Enum.reject(& &1.is_bot)
-          |> Enum.each(fn player ->
-            UserEvent.mark_stage_as_completed(event_id, player.id, %{
-              id: tournament.id,
-              wins_count: player.wins_count,
-              games_count: get_players_total_games_count(tournament, player),
-              time_spent_in_seconds:
-                tournament
-                |> get_matches(player.matches_ids)
-                |> Enum.map(&(&1.duration_sec || 0))
-                |> Enum.sum()
-            })
-          end)
-        end
-
-        maybe_create_group_tournament(tournament, event, event_stage)
+      defp maybe_save_event_results(%{event_id: _event_id} = tournament) do
+        Codebattle.UserEvent.Stage.Context.save_tournament_results_async(tournament.id)
+        tournament
       end
 
       defp maybe_save_event_results(t), do: t
-
-      defp maybe_create_group_tournament(tournament, _event, %{group_tournament_meta: meta})
-           when is_map(meta) and map_size(meta) > 0 do
-        create_group_tournament_for_stage(tournament, meta)
-      end
-
-      defp maybe_create_group_tournament(tournament, _event, _stage), do: tournament
-
-      defp find_event_stage_for_tournament(event, tournament) do
-        # For global tournaments, the event stage has tournament_id set
-        stage = Enum.find(event.stages, &(&1.tournament_id == tournament.id))
-
-        if stage, do: stage, else: find_event_stage_by_slug(event, tournament)
-      end
-
-      defp find_event_stage_by_slug(event, tournament) do
-        # For single play tournaments, find via user_event_stage
-        case find_stage_slug_from_user_event(tournament) do
-          nil -> nil
-          slug -> Event.get_stage(event, slug)
-        end
-      end
-
-      defp find_stage_slug_from_user_event(tournament) do
-        import Ecto.Query, only: [where: 3, select: 3, limit: 2]
-
-        Codebattle.UserEvent.Stage
-        |> where([s], s.tournament_id == ^tournament.id)
-        |> select([s], s.slug)
-        |> limit(1)
-        |> Codebattle.Repo.one()
-      end
-
-      defp create_group_tournament_for_stage(tournament, meta) do
-        attrs = %{
-          creator_id: tournament.creator_id,
-          group_task_id: meta[:group_task_id],
-          name: meta[:name] || "#{tournament.name} - Review",
-          slug: meta[:slug] || "event-#{tournament.event_id}-t-#{tournament.id}",
-          description: meta[:description] || tournament.description,
-          starts_at: DateTime.utc_now(),
-          rounds_count: meta[:rounds_count] || 1,
-          round_timeout_seconds: meta[:round_timeout_seconds] || 3600,
-          run_on_external_platform: meta[:run_on_external_platform] || false,
-          template_id: meta[:template_id]
-        }
-
-        case Codebattle.GroupTournament.Context.create_group_tournament(attrs) do
-          {:ok, group_tournament} ->
-            Tournament.Context.update(tournament, %{
-              "group_tournament_id" => group_tournament.id
-            })
-
-            update_struct(tournament, %{group_tournament_id: group_tournament.id})
-
-          {:error, reason} ->
-            Logger.error("Failed to create group tournament: #{inspect(reason)}")
-            tournament
-        end
-      end
 
       defp maybe_activate_players(%{current_round_position: 0} = t), do: t
 

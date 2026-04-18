@@ -14,6 +14,7 @@ defmodule Codebattle.UserEvent.Stage do
              :slug,
              :status,
              :tournament_id,
+             :group_tournament_id,
              :entrance_result,
              :place_in_total_rank,
              :place_in_category_rank,
@@ -31,6 +32,7 @@ defmodule Codebattle.UserEvent.Stage do
     field(:slug, :string)
     field(:status, Ecto.Enum, values: @statuses)
     field(:tournament_id, :integer)
+    field(:group_tournament_id, :integer)
     field(:entrance_result, Ecto.Enum, values: @entrance_results)
     field(:place_in_total_rank, :integer)
     field(:place_in_category_rank, :integer)
@@ -50,6 +52,7 @@ defmodule Codebattle.UserEvent.Stage do
       :slug,
       :status,
       :tournament_id,
+      :group_tournament_id,
       :entrance_result,
       :place_in_total_rank,
       :place_in_category_rank,

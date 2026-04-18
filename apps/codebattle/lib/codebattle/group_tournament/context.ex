@@ -249,6 +249,55 @@ defmodule Codebattle.GroupTournament.Context do
     |> ensure_server_started()
   end
 
+  @spec bulk_transfer_players(pos_integer(), list(map())) :: :ok
+  def bulk_transfer_players(group_tournament_id, players) do
+    now = NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
+
+    player_entries =
+      Enum.map(players, fn player ->
+        %{
+          group_tournament_id: group_tournament_id,
+          user_id: player.id,
+          lang: player.lang || "js",
+          state: "active",
+          inserted_at: now,
+          updated_at: now
+        }
+      end)
+
+    user_group_tournament_entries =
+      Enum.map(players, fn player ->
+        %{
+          group_tournament_id: group_tournament_id,
+          user_id: player.id,
+          state: "pending",
+          repo_state: "pending",
+          role_state: "pending",
+          secret_state: "pending",
+          repo_response: %{},
+          role_response: %{},
+          secret_response: %{},
+          last_error: %{},
+          inserted_at: now,
+          updated_at: now
+        }
+      end)
+
+    player_entries
+    |> Enum.chunk_every(1000)
+    |> Enum.each(fn chunk ->
+      Repo.insert_all(GroupTournamentPlayer, chunk, on_conflict: :nothing)
+    end)
+
+    user_group_tournament_entries
+    |> Enum.chunk_every(1000)
+    |> Enum.each(fn chunk ->
+      Repo.insert_all(UserGroupTournament, chunk, on_conflict: :nothing)
+    end)
+
+    :ok
+  end
+
   defp enrich(%GroupTournament{} = group_tournament) do
     Map.put(group_tournament, :players_count, length(group_tournament.players || []))
   end

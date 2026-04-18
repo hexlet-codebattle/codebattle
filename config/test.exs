@@ -39,6 +39,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4003],
   server: true
 
+config :codebattle, Oban, testing: :inline
 config :codebattle, :external_platform_org_slug, "test-org"
 config :codebattle, :external_platform_service_url, "https://ext.test"
 

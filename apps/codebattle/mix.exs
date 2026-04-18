@@ -57,6 +57,8 @@ defmodule Codebattle.MixProject do
       {:fun_with_flags, "~> 1.11"},
       {:fun_with_flags_ui, "~> 1.0"},
       {:gettext, "~> 0.18"},
+      {:oban, "~> 2.19"},
+      {:oban_web, "~> 2.11"},
       {:nimble_csv, "~> 1.1"},
       {:phoenix, "~> 1.8"},
       {:phoenix_client, github: "vtm9/phoenix_client"},

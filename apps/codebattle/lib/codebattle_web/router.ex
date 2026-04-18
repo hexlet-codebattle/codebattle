@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
 
+  import Oban.Web.Router
   import Phoenix.LiveDashboard.Router
 
   alias CodebattleWeb.Admin.GroupTaskController
@@ -94,6 +95,7 @@ defmodule CodebattleWeb.Router do
   scope "/admin" do
     pipe_through([:browser, :admins_only])
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
+    oban_dashboard("/oban")
     live("/", CodebattleWeb.Live.Admin.IndexView, :index)
     live("/events", CodebattleWeb.Live.Admin.EventIndexView, :index)
     live("/games", CodebattleWeb.Live.Admin.Game.IndexView, :index)
@@ -149,6 +151,8 @@ defmodule CodebattleWeb.Router do
     )
 
     resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
+
+    live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
 
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)
 
@@ -270,7 +274,6 @@ defmodule CodebattleWeb.Router do
     resources("/seasons", SeasonController, only: [:index, :show])
 
     scope "/tournaments" do
-      get("/:id/admin", Tournament.AdminController, :show)
       get("/:id/stream", Tournament.StreamController, :show)
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
       get("/:id/player/:player_id", Tournament.PlayerController, :show, as: :tournament_player)

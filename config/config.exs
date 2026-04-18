@@ -31,6 +31,10 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
+config :codebattle, Oban,
+  repo: Codebattle.Repo,
+  queues: [default: 10]
+
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"

@@ -138,6 +138,8 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
+    Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
+
     next_state =
       state
       |> cancel_finish_timer()

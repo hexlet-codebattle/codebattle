@@ -43,8 +43,10 @@ defmodule Codebattle.Event do
                  :action_button_text,
                  :confirmation_text,
                  :dates,
+                 :group_tournament_id,
                  :group_tournament_meta,
                  :name,
+                 :save_results,
                  :slug,
                  :status,
                  :tournament_id,
@@ -56,7 +58,9 @@ defmodule Codebattle.Event do
       field(:action_button_text, :string)
       field(:confirmation_text, :string)
       field(:dates, :string)
+      field(:group_tournament_id, :integer)
       field(:name, :string)
+      field(:save_results, :boolean, default: true)
       field(:slug, :string)
       field(:status, Ecto.Enum, values: [:pending, :passed, :active])
       field(:tournament_id, :integer)
@@ -145,8 +149,10 @@ defmodule Codebattle.Event do
       :action_button_text,
       :confirmation_text,
       :dates,
+      :group_tournament_id,
       :group_tournament_meta,
       :name,
+      :save_results,
       :slug,
       :status,
       :tournament_id,

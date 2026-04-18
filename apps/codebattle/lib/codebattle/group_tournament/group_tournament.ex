@@ -5,8 +5,10 @@ defmodule Codebattle.GroupTournament do
 
   import Ecto.Changeset
 
+  alias Codebattle.Event
   alias Codebattle.GroupTask
   alias Codebattle.GroupTournamentPlayer
+  alias Codebattle.Tournament
   alias Codebattle.User
 
   @states ~w(waiting_participants active finished canceled)
@@ -17,6 +19,7 @@ defmodule Codebattle.GroupTournament do
            only: [
              :id,
              :creator_id,
+             :event_id,
              :group_task_id,
              :name,
              :slug,
@@ -34,12 +37,15 @@ defmodule Codebattle.GroupTournament do
              :meta,
              :require_invitation,
              :run_on_external_platform,
-             :template_id
+             :template_id,
+             :tournament_id
            ]}
 
   schema "group_tournaments" do
     belongs_to(:creator, User)
+    belongs_to(:event, Event)
     belongs_to(:group_task, GroupTask)
+    belongs_to(:tournament, Tournament)
 
     field(:name, :string)
     field(:slug, :string)
@@ -72,6 +78,7 @@ defmodule Codebattle.GroupTournament do
     group_tournament
     |> cast(attrs, [
       :creator_id,
+      :event_id,
       :group_task_id,
       :name,
       :slug,
@@ -87,6 +94,7 @@ defmodule Codebattle.GroupTournament do
       :require_invitation,
       :run_on_external_platform,
       :template_id,
+      :tournament_id,
       :last_round_started_at,
       :last_round_ended_at,
       :meta

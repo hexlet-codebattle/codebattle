@@ -26,6 +26,7 @@ defmodule Codebattle.Application do
         {Codebattle.Tournament.UpcomingRunner, []},
         {Codebattle.ImageCache, []},
         {Codebattle.Repo, []},
+        {Oban, Application.fetch_env!(:codebattle, Oban)},
         {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
         %{id: Codebattle.PubSub, start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}},
