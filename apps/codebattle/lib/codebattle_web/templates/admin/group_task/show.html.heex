@@ -19,68 +19,6 @@
 
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Latest Runs</h3>
-      <span class="cb-text">showing {length(@runs)} most recent</span>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-sm">
-        <thead class="cb-text">
-          <tr>
-            <th class="cb-border-color border-bottom">inserted_at</th>
-            <th class="cb-border-color border-bottom">status</th>
-            <th class="cb-border-color border-bottom">player_ids</th>
-            <th class="cb-border-color border-bottom">downloads</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= for run <- @runs do %>
-            <tr>
-              <td class="text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
-              <td class="text-white cb-border-color">{run.status}</td>
-              <td class="text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
-              <td class="text-nowrap cb-border-color">
-                <%= cond do %>
-                  <% run.status == "error" -> %>
-                    <span class="text-danger">{extract_run_error(run.result)}</span>
-                  <% run.status == "pending" -> %>
-                    <span class="cb-text">nil</span>
-                  <% true -> %>
-                    {link("History JSON",
-                      to:
-                        Routes.group_task_run_part_path(
-                          @conn,
-                          :download_run_part,
-                          @group_task,
-                          run.id,
-                          "history"
-                        ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
-                    )}
-                    {link("Summary JSON",
-                      to:
-                        Routes.group_task_run_part_path(
-                          @conn,
-                          :download_run_part,
-                          @group_task,
-                          run.id,
-                          "summary"
-                        ),
-                      class:
-                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
-                    )}
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="text-white mb-0">Latest Solutions</h3>
       <span class="cb-text">showing {length(@solutions)} most recent</span>
     </div>

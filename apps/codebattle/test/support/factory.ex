@@ -5,9 +5,7 @@ defmodule CodebattleWeb.Factory do
   alias Codebattle.Feedback
   alias Codebattle.Game
   alias Codebattle.GroupTask
-  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
-  alias Codebattle.GroupTaskToken
   alias Codebattle.GroupTournament
   alias Codebattle.Playbook
   alias Codebattle.Task
@@ -249,14 +247,6 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def group_task_token_factory do
-    %GroupTaskToken{
-      user: build(:user),
-      group_task: build(:group_task),
-      token: sequence(:group_task_token, &"group-task-token-#{&1}-abcdefghijklmnopqrstuvwxyz")
-    }
-  end
-
   def group_task_solution_factory do
     %GroupTaskSolution{
       user: build(:user),
@@ -276,15 +266,6 @@ defmodule CodebattleWeb.Factory do
       starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
       rounds_count: 1,
       round_timeout_seconds: 60
-    }
-  end
-
-  def group_task_run_factory do
-    %GroupTaskRun{
-      group_task: build(:group_task),
-      player_ids: [1, 2],
-      status: "success",
-      result: %{"winner_id" => 1}
     }
   end
 

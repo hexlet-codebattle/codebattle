@@ -1,6 +1,6 @@
 import { camelizeKeys } from "humps";
 
-import { channelMethods } from "../../socket";
+import { channelMethods, channelTopics } from "../../socket";
 import { actions } from "../slices";
 
 import Channel from "./Channel";
@@ -12,7 +12,7 @@ export const setTournamentChannel = (tournamentId) => {
   return channel.setupChannel(newChannelName);
 };
 
-export const connectToTournament = () => (dispatch) => {
+export const connectToTournament = (currentUserId) => (dispatch) => {
   if (!channel) {
     console.error("Channel not initialized");
     return;
@@ -64,6 +64,29 @@ export const connectToTournament = () => (dispatch) => {
   };
 
   channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
+
+  const handleRunUpdated = (response) => {
+    const latestSolutionEntry = response.solution || null;
+    const currentUserSolution =
+      latestSolutionEntry && latestSolutionEntry.userId === currentUserId
+        ? latestSolutionEntry
+        : null;
+
+    dispatch(
+      actions.applyRunUpdate({
+        groupTournament: response.groupTournament,
+        run: response.run,
+        latestSolutionEntry,
+        solution: currentUserSolution,
+      }),
+    );
+
+    if (response.run?.id) {
+      dispatch(actions.addLog(`Run #${response.run.id} ${response.run.status}`));
+    }
+  };
+
+  channel.addListener(channelTopics.groupTournamentRunUpdated, handleRunUpdated);
 
   return channel;
 };

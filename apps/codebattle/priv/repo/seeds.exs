@@ -6,7 +6,6 @@ alias Codebattle.Game
 alias Codebattle.GroupTask
 alias Codebattle.GroupTask.Context, as: GroupTaskContext
 alias Codebattle.GroupTaskSolution
-alias Codebattle.GroupTaskToken
 alias Codebattle.Repo
 alias Codebattle.Season
 alias Codebattle.TaskPack
@@ -319,22 +318,7 @@ seed_group_task = fn slug, time_to_solve_sec ->
   end
 end
 
-seed_group_task_token = fn group_task, user ->
-  case Repo.get_by(GroupTaskToken, group_task_id: group_task.id, user_id: user.id) do
-    nil ->
-      {:ok, token} = GroupTaskContext.create_or_rotate_token(group_task, user.id)
-      token
-
-    token ->
-      token
-  end
-end
-
 seed_group_task_solution = fn group_task, user, lang, solution_text ->
-  encoded_solution = Base.encode64(solution_text)
-
-  token = seed_group_task_token.(group_task, user)
-
   existing_solution =
     Repo.get_by(GroupTaskSolution,
       group_task_id: group_task.id,
@@ -345,9 +329,9 @@ seed_group_task_solution = fn group_task, user, lang, solution_text ->
 
   if is_nil(existing_solution) do
     {:ok, _solution} =
-      GroupTaskContext.create_solution_from_token(token.token, %{
+      GroupTaskContext.create_solution(group_task.id, user.id, %{
         "lang" => lang,
-        "solution" => encoded_solution
+        "solution" => solution_text
       })
   end
 end

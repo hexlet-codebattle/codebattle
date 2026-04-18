@@ -4,7 +4,6 @@ defmodule Codebattle.GroupTournament.Context do
   import Ecto.Query
 
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
-  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.GlobalSupervisor
@@ -13,6 +12,7 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.Repo
   alias Codebattle.UserGroupTournament
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
+  alias Codebattle.UserGroupTournamentRun
 
   @spec list_group_tournaments() :: list(GroupTournament.t())
   def list_group_tournaments do
@@ -96,7 +96,7 @@ defmodule Codebattle.GroupTournament.Context do
         |> where([record], record.group_tournament_id == ^group_tournament.id)
         |> Repo.delete_all()
 
-        GroupTaskRun
+        UserGroupTournamentRun
         |> where([run], run.group_tournament_id == ^group_tournament.id)
         |> Repo.delete_all()
 
@@ -158,7 +158,7 @@ defmodule Codebattle.GroupTournament.Context do
     end
   end
 
-  @spec list_runs(GroupTournament.t() | pos_integer(), keyword()) :: list(GroupTaskRun.t())
+  @spec list_runs(GroupTournament.t() | pos_integer(), keyword()) :: list(UserGroupTournamentRun.t())
   def list_runs(group_tournament_or_id, opts \\ [])
 
   def list_runs(%GroupTournament{id: id}, opts), do: list_runs(id, opts)
@@ -166,8 +166,14 @@ defmodule Codebattle.GroupTournament.Context do
   def list_runs(group_tournament_id, opts) do
     limit = Keyword.get(opts, :limit, 50)
 
-    GroupTaskRun
-    |> where([run], run.group_tournament_id == ^group_tournament_id)
+    latest_run_ids =
+      UserGroupTournamentRun
+      |> where([run], run.group_tournament_id == ^group_tournament_id)
+      |> group_by([run], run.run_key)
+      |> select([run], max(run.id))
+
+    UserGroupTournamentRun
+    |> where([run], run.id in subquery(latest_run_ids))
     |> order_by([run], desc: run.inserted_at, desc: run.id)
     |> limit(^limit)
     |> Repo.all()

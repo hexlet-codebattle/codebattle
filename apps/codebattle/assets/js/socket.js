@@ -74,6 +74,7 @@ export const channelTopics = {
   tournamentPlayerFinishedTopic: "tournament:player:finished",
   tournamentActivated: "tournament:activated",
   tournamentCanceled: "tournament:canceled",
+  groupTournamentRunUpdated: "group_tournament:run_updated",
   deployHandoffStarted: "deploy:handoff_started",
   deployHandoffDone: "deploy:handoff_done",
   deployHandoffFailed: "deploy:handoff_failed",

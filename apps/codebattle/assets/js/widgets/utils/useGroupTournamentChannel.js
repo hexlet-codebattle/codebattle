@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import * as TournamentActions from "../middlewares/GroupTournament";
+import * as selectors from "../selectors";
 
 const useGroupTournamentChannel = (tournamentId) => {
   const dispatch = useDispatch();
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
 
   useEffect(() => {
     if (!tournamentId) {
@@ -20,11 +23,11 @@ const useGroupTournamentChannel = (tournamentId) => {
       }
     };
 
-    TournamentActions.connectToTournament()(dispatch);
+    TournamentActions.connectToTournament(currentUserId)(dispatch);
 
     return clearTournamentChannel;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, tournamentId]);
+  }, [currentUserId, dispatch, tournamentId]);
 };
 
 export default useGroupTournamentChannel;

@@ -64,6 +64,39 @@ const groupTournament = createSlice({
     setData: (state, { payload }) => {
       state.data = payload;
     },
+    applyRunUpdate: (state, { payload }) => {
+      const { groupTournament, run, solution, latestSolutionEntry } = payload;
+
+      state.data = state.data || {};
+
+      if (groupTournament) {
+        state.data.groupTournament = {
+          ...(state.data.groupTournament || {}),
+          ...groupTournament,
+        };
+      }
+
+      if (run) {
+        const currentRuns = state.data.runs || [];
+        state.data.runs = [run, ...currentRuns.filter((item) => item.id !== run.id)];
+      }
+
+      if (latestSolutionEntry) {
+        state.data.latestSolutions = {
+          ...(state.data.latestSolutions || {}),
+          [latestSolutionEntry.userId]: latestSolutionEntry,
+        };
+      }
+
+      if (solution) {
+        const currentHistory = state.data.solutionHistory || [];
+        state.data.solutionHistory = [
+          solution,
+          ...currentHistory.filter((item) => item.id !== solution.id),
+        ];
+        state.data.latestSolution = solution;
+      }
+    },
     resetGroupTournament: () => initialState,
   },
 });

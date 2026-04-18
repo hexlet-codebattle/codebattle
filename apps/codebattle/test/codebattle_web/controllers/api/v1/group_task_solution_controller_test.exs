@@ -48,31 +48,6 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
     FunWithFlags.enable(:group_tasks_api)
 
     user = insert(:user)
-    group_task = insert(:group_task)
-    {:ok, token} = GroupTaskContext.create_or_rotate_token(group_task, user.id)
-
-    response =
-      conn
-      |> put_req_header("authorization", "Bearer #{token.token}")
-      |> post("/api/v1/group_task_solutions", %{
-        "solution" => Base.encode64("def solution():\n    return 42\n"),
-        "lang" => "Python"
-      })
-      |> json_response(201)
-
-    assert response["group_task_solution"]["group_task_id"] == group_task.id
-    assert response["group_task_solution"]["user_id"] == user.id
-    assert response["group_task_solution"]["lang"] == "python"
-
-    [solution] = GroupTaskContext.list_solutions(group_task)
-    assert solution.user_id == user.id
-    assert solution.solution =~ "return 42"
-  end
-
-  test "creates solution from user group tournament token", %{conn: conn} do
-    FunWithFlags.enable(:group_tasks_api)
-
-    user = insert(:user)
     creator = insert(:user)
     group_task = insert(:group_task)
 
@@ -115,7 +90,22 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
 
     user = insert(:user)
     group_task = insert(:group_task)
-    {:ok, token} = GroupTaskContext.create_or_rotate_token(group_task, user.id)
+
+    group_tournament =
+      %GroupTournament{}
+      |> GroupTournament.changeset(%{
+        creator_id: insert(:user).id,
+        group_task_id: group_task.id,
+        name: "Validation Tournament",
+        slug: "validation-tournament",
+        description: "Tournament description",
+        starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+        rounds_count: 1,
+        round_timeout_seconds: 60
+      })
+      |> Repo.insert!()
+
+    {:ok, token} = GroupTournamentContext.create_or_rotate_token(group_tournament, user.id)
 
     response =
       conn
@@ -136,7 +126,22 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
 
     user = insert(:user)
     group_task = insert(:group_task)
-    {:ok, token} = GroupTaskContext.create_or_rotate_token(group_task, user.id)
+
+    group_tournament =
+      %GroupTournament{}
+      |> GroupTournament.changeset(%{
+        creator_id: insert(:user).id,
+        group_task_id: group_task.id,
+        name: "Malformed Tournament",
+        slug: "malformed-tournament",
+        description: "Tournament description",
+        starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+        rounds_count: 1,
+        round_timeout_seconds: 60
+      })
+      |> Repo.insert!()
+
+    {:ok, token} = GroupTournamentContext.create_or_rotate_token(group_tournament, user.id)
 
     response =
       conn

@@ -69,26 +69,26 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
   def submit_solution(conn, %{"id" => id, "solution" => solution}) do
     current_user = conn.assigns.current_user
     group_tournament = Context.get_current(id) || Context.get_group_tournament!(id)
-    current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
+    :ok = Context.ensure_server_started(group_tournament)
 
-    if is_nil(current_player) do
-      conn
-      |> put_status(:unprocessable_entity)
-      |> json(%{error: "join_tournament_first"})
-    else
-      case GroupTaskContext.create_solution(group_tournament.group_task_id, current_user.id, %{
-             group_tournament_id: group_tournament.id,
-             lang: current_player.lang,
-             solution: solution
-           }) do
-        {:ok, submitted_solution} ->
-          json(conn, %{ok: true, solution: serialize_solution(submitted_solution)})
+    case Server.submit_solution(group_tournament.id, current_user, solution) do
+      {:ok, submitted_solution} ->
+        json(conn, %{ok: true, solution: serialize_solution(submitted_solution)})
 
-        {:error, %Ecto.Changeset{} = changeset} ->
-          conn
-          |> put_status(:unprocessable_entity)
-          |> json(%{errors: translate_errors(changeset)})
-      end
+      {:error, :join_tournament_first} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "join_tournament_first"})
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: translate_errors(changeset)})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "not_found"})
     end
   end
 

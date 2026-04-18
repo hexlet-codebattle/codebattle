@@ -4,18 +4,16 @@ defmodule Codebattle.GroupTask.Context do
   import Ecto.Query
 
   alias Codebattle.GroupTask
-  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
-  alias Codebattle.GroupTaskToken
   alias Codebattle.Repo
+  alias Codebattle.UserGroupTournament
+  alias Codebattle.UserGroupTournamentRun
 
   require Logger
 
   @group_task_runner_receive_timeout_ms 180_000
   @group_task_runner_connect_timeout_ms 30_000
 
-  @admin_recent_tokens_limit 100
-  @admin_recent_runs_limit 50
   @admin_recent_solutions_limit 100
 
   @spec list_group_tasks() :: list(GroupTask.t())
@@ -57,21 +55,6 @@ defmodule Codebattle.GroupTask.Context do
   @spec change_group_task(GroupTask.t(), map()) :: Ecto.Changeset.t()
   def change_group_task(group_task, attrs \\ %{}) do
     GroupTask.changeset(group_task, attrs)
-  end
-
-  @spec list_tokens(GroupTask.t() | pos_integer(), keyword()) :: list(GroupTaskToken.t())
-  def list_tokens(group_task_or_id, opts \\ [])
-  def list_tokens(%GroupTask{id: group_task_id}, opts), do: list_tokens(group_task_id, opts)
-
-  def list_tokens(group_task_id, opts) do
-    limit = Keyword.get(opts, :limit, @admin_recent_tokens_limit)
-
-    GroupTaskToken
-    |> where([token], token.group_task_id == ^group_task_id)
-    |> preload(:user)
-    |> order_by([token], desc: token.updated_at, desc: token.id)
-    |> limit(^limit)
-    |> Repo.all()
   end
 
   @spec list_solutions(GroupTask.t() | pos_integer(), keyword()) :: list(GroupTaskSolution.t())
@@ -184,95 +167,47 @@ defmodule Codebattle.GroupTask.Context do
     Repo.delete(solution)
   end
 
-  @spec list_runs(GroupTask.t() | pos_integer(), keyword()) :: list(GroupTaskRun.t())
-  def list_runs(group_task_or_id, opts \\ [])
-  def list_runs(%GroupTask{id: group_task_id}, opts), do: list_runs(group_task_id, opts)
-
-  def list_runs(group_task_id, opts) do
-    limit = Keyword.get(opts, :limit, @admin_recent_runs_limit)
-
-    GroupTaskRun
-    |> where([run], run.group_task_id == ^group_task_id)
-    |> order_by([run], desc: run.inserted_at, desc: run.id)
-    |> limit(^limit)
-    |> Repo.all()
-  end
-
-  @spec get_run!(String.t() | pos_integer()) :: GroupTaskRun.t()
+  @spec get_run!(String.t() | pos_integer()) :: UserGroupTournamentRun.t()
   def get_run!(id) do
-    Repo.get!(GroupTaskRun, id)
-  end
-
-  @spec create_or_rotate_token(GroupTask.t() | pos_integer(), pos_integer()) ::
-          {:ok, GroupTaskToken.t()} | {:error, Ecto.Changeset.t()}
-  def create_or_rotate_token(%GroupTask{id: group_task_id}, user_id), do: create_or_rotate_token(group_task_id, user_id)
-
-  def create_or_rotate_token(group_task_id, user_id) do
-    token_value = generate_token()
-
-    case Repo.get_by(GroupTaskToken, group_task_id: group_task_id, user_id: user_id) do
-      nil ->
-        %GroupTaskToken{}
-        |> GroupTaskToken.changeset(%{
-          group_task_id: group_task_id,
-          user_id: user_id,
-          token: token_value
-        })
-        |> Repo.insert()
-
-      group_task_token ->
-        group_task_token
-        |> GroupTaskToken.changeset(%{token: token_value})
-        |> Repo.update()
-    end
-  end
-
-  @spec get_token_by_value(String.t()) :: GroupTaskToken.t() | nil
-  def get_token_by_value(token) when is_binary(token) do
-    token = String.trim(token)
-
-    GroupTaskToken
-    |> preload(:group_task)
-    |> Repo.get_by(token: token)
-  end
-
-  def get_token_by_value(_token), do: nil
-
-  @spec create_solution_from_token(String.t(), map()) ::
-          {:ok, GroupTaskSolution.t()} | {:error, :invalid_token | Ecto.Changeset.t()}
-  def create_solution_from_token(token, attrs) do
-    case get_token_by_value(token) do
-      nil ->
-        {:error, :invalid_token}
-
-      group_task_token ->
-        create_solution(group_task_token, attrs)
-    end
+    Repo.get!(UserGroupTournamentRun, id)
   end
 
   @spec run_group_task(GroupTask.t(), list(pos_integer()), map()) ::
-          {:ok, GroupTaskRun.t()} | {:error, Ecto.Changeset.t()}
+          {:ok, UserGroupTournamentRun.t()} | {:error, Ecto.Changeset.t()}
   def run_group_task(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
     normalized_player_ids = normalize_player_ids(player_ids)
+    group_tournament_id = Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id")
+    run_key = Ecto.UUID.generate()
 
-    case create_pending_run(group_task, normalized_player_ids, attrs) do
-      {:ok, group_task_run} ->
+    case create_pending_runs(group_task, normalized_player_ids, group_tournament_id, run_key) do
+      {:ok, runs} ->
         case build_run_payload(group_task, normalized_player_ids, attrs) do
           {:ok, payload} ->
             run_result = execute_run(group_task.runner_url, payload)
-            persist_group_task_run_result(group_task_run, run_result)
+
+            persist_group_task_run_result(
+              runs,
+              group_task,
+              group_tournament_id,
+              run_key,
+              normalized_player_ids,
+              run_result
+            )
 
           {:run_error, result} ->
-            persist_group_task_run_result(group_task_run, {:run_error, result})
+            persist_group_task_run_result(
+              runs,
+              group_task,
+              group_tournament_id,
+              run_key,
+              normalized_player_ids,
+              {:run_error, result}
+            )
         end
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
     end
-  end
-
-  defp create_solution(group_task_token, attrs) do
-    create_solution_from_submission(group_task_token.group_task_id, group_task_token.user_id, attrs)
   end
 
   defp decode_solution(solution) when is_binary(solution) do
@@ -289,24 +224,6 @@ defmodule Codebattle.GroupTask.Context do
     |> GroupTaskSolution.changeset(Map.put(params, :solution, "placeholder"))
     |> Ecto.Changeset.delete_change(:solution)
     |> Ecto.Changeset.add_error(:solution, "is invalid base64")
-  end
-
-  defp generate_token do
-    32
-    |> :crypto.strong_rand_bytes()
-    |> Base.url_encode64(padding: false)
-  end
-
-  defp create_pending_run(group_task, player_ids, attrs) do
-    %GroupTaskRun{}
-    |> GroupTaskRun.changeset(%{
-      group_task_id: group_task.id,
-      group_tournament_id: Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id"),
-      player_ids: player_ids,
-      status: "pending",
-      result: %{}
-    })
-    |> Repo.insert()
   end
 
   defp build_run_payload(%GroupTask{} = group_task, player_ids, attrs) do
@@ -419,17 +336,120 @@ defmodule Codebattle.GroupTask.Context do
     |> Enum.sort()
   end
 
-  defp persist_group_task_run_result(group_task_run, {:ok, result}) do
-    group_task_run
-    |> GroupTaskRun.changeset(%{status: "success", result: result})
-    |> Repo.update()
+  defp create_pending_runs(_group_task, _player_ids, nil, _run_key), do: {:ok, []}
+
+  defp create_pending_runs(%GroupTask{id: group_task_id}, player_ids, group_tournament_id, run_key) do
+    runs_by_user_id =
+      UserGroupTournament
+      |> where(
+        [record],
+        record.group_tournament_id == ^group_tournament_id and record.user_id in ^player_ids
+      )
+      |> Repo.all()
+      |> Map.new(&{&1.user_id, &1})
+
+    missing_player_ids = Enum.reject(player_ids, &Map.has_key?(runs_by_user_id, &1))
+
+    if missing_player_ids == [] do
+      inserted_runs = do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key)
+
+      case inserted_runs do
+        {:ok, runs} -> {:ok, runs}
+        {:error, changeset} -> {:error, changeset}
+      end
+    else
+      {:error,
+       %UserGroupTournamentRun{}
+       |> Ecto.Changeset.change()
+       |> Ecto.Changeset.add_error(
+         :player_ids,
+         "are not linked to the group tournament: #{Enum.join(missing_player_ids, ", ")}"
+       )}
+    end
   end
 
-  defp persist_group_task_run_result(group_task_run, {:run_error, result}) do
-    group_task_run
-    |> GroupTaskRun.changeset(%{status: "error", result: result})
-    |> Repo.update()
+  defp persist_group_task_run_result(runs, group_task, group_tournament_id, run_key, player_ids, {:ok, result}) do
+    persist_run_result(runs, group_task, group_tournament_id, run_key, player_ids, "success", result)
   end
+
+  defp persist_group_task_run_result(runs, group_task, group_tournament_id, run_key, player_ids, {:run_error, result}) do
+    persist_run_result(runs, group_task, group_tournament_id, run_key, player_ids, "error", result)
+  end
+
+  defp persist_run_result([], group_task, group_tournament_id, run_key, player_ids, status, result) do
+    {:ok,
+     %UserGroupTournamentRun{
+       group_task_id: group_task.id,
+       group_tournament_id: group_tournament_id,
+       run_key: run_key,
+       player_ids: player_ids,
+       status: status,
+       result: result,
+       inserted_at: NaiveDateTime.utc_now()
+     }}
+  end
+
+  defp persist_run_result(runs, _group_task, _group_tournament_id, _run_key, _player_ids, status, result) do
+    updated_runs = do_update_runs(runs, status, result)
+
+    case updated_runs do
+      {:ok, [representative_run | _]} -> {:ok, representative_run}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  defp do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key) do
+    Repo.transaction(fn ->
+      player_ids
+      |> Enum.reduce_while([], fn player_id, acc ->
+        create_pending_run(
+          player_id,
+          acc,
+          player_ids,
+          runs_by_user_id,
+          group_task_id,
+          group_tournament_id,
+          run_key
+        )
+      end)
+      |> Enum.reverse()
+    end)
+  end
+
+  defp do_update_runs(runs, status, result) do
+    Repo.transaction(fn ->
+      runs
+      |> Enum.reduce_while([], fn run, acc -> update_run(run, acc, status, result) end)
+      |> Enum.reverse()
+    end)
+  end
+
+  defp create_pending_run(player_id, acc, player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key) do
+    user_group_tournament = Map.fetch!(runs_by_user_id, player_id)
+
+    %UserGroupTournamentRun{}
+    |> UserGroupTournamentRun.changeset(%{
+      user_group_tournament_id: user_group_tournament.id,
+      group_task_id: group_task_id,
+      group_tournament_id: group_tournament_id,
+      run_key: run_key,
+      player_ids: player_ids,
+      status: "pending",
+      result: %{}
+    })
+    |> Repo.insert()
+    |> maybe_continue_transaction(acc)
+  end
+
+  defp update_run(run, acc, status, result) do
+    run
+    |> UserGroupTournamentRun.changeset(%{status: status, result: result})
+    |> Repo.update()
+    |> maybe_continue_transaction(acc)
+  end
+
+  defp maybe_continue_transaction({:ok, run}, acc), do: {:cont, [run | acc]}
+  defp maybe_continue_transaction({:error, changeset}, _acc), do: Repo.rollback(changeset)
 
   defp normalize_result_body(body) when is_map(body), do: body
   defp normalize_result_body(body), do: %{"body" => body}

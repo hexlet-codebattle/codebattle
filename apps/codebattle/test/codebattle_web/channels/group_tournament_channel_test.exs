@@ -3,6 +3,7 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
 
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament
+  alias CodebattleWeb.Endpoint
   alias CodebattleWeb.GroupTournamentChannel
   alias CodebattleWeb.UserSocket
 
@@ -44,6 +45,20 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
   test "join rejects an invalid tournament id", %{socket: socket} do
     assert {:error, %{reason: "invalid_tournament_id"}} =
              subscribe_and_join(socket, GroupTournamentChannel, "group_tournament:undefined")
+  end
+
+  test "pushes run updates broadcast on the tournament topic", %{socket: socket, topic: topic} do
+    {:ok, _response, _socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    Endpoint.broadcast!(topic, "group_tournament:run_updated", %{
+      group_tournament: %{id: 1, state: "active", meta: %{"last_run_status" => "success"}},
+      run: %{id: 42, status: "success", player_ids: [1, 2], result: %{"winner_id" => 1}}
+    })
+
+    assert_push("group_tournament:run_updated", %{
+      group_tournament: %{id: 1, state: "active", meta: %{"last_run_status" => "success"}},
+      run: %{id: 42, status: "success", player_ids: [1, 2], result: %{"winner_id" => 1}}
+    })
   end
 
   defp insert_group_tournament! do

@@ -5,9 +5,7 @@ defmodule Codebattle.GroupTask do
 
   import Ecto.Changeset
 
-  alias Codebattle.GroupTaskRun
   alias Codebattle.GroupTaskSolution
-  alias Codebattle.GroupTaskToken
 
   @type t :: %__MODULE__{}
 
@@ -16,9 +14,7 @@ defmodule Codebattle.GroupTask do
     field(:runner_url, :string)
     field(:time_to_solve_sec, :integer)
 
-    has_many(:runs, GroupTaskRun)
     has_many(:solutions, GroupTaskSolution)
-    has_many(:tokens, GroupTaskToken)
 
     timestamps()
   end

@@ -38,7 +38,6 @@ defmodule CodebattleWeb.Admin.GroupTaskController do
 
     render(conn, "show.html",
       group_task: group_task,
-      runs: Context.list_runs(group_task, limit: 20),
       solutions: Context.list_solutions(group_task, limit: 20),
       user: conn.assigns.current_user
     )

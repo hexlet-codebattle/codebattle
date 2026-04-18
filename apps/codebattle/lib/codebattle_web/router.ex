@@ -118,12 +118,6 @@ defmodule CodebattleWeb.Router do
 
     delete("/group_tasks/:id/solutions/:solution_id", GroupTaskController, :delete_solution, as: :group_task_solution)
 
-    post("/group_tasks/:group_task_id/runs", CodebattleWeb.Admin.GroupTaskRunController, :create, as: :group_task_run)
-
-    post("/group_tasks/:group_task_id/tokens", CodebattleWeb.Admin.GroupTaskTokenController, :create,
-      as: :group_task_token
-    )
-
     resources("/group_tasks", GroupTaskController)
 
     post("/group_tournaments/:id/start", CodebattleWeb.Admin.GroupTournamentController, :start,

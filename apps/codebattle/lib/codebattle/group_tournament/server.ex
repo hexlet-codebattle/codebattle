@@ -7,6 +7,8 @@ defmodule Codebattle.GroupTournament.Server do
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
   alias Codebattle.Repo
+  alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
+  alias CodebattleWeb.Endpoint
 
   require Logger
 
@@ -34,6 +36,12 @@ defmodule Codebattle.GroupTournament.Server do
 
   def confirm_invitation(id, user) do
     GenServer.call(server_name(id), {:confirm_invitation, user}, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
+  def submit_solution(id, user, solution) do
+    GenServer.call(server_name(id), {:submit_solution, user, solution}, 30_000)
   catch
     :exit, _ -> {:error, :not_found}
   end
@@ -176,6 +184,8 @@ defmodule Codebattle.GroupTournament.Server do
   def handle_call({:join, user, lang}, _from, %{group_tournament: group_tournament} = state) do
     Logger.info("Group tournament setup group_tournament_id=#{group_tournament.id} user_id=#{user.id} lang=#{lang}")
 
+    UserGroupTournamentContext.get_or_create(user, group_tournament)
+
     result =
       Context.create_or_update_player(group_tournament, user.id, %{
         lang: lang,
@@ -190,6 +200,27 @@ defmodule Codebattle.GroupTournament.Server do
 
       {:error, _} = error ->
         {:reply, error, state}
+    end
+  end
+
+  def handle_call({:submit_solution, user, solution}, _from, %{group_tournament: group_tournament} = state) do
+    current_player = Enum.find(group_tournament.players, &(&1.user_id == user.id))
+
+    if is_nil(current_player) do
+      {:reply, {:error, :join_tournament_first}, state}
+    else
+      case GroupTaskContext.create_solution(group_tournament.group_task_id, user.id, %{
+             group_tournament_id: group_tournament.id,
+             lang: current_player.lang,
+             solution: solution
+           }) do
+        {:ok, submitted_solution} ->
+          next_state = maybe_run_after_solution_submission(state, submitted_solution)
+          {:reply, {:ok, submitted_solution}, next_state}
+
+        {:error, _} = error ->
+          {:reply, error, state}
+      end
     end
   end
 
@@ -218,20 +249,8 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_info(:finish_round, %{group_tournament: %{state: "active"} = group_tournament} = state) do
-    player_ids = Enum.map(group_tournament.players, & &1.user_id)
-
-    run_result =
-      GroupTaskContext.run_group_task(
-        group_tournament.group_task,
-        player_ids,
-        %{group_tournament_id: group_tournament.id, include_bots: group_tournament.include_bots}
-      )
-
-    {last_run_id, last_run_status, last_run_result} =
-      case run_result do
-        {:ok, run} -> {run.id, run.status, run.result}
-        {:error, changeset} -> {nil, "error", %{errors: changeset.errors}}
-      end
+    run_result = run_group_tournament(group_tournament)
+    {last_run_id, last_run_status, last_run_result} = serialize_run_result_meta(run_result)
 
     finished_round_at = NaiveDateTime.utc_now(:second)
 
@@ -265,6 +284,8 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
+    maybe_broadcast_run_update(updated, run_result)
+
     next_state =
       state
       |> Map.put(:group_tournament, updated)
@@ -283,6 +304,34 @@ defmodule Codebattle.GroupTournament.Server do
   def handle_info(_message, state) do
     {:noreply, state}
   end
+
+  defp maybe_run_after_solution_submission(
+         %{group_tournament: %{state: "active"} = group_tournament} = state,
+         submitted_solution
+       ) do
+    run_result = run_group_tournament(group_tournament)
+    {last_run_id, last_run_status, last_run_result} = serialize_run_result_meta(run_result)
+
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{
+        meta:
+          Map.merge(group_tournament.meta || %{}, %{
+            "last_run_id" => last_run_id,
+            "last_run_status" => last_run_status,
+            "last_run_result" => last_run_result
+          })
+      })
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    maybe_broadcast_run_update(updated, run_result, submitted_solution)
+
+    %{state | group_tournament: updated}
+  end
+
+  defp maybe_run_after_solution_submission(state, _submitted_solution), do: state
 
   defp schedule_start(state, %{state: "waiting_participants", require_invitation: true}) do
     # When require_invitation is set, don't auto-start on timer.
@@ -317,6 +366,97 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   defp cancel_finish_timer(state), do: state
+
+  defp run_group_tournament(group_tournament) do
+    player_ids = Enum.map(group_tournament.players, & &1.user_id)
+
+    run_result =
+      GroupTaskContext.run_group_task(
+        group_tournament.group_task,
+        player_ids,
+        %{group_tournament_id: group_tournament.id, include_bots: group_tournament.include_bots}
+      )
+
+    case run_result do
+      {:ok, _run} = ok -> ok
+      {:error, changeset} -> {:error, %{errors: serialize_changeset_errors(changeset)}}
+    end
+  end
+
+  defp serialize_run_result_meta({:ok, run}), do: {run.id, run.status, run.result}
+  defp serialize_run_result_meta({:error, result}), do: {nil, "error", result}
+
+  defp maybe_broadcast_run_update(group_tournament, run_result, submitted_solution \\ nil)
+
+  defp maybe_broadcast_run_update(group_tournament, {:ok, run}, submitted_solution) do
+    payload = %{
+      group_tournament: serialize_group_tournament(group_tournament),
+      run: serialize_run(run)
+    }
+
+    payload =
+      if submitted_solution do
+        Map.put(payload, :solution, serialize_solution(submitted_solution))
+      else
+        payload
+      end
+
+    Endpoint.broadcast!("group_tournament:#{group_tournament.id}", "group_tournament:run_updated", payload)
+  end
+
+  defp maybe_broadcast_run_update(_group_tournament, {:error, _result}, _submitted_solution), do: :ok
+
+  defp serialize_group_tournament(group_tournament) do
+    %{
+      id: group_tournament.id,
+      name: group_tournament.name,
+      slug: group_tournament.slug,
+      description: group_tournament.description,
+      state: group_tournament.state,
+      starts_at: group_tournament.starts_at,
+      started_at: group_tournament.started_at,
+      finished_at: group_tournament.finished_at,
+      current_round_position: group_tournament.current_round_position,
+      rounds_count: group_tournament.rounds_count,
+      round_timeout_seconds: group_tournament.round_timeout_seconds,
+      include_bots: group_tournament.include_bots,
+      last_round_started_at: group_tournament.last_round_started_at,
+      last_round_ended_at: group_tournament.last_round_ended_at,
+      players_count: group_tournament.players_count,
+      group_task_id: group_tournament.group_task_id,
+      group_task_slug: group_tournament.group_task && group_tournament.group_task.slug,
+      template_id: group_tournament.template_id,
+      meta: group_tournament.meta
+    }
+  end
+
+  defp serialize_run(run) do
+    %{
+      id: run.id,
+      player_ids: run.player_ids,
+      status: run.status,
+      result: run.result,
+      inserted_at: run.inserted_at
+    }
+  end
+
+  defp serialize_solution(solution) do
+    %{
+      id: solution.id,
+      user_id: solution.user_id,
+      lang: solution.lang,
+      solution: solution.solution,
+      inserted_at: solution.inserted_at
+    }
+  end
+
+  defp serialize_changeset_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
+      Enum.reduce(opts, message, fn {key, value}, acc ->
+        String.replace(acc, "%{#{key}}", to_string(value))
+      end)
+    end)
+  end
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "group_tournament_srv:#{id}"}}
 end

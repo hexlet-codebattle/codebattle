@@ -7,6 +7,7 @@ defmodule Codebattle.UserGroupTournament do
 
   alias Codebattle.GroupTournament
   alias Codebattle.User
+  alias Codebattle.UserGroupTournamentRun
 
   @states ~w(pending provisioning ready failed)
   @step_states ~w(pending completed failed)
@@ -38,6 +39,7 @@ defmodule Codebattle.UserGroupTournament do
   schema "user_group_tournaments" do
     belongs_to(:user, User)
     belongs_to(:group_tournament, GroupTournament)
+    has_many(:runs, UserGroupTournamentRun)
 
     field(:state, :string, default: "pending")
     field(:repo_state, :string, default: "pending")
