@@ -111,6 +111,7 @@ export const channelMethods = {
   editorScrollPosition: channelTopics.editorScrollPositionTopic,
 
   enterPassCode: "enter_pass_code",
+  requestInviteUpdate: "request_invite_update",
 
   rematchSendOffer: "rematch:send_offer",
   rematchRejectOffer: "rematch:reject_offer",

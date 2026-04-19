@@ -1,5 +1,6 @@
 import MonacoEditor from "@monaco-editor/react";
 import React from "react";
+import i18n from "../../../i18n";
 import languages from "../../config/languages";
 import useEditor from "../../utils/useEditor";
 
@@ -38,8 +39,8 @@ function EditorPanel({ text, lang }) {
       style={{ height: "70%" }}
     >
       <div className="card-header d-flex justify-content-between py-2">
-        <h6 className="cb-text mb-0">Editor</h6>
-        <h6 className="cb-text mb-0">{lang ? `Language: ${mappedSyntax}` : ""}</h6>
+        <h6 className="cb-text mb-0">{i18n.t("Editor")}</h6>
+        <h6 className="cb-text mb-0">{lang ? `${i18n.t("Language")}: ${mappedSyntax}` : ""}</h6>
       </div>
       <div className="card-body p-0 pb-1 border-top cb-border-color">
         <MonacoEditor

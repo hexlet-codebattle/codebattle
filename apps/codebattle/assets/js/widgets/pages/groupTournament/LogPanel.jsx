@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../i18n";
 
 function LogPanel({ logs, className }) {
   return (
@@ -7,7 +8,7 @@ function LogPanel({ logs, className }) {
       style={{ height: "29%" }}
     >
       <div className="card-header">
-        <h6 className="cb-text mb-0">Execution Logs</h6>
+        <h6 className="cb-text mb-0">{i18n.t("Execution Logs")}</h6>
       </div>
       <div className="card-body p-3 border-top cb-border-color overflow-auto">
         {logs && logs.length > 0 ? (
@@ -18,11 +19,15 @@ function LogPanel({ logs, className }) {
                   {log}
                 </li>
               ))}
-              {logs.length > 3 && <li className="text-muted">... and {logs.length - 3} more</li>}
+              {logs.length > 3 && (
+                <li className="text-muted">
+                  {i18n.t("... and %{count} more", { count: logs.length - 3 })}
+                </li>
+              )}
             </ul>
           </div>
         ) : (
-          <div className="small text-muted">No logs yet</div>
+          <div className="small text-muted">{i18n.t("No logs yet")}</div>
         )}
       </div>
     </div>

@@ -9,6 +9,7 @@ const initialState = {
     inviteLink: null,
   },
   requireInvitation: true,
+  platformError: null,
   externalSetup: null,
   solutionEvolution: [], // Array<{ id: string, status: "creating" | "finished" }>
   logs: [], // Array<object>

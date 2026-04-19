@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import i18n from "../../../i18n";
 import Header from "./Header";
 import EvolutionPanel from "./EvolutionPanel";
 import MainPanel from "./MainPanel";
@@ -10,6 +11,7 @@ import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
 import * as selectors from "../../selectors";
 import Loading from "@/components/Loading";
 import { load, requestInviteUpdate } from "@/middlewares/GroupTournament";
+import AdminExternalSetupPanel from "./AdminExternalSetupPanel";
 
 const getDateTimestamp = (value) => {
   if (!value) {
@@ -56,7 +58,6 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   const dispatch = useDispatch();
 
   const [viewerFullscreen, setViewerFullscreen] = useState(false);
-  const [showInviteWindow, setShowInviteWindow] = useState(false);
   const [selectedRun, setSelectedRun] = useState();
   const [runId, setRunId] = useState();
 
@@ -70,11 +71,14 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     externalSetup,
     solutionEvolution,
     requireInvitation,
+    platformError,
     logs,
     code,
     langSlug,
     data,
   } = useSelector(selectors.groupTournamentSelector);
+
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
   const solutionHistory = useMemo(() => data?.solutionHistory || [], [data?.solutionHistory]);
   const selectedRunSolution = useMemo(
@@ -83,10 +87,6 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   );
   const editorText = selectedRunSolution?.solution || code;
   const editorLang = selectedRunSolution?.lang || langSlug;
-
-  const openExternalRegistrationWindow = () => {
-    setShowInviteWindow(true);
-  };
 
   const requestInviteUpdates = () => {
     requestInviteUpdate()(dispatch);
@@ -100,47 +100,92 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   }, [runId, data.runs]);
 
   useEffect(() => {
-    if (showInviteWindow) {
-      open(invite.inviteLink, undefined, "left=100,top=100,width=960,height=640");
-    }
-  }, [invite.inviteLink, showInviteWindow]);
-
-  useEffect(() => {
     if (tournamentId) {
       load(tournamentId)(dispatch);
     }
   }, [tournamentId, dispatch]);
 
-  if (invite.state === "loading" && requireInvitation) {
+  if (status === "loading") {
     return <Loading />;
   }
 
-  if ((invite.state === "creating" || invite.state === "pending") && requireInvitation) {
+  if (!isAdmin && requireInvitation && invite.state !== "accepted") {
+    const isPending =
+      invite.state === "creating" || invite.state === "pending" || invite.state === "loading";
+    const isFailed = invite.state === "failed";
+
     return (
       <div className="container-fluid h-100">
         <div className="row justify-content-center h-100">
           <div className="col-lg-5 col-md-6 col-sm-8 px-md-4 align-content-center">
             <div className="cb-bg-panel shadow-sm cb-rounded p-5">
-              {tournamentName && <h5 className="text-center mb-4">{tournamentName}</h5>}
-              <div className="d-flex">
+              <p className="text-center cb-text mb-4">
+                {i18n.t("You need to accept an invitation to participate in this tournament.")}
+              </p>
+              {isPending && !invite.inviteLink && (
+                <div className="text-center cb-text mb-3">{i18n.t("Preparing your invite...")}</div>
+              )}
+              {isFailed && (
+                <div className="text-center text-danger mb-3">
+                  {i18n.t("Invite failed. Please try again.")}
+                </div>
+              )}
+              <div className="d-flex flex-column align-items-center gap-3">
+                {invite.inviteLink && (
+                  <a
+                    href={invite.inviteLink}
+                    className="btn btn-lg btn-success cb-rounded w-100"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {i18n.t("Accept Invite")}
+                  </a>
+                )}
+                {isFailed ? (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded w-100"
+                    onClick={requestInviteUpdates}
+                  >
+                    {i18n.t("Retry")}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded w-100"
+                    onClick={requestInviteUpdates}
+                  >
+                    {i18n.t("Check Status")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (platformError) {
+    return (
+      <div className="container-fluid h-100">
+        <div className="row justify-content-center h-100">
+          <div className="col-lg-5 col-md-6 col-sm-8 px-md-4 align-content-center">
+            <div className="cb-bg-panel shadow-sm cb-rounded p-5">
+              <div className="text-center text-danger mb-3">
+                {i18n.t(
+                  "Could not retrieve your external platform credentials. Please contact support.",
+                )}
+              </div>
+              <div className="d-flex justify-content-center">
                 <button
                   type="button"
-                  className="btn btn-success text-white cb-rounded w-100"
-                  onClick={openExternalRegistrationWindow}
-                >
-                  Registration
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary cb-rounded w-100 ml-2"
+                  className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
                   onClick={requestInviteUpdates}
                 >
-                  Next Step
+                  {i18n.t("Retry")}
                 </button>
               </div>
-              <small className="text-center d-block mt-3">
-                For this stage you need to register on the external platform
-              </small>
             </div>
           </div>
         </div>
@@ -153,6 +198,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
       <div className="row">
         <Header name={tournamentName} status={status} />
       </div>
+      {isAdmin && externalSetup && (
+        <div className="row mt-2">
+          <AdminExternalSetupPanel externalSetup={externalSetup} />
+        </div>
+      )}
       <div className="row mt-3 h-100">
         <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
           <EvolutionPanel
@@ -167,7 +217,6 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
           <MainPanel
             status={status}
             run={selectedRun}
-            externalSetup={externalSetup}
             description={tournamentDescription}
             setViewerFullscreen={setViewerFullscreen}
           />
@@ -189,14 +238,15 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
         >
           <div className="d-flex justify-content-between align-items-center mb-3">
             <div className="text-white">
-              Run Viewer Fullscreen{selectedRun ? ` • Run #${selectedRun.id}` : ""}
+              {i18n.t("Run Viewer Fullscreen")}
+              {selectedRun ? ` • Run #${selectedRun.id}` : ""}
             </div>
             <button
               type="button"
               className="btn btn-outline-light cb-rounded"
               onClick={() => setViewerFullscreen(false)}
             >
-              Close Fullscreen
+              {i18n.t("Close Fullscreen")}
             </button>
           </div>
           <div className="flex-grow-1">

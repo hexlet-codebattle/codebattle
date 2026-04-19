@@ -262,7 +262,6 @@ defmodule CodebattleWeb.Router do
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit])
     get("/group_tournaments/:id", GroupTournamentController, :show)
-    post("/group_tournaments/:id/request_invite", GroupTournamentController, :request_invite)
     get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 
     get("/stream", StreamController, :index)

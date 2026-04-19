@@ -38,14 +38,11 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
       externalSetup,
       solutionEvolution,
       requireInvitation,
+      platformError,
       logs,
       code,
       langSlug,
     } = normalizedResponse;
-
-    console.log(normalizedResponse);
-    console.log("group tournament join invite", invite);
-    console.log("group tournament external setup", externalSetup);
 
     dispatch(
       actions.setGroupTournamentData({
@@ -55,6 +52,7 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
         invite,
         externalSetup,
         requireInvitation,
+        platformError,
         solutionEvolution,
         logs,
         code,
@@ -103,6 +101,7 @@ export const requestInviteUpdate = () => (dispatch) => {
       const normalizedData = camelizeKeys(data);
       const invite = normalizedData.invite;
       const externalSetup = normalizedData.externalSetup;
+      const platformError = normalizedData.platformError || null;
 
       dispatch(actions.updateInviteState(invite.state));
 
@@ -110,9 +109,7 @@ export const requestInviteUpdate = () => (dispatch) => {
         dispatch(actions.updateInviteLink(invite.inviteLink));
       }
 
-      if (externalSetup) {
-        dispatch(actions.updateGroupTournamentData({ externalSetup }));
-      }
+      dispatch(actions.updateGroupTournamentData({ externalSetup, platformError }));
     })
     .receive("error", (error) => {
       console.error("Request invite update failed", error);

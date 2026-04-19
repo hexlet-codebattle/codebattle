@@ -1640,3 +1640,66 @@ msgstr "Процент тестов"
 
 msgid "Started - Finished"
 msgstr "Начало - Конец"
+
+msgid "Invitation Required"
+msgstr "Требуется приглашение"
+
+msgid "You need to accept an invitation to participate in this tournament."
+msgstr "Для участия в этом турнире необходимо принять приглашение."
+
+msgid "Accept Invite"
+msgstr "Принять приглашение"
+
+msgid "Check Status"
+msgstr "Проверить статус"
+
+msgid "Preparing your invite..."
+msgstr "Подготавливаем приглашение..."
+
+msgid "Invite failed. Please try again."
+msgstr "Не удалось отправить приглашение. Попробуйте ещё раз."
+
+msgid "Retry"
+msgstr "Повторить"
+
+msgid "Could not retrieve your external platform credentials. Please contact support."
+msgstr "Не удалось получить учётные данные внешней платформы. Пожалуйста, обратитесь в поддержку."
+
+msgid "Group Tournament"
+msgstr "Групповой турнир"
+
+msgid "Execution History"
+msgstr "История запусков"
+
+msgid "+ Add Solution"
+msgstr "+ Добавить решение"
+
+msgid "Run Viewer"
+msgstr "Просмотр запуска"
+
+msgid "No viewer HTML for this run."
+msgstr "Нет HTML для просмотра этого запуска."
+
+msgid "Tournament Overview"
+msgstr "Обзор турнира"
+
+msgid "No additional setup is required for this tournament."
+msgstr "Для этого турнира дополнительная настройка не требуется."
+
+msgid "Execution Logs"
+msgstr "Логи выполнения"
+
+msgid "No logs yet"
+msgstr "Логов пока нет"
+
+msgid "... and %{count} more"
+msgstr "... и ещё %{count}"
+
+msgid "External Setup"
+msgstr "Внешняя настройка"
+
+msgid "Run Viewer Fullscreen"
+msgstr "Просмотр запуска — полный экран"
+
+msgid "Close Fullscreen"
+msgstr "Закрыть полный экран"

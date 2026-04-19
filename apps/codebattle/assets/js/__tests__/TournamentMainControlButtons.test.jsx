@@ -55,9 +55,9 @@ function renderComponent(props = {}) {
 test("shows Finish button for an active tournament even when restart is unavailable", () => {
   renderComponent();
 
-  expect(screen.getByRole("button", { name: "Finish" })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Finish Round" })).toBeInTheDocument();
-  expect(screen.queryByRole("button", { name: "Restart" })).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Finish Tournament/ })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Finish Round/ })).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Restart/ })).not.toBeInTheDocument();
 });
 
 test("does not show Finish button for a finished tournament", () => {

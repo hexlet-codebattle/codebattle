@@ -40,6 +40,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   server: true
 
 config :codebattle, Oban, testing: :inline
+config :codebattle, :external_platform_adapter, Codebattle.ExternalPlatform.Fake
 config :codebattle, :external_platform_org_slug, "test-org"
 config :codebattle, :external_platform_service_url, "https://ext.test"
 

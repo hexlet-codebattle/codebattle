@@ -2,11 +2,10 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
+  alias Codebattle.ExternalPlatformInvite.Advancer, as: InviteAdvancer
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
-
-  require Logger
 
   def join("group_tournament:" <> tournament_id, _payload, socket) do
     case parse_tournament_id(tournament_id) do
@@ -34,21 +33,21 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp join_with_invite(socket, current_user, group_tournament, tournament_id) do
-    alias_name = current_user.external_oauth_login || current_user.name
-
     invite =
       current_user.id
       |> InviteContext.get_or_create_invite(tournament_id)
-      |> maybe_send_invite_on_join(alias_name)
+      |> InviteAdvancer.advance(current_user)
 
-    external_setup = maybe_ensure_external_setup(current_user, group_tournament, invite)
+    {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
+    external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
 
     {:ok,
      %{
        status: group_tournament.state,
        invite: serialize_invite(invite),
        require_invitation: true,
-       external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
+       platform_error: platform_error,
+       external_setup: serialize_external_setup(external_setup, user, group_tournament)
      }, socket}
   end
 
@@ -82,26 +81,23 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp reply_with_invite_update(current_user, tournament_id, socket) do
-    alias_name = current_user.external_oauth_login || current_user.name
     group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
-    invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
 
-    if invite.state in ["pending", "failed"] do
-      retry_send_invite(invite, alias_name, current_user, group_tournament, socket)
-    else
-      {:reply, {:ok, serialize_invite_reply(current_user, group_tournament, invite)}, socket}
-    end
-  end
+    invite =
+      current_user.id
+      |> InviteContext.get_or_create_invite(tournament_id)
+      |> InviteAdvancer.advance(current_user)
 
-  defp retry_send_invite(invite, alias_name, current_user, group_tournament, socket) do
-    case InviteContext.send_invite(invite, alias_name) do
-      {:ok, updated_invite} ->
-        {:reply, {:ok, serialize_invite_reply(current_user, group_tournament, updated_invite)}, socket}
+    {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
 
-      {:error, reason} ->
-        Logger.error("Failed to send invite: #{inspect(reason)}")
-        {:reply, {:error, %{reason: "failed_to_send_invite"}}, socket}
-    end
+    socket =
+      if invite.state == "accepted" do
+        assign(socket, :current_user, user)
+      else
+        socket
+      end
+
+    {:reply, {:ok, serialize_invite_reply(user, group_tournament, invite, platform_error)}, socket}
   end
 
   defp extract_tournament_id("group_tournament:" <> tournament_id) do
@@ -138,27 +134,40 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     }
   end
 
-  defp serialize_invite_reply(user, group_tournament, invite) do
+  defp serialize_invite_reply(user, group_tournament, invite, platform_error \\ nil) do
     external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
 
     %{
       invite: serialize_invite(invite),
+      platform_error: platform_error,
       external_setup: serialize_external_setup(external_setup, user, group_tournament)
     }
   end
 
-  defp maybe_send_invite_on_join(%{state: "pending"} = invite, alias_name) do
-    case InviteContext.send_invite(invite, alias_name) do
-      {:ok, updated_invite} ->
-        updated_invite
+  defp maybe_ensure_platform_credentials(current_user, %{state: "accepted"}, %{run_on_external_platform: true}) do
+    fresh_user = Codebattle.Repo.get!(Codebattle.User, current_user.id)
 
-      {:error, reason} ->
-        Logger.error("Failed to send invite during join: #{inspect(reason)}")
-        invite
+    if has_platform_credentials?(fresh_user) do
+      {fresh_user, nil}
+    else
+      case UserGroupTournamentContext.ensure_platform_identity(fresh_user) do
+        {:ok, updated_user} ->
+          {updated_user, nil}
+
+        {:error, _reason} ->
+          {fresh_user, "external_platform_credentials_not_found"}
+      end
     end
   end
 
-  defp maybe_send_invite_on_join(invite, _alias_name), do: invite
+  defp maybe_ensure_platform_credentials(current_user, _invite, _group_tournament) do
+    {current_user, nil}
+  end
+
+  defp has_platform_credentials?(%{external_platform_id: id, external_platform_login: login})
+       when is_binary(id) and id != "" and is_binary(login) and login != "", do: true
+
+  defp has_platform_credentials?(_), do: false
 
   defp maybe_ensure_external_setup(user, %{run_on_external_platform: false} = group_tournament, _invite) do
     UserGroupTournamentContext.get(user.id, group_tournament.id)

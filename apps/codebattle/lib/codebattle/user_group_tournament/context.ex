@@ -316,7 +316,7 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   defp create_repo_for_tournament(_group_tournament, _repo_slug), do: {:error, %{error: "template_id is required"}}
 
-  defp ensure_platform_identity(%User{} = user) do
+  def ensure_platform_identity(%User{} = user) do
     lookup_login = platform_identity_lookup_login(user)
 
     if lookup_login == "" do
@@ -351,7 +351,7 @@ defmodule Codebattle.UserGroupTournament.Context do
   end
 
   defp platform_identity_lookup_login(%User{} = user) do
-    normalize_login(user.external_platform_login || user.external_oauth_login)
+    normalize_login(user.external_platform_login || user.external_oauth_login || user.github_name || user.name)
   end
 
   defp reload_user(%User{id: user_id} = user) do

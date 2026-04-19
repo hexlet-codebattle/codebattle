@@ -1072,3 +1072,66 @@ msgstr "Tests percent"
 
 msgid "Started - Finished"
 msgstr "Started - Finished"
+
+msgid "Invitation Required"
+msgstr "Invitation Required"
+
+msgid "You need to accept an invitation to participate in this tournament."
+msgstr "You need to accept an invitation to participate in this tournament."
+
+msgid "Accept Invite"
+msgstr "Accept Invite"
+
+msgid "Check Status"
+msgstr "Check Status"
+
+msgid "Preparing your invite..."
+msgstr "Preparing your invite..."
+
+msgid "Invite failed. Please try again."
+msgstr "Invite failed. Please try again."
+
+msgid "Retry"
+msgstr "Retry"
+
+msgid "Could not retrieve your external platform credentials. Please contact support."
+msgstr "Could not retrieve your external platform credentials. Please contact support."
+
+msgid "Group Tournament"
+msgstr "Group Tournament"
+
+msgid "Execution History"
+msgstr "Execution History"
+
+msgid "+ Add Solution"
+msgstr "+ Add Solution"
+
+msgid "Run Viewer"
+msgstr "Run Viewer"
+
+msgid "No viewer HTML for this run."
+msgstr "No viewer HTML for this run."
+
+msgid "Tournament Overview"
+msgstr "Tournament Overview"
+
+msgid "No additional setup is required for this tournament."
+msgstr "No additional setup is required for this tournament."
+
+msgid "Execution Logs"
+msgstr "Execution Logs"
+
+msgid "No logs yet"
+msgstr "No logs yet"
+
+msgid "... and %{count} more"
+msgstr "... and %{count} more"
+
+msgid "External Setup"
+msgstr "External Setup"
+
+msgid "Run Viewer Fullscreen"
+msgstr "Run Viewer Fullscreen"
+
+msgid "Close Fullscreen"
+msgstr "Close Fullscreen"

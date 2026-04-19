@@ -8,13 +8,20 @@ defmodule Codebattle.ExternalPlatform do
   @lookup_path "/v1/users/id"
   @invite_path "/orgs"
 
+  defp adapter do
+    Application.get_env(:codebattle, :external_platform_adapter)
+  end
+
   def get_user_by_login(login) when is_binary(login) do
     login = String.trim(login)
 
     if login == "" do
       nil
     else
-      do_get_user_by_login(login)
+      case adapter() do
+        nil -> do_get_user_by_login(login)
+        mod -> mod.get_user_by_login(login)
+      end
     end
   end
 
@@ -35,9 +42,15 @@ defmodule Codebattle.ExternalPlatform do
   """
   @spec check_invite(String.t()) :: {:ok, map()} | {:error, :not_accepted}
   def check_invite(login) when is_binary(login) do
-    case get_user_by_login(login) do
-      %{id: _} = user_data -> {:ok, user_data}
-      _ -> {:error, :not_accepted}
+    case adapter() do
+      nil ->
+        case get_user_by_login(login) do
+          %{id: _} = user_data -> {:ok, user_data}
+          _ -> {:error, :not_accepted}
+        end
+
+      mod ->
+        mod.check_invite(login)
     end
   end
 
@@ -51,9 +64,15 @@ defmodule Codebattle.ExternalPlatform do
     if alias_name == "" do
       {:error, :empty_alias}
     else
-      org_slug = Keyword.get(opts, :org_slug, default_org_slug())
-      ttl_in_days = Keyword.get(opts, :ttl_in_days)
-      do_create_invite(org_slug, alias_name, ttl_in_days)
+      case adapter() do
+        nil ->
+          org_slug = Keyword.get(opts, :org_slug, default_org_slug())
+          ttl_in_days = Keyword.get(opts, :ttl_in_days)
+          do_create_invite(org_slug, alias_name, ttl_in_days)
+
+        mod ->
+          mod.create_invite(alias_name, opts)
+      end
     end
   end
 
@@ -114,6 +133,13 @@ defmodule Codebattle.ExternalPlatform do
   """
   @spec poll_invite_status(String.t()) :: {:ok, map()} | {:error, term()}
   def poll_invite_status(operation_id) when is_binary(operation_id) and operation_id != "" do
+    case adapter() do
+      nil -> do_poll_invite_status(operation_id)
+      mod -> mod.poll_invite_status(operation_id)
+    end
+  end
+
+  defp do_poll_invite_status(operation_id) do
     url = "#{external_platform_service_url()}#{@operations_path}:#{operation_id}"
 
     opts =
@@ -161,6 +187,13 @@ defmodule Codebattle.ExternalPlatform do
   """
   @spec get_invite(String.t()) :: {:ok, map()} | {:error, term()}
   def get_invite(invite_id) when is_binary(invite_id) and invite_id != "" do
+    case adapter() do
+      nil -> do_get_invite(invite_id)
+      mod -> mod.get_invite(invite_id)
+    end
+  end
+
+  defp do_get_invite(invite_id) do
     url = "#{external_platform_service_url()}/v1/invites/#{invite_id}"
 
     opts =
@@ -205,22 +238,21 @@ defmodule Codebattle.ExternalPlatform do
   """
   @spec create_repo_from_template(String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def create_repo_from_template(target_org_slug, opts \\ []) do
-    slug = opts[:slug]
-    template_id = opts[:template_id]
+    case adapter() do
+      nil ->
+        with :ok <- validate_required_string(target_org_slug, :invalid_org_slug),
+             :ok <- validate_required_string(opts[:slug], :invalid_repo_slug),
+             :ok <- validate_required_string(opts[:template_id], :invalid_template_id) do
+          do_create_repo_from_template(String.trim(target_org_slug), opts)
+        end
 
-    cond do
-      !is_binary(target_org_slug) || String.trim(target_org_slug) == "" ->
-        {:error, :invalid_org_slug}
-
-      !is_binary(slug) || String.trim(slug) == "" ->
-        {:error, :invalid_repo_slug}
-
-      !is_binary(template_id) || String.trim(template_id) == "" ->
-        {:error, :invalid_template_id}
-
-      true ->
-        do_create_repo_from_template(String.trim(target_org_slug), opts)
+      mod ->
+        mod.create_repo_from_template(target_org_slug, opts)
     end
+  end
+
+  defp validate_required_string(value, error) do
+    if is_binary(value) && String.trim(value) != "", do: :ok, else: {:error, error}
   end
 
   defp do_create_repo_from_template(target_org_slug, opts) do
@@ -283,7 +315,14 @@ defmodule Codebattle.ExternalPlatform do
   POST /repos/{org_slug}/{repo_slug}/roles
   """
   @spec add_repo_role(String.t(), String.t(), String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
-  def add_repo_role(org_slug, repo_slug, user_id, role, _opts \\ []) do
+  def add_repo_role(org_slug, repo_slug, user_id, role, opts \\ []) do
+    case adapter() do
+      nil -> do_add_repo_role(org_slug, repo_slug, user_id, role)
+      mod -> mod.add_repo_role(org_slug, repo_slug, user_id, role, opts)
+    end
+  end
+
+  defp do_add_repo_role(org_slug, repo_slug, user_id, role) do
     body = %{
       subject_roles: [
         %{
@@ -340,6 +379,13 @@ defmodule Codebattle.ExternalPlatform do
   @spec upsert_secret(String.t(), String.t(), String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def upsert_secret(org_slug, repo_slug, key, value, opts)
       when is_binary(org_slug) and is_binary(repo_slug) and is_binary(key) and is_binary(value) do
+    case adapter() do
+      nil -> do_upsert_secret(org_slug, repo_slug, key, value, opts)
+      mod -> mod.upsert_secret(org_slug, repo_slug, key, value, opts)
+    end
+  end
+
+  defp do_upsert_secret(org_slug, repo_slug, key, value, opts) do
     body = %{value: value}
 
     url = "#{external_platform_service_url()}/repos/#{org_slug}/#{repo_slug}/secrets/#{key}"
