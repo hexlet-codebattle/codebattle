@@ -607,6 +607,16 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("group_tournament:run_updated", params) do
+    [
+      %Message{
+        topic: "group_tournament:#{params.group_tournament_id}",
+        event: "group_tournament:run_updated",
+        payload: params
+      }
+    ]
+  end
+
   def get_messages("tournament:stream:active_game", params) do
     [
       %Message{

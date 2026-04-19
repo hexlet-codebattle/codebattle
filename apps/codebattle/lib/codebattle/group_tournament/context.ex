@@ -9,7 +9,9 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.GroupTournament.GlobalSupervisor
   alias Codebattle.GroupTournament.Server
   alias Codebattle.GroupTournamentPlayer
+  alias Codebattle.PubSub
   alias Codebattle.Repo
+  alias Codebattle.User
   alias Codebattle.UserGroupTournament
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
   alias Codebattle.UserGroupTournamentRun
@@ -218,6 +220,19 @@ defmodule Codebattle.GroupTournament.Context do
     end
   end
 
+  @spec create_solution_from_token_and_run(String.t(), map()) ::
+          {:ok, GroupTaskSolution.t()} | {:error, :invalid_token | Ecto.Changeset.t()}
+  def create_solution_from_token_and_run(token, attrs) do
+    case create_solution_from_token(token, attrs) do
+      {:ok, solution} ->
+        maybe_run_after_solution_submission(solution.group_tournament_id, solution)
+        {:ok, solution}
+
+      {:error, _} = error ->
+        error
+    end
+  end
+
   @spec get_current(pos_integer()) :: GroupTournament.t() | nil
   def get_current(id) do
     case Server.get_group_tournament(id) do
@@ -308,6 +323,134 @@ defmodule Codebattle.GroupTournament.Context do
     case DateTime.compare(starts_at, now) do
       :gt -> starts_at
       _ -> DateTime.add(now, 5 * 60, :second)
+    end
+  end
+
+  @spec maybe_run_after_solution_submission(pos_integer() | nil, GroupTaskSolution.t() | nil) :: :ok
+  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution \\ nil)
+
+  def maybe_run_after_solution_submission(nil, _submitted_solution), do: :ok
+
+  def maybe_run_after_solution_submission(group_tournament_id, submitted_solution) do
+    case get_group_tournament(group_tournament_id) do
+      %{state: "active", group_task: group_task, players: players, include_bots: include_bots} ->
+        player_ids = Enum.map(players, & &1.user_id)
+
+        run_result =
+          GroupTaskContext.run_group_task(group_task, player_ids, %{
+            group_tournament_id: group_tournament_id,
+            include_bots: include_bots
+          })
+
+        broadcast_run_update(group_tournament_id, run_result, submitted_solution)
+
+        :ok
+
+      _ ->
+        :ok
+    end
+  end
+
+  def serialize_group_tournament(%GroupTournament{} = group_tournament) do
+    group_tournament
+    |> Map.take([
+      :id,
+      :name,
+      :slug,
+      :description,
+      :state,
+      :starts_at,
+      :started_at,
+      :finished_at,
+      :current_round_position,
+      :rounds_count,
+      :round_timeout_seconds,
+      :include_bots,
+      :last_round_started_at,
+      :last_round_ended_at,
+      :players_count,
+      :group_task_id,
+      :template_id,
+      :meta
+    ])
+    |> Map.put(:group_task_slug, group_tournament.group_task && group_tournament.group_task.slug)
+  end
+
+  def serialize_run(run) do
+    %{
+      id: run.id,
+      player_ids: run.player_ids,
+      status: run.status,
+      result: run.result,
+      inserted_at: run.inserted_at
+    }
+  end
+
+  def serialize_run_details(run, solution \\ nil) do
+    run
+    |> serialize_run()
+    |> Map.merge(%{
+      group_tournament_id: run.group_tournament_id,
+      group_task_id: run.group_task_id,
+      user_group_tournament_id: run.user_group_tournament_id,
+      run_key: run.run_key,
+      score: run.score,
+      user_id: run.user_group_tournament && run.user_group_tournament.user_id,
+      solution: solution && serialize_solution(solution)
+    })
+  end
+
+  def serialize_solution(solution) do
+    %{
+      id: solution.id,
+      user_id: solution.user_id,
+      lang: solution.lang,
+      solution: solution.solution,
+      inserted_at: solution.inserted_at
+    }
+  end
+
+  @spec get_run_details!(pos_integer(), User.t()) :: map()
+  def get_run_details!(run_id, current_user) do
+    %{run: run, solution: solution} = GroupTaskContext.get_run_with_solution!(run_id)
+
+    if can_view_run_details?(current_user, run) do
+      %{
+        run: serialize_run_details(run, solution)
+      }
+    else
+      raise Ecto.NoResultsError, queryable: UserGroupTournamentRun
+    end
+  end
+
+  defp can_view_run_details?(current_user, %UserGroupTournamentRun{user_group_tournament: %{user_id: user_id}}) do
+    User.admin?(current_user) || current_user.id == user_id
+  end
+
+  defp can_view_run_details?(current_user, %UserGroupTournamentRun{}) do
+    User.admin?(current_user)
+  end
+
+  def broadcast_run_update(group_tournament_or_id, run_result, submitted_solution \\ nil)
+
+  def broadcast_run_update(%GroupTournament{} = group_tournament, {:ok, run}, submitted_solution) do
+    payload = %{
+      group_tournament_id: group_tournament.id,
+      user_id:
+        (submitted_solution && submitted_solution.user_id) ||
+          (run.user_group_tournament && run.user_group_tournament.user_id) || List.first(run.player_ids),
+      run_id: run.id
+    }
+
+    PubSub.broadcast("group_tournament:run_updated", payload)
+  end
+
+  def broadcast_run_update(_group_tournament, {:error, _result}, _submitted_solution), do: :ok
+
+  def broadcast_run_update(group_tournament_id, run_result, submitted_solution) when is_integer(group_tournament_id) do
+    case get_group_tournament(group_tournament_id) do
+      %GroupTournament{} = group_tournament -> broadcast_run_update(group_tournament, run_result, submitted_solution)
+      _ -> :ok
     end
   end
 end

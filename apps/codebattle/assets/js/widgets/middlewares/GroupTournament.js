@@ -27,7 +27,24 @@ const applyInviteUpdate = (dispatch, payload) => {
   dispatch(actions.updateGroupTournamentData({ externalSetup, platformError }));
 };
 
-export const connectToTournament = (currentUserId) => (dispatch) => {
+export const requestRunDetails = (runId) => (dispatch) => {
+  if (!channel) {
+    console.error("Channel not initialized");
+    return;
+  }
+
+  channel
+    .push("group_tournament:run:request", { runId })
+    .receive("ok", (data) => {
+      const normalizedData = camelizeKeys(data);
+      dispatch(actions.applyRunDetails(normalizedData));
+    })
+    .receive("error", (error) => {
+      console.error("Request run details failed", error);
+    });
+};
+
+export const connectToTournament = (_currentUserId) => (dispatch) => {
   if (!channel) {
     console.error("Channel not initialized");
     return;
@@ -79,23 +96,10 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
   channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
 
   const handleRunUpdated = (response) => {
-    const latestSolutionEntry = response.solution || null;
-    const currentUserSolution =
-      latestSolutionEntry && latestSolutionEntry.userId === currentUserId
-        ? latestSolutionEntry
-        : null;
+    dispatch(actions.applyRunStub(response));
 
-    dispatch(
-      actions.applyRunUpdate({
-        groupTournament: response.groupTournament,
-        run: response.run,
-        latestSolutionEntry,
-        solution: currentUserSolution,
-      }),
-    );
-
-    if (response.run?.id) {
-      dispatch(actions.addLog(`Run #${response.run.id} ${response.run.status}`));
+    if (response.runId) {
+      dispatch(actions.addLog(`Run #${response.runId}`));
     }
   };
 

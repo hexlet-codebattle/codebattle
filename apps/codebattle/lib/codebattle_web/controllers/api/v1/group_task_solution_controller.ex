@@ -49,7 +49,8 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
 
   defp create_solution(:error, conn, _params), do: unauthorized(conn)
 
-  defp create_solution_from_token(token, params), do: GroupTournamentContext.create_solution_from_token(token, params)
+  defp create_solution_from_token(token, params),
+    do: GroupTournamentContext.create_solution_from_token_and_run(token, params)
 
   defp unauthorized(conn) do
     conn

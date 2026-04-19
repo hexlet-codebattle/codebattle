@@ -73,18 +73,7 @@ defmodule Codebattle.UserGroupTournament.Context do
   end
 
   def repo_slug_for(%User{} = user, %GroupTournament{} = group_tournament) do
-    login =
-      case platform_identity_lookup_login(user) do
-        "" ->
-          user
-          |> reload_user()
-          |> platform_identity_lookup_login()
-
-        resolved_login ->
-          resolved_login
-      end
-
-    repo_slug(group_tournament.slug, login)
+    repo_slug(group_tournament.slug, user.id)
   end
 
   def repo_slug_for(_, %GroupTournament{} = group_tournament), do: group_tournament.slug
@@ -300,8 +289,8 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   defp resolve_platform_user_id(%User{}), do: {:error, :missing_external_platform_identity}
 
-  defp repo_slug(group_tournament_slug, ""), do: group_tournament_slug
-  defp repo_slug(group_tournament_slug, login), do: "#{group_tournament_slug}-#{login}"
+  defp repo_slug(group_tournament_slug, nil), do: group_tournament_slug
+  defp repo_slug(group_tournament_slug, user_id), do: "#{group_tournament_slug}-#{user_id}"
 
   defp create_repo_for_tournament(%GroupTournament{template_id: template_id} = group_tournament, repo_slug)
        when is_binary(template_id) and template_id != "" do
@@ -352,10 +341,6 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   defp platform_identity_lookup_login(%User{} = user) do
     normalize_login(user.external_platform_login || user.external_oauth_login || user.github_name || user.name)
-  end
-
-  defp reload_user(%User{id: user_id} = user) do
-    Repo.get(User, user_id) || user
   end
 
   defp normalize_login(nil), do: ""

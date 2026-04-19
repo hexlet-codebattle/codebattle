@@ -65,38 +65,39 @@ const groupTournament = createSlice({
     setData: (state, { payload }) => {
       state.data = payload;
     },
-    applyRunUpdate: (state, { payload }) => {
-      const { groupTournament: groupTournamentData, run, solution, latestSolutionEntry } = payload;
+    applyRunStub: (state, { payload }) => {
+      const { groupTournamentId, userId, runId } = payload;
 
       state.data = state.data || {};
 
-      if (groupTournamentData) {
-        state.data.groupTournament = {
-          ...(state.data.groupTournament || {}),
-          ...groupTournamentData,
-        };
+      const run = { id: runId, groupTournamentId, userId, detailsLoaded: false };
+      const currentRuns = state.data.runs || [];
+      const existingRunIndex = currentRuns.findIndex((item) => item.id === run.id);
+
+      if (existingRunIndex >= 0) {
+        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...run };
+      } else {
+        currentRuns.unshift(run);
       }
 
-      if (run) {
-        const currentRuns = state.data.runs || [];
-        state.data.runs = [run, ...currentRuns.filter((item) => item.id !== run.id)];
+      state.data.runs = currentRuns;
+    },
+    applyRunDetails: (state, { payload }) => {
+      const run = payload.run || payload;
+
+      state.data = state.data || {};
+
+      const currentRuns = state.data.runs || [];
+      const nextRun = { ...run, detailsLoaded: true };
+      const existingRunIndex = currentRuns.findIndex((item) => item.id === nextRun.id);
+
+      if (existingRunIndex >= 0) {
+        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...nextRun };
+      } else {
+        currentRuns.unshift(nextRun);
       }
 
-      if (latestSolutionEntry) {
-        state.data.latestSolutions = {
-          ...(state.data.latestSolutions || {}),
-          [latestSolutionEntry.userId]: latestSolutionEntry,
-        };
-      }
-
-      if (solution) {
-        const currentHistory = state.data.solutionHistory || [];
-        state.data.solutionHistory = [
-          solution,
-          ...currentHistory.filter((item) => item.id !== solution.id),
-        ];
-        state.data.latestSolution = solution;
-      }
+      state.data.runs = currentRuns;
     },
     resetGroupTournament: () => initialState,
   },

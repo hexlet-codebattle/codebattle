@@ -6,6 +6,15 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
   alias Codebattle.UserGroupTournament.Context
 
   setup do
+    user =
+      insert(:user,
+        external_oauth_login: "ext-user"
+      )
+
+    repo_slug = "source-repo-#{user.id}"
+    role_path = "/repos/test-org/#{repo_slug}/roles"
+    secret_path = "/repos/test-org/#{repo_slug}/secrets/CODEBATTLE_AUTH_TOKEN"
+
     Req.Test.stub(Codebattle.Auth, fn req ->
       case req do
         %{request_path: "/v1/users/id", method: "GET", host: "ext.test"} ->
@@ -14,25 +23,20 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
         %{request_path: "/orgs/test-org/repos", method: "POST", host: "ext.test"} = req ->
           Req.Test.json(req, %{
             "status" => "created",
-            "web_url" => "https://external.platform/test-org/source-repo-ext-user"
+            "web_url" => "https://external.platform/test-org/#{repo_slug}"
           })
 
-        %{request_path: "/repos/test-org/source-repo-ext-user/roles", method: "POST", host: "ext.test"} ->
+        %{request_path: ^role_path, method: "POST", host: "ext.test"} = req ->
           Req.Test.json(req, %{"subject_roles" => [%{"role" => "developer"}]})
 
         %{
-          request_path: "/repos/test-org/source-repo-ext-user/secrets/CODEBATTLE_AUTH_TOKEN",
+          request_path: ^secret_path,
           method: "PUT",
           host: "ext.test"
-        } ->
+        } = req ->
           Req.Test.json(req, %{"status" => "scheduled", "operation_id" => "secret-op-1"})
       end
     end)
-
-    user =
-      insert(:user,
-        external_oauth_login: "ext-user"
-      )
 
     group_tournament =
       %GroupTournament{}
@@ -63,8 +67,8 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
     assert record.repo_state == "completed"
     assert record.role_state == "completed"
     assert record.secret_state == "completed"
-    assert record.repo_url == "https://fake-platform.test/test-org/source-repo-ext-user"
-    assert Context.repo_slug_for(user, group_tournament) == "source-repo-ext-user"
+    assert record.repo_url == "https://fake-platform.test/test-org/source-repo-#{user.id}"
+    assert Context.repo_slug_for(user, group_tournament) == "source-repo-#{user.id}"
     assert record.secret_key == "CODEBATTLE_AUTH_TOKEN"
     assert record.secret_group == "ci"
 

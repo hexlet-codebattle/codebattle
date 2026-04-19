@@ -1,5 +1,7 @@
 import React from "react";
+import moment from "moment";
 import i18n from "../../../i18n";
+import useTimer from "../../utils/useTimer";
 
 const statusBadge = {
   active: { className: "badge-success", labelKey: "Active" },
@@ -7,13 +9,38 @@ const statusBadge = {
   loading: { className: "badge-warning", labelKey: "Loading" },
 };
 
-function Header({ name, status }) {
+function TournamentTimer({ groupTournament }) {
+  if (groupTournament?.state !== "active") {
+    return null;
+  }
+
+  const startedAt = groupTournament?.startedAt;
+  const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
+
+  if (!startedAt || !Number.isInteger(timeoutSeconds)) {
+    return null;
+  }
+
+  const endsAt = moment.utc(startedAt).add(timeoutSeconds, "seconds");
+  const [time, seconds] = useTimer(endsAt);
+
+  if (!seconds && !time) {
+    return null;
+  }
+
+  return <span className="text-monospace mr-3">{time}</span>;
+}
+
+function Header({ name, status, groupTournament }) {
   const badge = statusBadge[status] || statusBadge.loading;
 
   return (
-    <div className="cb-bg-panel shadow-sm cb-rounded p-3 d-flex align-items-center justify-content-between w-100">
-      <h4 className="mb-0">{name || i18n.t("Group Tournament")}</h4>
-      <span className={`badge ${badge.className} px-3 py-2`}>{i18n.t(badge.labelKey)}</span>
+    <div className="cb-bg-panel shadow-sm cb-rounded p-3 d-flex align-items-center justify-content-between flex-wrap w-100">
+      <h4 className="mb-0 mr-3">{name || i18n.t("Group Tournament")}</h4>
+      <div className="d-flex align-items-center ml-auto">
+        <TournamentTimer groupTournament={groupTournament} />
+        <span className={`badge ${badge.className} px-3 py-2`}>{i18n.t(badge.labelKey)}</span>
+      </div>
     </div>
   );
 }

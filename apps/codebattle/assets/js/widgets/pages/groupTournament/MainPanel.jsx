@@ -2,6 +2,9 @@ import React from "react";
 import i18n from "../../../i18n";
 
 function MainPanel({ run, description, setViewerFullscreen }) {
+  const isStubRun =
+    run?.groupTournamentId && !run?.detailsLoaded && !run?.solution && !run?.result?.viewerHtml;
+
   if (run) {
     return (
       <>
@@ -34,6 +37,8 @@ function MainPanel({ run, description, setViewerFullscreen }) {
                 borderRadius: "8px",
               }}
             />
+          ) : isStubRun ? (
+            <div className="cb-text">{i18n.t("Click the run to load details.")}</div>
           ) : (
             <div className="cb-text">{i18n.t("No viewer HTML for this run.")}</div>
           )}

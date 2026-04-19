@@ -5,6 +5,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   alias Codebattle.ExternalPlatformInvite.Advancer, as: InviteAdvancer
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.PubSub.Message
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
   def join("group_tournament:" <> tournament_id, _payload, socket) do
@@ -14,6 +15,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
 
         if has_access?(current_user, group_tournament) do
+          Codebattle.PubSub.subscribe("group_tournament:#{parsed_tournament_id}")
           join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
         else
           {:error, %{reason: "not_authorized"}}
@@ -74,6 +76,21 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     end
   end
 
+  def handle_in("group_tournament:run:request", %{"run_id" => run_id}, socket) do
+    case parse_run_id(run_id) do
+      {:ok, parsed_run_id} ->
+        current_user = socket.assigns.current_user
+
+        {:reply, {:ok, GroupTournamentContext.get_run_details!(parsed_run_id, current_user)}, socket}
+
+      :error ->
+        {:reply, {:error, %{reason: "invalid_run_id"}}, socket}
+    end
+  rescue
+    Ecto.NoResultsError ->
+      {:reply, {:error, %{reason: "not_found"}}, socket}
+  end
+
   def handle_in(_event, _payload, socket) do
     {:noreply, socket}
   end
@@ -102,6 +119,11 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
       {:noreply, socket}
     end
+  end
+
+  def handle_info(%Message{event: "group_tournament:run_updated", payload: payload}, socket) do
+    push(socket, "group_tournament:run_updated", payload)
+    {:noreply, socket}
   end
 
   def handle_info(_message, socket) do
@@ -137,6 +159,17 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       :error -> nil
     end
   end
+
+  defp parse_run_id(run_id) when is_integer(run_id), do: {:ok, run_id}
+
+  defp parse_run_id(run_id) when is_binary(run_id) do
+    case Integer.parse(run_id) do
+      {parsed_run_id, ""} -> {:ok, parsed_run_id}
+      _ -> :error
+    end
+  end
+
+  defp parse_run_id(_run_id), do: :error
 
   defp serialize_invite(invite) do
     %{

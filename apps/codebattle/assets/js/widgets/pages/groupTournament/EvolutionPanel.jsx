@@ -14,10 +14,15 @@ const formatInsertedAt = (insertedAt) => {
     return null;
   }
 
-  return date.toLocaleString();
+  return date.toLocaleTimeString([], {
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 };
 
-const buildRunSummary = (item, idx) => {
+const buildRunSummary = (item, idx, totalItems) => {
   if (!item || typeof item !== "object") {
     return {
       key: idx,
@@ -26,10 +31,9 @@ const buildRunSummary = (item, idx) => {
     };
   }
 
-  const playersCount = item.playerIds?.length;
   const meta = [
     item.status,
-    playersCount ? i18n.t("%{count} players", { count: playersCount }) : null,
+    item.score != null ? i18n.t("Score %{score}", { score: item.score }) : null,
     formatInsertedAt(item.insertedAt),
   ]
     .filter(Boolean)
@@ -37,54 +41,75 @@ const buildRunSummary = (item, idx) => {
 
   return {
     key: item.id ?? idx,
-    title: `Run #${item.id ?? idx + 1}`,
+    title: `v${totalItems - idx}`,
     meta,
   };
 };
 
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   return (
-    <div className="card cb-card border cb-border-color rounded h-100">
-      <div className="card-header py-2">
+    <div className="card cb-card border cb-border-color rounded h-100 shadow-sm">
+      <div className="card-header py-3 border-bottom cb-border-color">
         <h6 className="cb-text mb-0">{i18n.t("Execution History")}</h6>
       </div>
-      <div className="card-body p-1 border-top cb-border-color">
-        <div className="cb-overflow-y-auto">
+      <div className="card-body p-2 border-top cb-border-color">
+        <div
+          className="cb-overflow-y-auto"
+          style={{
+            paddingRight: "4px",
+            overflowX: "hidden",
+            scrollbarGutter: "stable",
+          }}
+        >
           {tournamentStatus !== "finished" && repoUrl && (
             <a href={getExternalUrl(repoUrl)} target="_blank" rel="noopener noreferrer">
-              <div className="border cb-border-color rounded p-3">{i18n.t("+ Add Solution")}</div>
+              <div className="border cb-border-color rounded p-3 mb-2 bg-transparent">
+                {i18n.t("+ Add Solution")}
+              </div>
             </a>
           )}
           {items && items.length > 0 && (
-            <div className="mt-2 small">
-              <div className="list-group list-group-flush">
-                {items.map((item, idx) => {
-                  const summary = buildRunSummary(item, idx);
+            <div className="mt-2 small d-flex flex-column">
+              {items.map((item, idx) => {
+                const summary = buildRunSummary(item, idx, items.length);
+                const isActive = runId === item?.id;
 
-                  return (
-                    <button
-                      key={summary.key}
-                      type="button"
-                      onClick={() => setRunId(item?.id)}
-                      className="list-group-item list-group-item-action px-0 py-1 border-0 text-left bg-transparent"
-                      style={{
-                        backgroundColor:
-                          runId === item?.id ? "rgba(40, 167, 69, 0.14)" : "transparent",
-                      }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <span className="badge badge-secondary mr-2">v{idx + 1}</span>
-                        <span className="text-truncate">{summary.title}</span>
-                      </div>
-                      {summary.meta ? (
-                        <small className="d-block text-muted text-truncate mt-1">
-                          {summary.meta}
-                        </small>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
+                return (
+                  <button
+                    key={summary.key}
+                    type="button"
+                    onClick={() => setRunId(item?.id)}
+                    className="border cb-border-color rounded p-3 text-left bg-transparent mb-2"
+                    style={{
+                      backgroundColor: isActive ? "rgba(40, 167, 69, 0.2)" : "transparent",
+                      borderColor: isActive ? "rgba(40, 167, 69, 0.7)" : "rgba(99, 102, 121, 0.95)",
+                      boxShadow: isActive ? "inset 3px 0 0 rgba(40, 167, 69, 0.95)" : "none",
+                      transition:
+                        "background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
+                      width: "100%",
+                    }}
+                    onMouseEnter={(event) => {
+                      if (!isActive) {
+                        event.currentTarget.style.backgroundColor = "rgba(148, 163, 184, 0.1)";
+                        event.currentTarget.style.borderColor = "rgba(148, 163, 184, 0.75)";
+                      }
+                    }}
+                    onMouseLeave={(event) => {
+                      if (!isActive) {
+                        event.currentTarget.style.backgroundColor = "transparent";
+                        event.currentTarget.style.borderColor = "rgba(99, 102, 121, 0.95)";
+                      }
+                    }}
+                  >
+                    <div className="d-flex align-items-center text-nowrap">
+                      <span className="badge badge-secondary mr-2">{summary.title}</span>
+                      <span className={`text-truncate ${isActive ? "text-white" : "text-muted"}`}>
+                        {summary.meta}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

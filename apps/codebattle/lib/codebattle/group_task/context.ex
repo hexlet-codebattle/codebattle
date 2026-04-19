@@ -172,6 +172,20 @@ defmodule Codebattle.GroupTask.Context do
     Repo.get!(UserGroupTournamentRun, id)
   end
 
+  @spec get_run_with_solution!(String.t() | pos_integer()) ::
+          %{run: UserGroupTournamentRun.t(), solution: GroupTaskSolution.t() | nil}
+  def get_run_with_solution!(id) do
+    run =
+      UserGroupTournamentRun
+      |> where([run], run.id == ^id)
+      |> preload(:user_group_tournament)
+      |> Repo.one!()
+
+    solution = get_run_solution(run)
+
+    %{run: run, solution: solution}
+  end
+
   @spec run_group_task(GroupTask.t(), list(pos_integer()), map()) ::
           {:ok, UserGroupTournamentRun.t()} | {:error, Ecto.Changeset.t()}
   def run_group_task(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
@@ -218,6 +232,23 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp decode_solution(_solution), do: :error
+
+  defp get_run_solution(%UserGroupTournamentRun{user_group_tournament: %{user_id: user_id}} = run) do
+    GroupTaskSolution
+    |> where(
+      [solution],
+      solution.group_task_id == ^run.group_task_id and
+        solution.group_tournament_id == ^run.group_tournament_id and
+        solution.user_id == ^user_id and
+        solution.inserted_at <= ^run.inserted_at
+    )
+    |> preload(:user)
+    |> order_by([solution], desc: solution.inserted_at, desc: solution.id)
+    |> limit(1)
+    |> Repo.one()
+  end
+
+  defp get_run_solution(_run), do: nil
 
   defp invalid_solution_encoding_changeset(params) do
     %GroupTaskSolution{}

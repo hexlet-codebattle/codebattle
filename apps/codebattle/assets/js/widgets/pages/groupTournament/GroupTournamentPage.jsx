@@ -56,7 +56,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   return (
     <>
       <div className="row">
-        <Header name={tournamentName} status={status} />
+        <Header name={tournamentName} status={status} groupTournament={data?.groupTournament} />
       </div>
       {isAdmin && externalSetup && (
         <div className="row mt-2">
@@ -86,7 +86,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
           <LogPanel logs={logs} />
         </div>
       </div>
-      <FullscreenGroupBattleViewer viewerFullscreen={viewerFullscreen} selectedRun={selectedRun} />
+      <FullscreenGroupBattleViewer
+        viewerFullscreen={viewerFullscreen}
+        selectedRun={selectedRun}
+        setViewerFullscreen={setViewerFullscreen}
+      />
     </>
   );
 }

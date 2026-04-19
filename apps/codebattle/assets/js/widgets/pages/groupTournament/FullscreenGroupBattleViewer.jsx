@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "../../../i18n";
 
 function FullscreenGroupBattleViewer({ viewerFullscreen, selectedRun, setViewerFullscreen }) {
   if (!(viewerFullscreen && selectedRun?.result?.viewerHtml)) {
@@ -23,7 +24,7 @@ function FullscreenGroupBattleViewer({ viewerFullscreen, selectedRun, setViewerF
         <button
           type="button"
           className="btn btn-outline-light cb-rounded"
-          onClick={() => setViewerFullscreen(false)}
+          onClick={() => setViewerFullscreen && setViewerFullscreen(false)}
         >
           {i18n.t("Close Fullscreen")}
         </button>

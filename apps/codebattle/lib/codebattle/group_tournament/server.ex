@@ -8,7 +8,6 @@ defmodule Codebattle.GroupTournament.Server do
   alias Codebattle.GroupTournament.Context
   alias Codebattle.Repo
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
-  alias CodebattleWeb.Endpoint
 
   require Logger
 
@@ -391,66 +390,10 @@ defmodule Codebattle.GroupTournament.Server do
   defp maybe_broadcast_run_update(group_tournament, run_result, submitted_solution \\ nil)
 
   defp maybe_broadcast_run_update(group_tournament, {:ok, run}, submitted_solution) do
-    payload = %{
-      group_tournament: serialize_group_tournament(group_tournament),
-      run: serialize_run(run)
-    }
-
-    payload =
-      if submitted_solution do
-        Map.put(payload, :solution, serialize_solution(submitted_solution))
-      else
-        payload
-      end
-
-    Endpoint.broadcast!("group_tournament:#{group_tournament.id}", "group_tournament:run_updated", payload)
+    Context.broadcast_run_update(group_tournament, {:ok, run}, submitted_solution)
   end
 
   defp maybe_broadcast_run_update(_group_tournament, {:error, _result}, _submitted_solution), do: :ok
-
-  defp serialize_group_tournament(group_tournament) do
-    %{
-      id: group_tournament.id,
-      name: group_tournament.name,
-      slug: group_tournament.slug,
-      description: group_tournament.description,
-      state: group_tournament.state,
-      starts_at: group_tournament.starts_at,
-      started_at: group_tournament.started_at,
-      finished_at: group_tournament.finished_at,
-      current_round_position: group_tournament.current_round_position,
-      rounds_count: group_tournament.rounds_count,
-      round_timeout_seconds: group_tournament.round_timeout_seconds,
-      include_bots: group_tournament.include_bots,
-      last_round_started_at: group_tournament.last_round_started_at,
-      last_round_ended_at: group_tournament.last_round_ended_at,
-      players_count: group_tournament.players_count,
-      group_task_id: group_tournament.group_task_id,
-      group_task_slug: group_tournament.group_task && group_tournament.group_task.slug,
-      template_id: group_tournament.template_id,
-      meta: group_tournament.meta
-    }
-  end
-
-  defp serialize_run(run) do
-    %{
-      id: run.id,
-      player_ids: run.player_ids,
-      status: run.status,
-      result: run.result,
-      inserted_at: run.inserted_at
-    }
-  end
-
-  defp serialize_solution(solution) do
-    %{
-      id: solution.id,
-      user_id: solution.user_id,
-      lang: solution.lang,
-      solution: solution.solution,
-      inserted_at: solution.inserted_at
-    }
-  end
 
   defp serialize_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->

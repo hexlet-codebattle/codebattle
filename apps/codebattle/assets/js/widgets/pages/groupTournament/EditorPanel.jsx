@@ -40,7 +40,7 @@ function EditorPanel({ text, lang }) {
     >
       <div className="card-header d-flex justify-content-between py-2">
         <h6 className="cb-text mb-0">{i18n.t("Editor")}</h6>
-        <h6 className="cb-text mb-0">{lang ? `${i18n.t("Language")}: ${mappedSyntax}` : ""}</h6>
+        <h6 className="cb-text mb-0">{lang ? lang : ""}</h6>
       </div>
       <div className="card-body p-0 pb-1 border-top cb-border-color">
         <MonacoEditor
