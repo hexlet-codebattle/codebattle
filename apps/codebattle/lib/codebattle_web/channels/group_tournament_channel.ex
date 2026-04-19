@@ -134,7 +134,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     }
   end
 
-  defp serialize_invite_reply(user, group_tournament, invite, platform_error \\ nil) do
+  defp serialize_invite_reply(user, group_tournament, invite, platform_error) do
     external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
 
     %{

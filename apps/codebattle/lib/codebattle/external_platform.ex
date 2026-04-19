@@ -139,6 +139,8 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
+  def poll_invite_status(_), do: {:error, :invalid_operation_id}
+
   defp do_poll_invite_status(operation_id) do
     url = "#{external_platform_service_url()}#{@operations_path}:#{operation_id}"
 
@@ -177,8 +179,6 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
-  def poll_invite_status(_), do: {:error, :invalid_operation_id}
-
   @doc """
   Fetches an organization invite by its ID.
   Hits the local sc proxy: GET /v1/invites/{invite_id}
@@ -192,6 +192,8 @@ defmodule Codebattle.ExternalPlatform do
       mod -> mod.get_invite(invite_id)
     end
   end
+
+  def get_invite(_), do: {:error, :invalid_invite_id}
 
   defp do_get_invite(invite_id) do
     url = "#{external_platform_service_url()}/v1/invites/#{invite_id}"
@@ -229,8 +231,6 @@ defmodule Codebattle.ExternalPlatform do
         {:error, reason}
     end
   end
-
-  def get_invite(_), do: {:error, :invalid_invite_id}
 
   @doc """
   Creates a repository in the target organization from a template repository.
@@ -385,6 +385,8 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
+  def upsert_secret(_, _, _, _, _), do: {:error, :invalid_secret_request}
+
   defp do_upsert_secret(org_slug, repo_slug, key, value, opts) do
     body = %{value: value}
 
@@ -428,8 +430,6 @@ defmodule Codebattle.ExternalPlatform do
         {:error, reason}
     end
   end
-
-  def upsert_secret(_, _, _, _, _), do: {:error, :invalid_secret_request}
 
   defp do_get_user_by_login(login) do
     url = external_platform_service_url() <> @lookup_path
