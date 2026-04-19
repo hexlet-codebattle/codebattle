@@ -63,7 +63,7 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
     assert record.repo_state == "completed"
     assert record.role_state == "completed"
     assert record.secret_state == "completed"
-    assert record.repo_url == "https://external.platform/test-org/source-repo-ext-user"
+    assert record.repo_url == "https://fake-platform.test/test-org/source-repo-ext-user"
     assert Context.repo_slug_for(user, group_tournament) == "source-repo-ext-user"
     assert record.secret_key == "CODEBATTLE_AUTH_TOKEN"
     assert record.secret_group == "ci"

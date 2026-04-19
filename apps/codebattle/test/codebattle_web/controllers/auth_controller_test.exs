@@ -137,8 +137,8 @@ defmodule CodebattleWeb.AuthControllerTest do
                avatar_url: "https://external.test/avatars/test-avatar-id",
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
-               external_platform_id: "external-platform-test-id",
-               external_platform_login: "external-platform-test-login",
+               external_platform_id: "fake-user-external_test_login",
+               external_platform_login: "external_test_login",
                lang: "js",
                name: "External-external-user-id",
                rank: 5432,
@@ -169,8 +169,8 @@ defmodule CodebattleWeb.AuthControllerTest do
                avatar_url: "https://external.test/avatars/test-avatar-id",
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
-               external_platform_id: "external-platform-test-id",
-               external_platform_login: "external-platform-test-login"
+               external_platform_id: "fake-user-external_test_login",
+               external_platform_login: "external_test_login"
              } = user
 
       assert conn.state == :sent

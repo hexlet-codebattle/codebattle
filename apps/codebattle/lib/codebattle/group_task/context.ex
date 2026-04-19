@@ -417,9 +417,12 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp do_update_runs(runs, status, result) do
+    ranking = extract_ranking(result)
+
     Repo.transaction(fn ->
       runs
-      |> Enum.reduce_while([], fn run, acc -> update_run(run, acc, status, result) end)
+      |> Repo.preload(:user_group_tournament)
+      |> Enum.reduce_while([], fn run, acc -> update_run(run, acc, status, result, ranking) end)
       |> Enum.reverse()
     end)
   end
@@ -441,11 +444,26 @@ defmodule Codebattle.GroupTask.Context do
     |> maybe_continue_transaction(acc)
   end
 
-  defp update_run(run, acc, status, result) do
+  defp update_run(run, acc, status, result, ranking) do
+    user_id = run.user_group_tournament.user_id
+    score = extract_score_for_user(ranking, user_id)
+
     run
-    |> UserGroupTournamentRun.changeset(%{status: status, result: result})
+    |> UserGroupTournamentRun.changeset(%{status: status, result: result, score: score})
     |> Repo.update()
     |> maybe_continue_transaction(acc)
+  end
+
+  defp extract_ranking(%{"summary" => %{"ranking" => ranking}}) when is_list(ranking), do: ranking
+  defp extract_ranking(_), do: []
+
+  defp extract_score_for_user([], _user_id), do: nil
+
+  defp extract_score_for_user(ranking, user_id) do
+    case Enum.find(ranking, fn entry -> entry["player_id"] == user_id end) do
+      %{"score" => score} when is_integer(score) -> score
+      _ -> nil
+    end
   end
 
   defp maybe_continue_transaction({:ok, run}, acc), do: {:cont, [run | acc]}

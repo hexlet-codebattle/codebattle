@@ -1327,7 +1327,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp maybe_save_event_results(%{event_id: _event_id} = tournament) do
+      defp maybe_save_event_results(%{event_id: event_id} = tournament) when not is_nil(event_id) do
         Codebattle.UserEvent.Stage.Context.save_tournament_results_async(tournament.id)
         tournament
       end

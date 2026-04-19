@@ -30,16 +30,18 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     {:ok, %{socket: socket, topic: topic, user: user}}
   end
 
-  test "join sends a pending invite and returns it", %{socket: socket, topic: topic, user: user} do
+  test "join returns a ready invite and returns it", %{socket: socket, topic: topic, user: user} do
     {:ok, response, _socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
 
-    assert %{invite: %{state: "creating", response: %{"operation_id" => "op-123"}}} = response
+    assert %{invite: %{state: "invited", invite_link: invite_link}} = response
+    assert String.starts_with?(invite_link, "https://fake-platform.test/invite/")
 
     tournament_id = topic |> String.split(":") |> List.last() |> String.to_integer()
     invite = InviteContext.get_invite(user.id, tournament_id)
 
-    assert invite.state == "creating"
-    assert invite.operation_id == "op-123"
+    assert invite.state == "invited"
+    assert String.starts_with?(invite.operation_id, "fake-op-")
+    assert String.starts_with?(invite.invite_link, "https://fake-platform.test/invite/")
   end
 
   test "join rejects an invalid tournament id", %{socket: socket} do

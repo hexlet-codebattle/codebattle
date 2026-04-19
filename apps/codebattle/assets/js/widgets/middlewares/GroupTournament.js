@@ -12,6 +12,21 @@ export const setTournamentChannel = (tournamentId) => {
   return channel.setupChannel(newChannelName);
 };
 
+const applyInviteUpdate = (dispatch, payload) => {
+  const normalizedData = camelizeKeys(payload);
+  const invite = normalizedData.invite;
+  const externalSetup = normalizedData.externalSetup;
+  const platformError = normalizedData.platformError || null;
+
+  dispatch(actions.updateInviteState(invite.state));
+
+  if (invite.inviteLink) {
+    dispatch(actions.updateInviteLink(invite.inviteLink));
+  }
+
+  dispatch(actions.updateGroupTournamentData({ externalSetup, platformError }));
+};
+
 export const connectToTournament = (currentUserId) => (dispatch) => {
   if (!channel) {
     console.error("Channel not initialized");
@@ -84,6 +99,11 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
     }
   };
 
+  const handleInviteUpdated = (response) => {
+    applyInviteUpdate(dispatch, response);
+  };
+
+  channel.addListener("group_tournament:invite_updated", handleInviteUpdated);
   channel.addListener(channelTopics.groupTournamentRunUpdated, handleRunUpdated);
 
   return channel;
@@ -98,18 +118,7 @@ export const requestInviteUpdate = () => (dispatch) => {
   channel
     .push(channelMethods.requestInviteUpdate, {})
     .receive("ok", (data) => {
-      const normalizedData = camelizeKeys(data);
-      const invite = normalizedData.invite;
-      const externalSetup = normalizedData.externalSetup;
-      const platformError = normalizedData.platformError || null;
-
-      dispatch(actions.updateInviteState(invite.state));
-
-      if (invite.inviteLink) {
-        dispatch(actions.updateInviteLink(invite.inviteLink));
-      }
-
-      dispatch(actions.updateGroupTournamentData({ externalSetup, platformError }));
+      applyInviteUpdate(dispatch, data);
     })
     .receive("error", (error) => {
       console.error("Request invite update failed", error);

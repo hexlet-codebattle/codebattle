@@ -22,6 +22,7 @@ defmodule Codebattle.UserGroupTournamentRun do
     field(:player_ids, {:array, :integer}, default: [])
     field(:status, :string)
     field(:result, :map, default: %{})
+    field(:score, :integer)
 
     timestamps()
   end
@@ -35,7 +36,8 @@ defmodule Codebattle.UserGroupTournamentRun do
       :run_key,
       :player_ids,
       :status,
-      :result
+      :result,
+      :score
     ])
     |> validate_required([
       :user_group_tournament_id,
