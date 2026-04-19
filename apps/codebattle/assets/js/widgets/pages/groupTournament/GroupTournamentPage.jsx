@@ -23,23 +23,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
 
   useGroupTournamentChannel(tournamentId);
 
-  const {
-    status,
-    invite,
-    externalSetup,
-    requireInvitation,
-    platformError,
-    logs,
-    data,
-  } = useSelector(selectors.groupTournamentSelector);
+  const { status, invite, externalSetup, requireInvitation, platformError, logs, data } =
+    useSelector(selectors.groupTournamentSelector);
 
-  const {
-    runId,
-    selectedRun,
-    setSelectedRunId,
-    selectedRunCode,
-    selectedRunLang,
-  } = useGroupBattleRun(data)
+  const { runId, selectedRun, setSelectedRunId, selectedRunCode, selectedRunLang } =
+    useGroupBattleRun(data);
 
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
@@ -58,16 +46,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   }
 
   if (!isAdmin && requireInvitation && invite.state !== "accepted") {
-    return <InvitationPanel
-      invite={invite}
-      requestInviteUpdates={requestInviteUpdates}
-    />
+    return <InvitationPanel invite={invite} requestInviteUpdates={requestInviteUpdates} />;
   }
 
   if (platformError) {
-    return <ExternalPlatformErrorPanel
-      requestInviteUpdates={requestInviteUpdates}
-    />
+    return <ExternalPlatformErrorPanel requestInviteUpdates={requestInviteUpdates} />;
   }
 
   return (

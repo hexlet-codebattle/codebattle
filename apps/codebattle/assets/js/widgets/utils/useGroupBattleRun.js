@@ -30,7 +30,7 @@ const useGroupBattleRun = (data) => {
       selectedRunLang: editorLang,
       setSelectedRunId: setRunId,
     };
-  }, [data, runId, selectedRun, setRunId, findSolutionForRun]);
-}
+  }, [runId, selectedRun, selectedRunSolution?.solution, selectedRunSolution?.lang]);
+};
 
 export default useGroupBattleRun;
