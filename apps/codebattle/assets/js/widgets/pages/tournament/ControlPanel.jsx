@@ -1,12 +1,9 @@
 import React, { memo, useCallback, useContext } from "react";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cn from "classnames";
 import i18next from "i18next";
-import { useSelector } from "react-redux";
 
 import CustomEventStylesContext from "../../components/CustomEventStylesContext";
-import { tournamentPlayersSelector } from "../../selectors";
 
 // %{"type" => "top_users_by_clan_ranking"} ->
 // %{"type" => "tasks_ranking"} ->
@@ -45,54 +42,27 @@ export const mapPanelModeToTitle = {
 function ControlPanel({
   allowedPanelModes,
   isPlayer,
+  leftContent = null,
   panelMode,
-  panelHistory,
-  setPanelHistory,
-  setSearchOption,
   setPanelMode,
 }) {
-  const allPlayers = useSelector(tournamentPlayersSelector);
   const hasCustomEventStyles = useContext(CustomEventStylesContext);
-
-  const onPanelBack = useCallback(() => {
-    if (panelHistory.length === 0) return;
-
-    const [prev, ...rest] = panelHistory.reverse();
-
-    setPanelMode(prev);
-    setPanelHistory(rest.reverse());
-
-    if (prev.userId) {
-      setSearchOption(allPlayers[prev.userId]);
-    }
-  }, [panelHistory, setPanelHistory, setPanelMode, setSearchOption, allPlayers]);
   const onChangePanelMode = useCallback(
     (e) => {
       setPanelMode({ panel: e.target.value });
-      setPanelHistory((items) => [...items, panelMode]);
     },
-    [setPanelMode, setPanelHistory, panelMode],
+    [setPanelMode],
   );
-  const backBtnClassName = cn("btn text-nowrap cb-rounded mr-1 mb-2", {
-    "btn-outline-secondary cb-btn-outline-secondary": !hasCustomEventStyles,
-    "cb-custom-event-btn-outline-secondary": hasCustomEventStyles,
-  });
 
   return (
-    <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between">
-      <div className="d-flex align-items-center w-50">
-        <button
-          type="button"
-          className={backBtnClassName}
-          onClick={onPanelBack}
-          disabled={panelHistory.length === 0}
-        >
-          <FontAwesomeIcon icon="backward" className="mr-1" />
-          {i18next.t("Back")}
-        </button>
-        <div />
-      </div>
-      <div className={cn("d-flex mb-2 text-nowrap justify-content-end")}>
+    <div className="d-flex flex-column flex-md-row flex-lg-row flex-xl-row justify-content-between align-items-start gap-2">
+      <div className="d-flex align-items-start flex-grow-1 min-w-0 mb-2 mb-md-0">{leftContent}</div>
+      <div
+        className={cn(
+          "d-flex text-nowrap justify-content-end ml-md-3",
+          hasCustomEventStyles && "cb-custom-event-text",
+        )}
+      >
         <select
           key="select_panel_mode"
           className="form-control custom-select cb-bg-panel cb-border-color text-white cb-rounded"

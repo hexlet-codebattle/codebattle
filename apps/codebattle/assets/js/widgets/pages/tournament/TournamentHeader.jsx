@@ -8,16 +8,12 @@ import moment from "moment";
 import CustomEventStylesContext from "@/components/CustomEventStylesContext";
 
 import CopyButton from "../../components/CopyButton";
-import Loading from "../../components/Loading";
-import TournamentType from "../../components/TournamentType";
 import TournamentStates from "../../config/tournament";
 import TournamentTypes from "../../config/tournamentTypes";
 import useTimer from "../../utils/useTimer";
 
 import JoinButton from "./JoinButton";
 import TournamentMainControlButtons from "./TournamentMainControlButtons";
-
-const getIconByAccessType = (accessType) => (accessType === "token" ? "lock" : "unlock");
 export const buildTournamentAccessUrl = (tournamentId, accessToken) => {
   const url = new URL(`/tournaments/${tournamentId}`, window.location.origin);
   url.searchParams.set("access_token", accessToken);
@@ -140,7 +136,6 @@ function TournamentHeader({
   name,
   players,
   playersCount,
-  playersLimit,
   currentUserId,
   showBots = true,
   hideResults = true,
@@ -151,6 +146,8 @@ function TournamentHeader({
   toggleStreamMode,
   handleStartRound,
   handleOpenDetails,
+  showHeaderPane = true,
+  showAdminPane = true,
 }) {
   const stateBadgeTitle = useMemo(
     () => i18next.t(getBadgeTitle(state, breakState, hideResults)),
@@ -196,62 +193,62 @@ function TournamentHeader({
     state === TournamentStates.active ||
     state === TournamentStates.finished ||
     state === TournamentStates.canceled;
-  const showAdminJoinButton =
-    canModerate && [TournamentStates.waitingParticipants, TournamentStates.active].includes(state);
   const canToggleShowBots = type === TournamentTypes.show;
   const tournamentAccessUrl = useMemo(
     () => buildTournamentAccessUrl(tournamentId, accessToken),
     [tournamentId, accessToken],
   );
   const showDeadTournamentWarning = canModerate && !isLive;
+  const showAdminJoinButton =
+    canModerate && [TournamentStates.waitingParticipants, TournamentStates.active].includes(state);
+  const showAdminPanel = canModerate && showAdminPane;
 
   return (
     <>
-      <div className="col cb-bg-panel shadow-sm cb-rounded p-2">
-        <div className="d-flex flex-column flex-lg-row justify-content-between">
-          <div className="d-flex align-items-center pb-2">
-            <h2
-              title={name}
-              className="pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
-            >
-              {name}
-            </h2>
-            <div
-              title={accessType === "token" ? "Private tournament" : "Public tournament"}
-              className="text-center ml-2"
-            >
-              <FontAwesomeIcon icon={getIconByAccessType(accessType)} />
+      {showHeaderPane && (
+        <div className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2">
+          <div className="d-flex flex-column">
+            <div className="d-flex align-items-center mb-3">
+              <div className="d-flex flex-column">
+                <h2
+                  title={name}
+                  className="pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
+                >
+                  {name}
+                </h2>
+              </div>
+              {accessType === "token" && (
+                <div title="Private tournament" className="text-center ml-2">
+                  <FontAwesomeIcon icon="lock" />
+                </div>
+              )}
             </div>
-            {isOnline ? (
-              <div
-                title={isLive ? "Active tournament" : "Inactive tournament"}
-                className={cn("text-center ml-2", {
-                  "text-primary": isLive,
-                  "text-light": !isLive,
-                })}
-              >
-                <FontAwesomeIcon icon="wifi" />
-              </div>
-            ) : (
-              <div className="text-center ml-2">
-                <Loading adaptive />
-              </div>
-            )}
+            <div className="d-flex align-items-center flex-wrap overflow-auto">
+              <span className={stateClassName}>{stateBadgeTitle}</span>
+              <span className="h6 mb-0 text-nowrap">
+                <TournamentStateDescription
+                  state={state}
+                  startsAt={startsAt}
+                  breakState={breakState}
+                  breakDurationSeconds={breakDurationSeconds}
+                  currentRoundTimeoutSeconds={currentRoundTimeoutSeconds}
+                  lastRoundStartedAt={lastRoundStartedAt}
+                  lastRoundEndedAt={lastRoundEndedAt}
+                  isLive={isLive}
+                  isOver={isOver}
+                  isOnline={isOnline}
+                />
+              </span>
+            </div>
           </div>
-          <div className="d-flex">
-            {!streamMode && (
-              <div className="d-flex justify-items-center pb-2">
-                {/* {!players[currentUserId] && (
-                  <a className={backBtnClassName} href="/tournaments">
-                    <FontAwesomeIcon className="mr-2" icon="undo" />
-                    {i18next.t("Back to tournaments")}
-                  </a>
-                )} */}
-              </div>
-            )}
-            <div className="d-flex justify-items-center pb-2">
+        </div>
+      )}
+      {showAdminPanel && (
+        <div className="cb-bg-panel shadow-sm cb-rounded p-3 mb-2 overflow-auto">
+          <div className="d-flex flex-column">
+            <div className="d-flex flex-column flex-lg-row align-items-lg-start">
               {showAdminJoinButton && (
-                <div className="mr-2">
+                <div className="mb-3 mb-lg-0 mr-lg-3">
                   <JoinButton
                     isShow
                     isShowLeave={state === TournamentStates.waitingParticipants}
@@ -261,53 +258,36 @@ function TournamentHeader({
                 </div>
               )}
               {canModerate && (
-                <TournamentMainControlButtons
-                  accessType={accessType}
-                  streamMode={streamMode}
-                  tournamentId={tournamentId}
-                  canStart={canStart}
-                  canStartRound={canStartRound}
-                  canFinishRound={canFinishRound}
-                  canFinishTournament={canFinishTournament}
-                  canRestart={canRestart}
-                  canToggleShowBots={canToggleShowBots}
-                  showBots={showBots}
-                  hideResults={hideResults}
-                  disabled={!isOnline}
-                  handleStartRound={handleStartRound}
-                  handleOpenDetails={handleOpenDetails}
-                  toggleShowBots={toggleShowBots}
-                  toggleStreamMode={toggleStreamMode}
-                />
+                <div className="flex-grow-1">
+                  <TournamentMainControlButtons
+                    accessType={accessType}
+                    streamMode={streamMode}
+                    tournamentId={tournamentId}
+                    canStart={canStart}
+                    canStartRound={canStartRound}
+                    canFinishRound={canFinishRound}
+                    canFinishTournament={canFinishTournament}
+                    canRestart={canRestart}
+                    canToggleShowBots={canToggleShowBots}
+                    showBots={showBots}
+                    hideResults={hideResults}
+                    disabled={!isOnline}
+                    handleStartRound={handleStartRound}
+                    handleOpenDetails={handleOpenDetails}
+                    toggleShowBots={toggleShowBots}
+                    toggleStreamMode={toggleStreamMode}
+                  />
+                </div>
               )}
             </div>
-          </div>
-        </div>
-        {canModerate && !streamMode && (
-          <div
-            className={cn(
-              "d-flex align-items-center small text-nowrap text-muted mt-1",
-              "cb-grid-divider overflow-auto border-top cb-border-color",
-            )}
-          >
-            <div title={type} className="d-flex align-items-center">
-              Mode:
-              <span className="ml-2">
-                <TournamentType type={type} />
-              </span>
-            </div>
-            <span className="mx-2">|</span>
-            <div title={`Players limit is ${playersLimit}`} className="d-flex align-items-center">
-              {`Players limit: ${playersLimit}`}
-            </div>
-            <span className="mx-2">|</span>
-            <div title={`Is live ${isLive}`} className="d-flex align-items-center">
-              {`Is live: ${isLive}`}
-            </div>
-            {accessType === "token" && (
-              <>
-                <span className="mx-2">|</span>
-                <div className="d-flex input-group ml-2">
+            {canModerate && !streamMode && accessType === "token" && (
+              <div
+                className={cn(
+                  "d-flex justify-content-end mt-2 pt-2",
+                  "cb-grid-divider overflow-auto border-top cb-border-color",
+                )}
+              >
+                <div className="d-flex input-group">
                   <div title="Access token" className="input-group-prepend">
                     <span className="input-group-text cb-bg-highlight-panel cb-border-color cb-text">
                       <FontAwesomeIcon icon="key" />
@@ -319,49 +299,25 @@ function TournamentHeader({
                     disabled={!isLive || !isOnline}
                   />
                 </div>
-              </>
+              </div>
+            )}
+            {showDeadTournamentWarning && (
+              <div
+                className={cn(
+                  "mt-2 px-3 py-2 rounded small font-weight-bold border",
+                  hasCustomEventStyle
+                    ? "cb-bg-highlight-panel cb-border-color cb-text"
+                    : "border-warning text-warning",
+                )}
+              >
+                {i18next.t(
+                  "Tournament process is dead. Click Restart to make it live again so users can join.",
+                )}
+              </div>
             )}
           </div>
-        )}
-        {showDeadTournamentWarning && (
-          <div
-            className={cn(
-              "mt-2 px-3 py-2 rounded small font-weight-bold border",
-              hasCustomEventStyle
-                ? "cb-bg-highlight-panel cb-border-color cb-text"
-                : "border-warning text-warning",
-            )}
-          >
-            {i18next.t(
-              "Tournament process is dead. Click Restart to make it live again so users can join.",
-            )}
-          </div>
-        )}
-      </div>
-      <div
-        className={cn(
-          "col cb-bg-panel shadow-sm cb-rounded p-2 mt-2 overflow-auto",
-          "d-flex align-items-center justify-content-between",
-        )}
-      >
-        <p className="h5 mb-0 text-nowrap">
-          <span className={stateClassName}>{stateBadgeTitle}</span>
-          <span className="h6 text-nowrap">
-            <TournamentStateDescription
-              state={state}
-              startsAt={startsAt}
-              breakState={breakState}
-              breakDurationSeconds={breakDurationSeconds}
-              currentRoundTimeoutSeconds={currentRoundTimeoutSeconds}
-              lastRoundStartedAt={lastRoundStartedAt}
-              lastRoundEndedAt={lastRoundEndedAt}
-              isLive={isLive}
-              isOver={isOver}
-              isOnline={isOnline}
-            />
-          </span>
-        </p>
-      </div>
+        </div>
+      )}
     </>
   );
 }

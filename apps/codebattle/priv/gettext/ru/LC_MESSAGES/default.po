@@ -89,7 +89,7 @@ msgstr "Присоединиться"
 
 #: lib/codebattle_web/templates/game/index.html.slim:21
 msgid "Show"
-msgstr "Наблюдать"
+msgstr "Открыть"
 
 msgid "Continue"
 msgstr "Продолжать"
@@ -487,8 +487,44 @@ msgstr "Общее количество команд %{count}"
 msgid "Place"
 msgstr "Место"
 
+msgid "Player"
+msgstr "Участник"
+
+msgid "Join this tournament to take part in the matches."
+msgstr "Присоединитесь к турниру, чтобы участвовать в матчах."
+
+msgid "You are registered for this tournament. You can leave before it starts."
+msgstr "Вы зарегистрированы на этот турнир. До его начала вы можете покинуть его."
+
 msgid "Score"
 msgstr "Балл"
+
+msgid "Matches"
+msgstr "Матчи"
+
+msgid "No winner"
+msgstr "Нет победителя"
+
+msgid "Avg Result"
+msgstr "Средний результат"
+
+msgid "Match duration"
+msgstr "Длительность матча"
+
+msgid "Match start time"
+msgstr "Время начала матча"
+
+msgid "Total Time"
+msgstr "Общее время"
+
+msgid "Win rate"
+msgstr "Винрейт"
+
+msgid "Average result"
+msgstr "Средний результат"
+
+msgid "Current round"
+msgstr "Текущий тур"
 
 msgid "User"
 msgstr "Участник"
@@ -498,6 +534,12 @@ msgstr "Время (сек)"
 
 msgid "Clan"
 msgstr "ВУЗ"
+
+msgid "Page"
+msgstr "Страница"
+
+msgid "of"
+msgstr "из"
 
 msgid "Count of solutions"
 msgstr "Количество успешных решений"
@@ -679,6 +721,9 @@ msgstr "Ожидаем участников"
 msgid "Active"
 msgstr "Активен"
 
+msgid "In progress"
+msgstr "Идет игра"
+
 msgid "Round break"
 msgstr "Перерыв"
 
@@ -698,7 +743,7 @@ msgid "Next round will start in "
 msgstr "Следующая задача начнется через "
 
 msgid "Draw"
-msgstr "Последняя задача в ничью"
+msgstr "Ничья"
 
 msgid "You lose"
 msgstr "Последняя задача проиграна"
@@ -1194,6 +1239,9 @@ msgstr "Ожидание"
 msgid "Won"
 msgstr "Победа"
 
+msgid "Over"
+msgstr "Ничья"
+
 msgid "%{count} pts"
 msgstr "%{count} очк."
 
@@ -1586,3 +1634,9 @@ msgstr "Вы успешно авторизовались на платформе
 
 msgid "Tournament process is dead. Click Restart to make it live again so users can join."
 msgstr "Процесс турнира остановлен. Нажмите Restart, чтобы снова запустить его и дать пользователям возможность присоединиться."
+
+msgid "Tests percent"
+msgstr "Процент тестов"
+
+msgid "Started - Finished"
+msgstr "Начало - Конец"

@@ -16,7 +16,6 @@ function UserName({
   hovered,
   hideOnlineIndicator,
   hideLink,
-  hideRank,
   displayName,
 }) {
   const commonClassName = "d-flex align-items-center";
@@ -39,19 +38,17 @@ function UserName({
       {!hideOnlineIndicator && !user.isBot && (
         <FontAwesomeIcon icon={faCircle} className={onlineIndicatorClassName} />
       )}
-      <LanguageIcon className="mr-1" lang={lang} />
+      {!user.isBot && <LanguageIcon className="mr-1" lang={lang} />}
       {user.isBot && (
         <FontAwesomeIcon className={botImgClassName} icon={faRobot} transform="up-1" />
       )}
       {hideLink ? (
-        <span className={userClassName} title={user.name}>
+        <span className={userClassName} title={shownName}>
           <span className={userNameClassName}>{shownName}</span>
-          {user.rank && !hideRank && <span className={userNameClassName}>{`(${user.rank})`}</span>}
         </span>
       ) : (
-        <a href={`/users/${user.id}`} className={userClassName} title={user.name}>
+        <a href={`/users/${user.id}`} className={userClassName} title={shownName}>
           <span className={userNameClassName}>{shownName}</span>
-          {user.rank && !hideRank && <span className={userNameClassName}>{`(${user.rank})`}</span>}
         </a>
       )}
     </div>

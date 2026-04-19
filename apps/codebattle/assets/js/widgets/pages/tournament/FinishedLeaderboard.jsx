@@ -81,9 +81,7 @@ function FinishedLeaderboard({ leaderboard }) {
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Score")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Wins")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Games")}</th>
-                  <th className="p-1 pl-4 font-weight-light border-0">
-                    {i18next.t("Avg Result %")}
-                  </th>
+                  <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Avg Result")}</th>
                   <th className="p-1 pl-4 font-weight-light border-0">{i18next.t("Total Time")}</th>
                 </tr>
               </thead>

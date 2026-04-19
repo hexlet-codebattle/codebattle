@@ -14,6 +14,7 @@ import PlayersMatchesPanel from "./PlayersMatchesPanel";
 import PlayerStatsPanel from "./PlayerStatsPanel";
 import RatingClansPanel from "./RatingClansPanel";
 import ReportsPanel from "./ReportsPanel";
+import StatisticsCard from "./StatisticsCard";
 import TaskRankingAdvancedPanel from "./TaskRankingAdvancedPanel";
 import TaskRankingPanel from "./TaskRankingPanel";
 import TournamentGameCreatePanel from "./TournamentGameCreatePanel";
@@ -204,11 +205,19 @@ function CustomTournamentInfoPanel({
       <div ref={infoPanelRef}>
         <ControlPanel
           isPlayer={!!players[currentUserId]}
+          leftContent={
+            panelMode.panel === PanelModeCodes.playerMode ? (
+              <StatisticsCard
+                playerId={currentUserId}
+                matchList={Object.values(matches).filter((match) =>
+                  match.playerIds.includes(currentUserId),
+                )}
+                compact
+              />
+            ) : null
+          }
           panelMode={panelMode}
-          panelHistory={panelHistory}
-          setSearchOption={setSearchedUser}
           setPanelMode={setPanelMode}
-          setPanelHistory={setPanelHistory}
           allowedPanelModes={allowedPanelModes}
         />
         {panelMode.panel === PanelModeCodes.leaderboardMode && (

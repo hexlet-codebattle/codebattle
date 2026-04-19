@@ -272,7 +272,7 @@ defmodule CodebattleWeb.GameController do
 
     gettext("Play with") <>
       ": " <>
-      "@#{player.name}(#{player.rating})-#{player.lang}" <>
+      "@#{player.name}-#{player.lang}" <>
       ". " <>
       gettext("Waiting for an opponent") <> ". " <> level
   end
@@ -283,9 +283,9 @@ defmodule CodebattleWeb.GameController do
 
     gettext("Game between") <>
       ": " <>
-      "@#{player1.name}(#{player1.rating})-#{player1.lang}" <>
+      "@#{player1.name}-#{player1.lang}" <>
       " VS " <>
-      "@#{player2.name}(#{player2.rating})-#{player2.lang}" <>
+      "@#{player2.name}-#{player2.lang}" <>
       ". " <> level <> ". " <> state
   end
 

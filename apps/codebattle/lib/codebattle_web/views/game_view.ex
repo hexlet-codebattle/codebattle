@@ -3,19 +3,9 @@ defmodule CodebattleWeb.GameView do
 
   import Codebattle.Game.Helpers
 
-  def user_name(%Codebattle.User{name: name, rating: rating}) do
-    case {name, rating} do
-      {nil, nil} -> ""
-      _ -> "#{name}(#{rating})"
-    end
-  end
+  def user_name(%Codebattle.User{name: name}), do: name || ""
 
-  def player_name(%Codebattle.Game.Player{name: name, rating: rating}) do
-    case {name, rating} do
-      {nil, nil} -> ""
-      _ -> "#{name}(#{rating})"
-    end
-  end
+  def player_name(%Codebattle.Game.Player{name: name}), do: name || ""
 
   def result(%Codebattle.Game{users: users, user_games: user_games}) do
     Enum.map_join(users, ", ", fn u ->

@@ -407,6 +407,21 @@ msgstr "Login"
 msgid "University"
 msgstr "University"
 
+msgid "Player"
+msgstr "Player"
+
+msgid "Join this tournament to take part in the matches."
+msgstr "Join this tournament to take part in the matches."
+
+msgid "You are registered for this tournament. You can leave before it starts."
+msgstr "You are registered for this tournament. You can leave before it starts."
+
+msgid "Page"
+msgstr "Page"
+
+msgid "of"
+msgstr "of"
+
 msgid "Category"
 msgstr "Category"
 
@@ -614,8 +629,20 @@ msgstr "Unknown"
 msgid "Pending"
 msgstr "Pending"
 
+msgid "Active"
+msgstr "Active"
+
+msgid "In progress"
+msgstr "In progress"
+
 msgid "Won"
 msgstr "Won"
+
+msgid "Lost"
+msgstr "Lost"
+
+msgid "Over"
+msgstr "Over"
 
 msgid "Draw"
 msgstr "Draw"
@@ -652,6 +679,33 @@ msgstr "H2H Arena"
 
 msgid "Direct duel history with profile links, live status, and every shared game."
 msgstr "Direct duel history with profile links, live status, and every shared game."
+
+msgid "Matches"
+msgstr "Matches"
+
+msgid "No winner"
+msgstr "No winner"
+
+msgid "Avg Result"
+msgstr "Avg Result"
+
+msgid "Match duration"
+msgstr "Match duration"
+
+msgid "Match start time"
+msgstr "Match start time"
+
+msgid "Total Time"
+msgstr "Total Time"
+
+msgid "Win rate"
+msgstr "Win rate"
+
+msgid "Average result"
+msgstr "Average result"
+
+msgid "Current round"
+msgstr "Current round"
 
 msgid "Total games"
 msgstr "Total games"
@@ -1012,3 +1066,9 @@ msgstr "You successfully authorized to the platform. Open your tournament link t
 
 msgid "Tournament process is dead. Click Restart to make it live again so users can join."
 msgstr "Tournament process is dead. Click Restart to make it live again so users can join."
+
+msgid "Tests percent"
+msgstr "Tests percent"
+
+msgid "Started - Finished"
+msgstr "Started - Finished"

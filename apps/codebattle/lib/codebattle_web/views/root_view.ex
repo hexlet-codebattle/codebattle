@@ -17,12 +17,7 @@ defmodule CodebattleWeb.RootView do
     Plug.CSRFProtection.get_csrf_token()
   end
 
-  def user_name(%Codebattle.User{name: name, rating: rating}) do
-    case {name, rating} do
-      {nil, nil} -> ""
-      _ -> "#{name}(#{rating})"
-    end
-  end
+  def user_name(%Codebattle.User{name: name}), do: name || ""
 
   def feedback do
     Enum.map(Feedback.get_all(), &item/1)

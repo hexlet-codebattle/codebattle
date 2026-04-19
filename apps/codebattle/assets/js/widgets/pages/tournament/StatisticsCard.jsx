@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 
 import cn from "classnames";
 import { useSelector } from "react-redux";
@@ -8,63 +8,42 @@ import useMatchesStatistics from "@/utils/useMatchesStatistics";
 
 import i18next from "../../../i18n";
 
-import TournamentPlace from "./TournamentPlace";
-
-function StatisticsCard({ playerId, matchList = [] }) {
+function StatisticsCard({ playerId, matchList = [], compact = false }) {
   const [playerStats] = useMatchesStatistics(playerId, matchList);
   const playerRanking = useSelector(userRankingSelector(playerId));
-
-  const cardClassName = cn(
-    "d-flex flex-column justify-content-center p-2 w-100",
-    "align-items-center align-items-md-baseline align-items-lg-baseline align-items-xl-baseline",
+  const noWinnerCount =
+    matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length;
+  const finishedMatches = useMemo(
+    () => matchList.filter((match) => !!match.playerResults?.[playerId]),
+    [matchList, playerId],
   );
+  const avgResultPercent = finishedMatches.length ? playerStats.avgTests.toFixed(1) : "0.0";
 
   return (
-    <div className={cardClassName}>
-      {playerRanking?.place !== undefined && (
-        <h6 title={i18next.t("Your place in tournament")} className="p-1">
-          <TournamentPlace title={i18next.t("Your place")} place={playerRanking?.place} />
-        </h6>
-      )}
-      <h6 title={i18next.t("Your score")} className="p-1">
-        {`${i18next.t("Your score")}: ${playerRanking?.score}`}
-      </h6>
-      {/* <h6 */}
-      {/*   title="Your task_ids" */}
-      {/*   className="p-1" */}
-      {/* > */}
-      {/*   {`${i18next.t('taskIds')}: ${taskIds}`} */}
-      {/* </h6> */}
-      <h6 title={i18next.t("Your game played")} className="p-1">
-        {`${i18next.t("Games")}: ${matchList.length}`}
-      </h6>
-      <h6
-        title="Stats: Win games / Lost games / Canceled games"
-        className="d-none d-md-block d-lg-block d-xl-block p-1"
-      >
-        {i18next.t("Stats: ")}
-        <span className="text-success">
-          {`${i18next.t("Win")} ${playerStats.winMatches.length}`}
+    <div className={cn("cb-bg-highlight-panel cb-rounded px-3 py-2", compact && "w-100")}>
+      <div className="d-flex flex-wrap align-items-center small">
+        <span className="mr-3 mb-1">
+          {i18next.t("Place")}:{" "}
+          <span className="font-weight-bold">{playerRanking?.place ?? "?"}</span>
         </span>
-        {" / "}
-        <span className="text-danger">
-          {`${i18next.t("Lost")} ${playerStats.lostMatches.length}`}
+        <span className="mr-3 mb-1">
+          {i18next.t("Score")}:{" "}
+          <span className="font-weight-bold">{playerRanking?.score ?? 0}</span>
         </span>
-        {" / "}
-        <span className="text-muted">
-          {`${i18next.t("Timeout")} ${matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length}`}
+        <span className="mr-3 mb-1">
+          {i18next.t("Avg Result")}: <span className="font-weight-bold">{avgResultPercent}%</span>
         </span>
-      </h6>
-      <h6 title="Stats: Win games / Lost games / Canceled games" className="d-block d-md-none p-1">
-        {i18next.t("Stats: ")}
-        <span className="text-success">{playerStats.winMatches.length}</span>
-        {" / "}
-        <span className="text-danger">{playerStats.lostMatches.length}</span>
-        {" / "}
-        <span className="text-muted">
-          {matchList.length - playerStats.winMatches.length - playerStats.lostMatches.length}
+        <span className="mb-1">
+          {i18next.t("Stats: ")}
+          <span className="font-weight-bold">
+            {i18next.t("Win")} {playerStats.winMatches.length}
+            {" / "}
+            {i18next.t("Lost")} {playerStats.lostMatches.length}
+            {" / "}
+            {i18next.t("Draw")} {noWinnerCount}
+          </span>
         </span>
-      </h6>
+      </div>
     </div>
   );
 }

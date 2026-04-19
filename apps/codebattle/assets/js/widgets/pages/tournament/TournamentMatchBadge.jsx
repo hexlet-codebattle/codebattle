@@ -2,6 +2,7 @@ import React, { memo, useContext, useMemo } from "react";
 
 import cn from "classnames";
 
+import i18next from "../../../i18n";
 import CustomEventStylesContext from "../../components/CustomEventStylesContext";
 import MatchStatesCodes from "../../config/matchStates";
 
@@ -9,23 +10,23 @@ function TournamentMatchBadge({ matchState, isWinner, currentUserIsPlayer }) {
   const title = useMemo(() => {
     switch (matchState) {
       case MatchStatesCodes.pending:
-        return "Next";
+        return i18next.t("Next");
       case MatchStatesCodes.playing:
-        return "Active";
+        return i18next.t("In progress");
       case MatchStatesCodes.gameOver: {
         if (isWinner) {
-          return "Won";
+          return i18next.t("Won");
         }
         if (!isWinner) {
-          return "Lose";
+          return i18next.t("Lost");
         }
 
-        return "Over";
+        return i18next.t("Draw");
       }
       case MatchStatesCodes.timeout:
       case MatchStatesCodes.canceled:
       default:
-        return "Over";
+        return i18next.t("Draw");
     }
   }, [matchState, isWinner]);
 

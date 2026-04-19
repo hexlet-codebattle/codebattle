@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import cn from "classnames";
 import has from "lodash/has";
 import isEmpty from "lodash/isEmpty";
+import i18next from "i18next";
 import Markdown from "react-markdown";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -45,8 +46,8 @@ function InfoPanel({ currentUserId, tournament, hideResults, canModerate, isOnli
       <div className="mb-3 pb-2 border-bottom cb-border-color">
         <p className="mb-2 text-muted">
           {isParticipant
-            ? "You are registered for this tournament. You can leave before it starts."
-            : "Join this tournament to take part in the matches."}
+            ? i18next.t("You are registered for this tournament. You can leave before it starts.")
+            : i18next.t("Join this tournament to take part in the matches.")}
         </p>
         <JoinButton
           isShow
@@ -297,44 +298,80 @@ function Tournament() {
           redirectImmediatly={activePresentationMode}
         />
         <div className={panelClassName}>
-          <TournamentHeader
-            id={tournament.id}
-            streamMode={streamMode}
-            accessToken={tournament.accessToken}
-            accessType={tournament.accessType}
-            breakDurationSeconds={tournament.breakDurationSeconds}
-            breakState={tournament.breakState}
-            currentUserId={currentUserId}
-            isLive={tournament.isLive}
-            isOnline={tournament.channel?.online ?? false}
-            isOver={isOver}
-            canModerate={canModerate}
-            lastRoundEndedAt={tournament.lastRoundEndedAt}
-            lastRoundStartedAt={tournament.lastRoundStartedAt}
-            level={tournament.level}
-            currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
-            name={tournament.name}
-            players={tournament.players}
-            playersCount={tournament.playersCount}
-            playersLimit={tournament.playersLimit}
-            showBots={tournament.showBots}
-            hideResults={hideResults}
-            startsAt={tournament.startsAt}
-            state={tournament.state}
-            type={tournament.type}
-            handleStartRound={handleStartRound}
-            handleOpenDetails={handleOpenDetails}
-            toggleShowBots={toggleShowBots}
-            toggleStreamMode={toggleStreamMode}
-          />
-        </div>
-        <div className={panelClassName}>
+          {hiddenSidePanel && (
+            <TournamentHeader
+              id={tournament.id}
+              streamMode={streamMode}
+              accessToken={tournament.accessToken}
+              accessType={tournament.accessType}
+              breakDurationSeconds={tournament.breakDurationSeconds}
+              breakState={tournament.breakState}
+              currentUserId={currentUserId}
+              isLive={tournament.isLive}
+              isOnline={tournament.channel?.online ?? false}
+              isOver={isOver}
+              canModerate={canModerate}
+              lastRoundEndedAt={tournament.lastRoundEndedAt}
+              lastRoundStartedAt={tournament.lastRoundStartedAt}
+              level={tournament.level}
+              currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+              name={tournament.name}
+              players={tournament.players}
+              playersCount={tournament.playersCount}
+              playersLimit={tournament.playersLimit}
+              showBots={tournament.showBots}
+              hideResults={hideResults}
+              startsAt={tournament.startsAt}
+              state={tournament.state}
+              type={tournament.type}
+              handleStartRound={handleStartRound}
+              handleOpenDetails={handleOpenDetails}
+              toggleShowBots={toggleShowBots}
+              toggleStreamMode={toggleStreamMode}
+              showHeaderPane
+              showAdminPane={false}
+            />
+          )}
           <div className="row flex-lg-row-reverse">
             <div
               className={cn("col-12 mb-2 mb-lg-0", {
                 "col-lg-8": !hiddenSidePanel,
               })}
             >
+              {canModerate && (
+                <TournamentHeader
+                  id={tournament.id}
+                  streamMode={streamMode}
+                  accessToken={tournament.accessToken}
+                  accessType={tournament.accessType}
+                  breakDurationSeconds={tournament.breakDurationSeconds}
+                  breakState={tournament.breakState}
+                  currentUserId={currentUserId}
+                  isLive={tournament.isLive}
+                  isOnline={tournament.channel?.online ?? false}
+                  isOver={isOver}
+                  canModerate={canModerate}
+                  lastRoundEndedAt={tournament.lastRoundEndedAt}
+                  lastRoundStartedAt={tournament.lastRoundStartedAt}
+                  level={tournament.level}
+                  currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+                  name={tournament.name}
+                  players={tournament.players}
+                  playersCount={tournament.playersCount}
+                  playersLimit={tournament.playersLimit}
+                  showBots={tournament.showBots}
+                  hideResults={hideResults}
+                  startsAt={tournament.startsAt}
+                  state={tournament.state}
+                  type={tournament.type}
+                  handleStartRound={handleStartRound}
+                  handleOpenDetails={handleOpenDetails}
+                  toggleShowBots={toggleShowBots}
+                  toggleStreamMode={toggleStreamMode}
+                  showHeaderPane={false}
+                  showAdminPane
+                />
+              )}
               <div className="cb-bg-panel h-100 shadow-sm cb-rounded p-3 overflow-auto">
                 <InfoPanel
                   tournament={tournament}
@@ -346,18 +383,50 @@ function Tournament() {
                 />
               </div>
             </div>
-            <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-4 h-100">
-              {tournament.state !== TournamentStates.finished &&
-                !tournament.useClan &&
-                !hiddenSidePanel && (
+            {!hiddenSidePanel && (
+              <div className="d-flex flex-column col-12 col-lg-4 h-100">
+                <TournamentHeader
+                  id={tournament.id}
+                  streamMode={streamMode}
+                  accessToken={tournament.accessToken}
+                  accessType={tournament.accessType}
+                  breakDurationSeconds={tournament.breakDurationSeconds}
+                  breakState={tournament.breakState}
+                  currentUserId={currentUserId}
+                  isLive={tournament.isLive}
+                  isOnline={tournament.channel?.online ?? false}
+                  isOver={isOver}
+                  canModerate={canModerate}
+                  lastRoundEndedAt={tournament.lastRoundEndedAt}
+                  lastRoundStartedAt={tournament.lastRoundStartedAt}
+                  level={tournament.level}
+                  currentRoundTimeoutSeconds={tournament.currentRoundTimeoutSeconds}
+                  name={tournament.name}
+                  players={tournament.players}
+                  playersCount={tournament.playersCount}
+                  playersLimit={tournament.playersLimit}
+                  showBots={tournament.showBots}
+                  hideResults={hideResults}
+                  startsAt={tournament.startsAt}
+                  state={tournament.state}
+                  type={tournament.type}
+                  handleStartRound={handleStartRound}
+                  handleOpenDetails={handleOpenDetails}
+                  toggleShowBots={toggleShowBots}
+                  toggleStreamMode={toggleStreamMode}
+                  showHeaderPane
+                  showAdminPane={false}
+                />
+                {tournament.useChat && <TournamentChat />}
+                {tournament.useClan && <TournamentClanTable />}
+                {tournament.state !== TournamentStates.finished && !tournament.useClan && (
                   <PlayersRankingPanel
                     playersCount={tournament.playersCount}
                     ranking={tournament.ranking}
                   />
                 )}
-              {tournament.useChat && !hiddenSidePanel && <TournamentChat />}
-              {tournament.useClan && !hiddenSidePanel && <TournamentClanTable />}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </>
