@@ -28,7 +28,7 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
       })
     end)
 
-    user = insert(:user, name: "invite-user")
+    user = insert(:user, name: "invite-user", subscription_type: :moderator)
     group_tournament = insert_group_tournament!()
     topic = "group_tournament:#{group_tournament.id}"
 
