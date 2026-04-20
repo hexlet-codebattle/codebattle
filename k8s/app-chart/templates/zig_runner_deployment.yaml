@@ -67,6 +67,12 @@ spec:
           env:
             - name: DEBUG
               value: {{ $.Values.zigRunners.env.DEBUG | quote }}
+            {{- with .env }}
+            {{- range $key, $val := . }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $.Values.zigRunners.resources | nindent 12 }}
           imagePullPolicy: {{ $.Values.zigRunners.imagePullPolicy | default "Always" }}
