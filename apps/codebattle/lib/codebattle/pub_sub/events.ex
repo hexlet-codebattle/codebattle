@@ -613,6 +613,11 @@ defmodule Codebattle.PubSub.Events do
         topic: "group_tournament:#{params.group_tournament_id}",
         event: "group_tournament:run_updated",
         payload: params
+      },
+      %Message{
+        topic: "group_tournament:#{params.group_tournament_id}:user:#{params.user_id}",
+        event: "group_tournament:run_updated",
+        payload: params
       }
     ]
   end

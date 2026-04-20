@@ -20,6 +20,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   const dispatch = useDispatch();
 
   const [viewerFullscreen, setViewerFullscreen] = useState(false);
+  const [editorFullscreen, setEditorFullscreen] = useState(false);
 
   useGroupTournamentChannel(tournamentId);
 
@@ -64,7 +65,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
         </div>
       )}
       <div className="row mt-3 h-100">
-        <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
+        <div className="col-lg-2 col-md-2 col-12 p-1 pb-4">
           <EvolutionPanel
             items={data?.runs}
             tournamentStatus={status}
@@ -73,7 +74,7 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
             repoUrl={externalSetup?.repoUrl}
           />
         </div>
-        <div className="col-lg-5 col-md-5 col-12 p-1 pb-4">
+        <div className="col-lg-7 col-md-7 col-12 p-1 pb-4">
           <MainPanel
             status={status}
             run={selectedRun}
@@ -81,8 +82,13 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
             setViewerFullscreen={setViewerFullscreen}
           />
         </div>
-        <div className="col-lg-4 col-md-4 col-12 p-1 pb-4">
-          <EditorPanel text={selectedRunCode} lang={selectedRunLang} />
+        <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
+          <EditorPanel
+            text={selectedRunCode}
+            lang={selectedRunLang}
+            editorFullscreen={editorFullscreen}
+            setEditorFullscreen={setEditorFullscreen}
+          />
           <LogPanel logs={logs} />
         </div>
       </div>

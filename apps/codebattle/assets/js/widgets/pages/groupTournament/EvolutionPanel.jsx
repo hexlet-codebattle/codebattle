@@ -22,28 +22,16 @@ const formatInsertedAt = (insertedAt) => {
   });
 };
 
-const buildRunSummary = (item, idx, totalItems) => {
+const isSuccess = (item) => item?.status === "success";
+
+const buildRunMeta = (item) => {
   if (!item || typeof item !== "object") {
-    return {
-      key: idx,
-      title: `v${idx + 1}`,
-      meta: item ? String(item) : null,
-    };
+    return item ? String(item) : null;
   }
 
-  const meta = [
-    item.status,
-    item.score != null ? i18n.t("Score %{score}", { score: item.score }) : null,
-    formatInsertedAt(item.insertedAt),
-  ]
+  return [i18n.t("Score %{score}", { score: item.score ?? 0 }), formatInsertedAt(item.insertedAt)]
     .filter(Boolean)
-    .join(" • ");
-
-  return {
-    key: item.id ?? idx,
-    title: `v${totalItems - idx}`,
-    meta,
-  };
+    .join(" · ");
 };
 
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
@@ -71,40 +59,40 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
           {items && items.length > 0 && (
             <div className="mt-2 small d-flex flex-column">
               {items.map((item, idx) => {
-                const summary = buildRunSummary(item, idx, items.length);
                 const isActive = runId === item?.id;
+                const success = isSuccess(item);
+                const borderColor = success ? "rgba(40, 167, 69, 0.95)" : "rgba(220, 53, 69, 0.95)";
+                const meta = buildRunMeta(item);
+                const title = `v${items.length - idx}`;
 
                 return (
                   <button
-                    key={summary.key}
+                    key={item?.id ?? idx}
                     type="button"
                     onClick={() => setRunId(item?.id)}
-                    className="border cb-border-color rounded p-3 text-left bg-transparent mb-2"
+                    className="rounded p-2 text-left bg-transparent mb-2"
                     style={{
-                      backgroundColor: isActive ? "rgba(40, 167, 69, 0.2)" : "transparent",
-                      borderColor: isActive ? "rgba(40, 167, 69, 0.7)" : "rgba(99, 102, 121, 0.95)",
-                      boxShadow: isActive ? "inset 3px 0 0 rgba(40, 167, 69, 0.95)" : "none",
-                      transition:
-                        "background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease",
+                      border: "1px solid rgba(99, 102, 121, 0.95)",
+                      borderLeft: `3px solid ${borderColor}`,
+                      backgroundColor: isActive ? "rgba(148, 163, 184, 0.15)" : "transparent",
+                      transition: "background-color 160ms ease",
                       width: "100%",
                     }}
                     onMouseEnter={(event) => {
                       if (!isActive) {
                         event.currentTarget.style.backgroundColor = "rgba(148, 163, 184, 0.1)";
-                        event.currentTarget.style.borderColor = "rgba(148, 163, 184, 0.75)";
                       }
                     }}
                     onMouseLeave={(event) => {
                       if (!isActive) {
                         event.currentTarget.style.backgroundColor = "transparent";
-                        event.currentTarget.style.borderColor = "rgba(99, 102, 121, 0.95)";
                       }
                     }}
                   >
                     <div className="d-flex align-items-center text-nowrap">
-                      <span className="badge badge-secondary mr-2">{summary.title}</span>
+                      <span className="badge badge-secondary mr-2">{title}</span>
                       <span className={`text-truncate ${isActive ? "text-white" : "text-muted"}`}>
-                        {summary.meta}
+                        {meta}
                       </span>
                     </div>
                   </button>

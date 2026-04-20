@@ -66,11 +66,20 @@ const groupTournament = createSlice({
       state.data = payload;
     },
     applyRunStub: (state, { payload }) => {
-      const { groupTournamentId, userId, runId } = payload;
+      const { groupTournamentId, userId, runId, status, score, playerIds, insertedAt } = payload;
 
       state.data = state.data || {};
 
-      const run = { id: runId, groupTournamentId, userId, detailsLoaded: false };
+      const run = {
+        id: runId,
+        groupTournamentId,
+        userId,
+        status,
+        score,
+        playerIds,
+        insertedAt,
+        detailsLoaded: false,
+      };
       const currentRuns = state.data.runs || [];
       const existingRunIndex = currentRuns.findIndex((item) => item.id === run.id);
 

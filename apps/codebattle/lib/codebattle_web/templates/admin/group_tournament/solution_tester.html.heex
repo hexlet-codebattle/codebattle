@@ -1,0 +1,123 @@
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <h1 class="text-center text-white mb-4">
+    Solution Tester — {@group_tournament.name}
+  </h1>
+
+  <div class="mb-3">
+    <a
+      href={Routes.admin_group_tournament_path(@conn, :show, @group_tournament)}
+      class="btn btn-outline-secondary btn-sm"
+    >
+      Back to Tournament
+    </a>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4 text-white">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group mb-3">
+          <label class="font-weight-bold mb-1">Token</label>
+          <select id="token-select" class="form-control bg-dark text-white border-secondary">
+            <option value="">-- select a token --</option>
+            <%= for token <- @tokens do %>
+              <option value={token.token}>
+                User #{token.user_id} — {String.slice(token.token, 0..15)}...
+              </option>
+            <% end %>
+          </select>
+        </div>
+        <div class="form-group mb-3">
+          <label class="font-weight-bold mb-1">Or paste token manually</label>
+          <input
+            id="token-input"
+            type="text"
+            class="form-control bg-dark text-white border-secondary font-monospace"
+            placeholder="Bearer token"
+          />
+        </div>
+        <div class="form-group mb-3">
+          <label class="font-weight-bold mb-1">Language</label>
+          <input
+            id="lang-input"
+            type="text"
+            value="js"
+            class="form-control bg-dark text-white border-secondary font-monospace"
+            placeholder="js, python, elixir..."
+          />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group mb-3">
+          <label class="font-weight-bold mb-1">
+            Solution (plain text, will be base64-encoded)
+          </label>
+          <textarea
+            id="solution-input"
+            rows="12"
+            class="form-control bg-dark text-white border-secondary font-monospace"
+            style="font-size: 13px; resize: vertical;"
+            placeholder="Paste your solution code here..."
+          ></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button id="submit-btn" class="btn btn-primary mt-2">
+      Submit Solution
+    </button>
+
+    <div id="result-panel" class="mt-4" style="display: none;">
+      <h5>Response</h5>
+      <pre
+        id="result-output"
+        class="bg-dark text-white p-3 border border-secondary rounded"
+        style="white-space: pre-wrap; font-size: 13px;"
+      ></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("submit-btn").addEventListener("click", async () => {
+    const tokenFromSelect = document.getElementById("token-select").value;
+    const tokenFromInput = document.getElementById("token-input").value.trim();
+    const token = tokenFromInput || tokenFromSelect;
+    const lang = document.getElementById("lang-input").value.trim();
+    const solutionText = document.getElementById("solution-input").value;
+    const resultPanel = document.getElementById("result-panel");
+    const resultOutput = document.getElementById("result-output");
+
+    if (!token || !solutionText) {
+      resultPanel.style.display = "block";
+      resultOutput.textContent = "Error: token and solution are required";
+      return;
+    }
+
+    const solution = btoa(unescape(encodeURIComponent(solutionText)));
+
+    const btn = document.getElementById("submit-btn");
+    btn.disabled = true;
+    btn.textContent = "Submitting...";
+
+    try {
+      const response = await fetch("/api/v1/group_task_solutions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ lang, solution })
+      });
+
+      const data = await response.json();
+      resultPanel.style.display = "block";
+      resultOutput.textContent = response.status + " " + response.statusText + "\n\n" + JSON.stringify(data, null, 2);
+    } catch (err) {
+      resultPanel.style.display = "block";
+      resultOutput.textContent = "Request failed: " + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Submit Solution";
+    }
+  });
+</script>

@@ -152,6 +152,10 @@ defmodule CodebattleWeb.Router do
 
     resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
 
+    get("/group_tournaments/:id/solution_tester", CodebattleWeb.Admin.GroupTournamentController, :solution_tester,
+      as: :admin_group_tournament
+    )
+
     live("/tournaments", CodebattleWeb.Live.Admin.TournamentIndexView, :index)
 
     get("/tournament_duplicator", TournamentDuplicatorController, :new, as: :admin_tournament_duplicator)

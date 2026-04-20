@@ -40,6 +40,11 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionController do
       {:error, :invalid_token} ->
         unauthorized(conn)
 
+      {:error, :tournament_finished} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "tournament_finished"})
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)

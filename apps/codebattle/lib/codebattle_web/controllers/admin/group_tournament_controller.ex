@@ -52,7 +52,6 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
       group_tournament: group_tournament,
       runs: Context.list_runs(group_tournament),
       solutions: latest_solutions(group_tournament),
-      tokens: Context.list_tokens(group_tournament),
       tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
       token_changeset: token_changeset(%{}),
       user: conn.assigns.current_user
@@ -198,6 +197,17 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def solution_tester(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+    tokens = Context.list_tokens(group_tournament)
+
+    render(conn, "solution_tester.html",
+      group_tournament: group_tournament,
+      tokens: tokens,
+      user: conn.assigns.current_user
+    )
+  end
+
   def add_user(conn, %{"id" => id, "add_user" => %{"user_id" => user_id_param}}) do
     group_tournament = Context.get_group_tournament!(id)
 
@@ -211,6 +221,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
           user ->
             UserGroupTournamentContext.get_or_create(user, group_tournament)
+            Context.create_or_update_player(group_tournament, user.id, %{lang: "js", state: "active"})
 
             conn
             |> put_flash(:info, "User #{user.name} (ID: #{user.id}) added to tournament.")
@@ -258,7 +269,6 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
       group_tournament: group_tournament,
       runs: Context.list_runs(group_tournament),
       solutions: latest_solutions(group_tournament),
-      tokens: Context.list_tokens(group_tournament),
       tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
       token_changeset: token_changeset,
       user: conn.assigns.current_user

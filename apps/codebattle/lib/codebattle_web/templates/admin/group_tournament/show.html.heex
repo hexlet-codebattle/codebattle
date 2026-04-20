@@ -77,6 +77,10 @@
           data: [confirm: "Run checker for the tournament players now?"],
           class: "btn btn-outline-success cb-rounded ml-2"
         )}
+        {link("Solution Tester",
+          to: Routes.admin_group_tournament_path(@conn, :solution_tester, @group_tournament),
+          class: "btn btn-outline-info cb-rounded ml-2"
+        )}
       </div>
     </div>
   </div>
@@ -135,6 +139,7 @@
             <th class="cb-border-color border-bottom">user_id</th>
             <th class="cb-border-color border-bottom">user</th>
             <th class="cb-border-color border-bottom">state</th>
+            <th class="cb-border-color border-bottom">token</th>
             <th class="cb-border-color border-bottom">added_at</th>
           </tr>
         </thead>
@@ -144,6 +149,7 @@
               <td class="text-white cb-border-color">{record.user_id}</td>
               <td class="text-white cb-border-color">{record.user && record.user.name}</td>
               <td class="text-white cb-border-color">{record.state}</td>
+              <td class="text-white cb-border-color"><code>{record.token}</code></td>
               <td class="text-white cb-border-color">{format_datetime(record.inserted_at)}</td>
             </tr>
           <% end %>
@@ -176,35 +182,6 @@
               <td class="text-white cb-border-color">{player.lang}</td>
               <td class="text-white cb-border-color">{player.state}</td>
               <td class="text-white cb-border-color">{format_datetime(player.last_setup_at)}</td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Latest Tokens</h3>
-      <span class="cb-text">showing {length(@tokens)} most recent</span>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-sm">
-        <thead class="cb-text">
-          <tr>
-            <th class="cb-border-color border-bottom">user_id</th>
-            <th class="cb-border-color border-bottom">user</th>
-            <th class="cb-border-color border-bottom">token</th>
-            <th class="cb-border-color border-bottom">updated_at</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= for token <- @tokens do %>
-            <tr>
-              <td class="text-white cb-border-color">{token.user_id}</td>
-              <td class="text-white cb-border-color">{token.user && token.user.name}</td>
-              <td class="text-white cb-border-color"><code>{token.token}</code></td>
-              <td class="text-white cb-border-color">{format_datetime(token.updated_at)}</td>
             </tr>
           <% end %>
         </tbody>

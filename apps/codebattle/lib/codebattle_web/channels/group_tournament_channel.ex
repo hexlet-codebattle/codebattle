@@ -15,7 +15,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
 
         if has_access?(current_user, group_tournament) do
-          Codebattle.PubSub.subscribe("group_tournament:#{parsed_tournament_id}")
+          subscribe_to_group_tournament(parsed_tournament_id, current_user)
+          Codebattle.PubSub.subscribe("group_tournament:#{parsed_tournament_id}:user:#{current_user.id}")
           join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
         else
           {:error, %{reason: "not_authorized"}}
@@ -23,6 +24,12 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
       :error ->
         {:error, %{reason: "invalid_tournament_id"}}
+    end
+  end
+
+  defp subscribe_to_group_tournament(tournament_id, current_user) do
+    if Codebattle.User.admin_or_moderator?(current_user) do
+      Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
     end
   end
 

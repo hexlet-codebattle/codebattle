@@ -55,7 +55,7 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
 
     user = insert(:user)
     creator = insert(:user)
-    group_task = insert(:group_task)
+    group_task = insert(:group_task, runner_url: "http://runner.test/api/v1/group_tasks/run")
 
     group_tournament =
       %GroupTournament{}
@@ -65,11 +65,22 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
         name: "Source Repo Tournament",
         slug: "source-repo-tournament",
         description: "Tournament description",
-        starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+        state: "active",
+        starts_at: DateTime.add(DateTime.utc_now(), -60, :second),
+        started_at: DateTime.utc_now(:second),
+        current_round_position: 1,
         rounds_count: 1,
-        round_timeout_seconds: 60
+        round_timeout_seconds: 60,
+        last_round_started_at: NaiveDateTime.utc_now(:second)
       })
       |> Repo.insert!()
+
+    {:ok, _player} =
+      GroupTournamentContext.create_or_update_player(group_tournament, user.id, %{
+        lang: "python",
+        state: "active",
+        last_setup_at: DateTime.utc_now(:second)
+      })
 
     {:ok, token} = GroupTournamentContext.create_or_rotate_token(group_tournament, user.id)
 
@@ -89,6 +100,49 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
     [solution] = GroupTaskContext.list_solutions(group_task)
     assert solution.user_id == user.id
     assert solution.solution =~ "return 7"
+
+    [run] = GroupTournamentContext.list_runs(group_tournament, limit: 1)
+    assert run.status == "success"
+  end
+
+  test "returns tournament_finished for finished tournaments", %{conn: conn} do
+    FunWithFlags.enable(:group_tasks_api)
+
+    user = insert(:user)
+    creator = insert(:user)
+    group_task = insert(:group_task)
+
+    group_tournament =
+      %GroupTournament{}
+      |> GroupTournament.changeset(%{
+        creator_id: creator.id,
+        group_task_id: group_task.id,
+        name: "Finished Tournament",
+        slug: "finished-tournament",
+        description: "Tournament description",
+        state: "finished",
+        starts_at: DateTime.add(DateTime.utc_now(), -7200, :second),
+        started_at: DateTime.add(DateTime.utc_now(), -7100, :second),
+        finished_at: DateTime.utc_now(:second),
+        current_round_position: 1,
+        rounds_count: 1,
+        round_timeout_seconds: 60
+      })
+      |> Repo.insert!()
+
+    {:ok, token} = GroupTournamentContext.create_or_rotate_token(group_tournament, user.id)
+
+    response =
+      conn
+      |> put_req_header("authorization", "Bearer #{token.token}")
+      |> post("/api/v1/group_task_solutions", %{
+        "solution" => Base.encode64("def solution():\n    return 7\n"),
+        "lang" => "Python"
+      })
+      |> json_response(404)
+
+    assert response["error"] == "tournament_finished"
+    assert Repo.aggregate(Codebattle.GroupTaskSolution, :count, :id) == 0
   end
 
   test "creates a run when submitting a solution for an active tournament", %{conn: conn} do
@@ -222,9 +276,13 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
         name: "Validation Tournament",
         slug: "validation-tournament",
         description: "Tournament description",
-        starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+        state: "active",
+        starts_at: DateTime.add(DateTime.utc_now(), -60, :second),
+        started_at: DateTime.utc_now(:second),
+        current_round_position: 1,
         rounds_count: 1,
-        round_timeout_seconds: 60
+        round_timeout_seconds: 60,
+        last_round_started_at: NaiveDateTime.utc_now(:second)
       })
       |> Repo.insert!()
 
@@ -258,9 +316,13 @@ defmodule CodebattleWeb.Api.V1.GroupTaskSolutionControllerTest do
         name: "Malformed Tournament",
         slug: "malformed-tournament",
         description: "Tournament description",
-        starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
+        state: "active",
+        starts_at: DateTime.add(DateTime.utc_now(), -60, :second),
+        started_at: DateTime.utc_now(:second),
+        current_round_position: 1,
         rounds_count: 1,
-        round_timeout_seconds: 60
+        round_timeout_seconds: 60,
+        last_round_started_at: NaiveDateTime.utc_now(:second)
       })
       |> Repo.insert!()
 

@@ -221,15 +221,30 @@ defmodule Codebattle.GroupTournament.Context do
   end
 
   @spec create_solution_from_token_and_run(String.t(), map()) ::
-          {:ok, GroupTaskSolution.t()} | {:error, :invalid_token | Ecto.Changeset.t()}
+          {:ok, GroupTaskSolution.t()} | {:error, :invalid_token | :tournament_finished | Ecto.Changeset.t()}
   def create_solution_from_token_and_run(token, attrs) do
-    case create_solution_from_token(token, attrs) do
-      {:ok, solution} ->
-        maybe_run_after_solution_submission(solution.group_tournament_id, solution)
-        {:ok, solution}
+    case get_token_by_value(token) do
+      nil ->
+        {:error, :invalid_token}
 
-      {:error, _} = error ->
-        error
+      %{group_tournament: %{state: "active"} = group_tournament, user_id: user_id} ->
+        group_tournament.group_task_id
+        |> GroupTaskContext.create_solution_from_submission(user_id, %{
+          group_tournament_id: group_tournament.id,
+          lang: Map.get(attrs, "lang") || Map.get(attrs, :lang),
+          solution: Map.get(attrs, "solution") || Map.get(attrs, :solution)
+        })
+        |> case do
+          {:ok, solution} ->
+            maybe_run_after_solution_submission(solution.group_tournament_id, solution)
+            {:ok, solution}
+
+          {:error, _} = error ->
+            error
+        end
+
+      %{group_tournament: _group_tournament} ->
+        {:error, :tournament_finished}
     end
   end
 
@@ -333,8 +348,8 @@ defmodule Codebattle.GroupTournament.Context do
 
   def maybe_run_after_solution_submission(group_tournament_id, submitted_solution) do
     case get_group_tournament(group_tournament_id) do
-      %{state: "active", group_task: group_task, players: players, include_bots: include_bots} ->
-        player_ids = Enum.map(players, & &1.user_id)
+      %{state: "active", group_task: group_task, include_bots: include_bots} ->
+        player_ids = [submitted_solution.user_id]
 
         run_result =
           GroupTaskContext.run_group_task(group_task, player_ids, %{
@@ -439,7 +454,11 @@ defmodule Codebattle.GroupTournament.Context do
       user_id:
         (submitted_solution && submitted_solution.user_id) ||
           (run.user_group_tournament && run.user_group_tournament.user_id) || List.first(run.player_ids),
-      run_id: run.id
+      run_id: run.id,
+      status: run.status,
+      score: run.score,
+      player_ids: run.player_ids,
+      inserted_at: run.inserted_at
     }
 
     PubSub.broadcast("group_tournament:run_updated", payload)
