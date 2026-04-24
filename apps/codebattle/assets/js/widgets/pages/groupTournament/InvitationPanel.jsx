@@ -1,57 +1,68 @@
 import React from "react";
 
-import i18n from "../../../i18n";
-
 function InvitationPanel({ invite, requestInviteUpdates }) {
-  const isPending =
-    invite.state === "creating" || invite.state === "pending" || invite.state === "loading";
-  const isFailed = invite.state === "failed";
-
   return (
-    <div className="container-fluid h-100">
-      <div className="row justify-content-center h-100">
-        <div className="col-lg-5 col-md-6 col-sm-8 px-md-4 align-content-center">
-          <div className="cb-bg-panel shadow-sm cb-rounded p-5">
-            <p className="text-center cb-text mb-4">
-              {i18n.t("You need to accept an invitation to participate in this tournament.")}
-            </p>
-            {isPending && !invite.inviteLink && (
-              <div className="text-center cb-text mb-3">{i18n.t("Preparing your invite...")}</div>
-            )}
-            {isFailed && (
-              <div className="text-center text-danger mb-3">
-                {i18n.t("Invite failed. Please try again.")}
-              </div>
-            )}
-            <div className="d-flex flex-column align-items-center gap-3">
-              {invite.inviteLink && (
+    <div className="container-fluid cb-main-wrapper py-5">
+      <div className="container">
+        <div className="text-center mb-5">
+          <h1 className="display-4 font-weight-bold">Групповой турнир</h1>
+        </div>
+
+        <div className="row justify-content-center text-center my-5">
+          <div className="col-md-3">
+            <p className="small">Задание выполняется в <br /><strong>SourceCraft</strong></p>
+          </div>
+          <div className="col-md-3">
+            <p className="small text-muted pt-2">30 минут на решение</p>
+          </div>
+        </div>
+
+        <div className="row justify-content-center">
+          <div className="col-lg-8">
+            <h5 className="mb-4 font-weight-bold">Прежде чем начать:</h5>
+
+            <ul className="list-group cb-steps-list">
+              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item">
+                <div className="d-flex align-items-center">
+                  <div className="d-flex flex-column">
+                    <div>
+                      <span className="cb-step-num mr-3">1</span>
+                      <span>Создайте аккаунт в SourceCraft</span>
+                    </div>
+                    <div>
+                      <small>(Регистрируясь под тем же Yandex Id, что и при регистрации на Баттле Вузов)</small>
+                    </div>
+                  </div>
+                </div>
                 <a
-                  href={invite.inviteLink}
-                  className="btn btn-lg btn-success cb-rounded w-100"
                   target="_blank"
+                  href="https://sourcecraft.dev/"
+                  className="btn btn-success cb-btn-action rounded"
                   rel="noopener noreferrer"
-                >
-                  {i18n.t("Accept Invite")}
-                </a>
-              )}
-              {isFailed ? (
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded w-100"
-                  onClick={requestInviteUpdates}
-                >
-                  {i18n.t("Retry")}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary cb-btn-outline-secondary cb-rounded w-100"
-                  onClick={requestInviteUpdates}
-                >
-                  {i18n.t("Check Status")}
-                </button>
-              )}
-            </div>
+                >Создать аккаунт</a>
+              </li>
+
+              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
+                <div className="d-flex align-items-center">
+                  <span className="cb-step-num mr-3">2</span>
+                  <span>Присоединитесь к нашей организации в SourceCraft, чтобы получить задание</span>
+                </div>
+                <a
+                  target="_blank"
+                  href={invite.inviteLink}
+                  className="btn btn-success cb-btn-action rounded"
+                  rel="noopener noreferrer"
+                >Получить приглашение</a>
+              </li>
+
+              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
+                <div className="d-flex align-items-center">
+                  <span className="cb-step-num mr-3">3</span>
+                  <span>По завершению всех шагов вы можете начать решать задачу</span>
+                </div>
+                <button className="btn btn-success cb-btn-action rounded" onClick={requestInviteUpdates}>К задаче</button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>

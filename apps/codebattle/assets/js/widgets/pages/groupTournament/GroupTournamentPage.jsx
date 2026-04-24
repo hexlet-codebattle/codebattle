@@ -47,7 +47,10 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   }
 
   if (!isAdmin && requireInvitation && invite.state !== "accepted") {
-    return <InvitationPanel invite={invite} requestInviteUpdates={requestInviteUpdates} />;
+    return <InvitationPanel
+      invite={invite}
+      requestInviteUpdates={requestInviteUpdates}
+    />
   }
 
   if (platformError) {
