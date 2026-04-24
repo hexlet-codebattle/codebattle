@@ -48,7 +48,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       |> InviteAdvancer.advance(current_user)
 
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
-    external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
+    external_setup = get_external_setup(user, group_tournament)
 
     maybe_schedule_invite_refresh(socket, tournament_id, invite)
 
@@ -63,7 +63,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp join_without_invite(socket, current_user, group_tournament) do
-    external_setup = maybe_ensure_external_setup(current_user, group_tournament, %{state: "accepted"})
+    external_setup = get_external_setup(current_user, group_tournament)
 
     {:ok,
      %{
@@ -134,7 +134,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       {:noreply, socket}
     else
       {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
-      external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
+      external_setup = get_external_setup(user, group_tournament)
 
       push(socket, "group_tournament:invite_updated", %{
         invite: serialize_invite(invite),
@@ -224,7 +224,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp serialize_invite_reply(user, group_tournament, invite, platform_error) do
-    external_setup = maybe_ensure_external_setup(user, group_tournament, invite)
+    external_setup = get_external_setup(user, group_tournament)
 
     %{
       invite: serialize_invite(invite),
@@ -258,28 +258,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
   defp has_platform_credentials?(_), do: false
 
-  defp maybe_ensure_external_setup(user, %{run_on_external_platform: false} = group_tournament, _invite) do
+  defp get_external_setup(user, group_tournament) do
     UserGroupTournamentContext.get(user.id, group_tournament.id)
-  end
-
-  defp maybe_ensure_external_setup(user, group_tournament, %{state: "accepted"}) do
-    case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
-      {:ok, record} -> record
-      {:error, _reason, record} -> record
-    end
-  end
-
-  defp maybe_ensure_external_setup(user, group_tournament, _invite) do
-    if can_lookup_platform_identity?(user) and !group_tournament.require_invitation do
-      case UserGroupTournamentContext.ensure_external_setup(user, group_tournament) do
-        {:ok, record} -> record
-        {:error, _reason, record} -> record
-      end
-    end
-  end
-
-  defp can_lookup_platform_identity?(user) do
-    UserGroupTournamentContext.can_lookup_platform_identity?(user)
   end
 
   defp has_access?(user, group_tournament) do
