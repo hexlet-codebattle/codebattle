@@ -146,6 +146,11 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     end
   end
 
+  def handle_info(%Message{event: "group_tournament:status_updated", payload: payload}, socket) do
+    push(socket, "group_tournament:status_updated", %{status: payload.status})
+    {:noreply, socket}
+  end
+
   def handle_info(%Message{event: "group_tournament:run_updated", payload: payload}, socket) do
     push(socket, "group_tournament:run_updated", payload)
     {:noreply, socket}

@@ -622,6 +622,31 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("group_tournament:status_updated", params) do
+    messages = [
+      %Message{
+        topic: "group_tournament:#{params.group_tournament_id}",
+        event: "group_tournament:status_updated",
+        payload: params
+      }
+    ]
+
+    if params[:user_ids] do
+      user_messages =
+        Enum.map(params.user_ids, fn user_id ->
+          %Message{
+            topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
+            event: "group_tournament:status_updated",
+            payload: params
+          }
+        end)
+
+      messages ++ user_messages
+    else
+      messages
+    end
+  end
+
   def get_messages("tournament:stream:active_game", params) do
     [
       %Message{

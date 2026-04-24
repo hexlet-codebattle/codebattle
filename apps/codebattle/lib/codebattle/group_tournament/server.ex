@@ -6,6 +6,7 @@ defmodule Codebattle.GroupTournament.Server do
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
+  alias Codebattle.PubSub
   alias Codebattle.Repo
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
@@ -238,6 +239,8 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
+    broadcast_status_update(updated)
+
     next_state =
       state
       |> Map.put(:group_tournament, updated)
@@ -284,6 +287,10 @@ defmodule Codebattle.GroupTournament.Server do
       |> Map.put(:is_live, true)
 
     maybe_broadcast_run_update(updated, run_result)
+
+    if updated.state != group_tournament.state do
+      broadcast_status_update(updated)
+    end
 
     next_state =
       state
@@ -399,6 +406,16 @@ defmodule Codebattle.GroupTournament.Server do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  defp broadcast_status_update(%GroupTournament{} = group_tournament) do
+    player_user_ids = Enum.map(group_tournament.players, & &1.user_id)
+
+    PubSub.broadcast("group_tournament:status_updated", %{
+      group_tournament_id: group_tournament.id,
+      status: group_tournament.state,
+      user_ids: player_user_ids
+    })
   end
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "group_tournament_srv:#{id}"}}

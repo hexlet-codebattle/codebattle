@@ -293,6 +293,27 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     assert gt.state == "active"
   end
 
+  test "start_group_tournament pushes status_updated to the client", %{
+    socket: socket,
+    topic: topic,
+    user: user
+  } do
+    {:ok, _response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    tournament_id = topic |> String.split(":") |> List.last() |> String.to_integer()
+    invite = InviteContext.get_invite(user.id, tournament_id)
+
+    invite
+    |> Codebattle.ExternalPlatformInvite.changeset(%{state: "accepted"})
+    |> Repo.update!()
+
+    ref = push(socket, "start_group_tournament", %{})
+    assert_reply(ref, :ok, _)
+
+    # The server broadcasts status_updated after async transition to "active"
+    assert_push("group_tournament:status_updated", %{status: "active"})
+  end
+
   test "start_group_tournament fails when invite is not accepted", %{
     socket: socket,
     topic: topic

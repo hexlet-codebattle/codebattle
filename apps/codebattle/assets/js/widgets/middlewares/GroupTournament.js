@@ -107,7 +107,13 @@ export const connectToTournament = (_currentUserId) => (dispatch) => {
     applyInviteUpdate(dispatch, response);
   };
 
+  const handleStatusUpdated = (response) => {
+    const normalizedData = camelizeKeys(response);
+    dispatch(actions.updateGroupTournamentStatus(normalizedData.status));
+  };
+
   channel.addListener("group_tournament:invite_updated", handleInviteUpdated);
+  channel.addListener("group_tournament:status_updated", handleStatusUpdated);
   channel.addListener(channelTopics.groupTournamentRunUpdated, handleRunUpdated);
 
   return channel;
