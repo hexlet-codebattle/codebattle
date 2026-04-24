@@ -99,21 +99,19 @@ defmodule Codebattle.GroupTournament.Server do
       ) do
     invite = InviteContext.get_invite(user.id, group_tournament.id)
 
-    case invite && InviteContext.check_accepted(invite) do
-      {:ok, _updated_invite} ->
-        updated =
-          group_tournament
-          |> GroupTournament.changeset(%{starts_at: DateTime.utc_now()})
-          |> Repo.update!()
-          |> Repo.preload([:creator, :group_task, players: [:user]])
-          |> Map.put(:is_live, true)
+    if invite && invite.state == "accepted" do
+      updated =
+        group_tournament
+        |> GroupTournament.changeset(%{starts_at: DateTime.utc_now()})
+        |> Repo.update!()
+        |> Repo.preload([:creator, :group_task, players: [:user]])
+        |> Map.put(:is_live, true)
 
-        send(self(), :start_tournament)
+      send(self(), :start_tournament)
 
-        {:reply, {:ok, updated}, %{cancel_start_timer(state) | group_tournament: updated}}
-
-      _ ->
-        {:reply, {:error, :invitation_not_accepted}, state}
+      {:reply, {:ok, updated}, %{cancel_start_timer(state) | group_tournament: updated}}
+    else
+      {:reply, {:error, :invitation_not_accepted}, state}
     end
   end
 

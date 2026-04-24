@@ -265,6 +265,86 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     )
   end
 
+  test "start_group_tournament starts the tournament when invite is accepted", %{
+    socket: socket,
+    topic: topic,
+    user: user
+  } do
+    {:ok, response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    # Invite should be in "invited" state after join (fake adapter returns pending for get_invite)
+    assert %{invite: %{state: "invited"}, status: "waiting_participants"} = response
+
+    # Manually mark invite as accepted (simulating admin override or platform acceptance)
+    tournament_id = topic |> String.split(":") |> List.last() |> String.to_integer()
+    invite = InviteContext.get_invite(user.id, tournament_id)
+
+    invite
+    |> Codebattle.ExternalPlatformInvite.changeset(%{state: "accepted"})
+    |> Repo.update!()
+
+    # Push start_group_tournament — should succeed now
+    ref = push(socket, "start_group_tournament", %{})
+    assert_reply(ref, :ok, %{status: "waiting_participants"})
+
+    # The tournament transitions to "active" asynchronously via handle_info(:start_tournament)
+    Process.sleep(50)
+    gt = GroupTournamentContext.get_group_tournament!(tournament_id)
+    assert gt.state == "active"
+  end
+
+  test "start_group_tournament fails when invite is not accepted", %{
+    socket: socket,
+    topic: topic
+  } do
+    {:ok, _response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    # Invite is in "invited" state, not "accepted"
+    ref = push(socket, "start_group_tournament", %{})
+    assert_reply(ref, :error, %{reason: "invitation_not_accepted"})
+  end
+
+  test "start_group_tournament fails when tournament is already active", %{
+    socket: socket,
+    topic: topic,
+    user: user
+  } do
+    {:ok, _response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    # Mark invite as accepted
+    tournament_id = topic |> String.split(":") |> List.last() |> String.to_integer()
+    invite = InviteContext.get_invite(user.id, tournament_id)
+
+    invite
+    |> Codebattle.ExternalPlatformInvite.changeset(%{state: "accepted"})
+    |> Repo.update!()
+
+    # First start succeeds
+    ref = push(socket, "start_group_tournament", %{})
+    assert_reply(ref, :ok, _)
+
+    # Wait for async transition to "active"
+    Process.sleep(50)
+
+    # Second start fails — already active
+    ref = push(socket, "start_group_tournament", %{})
+    assert_reply(ref, :error, %{reason: "invalid_state"})
+  end
+
+  test "request_invite_update returns current invite state", %{
+    socket: socket,
+    topic: topic
+  } do
+    {:ok, _response, socket} = subscribe_and_join(socket, GroupTournamentChannel, topic)
+
+    ref = push(socket, "request_invite_update", %{})
+
+    assert_reply(ref, :ok, %{
+      invite: %{state: "invited"},
+      platform_error: nil
+    })
+  end
+
   defp insert_group_tournament! do
     creator = insert(:user)
     group_task = insert(:group_task)

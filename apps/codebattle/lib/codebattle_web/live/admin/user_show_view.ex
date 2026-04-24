@@ -255,25 +255,39 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   def handle_event("refresh_invite_via_api", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
-    _ = InviteContext.refresh_status_via_api(invite)
-    {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
+
+    flash =
+      case InviteContext.refresh_status_via_api(invite) do
+        {:ok, updated} ->
+          {:info, "Platform status: #{updated.state}"}
+
+        {:error, :no_platform_invite_id} ->
+          {:error, "No platform invite ID found in response data"}
+
+        {:error, reason} ->
+          {:error, "Check failed: #{inspect(reason)}"}
+      end
+
+    {:noreply,
+     socket
+     |> assign(platform_invites: get_platform_invites(user.id))
+     |> put_flash(elem(flash, 0), elem(flash, 1))}
   end
 
   def handle_event("mark_invite_accepted", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
 
-    # Try to refresh from platform so we can mirror their slug onto our User record.
-    # If refresh fails (e.g., no platform invite id), still mark the invite accepted as the admin commanded.
+    # Try to refresh from platform first to mirror identity.
+    # Regardless of result, force-accept as admin override.
     case InviteContext.refresh_status_via_api(invite) do
+      {:ok, %{state: "accepted"}} ->
+        :ok
+
       {:ok, refreshed} ->
-        # If the platform already says accepted, refresh_status_via_api handled everything.
-        # Otherwise force-accept as admin override.
-        if refreshed.state != "accepted" do
-          refreshed
-          |> ExternalPlatformInvite.changeset(%{state: "accepted"})
-          |> Repo.update!()
-        end
+        refreshed
+        |> ExternalPlatformInvite.changeset(%{state: "accepted"})
+        |> Repo.update!()
 
       _ ->
         invite
@@ -281,9 +295,19 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         |> Repo.update!()
     end
 
+    # Enqueue external setup job if this invite is tied to a tournament
+    if invite.group_tournament_id do
+      %{user_id: user.id, group_tournament_id: invite.group_tournament_id}
+      |> Codebattle.Workers.ExternalSetupWorker.new()
+      |> Oban.insert()
+    end
+
     refreshed_user = User.get!(user.id, preload: [:clan])
 
-    {:noreply, assign(socket, user: refreshed_user, platform_invites: get_platform_invites(user.id))}
+    {:noreply,
+     socket
+     |> assign(user: refreshed_user, platform_invites: get_platform_invites(user.id))
+     |> put_flash(:info, "Invite marked as accepted")}
   end
 
   def handle_event("toggle_invite_details", %{"id" => id}, socket) do
