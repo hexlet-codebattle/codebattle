@@ -73,11 +73,11 @@ defmodule Codebattle.GroupTournament.Context do
     GroupTournament.changeset(group_tournament, attrs)
   end
 
-  @spec confirm_invitation(pos_integer(), map()) ::
+  @spec start_tournament(pos_integer(), map()) ::
           {:ok, GroupTournament.t()} | {:error, atom()}
-  def confirm_invitation(group_tournament_id, user) do
+  def start_tournament(group_tournament_id, user) do
     :ok = ensure_server_started(group_tournament_id)
-    Server.confirm_invitation(group_tournament_id, user)
+    Server.start_tournament(group_tournament_id, user)
   end
 
   @spec delete_group_tournament(GroupTournament.t()) ::

@@ -29,9 +29,9 @@ defmodule Codebattle.ExternalPlatform.Fake do
   @doc """
   Always returns :not_accepted so the invite flow stays at "invited" state
   until explicitly accepted. Use `accept_invite/1` to simulate acceptance
-  for a specific login, or call `ExternalPlatformInvite.Context` directly in tests.
+  for a specific invite_id, or call `ExternalPlatformInvite.Context` directly in tests.
   """
-  def check_invite(_login), do: {:error, :not_accepted}
+  def check_invite(_invite_id), do: {:error, :not_accepted}
 
   def create_invite(alias_name, _opts \\ []) when is_binary(alias_name) do
     alias_name = String.trim(alias_name)
@@ -95,12 +95,8 @@ defmodule Codebattle.ExternalPlatform.Fake do
     {:ok,
      %{
        "id" => invite_id,
-       "status" => "accepted",
-       "invite_link" => "https://fake-platform.test/invite/#{invite_id}",
-       "invitee" => %{
-         "id" => "fake-user-id-#{invite_id}",
-         "slug" => "fake-user-slug"
-       }
+       "status" => "pending",
+       "invite_link" => "https://fake-platform.test/invite/#{invite_id}"
      }}
   end
 

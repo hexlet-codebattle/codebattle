@@ -1,6 +1,6 @@
 import React from "react";
 
-function InvitationPanel({ invite, requestInviteUpdates }) {
+function InvitationPanel({ invite, onStart }) {
   return (
     <div className="container-fluid cb-main-wrapper py-5">
       <div className="container">
@@ -10,7 +10,10 @@ function InvitationPanel({ invite, requestInviteUpdates }) {
 
         <div className="row justify-content-center text-center my-5">
           <div className="col-md-3">
-            <p className="small">Задание выполняется в <br /><strong>SourceCraft</strong></p>
+            <p className="small">
+              Задание выполняется в <br />
+              <strong>SourceCraft</strong>
+            </p>
           </div>
           <div className="col-md-3">
             <p className="small text-muted pt-2">30 минут на решение</p>
@@ -30,7 +33,9 @@ function InvitationPanel({ invite, requestInviteUpdates }) {
                       <span>Создайте аккаунт в SourceCraft</span>
                     </div>
                     <div>
-                      <small>(Регистрируясь под тем же Yandex Id, что и при регистрации на Баттле Вузов)</small>
+                      <small>
+                        (Регистрируясь под тем же Yandex Id, что и при регистрации на Баттле Вузов)
+                      </small>
                     </div>
                   </div>
                 </div>
@@ -39,20 +44,26 @@ function InvitationPanel({ invite, requestInviteUpdates }) {
                   href="https://sourcecraft.dev/"
                   className="btn btn-success cb-btn-action rounded"
                   rel="noopener noreferrer"
-                >Создать аккаунт</a>
+                >
+                  Создать аккаунт
+                </a>
               </li>
 
               <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
                 <div className="d-flex align-items-center">
                   <span className="cb-step-num mr-3">2</span>
-                  <span>Присоединитесь к нашей организации в SourceCraft, чтобы получить задание</span>
+                  <span>
+                    Присоединитесь к нашей организации в SourceCraft, чтобы получить задание
+                  </span>
                 </div>
                 <a
                   target="_blank"
                   href={invite.inviteLink}
                   className="btn btn-success cb-btn-action rounded"
                   rel="noopener noreferrer"
-                >Получить приглашение</a>
+                >
+                  Принять приглашение
+                </a>
               </li>
 
               <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
@@ -60,7 +71,13 @@ function InvitationPanel({ invite, requestInviteUpdates }) {
                   <span className="cb-step-num mr-3">3</span>
                   <span>По завершению всех шагов вы можете начать решать задачу</span>
                 </div>
-                <button className="btn btn-success cb-btn-action rounded" onClick={requestInviteUpdates}>К задаче</button>
+                <button
+                  className="btn btn-success cb-btn-action rounded"
+                  onClick={onStart}
+                  disabled={invite.state !== "accepted"}
+                >
+                  К задаче
+                </button>
               </li>
             </ul>
           </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "@/components/Loading";
-import { load, requestInviteUpdate } from "@/middlewares/GroupTournament";
+import { load, requestInviteUpdate, startGroupTournament } from "@/middlewares/GroupTournament";
 import useGroupBattleRun from "@/utils/useGroupBattleRun";
 import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
 import * as selectors from "../../selectors";
@@ -36,6 +36,10 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     requestInviteUpdate()(dispatch);
   };
 
+  const handleStartTournament = () => {
+    startGroupTournament()(dispatch);
+  };
+
   useEffect(() => {
     if (tournamentId) {
       load(tournamentId)(dispatch);
@@ -46,11 +50,8 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
     return <Loading />;
   }
 
-  if (!isAdmin && requireInvitation && invite.state !== "accepted") {
-    return <InvitationPanel
-      invite={invite}
-      requestInviteUpdates={requestInviteUpdates}
-    />
+  if (!isAdmin && requireInvitation && status === "waiting_participants") {
+    return <InvitationPanel invite={invite} onStart={handleStartTournament} />;
   }
 
   if (platformError) {

@@ -263,21 +263,23 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
 
-    # Try to look up the user on the platform so we can mirror their slug onto our User record.
-    # If lookup fails (e.g., user not yet there), still mark the invite accepted as the admin commanded.
-    login = user.external_oauth_login || user.name
-
-    case ExternalPlatform.check_invite(login) do
-      {:ok, user_data} ->
-        update_user_platform_identity(user, user_data)
+    # Try to refresh from platform so we can mirror their slug onto our User record.
+    # If refresh fails (e.g., no platform invite id), still mark the invite accepted as the admin commanded.
+    case InviteContext.refresh_status_via_api(invite) do
+      {:ok, refreshed} ->
+        # If the platform already says accepted, refresh_status_via_api handled everything.
+        # Otherwise force-accept as admin override.
+        if refreshed.state != "accepted" do
+          refreshed
+          |> ExternalPlatformInvite.changeset(%{state: "accepted"})
+          |> Repo.update!()
+        end
 
       _ ->
-        :ok
+        invite
+        |> ExternalPlatformInvite.changeset(%{state: "accepted"})
+        |> Repo.update!()
     end
-
-    invite
-    |> ExternalPlatformInvite.changeset(%{state: "accepted"})
-    |> Repo.update!()
 
     refreshed_user = User.get!(user.id, preload: [:clan])
 

@@ -83,6 +83,24 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     end
   end
 
+  def handle_in("start_group_tournament", _, socket) do
+    current_user = socket.assigns.current_user
+
+    case extract_tournament_id(socket.topic) do
+      nil ->
+        {:reply, {:error, %{reason: "invalid_tournament_id"}}, socket}
+
+      tournament_id ->
+        case GroupTournamentContext.start_tournament(tournament_id, current_user) do
+          {:ok, group_tournament} ->
+            {:reply, {:ok, %{status: group_tournament.state}}, socket}
+
+          {:error, reason} ->
+            {:reply, {:error, %{reason: to_string(reason)}}, socket}
+        end
+    end
+  end
+
   def handle_in("group_tournament:run:request", %{"run_id" => run_id}, socket) do
     case parse_run_id(run_id) do
       {:ok, parsed_run_id} ->
@@ -111,7 +129,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       |> InviteContext.get_or_create_invite(tournament_id)
       |> InviteAdvancer.advance(current_user)
 
-    if invite.state in ["creating", "pending"] do
+    if invite.state in ["creating", "pending", "invited"] do
       maybe_schedule_invite_refresh(socket, tournament_id, invite, retries_left)
       {:noreply, socket}
     else
@@ -278,11 +296,16 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp maybe_schedule_invite_refresh(socket, tournament_id, invite),
-    do: maybe_schedule_invite_refresh(socket, tournament_id, invite, 15)
+    do: maybe_schedule_invite_refresh(socket, tournament_id, invite, 90)
 
   defp maybe_schedule_invite_refresh(socket, tournament_id, %{state: state}, retries_left)
        when state in ["creating", "pending"] and retries_left > 0 do
-    Process.send_after(self(), {:refresh_invite, tournament_id, retries_left - 1}, 1_000)
+    Process.send_after(self(), {:refresh_invite, tournament_id, retries_left - 1}, 3_000)
+    socket
+  end
+
+  defp maybe_schedule_invite_refresh(socket, tournament_id, %{state: "invited"}, retries_left) when retries_left > 0 do
+    Process.send_after(self(), {:refresh_invite, tournament_id, retries_left - 1}, 3_000)
     socket
   end
 

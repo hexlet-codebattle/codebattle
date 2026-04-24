@@ -129,6 +129,23 @@ export const requestInviteUpdate = () => (dispatch) => {
     });
 };
 
+export const startGroupTournament = () => (dispatch) => {
+  if (!channel) {
+    console.error("Channel not initialized");
+    return;
+  }
+
+  channel
+    .push("start_group_tournament", {})
+    .receive("ok", (data) => {
+      const normalizedData = camelizeKeys(data);
+      dispatch(actions.updateGroupTournamentStatus(normalizedData.status || "active"));
+    })
+    .receive("error", (error) => {
+      console.error("Start group tournament failed", error);
+    });
+};
+
 const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options);
   const data = await response.json();

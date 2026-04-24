@@ -116,28 +116,41 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   end
 
   @doc """
-  Checks if the user has accepted the invite on the external platform.
+  Checks if the user has accepted the invite on the external platform
+  by fetching the invite by its platform ID.
   Transitions: invited → accepted, or invited → expired.
   """
-  @spec check_accepted(ExternalPlatformInvite.t(), String.t()) ::
+  @spec check_accepted(ExternalPlatformInvite.t()) ::
           {:ok, ExternalPlatformInvite.t()} | {:error, term()}
-  def check_accepted(%ExternalPlatformInvite{state: "invited"} = invite, login) do
+  def check_accepted(%ExternalPlatformInvite{state: "invited"} = invite) do
     if expired?(invite) do
       update_invite(invite, %{state: "expired"})
     else
-      case ExternalPlatform.check_invite(login) do
-        {:ok, user_data} ->
-          _ = persist_platform_user(invite.user_id, user_data)
-          update_invite(invite, %{state: "accepted"})
-
-        {:error, :not_accepted} ->
-          {:error, :not_accepted}
-      end
+      do_check_accepted(invite)
     end
   end
 
-  def check_accepted(%ExternalPlatformInvite{state: state}, _login) do
+  def check_accepted(%ExternalPlatformInvite{state: state}) do
     {:error, {:invalid_transition, state, "accepted"}}
+  end
+
+  defp do_check_accepted(invite) do
+    case extract_platform_invite_id(invite) do
+      nil ->
+        {:error, :no_platform_invite_id}
+
+      platform_invite_id ->
+        case ExternalPlatform.check_invite(platform_invite_id) do
+          {:ok, body} ->
+            invitee = Map.get(body, "invitee") || %{}
+            user_data = %{id: Map.get(invitee, "id"), login: Map.get(invitee, "slug")}
+            _ = persist_platform_user(invite.user_id, user_data)
+            update_invite(invite, %{state: "accepted", response: merge_response(invite.response, body)})
+
+          {:error, :not_accepted} ->
+            {:error, :not_accepted}
+        end
+    end
   end
 
   @doc """

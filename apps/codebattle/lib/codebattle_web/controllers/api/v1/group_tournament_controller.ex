@@ -95,7 +95,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
   def confirm_invitation(conn, %{"id" => id}) do
     current_user = conn.assigns.current_user
 
-    case Context.confirm_invitation(id, current_user) do
+    case Context.start_tournament(id, current_user) do
       {:ok, group_tournament} ->
         json(conn, %{ok: true, group_tournament: serialize_group_tournament(group_tournament)})
 

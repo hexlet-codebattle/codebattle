@@ -2,7 +2,7 @@ defmodule Codebattle.GroupTournament.Server do
   @moduledoc false
   use GenServer
 
-  alias Codebattle.ExternalPlatform
+  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
@@ -33,8 +33,8 @@ defmodule Codebattle.GroupTournament.Server do
     :exit, _ -> {:error, :not_found}
   end
 
-  def confirm_invitation(id, user) do
-    GenServer.call(server_name(id), {:confirm_invitation, user}, 30_000)
+  def start_tournament(id, user) do
+    GenServer.call(server_name(id), {:start_tournament, user}, 30_000)
   catch
     :exit, _ -> {:error, :not_found}
   end
@@ -93,14 +93,14 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_call(
-        {:confirm_invitation, user},
+        {:start_tournament, user},
         _from,
         %{group_tournament: %{state: "waiting_participants", require_invitation: true} = group_tournament} = state
       ) do
-    login = user.external_oauth_login || user.name
+    invite = InviteContext.get_invite(user.id, group_tournament.id)
 
-    case ExternalPlatform.check_invite(login) do
-      {:ok, _user_data} ->
+    case invite && InviteContext.check_accepted(invite) do
+      {:ok, _updated_invite} ->
         updated =
           group_tournament
           |> GroupTournament.changeset(%{starts_at: DateTime.utc_now()})
@@ -112,16 +112,16 @@ defmodule Codebattle.GroupTournament.Server do
 
         {:reply, {:ok, updated}, %{cancel_start_timer(state) | group_tournament: updated}}
 
-      {:error, :not_accepted} ->
+      _ ->
         {:reply, {:error, :invitation_not_accepted}, state}
     end
   end
 
-  def handle_call({:confirm_invitation, _user}, _from, %{group_tournament: %{require_invitation: false}} = state) do
+  def handle_call({:start_tournament, _user}, _from, %{group_tournament: %{require_invitation: false}} = state) do
     {:reply, {:error, :invitation_not_required}, state}
   end
 
-  def handle_call({:confirm_invitation, _user}, _from, state) do
+  def handle_call({:start_tournament, _user}, _from, state) do
     {:reply, {:error, :invalid_state}, state}
   end
 
@@ -336,7 +336,7 @@ defmodule Codebattle.GroupTournament.Server do
 
   defp schedule_start(state, %{state: "waiting_participants", require_invitation: true}) do
     # When require_invitation is set, don't auto-start on timer.
-    # Tournament starts via confirm_invitation (automatic) or start_now (manual by admin).
+    # Tournament starts via start_tournament (user-initiated) or start_now (manual by admin).
     state
   end
 

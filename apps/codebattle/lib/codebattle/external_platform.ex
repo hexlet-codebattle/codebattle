@@ -37,20 +37,18 @@ defmodule Codebattle.ExternalPlatform do
   def get_user_id_by_login(_), do: nil
 
   @doc """
-  Polls the external platform to check whether the user has accepted an invitation.
-  Returns `{:ok, user_data}` if the invite was accepted, `{:error, :not_accepted}` otherwise.
+  Checks whether an invite has been accepted on the external platform by fetching
+  the invite by its platform ID via GET /v1/invites/{invite_id}.
+
+  Returns `{:ok, body}` when the platform reports status "accepted",
+  `{:error, :not_accepted}` otherwise.
   """
   @spec check_invite(String.t()) :: {:ok, map()} | {:error, :not_accepted}
-  def check_invite(login) when is_binary(login) do
-    case adapter() do
-      nil ->
-        case get_user_by_login(login) do
-          %{id: _} = user_data -> {:ok, user_data}
-          _ -> {:error, :not_accepted}
-        end
-
-      mod ->
-        mod.check_invite(login)
+  def check_invite(invite_id) when is_binary(invite_id) and invite_id != "" do
+    case get_invite(invite_id) do
+      {:ok, %{"status" => "accepted"} = body} -> {:ok, body}
+      {:ok, _} -> {:error, :not_accepted}
+      {:error, _} -> {:error, :not_accepted}
     end
   end
 

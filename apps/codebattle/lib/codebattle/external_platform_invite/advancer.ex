@@ -23,7 +23,7 @@ defmodule Codebattle.ExternalPlatformInvite.Advancer do
     case invite.state do
       "pending" -> try_advance(InviteContext.send_invite(invite, alias_name), invite, user, attempts_left)
       "creating" -> try_advance(InviteContext.poll_status(invite), invite, user, attempts_left)
-      "invited" -> try_advance(InviteContext.check_accepted(invite, invite_login(user)), invite, user, attempts_left)
+      "invited" -> try_advance(InviteContext.check_accepted(invite), invite, user, attempts_left)
       _ -> invite
     end
   end
@@ -41,9 +41,4 @@ defmodule Codebattle.ExternalPlatformInvite.Advancer do
   defp invite_alias(%{external_oauth_login: login}) when is_binary(login) and login != "", do: login
   defp invite_alias(%{name: name}) when is_binary(name) and name != "", do: name
   defp invite_alias(_), do: ""
-
-  defp invite_login(%{external_platform_login: login}) when is_binary(login) and login != "", do: login
-  defp invite_login(%{external_oauth_login: login}) when is_binary(login) and login != "", do: login
-  defp invite_login(%{name: name}) when is_binary(name) and name != "", do: name
-  defp invite_login(_), do: ""
 end
