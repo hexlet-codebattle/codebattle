@@ -170,8 +170,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     end
   end
 
-  defp maybe_insert_setup_job(multi, %{group_tournament_id: gt_id, user_id: user_id})
-       when not is_nil(gt_id) do
+  defp maybe_insert_setup_job(multi, %{group_tournament_id: gt_id, user_id: user_id}) when not is_nil(gt_id) do
     job =
       Codebattle.Workers.ExternalSetupWorker.new(%{
         user_id: user_id,
