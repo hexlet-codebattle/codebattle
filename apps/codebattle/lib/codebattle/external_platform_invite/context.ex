@@ -154,33 +154,29 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   end
 
   defp accept_and_enqueue_setup(invite, body) do
-    changeset =
-      ExternalPlatformInvite.changeset(invite, %{
+    result =
+      update_invite(invite, %{
         state: "accepted",
         response: merge_response(invite.response, body)
       })
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:invite, changeset)
-    |> maybe_insert_setup_job(invite)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{invite: updated_invite}} -> {:ok, updated_invite}
-      {:error, :invite, changeset, _} -> {:error, changeset}
+    case result do
+      {:ok, _updated_invite} ->
+        enqueue_external_setup(invite)
+        result
+
+      error ->
+        error
     end
   end
 
-  defp maybe_insert_setup_job(multi, %{group_tournament_id: gt_id, user_id: user_id}) when not is_nil(gt_id) do
-    job =
-      Codebattle.Workers.ExternalSetupWorker.new(%{
-        user_id: user_id,
-        group_tournament_id: gt_id
-      })
-
-    Oban.insert(multi, :external_setup, job)
+  defp enqueue_external_setup(%{group_tournament_id: gt_id, user_id: user_id}) when not is_nil(gt_id) do
+    %{user_id: user_id, group_tournament_id: gt_id}
+    |> Codebattle.Workers.ExternalSetupWorker.new()
+    |> Oban.insert()
   end
 
-  defp maybe_insert_setup_job(multi, _invite), do: multi
+  defp enqueue_external_setup(_invite), do: :ok
 
   @doc """
   Re-fetches the invite from SourceCraft (using the new GET /invites/{id} endpoint)
