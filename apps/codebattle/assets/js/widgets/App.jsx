@@ -57,6 +57,7 @@ const persistor = persistStore(store);
 const EventWidget = React.lazy(() => import("./pages/event"));
 const HallOfFame = React.lazy(() => import("./pages/hallOfFamePage"));
 const HeadToHead = React.lazy(() => import("./pages/headToHeadPage"));
+const GameMl = React.lazy(() => import("./pages/gameMl/GameMlPage"));
 const Seasons = React.lazy(() => import("./pages/seasonsPage"));
 const SeasonShow = React.lazy(() => import("./pages/seasonsPage/SeasonShowPage"));
 const InvitesContainer = React.lazy(() => import("./components/InvitesContainer"));
@@ -338,6 +339,18 @@ export function HeadToHeadPage() {
       <PersistGate loading={null} persistor={persistor}>
         <Suspense>
           <HeadToHead />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
+
+export function GameMlPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <GameMl />
         </Suspense>
       </PersistGate>
     </Provider>

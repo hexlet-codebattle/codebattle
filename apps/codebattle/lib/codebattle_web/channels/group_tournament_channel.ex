@@ -5,6 +5,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   alias Codebattle.ExternalPlatformInvite.Advancer, as: InviteAdvancer
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
   alias Codebattle.PubSub.Message
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
@@ -16,7 +17,6 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
         if has_access?(current_user, group_tournament) do
           subscribe_to_group_tournament(parsed_tournament_id, current_user)
-          Codebattle.PubSub.subscribe("group_tournament:#{parsed_tournament_id}:user:#{current_user.id}")
           join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
         else
           {:error, %{reason: "not_authorized"}}
@@ -30,6 +30,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   defp subscribe_to_group_tournament(tournament_id, current_user) do
     if Codebattle.User.admin_or_moderator?(current_user) do
       Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
+    else
+      Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:user:#{current_user.id}")
     end
   end
 
@@ -57,6 +59,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
        status: group_tournament.state,
        invite: serialize_invite(invite),
        require_invitation: true,
+       run_on_external_platform: group_tournament.run_on_external_platform,
        platform_error: platform_error,
        external_setup: serialize_external_setup(external_setup, user, group_tournament)
      }, socket}
@@ -70,6 +73,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
        status: group_tournament.state,
        invite: %{state: "accepted"},
        require_invitation: false,
+       run_on_external_platform: group_tournament.run_on_external_platform,
        external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
      }, socket}
   end
@@ -99,6 +103,21 @@ defmodule CodebattleWeb.GroupTournamentChannel do
             {:reply, {:error, %{reason: to_string(reason)}}, socket}
         end
     end
+  end
+
+  def handle_in("group_tournament:submit_solution", %{"solution" => solution} = payload, socket)
+      when is_binary(solution) do
+    current_user = socket.assigns.current_user
+    lang = payload["lang"]
+
+    case extract_tournament_id(socket.topic) do
+      nil -> {:reply, {:error, %{reason: "invalid_tournament_id"}}, socket}
+      tournament_id -> attempt_submit_solution(tournament_id, current_user, lang, solution, socket)
+    end
+  end
+
+  def handle_in("group_tournament:submit_solution", _payload, socket) do
+    {:reply, {:error, %{reason: "invalid_payload"}}, socket}
   end
 
   def handle_in("group_tournament:run:request", %{"run_id" => run_id}, socket) do
@@ -183,6 +202,37 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {:reply, {:ok, response}, socket}
   end
 
+  defp attempt_submit_solution(tournament_id, current_user, lang, solution, socket) do
+    group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
+
+    cond do
+      group_tournament.run_on_external_platform ->
+        {:reply, {:error, %{reason: "external_platform_only"}}, socket}
+
+      not is_binary(lang) or lang == "" ->
+        {:reply, {:error, %{reason: "lang_required"}}, socket}
+
+      true ->
+        do_submit_solution(group_tournament, current_user, lang, solution, socket)
+    end
+  end
+
+  defp do_submit_solution(group_tournament, current_user, lang, solution, socket) do
+    :ok = GroupTournamentContext.ensure_server_started(group_tournament)
+
+    with {:ok, _} <- GroupTournamentServer.join(group_tournament.id, current_user, lang),
+         {:ok, submitted_solution} <-
+           GroupTournamentServer.submit_solution(group_tournament.id, current_user, solution) do
+      {:reply, {:ok, %{solution: serialize_solution(submitted_solution)}}, socket}
+    else
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "submit_failed"}}, socket}
+    end
+  end
+
   defp extract_tournament_id("group_tournament:" <> tournament_id) do
     case parse_tournament_id(tournament_id) do
       {:ok, parsed_tournament_id} -> parsed_tournament_id
@@ -208,6 +258,18 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       invite_link: invite.invite_link,
       expires_at: invite.expires_at,
       response: invite.response
+    }
+  end
+
+  defp serialize_solution(nil), do: nil
+
+  defp serialize_solution(solution) do
+    %{
+      id: solution.id,
+      user_id: solution.user_id,
+      lang: solution.lang,
+      solution: solution.solution,
+      inserted_at: solution.inserted_at
     }
   end
 

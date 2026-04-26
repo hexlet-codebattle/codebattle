@@ -10,21 +10,16 @@ const statusBadge = {
 };
 
 function TournamentTimer({ groupTournament }) {
-  if (groupTournament?.state !== "active") {
-    return null;
-  }
-
   const startedAt = groupTournament?.startedAt;
   const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
+  const endsAt =
+    startedAt && Number.isInteger(timeoutSeconds)
+      ? moment.utc(startedAt).add(timeoutSeconds, "seconds")
+      : null;
 
-  if (!startedAt || !Number.isInteger(timeoutSeconds)) {
-    return null;
-  }
-
-  const endsAt = moment.utc(startedAt).add(timeoutSeconds, "seconds");
   const [time, seconds] = useTimer(endsAt);
 
-  if (!seconds && !time) {
+  if (groupTournament?.state !== "active" || !endsAt || (!seconds && !time)) {
     return null;
   }
 

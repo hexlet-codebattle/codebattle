@@ -7,6 +7,7 @@ defmodule Codebattle.Game.Engine do
   alias Codebattle.CodeCheck
   alias Codebattle.CssTask
   alias Codebattle.Game
+  alias Codebattle.Game.BotDetection
   alias Codebattle.Playbook
   alias Codebattle.Repo
   alias Codebattle.SqlTask
@@ -268,6 +269,7 @@ defmodule Codebattle.Game.Engine do
             {:ok, _game} = store_result!(new_game, params)
 
             Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+            BotDetection.schedule_analysis_after_game(new_game)
 
             store_playbook_async(new_game)
 
@@ -295,6 +297,7 @@ defmodule Codebattle.Game.Engine do
       {:ok, {_old_game_state, new_game}} ->
         {:ok, _game} = store_result!(new_game)
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+        BotDetection.schedule_analysis_after_game(new_game)
         store_playbook_async(new_game)
         {:ok, new_game}
 
@@ -509,6 +512,7 @@ defmodule Codebattle.Game.Engine do
       })
 
     Codebattle.PubSub.broadcast("game:finished", %{game: updated_game})
+    BotDetection.schedule_analysis_after_game(updated_game)
     terminate_game_after(game, timeout_termination_delay(game))
     store_playbook_async(game)
     updated_game

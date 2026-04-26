@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 import GameRoomModes from "../config/gameModes";
 import sound from "../lib/sound";
@@ -57,6 +57,7 @@ const useOption = (
     hideCursorInOverviewRuler = false,
     overviewRulerBorder = true,
     placeholder = defaultEditorPlaceholder,
+    allowClipboard = false,
   },
 ) => {
   const options = useMemo(
@@ -77,7 +78,7 @@ const useOption = (
       minimap: { enabled: false },
       parameterHints: { enabled: false },
       readOnly: !editable || loading,
-      contextmenu: false,
+      contextmenu: allowClipboard,
       scrollbar: {
         useShadows: false,
         verticalHasArrows: true,
@@ -104,6 +105,7 @@ const useOption = (
       fontSize,
       editable,
       loading,
+      allowClipboard,
     ],
   );
 
@@ -135,6 +137,14 @@ const useOption = (
 const useEditor = (props) => {
   const [editor, setEditor] = useState();
   const [monaco, setMonaco] = useState();
+
+  // Keep the latest onTelemetryEvent in a ref so Monaco's mount-time listener
+  // closure always invokes the current callback, not a stale (no-op) snapshot
+  // captured before the gating state turned on.
+  const onTelemetryEventRef = useRef(props.onTelemetryEvent);
+  useEffect(() => {
+    onTelemetryEventRef.current = props.onTelemetryEvent;
+  }, [props.onTelemetryEvent]);
 
   const options = useOption(editor, props);
   useCursorUpdates(editor, monaco, props);
@@ -185,13 +195,14 @@ const useEditor = (props) => {
       roomMode,
       checkResult,
       toggleMuteSound,
-      onTelemetryEvent,
       syntax,
       gameStartTimeMs,
+      allowClipboard,
     } = props;
 
     const emitTelemetry = (payload) => {
-      if (typeof onTelemetryEvent !== "function") {
+      const handler = onTelemetryEventRef.current;
+      if (typeof handler !== "function") {
         return;
       }
 
@@ -207,7 +218,7 @@ const useEditor = (props) => {
           ? Math.max(0, nowMs - gameStartTimeMs)
           : 0;
 
-      onTelemetryEvent({
+      handler({
         offset_ms: offsetMs,
         lang_slug: syntax,
         selection_start:
@@ -259,125 +270,130 @@ const useEditor = (props) => {
     });
 
     // Intercept keydown for custom Copy, Cut, and Paste logic.
-    currentEditor.onKeyDown((e) => {
-      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-      const browserEvent = e.browserEvent || {};
+    if (!allowClipboard)
+      currentEditor.onKeyDown((e) => {
+        const isCtrlOrCmd = e.ctrlKey || e.metaKey;
+        const browserEvent = e.browserEvent || {};
 
-      emitTelemetry({
-        type: "keydown",
-        key: browserEvent.key,
-        code: browserEvent.code,
-        key_code: e.keyCode,
-        alt_key: !!e.altKey,
-        ctrl_key: !!e.ctrlKey,
-        meta_key: !!e.metaKey,
-        shift_key: !!e.shiftKey,
-        repeat: !!browserEvent.repeat,
-        is_composing: !!browserEvent.isComposing,
-      });
+        emitTelemetry({
+          type: "keydown",
+          key: browserEvent.key,
+          code: browserEvent.code,
+          key_code: e.keyCode,
+          alt_key: !!e.altKey,
+          ctrl_key: !!e.ctrlKey,
+          meta_key: !!e.metaKey,
+          shift_key: !!e.shiftKey,
+          repeat: !!browserEvent.repeat,
+          is_composing: !!browserEvent.isComposing,
+        });
 
-      // COPY (Ctrl+C / Cmd+C)
-      if (isCtrlOrCmd && e.code === "KeyC") {
-        e.preventDefault();
-        if (!editable) return;
+        // COPY (Ctrl+C / Cmd+C)
+        if (isCtrlOrCmd && e.code === "KeyC") {
+          e.preventDefault();
+          if (!editable) return;
 
-        // Generate a new random prefix each time we copy
-        currentClipboardPrefix = generateRandomPrefix();
-        selection = currentEditor.getModel().getValueInRange(currentEditor.getSelection());
-        editorClipboard = currentClipboardPrefix + selection;
-      }
+          // Generate a new random prefix each time we copy
+          currentClipboardPrefix = generateRandomPrefix();
+          selection = currentEditor.getModel().getValueInRange(currentEditor.getSelection());
+          editorClipboard = currentClipboardPrefix + selection;
+        }
 
-      // CUT (Ctrl+X / Cmd+X)
-      if (isCtrlOrCmd && e.code === "KeyX") {
-        e.preventDefault();
-        if (!editable) return;
+        // CUT (Ctrl+X / Cmd+X)
+        if (isCtrlOrCmd && e.code === "KeyX") {
+          e.preventDefault();
+          if (!editable) return;
 
-        // Generate a new random prefix each time we cut
-        currentClipboardPrefix = generateRandomPrefix();
-        selection = currentEditor.getModel().getValueInRange(currentEditor.getSelection());
-        editorClipboard = currentClipboardPrefix + selection;
+          // Generate a new random prefix each time we cut
+          currentClipboardPrefix = generateRandomPrefix();
+          selection = currentEditor.getModel().getValueInRange(currentEditor.getSelection());
+          editorClipboard = currentClipboardPrefix + selection;
 
-        // Remove the selection from the editor
-        currentEditor.executeEdits("custom-cut", [
-          {
-            range: currentEditor.getSelection(),
-            text: "",
-            forceMoveMarkers: true,
-          },
-        ]);
-      }
-
-      // PASTE (Ctrl+V / Cmd+V)
-      if (isCtrlOrCmd && e.code === "KeyV") {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Only allow paste if it matches the exact current prefix
-        if (editorClipboard.startsWith(currentClipboardPrefix)) {
-          // Remove the prefix before inserting
-          const customText = editorClipboard.replace(currentClipboardPrefix, "");
-          currentEditor.executeEdits("custom-paste", [
+          // Remove the selection from the editor
+          currentEditor.executeEdits("custom-cut", [
             {
               range: currentEditor.getSelection(),
-              text: customText,
+              text: "",
               forceMoveMarkers: true,
             },
           ]);
         }
-      }
 
-      // Block Insert (paste on some systems)
-      // if (e.keyCode === 45 && e.code !== 'KeyO' /* Insert key */) {
-      //   e.preventDefault();
-      //   e.stopPropagation();
-      // }
-    });
+        // PASTE (Ctrl+V / Cmd+V)
+        if (isCtrlOrCmd && e.code === "KeyV") {
+          e.preventDefault();
+          e.stopPropagation();
+
+          // Only allow paste if it matches the exact current prefix
+          if (editorClipboard.startsWith(currentClipboardPrefix)) {
+            // Remove the prefix before inserting
+            const customText = editorClipboard.replace(currentClipboardPrefix, "");
+            currentEditor.executeEdits("custom-paste", [
+              {
+                range: currentEditor.getSelection(),
+                text: customText,
+                forceMoveMarkers: true,
+              },
+            ]);
+          }
+        }
+
+        // Block Insert (paste on some systems)
+        // if (e.keyCode === 45 && e.code !== 'KeyO' /* Insert key */) {
+        //   e.preventDefault();
+        //   e.stopPropagation();
+        // }
+      });
 
     // Disable the context menu (right-click) to block "Paste" from there
-    currentEditor.onContextMenu((e) => {
-      // Monaco's context menu event has the DOM event nested in e.event
-      if (e && e.event && e.event.preventDefault) {
-        e.event.preventDefault();
-      }
-      return false;
-    });
+    if (!allowClipboard) {
+      currentEditor.onContextMenu((e) => {
+        // Monaco's context menu event has the DOM event nested in e.event
+        if (e && e.event && e.event.preventDefault) {
+          e.event.preventDefault();
+        }
+        return false;
+      });
+    }
 
     // Prevent the DOM-level paste event
     const domNode = currentEditor.getDomNode();
-    domNode.addEventListener(
-      "paste",
-      (e) => {
-        emitTelemetry({
-          type: "paste_blocked",
-          clipboard_text_length: e.clipboardData?.getData("text")?.length,
-          alt_key: !!e.altKey,
-          ctrl_key: !!e.ctrlKey,
-          meta_key: !!e.metaKey,
-          shift_key: !!e.shiftKey,
-        });
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      },
-      true,
-    );
+    if (!allowClipboard)
+      domNode.addEventListener(
+        "paste",
+        (e) => {
+          emitTelemetry({
+            type: "paste_blocked",
+            clipboard_text_length: e.clipboardData?.getData("text")?.length,
+            alt_key: !!e.altKey,
+            ctrl_key: !!e.ctrlKey,
+            meta_key: !!e.metaKey,
+            shift_key: !!e.shiftKey,
+          });
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        },
+        true,
+      );
 
-    domNode.addEventListener(
-      "drop",
-      (e) => {
-        emitTelemetry({
-          type: "drop_blocked",
-          alt_key: !!e.altKey,
-          ctrl_key: !!e.ctrlKey,
-          meta_key: !!e.metaKey,
-          shift_key: !!e.shiftKey,
-        });
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      },
-      true,
-    );
+    if (!allowClipboard)
+      domNode.addEventListener(
+        "drop",
+        (e) => {
+          emitTelemetry({
+            type: "drop_blocked",
+            alt_key: !!e.altKey,
+            ctrl_key: !!e.ctrlKey,
+            meta_key: !!e.metaKey,
+            shift_key: !!e.shiftKey,
+          });
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        },
+        true,
+      );
 
     if (editable) {
       currentEditor.focus();

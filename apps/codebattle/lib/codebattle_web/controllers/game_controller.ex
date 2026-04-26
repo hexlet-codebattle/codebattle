@@ -4,6 +4,7 @@ defmodule CodebattleWeb.GameController do
   import PhoenixGon.Controller
 
   alias Codebattle.Game
+  alias Codebattle.Game.BotDetection
   alias Codebattle.Game.Context
   alias Codebattle.Game.Helpers
   alias Codebattle.Playbook
@@ -65,6 +66,95 @@ defmodule CodebattleWeb.GameController do
       {:error, :not_found} ->
         render_game_not_found(conn)
     end
+  end
+
+  def ml(conn, %{"id" => id} = params) do
+    user = conn.assigns.current_user
+
+    if User.admin_or_moderator?(user) do
+      render_ml(conn, id, user, params)
+    else
+      render_ml_forbidden(conn)
+    end
+  end
+
+  defp render_ml(conn, id, user, params) do
+    case Context.fetch_game(id) do
+      {:ok, game} -> render_ml_for_game(conn, game, user, params)
+      {:error, :not_found} -> render_game_not_found(conn)
+    end
+  end
+
+  defp render_ml_for_game(conn, game, user, params) do
+    if Map.get(params, "refresh") == "1" do
+      {:ok, _} = BotDetection.analyze_and_persist(game.id)
+    end
+
+    batches = Codebattle.Game.EditorEventBatch.list_by_game(game.id)
+    {:ok, analyses} = BotDetection.get_or_analyze(game.id)
+    analyses_by_user = Map.new(analyses, &{&1.user_id, &1})
+    players = Helpers.get_players(game)
+
+    conn
+    |> put_gon(
+      game_id: game.id,
+      players: Enum.map(players, &serialize_ml_player(&1, analyses_by_user)),
+      batches: Enum.map(batches, &serialize_batch/1)
+    )
+    |> render("ml.html", %{game: game, user: user})
+  end
+
+  defp render_ml_forbidden(conn) do
+    conn
+    |> put_flash(:danger, gettext("You must be admin to access that page"))
+    |> redirect(to: Routes.root_path(conn, :index))
+  end
+
+  defp serialize_ml_player(player, analyses_by_user) do
+    analysis = Map.get(analyses_by_user, player.id)
+
+    %{
+      id: player.id,
+      name: player.name,
+      avatar_url: Map.get(player, :avatar_url),
+      rating: Map.get(player, :rating),
+      rank: Map.get(player, :rank),
+      lang: Map.get(player, :editor_lang) || Map.get(player, :lang),
+      is_bot: Map.get(player, :is_bot, false),
+      editor_text: Map.get(player, :editor_text),
+      editor_lang: Map.get(player, :editor_lang),
+      report: serialize_analysis(analysis)
+    }
+  end
+
+  defp serialize_analysis(nil), do: nil
+
+  defp serialize_analysis(%BotDetection.Analysis{} = a) do
+    %{
+      score: a.score,
+      level: Atom.to_string(a.level),
+      signals: a.signals,
+      stats: a.stats,
+      code_analysis: a.code_analysis,
+      final_length: a.final_length,
+      template_length: a.template_length,
+      effective_added_length: a.effective_added_length
+    }
+  end
+
+  defp serialize_batch(batch) do
+    %{
+      id: batch.id,
+      user_id: batch.user_id,
+      lang: batch.lang,
+      event_count: batch.event_count,
+      window_start_offset_ms: batch.window_start_offset_ms,
+      window_end_offset_ms: batch.window_end_offset_ms,
+      batch_started_at: batch.batch_started_at,
+      batch_ended_at: batch.batch_ended_at,
+      summary: batch.summary,
+      inserted_at: batch.inserted_at
+    }
   end
 
   def join(conn, %{"id" => id}) do
@@ -137,7 +227,7 @@ defmodule CodebattleWeb.GameController do
         conn =
           put_gon(conn,
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
-            editor_summary_enabled: FunWithFlags.enabled?(:editor_summary),
+            editor_summary_enabled: !FunWithFlags.enabled?(:editor_summary_disabled),
             can_manage_game: User.admin_or_moderator?(user),
             game: game_params,
             game_id: game.id,

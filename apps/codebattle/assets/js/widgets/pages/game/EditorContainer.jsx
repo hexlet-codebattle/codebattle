@@ -39,7 +39,10 @@ import useMachineStateSelector from "../../utils/useMachineStateSelector";
 import EditorToolbar from "./EditorToolbar";
 
 const restrictedText = '\n\n\n\t"Only for Premium subscribers"';
-const editorSummaryEnabled = !!Gon.getAsset("editor_summary_enabled");
+
+// Default ON unless BE Gon flag explicitly disables it. Read at call time
+// so SPA navigation between pages can't latch a stale `false`.
+const isEditorSummaryEnabled = () => Gon.getAsset("editor_summary_enabled") !== false;
 
 const useEditorChannelSubscription = (mainService, editorService, player) => {
   const dispatch = useDispatch();
@@ -84,6 +87,7 @@ function EditorContainer({
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isAdminOrModerator = useSelector(selectors.currentUserIsAdminOrModeratorSelector);
   const isPremium = useSelector(selectors.currentUserIsPremiumSelector);
+  const currentUserIsBot = useSelector(selectors.currentUserIsBotSelector);
   const gameId = useSelector(selectors.gameIdSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
   const { tournamentId, startsAt, hideBannedPlayerControls } = useSelector(
@@ -210,7 +214,12 @@ function EditorContainer({
     !openedReplayer && userSettings.editable && userSettings.editorState !== "banned";
   const canSendCursor = canChange;
   const canCaptureEditorTelemetry =
-    editorSummaryEnabled && canChange && editable && isActiveGame && !isPreview;
+    isEditorSummaryEnabled() &&
+    canChange &&
+    editable &&
+    isActiveGame &&
+    !isPreview &&
+    !currentUserIsBot;
   const updateEditor =
     editorCurrent.context.editorState === "testing" ? updateEditorValue : updateAndSendEditorValue;
   const onChange = canChange ? updateEditor : noop;

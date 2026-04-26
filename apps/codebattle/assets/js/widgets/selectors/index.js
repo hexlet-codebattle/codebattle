@@ -37,6 +37,9 @@ export const currentUserIsPremiumSelector = (state) =>
 export const currentUserIsGuestSelector = (state) =>
   !!state.user.users[state.user.currentUserId].isGuest;
 
+export const currentUserIsBotSelector = (state) =>
+  !!state.user.users[state.user.currentUserId]?.isBot;
+
 export const userByIdSelector = (userId) => (state) => state.user.users[userId];
 
 export const userIsAdminSelector = (userId) => (state) =>

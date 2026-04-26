@@ -1,6 +1,7 @@
 defmodule Codebattle.Game.ContextTest do
   use Codebattle.DataCase
 
+  alias Codebattle.Game.EditorEventBatch
   alias Codebattle.Game.GlobalSupervisor
   alias Codebattle.Game.Player
   alias Codebattle.Game.Server
@@ -67,6 +68,74 @@ defmodule Codebattle.Game.ContextTest do
       reloaded_game = Game.Context.get_game!(game_id)
 
       assert Enum.map(reloaded_game.players, & &1.rating) == [user1.rating, user2.rating]
+    end
+  end
+
+  describe "store_editor_summary/4" do
+    setup do
+      user1 = insert(:user)
+      user2 = insert(:user)
+
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      {:ok, %{user: user1, game: game}}
+    end
+
+    test "persists batch when summary uses camelCase keys (frontend payload)", %{user: user, game: game} do
+      summary = %{
+        "eventCount" => 5,
+        "windowStartOffsetMs" => 100,
+        "windowEndOffsetMs" => 900,
+        "langSlug" => "elixir",
+        "keyEventCount" => 4,
+        "printableKeyCount" => 3,
+        "charsInserted" => 7
+      }
+
+      assert {:ok, %EditorEventBatch{} = batch} =
+               Game.Context.store_editor_summary(game.id, user, summary, "elixir")
+
+      assert batch.event_count == 5
+      assert batch.window_start_offset_ms == 100
+      assert batch.window_end_offset_ms == 900
+      assert batch.lang == "elixir"
+      assert batch.summary["key_event_count"] == 4
+      assert batch.summary["printable_key_count"] == 3
+      assert batch.summary["chars_inserted"] == 7
+      refute Map.has_key?(batch.summary, "lang_slug")
+    end
+
+    test "persists batch when summary uses snake_case keys", %{user: user, game: game} do
+      summary = %{
+        "event_count" => 2,
+        "window_start_offset_ms" => 0,
+        "window_end_offset_ms" => 500,
+        "lang_slug" => "ruby",
+        "key_event_count" => 2
+      }
+
+      assert {:ok, %EditorEventBatch{} = batch} =
+               Game.Context.store_editor_summary(game.id, user, summary, "ruby")
+
+      assert batch.event_count == 2
+      assert batch.summary["key_event_count"] == 2
+    end
+
+    test "skips when event_count is zero", %{user: user, game: game} do
+      summary = %{"eventCount" => 0, "windowStartOffsetMs" => 0, "windowEndOffsetMs" => 0}
+
+      assert {:ok, :skipped} = Game.Context.store_editor_summary(game.id, user, summary, "elixir")
+    end
+
+    test "skips when end offset precedes start offset", %{user: user, game: game} do
+      summary = %{"eventCount" => 1, "windowStartOffsetMs" => 500, "windowEndOffsetMs" => 100}
+
+      assert {:ok, :skipped} = Game.Context.store_editor_summary(game.id, user, summary, "elixir")
+    end
+
+    test "skips when summary is nil", %{user: user, game: game} do
+      assert {:ok, :skipped} = Game.Context.store_editor_summary(game.id, user, nil, "elixir")
     end
   end
 

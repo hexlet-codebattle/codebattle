@@ -316,6 +316,24 @@ msgstr "Задача"
 msgid "Editor"
 msgstr "Редактор"
 
+msgid "Solution"
+msgstr "Решение"
+
+msgid "Submit solution"
+msgstr "Отправить решение"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Sending..."
+msgstr "Отправка..."
+
+msgid "Copy"
+msgstr "Копировать"
+
+msgid "Copied!"
+msgstr "Скопировано!"
+
 msgid "Output"
 msgstr "Тесты"
 

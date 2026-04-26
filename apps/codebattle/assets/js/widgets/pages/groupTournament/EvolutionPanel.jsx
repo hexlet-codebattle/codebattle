@@ -36,13 +36,15 @@ const buildRunMeta = (item) => {
 
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   return (
-    <div className="card cb-card border cb-border-color rounded h-100 shadow-sm">
-      <div className="card-header py-3 border-bottom cb-border-color">
+    <div className="card cb-card border cb-border-color rounded shadow-sm">
+      <div className="card-header py-2 border-bottom cb-border-color">
         <h6 className="cb-text mb-0">{i18n.t("Execution History")}</h6>
       </div>
-      <div className="card-body p-2 border-top cb-border-color">
+      <div
+        className="card-body p-2 border-top cb-border-color"
+        style={{ height: "80vh", overflowY: "auto" }}
+      >
         <div
-          className="cb-overflow-y-auto"
           style={{
             paddingRight: "4px",
             overflowX: "hidden",
@@ -72,10 +74,19 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
                     onClick={() => setRunId(item?.id)}
                     className="rounded p-2 text-left bg-transparent mb-2"
                     style={{
-                      border: "1px solid rgba(99, 102, 121, 0.95)",
+                      borderTop: isActive
+                        ? "1px solid rgba(96, 165, 250, 0.95)"
+                        : "1px solid rgba(99, 102, 121, 0.95)",
+                      borderRight: isActive
+                        ? "1px solid rgba(96, 165, 250, 0.95)"
+                        : "1px solid rgba(99, 102, 121, 0.95)",
+                      borderBottom: isActive
+                        ? "1px solid rgba(96, 165, 250, 0.95)"
+                        : "1px solid rgba(99, 102, 121, 0.95)",
                       borderLeft: `3px solid ${borderColor}`,
-                      backgroundColor: isActive ? "rgba(148, 163, 184, 0.15)" : "transparent",
-                      transition: "background-color 160ms ease",
+                      backgroundColor: isActive ? "rgba(96, 165, 250, 0.25)" : "transparent",
+                      boxShadow: isActive ? "0 0 0 1px rgba(96, 165, 250, 0.5)" : "none",
+                      transition: "background-color 160ms ease, box-shadow 160ms ease",
                       width: "100%",
                     }}
                     onMouseEnter={(event) => {

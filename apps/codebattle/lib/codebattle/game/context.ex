@@ -415,11 +415,23 @@ defmodule Codebattle.Game.Context do
   defp sanitize_string(_value, _max_length), do: nil
 
   defp map_get(data, key) when is_map(data) do
+    camel_key = snake_to_camel(key)
+
     Map.get(data, key) ||
+      Map.get(data, camel_key) ||
       case safe_to_existing_atom(key) do
         nil -> nil
         atom_key -> Map.get(data, atom_key)
+      end ||
+      case safe_to_existing_atom(camel_key) do
+        nil -> nil
+        atom_key -> Map.get(data, atom_key)
       end
+  end
+
+  defp snake_to_camel(key) when is_binary(key) do
+    [head | tail] = String.split(key, "_")
+    Enum.join([head | Enum.map(tail, &String.capitalize/1)])
   end
 
   defp safe_to_existing_atom(key) when is_binary(key) do
@@ -427,8 +439,6 @@ defmodule Codebattle.Game.Context do
   rescue
     ArgumentError -> nil
   end
-
-  defp safe_to_existing_atom(_key), do: nil
 
   @spec terminate_tournament_games(tournament_id) :: :ok
   def terminate_tournament_games(tournament_id) do

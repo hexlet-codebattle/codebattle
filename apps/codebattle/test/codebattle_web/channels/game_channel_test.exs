@@ -10,7 +10,7 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Phoenix.Socket.Reply
 
   setup do
-    FunWithFlags.enable(:editor_summary)
+    FunWithFlags.disable(:editor_summary_disabled)
 
     user1 = insert(:user, rating: 1001)
     user2 = insert(:user, rating: 1002)
@@ -318,6 +318,70 @@ defmodule CodebattleWeb.GameChannelTest do
         })
 
       assert_reply(ref2, :error, %{reason: :editor_summary_rate_limited})
+    end
+
+    test "is enabled by default without any flag toggling", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      FunWithFlags.clear(:editor_summary_disabled)
+
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      game_topic = game_topic(game)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+
+      push(socket1, "editor:summary", %{
+        summary: %{
+          event_count: 3,
+          window_start_offset_ms: 0,
+          window_end_offset_ms: 1_000,
+          lang_slug: "js",
+          key_event_count: 2
+        },
+        lang_slug: "js"
+      })
+
+      :timer.sleep(50)
+
+      assert [%EditorEventBatch{event_count: 3}] = EditorEventBatch.list_by_game(game.id)
+    end
+
+    test "drops summaries when editor_summary_disabled flag is enabled", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      FunWithFlags.enable(:editor_summary_disabled)
+
+      on_exit(fn -> FunWithFlags.disable(:editor_summary_disabled) end)
+
+      {:ok, game} =
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
+
+      game_topic = game_topic(game)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+
+      push(socket1, "editor:summary", %{
+        summary: %{
+          event_count: 3,
+          window_start_offset_ms: 0,
+          window_end_offset_ms: 1_000,
+          lang_slug: "js",
+          key_event_count: 2
+        },
+        lang_slug: "js"
+      })
+
+      :timer.sleep(50)
+
+      assert EditorEventBatch.list_by_game(game.id) == []
     end
   end
 

@@ -9,13 +9,15 @@ const initialState = {
     inviteLink: null,
   },
   requireInvitation: true,
+  runOnExternalPlatform: false,
   platformError: null,
   externalSetup: null,
   solutionEvolution: [], // Array<{ id: string, status: "creating" | "finished" }>
-  logs: [], // Array<object>
   code: "",
   langSlug: "",
   data: {},
+  activeRunIdFromServer: null,
+  activeRunFromServerTick: 0,
 };
 
 const groupTournament = createSlice({
@@ -53,9 +55,6 @@ const groupTournament = createSlice({
         solutionEvolutionItem.status = status;
       }
     },
-    addLog: (state, { payload }) => {
-      state.logs.push(payload);
-    },
     updateCode: (state, { payload }) => {
       state.code = payload;
     },
@@ -64,6 +63,10 @@ const groupTournament = createSlice({
     },
     setData: (state, { payload }) => {
       state.data = payload;
+    },
+    setActiveRunIdFromServer: (state, { payload }) => {
+      state.activeRunIdFromServer = payload;
+      state.activeRunFromServerTick = (state.activeRunFromServerTick || 0) + 1;
     },
     applyRunStub: (state, { payload }) => {
       const { groupTournamentId, userId, runId, status, score, playerIds, insertedAt } = payload;
@@ -90,6 +93,11 @@ const groupTournament = createSlice({
       }
 
       state.data.runs = currentRuns;
+
+      if (runId) {
+        state.activeRunIdFromServer = runId;
+        state.activeRunFromServerTick = (state.activeRunFromServerTick || 0) + 1;
+      }
     },
     applyRunDetails: (state, { payload }) => {
       const run = payload.run || payload;

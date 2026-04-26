@@ -6,6 +6,7 @@ import {
   EventPage,
   GroupTournamentPage,
   Game,
+  GameMlPage,
   GameThreejsPage,
   HallOfFamePage,
   HeadToHeadPage,
@@ -36,6 +37,7 @@ export const renderGroupTournamentPage = (domElement) =>
 export const renderGameWidget = (domElement) => createRoot(domElement).render(<Game />);
 export const renderGameThreejsPage = (domElement) =>
   createRoot(domElement).render(<GameThreejsPage />);
+export const renderGameMlPage = (domElement) => createRoot(domElement).render(<GameMlPage />);
 export const renderHeatmapWidget = (domElement) => createRoot(domElement).render(<Heatmap />);
 export const renderInvitesWidget = (domElement) => createRoot(domElement).render(<Invites />);
 export const renderLobby = (domElement) => createRoot(domElement).render(<Lobby />);

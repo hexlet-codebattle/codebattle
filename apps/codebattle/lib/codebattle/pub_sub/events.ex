@@ -4,6 +4,19 @@ defmodule Codebattle.PubSub.Events do
   alias Codebattle.PubSub.Message
   alias Codebattle.Tournament
 
+  def get_messages("tournament:bot_alert", %{tournament_id: tournament_id} = params) do
+    # Admin-only topic — the same one `TournamentAdminChannel.join/3`
+    # subscribes to. The matching `tournament:bot_alert` push from the
+    # admin channel to the FE is not wired up yet (TODO).
+    [
+      %Message{
+        topic: "tournament:#{tournament_id}",
+        event: "tournament:bot_alert",
+        payload: params
+      }
+    ]
+  end
+
   def get_messages("deploy:handoff_started", params) do
     [
       %Message{

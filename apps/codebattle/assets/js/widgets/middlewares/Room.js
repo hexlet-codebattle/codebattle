@@ -242,10 +242,15 @@ export const sendEditorSummary =
     const userId = selectors.currentUserIdSelector(state);
     const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
 
-    channel.push(channelMethods.editorSummary, {
-      summary,
-      langSlug: currentLangSlug,
-    });
+    try {
+      channel.push(channelMethods.editorSummary, {
+        summary,
+        langSlug: currentLangSlug,
+      });
+    } catch {
+      // Channel may have been torn down (e.g. unmount cleanup after navigation) —
+      // swallow so we don't crash the React cleanup path.
+    }
   };
 
 // TODO: only for show tournament

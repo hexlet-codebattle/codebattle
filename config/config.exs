@@ -33,7 +33,10 @@ config :codebattle, CodebattleWeb.Gettext,
 
 config :codebattle, Oban,
   repo: Codebattle.Repo,
-  queues: [default: 10]
+  # `bot_detection` is intentionally low-concurrency: the analysis is CPU-bound
+  # (telemetry aggregation + code parsing) and runs after every finished game,
+  # so we cap parallelism to keep the box responsive under bursts.
+  queues: [default: 10, bot_detection: 2]
 
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"

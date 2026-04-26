@@ -38,6 +38,7 @@ import "./widgets/lib/sentry";
 import {
   renderEventPage,
   renderGroupTournamentPage,
+  renderGameMlPage,
   renderGameThreejsPage,
   renderGameWidget,
   renderHallOfFame,
@@ -104,6 +105,7 @@ window.addEventListener("phx:page-loading-stop", (_info) => NProgress.done());
 liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById("game-widget-root");
+const gameMlRoot = document.getElementById("game-ml-root");
 const gameThreejsRoot = document.getElementById("game-threejs-root");
 const heatmapRoot = document.getElementById("heatmap-root");
 const onlineRoot = document.getElementById("online-root");
@@ -134,6 +136,10 @@ if (gameWidgetRoot) {
 
 if (gameThreejsRoot) {
   renderGameThreejsPage(gameThreejsRoot);
+}
+
+if (gameMlRoot) {
+  renderGameMlPage(gameMlRoot);
 }
 
 if (heatmapRoot) {

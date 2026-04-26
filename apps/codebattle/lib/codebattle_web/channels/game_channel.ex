@@ -175,14 +175,21 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("editor:summary", payload, socket) do
-    with true <- FunWithFlags.enabled?(:editor_summary),
-         %{summary: summary, lang_slug: lang_slug, summary_event_count: summary_event_count} <-
-           parse_editor_summary_payload(payload),
-         {:ok, socket} <- allow_editor_summary?(socket, summary_event_count) do
-      store_editor_summary(socket, summary, lang_slug)
+    if socket.assigns.current_user.is_bot do
+      {:noreply, socket}
     else
-      false -> {:noreply, socket}
-      {:error, :editor_summary_rate_limited} -> {:reply, {:error, %{reason: :editor_summary_rate_limited}}, socket}
+      with false <- FunWithFlags.enabled?(:editor_summary_disabled),
+           %{summary: summary, lang_slug: lang_slug, summary_event_count: summary_event_count} <-
+             parse_editor_summary_payload(payload),
+           {:ok, socket} <- allow_editor_summary?(socket, summary_event_count) do
+        store_editor_summary(socket, summary, lang_slug)
+      else
+        true ->
+          {:noreply, socket}
+
+        {:error, :editor_summary_rate_limited} ->
+          {:reply, {:error, %{reason: :editor_summary_rate_limited}}, socket}
+      end
     end
   end
 

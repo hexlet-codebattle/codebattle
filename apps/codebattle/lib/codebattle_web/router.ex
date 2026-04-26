@@ -311,6 +311,7 @@ defmodule CodebattleWeb.Router do
     end
 
     get("/games/:id/threejs", GameController, :threejs)
+    get("/games/:id/ml", GameController, :ml)
 
     scope "/games" do
       post("/training", GameController, :create_training)

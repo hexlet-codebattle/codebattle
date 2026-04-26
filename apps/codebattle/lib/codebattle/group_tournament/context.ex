@@ -177,9 +177,12 @@ defmodule Codebattle.GroupTournament.Context do
     UserGroupTournamentRun
     |> where([run], run.id in subquery(latest_run_ids))
     |> order_by([run], desc: run.inserted_at, desc: run.id)
-    |> limit(^limit)
+    |> maybe_limit(limit)
     |> Repo.all()
   end
+
+  defp maybe_limit(query, :infinity), do: query
+  defp maybe_limit(query, limit), do: limit(query, ^limit)
 
   @spec list_tokens(GroupTournament.t() | pos_integer(), keyword()) :: list(UserGroupTournament.t())
   def list_tokens(group_tournament_or_id, opts \\ [])

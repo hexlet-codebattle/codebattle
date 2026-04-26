@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "@/components/Loading";
-import { load, requestInviteUpdate, startGroupTournament } from "@/middlewares/GroupTournament";
+import {
+  load,
+  requestInviteUpdate,
+  startGroupTournament,
+  submitSolution,
+} from "@/middlewares/GroupTournament";
 import useGroupBattleRun from "@/utils/useGroupBattleRun";
 import useGroupTournamentChannel from "@/utils/useGroupTournamentChannel";
 import * as selectors from "../../selectors";
@@ -13,7 +18,6 @@ import ExternalPlatformErrorPanel from "./ExternalPlatformErrorPanel";
 import FullscreenGroupBattleViewer from "./FullscreenGroupBattleViewer";
 import Header from "./Header";
 import InvitationPanel from "./InvitationPanel";
-import LogPanel from "./LogPanel";
 import MainPanel from "./MainPanel";
 
 function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescription }) {
@@ -24,8 +28,15 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
 
   useGroupTournamentChannel(tournamentId);
 
-  const { status, invite, externalSetup, requireInvitation, platformError, logs, data } =
-    useSelector(selectors.groupTournamentSelector);
+  const {
+    status,
+    invite,
+    externalSetup,
+    requireInvitation,
+    runOnExternalPlatform,
+    platformError,
+    data,
+  } = useSelector(selectors.groupTournamentSelector);
 
   const { runId, selectedRun, setSelectedRunId, selectedRunCode, selectedRunLang } =
     useGroupBattleRun(data);
@@ -39,6 +50,8 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   const handleStartTournament = () => {
     startGroupTournament()(dispatch);
   };
+
+  const handleSubmitSolution = (solution, lang) => submitSolution(solution, lang)(dispatch);
 
   useEffect(() => {
     if (tournamentId) {
@@ -78,7 +91,11 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
             repoUrl={externalSetup?.repoUrl}
           />
         </div>
-        <div className="col-lg-7 col-md-7 col-12 p-1 pb-4">
+        <div
+          className={`${
+            runOnExternalPlatform ? "col-lg-10 col-md-10" : "col-lg-7 col-md-7"
+          } col-12 p-1 pb-4`}
+        >
           <MainPanel
             status={status}
             run={selectedRun}
@@ -86,15 +103,20 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
             setViewerFullscreen={setViewerFullscreen}
           />
         </div>
-        <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
-          <EditorPanel
-            text={selectedRunCode}
-            lang={selectedRunLang}
-            editorFullscreen={editorFullscreen}
-            setEditorFullscreen={setEditorFullscreen}
-          />
-          <LogPanel logs={logs} />
-        </div>
+        {!runOnExternalPlatform && (
+          <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
+            <EditorPanel
+              text={selectedRunCode}
+              lang={selectedRunLang}
+              editorFullscreen={editorFullscreen}
+              setEditorFullscreen={setEditorFullscreen}
+              editable
+              onSubmit={handleSubmitSolution}
+              langs={data?.langs}
+              currentLang={data?.currentPlayer?.lang || selectedRunLang}
+            />
+          </div>
+        )}
       </div>
       <FullscreenGroupBattleViewer
         viewerFullscreen={viewerFullscreen}
