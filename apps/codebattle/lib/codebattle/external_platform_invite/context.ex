@@ -142,9 +142,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
       platform_invite_id ->
         case ExternalPlatform.check_invite(platform_invite_id) do
           {:ok, body} ->
-            invitee = Map.get(body, "invitee") || %{}
-            user_data = %{id: Map.get(invitee, "id"), login: Map.get(invitee, "slug")}
-            _ = persist_platform_user(invite.user_id, user_data)
+            _ = persist_platform_user(invite.user_id, resolve_platform_user(body))
             accept_and_enqueue_setup(invite, body)
 
           {:error, :not_accepted} ->
@@ -153,11 +151,24 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     end
   end
 
+  defp resolve_platform_user(body) do
+    case Map.get(body, "subject") || %{} do
+      %{"id" => subject_id} when is_binary(subject_id) and subject_id != "" ->
+        case ExternalPlatform.get_user_by_id(subject_id) do
+          %{id: id} = user -> %{id: id, login: Map.get(user, :login)}
+          _ -> %{id: subject_id, login: nil}
+        end
+
+      _ ->
+        %{id: nil, login: nil}
+    end
+  end
+
   defp accept_and_enqueue_setup(invite, body) do
     result =
       update_invite(invite, %{
         state: "accepted",
-        response: merge_response(invite.response, body)
+        response: merge_accepted_response(invite.response, body)
       })
 
     case result do
@@ -217,14 +228,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   defp extract_platform_invite_id(_), do: nil
 
   defp apply_platform_invite_status(invite, %{"status" => "accepted"} = body) do
-    invitee = Map.get(body, "invitee") || %{}
-
-    user_data = %{
-      id: Map.get(invitee, "id"),
-      login: Map.get(invitee, "slug")
-    }
-
-    _ = persist_platform_user(invite.user_id, user_data)
+    _ = persist_platform_user(invite.user_id, resolve_platform_user(body))
     accept_and_enqueue_setup(invite, body)
   end
 
@@ -259,6 +263,12 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
   end
 
   defp merge_response(_existing, new), do: %{"platform_invite" => new}
+
+  defp merge_accepted_response(existing, body) do
+    existing
+    |> merge_response(body)
+    |> Map.put("accepted_invite", body)
+  end
 
   # -- Private --
 

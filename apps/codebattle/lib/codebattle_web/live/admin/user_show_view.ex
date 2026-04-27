@@ -14,6 +14,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   alias Codebattle.UserGame
   alias Codebattle.UserGroupTournament
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
+  alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   @max_rating 2000
 
@@ -72,8 +73,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
     case InviteContext.send_invite(invite, alias_name) do
       {:ok, updated_invite} ->
-        # Auto-poll to try getting the invite link immediately
-        maybe_auto_poll(updated_invite)
+        updated_invite
+        |> maybe_auto_poll()
+        |> PlatformInviteAdvancerWorker.enqueue()
+
         {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
 
       {:error, _reason} ->
@@ -100,6 +103,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     case result do
       {:ok, updated_invite} ->
         updated_invite = maybe_auto_poll(updated_invite)
+        PlatformInviteAdvancerWorker.enqueue(updated_invite)
 
         {:noreply,
          socket
@@ -119,7 +123,8 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     invite = Repo.get!(ExternalPlatformInvite, id)
 
     case InviteContext.poll_status(invite) do
-      {:ok, _updated} ->
+      {:ok, updated} ->
+        PlatformInviteAdvancerWorker.enqueue(updated)
         {:noreply, assign(socket, platform_invites: get_platform_invites(user.id))}
 
       {:error, _reason} ->
@@ -259,6 +264,7 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     flash =
       case InviteContext.refresh_status_via_api(invite) do
         {:ok, updated} ->
+          PlatformInviteAdvancerWorker.enqueue(updated)
           {:info, "Platform status: #{updated.state}"}
 
         {:error, :no_platform_invite_id} ->
@@ -344,29 +350,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
       {:error, _changeset} ->
         {:noreply, put_flash(socket, :error, "Failed to update platform login")}
-    end
-  end
-
-  def handle_event("sync_platform_identity", _params, socket) do
-    user = socket.assigns.user
-    login = user.external_platform_login || user.external_oauth_login
-
-    if is_nil(login) || String.trim(login) == "" do
-      {:noreply, put_flash(socket, :error, "No platform login to look up — set it first")}
-    else
-      case ExternalPlatform.get_user_by_login(login) do
-        %{id: platform_id} = user_data when is_binary(platform_id) and platform_id != "" ->
-          update_user_platform_identity(user, user_data)
-          refreshed_user = User.get!(user.id, preload: [:clan])
-
-          {:noreply,
-           socket
-           |> assign(user: refreshed_user, progress: user_progress(refreshed_user))
-           |> put_flash(:info, "Synced: platform_id=#{platform_id}, login=#{Map.get(user_data, :login, login)}")}
-
-        _ ->
-          {:noreply, put_flash(socket, :error, "User \"#{login}\" not found on external platform")}
-      end
     end
   end
 
@@ -627,43 +610,11 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     |> Repo.all()
   end
 
-  # Returns {:ok, external_platform_uuid} or {:error, atom}.
-  # Prefers the cached external_platform_id on the user record.
-  # Falls back to looking up by slug via the platform service.
   defp resolve_platform_user_id(%{external_platform_id: id}) when is_binary(id) and id != "" do
     {:ok, id}
   end
 
-  defp resolve_platform_user_id(%{external_platform_login: login} = user) when is_binary(login) and login != "" do
-    case ExternalPlatform.get_user_by_login(login) do
-      %{id: id} = user_data when is_binary(id) and id != "" ->
-        # Cache the id on the user record so we don't have to look it up again.
-        update_user_platform_identity(user, user_data)
-        {:ok, id}
-
-      _ ->
-        {:error, :platform_user_not_found}
-    end
-  end
-
-  defp resolve_platform_user_id(_user), do: {:error, :user_has_no_platform_login}
-
-  defp update_user_platform_identity(user, %{id: platform_id} = user_data)
-       when is_binary(platform_id) and platform_id != "" do
-    attrs = %{external_platform_id: platform_id}
-
-    attrs =
-      case Map.get(user_data, :login) do
-        login when is_binary(login) and login != "" -> Map.put(attrs, :external_platform_login, login)
-        _ -> attrs
-      end
-
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
-  end
-
-  defp update_user_platform_identity(_user, _user_data), do: :ok
+  defp resolve_platform_user_id(_user), do: {:error, :missing_external_platform_identity}
 
   defp default_org_slug do
     Application.get_env(:codebattle, :external_platform_org_slug)
@@ -761,6 +712,27 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
 
   defp invite_flash_message(%ExternalPlatformInvite{state: state}) do
     "Invite state: #{state}"
+  end
+
+  defp accepted_invite_payload(%ExternalPlatformInvite{response: %{"accepted_invite" => body}}) when is_map(body),
+    do: body
+
+  defp accepted_invite_payload(_), do: nil
+
+  defp accepted_invite_fields(body) do
+    subject = Map.get(body, "subject") || %{}
+
+    [
+      {"Status", Map.get(body, "status")},
+      {"Invite ID", Map.get(body, "id")},
+      {"Alias", Map.get(body, "alias")},
+      {"Subject ID", Map.get(subject, "id")},
+      {"Subject Type", Map.get(subject, "type")},
+      {"Created At", Map.get(body, "created_at")},
+      {"Expires At", Map.get(body, "expires_at")}
+    ]
+    |> Enum.reject(fn {_k, v} -> is_nil(v) or v == "" end)
+    |> Enum.map(fn {k, v} -> {k, to_string(v)} end)
   end
 
   defp get_platform_invites(user_id) do
@@ -1162,13 +1134,6 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
               <div class="cb-bg-panel cb-border-color border cb-rounded p-4 mt-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <div class="text-white fw-bold">External Platform Identity</div>
-                  <button
-                    class="btn btn-sm btn-outline-info cb-rounded"
-                    phx-click="sync_platform_identity"
-                    title="Look up user on external platform by login and sync ID"
-                  >
-                    Sync from Platform
-                  </button>
                 </div>
                 <div class="row g-3">
                   <div class="col-md-6">
@@ -1594,6 +1559,21 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       <%= if @expanded_invite_id == invite.id do %>
                         <tr>
                           <td colspan="8" class="p-3">
+                            <%= if accepted = accepted_invite_payload(invite) do %>
+                              <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
+                                <div class="text-white fw-bold mb-2">
+                                  <i class="bi bi-check-circle-fill text-success"></i> Accepted Invite
+                                </div>
+                                <dl class="row mb-0 small text-white">
+                                  <%= for {label, value} <- accepted_invite_fields(accepted) do %>
+                                    <dt class="col-sm-3 cb-text">{label}</dt>
+                                    <dd class="col-sm-9 text-break">
+                                      <code class="text-info">{value}</code>
+                                    </dd>
+                                  <% end %>
+                                </dl>
+                              </div>
+                            <% end %>
                             <pre
                               class="text-white mb-0 small"
                               style="max-height: 300px; overflow: auto; white-space: pre-wrap;"

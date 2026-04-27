@@ -8,6 +8,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
   alias Codebattle.PubSub.Message
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
+  alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   def join("group_tournament:" <> tournament_id, _payload, socket) do
     case parse_tournament_id(tournament_id) do
@@ -52,7 +53,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     external_setup = get_external_setup(user, group_tournament)
 
-    maybe_schedule_invite_refresh(socket, tournament_id, invite)
+    PlatformInviteAdvancerWorker.enqueue(invite)
 
     {:ok,
      %{
@@ -139,29 +140,26 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_info({:refresh_invite, tournament_id, retries_left}, socket) do
+  def handle_info(%Message{event: "group_tournament:invite_updated"}, socket) do
     current_user = socket.assigns.current_user
-    group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
 
-    invite =
-      current_user.id
-      |> InviteContext.get_or_create_invite(tournament_id)
-      |> InviteAdvancer.advance(current_user)
+    case extract_tournament_id(socket.topic) do
+      nil ->
+        {:noreply, socket}
 
-    if invite.state in ["creating", "pending", "invited"] do
-      maybe_schedule_invite_refresh(socket, tournament_id, invite, retries_left)
-      {:noreply, socket}
-    else
-      {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
-      external_setup = get_external_setup(user, group_tournament)
+      tournament_id ->
+        group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
+        invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
+        {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
+        external_setup = get_external_setup(user, group_tournament)
 
-      push(socket, "group_tournament:invite_updated", %{
-        invite: serialize_invite(invite),
-        platform_error: platform_error,
-        external_setup: serialize_external_setup(external_setup, user, group_tournament)
-      })
+        push(socket, "group_tournament:invite_updated", %{
+          invite: serialize_invite(invite),
+          platform_error: platform_error,
+          external_setup: serialize_external_setup(external_setup, user, group_tournament)
+        })
 
-      {:noreply, socket}
+        {:noreply, socket}
     end
   end
 
@@ -190,7 +188,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     response = serialize_invite_reply(user, group_tournament, invite, platform_error)
 
-    maybe_schedule_invite_refresh(socket, tournament_id, invite)
+    PlatformInviteAdvancerWorker.enqueue(invite)
 
     socket =
       if invite.state == "accepted" do
@@ -341,20 +339,4 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       _ -> :error
     end
   end
-
-  defp maybe_schedule_invite_refresh(socket, tournament_id, invite),
-    do: maybe_schedule_invite_refresh(socket, tournament_id, invite, 90)
-
-  defp maybe_schedule_invite_refresh(socket, tournament_id, %{state: state}, retries_left)
-       when state in ["creating", "pending"] and retries_left > 0 do
-    Process.send_after(self(), {:refresh_invite, tournament_id, retries_left - 1}, 3_000)
-    socket
-  end
-
-  defp maybe_schedule_invite_refresh(socket, tournament_id, %{state: "invited"}, retries_left) when retries_left > 0 do
-    Process.send_after(self(), {:refresh_invite, tournament_id, retries_left - 1}, 3_000)
-    socket
-  end
-
-  defp maybe_schedule_invite_refresh(socket, _tournament_id, _invite, _retries_left), do: socket
 end

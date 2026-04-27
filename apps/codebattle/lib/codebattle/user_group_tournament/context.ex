@@ -305,46 +305,18 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   defp create_repo_for_tournament(_group_tournament, _repo_slug), do: {:error, %{error: "template_id is required"}}
 
-  def ensure_platform_identity(%User{} = user) do
-    lookup_login = platform_identity_lookup_login(user)
-
-    if lookup_login == "" do
-      {:error, :missing_external_platform_identity_lookup}
-    else
-      case ExternalPlatform.get_user_by_login(lookup_login) do
-        %{id: platform_id, login: platform_login} ->
-          updated_user =
-            user
-            |> User.changeset(%{
-              external_platform_id: platform_id,
-              external_platform_login: platform_login
-            })
-            |> Repo.update!()
-
-          {:ok, updated_user}
-
-        _ ->
-          {:error, :external_platform_user_not_found}
-      end
-    end
+  def ensure_platform_identity(%User{external_platform_id: id} = user) when is_binary(id) and id != "" do
+    {:ok, user}
   end
 
-  def can_lookup_platform_identity?(%User{} = user) do
-    platform_identity_lookup_login(user) != ""
-  end
+  def ensure_platform_identity(%User{}), do: {:error, :missing_external_platform_identity}
 
+  def can_lookup_platform_identity?(%User{external_platform_id: id}) when is_binary(id) and id != "", do: true
   def can_lookup_platform_identity?(_), do: false
 
   defp target_org_slug do
     Application.get_env(:codebattle, :external_platform_org_slug)
   end
-
-  defp platform_identity_lookup_login(%User{} = user) do
-    normalize_login(user.external_platform_login || user.external_oauth_login || user.github_name || user.name)
-  end
-
-  defp normalize_login(nil), do: ""
-  defp normalize_login(login), do: login |> String.trim() |> String.downcase()
 
   defp update!(%UserGroupTournament{} = record, attrs) do
     record

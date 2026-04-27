@@ -5,36 +5,32 @@ defmodule Codebattle.ExternalPlatform do
 
   @http_timeout_ms 7_000
   @invite_timeout_ms 35_000
-  @lookup_path "/v1/users/id"
+  @users_path "/v1/users"
   @invite_path "/orgs"
 
   defp adapter do
     Application.get_env(:codebattle, :external_platform_adapter)
   end
 
-  def get_user_by_login(login) when is_binary(login) do
-    login = String.trim(login)
+  @doc """
+  Fetches the platform user profile by ID and returns `%{id, login}` (login is the platform `username`).
+  Used after an invite is accepted to mirror the platform identity onto our User record.
+  """
+  @spec get_user_by_id(String.t()) :: %{id: String.t(), login: String.t() | nil} | nil
+  def get_user_by_id(user_id) when is_binary(user_id) do
+    user_id = String.trim(user_id)
 
-    if login == "" do
+    if user_id == "" do
       nil
     else
       case adapter() do
-        nil -> do_get_user_by_login(login)
-        mod -> mod.get_user_by_login(login)
+        nil -> do_get_user_by_id(user_id)
+        mod -> mod.get_user_by_id(user_id)
       end
     end
   end
 
-  def get_user_by_login(_), do: nil
-
-  def get_user_id_by_login(login) when is_binary(login) do
-    case get_user_by_login(login) do
-      %{id: id} -> id
-      _ -> nil
-    end
-  end
-
-  def get_user_id_by_login(_), do: nil
+  def get_user_by_id(_), do: nil
 
   @doc """
   Checks whether an invite has been accepted on the external platform by fetching
@@ -429,54 +425,37 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
-  defp do_get_user_by_login(login) do
-    url = external_platform_service_url() <> @lookup_path
+  defp do_get_user_by_id(user_id) do
+    url = external_platform_service_url() <> @users_path <> "/#{user_id}"
 
-    opts =
-      Keyword.put(
-        request_opts(),
-        :params,
-        login: login
-      )
-
-    Logger.info("ExternalPlatform.get_user_by_login START method=GET url=#{url} login=#{login}")
+    Logger.info("ExternalPlatform.get_user_by_id START method=GET url=#{url} user_id=#{user_id}")
 
     started_at = System.monotonic_time(:millisecond)
-    result = safe_request(:get, url, opts)
+    result = safe_request(:get, url, request_opts())
     duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
       {:ok, %{status: 200, body: %{"id" => id} = body}} when is_binary(id) and id != "" ->
         Logger.info(
-          "ExternalPlatform.get_user_by_login OK url=#{url} duration_ms=#{duration_ms} id=#{id} body=#{inspect(body)}"
+          "ExternalPlatform.get_user_by_id OK url=#{url} duration_ms=#{duration_ms} id=#{id} body=#{inspect(body)}"
         )
 
-        %{
-          id: id,
-          login: normalize_login(Map.get(body, "login"))
-        }
-
-      {:ok, %{status: 200, body: body}} ->
-        Logger.warning(
-          "ExternalPlatform.get_user_by_login INVALID url=#{url} duration_ms=#{duration_ms} body=#{inspect(body)}"
-        )
-
-        nil
+        %{id: id, login: normalize_login(Map.get(body, "username") || Map.get(body, "login"))}
 
       {:ok, %{status: status}} when status in [400, 404] ->
-        Logger.info("ExternalPlatform.get_user_by_login NOT_FOUND url=#{url} status=#{status} duration_ms=#{duration_ms}")
+        Logger.info("ExternalPlatform.get_user_by_id NOT_FOUND url=#{url} status=#{status} duration_ms=#{duration_ms}")
         nil
 
       {:ok, %{status: status, body: body}} ->
         Logger.warning(
-          "ExternalPlatform.get_user_by_login FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(body)}"
+          "ExternalPlatform.get_user_by_id FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(body)}"
         )
 
         nil
 
       {:error, reason} ->
         Logger.warning(
-          "ExternalPlatform.get_user_by_login ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+          "ExternalPlatform.get_user_by_id ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
         )
 
         nil

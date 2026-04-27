@@ -5,26 +5,17 @@ defmodule Codebattle.ExternalPlatform.Fake do
   No HTTP calls are made.
   """
 
-  def get_user_by_login(login) when is_binary(login) do
-    login = String.trim(login)
+  def get_user_by_id(user_id) when is_binary(user_id) do
+    user_id = String.trim(user_id)
 
-    if login == "" do
+    if user_id == "" do
       nil
     else
-      %{id: "fake-user-#{login}", login: login}
+      %{id: user_id, login: "fake-user-#{user_id}"}
     end
   end
 
-  def get_user_by_login(_), do: nil
-
-  def get_user_id_by_login(login) when is_binary(login) do
-    case get_user_by_login(login) do
-      %{id: id} -> id
-      _ -> nil
-    end
-  end
-
-  def get_user_id_by_login(_), do: nil
+  def get_user_by_id(_), do: nil
 
   @doc """
   Always returns :not_accepted so the invite flow stays at "invited" state
