@@ -8,6 +8,8 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.Game.Context
   alias Codebattle.Game.Helpers
   alias Codebattle.Playbook
+  alias Codebattle.Repo
+  alias Codebattle.Task
   alias Codebattle.Tournament
   alias Codebattle.User
   alias Codebattle.UserGameReport
@@ -47,6 +49,7 @@ defmodule CodebattleWeb.GameController do
       {:ok, game} ->
         if can_access_game?(game, user) do
           head_to_head = Context.fetch_head_to_head_by_game_id(game.id)
+          game = ensure_task_loaded(game)
           game_params = GameView.render_game(game, head_to_head)
 
           conn
@@ -174,7 +177,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create_training(conn, _params) do
-    task = Codebattle.Task.get_random_training_task()
+    task = Task.get_random_training_task()
 
     game_params = %{
       level: "elementary",
@@ -192,7 +195,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create_by_task(conn, %{"task_id" => task_id}) do
-    task = Codebattle.Task.get!(task_id)
+    task = Task.get!(task_id)
 
     game_params = %{
       level: task.level,
@@ -304,6 +307,34 @@ defmodule CodebattleWeb.GameController do
       end
     end
   end
+
+  defp ensure_task_loaded(%{task: %Task{}} = game), do: game
+
+  defp ensure_task_loaded(game) do
+    task_id = Map.get(game, :task_id)
+
+    if is_integer(task_id) do
+      case Repo.get(Task, task_id) do
+        nil -> reload_task_from_db(game)
+        task -> %{game | task: task}
+      end
+    else
+      reload_task_from_db(game)
+    end
+  end
+
+  defp reload_task_from_db(%{id: id} = game) when is_integer(id) do
+    import Ecto.Query
+
+    query = from(g in Game, where: g.id == ^id, preload: [:task], select: g.task)
+
+    case Repo.one(query) do
+      %Task{} = task -> %{game | task: task}
+      _ -> game
+    end
+  end
+
+  defp reload_task_from_db(game), do: game
 
   defp maybe_get_reports(user, game_id) do
     if User.admin_or_moderator?(user) do
