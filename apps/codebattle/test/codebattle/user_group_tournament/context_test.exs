@@ -8,7 +8,9 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
   setup do
     user =
       insert(:user,
-        external_oauth_login: "ext-user"
+        external_oauth_login: "ext-user",
+        external_platform_id: "platform-user-id",
+        external_platform_login: "ext-user"
       )
 
     repo_slug = "source-repo-#{user.id}"

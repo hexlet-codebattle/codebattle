@@ -137,8 +137,6 @@ defmodule CodebattleWeb.AuthControllerTest do
                avatar_url: "https://external.test/avatars/test-avatar-id",
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
-               external_platform_id: "fake-user-external_test_login",
-               external_platform_login: "external_test_login",
                lang: "js",
                name: "External-external-user-id",
                rank: 5432,
@@ -146,11 +144,14 @@ defmodule CodebattleWeb.AuthControllerTest do
                subscription_type: :free
              } = user
 
+      assert is_nil(user.external_platform_id)
+      assert is_nil(user.external_platform_login)
+
       assert conn.state == :sent
       assert redirected_to(conn) == "/next_path"
     end
 
-    test "/auth/external/callback upserts external platform fields for existing user", %{conn: conn} do
+    test "/auth/external/callback preserves external platform fields for existing user", %{conn: conn} do
       insert(
         :user,
         external_oauth_id: "external-user-id",
@@ -169,8 +170,8 @@ defmodule CodebattleWeb.AuthControllerTest do
                avatar_url: "https://external.test/avatars/test-avatar-id",
                external_oauth_id: "external-user-id",
                external_oauth_login: "external_test_login",
-               external_platform_id: "fake-user-external_test_login",
-               external_platform_login: "external_test_login"
+               external_platform_id: "old-platform-id",
+               external_platform_login: "old-platform-login"
              } = user
 
       assert conn.state == :sent
