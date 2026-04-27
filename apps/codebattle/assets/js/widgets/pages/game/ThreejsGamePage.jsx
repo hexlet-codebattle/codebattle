@@ -195,7 +195,7 @@ const baseEditorOptions = {
   contextmenu: false,
 };
 
-const DEFAULT_FONT_SIZE = 24;
+const DEFAULT_FONT_SIZE = 22;
 const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 64;
 
@@ -309,9 +309,10 @@ function Pane({
   };
 
   return (
-    <div style={wrapperStyle} onMouseDown={onBringToFront}>
+    <div style={wrapperStyle} onMouseDown={onBringToFront} role="presentation">
       {showHeader && (
         <div
+          role="presentation"
           onMouseDown={editMode ? onDragStart : undefined}
           style={{
             background: "#060a12",
@@ -335,6 +336,7 @@ function Pane({
           </span>
           {editMode && (
             <div
+              role="presentation"
               style={{ display: "flex", alignItems: "center", gap: "6px" }}
               onMouseDown={(e) => e.stopPropagation()}
             >
@@ -379,6 +381,7 @@ function Pane({
       {!showHeader && editMode && (
         <>
           <div
+            role="presentation"
             onMouseDown={onDragStart}
             style={{
               position: "absolute",
@@ -423,6 +426,7 @@ function Pane({
       <div style={{ flexGrow: 1, minHeight: 0, ...bodyStyle }}>{children}</div>
       {editMode && (
         <div
+          role="presentation"
           onMouseDown={onResizeStart}
           style={{
             position: "absolute",
@@ -639,9 +643,13 @@ function TimerBody({ deadlineMs, gameState }) {
     return () => clearInterval(id);
   }, []);
 
-  const remaining = deadlineMs ? Math.max(0, Math.floor((deadlineMs - now) / 1000)) : null;
-  const danger = remaining !== null && remaining < 60;
-  const finished = gameState === "game_over" || gameState === "timeout" || remaining === 0;
+  const finished = ["game_over", "timeout", "canceled", "finished"].includes(gameState);
+  const remaining = finished
+    ? 0
+    : deadlineMs
+      ? Math.max(0, Math.floor((deadlineMs - now) / 1000))
+      : null;
+  const danger = !finished && remaining !== null && remaining < 60;
 
   return (
     <div
@@ -713,8 +721,8 @@ function ThreejsGamePage() {
     return {
       leftEditor: DEFAULT_FONT_SIZE,
       rightEditor: DEFAULT_FONT_SIZE,
-      task: 24,
-      examples: 24,
+      task: 22,
+      examples: 22,
       ...(preset?.fontSizes || {}),
     };
   });
@@ -829,8 +837,8 @@ function ThreejsGamePage() {
     setFontSizes({
       leftEditor: DEFAULT_FONT_SIZE,
       rightEditor: DEFAULT_FONT_SIZE,
-      task: 24,
-      examples: 24,
+      task: 22,
+      examples: 22,
     });
     setZOrder({
       task: 1,

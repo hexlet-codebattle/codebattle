@@ -161,7 +161,7 @@
     "oxc-minify": "^0.114.0",
     "oxfmt": "^0.33.0",
     "oxlint": "^1.48.0",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.10",
     "postcss-scss": "^4.0.9",
     "prettier": "^3.8.1",
     "react-refresh": "^0.18.0",
@@ -183,8 +183,10 @@
       "lodash-es": "^4.18.0",
       "picomatch@<2.3.2": "^2.3.2",
       "picomatch@>=4.0.0 <4.0.4": "^4.0.4",
+      "postcss": "^8.5.10",
       "qs": "^6.14.2",
       "rollup": "^4.59.0",
+      "uuid": "^14.0.0",
       "yaml@>=1.0.0 <1.10.3": "^1.10.3"
     },
     "onlyBuiltDependencies": [
