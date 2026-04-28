@@ -17,19 +17,8 @@ defmodule Codebattle.CodeCheck.Executor.RemoteZig do
         CheckerGenerator.call(token.task, token.lang_meta, seed)
       end
 
-    asserts =
-      token.task.asserts
-      |> Enum.map(& &1.arguments)
-      |> then(fn x -> %{arguments: x} end)
-      |> Jason.encode!()
-
-    %{
-      checker_text: checker_text,
-      lang_slug: token.lang_meta.slug,
-      timeout: token.lang_meta.container_run_timeout,
-      solution_text: token.solution_text,
-      asserts: asserts
-    }
+    token
+    |> build_params(checker_text)
     |> execute(token.lang_meta)
     |> case do
       {:ok, result} ->
@@ -48,6 +37,25 @@ defmodule Codebattle.CodeCheck.Executor.RemoteZig do
       {:error, reason} ->
         %{token | execution_error: reason}
     end
+  end
+
+  @spec build_params(Token.t(), String.t() | nil) :: map()
+  def build_params(token, checker_text) do
+    asserts =
+      token.task.asserts
+      |> Enum.map(& &1.arguments)
+      |> then(fn x -> %{arguments: x} end)
+      |> Jason.encode!()
+
+    solution_text = Runner.LanguageMeta.wrap_solution(token.lang_meta, token.solution_text)
+
+    %{
+      checker_text: checker_text,
+      lang_slug: token.lang_meta.slug,
+      timeout: token.lang_meta.container_run_timeout,
+      solution_text: solution_text,
+      asserts: asserts
+    }
   end
 
   def execute(params, lang_meta) do
