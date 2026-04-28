@@ -173,17 +173,21 @@ function Tournament() {
   useEffect(() => {
     const tournamentChannel = dispatch(connectToTournament(tournament?.id));
 
-    if (canModerate) {
-      const tournamentAdminChannel = dispatch(connectToTournamentAdmin(tournament?.id, true));
-
-      return () => {
-        tournamentChannel.leave();
-        tournamentAdminChannel.leave();
-      };
-    }
-
     return () => {
       tournamentChannel.leave();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!canModerate) {
+      return undefined;
+    }
+
+    const tournamentAdminChannel = dispatch(connectToTournamentAdmin(tournament?.id, true));
+
+    return () => {
+      tournamentAdminChannel.leave();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canModerate]);
