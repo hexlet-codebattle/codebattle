@@ -67,6 +67,9 @@ const RatingList = React.lazy(() => import("./pages/rating"));
 const Registration = React.lazy(() => import("./pages/registration"));
 const RoomWidget = React.lazy(() => import("./pages/RoomWidget"));
 const ThreejsGamePage = React.lazy(() => import("./pages/game/ThreejsGamePage"));
+const TournamentThreejsStreamWidget = React.lazy(
+  () => import("./pages/game/TournamentThreejsStreamPage"),
+);
 const Stream = React.lazy(() => import("./pages/stream/StreamWidget"));
 const Tournament = React.lazy(() => import("./pages/tournament"));
 const TournamentAdmin = React.lazy(() => import("./pages/tournament/TournamentAdminWidget"));
@@ -118,6 +121,31 @@ export function GameThreejsPage() {
     <Provider store={store}>
       <Suspense>
         <ThreejsGamePage />
+      </Suspense>
+    </Provider>
+  );
+}
+
+export function TournamentThreejsStreamPage() {
+  return (
+    <Provider store={store}>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              background: "#000",
+              color: "#e0bf7a",
+              height: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            Loading...
+          </div>
+        }
+      >
+        <TournamentThreejsStreamWidget />
       </Suspense>
     </Provider>
   );

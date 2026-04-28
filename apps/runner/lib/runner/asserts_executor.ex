@@ -43,7 +43,10 @@ defmodule Runner.AssertsExecutor do
 
     Logger.debug("tmp_dir_path: #{inspect(tmp_dir_path)}")
 
-    File.write!(Path.join(tmp_dir_path, lang_meta.solution_file_name), solution_text)
+    File.write!(
+      Path.join(tmp_dir_path, lang_meta.solution_file_name),
+      Runner.LanguageMeta.wrap_solution(lang_meta, solution_text)
+    )
 
     File.write!(
       Path.join(tmp_dir_path, lang_meta.arguments_generator_file_name),

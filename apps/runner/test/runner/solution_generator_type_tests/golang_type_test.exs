@@ -25,7 +25,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputString string) string {
@@ -60,7 +59,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputInteger int) int {
@@ -95,7 +93,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputArray []string) []string {
@@ -130,7 +127,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputHash map[string]string) map[string]string {
@@ -165,7 +161,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputArray [][]string) [][]string {
@@ -212,7 +207,6 @@ defmodule Runner.SolutionGeneratorTypeTests.GolangTypeTest do
     }
 
     expected = """
-    package main
     // import "fmt"
 
     func solution(inputComplex []map[string]map[string][]string) []map[string]map[string][]string {

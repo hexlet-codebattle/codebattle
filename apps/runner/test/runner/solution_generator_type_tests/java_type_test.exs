@@ -25,8 +25,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 
@@ -64,8 +62,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 
@@ -103,8 +99,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 
@@ -142,8 +136,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 
@@ -181,8 +173,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 
@@ -232,8 +222,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JavaTypeTest do
     }
 
     expected = """
-    package solution;
-
     import java.util.*;
     import java.util.stream.*;
 

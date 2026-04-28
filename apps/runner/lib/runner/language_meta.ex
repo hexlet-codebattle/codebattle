@@ -23,6 +23,7 @@ defmodule Runner.LanguageMeta do
     field(:slug, String.t())
     field(:solution_file_name, String.t())
     field(:solution_template, String.t())
+    field(:solution_wrapper, String.t() | nil, default: nil)
     field(:types, map())
     field(:version, String.t())
 
@@ -31,5 +32,12 @@ defmodule Runner.LanguageMeta do
     field(:arguments_generator_template, String.t())
     field(:arguments_generator_file_name, String.t())
     field(:asserts_generator_file_name, String.t())
+  end
+
+  @spec wrap_solution(t(), String.t()) :: String.t()
+  def wrap_solution(%__MODULE__{solution_wrapper: nil}, solution_text), do: solution_text
+
+  def wrap_solution(%__MODULE__{solution_wrapper: wrapper}, solution_text) do
+    EEx.eval_string(wrapper, solution: solution_text)
   end
 end

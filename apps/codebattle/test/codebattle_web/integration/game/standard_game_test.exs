@@ -80,8 +80,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     assert Helpers.get_second_player(game).editor_text ==
@@ -95,8 +93,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # First player won
@@ -128,8 +124,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # Winner cannot check results again
@@ -158,8 +152,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # Second player complete game
@@ -237,8 +229,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     assert Helpers.get_second_player(game).editor_text ==
@@ -252,8 +242,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # First player won
@@ -285,8 +273,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # Winner cannot check results again
@@ -315,8 +301,6 @@ defmodule CodebattleWeb.Integration.Game.StandardGameTest do
                return ans;
              };
              // use stdout to debug
-
-             module.exports = solution;
              """)
 
     # Second player complete game

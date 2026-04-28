@@ -59,7 +59,6 @@ defmodule Runner.SolutionGeneratorTest do
   """
 
   @golang_expected """
-  package main
   // import "fmt"
 
   func solution(a int, text string, b float64, c bool, nested_hash_of_string map[string]string, nested_array_of_string []string, nested_array_of_array_of_strings [][]string) []string {
@@ -70,8 +69,6 @@ defmodule Runner.SolutionGeneratorTest do
   """
 
   @java_expected """
-  package solution;
-
   import java.util.*;
   import java.util.stream.*;
 
@@ -94,13 +91,9 @@ defmodule Runner.SolutionGeneratorTest do
     return ans;
   };
   // use stdout to debug
-
-  module.exports = solution;
   """
 
   @kotlin_expected """
-  package solution
-
   import kotlin.collections.*
 
   fun solution(a: Int, text: String, b: Double, c: Boolean, nested_hash_of_string: Map<String, String>, nested_array_of_string: List<String>, nested_array_of_array_of_strings: List<List<String>>): List<String> {
@@ -156,8 +149,6 @@ defmodule Runner.SolutionGeneratorTest do
   };
 
   // use stdout to debug
-
-  export default solution;
   """
   @swift_expected """
   import Foundation

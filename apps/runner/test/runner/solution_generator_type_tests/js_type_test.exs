@@ -34,8 +34,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==
@@ -72,8 +70,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==
@@ -110,8 +106,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==
@@ -148,8 +142,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==
@@ -186,8 +178,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==
@@ -236,8 +226,6 @@ defmodule Runner.SolutionGeneratorTypeTests.JsTypeTest do
       return ans;
     };
     // use stdout to debug
-
-    module.exports = solution;
     """
 
     assert String.trim_trailing(expected, "\n") ==

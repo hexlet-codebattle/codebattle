@@ -89,7 +89,10 @@ defmodule Runner.Executor do
     Logger.debug("checker_file_name: #{inspect(lang_meta.checker_file_name)}")
     Logger.debug("tmp_dir_path: #{inspect(tmp_dir_path)}")
 
-    File.write!(Path.join(tmp_dir_path, lang_meta.solution_file_name), solution_text)
+    File.write!(
+      Path.join(tmp_dir_path, lang_meta.solution_file_name),
+      Runner.LanguageMeta.wrap_solution(lang_meta, solution_text)
+    )
 
     if checker_text do
       File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)

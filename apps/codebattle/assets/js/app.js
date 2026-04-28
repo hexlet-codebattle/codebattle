@@ -53,6 +53,7 @@ import {
   renderSettingPage,
   renderStairwayGamePage,
   renderStreamPage,
+  renderTournamentThreejsStreamPage,
   renderTaskPreviewPage,
   renderTournamentAdminPage,
   renderTournamentPage,
@@ -111,6 +112,7 @@ const heatmapRoot = document.getElementById("heatmap-root");
 const onlineRoot = document.getElementById("online-root");
 const invitesRoot = document.getElementById("invites-root");
 const streamRoot = document.getElementById("stream-classic-root");
+const tournamentThreejsStreamRoot = document.getElementById("tournament-threejs-stream-root");
 const lobbyRoot = document.getElementById("lobby-root");
 const ratingList = document.getElementById("rating-list");
 const registrationRoot = document.getElementById("registration");
@@ -204,6 +206,10 @@ if (invitesRoot) {
 
 if (streamRoot) {
   renderStreamPage(streamRoot);
+}
+
+if (tournamentThreejsStreamRoot) {
+  renderTournamentThreejsStreamPage(tournamentThreejsStreamRoot);
 }
 
 if (tournamentsScheduleRoot) {

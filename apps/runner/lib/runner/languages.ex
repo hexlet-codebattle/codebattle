@@ -89,6 +89,9 @@ defmodule Runner.Languages do
         return ans;
       };
       // <%= comment %>
+      """,
+      solution_wrapper: """
+      <%= solution %>
 
       module.exports = solution;
       """,
@@ -136,6 +139,9 @@ defmodule Runner.Languages do
       };
 
       // <%= comment %>
+      """,
+      solution_wrapper: """
+      <%= solution %>
 
       export default solution;
       """,
@@ -267,8 +273,6 @@ defmodule Runner.Languages do
       checker_file_name: "Checker.java",
       image: "ghcr.io/hexlet-codebattle/java:25.0.2",
       solution_template: """
-      package solution;
-
       import java.util.*;
       import java.util.stream.*;
 
@@ -279,6 +283,11 @@ defmodule Runner.Languages do
         }
       }
       // <%= comment %>
+      """,
+      solution_wrapper: """
+      package solution;
+
+      <%= solution %>
       """,
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       default_values: %{
@@ -322,8 +331,6 @@ defmodule Runner.Languages do
       checker_file_name: "checker.kt",
       image: "ghcr.io/hexlet-codebattle/kotlin:2.3.0",
       solution_template: """
-      package solution
-
       import kotlin.collections.*
 
       fun solution(<%= arguments %>):<%= expected %> {
@@ -331,6 +338,11 @@ defmodule Runner.Languages do
         return ans
       }
       // <%= comment %>
+      """,
+      solution_wrapper: """
+      package solution
+
+      <%= solution %>
       """,
       arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       default_values: %{
@@ -433,7 +445,6 @@ defmodule Runner.Languages do
       checker_file_name: "checker.go",
       image: "ghcr.io/hexlet-codebattle/golang:1.25.6",
       solution_template: """
-      package main
       // import "fmt"
 
       func solution(<%= arguments %>)<%= expected %> {
@@ -441,6 +452,11 @@ defmodule Runner.Languages do
         return ans
       }
       // <%= comment %>
+      """,
+      solution_wrapper: """
+      package main
+
+      <%= solution %>
       """,
       arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       default_values: %{

@@ -390,13 +390,22 @@ defmodule Codebattle.PubSub.Events do
       |> Enum.reject(&is_nil/1)
       |> Enum.map(&get_player_changed_fields/1)
 
-    Enum.map(players, fn player ->
-      %Message{
-        topic: "tournament:#{params.tournament.id}:player:#{player.id}",
-        event: "tournament:match:upserted",
-        payload: %{match: params.match, players: players}
-      }
-    end)
+    player_messages =
+      Enum.map(players, fn player ->
+        %Message{
+          topic: "tournament:#{params.tournament.id}:player:#{player.id}",
+          event: "tournament:match:upserted",
+          payload: %{match: params.match, players: players}
+        }
+      end)
+
+    common_message = %Message{
+      topic: "tournament:#{params.tournament.id}:common",
+      event: "tournament:match:upserted",
+      payload: %{match: params.match, players: players}
+    }
+
+    [common_message | player_messages]
   end
 
   def get_messages("tournament:game:wait", params) do

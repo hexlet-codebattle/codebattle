@@ -193,9 +193,14 @@ const baseEditorOptions = {
   wordWrap: "off",
   renderWhitespace: "none",
   contextmenu: false,
+  padding: { top: 14, bottom: 14 },
+  lineNumbersMinChars: 3,
+  lineDecorationsWidth: 12,
+  glyphMargin: false,
+  folding: false,
 };
 
-const DEFAULT_FONT_SIZE = 22;
+const DEFAULT_FONT_SIZE = 18;
 const MIN_FONT_SIZE = 10;
 const MAX_FONT_SIZE = 64;
 
@@ -226,8 +231,6 @@ const clearPreset = () => {
   }
 };
 
-const initialGame = Gon.getAsset("game") || {};
-
 const computeDefaultLayouts = (stage) => {
   const w = stage.clientWidth;
   const h = stage.clientHeight;
@@ -237,7 +240,7 @@ const computeDefaultLayouts = (stage) => {
   const timerW = 200;
   const examplesW = colW - timerW - gap;
 
-  const topRowH = Math.round(h * 0.35);
+  const topRowH = Math.round(h * 0.3);
   const testsH = Math.round(h * 0.13);
 
   const editorY = pad + topRowH + gap;
@@ -607,22 +610,21 @@ function ExamplesBody({ examples, fontSize }) {
         lineHeight: 1.5,
       }}
     >
-      <style>{`
-        .cb-threejs-examples,
-        .cb-threejs-examples p,
-        .cb-threejs-examples pre,
-        .cb-threejs-examples code,
-        .cb-threejs-examples pre code,
-        .cb-threejs-examples span {
-          color: #ffffff !important;
-          background: transparent !important;
-        }
-        .cb-threejs-examples pre {
-          padding: 0;
-          margin: 0;
-        }
-      `}</style>
-      <TaskDescriptionMarkdown description={examples || ""} />
+      <pre
+        style={{
+          margin: 0,
+          padding: 0,
+          background: "transparent",
+          color: "#ffffff",
+          fontFamily: "Menlo, Monaco, Consolas, monospace",
+          fontSize: `${fontSize}px`,
+          lineHeight: 1.5,
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+        }}
+      >
+        {examples || ""}
+      </pre>
     </div>
   );
 }
@@ -691,7 +693,16 @@ function TimerBody({ deadlineMs, gameState }) {
   );
 }
 
-function ThreejsGamePage() {
+function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = {}) {
+  const gameId = gameIdProp ?? Gon.getAsset("game_id");
+  const initialGameSource = initialGameProp ?? Gon.getAsset("game") ?? {};
+  const [initialGame, setInitialGame] = useState(initialGameSource);
+
+  useEffect(() => {
+    setInitialGame(initialGameSource);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameId]);
+
   const fxRef = useRef(null);
   const arenaRef = useRef(null);
   const stateRef = useRef(null);
@@ -704,13 +715,13 @@ function ThreejsGamePage() {
   const [paneHeaders, setPaneHeaders] = useState(() => {
     const preset = loadPreset();
     return {
-      task: true,
-      examples: true,
-      timer: true,
-      leftEditor: true,
-      rightEditor: true,
-      leftTests: true,
-      rightTests: true,
+      task: false,
+      examples: false,
+      timer: false,
+      leftEditor: false,
+      rightEditor: false,
+      leftTests: false,
+      rightTests: false,
       ...(preset?.paneHeaders || {}),
     };
   });
@@ -721,8 +732,8 @@ function ThreejsGamePage() {
     return {
       leftEditor: DEFAULT_FONT_SIZE,
       rightEditor: DEFAULT_FONT_SIZE,
-      task: 22,
-      examples: 22,
+      task: DEFAULT_FONT_SIZE,
+      examples: DEFAULT_FONT_SIZE,
       ...(preset?.fontSizes || {}),
     };
   });
@@ -837,8 +848,8 @@ function ThreejsGamePage() {
     setFontSizes({
       leftEditor: DEFAULT_FONT_SIZE,
       rightEditor: DEFAULT_FONT_SIZE,
-      task: 22,
-      examples: 22,
+      task: DEFAULT_FONT_SIZE,
+      examples: DEFAULT_FONT_SIZE,
     });
     setZOrder({
       task: 1,
@@ -848,6 +859,15 @@ function ThreejsGamePage() {
       rightEditor: 5,
       leftTests: 6,
       rightTests: 7,
+    });
+    setPaneHeaders({
+      task: false,
+      examples: false,
+      timer: false,
+      leftEditor: false,
+      rightEditor: false,
+      leftTests: false,
+      rightTests: false,
     });
     requestAnimationFrame(() => {
       const stage = stageRef.current;
@@ -899,7 +919,6 @@ function ThreejsGamePage() {
   }, []);
 
   useEffect(() => {
-    const gameId = Gon.getAsset("game_id");
     if (!gameId) {
       return () => {};
     }
@@ -1099,13 +1118,22 @@ function ThreejsGamePage() {
       "game:finished",
     ].forEach(addHandler);
 
-    channel.join();
+    channel.join().receive("ok", (resp) => {
+      const game = resp?.game;
+      if (!game) return;
+      setInitialGame(game);
+      setBattleState((prev) => ({
+        ...prev,
+        gameState: game.state || prev.gameState,
+        players: normalizePlayers(game.players || [], prev.players),
+      }));
+    });
 
     return () => {
       refs.forEach(({ event, ref }) => channel.off(event, ref));
       channel.leave();
     };
-  }, []);
+  }, [gameId]);
 
   useEffect(() => {
     const container = fxRef.current;

@@ -80,7 +80,9 @@ function LangTitle({ slug, name, version }) {
 }
 
 function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
-  const langs = useSelector(selectors.editorLangsSelector);
+  const allLangs = useSelector(selectors.editorLangsSelector);
+  // Kotlin temporarily hidden — image runs but support is incomplete
+  const langs = useMemo(() => allLangs.filter((lang) => lang.slug !== "kotlin"), [allLangs]);
 
   const [[currentLang], otherLangs] = useMemo(
     () => partition(langs, (lang) => lang.slug === currentLangSlug),
