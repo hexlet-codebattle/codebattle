@@ -16,6 +16,12 @@ import Channel from "./Channel";
 
 const tournamentId = Gon.getAsset("tournament_id");
 const channel = new Channel();
+if (tournamentId) {
+  channel.setupChannel(
+    `tournament:${tournamentId}`,
+    getTournamentJoinPayload(window.location.search, Gon.getAsset("tournament_access_token")),
+  );
+}
 const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options);
   const data = await response.json();

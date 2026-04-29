@@ -27,6 +27,10 @@ export default class Channel {
       return this;
     }
 
+    if (this.channel && this.channel.topic === topic) {
+      return this;
+    }
+
     const channel = socket.channel(topic, decamelizeKeys(params, { separator: "_" }));
 
     channel.onMessage = (event, payload) => {
@@ -191,8 +195,9 @@ export default class Channel {
   }
 
   push(topic, params) {
-    if (!this.channel) {
-      throw new Error(nonChannelErrorMessage);
+    if (!this.channel || !this.channel.joinedOnce) {
+      const noop = { receive: () => noop };
+      return noop;
     }
 
     const pushInstance = this.channel.push(topic, decamelizeKeys(params, { separator: "_" }));

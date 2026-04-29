@@ -447,21 +447,49 @@ function Pane({
   );
 }
 
-function EditorBody({ player, fontSize, onMount }) {
+function EditorBody({ player, fontSize, onMount, isWinner }) {
   const language = languages[getPlayerLang(player)] || "javascript";
+  const text = getPlayerText(player) || "";
+  const lines = text.split("\n");
+  const maxLineLen = lines.reduce((m, l) => Math.max(m, l.length), 0);
+  const lineCount = lines.length;
+  const cupOnRight = maxLineLen < 60;
+  const cupOnBottom = lineCount < 30;
   return (
-    <MonacoEditor
-      theme="vs-dark"
-      language={language}
-      value={getPlayerText(player)}
-      height="100%"
-      options={{ ...baseEditorOptions, fontSize }}
-      onMount={onMount}
-    />
+    <div style={{ position: "relative", height: "100%" }}>
+      <MonacoEditor
+        theme="vs-dark"
+        language={language}
+        value={text}
+        height="100%"
+        options={{ ...baseEditorOptions, fontSize }}
+        onMount={onMount}
+      />
+      {isWinner && (
+        <div
+          aria-label="Winner"
+          title="Winner"
+          style={{
+            position: "absolute",
+            ...(cupOnBottom ? { bottom: "20px" } : { top: "20px" }),
+            ...(cupOnRight ? { right: "24px" } : { left: "24px" }),
+            fontSize: "160px",
+            lineHeight: 1,
+            filter: `drop-shadow(0 0 28px ${brand.gold}) drop-shadow(0 0 48px rgba(224,191,122,0.55))`,
+            pointerEvents: "none",
+            zIndex: 10,
+            animation: "cb-cup-bounce-big 1.8s ease-in-out infinite",
+            transformOrigin: "center",
+          }}
+        >
+          🏆
+        </div>
+      )}
+    </div>
   );
 }
 
-function TestsBody({ tests, accent }) {
+function TestsBody({ tests, accent, isWinner }) {
   const total = tests?.assertsCount || 0;
   const success = tests?.successCount || 0;
   const percent = total > 0 ? clamp((success / total) * 100, 0, 100) : 0;
@@ -513,8 +541,27 @@ function TestsBody({ tests, accent }) {
         flexDirection: "column",
         gap: "8px",
         overflow: "hidden",
+        position: "relative",
       }}
     >
+      {isWinner && (
+        <div
+          aria-label="Winner"
+          title="Winner"
+          style={{
+            position: "absolute",
+            top: "6px",
+            right: "10px",
+            fontSize: "28px",
+            lineHeight: 1,
+            filter: `drop-shadow(0 0 8px ${brand.gold})`,
+            pointerEvents: "none",
+            animation: "cb-cup-bounce 1.6s ease-in-out infinite",
+          }}
+        >
+          🏆
+        </div>
+      )}
       <div
         style={{
           display: "flex",
@@ -1520,6 +1567,7 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                         player={leftPlayer}
                         fontSize={fontSizes.leftEditor}
                         onMount={registerEditor(getPlayerId(leftPlayer))}
+                        isWinner={leftPlayer?.result === "won"}
                       />
                     </Pane>
 
@@ -1544,11 +1592,12 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                         player={rightPlayer}
                         fontSize={fontSizes.rightEditor}
                         onMount={registerEditor(getPlayerId(rightPlayer))}
+                        isWinner={rightPlayer?.result === "won"}
                       />
                     </Pane>
 
                     <Pane
-                      title={`${getPlayerName(leftPlayer)} — Tests`}
+                      title={`${leftPlayer?.result === "won" ? "🏆 " : ""}${getPlayerName(leftPlayer)} — Tests`}
                       accent={editorThemes[0].header}
                       layout={layouts.leftTests}
                       zIndex={zOrder.leftTests}
@@ -1562,11 +1611,12 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                       <TestsBody
                         tests={battleState.tests[getPlayerId(leftPlayer)]}
                         accent={editorThemes[0].header}
+                        isWinner={leftPlayer?.result === "won"}
                       />
                     </Pane>
 
                     <Pane
-                      title={`${getPlayerName(rightPlayer)} — Tests`}
+                      title={`${rightPlayer?.result === "won" ? "🏆 " : ""}${getPlayerName(rightPlayer)} — Tests`}
                       accent={editorThemes[1].header}
                       layout={layouts.rightTests}
                       zIndex={zOrder.rightTests}
@@ -1580,45 +1630,23 @@ function ThreejsGamePage({ gameId: gameIdProp, initialGame: initialGameProp } = 
                       <TestsBody
                         tests={battleState.tests[getPlayerId(rightPlayer)]}
                         accent={editorThemes[1].header}
+                        isWinner={rightPlayer?.result === "won"}
                       />
                     </Pane>
                   </>
                 )}
               </div>
 
-              {(() => {
-                const winner = (battleState.players || []).find((p) => p?.result === "won");
-                if (!winner) return null;
-                return (
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "16px",
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      zIndex: 40,
-                      background: "rgba(6,10,18,0.92)",
-                      border: `2px solid ${brand.gold}`,
-                      borderRadius: "999px",
-                      padding: "8px 22px",
-                      color: brand.gold,
-                      fontFamily: "Menlo, Monaco, Consolas, monospace",
-                      fontWeight: 700,
-                      fontSize: "20px",
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      boxShadow: `0 0 30px rgba(224,191,122,0.45)`,
-                      pointerEvents: "none",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {`🏆 ${getPlayerName(winner)} wins`}
-                  </div>
-                );
-              })()}
-
               <div className={`cb-threejs-floating-tools${editMode ? " cb-active" : ""}`}>
                 <style>{`
+                  @keyframes cb-cup-bounce {
+                    0%, 100% { transform: translateY(0) rotate(-6deg); }
+                    50% { transform: translateY(-4px) rotate(6deg); }
+                  }
+                  @keyframes cb-cup-bounce-big {
+                    0%, 100% { transform: translateY(0) rotate(-8deg) scale(1); }
+                    50% { transform: translateY(-14px) rotate(8deg) scale(1.06); }
+                  }
                   .cb-threejs-floating-tools {
                     position: absolute;
                     left: 12px;
