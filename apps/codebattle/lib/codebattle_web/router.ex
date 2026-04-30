@@ -265,6 +265,7 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit])
+    get("/my-tournament", GroupTournamentController, :my_tournament)
     get("/group_tournaments/:id", GroupTournamentController, :show)
     get("/group_tournaments/:id/admin", GroupTournamentController, :admin, as: :group_tournament_admin)
 

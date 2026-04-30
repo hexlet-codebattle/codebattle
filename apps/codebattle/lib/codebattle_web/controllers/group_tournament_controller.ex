@@ -2,10 +2,11 @@ defmodule CodebattleWeb.GroupTournamentController do
   use CodebattleWeb, :controller
 
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.GroupTournament.Server
   alias Codebattle.User
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
-  plug(CodebattleWeb.Plugs.RequireAuth)
+  plug(CodebattleWeb.Plugs.RequireAuth when action not in [:my_tournament])
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :app})
 
   def show(conn, %{"id" => id}) do
@@ -30,6 +31,41 @@ defmodule CodebattleWeb.GroupTournamentController do
     end
   end
 
+  def my_tournament(conn, params) do
+    current_user = conn.assigns.current_user
+
+    if current_user.is_guest do
+      redirect(conn, to: "/")
+    else
+      current_user.id
+      |> UserGroupTournamentContext.get_latest_for_user()
+      |> handle_my_tournament(conn, params)
+    end
+  end
+
+  defp handle_my_tournament(%{group_tournament: %{state: "active", id: id}}, conn, _params) do
+    redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
+  end
+
+  defp handle_my_tournament(%{group_tournament: %{state: "waiting_participants", id: id}} = record, conn, %{
+         "start" => "true"
+       }) do
+    if external_setup_ready?(record) do
+      :ok = GroupTournamentContext.ensure_server_started(id)
+      Server.start_now(id)
+    end
+
+    redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
+  end
+
+  defp handle_my_tournament(%{group_tournament: %{state: "waiting_participants", id: id}}, conn, _params) do
+    redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
+  end
+
+  defp handle_my_tournament(_record, conn, _params) do
+    redirect(conn, to: "/")
+  end
+
   def admin(conn, %{"id" => id}) do
     current_user = conn.assigns.current_user
     group_tournament = GroupTournamentContext.get_group_tournament!(id)
@@ -46,6 +82,12 @@ defmodule CodebattleWeb.GroupTournamentController do
       |> halt()
     end
   end
+
+  defp external_setup_ready?(%{group_tournament: %{run_on_external_platform: false}}), do: true
+
+  defp external_setup_ready?(%{repo_state: "completed", role_state: "completed", secret_state: "completed"}), do: true
+
+  defp external_setup_ready?(_record), do: false
 
   defp has_access?(user, group_tournament) do
     can_moderate?(group_tournament, user) ||

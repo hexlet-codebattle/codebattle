@@ -25,6 +25,8 @@ defmodule CodebattleWeb.Plugs.RescrictAccess do
   @allowed_mini_paths [
     ~r{^\/$},
     ~r{^\/authorized\/?$},
+    ~r{^\/my-tournament\/?$},
+    # ~r{^\/group_tournaments\/\d+\/?$},
     ~r{^\/tournaments\/(?:[2-9]|1\d|2[0-9]|3[0-1])\/?$},
     # ~r{^\/e\/\w+\/?$},
     # ~r{^\/e\/\w+\/stage\/?$},

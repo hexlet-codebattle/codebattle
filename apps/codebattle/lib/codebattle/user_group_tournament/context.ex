@@ -20,6 +20,16 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Repo.one()
   end
 
+  @spec get_latest_for_user(pos_integer()) :: UserGroupTournament.t() | nil
+  def get_latest_for_user(user_id) do
+    UserGroupTournament
+    |> where([record], record.user_id == ^user_id)
+    |> order_by([record], desc: record.inserted_at, desc: record.id)
+    |> limit(1)
+    |> preload(:group_tournament)
+    |> Repo.one()
+  end
+
   @spec list_users(pos_integer()) :: list(UserGroupTournament.t())
   def list_users(group_tournament_id) do
     UserGroupTournament

@@ -25,33 +25,9 @@ function InvitationPanel({ invite, onStart }) {
             <h5 className="mb-4 font-weight-bold">Прежде чем начать:</h5>
 
             <ul className="list-group cb-steps-list">
-              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item">
-                <div className="d-flex align-items-center">
-                  <div className="d-flex flex-column">
-                    <div>
-                      <span className="cb-step-num mr-3">1</span>
-                      <span>Создайте аккаунт в SourceCraft</span>
-                    </div>
-                    <div>
-                      <small>
-                        (Регистрируясь под тем же Yandex Id, что и при регистрации на Баттле Вузов)
-                      </small>
-                    </div>
-                  </div>
-                </div>
-                <a
-                  target="_blank"
-                  href="https://sourcecraft.dev/"
-                  className="btn btn-success cb-btn-action rounded"
-                  rel="noopener noreferrer"
-                >
-                  Создать аккаунт
-                </a>
-              </li>
-
               <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
                 <div className="d-flex align-items-center">
-                  <span className="cb-step-num mr-3">2</span>
+                  <span className="cb-step-num mr-3">1</span>
                   <span>
                     Присоединитесь к нашей организации в SourceCraft, чтобы получить задание
                   </span>
@@ -68,7 +44,7 @@ function InvitationPanel({ invite, onStart }) {
 
               <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
                 <div className="d-flex align-items-center">
-                  <span className="cb-step-num mr-3">3</span>
+                  <span className="cb-step-num mr-3">2</span>
                   <span>По завершению всех шагов вы можете начать решать задачу</span>
                 </div>
                 <button

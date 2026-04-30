@@ -41,6 +41,8 @@ config :codebattle, Oban,
 config :codebattle, :api_key, "x-key"
 config :codebattle, :app_subtitle, "by Hexlet’s community"
 config :codebattle, :app_title, "Hexlet Codebattle"
+config :codebattle, :base_admin_path, "/"
+config :codebattle, :base_moderator_path, "/"
 config :codebattle, :base_user_path, "/"
 config :codebattle, :default_db_type_slug, "postgresql"
 config :codebattle, :default_lang_slug, "js"

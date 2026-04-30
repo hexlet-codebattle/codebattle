@@ -22,7 +22,7 @@ defmodule CodebattleWeb.RootController do
 
     cond do
       FunWithFlags.enabled?(:redirect_from_lobby_to_base) ->
-        path = Application.get_env(:codebattle, :base_user_path)
+        path = base_path_for(current_user)
 
         conn
         |> redirect(to: path)
@@ -101,4 +101,19 @@ defmodule CodebattleWeb.RootController do
   end
 
   defp maybe_put_opponent(conn, _params), do: conn
+
+  defp base_path_for(user) do
+    cond do
+      User.admin?(user) ->
+        Application.get_env(:codebattle, :base_admin_path) ||
+          Application.get_env(:codebattle, :base_user_path)
+
+      User.moderator?(user) ->
+        Application.get_env(:codebattle, :base_moderator_path) ||
+          Application.get_env(:codebattle, :base_user_path)
+
+      true ->
+        Application.get_env(:codebattle, :base_user_path)
+    end
+  end
 end
