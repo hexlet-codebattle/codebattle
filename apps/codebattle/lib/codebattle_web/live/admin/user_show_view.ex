@@ -353,6 +353,23 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("update_platform_id", %{"external_platform_id" => id}, socket) do
+    user = socket.assigns.user
+    id = String.trim(id)
+    attrs = if id == "", do: %{external_platform_id: nil}, else: %{external_platform_id: id}
+
+    case user |> User.changeset(attrs) |> Repo.update() do
+      {:ok, updated_user} ->
+        {:noreply,
+         socket
+         |> assign(user: updated_user, progress: user_progress(updated_user))
+         |> put_flash(:info, "Platform ID updated")}
+
+      {:error, _changeset} ->
+        {:noreply, put_flash(socket, :error, "Failed to update platform ID")}
+    end
+  end
+
   def handle_event("delete_token", %{"id" => id}, socket) do
     case User.delete_auth_token(id) do
       {:ok, user} ->
@@ -1154,18 +1171,21 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                     </form>
                   </div>
                   <div class="col-md-6">
-                    <div class="d-flex flex-column gap-2">
+                    <form phx-submit="update_platform_id" class="d-flex flex-column gap-2">
                       <label class="cb-text small text-uppercase">Platform ID</label>
-                      <div class="d-flex align-items-center gap-2" style="min-height: 31px;">
-                        <%= if @user.external_platform_id do %>
-                          <code class="text-white text-break">{@user.external_platform_id}</code>
-                        <% else %>
-                          <span class="text-warning small">
-                            Not set — click "Sync from Platform" to resolve
-                          </span>
-                        <% end %>
+                      <div class="d-flex gap-2">
+                        <input
+                          type="text"
+                          name="external_platform_id"
+                          value={@user.external_platform_id || ""}
+                          placeholder="e.g. platform user id"
+                          class="form-control form-control-sm cb-bg-highlight-panel cb-border-color text-white"
+                        />
+                        <button type="submit" class="btn btn-sm btn-success cb-rounded text-nowrap">
+                          Save
+                        </button>
                       </div>
-                    </div>
+                    </form>
                   </div>
                 </div>
               </div>

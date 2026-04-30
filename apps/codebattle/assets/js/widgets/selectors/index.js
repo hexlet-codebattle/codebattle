@@ -512,6 +512,7 @@ export const participantDataSelector = (state) => {
         status: eventStage.status,
         userStatus: userStage?.status,
         tournamentId: userStage?.tournamentId,
+        groupTournamentId: userStage?.groupTournamentId,
         name: eventStage.name,
         dates: eventStage.dates,
         isStageAvailableForUser,

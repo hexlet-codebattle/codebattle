@@ -156,7 +156,15 @@ function ParticipantDashboard() {
                   <div className="d-flex justify-content-center cb-custom-event-stage-action">
                     {stage.isStageAvailableForUser && stage.type === "tournament" && (
                       <div className="action-button">
-                        {stage.userStatus === "started" && stage.tournamentId ? (
+                        {stage.groupTournamentId ? (
+                          <a
+                            type="button"
+                            className="btn btn-success rounded-pill px-4"
+                            href={`/group_tournaments/${stage.groupTournamentId}`}
+                          >
+                            {i18n.t(stage.actionButtonText)}
+                          </a>
+                        ) : stage.userStatus === "started" && stage.tournamentId ? (
                           <a
                             type="button"
                             className="btn btn-success rounded-pill px-4"
