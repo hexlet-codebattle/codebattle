@@ -164,7 +164,19 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   def handle_info(%Message{event: "group_tournament:status_updated", payload: payload}, socket) do
-    push(socket, "group_tournament:status_updated", %{status: payload.status})
+    case extract_tournament_id(socket.topic) do
+      nil ->
+        push(socket, "group_tournament:status_updated", %{status: payload.status})
+
+      tournament_id ->
+        group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
+
+        push(socket, "group_tournament:status_updated", %{
+          status: payload.status,
+          group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament)
+        })
+    end
+
     {:noreply, socket}
   end
 

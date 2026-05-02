@@ -8,7 +8,7 @@ import Modal from "@/components/BootstrapModal";
 
 import ModalCodes from "../../config/modalCodes";
 
-const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId, bodyText }) => {
+const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) => {
   const modal = useModal(ModalCodes.nextStageGroupTournamentModal);
 
   useEffect(() => {
@@ -26,17 +26,18 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId, bod
   }
 
   const href = `/group_tournaments/${groupTournamentId}`;
-  const text =
-    bodyText ||
-    i18n.t("Your next step is the AI-round group tournament. Click the button below to continue.");
+  const headerText = i18n.t("First qualification round finished");
+  const bodyText = i18n.t(
+    "Your next step is the AI-round group tournament. Click the button below to continue.",
+  );
 
   return (
     <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
       <Modal.Header closeButton>
-        <Modal.Title>{i18n.t("Tournament finished")}</Modal.Title>
+        <Modal.Title>{headerText}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="mb-0">{text}</p>
+        <p className="mb-0">{bodyText}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={modal.hide}>

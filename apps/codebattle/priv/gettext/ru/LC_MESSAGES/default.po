@@ -1727,3 +1727,18 @@ msgstr "Закрыть полный экран"
 
 msgid "Fullscreen"
 msgstr "Полный экран"
+
+msgid "Your next step is the AI-round group tournament. Click the button below to continue."
+msgstr "Теперь тебя ждёт задача, решить которую ты сможешь с AI-ассистентом на платформе SourceCraft. Реши её, чтобы завершить квалификацию."
+
+msgid "Go to AI-round group tournament"
+msgstr "Перейти к AI-раунду"
+
+msgid "Stage finished"
+msgstr "Этап завершён"
+
+msgid "%{name} stage finished"
+msgstr "Этап «%{name}» завершён"
+
+msgid "First qualification round finished"
+msgstr "Первая часть квалификации завершилась"

@@ -39,16 +39,14 @@ function ParticipantDashboard() {
   );
 
   const pendingGroupTournamentId = pendingGroupTournamentStage?.groupTournamentId;
-  const pendingNextRoundText = pendingGroupTournamentStage?.nextRoundText;
 
   useEffect(() => {
     if (pendingGroupTournamentId) {
       NiceModal.show(ModalCodes.nextStageGroupTournamentModal, {
         groupTournamentId: pendingGroupTournamentId,
-        bodyText: pendingNextRoundText,
       });
     }
-  }, [pendingGroupTournamentId, pendingNextRoundText]);
+  }, [pendingGroupTournamentId]);
 
   if (!participantData || !event) {
     return (

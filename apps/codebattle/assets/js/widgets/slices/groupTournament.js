@@ -39,6 +39,13 @@ const groupTournament = createSlice({
     updateGroupTournamentStatus: (state, { payload }) => {
       state.status = payload;
     },
+    mergeGroupTournament: (state, { payload }) => {
+      state.data = state.data || {};
+      state.data.groupTournament = {
+        ...(state.data.groupTournament || {}),
+        ...payload,
+      };
+    },
     updateInviteState: (state, { payload }) => {
       state.invite.state = payload;
     },

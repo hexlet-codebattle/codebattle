@@ -1135,3 +1135,21 @@ msgstr "Run Viewer Fullscreen"
 
 msgid "Close Fullscreen"
 msgstr "Close Fullscreen"
+
+msgid "Tournament finished"
+msgstr "Tournament finished"
+
+msgid "Your next step is the AI-round group tournament. Click the button below to continue."
+msgstr "Your next step is the AI-round group tournament. Click the button below to continue."
+
+msgid "Go to AI-round group tournament"
+msgstr "Go to AI-round group tournament"
+
+msgid "Stage finished"
+msgstr "Stage finished"
+
+msgid "%{name} stage finished"
+msgstr "%{name} stage finished"
+
+msgid "First qualification round finished"
+msgstr "First qualification round finished"
