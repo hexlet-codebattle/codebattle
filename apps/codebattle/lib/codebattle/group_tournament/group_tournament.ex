@@ -100,7 +100,6 @@ defmodule Codebattle.GroupTournament do
       :meta
     ])
     |> validate_required([
-      :creator_id,
       :group_task_id,
       :name,
       :slug,

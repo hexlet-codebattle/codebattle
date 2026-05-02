@@ -87,6 +87,15 @@ defmodule CodebattleWeb.EventController do
     |> redirect(to: Routes.event_path(conn, :show, event))
   end
 
+  def calculate_places(conn, %{"id" => id, "stage_slug" => stage_slug}) do
+    event = Event.get!(id)
+    {:ok, count} = EventContext.calculate_places_for_stage(event, stage_slug)
+
+    conn
+    |> put_flash(:info, "Recalculated places for #{count} users in stage \"#{stage_slug}\".")
+    |> redirect(to: Routes.event_path(conn, :show, event))
+  end
+
   def delete(conn, %{"id" => id}) do
     event = Event.get!(id)
 

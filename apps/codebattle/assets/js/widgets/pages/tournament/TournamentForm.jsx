@@ -71,6 +71,7 @@ function TournamentForm({
   const [formData, setFormData] = useState({
     name: initialValues.name || "",
     description: initialValues.description || "",
+    creator_id: initialValues.creator_id || "",
     moderator_ids: initialValues.moderator_ids || "",
     starts_at: initialValues.starts_at || "",
     access_type: initialValues.access_type || "public",
@@ -194,6 +195,27 @@ function TournamentForm({
               required
             />
             {renderError("description")}
+          </div>
+
+          <div className="form-group mb-3">
+            <label htmlFor="creator_id" className="form-label text-white">
+              Creator ID
+            </label>
+            <input
+              type="number"
+              id="creator_id"
+              name="creator_id"
+              className={cn("form-control cb-bg-panel cb-border-color text-white cb-rounded", {
+                "is-invalid": errors.creator_id,
+              })}
+              value={formData.creator_id}
+              onChange={handleChange}
+              min={1}
+            />
+            <div className="form-text text-muted">
+              The user ID who owns this tournament. Changing this transfers ownership.
+            </div>
+            {renderError("creator_id")}
           </div>
 
           <div className="form-group mb-0">
@@ -724,6 +746,7 @@ TournamentForm.propTypes = {
   initialValues: PropTypes.shape({
     name: PropTypes.string,
     description: PropTypes.string,
+    creator_id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     moderator_ids: PropTypes.string,
     starts_at: PropTypes.string,
     access_type: PropTypes.string,

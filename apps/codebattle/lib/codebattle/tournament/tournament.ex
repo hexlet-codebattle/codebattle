@@ -156,6 +156,7 @@ defmodule Codebattle.Tournament do
       :break_duration_seconds,
       :break_state,
       :cheater_ids,
+      :creator_id,
       :current_round_id,
       :current_round_position,
       :description,

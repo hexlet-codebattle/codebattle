@@ -183,6 +183,7 @@ function EditTournament({ tournamentId, taskPackNames = [], userTimezone = "UTC"
   const initialValues = {
     name: tournament.name || "",
     description: tournament.description || "",
+    creator_id: tournament.creatorId || "",
     moderator_ids: (tournament.moderatorIds || []).join(", "),
     starts_at: formatDatetimeLocal(tournament.startsAt),
     access_type: tournament.accessType || "public",

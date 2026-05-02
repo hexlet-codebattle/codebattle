@@ -463,6 +463,31 @@ rescue
     Logger.error("Error seeding tokens: #{inspect(e)}")
 end
 
+qualification_group_task =
+  case Repo.get_by(GroupTask, slug: "group-task-sprint-demo") do
+    nil -> seed_group_task.("group-task-sprint-demo", 900)
+    existing -> existing
+  end
+
+finals_group_task =
+  case Repo.get_by(GroupTask, slug: "group-task-finals-demo") do
+    nil -> seed_group_task.("group-task-finals-demo", 1_200)
+    existing -> existing
+  end
+
+tournament_meta_default = %{
+  type: "swiss",
+  rounds_limit: 1,
+  access_type: "token",
+  state: "waiting_participants",
+  level: "easy",
+  tournament_timeout_seconds: 75 * 60,
+  players_limit: 128,
+  ranking_type: "by_user",
+  task_provider: "level",
+  task_strategy: "sequential"
+}
+
 stages =
   [
     %{
@@ -471,20 +496,18 @@ stages =
       dates: "May 12-17",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
+      next_round_text:
+        "You finished the qualification tournament. Your next round is the AI-round group tournament — open it to continue.",
       status: :active,
       type: :tournament,
       playing_type: :single,
-      tournament_meta: %{
-        type: "swiss",
-        rounds_limit: 7,
-        access_type: "token",
-        state: "waiting_participants",
-        task_pack_name: "qualification",
-        tournament_timeout_seconds: 75 * 60,
-        players_limit: 128,
-        ranking_type: "by_user",
-        task_provider: "task_pack",
-        task_strategy: "sequential"
+      tournament_meta: tournament_meta_default,
+      group_tournament_meta: %{
+        group_task_id: qualification_group_task.id,
+        rounds_count: 2,
+        require_invitation: true,
+        round_timeout_seconds: 15 * 60,
+        include_bots: true
       }
     },
     %{
@@ -499,8 +522,19 @@ stages =
       dates: "May 31",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
+      next_round_text:
+        "You finished the semifinal. Your next round is the AI-round group tournament — open it to continue.",
       status: :active,
-      type: :tournament
+      type: :tournament,
+      playing_type: :single,
+      tournament_meta: tournament_meta_default,
+      group_tournament_meta: %{
+        group_task_id: qualification_group_task.id,
+        rounds_count: 2,
+        require_invitation: true,
+        round_timeout_seconds: 20 * 60,
+        include_bots: true
+      }
     },
     %{
       slug: "final_entrance",
@@ -513,9 +547,20 @@ stages =
       name: "Final",
       action_button_text: "Go",
       confirmation_text: "Confirm that you want to suffer 1 hour",
+      next_round_text:
+        "You finished the final tournament. Your next round is the AI-round group tournament — open it to continue.",
       dates: "June 26",
       status: :active,
-      type: :tournament
+      type: :tournament,
+      playing_type: :single,
+      tournament_meta: tournament_meta_default,
+      group_tournament_meta: %{
+        group_task_id: finals_group_task.id,
+        rounds_count: 2,
+        require_invitation: true,
+        round_timeout_seconds: 30 * 60,
+        include_bots: true
+      }
     }
   ]
 
@@ -526,6 +571,7 @@ event_params = %{
   slug: event_slug,
   title: "Codebattle Hexlet summer",
   description: "Codebattle Hexlet summer",
+  creator_id: 1,
   starts_at: ~N[2019-08-22 19:33:08.910767],
   finishes_at: ~N[2019-08-22 19:33:08.910767],
   stages: stages
@@ -555,50 +601,17 @@ if Enum.any?(events) do
           UserEvent.create(%{
             user_id: user.id,
             event_id: event.id,
+            status: "pending",
             stages: [
-              %{
-                slug: "qualification",
-                status: :pending,
-                place_in_total_rank: nil,
-                place_in_category_rank: nil,
-                score: nil,
-                wins_count: Enum.random(0..10),
-                games_count: Enum.random(1..20),
-                time_spent_in_seconds: Enum.random(100..10_000)
-              },
-              %{
-                slug: "semifinal_entrance",
-                entrance_result: :passed
-              },
-              %{
-                slug: "semifinal",
-                tournament_type: :global,
-                status: :pending,
-                place_in_total_rank: Enum.random(1..50),
-                place_in_category_rank: Enum.random(1..25),
-                score: Enum.random(10..100),
-                wins_count: Enum.random(0..10),
-                games_count: Enum.random(1..15),
-                time_spent_in_seconds: Enum.random(100..8000)
-              },
-              %{
-                slug: "final_entrance",
-                entrance_result: :not_passed
-              },
-              %{
-                slug: "final",
-                status: :pending,
-                place_in_total_rank: Enum.random(1..20),
-                place_in_category_rank: Enum.random(1..10),
-                score: Enum.random(20..100),
-                wins_count: Enum.random(0..8),
-                games_count: Enum.random(1..10),
-                time_spent_in_seconds: Enum.random(100..5000)
-              }
+              %{slug: "qualification", status: :pending},
+              %{slug: "semifinal_entrance", status: :pending, entrance_result: :passed},
+              %{slug: "semifinal", status: :pending},
+              %{slug: "final_entrance", status: :pending, entrance_result: :not_passed},
+              %{slug: "final", status: :pending}
             ]
           })
 
-        user_event ->
+        _user_event ->
           IO.puts("User event already exists for user #{user.id} and event #{event.id}")
       end
     end)
@@ -606,8 +619,6 @@ if Enum.any?(events) do
 else
   IO.puts("No events found in the database")
 end
-
-Repo.delete_all(UserEvent)
 
 # UserEvent.create(%{
 #   user_id: 2185,

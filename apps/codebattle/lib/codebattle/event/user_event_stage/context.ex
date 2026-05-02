@@ -32,8 +32,10 @@ defmodule Codebattle.UserEvent.Stage.Context do
         |> Stage.changeset(%{
           wins_count: player_result.wins_count,
           games_count: player_result.games_count,
+          score: player_result[:score],
           time_spent_in_seconds: player_result.time_spent_in_seconds,
-          group_tournament_id: player_result[:group_tournament_id]
+          group_tournament_id: player_result[:group_tournament_id] || stage.group_tournament_id,
+          tournament_finished: true
         })
         |> Repo.update()
       end
@@ -49,7 +51,7 @@ defmodule Codebattle.UserEvent.Stage.Context do
     Stage
     |> join(:inner, [s], ue in UserEvent, on: s.user_event_id == ue.id)
     |> where([s, ue], ue.event_id == ^event_id and s.tournament_id == ^tournament_id)
-    |> Repo.update_all(set: [status: :completed, finished_at: now])
+    |> Repo.update_all(set: [status: :completed, tournament_finished: true, finished_at: now])
 
     :ok
   end
@@ -60,7 +62,7 @@ defmodule Codebattle.UserEvent.Stage.Context do
 
     Stage
     |> where([s], s.group_tournament_id == ^group_tournament_id)
-    |> Repo.update_all(set: [status: :completed, finished_at: now])
+    |> Repo.update_all(set: [status: :completed, group_tournament_finished: true, finished_at: now])
 
     :ok
   end

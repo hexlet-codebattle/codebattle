@@ -34,7 +34,10 @@ function Header({ name, status, groupTournament }) {
       <h4 className="mb-0 mr-3">{name || i18n.t("Group Tournament")}</h4>
       <div className="d-flex align-items-center ml-auto">
         <TournamentTimer groupTournament={groupTournament} />
-        <span className={`badge ${badge.className} px-3 py-2`}>{i18n.t(badge.labelKey)}</span>
+        <span className={`badge ${badge.className} px-3 py-2 mr-3`}>{i18n.t(badge.labelKey)}</span>
+        <a className="btn btn-secondary cb-btn-secondary cb-rounded" href="/">
+          {i18n.t("Back to event")}
+        </a>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import NiceModal, { unregister } from "@ebay/nice-modal-react";
 
 import AnimationModal from "@/pages/game/AnimationModal";
+import NextStageGroupTournamentModal from "@/pages/game/NextStageGroupTournamentModal";
 import PremiumRestrictionModal from "@/pages/game/PremiumRestrictionModal";
 import TaskDescriptionModal from "@/pages/game/TaskDescriptionModal";
 import TournamentAwardModal from "@/pages/game/TournamentAwardModal";
@@ -17,6 +18,7 @@ const useGameRoomModals = () => {
     NiceModal.register(ModalCodes.taskDescriptionModal, TaskDescriptionModal);
     NiceModal.register(ModalCodes.tournamentStatisticsModal, TournamentStatisticsModal);
     NiceModal.register(ModalCodes.awardModal, TournamentAwardModal);
+    NiceModal.register(ModalCodes.nextStageGroupTournamentModal, NextStageGroupTournamentModal);
 
     const unregisterModals = () => {
       unregister(ModalCodes.gameResultModal);
@@ -24,6 +26,7 @@ const useGameRoomModals = () => {
       unregister(ModalCodes.taskDescriptionModal);
       unregister(ModalCodes.tournamentStatisticsModal);
       unregister(ModalCodes.awardModal);
+      unregister(ModalCodes.nextStageGroupTournamentModal);
     };
 
     return unregisterModals;

@@ -42,6 +42,7 @@ defmodule Codebattle.Event do
                only: [
                  :action_button_text,
                  :confirmation_text,
+                 :next_round_text,
                  :dates,
                  :group_tournament_id,
                  :group_tournament_meta,
@@ -57,6 +58,7 @@ defmodule Codebattle.Event do
 
       field(:action_button_text, :string)
       field(:confirmation_text, :string)
+      field(:next_round_text, :string)
       field(:dates, :string)
       field(:group_tournament_id, :integer)
       field(:name, :string)
@@ -148,6 +150,7 @@ defmodule Codebattle.Event do
     |> cast(params, [
       :action_button_text,
       :confirmation_text,
+      :next_round_text,
       :dates,
       :group_tournament_id,
       :group_tournament_meta,

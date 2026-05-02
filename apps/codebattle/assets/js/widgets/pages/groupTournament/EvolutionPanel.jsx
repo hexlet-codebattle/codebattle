@@ -24,17 +24,28 @@ const formatInsertedAt = (insertedAt) => {
 
 const isSuccess = (item) => item?.status === "success";
 
-const buildRunMeta = (item) => {
-  if (!item || typeof item !== "object") {
-    return item ? String(item) : null;
+const findBestRunId = (items) => {
+  if (!items || items.length === 0) {
+    return null;
   }
 
-  return [i18n.t("Score %{score}", { score: item.score ?? 0 }), formatInsertedAt(item.insertedAt)]
-    .filter(Boolean)
-    .join(" · ");
+  let bestId = null;
+  let bestScore = -Infinity;
+
+  items.forEach((item) => {
+    const score = item?.score ?? 0;
+    if (score > bestScore) {
+      bestScore = score;
+      bestId = item?.id;
+    }
+  });
+
+  return bestId;
 };
 
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
+  const bestRunId = findBestRunId(items);
+
   return (
     <div className="card cb-card border cb-border-color rounded shadow-sm">
       <div className="card-header py-2 border-bottom cb-border-color">
@@ -63,9 +74,17 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
               {items.map((item, idx) => {
                 const isActive = runId === item?.id;
                 const success = isSuccess(item);
-                const borderColor = success ? "rgba(40, 167, 69, 0.95)" : "rgba(220, 53, 69, 0.95)";
-                const meta = buildRunMeta(item);
+                const isBest = item?.id != null && item.id === bestRunId;
+                const statusColor = success ? "rgba(40, 167, 69, 0.95)" : "rgba(220, 53, 69, 0.95)";
+                const goldColor = "rgba(255, 193, 7, 0.95)";
+                const ringColor = isBest
+                  ? goldColor
+                  : isActive
+                    ? "rgba(96, 165, 250, 0.95)"
+                    : "rgba(99, 102, 121, 0.95)";
                 const title = `v${items.length - idx}`;
+                const score = item?.score ?? 0;
+                const time = formatInsertedAt(item?.insertedAt);
 
                 return (
                   <button
@@ -74,18 +93,16 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
                     onClick={() => setRunId(item?.id)}
                     className="rounded p-2 text-left bg-transparent mb-2"
                     style={{
-                      borderTop: isActive
-                        ? "1px solid rgba(96, 165, 250, 0.95)"
-                        : "1px solid rgba(99, 102, 121, 0.95)",
-                      borderRight: isActive
-                        ? "1px solid rgba(96, 165, 250, 0.95)"
-                        : "1px solid rgba(99, 102, 121, 0.95)",
-                      borderBottom: isActive
-                        ? "1px solid rgba(96, 165, 250, 0.95)"
-                        : "1px solid rgba(99, 102, 121, 0.95)",
-                      borderLeft: `3px solid ${borderColor}`,
+                      borderTop: `${isBest ? 2 : 1}px solid ${ringColor}`,
+                      borderRight: `${isBest ? 2 : 1}px solid ${ringColor}`,
+                      borderBottom: `${isBest ? 2 : 1}px solid ${ringColor}`,
+                      borderLeft: `3px solid ${statusColor}`,
                       backgroundColor: isActive ? "rgba(96, 165, 250, 0.25)" : "transparent",
-                      boxShadow: isActive ? "0 0 0 1px rgba(96, 165, 250, 0.5)" : "none",
+                      boxShadow: isBest
+                        ? "0 0 0 1px rgba(255, 193, 7, 0.5)"
+                        : isActive
+                          ? "0 0 0 1px rgba(96, 165, 250, 0.5)"
+                          : "none",
                       transition: "background-color 160ms ease, box-shadow 160ms ease",
                       width: "100%",
                     }}
@@ -102,9 +119,22 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
                   >
                     <div className="d-flex align-items-center text-nowrap">
                       <span className="badge badge-secondary mr-2">{title}</span>
-                      <span className={`text-truncate ${isActive ? "text-white" : "text-muted"}`}>
-                        {meta}
+                      <span
+                        className="font-weight-bold mr-2"
+                        style={{
+                          fontSize: "1.15rem",
+                          color: isBest ? goldColor : isActive ? "#ffffff" : "#e2e8f0",
+                        }}
+                      >
+                        {i18n.t("Score %{score}", { score })}
                       </span>
+                      {time && (
+                        <span
+                          className={`small text-truncate ${isActive ? "text-white-50" : "text-muted"}`}
+                        >
+                          {time}
+                        </span>
+                      )}
                     </div>
                   </button>
                 );

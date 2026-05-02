@@ -86,15 +86,29 @@
                 </td>
                 <td class="text-white cb-border-color">{stage.tournament_id}</td>
                 <td class="cb-border-color">
-                  {link("Enroll All Users",
-                    to:
-                      Routes.event_enroll_all_path(@conn, :enroll_all, @event,
-                        stage_slug: stage.slug
-                      ),
-                    method: :post,
-                    data: [confirm: "Enroll all non-bot users into stage \"#{stage.slug}\"?"],
-                    class: "btn btn-sm btn-warning cb-rounded text-nowrap"
-                  )}
+                  <div class="d-flex flex-column gap-1">
+                    {link("Enroll All Users",
+                      to:
+                        Routes.event_enroll_all_path(@conn, :enroll_all, @event,
+                          stage_slug: stage.slug
+                        ),
+                      method: :post,
+                      data: [confirm: "Enroll all non-bot users into stage \"#{stage.slug}\"?"],
+                      class: "btn btn-sm btn-warning cb-rounded text-nowrap"
+                    )}
+                    {link("Calculate places",
+                      to:
+                        Routes.event_calculate_places_path(@conn, :calculate_places, @event,
+                          stage_slug: stage.slug
+                        ),
+                      method: :post,
+                      data: [
+                        confirm:
+                          "Recalculate place_in_total/category for stage \"#{stage.slug}\"?"
+                      ],
+                      class: "btn btn-sm btn-info cb-rounded text-nowrap mt-1"
+                    )}
+                  </div>
                 </td>
               </tr>
             <% end %>

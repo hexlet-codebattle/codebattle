@@ -290,6 +290,10 @@ defmodule Codebattle.GroupTournament.Server do
 
     if updated.state != group_tournament.state do
       broadcast_status_update(updated)
+
+      if updated.state == "finished" do
+        Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
+      end
     end
 
     next_state =

@@ -1771,22 +1771,33 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               </td>
                               <td class="cb-border-color">
                                 <%= if user_stage do %>
-                                  <%= if user_stage.tournament_id do %>
-                                    <a
-                                      href={
-                                        Routes.tournament_path(
-                                          @socket,
-                                          :show,
-                                          user_stage.tournament_id
-                                        )
-                                      }
-                                      class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded text-nowrap"
-                                    >
-                                      #{user_stage.tournament_id}
-                                    </a>
-                                  <% else %>
-                                    <span class="cb-text">{user_stage.entrance_result}</span>
-                                  <% end %>
+                                  <div class="d-flex flex-column gap-1">
+                                    <%= if user_stage.tournament_id do %>
+                                      <a
+                                        href={
+                                          Routes.tournament_path(
+                                            @socket,
+                                            :show,
+                                            user_stage.tournament_id
+                                          )
+                                        }
+                                        class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded text-nowrap"
+                                      >
+                                        Tournament #{user_stage.tournament_id}
+                                      </a>
+                                    <% end %>
+                                    <%= if user_stage.group_tournament_id do %>
+                                      <a
+                                        href={"/admin/group_tournaments/#{user_stage.group_tournament_id}"}
+                                        class="btn btn-sm btn-outline-warning cb-btn-outline-warning cb-rounded text-nowrap mt-1"
+                                      >
+                                        Group #{user_stage.group_tournament_id}
+                                      </a>
+                                    <% end %>
+                                    <%= if !user_stage.tournament_id && !user_stage.group_tournament_id do %>
+                                      <span class="cb-text">{user_stage.entrance_result}</span>
+                                    <% end %>
+                                  </div>
                                 <% else %>
                                   <span class="cb-text">–</span>
                                 <% end %>

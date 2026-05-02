@@ -15,12 +15,16 @@ defmodule Codebattle.UserEvent.Stage do
              :status,
              :tournament_id,
              :group_tournament_id,
+             :tournament_finished,
+             :group_tournament_finished,
              :entrance_result,
              :place_in_total_rank,
              :place_in_category_rank,
+             :group_tournament_score,
              :games_count,
              :score,
              :time_spent_in_seconds,
+             :group_tournament_time_spent_in_seconds,
              :wins_count,
              :started_at,
              :finished_at
@@ -33,12 +37,16 @@ defmodule Codebattle.UserEvent.Stage do
     field(:status, Ecto.Enum, values: @statuses)
     field(:tournament_id, :integer)
     field(:group_tournament_id, :integer)
+    field(:tournament_finished, :boolean, default: false)
+    field(:group_tournament_finished, :boolean, default: false)
     field(:entrance_result, Ecto.Enum, values: @entrance_results)
     field(:place_in_total_rank, :integer)
     field(:place_in_category_rank, :integer)
+    field(:group_tournament_score, :integer)
     field(:games_count, :integer)
     field(:score, :integer)
     field(:time_spent_in_seconds, :integer)
+    field(:group_tournament_time_spent_in_seconds, :integer)
     field(:wins_count, :integer)
     field(:started_at, :utc_datetime)
     field(:finished_at, :utc_datetime)
@@ -53,12 +61,16 @@ defmodule Codebattle.UserEvent.Stage do
       :status,
       :tournament_id,
       :group_tournament_id,
+      :tournament_finished,
+      :group_tournament_finished,
       :entrance_result,
       :place_in_total_rank,
       :place_in_category_rank,
       :games_count,
       :score,
+      :group_tournament_score,
       :time_spent_in_seconds,
+      :group_tournament_time_spent_in_seconds,
       :wins_count,
       :started_at,
       :finished_at

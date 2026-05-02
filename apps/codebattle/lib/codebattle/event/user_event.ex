@@ -99,8 +99,8 @@ defmodule Codebattle.UserEvent do
     Repo.delete(user_event)
   end
 
-  @spec mark_stage_as_started(t(), String.t(), integer()) :: t()
-  def mark_stage_as_started(user_event, stage_slug, tournament_id) do
+  @spec mark_stage_as_started(t(), String.t(), integer(), integer() | nil) :: t()
+  def mark_stage_as_started(user_event, stage_slug, tournament_id, group_tournament_id \\ nil) do
     user_event = Repo.preload(user_event, :stages)
 
     stage_params =
@@ -112,6 +112,9 @@ defmodule Codebattle.UserEvent do
             status: :started,
             started_at: DateTime.utc_now(),
             tournament_id: tournament_id,
+            group_tournament_id: group_tournament_id || stage.group_tournament_id,
+            tournament_finished: stage.tournament_finished,
+            group_tournament_finished: stage.group_tournament_finished,
             entrance_result: stage.entrance_result,
             place_in_total_rank: stage.place_in_total_rank,
             place_in_category_rank: stage.place_in_category_rank,
@@ -157,6 +160,9 @@ defmodule Codebattle.UserEvent do
           slug: user_stage.slug,
           status: :completed,
           tournament_id: user_stage.tournament_id,
+          group_tournament_id: user_stage.group_tournament_id,
+          tournament_finished: true,
+          group_tournament_finished: user_stage.group_tournament_finished,
           entrance_result: user_stage.entrance_result,
           place_in_total_rank: user_stage.place_in_total_rank,
           place_in_category_rank: user_stage.place_in_category_rank,

@@ -8,6 +8,7 @@ const modalCodes = {
   eventStageModal: "event_stage_modal",
   calendarEventModal: "calendar_event_modal",
   tournamentModal: "tournament_modal",
+  nextStageGroupTournamentModal: "next_stage_group_tournament_modal",
 };
 
 export default modalCodes;

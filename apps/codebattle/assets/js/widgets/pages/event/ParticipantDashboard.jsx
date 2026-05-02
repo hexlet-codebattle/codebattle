@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 
 import NiceModal, { unregister } from "@ebay/nice-modal-react";
 import cn from "classnames";
-import Gon from "gon";
 import upperCase from "lodash/upperCase";
 import { useSelector } from "react-redux";
+
+import NextStageGroupTournamentModal from "@/pages/game/NextStageGroupTournamentModal";
 
 import i18n from "../../../i18n";
 import ModalCodes from "../../config/modalCodes";
@@ -14,61 +15,14 @@ import EventStageConfirmationModal from "./EventStageConfirmationModal";
 import NotPassedIcon from "./NotPassedIcon";
 import PassedIcon from "./PassedIcon";
 
-const externalPlatformLoginUrl = Gon.getAsset("external_platform_login_url");
-const externalPlatformName = Gon.getAsset("external_platform_name") || "External platform";
-const externalPlatformProfileUrlTemplate = Gon.getAsset("external_platform_profile_url_template");
-
-const getExternalPlatformProfileUrl = (login) => {
-  if (!login || !externalPlatformProfileUrlTemplate) {
-    return null;
-  }
-
-  return externalPlatformProfileUrlTemplate.replace("USER_LOGIN", login);
-};
-
-const renderExternalPlatformLink = (user) => {
-  if (user.externalPlatformId) {
-    const profileUrl = getExternalPlatformProfileUrl(user.externalOauthLogin);
-    const linkLabel = user.externalOauthLogin || user.externalPlatformId;
-
-    if (!profileUrl) {
-      return <span className="cb-custom-event-profile-data ms-2">{linkLabel}</span>;
-    }
-
-    return (
-      <a
-        className="cb-custom-event-profile-data ms-2"
-        href={profileUrl}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {linkLabel}
-      </a>
-    );
-  }
-
-  if (!externalPlatformLoginUrl) {
-    return <span className="cb-custom-event-profile-data ms-2">{i18n.t("Sign in")}</span>;
-  }
-
-  return (
-    <a
-      className="cb-custom-event-profile-data ms-2"
-      href={externalPlatformLoginUrl}
-      target="_blank"
-      rel="noreferrer"
-    >
-      {i18n.t("Sign in")}
-    </a>
-  );
-};
-
 function ParticipantDashboard() {
   useEffect(() => {
     NiceModal.register(ModalCodes.eventStageModal, EventStageConfirmationModal);
+    NiceModal.register(ModalCodes.nextStageGroupTournamentModal, NextStageGroupTournamentModal);
 
     const unregisterModals = () => {
       unregister(ModalCodes.eventStageModal);
+      unregister(ModalCodes.nextStageGroupTournamentModal);
     };
 
     return unregisterModals;
@@ -78,6 +32,23 @@ function ParticipantDashboard() {
   const user = useSelector(currentUserSelector);
   const participantData = useSelector(participantDataSelector);
   const event = useSelector(eventSelector);
+
+  const pendingGroupTournamentStage = participantData?.stages?.find(
+    (stage) =>
+      stage.tournamentFinished && stage.groupTournamentId && !stage.groupTournamentFinished,
+  );
+
+  const pendingGroupTournamentId = pendingGroupTournamentStage?.groupTournamentId;
+  const pendingNextRoundText = pendingGroupTournamentStage?.nextRoundText;
+
+  useEffect(() => {
+    if (pendingGroupTournamentId) {
+      NiceModal.show(ModalCodes.nextStageGroupTournamentModal, {
+        groupTournamentId: pendingGroupTournamentId,
+        bodyText: pendingNextRoundText,
+      });
+    }
+  }, [pendingGroupTournamentId, pendingNextRoundText]);
 
   if (!participantData || !event) {
     return (
@@ -116,10 +87,6 @@ function ParticipantDashboard() {
                 {i18n.t("Category")}
                 <span className="cb-custom-event-profile-data ms-2">{user.category}</span>
               </div>
-              <div className="d-flex text-white justify-content-between cb-custom-event-profile my-1 mx-1 w-100">
-                {externalPlatformName}
-                {renderExternalPlatformLink(user)}
-              </div>
             </div>
           </div>
         </div>
@@ -139,6 +106,9 @@ function ParticipantDashboard() {
                 {i18n.t("Score/Total")}
               </div>
               <div className="d-flex justify-content-center align-items-center">
+                {i18n.t("AI score")}
+              </div>
+              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Time spent")}
               </div>
             </div>
@@ -156,7 +126,7 @@ function ParticipantDashboard() {
                   <div className="d-flex justify-content-center cb-custom-event-stage-action">
                     {stage.isStageAvailableForUser && stage.type === "tournament" && (
                       <div className="action-button">
-                        {stage.groupTournamentId ? (
+                        {stage.groupTournamentId && stage.tournamentFinished ? (
                           <a
                             type="button"
                             className="btn btn-success rounded-pill px-4"
@@ -241,6 +211,17 @@ function ParticipantDashboard() {
                           {i18n.t("Score/Total")}:
                         </div>
                         {stage.winsCount}/{stage.gamesCount}
+                      </div>
+                      <div
+                        className={cn(
+                          "d-flex d-sm-flex cb-custom-event-stage-cell",
+                          "justify-content-center align-items-center text-center",
+                        )}
+                      >
+                        <div className="d-block d-xl-none me-2 font-weight-bold">
+                          {i18n.t("AI score")}:
+                        </div>
+                        {stage.aiScore}
                       </div>
                       <div
                         className={cn(

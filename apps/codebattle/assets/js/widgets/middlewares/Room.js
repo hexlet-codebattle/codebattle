@@ -1,8 +1,10 @@
+import NiceModal from "@ebay/nice-modal-react";
 import Gon from "gon";
 import { camelizeKeys } from "humps";
 import debounce from "lodash/debounce";
 import find from "lodash/find";
 
+import ModalCodes from "@/config/modalCodes";
 import { makeGameUrl } from "@/utils/urlBuilders";
 
 import { channelMethods, channelTopics } from "../../socket";
@@ -619,7 +621,9 @@ export const activeGameReady =
 
     const handleTournamentFinished = (response) => {
       if (response.tournament.groupTournamentId) {
-        window.location.href = `/group_tournaments/${response.tournament.groupTournamentId}`;
+        NiceModal.show(ModalCodes.nextStageGroupTournamentModal, {
+          groupTournamentId: response.tournament.groupTournamentId,
+        });
       }
     };
 

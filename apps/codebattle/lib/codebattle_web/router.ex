@@ -108,6 +108,8 @@ defmodule CodebattleWeb.Router do
     live("/seasons/:id", CodebattleWeb.Live.Admin.Season.ShowView, :show)
     resources("/events", CodebattleWeb.EventController, except: [:index])
     post("/events/:id/enroll_all", CodebattleWeb.EventController, :enroll_all, as: :event_enroll_all)
+
+    post("/events/:id/calculate_places", CodebattleWeb.EventController, :calculate_places, as: :event_calculate_places)
     get("/group_tasks/:id/runs/:run_id/:part", GroupTaskController, :download_run_part, as: :group_task_run_part)
 
     get("/group_tasks/:id/solutions/:solution_id/edit", GroupTaskController, :edit_solution,

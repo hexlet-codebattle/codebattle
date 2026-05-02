@@ -507,12 +507,17 @@ export const participantDataSelector = (state) => {
       const gamesCount = userStage?.gamesCount ? userStage.gamesCount : "-";
       const zeroWinsCount = gamesCount === "-" ? "-" : "0";
       const winsCount = userStage?.winsCount ? userStage.winsCount : zeroWinsCount;
+      const totalSeconds =
+        (userStage?.timeSpentInSeconds || 0) + (userStage?.groupTournamentTimeSpentInSeconds || 0);
+      const aiScoreRaw = userStage?.groupTournamentScore;
 
       return {
         status: eventStage.status,
         userStatus: userStage?.status,
         tournamentId: userStage?.tournamentId,
         groupTournamentId: userStage?.groupTournamentId,
+        tournamentFinished: !!userStage?.tournamentFinished,
+        groupTournamentFinished: !!userStage?.groupTournamentFinished,
         name: eventStage.name,
         dates: eventStage.dates,
         isStageAvailableForUser,
@@ -522,11 +527,11 @@ export const participantDataSelector = (state) => {
         placeInCategoryRank: userStage?.placeInCategoryRank ? userStage.placeInCategoryRank : "-",
         gamesCount,
         winsCount,
-        timeSpent: userStage?.timeSpentInSeconds
-          ? moment.utc(userStage.timeSpentInSeconds * 1000).format("HH:mm:ss")
-          : "-",
+        aiScore: typeof aiScoreRaw === "number" ? aiScoreRaw : "-",
+        timeSpent: totalSeconds > 0 ? moment.utc(totalSeconds * 1000).format("HH:mm:ss") : "-",
         actionButtonText: eventStage.actionButtonText,
         confirmationText: eventStage.confirmationText,
+        nextRoundText: eventStage.nextRoundText,
         type: eventStage.type,
       };
     }) || [];
