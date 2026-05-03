@@ -138,6 +138,25 @@ ars:
 	@mkdir -p $(ARS_GOCACHE) $(ARS_GOPATH)
 	cd tools/ars && GOCACHE=$(ARS_GOCACHE) GOPATH=$(ARS_GOPATH) go build -o $(ARS_BIN) ./cmd/ars && exec $(ARS_BIN) $(ARS_ARGS)
 
+DIMA_ARGS ?=
+DIMA_GOCACHE ?= $(CURDIR)/tmp/dima-go-build
+DIMA_GOPATH ?= $(CURDIR)/tmp/dima-go
+DIMA_BIN ?= $(CURDIR)/tmp/dima
+
+dima:
+	@command -v go >/dev/null 2>&1 || { \
+		echo "go is required for dima. Install it first, for example:"; \
+		echo "  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"; \
+		echo "  asdf install golang 1.22.12"; \
+		echo "  asdf global golang 1.22.12"; \
+		exit 127; \
+	}
+	@mkdir -p $(DIMA_GOCACHE) $(DIMA_GOPATH)
+	cd tools/dima && GOCACHE=$(DIMA_GOCACHE) GOPATH=$(DIMA_GOPATH) go build -o $(DIMA_BIN) ./cmd/dima
+
+huyach: dima
+	exec $(DIMA_BIN) $(DIMA_ARGS)
+
 test:
 	mix coveralls.json --exclude image_executor --max-failures 1
 

@@ -1,0 +1,18 @@
+server = "http://localhost:4000"
+auth_key = "x-key"
+
+users = 19
+group_task_id = 1
+runner_url = "http://localhost:1234/run"
+slice_size = 16
+slice_strategy = "random"
+
+avg_submit_seconds = 20
+randomness = 30
+join_ramp_seconds = 5
+
+langs = ["python", "cpp"]
+
+[solutions]
+python_dir = "./solutions/python"
+cpp_dir = "./solutions/cpp"

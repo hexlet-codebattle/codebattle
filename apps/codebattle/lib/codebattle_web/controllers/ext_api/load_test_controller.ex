@@ -4,12 +4,15 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
   import Ecto.Query
   import Plug.Conn
 
+  alias Codebattle.GroupTask
+  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
   alias Codebattle.Repo
   alias Codebattle.Task
   alias Codebattle.Tournament
   alias Codebattle.User
 
-  plug(CodebattleWeb.Plugs.TokenAuth)
+  # plug(CodebattleWeb.Plugs.TokenAuth)
 
   @default_user_count 10
   @default_user_lang "python"
@@ -60,6 +63,73 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
     end
   end
 
+  def create_group_scenario(conn, params) do
+    with :ok <- ensure_load_tests_enabled(conn) do
+      users_count = parse_positive_int(params["users_count"], @default_user_count)
+      lang_mix = normalize_lang_mix(params["lang_mix"] || params["languages"])
+      tournament_params = scenario_tournament_params(params)
+
+      with {:ok, creator} <- find_or_create_creator(),
+           {:ok, group_task} <- find_group_task(tournament_params["group_task_id"]),
+           {:ok, group_task} <- maybe_update_runner_url(group_task, params["runner_url"]),
+           {:ok, group_tournament} <- create_group_tournament(creator, group_task, tournament_params),
+           {:ok, users} <- create_users(users_count, lang_mix),
+           {:ok, users_with_tokens} <- transfer_and_issue_tokens(group_tournament, users) do
+        json(conn, %{
+          creator: %{
+            id: creator.id,
+            name: creator.name,
+            user_token: sign_user_token(creator.id)
+          },
+          group_tournament: %{
+            id: group_tournament.id,
+            slug: group_tournament.slug,
+            state: group_tournament.state,
+            group_task_id: group_tournament.group_task_id,
+            slice_size: group_tournament.slice_size,
+            slice_strategy: group_tournament.slice_strategy
+          },
+          users: users_with_tokens
+        })
+      else
+        {:error, %Ecto.Changeset{} = changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{errors: format_errors(changeset)})
+
+        {:error, reason} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: inspect(reason)})
+      end
+    end
+  end
+
+  def start_group_scenario(conn, %{"id" => id}) do
+    with :ok <- ensure_load_tests_enabled(conn),
+         {:ok, group_tournament_id} <- parse_id(id),
+         :ok <- GroupTournamentContext.ensure_server_started(group_tournament_id),
+         {:ok, group_tournament} <- GroupTournamentServer.start_now(group_tournament_id) do
+      json(conn, %{
+        group_tournament: %{
+          id: group_tournament.id,
+          slug: group_tournament.slug,
+          state: group_tournament.state
+        }
+      })
+    else
+      {:error, :invalid_id} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "invalid_id"})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: inspect(reason)})
+    end
+  end
+
   def task_solutions(conn, %{"id" => id}) do
     with :ok <- ensure_load_tests_enabled(conn) do
       Task
@@ -93,6 +163,17 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
         })
     end
   end
+
+  defp parse_id(id) when is_integer(id) and id > 0, do: {:ok, id}
+
+  defp parse_id(id) when is_binary(id) do
+    case Integer.parse(id) do
+      {parsed, ""} when parsed > 0 -> {:ok, parsed}
+      _ -> {:error, :invalid_id}
+    end
+  end
+
+  defp parse_id(_), do: {:error, :invalid_id}
 
   defp ensure_load_tests_enabled(conn) do
     if FunWithFlags.enabled?(:allow_load_tests_ext_api) do
@@ -165,6 +246,85 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
 
       {_ok_users, errors} ->
         {:error, errors}
+    end
+  end
+
+  defp maybe_update_runner_url(group_task, runner_url) when is_binary(runner_url) and runner_url != "" do
+    if group_task.runner_url == runner_url do
+      {:ok, group_task}
+    else
+      group_task
+      |> Ecto.Changeset.change(runner_url: runner_url)
+      |> Repo.update()
+    end
+  end
+
+  defp maybe_update_runner_url(group_task, _runner_url), do: {:ok, group_task}
+
+  defp find_group_task(nil) do
+    case Repo.one(from(gt in GroupTask, order_by: [asc: gt.id], limit: 1)) do
+      nil -> {:error, :no_group_task_available}
+      group_task -> {:ok, group_task}
+    end
+  end
+
+  defp find_group_task(id) do
+    case Repo.get(GroupTask, id) do
+      nil -> {:error, :group_task_not_found}
+      group_task -> {:ok, group_task}
+    end
+  end
+
+  defp create_group_tournament(creator, group_task, tournament_params) do
+    params =
+      Map.merge(
+        %{
+          "creator_id" => creator.id,
+          "group_task_id" => group_task.id,
+          "name" => "Load test group #{System.unique_integer([:positive])}",
+          "slug" => "load-test-group-#{System.unique_integer([:positive])}",
+          "description" => "Load test group tournament",
+          "starts_at" => default_starts_at(),
+          "rounds_count" => 1,
+          "round_timeout_seconds" => 1200,
+          "include_bots" => true
+        },
+        Map.delete(tournament_params, "group_task_id")
+      )
+
+    GroupTournamentContext.create_group_tournament(params)
+  end
+
+  defp transfer_and_issue_tokens(group_tournament, users) do
+    transfer_payload =
+      Enum.map(users, fn user ->
+        %{id: user.id, lang: user.lang}
+      end)
+
+    :ok = GroupTournamentContext.bulk_transfer_players(group_tournament.id, transfer_payload)
+
+    tokens =
+      Enum.reduce_while(users, [], fn user, acc ->
+        case GroupTournamentContext.create_or_rotate_token(group_tournament.id, user.id) do
+          {:ok, record} ->
+            entry = %{
+              user_id: user.id,
+              name: user.name,
+              lang: user.lang,
+              token: record.token,
+              user_token: sign_user_token(user.id)
+            }
+
+            {:cont, [entry | acc]}
+
+          {:error, changeset} ->
+            {:halt, {:error, changeset}}
+        end
+      end)
+
+    case tokens do
+      {:error, _} = err -> err
+      list -> {:ok, Enum.reverse(list)}
     end
   end
 
