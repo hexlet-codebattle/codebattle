@@ -12,6 +12,7 @@ defmodule Codebattle.GroupTournament do
   alias Codebattle.User
 
   @states ~w(waiting_participants active finished canceled)
+  @slice_strategies ~w(random rating)
 
   @type t :: %__MODULE__{}
 
@@ -38,7 +39,9 @@ defmodule Codebattle.GroupTournament do
              :require_invitation,
              :run_on_external_platform,
              :template_id,
-             :tournament_id
+             :tournament_id,
+             :slice_size,
+             :slice_strategy
            ]}
 
   schema "group_tournaments" do
@@ -61,6 +64,8 @@ defmodule Codebattle.GroupTournament do
     field(:require_invitation, :boolean, default: false)
     field(:run_on_external_platform, :boolean, default: false)
     field(:template_id, :string)
+    field(:slice_size, :integer, default: 16)
+    field(:slice_strategy, :string, default: "random")
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -95,6 +100,8 @@ defmodule Codebattle.GroupTournament do
       :run_on_external_platform,
       :template_id,
       :tournament_id,
+      :slice_size,
+      :slice_strategy,
       :last_round_started_at,
       :last_round_ended_at,
       :meta
@@ -111,6 +118,8 @@ defmodule Codebattle.GroupTournament do
     |> update_change(:slug, &normalize_slug/1)
     |> update_change(:template_id, &normalize_optional_string/1)
     |> validate_inclusion(:state, @states)
+    |> validate_inclusion(:slice_strategy, @slice_strategies)
+    |> validate_number(:slice_size, greater_than: 0)
     |> validate_length(:name, min: 2, max: 255)
     |> validate_length(:slug, min: 2, max: 255)
     |> validate_length(:description, min: 3, max: 7531)

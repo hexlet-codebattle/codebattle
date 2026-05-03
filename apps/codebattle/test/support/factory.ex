@@ -7,6 +7,7 @@ defmodule CodebattleWeb.Factory do
   alias Codebattle.GroupTask
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTournament
+  alias Codebattle.GroupTournamentPlayer
   alias Codebattle.Playbook
   alias Codebattle.Task
   alias Codebattle.TaskPack
@@ -266,6 +267,15 @@ defmodule CodebattleWeb.Factory do
       starts_at: DateTime.add(DateTime.utc_now(), 3600, :second),
       rounds_count: 1,
       round_timeout_seconds: 60
+    }
+  end
+
+  def group_tournament_player_factory do
+    %GroupTournamentPlayer{
+      group_tournament: build(:group_tournament),
+      user: build(:user),
+      lang: "python",
+      state: "active"
     }
   end
 

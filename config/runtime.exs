@@ -167,6 +167,12 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
+config :codebattle,
+       :group_tournament_slice_run_concurrency,
+       "CODEBATTLE_GROUP_TOURNAMENT_SLICE_RUN_CONCURRENCY"
+       |> System.get_env("30")
+       |> String.to_integer()
+
 config :codebattle, :logo_title, logo_title
 config :codebattle, :main_event_slug, System.get_env("CODEBATTLE_MAIN_EVENT_SLUG")
 
