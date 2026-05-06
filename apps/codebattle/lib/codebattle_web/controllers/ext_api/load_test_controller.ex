@@ -12,7 +12,7 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
   alias Codebattle.Tournament
   alias Codebattle.User
 
-  # plug(CodebattleWeb.Plugs.TokenAuth)
+  plug(CodebattleWeb.Plugs.TokenAuth)
 
   @default_user_count 10
   @default_user_lang "python"
