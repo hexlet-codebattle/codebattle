@@ -6,6 +6,7 @@ defmodule Codebattle.GroupTournament.Server do
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
+  alias Codebattle.GroupTournament.SliceRunner
   alias Codebattle.PubSub
   alias Codebattle.Repo
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
@@ -239,6 +240,14 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
+    case SliceRunner.assign_slices(updated) do
+      {:ok, count} ->
+        Logger.info("group_tournament=#{updated.id} assigned #{count} slices on start")
+
+      {:error, reason} ->
+        Logger.warning("group_tournament=#{updated.id} slice assignment failed: #{inspect(reason)}")
+    end
+
     broadcast_status_update(updated)
 
     next_state =
@@ -251,8 +260,12 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_info(:finish_round, %{group_tournament: %{state: "active"} = group_tournament} = state) do
-    run_result = run_group_tournament(group_tournament)
-    {last_run_id, last_run_status, last_run_result} = serialize_run_result_meta(run_result)
+    slice_results = SliceRunner.run_all_slices(group_tournament)
+
+    ok = Enum.count(slice_results, fn {_idx, r} -> r == :ok end)
+    skipped = Enum.count(slice_results, fn {_idx, r} -> r == :skipped end)
+    errored = Enum.count(slice_results, fn {_idx, r} -> match?({:error, _}, r) end)
+    Logger.info("group_tournament=#{group_tournament.id} slice runs ok=#{ok} skipped=#{skipped} error=#{errored}")
 
     finished_round_at = NaiveDateTime.utc_now(:second)
 
@@ -260,9 +273,10 @@ defmodule Codebattle.GroupTournament.Server do
       last_round_ended_at: finished_round_at,
       meta:
         Map.merge(group_tournament.meta || %{}, %{
-          "last_run_id" => last_run_id,
-          "last_run_status" => last_run_status,
-          "last_run_result" => last_run_result
+          "last_slice_runs_total" => length(slice_results),
+          "last_slice_runs_ok" => ok,
+          "last_slice_runs_skipped" => skipped,
+          "last_slice_runs_error" => errored
         })
     }
 
@@ -285,8 +299,6 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.update!()
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
-
-    maybe_broadcast_run_update(updated, run_result)
 
     if updated.state != group_tournament.state do
       broadcast_status_update(updated)
@@ -315,30 +327,20 @@ defmodule Codebattle.GroupTournament.Server do
     {:noreply, state}
   end
 
+  # Per-submission "preview" run: only the submitting player's solution is
+  # executed, and the run is left untagged (slice_index nil). Slice runs fire
+  # on the round timer and carry the slice_index — those are the scored runs.
   defp maybe_run_after_solution_submission(
          %{group_tournament: %{state: "active"} = group_tournament} = state,
          submitted_solution
-       ) do
-    run_result = run_group_tournament(group_tournament)
-    {last_run_id, last_run_status, last_run_result} = serialize_run_result_meta(run_result)
+       )
+       when not is_nil(submitted_solution) do
+    GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
+      group_tournament_id: group_tournament.id,
+      include_bots: group_tournament.include_bots
+    })
 
-    updated =
-      group_tournament
-      |> GroupTournament.changeset(%{
-        meta:
-          Map.merge(group_tournament.meta || %{}, %{
-            "last_run_id" => last_run_id,
-            "last_run_status" => last_run_status,
-            "last_run_result" => last_run_result
-          })
-      })
-      |> Repo.update!()
-      |> Repo.preload([:creator, :group_task, players: [:user]])
-      |> Map.put(:is_live, true)
-
-    maybe_broadcast_run_update(updated, run_result, submitted_solution)
-
-    %{state | group_tournament: updated}
+    state
   end
 
   defp maybe_run_after_solution_submission(state, _submitted_solution), do: state
@@ -376,41 +378,6 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   defp cancel_finish_timer(state), do: state
-
-  defp run_group_tournament(group_tournament) do
-    player_ids = Enum.map(group_tournament.players, & &1.user_id)
-
-    run_result =
-      GroupTaskContext.run_group_task(
-        group_tournament.group_task,
-        player_ids,
-        %{group_tournament_id: group_tournament.id, include_bots: group_tournament.include_bots}
-      )
-
-    case run_result do
-      {:ok, _run} = ok -> ok
-      {:error, changeset} -> {:error, %{errors: serialize_changeset_errors(changeset)}}
-    end
-  end
-
-  defp serialize_run_result_meta({:ok, run}), do: {run.id, run.status, run.result}
-  defp serialize_run_result_meta({:error, result}), do: {nil, "error", result}
-
-  defp maybe_broadcast_run_update(group_tournament, run_result, submitted_solution \\ nil)
-
-  defp maybe_broadcast_run_update(group_tournament, {:ok, run}, submitted_solution) do
-    Context.broadcast_run_update(group_tournament, {:ok, run}, submitted_solution)
-  end
-
-  defp maybe_broadcast_run_update(_group_tournament, {:error, _result}, _submitted_solution), do: :ok
-
-  defp serialize_changeset_errors(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {message, opts} ->
-      Enum.reduce(opts, message, fn {key, value}, acc ->
-        String.replace(acc, "%{#{key}}", to_string(value))
-      end)
-    end)
-  end
 
   defp broadcast_status_update(%GroupTournament{} = group_tournament) do
     player_user_ids = Enum.map(group_tournament.players, & &1.user_id)

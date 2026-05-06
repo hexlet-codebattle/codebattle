@@ -44,18 +44,11 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id} = params) do
     group_tournament = Context.get_group_tournament!(id)
     :ok = Context.ensure_server_started(group_tournament)
 
-    render(conn, "show.html",
-      group_tournament: group_tournament,
-      runs: Context.list_runs(group_tournament),
-      solutions: latest_solutions(group_tournament),
-      tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
-      token_changeset: token_changeset(%{}),
-      user: conn.assigns.current_user
-    )
+    render_paginated(conn, group_tournament, params, token_changeset(%{}))
   end
 
   def edit(conn, %{"id" => id}) do
@@ -265,23 +258,98 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   defp render_show(conn, group_tournament, token_changeset) do
     conn
     |> put_status(:unprocessable_entity)
-    |> render("show.html",
+    |> render_paginated(group_tournament, conn.params, token_changeset)
+  end
+
+  @page_size 30
+
+  defp render_paginated(conn, group_tournament, params, token_changeset) do
+    players_page = parse_page(params["players_page"])
+    runs_page = parse_page(params["runs_page"])
+    slice_runs_page = parse_page(params["slice_runs_page"])
+    solutions_page = parse_page(params["solutions_page"])
+    slice_filter = parse_slice(params["slice"])
+
+    players_total = Context.count_players(group_tournament.id, slice_index: slice_filter)
+    runs_total = Context.count_runs(group_tournament.id, kind: :user)
+    slice_runs_total = Context.count_runs(group_tournament.id, kind: :slice)
+    solutions_total = Context.count_latest_solutions(group_tournament.id, group_tournament.group_task_id)
+
+    render(conn, "show.html",
       group_tournament: group_tournament,
-      runs: Context.list_runs(group_tournament),
-      solutions: latest_solutions(group_tournament),
+      slice_filter: slice_filter,
+      slice_summaries: Context.list_slice_summaries(group_tournament.id),
+      players:
+        Context.list_players(group_tournament.id,
+          slice_index: slice_filter,
+          limit: @page_size,
+          offset: (players_page - 1) * @page_size
+        ),
+      players_page: players_page,
+      players_total: players_total,
+      players_pages: page_count(players_total, @page_size),
+      runs:
+        Context.list_runs(group_tournament.id,
+          kind: :user,
+          limit: @page_size,
+          offset: (runs_page - 1) * @page_size
+        ),
+      runs_page: runs_page,
+      runs_total: runs_total,
+      runs_pages: page_count(runs_total, @page_size),
+      slice_runs:
+        Context.list_runs(group_tournament.id,
+          kind: :slice,
+          limit: @page_size,
+          offset: (slice_runs_page - 1) * @page_size
+        ),
+      slice_runs_page: slice_runs_page,
+      slice_runs_total: slice_runs_total,
+      slice_runs_pages: page_count(slice_runs_total, @page_size),
+      solutions:
+        Context.list_paginated_solutions(group_tournament.id, group_tournament.group_task_id,
+          limit: @page_size,
+          offset: (solutions_page - 1) * @page_size
+        ),
+      solutions_page: solutions_page,
+      solutions_total: solutions_total,
+      solutions_pages: page_count(solutions_total, @page_size),
+      page_size: @page_size,
       tournament_users: UserGroupTournamentContext.list_users(group_tournament.id),
       token_changeset: token_changeset,
       user: conn.assigns.current_user
     )
   end
 
-  defp latest_solutions(group_tournament) do
-    player_ids = Enum.map(group_tournament.players, & &1.user_id)
+  defp parse_page(nil), do: 1
 
-    GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
-      group_tournament_id: group_tournament.id
-    )
+  defp parse_page(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {n, ""} when n >= 1 -> n
+      _ -> 1
+    end
   end
+
+  defp parse_page(value) when is_integer(value) and value >= 1, do: value
+  defp parse_page(_), do: 1
+
+  defp parse_slice(nil), do: nil
+  defp parse_slice(""), do: nil
+  defp parse_slice("all"), do: nil
+  defp parse_slice("unassigned"), do: :unassigned
+
+  defp parse_slice(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {n, ""} when n >= 0 -> n
+      _ -> nil
+    end
+  end
+
+  defp parse_slice(value) when is_integer(value) and value >= 0, do: value
+  defp parse_slice(_), do: nil
+
+  defp page_count(0, _size), do: 1
+  defp page_count(total, size) when total > 0, do: div(total - 1, size) + 1
 
   defp parse_user_id(user_id) when is_integer(user_id) and user_id > 0, do: {:ok, user_id}
 

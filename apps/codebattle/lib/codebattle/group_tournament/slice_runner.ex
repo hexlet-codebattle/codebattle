@@ -88,7 +88,8 @@ defmodule Codebattle.GroupTournament.SliceRunner do
         result =
           GroupTaskContext.run_group_task(group_tournament.group_task, ids, %{
             group_tournament_id: group_tournament.id,
-            include_bots: group_tournament.include_bots
+            include_bots: group_tournament.include_bots,
+            slice_index: slice_index
           })
 
         GroupTournamentContext.broadcast_run_update(group_tournament, result)

@@ -167,18 +167,120 @@ defmodule Codebattle.GroupTournament.Context do
 
   def list_runs(group_tournament_id, opts) do
     limit = Keyword.get(opts, :limit, 50)
+    offset = Keyword.get(opts, :offset, 0)
+    kind = Keyword.get(opts, :kind)
 
     latest_run_ids =
       UserGroupTournamentRun
       |> where([run], run.group_tournament_id == ^group_tournament_id)
+      |> filter_kind(kind)
       |> group_by([run], run.run_key)
       |> select([run], max(run.id))
 
     UserGroupTournamentRun
     |> where([run], run.id in subquery(latest_run_ids))
     |> order_by([run], desc: run.inserted_at, desc: run.id)
+    |> offset(^offset)
     |> maybe_limit(limit)
     |> Repo.all()
+  end
+
+  @spec count_runs(GroupTournament.t() | pos_integer(), keyword()) :: non_neg_integer()
+  def count_runs(group_tournament_or_id, opts \\ [])
+  def count_runs(%GroupTournament{id: id}, opts), do: count_runs(id, opts)
+
+  def count_runs(group_tournament_id, opts) do
+    kind = Keyword.get(opts, :kind)
+
+    UserGroupTournamentRun
+    |> where([run], run.group_tournament_id == ^group_tournament_id)
+    |> filter_kind(kind)
+    |> select([run], count(fragment("DISTINCT ?", run.run_key)))
+    |> Repo.one()
+    |> Kernel.||(0)
+  end
+
+  defp filter_kind(query, :slice), do: where(query, [run], not is_nil(run.slice_index))
+  defp filter_kind(query, :user), do: where(query, [run], is_nil(run.slice_index))
+  defp filter_kind(query, _), do: query
+
+  @spec list_players(pos_integer(), keyword()) :: list(GroupTournamentPlayer.t())
+  def list_players(group_tournament_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 30)
+    offset = Keyword.get(opts, :offset, 0)
+    slice_index = Keyword.get(opts, :slice_index)
+
+    GroupTournamentPlayer
+    |> where([p], p.group_tournament_id == ^group_tournament_id)
+    |> filter_slice(slice_index)
+    |> order_by([p], asc_nulls_last: p.slice_index, asc: p.id)
+    |> offset(^offset)
+    |> limit(^limit)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
+  @spec count_players(pos_integer(), keyword()) :: non_neg_integer()
+  def count_players(group_tournament_id, opts \\ []) do
+    slice_index = Keyword.get(opts, :slice_index)
+
+    GroupTournamentPlayer
+    |> where([p], p.group_tournament_id == ^group_tournament_id)
+    |> filter_slice(slice_index)
+    |> select([p], count(p.id))
+    |> Repo.one()
+    |> Kernel.||(0)
+  end
+
+  @spec list_slice_summaries(pos_integer()) :: list(%{slice_index: integer(), count: non_neg_integer()})
+  def list_slice_summaries(group_tournament_id) do
+    GroupTournamentPlayer
+    |> where([p], p.group_tournament_id == ^group_tournament_id and not is_nil(p.slice_index))
+    |> group_by([p], p.slice_index)
+    |> order_by([p], asc: p.slice_index)
+    |> select([p], %{slice_index: p.slice_index, count: count(p.id)})
+    |> Repo.all()
+  end
+
+  @spec list_paginated_solutions(pos_integer(), pos_integer(), keyword()) :: list(GroupTaskSolution.t())
+  def list_paginated_solutions(group_tournament_id, group_task_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 30)
+    offset = Keyword.get(opts, :offset, 0)
+
+    latest_ids =
+      from(s in GroupTaskSolution,
+        where: s.group_task_id == ^group_task_id and s.group_tournament_id == ^group_tournament_id,
+        group_by: s.user_id,
+        select: max(s.id)
+      )
+
+    GroupTaskSolution
+    |> where([s], s.id in subquery(latest_ids))
+    |> order_by([s], desc: s.inserted_at, desc: s.id)
+    |> offset(^offset)
+    |> limit(^limit)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
+  @spec count_latest_solutions(pos_integer(), pos_integer()) :: non_neg_integer()
+  def count_latest_solutions(group_tournament_id, group_task_id) do
+    Repo.one(
+      from(s in GroupTaskSolution,
+        where: s.group_task_id == ^group_task_id and s.group_tournament_id == ^group_tournament_id,
+        select: count(fragment("DISTINCT ?", s.user_id))
+      )
+    ) || 0
+  end
+
+  defp filter_slice(query, nil), do: query
+
+  defp filter_slice(query, :unassigned) do
+    where(query, [p], is_nil(p.slice_index))
+  end
+
+  defp filter_slice(query, slice_index) when is_integer(slice_index) do
+    where(query, [p], p.slice_index == ^slice_index)
   end
 
   defp maybe_limit(query, :infinity), do: query

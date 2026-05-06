@@ -6,6 +6,7 @@ group_task_id = 1
 runner_url = "http://localhost:1234/run"
 slice_size = 16
 slice_strategy = "random"
+round_timeout_seconds = 30
 
 avg_submit_seconds = 20
 randomness = 30

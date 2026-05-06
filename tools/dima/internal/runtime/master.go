@@ -82,6 +82,9 @@ func (m *Master) CreateScenario(ctx context.Context) error {
 	if m.opts.GroupTaskID > 0 {
 		tournament["group_task_id"] = m.opts.GroupTaskID
 	}
+	if m.opts.RoundTimeoutSeconds > 0 {
+		tournament["round_timeout_seconds"] = m.opts.RoundTimeoutSeconds
+	}
 
 	req := extapi.GroupScenarioRequest{
 		UsersCount: m.opts.UsersCount,

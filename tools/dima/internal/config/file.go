@@ -33,6 +33,7 @@ type FileConfig struct {
 	RunnerURL        string        `toml:"runner_url"`
 	SliceSize        int           `toml:"slice_size"`
 	SliceStrategy    string        `toml:"slice_strategy"`
+	RoundTimeoutSeconds int        `toml:"round_timeout_seconds"`
 	AvgSubmitSeconds int           `toml:"avg_submit_seconds"`
 	Randomness       int           `toml:"randomness"`
 	JoinRampSeconds  int           `toml:"join_ramp_seconds"`
@@ -96,6 +97,9 @@ func ApplyFile(opts runtime.Options, cfg *FileConfig) runtime.Options {
 	}
 	if cfg.SliceStrategy != "" {
 		opts.SliceStrategy = cfg.SliceStrategy
+	}
+	if cfg.RoundTimeoutSeconds > 0 {
+		opts.RoundTimeoutSeconds = cfg.RoundTimeoutSeconds
 	}
 	if cfg.AvgSubmitSeconds > 0 {
 		opts.AvgSubmitSeconds = cfg.AvgSubmitSeconds

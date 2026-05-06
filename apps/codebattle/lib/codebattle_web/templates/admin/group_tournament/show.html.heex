@@ -158,10 +158,19 @@
     </div>
   </div>
 
+
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Players</h3>
-      <span class="cb-text">{@group_tournament.players_count} joined</span>
+      <h3 class="text-white mb-0">
+        Players
+        <%= if not is_nil(@slice_filter) do %>
+          <small class="cb-text">— filtered to {slice_label(@slice_filter)}</small>
+        <% end %>
+      </h3>
+      <span class="cb-text">
+        {@group_tournament.players_count} joined<%= if not is_nil(@slice_filter) do %>
+          ({@players_total} in this slice)<% end %>
+      </span>
     </div>
     <div class="table-responsive">
       <table class="table table-sm">
@@ -169,16 +178,20 @@
           <tr>
             <th class="cb-border-color border-bottom">user_id</th>
             <th class="cb-border-color border-bottom">user</th>
+            <th class="cb-border-color border-bottom">slice</th>
             <th class="cb-border-color border-bottom">lang</th>
             <th class="cb-border-color border-bottom">state</th>
             <th class="cb-border-color border-bottom">last_setup_at</th>
           </tr>
         </thead>
         <tbody>
-          <%= for player <- @group_tournament.players do %>
+          <%= for player <- @players do %>
             <tr>
               <td class="text-white cb-border-color">{player.user_id}</td>
               <td class="text-white cb-border-color">{player.user && player.user.name}</td>
+              <td class="text-white cb-border-color">
+                {if is_nil(player.slice_index), do: "-", else: player.slice_index}
+              </td>
               <td class="text-white cb-border-color">{player.lang}</td>
               <td class="text-white cb-border-color">{player.state}</td>
               <td class="text-white cb-border-color">{format_datetime(player.last_setup_at)}</td>
@@ -187,12 +200,133 @@
         </tbody>
       </table>
     </div>
+    <%= if @players_pages > 1 do %>
+      <div class="d-flex align-items-center mt-2 cb-text">
+        <%= if @players_page > 1 do %>
+          {link("« prev",
+            to: show_path(@conn, @group_tournament, %{players_page: @players_page - 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+          )}
+        <% end %>
+        <span class="mx-2">page {@players_page} of {@players_pages}</span>
+        <%= if @players_page < @players_pages do %>
+          {link("next »",
+            to: show_path(@conn, @group_tournament, %{players_page: @players_page + 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+          )}
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h3 class="text-white mb-0">Latest Runs</h3>
-      <span class="cb-text">showing {length(@runs)} most recent</span>
+      <div>
+        <h3 class="text-white mb-0">Slice Runs</h3>
+        <small class="cb-text">scored runs — one per slice on each timer tick</small>
+      </div>
+      <span class="cb-text">
+        {@slice_runs_total} total — page {@slice_runs_page} of {@slice_runs_pages}
+      </span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead class="cb-text">
+          <tr>
+            <th class="cb-border-color border-bottom">inserted_at</th>
+            <th class="cb-border-color border-bottom">slice</th>
+            <th class="cb-border-color border-bottom">status</th>
+            <th class="cb-border-color border-bottom">player_ids</th>
+            <th class="cb-border-color border-bottom">downloads</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= for run <- @slice_runs do %>
+            <tr>
+              <td class="text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
+              <td class="text-white cb-border-color">{run.slice_index}</td>
+              <td class="text-white cb-border-color">{run.status}</td>
+              <td class="text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
+              <td class="text-nowrap cb-border-color">
+                <%= cond do %>
+                  <% run.status == "error" -> %>
+                    <span class="text-danger">{extract_run_error(run.result)}</span>
+                  <% run.status == "pending" -> %>
+                    <span class="cb-text">nil</span>
+                  <% true -> %>
+                    {link("View Result",
+                      to:
+                        Routes.group_task_run_part_path(
+                          @conn,
+                          :download_run_part,
+                          @group_tournament.group_task,
+                          run.id,
+                          "viewer"
+                        ),
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      class:
+                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+                    )}
+                    {link("History JSON",
+                      to:
+                        Routes.group_task_run_part_path(
+                          @conn,
+                          :download_run_part,
+                          @group_tournament.group_task,
+                          run.id,
+                          "history"
+                        ),
+                      class:
+                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                    )}
+                    {link("Summary JSON",
+                      to:
+                        Routes.group_task_run_part_path(
+                          @conn,
+                          :download_run_part,
+                          @group_tournament.group_task,
+                          run.id,
+                          "summary"
+                        ),
+                      class:
+                        "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+                    )}
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <%= if @slice_runs_pages > 1 do %>
+      <div class="d-flex align-items-center mt-2 cb-text">
+        <%= if @slice_runs_page > 1 do %>
+          {link("« prev",
+            to: show_path(@conn, @group_tournament, %{slice_runs_page: @slice_runs_page - 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+          )}
+        <% end %>
+        <span class="mx-2">page {@slice_runs_page} of {@slice_runs_pages}</span>
+        <%= if @slice_runs_page < @slice_runs_pages do %>
+          {link("next »",
+            to: show_path(@conn, @group_tournament, %{slice_runs_page: @slice_runs_page + 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+          )}
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h3 class="text-white mb-0">Latest Runs</h3>
+        <small class="cb-text">per-submission preview runs — single user, not scored</small>
+      </div>
+      <span class="cb-text">
+        {@runs_total} total — page {@runs_page} of {@runs_pages}
+      </span>
     </div>
     <div class="table-responsive">
       <table class="table table-sm">
@@ -262,12 +396,31 @@
         </tbody>
       </table>
     </div>
+    <%= if @runs_pages > 1 do %>
+      <div class="d-flex align-items-center mt-2 cb-text">
+        <%= if @runs_page > 1 do %>
+          {link("« prev",
+            to: show_path(@conn, @group_tournament, %{runs_page: @runs_page - 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+          )}
+        <% end %>
+        <span class="mx-2">page {@runs_page} of {@runs_pages}</span>
+        <%= if @runs_page < @runs_pages do %>
+          {link("next »",
+            to: show_path(@conn, @group_tournament, %{runs_page: @runs_page + 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+          )}
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="text-white mb-0">Latest Solutions</h3>
-      <span class="cb-text">showing {length(@solutions)} latest by joined players</span>
+      <span class="cb-text">
+        {@solutions_total} total — page {@solutions_page} of {@solutions_pages}
+      </span>
     </div>
 
     <div class="table-responsive">
@@ -321,6 +474,23 @@
         </tbody>
       </table>
     </div>
+    <%= if @solutions_pages > 1 do %>
+      <div class="d-flex align-items-center mt-2 cb-text">
+        <%= if @solutions_page > 1 do %>
+          {link("« prev",
+            to: show_path(@conn, @group_tournament, %{solutions_page: @solutions_page - 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded mr-2"
+          )}
+        <% end %>
+        <span class="mx-2">page {@solutions_page} of {@solutions_pages}</span>
+        <%= if @solutions_page < @solutions_pages do %>
+          {link("next »",
+            to: show_path(@conn, @group_tournament, %{solutions_page: @solutions_page + 1}),
+            class: "btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded ml-2"
+          )}
+        <% end %>
+      </div>
+    <% end %>
   </div>
 
   <div class="d-flex mt-4">

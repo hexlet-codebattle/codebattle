@@ -191,9 +191,10 @@ defmodule Codebattle.GroupTask.Context do
   def run_group_task(%GroupTask{} = group_task, player_ids, attrs \\ %{}) do
     normalized_player_ids = normalize_player_ids(player_ids)
     group_tournament_id = Map.get(attrs, :group_tournament_id) || Map.get(attrs, "group_tournament_id")
+    slice_index = Map.get(attrs, :slice_index) || Map.get(attrs, "slice_index")
     run_key = Ecto.UUID.generate()
 
-    case create_pending_runs(group_task, normalized_player_ids, group_tournament_id, run_key) do
+    case create_pending_runs(group_task, normalized_player_ids, group_tournament_id, run_key, slice_index) do
       {:ok, runs} ->
         case build_run_payload(group_task, normalized_player_ids, attrs) do
           {:ok, payload} ->
@@ -367,9 +368,9 @@ defmodule Codebattle.GroupTask.Context do
     |> Enum.sort()
   end
 
-  defp create_pending_runs(_group_task, _player_ids, nil, _run_key), do: {:ok, []}
+  defp create_pending_runs(_group_task, _player_ids, nil, _run_key, _slice_index), do: {:ok, []}
 
-  defp create_pending_runs(%GroupTask{id: group_task_id}, player_ids, group_tournament_id, run_key) do
+  defp create_pending_runs(%GroupTask{id: group_task_id}, player_ids, group_tournament_id, run_key, slice_index) do
     runs_by_user_id =
       UserGroupTournament
       |> where(
@@ -382,7 +383,8 @@ defmodule Codebattle.GroupTask.Context do
     missing_player_ids = Enum.reject(player_ids, &Map.has_key?(runs_by_user_id, &1))
 
     if missing_player_ids == [] do
-      inserted_runs = do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key)
+      inserted_runs =
+        do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key, slice_index)
 
       case inserted_runs do
         {:ok, runs} -> {:ok, runs}
@@ -429,7 +431,7 @@ defmodule Codebattle.GroupTask.Context do
     end
   end
 
-  defp do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key) do
+  defp do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key, slice_index) do
     Repo.transaction(fn ->
       player_ids
       |> Enum.reduce_while([], fn player_id, acc ->
@@ -440,7 +442,8 @@ defmodule Codebattle.GroupTask.Context do
           runs_by_user_id,
           group_task_id,
           group_tournament_id,
-          run_key
+          run_key,
+          slice_index
         )
       end)
       |> Enum.reverse()
@@ -458,7 +461,16 @@ defmodule Codebattle.GroupTask.Context do
     end)
   end
 
-  defp create_pending_run(player_id, acc, player_ids, runs_by_user_id, group_task_id, group_tournament_id, run_key) do
+  defp create_pending_run(
+         player_id,
+         acc,
+         player_ids,
+         runs_by_user_id,
+         group_task_id,
+         group_tournament_id,
+         run_key,
+         slice_index
+       ) do
     user_group_tournament = Map.fetch!(runs_by_user_id, player_id)
 
     %UserGroupTournamentRun{}
@@ -468,6 +480,7 @@ defmodule Codebattle.GroupTask.Context do
       group_tournament_id: group_tournament_id,
       run_key: run_key,
       player_ids: player_ids,
+      slice_index: slice_index,
       status: "pending",
       result: %{}
     })

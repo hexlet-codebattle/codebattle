@@ -20,6 +20,7 @@ defmodule Codebattle.UserGroupTournamentRun do
 
     field(:run_key, Ecto.UUID)
     field(:player_ids, {:array, :integer}, default: [])
+    field(:slice_index, :integer)
     field(:status, :string)
     field(:result, :map, default: %{})
     field(:score, :integer)
@@ -35,6 +36,7 @@ defmodule Codebattle.UserGroupTournamentRun do
       :group_tournament_id,
       :run_key,
       :player_ids,
+      :slice_index,
       :status,
       :result,
       :score

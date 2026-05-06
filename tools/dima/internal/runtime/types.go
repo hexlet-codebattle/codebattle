@@ -10,6 +10,7 @@ type Options struct {
 	RunnerURL          string
 	SliceSize          int
 	SliceStrategy      string
+	RoundTimeoutSeconds int
 	AvgSubmitSeconds   int
 	RandomnessPercent  int
 	JoinRampSeconds    int
