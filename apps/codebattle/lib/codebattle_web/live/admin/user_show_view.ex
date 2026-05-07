@@ -291,14 +291,10 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
         :ok
 
       {:ok, refreshed} ->
-        refreshed
-        |> ExternalPlatformInvite.changeset(%{state: "accepted"})
-        |> Repo.update!()
+        InviteContext.update_invite(refreshed, %{state: "accepted"})
 
       _ ->
-        invite
-        |> ExternalPlatformInvite.changeset(%{state: "accepted"})
-        |> Repo.update!()
+        InviteContext.update_invite(invite, %{state: "accepted"})
     end
 
     # Enqueue external setup job if this invite is tied to a tournament

@@ -158,7 +158,6 @@
     </div>
   </div>
 
-
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="text-white mb-0">
@@ -169,7 +168,8 @@
       </h3>
       <span class="cb-text">
         {@group_tournament.players_count} joined<%= if not is_nil(@slice_filter) do %>
-          ({@players_total} in this slice)<% end %>
+          ({@players_total} in this slice)
+        <% end %>
       </span>
     </div>
     <div class="table-responsive">

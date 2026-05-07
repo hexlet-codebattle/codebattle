@@ -1,7 +1,17 @@
 import React from "react";
 import i18n from "../../../i18n";
 
-const getExternalUrl = (url) => `${url}/browse/README.md?rev=main&chatMessage=""`;
+const getExternalUrl = (url) => {
+  const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
+
+  externalUrl.searchParams.set("rev", "main");
+  externalUrl.searchParams.set(
+    "chatMessage",
+    "Это ИИ-ассистент, который поможет тебе решить задачу.",
+  );
+
+  return externalUrl.toString();
+};
 
 const formatInsertedAt = (insertedAt) => {
   if (!insertedAt) {

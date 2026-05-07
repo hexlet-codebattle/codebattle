@@ -217,7 +217,7 @@ defmodule Codebattle.Event.Context do
   end
 
   defp setup_individual_group_tournament(event, event_stage, user, tournament) do
-    case create_individual_group_tournament(event, event_stage, user) do
+    case create_individual_group_tournament(event, event_stage) do
       {:ok, group_tournament} ->
         GroupTournament.Server.join(group_tournament.id, user, user.lang || "js")
         group_tournament.id
@@ -243,21 +243,53 @@ defmodule Codebattle.Event.Context do
     updated
   end
 
-  defp create_individual_group_tournament(event, event_stage, user) do
-    meta = event_stage.group_tournament_meta || %{}
+  @doc """
+  Creates a group_tournament for an event stage by copying configurable fields
+  from the parent referenced by `event_stage.group_tournament_meta[:parent_id]`.
+
+  Returns `{:error, :missing_parent_id}` if the stage has no parent pointer, or
+  `{:error, {:parent_not_found, id}}` if the referenced parent is missing.
+  """
+  def create_individual_group_tournament(event, event_stage) do
+    stage_meta = event_stage.group_tournament_meta || %{}
+
+    case Map.get(stage_meta, :parent_id) do
+      nil ->
+        {:error, :missing_parent_id}
+
+      parent_id ->
+        case GroupTournament.Context.get_group_tournament(parent_id) do
+          nil -> {:error, {:parent_not_found, parent_id}}
+          parent -> create_from_parent(event, parent)
+        end
+    end
+  end
+
+  @copied_parent_fields ~w(
+    group_task_id
+    description
+    rounds_count
+    round_timeout_seconds
+    include_bots
+    require_invitation
+    run_on_external_platform
+    template_id
+    slice_size
+    slice_strategy
+    meta
+  )a
+
+  defp create_from_parent(event, parent) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
-    base_name = Map.get(meta, :name) || event_stage.name
-    base_description = Map.get(meta, :description) || base_name
 
     attrs =
-      meta
+      parent
+      |> Map.take(@copied_parent_fields)
       |> Map.put(:event_id, event.id)
-      |> Map.put(:name, "#{base_name} ##{user.id}")
-      |> Map.put(:description, base_description)
-      |> Map.put(:slug, "#{event.slug}-#{event_stage.slug}-#{user.id}-#{System.unique_integer([:positive])}")
-      |> Map.put_new(:starts_at, now)
-      |> Map.put_new(:state, "waiting_participants")
-      |> Map.put_new(:rounds_count, 1)
+      |> Map.put(:name, parent.name)
+      |> Map.put(:slug, event.slug)
+      |> Map.put(:starts_at, now)
+      |> Map.put(:state, "waiting_participants")
 
     GroupTournament.Context.create_group_tournament(attrs)
   end

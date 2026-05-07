@@ -20,7 +20,12 @@ import Header from "./Header";
 import InvitationPanel from "./InvitationPanel";
 import MainPanel from "./MainPanel";
 
-function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescription }) {
+function GroupTournamentPage({
+  tournamentId,
+  tournamentName,
+  tournamentDescription,
+  tournamentMeta,
+}) {
   const dispatch = useDispatch();
 
   const [viewerFullscreen, setViewerFullscreen] = useState(false);
@@ -64,7 +69,14 @@ function GroupTournamentPage({ tournamentId, tournamentName, tournamentDescripti
   }
 
   if (!isAdmin && requireInvitation && status === "waiting_participants") {
-    return <InvitationPanel invite={invite} onStart={handleStartTournament} />;
+    return (
+      <InvitationPanel
+        name={tournamentName}
+        meta={tournamentMeta}
+        invite={invite}
+        onStart={handleStartTournament}
+      />
+    );
   }
 
   if (platformError) {

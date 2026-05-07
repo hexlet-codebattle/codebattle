@@ -2,6 +2,7 @@ import React, { Suspense } from "react";
 
 import NiceModal from "@ebay/nice-modal-react";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { camelizeKeys } from "humps";
 import { Provider } from "react-redux";
 import { persistStore, persistReducer, PERSIST } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -256,6 +257,13 @@ export function GroupTournamentPage() {
   const tournamentId = container?.dataset?.groupTournamentId;
   const tournamentName = container?.dataset?.groupTournamentName;
   const tournamentDescription = container?.dataset?.groupTournamentDescription;
+  const tournamentMeta = (() => {
+    try {
+      return camelizeKeys(JSON.parse(container?.dataset?.groupTournamentMeta || "{}"));
+    } catch {
+      return {};
+    }
+  })();
 
   return (
     <Provider store={store}>
@@ -265,6 +273,7 @@ export function GroupTournamentPage() {
             tournamentId={tournamentId}
             tournamentName={tournamentName}
             tournamentDescription={tournamentDescription}
+            tournamentMeta={tournamentMeta}
           />
         </Suspense>
       </PersistGate>

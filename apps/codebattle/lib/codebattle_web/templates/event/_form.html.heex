@@ -97,7 +97,8 @@
             <code>tournament_meta</code>: Tournament config (<code>tournament_timeout_seconds</code>, <code>rounds_limit</code>, <code>players_limit</code>, <code>task_provider</code>, <code>task_strategy</code>, <code>task_pack_name</code>)
           </li>
           <li>
-            <code>group_tournament_meta</code>: Group tournament config (<code>group_task_id</code>, <code>name</code>, <code>slug</code>, <code>description</code>, <code>rounds_count</code>, <code>round_timeout_seconds</code>, <code>run_on_external_platform</code>, <code>template_id</code>)
+            <code>group_tournament_meta</code>: <code>%&#123;parent_id: 42&#125;</code>
+            — points at a parent group tournament whose config (group_task, rounds, timeouts, require_invitation, run_on_external_platform, template_id, slicing, meta strings) is copied to each per-user tournament generated for this stage.
           </li>
         </ul>
       </div>

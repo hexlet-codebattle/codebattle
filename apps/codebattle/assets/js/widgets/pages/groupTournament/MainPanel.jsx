@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Markdown from "react-markdown";
 import i18n from "../../../i18n";
 import JsonViewerModal from "./JsonViewerModal";
 
@@ -100,9 +101,9 @@ function MainPanel({ run, description, setViewerFullscreen }) {
         style={{ minHeight: "240px", maxHeight: "70vh" }}
       >
         {description ? (
-          <p className="mb-0" style={{ whiteSpace: "pre-wrap" }}>
-            {description}
-          </p>
+          <div className="cb-markdown mb-0">
+            <Markdown>{description}</Markdown>
+          </div>
         ) : (
           <div className="small text-muted">
             {i18n.t("No additional setup is required for this tournament.")}

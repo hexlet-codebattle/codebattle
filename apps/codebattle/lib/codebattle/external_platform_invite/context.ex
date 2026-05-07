@@ -22,6 +22,7 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
 
   alias Codebattle.ExternalPlatform
   alias Codebattle.ExternalPlatformInvite
+  alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.User
 
@@ -314,10 +315,39 @@ defmodule Codebattle.ExternalPlatformInvite.Context do
     update_invite(invite, %{state: "failed", response: %{"error" => inspect(reason)}})
   end
 
-  defp update_invite(invite, attrs) do
-    invite
-    |> ExternalPlatformInvite.changeset(attrs)
-    |> Repo.update()
+  @doc """
+  Single mutation entry point for an invite. Always go through this so subscribers
+  to `group_tournament:<id>:user:<user_id>` receive the `invite_updated` broadcast.
+  """
+  @spec update_invite(ExternalPlatformInvite.t(), map()) ::
+          {:ok, ExternalPlatformInvite.t()} | {:error, Ecto.Changeset.t()}
+  def update_invite(invite, attrs) do
+    prev_state = invite.state
+
+    result =
+      invite
+      |> ExternalPlatformInvite.changeset(attrs)
+      |> Repo.update()
+
+    with {:ok, updated} <- result do
+      maybe_broadcast(updated, prev_state)
+      {:ok, updated}
+    end
+  end
+
+  defp maybe_broadcast(%ExternalPlatformInvite{group_tournament_id: nil}, _prev_state), do: :ok
+
+  defp maybe_broadcast(%ExternalPlatformInvite{state: state}, state), do: :ok
+
+  defp maybe_broadcast(%ExternalPlatformInvite{} = invite, _prev_state) do
+    message = %Message{
+      topic: "group_tournament:#{invite.group_tournament_id}:user:#{invite.user_id}",
+      event: "group_tournament:invite_updated",
+      payload: %{invite_id: invite.id, state: invite.state}
+    }
+
+    Phoenix.PubSub.broadcast(Codebattle.PubSub, message.topic, message)
+    :ok
   end
 
   # When the SourceCraft platform confirms an invite acceptance, mirror the user's

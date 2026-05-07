@@ -101,6 +101,112 @@
     {error_tag(f, :require_invitation)}
   </div>
 
+  <h4 class="text-white mt-4 mb-3">Invitation Panel</h4>
+  <p class="text-muted small mb-3">
+    Strings shown on the pre-tournament invitation page. Leave blank to use defaults.
+  </p>
+
+  <% meta = f.data.meta || %{} %>
+
+  <div class="form-group">
+    <div><span class="text-white">Task info label (left card)</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][task_info_label]"
+      value={meta["task_info_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Task info icon URL (left card)</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][task_info_icon_url]"
+      value={meta["task_info_icon_url"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="2048"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Task duration label (right card)</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][task_duration_label]"
+      value={meta["task_duration_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Task duration icon URL (right card)</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][task_duration_icon_url]"
+      value={meta["task_duration_icon_url"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="2048"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Steps title</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][steps_title]"
+      value={meta["steps_title"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Step 1 label</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][step1_label]"
+      value={meta["step1_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Step 1 button label</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][step1_button_label]"
+      value={meta["step1_button_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Step 2 label</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][step2_label]"
+      value={meta["step2_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Step 2 button label</span></div>
+    <input
+      type="text"
+      name="group_tournament[meta][step2_button_label]"
+      value={meta["step2_button_label"] || ""}
+      class="form-control form-control-lg cb-bg-panel cb-border-color text-white"
+      maxlength="255"
+    />
+  </div>
+
   <div class="d-flex">
     {submit("Save",
       phx_disable_with: "Saving...",

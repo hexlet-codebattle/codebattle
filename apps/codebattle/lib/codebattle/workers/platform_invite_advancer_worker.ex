@@ -7,16 +7,16 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   so an invite continues to advance even after the user disconnects.
 
   Snooze cadence escalates with attempt count to balance freshness and load:
-    attempts   1–100 → 3s   (≈5 min)
-    attempts 101–200 → 5s   (≈8 min)
-    attempts 201–300 → 7s   (≈12 min)
-    attempts 301–400 → 9s   (≈15 min)
-  Total ≈ 40 minutes of polling before the job is discarded.
+    attempts   1–140 → 3s   (≈7 min)
+    attempts 141–240 → 5s   (≈8 min)
+    attempts 241–340 → 7s   (≈12 min)
+    attempts 341–440 → 9s   (≈15 min)
+  Total ≈ 42 minutes of polling before the job is discarded.
   """
 
   use Oban.Worker,
     queue: :default,
-    max_attempts: 400,
+    max_attempts: 440,
     unique: [
       keys: [:invite_id],
       states: [:available, :scheduled, :retryable, :executing],
@@ -25,7 +25,6 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
 
   alias Codebattle.ExternalPlatformInvite
   alias Codebattle.ExternalPlatformInvite.Advancer
-  alias Codebattle.PubSub.Message
   alias Codebattle.Repo
   alias Codebattle.User
 
@@ -45,26 +44,19 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   end
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"invite_id" => invite_id, "user_id" => user_id} = args, attempt: attempt}) do
-    tournament_id = Map.get(args, "group_tournament_id")
-
+  def perform(%Oban.Job{args: %{"invite_id" => invite_id, "user_id" => user_id}, attempt: attempt}) do
     with %ExternalPlatformInvite{} = invite <- Repo.get(ExternalPlatformInvite, invite_id),
          %User{} = user <- Repo.get(User, user_id) do
-      run(invite, user, tournament_id, attempt)
+      run(invite, user, attempt)
     else
       _ -> :ok
     end
   end
 
-  defp run(%ExternalPlatformInvite{state: state} = invite, _user, tournament_id, _attempt)
-       when state in @terminal_states do
-    broadcast(invite, tournament_id)
-    :ok
-  end
+  defp run(%ExternalPlatformInvite{state: state}, _user, _attempt) when state in @terminal_states, do: :ok
 
-  defp run(invite, user, tournament_id, attempt) do
+  defp run(invite, user, attempt) do
     advanced = Advancer.advance(invite, user)
-    broadcast(advanced, tournament_id)
 
     if advanced.state in @terminal_states do
       :ok
@@ -73,21 +65,8 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     end
   end
 
-  defp snooze_seconds(attempt) when attempt <= 100, do: 3
-  defp snooze_seconds(attempt) when attempt <= 200, do: 5
-  defp snooze_seconds(attempt) when attempt <= 300, do: 7
+  defp snooze_seconds(attempt) when attempt <= 140, do: 3
+  defp snooze_seconds(attempt) when attempt <= 240, do: 5
+  defp snooze_seconds(attempt) when attempt <= 340, do: 7
   defp snooze_seconds(_attempt), do: 9
-
-  defp broadcast(_invite, nil), do: :ok
-
-  defp broadcast(%ExternalPlatformInvite{user_id: user_id} = invite, tournament_id) do
-    message = %Message{
-      topic: "group_tournament:#{tournament_id}:user:#{user_id}",
-      event: "group_tournament:invite_updated",
-      payload: %{invite_id: invite.id, state: invite.state}
-    }
-
-    Phoenix.PubSub.broadcast(Codebattle.PubSub, message.topic, message)
-    :ok
-  end
 end
