@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentControllerTest do
     :ok
   end
 
-  test "submitting a solution runs the checker immediately for active group tournaments", %{conn: conn} do
+  test "submitting a solution runs the preview checker immediately for active group tournaments", %{conn: conn} do
     user = insert(:user)
     opponent = insert(:user)
     creator = insert(:user)
@@ -86,14 +86,9 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentControllerTest do
     assert response["solution"]["user_id"] == user.id
     assert response["solution"]["lang"] == "python"
 
-    updated_group_tournament = GroupTournamentContext.get_current(group_tournament.id)
-    assert updated_group_tournament.meta["last_run_status"] == "success"
-    assert updated_group_tournament.meta["last_run_result"] == %{"winner_id" => user.id}
-    assert updated_group_tournament.meta["last_run_id"]
-
     [run] = GroupTournamentContext.list_runs(group_tournament, limit: 1)
     assert run.status == "success"
-    assert run.player_ids == Enum.sort([user.id, opponent.id])
+    assert run.player_ids == [user.id]
     assert run.result == %{"winner_id" => user.id}
   end
 end
