@@ -41,7 +41,7 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={modal.hide}>
-          {i18n.t("Close")}
+          {i18n.t("Later")}
         </Button>
         <Button as="a" href={href} variant="primary">
           {i18n.t("Go to AI-round group tournament")}

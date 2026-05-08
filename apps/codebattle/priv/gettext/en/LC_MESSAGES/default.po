@@ -1145,6 +1145,9 @@ msgstr "Your next step is the AI-round group tournament. Click the button below 
 msgid "Go to AI-round group tournament"
 msgstr "Go to AI-round group tournament"
 
+msgid "Later"
+msgstr "Later"
+
 msgid "Stage finished"
 msgstr "Stage finished"
 
