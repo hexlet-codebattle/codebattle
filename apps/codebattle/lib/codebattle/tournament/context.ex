@@ -114,7 +114,7 @@ defmodule Codebattle.Tournament.Context do
 
   @spec get_upcoming_to_live_candidate(non_neg_integer()) :: Tournament.t() | nil
   def get_upcoming_to_live_candidate(starts_at_delay_mins) do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now(:second)
     delay_time = DateTime.add(now, starts_at_delay_mins, :minute)
 
     Repo.one(
