@@ -3,17 +3,21 @@ ARG ALPINE_TAG=3.23
 ARG TARGETPLATFORM
 
 ########################################
-# 1) builder – create the mega-PCH
+# 1) builder – PCH + prebuilt runtime.o
 ########################################
 FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG} AS pch-builder
 RUN apk add --no-cache clang mold lld libc++ make
 
-# Self-contained prelude (no external single-header libs):
-#   <bits/stdc++.h> + custom JSON emitter + RunTest helper.
-# See prelude.hpp for rationale.
+# Compiler flags must match the per-run flags in Makefile, otherwise clang
+# rejects the PCH / object file as incompatible.
+ENV CB_FLAGS="-std=c++23 -O0 -g0 -pipe -fno-stack-protector -fno-pic -fno-asynchronous-unwind-tables -w"
+
 COPY prelude.hpp /pch/all.hpp
-RUN clang++ -std=c++23 -O0 -fno-stack-protector -fno-pic -pipe -g0 \
-      -x c++-header /pch/all.hpp -o /pch/all.pch
+RUN clang++ ${CB_FLAGS} -x c++-header /pch/all.hpp -o /pch/all.pch
+
+COPY runtime.cpp /pch/runtime.cpp
+RUN clang++ ${CB_FLAGS} -include-pch /pch/all.pch \
+      -c /pch/runtime.cpp -o /pch/runtime.o
 
 ########################################
 # 2) runner stage
@@ -34,9 +38,10 @@ RUN grep -q '^app:' /etc/group || addgroup -S -g 10001 app \
 # working dir for mounted code
 WORKDIR /usr/src/app
 
-# copy PCH (precompiled) and its source (kept around for debugging)
-COPY --from=pch-builder /pch/all.pch /pch/all.pch
-COPY --from=pch-builder /pch/all.hpp /pch/all.hpp
+# precompiled artifacts (kept the .hpp around for debugging)
+COPY --from=pch-builder /pch/all.pch    /pch/all.pch
+COPY --from=pch-builder /pch/all.hpp    /pch/all.hpp
+COPY --from=pch-builder /pch/runtime.o  /pch/runtime.o
 
 # app files
 COPY check ./check
