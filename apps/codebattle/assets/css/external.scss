@@ -43,7 +43,6 @@ $dark-red: #b00020;
 
 .cb-bg-dark {
   background-color: #0c0f1e !important;
-  background: linear-gradient(135deg, #242424 0%, #151515 100%);
 }
 
 .navbar-brand img {
@@ -118,7 +117,9 @@ $dark-red: #b00020;
 /* AUTH COMPONENT*/
 /* --------------------------------------------------*/
 .auth-container {
-  background-color: #1a1c2e; /* or whatever your main background is*/
+  position: relative;
+  overflow: hidden;
+  background-color: #353754;
   background-size: cover;
   padding: 2rem;
 }
@@ -396,7 +397,7 @@ $dark-red: #b00020;
 .cb-custom-event-stage-grid {
   display: grid;
   grid-template-columns: minmax(170px, 1.05fr) minmax(110px, 0.7fr) repeat(
-      5,
+      4,
       minmax(80px, 0.9fr)
     );
   align-items: center;
@@ -622,24 +623,24 @@ $dark-red: #b00020;
 
 .cup {
   position: absolute;
+  top: 60%;
+  left: 50%;
   z-index: 0;
   pointer-events: none;
-  background-image: url(https://avatars.mds.yandex.net/get-lpc/9736426/457f402a-5ab5-439a-bd13-2c0d18bce25b/orig?width=1066&height=1397);
+  background-image: var(--cup-background-url);
   background-repeat: no-repeat;
-  transform: rotate(8deg);
-  background-size: 700px 845px;
-  width: 700px;
-  height: 845px;
-
-  @media (max-width: $lg) {
-    & {
-      display: none;
-    }
-  }
+  background-position: center;
+  background-size: cover;
+  transform: translate(-50%, -50%) rotate(17.47deg);
+  width: 90vmax;
+  height: 90vmax;
 }
 
 .cup-aside {
-  background-size: 600px 745px;
+  top: auto;
+  left: auto;
+  transform: rotate(8deg);
+  background-size: contain;
   width: 600px;
   height: 745px;
   bottom: -18%;

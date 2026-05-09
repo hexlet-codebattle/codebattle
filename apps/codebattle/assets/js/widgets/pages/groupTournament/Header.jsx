@@ -4,9 +4,9 @@ import i18n from "../../../i18n";
 import useTimer from "../../utils/useTimer";
 
 const statusBadge = {
-  active: { className: "badge-success", labelKey: "Active" },
-  finished: { className: "badge-secondary", labelKey: "Finished" },
-  loading: { className: "badge-warning", labelKey: "Loading" },
+  active: { className: "btn-success", labelKey: "Active" },
+  finished: { className: "btn-secondary", labelKey: "Finished" },
+  loading: { className: "btn-warning", labelKey: "Loading" },
 };
 
 function TournamentTimer({ groupTournament }) {
@@ -23,19 +23,39 @@ function TournamentTimer({ groupTournament }) {
     return null;
   }
 
-  return <span className="text-monospace mr-3">{time}</span>;
+  const color = seconds <= 60 ? "#ff3b30" : seconds <= 300 ? "#ffe500" : "#ffffff";
+
+  return (
+    <span
+      className="text-monospace rounded-pill px-4 py-2"
+      style={{
+        fontSize: "1.5rem",
+        color,
+        border: `1px solid ${color}`,
+      }}
+    >
+      {time}
+    </span>
+  );
 }
 
 function Header({ name, status, groupTournament }) {
   const badge = statusBadge[status] || statusBadge.loading;
 
   return (
-    <div className="cb-bg-panel shadow-sm cb-rounded p-3 d-flex align-items-center justify-content-between flex-wrap w-100">
-      <h4 className="mb-0 mr-3">{name || i18n.t("Group Tournament")}</h4>
-      <div className="d-flex align-items-center ml-auto">
+    <div className="cb-custom-event-profile d-flex align-items-center w-100 position-relative">
+      <h4 className="mb-0 mr-3 text-white">{name || i18n.t("Group Tournament")}</h4>
+      <div
+        className="position-absolute"
+        style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
+      >
         <TournamentTimer groupTournament={groupTournament} />
-        <span className={`badge ${badge.className} px-3 py-2 mr-3`}>{i18n.t(badge.labelKey)}</span>
-        <a className="btn btn-secondary cb-btn-secondary cb-rounded" href="/">
+      </div>
+      <div className="d-flex align-items-center ml-auto">
+        <span className={`btn ${badge.className} rounded-pill px-4 mr-3`}>
+          {i18n.t(badge.labelKey)}
+        </span>
+        <a className="btn btn-outline-light rounded-pill px-4" href="/">
           {i18n.t("Back to event")}
         </a>
       </div>

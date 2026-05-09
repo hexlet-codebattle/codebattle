@@ -334,6 +334,9 @@ msgstr "Копировать"
 msgid "Copied!"
 msgstr "Скопировано!"
 
+msgid "Download"
+msgstr "Скачать"
+
 msgid "Output"
 msgstr "Тесты"
 
@@ -519,6 +522,9 @@ msgstr "Балл"
 
 msgid "Score %{score}"
 msgstr "Балл %{score}"
+
+msgid "best try"
+msgstr "лучший"
 
 msgid "Matches"
 msgstr "Матчи"
@@ -797,7 +803,7 @@ msgid "Wins count"
 msgstr "Количество побед"
 
 msgid "Score/Total"
-msgstr "Количество баллов"
+msgstr "Балл"
 
 msgid "Loses"
 msgstr "Поражений"
@@ -1692,8 +1698,8 @@ msgstr "Групповой турнир"
 msgid "Execution History"
 msgstr "История запусков"
 
-msgid "+ Add Solution"
-msgstr "+ Добавить решение"
+msgid "Add Solution +"
+msgstr "Добавить решение +"
 
 msgid "Run Viewer"
 msgstr "Просмотр запуска"

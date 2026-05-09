@@ -44,6 +44,7 @@ config :codebattle, :app_title, "Hexlet Codebattle"
 config :codebattle, :base_admin_path, "/"
 config :codebattle, :base_moderator_path, "/"
 config :codebattle, :base_user_path, "/"
+config :codebattle, :cup_background_url, ""
 config :codebattle, :default_db_type_slug, "postgresql"
 config :codebattle, :default_lang_slug, "js"
 config :codebattle, :default_style_lang_slug, "css"
@@ -69,6 +70,7 @@ config :codebattle, :firebase,
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
 config :codebattle, :logo_title, "Hexlet Codebattle"
+config :codebattle, :logo_title_position, "right"
 
 config :codebattle, :oauth,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),

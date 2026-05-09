@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import dayjs from "../../../i18n/dayjs";
 import i18n from "../../../i18n";
 
 const getExternalUrl = (url) => {
@@ -13,23 +14,14 @@ const getExternalUrl = (url) => {
   return externalUrl.toString();
 };
 
-const formatInsertedAt = (insertedAt) => {
+const formatInsertedAtTooltip = (insertedAt) => {
   if (!insertedAt) {
-    return null;
+    return undefined;
   }
 
-  const date = new Date(insertedAt);
+  const date = dayjs.utc(insertedAt).tz(dayjs.tz.guess());
 
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date.toLocaleTimeString([], {
-    hour12: false,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  return date.isValid() ? date.format("YYYY-MM-DD HH:mm:ss") : undefined;
 };
 
 const isSuccess = (item) => item?.status === "success";
@@ -55,15 +47,24 @@ const findBestRunId = (items) => {
 
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   const bestRunId = findBestRunId(items);
+  const [hoverTooltip, setHoverTooltip] = useState(null);
 
   return (
-    <div className="card cb-card border cb-border-color rounded shadow-sm">
-      <div className="card-header py-2 border-bottom cb-border-color">
-        <h6 className="cb-text mb-0">{i18n.t("Execution History")}</h6>
+    <>
+      <div
+        className="cb-custom-event-profile d-flex align-items-center justify-content-center w-100"
+        style={{ minHeight: "64px" }}
+      >
+        <h5 className="mb-0 text-white font-weight-bold">{i18n.t("Execution History")}</h5>
       </div>
       <div
-        className="card-body p-2 border-top cb-border-color"
-        style={{ height: "80vh", overflowY: "auto" }}
+        className="mt-3 p-3 w-100"
+        style={{
+          height: "80vh",
+          overflowY: "auto",
+          backgroundColor: "#30333f",
+          borderRadius: "25px",
+        }}
       >
         <div
           style={{
@@ -73,9 +74,17 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
           }}
         >
           {tournamentStatus !== "finished" && repoUrl && (
-            <a href={getExternalUrl(repoUrl)} target="_blank" rel="noopener noreferrer">
-              <div className="border cb-border-color rounded p-3 mb-2 bg-transparent">
-                {i18n.t("+ Add Solution")}
+            <a
+              href={getExternalUrl(repoUrl)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="d-block text-decoration-none mb-3"
+            >
+              <div
+                className="btn btn-yellow rounded-pill w-100 text-center text-nowrap"
+                style={{ padding: "12px 12px" }}
+              >
+                {i18n.t("Add Solution +")}
               </div>
             </a>
           )}
@@ -86,74 +95,85 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
                 const success = isSuccess(item);
                 const isBest = item?.id != null && item.id === bestRunId;
                 const statusColor = success ? "rgba(40, 167, 69, 0.95)" : "rgba(220, 53, 69, 0.95)";
-                const goldColor = "rgba(255, 193, 7, 0.95)";
-                const ringColor = isBest
-                  ? goldColor
-                  : isActive
-                    ? "rgba(96, 165, 250, 0.95)"
-                    : "rgba(99, 102, 121, 0.95)";
+                const ringColor = isActive
+                  ? "rgba(96, 165, 250, 0.95)"
+                  : "rgba(99, 102, 121, 0.95)";
                 const title = `v${items.length - idx}`;
                 const score = item?.score ?? 0;
-                const time = formatInsertedAt(item?.insertedAt);
+                const tooltip = formatInsertedAtTooltip(item?.insertedAt);
 
                 return (
-                  <button
-                    key={item?.id ?? idx}
-                    type="button"
-                    onClick={() => setRunId(item?.id)}
-                    className="rounded p-2 text-left bg-transparent mb-2"
-                    style={{
-                      borderTop: `${isBest ? 2 : 1}px solid ${ringColor}`,
-                      borderRight: `${isBest ? 2 : 1}px solid ${ringColor}`,
-                      borderBottom: `${isBest ? 2 : 1}px solid ${ringColor}`,
-                      borderLeft: `3px solid ${statusColor}`,
-                      backgroundColor: isActive ? "rgba(96, 165, 250, 0.25)" : "transparent",
-                      boxShadow: isBest
-                        ? "0 0 0 1px rgba(255, 193, 7, 0.5)"
-                        : isActive
-                          ? "0 0 0 1px rgba(96, 165, 250, 0.5)"
-                          : "none",
-                      transition: "background-color 160ms ease, box-shadow 160ms ease",
-                      width: "100%",
-                    }}
-                    onMouseEnter={(event) => {
-                      if (!isActive) {
-                        event.currentTarget.style.backgroundColor = "rgba(148, 163, 184, 0.1)";
-                      }
-                    }}
-                    onMouseLeave={(event) => {
-                      if (!isActive) {
-                        event.currentTarget.style.backgroundColor = "transparent";
-                      }
-                    }}
-                  >
-                    <div className="d-flex align-items-center text-nowrap">
-                      <span className="badge badge-secondary mr-2">{title}</span>
-                      <span
-                        className="font-weight-bold mr-2"
-                        style={{
-                          fontSize: "1.15rem",
-                          color: isBest ? goldColor : isActive ? "#ffffff" : "#e2e8f0",
-                        }}
-                      >
-                        {i18n.t("Score %{score}", { score })}
-                      </span>
-                      {time && (
+                  <div key={item?.id ?? idx} className="mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setRunId(item?.id)}
+                      className="rounded-pill p-2 px-3 text-left bg-transparent"
+                      style={{
+                        borderTop: `1px solid ${ringColor}`,
+                        borderRight: `1px solid ${ringColor}`,
+                        borderBottom: `1px solid ${ringColor}`,
+                        borderLeft: `3px solid ${statusColor}`,
+                        backgroundColor: isActive ? "rgba(96, 165, 250, 0.25)" : "transparent",
+                        boxShadow: isActive ? "0 0 0 1px rgba(96, 165, 250, 0.5)" : "none",
+                        transition: "background-color 160ms ease, box-shadow 160ms ease",
+                        width: "100%",
+                      }}
+                      onMouseEnter={(event) => {
+                        if (!isActive) {
+                          event.currentTarget.style.backgroundColor = "rgba(148, 163, 184, 0.1)";
+                        }
+                        if (tooltip) {
+                          const rect = event.currentTarget.getBoundingClientRect();
+                          setHoverTooltip({
+                            text: tooltip,
+                            top: rect.top + rect.height / 2,
+                            left: rect.right + 8,
+                          });
+                        }
+                      }}
+                      onMouseLeave={(event) => {
+                        if (!isActive) {
+                          event.currentTarget.style.backgroundColor = "transparent";
+                        }
+                        setHoverTooltip(null);
+                      }}
+                    >
+                      <div className="d-flex align-items-center text-nowrap">
+                        <span className="badge badge-secondary mr-2">{title}</span>
                         <span
-                          className={`small text-truncate ${isActive ? "text-white-50" : "text-muted"}`}
+                          className="font-weight-bold mr-2"
+                          style={{
+                            fontSize: "1.15rem",
+                            color: isActive ? "#ffffff" : "#e2e8f0",
+                          }}
                         >
-                          {time}
+                          {i18n.t("Score %{score}", { score })}
                         </span>
-                      )}
-                    </div>
-                  </button>
+                        {isBest && (
+                          <span
+                            className={`small text-truncate ${isActive ? "text-white-50" : "text-muted"}`}
+                          >
+                            {i18n.t("best try")}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  </div>
                 );
               })}
             </div>
           )}
         </div>
       </div>
-    </div>
+      {hoverTooltip && (
+        <div
+          className="cb-run-item-tooltip"
+          style={{ top: hoverTooltip.top, left: hoverTooltip.left }}
+        >
+          {hoverTooltip.text}
+        </div>
+      )}
+    </>
   );
 }
 

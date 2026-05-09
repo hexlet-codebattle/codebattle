@@ -39,6 +39,9 @@
     {render_tags_all(assigns[:meta_tags] || %{})}
     <meta name="csrf-token" content={csrf_token_value()} />
     <title>{Application.get_env(:codebattle, :app_title)}</title>
+    <style>
+      :root { --cup-background-url: url("<%= Application.get_env(:codebattle, :cup_background_url) %>"); }
+    </style>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
 
     <%= if CodebattleWeb.Vite.dev?() do %>
@@ -73,6 +76,16 @@
           <div class="container-lg">
             <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
               <a class="navbar-brand d-flex align-items-end" href="/">
+                <%= if Application.get_env(:codebattle, :logo_title_position) == "left" do %>
+                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray mr-1 pb">
+                    <span class="font-weight-bold">
+                      {Application.get_env(:codebattle, :logo_title)}
+                    </span>
+                    <span class="header-txt">
+                      {Application.get_env(:codebattle, :app_subtitle)}
+                    </span>
+                  </div>
+                <% end %>
                 <%= if collab_logo(@current_user) do %>
                   <img
                     alt="collab icon"
@@ -95,14 +108,16 @@
                     src={collab_logo_minor(@current_user)}
                   />
                 <% end %>
-                <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb">
-                  <span class="font-weight-bold">
-                    {Application.get_env(:codebattle, :logo_title)}
-                  </span>
-                  <span class="header-txt">
-                    {Application.get_env(:codebattle, :app_subtitle)}
-                  </span>
-                </div>
+                <%= if Application.get_env(:codebattle, :logo_title_position) != "left" do %>
+                  <div class="d-none d-sm-none d-md-flex d-lg-flex flex-column text-gray ml-1 pb">
+                    <span class="font-weight-bold">
+                      {Application.get_env(:codebattle, :logo_title)}
+                    </span>
+                    <span class="header-txt">
+                      {Application.get_env(:codebattle, :app_subtitle)}
+                    </span>
+                  </div>
+                <% end %>
               </a>
               <%= unless @current_user.is_guest do %>
                 <button

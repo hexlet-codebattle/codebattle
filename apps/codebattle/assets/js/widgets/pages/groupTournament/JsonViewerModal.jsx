@@ -33,6 +33,19 @@ function JsonViewerModal({ open, title, value, onClose }) {
     }
   };
 
+  const handleDownload = () => {
+    if (!formatted) return;
+    const blob = new Blob([formatted], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = typeof title === "string" && title ? title : "data.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div
       className="position-fixed d-flex flex-column"
@@ -51,6 +64,14 @@ function JsonViewerModal({ open, title, value, onClose }) {
             disabled={!formatted}
           >
             {copied ? i18n.t("Copied!") : i18n.t("Copy")}
+          </button>
+          <button
+            type="button"
+            className="btn btn-sm btn-outline-success mr-2"
+            onClick={handleDownload}
+            disabled={!formatted}
+          >
+            {i18n.t("Download")}
           </button>
           <button type="button" className="btn btn-sm btn-outline-light" onClick={onClose}>
             {i18n.t("Close")}

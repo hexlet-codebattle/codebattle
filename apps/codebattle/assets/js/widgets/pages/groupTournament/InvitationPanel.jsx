@@ -18,78 +18,73 @@ function InvitationPanel({ name, meta, invite, onStart }) {
   const step2ButtonLabel = m.step2ButtonLabel || i18n.t("Go to task");
 
   return (
-    <div className="container-fluid cb-main-wrapper py-5">
-      <div className="container">
-        <div className="text-center mb-5">
-          <h1 className="display-4 font-weight-bold">{name || i18n.t("Group Tournament")}</h1>
+    <div className="container-fluid position-relative overflow-hidden min-vh-100">
+      <div className="cup cup-aside" />
+      <div className="cb-custom-event-content d-flex flex-column mx-auto w-100">
+        <div className="row my-5">
+          <div className="col-12 d-flex justify-content-center">
+            <h1 className="text-white text-center cb-custom-event-title">
+              {(name || i18n.t("Group Tournament")).toUpperCase()}
+            </h1>
+          </div>
         </div>
 
-        <div className="row justify-content-center text-center my-5">
-          <div className="col-md-3">
+        <div className="row justify-content-center text-center my-4">
+          <div className="col-auto px-4 d-flex flex-column align-items-center">
             {taskInfoIconUrl && (
               <img
                 src={taskInfoIconUrl}
                 alt=""
-                className="cb-invitation-icon mb-2"
                 style={{ width: 48, height: 48, objectFit: "contain" }}
               />
             )}
-            <p className="small">{taskInfoLabel}</p>
+            <p className="text-white small mt-2 mb-0">{taskInfoLabel}</p>
           </div>
-          <div className="col-md-3">
+          <div className="col-auto px-4 d-flex flex-column align-items-center">
             {taskDurationIconUrl && (
               <img
                 src={taskDurationIconUrl}
                 alt=""
-                className="cb-invitation-icon mb-2"
                 style={{ width: 48, height: 48, objectFit: "contain" }}
               />
             )}
-            <p className="small text-muted pt-2">{taskDurationLabel}</p>
+            <p className="text-white small mt-2 mb-0">{taskDurationLabel}</p>
           </div>
         </div>
 
-        <div className="row justify-content-center">
-          <div className="col-lg-8">
-            <h5 className="mb-4 font-weight-bold">{stepsTitle}</h5>
+        <div className="row justify-content-center my-3">
+          <div className="col-12 col-lg-9">
+            <h3 className="text-white text-center font-weight-bold mb-4">{stepsTitle}</h3>
 
-            <ul className="list-group cb-steps-list">
-              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
-                <div className="d-flex align-items-center">
-                  <span className="cb-step-num mr-3">1</span>
-                  <span>{step1Label}</span>
-                </div>
-                {isAccepted ? (
-                  <button type="button" className="btn btn-success cb-btn-action rounded" disabled>
-                    {i18n.t("Accepted")}
-                  </button>
-                ) : (
-                  <a
-                    target="_blank"
-                    href={invite?.inviteLink}
-                    className="btn btn-success cb-btn-action rounded"
-                    rel="noopener noreferrer"
-                  >
-                    {step1ButtonLabel}
-                  </a>
-                )}
-              </li>
-
-              <li className="cb-bg-secondary list-group-item d-flex justify-content-between align-items-center cb-step-item mt-2">
-                <div className="d-flex align-items-center">
-                  <span className="cb-step-num mr-3">2</span>
-                  <span>{step2Label}</span>
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-success cb-btn-action rounded"
-                  onClick={onStart}
-                  disabled={!isAccepted}
-                >
-                  {step2ButtonLabel}
+            <div className="cb-custom-event-profile d-flex justify-content-between align-items-center my-3">
+              <span className="text-white">{step1Label}</span>
+              {isAccepted ? (
+                <button type="button" className="btn btn-yellow rounded-pill px-4" disabled>
+                  {i18n.t("Accepted")}
                 </button>
-              </li>
-            </ul>
+              ) : (
+                <a
+                  target="_blank"
+                  href={invite?.inviteLink}
+                  className="btn btn-yellow rounded-pill px-4"
+                  rel="noopener noreferrer"
+                >
+                  {step1ButtonLabel}
+                </a>
+              )}
+            </div>
+
+            <div className="cb-custom-event-profile d-flex justify-content-between align-items-center my-3">
+              <span className="text-white">{step2Label}</span>
+              <button
+                type="button"
+                className="btn btn-yellow rounded-pill px-4"
+                onClick={onStart}
+                disabled={!isAccepted}
+              >
+                {step2ButtonLabel}
+              </button>
+            </div>
           </div>
         </div>
       </div>

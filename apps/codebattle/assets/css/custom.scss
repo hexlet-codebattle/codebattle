@@ -686,6 +686,45 @@
   margin-left: 0.4rem;
 }
 
+.cb-custom-event-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1180px;
+}
+
+.cb-run-item-tooltip {
+  position: fixed;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  background-color: #0c0f1e;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  pointer-events: none;
+  z-index: 1050;
+}
+
+.btn-yellow {
+  background-color: #fffb47;
+  color: black;
+  border-radius: 999px;
+  font-weight: bold;
+  padding: 12px 24px;
+  transition: background-color 0.3s ease;
+  border: none;
+
+  &:hover {
+    background-color: #e6e02b;
+    color: black;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
 .cb-custom-event-stage-section {
   background-color: #30333f;
   border-radius: 25px;
@@ -904,22 +943,24 @@
 
 .cup {
   position: absolute;
-  background-image: url(https://avatars.mds.yandex.net/get-lpc/9736426/457f402a-5ab5-439a-bd13-2c0d18bce25b/orig?width=1066&height=1397);
+  top: 60%;
+  left: 50%;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--cup-background-url);
   background-repeat: no-repeat;
-  transform: rotate(8deg);
-  background-size: 700px 845px;
-  width: 700px;
-  height: 845px;
-
-  @media (max-width: $md) {
-    & {
-      display: none;
-    }
-  }
+  background-position: center;
+  background-size: cover;
+  transform: translate(-50%, -50%) rotate(17.47deg);
+  width: 90vmax;
+  height: 90vmax;
 }
 
 .cup-aside {
-  background-size: 600px 745px;
+  top: auto;
+  left: auto;
+  transform: rotate(8deg);
+  background-size: contain;
   width: 600px;
   height: 745px;
   bottom: -15%;

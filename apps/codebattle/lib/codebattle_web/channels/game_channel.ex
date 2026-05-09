@@ -175,7 +175,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("editor:summary", payload, socket) do
-    if socket.assigns.current_user.is_bot do
+    if socket.assigns.current_user.is_bot or socket.assigns.current_user.is_guest do
       {:noreply, socket}
     else
       with false <- FunWithFlags.enabled?(:editor_summary_disabled),

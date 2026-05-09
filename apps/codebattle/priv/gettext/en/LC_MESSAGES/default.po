@@ -1103,8 +1103,8 @@ msgstr "Group Tournament"
 msgid "Execution History"
 msgstr "Execution History"
 
-msgid "+ Add Solution"
-msgstr "+ Add Solution"
+msgid "Add Solution +"
+msgstr "Add Solution +"
 
 msgid "Run Viewer"
 msgstr "Run Viewer"

@@ -104,9 +104,6 @@ function ParticipantDashboard() {
                 {i18n.t("Score/Total")}
               </div>
               <div className="d-flex justify-content-center align-items-center">
-                {i18n.t("AI score")}
-              </div>
-              <div className="d-flex justify-content-center align-items-center">
                 {i18n.t("Time spent")}
               </div>
             </div>
@@ -208,18 +205,10 @@ function ParticipantDashboard() {
                         <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Score/Total")}:
                         </div>
-                        {stage.winsCount}/{stage.gamesCount}
-                      </div>
-                      <div
-                        className={cn(
-                          "d-flex d-sm-flex cb-custom-event-stage-cell",
-                          "justify-content-center align-items-center text-center",
-                        )}
-                      >
-                        <div className="d-block d-xl-none me-2 font-weight-bold">
-                          {i18n.t("AI score")}:
-                        </div>
-                        {stage.aiScore}
+                        <span>
+                          {stage.winsCount}/{stage.gamesCount}
+                        </span>
+                        <span style={{ marginLeft: "0.75rem" }}>{stage.aiScore}</span>
                       </div>
                       <div
                         className={cn(

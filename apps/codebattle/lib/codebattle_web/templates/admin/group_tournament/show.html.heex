@@ -146,7 +146,12 @@
         <tbody>
           <%= for record <- @tournament_users do %>
             <tr>
-              <td class="text-white cb-border-color">{record.user_id}</td>
+              <td class="cb-border-color">
+                {link(record.user_id,
+                  to: "/admin/users/#{record.user_id}",
+                  class: "text-white"
+                )}
+              </td>
               <td class="text-white cb-border-color">{record.user && record.user.name}</td>
               <td class="text-white cb-border-color">{record.state}</td>
               <td class="text-white cb-border-color"><code>{record.token}</code></td>
@@ -187,7 +192,12 @@
         <tbody>
           <%= for player <- @players do %>
             <tr>
-              <td class="text-white cb-border-color">{player.user_id}</td>
+              <td class="cb-border-color">
+                {link(player.user_id,
+                  to: "/admin/users/#{player.user_id}",
+                  class: "text-white"
+                )}
+              </td>
               <td class="text-white cb-border-color">{player.user && player.user.name}</td>
               <td class="text-white cb-border-color">
                 {if is_nil(player.slice_index), do: "-", else: player.slice_index}
@@ -439,7 +449,12 @@
           <%= for solution <- @solutions do %>
             <tr>
               <td class="text-white cb-border-color">{format_datetime(solution.inserted_at)}</td>
-              <td class="text-white cb-border-color">{solution.user_id}</td>
+              <td class="cb-border-color">
+                {link(solution.user_id,
+                  to: "/admin/users/#{solution.user_id}",
+                  class: "text-white"
+                )}
+              </td>
               <td class="text-white cb-border-color">{solution.user && solution.user.name}</td>
               <td class="text-white cb-border-color">{solution.lang}</td>
               <td class="text-white cb-border-color">

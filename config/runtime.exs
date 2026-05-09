@@ -12,6 +12,10 @@ session_max_age =
 
 app_title = System.get_env("CODEBATTLE_APP_TITLE", "Hexlet Codebattle")
 logo_title = System.get_env("CODEBATTLE_LOGO_TITLE", "Hexlet Codebattle")
+logo_title_position = System.get_env("CODEBATTLE_LOGO_TITLE_POSITION", "right")
+
+cup_background_url = System.get_env("CODEBATTLE_CUP_BACKGROUND_URL", "")
+
 app_subtitle = System.get_env("CODEBATTLE_APP_SUBTITLE", "by Hexlet’s community")
 opengraph_title = System.get_env("CODEBATTLE_OPENGRAPH_TITLE", "Hexlet Codebattle • Game for programmers")
 
@@ -108,6 +112,7 @@ config :codebattle, :app_title, app_title
 config :codebattle, :base_admin_path, System.get_env("CODEBATTLE_BASE_ADMIN_PATH", "/")
 config :codebattle, :base_moderator_path, System.get_env("CODEBATTLE_BASE_MODERATOR_PATH", "/")
 config :codebattle, :base_user_path, System.get_env("CODEBATTLE_BASE_USER_PATH", "/")
+config :codebattle, :cup_background_url, cup_background_url
 config :codebattle, :default_lang_slug, System.get_env("CODEBATTLE_DEFAULT_LANG_SLUG", "js")
 
 config :codebattle, :external,
@@ -174,6 +179,7 @@ config :codebattle,
        |> String.to_integer()
 
 config :codebattle, :logo_title, logo_title
+config :codebattle, :logo_title_position, logo_title_position
 config :codebattle, :main_event_slug, System.get_env("CODEBATTLE_MAIN_EVENT_SLUG")
 
 config :codebattle, :oauth,
