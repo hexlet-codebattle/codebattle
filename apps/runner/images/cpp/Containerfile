@@ -6,18 +6,14 @@ ARG TARGETPLATFORM
 # 1) builder – create the mega-PCH
 ########################################
 FROM --platform=$TARGETPLATFORM alpine:${ALPINE_TAG} AS pch-builder
-RUN apk add --no-cache clang mold lld libc++ make wget ca-certificates
+RUN apk add --no-cache clang mold lld libc++ make
 
-# single-header libs
-RUN wget -qO /usr/include/json.hpp \
-  https://github.com/nlohmann/json/releases/download/v3.12.0/json.hpp \
-  && wget -qO /usr/include/fifo_map.hpp \
-  https://raw.githubusercontent.com/nlohmann/fifo_map/master/src/fifo_map.hpp
-
-# compose heavy header and precompile
-RUN mkdir /pch \
-  && printf '#include <bits/stdc++.h>\n#include "json.hpp"\n#include "fifo_map.hpp"\n' > /pch/all.hpp \
-  && clang++ -std=c++23 -O0 -x c++-header /pch/all.hpp -o /pch/all.pch
+# Self-contained prelude (no external single-header libs):
+#   <bits/stdc++.h> + custom JSON emitter + RunTest helper.
+# See prelude.hpp for rationale.
+COPY prelude.hpp /pch/all.hpp
+RUN clang++ -std=c++23 -O0 -fno-stack-protector -fno-pic -pipe -g0 \
+      -x c++-header /pch/all.hpp -o /pch/all.pch
 
 ########################################
 # 2) runner stage
@@ -38,11 +34,9 @@ RUN grep -q '^app:' /etc/group || addgroup -S -g 10001 app \
 # working dir for mounted code
 WORKDIR /usr/src/app
 
-# copy headers + PCH
-COPY --from=pch-builder /usr/include/json.hpp     /usr/include/json.hpp
-COPY --from=pch-builder /usr/include/fifo_map.hpp /usr/include/fifo_map.hpp
-COPY --from=pch-builder /pch/all.pch              /pch/all.pch
-COPY --from=pch-builder /pch/all.hpp              /pch/all.hpp
+# copy PCH (precompiled) and its source (kept around for debugging)
+COPY --from=pch-builder /pch/all.pch /pch/all.pch
+COPY --from=pch-builder /pch/all.hpp /pch/all.hpp
 
 # app files
 COPY check ./check

@@ -1,70 +1,22 @@
-#include <bits/stdc++.h>
-#include "../json.hpp"
-#include "../fifo_map.hpp"
-
 #include "solution.cpp"
-
-using namespace std;
-
-template<class K, class V, class dummy_compare, class A>
-using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
-using json = nlohmann::basic_json<fifo_map>;
-
-template <typename T1>
-json BuildResultMessage(string status, T1 result, string output, string executionTime) {
-  json j;
-  j["type"] = status;
-  j["value"] = result;
-  j["output"] = output;
-  j["time"] = executionTime;
-
-  return j;
-}
-
-
-void SendMessage(json j) {
-  cout << j << "\n";
-}
-
-template <typename T>
-json BuildErrorMessage(string status, T result) {
-  json j;
-  j["type"] = status;
-  j["value"] = result;
-
-  return j;
-}
 
 int main() {
   std::stringstream buffer_;
   std::streambuf * oldBuf_ = std::cout.rdbuf(buffer_.rdbuf());
-  bool success_ = true;
-  string output_ = "";
-  vector<json> finalResults_ = {};
+  std::vector<std::string> finalResults_;
 
   try {
-    <%= for %{arguments: arguments, index: i} <- checks do %>
+    <%= for %{arguments: arguments} <- checks do %>
       <%= for %{defining: defining, value: value} <- arguments.info do %>
         <%= defining %> = <%= value %>;
       <% end %>
-
-      auto start<%= i %>_ = std::chrono::high_resolution_clock::now();
-      auto result<%= i %>_ = solution(<%= arguments.expression %>);
-      std::chrono::duration<double> executionTime<%= i %>_ = std::chrono::high_resolution_clock::now() - start<%= i %>_;
-      char buffer<%= i %>_[20];
-      std::sprintf(buffer<%= i %>_, "%.7f", executionTime<%= i %>_.count());
-      auto time<%= i %>_ = std::string(buffer<%= i %>_);
-      output_ = buffer_.str();
-      buffer_.str("");
-      finalResults_.push_back(BuildResultMessage("result", result<%= i %>_, output_,  time<%= i %>_));
+      RunTest(finalResults_, buffer_, [&]{ return solution(<%= arguments.expression %>); });
     <% end %>
-
   } catch (const std::exception& e) {
-    json message = BuildErrorMessage("error", e.what());
-    finalResults_.push_back(message);
+    SendError(finalResults_, e.what());
   }
 
   std::cout.rdbuf(oldBuf_);
-  for_each(finalResults_.begin(), finalResults_.end(), SendMessage);
-  cout << buffer_.str() << "\n";
+  for (auto const& s : finalResults_) std::cout << s << "\n";
+  std::cout << buffer_.str() << "\n";
 }
