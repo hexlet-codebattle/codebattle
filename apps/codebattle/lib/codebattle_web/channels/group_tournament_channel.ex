@@ -45,11 +45,11 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
   defp join_with_invite(socket, current_user, group_tournament, tournament_id) do
     invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
+    PlatformInviteAdvancerWorker.enqueue(invite)
+    invite = InviteContext.get_invite(current_user.id, tournament_id) || invite
 
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     external_setup = get_external_setup(user, group_tournament)
-
-    PlatformInviteAdvancerWorker.enqueue(invite)
 
     {:ok,
      %{
@@ -189,11 +189,11 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
 
     invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
+    PlatformInviteAdvancerWorker.enqueue(invite)
+    invite = InviteContext.get_invite(current_user.id, tournament_id) || invite
 
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     response = serialize_invite_reply(user, group_tournament, invite, platform_error)
-
-    PlatformInviteAdvancerWorker.enqueue(invite)
 
     socket =
       if invite.state == "accepted" do
