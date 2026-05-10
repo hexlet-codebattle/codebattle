@@ -2,7 +2,6 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.ExternalPlatformInvite.Advancer, as: InviteAdvancer
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
@@ -45,10 +44,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp join_with_invite(socket, current_user, group_tournament, tournament_id) do
-    invite =
-      current_user.id
-      |> InviteContext.get_or_create_invite(tournament_id)
-      |> InviteAdvancer.advance(current_user)
+    invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
 
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     external_setup = get_external_setup(user, group_tournament)
@@ -192,10 +188,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   defp reply_with_invite_update(current_user, tournament_id, socket) do
     group_tournament = GroupTournamentContext.get_group_tournament!(tournament_id)
 
-    invite =
-      current_user.id
-      |> InviteContext.get_or_create_invite(tournament_id)
-      |> InviteAdvancer.advance(current_user)
+    invite = InviteContext.get_or_create_invite(current_user.id, tournament_id)
 
     {user, platform_error} = maybe_ensure_platform_credentials(current_user, invite, group_tournament)
     response = serialize_invite_reply(user, group_tournament, invite, platform_error)

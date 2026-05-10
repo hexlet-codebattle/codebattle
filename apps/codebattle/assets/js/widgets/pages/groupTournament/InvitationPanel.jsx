@@ -62,15 +62,19 @@ function InvitationPanel({ name, meta, invite, onStart }) {
                 <button type="button" className="btn btn-yellow rounded-pill px-4" disabled>
                   {i18n.t("Accepted")}
                 </button>
-              ) : (
+              ) : invite?.inviteLink ? (
                 <a
                   target="_blank"
-                  href={invite?.inviteLink}
+                  href={invite.inviteLink}
                   className="btn btn-yellow rounded-pill px-4"
                   rel="noopener noreferrer"
                 >
                   {step1ButtonLabel}
                 </a>
+              ) : (
+                <button type="button" className="btn btn-yellow rounded-pill px-4" disabled>
+                  {step1ButtonLabel}
+                </button>
               )}
             </div>
 

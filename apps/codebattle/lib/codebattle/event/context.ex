@@ -4,6 +4,7 @@ defmodule Codebattle.Event.Context do
   import Ecto.Query
 
   alias Codebattle.Event
+  alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTournament
   alias Codebattle.Repo
   alias Codebattle.Tournament
@@ -11,6 +12,7 @@ defmodule Codebattle.Event.Context do
   alias Codebattle.User
   alias Codebattle.UserEvent
   alias Codebattle.UserEvent.Stage, as: UserEventStage
+  alias Codebattle.Workers.PlatformInviteAdvancerWorker
 
   require Logger
 
@@ -220,6 +222,7 @@ defmodule Codebattle.Event.Context do
     case create_individual_group_tournament(event, event_stage) do
       {:ok, group_tournament} ->
         GroupTournament.Server.join(group_tournament.id, user, user.lang || "js")
+        maybe_preseed_external_invite(group_tournament, user)
         group_tournament.id
 
       {:error, reason} ->
@@ -293,4 +296,12 @@ defmodule Codebattle.Event.Context do
 
     GroupTournament.Context.create_group_tournament(attrs)
   end
+
+  defp maybe_preseed_external_invite(%GroupTournament{require_invitation: true} = group_tournament, user) do
+    invite = InviteContext.get_or_create_invite(user.id, group_tournament.id)
+    PlatformInviteAdvancerWorker.enqueue(invite)
+    :ok
+  end
+
+  defp maybe_preseed_external_invite(_group_tournament, _user), do: :ok
 end
