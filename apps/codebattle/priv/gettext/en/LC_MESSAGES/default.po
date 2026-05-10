@@ -1156,3 +1156,6 @@ msgstr "%{name} stage finished"
 
 msgid "First qualification round finished"
 msgstr "First qualification round finished"
+
+msgid "Accepted"
+msgstr "Accepted"

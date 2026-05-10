@@ -1751,3 +1751,6 @@ msgstr "Этап «%{name}» завершён"
 
 msgid "First qualification round finished"
 msgstr "Первая часть квалификации пройдена"
+
+msgid "Accepted"
+msgstr "Принято"

@@ -426,6 +426,137 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
+  @doc """
+  Removes inherited repository roles at the organization level.
+  POST /orgs/roles/remove
+  Each entry: %{role: "developer", subject: %{type: "user", id: "..."}}
+  """
+  @spec remove_org_roles([map()]) :: {:ok, map()} | {:error, term()}
+  def remove_org_roles(repo_subject_roles) when is_list(repo_subject_roles) and repo_subject_roles != [] do
+    case adapter() do
+      nil -> do_remove_org_roles(repo_subject_roles)
+      mod -> mod.remove_org_roles(repo_subject_roles)
+    end
+  end
+
+  def remove_org_roles(_), do: {:error, :invalid_repo_subject_roles}
+
+  defp do_remove_org_roles(repo_subject_roles) do
+    body = %{repo_subject_roles: repo_subject_roles}
+    url = "#{external_platform_service_url()}/orgs/roles/remove"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @http_timeout_ms],
+        receive_timeout: @http_timeout_ms
+      )
+
+    Logger.info(
+      "ExternalPlatform.remove_org_roles START method=POST url=#{url} roles_count=#{length(repo_subject_roles)}"
+    )
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:post, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: 200, body: resp_body}} ->
+        Logger.info(
+          "ExternalPlatform.remove_org_roles OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.remove_org_roles FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.remove_org_roles ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  @doc """
+  Occupies code assist workplaces for multiple users in bulk.
+  POST /code-assist-workplaces/occupy-bulk
+  """
+  @spec occupy_code_assist_workplaces([String.t()]) :: {:ok, map()} | {:error, term()}
+  def occupy_code_assist_workplaces(user_ids) when is_list(user_ids) do
+    case adapter() do
+      nil -> do_code_assist_workplaces_bulk("occupy-bulk", user_ids)
+      mod -> mod.occupy_code_assist_workplaces(user_ids)
+    end
+  end
+
+  def occupy_code_assist_workplaces(_), do: {:error, :invalid_user_ids}
+
+  @doc """
+  Releases code assist workplaces for multiple users in bulk.
+  POST /code-assist-workplaces/release-bulk
+  """
+  @spec release_code_assist_workplaces([String.t()]) :: {:ok, map()} | {:error, term()}
+  def release_code_assist_workplaces(user_ids) when is_list(user_ids) do
+    case adapter() do
+      nil -> do_code_assist_workplaces_bulk("release-bulk", user_ids)
+      mod -> mod.release_code_assist_workplaces(user_ids)
+    end
+  end
+
+  def release_code_assist_workplaces(_), do: {:error, :invalid_user_ids}
+
+  defp do_code_assist_workplaces_bulk(action, user_ids) do
+    body = %{user_ids: user_ids}
+    url = "#{external_platform_service_url()}/code-assist-workplaces/#{action}"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @invite_timeout_ms],
+        receive_timeout: @invite_timeout_ms
+      )
+
+    Logger.info(
+      "ExternalPlatform.code_assist_workplaces START method=POST url=#{url} action=#{action} user_ids_count=#{length(user_ids)}"
+    )
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:post, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: 200, body: resp_body}} ->
+        Logger.info(
+          "ExternalPlatform.code_assist_workplaces OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.code_assist_workplaces FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.code_assist_workplaces ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
   defp do_get_user_by_id(user_id) do
     url = external_platform_service_url() <> @users_path <> "/#{user_id}"
 

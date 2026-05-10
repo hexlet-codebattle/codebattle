@@ -5,6 +5,7 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   alias Codebattle.ExternalPlatform
   alias Codebattle.GroupTournament
+  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserGroupTournament
@@ -12,6 +13,7 @@ defmodule Codebattle.UserGroupTournament.Context do
   @default_repo_role "developer"
   @default_secret_group "ci"
   @default_secret_key "CODEBATTLE_AUTH_TOKEN"
+  @finalize_role "viewer"
 
   @spec get(pos_integer(), pos_integer()) :: UserGroupTournament.t() | nil
   def get(user_id, group_tournament_id) do
@@ -71,8 +73,9 @@ defmodule Codebattle.UserGroupTournament.Context do
          synced_record = get_or_create(synced_user, group_tournament),
          {:ok, repo_record} <- ensure_repo(synced_record, group_tournament, synced_user),
          {:ok, role_record} <- ensure_role(repo_record, group_tournament, synced_user),
-         {:ok, secret_record} <- ensure_secret(role_record, group_tournament, synced_user) do
-      {:ok, finalize_ready(secret_record)}
+         {:ok, secret_record} <- ensure_secret(role_record, group_tournament, synced_user),
+         {:ok, workplace_record} <- ensure_workplace(secret_record, group_tournament, synced_user) do
+      {:ok, finalize_ready(workplace_record)}
     else
       {:error, reason, %UserGroupTournament{} = failed_record} ->
         {:error, reason, failed_record}
@@ -250,6 +253,186 @@ defmodule Codebattle.UserGroupTournament.Context do
     end
   end
 
+  defp ensure_workplace(%UserGroupTournament{workplace_state: "completed"} = record, _group_tournament, _user),
+    do: {:ok, record}
+
+  defp ensure_workplace(%UserGroupTournament{} = record, %GroupTournament{} = _group_tournament, %User{} = user) do
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        case ExternalPlatform.occupy_code_assist_workplaces([platform_user_id]) do
+          {:ok, response} ->
+            {:ok,
+             update!(record, %{
+               state: "provisioning",
+               workplace_state: "completed",
+               workplace_response: response,
+               last_error: %{}
+             })}
+
+          {:error, reason} ->
+            {:error, reason, fail_step(record, :workplace, reason)}
+        end
+
+      {:error, reason} ->
+        {:error, reason, fail_step(record, :workplace, reason)}
+    end
+  end
+
+  @doc """
+  Finalizes a chunk of users for a group tournament:
+
+    1. Bulk-releases code-assist workplaces for users whose `release_state` is
+       not yet completed.
+    2. Bulk-removes the developer role at the org level for users whose
+       `dev_role_removal_state` is not yet completed.
+    3. Grants the `viewer` role on each user's repo (one HTTP call per repo,
+       since each user owns a separate repo) for users whose
+       `viewer_role_state` is not yet completed.
+
+  Each sub-step is idempotent: per-user state fields are flipped to "completed"
+  only after the corresponding API call succeeds, so retries skip work that has
+  already been done for individual users.
+  """
+  @spec finalize_chunk(pos_integer(), [pos_integer()]) :: :ok | {:error, term()}
+  def finalize_chunk(group_tournament_id, user_ids) when is_list(user_ids) do
+    group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
+
+    if group_tournament.run_on_external_platform do
+      records = list_chunk_records(group_tournament_id, user_ids)
+
+      with :ok <- bulk_release_chunk(records),
+           :ok <- bulk_remove_dev_role_chunk(records) do
+        add_viewer_role_chunk(records, group_tournament)
+      end
+    else
+      :ok
+    end
+  end
+
+  defp list_chunk_records(group_tournament_id, user_ids) do
+    UserGroupTournament
+    |> where([r], r.group_tournament_id == ^group_tournament_id and r.user_id in ^user_ids)
+    |> preload(:user)
+    |> Repo.all()
+  end
+
+  defp bulk_release_chunk(records) do
+    pending = Enum.reject(records, &(&1.release_state == "completed"))
+    {paired_records, platform_user_ids} = platform_ids(pending)
+
+    bulk_release_paired_records(paired_records, platform_user_ids)
+  end
+
+  defp bulk_release_paired_records(_paired_records, []), do: :ok
+
+  defp bulk_release_paired_records(paired_records, platform_user_ids) do
+    case ExternalPlatform.release_code_assist_workplaces(platform_user_ids) do
+      {:ok, response} ->
+        Enum.each(paired_records, fn record ->
+          update!(record, %{release_state: "completed", release_response: response, last_error: %{}})
+        end)
+
+        :ok
+
+      {:error, reason} ->
+        Enum.each(paired_records, &fail_step(&1, :release, reason))
+        {:error, reason}
+    end
+  end
+
+  defp bulk_remove_dev_role_chunk(records) do
+    pending = Enum.reject(records, &(&1.dev_role_removal_state == "completed"))
+    {paired_records, platform_user_ids} = platform_ids(pending)
+
+    bulk_remove_dev_role_paired_records(paired_records, platform_user_ids)
+  end
+
+  defp bulk_remove_dev_role_paired_records(_paired_records, []), do: :ok
+
+  defp bulk_remove_dev_role_paired_records(paired_records, platform_user_ids) do
+    repo_subject_roles =
+      paired_records
+      |> Enum.zip(platform_user_ids)
+      |> Enum.map(fn {record, platform_user_id} ->
+        %{
+          role: record.role || @default_repo_role,
+          subject: %{type: "user", id: platform_user_id}
+        }
+      end)
+
+    case ExternalPlatform.remove_org_roles(repo_subject_roles) do
+      {:ok, response} ->
+        Enum.each(paired_records, fn record ->
+          update!(record, %{
+            dev_role_removal_state: "completed",
+            dev_role_removal_response: response,
+            last_error: %{}
+          })
+        end)
+
+        :ok
+
+      {:error, reason} ->
+        Enum.each(paired_records, &fail_step(&1, :dev_role_removal, reason))
+        {:error, reason}
+    end
+  end
+
+  defp add_viewer_role_chunk(records, %GroupTournament{} = group_tournament) do
+    pending = Enum.reject(records, &(&1.viewer_role_state == "completed"))
+
+    Enum.reduce_while(pending, :ok, fn record, _acc ->
+      case add_viewer_role_for_record(record, group_tournament) do
+        :ok -> {:cont, :ok}
+        {:error, reason} -> {:halt, {:error, reason}}
+      end
+    end)
+  end
+
+  defp add_viewer_role_for_record(
+         %UserGroupTournament{user: %User{} = user} = record,
+         %GroupTournament{} = group_tournament
+       ) do
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        case ExternalPlatform.add_repo_role(
+               target_org_slug(),
+               repo_slug_for(user, group_tournament),
+               platform_user_id,
+               @finalize_role
+             ) do
+          {:ok, response} ->
+            update!(record, %{
+              viewer_role_state: "completed",
+              viewer_role_response: response,
+              last_error: %{}
+            })
+
+            :ok
+
+          {:error, reason} ->
+            fail_step(record, :viewer_role, reason)
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        fail_step(record, :viewer_role, reason)
+        {:error, reason}
+    end
+  end
+
+  defp platform_ids(records) do
+    records
+    |> Enum.map(fn record ->
+      case resolve_platform_user_id(record.user) do
+        {:ok, id} -> {record, id}
+        {:error, _} -> nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.unzip()
+  end
+
   defp finalize_ready(%UserGroupTournament{state: "ready"} = record), do: record
 
   defp finalize_ready(%UserGroupTournament{} = record) do
@@ -266,6 +449,22 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   defp fail_step(%UserGroupTournament{} = record, :secret, reason) do
     update!(record, %{state: "failed", secret_state: "failed", last_error: serialize_error(reason)})
+  end
+
+  defp fail_step(%UserGroupTournament{} = record, :workplace, reason) do
+    update!(record, %{state: "failed", workplace_state: "failed", last_error: serialize_error(reason)})
+  end
+
+  defp fail_step(%UserGroupTournament{} = record, :release, reason) do
+    update!(record, %{release_state: "failed", last_error: serialize_error(reason)})
+  end
+
+  defp fail_step(%UserGroupTournament{} = record, :viewer_role, reason) do
+    update!(record, %{viewer_role_state: "failed", last_error: serialize_error(reason)})
+  end
+
+  defp fail_step(%UserGroupTournament{} = record, :dev_role_removal, reason) do
+    update!(record, %{dev_role_removal_state: "failed", last_error: serialize_error(reason)})
   end
 
   defp maybe_update_defaults(%UserGroupTournament{} = record, %User{} = user, %GroupTournament{} = group_tournament) do

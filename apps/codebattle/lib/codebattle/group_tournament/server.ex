@@ -138,6 +138,7 @@ defmodule Codebattle.GroupTournament.Server do
       |> Map.put(:is_live, true)
 
     Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
+    enqueue_finalize_jobs(updated)
 
     next_state =
       state
@@ -305,6 +306,7 @@ defmodule Codebattle.GroupTournament.Server do
 
       if updated.state == "finished" do
         Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
+        enqueue_finalize_jobs(updated)
       end
     end
 
@@ -387,6 +389,22 @@ defmodule Codebattle.GroupTournament.Server do
       status: group_tournament.state,
       user_ids: player_user_ids
     })
+  end
+
+  @finalize_chunk_size 50
+
+  defp enqueue_finalize_jobs(%GroupTournament{run_on_external_platform: false}), do: :ok
+
+  defp enqueue_finalize_jobs(%GroupTournament{} = group_tournament) do
+    group_tournament.players
+    |> Enum.map(& &1.user_id)
+    |> Enum.chunk_every(@finalize_chunk_size)
+    |> Enum.with_index()
+    |> Enum.each(fn {user_ids, chunk_index} ->
+      %{group_tournament_id: group_tournament.id, user_ids: user_ids, chunk: chunk_index}
+      |> Codebattle.Workers.GroupTournamentFinalizeWorker.new()
+      |> Oban.insert()
+    end)
   end
 
   defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "group_tournament_srv:#{id}"}}

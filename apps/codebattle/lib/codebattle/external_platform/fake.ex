@@ -113,4 +113,10 @@ defmodule Codebattle.ExternalPlatform.Fake do
   def upsert_secret(_org_slug, _repo_slug, _key, _value, _opts \\ []) do
     {:ok, %{"status" => "ok"}}
   end
+
+  def occupy_code_assist_workplaces(_user_ids), do: {:ok, %{"status" => "ok"}}
+
+  def release_code_assist_workplaces(_user_ids), do: {:ok, %{"status" => "ok"}}
+
+  def remove_org_roles(_repo_subject_roles), do: {:ok, %{"status" => "ok"}}
 end

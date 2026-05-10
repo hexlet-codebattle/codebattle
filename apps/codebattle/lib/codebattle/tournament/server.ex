@@ -296,6 +296,22 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament_info, state}
   end
 
+  def handle_call({:fire_event, :finish_round, _params}, _from, %{tournament: tournament} = state) do
+    cond do
+      state.frozen ->
+        {:reply, {:error, :handoff_in_progress}, state}
+
+      tournament.round_state == "round_finishing" or in_break?(tournament) or finished?(tournament) ->
+        {:reply, tournament, state}
+
+      true ->
+        new_tournament = tournament.module.finish_all_playing_matches(tournament)
+        update_tournament_info_cache(new_tournament)
+        {:noreply, in_progress_state} = schedule_round_finish(%{state | tournament: new_tournament})
+        {:reply, in_progress_state.tournament, in_progress_state}
+    end
+  end
+
   def handle_call({:fire_event, event_type, params}, _from, %{tournament: tournament} = state) do
     if state.frozen do
       {:reply, {:error, :handoff_in_progress}, state}
@@ -364,12 +380,12 @@ defmodule Codebattle.Tournament.Server do
       defer_message({:finish_round_force, round_position}, "finish_round_force", state)
     else
       if tournament.current_round_position == round_position and
+           tournament.round_state != "round_finishing" and
            not in_break?(tournament) and
            not finished?(tournament) do
-        new_tournament = tournament.module.finish_round(tournament)
+        new_tournament = tournament.module.finish_all_playing_matches(tournament)
         update_tournament_info_cache(new_tournament)
-
-        {:noreply, %{state | tournament: new_tournament}}
+        schedule_round_finish(%{state | tournament: new_tournament})
       else
         {:noreply, %{state | tournament: tournament}}
       end

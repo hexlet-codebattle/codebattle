@@ -1193,7 +1193,7 @@ defmodule Codebattle.Tournament.Base do
       defp get_task_id_by_params(%{task_id: task_id}), do: task_id
       defp get_task_id_by_params(_round_params), do: nil
 
-      defp finish_all_playing_matches(tournament) do
+      def finish_all_playing_matches(tournament) do
         matches_to_finish = get_matches(tournament, "playing")
 
         # Early return if no matches to finish

@@ -74,6 +74,9 @@ defmodule Codebattle.Game.EditorEventBatch do
     |> validate_number(:window_start_offset_ms, greater_than_or_equal_to: 0)
     |> validate_number(:window_end_offset_ms, greater_than_or_equal_to: 0)
     |> validate_window_offsets()
+    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:game_id)
+    |> foreign_key_constraint(:tournament_id)
   end
 
   def create(attrs) do

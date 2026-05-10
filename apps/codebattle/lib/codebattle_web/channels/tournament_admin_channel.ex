@@ -205,7 +205,7 @@ defmodule CodebattleWeb.TournamentAdminChannel do
   def handle_in("tournament:finish_round", _, socket) do
     tournament_id = socket.assigns.tournament_info.id
 
-    Tournament.Context.handle_event(tournament_id, :finish_round, %{})
+    Tournament.Server.cast_event(tournament_id, :finish_round, %{})
 
     {:noreply, socket}
   end
