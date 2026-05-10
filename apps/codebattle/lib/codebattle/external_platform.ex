@@ -257,7 +257,8 @@ defmodule Codebattle.ExternalPlatform do
       %{
         name: Keyword.get(opts, :name, slug),
         slug: slug,
-        description: opts[:description],
+        # we don't need a description
+        # description: opts[:description],
         visibility: Keyword.get(opts, :visibility, "public"),
         templating_options: %{template_id: template_id}
       }
