@@ -234,6 +234,89 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("occupy_workplace", %{"id" => ugt_id}, socket) do
+    user = socket.assigns.user
+    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
+
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        result = ExternalPlatform.occupy_code_assist_workplaces([platform_user_id])
+        ugt = update_ugt_from_result(ugt, :workplace, result)
+
+        {:noreply,
+         assign(socket,
+           user_group_tournaments: get_user_group_tournaments(user.id),
+           action_result: format_action_result(ugt.id, "Occupy workplace", result)
+         )}
+
+      {:error, reason} ->
+        {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
+    end
+  end
+
+  def handle_event("release_workplace", %{"id" => ugt_id}, socket) do
+    user = socket.assigns.user
+    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
+
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        result = ExternalPlatform.release_code_assist_workplaces([platform_user_id])
+        ugt = update_ugt_from_result(ugt, :release, result)
+
+        {:noreply,
+         assign(socket,
+           user_group_tournaments: get_user_group_tournaments(user.id),
+           action_result: format_action_result(ugt.id, "Release workplace", result)
+         )}
+
+      {:error, reason} ->
+        {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
+    end
+  end
+
+  def handle_event("add_viewer_role", %{"id" => ugt_id}, socket) do
+    user = socket.assigns.user
+    ugt = UserGroupTournament |> Repo.get!(ugt_id) |> Repo.preload(:group_tournament)
+    org_slug = default_org_slug()
+
+    cond do
+      is_nil(ugt.group_tournament) ->
+        {:noreply, assign(socket, action_result: {:error, ugt.id, "No linked tournament"})}
+
+      is_nil(user.external_platform_login) || user.external_platform_login == "" ->
+        {:noreply, assign(socket, action_result: {:error, ugt.id, "User has no external_platform_login"})}
+
+      true ->
+        case resolve_platform_user_id(user) do
+          {:ok, platform_user_id} ->
+            repo_slug = UserGroupTournamentContext.repo_slug_for(user, ugt.group_tournament)
+            result = ExternalPlatform.add_repo_role(org_slug, repo_slug, platform_user_id, "viewer")
+
+            ugt = update_ugt_from_result(ugt, :viewer_role, result)
+
+            {:noreply,
+             assign(socket,
+               user_group_tournaments: get_user_group_tournaments(user.id),
+               action_result: format_action_result(ugt.id, "Add viewer role", result)
+             )}
+
+          {:error, reason} ->
+            {:noreply, assign(socket, action_result: {:error, ugt.id, inspect(reason)})}
+        end
+    end
+  end
+
+  def handle_event("delete_user_group_tournament", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    ugt = Repo.get!(UserGroupTournament, id)
+    Repo.delete!(ugt)
+
+    {:noreply,
+     socket
+     |> assign(user_group_tournaments: get_user_group_tournaments(user.id))
+     |> put_flash(:info, "User removed from tournament")}
+  end
+
   def handle_event("update_ugt_repo_url", %{"ugt_id" => id, "repo_url" => repo_url}, socket) do
     user = socket.assigns.user
     ugt = Repo.get!(UserGroupTournament, id)
@@ -634,39 +717,44 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
   end
 
   defp update_ugt_from_result(ugt, step, result) do
-    attrs =
-      case {step, result} do
-        {:repo, {:ok, response}} ->
-          %{
-            state: "provisioning",
-            repo_state: "completed",
-            repo_url: extract_repo_url(response),
-            repo_response: response,
-            last_error: %{}
-          }
-
-        {:repo, {:error, reason}} ->
-          %{state: "failed", repo_state: "failed", last_error: serialize_error(reason)}
-
-        {:role, {:ok, response}} ->
-          %{state: "provisioning", role_state: "completed", role_response: response, last_error: %{}}
-
-        {:role, {:error, reason}} ->
-          %{state: "failed", role_state: "failed", last_error: serialize_error(reason)}
-
-        {:secret, {:ok, response}} ->
-          %{state: "provisioning", secret_state: "completed", secret_response: response, last_error: %{}}
-
-        {:secret, {:error, reason}} ->
-          %{state: "failed", secret_state: "failed", last_error: serialize_error(reason)}
-      end
-
-    # Check if all steps completed -> ready
-    attrs = maybe_finalize_ready(ugt, attrs)
+    attrs = maybe_finalize_ready(ugt, step_attrs(ugt, step, result))
 
     ugt
     |> UserGroupTournament.changeset(attrs)
     |> Repo.update!()
+  end
+
+  defp step_attrs(_ugt, :repo, {:ok, response}) do
+    %{
+      state: "provisioning",
+      repo_state: "completed",
+      repo_url: extract_repo_url(response),
+      repo_response: response,
+      last_error: %{}
+    }
+  end
+
+  defp step_attrs(_ugt, :role, {:ok, response}),
+    do: %{state: "provisioning", role_state: "completed", role_response: response, last_error: %{}}
+
+  defp step_attrs(_ugt, :secret, {:ok, response}),
+    do: %{state: "provisioning", secret_state: "completed", secret_response: response, last_error: %{}}
+
+  defp step_attrs(_ugt, :workplace, {:ok, response}),
+    do: %{state: "provisioning", workplace_state: "completed", workplace_response: response, last_error: %{}}
+
+  defp step_attrs(_ugt, :release, {:ok, response}),
+    do: %{release_state: "completed", release_response: response, last_error: %{}}
+
+  defp step_attrs(_ugt, :viewer_role, {:ok, response}),
+    do: %{viewer_role_state: "completed", viewer_role_response: response, last_error: %{}}
+
+  defp step_attrs(_ugt, step, {:error, reason}) when step in [:release, :viewer_role] do
+    %{:"#{step}_state" => "failed", :last_error => serialize_error(reason)}
+  end
+
+  defp step_attrs(_ugt, step, {:error, reason}) do
+    %{:state => "failed", :"#{step}_state" => "failed", :last_error => serialize_error(reason)}
   end
 
   defp maybe_finalize_ready(ugt, %{repo_state: "completed"} = attrs) do
@@ -1258,11 +1346,47 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                       </button>
                       <button
                         type="button"
+                        class="btn btn-sm btn-outline-primary cb-rounded"
+                        phx-click="occupy_workplace"
+                        phx-value-id={ugt.id}
+                        data-confirm="Occupy code-assist workplace for this user?"
+                      >
+                        Occupy Workplace
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger cb-rounded"
+                        phx-click="release_workplace"
+                        phx-value-id={ugt.id}
+                        data-confirm="Release code-assist workplace for this user?"
+                      >
+                        Release Workplace
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-warning cb-rounded"
+                        phx-click="add_viewer_role"
+                        phx-value-id={ugt.id}
+                        data-confirm="Grant viewer role on this repo?"
+                      >
+                        Add Viewer Role
+                      </button>
+                      <button
+                        type="button"
                         class="btn btn-sm btn-outline-secondary cb-btn-outline-secondary cb-rounded"
                         phx-click="toggle_user_group_tournament_details"
                         phx-value-id={ugt.id}
                       >
                         Payloads
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-danger cb-rounded"
+                        phx-click="delete_user_group_tournament"
+                        phx-value-id={ugt.id}
+                        data-confirm="Remove this user from the tournament? This deletes the user_group_tournament record only — external repo/workplace are not touched."
+                      >
+                        Remove
                       </button>
                     </div>
                   </div>
@@ -1299,6 +1423,38 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                               <td class="border-0 py-1">
                                 <span class={provisioning_step_badge(ugt.secret_state)}>
                                   {ugt.secret_state}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="cb-text border-0 py-1">Workplace</td>
+                              <td class="border-0 py-1">
+                                <span class={provisioning_step_badge(ugt.workplace_state)}>
+                                  {ugt.workplace_state}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="cb-text border-0 py-1">Release</td>
+                              <td class="border-0 py-1">
+                                <span class={provisioning_step_badge(ugt.release_state)}>
+                                  {ugt.release_state}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="cb-text border-0 py-1">Viewer role</td>
+                              <td class="border-0 py-1">
+                                <span class={provisioning_step_badge(ugt.viewer_role_state)}>
+                                  {ugt.viewer_role_state}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="cb-text border-0 py-1">Dev role removal</td>
+                              <td class="border-0 py-1">
+                                <span class={provisioning_step_badge(ugt.dev_role_removal_state)}>
+                                  {ugt.dev_role_removal_state}
                                 </span>
                               </td>
                             </tr>
@@ -1404,6 +1560,34 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
                           style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
                         ><code>{Jason.encode!(ugt.secret_response || %{}, pretty: true)}</code></pre>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="cb-text text-uppercase small mb-1">Workplace Response</div>
+                        <pre
+                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
+                        ><code>{Jason.encode!(ugt.workplace_response || %{}, pretty: true)}</code></pre>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="cb-text text-uppercase small mb-1">Release Response</div>
+                        <pre
+                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
+                        ><code>{Jason.encode!(ugt.release_response || %{}, pretty: true)}</code></pre>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="cb-text text-uppercase small mb-1">Viewer Role Response</div>
+                        <pre
+                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
+                        ><code>{Jason.encode!(ugt.viewer_role_response || %{}, pretty: true)}</code></pre>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="cb-text text-uppercase small mb-1">Dev Role Removal Response</div>
+                        <pre
+                          class="text-white mb-0 small cb-bg-panel cb-border-color border cb-rounded p-2"
+                          style="max-height: 200px; overflow: auto; white-space: pre-wrap;"
+                        ><code>{Jason.encode!(ugt.dev_role_removal_response || %{}, pretty: true)}</code></pre>
                       </div>
                       <div class="col-lg-6">
                         <div class="cb-text text-uppercase small mb-1">Last Error</div>
