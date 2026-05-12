@@ -165,7 +165,9 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     {:reply, {:error, %{reason: "invalid_payload"}}, socket}
   end
 
-  def handle_in("group_tournament:run:request", %{"run_id" => run_id}, socket) do
+  def handle_in("group_tournament:run:request", payload, socket) do
+    run_id = payload["runId"] || payload["run_id"]
+
     case parse_run_id(run_id) do
       {:ok, parsed_run_id} ->
         current_user = socket.assigns.current_user

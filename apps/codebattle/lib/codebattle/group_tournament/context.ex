@@ -502,6 +502,7 @@ defmodule Codebattle.GroupTournament.Context do
       player_ids: run.player_ids,
       status: run.status,
       result: run.result,
+      score: run.score,
       inserted_at: run.inserted_at
     }
   end
@@ -514,7 +515,6 @@ defmodule Codebattle.GroupTournament.Context do
       group_task_id: run.group_task_id,
       user_group_tournament_id: run.user_group_tournament_id,
       run_key: run.run_key,
-      score: run.score,
       user_id: run.user_group_tournament && run.user_group_tournament.user_id,
       solution: solution && serialize_solution(solution)
     })
