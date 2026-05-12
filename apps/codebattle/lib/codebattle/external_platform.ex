@@ -366,6 +366,68 @@ defmodule Codebattle.ExternalPlatform do
   end
 
   @doc """
+  Removes a role for a user on a specific repository (does not affect org membership).
+  POST /repos/{org_slug}/{repo_slug}/roles/remove
+  """
+  @spec remove_repo_role(String.t(), String.t(), String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def remove_repo_role(org_slug, repo_slug, user_id, role, opts \\ []) do
+    case adapter() do
+      nil -> do_remove_repo_role(org_slug, repo_slug, user_id, role)
+      mod -> mod.remove_repo_role(org_slug, repo_slug, user_id, role, opts)
+    end
+  end
+
+  defp do_remove_repo_role(org_slug, repo_slug, user_id, role) do
+    body = %{
+      subject_roles: [
+        %{
+          role: role,
+          subject: %{type: "user", id: user_id}
+        }
+      ]
+    }
+
+    url = "#{external_platform_service_url()}/repos/#{org_slug}/#{repo_slug}/roles/remove"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @http_timeout_ms],
+        receive_timeout: @http_timeout_ms
+      )
+
+    Logger.info("ExternalPlatform.remove_repo_role START method=POST url=#{url} body=#{inspect(body)}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:post, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: 200, body: resp_body}} ->
+        Logger.info(
+          "ExternalPlatform.remove_repo_role OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.remove_repo_role FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.remove_repo_role ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  @doc """
   Creates or updates a repository secret.
   PUT /repos/{org_slug}/{repo_slug}/secrets/{key}
   """

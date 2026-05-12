@@ -110,6 +110,10 @@ defmodule Codebattle.ExternalPlatform.Fake do
     {:ok, %{"status" => "ok"}}
   end
 
+  def remove_repo_role(_org_slug, _repo_slug, _user_id, _role, _opts \\ []) do
+    {:ok, %{"status" => "ok"}}
+  end
+
   def upsert_secret(_org_slug, _repo_slug, _key, _value, _opts \\ []) do
     {:ok, %{"status" => "ok"}}
   end

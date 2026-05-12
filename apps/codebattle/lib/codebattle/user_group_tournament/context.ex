@@ -283,8 +283,9 @@ defmodule Codebattle.UserGroupTournament.Context do
 
     1. Bulk-releases code-assist workplaces for users whose `release_state` is
        not yet completed.
-    2. Bulk-removes the developer role at the org level for users whose
-       `dev_role_removal_state` is not yet completed.
+    2. Removes the developer role from each user's own repo (one HTTP call per
+       repo) for users whose `dev_role_removal_state` is not yet completed.
+       Org membership is intentionally left intact.
     3. Grants the `viewer` role on each user's repo (one HTTP call per repo,
        since each user owns a separate repo) for users whose
        `viewer_role_state` is not yet completed.
@@ -301,7 +302,7 @@ defmodule Codebattle.UserGroupTournament.Context do
       records = list_chunk_records(group_tournament_id, user_ids)
 
       with :ok <- bulk_release_chunk(records),
-           :ok <- bulk_remove_dev_role_chunk(records) do
+           :ok <- remove_dev_role_chunk(records, group_tournament) do
         add_viewer_role_chunk(records, group_tournament)
       end
     else
@@ -340,40 +341,45 @@ defmodule Codebattle.UserGroupTournament.Context do
     end
   end
 
-  defp bulk_remove_dev_role_chunk(records) do
+  defp remove_dev_role_chunk(records, %GroupTournament{} = group_tournament) do
     pending = Enum.reject(records, &(&1.dev_role_removal_state == "completed"))
-    {paired_records, platform_user_ids} = platform_ids(pending)
 
-    bulk_remove_dev_role_paired_records(paired_records, platform_user_ids)
+    Enum.reduce_while(pending, :ok, fn record, _acc ->
+      case remove_dev_role_for_record(record, group_tournament) do
+        :ok -> {:cont, :ok}
+        {:error, reason} -> {:halt, {:error, reason}}
+      end
+    end)
   end
 
-  defp bulk_remove_dev_role_paired_records(_paired_records, []), do: :ok
+  defp remove_dev_role_for_record(
+         %UserGroupTournament{user: %User{} = user} = record,
+         %GroupTournament{} = group_tournament
+       ) do
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        case ExternalPlatform.remove_repo_role(
+               target_org_slug(),
+               repo_slug_for(user, group_tournament),
+               platform_user_id,
+               record.role || @default_repo_role
+             ) do
+          {:ok, response} ->
+            update!(record, %{
+              dev_role_removal_state: "completed",
+              dev_role_removal_response: response,
+              last_error: %{}
+            })
 
-  defp bulk_remove_dev_role_paired_records(paired_records, platform_user_ids) do
-    repo_subject_roles =
-      paired_records
-      |> Enum.zip(platform_user_ids)
-      |> Enum.map(fn {record, platform_user_id} ->
-        %{
-          role: record.role || @default_repo_role,
-          subject: %{type: "user", id: platform_user_id}
-        }
-      end)
+            :ok
 
-    case ExternalPlatform.remove_org_roles(repo_subject_roles) do
-      {:ok, response} ->
-        Enum.each(paired_records, fn record ->
-          update!(record, %{
-            dev_role_removal_state: "completed",
-            dev_role_removal_response: response,
-            last_error: %{}
-          })
-        end)
-
-        :ok
+          {:error, reason} ->
+            fail_step(record, :dev_role_removal, reason)
+            {:error, reason}
+        end
 
       {:error, reason} ->
-        Enum.each(paired_records, &fail_step(&1, :dev_role_removal, reason))
+        fail_step(record, :dev_role_removal, reason)
         {:error, reason}
     end
   end
