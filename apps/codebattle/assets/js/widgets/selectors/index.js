@@ -489,6 +489,9 @@ export const reportsSelector = createDraftSafeSelector(
 
 export const selectDefaultAvatarUrl = () => logoSvg;
 
+const formatDuration = (seconds) =>
+  seconds > 0 ? moment.utc(seconds * 1000).format("HH:mm:ss") : "-";
+
 // Participant data selector
 export const participantDataSelector = (state) => {
   const event = eventSelector(state);
@@ -507,9 +510,10 @@ export const participantDataSelector = (state) => {
       const gamesCount = userStage?.gamesCount ? userStage.gamesCount : "-";
       const zeroWinsCount = gamesCount === "-" ? "-" : "0";
       const winsCount = userStage?.winsCount ? userStage.winsCount : zeroWinsCount;
-      const totalSeconds =
-        (userStage?.timeSpentInSeconds || 0) + (userStage?.groupTournamentTimeSpentInSeconds || 0);
+      const tournamentSeconds = userStage?.timeSpentInSeconds || 0;
+      const groupTournamentSeconds = userStage?.groupTournamentTimeSpentInSeconds || 0;
       const aiScoreRaw = userStage?.groupTournamentScore;
+      const totalScoreRaw = userStage?.groupTournamentTotalScore;
 
       return {
         status: eventStage.status,
@@ -528,7 +532,10 @@ export const participantDataSelector = (state) => {
         gamesCount,
         winsCount,
         aiScore: typeof aiScoreRaw === "number" ? aiScoreRaw : "-",
-        timeSpent: totalSeconds > 0 ? moment.utc(totalSeconds * 1000).format("HH:mm:ss") : "-",
+        maxScore: typeof totalScoreRaw === "number" ? totalScoreRaw : null,
+        tournamentTimeSpent: formatDuration(tournamentSeconds),
+        groupTournamentTimeSpent: formatDuration(groupTournamentSeconds),
+        timeSpent: formatDuration(tournamentSeconds + groupTournamentSeconds),
         actionButtonText: eventStage.actionButtonText,
         confirmationText: eventStage.confirmationText,
         nextRoundText: eventStage.nextRoundText,

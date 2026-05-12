@@ -81,7 +81,7 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
     assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
   end
 
-  test "redirects to / when latest is finished", %{conn: conn} do
+  test "redirects to group tournament page when latest is finished", %{conn: conn} do
     user = insert(:user)
 
     group_tournament =
@@ -92,6 +92,20 @@ defmodule CodebattleWeb.GroupTournamentControllerTest do
         starts_at: DateTime.add(DateTime.utc_now(), -120, :second)
       })
 
+    insert_user_group_tournament(user, group_tournament)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get("/my-tournament")
+
+    assert redirected_to(conn) == "/group_tournaments/#{group_tournament.id}"
+  end
+
+  test "redirects to / when latest is canceled", %{conn: conn} do
+    user = insert(:user)
+
+    group_tournament = insert_group_tournament(%{state: "canceled"})
     insert_user_group_tournament(user, group_tournament)
 
     conn =

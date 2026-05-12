@@ -43,8 +43,8 @@ defmodule CodebattleWeb.GroupTournamentController do
     end
   end
 
-  defp handle_my_tournament(%{group_tournament: %{state: "active", id: id}}, conn, _params) do
-    redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
+  defp handle_my_tournament(%{group_tournament: %{state: "canceled"}}, conn, _params) do
+    redirect(conn, to: "/")
   end
 
   defp handle_my_tournament(%{group_tournament: %{state: "waiting_participants", id: id}} = record, conn, %{
@@ -58,7 +58,7 @@ defmodule CodebattleWeb.GroupTournamentController do
     redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
   end
 
-  defp handle_my_tournament(%{group_tournament: %{state: "waiting_participants", id: id}}, conn, _params) do
+  defp handle_my_tournament(%{group_tournament: %{id: id}}, conn, _params) do
     redirect(conn, to: Routes.group_tournament_path(conn, :show, id))
   end
 

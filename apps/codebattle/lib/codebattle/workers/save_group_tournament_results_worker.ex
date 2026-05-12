@@ -27,6 +27,7 @@ defmodule Codebattle.Workers.SaveGroupTournamentResultsWorker do
   defp save_results(%GroupTournament{id: group_tournament_id} = group_tournament) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     duration = duration_seconds(group_tournament)
+    total_score = group_tournament.max_score
 
     stages =
       UserEventStage
@@ -36,22 +37,22 @@ defmodule Codebattle.Workers.SaveGroupTournamentResultsWorker do
 
     case stages do
       [] -> :ok
-      _ -> update_stages(stages, group_tournament_id, now, duration)
+      _ -> update_stages(stages, group_tournament_id, now, duration, total_score)
     end
   end
 
-  defp update_stages(stages, group_tournament_id, now, duration) do
+  defp update_stages(stages, group_tournament_id, now, duration, total_score) do
     scores_by_user_id = best_scores_for(group_tournament_id)
 
     Enum.each(stages, fn stage ->
       score = Map.get(scores_by_user_id, stage.user_event.user_id, 0)
-      update_stage(stage, group_tournament_id, now, duration, score)
+      update_stage(stage, group_tournament_id, now, duration, score, total_score)
     end)
 
     :ok
   end
 
-  defp update_stage(stage, group_tournament_id, now, duration, score) do
+  defp update_stage(stage, group_tournament_id, now, duration, score, total_score) do
     result =
       stage
       |> UserEventStage.changeset(%{
@@ -59,6 +60,7 @@ defmodule Codebattle.Workers.SaveGroupTournamentResultsWorker do
         finished_at: now,
         group_tournament_finished: true,
         group_tournament_score: score,
+        group_tournament_total_score: total_score,
         group_tournament_time_spent_in_seconds: duration
       })
       |> Repo.update()

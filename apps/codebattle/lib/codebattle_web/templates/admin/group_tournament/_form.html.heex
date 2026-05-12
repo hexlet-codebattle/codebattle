@@ -68,6 +68,15 @@
     {error_tag(f, :round_timeout_seconds)}
   </div>
 
+  <div class="form-group">
+    <div><span class="text-white">Max Score</span></div>
+    {number_input(f, :max_score,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1"
+    )}
+    {error_tag(f, :max_score)}
+  </div>
+
   <div class="form-group form-check mb-4">
     {checkbox(f, :include_bots, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :include_bots)}>

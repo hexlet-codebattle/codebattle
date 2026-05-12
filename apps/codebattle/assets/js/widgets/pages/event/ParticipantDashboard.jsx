@@ -205,10 +205,15 @@ function ParticipantDashboard() {
                         <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Score/Total")}:
                         </div>
-                        <span>
-                          {stage.winsCount}/{stage.gamesCount}
-                        </span>
-                        <span style={{ marginLeft: "0.75rem" }}>{stage.aiScore}</span>
+                        <div className="d-flex flex-column align-items-center">
+                          <span>
+                            {stage.winsCount}/{stage.gamesCount}
+                          </span>
+                          <span>
+                            {stage.aiScore}
+                            {stage.maxScore != null ? `/${stage.maxScore}` : ""}
+                          </span>
+                        </div>
                       </div>
                       <div
                         className={cn(
@@ -219,7 +224,10 @@ function ParticipantDashboard() {
                         <div className="d-block d-xl-none me-2 font-weight-bold">
                           {i18n.t("Time spent")}:
                         </div>
-                        {stage.timeSpent}
+                        <div className="d-flex flex-column align-items-center">
+                          <span>{stage.tournamentTimeSpent}</span>
+                          <span>{stage.groupTournamentTimeSpent}</span>
+                        </div>
                       </div>
                     </>
                   )}

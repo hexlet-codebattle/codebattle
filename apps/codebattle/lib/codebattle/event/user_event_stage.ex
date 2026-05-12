@@ -21,6 +21,7 @@ defmodule Codebattle.UserEvent.Stage do
              :place_in_total_rank,
              :place_in_category_rank,
              :group_tournament_score,
+             :group_tournament_total_score,
              :games_count,
              :score,
              :time_spent_in_seconds,
@@ -43,6 +44,7 @@ defmodule Codebattle.UserEvent.Stage do
     field(:place_in_total_rank, :integer)
     field(:place_in_category_rank, :integer)
     field(:group_tournament_score, :integer)
+    field(:group_tournament_total_score, :integer)
     field(:games_count, :integer)
     field(:score, :integer)
     field(:time_spent_in_seconds, :integer)
@@ -69,6 +71,7 @@ defmodule Codebattle.UserEvent.Stage do
       :games_count,
       :score,
       :group_tournament_score,
+      :group_tournament_total_score,
       :time_spent_in_seconds,
       :group_tournament_time_spent_in_seconds,
       :wins_count,

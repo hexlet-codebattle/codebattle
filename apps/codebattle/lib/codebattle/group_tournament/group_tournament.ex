@@ -41,7 +41,8 @@ defmodule Codebattle.GroupTournament do
              :template_id,
              :tournament_id,
              :slice_size,
-             :slice_strategy
+             :slice_strategy,
+             :max_score
            ]}
 
   schema "group_tournaments" do
@@ -66,6 +67,7 @@ defmodule Codebattle.GroupTournament do
     field(:template_id, :string)
     field(:slice_size, :integer, default: 16)
     field(:slice_strategy, :string, default: "random")
+    field(:max_score, :integer)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -104,7 +106,8 @@ defmodule Codebattle.GroupTournament do
       :slice_strategy,
       :last_round_started_at,
       :last_round_ended_at,
-      :meta
+      :meta,
+      :max_score
     ])
     |> validate_required([
       :group_task_id,
