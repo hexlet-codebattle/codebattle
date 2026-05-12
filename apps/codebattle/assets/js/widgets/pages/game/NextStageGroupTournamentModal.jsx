@@ -37,7 +37,7 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
         <Modal.Title>{headerText}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="mb-0">{bodyText}</p>
+        <p className="mb-0 text-white">{bodyText}</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={modal.hide}>

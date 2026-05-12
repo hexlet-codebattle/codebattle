@@ -16,7 +16,7 @@ const EventStageConfirmationModal = NiceModal.create(
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="text-muted">{bodyText}</div>
+          <div className="text-white">{bodyText}</div>
         </Modal.Body>
         <Modal.Footer>
           <button
