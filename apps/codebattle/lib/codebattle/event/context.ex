@@ -290,7 +290,7 @@ defmodule Codebattle.Event.Context do
       |> Map.take(@copied_parent_fields)
       |> Map.put(:event_id, event.id)
       |> Map.put(:name, parent.name)
-      |> Map.put(:slug, event.slug)
+      |> Map.put(:slug, parent.slug)
       |> Map.put(:starts_at, now)
       |> Map.put(:state, "waiting_participants")
 
