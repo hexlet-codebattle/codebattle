@@ -10,11 +10,11 @@ const statusBadge = {
 };
 
 function TournamentTimer({ groupTournament }) {
-  const startedAt = groupTournament?.startedAt;
+  const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
   const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
   const endsAt =
-    startedAt && Number.isInteger(timeoutSeconds)
-      ? moment.utc(startedAt).add(timeoutSeconds, "seconds")
+    roundStartedAt && Number.isInteger(timeoutSeconds)
+      ? moment.utc(roundStartedAt).add(timeoutSeconds, "seconds")
       : null;
 
   const [time, seconds] = useTimer(endsAt);

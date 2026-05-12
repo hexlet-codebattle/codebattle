@@ -92,6 +92,7 @@ export const connectToTournament = (_currentUserId) => (dispatch) => {
       platformError,
       code,
       langSlug,
+      snapshot,
     } = normalizedResponse;
 
     dispatch(
@@ -109,6 +110,10 @@ export const connectToTournament = (_currentUserId) => (dispatch) => {
         langSlug,
       }),
     );
+
+    if (snapshot) {
+      dispatch(actions.setData(snapshot));
+    }
   };
 
   channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
@@ -188,13 +193,16 @@ const requestJson = async (url, options = {}) => {
 };
 
 export const load = (groupTournamentId) => async (dispatch) => {
-  const response = await requestJson(`/api/v1/group_tournaments/${groupTournamentId}`, {
-    headers: {
-      "Content-Type": "application/json",
-      "x-csrf-token": window.csrf_token,
-    },
-  });
-  console.log(response);
+  try {
+    const response = await requestJson(`/api/v1/group_tournaments/${groupTournamentId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-csrf-token": window.csrf_token || "",
+      },
+    });
 
-  dispatch(actions.setData(response));
+    dispatch(actions.setData(response));
+  } catch (error) {
+    console.error("group_tournament:load failed", error);
+  }
 };

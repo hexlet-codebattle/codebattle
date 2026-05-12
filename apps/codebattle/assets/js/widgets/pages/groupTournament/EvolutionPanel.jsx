@@ -3,15 +3,24 @@ import dayjs from "../../../i18n/dayjs";
 import i18n from "../../../i18n";
 
 const getExternalUrl = (url) => {
-  const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
+  if (!url) {
+    return null;
+  }
 
-  externalUrl.searchParams.set("rev", "main");
-  externalUrl.searchParams.set(
-    "chatMessage",
-    "Это ИИ-ассистент, который поможет тебе решить задачу.",
-  );
+  try {
+    const externalUrl = new URL(`${url.replace(/\/$/, "")}/browse/README.md`);
 
-  return externalUrl.toString();
+    externalUrl.searchParams.set("rev", "main");
+    externalUrl.searchParams.set(
+      "chatMessage",
+      "Это ИИ-ассистент, который поможет тебе решить задачу.",
+    );
+
+    return externalUrl.toString();
+  } catch (error) {
+    console.error("group_tournament: invalid repo url", url, error);
+    return null;
+  }
 };
 
 const formatInsertedAtTooltip = (insertedAt) => {
@@ -48,6 +57,7 @@ const findBestRunId = (items) => {
 function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
   const bestRunId = findBestRunId(items);
   const [hoverTooltip, setHoverTooltip] = useState(null);
+  const externalUrl = tournamentStatus !== "finished" ? getExternalUrl(repoUrl) : null;
 
   return (
     <>
@@ -73,9 +83,9 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
             scrollbarGutter: "stable",
           }}
         >
-          {tournamentStatus !== "finished" && repoUrl && (
+          {externalUrl && (
             <a
-              href={getExternalUrl(repoUrl)}
+              href={externalUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="d-block text-decoration-none mb-3"

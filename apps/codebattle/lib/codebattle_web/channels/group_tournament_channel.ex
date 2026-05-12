@@ -3,11 +3,13 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
+  alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
   alias Codebattle.PubSub.Message
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
   alias Codebattle.Workers.PlatformInviteAdvancerWorker
+  alias Runner.Languages
 
   def join("group_tournament:" <> tournament_id, _payload, socket) do
     case parse_tournament_id(tournament_id) do
@@ -58,7 +60,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
        require_invitation: true,
        run_on_external_platform: group_tournament.run_on_external_platform,
        platform_error: platform_error,
-       external_setup: serialize_external_setup(external_setup, user, group_tournament)
+       external_setup: serialize_external_setup(external_setup, user, group_tournament),
+       snapshot: build_snapshot(group_tournament, user)
      }, socket}
   end
 
@@ -71,8 +74,53 @@ defmodule CodebattleWeb.GroupTournamentChannel do
        invite: %{state: "accepted"},
        require_invitation: false,
        run_on_external_platform: group_tournament.run_on_external_platform,
-       external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
+       external_setup: serialize_external_setup(external_setup, current_user, group_tournament),
+       snapshot: build_snapshot(group_tournament, current_user)
      }, socket}
+  end
+
+  defp build_snapshot(group_tournament, current_user) do
+    player_ids = Enum.map(group_tournament.players, & &1.user_id)
+
+    latest_solutions =
+      GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
+        group_tournament_id: group_tournament.id
+      )
+
+    current_user_solutions =
+      GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id,
+        group_tournament_id: group_tournament.id
+      )
+
+    current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
+
+    %{
+      group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
+      current_player: serialize_player(current_player),
+      players: Enum.map(group_tournament.players, &serialize_player/1),
+      latest_solutions: Map.new(latest_solutions, &{&1.user_id, serialize_solution(&1)}),
+      solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
+      latest_solution: current_user_solutions |> List.first() |> serialize_solution(),
+      runs:
+        group_tournament
+        |> GroupTournamentContext.list_runs(limit: :infinity)
+        |> Enum.map(&GroupTournamentContext.serialize_run/1),
+      langs: Languages.get_langs()
+    }
+  end
+
+  defp serialize_player(nil), do: nil
+
+  defp serialize_player(player) do
+    %{
+      id: player.id,
+      user_id: player.user_id,
+      name: player.user && player.user.name,
+      lang: player.lang,
+      state: player.state,
+      last_setup_at: player.last_setup_at,
+      inserted_at: player.inserted_at
+    }
   end
 
   def handle_in("request_invite_update", _, socket) do
