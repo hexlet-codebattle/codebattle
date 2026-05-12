@@ -25,7 +25,7 @@ defmodule Codebattle.Event.ContextTest do
           }
         )
 
-      event = insert(:event, slug: "ya-cup")
+      event = insert(:event, slug: "cup")
 
       event_stage = %Event.Stage{
         slug: "stage-1",
@@ -57,7 +57,7 @@ defmodule Codebattle.Event.ContextTest do
 
       # Per-stage overrides
       assert child.name == parent.name
-      assert child.slug == event.slug
+      assert child.slug == parent.slug
     end
 
     test "returns :missing_parent_id when stage has no parent pointer" do
@@ -88,7 +88,7 @@ defmodule Codebattle.Event.ContextTest do
 
     test "child is persisted and discoverable via Repo" do
       parent = insert(:group_tournament)
-      event = insert(:event, slug: "ya-cup-#{System.unique_integer([:positive])}")
+      event = insert(:event, slug: "cup-#{System.unique_integer([:positive])}")
 
       event_stage = %Event.Stage{
         slug: "stage-1",
