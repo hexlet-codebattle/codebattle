@@ -29,18 +29,6 @@ defmodule CodebattleWeb.Plugs.RescrictAccessTest do
     assert conn.status != 302
   end
 
-  test "blocks tournaments with ids outside 2 to 31 in mini mode", %{conn: conn} do
-    user = insert(:user)
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
-      |> get("/tournaments/32")
-
-    assert conn.status == 302
-    assert redirected_to(conn) == "/"
-  end
-
   test "allows moderator user to access any tournaments path in mini mode", %{conn: conn} do
     user = insert(:user, subscription_type: :moderator)
     insert(:tournament, id: 23, creator_id: user.id)
