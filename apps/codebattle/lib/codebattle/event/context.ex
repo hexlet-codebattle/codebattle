@@ -279,6 +279,7 @@ defmodule Codebattle.Event.Context do
     template_id
     slice_size
     slice_strategy
+    max_score
     meta
   )a
 
