@@ -118,6 +118,29 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
     end
   end
 
+  def handle_event("retry_invite", %{"id" => id}, socket) do
+    user = socket.assigns.user
+    alias_name = user.external_oauth_login || user.name
+    invite = Repo.get!(ExternalPlatformInvite, id)
+
+    case InviteContext.send_invite(invite, alias_name) do
+      {:ok, updated_invite} ->
+        updated_invite = maybe_auto_poll(updated_invite)
+        PlatformInviteAdvancerWorker.enqueue(updated_invite)
+
+        {:noreply,
+         socket
+         |> assign(platform_invites: get_platform_invites(user.id))
+         |> put_flash(:info, invite_flash_message(updated_invite))}
+
+      {:error, reason} ->
+        {:noreply,
+         socket
+         |> assign(platform_invites: get_platform_invites(user.id))
+         |> put_flash(:error, "Failed to retry invite: #{inspect(reason)}")}
+    end
+  end
+
   def handle_event("poll_invite_status", %{"id" => id}, socket) do
     user = socket.assigns.user
     invite = Repo.get!(ExternalPlatformInvite, id)
@@ -1705,6 +1728,18 @@ defmodule CodebattleWeb.Live.Admin.UserShowView do
                           {format_invite_datetime(invite.updated_at)}
                         </td>
                         <td class="text-nowrap">
+                          <%= if invite.state == "failed" do %>
+                            <button
+                              type="button"
+                              class="btn btn-sm btn-outline-warning cb-rounded me-1"
+                              phx-click="retry_invite"
+                              phx-value-id={invite.id}
+                              data-confirm="Retry creating this invite?"
+                              title="Resend invite to external platform"
+                            >
+                              Retry
+                            </button>
+                          <% end %>
                           <%= if invite.state == "creating" do %>
                             <button
                               type="button"

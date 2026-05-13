@@ -7,16 +7,15 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
   so an invite continues to advance even after the user disconnects.
 
   Snooze cadence escalates with attempt count to balance freshness and load:
-    attempts   1–140 → 3s   (≈7 min)
-    attempts 141–240 → 5s   (≈8 min)
-    attempts 241–340 → 7s   (≈12 min)
-    attempts 341–440 → 9s   (≈15 min)
-  Total ≈ 42 minutes of polling before the job is discarded.
+    attempts   1–60  → 5s    (≈5 min)
+    attempts  61–240 → 10s   (≈30 min)
+    attempts 241–310 → 180s  (≈3.5 hours, once per 3 min)
+  Total ≈ 4 hours of polling before the job is discarded.
   """
 
   use Oban.Worker,
     queue: :default,
-    max_attempts: 440,
+    max_attempts: 310,
     unique: [
       keys: [:invite_id],
       states: [:available, :scheduled, :retryable, :executing],
@@ -48,7 +47,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     )
 
     case %{invite_id: invite_id, user_id: user_id, group_tournament_id: tournament_id}
-         |> new(schedule_in: 3)
+         |> new(schedule_in: 5)
          |> Oban.insert() do
       {:ok, job} ->
         Logger.error(
@@ -151,8 +150,7 @@ defmodule Codebattle.Workers.PlatformInviteAdvancerWorker do
     :ok
   end
 
-  defp snooze_seconds(attempt) when attempt <= 140, do: 3
-  defp snooze_seconds(attempt) when attempt <= 240, do: 5
-  defp snooze_seconds(attempt) when attempt <= 340, do: 7
-  defp snooze_seconds(_attempt), do: 9
+  defp snooze_seconds(attempt) when attempt <= 60, do: 5
+  defp snooze_seconds(attempt) when attempt <= 240, do: 10
+  defp snooze_seconds(_attempt), do: 180
 end

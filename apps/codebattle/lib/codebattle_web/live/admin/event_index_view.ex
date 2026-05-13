@@ -61,6 +61,12 @@ defmodule CodebattleWeb.Live.Admin.EventIndexView do
                   <td class="align-middle text-white cb-border-color text-end">
                     <div class="btn-group btn-group-sm">
                       <a
+                        href={"/admin/events/#{event.id}/dashboard"}
+                        class="btn btn-outline-info"
+                      >
+                        Dashboard
+                      </a>
+                      <a
                         href={Routes.event_path(@socket, :show, event)}
                         class="btn btn-outline-secondary cb-btn-outline-secondary"
                       >
