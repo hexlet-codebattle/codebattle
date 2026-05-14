@@ -249,6 +249,8 @@ defmodule Codebattle.GroupTournament.Server do
         Logger.warning("group_tournament=#{updated.id} slice assignment failed: #{inspect(reason)}")
     end
 
+    enqueue_occupy_jobs(updated)
+
     broadcast_status_update(updated)
 
     next_state =
@@ -403,6 +405,20 @@ defmodule Codebattle.GroupTournament.Server do
     |> Enum.each(fn {user_ids, chunk_index} ->
       %{group_tournament_id: group_tournament.id, user_ids: user_ids, chunk: chunk_index}
       |> Codebattle.Workers.GroupTournamentFinalizeWorker.new()
+      |> Oban.insert()
+    end)
+  end
+
+  defp enqueue_occupy_jobs(%GroupTournament{run_on_external_platform: false}), do: :ok
+
+  defp enqueue_occupy_jobs(%GroupTournament{} = group_tournament) do
+    group_tournament.players
+    |> Enum.map(& &1.user_id)
+    |> Enum.chunk_every(@finalize_chunk_size)
+    |> Enum.with_index()
+    |> Enum.each(fn {user_ids, chunk_index} ->
+      %{group_tournament_id: group_tournament.id, user_ids: user_ids, chunk: chunk_index}
+      |> Codebattle.Workers.GroupTournamentOccupyWorker.new()
       |> Oban.insert()
     end)
   end

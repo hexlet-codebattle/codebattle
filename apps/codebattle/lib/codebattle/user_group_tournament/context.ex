@@ -73,9 +73,8 @@ defmodule Codebattle.UserGroupTournament.Context do
          synced_record = get_or_create(synced_user, group_tournament),
          {:ok, repo_record} <- ensure_repo(synced_record, group_tournament, synced_user),
          {:ok, role_record} <- ensure_role(repo_record, group_tournament, synced_user),
-         {:ok, secret_record} <- ensure_secret(role_record, group_tournament, synced_user),
-         {:ok, workplace_record} <- ensure_workplace(secret_record, group_tournament, synced_user) do
-      {:ok, finalize_ready(workplace_record)}
+         {:ok, secret_record} <- ensure_secret(role_record, group_tournament, synced_user) do
+      {:ok, finalize_ready(secret_record)}
     else
       {:error, reason, %UserGroupTournament{} = failed_record} ->
         {:error, reason, failed_record}
@@ -253,28 +252,41 @@ defmodule Codebattle.UserGroupTournament.Context do
     end
   end
 
-  defp ensure_workplace(%UserGroupTournament{workplace_state: "completed"} = record, _group_tournament, _user),
-    do: {:ok, record}
+  @doc """
+  Bulk-occupies code-assist workplaces for a chunk of users in a group
+  tournament. Called when the tournament transitions to "active". Per-user
+  `workplace_state` is flipped to "completed" only after the bulk API call
+  succeeds, so retries skip users that are already occupied.
+  """
+  @spec occupy_chunk(pos_integer(), [pos_integer()]) :: :ok | {:error, term()}
+  def occupy_chunk(group_tournament_id, user_ids) when is_list(user_ids) do
+    group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
 
-  defp ensure_workplace(%UserGroupTournament{} = record, %GroupTournament{} = _group_tournament, %User{} = user) do
-    case resolve_platform_user_id(user) do
-      {:ok, platform_user_id} ->
-        case ExternalPlatform.occupy_code_assist_workplaces([platform_user_id]) do
-          {:ok, response} ->
-            {:ok,
-             update!(record, %{
-               state: "provisioning",
-               workplace_state: "completed",
-               workplace_response: response,
-               last_error: %{}
-             })}
+    if group_tournament.run_on_external_platform do
+      records = list_chunk_records(group_tournament_id, user_ids)
+      pending = Enum.reject(records, &(&1.workplace_state == "completed"))
+      {paired_records, platform_user_ids} = platform_ids(pending)
 
-          {:error, reason} ->
-            {:error, reason, fail_step(record, :workplace, reason)}
-        end
+      bulk_occupy_paired_records(paired_records, platform_user_ids)
+    else
+      :ok
+    end
+  end
+
+  defp bulk_occupy_paired_records(_paired_records, []), do: :ok
+
+  defp bulk_occupy_paired_records(paired_records, platform_user_ids) do
+    case ExternalPlatform.occupy_code_assist_workplaces(platform_user_ids) do
+      {:ok, response} ->
+        Enum.each(paired_records, fn record ->
+          update!(record, %{workplace_state: "completed", workplace_response: response, last_error: %{}})
+        end)
+
+        :ok
 
       {:error, reason} ->
-        {:error, reason, fail_step(record, :workplace, reason)}
+        Enum.each(paired_records, &fail_step(&1, :workplace, reason))
+        {:error, reason}
     end
   end
 
