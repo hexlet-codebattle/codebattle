@@ -344,6 +344,7 @@
           <tr>
             <th class="cb-border-color border-bottom">inserted_at</th>
             <th class="cb-border-color border-bottom">status</th>
+            <th class="cb-border-color border-bottom">score</th>
             <th class="cb-border-color border-bottom">player_ids</th>
             <th class="cb-border-color border-bottom">downloads</th>
           </tr>
@@ -353,6 +354,7 @@
             <tr>
               <td class="text-white cb-border-color">{format_datetime(run.inserted_at)}</td>
               <td class="text-white cb-border-color">{run.status}</td>
+              <td class="text-white cb-border-color">{run.score}</td>
               <td class="text-white cb-border-color">{Enum.join(run.player_ids, ", ")}</td>
               <td class="text-nowrap cb-border-color">
                 <%= cond do %>

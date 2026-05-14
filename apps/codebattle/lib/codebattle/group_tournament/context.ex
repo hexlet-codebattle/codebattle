@@ -22,7 +22,10 @@ defmodule Codebattle.GroupTournament.Context do
     sort_dir = Keyword.get(opts, :sort_dir, :desc)
 
     GroupTournament
-    |> order_by([gt], [{^sort_dir, field(gt, ^sort_by)}])
+    |> order_by([gt], [
+      {:asc, fragment("CASE WHEN ? = 'active' THEN 0 ELSE 1 END", gt.state)},
+      {^sort_dir, field(gt, ^sort_by)}
+    ])
     |> preload([:creator, :group_task, :players])
     |> Repo.all()
     |> Enum.map(&enrich/1)
