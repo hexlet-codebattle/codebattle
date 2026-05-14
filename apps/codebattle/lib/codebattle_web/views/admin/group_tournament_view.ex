@@ -44,4 +44,16 @@ defmodule CodebattleWeb.Admin.GroupTournamentView do
   def slice_label(nil), do: "All"
   def slice_label(:unassigned), do: "Unassigned"
   def slice_label(n) when is_integer(n), do: "Slice #{n}"
+
+  def sort_link_dir(current_sort_by, current_sort_dir, col) do
+    cond do
+      current_sort_by == col and current_sort_dir == :desc -> "asc"
+      current_sort_by == col and current_sort_dir == :asc -> "desc"
+      true -> "desc"
+    end
+  end
+
+  def sort_arrow(current_sort_by, :asc, col) when current_sort_by == col, do: " ▲"
+  def sort_arrow(current_sort_by, :desc, col) when current_sort_by == col, do: " ▼"
+  def sort_arrow(_, _, _), do: ""
 end

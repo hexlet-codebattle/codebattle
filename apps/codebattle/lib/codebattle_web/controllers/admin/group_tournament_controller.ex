@@ -11,12 +11,23 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   plug(:put_view, CodebattleWeb.Admin.GroupTournamentView)
   plug(:put_layout, html: {CodebattleWeb.LayoutView, :admin})
 
-  def index(conn, _params) do
+  def index(conn, params) do
+    sort_by = parse_sort_by(params["sort_by"])
+    sort_dir = parse_sort_dir(params["sort_dir"])
+
     render(conn, "index.html",
-      group_tournaments: Context.list_group_tournaments(),
+      group_tournaments: Context.list_group_tournaments(sort_by: sort_by, sort_dir: sort_dir),
+      sort_by: sort_by,
+      sort_dir: sort_dir,
       user: conn.assigns.current_user
     )
   end
+
+  defp parse_sort_by(p) when p in ~w(id starts_at finished_at), do: String.to_existing_atom(p)
+  defp parse_sort_by(_), do: :id
+
+  defp parse_sort_dir("asc"), do: :asc
+  defp parse_sort_dir(_), do: :desc
 
   def new(conn, _params) do
     render(conn, "new.html",

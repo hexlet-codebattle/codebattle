@@ -13,11 +13,33 @@
           <th class="cb-border-color border-bottom">slug</th>
           <th class="cb-border-color border-bottom">group_task</th>
           <th class="cb-border-color border-bottom">state</th>
-          <th class="cb-border-color border-bottom">include_bots</th>
-          <th class="cb-border-color border-bottom">ext_platform</th>
-          <th class="cb-border-color border-bottom">req_invite</th>
           <th class="cb-border-color border-bottom">players</th>
-          <th class="cb-border-color border-bottom">starts_at</th>
+          <th class="cb-border-color border-bottom">
+            <a
+              href={
+                Routes.admin_group_tournament_path(@conn, :index,
+                  sort_by: "starts_at",
+                  sort_dir: sort_link_dir(@sort_by, @sort_dir, :starts_at)
+                )
+              }
+              class="text-decoration-none cb-text"
+            >
+              starts_at{sort_arrow(@sort_by, @sort_dir, :starts_at)}
+            </a>
+          </th>
+          <th class="cb-border-color border-bottom">
+            <a
+              href={
+                Routes.admin_group_tournament_path(@conn, :index,
+                  sort_by: "finished_at",
+                  sort_dir: sort_link_dir(@sort_by, @sort_dir, :finished_at)
+                )
+              }
+              class="text-decoration-none cb-text"
+            >
+              finished_at{sort_arrow(@sort_by, @sort_dir, :finished_at)}
+            </a>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -31,19 +53,13 @@
             </td>
             <td class="align-middle text-white cb-border-color">{group_tournament.state}</td>
             <td class="align-middle text-white cb-border-color">
-              {inspect(group_tournament.include_bots)}
-            </td>
-            <td class="align-middle text-white cb-border-color">
-              {inspect(group_tournament.run_on_external_platform)}
-            </td>
-            <td class="align-middle text-white cb-border-color">
-              {inspect(group_tournament.require_invitation)}
-            </td>
-            <td class="align-middle text-white cb-border-color">
               {group_tournament.players_count}
             </td>
             <td class="align-middle text-white cb-border-color">
               {format_datetime(group_tournament.starts_at)}
+            </td>
+            <td class="align-middle text-white cb-border-color">
+              {format_datetime(group_tournament.finished_at)}
             </td>
             <td class="align-middle text-nowrap cb-border-color">
               <div class="d-flex">

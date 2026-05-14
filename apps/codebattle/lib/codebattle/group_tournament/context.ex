@@ -16,10 +16,13 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
   alias Codebattle.UserGroupTournamentRun
 
-  @spec list_group_tournaments() :: list(GroupTournament.t())
-  def list_group_tournaments do
+  @spec list_group_tournaments(keyword()) :: list(GroupTournament.t())
+  def list_group_tournaments(opts \\ []) do
+    sort_by = Keyword.get(opts, :sort_by, :id)
+    sort_dir = Keyword.get(opts, :sort_dir, :desc)
+
     GroupTournament
-    |> order_by([gt], desc: gt.id)
+    |> order_by([gt], [{^sort_dir, field(gt, ^sort_by)}])
     |> preload([:creator, :group_task, :players])
     |> Repo.all()
     |> Enum.map(&enrich/1)
