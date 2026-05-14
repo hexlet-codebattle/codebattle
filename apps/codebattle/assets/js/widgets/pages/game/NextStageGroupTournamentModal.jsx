@@ -32,7 +32,13 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
   );
 
   return (
-    <Modal centered show={modal.visible} onHide={modal.hide} contentClassName="cb-bg-panel cb-text">
+    <Modal
+      centered
+      show={modal.visible}
+      backdrop="static"
+      keyboard={false}
+      contentClassName="cb-bg-panel cb-text"
+    >
       <Modal.Header closeButton>
         <Modal.Title>{headerText}</Modal.Title>
       </Modal.Header>
@@ -40,9 +46,9 @@ const NextStageGroupTournamentModal = NiceModal.create(({ groupTournamentId }) =
         <p className="mb-0 text-white">{bodyText}</p>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={modal.hide}>
-          {i18n.t("Later")}
-        </Button>
+        {/* <Button variant="secondary" onClick={modal.hide}> */}
+        {/*   {i18n.t("Later")} */}
+        {/* </Button> */}
         <Button as="a" href={href} variant="primary">
           {i18n.t("Go to AI-round group tournament")}
         </Button>
