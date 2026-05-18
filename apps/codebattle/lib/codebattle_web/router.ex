@@ -79,6 +79,7 @@ defmodule CodebattleWeb.Router do
     post("/load_tests/scenarios", LoadTestController, :create_scenario)
     post("/load_tests/group_scenarios", LoadTestController, :create_group_scenario)
     post("/load_tests/group_scenarios/:id/start", LoadTestController, :start_group_scenario)
+    post("/load_tests/group_scenarios/:id/retry", LoadTestController, :retry_group_scenario)
     get("/load_tests/tasks/:id/solutions", LoadTestController, :task_solutions)
   end
 
@@ -145,6 +146,10 @@ defmodule CodebattleWeb.Router do
     )
 
     post("/group_tournaments/:id/reset", CodebattleWeb.Admin.GroupTournamentController, :reset,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/retry", CodebattleWeb.Admin.GroupTournamentController, :retry,
       as: :admin_group_tournament
     )
 

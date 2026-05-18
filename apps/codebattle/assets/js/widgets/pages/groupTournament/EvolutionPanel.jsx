@@ -35,6 +35,38 @@ const formatInsertedAtTooltip = (insertedAt) => {
 
 const isSuccess = (item) => item?.status === "success";
 
+const isRoundRun = (item) => item?.kind === "slice" || item?.kind === "seed";
+
+const buildRunTitles = (items) => {
+  if (!items || items.length === 0) {
+    return {};
+  }
+
+  const titles = {};
+  const userRunIds = [];
+
+  items.forEach((item) => {
+    if (!item?.id) {
+      return;
+    }
+
+    if (isRoundRun(item)) {
+      const round = item.kind === "seed" ? 1 : item.roundPosition;
+      titles[item.id] = round ? `R${round}` : "R";
+    } else {
+      userRunIds.push(item.id);
+    }
+  });
+
+  // Items are ordered newest-first, so the oldest user submission is v1.
+  const userTotal = userRunIds.length;
+  userRunIds.forEach((id, idx) => {
+    titles[id] = `v${userTotal - idx}`;
+  });
+
+  return titles;
+};
+
 const findBestRunId = (items) => {
   if (!items || items.length === 0) {
     return null;
@@ -44,6 +76,9 @@ const findBestRunId = (items) => {
   let bestScore = -Infinity;
 
   items.forEach((item) => {
+    if (isRoundRun(item)) {
+      return;
+    }
     const score = item?.score ?? 0;
     if (score > bestScore) {
       bestScore = score;
@@ -54,10 +89,12 @@ const findBestRunId = (items) => {
   return bestId;
 };
 
-function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
+function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl, onAddSolution }) {
   const bestRunId = findBestRunId(items);
+  const titles = buildRunTitles(items);
   const [hoverTooltip, setHoverTooltip] = useState(null);
   const externalUrl = tournamentStatus !== "finished" ? getExternalUrl(repoUrl) : null;
+  const canAddSolutionInternal = tournamentStatus !== "finished" && !externalUrl && !!onAddSolution;
 
   return (
     <>
@@ -98,6 +135,16 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
               </div>
             </a>
           )}
+          {canAddSolutionInternal && (
+            <button
+              type="button"
+              onClick={onAddSolution}
+              className="btn btn-yellow rounded-pill w-100 text-center text-nowrap mb-3"
+              style={{ padding: "12px 12px" }}
+            >
+              {i18n.t("Add Solution +")}
+            </button>
+          )}
           {items && items.length > 0 && (
             <div className="mt-2 small d-flex flex-column">
               {items.map((item, idx) => {
@@ -108,7 +155,7 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl }) {
                 const ringColor = isActive
                   ? "rgba(96, 165, 250, 0.95)"
                   : "rgba(99, 102, 121, 0.95)";
-                const title = `v${items.length - idx}`;
+                const title = (item?.id != null && titles[item.id]) || `v${items.length - idx}`;
                 const score = item?.score ?? 0;
                 const tooltip = formatInsertedAtTooltip(item?.insertedAt);
 

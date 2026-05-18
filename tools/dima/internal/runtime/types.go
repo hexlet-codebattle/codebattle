@@ -17,6 +17,17 @@ type Options struct {
 	LangMix            []string
 	PythonSolutionsDir string
 	CPPSolutionsDir    string
+	// Ranked-tournament knobs. When TournamentType is "ranked", the server
+	// uses seeding round + slice cascade. Otherwise (default "individual"),
+	// the legacy single-round behaviour applies.
+	TournamentType   string
+	RoundsCount      int
+	MaxScore         int
+	ScoringStrategy  string
+	MovementStrategy string
+	PlaceWeight      int
+	IncludeBots      bool
+	IncludeBotsSet   bool
 }
 
 type Behavior struct {
@@ -32,8 +43,18 @@ type Snapshot struct {
 	GroupTournamentURL    string
 	GroupTournamentSlug   string
 	GroupTournamentState  string
+	TournamentType        string
 	SliceSize             int
 	SliceStrategy         string
+	RoundTimeoutSeconds   int
+	RoundsCount           int
+	CurrentRoundPosition  int
+	MaxScore              int
+	ScoringStrategy       string
+	MovementStrategy      string
+	PlaceWeight           int
+	IncludeBots           bool
+	IncludeBotsKnown      bool
 	UsersTotal            int
 	ChannelConnected      int
 	SolutionsSubmitted    int

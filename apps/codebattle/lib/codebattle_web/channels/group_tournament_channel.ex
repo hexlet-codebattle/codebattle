@@ -18,7 +18,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament = GroupTournamentContext.get_group_tournament!(parsed_tournament_id)
 
         if has_access?(current_user, group_tournament) do
-          subscribe_to_group_tournament(parsed_tournament_id, current_user)
+          subscribe_to_group_tournament(parsed_tournament_id, group_tournament, current_user)
           join_tournament(socket, current_user, group_tournament, parsed_tournament_id)
         else
           {:error, %{reason: "not_authorized"}}
@@ -29,11 +29,16 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     end
   end
 
-  defp subscribe_to_group_tournament(tournament_id, current_user) do
-    if Codebattle.User.admin_or_moderator?(current_user) do
-      Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
-    else
-      Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:user:#{current_user.id}")
+  defp subscribe_to_group_tournament(tournament_id, group_tournament, current_user) do
+    cond do
+      Codebattle.User.admin_or_moderator?(current_user) ->
+        Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
+
+      group_tournament.type == "ranked" ->
+        Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:user:#{current_user.id}")
+
+      true ->
+        Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
     end
   end
 
@@ -103,11 +108,22 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       latest_solution: current_user_solutions |> List.first() |> serialize_solution(),
       runs:
         group_tournament
-        |> GroupTournamentContext.list_runs(limit: :infinity)
+        |> GroupTournamentContext.list_runs(list_runs_opts(group_tournament, current_user))
         |> Enum.map(&GroupTournamentContext.serialize_run/1),
+      leaderboard: GroupTournamentContext.build_leaderboard(group_tournament.id),
       langs: Languages.get_langs()
     }
   end
+
+  defp list_runs_opts(%{type: "ranked"}, current_user) do
+    if Codebattle.User.admin_or_moderator?(current_user) do
+      [limit: :infinity]
+    else
+      [limit: :infinity, visible_for_user_id: current_user.id]
+    end
+  end
+
+  defp list_runs_opts(_group_tournament, _current_user), do: [limit: :infinity]
 
   defp serialize_player(nil), do: nil
 
@@ -219,7 +235,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
         push(socket, "group_tournament:status_updated", %{
           status: payload.status,
-          group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament)
+          group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
+          leaderboard: GroupTournamentContext.build_leaderboard(tournament_id)
         })
     end
 

@@ -85,6 +85,27 @@ func (m *Master) CreateScenario(ctx context.Context) error {
 	if m.opts.RoundTimeoutSeconds > 0 {
 		tournament["round_timeout_seconds"] = m.opts.RoundTimeoutSeconds
 	}
+	if m.opts.TournamentType != "" {
+		tournament["type"] = m.opts.TournamentType
+	}
+	if m.opts.RoundsCount > 0 {
+		tournament["rounds_count"] = m.opts.RoundsCount
+	}
+	if m.opts.MaxScore > 0 {
+		tournament["max_score"] = m.opts.MaxScore
+	}
+	if m.opts.ScoringStrategy != "" {
+		tournament["scoring_strategy"] = m.opts.ScoringStrategy
+	}
+	if m.opts.MovementStrategy != "" {
+		tournament["movement_strategy"] = m.opts.MovementStrategy
+	}
+	if m.opts.PlaceWeight > 0 {
+		tournament["place_weight"] = m.opts.PlaceWeight
+	}
+	if m.opts.IncludeBotsSet {
+		tournament["include_bots"] = m.opts.IncludeBots
+	}
 
 	req := extapi.GroupScenarioRequest{
 		UsersCount: m.opts.UsersCount,
@@ -125,6 +146,11 @@ func (m *Master) CreateScenario(ctx context.Context) error {
 			},
 			OnRunResult: func(userID int, status string, score int) {
 				m.recordRunResult(userCopy, status, score)
+			},
+			OnTournamentStatus: func(status string) {
+				m.mu.Lock()
+				m.tournamentState = status
+				m.mu.Unlock()
 			},
 			OnError: func() {
 				m.failedEvents.Add(1)
@@ -190,6 +216,35 @@ func (m *Master) JoinScenario(ctx context.Context) error {
 	return nil
 }
 
+func (m *Master) RetryScenario(ctx context.Context) error {
+	m.mu.RLock()
+	scenario := m.scenario
+	m.mu.RUnlock()
+
+	if scenario == nil {
+		m.appendLog("system !! retry: no scenario yet (press c first)")
+		return fmt.Errorf("create a scenario first")
+	}
+
+	m.appendLog(fmt.Sprintf("system -> retry tournament_id=%d", scenario.GroupTournament.ID))
+	if err := m.client.RetryGroupScenario(ctx, scenario.GroupTournament.ID); err != nil {
+		m.appendLog(fmt.Sprintf("system !! retry failed: %v", err))
+		return err
+	}
+	m.appendLog("system <- retry ok (state=waiting_participants)")
+
+	m.mu.Lock()
+	m.tournamentState = "waiting_participants"
+	m.bestScores = map[int]ScoreEntry{}
+	m.solutionsSubmitted.Store(0)
+	m.runsOk.Store(0)
+	m.runsError.Store(0)
+	m.failedEvents.Store(0)
+	m.mu.Unlock()
+
+	return nil
+}
+
 func (m *Master) StartScenario(ctx context.Context) error {
 	m.mu.RLock()
 	scenario := m.scenario
@@ -234,6 +289,15 @@ func (m *Master) Snapshot() Snapshot {
 	slug := ""
 	sliceSize := m.opts.SliceSize
 	sliceStrategy := m.opts.SliceStrategy
+	tournamentType := m.opts.TournamentType
+	roundsCount := m.opts.RoundsCount
+	roundTimeout := m.opts.RoundTimeoutSeconds
+	maxScore := m.opts.MaxScore
+	scoringStrategy := m.opts.ScoringStrategy
+	movementStrategy := m.opts.MovementStrategy
+	placeWeight := m.opts.PlaceWeight
+	includeBots := m.opts.IncludeBots
+	includeBotsKnown := m.opts.IncludeBotsSet
 
 	if m.scenario != nil {
 		usersTotal = len(m.scenario.Users)
@@ -241,6 +305,29 @@ func (m *Master) Snapshot() Snapshot {
 		slug = m.scenario.GroupTournament.Slug
 		sliceSize = m.scenario.GroupTournament.SliceSize
 		sliceStrategy = m.scenario.GroupTournament.SliceStrategy
+		if m.scenario.GroupTournament.Type != "" {
+			tournamentType = m.scenario.GroupTournament.Type
+		}
+		if m.scenario.GroupTournament.RoundsCount > 0 {
+			roundsCount = m.scenario.GroupTournament.RoundsCount
+		}
+		if m.scenario.GroupTournament.RoundTimeoutSeconds > 0 {
+			roundTimeout = m.scenario.GroupTournament.RoundTimeoutSeconds
+		}
+		if m.scenario.GroupTournament.MaxScore > 0 {
+			maxScore = m.scenario.GroupTournament.MaxScore
+		}
+		if m.scenario.GroupTournament.ScoringStrategy != "" {
+			scoringStrategy = m.scenario.GroupTournament.ScoringStrategy
+		}
+		if m.scenario.GroupTournament.MovementStrategy != "" {
+			movementStrategy = m.scenario.GroupTournament.MovementStrategy
+		}
+		if m.scenario.GroupTournament.PlaceWeight > 0 {
+			placeWeight = m.scenario.GroupTournament.PlaceWeight
+		}
+		includeBots = m.scenario.GroupTournament.IncludeBots
+		includeBotsKnown = true
 		tournamentURL = fmt.Sprintf(
 			"%s/admin/group_tournaments/%d",
 			strings.TrimRight(m.opts.ServerURL, "/"),
@@ -267,8 +354,17 @@ func (m *Master) Snapshot() Snapshot {
 		GroupTournamentURL:    tournamentURL,
 		GroupTournamentSlug:   slug,
 		GroupTournamentState:  m.tournamentState,
+		TournamentType:        tournamentType,
 		SliceSize:             sliceSize,
 		SliceStrategy:         sliceStrategy,
+		RoundTimeoutSeconds:   roundTimeout,
+		RoundsCount:           roundsCount,
+		MaxScore:              maxScore,
+		ScoringStrategy:       scoringStrategy,
+		MovementStrategy:      movementStrategy,
+		PlaceWeight:           placeWeight,
+		IncludeBots:           includeBots,
+		IncludeBotsKnown:      includeBotsKnown,
 		UsersTotal:            usersTotal,
 		ChannelConnected:      int(m.channelConnected.Load()),
 		SolutionsSubmitted:    int(m.solutionsSubmitted.Load()),

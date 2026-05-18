@@ -13,6 +13,9 @@ defmodule Codebattle.GroupTournament do
 
   @states ~w(waiting_participants active finished canceled)
   @slice_strategies ~w(random rating)
+  @types ~w(individual ranked)
+  @scoring_strategies ~w(diagonal_quadratic diagonal_linear global_linear)
+  @movement_strategies ~w(mirrored_cascade global_rerank neighbor_ladder)
 
   @type t :: %__MODULE__{}
 
@@ -42,7 +45,14 @@ defmodule Codebattle.GroupTournament do
              :tournament_id,
              :slice_size,
              :slice_strategy,
-             :max_score
+             :max_score,
+             :type,
+             :slice_count,
+             :place_weight,
+             :scoring_strategy,
+             :movement_strategy,
+             :inactive_rounds_to_leave,
+             :break_duration_seconds
            ]}
 
   schema "group_tournaments" do
@@ -68,6 +78,13 @@ defmodule Codebattle.GroupTournament do
     field(:slice_size, :integer, default: 16)
     field(:slice_strategy, :string, default: "random")
     field(:max_score, :integer)
+    field(:type, :string, default: "individual")
+    field(:slice_count, :integer)
+    field(:place_weight, :integer, default: 1)
+    field(:scoring_strategy, :string, default: "diagonal_quadratic")
+    field(:movement_strategy, :string, default: "mirrored_cascade")
+    field(:inactive_rounds_to_leave, :integer, default: 2)
+    field(:break_duration_seconds, :integer, default: 0)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -107,7 +124,14 @@ defmodule Codebattle.GroupTournament do
       :last_round_started_at,
       :last_round_ended_at,
       :meta,
-      :max_score
+      :max_score,
+      :type,
+      :slice_count,
+      :place_weight,
+      :scoring_strategy,
+      :movement_strategy,
+      :inactive_rounds_to_leave,
+      :break_duration_seconds
     ])
     |> validate_required([
       :group_task_id,
@@ -122,7 +146,13 @@ defmodule Codebattle.GroupTournament do
     |> update_change(:template_id, &normalize_optional_string/1)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:slice_strategy, @slice_strategies)
+    |> validate_inclusion(:type, @types)
+    |> validate_inclusion(:scoring_strategy, @scoring_strategies)
+    |> validate_inclusion(:movement_strategy, @movement_strategies)
     |> validate_number(:slice_size, greater_than: 0)
+    |> validate_number(:place_weight, greater_than: 0)
+    |> validate_number(:inactive_rounds_to_leave, greater_than: 0)
+    |> validate_number(:break_duration_seconds, greater_than_or_equal_to: 0)
     |> validate_length(:name, min: 2, max: 255)
     |> validate_length(:slug, min: 2, max: 255)
     |> validate_length(:description, min: 3, max: 7531)
@@ -135,6 +165,25 @@ defmodule Codebattle.GroupTournament do
   end
 
   def states, do: @states
+  def types, do: @types
+  def scoring_strategies, do: @scoring_strategies
+  def movement_strategies, do: @movement_strategies
+
+  @doc """
+  Returns true if this is the seeding round of a ranked tournament.
+
+  Round 1 is the seeding round for ranked tournaments; rounds 2..rounds_count
+  are the slice rounds. So a `rounds_count = 6` ranked tournament has 1
+  seeding round + 5 slice rounds.
+  """
+  def seeding_round?(%__MODULE__{type: "ranked", current_round_position: 1}), do: true
+  def seeding_round?(_), do: false
+
+  @doc """
+  Returns true if this tournament uses the new multiplayer slice flow.
+  """
+  def ranked?(%__MODULE__{type: "ranked"}), do: true
+  def ranked?(_), do: false
 
   defp normalize_slug(nil), do: nil
   defp normalize_slug(slug), do: slug |> String.trim() |> String.downcase()

@@ -87,7 +87,15 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
             state: group_tournament.state,
             group_task_id: group_tournament.group_task_id,
             slice_size: group_tournament.slice_size,
-            slice_strategy: group_tournament.slice_strategy
+            slice_strategy: group_tournament.slice_strategy,
+            type: group_tournament.type,
+            rounds_count: group_tournament.rounds_count,
+            round_timeout_seconds: group_tournament.round_timeout_seconds,
+            max_score: group_tournament.max_score,
+            scoring_strategy: group_tournament.scoring_strategy,
+            movement_strategy: group_tournament.movement_strategy,
+            place_weight: group_tournament.place_weight,
+            include_bots: group_tournament.include_bots
           },
           users: users_with_tokens
         })
@@ -127,6 +135,34 @@ defmodule CodebattleWeb.ExtApi.LoadTestController do
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{error: inspect(reason)})
+    end
+  end
+
+  def retry_group_scenario(conn, %{"id" => id}) do
+    with :ok <- ensure_load_tests_enabled(conn),
+         {:ok, group_tournament_id} <- parse_id(id) do
+      group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
+
+      case GroupTournamentContext.retry_group_tournament(group_tournament) do
+        {:ok, updated} ->
+          json(conn, %{
+            group_tournament: %{
+              id: updated.id,
+              slug: updated.slug,
+              state: updated.state
+            }
+          })
+
+        {:error, reason} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: inspect(reason)})
+      end
+    else
+      {:error, :invalid_id} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "invalid_id"})
     end
   end
 

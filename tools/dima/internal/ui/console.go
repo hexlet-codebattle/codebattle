@@ -95,6 +95,15 @@ func (m model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m.dispatch("joining workers...", func() error { return m.master.JoinScenario(m.ctx) })
 	case "s":
 		return m.dispatch("starting tournament...", func() error { return m.master.StartScenario(m.ctx) })
+	case "r":
+		return m.dispatch("retrying tournament...", func() error { return m.master.RetryScenario(m.ctx) })
+	case "R":
+		return m.dispatch("restarting tournament (create+join)...", func() error {
+			if err := m.master.CreateScenario(m.ctx); err != nil {
+				return err
+			}
+			return m.master.JoinScenario(m.ctx)
+		})
 	case "1":
 		return m.dispatch("language=python", func() error { return m.master.SetLanguage("all", "python") })
 	case "2":
@@ -150,7 +159,7 @@ var (
 
 func (m model) View() string {
 	settings := m.renderSettings()
-	keys := labelStyle.Render("keys: c=create j=join s=start 1=python 2=cpp p=pause u=unpause +/-=speed q=quit")
+	keys := labelStyle.Render("keys: c=create j=join s=start r=retry R=restart 1=python 2=cpp p=pause u=unpause +/-=speed q=quit")
 
 	settingsH := lipgloss.Height(settings)
 	keysH := lipgloss.Height(keys)
@@ -238,7 +247,14 @@ func (m model) renderSettings() string {
 	b.WriteString(kv("id", fmt.Sprintf("%d", s.GroupTournamentID)))
 	b.WriteString(kv("slug", s.GroupTournamentSlug))
 	b.WriteString(kv("state", s.GroupTournamentState))
-	b.WriteString(kv("slice", fmt.Sprintf("%d (%s)", s.SliceSize, s.SliceStrategy)))
+	b.WriteString(kv("type", emptyDash(s.TournamentType)))
+	b.WriteString(kv("rounds", fmt.Sprintf("%d x %ds", s.RoundsCount, s.RoundTimeoutSeconds)))
+	b.WriteString(kv("slice", fmt.Sprintf("%d players (%s)", s.SliceSize, s.SliceStrategy)))
+	b.WriteString(kv("scoring", fmt.Sprintf("%s (max %d, place_weight %d)", emptyDash(s.ScoringStrategy), s.MaxScore, s.PlaceWeight)))
+	b.WriteString(kv("movement", emptyDash(s.MovementStrategy)))
+	if s.IncludeBotsKnown {
+		b.WriteString(kv("include_bots", fmt.Sprintf("%t", s.IncludeBots)))
+	}
 	if s.GroupTournamentURL != "" {
 		b.WriteString(kv("url", s.GroupTournamentURL))
 	}
@@ -258,6 +274,22 @@ func (m model) renderSettings() string {
 	}
 	if cpp, ok := s.DefaultBehaviorByLang["cpp"]; ok {
 		b.WriteString(kv("cpp delay (ms) / pool", fmt.Sprintf("%d / %d files", cpp.SubmitDelayMS, len(cpp.SolutionPool))))
+	}
+
+	if len(s.BestScores) > 0 {
+		b.WriteString("\n")
+		b.WriteString(headerStyle.Render("Leaderboard"))
+		b.WriteString("\n")
+		limit := len(s.BestScores)
+		if limit > 10 {
+			limit = 10
+		}
+		for i := 0; i < limit; i++ {
+			entry := s.BestScores[i]
+			line := fmt.Sprintf("  %2d. %s [%s] u%d  score=%d", i+1, truncate(entry.Name, 24), entry.Lang, entry.UserID, entry.Score)
+			b.WriteString(logLineSty.Render(line))
+			b.WriteString("\n")
+		}
 	}
 
 	if m.lastErr != "" {
@@ -300,6 +332,13 @@ func (m model) renderLogs(maxHeight int) string {
 
 func kv(label, value string) string {
 	return labelStyle.Render("  "+label+": ") + valueStyle.Render(value) + "\n"
+}
+
+func emptyDash(s string) string {
+	if strings.TrimSpace(s) == "" {
+		return "-"
+	}
+	return s
 }
 
 func truncate(s string, n int) string {

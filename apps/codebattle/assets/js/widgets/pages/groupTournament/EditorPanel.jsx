@@ -13,6 +13,7 @@ function EditorPanel({
   onSubmit,
   langs = [],
   currentLang,
+  inlineHidden = false,
 }) {
   const [selectedLang, setSelectedLang] = useState(currentLang || lang || "js");
   const [draft, setDraft] = useState(text || "");
@@ -127,47 +128,49 @@ function EditorPanel({
 
   return (
     <>
-      <div className="card cb-card border cb-border-color rounded shadow-sm">
-        <div className="card-header py-2 border-bottom cb-border-color">
-          <h6 className="cb-text mb-0 d-flex align-items-center justify-content-between">
-            <span className="d-flex align-items-center">
-              {titleText}
-              {langSelector}
-            </span>
-            <span className="d-flex align-items-center">
-              {editable && (
-                <button
-                  type="button"
-                  className="btn btn-sm btn-success mr-3"
-                  onClick={handleSubmit}
-                  disabled={submitting || !draft || !selectedLang}
-                >
-                  {submitting ? i18n.t("Sending...") : i18n.t("Submit")}
-                </button>
-              )}
-              <span
-                role="button"
-                tabIndex={0}
-                style={{ cursor: "pointer", textDecoration: "underline" }}
-                onClick={() => setEditorFullscreen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") setEditorFullscreen(true);
-                }}
-              >
-                {i18n.t("Fullscreen")}
+      {!inlineHidden && (
+        <div className="card cb-card border cb-border-color rounded shadow-sm">
+          <div className="card-header py-2 border-bottom cb-border-color">
+            <h6 className="cb-text mb-0 d-flex align-items-center justify-content-between">
+              <span className="d-flex align-items-center">
+                {titleText}
+                {langSelector}
               </span>
-            </span>
-          </h6>
-        </div>
-        <div className="card-body p-0 border-top cb-border-color" style={{ height: "80vh" }}>
-          {editor}
-        </div>
-        {editable && submitError && (
-          <div className="card-footer py-2 border-top cb-border-color">
-            <small className="text-danger">{submitError}</small>
+              <span className="d-flex align-items-center">
+                {editable && (
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-success mr-3"
+                    onClick={handleSubmit}
+                    disabled={submitting || !draft || !selectedLang}
+                  >
+                    {submitting ? i18n.t("Sending...") : i18n.t("Submit")}
+                  </button>
+                )}
+                <span
+                  role="button"
+                  tabIndex={0}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                  onClick={() => setEditorFullscreen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") setEditorFullscreen(true);
+                  }}
+                >
+                  {i18n.t("Fullscreen")}
+                </span>
+              </span>
+            </h6>
           </div>
-        )}
-      </div>
+          <div className="card-body p-0 border-top cb-border-color" style={{ height: "80vh" }}>
+            {editor}
+          </div>
+          {editable && submitError && (
+            <div className="card-footer py-2 border-top cb-border-color">
+              <small className="text-danger">{submitError}</small>
+            </div>
+          )}
+        </div>
+      )}
 
       {editorFullscreen && (
         <div

@@ -7,8 +7,21 @@ auth_key = "x-key"
 users = 200
 group_task_id = 1
 runner_url = "http://localhost:1234/run"
-slice_size = 16
+
+# Tournament defaults are ranked: round 1 is a single-leaderboard seeding
+# round (solo vs bots), rounds 2..rounds_count slice players into
+# `slice_size` buckets with cascade movement and diagonal scoring.
+# Set type = "individual" for the legacy single-round load test.
+type = "ranked"
+slice_size = 8
 slice_strategy = "random"   # or "rating"
+rounds_count = 5            # 1 seeding + 4 slice rounds
+round_timeout_seconds = 60  # length of each round (seconds)
+max_score = 1000            # per-round top score (slice 0 / 1st place gets this)
+scoring_strategy = "diagonal_quadratic"  # diagonal_linear | global_linear
+movement_strategy = "mirrored_cascade"   # global_rerank | neighbor_ladder
+place_weight = 1
+# include_bots = false      # ranked slices auto-pad short slices with bots regardless
 
 avg_submit_seconds = 20
 randomness = 30

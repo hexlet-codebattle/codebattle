@@ -101,35 +101,34 @@ function GroupTournamentPage({
             runId={runId}
             setRunId={setSelectedRunId}
             repoUrl={externalSetup?.repoUrl}
+            onAddSolution={runOnExternalPlatform ? null : () => setEditorFullscreen(true)}
           />
         </div>
-        <div
-          className={`${
-            runOnExternalPlatform ? "col-lg-10 col-md-10" : "col-lg-7 col-md-7"
-          } col-12 p-1 pb-4`}
-        >
+        <div className="col-lg-10 col-md-10 col-12 p-1 pb-4">
           <MainPanel
             status={status}
             run={selectedRun}
             description={tournamentDescription}
             setViewerFullscreen={setViewerFullscreen}
+            leaderboard={data?.leaderboard}
+            roundsCount={data?.groupTournament?.roundsCount}
+            currentRoundPosition={data?.groupTournament?.currentRoundPosition}
           />
         </div>
-        {!runOnExternalPlatform && (
-          <div className="col-lg-3 col-md-3 col-12 p-1 pb-4">
-            <EditorPanel
-              text={selectedRunCode}
-              lang={selectedRunLang}
-              editorFullscreen={editorFullscreen}
-              setEditorFullscreen={setEditorFullscreen}
-              editable
-              onSubmit={handleSubmitSolution}
-              langs={data?.langs}
-              currentLang={data?.currentPlayer?.lang || selectedRunLang}
-            />
-          </div>
-        )}
       </div>
+      {!runOnExternalPlatform && (
+        <EditorPanel
+          inlineHidden
+          text={selectedRunCode}
+          lang={selectedRunLang}
+          editorFullscreen={editorFullscreen}
+          setEditorFullscreen={setEditorFullscreen}
+          editable
+          onSubmit={handleSubmitSolution}
+          langs={data?.langs}
+          currentLang={data?.currentPlayer?.lang || selectedRunLang}
+        />
+      )}
       <FullscreenGroupBattleViewer
         viewerFullscreen={viewerFullscreen}
         selectedRun={selectedRun}

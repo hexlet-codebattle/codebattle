@@ -34,12 +34,20 @@ type GroupScenarioResponse struct {
 		UserToken string `json:"user_token"`
 	} `json:"creator"`
 	GroupTournament struct {
-		ID            int    `json:"id"`
-		Slug          string `json:"slug"`
-		State         string `json:"state"`
-		GroupTaskID   int    `json:"group_task_id"`
-		SliceSize     int    `json:"slice_size"`
-		SliceStrategy string `json:"slice_strategy"`
+		ID                  int    `json:"id"`
+		Slug                string `json:"slug"`
+		State               string `json:"state"`
+		GroupTaskID         int    `json:"group_task_id"`
+		SliceSize           int    `json:"slice_size"`
+		SliceStrategy       string `json:"slice_strategy"`
+		Type                string `json:"type"`
+		RoundsCount         int    `json:"rounds_count"`
+		RoundTimeoutSeconds int    `json:"round_timeout_seconds"`
+		MaxScore            int    `json:"max_score"`
+		ScoringStrategy     string `json:"scoring_strategy"`
+		MovementStrategy    string `json:"movement_strategy"`
+		PlaceWeight         int    `json:"place_weight"`
+		IncludeBots         bool   `json:"include_bots"`
 	} `json:"group_tournament"`
 	Users []GroupScenarioUser `json:"users"`
 }
@@ -85,6 +93,11 @@ func (c *Client) CreateGroupScenario(ctx context.Context, req GroupScenarioReque
 
 func (c *Client) StartGroupScenario(ctx context.Context, groupTournamentID int) error {
 	path := fmt.Sprintf("/ext_api/load_tests/group_scenarios/%d/start", groupTournamentID)
+	return c.doJSON(ctx, http.MethodPost, path, struct{}{}, nil, nil)
+}
+
+func (c *Client) RetryGroupScenario(ctx context.Context, groupTournamentID int) error {
+	path := fmt.Sprintf("/ext_api/load_tests/group_scenarios/%d/retry", groupTournamentID)
 	return c.doJSON(ctx, http.MethodPost, path, struct{}{}, nil, nil)
 }
 

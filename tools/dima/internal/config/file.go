@@ -40,6 +40,15 @@ type FileConfig struct {
 	Langs            []string      `toml:"langs"`
 	Solutions        FileSolutions `toml:"solutions"`
 
+	// Ranked tournament knobs.
+	TournamentType   string `toml:"type"`
+	RoundsCount      int    `toml:"rounds_count"`
+	MaxScore         int    `toml:"max_score"`
+	ScoringStrategy  string `toml:"scoring_strategy"`
+	MovementStrategy string `toml:"movement_strategy"`
+	PlaceWeight      int    `toml:"place_weight"`
+	IncludeBots      *bool  `toml:"include_bots"`
+
 	sourceDir string
 }
 
@@ -118,6 +127,28 @@ func ApplyFile(opts runtime.Options, cfg *FileConfig) runtime.Options {
 	}
 	if cfg.Solutions.CPPDir != "" {
 		opts.CPPSolutionsDir = resolvePath(cfg.sourceDir, cfg.Solutions.CPPDir)
+	}
+	if cfg.TournamentType != "" {
+		opts.TournamentType = cfg.TournamentType
+	}
+	if cfg.RoundsCount > 0 {
+		opts.RoundsCount = cfg.RoundsCount
+	}
+	if cfg.MaxScore > 0 {
+		opts.MaxScore = cfg.MaxScore
+	}
+	if cfg.ScoringStrategy != "" {
+		opts.ScoringStrategy = cfg.ScoringStrategy
+	}
+	if cfg.MovementStrategy != "" {
+		opts.MovementStrategy = cfg.MovementStrategy
+	}
+	if cfg.PlaceWeight > 0 {
+		opts.PlaceWeight = cfg.PlaceWeight
+	}
+	if cfg.IncludeBots != nil {
+		opts.IncludeBots = *cfg.IncludeBots
+		opts.IncludeBotsSet = true
 	}
 	return opts
 }

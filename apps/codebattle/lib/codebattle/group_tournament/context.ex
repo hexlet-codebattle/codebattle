@@ -9,6 +9,7 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.GroupTournament.GlobalSupervisor
   alias Codebattle.GroupTournament.Server
   alias Codebattle.GroupTournamentPlayer
+  alias Codebattle.GroupTournamentRoundScore
   alias Codebattle.PubSub
   alias Codebattle.Repo
   alias Codebattle.User
@@ -93,6 +94,70 @@ defmodule Codebattle.GroupTournament.Context do
     Repo.delete(group_tournament)
   end
 
+  @spec retry_group_tournament(GroupTournament.t()) ::
+          {:ok, GroupTournament.t()} | {:error, term()}
+  def retry_group_tournament(%GroupTournament{} = group_tournament) do
+    result =
+      Repo.transaction(fn ->
+        player_ids = Enum.map(group_tournament.players, & &1.user_id)
+
+        GroupTournamentRoundScore
+        |> where([rs], rs.group_tournament_id == ^group_tournament.id)
+        |> Repo.delete_all()
+
+        UserGroupTournamentRun
+        |> where([run], run.group_tournament_id == ^group_tournament.id)
+        |> Repo.delete_all()
+
+        if player_ids != [] do
+          GroupTaskSolution
+          |> where([solution], solution.group_tournament_id == ^group_tournament.id and solution.user_id in ^player_ids)
+          |> Repo.delete_all()
+        end
+
+        GroupTournamentPlayer
+        |> where([player], player.group_tournament_id == ^group_tournament.id)
+        |> Repo.update_all(
+          set: [
+            state: "active",
+            total_score: 0,
+            seed_score: nil,
+            seed_duration_ms: nil,
+            slice_index: nil,
+            slice_ranking: nil,
+            place: nil,
+            last_round_place: nil,
+            consecutive_zero_rounds: 0,
+            updated_at: NaiveDateTime.utc_now(:second)
+          ]
+        )
+
+        group_tournament
+        |> GroupTournament.changeset(%{
+          state: "waiting_participants",
+          starts_at: reset_starts_at(group_tournament.starts_at),
+          started_at: nil,
+          finished_at: nil,
+          current_round_position: 0,
+          last_round_started_at: nil,
+          last_round_ended_at: nil,
+          meta: %{}
+        })
+        |> Repo.update!()
+      end)
+
+    case result do
+      {:ok, updated} ->
+        enriched = get_group_tournament!(updated.id)
+        :ok = ensure_server_started(enriched)
+        Server.update_group_tournament(enriched)
+        {:ok, enriched}
+
+      error ->
+        error
+    end
+  end
+
   @spec reset_group_tournament(GroupTournament.t()) ::
           {:ok, GroupTournament.t()} | {:error, term()}
   def reset_group_tournament(%GroupTournament{} = group_tournament) do
@@ -175,21 +240,36 @@ defmodule Codebattle.GroupTournament.Context do
     limit = Keyword.get(opts, :limit, 50)
     offset = Keyword.get(opts, :offset, 0)
     kind = Keyword.get(opts, :kind)
+    visible_for_user_id = Keyword.get(opts, :visible_for_user_id)
 
-    latest_run_ids =
+    base =
       UserGroupTournamentRun
       |> where([run], run.group_tournament_id == ^group_tournament_id)
       |> filter_kind(kind)
-      |> group_by([run], run.run_key)
-      |> select([run], max(run.id))
+      |> filter_visible_for(visible_for_user_id)
 
-    UserGroupTournamentRun
-    |> where([run], run.id in subquery(latest_run_ids))
+    # Each run_key has one row per participating user. When filtering for a
+    # specific viewer we already have at most one row per run_key, so we can
+    # skip the latest-id-per-key dedup; otherwise (admin view) keep it.
+    base
+    |> dedup_by_run_key(visible_for_user_id)
     |> order_by([run], desc: run.inserted_at, desc: run.id)
     |> offset(^offset)
     |> maybe_limit(limit)
     |> Repo.all()
   end
+
+  defp dedup_by_run_key(query, nil) do
+    latest_run_ids =
+      query
+      |> exclude(:order_by)
+      |> group_by([run], run.run_key)
+      |> select([run], max(run.id))
+
+    from(run in UserGroupTournamentRun, where: run.id in subquery(latest_run_ids))
+  end
+
+  defp dedup_by_run_key(query, _user_id), do: query
 
   @spec count_runs(GroupTournament.t() | pos_integer(), keyword()) :: non_neg_integer()
   def count_runs(group_tournament_or_id, opts \\ [])
@@ -206,9 +286,24 @@ defmodule Codebattle.GroupTournament.Context do
     |> Kernel.||(0)
   end
 
-  defp filter_kind(query, :slice), do: where(query, [run], not is_nil(run.slice_index))
-  defp filter_kind(query, :user), do: where(query, [run], is_nil(run.slice_index))
+  defp filter_kind(query, :slice), do: where(query, [run], run.kind == "slice")
+  defp filter_kind(query, :user), do: where(query, [run], run.kind == "user")
+  defp filter_kind(query, :seed), do: where(query, [run], run.kind == "seed")
+
+  defp filter_kind(query, [_ | _] = kinds) do
+    kinds = Enum.map(kinds, &to_string/1)
+    where(query, [run], run.kind in ^kinds)
+  end
+
   defp filter_kind(query, _), do: query
+
+  defp filter_visible_for(query, nil), do: query
+
+  defp filter_visible_for(query, user_id) when is_integer(user_id) do
+    query
+    |> join(:inner, [run], ugt in UserGroupTournament, on: ugt.id == run.user_group_tournament_id)
+    |> where([_run, ugt], ugt.user_id == ^user_id)
+  end
 
   @spec list_players(pos_integer(), keyword()) :: list(GroupTournamentPlayer.t())
   def list_players(group_tournament_id, opts \\ []) do
@@ -491,6 +586,7 @@ defmodule Codebattle.GroupTournament.Context do
       :current_round_position,
       :rounds_count,
       :round_timeout_seconds,
+      :break_duration_seconds,
       :include_bots,
       :last_round_started_at,
       :last_round_ended_at,
@@ -502,10 +598,80 @@ defmodule Codebattle.GroupTournament.Context do
     |> Map.put(:group_task_slug, group_tournament.group_task && group_tournament.group_task.slug)
   end
 
+  @doc """
+  Returns the leaderboard for a group tournament: one entry per active+left
+  player with their total_score, current slice, and a `rounds` map keyed by
+  round_position with `%{slice_index, place, score}` entries.
+
+  Ordered by total_score desc, then user_id asc as a stable tie-break.
+  """
+  @spec build_leaderboard(pos_integer()) :: list(map())
+  def build_leaderboard(group_tournament_id) do
+    players =
+      GroupTournamentPlayer
+      |> where([p], p.group_tournament_id == ^group_tournament_id)
+      |> preload([:user])
+      |> Repo.all()
+
+    round_scores =
+      GroupTournamentRoundScore
+      |> where([rs], rs.group_tournament_id == ^group_tournament_id)
+      |> Repo.all()
+      |> Enum.group_by(& &1.user_id)
+
+    players
+    |> Enum.map(fn player ->
+      rounds =
+        round_scores
+        |> Map.get(player.user_id, [])
+        |> Map.new(fn rs ->
+          {rs.round_position,
+           %{
+             slice_index: rs.slice_index,
+             place: rs.place,
+             score: rs.score
+           }}
+        end)
+
+      # Synthesise R1 from the seeding pass so the UI can show the seed score
+      # in the R1 column. Seeding runs solo-against-bots, so there's no
+      # cross-player place; we still surface the score (and the initial slice
+      # the player landed in) without touching total_score.
+      rounds =
+        if is_integer(player.seed_score) and not Map.has_key?(rounds, 1) do
+          Map.put(rounds, 1, %{
+            slice_index: player.slice_index,
+            place: nil,
+            score: player.seed_score
+          })
+        else
+          rounds
+        end
+
+      %{
+        user_id: player.user_id,
+        name: player.user && player.user.name,
+        avatar_url: player.user && Map.get(player.user, :avatar_url),
+        clan: player.user && Map.get(player.user, :clan),
+        clan_id: player.user && Map.get(player.user, :clan_id),
+        state: player.state,
+        slice_index: player.slice_index,
+        total_score: player.total_score || 0,
+        seed_score: player.seed_score,
+        last_round_place: player.last_round_place,
+        rounds: rounds
+      }
+    end)
+    |> Enum.sort_by(fn entry -> {-(entry.total_score || 0), entry.user_id} end)
+  end
+
   def serialize_run(run) do
     %{
       id: run.id,
       player_ids: run.player_ids,
+      kind: run.kind,
+      slice_index: run.slice_index,
+      round_position: run.round_position,
       status: run.status,
       result: run.result,
       score: run.score,
@@ -549,12 +715,21 @@ defmodule Codebattle.GroupTournament.Context do
     end
   end
 
-  defp can_view_run_details?(current_user, %UserGroupTournamentRun{user_group_tournament: %{user_id: user_id}}) do
-    User.admin?(current_user) || current_user.id == user_id
-  end
+  defp can_view_run_details?(current_user, %UserGroupTournamentRun{} = run) do
+    cond do
+      User.admin?(current_user) ->
+        true
 
-  defp can_view_run_details?(current_user, %UserGroupTournamentRun{}) do
-    User.admin?(current_user)
+      match?(%{user_group_tournament: %{user_id: _}}, run) and
+          run.user_group_tournament.user_id == current_user.id ->
+        true
+
+      is_list(run.player_ids) and current_user.id in run.player_ids ->
+        true
+
+      true ->
+        false
+    end
   end
 
   def broadcast_run_update(group_tournament_or_id, run_result, submitted_solution \\ nil)
@@ -568,6 +743,9 @@ defmodule Codebattle.GroupTournament.Context do
       run_id: run.id,
       status: run.status,
       score: run.score,
+      kind: run.kind,
+      slice_index: run.slice_index,
+      round_position: run.round_position,
       player_ids: run.player_ids,
       inserted_at: run.inserted_at
     }

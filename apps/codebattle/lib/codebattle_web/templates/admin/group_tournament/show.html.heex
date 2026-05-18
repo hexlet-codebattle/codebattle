@@ -62,6 +62,15 @@
           data: [confirm: "Reset players, runs, and solutions for this group tournament?"],
           class: "btn btn-outline-warning cb-rounded ml-2"
         )}
+        {link("Retry",
+          to: Routes.admin_group_tournament_path(@conn, :retry, @group_tournament),
+          method: :post,
+          data: [
+            confirm:
+              "Keep all players, clear their scores/runs/solutions, and move tournament back to waiting participants?"
+          ],
+          class: "btn btn-outline-info cb-rounded ml-2"
+        )}
       </div>
 
       <div class="mb-2">

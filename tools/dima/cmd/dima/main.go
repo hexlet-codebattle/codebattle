@@ -32,6 +32,14 @@ func main() {
 	langs := flag.String("langs", "", "comma-separated language rotation")
 	pythonDir := flag.String("python-solutions-dir", "", "directory of python solution files (one per file)")
 	cppDir := flag.String("cpp-solutions-dir", "", "directory of cpp solution files (one per file)")
+	tournamentType := flag.String("type", "", `tournament type: "individual" (default) or "ranked"`)
+	roundsCount := flag.Int("rounds-count", 0, "rounds_count for the tournament (ranked: 1 seeding + N-1 slice)")
+	maxScore := flag.Int("max-score", 0, "per-round max points (ranked scoring strategies use this as the top-of-curve)")
+	scoringStrategy := flag.String("scoring-strategy", "", "ranked scoring: diagonal_quadratic|diagonal_linear|global_linear")
+	movementStrategy := flag.String("movement-strategy", "", "ranked movement: mirrored_cascade|global_rerank|neighbor_ladder")
+	placeWeight := flag.Int("place-weight", 0, "ranked diagonal scoring place-weight knob (default 1)")
+	includeBotsFlag := flag.String("include-bots", "", "true|false (omit to keep server default)")
+	roundTimeout := flag.Int("round-timeout-seconds", 0, "per-round timeout in seconds (overrides group_task.time_to_solve_sec)")
 	flag.Parse()
 
 	opts := defaults
@@ -86,6 +94,35 @@ func main() {
 	}
 	if *cppDir != "" {
 		opts.CPPSolutionsDir = *cppDir
+	}
+	if *tournamentType != "" {
+		opts.TournamentType = *tournamentType
+	}
+	if *roundsCount > 0 {
+		opts.RoundsCount = *roundsCount
+	}
+	if *maxScore > 0 {
+		opts.MaxScore = *maxScore
+	}
+	if *scoringStrategy != "" {
+		opts.ScoringStrategy = *scoringStrategy
+	}
+	if *movementStrategy != "" {
+		opts.MovementStrategy = *movementStrategy
+	}
+	if *placeWeight > 0 {
+		opts.PlaceWeight = *placeWeight
+	}
+	if *roundTimeout > 0 {
+		opts.RoundTimeoutSeconds = *roundTimeout
+	}
+	switch strings.ToLower(strings.TrimSpace(*includeBotsFlag)) {
+	case "true", "1", "yes":
+		opts.IncludeBots = true
+		opts.IncludeBotsSet = true
+	case "false", "0", "no":
+		opts.IncludeBots = false
+		opts.IncludeBotsSet = true
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

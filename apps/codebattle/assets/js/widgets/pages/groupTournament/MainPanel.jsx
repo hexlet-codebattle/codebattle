@@ -2,9 +2,19 @@ import React, { useState } from "react";
 import Markdown from "react-markdown";
 import i18n from "../../../i18n";
 import JsonViewerModal from "./JsonViewerModal";
+import Leaderboard from "./Leaderboard";
 
-function MainPanel({ run, description, setViewerFullscreen }) {
+function MainPanel({
+  run,
+  description,
+  setViewerFullscreen,
+  leaderboard,
+  roundsCount,
+  currentRoundPosition,
+  status,
+}) {
   const [openJson, setOpenJson] = useState(null); // "history" | "summary" | null
+  const [activeTab, setActiveTab] = useState("run"); // "run" | "leaderboard"
 
   const isStubRun =
     run?.groupTournamentId && !run?.detailsLoaded && !run?.solution && !run?.result?.viewerHtml;
@@ -13,6 +23,72 @@ function MainPanel({ run, description, setViewerFullscreen }) {
   const summary = run?.result?.summary;
   const hasHistory = history != null;
   const hasSummary = summary != null;
+  const hasLeaderboard =
+    Array.isArray(leaderboard) &&
+    leaderboard.length > 0 &&
+    Number.isInteger(roundsCount) &&
+    roundsCount > 1;
+
+  const tabBtnClass = (active) =>
+    `btn btn-sm px-3 mr-2 text-white shadow-none border-0 rounded-0 ${
+      active ? "font-weight-bold" : ""
+    }`;
+  const tabBtnStyle = (active) => ({
+    borderBottom: active ? "2px solid #fff" : "2px solid transparent",
+    background: "transparent",
+  });
+
+  const renderTabs = () => (
+    <div className="d-flex align-items-center mr-3">
+      <button
+        type="button"
+        className={tabBtnClass(activeTab === "run")}
+        style={tabBtnStyle(activeTab === "run")}
+        onClick={() => setActiveTab("run")}
+      >
+        {i18n.t("Run Viewer")}
+      </button>
+      {hasLeaderboard && (
+        <button
+          type="button"
+          className={tabBtnClass(activeTab === "leaderboard")}
+          style={tabBtnStyle(activeTab === "leaderboard")}
+          onClick={() => setActiveTab("leaderboard")}
+        >
+          {i18n.t("Leaderboard")}
+        </button>
+      )}
+    </div>
+  );
+
+  if (activeTab === "leaderboard" && hasLeaderboard) {
+    return (
+      <>
+        <div
+          className="cb-custom-event-profile d-flex align-items-center justify-content-between flex-wrap w-100"
+          style={{ minHeight: "64px" }}
+        >
+          {renderTabs()}
+        </div>
+        <div
+          className="mt-3 p-3 w-100 overflow-auto"
+          style={{
+            minHeight: "240px",
+            maxHeight: "80vh",
+            backgroundColor: "#30333f",
+            borderRadius: "25px",
+          }}
+        >
+          <Leaderboard
+            leaderboard={leaderboard}
+            roundsCount={roundsCount}
+            currentRoundPosition={currentRoundPosition}
+            isFinished={status === "finished"}
+          />
+        </div>
+      </>
+    );
+  }
 
   if (run) {
     return (
@@ -21,7 +97,7 @@ function MainPanel({ run, description, setViewerFullscreen }) {
           className="cb-custom-event-profile d-flex align-items-center justify-content-between flex-wrap w-100"
           style={{ minHeight: "64px" }}
         >
-          <h5 className="mb-0 text-white font-weight-bold">{i18n.t("Run Viewer")}</h5>
+          {renderTabs()}
           <div className="d-flex align-items-center">
             {hasHistory && (
               <button
@@ -45,7 +121,7 @@ function MainPanel({ run, description, setViewerFullscreen }) {
               <span
                 role="button"
                 tabIndex={0}
-                className="text-white"
+                className="text-white mr-3"
                 style={{ cursor: "pointer", textDecoration: "underline" }}
                 onClick={() => setViewerFullscreen(true)}
                 onKeyDown={(e) => {
@@ -102,7 +178,7 @@ function MainPanel({ run, description, setViewerFullscreen }) {
         className="cb-custom-event-profile d-flex align-items-center w-100"
         style={{ minHeight: "64px" }}
       >
-        <h5 className="mb-0 text-white font-weight-bold">{i18n.t("Tournament Overview")}</h5>
+        {renderTabs()}
       </div>
       <div
         className="mt-3 p-3 w-100 overflow-auto"

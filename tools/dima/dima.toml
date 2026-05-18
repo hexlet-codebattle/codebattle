@@ -1,12 +1,22 @@
 server = "http://localhost:4000"
 auth_key = "x-key"
 
-users = 19
+users = 55
 group_task_id = 1
 runner_url = "http://localhost:1234/run"
-slice_size = 16
+
+# Ranked tournament defaults: round 1 is solo-vs-bots seeding which produces
+# a single leaderboard, then the rest of the rounds slice players into
+# `slice_size` buckets and cascade movement between them.
+type = "ranked"
+slice_size = 8
 slice_strategy = "random"
-round_timeout_seconds = 30
+rounds_count = 6                # 1 seeding + 5 slice rounds, all 1 minute
+round_timeout_seconds = 60
+max_score = 1000
+scoring_strategy = "diagonal_quadratic"
+movement_strategy = "mirrored_cascade"
+place_weight = 1
 
 avg_submit_seconds = 20
 randomness = 30
@@ -15,5 +25,5 @@ join_ramp_seconds = 5
 langs = ["python", "cpp"]
 
 [solutions]
-python_dir = "./solutions/python"
-cpp_dir = "./solutions/cpp"
+python_dir = "tmp/solutions/python"
+cpp_dir = "tmp/solutions/cpp"

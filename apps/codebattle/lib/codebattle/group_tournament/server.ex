@@ -69,7 +69,13 @@ defmodule Codebattle.GroupTournament.Server do
   def init(group_tournament_id) do
     group_tournament = group_tournament_id |> Context.get_group_tournament!() |> Map.put(:is_live, true)
     state = %{group_tournament: group_tournament, start_timer_ref: nil, finish_timer_ref: nil}
-    {:ok, schedule_start(state, group_tournament)}
+
+    state =
+      state
+      |> schedule_start(group_tournament)
+      |> maybe_resume_round_finish(group_tournament)
+
+    {:ok, state}
   end
 
   @impl true
@@ -228,12 +234,16 @@ defmodule Codebattle.GroupTournament.Server do
 
   @impl true
   def handle_info(:start_tournament, %{group_tournament: %{state: "waiting_participants"} = group_tournament} = state) do
+    starting_round = starting_round_position(group_tournament)
+    slice_count = compute_slice_count(group_tournament)
+
     updated =
       group_tournament
       |> GroupTournament.changeset(%{
         state: "active",
         started_at: DateTime.utc_now(:second),
-        current_round_position: 1,
+        current_round_position: starting_round,
+        slice_count: slice_count,
         last_round_started_at: NaiveDateTime.utc_now(:second),
         last_round_ended_at: nil
       })
@@ -241,13 +251,7 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
-    case SliceRunner.assign_slices(updated) do
-      {:ok, count} ->
-        Logger.info("group_tournament=#{updated.id} assigned #{count} slices on start")
-
-      {:error, reason} ->
-        Logger.warning("group_tournament=#{updated.id} slice assignment failed: #{inspect(reason)}")
-    end
+    perform_round_start(updated)
 
     enqueue_occupy_jobs(updated)
 
@@ -263,25 +267,15 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_info(:finish_round, %{group_tournament: %{state: "active"} = group_tournament} = state) do
-    slice_results = SliceRunner.run_all_slices(group_tournament)
+    {slice_results, round_results} = run_round(group_tournament)
 
-    ok = Enum.count(slice_results, fn {_idx, r} -> r == :ok end)
-    skipped = Enum.count(slice_results, fn {_idx, r} -> r == :skipped end)
-    errored = Enum.count(slice_results, fn {_idx, r} -> match?({:error, _}, r) end)
-    Logger.info("group_tournament=#{group_tournament.id} slice runs ok=#{ok} skipped=#{skipped} error=#{errored}")
+    log_slice_results(group_tournament, slice_results)
 
     finished_round_at = NaiveDateTime.utc_now(:second)
 
-    attrs = %{
-      last_round_ended_at: finished_round_at,
-      meta:
-        Map.merge(group_tournament.meta || %{}, %{
-          "last_slice_runs_total" => length(slice_results),
-          "last_slice_runs_ok" => ok,
-          "last_slice_runs_skipped" => skipped,
-          "last_slice_runs_error" => errored
-        })
-    }
+    attrs = base_finish_attrs(group_tournament, finished_round_at, slice_results)
+
+    break_seconds = max(group_tournament.break_duration_seconds || 0, 0)
 
     attrs =
       if group_tournament.current_round_position >= group_tournament.rounds_count do
@@ -290,9 +284,12 @@ defmodule Codebattle.GroupTournament.Server do
           finished_at: DateTime.utc_now(:second)
         })
       else
+        # During the break, last_round_started_at is set to a future timestamp
+        # (finished_round_at + break_seconds). The frontend treats a future
+        # last_round_started_at as "intermission until next round".
         Map.merge(attrs, %{
           current_round_position: group_tournament.current_round_position + 1,
-          last_round_started_at: finished_round_at
+          last_round_started_at: NaiveDateTime.add(finished_round_at, break_seconds, :second)
         })
       end
 
@@ -303,13 +300,13 @@ defmodule Codebattle.GroupTournament.Server do
       |> Repo.preload([:creator, :group_task, players: [:user]])
       |> Map.put(:is_live, true)
 
-    if updated.state != group_tournament.state do
-      broadcast_status_update(updated)
+    apply_post_round_transitions(group_tournament, updated, round_results)
 
-      if updated.state == "finished" do
-        Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
-        enqueue_finalize_jobs(updated)
-      end
+    broadcast_status_update(updated)
+
+    if updated.state != group_tournament.state and updated.state == "finished" do
+      Codebattle.UserEvent.Stage.Context.save_group_tournament_results_async(updated.id)
+      enqueue_finalize_jobs(updated)
     end
 
     next_state =
@@ -319,7 +316,7 @@ defmodule Codebattle.GroupTournament.Server do
 
     next_state =
       if updated.state == "active" do
-        schedule_round_finish(next_state, updated)
+        schedule_round_finish(next_state, updated, break_seconds)
       else
         next_state
       end
@@ -331,18 +328,184 @@ defmodule Codebattle.GroupTournament.Server do
     {:noreply, state}
   end
 
-  # Per-submission "preview" run: only the submitting player's solution is
-  # executed, and the run is left untagged (slice_index nil). Slice runs fire
-  # on the round timer and carry the slice_index — those are the scored runs.
+  # --- Round orchestration helpers ---
+
+  # All tournament types start at round 1. For ranked tournaments, round 1
+  # is the seeding round; rounds 2..rounds_count are the slice rounds.
+  defp starting_round_position(_), do: 1
+
+  defp compute_slice_count(%GroupTournament{type: "ranked"} = t) do
+    active = count_active_players(t.id)
+
+    if active <= 0 do
+      0
+    else
+      div(active - 1, t.slice_size) + 1
+    end
+  end
+
+  defp compute_slice_count(_), do: nil
+
+  defp count_active_players(group_tournament_id) do
+    import Ecto.Query
+
+    Codebattle.GroupTournamentPlayer
+    |> where([p], p.group_tournament_id == ^group_tournament_id and p.state == "active")
+    |> select([p], count(p.id))
+    |> Repo.one()
+    |> Kernel.||(0)
+  end
+
+  # For ranked tournaments, round 1 is a submission window: players submit
+  # solutions during the round (each submission runs as a bot-less debug run),
+  # then at round-end we run seeding against their latest submissions with
+  # bots and slice them. For individual tournaments, assign_slices is called
+  # once at start (legacy behaviour) so existing slice-aware features still
+  # work even though no movement happens later.
+  defp perform_round_start(%GroupTournament{type: "ranked", current_round_position: 1}) do
+    :ok
+  end
+
+  defp perform_round_start(%GroupTournament{} = t) do
+    case SliceRunner.assign_slices(t) do
+      {:ok, count} ->
+        Logger.info("group_tournament=#{t.id} assigned #{count} slices on start")
+
+      {:error, reason} ->
+        Logger.warning("group_tournament=#{t.id} slice assignment failed: #{inspect(reason)}")
+    end
+  end
+
+  # `run_round` returns the slice-runner results AND the round_results array
+  # used by movement. Returns `[]` for the seeding round (round 1 ranked).
+  defp run_round(%GroupTournament{type: "ranked", current_round_position: 1} = t) do
+    # Seeding round end: run each player's latest submission with bots
+    # (parallel pool inside SliceRunner) to produce seed scores. No
+    # round_results are returned — slicing happens in apply_post_round_transitions.
+    SliceRunner.run_seeding(t)
+    {[], []}
+  end
+
+  defp run_round(%GroupTournament{type: "ranked"} = t) do
+    slice_results = SliceRunner.run_all_slices(t)
+
+    round_results =
+      Enum.flat_map(slice_results, fn
+        {_idx, :ok, results} -> results
+        _ -> []
+      end)
+
+    {slice_results, round_results}
+  end
+
+  defp run_round(%GroupTournament{} = t) do
+    slice_results = SliceRunner.run_all_slices(t)
+    {slice_results, []}
+  end
+
+  defp log_slice_results(%GroupTournament{} = t, slice_results) do
+    ok = Enum.count(slice_results, fn {_idx, status, _} -> status == :ok end)
+    skipped = Enum.count(slice_results, fn {_idx, status, _} -> status == :skipped end)
+    errored = Enum.count(slice_results, fn {_idx, status, _} -> match?({:error, _}, status) end)
+
+    Logger.info("group_tournament=#{t.id} slice runs ok=#{ok} skipped=#{skipped} error=#{errored}")
+  end
+
+  defp base_finish_attrs(%GroupTournament{} = t, finished_round_at, slice_results) do
+    ok = Enum.count(slice_results, fn {_idx, status, _} -> status == :ok end)
+    skipped = Enum.count(slice_results, fn {_idx, status, _} -> status == :skipped end)
+    errored = Enum.count(slice_results, fn {_idx, status, _} -> match?({:error, _}, status) end)
+
+    %{
+      last_round_ended_at: finished_round_at,
+      meta:
+        Map.merge(t.meta || %{}, %{
+          "last_slice_runs_total" => length(slice_results),
+          "last_slice_runs_ok" => ok,
+          "last_slice_runs_skipped" => skipped,
+          "last_slice_runs_error" => errored
+        })
+    }
+  end
+
+  # Post-round transitions for ranked tournaments:
+  # - After seeding round (round 1 just ended): assign initial slices by
+  #   seed_score, then advance to round 2.
+  # - After a slice round: apply movement, then auto-leave players hitting the
+  #   inactive threshold.
+  defp apply_post_round_transitions(
+         %GroupTournament{type: "ranked", current_round_position: 1} = before_t,
+         %GroupTournament{} = _updated,
+         _round_results
+       ) do
+    # Use rating strategy for the initial assignment so it sorts by
+    # slice_ranking (which SliceRunner.run_seeding/1 wrote based on seed score).
+    seeded = %{before_t | slice_strategy: "rating"}
+
+    case SliceRunner.assign_slices(seeded) do
+      {:ok, count} ->
+        Logger.info("group_tournament=#{before_t.id} assigned #{count} slices after seeding")
+
+      {:error, reason} ->
+        Logger.warning("group_tournament=#{before_t.id} initial slice assignment failed: #{inspect(reason)}")
+    end
+  end
+
+  defp apply_post_round_transitions(
+         %GroupTournament{type: "ranked"} = before_t,
+         %GroupTournament{} = _updated,
+         round_results
+       )
+       when round_results != [] do
+    case SliceRunner.apply_movement(before_t, round_results) do
+      {:ok, _} ->
+        :ok
+
+      {:error, reason} ->
+        Logger.warning("group_tournament=#{before_t.id} movement failed: #{inspect(reason)}")
+    end
+
+    maybe_auto_leave_inactive(before_t)
+  end
+
+  defp apply_post_round_transitions(_before, _updated, _results), do: :ok
+
+  defp maybe_auto_leave_inactive(%GroupTournament{inactive_rounds_to_leave: threshold} = t)
+       when is_integer(threshold) and threshold > 0 do
+    import Ecto.Query
+
+    {count, _} =
+      Codebattle.GroupTournamentPlayer
+      |> where(
+        [p],
+        p.group_tournament_id == ^t.id and p.state == "active" and
+          p.consecutive_zero_rounds >= ^threshold
+      )
+      |> Repo.update_all(set: [state: "left", updated_at: NaiveDateTime.utc_now()])
+
+    if count > 0 do
+      Logger.info("group_tournament=#{t.id} auto-left #{count} inactive players")
+    end
+  end
+
+  defp maybe_auto_leave_inactive(_), do: :ok
+
+  # Per-submission debug run: only the submitting player's solution is executed
+  # — never with bots — so the user can see their own output. The run is left
+  # untagged (slice_index nil). Scored runs fire on the round timer and carry
+  # the slice_index.
   defp maybe_run_after_solution_submission(
          %{group_tournament: %{state: "active"} = group_tournament} = state,
          submitted_solution
        )
        when not is_nil(submitted_solution) do
-    GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
-      group_tournament_id: group_tournament.id,
-      include_bots: group_tournament.include_bots
-    })
+    run_result =
+      GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
+        group_tournament_id: group_tournament.id,
+        include_bots: false
+      })
+
+    Context.broadcast_run_update(group_tournament, run_result, submitted_solution)
 
     state
   end
@@ -362,12 +525,30 @@ defmodule Codebattle.GroupTournament.Server do
 
   defp schedule_start(state, _group_tournament), do: state
 
-  defp schedule_round_finish(state, group_tournament) do
+  defp schedule_round_finish(state, group_tournament, break_seconds \\ 0) do
     timeout_seconds =
       group_tournament.round_timeout_seconds || group_tournament.group_task.time_to_solve_sec || 300
 
-    %{state | finish_timer_ref: Process.send_after(self(), :finish_round, to_timeout(second: timeout_seconds))}
+    total = timeout_seconds + max(break_seconds, 0)
+
+    %{state | finish_timer_ref: Process.send_after(self(), :finish_round, to_timeout(second: total))}
   end
+
+  # On process restart, an active tournament has no finish timer scheduled by
+  # init/1. If a round was in progress (last_round_started_at set, no end),
+  # compute the remaining seconds and (re)schedule :finish_round. If the round
+  # window has already elapsed, fire immediately so the round can advance.
+  defp maybe_resume_round_finish(state, %GroupTournament{state: "active", last_round_started_at: started_at} = t)
+       when not is_nil(started_at) do
+    timeout_seconds = t.round_timeout_seconds || (t.group_task && t.group_task.time_to_solve_sec) || 300
+    elapsed = NaiveDateTime.diff(NaiveDateTime.utc_now(:second), started_at, :second)
+    remaining_ms = max((timeout_seconds - elapsed) * 1000, 0)
+
+    Logger.info("group_tournament=#{t.id} resuming finish timer, remaining_ms=#{remaining_ms}")
+    %{state | finish_timer_ref: Process.send_after(self(), :finish_round, remaining_ms)}
+  end
+
+  defp maybe_resume_round_finish(state, _group_tournament), do: state
 
   defp cancel_start_timer(%{start_timer_ref: ref} = state) when is_reference(ref) do
     _ = Process.cancel_timer(ref, async: false, info: false)

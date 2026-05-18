@@ -37,7 +37,10 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       latest_solutions: Map.new(latest_solutions, &{&1.user_id, serialize_solution(&1)}),
       solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
       latest_solution: serialize_solution(latest_solution),
-      runs: Enum.map(Context.list_runs(group_tournament, limit: :infinity), &serialize_run/1),
+      runs:
+        group_tournament
+        |> Context.list_runs(list_runs_opts(group_tournament, current_user))
+        |> Enum.map(&serialize_run/1),
       langs: Languages.get_langs(),
       can_moderate: can_moderate?(group_tournament, current_user),
       external_setup: serialize_external_setup(external_setup, current_user, group_tournament)
@@ -138,6 +141,16 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     group_tournament.creator_id == user.id || User.admin_or_moderator?(user)
   end
 
+  defp list_runs_opts(%{type: "ranked"}, current_user) do
+    if User.admin_or_moderator?(current_user) do
+      [limit: :infinity]
+    else
+      [limit: :infinity, visible_for_user_id: current_user.id]
+    end
+  end
+
+  defp list_runs_opts(_group_tournament, _current_user), do: [limit: :infinity]
+
   defp serialize_group_tournament(group_tournament) do
     %{
       id: group_tournament.id,
@@ -193,6 +206,9 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     %{
       id: run.id,
       player_ids: run.player_ids,
+      kind: run.kind,
+      slice_index: run.slice_index,
+      round_position: run.round_position,
       status: run.status,
       result: run.result,
       score: run.score,

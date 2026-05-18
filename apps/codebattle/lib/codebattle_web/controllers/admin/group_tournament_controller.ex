@@ -201,6 +201,22 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def retry(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+
+    case Context.retry_group_tournament(group_tournament) do
+      {:ok, updated_group_tournament} ->
+        conn
+        |> put_flash(:info, "Group tournament reset to waiting participants with scores cleared.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, updated_group_tournament))
+
+      {:error, _reason} ->
+        conn
+        |> put_flash(:error, "Failed to retry group tournament.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
   def solution_tester(conn, %{"id" => id}) do
     group_tournament = Context.get_group_tournament!(id)
     tokens = Context.list_tokens(group_tournament)

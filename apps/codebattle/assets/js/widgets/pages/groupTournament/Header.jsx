@@ -12,30 +12,61 @@ const statusBadge = {
 function TournamentTimer({ groupTournament }) {
   const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
   const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
-  const endsAt =
-    roundStartedAt && Number.isInteger(timeoutSeconds)
-      ? moment.utc(roundStartedAt).add(timeoutSeconds, "seconds")
+
+  const startMoment = roundStartedAt ? moment.utc(roundStartedAt) : null;
+  // When the server schedules an inter-round break, it pushes lastRoundStartedAt
+  // into the future (now + break_duration_seconds). Detect that here.
+  const onBreak = startMoment && startMoment.isAfter(moment());
+
+  const target = onBreak
+    ? startMoment
+    : startMoment && Number.isInteger(timeoutSeconds)
+      ? startMoment.clone().add(timeoutSeconds, "seconds")
       : null;
 
-  const [time, seconds] = useTimer(endsAt);
+  const [time, seconds] = useTimer(target);
 
-  if (groupTournament?.state !== "active" || !endsAt || (!seconds && !time)) {
+  const currentRound = groupTournament?.currentRoundPosition;
+  const roundsCount = groupTournament?.roundsCount;
+  const showRoundCounter =
+    Number.isInteger(roundsCount) &&
+    roundsCount > 1 &&
+    Number.isInteger(currentRound) &&
+    currentRound > 0;
+
+  if (groupTournament?.state !== "active" || !target || (!seconds && !time)) {
     return null;
   }
 
-  const color = seconds <= 60 ? "#ff3b30" : seconds <= 300 ? "#ffe500" : "#ffffff";
+  const color = onBreak
+    ? "#7fdbff"
+    : seconds <= 60
+      ? "#ff3b30"
+      : seconds <= 300
+        ? "#ffe500"
+        : "#ffffff";
 
   return (
-    <span
-      className="text-monospace rounded-pill px-4 py-2"
-      style={{
-        fontSize: "1.5rem",
-        color,
-        border: `1px solid ${color}`,
-      }}
-    >
-      {time}
-    </span>
+    <div className="d-flex align-items-center">
+      {showRoundCounter && (
+        <span
+          className="text-monospace text-white mr-3"
+          style={{ fontSize: "1.1rem", opacity: 0.85 }}
+        >
+          {`${i18n.t("Round")} ${currentRound}/${roundsCount}`}
+        </span>
+      )}
+      <span
+        className="text-monospace rounded-pill px-4 py-2"
+        style={{
+          fontSize: "1.5rem",
+          color,
+          border: `1px solid ${color}`,
+        }}
+      >
+        {onBreak ? `${i18n.t("Break")}: ${time}` : time}
+      </span>
+    </div>
   );
 }
 

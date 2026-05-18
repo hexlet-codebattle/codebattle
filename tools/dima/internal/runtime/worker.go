@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/hexlet-codebattle/dima/internal/extapi"
@@ -14,22 +15,24 @@ import (
 )
 
 type WorkerParams struct {
-	Client             *extapi.Client
-	ServerURL          string
-	GroupTournamentID  int
-	User               extapi.GroupScenarioUser
-	Behavior           Behavior
-	OnChannelConnected func()
-	OnSolutionSent     func()
-	OnRunResult        func(userID int, status string, score int)
-	OnError            func()
-	OnLog              func(line string)
+	Client              *extapi.Client
+	ServerURL           string
+	GroupTournamentID   int
+	User                extapi.GroupScenarioUser
+	Behavior            Behavior
+	OnChannelConnected  func()
+	OnSolutionSent      func()
+	OnRunResult         func(userID int, status string, score int)
+	OnTournamentStatus  func(status string)
+	OnError             func()
+	OnLog               func(line string)
 }
 
 type Worker struct {
 	params   WorkerParams
 	behavior Behavior
 	mu       sync.RWMutex
+	finished atomic.Bool
 }
 
 func NewWorker(params WorkerParams) *Worker {
@@ -86,12 +89,22 @@ func (w *Worker) handleEvent(event phoenix.Message) {
 		if w.params.OnRunResult != nil {
 			w.params.OnRunResult(userID, status, score)
 		}
+	case "group_tournament:status_updated":
+		status, _ := event.Payload["status"].(string)
+		w.logf("<- status_updated status=%s", status)
+		w.finished.Store(status == "finished")
+		if w.params.OnTournamentStatus != nil {
+			w.params.OnTournamentStatus(status)
+		}
 	default:
 		// ignore other broadcasts
 	}
 }
 
 func (w *Worker) maybeSubmit(ctx context.Context) {
+	if w.finished.Load() {
+		return
+	}
 	behavior := w.getBehavior()
 	if behavior.Paused {
 		return

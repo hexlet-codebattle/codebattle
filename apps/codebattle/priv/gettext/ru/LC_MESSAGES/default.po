@@ -1051,7 +1051,7 @@ msgid "Final Entrance"
 msgstr "Выход в финал"
 
 msgid "Final"
-msgstr "Финал"
+msgstr "Итог"
 
 msgid "Failed"
 msgstr "Не прошёл"
@@ -1754,3 +1754,21 @@ msgstr "Первая часть квалификации пройдена"
 
 msgid "Accepted"
 msgstr "Принято"
+
+msgid "Slice"
+msgstr "Группа"
+
+msgid "Round"
+msgstr "Раунд"
+
+msgid "Total"
+msgstr "Итог"
+
+msgid "Left"
+msgstr "Вышел"
+
+msgid "Seed"
+msgstr "Отбор"
+
+msgid "Add solution"
+msgstr "Добавить решение"

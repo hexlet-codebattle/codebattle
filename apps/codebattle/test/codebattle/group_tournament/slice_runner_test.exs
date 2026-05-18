@@ -84,7 +84,7 @@ defmodule Codebattle.GroupTournament.SliceRunnerTest do
 
       insert_solution(tournament, p_with)
 
-      assert :ok = SliceRunner.run_slice(tournament, 0)
+      assert {:ok, _round_results} = SliceRunner.run_slice(tournament, 0)
 
       request = Process.get(:group_task_runner_last_request)
       assert request, "expected runner to be called"
@@ -120,7 +120,7 @@ defmodule Codebattle.GroupTournament.SliceRunnerTest do
 
       results = SliceRunner.run_all_slices(tournament, max_concurrency: 2)
 
-      by_slice = Map.new(results)
+      by_slice = Map.new(results, fn {idx, status, _round} -> {idx, status} end)
       assert by_slice[0] == :ok
       assert by_slice[1] == :ok
       assert by_slice[2] == :skipped

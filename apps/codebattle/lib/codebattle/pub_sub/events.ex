@@ -630,17 +630,27 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("group_tournament:run_updated", params) do
+    recipient_ids =
+      [params[:user_id] | params[:player_ids] || []]
+      |> Enum.reject(&is_nil/1)
+      |> Enum.uniq()
+
+    user_messages =
+      Enum.map(recipient_ids, fn user_id ->
+        %Message{
+          topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
+          event: "group_tournament:run_updated",
+          payload: params
+        }
+      end)
+
     [
       %Message{
         topic: "group_tournament:#{params.group_tournament_id}",
         event: "group_tournament:run_updated",
         payload: params
-      },
-      %Message{
-        topic: "group_tournament:#{params.group_tournament_id}:user:#{params.user_id}",
-        event: "group_tournament:run_updated",
-        payload: params
       }
+      | user_messages
     ]
   end
 

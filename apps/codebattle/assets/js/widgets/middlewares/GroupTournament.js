@@ -137,6 +137,10 @@ export const connectToTournament = (_currentUserId) => (dispatch) => {
     if (normalizedData.groupTournament) {
       dispatch(actions.mergeGroupTournament(normalizedData.groupTournament));
     }
+
+    if (normalizedData.leaderboard) {
+      dispatch(actions.setLeaderboard(normalizedData.leaderboard));
+    }
   };
 
   channel.addListener("group_tournament:invite_updated", handleInviteUpdated);

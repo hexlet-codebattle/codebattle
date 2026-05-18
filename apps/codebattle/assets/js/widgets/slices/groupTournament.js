@@ -46,6 +46,10 @@ const groupTournament = createSlice({
         ...payload,
       };
     },
+    setLeaderboard: (state, { payload }) => {
+      state.data = state.data || {};
+      state.data.leaderboard = payload || [];
+    },
     updateInviteState: (state, { payload }) => {
       state.invite.state = payload;
     },
@@ -76,7 +80,18 @@ const groupTournament = createSlice({
       state.activeRunFromServerTick = (state.activeRunFromServerTick || 0) + 1;
     },
     applyRunStub: (state, { payload }) => {
-      const { groupTournamentId, userId, runId, status, score, playerIds, insertedAt } = payload;
+      const {
+        groupTournamentId,
+        userId,
+        runId,
+        status,
+        score,
+        kind,
+        sliceIndex,
+        roundPosition,
+        playerIds,
+        insertedAt,
+      } = payload;
 
       state.data = state.data || {};
 
@@ -86,6 +101,9 @@ const groupTournament = createSlice({
         userId,
         status,
         score,
+        kind,
+        sliceIndex,
+        roundPosition,
         playerIds,
         insertedAt,
         detailsLoaded: false,

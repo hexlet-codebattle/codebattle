@@ -13,6 +13,7 @@ That's "Dima, hit it" — Dima will load-test your group tournament.
 - `c` create a group tournament scenario through `ext_api` and prepare synthetic users
 - `j` make the prepared users join the group tournament channel
 - `s` start the tournament through the admin channel (`start_group_tournament`)
+- `r` restart: re-create the scenario and re-join all players, leaving it un-started
 - `1` / `2` switch all workers to `python` / `cpp`
 - `+` / `-` increase / decrease per-user submit delay (ms)
 - `p` / `u` pause or resume all workers
@@ -100,6 +101,47 @@ Or via env vars: `DIMA_PYTHON_SOLUTIONS_DIR`, `DIMA_CPP_SOLUTIONS_DIR`.
 If a directory is empty or missing the worker falls back to a tiny baked-in
 stub. The TUI shows the loaded pool size next to each language's submit
 delay, so you can confirm your files were picked up.
+
+## Ranked tournaments (default)
+
+Dima now defaults to the ranked flow: 5 one-minute rounds, slices of 8,
+diagonal-quadratic scoring with mirrored cascade movement.
+
+- Round 1 is the **seeding round** — solo vs bots, all real users on a
+  single leaderboard. The server ranks them by seed score and uses that to
+  seat the initial slices.
+- Rounds 2..5 are **slice rounds**: players are split into slices of 8 and
+  cascaded between slices between rounds based on the chosen movement
+  strategy.
+
+Knobs (CLI flags or TOML keys):
+
+```bash
+go run ./cmd/dima \
+  -type ranked \
+  -users 64 \
+  -slice-size 8 \
+  -rounds-count 5 \
+  -round-timeout-seconds 60 \
+  -max-score 1000 \
+  -scoring-strategy diagonal_quadratic \
+  -movement-strategy mirrored_cascade
+```
+
+Equivalent TOML (matches the bundled `dima.toml`):
+
+```toml
+type = "ranked"
+slice_size = 8
+rounds_count = 5
+round_timeout_seconds = 60
+max_score = 1000
+scoring_strategy = "diagonal_quadratic"   # diagonal_linear | global_linear
+movement_strategy = "mirrored_cascade"    # global_rerank | neighbor_ladder
+place_weight = 1
+```
+
+Set `type = "individual"` for the legacy single-round load test.
 
 ## TOML config
 

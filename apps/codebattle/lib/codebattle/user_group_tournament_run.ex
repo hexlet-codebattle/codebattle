@@ -10,6 +10,7 @@ defmodule Codebattle.UserGroupTournamentRun do
   alias Codebattle.UserGroupTournament
 
   @statuses ~w(pending success error)
+  @kinds ~w(user slice seed)
 
   @type t :: %__MODULE__{}
 
@@ -21,9 +22,12 @@ defmodule Codebattle.UserGroupTournamentRun do
     field(:run_key, Ecto.UUID)
     field(:player_ids, {:array, :integer}, default: [])
     field(:slice_index, :integer)
+    field(:round_position, :integer)
+    field(:kind, :string, default: "user")
     field(:status, :string)
     field(:result, :map, default: %{})
     field(:score, :integer)
+    field(:duration_ms, :integer)
 
     timestamps()
   end
@@ -37,9 +41,12 @@ defmodule Codebattle.UserGroupTournamentRun do
       :run_key,
       :player_ids,
       :slice_index,
+      :round_position,
+      :kind,
       :status,
       :result,
-      :score
+      :score,
+      :duration_ms
     ])
     |> validate_required([
       :user_group_tournament_id,
@@ -52,6 +59,7 @@ defmodule Codebattle.UserGroupTournamentRun do
     ])
     |> validate_length(:player_ids, min: 1)
     |> validate_inclusion(:status, @statuses)
+    |> validate_inclusion(:kind, @kinds)
     |> unique_constraint(:run_key, name: :user_group_tournament_runs_user_group_tournament_id_run_key_ind)
     |> foreign_key_constraint(:user_group_tournament_id)
     |> foreign_key_constraint(:group_task_id)
