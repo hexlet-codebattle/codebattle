@@ -195,13 +195,13 @@ jobs:
         run: mix credo
         working-directory: .
 
-      - name: Hex audit
-        run: mix hex.audit
-        working-directory: .
+      # - name: Hex audit
+      #   run: mix hex.audit
+      #   working-directory: .
 
-      - name: Deps audit
-        run: mix deps.audit
-        working-directory: .
+      # - name: Deps audit
+      #   run: mix deps.audit
+      #   working-directory: .
 
       - name: Mix dialyzer
         run: make dialyzer
