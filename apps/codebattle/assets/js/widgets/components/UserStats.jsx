@@ -104,6 +104,17 @@ function UserStats({ data, user: userInfo }) {
                   <div className="d-flex align-items-center">
                     <LanguageIcon className="mr-1" lang={lang} />
                     <span className="font-weight-bold">{name}</span>
+                    {userInfo.githubName && (
+                      <a
+                        href={`https://github.com/${userInfo.githubName}`}
+                        title={i18next.t("Github account")}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-white ml-2"
+                      >
+                        <FontAwesomeIcon icon={["fab", "github"]} />
+                      </a>
+                    )}
                   </div>
                   {clan && <span className="text-muted small">{clan}</span>}
                 </div>

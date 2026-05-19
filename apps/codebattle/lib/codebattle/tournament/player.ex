@@ -20,6 +20,7 @@ defmodule Codebattle.Tournament.Player do
     :lang,
     :style_lang,
     :db_type,
+    :github_name,
     :matches_ids,
     :name,
     :place,
@@ -55,6 +56,7 @@ defmodule Codebattle.Tournament.Player do
     field(:max_draw_index, :integer, default: 0)
     field(:style_lang, :string)
     field(:db_type, :string)
+    field(:github_name, :string)
     field(:matches_ids, {:array, :integer}, default: [])
     field(:name, :string)
     field(:place, :integer, default: 0)

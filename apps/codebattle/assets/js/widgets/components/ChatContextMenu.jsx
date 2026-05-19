@@ -6,6 +6,7 @@ import qs from "qs";
 import { Menu, Item, Separator } from "react-contexify";
 import { useSelector, useDispatch } from "react-redux";
 
+import i18n from "../../../i18n";
 import { pushCommand } from "@/middlewares/Chat";
 import { openDirect } from "@/middlewares/Lobby";
 import { followUser } from "@/middlewares/Main";
@@ -37,7 +38,13 @@ function ChatContextMenu({
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
 
-  const { isBot, canInvite, name, userId } = request.user;
+  const {
+    isBot,
+    canInvite,
+    name,
+    userId,
+    githubName,
+  } = request.user;
 
   const isCurrentUserHasActiveGames = useMemo(
     () =>
@@ -77,6 +84,10 @@ function ChatContextMenu({
   const handleFollow = useCallback(() => {
     dispatch(followUser(userId));
   }, [userId, dispatch]);
+
+  const handleShowGithubProfile = useCallback(() => {
+    window.open(`https://github.com/${githubName}`, "_blank");
+  }, [githubName]);
 
   const handleCreateInviteModal = useCallback(() => {
     if (userId && name) {
@@ -122,6 +133,12 @@ function ChatContextMenu({
           <FontAwesomeIcon className="mr-2 text-white" icon="user" />
           <span className="text-white">Info</span>
         </Item>
+        {githubName && (
+          <Item role="menuitem" aria-label="Github account" onClick={handleShowGithubProfile}>
+            <FontAwesomeIcon className="mr-2 text-white" icon={["fab", "github"]} />
+            <span className="text-white">{i18n.t("Github account")}</span>
+          </Item>
+        )}
         {!isCurrentUser && (
           <Item role="menuitem" aria-label="Follow" onClick={handleFollow}>
             <FontAwesomeIcon className="mr-2 text-white" icon="binoculars" />

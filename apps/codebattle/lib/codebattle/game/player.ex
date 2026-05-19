@@ -26,6 +26,7 @@ defmodule Codebattle.Game.Player do
              :clan_id,
              :editor_lang,
              :editor_text,
+             :github_name,
              :id,
              :is_banned,
              :is_bot,
@@ -68,6 +69,7 @@ defmodule Codebattle.Game.Player do
     field(:lang, :string, default: "js")
     field(:style_lang, :string, default: "css")
     field(:db_type, :string, default: "sql")
+    field(:github_name, :string)
     field(:name, :string, default: "Ada Lovelace")
     field(:playbook_id, :integer, default: nil)
     field(:rank, :integer, default: -1)
@@ -83,6 +85,7 @@ defmodule Codebattle.Game.Player do
       :id,
       :avatar_url,
       :name,
+      :github_name,
       :is_banned,
       :is_bot,
       :is_guest,
@@ -119,6 +122,7 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             clan_id: user.clan_id,
             name: user.name,
+            github_name: user.github_name,
             avatar_url: user.avatar_url,
             rating: default_rating(user_game.rating, user.rating),
             rating_diff: user_game.rating_diff,
@@ -142,6 +146,7 @@ defmodule Codebattle.Game.Player do
       is_guest: false,
       clan_id: player.clan_id,
       name: player.name,
+      github_name: player.github_name,
       rating: default_rating(player.rating),
       rank: player.rank,
       avatar_url: player.avatar_url,
@@ -168,6 +173,7 @@ defmodule Codebattle.Game.Player do
       is_guest: player.is_guest,
       clan_id: player.clan_id,
       name: player.name,
+      github_name: player.github_name,
       rating: default_rating(player.rating),
       rank: player.rank,
       editor_lang: get_editor_lang(player, params),
@@ -198,6 +204,7 @@ defmodule Codebattle.Game.Player do
             is_bot: user.is_bot,
             is_guest: user.is_guest,
             name: user.name,
+            github_name: user.github_name,
             clan_id: user.clan_id,
             rating: default_rating(user.rating),
             rank: user.rank,

@@ -28,6 +28,7 @@ const useChatContextMenu = ({ type, users, canInvite = false }) => {
           name: user?.name || userName,
           isBot: user?.isBot,
           userId: user?.id || Number(userId),
+          githubName: user?.githubName,
           canInvite: user ? canInvite : false,
         },
       };
