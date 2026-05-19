@@ -5,6 +5,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   alias Codebattle.ExternalPlatformInvite.Context, as: InviteContext
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
+  alias Codebattle.GroupTournament.LeaderboardStore
   alias Codebattle.GroupTournament.Server, as: GroupTournamentServer
   alias Codebattle.PubSub.Message
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
@@ -110,7 +111,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament
         |> GroupTournamentContext.list_runs(list_runs_opts(group_tournament, current_user))
         |> Enum.map(&GroupTournamentContext.serialize_run/1),
-      leaderboard: GroupTournamentContext.build_leaderboard(group_tournament.id),
+      leaderboard: LeaderboardStore.list(group_tournament.id),
       langs: Languages.get_langs()
     }
   end
@@ -236,7 +237,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         push(socket, "group_tournament:status_updated", %{
           status: payload.status,
           group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
-          leaderboard: GroupTournamentContext.build_leaderboard(tournament_id)
+          leaderboard: LeaderboardStore.list(tournament_id)
         })
     end
 

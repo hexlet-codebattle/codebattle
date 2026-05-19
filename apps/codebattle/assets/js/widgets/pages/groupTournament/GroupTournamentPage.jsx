@@ -47,6 +47,7 @@ function GroupTournamentPage({
     useGroupBattleRun(data);
 
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
 
   const requestInviteUpdates = () => {
     requestInviteUpdate()(dispatch);
@@ -113,6 +114,7 @@ function GroupTournamentPage({
             leaderboard={data?.leaderboard}
             roundsCount={data?.groupTournament?.roundsCount}
             currentRoundPosition={data?.groupTournament?.currentRoundPosition}
+            currentUserId={currentUserId}
           />
         </div>
       </div>

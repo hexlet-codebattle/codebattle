@@ -1,7 +1,7 @@
 server = "http://localhost:4000"
 auth_key = "x-key"
 
-users = 55
+users = 21
 group_task_id = 1
 runner_url = "http://localhost:1234/run"
 

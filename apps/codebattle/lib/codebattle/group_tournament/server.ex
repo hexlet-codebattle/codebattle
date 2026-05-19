@@ -6,6 +6,7 @@ defmodule Codebattle.GroupTournament.Server do
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
+  alias Codebattle.GroupTournament.LeaderboardStore
   alias Codebattle.GroupTournament.SliceRunner
   alias Codebattle.PubSub
   alias Codebattle.Repo
@@ -74,6 +75,8 @@ defmodule Codebattle.GroupTournament.Server do
       state
       |> schedule_start(group_tournament)
       |> maybe_resume_round_finish(group_tournament)
+
+    LeaderboardStore.init(group_tournament.id)
 
     {:ok, state}
   end
@@ -302,6 +305,8 @@ defmodule Codebattle.GroupTournament.Server do
 
     apply_post_round_transitions(group_tournament, updated, round_results)
 
+    LeaderboardStore.refresh(updated.id)
+
     broadcast_status_update(updated)
 
     if updated.state != group_tournament.state and updated.state == "finished" do
@@ -431,8 +436,9 @@ defmodule Codebattle.GroupTournament.Server do
   # Post-round transitions for ranked tournaments:
   # - After seeding round (round 1 just ended): assign initial slices by
   #   seed_score, then advance to round 2.
-  # - After a slice round: apply movement, then auto-leave players hitting the
-  #   inactive threshold.
+  # - After a slice round: apply movement. Inactive players are not removed —
+  #   the movement strategy already settles them into the bottom slice, where
+  #   they can keep playing.
   defp apply_post_round_transitions(
          %GroupTournament{type: "ranked", current_round_position: 1} = before_t,
          %GroupTournament{} = _updated,
@@ -445,6 +451,9 @@ defmodule Codebattle.GroupTournament.Server do
     case SliceRunner.assign_slices(seeded) do
       {:ok, count} ->
         Logger.info("group_tournament=#{before_t.id} assigned #{count} slices after seeding")
+        # Capture the seed slice + place as a round-1 score row *now*, before
+        # subsequent rounds' movement rewrites `player.slice_index`.
+        {:ok, _} = SliceRunner.record_seed_round_scores(seeded)
 
       {:error, reason} ->
         Logger.warning("group_tournament=#{before_t.id} initial slice assignment failed: #{inspect(reason)}")
@@ -464,31 +473,9 @@ defmodule Codebattle.GroupTournament.Server do
       {:error, reason} ->
         Logger.warning("group_tournament=#{before_t.id} movement failed: #{inspect(reason)}")
     end
-
-    maybe_auto_leave_inactive(before_t)
   end
 
   defp apply_post_round_transitions(_before, _updated, _results), do: :ok
-
-  defp maybe_auto_leave_inactive(%GroupTournament{inactive_rounds_to_leave: threshold} = t)
-       when is_integer(threshold) and threshold > 0 do
-    import Ecto.Query
-
-    {count, _} =
-      Codebattle.GroupTournamentPlayer
-      |> where(
-        [p],
-        p.group_tournament_id == ^t.id and p.state == "active" and
-          p.consecutive_zero_rounds >= ^threshold
-      )
-      |> Repo.update_all(set: [state: "left", updated_at: NaiveDateTime.utc_now()])
-
-    if count > 0 do
-      Logger.info("group_tournament=#{t.id} auto-left #{count} inactive players")
-    end
-  end
-
-  defp maybe_auto_leave_inactive(_), do: :ok
 
   # Per-submission debug run: only the submitting player's solution is executed
   # — never with bots — so the user can see their own output. The run is left

@@ -525,17 +525,23 @@ defmodule Codebattle.GroupTask.Context do
 
     round_position = tournament.current_round_position
 
+    # Dense-rank humans only: when a slice is bot-filled, the runner ranks
+    # bots inline (e.g. a bot may take #1), leaving gaps in the surviving
+    # human places. Strip the bots first, then re-number 1..N by their raw
+    # rank so partial slices score and display contiguously.
     runs
     |> Enum.map(fn run ->
       user_id = run.user_group_tournament && run.user_group_tournament.user_id
-      place = extract_place_for_user(_user_ranking(run), user_id)
-      {user_id, place, run.id}
+      raw_place = extract_place_for_user(_user_ranking(run), user_id)
+      {user_id, raw_place, run.id}
     end)
     |> Enum.filter(fn {user_id, place, _} -> is_integer(user_id) and is_integer(place) end)
-    |> Enum.each(fn {user_id, place, run_id} ->
-      round_points = Scoring.round_points(tournament.scoring_strategy, slice_index, place, opts)
-      bump_player_score(tournament.id, user_id, round_points, place)
-      record_round_score(tournament.id, user_id, run_id, round_position, slice_index, place, round_points)
+    |> Enum.sort_by(fn {_uid, place, _rid} -> place end)
+    |> Enum.with_index(1)
+    |> Enum.each(fn {{user_id, _raw_place, run_id}, dense_place} ->
+      round_points = Scoring.round_points(tournament.scoring_strategy, slice_index, dense_place, opts)
+      bump_player_score(tournament.id, user_id, round_points, dense_place)
+      record_round_score(tournament.id, user_id, run_id, round_position, slice_index, dense_place, round_points)
     end)
   end
 

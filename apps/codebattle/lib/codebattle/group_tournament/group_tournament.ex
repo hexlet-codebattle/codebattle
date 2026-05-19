@@ -166,6 +166,7 @@ defmodule Codebattle.GroupTournament do
 
   def states, do: @states
   def types, do: @types
+  def slice_strategies, do: @slice_strategies
   def scoring_strategies, do: @scoring_strategies
   def movement_strategies, do: @movement_strategies
 

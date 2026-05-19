@@ -36,6 +36,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.GroupTournament.Movement
   alias Codebattle.GroupTournamentPlayer
+  alias Codebattle.GroupTournamentRoundScore
   alias Codebattle.Repo
 
   require Logger
@@ -109,7 +110,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
         result =
           GroupTaskContext.run_group_task(group_tournament.group_task, ids, %{
             group_tournament_id: group_tournament.id,
-            include_bots: include_bots_for_slice?(group_tournament, ids),
+            include_bots: include_bots_for_slice?(group_tournament, ids, slice_index),
             slice_index: slice_index,
             kind: :slice
           })
@@ -155,25 +156,102 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   end
 
   @doc """
+  Persists the seed-round (round 1) score row for each seeded player,
+  capturing the slice they were assigned to during seeding.
+
+  Must be called *after* `assign_slices/1` so `player.slice_index` reflects
+  the seed assignment — before any later round's movement overwrites it.
+  Without this, the leaderboard's "Seed" view falls back to the player's
+  current slice and shows seed scores grouped by their *final* slice
+  instead of the seed slice.
+
+  Within each slice, players are ordered by raw seed score desc (then
+  faster seed duration, then user_id) and assigned a 1-based place.
+  """
+  @spec record_seed_round_scores(GroupTournament.t()) :: {:ok, non_neg_integer()}
+  def record_seed_round_scores(%GroupTournament{id: tournament_id}) do
+    now = NaiveDateTime.utc_now(:second)
+
+    seeded =
+      GroupTournamentPlayer
+      |> where(
+        [p],
+        p.group_tournament_id == ^tournament_id and not is_nil(p.seed_score) and
+          not is_nil(p.slice_index)
+      )
+      |> select([p], %{
+        user_id: p.user_id,
+        slice_index: p.slice_index,
+        seed_score: p.seed_score,
+        seed_duration_ms: p.seed_duration_ms
+      })
+      |> Repo.all()
+
+    rows =
+      seeded
+      |> Enum.group_by(& &1.slice_index)
+      |> Enum.flat_map(fn {_slice, players} ->
+        players
+        |> Enum.sort_by(fn p -> {-p.seed_score, p.seed_duration_ms || 0, p.user_id} end)
+        |> Enum.with_index(1)
+        |> Enum.map(fn {p, place} ->
+          %{
+            group_tournament_id: tournament_id,
+            user_id: p.user_id,
+            run_id: nil,
+            round_position: 1,
+            slice_index: p.slice_index,
+            place: place,
+            score: p.seed_score,
+            inserted_at: now,
+            updated_at: now
+          }
+        end)
+      end)
+
+    case rows do
+      [] ->
+        {:ok, 0}
+
+      _ ->
+        {count, _} =
+          Repo.insert_all(GroupTournamentRoundScore, rows,
+            on_conflict: {:replace, [:run_id, :slice_index, :place, :score, :updated_at]},
+            conflict_target: [:group_tournament_id, :user_id, :round_position]
+          )
+
+        {:ok, count}
+    end
+  end
+
+  @doc """
   Applies the tournament's configured movement strategy to update each
   player's `slice_index` based on the round's results. Returns
   `{:ok, slice_count}` on success.
 
   `round_results` is the list of `%{user_id, slice_index, place}` produced
   by the slice runs of the round that just ended.
+
+  After the strategy returns, slices are normalized so that slices
+  `0..slice_count - 2` each contain exactly `slice_size` players and the
+  bottom slice absorbs the remainder. Within each target slice we keep the
+  players whose strategy intent was strongest (lower original slice and
+  better place win ties), so the strategy's ordering is preserved — only
+  size violations are corrected.
   """
   @spec apply_movement(GroupTournament.t(), [Movement.round_result()]) ::
           {:ok, non_neg_integer()} | {:error, term()}
   def apply_movement(%GroupTournament{} = group_tournament, round_results) do
-    movement_opts = %{
-      slice_count: group_tournament.slice_count || 0,
-      slice_size: group_tournament.slice_size
-    }
+    slice_count = group_tournament.slice_count || 0
+    slice_size = group_tournament.slice_size
+
+    movement_opts = %{slice_count: slice_count, slice_size: slice_size}
 
     assignments = Movement.reassign(group_tournament.movement_strategy, round_results, movement_opts)
+    normalized = normalize_slice_sizes(assignments, round_results, slice_count, slice_size)
 
     Repo.transaction(fn ->
-      assignments
+      normalized
       |> Enum.group_by(& &1.new_slice_index, & &1.user_id)
       |> Enum.each(fn {new_slice_index, user_ids} ->
         GroupTournamentPlayer
@@ -184,15 +262,47 @@ defmodule Codebattle.GroupTournament.SliceRunner do
         |> Repo.update_all(set: [slice_index: new_slice_index, updated_at: NaiveDateTime.utc_now()])
       end)
 
-      Map.new(assignments, &{&1.user_id, &1.new_slice_index})
+      Map.new(normalized, &{&1.user_id, &1.new_slice_index})
     end)
   end
+
+  # Reflow assignments so slices 0..slice_count-2 each hold exactly
+  # `slice_size` players and the bottom slice gets the remainder. Players
+  # are placed by strategy-assigned slice first, then by original slice
+  # (lower = stronger), then by place ascending, then by user_id for a
+  # deterministic tiebreak.
+  defp normalize_slice_sizes(assignments, _round_results, slice_count, _slice_size)
+       when slice_count <= 1 or assignments == [] do
+    assignments
+  end
+
+  defp normalize_slice_sizes(assignments, round_results, slice_count, slice_size)
+       when is_integer(slice_size) and slice_size > 0 do
+    results_by_user = Map.new(round_results, fn r -> {r.user_id, r} end)
+
+    last_index = slice_count - 1
+
+    assignments
+    |> Enum.sort_by(fn %{user_id: user_id, new_slice_index: new_idx} ->
+      r = Map.get(results_by_user, user_id, %{slice_index: new_idx, place: slice_size + 1})
+      {new_idx, Map.get(r, :slice_index, new_idx), Map.get(r, :place, slice_size + 1), user_id}
+    end)
+    |> Enum.with_index()
+    |> Enum.map(fn {%{user_id: user_id}, position} ->
+      slot = min(div(position, slice_size), last_index)
+      %{user_id: user_id, new_slice_index: slot}
+    end)
+  end
+
+  defp normalize_slice_sizes(assignments, _round_results, _slice_count, _slice_size), do: assignments
 
   defp build_round_results(run, ids, slice_index) do
     run
     |> GroupTaskContext.extract_round_results()
     |> Enum.filter(fn r -> r.user_id in ids end)
-    |> Enum.map(fn r -> Map.put(r, :slice_index, slice_index) end)
+    |> Enum.sort_by(& &1.place)
+    |> Enum.with_index(1)
+    |> Enum.map(fn {r, dense_place} -> Map.merge(r, %{place: dense_place, slice_index: slice_index}) end)
   end
 
   defp run_seed_for_player(%GroupTournament{} = group_tournament, user_id) do
@@ -240,14 +350,27 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   defp seed_ranking(score, duration_ms), do: -score * 1_000_000 + duration_ms
 
   # Pad short slices with bots so a slice always plays against a full field of
-  # `slice_size` participants. A fully-populated slice (all humans submitted)
-  # runs without bots — humans race only each other.
-  defp include_bots_for_slice?(%GroupTournament{slice_size: slice_size}, ids)
+  # `slice_size` participants. The bottom slice is exempt — by design it holds
+  # the remainder when player count doesn't divide evenly, so a partial field
+  # there is expected and bot-fillers would just add noise. Fully-populated
+  # slices run without bots — humans race only each other.
+  defp include_bots_for_slice?(%GroupTournament{slice_size: slice_size} = t, ids, slice_index)
        when is_integer(slice_size) and slice_size > 0 do
-    length(ids) < slice_size
+    cond do
+      length(ids) >= slice_size -> false
+      bottom_slice?(t, slice_index) -> false
+      true -> true
+    end
   end
 
-  defp include_bots_for_slice?(_, _), do: false
+  defp include_bots_for_slice?(_, _, _), do: false
+
+  defp bottom_slice?(%GroupTournament{slice_count: slice_count}, slice_index)
+       when is_integer(slice_count) and slice_count > 0 and is_integer(slice_index) do
+    slice_index == slice_count - 1
+  end
+
+  defp bottom_slice?(_, _), do: false
 
   defp order_players(players, "rating") do
     Enum.sort_by(players, fn player ->

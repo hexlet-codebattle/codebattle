@@ -73,7 +73,10 @@ const groupTournament = createSlice({
       state.langSlug = payload;
     },
     setData: (state, { payload }) => {
-      state.data = payload;
+      // Merge so a later-arriving REST snapshot can't wipe fields that only
+      // the channel push includes (notably `leaderboard`). Both sources race
+      // on initial page load.
+      state.data = { ...(state.data || {}), ...(payload || {}) };
     },
     setActiveRunIdFromServer: (state, { payload }) => {
       state.activeRunIdFromServer = payload;

@@ -289,6 +289,117 @@ defmodule Codebattle.GroupTournament.IntegrationTest do
       assert reloaded.total_score == 0
       assert reloaded.consecutive_zero_rounds == 1
     end
+
+    test "apply_movement keeps slice sizes balanced across many rounds (mirrored_cascade reproducer)" do
+      # Repro for the tournament-13 bug: slice_size=8, slice_count=7,
+      # mirrored_cascade — without the normalize pass the cascade drained
+      # the top slices and overflowed the bottom one. After the fix slices
+      # 0..slice_count-2 must each hold exactly slice_size players and the
+      # bottom slice gets the remainder (here zero remainder → also 8).
+
+      slice_size = 8
+      slice_count = 7
+      player_count = slice_size * slice_count
+
+      tournament =
+        build_ranked_tournament(
+          slice_size: slice_size,
+          rounds_count: 6,
+          max_score: 1000,
+          slice_count: slice_count
+        )
+
+      players = create_players_with_tokens(tournament, player_count)
+      Enum.each(players, fn p -> insert_solution(tournament, p, "x-#{p.user_id}") end)
+
+      sorted_desc = Enum.sort_by(players, & &1.user_id, :desc)
+
+      slice_assignment =
+        sorted_desc
+        |> Enum.with_index()
+        |> Enum.map(fn {_p, idx} -> div(idx, slice_size) end)
+
+      assign_manually(sorted_desc, slice_assignment)
+
+      scores = Map.new(players, fn p -> {p.user_id, p.user_id} end)
+      put_scores(scores)
+
+      for round_no <- 2..6 do
+        tournament = tournament |> set_round(round_no) |> reload_tournament()
+        slice_results = SliceRunner.run_all_slices(tournament, max_concurrency: 4)
+
+        round_results =
+          Enum.flat_map(slice_results, fn
+            {_idx, :ok, results} -> results
+            _ -> []
+          end)
+
+        {:ok, _} = SliceRunner.apply_movement(tournament, round_results)
+
+        sizes =
+          for slice_idx <- 0..(slice_count - 1) do
+            length(list_user_ids_in_slice(tournament.id, slice_idx))
+          end
+
+        # Every slice except the bottom must equal slice_size.
+        for {size, idx} <- Enum.with_index(sizes), idx < slice_count - 1 do
+          assert size == slice_size,
+                 "round #{round_no}: slice #{idx} has #{size} players, expected #{slice_size}. sizes=#{inspect(sizes)}"
+        end
+
+        # Bottom slice holds the remainder (0..slice_size players).
+        bottom = List.last(sizes)
+        assert bottom >= 0 and bottom <= slice_size
+
+        # Total conserved.
+        assert Enum.sum(sizes) == player_count
+      end
+    end
+
+    test "post-round transitions keep zero-scoring players active in the bottom slice" do
+      tournament =
+        build_ranked_tournament(slice_size: 4, rounds_count: 5, max_score: 1000, slice_count: 2)
+
+      players = create_players_with_tokens(tournament, 8)
+      Enum.each(players, fn p -> insert_solution(tournament, p, "x-#{p.user_id}") end)
+
+      sorted_desc = Enum.sort_by(players, & &1.user_id, :desc)
+      assign_manually(sorted_desc, [0, 0, 0, 0, 1, 1, 1, 1])
+
+      last_place_player = Enum.min_by(players, & &1.user_id)
+
+      # Underdog never scores; everyone else gets their user_id worth.
+      scores =
+        Map.new(players, fn p ->
+          {p.user_id, if(p.user_id == last_place_player.user_id, do: 0, else: p.user_id)}
+        end)
+
+      put_scores(scores)
+
+      # Run several slice rounds and apply movement after each — the old code
+      # would mark this player as "left" once consecutive_zero_rounds hit the
+      # threshold (default 2). With auto-leave removed they must stay active
+      # and remain in the bottom slice.
+      for round_no <- 2..4 do
+        tournament = tournament |> set_round(round_no) |> reload_tournament()
+        slice_results = SliceRunner.run_all_slices(tournament, max_concurrency: 2)
+
+        round_results =
+          Enum.flat_map(slice_results, fn
+            {_idx, :ok, results} -> results
+            _ -> []
+          end)
+
+        {:ok, _} = SliceRunner.apply_movement(tournament, round_results)
+      end
+
+      reloaded = Repo.reload!(last_place_player)
+
+      assert reloaded.state == "active", "inactive player should stay active, got #{reloaded.state}"
+      assert reloaded.consecutive_zero_rounds >= 2, "expected zero-streak to accumulate past the old threshold"
+      assert reloaded.slice_index == 1, "inactive player should settle in the bottom slice"
+      assert reloaded.total_score == 0
+    end
   end
 
   # === Helpers ===

@@ -77,6 +77,89 @@
     {error_tag(f, :max_score)}
   </div>
 
+  <h4 class="text-white mt-4 mb-3">Format</h4>
+
+  <div class="form-group">
+    <div><span class="text-white">Type</span></div>
+    {select(f, :type, Enum.map(Codebattle.GroupTournament.types(), &{&1, &1}),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
+    {error_tag(f, :type)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Slice Size (players per slice group)</span></div>
+    {number_input(f, :slice_size,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1"
+    )}
+    {error_tag(f, :slice_size)}
+  </div>
+
+  <div class="form-group">
+    <div>
+      <span class="text-white">
+        Slice Count (leave blank to derive from players / slice size)
+      </span>
+    </div>
+    {number_input(f, :slice_count,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1"
+    )}
+    {error_tag(f, :slice_count)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Slice Strategy</span></div>
+    {select(
+      f,
+      :slice_strategy,
+      Enum.map(Codebattle.GroupTournament.slice_strategies(), &{&1, &1}),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
+    {error_tag(f, :slice_strategy)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Scoring Strategy</span></div>
+    {select(
+      f,
+      :scoring_strategy,
+      Enum.map(Codebattle.GroupTournament.scoring_strategies(), &{&1, &1}),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
+    {error_tag(f, :scoring_strategy)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Movement Strategy</span></div>
+    {select(
+      f,
+      :movement_strategy,
+      Enum.map(Codebattle.GroupTournament.movement_strategies(), &{&1, &1}),
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white"
+    )}
+    {error_tag(f, :movement_strategy)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Place Weight</span></div>
+    {number_input(f, :place_weight,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1"
+    )}
+    {error_tag(f, :place_weight)}
+  </div>
+
+  <div class="form-group">
+    <div><span class="text-white">Break Between Rounds (sec)</span></div>
+    {number_input(f, :break_duration_seconds,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "0"
+    )}
+    {error_tag(f, :break_duration_seconds)}
+  </div>
+
   <div class="form-group form-check mb-4">
     {checkbox(f, :include_bots, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :include_bots)}>

@@ -12,6 +12,7 @@ function MainPanel({
   roundsCount,
   currentRoundPosition,
   status,
+  currentUserId,
 }) {
   const [openJson, setOpenJson] = useState(null); // "history" | "summary" | null
   const [activeTab, setActiveTab] = useState("run"); // "run" | "leaderboard"
@@ -23,11 +24,12 @@ function MainPanel({
   const summary = run?.result?.summary;
   const hasHistory = history != null;
   const hasSummary = summary != null;
+  // Show the leaderboard tab for every multi-player tournament regardless of
+  // round count or how far along the tournament is — players want to see
+  // current standings even before round 1 is over, and single-round
+  // tournaments still benefit from the slice/seed views.
   const hasLeaderboard =
-    Array.isArray(leaderboard) &&
-    leaderboard.length > 0 &&
-    Number.isInteger(roundsCount) &&
-    roundsCount > 1;
+    Array.isArray(leaderboard) && leaderboard.length > 0 && Number.isInteger(roundsCount);
 
   const tabBtnClass = (active) =>
     `btn btn-sm px-3 mr-2 text-white shadow-none border-0 rounded-0 ${
@@ -84,6 +86,7 @@ function MainPanel({
             roundsCount={roundsCount}
             currentRoundPosition={currentRoundPosition}
             isFinished={status === "finished"}
+            currentUserId={currentUserId}
           />
         </div>
       </>

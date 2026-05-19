@@ -1770,5 +1770,23 @@ msgstr "Вышел"
 msgid "Seed"
 msgstr "Отбор"
 
+msgid "%{count} slices"
+msgstr "%{count} групп"
+
+msgid "%{visible} / %{total} slices"
+msgstr "%{visible} / %{total} групп"
+
+msgid "Show all"
+msgstr "Показать все"
+
+msgid "Show less"
+msgstr "Свернуть"
+
+msgid "No round data yet"
+msgstr "Данных раунда пока нет"
+
+msgid "You"
+msgstr "Вы"
+
 msgid "Add solution"
 msgstr "Добавить решение"

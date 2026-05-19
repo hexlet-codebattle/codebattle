@@ -620,49 +620,49 @@ defmodule Codebattle.GroupTournament.Context do
       |> Enum.group_by(& &1.user_id)
 
     players
-    |> Enum.map(fn player ->
-      rounds =
-        round_scores
-        |> Map.get(player.user_id, [])
-        |> Map.new(fn rs ->
-          {rs.round_position,
-           %{
-             slice_index: rs.slice_index,
-             place: rs.place,
-             score: rs.score
-           }}
-        end)
-
-      # Synthesise R1 from the seeding pass so the UI can show the seed score
-      # in the R1 column. Seeding runs solo-against-bots, so there's no
-      # cross-player place; we still surface the score (and the initial slice
-      # the player landed in) without touching total_score.
-      rounds =
-        if is_integer(player.seed_score) and not Map.has_key?(rounds, 1) do
-          Map.put(rounds, 1, %{
-            slice_index: player.slice_index,
-            place: nil,
-            score: player.seed_score
-          })
-        else
-          rounds
-        end
-
-      %{
-        user_id: player.user_id,
-        name: player.user && player.user.name,
-        avatar_url: player.user && Map.get(player.user, :avatar_url),
-        clan: player.user && Map.get(player.user, :clan),
-        clan_id: player.user && Map.get(player.user, :clan_id),
-        state: player.state,
-        slice_index: player.slice_index,
-        total_score: player.total_score || 0,
-        seed_score: player.seed_score,
-        last_round_place: player.last_round_place,
-        rounds: rounds
-      }
+    |> Enum.map(&build_leaderboard_entry(&1, round_scores))
+    |> Enum.sort_by(fn entry ->
+      {-(entry.total_score || 0), -(entry.seed_score || 0), entry.user_id}
     end)
-    |> Enum.sort_by(fn entry -> {-(entry.total_score || 0), entry.user_id} end)
+  end
+
+  defp build_leaderboard_entry(player, round_scores) do
+    rounds =
+      round_scores
+      |> Map.get(player.user_id, [])
+      |> Map.new(fn rs ->
+        {rs.round_position, %{slice_index: rs.slice_index, place: rs.place, score: rs.score}}
+      end)
+      |> maybe_put_seed_round(player)
+
+    %{
+      user_id: player.user_id,
+      name: player.user && player.user.name,
+      avatar_url: player.user && Map.get(player.user, :avatar_url),
+      clan: player.user && Map.get(player.user, :clan),
+      clan_id: player.user && Map.get(player.user, :clan_id),
+      state: player.state,
+      slice_index: player.slice_index,
+      total_score: player.total_score || 0,
+      seed_score: player.seed_score,
+      last_round_place: player.last_round_place,
+      rounds: rounds
+    }
+  end
+
+  # Synthesise R1 from the seeding pass so the UI can show the seed score in
+  # the R1 column. Seeding runs solo-against-bots, so there's no cross-player
+  # place; we surface score and initial slice without touching total_score.
+  defp maybe_put_seed_round(rounds, player) do
+    if is_integer(player.seed_score) and not Map.has_key?(rounds, 1) do
+      Map.put(rounds, 1, %{
+        slice_index: player.slice_index,
+        place: nil,
+        score: player.seed_score
+      })
+    else
+      rounds
+    end
   end
 
   def serialize_run(run) do
