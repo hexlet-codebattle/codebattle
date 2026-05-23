@@ -52,7 +52,8 @@ defmodule Codebattle.GroupTournament do
              :scoring_strategy,
              :movement_strategy,
              :inactive_rounds_to_leave,
-             :break_duration_seconds
+             :break_duration_seconds,
+             :has_seed_round
            ]}
 
   schema "group_tournaments" do
@@ -85,6 +86,7 @@ defmodule Codebattle.GroupTournament do
     field(:movement_strategy, :string, default: "mirrored_cascade")
     field(:inactive_rounds_to_leave, :integer, default: 2)
     field(:break_duration_seconds, :integer, default: 0)
+    field(:has_seed_round, :boolean, default: false)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -131,7 +133,8 @@ defmodule Codebattle.GroupTournament do
       :scoring_strategy,
       :movement_strategy,
       :inactive_rounds_to_leave,
-      :break_duration_seconds
+      :break_duration_seconds,
+      :has_seed_round
     ])
     |> validate_required([
       :group_task_id,
@@ -173,11 +176,14 @@ defmodule Codebattle.GroupTournament do
   @doc """
   Returns true if this is the seeding round of a ranked tournament.
 
-  Round 1 is the seeding round for ranked tournaments; rounds 2..rounds_count
-  are the slice rounds. So a `rounds_count = 6` ranked tournament has 1
-  seeding round + 5 slice rounds.
+  When `has_seed_round` is true, round 1 is the seeding pass (solo-vs-bots
+  to compute seed_score, used to slot players into initial slices) and
+  rounds 2..rounds_count are the slice rounds — so `rounds_count = 6` gives
+  1 seed + 5 slice rounds. When `has_seed_round` is false, every round is
+  a slice round and round 1 is no different from the rest.
   """
-  def seeding_round?(%__MODULE__{type: "ranked", current_round_position: 1}), do: true
+  def seeding_round?(%__MODULE__{type: "ranked", has_seed_round: true, current_round_position: 1}), do: true
+
   def seeding_round?(_), do: false
 
   @doc """

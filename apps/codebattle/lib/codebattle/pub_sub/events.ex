@@ -630,28 +630,45 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("group_tournament:run_updated", params) do
-    recipient_ids =
-      [params[:user_id] | params[:player_ids] || []]
-      |> Enum.reject(&is_nil/1)
-      |> Enum.uniq()
+    # A run row belongs to exactly one user — the broadcast carries that
+    # user's score/place and should only land in that user's per-user topic.
+    # Fanning out to every player_id of a slice would send each row to all
+    # six players, leaving each panel with six duplicates per slice.
+    per_user =
+      case params[:user_id] do
+        user_id when is_integer(user_id) ->
+          [
+            %Message{
+              topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
+              event: "group_tournament:run_updated",
+              payload: params
+            }
+          ]
 
-    user_messages =
-      Enum.map(recipient_ids, fn user_id ->
-        %Message{
-          topic: "group_tournament:#{params.group_tournament_id}:user:#{user_id}",
-          event: "group_tournament:run_updated",
-          payload: params
-        }
-      end)
+        _ ->
+          []
+      end
 
-    [
-      %Message{
-        topic: "group_tournament:#{params.group_tournament_id}",
-        event: "group_tournament:run_updated",
-        payload: params
-      }
-      | user_messages
-    ]
+    # The tournament-wide topic is opt-in (admins/moderators on ranked,
+    # everyone on individual tournaments) and exists to give those listeners
+    # a live feed of *user-initiated* submissions. Slice/seed rounds finish
+    # ~slice_size rows at a time — broadcasting all of those to the wide
+    # topic would dump up to 1000 events on every admin per round when the
+    # status_updated event + per-user topics already cover what's useful.
+    tournament_wide =
+      if params[:kind] in ["user", :user] do
+        [
+          %Message{
+            topic: "group_tournament:#{params.group_tournament_id}",
+            event: "group_tournament:run_updated",
+            payload: params
+          }
+        ]
+      else
+        []
+      end
+
+    per_user ++ tournament_wide
   end
 
   def get_messages("group_tournament:status_updated", params) do

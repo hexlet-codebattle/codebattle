@@ -10,7 +10,6 @@ defmodule Codebattle.GroupTournament.Context do
   alias Codebattle.GroupTournament.Server
   alias Codebattle.GroupTournamentPlayer
   alias Codebattle.GroupTournamentRoundScore
-  alias Codebattle.PubSub
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserGroupTournament
@@ -555,15 +554,11 @@ defmodule Codebattle.GroupTournament.Context do
   def maybe_run_after_solution_submission(group_tournament_id, submitted_solution) do
     case get_group_tournament(group_tournament_id) do
       %{state: "active", group_task: group_task, include_bots: include_bots} ->
-        player_ids = [submitted_solution.user_id]
-
-        run_result =
-          GroupTaskContext.run_group_task(group_task, player_ids, %{
-            group_tournament_id: group_tournament_id,
-            include_bots: include_bots
-          })
-
-        broadcast_run_update(group_tournament_id, run_result, submitted_solution)
+        # run_group_task itself emits per-user "run_updated" broadcasts.
+        GroupTaskContext.run_group_task(group_task, [submitted_solution.user_id], %{
+          group_tournament_id: group_tournament_id,
+          include_bots: include_bots
+        })
 
         :ok
 
@@ -603,67 +598,124 @@ defmodule Codebattle.GroupTournament.Context do
   player with their total_score, current slice, and a `rounds` map keyed by
   round_position with `%{slice_index, place, score}` entries.
 
-  Ordered by total_score desc, then user_id asc as a stable tie-break.
+  Ordered by total_score desc, then seed_score desc, then user_id asc as a
+  stable tie-break.
+
+  Implemented as a single SQL query so a 1000-player tournament rebuild is
+  one DB roundtrip plus an O(P) Elixir post-process, instead of two queries
+  + in-memory group_by + sort. Postgres builds the per-player `rounds` map
+  via json_object_agg and does the sort using indexed columns.
   """
   @spec build_leaderboard(pos_integer()) :: list(map())
   def build_leaderboard(group_tournament_id) do
-    players =
-      GroupTournamentPlayer
-      |> where([p], p.group_tournament_id == ^group_tournament_id)
-      |> preload([:user])
-      |> Repo.all()
+    sql = """
+    SELECT
+      p.user_id,
+      u.name,
+      u.avatar_url,
+      u.clan,
+      u.clan_id,
+      p.state,
+      p.slice_index,
+      COALESCE(p.total_score, 0) AS total_score,
+      p.seed_score,
+      p.last_round_place,
+      COALESCE(
+        json_object_agg(
+          rs.round_position,
+          json_build_object(
+            'slice_index', rs.slice_index,
+            'place',       rs.place,
+            'score',       rs.score
+          )
+        ) FILTER (WHERE rs.round_position IS NOT NULL),
+        '{}'::json
+      ) AS rounds
+    FROM group_tournament_players p
+    LEFT JOIN users u
+      ON u.id = p.user_id
+    LEFT JOIN group_tournament_round_scores rs
+      ON rs.group_tournament_id = p.group_tournament_id
+     AND rs.user_id              = p.user_id
+    WHERE p.group_tournament_id = $1
+    GROUP BY p.id, u.id
+    ORDER BY COALESCE(p.total_score, 0) DESC,
+             COALESCE(p.seed_score, 0)  DESC,
+             p.user_id ASC
+    """
 
-    round_scores =
-      GroupTournamentRoundScore
-      |> where([rs], rs.group_tournament_id == ^group_tournament_id)
-      |> Repo.all()
-      |> Enum.group_by(& &1.user_id)
+    %{rows: rows} = Repo.query!(sql, [group_tournament_id])
 
-    players
-    |> Enum.map(&build_leaderboard_entry(&1, round_scores))
-    |> Enum.sort_by(fn entry ->
-      {-(entry.total_score || 0), -(entry.seed_score || 0), entry.user_id}
-    end)
+    Enum.map(rows, &row_to_leaderboard_entry/1)
   end
 
-  defp build_leaderboard_entry(player, round_scores) do
+  defp row_to_leaderboard_entry([
+         user_id,
+         name,
+         avatar_url,
+         clan,
+         clan_id,
+         state,
+         slice_index,
+         total_score,
+         seed_score,
+         last_round_place,
+         rounds_json
+       ]) do
     rounds =
-      round_scores
-      |> Map.get(player.user_id, [])
-      |> Map.new(fn rs ->
-        {rs.round_position, %{slice_index: rs.slice_index, place: rs.place, score: rs.score}}
-      end)
-      |> maybe_put_seed_round(player)
+      rounds_json
+      |> decode_rounds_map()
+      |> maybe_put_seed_round(seed_score, slice_index)
 
     %{
-      user_id: player.user_id,
-      name: player.user && player.user.name,
-      avatar_url: player.user && Map.get(player.user, :avatar_url),
-      clan: player.user && Map.get(player.user, :clan),
-      clan_id: player.user && Map.get(player.user, :clan_id),
-      state: player.state,
-      slice_index: player.slice_index,
-      total_score: player.total_score || 0,
-      seed_score: player.seed_score,
-      last_round_place: player.last_round_place,
+      user_id: user_id,
+      name: name,
+      avatar_url: avatar_url,
+      clan: clan,
+      clan_id: clan_id,
+      state: state,
+      slice_index: slice_index,
+      total_score: total_score,
+      seed_score: seed_score,
+      last_round_place: last_round_place,
       rounds: rounds
     }
   end
 
+  # json_object_agg returns a Postgres `json` column. Postgrex hands it back
+  # as an already-decoded map with string keys (e.g. %{"1" => ...}); convert
+  # to integer keys + atom-valued cells to match the cached leaderboard
+  # shape that the rest of the code (and the UI) already uses.
+  defp decode_rounds_map(rounds) when is_map(rounds) do
+    Map.new(rounds, fn {round_position, cell} ->
+      {to_integer_key(round_position),
+       %{
+         slice_index: cell["slice_index"],
+         place: cell["place"],
+         score: cell["score"]
+       }}
+    end)
+  end
+
+  defp decode_rounds_map(_), do: %{}
+
+  defp to_integer_key(key) when is_integer(key), do: key
+  defp to_integer_key(key) when is_binary(key), do: String.to_integer(key)
+
   # Synthesise R1 from the seeding pass so the UI can show the seed score in
-  # the R1 column. Seeding runs solo-against-bots, so there's no cross-player
-  # place; we surface score and initial slice without touching total_score.
-  defp maybe_put_seed_round(rounds, player) do
-    if is_integer(player.seed_score) and not Map.has_key?(rounds, 1) do
-      Map.put(rounds, 1, %{
-        slice_index: player.slice_index,
-        place: nil,
-        score: player.seed_score
-      })
-    else
+  # the R1 column during the brief window between `run_seeding` completing
+  # and `record_seed_round_scores` writing the persisted row. For
+  # tournaments with `has_seed_round=false`, `seed_score` is nil and this is
+  # a no-op.
+  defp maybe_put_seed_round(rounds, seed_score, slice_index) when is_integer(seed_score) do
+    if Map.has_key?(rounds, 1) do
       rounds
+    else
+      Map.put(rounds, 1, %{slice_index: slice_index, place: nil, score: seed_score})
     end
   end
+
+  defp maybe_put_seed_round(rounds, _seed_score, _slice_index), do: rounds
 
   def serialize_run(run) do
     %{
@@ -729,36 +781,6 @@ defmodule Codebattle.GroupTournament.Context do
 
       true ->
         false
-    end
-  end
-
-  def broadcast_run_update(group_tournament_or_id, run_result, submitted_solution \\ nil)
-
-  def broadcast_run_update(%GroupTournament{} = group_tournament, {:ok, run}, submitted_solution) do
-    payload = %{
-      group_tournament_id: group_tournament.id,
-      user_id:
-        (submitted_solution && submitted_solution.user_id) ||
-          (run.user_group_tournament && run.user_group_tournament.user_id) || List.first(run.player_ids),
-      run_id: run.id,
-      status: run.status,
-      score: run.score,
-      kind: run.kind,
-      slice_index: run.slice_index,
-      round_position: run.round_position,
-      player_ids: run.player_ids,
-      inserted_at: run.inserted_at
-    }
-
-    PubSub.broadcast("group_tournament:run_updated", payload)
-  end
-
-  def broadcast_run_update(_group_tournament, {:error, _result}, _submitted_solution), do: :ok
-
-  def broadcast_run_update(group_tournament_id, run_result, submitted_solution) when is_integer(group_tournament_id) do
-    case get_group_tournament(group_tournament_id) do
-      %GroupTournament{} = group_tournament -> broadcast_run_update(group_tournament, run_result, submitted_solution)
-      _ -> :ok
     end
   end
 end

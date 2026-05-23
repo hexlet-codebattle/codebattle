@@ -68,7 +68,8 @@ defmodule CodebattleWeb.GroupTournamentChannelTest do
     PubSub.broadcast("group_tournament:run_updated", %{
       group_tournament_id: tournament_id,
       user_id: 17,
-      run_id: 42
+      run_id: 42,
+      kind: "user"
     })
 
     assert_push("group_tournament:run_updated", %{group_tournament_id: ^tournament_id, user_id: 17, run_id: 42})

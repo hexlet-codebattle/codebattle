@@ -706,6 +706,20 @@
   z-index: 1050;
 }
 
+@keyframes cb-run-pending-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, 0);
+  }
+}
+
+.cb-run-pending {
+  animation: cb-run-pending-pulse 1.6s ease-in-out infinite;
+}
+
 .btn-yellow {
   background-color: #fffb47;
   color: black;

@@ -1,6 +1,15 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import dayjs from "../../../i18n/dayjs";
 import i18n from "../../../i18n";
+
+const ACCENT_USER = "rgba(99, 102, 121, 0.95)";
+const ACCENT_SEED = "rgba(20, 184, 166, 0.95)";
+const ACCENT_SLICE = "rgba(139, 92, 246, 0.95)";
+const ACCENT_ACTIVE = "rgba(96, 165, 250, 0.95)";
+
+const STATUS_SUCCESS = "rgba(40, 167, 69, 0.95)";
+const STATUS_ERROR = "rgba(220, 53, 69, 0.95)";
+const STATUS_PENDING = "rgba(245, 158, 11, 0.95)";
 
 const getExternalUrl = (url) => {
   if (!url) {
@@ -33,9 +42,25 @@ const formatInsertedAtTooltip = (insertedAt) => {
   return date.isValid() ? date.format("YYYY-MM-DD HH:mm:ss") : undefined;
 };
 
+const isSeedRun = (item) => item?.kind === "seed";
+const isSliceRun = (item) => item?.kind === "slice";
+const isRoundRun = (item) => isSeedRun(item) || isSliceRun(item);
+const isPending = (item) => item?.status === "pending";
+const isError = (item) => item?.status === "error";
 const isSuccess = (item) => item?.status === "success";
 
-const isRoundRun = (item) => item?.kind === "slice" || item?.kind === "seed";
+const kindAccent = (item) => {
+  if (isSeedRun(item)) return ACCENT_SEED;
+  if (isSliceRun(item)) return ACCENT_SLICE;
+  return ACCENT_USER;
+};
+
+const statusAccent = (item) => {
+  if (isPending(item)) return STATUS_PENDING;
+  if (isError(item)) return STATUS_ERROR;
+  if (isSuccess(item)) return STATUS_SUCCESS;
+  return STATUS_PENDING;
+};
 
 const buildRunTitles = (items) => {
   if (!items || items.length === 0) {
@@ -50,15 +75,18 @@ const buildRunTitles = (items) => {
       return;
     }
 
-    if (isRoundRun(item)) {
-      const round = item.kind === "seed" ? 1 : item.roundPosition;
-      titles[item.id] = round ? `R${round}` : "R";
+    if (isSeedRun(item)) {
+      titles[item.id] = i18n.t("Seed");
+    } else if (isSliceRun(item)) {
+      // Round 1 is the seed round; slice rounds start at round_position=2 and
+      // display as R1, R2, ... to match the leaderboard's round labels.
+      const r = Number.isInteger(item.roundPosition) ? item.roundPosition - 1 : null;
+      titles[item.id] = r ? `R${r}` : "R";
     } else {
       userRunIds.push(item.id);
     }
   });
 
-  // Items are ordered newest-first, so the oldest user submission is v1.
   const userTotal = userRunIds.length;
   userRunIds.forEach((id, idx) => {
     titles[id] = `v${userTotal - idx}`;
@@ -76,7 +104,7 @@ const findBestRunId = (items) => {
   let bestScore = -Infinity;
 
   items.forEach((item) => {
-    if (isRoundRun(item)) {
+    if (isRoundRun(item) || !isSuccess(item)) {
       return;
     }
     const score = item?.score ?? 0;
@@ -89,12 +117,34 @@ const findBestRunId = (items) => {
   return bestId;
 };
 
-function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl, onAddSolution }) {
+const getPlaceFor = (item, leaderboardEntry) => {
+  if (!leaderboardEntry?.rounds) return null;
+  const key = isSeedRun(item) ? 1 : item?.roundPosition;
+  if (!Number.isInteger(key)) return null;
+  const cell = leaderboardEntry.rounds[key] || leaderboardEntry.rounds[String(key)];
+  return Number.isInteger(cell?.place) ? cell.place : null;
+};
+
+function EvolutionPanel({
+  items,
+  tournamentStatus,
+  runId,
+  setRunId,
+  repoUrl,
+  onAddSolution,
+  leaderboard,
+  currentUserId,
+}) {
   const bestRunId = findBestRunId(items);
   const titles = buildRunTitles(items);
   const [hoverTooltip, setHoverTooltip] = useState(null);
   const externalUrl = tournamentStatus !== "finished" ? getExternalUrl(repoUrl) : null;
   const canAddSolutionInternal = tournamentStatus !== "finished" && !externalUrl && !!onAddSolution;
+
+  const myEntry = useMemo(() => {
+    if (!Number.isInteger(currentUserId) || !Array.isArray(leaderboard)) return null;
+    return leaderboard.find((e) => e.userId === currentUserId) || null;
+  }, [leaderboard, currentUserId]);
 
   return (
     <>
@@ -149,27 +199,34 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl, onA
             <div className="mt-2 small d-flex flex-column">
               {items.map((item, idx) => {
                 const isActive = runId === item?.id;
-                const success = isSuccess(item);
+                const pending = isPending(item);
+                const roundRun = isRoundRun(item);
                 const isBest = item?.id != null && item.id === bestRunId;
-                const statusColor = success ? "rgba(40, 167, 69, 0.95)" : "rgba(220, 53, 69, 0.95)";
-                const ringColor = isActive
-                  ? "rgba(96, 165, 250, 0.95)"
-                  : "rgba(99, 102, 121, 0.95)";
+                const accent = kindAccent(item);
+                const ringColor = isActive ? ACCENT_ACTIVE : accent;
+                const leftBorderColor = statusAccent(item);
                 const title = (item?.id != null && titles[item.id]) || `v${items.length - idx}`;
-                const score = item?.score ?? 0;
+                const score = item?.score;
+                const place = roundRun ? getPlaceFor(item, myEntry) : null;
                 const tooltip = formatInsertedAtTooltip(item?.insertedAt);
+                const sliceLabel =
+                  isSliceRun(item) && Number.isInteger(item.sliceIndex)
+                    ? `S${item.sliceIndex + 1}`
+                    : null;
 
                 return (
                   <div key={item?.id ?? idx} className="mb-2">
                     <button
                       type="button"
                       onClick={() => setRunId(item?.id)}
-                      className="rounded-pill p-2 px-3 text-left bg-transparent"
+                      className={`rounded-pill p-2 px-3 text-left bg-transparent ${
+                        pending ? "cb-run-pending" : ""
+                      }`}
                       style={{
                         borderTop: `1px solid ${ringColor}`,
                         borderRight: `1px solid ${ringColor}`,
                         borderBottom: `1px solid ${ringColor}`,
-                        borderLeft: `3px solid ${statusColor}`,
+                        borderLeft: `3px solid ${leftBorderColor}`,
                         backgroundColor: isActive ? "rgba(96, 165, 250, 0.25)" : "transparent",
                         boxShadow: isActive ? "0 0 0 1px rgba(96, 165, 250, 0.5)" : "none",
                         transition: "background-color 160ms ease, box-shadow 160ms ease",
@@ -196,17 +253,44 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl, onA
                       }}
                     >
                       <div className="d-flex align-items-center text-nowrap">
-                        <span className="badge badge-secondary mr-2">{title}</span>
                         <span
-                          className="font-weight-bold mr-2"
+                          className="badge mr-2"
                           style={{
-                            fontSize: "1.15rem",
-                            color: isActive ? "#ffffff" : "#e2e8f0",
+                            backgroundColor: accent,
+                            color: "#fff",
                           }}
                         >
-                          {i18n.t("Score %{score}", { score })}
+                          {title}
                         </span>
-                        {isBest && (
+                        {sliceLabel && (
+                          <span
+                            className={`small mr-2 ${isActive ? "text-white-50" : "text-muted"}`}
+                          >
+                            {sliceLabel}
+                          </span>
+                        )}
+                        {pending ? (
+                          <span
+                            className="font-weight-bold"
+                            style={{
+                              fontSize: "1rem",
+                              color: isActive ? "#ffffff" : "#fbbf24",
+                            }}
+                          >
+                            {i18n.t("Running…")}
+                          </span>
+                        ) : (
+                          <span
+                            className="font-weight-bold mr-2"
+                            style={{
+                              fontSize: "1.15rem",
+                              color: isActive ? "#ffffff" : "#e2e8f0",
+                            }}
+                          >
+                            {i18n.t("Score %{score}", { score: score ?? 0 })}
+                          </span>
+                        )}
+                        {!pending && isBest && (
                           <span
                             className={`small text-truncate ${isActive ? "text-white-50" : "text-muted"}`}
                           >
@@ -214,6 +298,18 @@ function EvolutionPanel({ items, tournamentStatus, runId, setRunId, repoUrl, onA
                           </span>
                         )}
                       </div>
+                      {!pending && !roundRun && (
+                        <div className={`small mt-1 ${isActive ? "text-white-50" : "text-muted"}`}>
+                          {i18n.t("Test run")}
+                        </div>
+                      )}
+                      {!pending && roundRun && (
+                        <div className={`small mt-1 ${isActive ? "text-white-50" : "text-muted"}`}>
+                          {Number.isInteger(place)
+                            ? i18n.t("Place: #%{place}", { place })
+                            : i18n.t("Place: pending")}
+                        </div>
+                      )}
                     </button>
                   </div>
                 );

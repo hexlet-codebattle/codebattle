@@ -103,6 +103,8 @@ function GroupTournamentPage({
             setRunId={setSelectedRunId}
             repoUrl={externalSetup?.repoUrl}
             onAddSolution={runOnExternalPlatform ? null : () => setEditorFullscreen(true)}
+            leaderboard={data?.leaderboard}
+            currentUserId={currentUserId}
           />
         </div>
         <div className="col-lg-10 col-md-10 col-12 p-1 pb-4">

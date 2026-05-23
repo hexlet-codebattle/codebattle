@@ -42,8 +42,8 @@ defmodule Codebattle.GroupTournament.Server do
     :exit, _ -> {:error, :not_found}
   end
 
-  def submit_solution(id, user, solution) do
-    GenServer.call(server_name(id), {:submit_solution, user, solution}, 30_000)
+  def submit_solution(id, user, solution, opts \\ []) do
+    GenServer.call(server_name(id), {:submit_solution, user, solution, opts}, 30_000)
   catch
     :exit, _ -> {:error, :not_found}
   end
@@ -214,7 +214,7 @@ defmodule Codebattle.GroupTournament.Server do
     end
   end
 
-  def handle_call({:submit_solution, user, solution}, _from, %{group_tournament: group_tournament} = state) do
+  def handle_call({:submit_solution, user, solution, opts}, _from, %{group_tournament: group_tournament} = state) do
     current_player = Enum.find(group_tournament.players, &(&1.user_id == user.id))
 
     if is_nil(current_player) do
@@ -226,8 +226,13 @@ defmodule Codebattle.GroupTournament.Server do
              solution: solution
            }) do
         {:ok, submitted_solution} ->
-          next_state = maybe_run_after_solution_submission(state, submitted_solution)
-          {:reply, {:ok, submitted_solution}, next_state}
+          # Async path (used by the LiveView channel) lets the channel push
+          # the "pending" broadcast to the client immediately while the
+          # runner works. The sync path is kept for REST callers that
+          # expect the run to be finished by the time the response returns.
+          run_user_submission(group_tournament, submitted_solution, opts)
+
+          {:reply, {:ok, submitted_solution}, state}
 
         {:error, _} = error ->
           {:reply, error, state}
@@ -361,17 +366,22 @@ defmodule Codebattle.GroupTournament.Server do
     |> Kernel.||(0)
   end
 
-  # For ranked tournaments, round 1 is a submission window: players submit
-  # solutions during the round (each submission runs as a bot-less debug run),
-  # then at round-end we run seeding against their latest submissions with
-  # bots and slice them. For individual tournaments, assign_slices is called
-  # once at start (legacy behaviour) so existing slice-aware features still
-  # work even though no movement happens later.
-  defp perform_round_start(%GroupTournament{type: "ranked", current_round_position: 1}) do
-    :ok
+  # For ranked tournaments with a seed round, round 1 is a submission window:
+  # players submit solutions during the round (each submission runs as a
+  # bot-less debug run), then at round-end we run seeding against their latest
+  # submissions with bots and slice them. For tournaments without a seed
+  # round, or for individual tournaments, assign_slices is called once at
+  # start so existing slice-aware features still work even though no movement
+  # happens later for individual tournaments.
+  defp perform_round_start(%GroupTournament{} = t) do
+    if GroupTournament.seeding_round?(t) do
+      :ok
+    else
+      assign_slices_on_start(t)
+    end
   end
 
-  defp perform_round_start(%GroupTournament{} = t) do
+  defp assign_slices_on_start(%GroupTournament{} = t) do
     case SliceRunner.assign_slices(t) do
       {:ok, count} ->
         Logger.info("group_tournament=#{t.id} assigned #{count} slices on start")
@@ -382,30 +392,31 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   # `run_round` returns the slice-runner results AND the round_results array
-  # used by movement. Returns `[]` for the seeding round (round 1 ranked).
-  defp run_round(%GroupTournament{type: "ranked", current_round_position: 1} = t) do
-    # Seeding round end: run each player's latest submission with bots
-    # (parallel pool inside SliceRunner) to produce seed scores. No
-    # round_results are returned — slicing happens in apply_post_round_transitions.
-    SliceRunner.run_seeding(t)
-    {[], []}
-  end
-
-  defp run_round(%GroupTournament{type: "ranked"} = t) do
-    slice_results = SliceRunner.run_all_slices(t)
-
-    round_results =
-      Enum.flat_map(slice_results, fn
-        {_idx, :ok, results} -> results
-        _ -> []
-      end)
-
-    {slice_results, round_results}
-  end
-
+  # used by movement. Returns `[]` for the seeding round.
   defp run_round(%GroupTournament{} = t) do
-    slice_results = SliceRunner.run_all_slices(t)
-    {slice_results, []}
+    cond do
+      GroupTournament.seeding_round?(t) ->
+        # Seeding round end: run each player's latest submission with bots
+        # (parallel pool inside SliceRunner) to produce seed scores. No
+        # round_results — slicing happens in apply_post_round_transitions.
+        SliceRunner.run_seeding(t)
+        {[], []}
+
+      GroupTournament.ranked?(t) ->
+        slice_results = SliceRunner.run_all_slices(t)
+
+        round_results =
+          Enum.flat_map(slice_results, fn
+            {_idx, :ok, results} -> results
+            _ -> []
+          end)
+
+        {slice_results, round_results}
+
+      true ->
+        slice_results = SliceRunner.run_all_slices(t)
+        {slice_results, []}
+    end
   end
 
   defp log_slice_results(%GroupTournament{} = t, slice_results) do
@@ -434,16 +445,28 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   # Post-round transitions for ranked tournaments:
-  # - After seeding round (round 1 just ended): assign initial slices by
-  #   seed_score, then advance to round 2.
+  # - After seeding round (round 1 just ended, has_seed_round=true): assign
+  #   initial slices by seed_score, then advance to round 2.
   # - After a slice round: apply movement. Inactive players are not removed —
   #   the movement strategy already settles them into the bottom slice, where
   #   they can keep playing.
-  defp apply_post_round_transitions(
-         %GroupTournament{type: "ranked", current_round_position: 1} = before_t,
-         %GroupTournament{} = _updated,
-         _round_results
-       ) do
+  defp apply_post_round_transitions(before_t, updated, round_results) do
+    cond do
+      GroupTournament.seeding_round?(before_t) ->
+        apply_post_seed_transitions(before_t)
+
+      GroupTournament.ranked?(before_t) and round_results != [] ->
+        apply_movement_transition(before_t, round_results)
+
+      true ->
+        :ok
+    end
+
+    _ = updated
+    :ok
+  end
+
+  defp apply_post_seed_transitions(%GroupTournament{} = before_t) do
     # Use rating strategy for the initial assignment so it sorts by
     # slice_ranking (which SliceRunner.run_seeding/1 wrote based on seed score).
     seeded = %{before_t | slice_strategy: "rating"}
@@ -460,12 +483,7 @@ defmodule Codebattle.GroupTournament.Server do
     end
   end
 
-  defp apply_post_round_transitions(
-         %GroupTournament{type: "ranked"} = before_t,
-         %GroupTournament{} = _updated,
-         round_results
-       )
-       when round_results != [] do
+  defp apply_movement_transition(%GroupTournament{} = before_t, round_results) do
     case SliceRunner.apply_movement(before_t, round_results) do
       {:ok, _} ->
         :ok
@@ -475,29 +493,39 @@ defmodule Codebattle.GroupTournament.Server do
     end
   end
 
-  defp apply_post_round_transitions(_before, _updated, _results), do: :ok
-
   # Per-submission debug run: only the submitting player's solution is executed
   # — never with bots — so the user can see their own output. The run is left
   # untagged (slice_index nil). Scored runs fire on the round timer and carry
   # the slice_index.
-  defp maybe_run_after_solution_submission(
-         %{group_tournament: %{state: "active"} = group_tournament} = state,
-         submitted_solution
-       )
+  defp run_user_submission_sync(%GroupTournament{state: "active"} = group_tournament, submitted_solution)
        when not is_nil(submitted_solution) do
-    run_result =
-      GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
-        group_tournament_id: group_tournament.id,
-        include_bots: false
-      })
+    # run_group_task itself emits per-user "run_updated" broadcasts (one
+    # pending, one finished), so we don't broadcast again here.
+    GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
+      group_tournament_id: group_tournament.id,
+      include_bots: false
+    })
 
-    Context.broadcast_run_update(group_tournament, run_result, submitted_solution)
-
-    state
+    :ok
   end
 
-  defp maybe_run_after_solution_submission(state, _submitted_solution), do: state
+  defp run_user_submission_sync(_group_tournament, _submitted_solution), do: :ok
+
+  defp run_user_submission_async(%GroupTournament{state: "active"} = group_tournament, submitted_solution)
+       when not is_nil(submitted_solution) do
+    Task.start(fn -> run_user_submission_sync(group_tournament, submitted_solution) end)
+    :ok
+  end
+
+  defp run_user_submission_async(_group_tournament, _submitted_solution), do: :ok
+
+  defp run_user_submission(group_tournament, submitted_solution, opts) do
+    if Keyword.get(opts, :async, false) do
+      run_user_submission_async(group_tournament, submitted_solution)
+    else
+      run_user_submission_sync(group_tournament, submitted_solution)
+    end
+  end
 
   defp schedule_start(state, %{state: "waiting_participants", require_invitation: true}) do
     # When require_invitation is set, don't auto-start on timer.

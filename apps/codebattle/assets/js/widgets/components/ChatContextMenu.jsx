@@ -6,7 +6,7 @@ import qs from "qs";
 import { Menu, Item, Separator } from "react-contexify";
 import { useSelector, useDispatch } from "react-redux";
 
-import i18n from "../../../i18n";
+import i18n from "../../i18n";
 import { pushCommand } from "@/middlewares/Chat";
 import { openDirect } from "@/middlewares/Lobby";
 import { followUser } from "@/middlewares/Main";
@@ -38,13 +38,7 @@ function ChatContextMenu({
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
 
-  const {
-    isBot,
-    canInvite,
-    name,
-    userId,
-    githubName,
-  } = request.user;
+  const { isBot, canInvite, name, userId, githubName } = request.user;
 
   const isCurrentUserHasActiveGames = useMemo(
     () =>

@@ -12,13 +12,6 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
     current_user = conn.assigns.current_user
     group_tournament = Context.get_current(id) || Context.get_group_tournament!(id)
 
-    player_ids = Enum.map(group_tournament.players, & &1.user_id)
-
-    latest_solutions =
-      GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
-        group_tournament_id: group_tournament.id
-      )
-
     external_setup = ensure_external_setup_if_needed(current_user, group_tournament)
 
     current_player = Enum.find(group_tournament.players, &(&1.user_id == current_user.id))
@@ -34,7 +27,6 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       group_tournament: serialize_group_tournament(group_tournament),
       current_player: serialize_player(current_player),
       players: Enum.map(group_tournament.players, &serialize_player/1),
-      latest_solutions: Map.new(latest_solutions, &{&1.user_id, serialize_solution(&1)}),
       solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
       latest_solution: serialize_solution(latest_solution),
       runs:

@@ -169,6 +169,15 @@
   </div>
 
   <div class="form-group form-check mb-4">
+    {checkbox(f, :has_seed_round, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :has_seed_round)}>
+      Has Seed Round (ranked only — round 1 is a solo-vs-bots seeding pass that
+      computes <code>seed_score</code> and slots players into initial slices)
+    </label>
+    {error_tag(f, :has_seed_round)}
+  </div>
+
+  <div class="form-group form-check mb-4">
     {checkbox(f, :run_on_external_platform, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :run_on_external_platform)}>
       Run on External Platform

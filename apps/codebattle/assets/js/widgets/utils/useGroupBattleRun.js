@@ -26,7 +26,7 @@ const useGroupBattleRun = (data) => {
 
       const nextRun = data.runs.find((run) => run.id === nextRunId);
 
-      if (nextRun && !nextRun.solution) {
+      if (nextRun && !nextRun.detailsLoaded) {
         requestRunDetails(nextRunId)(dispatch);
       }
     },
@@ -59,12 +59,13 @@ const useGroupBattleRun = (data) => {
 
     if (nextRun) {
       setSelectedRun(nextRun);
-      if (!nextRun.solution) {
-        requestRunDetails(activeRunIdFromServer)(dispatch);
-      }
-    } else {
-      requestRunDetails(activeRunIdFromServer)(dispatch);
     }
+
+    // Always re-fetch on a server tick. A tick can carry either a "pending"
+    // stub or a finished status; the broadcast itself doesn't include the
+    // result map, so we ask the server for the freshly persisted row to pick
+    // up viewerHtml/summary/history once the runner is done.
+    requestRunDetails(activeRunIdFromServer)(dispatch);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRunFromServerTick]);
 

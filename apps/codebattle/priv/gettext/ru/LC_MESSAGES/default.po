@@ -1377,6 +1377,27 @@ msgstr "Аккаунт Github"
 msgid "Place: #%{place}"
 msgstr "Место: #%{place}"
 
+msgid "Place: pending"
+msgstr "Место: ожидается"
+
+msgid "Test run"
+msgstr "Тестовый запуск"
+
+msgid "Running…"
+msgstr "Выполняется…"
+
+msgid "Running your solution…"
+msgstr "Запускаем твоё решение…"
+
+msgid "We're executing your code in the runner. This may take a few seconds."
+msgstr "Выполняем код в раннере. Это может занять несколько секунд."
+
+msgid "Loading run result…"
+msgstr "Загружаем результат запуска…"
+
+msgid "Fetching the executed run output."
+msgstr "Получаем вывод запуска."
+
 msgid "Completed games"
 msgstr "Завершённые игры"
 
@@ -1703,6 +1724,15 @@ msgstr "Добавить решение +"
 
 msgid "Run Viewer"
 msgstr "Просмотр запуска"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "No description provided for this tournament."
+msgstr "Описание для этого турнира не задано."
+
+msgid "Pick a run from the left panel to see its output."
+msgstr "Выбери запуск в левой панели, чтобы увидеть результат."
 
 msgid "No viewer HTML for this run."
 msgstr "Нет HTML для просмотра этого запуска."

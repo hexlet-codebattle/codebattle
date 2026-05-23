@@ -34,6 +34,12 @@ defmodule CodebattleWeb.GroupTournamentChannel do
     cond do
       Codebattle.User.admin_or_moderator?(current_user) ->
         Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")
+        # Slice/seed events only fan out to per-user topics, so an
+        # admin-who-is-also-a-player would miss their own slice rows
+        # without this second subscription.
+        if group_tournament.type == "ranked" do
+          Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:user:#{current_user.id}")
+        end
 
       group_tournament.type == "ranked" ->
         Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:user:#{current_user.id}")
@@ -86,13 +92,6 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp build_snapshot(group_tournament, current_user) do
-    player_ids = Enum.map(group_tournament.players, & &1.user_id)
-
-    latest_solutions =
-      GroupTaskContext.list_latest_solutions(group_tournament.group_task_id, player_ids,
-        group_tournament_id: group_tournament.id
-      )
-
     current_user_solutions =
       GroupTaskContext.list_user_solutions(group_tournament.group_task_id, current_user.id,
         group_tournament_id: group_tournament.id
@@ -104,7 +103,6 @@ defmodule CodebattleWeb.GroupTournamentChannel do
       group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
       current_player: serialize_player(current_player),
       players: Enum.map(group_tournament.players, &serialize_player/1),
-      latest_solutions: Map.new(latest_solutions, &{&1.user_id, serialize_solution(&1)}),
       solution_history: Enum.map(current_user_solutions, &serialize_solution/1),
       latest_solution: current_user_solutions |> List.first() |> serialize_solution(),
       runs:
@@ -293,7 +291,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
 
     with {:ok, _} <- GroupTournamentServer.join(group_tournament.id, current_user, lang),
          {:ok, submitted_solution} <-
-           GroupTournamentServer.submit_solution(group_tournament.id, current_user, solution) do
+           GroupTournamentServer.submit_solution(group_tournament.id, current_user, solution, async: true) do
       {:reply, {:ok, %{solution: serialize_solution(submitted_solution)}}, socket}
     else
       {:error, reason} when is_atom(reason) ->

@@ -207,6 +207,8 @@ defmodule Codebattle.GroupTask.Context do
 
     case create_pending_runs(group_task, normalized_player_ids, run_ctx) do
       {:ok, runs} ->
+        broadcast_pending_runs(runs, run_ctx)
+
         case build_run_payload(group_task, normalized_player_ids, attrs) do
           {:ok, payload} ->
             run_result = execute_run(group_task.runner_url, payload)
@@ -220,6 +222,29 @@ defmodule Codebattle.GroupTask.Context do
         {:error, changeset}
     end
   end
+
+  # Tell the UI a user-initiated run is in flight so the player sees a
+  # "running" stub instead of a quiet UI while the runner is busy. Slice/seed
+  # runs are server-scheduled and arrive in bulk, so we don't broadcast their
+  # pending stubs.
+  defp broadcast_pending_runs(runs, %{kind: "user", group_tournament_id: tid}) when not is_nil(tid) do
+    Enum.each(runs, fn run ->
+      Codebattle.PubSub.broadcast("group_tournament:run_updated", %{
+        group_tournament_id: tid,
+        user_id: List.first(run.player_ids),
+        run_id: run.id,
+        status: run.status,
+        score: nil,
+        kind: run.kind,
+        slice_index: run.slice_index,
+        round_position: nil,
+        player_ids: run.player_ids,
+        inserted_at: run.inserted_at
+      })
+    end)
+  end
+
+  defp broadcast_pending_runs(_runs, _run_ctx), do: :ok
 
   @doc """
   Extracts per-player round results (`%{user_id, place, score, duration_ms}`)
@@ -461,10 +486,44 @@ defmodule Codebattle.GroupTask.Context do
     updated_runs = do_update_runs(runs, status, result, run_ctx.group_tournament_id, run_ctx.slice_index, run_ctx.kind)
 
     case updated_runs do
-      {:ok, [representative_run | _]} -> {:ok, representative_run}
-      {:error, changeset} -> {:error, changeset}
+      {:ok, [representative_run | _] = all_runs} ->
+        broadcast_finished_runs(all_runs, run_ctx)
+        {:ok, representative_run}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
+
+  # One broadcast per persisted row so each player sees *their own* run_id and
+  # score in the UI. The previous "single payload to everyone" approach worked
+  # for user-kind runs (one player per run_key) but was wrong for slice runs:
+  # every player in the slice got the representative row's score and id,
+  # overwriting their own local state.
+  defp broadcast_finished_runs(runs, %{group_tournament_id: tid}) when not is_nil(tid) do
+    Enum.each(runs, fn run ->
+      Codebattle.PubSub.broadcast("group_tournament:run_updated", %{
+        group_tournament_id: tid,
+        user_id: user_id_for_run(run),
+        run_id: run.id,
+        status: run.status,
+        score: run.score,
+        kind: run.kind,
+        slice_index: run.slice_index,
+        round_position: run.round_position,
+        player_ids: run.player_ids,
+        inserted_at: run.inserted_at
+      })
+    end)
+  end
+
+  defp broadcast_finished_runs(_runs, _run_ctx), do: :ok
+
+  defp user_id_for_run(%UserGroupTournamentRun{user_group_tournament: %{user_id: user_id}}) when is_integer(user_id),
+    do: user_id
+
+  defp user_id_for_run(%UserGroupTournamentRun{player_ids: [first | _]}), do: first
+  defp user_id_for_run(_), do: nil
 
   defp do_create_pending_runs(player_ids, runs_by_user_id, group_task_id, run_ctx) do
     Repo.transaction(fn ->

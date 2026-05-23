@@ -33,7 +33,6 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTaskSolution
   alias Codebattle.GroupTournament
-  alias Codebattle.GroupTournament.Context, as: GroupTournamentContext
   alias Codebattle.GroupTournament.Movement
   alias Codebattle.GroupTournamentPlayer
   alias Codebattle.GroupTournamentRoundScore
@@ -115,7 +114,8 @@ defmodule Codebattle.GroupTournament.SliceRunner do
             kind: :slice
           })
 
-        GroupTournamentContext.broadcast_run_update(group_tournament, result)
+        # run_group_task now broadcasts a per-user "run_updated" event for
+        # every persisted row, so each player sees their own run_id and score.
 
         case result do
           {:ok, run} ->
@@ -165,8 +165,12 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   current slice and shows seed scores grouped by their *final* slice
   instead of the seed slice.
 
-  Within each slice, players are ordered by raw seed score desc (then
-  faster seed duration, then user_id) and assigned a 1-based place.
+  Place is the player's *global* rank across all seeded players (sorted by
+  seed_score desc, then faster seed duration, then user_id), not the rank
+  within their assigned slice. Slice rank is implicit in the slice ordering
+  itself and would lose useful information ("you placed N out of M"); the
+  global rank is what determines slice assignment, so it's the meaningful
+  number to surface in the UI.
   """
   @spec record_seed_round_scores(GroupTournament.t()) :: {:ok, non_neg_integer()}
   def record_seed_round_scores(%GroupTournament{id: tournament_id}) do
@@ -189,24 +193,20 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
     rows =
       seeded
-      |> Enum.group_by(& &1.slice_index)
-      |> Enum.flat_map(fn {_slice, players} ->
-        players
-        |> Enum.sort_by(fn p -> {-p.seed_score, p.seed_duration_ms || 0, p.user_id} end)
-        |> Enum.with_index(1)
-        |> Enum.map(fn {p, place} ->
-          %{
-            group_tournament_id: tournament_id,
-            user_id: p.user_id,
-            run_id: nil,
-            round_position: 1,
-            slice_index: p.slice_index,
-            place: place,
-            score: p.seed_score,
-            inserted_at: now,
-            updated_at: now
-          }
-        end)
+      |> Enum.sort_by(fn p -> {-p.seed_score, p.seed_duration_ms || 0, p.user_id} end)
+      |> Enum.with_index(1)
+      |> Enum.map(fn {p, global_place} ->
+        %{
+          group_tournament_id: tournament_id,
+          user_id: p.user_id,
+          run_id: nil,
+          round_position: 1,
+          slice_index: p.slice_index,
+          place: global_place,
+          score: p.seed_score,
+          inserted_at: now,
+          updated_at: now
+        }
       end)
 
     case rows do
@@ -320,7 +320,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
     case result do
       {:ok, run} ->
         persist_seed(group_tournament.id, user_id, run.score, run.duration_ms || duration_ms)
-        GroupTournamentContext.broadcast_run_update(group_tournament, {:ok, run})
+        # run_group_task already emits a per-user "run_updated" broadcast.
         :ok
 
       {:error, _} = err ->

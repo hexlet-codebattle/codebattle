@@ -98,7 +98,11 @@ const groupTournament = createSlice({
 
       state.data = state.data || {};
 
-      const run = {
+      // Don't clobber `detailsLoaded` / `result` on existing rows — the stub
+      // carries no result map, so merging it as-is would wipe a previously
+      // loaded viewer. The activeRunFromServerTick bump asks the caller to
+      // re-fetch details to pick up the new status's result.
+      const stub = {
         id: runId,
         groupTournamentId,
         userId,
@@ -109,15 +113,14 @@ const groupTournament = createSlice({
         roundPosition,
         playerIds,
         insertedAt,
-        detailsLoaded: false,
       };
       const currentRuns = state.data.runs || [];
-      const existingRunIndex = currentRuns.findIndex((item) => item.id === run.id);
+      const existingRunIndex = currentRuns.findIndex((item) => item.id === stub.id);
 
       if (existingRunIndex >= 0) {
-        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...run };
+        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...stub };
       } else {
-        currentRuns.unshift(run);
+        currentRuns.unshift({ ...stub, detailsLoaded: false });
       }
 
       state.data.runs = currentRuns;
