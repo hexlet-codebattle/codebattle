@@ -73,7 +73,7 @@ defmodule Codebattle.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:recon, "~> 2.5"},
       {:req, "~> 0.5.0"},
-      {:sentry, "~> 11.0"},
+      {:sentry, "~> 13.0"},
       {:statistics, "~> 0.6"},
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.0"},

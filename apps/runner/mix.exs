@@ -45,7 +45,7 @@ defmodule Runner.MixProject do
       {:phoenix_live_view, "~> 1.1", only: [:dev, :test], runtime: false},
       {:phoenix_view, "~> 2.0"},
       {:porcelain, "~> 2.0"},
-      {:sentry, "~> 11.0"},
+      {:sentry, "~> 13.0"},
       {:styler, "~> 1.4", only: [:dev, :test], runtime: false},
       {:temp, "~> 0.4"},
       {:typed_struct, "~> 0.3"}
