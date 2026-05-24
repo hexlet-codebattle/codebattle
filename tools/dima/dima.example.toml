@@ -21,6 +21,7 @@ max_score = 1000            # per-round top score (slice 0 / 1st place gets this
 scoring_strategy = "diagonal_quadratic"  # diagonal_linear | global_linear
 movement_strategy = "mirrored_cascade"   # global_rerank | neighbor_ladder
 place_weight = 1
+has_seed_round = true                    # round 1 is solo-vs-bots seeding; false = all rounds are slice rounds
 # include_bots = false      # ranked slices auto-pad short slices with bots regardless
 
 avg_submit_seconds = 20

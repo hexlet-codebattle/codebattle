@@ -139,6 +139,7 @@ max_score = 1000
 scoring_strategy = "diagonal_quadratic"   # diagonal_linear | global_linear
 movement_strategy = "mirrored_cascade"    # global_rerank | neighbor_ladder
 place_weight = 1
+has_seed_round = true                     # round 1 = solo-vs-bots seeding (false = all rounds are slice rounds)
 ```
 
 Set `type = "individual"` for the legacy single-round load test.

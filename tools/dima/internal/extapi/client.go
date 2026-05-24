@@ -48,6 +48,7 @@ type GroupScenarioResponse struct {
 		MovementStrategy    string `json:"movement_strategy"`
 		PlaceWeight         int    `json:"place_weight"`
 		IncludeBots         bool   `json:"include_bots"`
+		HasSeedRound        bool   `json:"has_seed_round"`
 	} `json:"group_tournament"`
 	Users []GroupScenarioUser `json:"users"`
 }

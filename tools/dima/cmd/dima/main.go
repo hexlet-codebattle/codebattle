@@ -39,6 +39,7 @@ func main() {
 	movementStrategy := flag.String("movement-strategy", "", "ranked movement: mirrored_cascade|global_rerank|neighbor_ladder")
 	placeWeight := flag.Int("place-weight", 0, "ranked diagonal scoring place-weight knob (default 1)")
 	includeBotsFlag := flag.String("include-bots", "", "true|false (omit to keep server default)")
+	hasSeedRoundFlag := flag.String("has-seed-round", "", "true|false (ranked: round 1 is solo-vs-bots seeding; omit to keep config/server default)")
 	roundTimeout := flag.Int("round-timeout-seconds", 0, "per-round timeout in seconds (overrides group_task.time_to_solve_sec)")
 	flag.Parse()
 
@@ -123,6 +124,14 @@ func main() {
 	case "false", "0", "no":
 		opts.IncludeBots = false
 		opts.IncludeBotsSet = true
+	}
+	switch strings.ToLower(strings.TrimSpace(*hasSeedRoundFlag)) {
+	case "true", "1", "yes":
+		opts.HasSeedRound = true
+		opts.HasSeedRoundSet = true
+	case "false", "0", "no":
+		opts.HasSeedRound = false
+		opts.HasSeedRoundSet = true
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

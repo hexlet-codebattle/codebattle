@@ -1389,6 +1389,9 @@ msgstr "Выполняется…"
 msgid "Running your solution…"
 msgstr "Запускаем твоё решение…"
 
+msgid "Running solutions…"
+msgstr "Идет запуск решений…"
+
 msgid "We're executing your code in the runner. This may take a few seconds."
 msgstr "Выполняем код в раннере. Это может занять несколько секунд."
 

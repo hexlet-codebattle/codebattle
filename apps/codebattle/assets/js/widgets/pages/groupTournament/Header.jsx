@@ -38,13 +38,23 @@ function TournamentTimer({ groupTournament }) {
     return null;
   }
 
+  const checkingSolutions = !onBreak && seconds === 0;
+
   const color = onBreak
     ? "#7fdbff"
-    : seconds <= 60
-      ? "#ff3b30"
-      : seconds <= 300
-        ? "#ffe500"
-        : "#ffffff";
+    : checkingSolutions
+      ? "#7fdbff"
+      : seconds <= 60
+        ? "#ff3b30"
+        : seconds <= 300
+          ? "#ffe500"
+          : "#ffffff";
+
+  const label = onBreak
+    ? `${i18n.t("Break")}: ${time}`
+    : checkingSolutions
+      ? i18n.t("Running solutions…")
+      : time;
 
   return (
     <div className="d-flex align-items-center">
@@ -59,12 +69,12 @@ function TournamentTimer({ groupTournament }) {
       <span
         className="text-monospace rounded-pill px-4 py-2"
         style={{
-          fontSize: "1.5rem",
+          fontSize: checkingSolutions ? "1.1rem" : "1.5rem",
           color,
           border: `1px solid ${color}`,
         }}
       >
-        {onBreak ? `${i18n.t("Break")}: ${time}` : time}
+        {label}
       </span>
     </div>
   );

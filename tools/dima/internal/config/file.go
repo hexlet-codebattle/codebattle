@@ -48,6 +48,7 @@ type FileConfig struct {
 	MovementStrategy string `toml:"movement_strategy"`
 	PlaceWeight      int    `toml:"place_weight"`
 	IncludeBots      *bool  `toml:"include_bots"`
+	HasSeedRound     *bool  `toml:"has_seed_round"`
 
 	sourceDir string
 }
@@ -149,6 +150,10 @@ func ApplyFile(opts runtime.Options, cfg *FileConfig) runtime.Options {
 	if cfg.IncludeBots != nil {
 		opts.IncludeBots = *cfg.IncludeBots
 		opts.IncludeBotsSet = true
+	}
+	if cfg.HasSeedRound != nil {
+		opts.HasSeedRound = *cfg.HasSeedRound
+		opts.HasSeedRoundSet = true
 	}
 	return opts
 }

@@ -502,9 +502,16 @@ export const participantDataSelector = (state) => {
     event?.stages.map((eventStage) => {
       const userStage = userEvent?.stages.find((stage) => stage.slug === eventStage.slug);
 
-      // Determine status based on event stage status and user participation
+      // Determine status based on event stage status and user participation.
+      // Entrance stages stay visible after the user's stage is completed so
+      // we keep showing Passed/Not passed; tournament stages hide their CTA
+      // once the user is done.
+      const allowedUserStatuses =
+        eventStage.type === "entrance"
+          ? ["pending", "started", "completed", null]
+          : ["pending", "started", null];
       const isStageAvailableForUser = !!(
-        eventStage.status === "active" && ["pending", "started", null].includes(userStage?.status)
+        eventStage.status === "active" && allowedUserStatuses.includes(userStage?.status)
       );
       const isUserPassedStage = userStage?.entranceResult === "passed";
       const gamesCount = userStage?.gamesCount ? userStage.gamesCount : "-";

@@ -28,6 +28,8 @@ type Options struct {
 	PlaceWeight      int
 	IncludeBots      bool
 	IncludeBotsSet   bool
+	HasSeedRound     bool
+	HasSeedRoundSet  bool
 }
 
 type Behavior struct {
@@ -55,6 +57,8 @@ type Snapshot struct {
 	PlaceWeight           int
 	IncludeBots           bool
 	IncludeBotsKnown      bool
+	HasSeedRound          bool
+	HasSeedRoundKnown     bool
 	UsersTotal            int
 	ChannelConnected      int
 	SolutionsSubmitted    int

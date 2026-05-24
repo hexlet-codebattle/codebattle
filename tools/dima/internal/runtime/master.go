@@ -106,6 +106,9 @@ func (m *Master) CreateScenario(ctx context.Context) error {
 	if m.opts.IncludeBotsSet {
 		tournament["include_bots"] = m.opts.IncludeBots
 	}
+	if m.opts.HasSeedRoundSet {
+		tournament["has_seed_round"] = m.opts.HasSeedRound
+	}
 
 	req := extapi.GroupScenarioRequest{
 		UsersCount: m.opts.UsersCount,
@@ -298,6 +301,8 @@ func (m *Master) Snapshot() Snapshot {
 	placeWeight := m.opts.PlaceWeight
 	includeBots := m.opts.IncludeBots
 	includeBotsKnown := m.opts.IncludeBotsSet
+	hasSeedRound := m.opts.HasSeedRound
+	hasSeedRoundKnown := m.opts.HasSeedRoundSet
 
 	if m.scenario != nil {
 		usersTotal = len(m.scenario.Users)
@@ -328,6 +333,8 @@ func (m *Master) Snapshot() Snapshot {
 		}
 		includeBots = m.scenario.GroupTournament.IncludeBots
 		includeBotsKnown = true
+		hasSeedRound = m.scenario.GroupTournament.HasSeedRound
+		hasSeedRoundKnown = true
 		tournamentURL = fmt.Sprintf(
 			"%s/admin/group_tournaments/%d",
 			strings.TrimRight(m.opts.ServerURL, "/"),
@@ -365,6 +372,8 @@ func (m *Master) Snapshot() Snapshot {
 		PlaceWeight:           placeWeight,
 		IncludeBots:           includeBots,
 		IncludeBotsKnown:      includeBotsKnown,
+		HasSeedRound:          hasSeedRound,
+		HasSeedRoundKnown:     hasSeedRoundKnown,
 		UsersTotal:            usersTotal,
 		ChannelConnected:      int(m.channelConnected.Load()),
 		SolutionsSubmitted:    int(m.solutionsSubmitted.Load()),

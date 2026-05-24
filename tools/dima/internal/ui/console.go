@@ -255,6 +255,9 @@ func (m model) renderSettings() string {
 	if s.IncludeBotsKnown {
 		b.WriteString(kv("include_bots", fmt.Sprintf("%t", s.IncludeBots)))
 	}
+	if s.HasSeedRoundKnown {
+		b.WriteString(kv("has_seed_round", fmt.Sprintf("%t", s.HasSeedRound)))
+	}
 	if s.GroupTournamentURL != "" {
 		b.WriteString(kv("url", s.GroupTournamentURL))
 	}

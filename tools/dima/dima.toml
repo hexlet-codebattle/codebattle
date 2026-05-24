@@ -1,7 +1,7 @@
 server = "http://localhost:4000"
 auth_key = "x-key"
 
-users = 21
+users = 295
 group_task_id = 1
 runner_url = "http://localhost:1234/run"
 
@@ -17,9 +17,23 @@ max_score = 1000
 scoring_strategy = "diagonal_quadratic"
 movement_strategy = "mirrored_cascade"
 place_weight = 1
+has_seed_round = true           # round 1 is solo-vs-bots seeding; set false for all-slice
 
-avg_submit_seconds = 20
-randomness = 30
+# How to start (TUI keys, in order):
+#   c — create scenario: synthetic users + tournament in waiting_participants
+#   j — join: each worker opens its socket and begins the submit loop
+#   s — start: flips the tournament to active so the runner picks up batches
+#
+# Submit cadence per worker:
+#   - First send fires after avg_submit_seconds / 2 (with randomness jitter),
+#     so the very first wave doesn't pile up at t=0.
+#   - Each subsequent send waits avg_submit_seconds, jittered by ±randomness%.
+#     e.g. avg_submit_seconds=200, randomness=30 -> each gap is 140..260s.
+#   - Minimum gap is clamped to 200ms; randomness above 90 is capped at 90.
+# join_ramp_seconds spreads the initial joins across that many seconds total
+# (delay between two adjacent joins = join_ramp_seconds / (users - 1)).
+avg_submit_seconds = 200
+randomness = 60
 join_ramp_seconds = 5
 
 langs = ["python", "cpp"]
