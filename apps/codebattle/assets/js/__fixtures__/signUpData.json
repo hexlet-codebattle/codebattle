@@ -86,6 +86,12 @@
       "password"
     ],
     [
+      "password validation: only special characters",
+      "!@#$%&*?",
+      "Should contain at least one letter or number",
+      "password"
+    ],
+    [
       "password validation: long password",
       "11111111111111111",
       "Should be from 6 to 16 characters",
