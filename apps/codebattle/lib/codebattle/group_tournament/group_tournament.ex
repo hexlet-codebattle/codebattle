@@ -14,7 +14,7 @@ defmodule Codebattle.GroupTournament do
   @states ~w(waiting_participants active finished canceled)
   @slice_strategies ~w(random rating)
   @types ~w(individual ranked)
-  @scoring_strategies ~w(diagonal_quadratic diagonal_linear global_linear)
+  @scoring_strategies ~w(diagonal_quadratic diagonal_linear global_linear flat_linear)
   @movement_strategies ~w(mirrored_cascade global_rerank neighbor_ladder)
 
   @type t :: %__MODULE__{}
@@ -53,7 +53,8 @@ defmodule Codebattle.GroupTournament do
              :movement_strategy,
              :inactive_rounds_to_leave,
              :break_duration_seconds,
-             :has_seed_round
+             :has_seed_round,
+             :show_leaderboard
            ]}
 
   schema "group_tournaments" do
@@ -87,6 +88,7 @@ defmodule Codebattle.GroupTournament do
     field(:inactive_rounds_to_leave, :integer, default: 2)
     field(:break_duration_seconds, :integer, default: 0)
     field(:has_seed_round, :boolean, default: false)
+    field(:show_leaderboard, :boolean, default: true)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -134,7 +136,8 @@ defmodule Codebattle.GroupTournament do
       :movement_strategy,
       :inactive_rounds_to_leave,
       :break_duration_seconds,
-      :has_seed_round
+      :has_seed_round,
+      :show_leaderboard
     ])
     |> validate_required([
       :group_task_id,

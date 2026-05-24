@@ -4,6 +4,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   alias Codebattle.GroupTask.Context, as: GroupTaskContext
   alias Codebattle.GroupTournament
   alias Codebattle.GroupTournament.Context
+  alias Codebattle.GroupTournament.LeaderboardStore
   alias Codebattle.GroupTournament.Server
   alias Codebattle.UserGroupTournament.Context, as: UserGroupTournamentContext
 
@@ -166,7 +167,8 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
     case GroupTaskContext.run_group_task(group_tournament.group_task, player_ids, %{
            group_tournament_id: group_tournament.id,
-           include_bots: group_tournament.include_bots
+           include_bots: group_tournament.include_bots,
+           round: group_tournament.current_round_position || 1
          }) do
       {:ok, %{status: "success"}} ->
         conn
@@ -216,6 +218,50 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
         |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
     end
   end
+
+  def toggle_leaderboard(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+    next_value = !group_tournament.show_leaderboard
+
+    case Context.update_group_tournament(group_tournament, %{"show_leaderboard" => next_value}) do
+      {:ok, _updated} ->
+        msg = if next_value, do: "Leaderboard shown to players.", else: "Leaderboard hidden from players."
+
+        conn
+        |> put_flash(:info, msg)
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Failed to toggle leaderboard visibility.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
+  def leaderboard(conn, %{"id" => id} = params) do
+    group_tournament = Context.get_group_tournament!(id)
+    :ok = Context.ensure_server_started(group_tournament)
+    view = parse_leaderboard_view(params["view"], group_tournament.rounds_count)
+
+    render(conn, "leaderboard.html",
+      group_tournament: group_tournament,
+      leaderboard: LeaderboardStore.list(group_tournament.id),
+      view: view,
+      user: conn.assigns.current_user
+    )
+  end
+
+  defp parse_leaderboard_view(nil, _rounds_count), do: :rating
+  defp parse_leaderboard_view("rating", _rounds_count), do: :rating
+
+  defp parse_leaderboard_view(value, rounds_count) when is_binary(value) do
+    case Integer.parse(value) do
+      {n, ""} when n >= 1 and (is_nil(rounds_count) or n <= rounds_count) -> {:round, n}
+      _ -> :rating
+    end
+  end
+
+  defp parse_leaderboard_view(_, _), do: :rating
 
   def solution_tester(conn, %{"id" => id}) do
     group_tournament = Context.get_group_tournament!(id)

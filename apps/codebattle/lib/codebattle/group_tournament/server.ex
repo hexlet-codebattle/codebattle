@@ -368,11 +368,12 @@ defmodule Codebattle.GroupTournament.Server do
 
   # For ranked tournaments with a seed round, round 1 is a submission window:
   # players submit solutions during the round (each submission runs as a
-  # bot-less debug run), then at round-end we run seeding against their latest
-  # submissions with bots and slice them. For tournaments without a seed
-  # round, or for individual tournaments, assign_slices is called once at
-  # start so existing slice-aware features still work even though no movement
-  # happens later for individual tournaments.
+  # bot-less debug run), then at round-end we run seeding solo (no bots) for
+  # each player's latest submission and slice them by seed score + submission
+  # duration. For tournaments without a seed round, or for individual
+  # tournaments, assign_slices is called once at start so existing slice-aware
+  # features still work even though no movement happens later for individual
+  # tournaments.
   defp perform_round_start(%GroupTournament{} = t) do
     if GroupTournament.seeding_round?(t) do
       :ok
@@ -396,9 +397,10 @@ defmodule Codebattle.GroupTournament.Server do
   defp run_round(%GroupTournament{} = t) do
     cond do
       GroupTournament.seeding_round?(t) ->
-        # Seeding round end: run each player's latest submission with bots
-        # (parallel pool inside SliceRunner) to produce seed scores. No
-        # round_results — slicing happens in apply_post_round_transitions.
+        # Seeding round end: run each player's latest submission solo, no
+        # bots (parallel pool inside SliceRunner) to produce seed scores
+        # plus submission durations. No round_results — slicing happens in
+        # apply_post_round_transitions.
         SliceRunner.run_seeding(t)
         {[], []}
 
@@ -503,7 +505,8 @@ defmodule Codebattle.GroupTournament.Server do
     # pending, one finished), so we don't broadcast again here.
     GroupTaskContext.run_group_task(group_tournament.group_task, [submitted_solution.user_id], %{
       group_tournament_id: group_tournament.id,
-      include_bots: false
+      include_bots: false,
+      round: group_tournament.current_round_position || 1
     })
 
     :ok

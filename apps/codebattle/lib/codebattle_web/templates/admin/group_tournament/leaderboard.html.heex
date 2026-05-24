@@ -1,0 +1,200 @@
+<%
+  rounds_count = @group_tournament.rounds_count || 0
+  rounds = if rounds_count > 0, do: Enum.to_list(1..rounds_count), else: []
+
+  round_label = fn 1 -> "Seed"; r -> "R#{r - 1}" end
+
+  cell_for = fn entry, r ->
+    rounds_map = entry[:rounds] || %{}
+    Map.get(rounds_map, r) || Map.get(rounds_map, to_string(r))
+  end
+
+  place_class = fn 1 -> "cb-gold-place-bg"; 2 -> "cb-silver-place-bg"; 3 -> "cb-bronze-place-bg"; _ -> "" end
+
+  view_path = fn view ->
+    base = Routes.admin_group_tournament_path(@conn, :leaderboard, @group_tournament)
+    case view do
+      :rating -> base
+      {:round, n} -> base <> "?view=" <> Integer.to_string(n)
+    end
+  end
+
+  tab_class = fn active ->
+    if active, do: "btn btn-sm btn-light text-dark font-weight-bold mr-2 mb-2",
+       else: "btn btn-sm btn-outline-light mr-2 mb-2"
+  end
+
+  slices_for_round = fn round_number ->
+    @leaderboard
+    |> Enum.flat_map(fn entry ->
+      cell = cell_for.(entry, round_number)
+      case cell do
+        %{slice_index: idx} when is_integer(idx) ->
+          [{idx, %{
+            user_id: entry[:user_id],
+            name: entry[:name] || "##{entry[:user_id]}",
+            clan: entry[:clan],
+            place: cell[:place],
+            score: cell[:score] || 0
+          }}]
+        _ -> []
+      end
+    end)
+    |> Enum.group_by(fn {idx, _} -> idx end, fn {_, p} -> p end)
+    |> Enum.map(fn {idx, players} ->
+      sorted =
+        Enum.sort_by(players, fn p ->
+          {if(is_integer(p.place), do: p.place, else: 999_999), -(p.score || 0), p.user_id}
+        end)
+      {idx, sorted}
+    end)
+    |> Enum.sort_by(fn {idx, _} -> idx end)
+  end
+%>
+<head>
+  <meta http-equiv="refresh" content="5" />
+</head>
+<div class="container-xl cb-bg-panel shadow-sm cb-rounded py-4 mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="text-white mb-0">Leaderboard — {@group_tournament.name}</h1>
+    <div>
+      {link("Back",
+        to: Routes.admin_group_tournament_path(@conn, :show, @group_tournament),
+        class: "btn btn-outline-secondary cb-btn-outline-secondary cb-rounded"
+      )}
+    </div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3 text-white d-flex flex-wrap align-items-center">
+    <div class="mr-4"><strong>State:</strong> {@group_tournament.state}</div>
+    <div class="mr-4">
+      <strong>Round:</strong> {@group_tournament.current_round_position}/{rounds_count}
+    </div>
+    <div class="mr-4"><strong>Players:</strong> {@group_tournament.players_count}</div>
+    <div class="mr-4">
+      <strong>Visible to players:</strong> {inspect(@group_tournament.show_leaderboard)}
+    </div>
+    <div class="ml-auto text-muted small">auto-refresh every 5s</div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3 mb-3">
+    <div class="d-flex flex-wrap">
+      {link("Rating", to: view_path.(:rating), class: tab_class.(@view == :rating))}
+      <%= for r <- rounds do %>
+        {link(round_label.(r),
+          to: view_path.({:round, r}),
+          class: tab_class.(@view == {:round, r})
+        )}
+      <% end %>
+    </div>
+  </div>
+
+  <%= cond do %>
+    <% Enum.empty?(@leaderboard) -> %>
+      <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 text-center text-muted">
+        No leaderboard data yet.
+      </div>
+
+    <% @view == :rating -> %>
+      <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
+        <div class="table-responsive">
+          <table class="table table-sm cb-text-light">
+            <thead>
+              <tr>
+                <th class="border-0 font-weight-light">#</th>
+                <th class="border-0 font-weight-light">Player</th>
+                <th class="border-0 font-weight-light">Clan</th>
+                <th class="border-0 font-weight-light text-center">Slice</th>
+                <%= for r <- rounds do %>
+                  <th class="border-0 font-weight-light text-center">{round_label.(r)}</th>
+                <% end %>
+                <th class="border-0 font-weight-light text-center">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%= for {entry, index} <- Enum.with_index(@leaderboard, 1) do %>
+                <tr class={"font-weight-bold #{place_class.(index)}"}>
+                  <td class="align-middle">{index}</td>
+                  <td class="align-middle text-white">
+                    <span title={entry[:name] || "##{entry[:user_id]}"}>
+                      {entry[:name] || "##{entry[:user_id]}"}
+                    </span>
+                    <%= if entry[:state] == "left" do %>
+                      <span class="badge badge-secondary ml-2">Left</span>
+                    <% end %>
+                  </td>
+                  <td class="align-middle text-white">{entry[:clan] || "—"}</td>
+                  <td class="align-middle text-center text-white">
+                    <%= if is_integer(entry[:slice_index]) do %>
+                      {entry[:slice_index] + 1}
+                    <% else %>
+                      —
+                    <% end %>
+                  </td>
+                  <%= for r <- rounds do %>
+                    <% cell = cell_for.(entry, r) %>
+                    <td class="align-middle text-center text-white">
+                      <%= if cell do %>
+                        <span class="font-weight-bold">{cell[:score] || 0}</span>
+                        <%= if is_integer(cell[:place]) do %>
+                          <span class="small ml-1">(#<%= cell[:place] %>)</span>
+                        <% end %>
+                      <% else %>
+                        <span class="text-muted">—</span>
+                      <% end %>
+                    </td>
+                  <% end %>
+                  <td class="align-middle text-center text-white font-weight-bold">
+                    {entry[:total_score] || 0}
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    <% match?({:round, _}, @view) -> %>
+      <% {:round, round_number} = @view %>
+      <% slices = slices_for_round.(round_number) %>
+      <%= if slices == [] do %>
+        <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 text-center text-muted">
+          No data yet for {round_label.(round_number)}.
+        </div>
+      <% else %>
+        <div class="d-flex flex-wrap" style="gap: 1rem;">
+          <%= for {slice_index, players} <- slices do %>
+            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2"
+                 style="min-width: 22rem; flex: 1 1 22rem;">
+              <div class="d-flex justify-content-between border-bottom cb-border-color pb-1 mb-2 px-2 text-white">
+                <span class="font-weight-bold">Group {slice_index + 1}</span>
+                <span class="text-muted small">{length(players)} players</span>
+              </div>
+              <table class="table table-sm cb-text-light mb-0">
+                <thead>
+                  <tr>
+                    <th class="border-0 font-weight-light p-1">#</th>
+                    <th class="border-0 font-weight-light p-1">Player</th>
+                    <th class="border-0 font-weight-light p-1">Clan</th>
+                    <th class="border-0 font-weight-light p-1 text-right">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <%= for {p, idx} <- Enum.with_index(players, 1) do %>
+                    <tr class={"font-weight-bold #{place_class.(p.place || 0)}"}>
+                      <td class="p-1 align-middle text-white">{p.place || idx}</td>
+                      <td class="p-1 align-middle text-white" title={p.name}>{p.name}</td>
+                      <td class="p-1 align-middle text-white">{p.clan || "—"}</td>
+                      <td class="p-1 align-middle text-right text-white font-weight-bold">
+                        {p.score}
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+  <% end %>
+</div>

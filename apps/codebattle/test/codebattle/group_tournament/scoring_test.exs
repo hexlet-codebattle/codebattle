@@ -40,7 +40,7 @@ defmodule Codebattle.GroupTournament.ScoringTest do
   describe "strategies/0" do
     test "lists all known strategy names" do
       assert Enum.sort(Scoring.strategies()) ==
-               ["diagonal_linear", "diagonal_quadratic", "global_linear"]
+               ["diagonal_linear", "diagonal_quadratic", "flat_linear", "global_linear"]
     end
   end
 end

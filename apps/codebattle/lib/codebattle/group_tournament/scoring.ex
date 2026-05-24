@@ -23,7 +23,8 @@ defmodule Codebattle.GroupTournament.Scoring do
   @strategies %{
     "diagonal_quadratic" => __MODULE__.DiagonalQuadratic,
     "diagonal_linear" => __MODULE__.DiagonalLinear,
-    "global_linear" => __MODULE__.GlobalLinear
+    "global_linear" => __MODULE__.GlobalLinear,
+    "flat_linear" => __MODULE__.FlatLinear
   }
 
   @spec resolve(String.t() | nil) :: module()

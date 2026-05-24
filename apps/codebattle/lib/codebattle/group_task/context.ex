@@ -20,6 +20,12 @@ defmodule Codebattle.GroupTask.Context do
 
   @admin_recent_solutions_limit 100
 
+  # Sentinel used when a run is missing `duration_ms` (e.g. the tournament
+  # had no `started_at` snapshot or the solution row predates the migration).
+  # Larger than any plausible submission time so a missing duration always
+  # sorts last within an equal-score group.
+  @missing_duration_sentinel 9_999_999_999_999
+
   @spec list_group_tasks() :: list(GroupTask.t())
   def list_group_tasks do
     GroupTask
@@ -235,6 +241,7 @@ defmodule Codebattle.GroupTask.Context do
         run_id: run.id,
         status: run.status,
         score: nil,
+        duration_ms: nil,
         kind: run.kind,
         slice_index: run.slice_index,
         round_position: nil,
@@ -247,9 +254,44 @@ defmodule Codebattle.GroupTask.Context do
   defp broadcast_pending_runs(_runs, _run_ctx), do: :ok
 
   @doc """
+  Returns the per-user persisted runs for a given `run_key`, projected to
+  `%{user_id, score, duration_ms}`. Only successful runs with a resolved
+  `user_group_tournament.user_id` matching `user_ids` and a numeric score
+  are returned. Used by SliceRunner.build_round_results to feed movement
+  using the same (score, submission-duration) ordering the leaderboard
+  records.
+  """
+  @spec list_run_results_by_run_key(Ecto.UUID.t() | nil, [integer()]) :: [
+          %{user_id: integer(), score: integer(), duration_ms: integer() | nil}
+        ]
+  def list_run_results_by_run_key(nil, _user_ids), do: []
+  def list_run_results_by_run_key(_run_key, []), do: []
+
+  def list_run_results_by_run_key(run_key, user_ids) do
+    UserGroupTournamentRun
+    |> where([run], run.run_key == ^run_key and run.status == "success" and not is_nil(run.score))
+    |> preload(:user_group_tournament)
+    |> Repo.all()
+    |> Enum.flat_map(&run_result_for_user(&1, user_ids))
+  end
+
+  defp run_result_for_user(%UserGroupTournamentRun{user_group_tournament: %{user_id: user_id}} = run, user_ids)
+       when is_integer(user_id) do
+    if user_id in user_ids do
+      [%{user_id: user_id, score: run.score, duration_ms: run.duration_ms}]
+    else
+      []
+    end
+  end
+
+  defp run_result_for_user(_run, _user_ids), do: []
+
+  @doc """
   Extracts per-player round results (`%{user_id, place, score, duration_ms}`)
-  from a stored run's `result` map. Used by SliceRunner to feed movement.
-  Returns `[]` if the run has no ranking (error/pending/empty).
+  from a stored run's `result` map. Returns `[]` if the run has no ranking
+  (error/pending/empty). Note: the runner's `place` and `duration_ms` are
+  authoritative for the run viewer, but movement and leaderboard scoring
+  re-rank from our persisted records — see `list_run_results_by_run_key/2`.
   """
   @spec extract_round_results(UserGroupTournamentRun.t()) :: [
           %{user_id: integer(), place: pos_integer(), score: integer() | nil, duration_ms: integer() | nil}
@@ -319,10 +361,13 @@ defmodule Codebattle.GroupTask.Context do
     missing_player_ids = Enum.reject(player_ids, &MapSet.member?(solution_user_ids, &1))
 
     if missing_player_ids == [] do
+      round = Map.get(attrs, :round) || Map.get(attrs, "round") || 1
+
       {:ok,
        %{
          include_bots: Map.get(attrs, :include_bots) || Map.get(attrs, "include_bots") || false,
          include_viewer_html: true,
+         options: %{round: round},
          solutions:
            Enum.map(latest_solutions, fn solution ->
              %{
@@ -508,6 +553,7 @@ defmodule Codebattle.GroupTask.Context do
         run_id: run.id,
         status: run.status,
         score: run.score,
+        duration_ms: run.duration_ms,
         kind: run.kind,
         slice_index: run.slice_index,
         round_position: run.round_position,
@@ -541,11 +587,13 @@ defmodule Codebattle.GroupTask.Context do
     round_position = round_position_for_run(tournament, kind)
 
     Repo.transaction(fn ->
+      preloaded_runs = Repo.preload(runs, :user_group_tournament)
+      durations_by_user_id = submission_durations_by_user_id(tournament, preloaded_runs)
+
       updated =
-        runs
-        |> Repo.preload(:user_group_tournament)
+        preloaded_runs
         |> Enum.reduce_while([], fn run, acc ->
-          update_run(run, acc, status, result, ranking, round_position)
+          update_run(run, acc, status, result, ranking, round_position, durations_by_user_id)
         end)
         |> Enum.reverse()
 
@@ -554,6 +602,63 @@ defmodule Codebattle.GroupTask.Context do
       updated
     end)
   end
+
+  # Duration is "time from tournament start to the moment the user submitted
+  # the solution being scored" — not runner wall-clock. We compute it once
+  # per `do_update_runs` batch by looking up each player's latest solution
+  # for the tournament. Returns `%{user_id => duration_ms}`; missing users
+  # (no tournament `started_at`, no solution row, or naive/utc mismatch)
+  # are simply absent, so the run row's `duration_ms` stays nil.
+  defp submission_durations_by_user_id(nil, _runs), do: %{}
+  defp submission_durations_by_user_id(%GroupTournament{started_at: nil}, _runs), do: %{}
+
+  defp submission_durations_by_user_id(
+         %GroupTournament{started_at: started_at, id: tournament_id, group_task_id: group_task_id},
+         runs
+       ) do
+    user_ids =
+      runs
+      |> Enum.flat_map(fn run ->
+        case run.user_group_tournament do
+          %{user_id: user_id} when is_integer(user_id) -> [user_id]
+          _ -> []
+        end
+      end)
+      |> Enum.uniq()
+
+    case user_ids do
+      [] ->
+        %{}
+
+      ids ->
+        GroupTaskSolution
+        |> where(
+          [solution],
+          solution.group_task_id == ^group_task_id and
+            solution.group_tournament_id == ^tournament_id and
+            solution.user_id in ^ids
+        )
+        |> distinct([solution], solution.user_id)
+        |> order_by([solution], asc: solution.user_id, desc: solution.id)
+        |> select([solution], {solution.user_id, solution.inserted_at})
+        |> Repo.all()
+        |> Enum.reduce(%{}, &put_submission_duration(&1, &2, started_at))
+    end
+  end
+
+  defp put_submission_duration({user_id, solution_inserted_at}, acc, started_at) do
+    case submission_duration_ms(started_at, solution_inserted_at) do
+      nil -> acc
+      duration_ms -> Map.put(acc, user_id, duration_ms)
+    end
+  end
+
+  defp submission_duration_ms(%DateTime{} = tournament_started_at, %NaiveDateTime{} = solution_inserted_at) do
+    submitted_at = DateTime.from_naive!(solution_inserted_at, "Etc/UTC")
+    max(DateTime.diff(submitted_at, tournament_started_at, :millisecond), 0)
+  end
+
+  defp submission_duration_ms(_, _), do: nil
 
   defp round_position_for_run(%GroupTournament{current_round_position: pos}, kind)
        when kind in ["slice", "seed"] and is_integer(pos), do: pos
@@ -584,20 +689,22 @@ defmodule Codebattle.GroupTask.Context do
 
     round_position = tournament.current_round_position
 
-    # Dense-rank humans only: when a slice is bot-filled, the runner ranks
-    # bots inline (e.g. a bot may take #1), leaving gaps in the surviving
-    # human places. Strip the bots first, then re-number 1..N by their raw
-    # rank so partial slices score and display contiguously.
+    # Rank humans by (score desc, submission duration asc) and dense-number
+    # 1..N. We deliberately ignore the runner's `place` so the ordering
+    # reflects submission timing (tournament-start → submitted_at) rather
+    # than the runner's internal scoring of bot fillers; bot-filled slices
+    # fall out naturally because bots have no `run` row here.
     runs
     |> Enum.map(fn run ->
       user_id = run.user_group_tournament && run.user_group_tournament.user_id
-      raw_place = extract_place_for_user(_user_ranking(run), user_id)
-      {user_id, raw_place, run.id}
+      {user_id, run.score, run.duration_ms, run.id}
     end)
-    |> Enum.filter(fn {user_id, place, _} -> is_integer(user_id) and is_integer(place) end)
-    |> Enum.sort_by(fn {_uid, place, _rid} -> place end)
+    |> Enum.filter(fn {user_id, score, _duration, _rid} -> is_integer(user_id) and is_integer(score) end)
+    |> Enum.sort_by(fn {_user_id, score, duration, _rid} ->
+      {-score, duration || @missing_duration_sentinel}
+    end)
     |> Enum.with_index(1)
-    |> Enum.each(fn {{user_id, _raw_place, run_id}, dense_place} ->
+    |> Enum.each(fn {{user_id, _score, _duration, run_id}, dense_place} ->
       round_points = Scoring.round_points(tournament.scoring_strategy, slice_index, dense_place, opts)
       bump_player_score(tournament.id, user_id, round_points, dense_place)
       record_round_score(tournament.id, user_id, run_id, round_position, slice_index, dense_place, round_points)
@@ -616,10 +723,6 @@ defmodule Codebattle.GroupTask.Context do
   end
 
   defp apply_tournament_scoring(_tournament, _runs, _ranking, _slice_index, _kind), do: :ok
-
-  # Each preloaded run carries the FULL ranking on its `result` field — we
-  # don't need to scan it per-run, but the helper keeps the shape consistent.
-  defp _user_ranking(%UserGroupTournamentRun{result: result}), do: extract_ranking(result)
 
   defp bump_player_score(group_tournament_id, user_id, round_points, place) do
     {count, _} =
@@ -682,16 +785,6 @@ defmodule Codebattle.GroupTask.Context do
     |> Repo.update_all([])
   end
 
-  defp extract_place_for_user([], _user_id), do: nil
-  defp extract_place_for_user(_ranking, nil), do: nil
-
-  defp extract_place_for_user(ranking, user_id) do
-    case Enum.find(ranking, fn entry -> entry["player_id"] == user_id end) do
-      %{"place" => place} when is_integer(place) -> place
-      _ -> nil
-    end
-  end
-
   defp numeric(v) when is_integer(v), do: v
   defp numeric(v) when is_float(v), do: round(v)
   defp numeric(_), do: nil
@@ -715,10 +808,10 @@ defmodule Codebattle.GroupTask.Context do
     |> maybe_continue_transaction(acc)
   end
 
-  defp update_run(run, acc, status, result, ranking, round_position) do
+  defp update_run(run, acc, status, result, ranking, round_position, durations_by_user_id) do
     user_id = run.user_group_tournament.user_id
     score = extract_score_for_user(ranking, user_id)
-    duration_ms = extract_duration_for_user(ranking, user_id)
+    duration_ms = Map.get(durations_by_user_id, user_id)
 
     attrs =
       %{status: status, result: result, score: score}
@@ -733,14 +826,6 @@ defmodule Codebattle.GroupTask.Context do
 
   defp maybe_put(map, _key, nil), do: map
   defp maybe_put(map, key, value), do: Map.put(map, key, value)
-
-  defp extract_duration_for_user(ranking, user_id) do
-    case Enum.find(ranking, fn entry -> entry["player_id"] == user_id end) do
-      %{"duration_ms" => v} when is_integer(v) -> v
-      %{"duration_ms" => v} when is_float(v) -> round(v)
-      _ -> nil
-    end
-  end
 
   defp extract_ranking(%{"summary" => %{"ranking" => ranking}}) when is_list(ranking), do: ranking
   defp extract_ranking(_), do: []

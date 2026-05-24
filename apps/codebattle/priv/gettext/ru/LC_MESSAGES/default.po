@@ -1823,3 +1823,9 @@ msgstr "Вы"
 
 msgid "Add solution"
 msgstr "Добавить решение"
+
+msgid "Time: %{duration}"
+msgstr "Время: %{duration}"
+
+msgid "Group %{n}"
+msgstr "Группа %{n}"

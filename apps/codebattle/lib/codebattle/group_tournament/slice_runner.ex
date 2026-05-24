@@ -20,9 +20,9 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   For ranked (`type == "ranked"`) tournaments this module additionally
   provides:
 
-    * `run_seeding/1` — fans out one solo run per player (with bots) so each
-      player's baseline score and duration can be persisted before slice
-      assignment.
+    * `run_seeding/1` — fans out one solo run per player (no bots) so each
+      player's baseline score and submission duration can be persisted
+      before slice assignment.
     * `apply_movement/2` — takes the round's per-player results and applies
       the tournament's configured movement strategy to update `slice_index`
       in a single transaction.
@@ -111,7 +111,8 @@ defmodule Codebattle.GroupTournament.SliceRunner do
             group_tournament_id: group_tournament.id,
             include_bots: include_bots_for_slice?(group_tournament, ids, slice_index),
             slice_index: slice_index,
-            kind: :slice
+            kind: :slice,
+            round: group_tournament.current_round_position || 1
           })
 
         # run_group_task now broadcasts a per-user "run_updated" event for
@@ -129,7 +130,9 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
   @doc """
   Runs the seeding round for a ranked tournament: each active player runs solo
-  against bots so we can persist their baseline score + duration. This is what
+  (no bots) so we can persist their baseline score and submission duration.
+  Duration is measured from `tournament.started_at` to
+  `solution.inserted_at` — see `Codebattle.GroupTask.Context`. This is what
   drives the initial slice assignment (via `assign_slices/1` with strategy
   `"rating"`).
   """
@@ -166,11 +169,11 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   instead of the seed slice.
 
   Place is the player's *global* rank across all seeded players (sorted by
-  seed_score desc, then faster seed duration, then user_id), not the rank
-  within their assigned slice. Slice rank is implicit in the slice ordering
-  itself and would lose useful information ("you placed N out of M"); the
-  global rank is what determines slice assignment, so it's the meaningful
-  number to surface in the UI.
+  seed_score desc, then faster seed duration), not the rank within their
+  assigned slice. Slice rank is implicit in the slice ordering itself and
+  would lose useful information ("you placed N out of M"); the global rank
+  is what determines slice assignment, so it's the meaningful number to
+  surface in the UI.
   """
   @spec record_seed_round_scores(GroupTournament.t()) :: {:ok, non_neg_integer()}
   def record_seed_round_scores(%GroupTournament{id: tournament_id}) do
@@ -193,7 +196,7 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
     rows =
       seeded
-      |> Enum.sort_by(fn p -> {-p.seed_score, p.seed_duration_ms || 0, p.user_id} end)
+      |> Enum.sort_by(fn p -> {-p.seed_score, p.seed_duration_ms || 0} end)
       |> Enum.with_index(1)
       |> Enum.map(fn {p, global_place} ->
         %{
@@ -296,30 +299,34 @@ defmodule Codebattle.GroupTournament.SliceRunner do
 
   defp normalize_slice_sizes(assignments, _round_results, _slice_count, _slice_size), do: assignments
 
+  # Re-rank from our persisted per-user runs rather than the runner's place,
+  # so movement decisions match the score+submission-duration ordering that
+  # `apply_tournament_scoring` records (see `Codebattle.GroupTask.Context`).
+  # Ranking is (score desc, duration_ms asc); a missing duration sorts last
+  # within an equal-score group.
+  @missing_duration_sentinel 9_999_999_999_999
   defp build_round_results(run, ids, slice_index) do
-    run
-    |> GroupTaskContext.extract_round_results()
-    |> Enum.filter(fn r -> r.user_id in ids end)
-    |> Enum.sort_by(& &1.place)
+    run.run_key
+    |> GroupTaskContext.list_run_results_by_run_key(ids)
+    |> Enum.sort_by(fn r -> {-r.score, r.duration_ms || @missing_duration_sentinel} end)
     |> Enum.with_index(1)
-    |> Enum.map(fn {r, dense_place} -> Map.merge(r, %{place: dense_place, slice_index: slice_index}) end)
+    |> Enum.map(fn {r, dense_place} ->
+      %{user_id: r.user_id, place: dense_place, score: r.score, duration_ms: r.duration_ms, slice_index: slice_index}
+    end)
   end
 
   defp run_seed_for_player(%GroupTournament{} = group_tournament, user_id) do
-    started_at = System.monotonic_time(:millisecond)
-
     result =
       GroupTaskContext.run_group_task(group_tournament.group_task, [user_id], %{
         group_tournament_id: group_tournament.id,
-        include_bots: true,
-        kind: :seed
+        include_bots: false,
+        kind: :seed,
+        round: 1
       })
-
-    duration_ms = System.monotonic_time(:millisecond) - started_at
 
     case result do
       {:ok, run} ->
-        persist_seed(group_tournament.id, user_id, run.score, run.duration_ms || duration_ms)
+        persist_seed(group_tournament.id, user_id, run.score, run.duration_ms)
         # run_group_task already emits a per-user "run_updated" broadcast.
         :ok
 
@@ -342,12 +349,16 @@ defmodule Codebattle.GroupTournament.SliceRunner do
   end
 
   # Lower slice_ranking sorts first under the "rating" strategy (ascending).
-  # We want highest score first → use -score. We then add a small duration
-  # factor (in microseconds-fitting integers) as a tie-break so faster
-  # submissions outrank slower ones at the same score.
+  # We want highest score first → use -score. We then add the duration_ms as
+  # a tie-break so faster submissions outrank slower ones at the same score.
+  # The multiplier must exceed any plausible duration: durations are now
+  # measured from tournament start to solution submission (hours of ms are
+  # realistic), so 10^12 leaves comfortable headroom — a 1-point score gap
+  # is worth ~31 years of submission delay.
+  @seed_score_weight 1_000_000_000_000
   defp seed_ranking(nil, _duration), do: nil
-  defp seed_ranking(score, nil), do: -score * 1_000_000
-  defp seed_ranking(score, duration_ms), do: -score * 1_000_000 + duration_ms
+  defp seed_ranking(score, nil), do: -score * @seed_score_weight
+  defp seed_ranking(score, duration_ms), do: -score * @seed_score_weight + duration_ms
 
   # Pad short slices with bots so a slice always plays against a full field of
   # `slice_size` participants. The bottom slice is exempt — by design it holds

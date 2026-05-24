@@ -30,6 +30,7 @@ function GroupTournamentPage({
 
   const [viewerFullscreen, setViewerFullscreen] = useState(false);
   const [editorFullscreen, setEditorFullscreen] = useState(false);
+  const [activeTab, setActiveTab] = useState(null);
 
   useGroupTournamentChannel(tournamentId);
 
@@ -45,6 +46,11 @@ function GroupTournamentPage({
 
   const { runId, selectedRun, setSelectedRunId, selectedRunCode, selectedRunLang } =
     useGroupBattleRun(data);
+
+  const handleSelectRun = (id) => {
+    setSelectedRunId(id);
+    setActiveTab("run");
+  };
 
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -100,7 +106,7 @@ function GroupTournamentPage({
             items={data?.runs}
             tournamentStatus={status}
             runId={runId}
-            setRunId={setSelectedRunId}
+            setRunId={handleSelectRun}
             repoUrl={externalSetup?.repoUrl}
             onAddSolution={runOnExternalPlatform ? null : () => setEditorFullscreen(true)}
             leaderboard={data?.leaderboard}
@@ -117,6 +123,8 @@ function GroupTournamentPage({
             roundsCount={data?.groupTournament?.roundsCount}
             currentRoundPosition={data?.groupTournament?.currentRoundPosition}
             currentUserId={currentUserId}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
           />
         </div>
       </div>

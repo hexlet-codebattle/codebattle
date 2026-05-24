@@ -161,6 +161,14 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/toggle_leaderboard", CodebattleWeb.Admin.GroupTournamentController, :toggle_leaderboard,
+      as: :admin_group_tournament
+    )
+
+    get("/group_tournaments/:id/leaderboard", CodebattleWeb.Admin.GroupTournamentController, :leaderboard,
+      as: :admin_group_tournament
+    )
+
     resources("/group_tournaments", CodebattleWeb.Admin.GroupTournamentController, as: :admin_group_tournament)
 
     get("/group_tournaments/:id/solution_tester", CodebattleWeb.Admin.GroupTournamentController, :solution_tester,

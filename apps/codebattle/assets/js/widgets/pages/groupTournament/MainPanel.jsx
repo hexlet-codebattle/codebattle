@@ -13,6 +13,8 @@ function MainPanel({
   currentRoundPosition,
   status,
   currentUserId,
+  activeTab: activeTabProp,
+  setActiveTab: setActiveTabProp,
 }) {
   const [openJson, setOpenJson] = useState(null); // "history" | "summary" | null
   // Pick the initial tab from the tournament's current state on first mount:
@@ -20,11 +22,13 @@ function MainPanel({
   // run viewer (which auto-selects the newest run), and pre-start ones open
   // on the description. The user can switch freely afterwards — we don't
   // re-derive on later status changes so we don't yank them away mid-read.
-  const [activeTab, setActiveTab] = useState(() => {
+  const initialTab = () => {
     if (status === "finished") return "leaderboard";
     if (status === "active") return "run";
     return "description";
-  });
+  };
+  const activeTab = activeTabProp ?? initialTab();
+  const setActiveTab = setActiveTabProp ?? (() => {});
 
   const isPendingRun = run?.status === "pending";
   const hasViewer = !!run?.result?.viewerHtml;

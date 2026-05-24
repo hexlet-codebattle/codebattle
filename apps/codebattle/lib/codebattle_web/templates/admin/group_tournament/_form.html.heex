@@ -178,6 +178,15 @@
   </div>
 
   <div class="form-group form-check mb-4">
+    {checkbox(f, :show_leaderboard, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :show_leaderboard)}>
+      Show Leaderboard to Players (admins always see it; toggle off to reduce
+      bandwidth pressure during large-room events)
+    </label>
+    {error_tag(f, :show_leaderboard)}
+  </div>
+
+  <div class="form-group form-check mb-4">
     {checkbox(f, :run_on_external_platform, class: "form-check-input")}
     <label class="form-check-label text-white" for={input_id(f, :run_on_external_platform)}>
       Run on External Platform

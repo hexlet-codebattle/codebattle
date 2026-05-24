@@ -31,6 +31,9 @@
         </p>
         <p><strong>Current Round:</strong> {@group_tournament.current_round_position}</p>
         <p><strong>Starts At:</strong> {format_datetime(@group_tournament.starts_at)}</p>
+        <p>
+          <strong>Show Leaderboard to Players:</strong> {inspect(@group_tournament.show_leaderboard)}
+        </p>
       </div>
     </div>
     <div class="mt-3 d-flex justify-content-between align-items-start flex-wrap">
@@ -90,6 +93,30 @@
         {link("Solution Tester",
           to: Routes.admin_group_tournament_path(@conn, :solution_tester, @group_tournament),
           class: "btn btn-outline-info cb-rounded ml-2"
+        )}
+        {link("Leaderboard",
+          to: Routes.admin_group_tournament_path(@conn, :leaderboard, @group_tournament),
+          class: "btn btn-outline-info cb-rounded ml-2"
+        )}
+        {link(
+          if(@group_tournament.show_leaderboard,
+            do: "Hide Leaderboard from Players",
+            else: "Show Leaderboard to Players"
+          ),
+          to: Routes.admin_group_tournament_path(@conn, :toggle_leaderboard, @group_tournament),
+          method: :post,
+          data: [
+            confirm:
+              if(@group_tournament.show_leaderboard,
+                do: "Hide the leaderboard from players?",
+                else: "Show the leaderboard to players?"
+              )
+          ],
+          class:
+            if(@group_tournament.show_leaderboard,
+              do: "btn btn-outline-warning cb-rounded ml-2",
+              else: "btn btn-outline-success cb-rounded ml-2"
+            )
         )}
       </div>
     </div>

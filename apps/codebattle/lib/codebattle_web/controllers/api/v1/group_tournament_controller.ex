@@ -204,6 +204,7 @@ defmodule CodebattleWeb.Api.V1.GroupTournamentController do
       status: run.status,
       result: run.result,
       score: run.score,
+      duration_ms: run.duration_ms,
       inserted_at: run.inserted_at
     }
   end

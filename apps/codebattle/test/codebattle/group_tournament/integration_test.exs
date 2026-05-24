@@ -405,10 +405,14 @@ defmodule Codebattle.GroupTournament.IntegrationTest do
   # === Helpers ===
 
   defp build_ranked_tournament(opts) do
+    # started_at must be set so runs receive a non-nil submission duration
+    # (duration_ms = solution.inserted_at - tournament.started_at). Backdate
+    # by 60s so solutions inserted in the test land at a positive offset.
     :group_tournament
     |> insert(%{
       type: "ranked",
       state: "active",
+      started_at: DateTime.add(DateTime.utc_now(:second), -60, :second),
       slice_size: Keyword.get(opts, :slice_size, 4),
       rounds_count: Keyword.get(opts, :rounds_count, 3),
       max_score: Keyword.get(opts, :max_score, 1000),

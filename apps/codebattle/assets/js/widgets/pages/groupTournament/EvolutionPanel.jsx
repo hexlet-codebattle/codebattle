@@ -42,6 +42,23 @@ const formatInsertedAtTooltip = (insertedAt) => {
   return date.isValid() ? date.format("YYYY-MM-DD HH:mm:ss") : undefined;
 };
 
+// Submission duration is "time from tournament start to when the user
+// submitted the solution being scored", in ms. Render mm:ss when under an
+// hour, hh:mm:ss otherwise.
+const formatDuration = (durationMs) => {
+  if (!Number.isFinite(durationMs) || durationMs < 0) {
+    return null;
+  }
+
+  const totalSeconds = Math.floor(durationMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+};
+
 const isSeedRun = (item) => item?.kind === "seed";
 const isSliceRun = (item) => item?.kind === "slice";
 const isRoundRun = (item) => isSeedRun(item) || isSliceRun(item);
@@ -95,28 +112,6 @@ const buildRunTitles = (items) => {
   return titles;
 };
 
-const findBestRunId = (items) => {
-  if (!items || items.length === 0) {
-    return null;
-  }
-
-  let bestId = null;
-  let bestScore = -Infinity;
-
-  items.forEach((item) => {
-    if (isRoundRun(item) || !isSuccess(item)) {
-      return;
-    }
-    const score = item?.score ?? 0;
-    if (score > bestScore) {
-      bestScore = score;
-      bestId = item?.id;
-    }
-  });
-
-  return bestId;
-};
-
 const getPlaceFor = (item, leaderboardEntry) => {
   if (!leaderboardEntry?.rounds) return null;
   const key = isSeedRun(item) ? 1 : item?.roundPosition;
@@ -135,7 +130,6 @@ function EvolutionPanel({
   leaderboard,
   currentUserId,
 }) {
-  const bestRunId = findBestRunId(items);
   const titles = buildRunTitles(items);
   const [hoverTooltip, setHoverTooltip] = useState(null);
   const externalUrl = tournamentStatus !== "finished" ? getExternalUrl(repoUrl) : null;
@@ -201,17 +195,17 @@ function EvolutionPanel({
                 const isActive = runId === item?.id;
                 const pending = isPending(item);
                 const roundRun = isRoundRun(item);
-                const isBest = item?.id != null && item.id === bestRunId;
                 const accent = kindAccent(item);
                 const ringColor = isActive ? ACCENT_ACTIVE : accent;
                 const leftBorderColor = statusAccent(item);
                 const title = (item?.id != null && titles[item.id]) || `v${items.length - idx}`;
                 const score = item?.score;
                 const place = roundRun ? getPlaceFor(item, myEntry) : null;
+                const duration = formatDuration(item?.durationMs);
                 const tooltip = formatInsertedAtTooltip(item?.insertedAt);
                 const sliceLabel =
                   isSliceRun(item) && Number.isInteger(item.sliceIndex)
-                    ? `S${item.sliceIndex + 1}`
+                    ? i18n.t("Group %{n}", { n: item.sliceIndex + 1 })
                     : null;
 
                 return (
@@ -262,13 +256,6 @@ function EvolutionPanel({
                         >
                           {title}
                         </span>
-                        {sliceLabel && (
-                          <span
-                            className={`small mr-2 ${isActive ? "text-white-50" : "text-muted"}`}
-                          >
-                            {sliceLabel}
-                          </span>
-                        )}
                         {pending ? (
                           <span
                             className="font-weight-bold"
@@ -290,17 +277,22 @@ function EvolutionPanel({
                             {i18n.t("Score %{score}", { score: score ?? 0 })}
                           </span>
                         )}
-                        {!pending && isBest && (
+                        {sliceLabel && (
                           <span
-                            className={`small text-truncate ${isActive ? "text-white-50" : "text-muted"}`}
+                            className={`small mr-2 ${isActive ? "text-white-50" : "text-muted"}`}
                           >
-                            {i18n.t("best try")}
+                            {sliceLabel}
                           </span>
                         )}
                       </div>
                       {!pending && !roundRun && (
                         <div className={`small mt-1 ${isActive ? "text-white-50" : "text-muted"}`}>
                           {i18n.t("Test run")}
+                          {duration && (
+                            <span className="ml-2">
+                              {i18n.t("Time: %{duration}", { duration })}
+                            </span>
+                          )}
                         </div>
                       )}
                       {!pending && roundRun && (
@@ -308,6 +300,11 @@ function EvolutionPanel({
                           {Number.isInteger(place)
                             ? i18n.t("Place: #%{place}", { place })
                             : i18n.t("Place: pending")}
+                          {duration && (
+                            <span className="ml-2">
+                              {i18n.t("Time: %{duration}", { duration })}
+                            </span>
+                          )}
                         </div>
                       )}
                     </button>

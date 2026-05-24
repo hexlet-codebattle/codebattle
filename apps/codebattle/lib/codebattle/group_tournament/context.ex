@@ -553,11 +553,12 @@ defmodule Codebattle.GroupTournament.Context do
 
   def maybe_run_after_solution_submission(group_tournament_id, submitted_solution) do
     case get_group_tournament(group_tournament_id) do
-      %{state: "active", group_task: group_task, include_bots: include_bots} ->
+      %{state: "active", group_task: group_task, include_bots: include_bots} = gt ->
         # run_group_task itself emits per-user "run_updated" broadcasts.
         GroupTaskContext.run_group_task(group_task, [submitted_solution.user_id], %{
           group_tournament_id: group_tournament_id,
-          include_bots: include_bots
+          include_bots: include_bots,
+          round: gt.current_round_position || 1
         })
 
         :ok
@@ -588,7 +589,8 @@ defmodule Codebattle.GroupTournament.Context do
       :players_count,
       :group_task_id,
       :template_id,
-      :meta
+      :meta,
+      :show_leaderboard
     ])
     |> Map.put(:group_task_slug, group_tournament.group_task && group_tournament.group_task.slug)
   end
@@ -727,6 +729,7 @@ defmodule Codebattle.GroupTournament.Context do
       status: run.status,
       result: run.result,
       score: run.score,
+      duration_ms: run.duration_ms,
       inserted_at: run.inserted_at
     }
   end

@@ -109,9 +109,17 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         group_tournament
         |> GroupTournamentContext.list_runs(list_runs_opts(group_tournament, current_user))
         |> Enum.map(&GroupTournamentContext.serialize_run/1),
-      leaderboard: LeaderboardStore.list(group_tournament.id),
+      leaderboard: leaderboard_for(group_tournament, current_user),
       langs: Languages.get_langs()
     }
+  end
+
+  defp leaderboard_for(group_tournament, current_user) do
+    if group_tournament.show_leaderboard || Codebattle.User.admin_or_moderator?(current_user) do
+      LeaderboardStore.list(group_tournament.id)
+    else
+      []
+    end
   end
 
   defp list_runs_opts(%{type: "ranked"}, current_user) do
@@ -235,7 +243,7 @@ defmodule CodebattleWeb.GroupTournamentChannel do
         push(socket, "group_tournament:status_updated", %{
           status: payload.status,
           group_tournament: GroupTournamentContext.serialize_group_tournament(group_tournament),
-          leaderboard: LeaderboardStore.list(tournament_id)
+          leaderboard: leaderboard_for(group_tournament, socket.assigns.current_user)
         })
     end
 
