@@ -32,7 +32,9 @@
         <p><strong>Current Round:</strong> {@group_tournament.current_round_position}</p>
         <p><strong>Starts At:</strong> {format_datetime(@group_tournament.starts_at)}</p>
         <p>
-          <strong>Show Leaderboard to Players:</strong> {inspect(@group_tournament.show_leaderboard)}
+          <strong>Show Leaderboard to Players:</strong> {inspect(
+            @group_tournament.show_leaderboard
+          )}
         </p>
       </div>
     </div>

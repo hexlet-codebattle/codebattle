@@ -1,56 +1,71 @@
-<%
-  rounds_count = @group_tournament.rounds_count || 0
-  rounds = if rounds_count > 0, do: Enum.to_list(1..rounds_count), else: []
+<% rounds_count = @group_tournament.rounds_count || 0
+rounds = if rounds_count > 0, do: Enum.to_list(1..rounds_count), else: []
 
-  round_label = fn 1 -> "Seed"; r -> "R#{r - 1}" end
+round_label = fn
+  1 -> "Seed"
+  r -> "R#{r - 1}"
+end
 
-  cell_for = fn entry, r ->
-    rounds_map = entry[:rounds] || %{}
-    Map.get(rounds_map, r) || Map.get(rounds_map, to_string(r))
+cell_for = fn entry, r ->
+  rounds_map = entry[:rounds] || %{}
+  Map.get(rounds_map, r) || Map.get(rounds_map, to_string(r))
+end
+
+place_class = fn
+  1 -> "cb-gold-place-bg"
+  2 -> "cb-silver-place-bg"
+  3 -> "cb-bronze-place-bg"
+  _ -> ""
+end
+
+view_path = fn view ->
+  base = Routes.admin_group_tournament_path(@conn, :leaderboard, @group_tournament)
+
+  case view do
+    :rating -> base
+    {:round, n} -> base <> "?view=" <> Integer.to_string(n)
   end
+end
 
-  place_class = fn 1 -> "cb-gold-place-bg"; 2 -> "cb-silver-place-bg"; 3 -> "cb-bronze-place-bg"; _ -> "" end
+tab_class = fn active ->
+  if active,
+    do: "btn btn-sm btn-light text-dark font-weight-bold mr-2 mb-2",
+    else: "btn btn-sm btn-outline-light mr-2 mb-2"
+end
 
-  view_path = fn view ->
-    base = Routes.admin_group_tournament_path(@conn, :leaderboard, @group_tournament)
-    case view do
-      :rating -> base
-      {:round, n} -> base <> "?view=" <> Integer.to_string(n)
+slices_for_round = fn round_number ->
+  @leaderboard
+  |> Enum.flat_map(fn entry ->
+    cell = cell_for.(entry, round_number)
+
+    case cell do
+      %{slice_index: idx} when is_integer(idx) ->
+        [
+          {idx,
+           %{
+             user_id: entry[:user_id],
+             name: entry[:name] || "##{entry[:user_id]}",
+             clan: entry[:clan],
+             place: cell[:place],
+             score: cell[:score] || 0
+           }}
+        ]
+
+      _ ->
+        []
     end
-  end
+  end)
+  |> Enum.group_by(fn {idx, _} -> idx end, fn {_, p} -> p end)
+  |> Enum.map(fn {idx, players} ->
+    sorted =
+      Enum.sort_by(players, fn p ->
+        {if(is_integer(p.place), do: p.place, else: 999_999), -(p.score || 0), p.user_id}
+      end)
 
-  tab_class = fn active ->
-    if active, do: "btn btn-sm btn-light text-dark font-weight-bold mr-2 mb-2",
-       else: "btn btn-sm btn-outline-light mr-2 mb-2"
-  end
-
-  slices_for_round = fn round_number ->
-    @leaderboard
-    |> Enum.flat_map(fn entry ->
-      cell = cell_for.(entry, round_number)
-      case cell do
-        %{slice_index: idx} when is_integer(idx) ->
-          [{idx, %{
-            user_id: entry[:user_id],
-            name: entry[:name] || "##{entry[:user_id]}",
-            clan: entry[:clan],
-            place: cell[:place],
-            score: cell[:score] || 0
-          }}]
-        _ -> []
-      end
-    end)
-    |> Enum.group_by(fn {idx, _} -> idx end, fn {_, p} -> p end)
-    |> Enum.map(fn {idx, players} ->
-      sorted =
-        Enum.sort_by(players, fn p ->
-          {if(is_integer(p.place), do: p.place, else: 999_999), -(p.score || 0), p.user_id}
-        end)
-      {idx, sorted}
-    end)
-    |> Enum.sort_by(fn {idx, _} -> idx end)
-  end
-%>
+    {idx, sorted}
+  end)
+  |> Enum.sort_by(fn {idx, _} -> idx end)
+end %>
 <head>
   <meta http-equiv="refresh" content="5" />
 </head>
@@ -94,7 +109,6 @@
       <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 text-center text-muted">
         No leaderboard data yet.
       </div>
-
     <% @view == :rating -> %>
       <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-3">
         <div class="table-responsive">
@@ -137,7 +151,7 @@
                       <%= if cell do %>
                         <span class="font-weight-bold">{cell[:score] || 0}</span>
                         <%= if is_integer(cell[:place]) do %>
-                          <span class="small ml-1">(#<%= cell[:place] %>)</span>
+                          <span class="small ml-1">(#{cell[:place]})</span>
                         <% end %>
                       <% else %>
                         <span class="text-muted">—</span>
@@ -153,7 +167,6 @@
           </table>
         </div>
       </div>
-
     <% match?({:round, _}, @view) -> %>
       <% {:round, round_number} = @view %>
       <% slices = slices_for_round.(round_number) %>
@@ -164,8 +177,10 @@
       <% else %>
         <div class="d-flex flex-wrap" style="gap: 1rem;">
           <%= for {slice_index, players} <- slices do %>
-            <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2"
-                 style="min-width: 22rem; flex: 1 1 22rem;">
+            <div
+              class="cb-bg-highlight-panel cb-border-color border cb-rounded p-2"
+              style="min-width: 22rem; flex: 1 1 22rem;"
+            >
               <div class="d-flex justify-content-between border-bottom cb-border-color pb-1 mb-2 px-2 text-white">
                 <span class="font-weight-bold">Group {slice_index + 1}</span>
                 <span class="text-muted small">{length(players)} players</span>
