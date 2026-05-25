@@ -180,7 +180,7 @@ zigRunners:
       image: ghcr.io/hexlet-codebattle/php:8.5.2
       replicaCount: 1
     - name: python
-      image: ghcr.io/hexlet-codebattle/python:3.14.2
+      image: ghcr.io/hexlet-codebattle/python:3.14.5
       replicaCount: 1
     - name: ruby
       image: ghcr.io/hexlet-codebattle/ruby:4.0.1

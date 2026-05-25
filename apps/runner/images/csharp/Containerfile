@@ -9,53 +9,67 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 # ---------- .NET SDK base (Debian/glibc) ----------
 FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG}
 
-# Dotnet/NuGet behavior (also used at runtime)
+  # We intentionally do NOT set NUGET_PACKAGES or HOME here.
+  #
+  # At runtime the runner-zig sandbox force-sets HOME=/sandbox and mounts a
+  # fresh tmpfs over /tmp per request. Anything we stash under /tmp (e.g. a
+  # pre-restored package cache) is therefore invisible to user code, which is
+  # exactly what produced the previous "NU1301: Unable to load the service
+  # index for source https://api.nuget.org/v3/index.json" error.
+  #
+  # Instead we pre-restore into ./.nuget/packages under the workdir. The
+  # runner's per-request copyWorkspace step then carries the cache into
+  # /sandbox/.nuget/packages, where dotnet finds it via the default
+  # $HOME/.nuget/packages lookup — no network needed at request time.
+  #
+  # RUN_ENV_ALLOW makes the runner forward the listed DOTNET_* vars into the
+  # sandbox env. Without DOTNET_SKIP_FIRST_TIME_EXPERIENCE at runtime, dotnet
+  # prints the "Welcome to .NET" banner and tries to install the HTTPS dev
+  # cert on every /run.
 ENV DOTNET_NOLOGO=1 \
-  DOTNET_CLI_TELEMETRY_OPTOUT=1 \
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-  DOTNET_EnableWriteXorExecute=0 \
-  HOME=/tmp/dotnet-home \
-  DOTNET_CLI_HOME=/tmp/dotnet-home \
-  NUGET_PACKAGES=/tmp/nuget/packages \
-  NUGET_CONFIG_FILE=/tmp/nuget/NuGet.Config
+    DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    DOTNET_EnableWriteXorExecute=0 \
+    RUN_ENV_ALLOW=DOTNET_NOLOGO,DOTNET_CLI_TELEMETRY_OPTOUT,DOTNET_SKIP_FIRST_TIME_EXPERIENCE,DOTNET_EnableWriteXorExecute
 
 WORKDIR /usr/src/app
 
-# System deps
+  # System deps
 RUN apt-get update \
   && apt-get install -y --no-install-recommends make curl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-# Create user + writable HOME and workdir
+  # Create non-root user + writable workdir. The runner-zig sandbox runs user
+  # code as RUN_UID_BASE+slot (default 10001+slot); matching that here keeps
+  # build-time and runtime UIDs aligned.
 RUN groupadd -g 10001 -r runneruser \
   && useradd -r -g runneruser -u 10001 -m -d /home/runneruser -s /usr/sbin/nologin runneruser \
-  && mkdir -p /tmp/dotnet-home /tmp/nuget/packages /tmp/nuget /usr/src/app \
-  && touch /tmp/nuget/NuGet.Config \
-  && chown -R runneruser:runneruser /home/runneruser /usr/src/app /tmp/dotnet-home /tmp/nuget \
-  && chmod -R a+rwX /tmp/dotnet-home /tmp/nuget /usr/src/app
+  && chown -R runneruser:runneruser /home/runneruser /usr/src/app
 
-# Switch to non-root BEFORE restore so any generated dirs are owned correctly
 USER runneruser
 
-# Create Directory.Build.props inside the image so obj/bin stay in project-local paths
+  # Keep obj/bin project-local so they live inside /sandbox at runtime. The
+  # runner's recursive chown gives the slot UID write access to every
+  # workspace sub-path, so dotnet build can scribble into ./obj freely.
 RUN cat > Directory.Build.props <<'EOF'
-<Project>
-  <PropertyGroup>
-    <BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>obj/</IntermediateOutputPath>
-    <BaseOutputPath>bin/</BaseOutputPath>
-  </PropertyGroup>
-</Project>
+  <Project>
+    <PropertyGroup>
+      <BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
+      <IntermediateOutputPath>obj/</IntermediateOutputPath>
+      <BaseOutputPath>bin/</BaseOutputPath>
+    </PropertyGroup>
+  </Project>
 EOF
 
-# Restore first (better layer cache)
+  # Restore into the workdir (--packages) so the cache survives the runtime
+  # workspace copy. Layer order: csproj first for better Docker cache reuse
+  # when only source files change.
 COPY --chown=runneruser:runneruser Checker.csproj ./
-RUN dotnet --info \
-  && dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org || true \
-  && dotnet nuget locals all --clear \
-  && dotnet restore --disable-parallel --source https://api.nuget.org/v3/index.json
+RUN dotnet restore --disable-parallel \
+        --packages /usr/src/app/.nuget/packages \
+        --source https://api.nuget.org/v3/index.json
 
-# App sources
+  # App sources
 COPY --chown=runneruser:runneruser Program.cs .
 COPY --chown=runneruser:runneruser check ./check
 COPY --chown=runneruser:runneruser Makefile .

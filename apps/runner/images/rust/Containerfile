@@ -7,26 +7,44 @@ FROM --platform=$TARGETPLATFORM rust:${RUST_TAG}
 
 RUN apk add --no-cache make libc-dev
 
-ENV CARGO_HOME=/tmp/cargo-home \
-  CARGO_TARGET_DIR=/tmp/cargo-target
-
-RUN mkdir -p /tmp/cargo-home /tmp/cargo-target \
-  && chmod -R 777 /tmp/cargo-home /tmp/cargo-target
+  # rustup/cargo state must be reachable from inside the runner-zig sandbox.
+  # That sandbox shadows /tmp (per-request tmpfs), bind-mounts the workdir to
+  # /sandbox, force-sets HOME=/sandbox, and strips env down to an allowlist.
+  #
+  # - RUSTUP_HOME stays at the rust image default (/usr/local/rustup). /usr is
+  #   not shadowed, so the toolchain remains reachable. Forwarding it via
+  #   RUN_ENV_ALLOW is critical — without it the cargo proxy bails with
+  #   "rustup could not choose a version of cargo to run".
+  # - CARGO_HOME lives under the workdir so it survives the runtime workspace
+  #   copy. The ENV reassignment below switches it to the /sandbox view that
+  #   the slot UID actually sees at request time.
+  # - CARGO_TARGET_DIR is left unset on purpose: cargo defaults to ./target,
+  #   which is /usr/src/app/target at build time and /sandbox/target at
+  #   request time. Both are the same files, just under different absolute
+  #   paths in the two namespaces.
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/src/app/.cargo \
+    RUN_ENV_ALLOW=RUSTUP_HOME,CARGO_HOME,RUST_BACKTRACE
 
 RUN addgroup -S app -g 10001 \
   && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
 
 WORKDIR /usr/src/app
+RUN chown app:app /usr/src/app
 
-COPY Cargo.toml .
-COPY check ./check
-COPY Makefile .
-
-RUN cargo build
-RUN chown -R app:app /usr/src/app /tmp/cargo-home /tmp/cargo-target \
-  && chmod -R a+rwX /tmp/cargo-home /tmp/cargo-target
+COPY --chown=app:app Cargo.toml .
+COPY --chown=app:app check ./check
+COPY --chown=app:app Makefile .
 
 USER app
+
+  # Pre-warm the dep cache + target so each /run only recompiles the (tiny)
+  # solution + checker.
+RUN cargo build
+
+  # Switch CARGO_HOME to its runtime view. The workdir is bind-mounted to
+  # /sandbox per request, so /usr/src/app/.cargo appears at /sandbox/.cargo.
+ENV CARGO_HOME=/sandbox/.cargo
 
 EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

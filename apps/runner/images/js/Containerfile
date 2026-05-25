@@ -5,27 +5,32 @@ ARG TARGETPLATFORM
 FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 FROM --platform=$TARGETPLATFORM node:${NODE_TAG}
 
-RUN apk add --update --no-cache make
+RUN apk add --no-cache make
 
-# app user
+  # Match the runner's slot UID (RUN_UID_BASE+slot, default 10001+slot) so
+  # build-time and runtime ownership line up. Real HOME is required because
+  # npm writes its cache + logs under $HOME/.npm (the previous /nonexistent
+  # setup made `npm install` fail with EACCES on mkdir /nonexistent).
 RUN addgroup -S app -g 10001 \
-  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+  && adduser -S -D -h /home/app -s /sbin/nologin -G app -u 10001 app
 
 WORKDIR /usr/src/app
+RUN chown app:app /usr/src/app
 
-# install deps (root), then drop privileges
-COPY package.json .
-RUN npm install \
-  && chown -R app:app /usr/src/app
+  # Install deps into the workdir so node_modules rides along with the
+  # per-request workspace copy into /sandbox. Node's default resolution
+  # (./node_modules, then walk up) finds them at request time — no NODE_PATH
+  # needed. Anything cached under /tmp would be shadowed by the sandbox's
+  # per-request tmpfs over /tmp.
+COPY --chown=app:app package*.json ./
 
-ENV NODE_PATH=/usr/local/lib/node_modules/
+USER app
+RUN npm install --omit=dev --no-audit --no-fund
 
-# copy sources
-COPY check check
-COPY checker.js .
-COPY assertsRunner.js .
-COPY Makefile .
-RUN chown -R app:app /usr/src/app
+COPY --chown=app:app check ./check
+COPY --chown=app:app checker.js .
+COPY --chown=app:app assertsRunner.js .
+COPY --chown=app:app Makefile .
 
 EXPOSE 4040
 COPY --from=runner /app/codebattle_runner /runner/codebattle_runner

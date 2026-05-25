@@ -529,12 +529,12 @@ defmodule Runner.Languages do
       checker_version: 2,
       output_version: 2,
       generate_checker?: false,
-      version: "3.14.2",
+      version: "3.14.5",
       check_dir: "check",
       container_run_timeout: "15s",
       solution_file_name: "solution.py",
       checker_file_name: "checker.py",
-      image: "ghcr.io/hexlet-codebattle/python:3.14.2",
+      image: "ghcr.io/hexlet-codebattle/python:3.14.5",
       solution_template: """
       from typing import List, Dict
 

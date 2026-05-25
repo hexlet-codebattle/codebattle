@@ -172,7 +172,7 @@ function EvolutionPanel({
               className="d-block text-decoration-none mb-3"
             >
               <div
-                className="btn btn-yellow rounded-pill w-100 text-center text-nowrap"
+                className="btn btn-yellow rounded-pill w-100 text-center"
                 style={{ padding: "12px 12px" }}
               >
                 {i18n.t("Add Solution +")}
@@ -183,7 +183,7 @@ function EvolutionPanel({
             <button
               type="button"
               onClick={onAddSolution}
-              className="btn btn-yellow rounded-pill w-100 text-center text-nowrap mb-3"
+              className="btn btn-yellow rounded-pill w-100 text-center mb-3"
               style={{ padding: "12px 12px" }}
             >
               {i18n.t("Add Solution +")}
