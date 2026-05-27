@@ -7,7 +7,7 @@ import { isOnBreak } from "../../utils/groupTournament";
 const statusBadge = {
   active: { className: "border-success bg-success text-white p-2", labelKey: "Active" },
   finished: { className: "border-secondary bg-secondary text-white p-2", labelKey: "Finished" },
-  loading: { className: "bg-warning text-white", labelKey: "Loading" },
+  loading: { className: "bg-warning text-white p-2", labelKey: "Loading" },
 };
 
 function TournamentTimer({ groupTournament }) {
