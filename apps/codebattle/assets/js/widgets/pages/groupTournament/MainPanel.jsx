@@ -3,6 +3,7 @@ import Markdown from "react-markdown";
 import i18n from "../../../i18n";
 import JsonViewerModal from "./JsonViewerModal";
 import Leaderboard from "./Leaderboard";
+import AdminExternalSetupPanel from "./AdminExternalSetupPanel";
 
 function MainPanel({
   run,
@@ -13,6 +14,8 @@ function MainPanel({
   currentRoundPosition,
   status,
   currentUserId,
+  isAdmin,
+  externalSetup,
   activeTab: activeTabProp,
   setActiveTab: setActiveTabProp,
 }) {
@@ -28,7 +31,7 @@ function MainPanel({
     return "description";
   };
   const activeTab = activeTabProp ?? initialTab();
-  const setActiveTab = setActiveTabProp ?? (() => {});
+  const setActiveTab = setActiveTabProp ?? (() => { });
 
   const isPendingRun = run?.status === "pending";
   const hasViewer = !!run?.result?.viewerHtml;
@@ -50,42 +53,39 @@ function MainPanel({
     Array.isArray(leaderboard) && leaderboard.length > 0 && Number.isInteger(roundsCount);
 
   const tabBtnClass = (active) =>
-    `btn btn-sm px-3 mr-2 text-white shadow-none border-0 rounded-0 ${
-      active ? "font-weight-bold" : ""
+    `btn btn-sm px-4 py-2 mr-2 shadow-none border-0 rounded-pill cb-tab-btn ${active ? "text-white font-weight-bold cb-tab-btn--active" : "text-white-50"
     }`;
   const tabBtnStyle = (active) => ({
-    borderBottom: active ? "2px solid #fff" : "2px solid transparent",
-    background: "transparent",
+    borderBottom: active ? "3px solid #3182ce" : "3px solid transparent",
+    transition: "all 0.2s ease-in-out",
   });
 
   const renderTabs = () => (
     <div className="d-flex align-items-center mr-3">
-      <button
-        type="button"
-        className={tabBtnClass(activeTab === "description")}
-        style={tabBtnStyle(activeTab === "description")}
-        onClick={() => setActiveTab("description")}
-      >
-        {i18n.t("Description")}
-      </button>
-      <button
-        type="button"
-        className={tabBtnClass(activeTab === "run")}
-        style={tabBtnStyle(activeTab === "run")}
-        onClick={() => setActiveTab("run")}
-      >
-        {i18n.t("Run Viewer")}
-      </button>
-      {hasLeaderboard && (
-        <button
-          type="button"
-          className={tabBtnClass(activeTab === "leaderboard")}
-          style={tabBtnStyle(activeTab === "leaderboard")}
-          onClick={() => setActiveTab("leaderboard")}
-        >
-          {i18n.t("Leaderboard")}
-        </button>
-      )}
+      {["description", "run", hasLeaderboard && "leaderboard", isAdmin && externalSetup && "settings"]
+        .filter(Boolean)
+        .map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            className={tabBtnClass(activeTab === tab)}
+            style={tabBtnStyle(activeTab === tab)}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab === "settings" ? (
+              <h6 className="mb-0">
+                {i18n.t("External Setup")}
+                <span
+                  className={`badge ms-2 ${externalSetup.state === "ready" ? "badge-success" : "badge-warning"}`}
+                >
+                  {externalSetup.state}
+                </span>
+              </h6>
+            ) : (
+              i18n.t(tab.charAt(0).toUpperCase() + tab.slice(1).replace("run", "Run Viewer"))
+            )}
+          </button>
+        ))}
     </div>
   );
 
@@ -93,8 +93,8 @@ function MainPanel({
     <div
       className="mt-3 p-3 w-100 overflow-auto"
       style={{
-        minHeight: "240px",
-        maxHeight: "80vh",
+        minHeight: "70vh",
+        maxHeight: "70vh",
         backgroundColor: "#30333f",
         borderRadius: "25px",
       }}
@@ -111,12 +111,26 @@ function MainPanel({
     </div>
   );
 
+  const renderSettings = () => (
+    <div
+      className="mt-3 p-3 w-100 overflow-auto"
+      style={{
+        minHeight: "70vh",
+        maxHeight: "70vh",
+        backgroundColor: "#30333f",
+        borderRadius: "25px",
+      }}
+    >
+      <AdminExternalSetupPanel externalSetup={externalSetup} />
+    </div>
+  );
+
   const renderLeaderboard = () => (
     <div
       className="mt-3 p-3 w-100 overflow-auto"
       style={{
-        minHeight: "240px",
-        maxHeight: "80vh",
+        minHeight: "70vh",
+        maxHeight: "70vh",
         backgroundColor: "#30333f",
         borderRadius: "25px",
       }}
@@ -134,7 +148,7 @@ function MainPanel({
   const renderRunViewer = () => (
     <div
       className="mt-3 p-3 w-100"
-      style={{ height: "80vh", backgroundColor: "#30333f", borderRadius: "25px" }}
+      style={{ height: "70vh", backgroundColor: "#30333f", borderRadius: "25px" }}
     >
       {!run ? (
         <div className="text-white-50 p-2">
@@ -219,7 +233,7 @@ function MainPanel({
   return (
     <>
       <div
-        className="cb-custom-event-profile d-flex align-items-center justify-content-between flex-wrap w-100"
+        className="cb-custom-event-profile d-flex align-items-center justify-content-between flex-wrap w-100 py-1"
         style={{ minHeight: "64px" }}
       >
         {renderTabs()}
@@ -227,9 +241,11 @@ function MainPanel({
       </div>
       {activeTab === "leaderboard" && hasLeaderboard
         ? renderLeaderboard()
-        : activeTab === "run"
-          ? renderRunViewer()
-          : renderDescription()}
+        : activeTab === "settings" && isAdmin && externalSetup
+          ? renderSettings()
+          : activeTab === "run"
+            ? renderRunViewer()
+            : renderDescription()}
       <JsonViewerModal
         open={openJson === "history"}
         title={i18n.t("history.json")}

@@ -1378,7 +1378,7 @@ msgid "Place: #%{place}"
 msgstr "Место: #%{place}"
 
 msgid "Place: pending"
-msgstr "Место: ожидается"
+msgstr "Место: cкоро"
 
 msgid "Test run"
 msgstr "Тестовый запуск"
@@ -1829,3 +1829,18 @@ msgstr "Время: %{duration}"
 
 msgid "Group %{n}"
 msgstr "Группа %{n}"
+
+msgid "Qualification run"
+msgstr "Отборочный"
+
+msgid "Group run"
+msgstr "Раунд"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid "Time Limit"
+msgstr "Лимит времени"
+
+msgid "Round %{n}"
+msgstr "Раунд %{n}"

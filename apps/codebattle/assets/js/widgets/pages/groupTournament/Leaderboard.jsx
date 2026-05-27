@@ -16,14 +16,17 @@ const tdClassName =
   "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0";
 
 const tabBtnClass = (active) =>
-  cn("btn btn-sm mr-2 mb-2", {
-    "btn-light text-dark font-weight-bold": active,
-    "btn-outline-light": !active,
-  });
+  `btn btn-sm px-4 mr-2 mb-2 shadow-none border-0 rounded-pill cb-tab-btn ${active ? "text-white font-weight-bold cb-tab-btn--active" : "text-white-50"
+  }`;
+
+const tabBtnStyle = (active) => ({
+  borderBottom: active ? "3px solid #3182ce" : "3px solid transparent",
+  transition: "all 0.2s ease-in-out",
+});
 
 function roundLabel(roundNumber) {
   if (roundNumber === 1) return i18n.t("Seed");
-  return `R${roundNumber - 1}`;
+  return i18n.t("Round %{n}", { n: roundNumber - 1 });
 }
 
 const TRUNCATE_LEN = 9;
@@ -99,9 +102,9 @@ function SliceRoundView({ leaderboard, roundNumber, currentUserId }) {
             {showAll
               ? i18n.t("%{count} slices", { count: slices.length })
               : i18n.t("%{visible} / %{total} slices", {
-                  visible: visibleSlices.length,
-                  total: slices.length,
-                })}
+                visible: visibleSlices.length,
+                total: slices.length,
+              })}
           </span>
           <button
             type="button"
@@ -189,7 +192,7 @@ function Leaderboard({
   }
 
   return (
-    <div className="cb-bg-panel shadow-sm p-3 cb-rounded overflow-auto">
+    <div className="p-3 cb-rounded overflow-auto">
       <div className="my-2">
         <div className="d-flex flex-column flex-grow-1 position-relative py-2 mh-100 rounded-left">
           <div className="d-flex justify-content-between border-bottom cb-border-color pb-2 px-3">
@@ -204,6 +207,7 @@ function Leaderboard({
             <button
               type="button"
               className={tabBtnClass(activeTab === "rating")}
+              style={tabBtnStyle(activeTab === "rating")}
               onClick={() => setActiveTab("rating")}
             >
               {i18n.t("Leaderboard")}
@@ -213,6 +217,7 @@ function Leaderboard({
                 key={`tab-${r}`}
                 type="button"
                 className={tabBtnClass(activeTab === `round-${r}`)}
+                style={tabBtnStyle(activeTab === `round-${r}`)}
                 onClick={() => setActiveTab(`round-${r}`)}
               >
                 {roundLabel(r)}
@@ -243,7 +248,7 @@ function Leaderboard({
                         key={`r-${r}`}
                         className="p-1 pl-4 font-weight-light border-0 text-center"
                       >
-                        {r === 1 ? i18n.t("Seed") : `R${r - 1}`}
+                        {r === 1 ? i18n.t("Seed") : i18n.t("Round %{n}", { n: r - 1 })}
                       </th>
                     ))}
                     <th className="p-1 pl-4 font-weight-light border-0 text-center text-nowrap">

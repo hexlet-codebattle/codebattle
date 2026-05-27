@@ -95,13 +95,8 @@ function GroupTournamentPage({
       <div className="row">
         <Header name={tournamentName} status={status} groupTournament={data?.groupTournament} />
       </div>
-      {isAdmin && externalSetup && (
-        <div className="row mt-2">
-          <AdminExternalSetupPanel externalSetup={externalSetup} />
-        </div>
-      )}
       <div className="row mt-3 h-100">
-        <div className="col-lg-2 col-md-2 col-12 p-1 pb-4">
+        <div className="col-lg-2 col-md-3 col-12 p-1 pb-4">
           <EvolutionPanel
             items={data?.runs}
             tournamentStatus={status}
@@ -113,7 +108,7 @@ function GroupTournamentPage({
             currentUserId={currentUserId}
           />
         </div>
-        <div className="col-lg-10 col-md-10 col-12 p-1 pb-4">
+        <div className="col-lg-10 col-md-9 col-12 p-1 pb-4">
           <MainPanel
             status={status}
             run={selectedRun}
@@ -123,6 +118,8 @@ function GroupTournamentPage({
             roundsCount={data?.groupTournament?.roundsCount}
             currentRoundPosition={data?.groupTournament?.currentRoundPosition}
             currentUserId={currentUserId}
+            isAdmin={isAdmin}
+            externalSetup={externalSetup}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
           />

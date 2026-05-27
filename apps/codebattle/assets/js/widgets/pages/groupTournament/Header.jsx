@@ -4,9 +4,9 @@ import i18n from "../../../i18n";
 import useTimer from "../../utils/useTimer";
 
 const statusBadge = {
-  active: { className: "btn-success", labelKey: "Active" },
-  finished: { className: "btn-secondary", labelKey: "Finished" },
-  loading: { className: "btn-warning", labelKey: "Loading" },
+  active: { className: "border-success bg-success text-white p-2", labelKey: "Active" },
+  finished: { className: "border-secondary bg-secondary text-white p-2", labelKey: "Finished" },
+  loading: { className: "bg-warning text-white", labelKey: "Loading" },
 };
 
 function TournamentTimer({ groupTournament }) {
@@ -93,7 +93,7 @@ function Header({ name, status, groupTournament }) {
         <TournamentTimer groupTournament={groupTournament} />
       </div>
       <div className="d-flex align-items-center ml-auto">
-        <span className={`btn ${badge.className} rounded-pill px-4 mr-3`}>
+        <span className={`${badge.className} rounded-pill px-4 mr-3`}>
           {i18n.t(badge.labelKey)}
         </span>
         <a className="btn btn-outline-light rounded-pill px-4" href="/">

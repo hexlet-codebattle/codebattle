@@ -9,6 +9,7 @@ import ru from "../../../priv/gettext/ru/LC_MESSAGES/default.po";
 const supportedLocales = ["en", "ru"];
 const normalizeLocale = (locale) => (supportedLocales.includes(locale) ? locale : "en");
 const lng = normalizeLocale(Gon?.getAsset?.("locale"));
+// const lng = "ru";
 
 export const getLocale = () => lng;
 export const getSupportedLocale = normalizeLocale;

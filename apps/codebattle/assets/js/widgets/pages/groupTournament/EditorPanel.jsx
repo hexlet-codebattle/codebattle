@@ -45,16 +45,16 @@ function EditorPanel({
     hideCursorInOverviewRuler: !editable,
     overviewRulerBorder: false,
     roomMode: "group_tournament",
-    checkResult: () => {},
-    toggleMuteSound: () => {},
+    checkResult: () => { },
+    toggleMuteSound: () => { },
     mute: false,
     userType: editable ? "player" : "spectator",
     userId: 0,
-    onChangeCursorSelection: () => {},
-    onChangeCursorPosition: () => {},
+    onChangeCursorSelection: () => { },
+    onChangeCursorPosition: () => { },
     syntax: mappedSyntax,
     gameStartTimeMs: 0,
-    onTelemetryEvent: () => {},
+    onTelemetryEvent: () => { },
     loading: false,
     canSendCursor: false,
     allowClipboard: editable,
@@ -161,7 +161,7 @@ function EditorPanel({
               </span>
             </h6>
           </div>
-          <div className="card-body p-0 border-top cb-border-color" style={{ height: "80vh" }}>
+          <div className="card-body p-0 border-top cb-border-color" style={{ height: "70vh" }}>
             {editor}
           </div>
           {editable && submitError && (
