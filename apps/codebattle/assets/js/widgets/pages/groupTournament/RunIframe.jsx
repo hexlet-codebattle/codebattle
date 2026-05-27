@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { currentUserIdSelector } from "../../selectors";
 
-function RunIframe(props) {
+function RunIframe({ title = "Run Viewer", ...props }) {
   const iframeRef = useRef(null);
   const currentUserId = useSelector(currentUserIdSelector);
 
@@ -25,7 +25,7 @@ function RunIframe(props) {
     return undefined;
   }, [currentUserId]);
 
-  return <iframe ref={iframeRef} {...props} />;
+  return <iframe ref={iframeRef} title={title} {...props} />;
 }
 
 export default RunIframe;
