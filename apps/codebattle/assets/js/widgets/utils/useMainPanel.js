@@ -17,7 +17,7 @@ const useMainPanel = ({
   };
 
   const activeTab = activeTabProp ?? initialTab();
-  const setActiveTab = setActiveTabProp ?? (() => { });
+  const setActiveTab = setActiveTabProp ?? (() => {});
 
   const isPendingRun = run?.status === "pending";
   const hasViewer = !!run?.result?.viewerHtml;

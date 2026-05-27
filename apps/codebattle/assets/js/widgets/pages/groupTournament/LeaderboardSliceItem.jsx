@@ -3,12 +3,7 @@ import cn from "classnames";
 import i18n from "../../../i18n";
 import LeaderboardSlicePlayerRow from "./LeaderboardSlicePlayerRow";
 
-const LeaderboardSliceItem = ({
-  sliceIndex,
-  players,
-  hasCurrentUser,
-  currentUserId,
-}) => (
+const LeaderboardSliceItem = ({ sliceIndex, players, hasCurrentUser, currentUserId }) => (
   <div
     className={cn("cb-bg-panel cb-rounded p-2", {
       "border border-warning": hasCurrentUser,

@@ -4,12 +4,7 @@ import i18n from "../../../i18n";
 import { trClassName, tdClassName } from "../../utils/groupTournament";
 import LeaderboardRatingRoundCell from "./LeaderboardRatingRoundCell";
 
-const LeaderboardRatingTableRow = ({
-  entry,
-  index,
-  rounds,
-  currentUserId,
-}) => {
+const LeaderboardRatingTableRow = ({ entry, index, rounds, currentUserId }) => {
   const place = index + 1;
   const isLeft = entry.state === "left";
   const isMe = Number.isInteger(currentUserId) && entry.userId === currentUserId;
@@ -43,9 +38,7 @@ const LeaderboardRatingTableRow = ({
           >
             {entry.name || `#${entry.userId}`}
           </div>
-          {isLeft && (
-            <span className="badge badge-secondary ml-2">{i18n.t("Left")}</span>
-          )}
+          {isLeft && <span className="badge badge-secondary ml-2">{i18n.t("Left")}</span>}
         </td>
         <td className={tdClassName}>
           <div

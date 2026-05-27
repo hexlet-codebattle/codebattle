@@ -10,14 +10,9 @@ const LeaderboardRatingTable = ({ leaderboard, rounds, currentUserId }) => (
           <th className="p-1 pl-4 font-weight-light border-0">#</th>
           <th className="p-1 pl-4 font-weight-light border-0">{i18n.t("Player")}</th>
           <th className="p-1 pl-4 font-weight-light border-0">{i18n.t("Clan")}</th>
-          <th className="p-1 pl-4 font-weight-light border-0 text-center">
-            {i18n.t("Slice")}
-          </th>
+          <th className="p-1 pl-4 font-weight-light border-0 text-center">{i18n.t("Slice")}</th>
           {rounds.map((r) => (
-            <th
-              key={`r-${r}`}
-              className="p-1 pl-4 font-weight-light border-0 text-center"
-            >
+            <th key={`r-${r}`} className="p-1 pl-4 font-weight-light border-0 text-center">
               {r === 1 ? i18n.t("Seed") : i18n.t("Round %{n}", { n: r - 1 })}
             </th>
           ))}

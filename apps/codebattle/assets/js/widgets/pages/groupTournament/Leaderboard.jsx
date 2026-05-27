@@ -23,9 +23,7 @@ function Leaderboard({
   }
 
   return (
-    <div
-      className="mt-3 p-3 w-100 overflow-auto cb-group-tournament-leaderboard-container"
-    >
+    <div className="mt-3 p-3 w-100 overflow-auto cb-group-tournament-leaderboard-container">
       <div className="p-3 cb-rounded overflow-auto">
         <div className="my-2">
           <div className="d-flex flex-column flex-grow-1 position-relative py-2 mh-100 rounded-left">
@@ -33,11 +31,7 @@ function Leaderboard({
               currentRoundPosition={currentRoundPosition}
               roundsCount={roundsCount}
             />
-            <LeaderboardTabs
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-              rounds={rounds}
-            />
+            <LeaderboardTabs activeTab={activeTab} setActiveTab={setActiveTab} rounds={rounds} />
             {activeTab !== "rating" ? (
               <div className="px-3 py-2">
                 <LeaderboardSliceRoundView

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import i18n from "../../../i18n";
-import RunItem from './RunItem';
+import RunItem from "./RunItem";
 
 const getExternalUrl = (url) => {
   if (!url) {
@@ -79,7 +79,8 @@ function EvolutionPanel({
                   currentUserId={currentUserId}
                 />
               ))}
-            </div>)}
+            </div>
+          )}
         </div>
       </div>
       {hoverTooltip && (

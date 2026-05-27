@@ -2,9 +2,7 @@ import React from "react";
 import i18n from "../../../i18n";
 
 const MainPanelRunViewer = ({ run, hasViewer, isPendingRun, isLoadingResult }) => (
-  <div
-    className="mt-3 p-3 w-100 cb-group-tournament-leaderboard-container"
-  >
+  <div className="mt-3 p-3 w-100 cb-group-tournament-leaderboard-container">
     {!run ? (
       <div className="text-white-50 p-2">
         {i18n.t("Pick a run from the left panel to see its output.")}

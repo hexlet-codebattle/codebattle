@@ -51,7 +51,8 @@ function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) 
   }
 
   const overLimit = slices.length > LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT;
-  const visibleSlices = overLimit && !showAll ? slices.slice(0, LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT) : slices;
+  const visibleSlices =
+    overLimit && !showAll ? slices.slice(0, LEADERBOARD_SLICE_VIEW_INITIAL_LIMIT) : slices;
 
   return (
     <>
@@ -61,9 +62,9 @@ function LeaderboardSliceRoundView({ leaderboard, roundNumber, currentUserId }) 
             {showAll
               ? i18n.t("%{count} slices", { count: slices.length })
               : i18n.t("%{visible} / %{total} slices", {
-                visible: visibleSlices.length,
-                total: slices.length,
-              })}
+                  visible: visibleSlices.length,
+                  total: slices.length,
+                })}
           </span>
           <button
             type="button"
