@@ -1,4 +1,5 @@
 import React from "react";
+import RunIframe from "./RunIframe";
 import i18n from "../../../i18n";
 
 const MainPanelRunViewer = ({ run, hasViewer, isPendingRun, isLoadingResult }) => (
@@ -8,7 +9,7 @@ const MainPanelRunViewer = ({ run, hasViewer, isPendingRun, isLoadingResult }) =
         {i18n.t("Pick a run from the left panel to see its output.")}
       </div>
     ) : hasViewer ? (
-      <iframe
+      <RunIframe
         title={`run-viewer-${run.id}`}
         srcDoc={run.result.viewerHtml}
         sandbox="allow-scripts"

@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import i18n from "../../../i18n";
 import RunItem from "./RunItem";
+import { isOnBreak } from "../../utils/groupTournament";
+
+const getStubRoundPosition = (groupTournament) => {
+  const roundPosition = groupTournament?.currentRoundPosition;
+  return roundPosition ? roundPosition + 1 : 2;
+}
 
 const getExternalUrl = (url) => {
   if (!url) {
@@ -26,6 +32,7 @@ const getExternalUrl = (url) => {
 function EvolutionPanel({
   items,
   tournamentStatus,
+  groupTournament,
   runId,
   setRunId,
   repoUrl,
@@ -33,9 +40,10 @@ function EvolutionPanel({
   leaderboard,
   currentUserId = 1,
 }) {
-  const [hoverTooltip, setHoverTooltip] = useState(null);
-  const externalUrl = tournamentStatus !== "finished" ? getExternalUrl(repoUrl) : null;
-  const canAddSolutionInternal = tournamentStatus !== "finished" && !externalUrl && !!onAddSolution;
+  const isFinished = tournamentStatus === "finished";
+  const externalUrl = !isFinished ? getExternalUrl(repoUrl) : null;
+  const canAddSolutionInternal = !isFinished && !externalUrl && !!onAddSolution;
+  const onBreak = isOnBreak(groupTournament);
 
   return (
     <>
@@ -65,14 +73,28 @@ function EvolutionPanel({
               {i18n.t("Add Solution +")}
             </button>
           )}
-          {items && items.length > 0 && (
+          {items?.length > 0 && (
             <div className="mt-2 small d-flex flex-column cb-timeline">
+              {!isFinished && !onBreak && (
+                <RunItem
+                  item={{
+                    id: "stub",
+                    kind: items.some((item) => item.kind === "seed") ? "slice" : "seed",
+                    roundPosition: getStubRoundPosition(groupTournament),
+                    isStub: true,
+                  }}
+                  items={items}
+                  runId={runId}
+                  setRunId={setRunId}
+                  leaderboard={leaderboard}
+                  currentUserId={currentUserId}
+                />
+              )}
               {items.map((item) => (
                 <RunItem
                   key={item.id}
                   item={item}
                   items={items}
-                  setHoverTooltip={setHoverTooltip}
                   runId={runId}
                   setRunId={setRunId}
                   leaderboard={leaderboard}
@@ -83,14 +105,6 @@ function EvolutionPanel({
           )}
         </div>
       </div>
-      {hoverTooltip && (
-        <div
-          className="cb-run-item__tooltip"
-          style={{ top: hoverTooltip.top, left: hoverTooltip.left }}
-        >
-          {hoverTooltip.text}
-        </div>
-      )}
     </>
   );
 }

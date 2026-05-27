@@ -1159,3 +1159,9 @@ msgstr "First qualification round finished"
 
 msgid "Accepted"
 msgstr "Accepted"
+
+msgid "Group assignment soon"
+msgstr "Group assignment soon"
+
+msgid "Group contest soon"
+msgstr "Group contest soon"

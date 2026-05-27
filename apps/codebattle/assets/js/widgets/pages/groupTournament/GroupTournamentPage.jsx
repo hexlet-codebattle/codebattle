@@ -70,6 +70,7 @@ function GroupTournamentPage({
         <div className="col-lg-2 col-md-3 col-12 p-1 pb-4">
           <EvolutionPanel
             items={data?.runs}
+            groupTournament={data?.groupTournament}
             tournamentStatus={status}
             runId={runId}
             setRunId={handleSelectRun}

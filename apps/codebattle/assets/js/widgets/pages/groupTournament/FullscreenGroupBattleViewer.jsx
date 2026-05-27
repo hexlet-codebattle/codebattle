@@ -1,5 +1,6 @@
 import React from "react";
 import i18n from "../../../i18n";
+import RunIframe from "./RunIframe";
 
 function FullscreenGroupBattleViewer({ viewerFullscreen, selectedRun, setViewerFullscreen }) {
   if (!(viewerFullscreen && selectedRun?.result?.viewerHtml)) {
@@ -30,7 +31,7 @@ function FullscreenGroupBattleViewer({ viewerFullscreen, selectedRun, setViewerF
         </button>
       </div>
       <div className="flex-grow-1">
-        <iframe
+        <RunIframe
           title={`run-viewer-fullscreen-${selectedRun.id}`}
           srcDoc={selectedRun.result.viewerHtml}
           sandbox="allow-scripts"

@@ -1,4 +1,5 @@
 import cn from "classnames";
+import moment from "moment";
 import i18n from "../../i18n";
 import { LEADERBOARD_TRUNCATE_LEN } from "../config/groupTournament";
 
@@ -14,9 +15,10 @@ export const tdClassName =
   "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0";
 
 export const tabBtnClass = (active) =>
-  `btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn ${
-    active ? "text-white font-weight-bold cb-tab-btn--active" : "text-white-50"
-  }`;
+  cn('btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn', {
+    "text-white cb-tab-btn--active": active,
+    "text-white-50": !active
+  });
 
 export const tabBtnStyle = (active) => ({
   borderBottom: active ? "3px solid #3182ce" : "3px solid transparent",
@@ -33,3 +35,59 @@ export function truncate(value) {
   if (value.length <= LEADERBOARD_TRUNCATE_LEN) return value;
   return `${value.slice(0, LEADERBOARD_TRUNCATE_LEN - 1)}…`;
 }
+
+export const formatDuration = (durationMs) => {
+  if (!Number.isFinite(durationMs) || durationMs < 0) {
+    return null;
+  }
+
+  const totalSeconds = Math.floor(durationMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+
+  return hours > 0
+    ? `${hours}:${pad(minutes)}:${pad(seconds)}`
+    : `${pad(minutes)}:${pad(seconds)}`;
+};
+
+export const isSeedRun = (item) => item?.kind === "seed";
+export const isSliceRun = (item) => item?.kind === "slice";
+export const isRoundRun = (item) => isSeedRun(item) || isSliceRun(item);
+
+export const getPlaceFor = (item, leaderboardEntry) => {
+  if (!leaderboardEntry?.rounds) return null;
+  const key = isSeedRun(item) ? 1 : item?.roundPosition;
+  if (!Number.isInteger(key)) return null;
+  const cell = leaderboardEntry.rounds[key] || leaderboardEntry.rounds[String(key)];
+  return Number.isInteger(cell?.place) ? cell.place : null;
+};
+
+export const getTitleForRun = (item, allItems) => {
+  if (isSeedRun(item)) {
+    return i18n.t("Qualification run");
+  }
+  if (isSliceRun(item)) {
+    const r = Number.isInteger(item.roundPosition) ? item.roundPosition - 1 : null;
+    return r ? `${i18n.t("Group run")} ${r}` : i18n.t("Group run");
+  }
+
+  const userRuns = allItems.filter((i) => !isRoundRun(i));
+  const myIndexInUserRuns = userRuns.findIndex((i) => i.id === item.id);
+
+  if (myIndexInUserRuns !== -1) {
+    const userTotal = userRuns.length;
+    return `${i18n.t("Test run")} v${userTotal - myIndexInUserRuns}`;
+  }
+
+  return i18n.t("Test run"); // Fallback
+};
+
+export const isOnBreak = (groupTournament) => {
+  const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
+  if (!roundStartedAt) return false;
+
+  const startMoment = moment.utc(roundStartedAt);
+  return startMoment.isAfter(moment());
+};

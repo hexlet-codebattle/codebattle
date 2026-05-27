@@ -2,6 +2,7 @@ import React from "react";
 import moment from "moment";
 import i18n from "../../../i18n";
 import useTimer from "../../utils/useTimer";
+import { isOnBreak } from "../../utils/groupTournament";
 
 const statusBadge = {
   active: { className: "border-success bg-success text-white p-2", labelKey: "Active" },
@@ -14,9 +15,7 @@ function TournamentTimer({ groupTournament }) {
   const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
 
   const startMoment = roundStartedAt ? moment.utc(roundStartedAt) : null;
-  // When the server schedules an inter-round break, it pushes lastRoundStartedAt
-  // into the future (now + break_duration_seconds). Detect that here.
-  const onBreak = startMoment && startMoment.isAfter(moment());
+  const onBreak = isOnBreak(groupTournament);
 
   const target = onBreak
     ? startMoment

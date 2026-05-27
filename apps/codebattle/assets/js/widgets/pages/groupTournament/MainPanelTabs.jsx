@@ -24,7 +24,13 @@ const MainPanelTabs = ({ activeTab, setActiveTab, hasLeaderboard, isAdmin, exter
               </span>
             </>
           ) : (
-            i18n.t(tab.charAt(0).toUpperCase() + tab.slice(1).replace("run", "Run Viewer"))
+            i18n.t(
+              {
+                description: "Description",
+                run: "Run Viewer",
+                leaderboard: "Leaderboard",
+              }[tab],
+            )
           )}
         </button>
       ))}
