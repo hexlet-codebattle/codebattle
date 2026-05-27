@@ -6,7 +6,7 @@ import { isOnBreak } from "../../utils/groupTournament";
 const getStubRoundPosition = (groupTournament) => {
   const roundPosition = groupTournament?.currentRoundPosition;
   return roundPosition ? roundPosition + 1 : 2;
-}
+};
 
 const getExternalUrl = (url) => {
   if (!url) {

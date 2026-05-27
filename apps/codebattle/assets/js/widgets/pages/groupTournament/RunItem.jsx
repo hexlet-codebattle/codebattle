@@ -24,9 +24,10 @@ const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }) =
   const roundRun = isRoundRun(item);
   const place = roundRun ? (item.place ?? getPlaceFor(item, myEntry)) : null;
   const duration = formatDuration(item.durationMs);
-  const sliceLabel = !item.isStub && isSliceRun(item) && Number.isInteger(item.sliceIndex)
-    ? i18n.t("Group %{n}", { n: item.sliceIndex + 1 })
-    : null;
+  const sliceLabel =
+    !item.isStub && isSliceRun(item) && Number.isInteger(item.sliceIndex)
+      ? i18n.t("Group %{n}", { n: item.sliceIndex + 1 })
+      : null;
 
   const buttonClasses = cn("cb-run-item", {
     "cb-run-item--group": roundRun,

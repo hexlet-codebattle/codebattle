@@ -15,9 +15,9 @@ export const tdClassName =
   "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0";
 
 export const tabBtnClass = (active) =>
-  cn('btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn', {
+  cn("btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn", {
     "text-white cb-tab-btn--active": active,
-    "text-white-50": !active
+    "text-white-50": !active,
   });
 
 export const tabBtnStyle = (active) => ({
@@ -47,9 +47,7 @@ export const formatDuration = (durationMs) => {
   const seconds = totalSeconds % 60;
   const pad = (n) => String(n).padStart(2, "0");
 
-  return hours > 0
-    ? `${hours}:${pad(minutes)}:${pad(seconds)}`
-    : `${pad(minutes)}:${pad(seconds)}`;
+  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
 };
 
 export const isSeedRun = (item) => item?.kind === "seed";
