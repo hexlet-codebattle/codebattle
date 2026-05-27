@@ -7,27 +7,23 @@ FROM --platform=$TARGETPLATFORM rust:${RUST_TAG}
 
 RUN apk add --no-cache make libc-dev
 
-  # rustup/cargo state must be reachable from inside the runner-zig sandbox.
-  # That sandbox shadows /tmp (per-request tmpfs), bind-mounts the workdir to
-  # /sandbox, force-sets HOME=/sandbox, and strips env down to an allowlist.
-  #
-  # - RUSTUP_HOME stays at the rust image default (/usr/local/rustup). /usr is
-  #   not shadowed, so the toolchain remains reachable. Forwarding it via
-  #   RUN_ENV_ALLOW is critical — without it the cargo proxy bails with
-  #   "rustup could not choose a version of cargo to run".
-  # - CARGO_HOME lives under the workdir so it survives the runtime workspace
-  #   copy. The ENV reassignment below switches it to the /sandbox view that
-  #   the slot UID actually sees at request time.
-  # - CARGO_TARGET_DIR is left unset on purpose: cargo defaults to ./target,
-  #   which is /usr/src/app/target at build time and /sandbox/target at
-  #   request time. Both are the same files, just under different absolute
-  #   paths in the two namespaces.
+# rustup + cargo state under /opt so it survives the sandbox masks (which
+# shadow /tmp and /app, force-set HOME=/sandbox, and strip env down to an
+# allowlist). /opt and /usr aren't shadowed, so the toolchain stays
+# reachable and the pre-built cache survives the per-request workspace copy.
+# 0o777 below lets every slot UID write — cargo uses .cargo-lock files so
+# concurrent invocations are safe for shared artifacts.
 ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/src/app/.cargo \
-    RUN_ENV_ALLOW=RUSTUP_HOME,CARGO_HOME,RUST_BACKTRACE
+    CARGO_HOME=/opt/cargo \
+    CARGO_TARGET_DIR=/opt/cargo-target \
+    RUN_ENV_ALLOW=RUSTUP_HOME,CARGO_HOME,CARGO_TARGET_DIR,RUST_BACKTRACE
+
+RUN mkdir -p /opt/cargo /opt/cargo-target
 
 RUN addgroup -S app -g 10001 \
-  && adduser -S -D -H -h /nonexistent -s /sbin/nologin -G app -u 10001 app
+  && adduser -S -D -h /home/app -s /sbin/nologin -G app -u 10001 app \
+  && chown -R app:app /opt/cargo /opt/cargo-target \
+  && chmod -R 0777 /opt/cargo /opt/cargo-target
 
 WORKDIR /usr/src/app
 RUN chown app:app /usr/src/app
@@ -38,14 +34,11 @@ COPY --chown=app:app Makefile .
 
 USER app
 
-  # Pre-warm the dep cache + target so each /run only recompiles the (tiny)
-  # solution + checker.
+# Pre-build into the shared target dir. Request-time builds only recompile
+# the changed file (solution.rs) and re-link the bin.
 RUN cargo build
 
-  # Switch CARGO_HOME to its runtime view. The workdir is bind-mounted to
-  # /sandbox per request, so /usr/src/app/.cargo appears at /sandbox/.cargo.
-ENV CARGO_HOME=/sandbox/.cargo
+COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 
 EXPOSE 4040
-COPY --from=runner /app/codebattle_runner /runner/codebattle_runner
 ENTRYPOINT ["/runner/codebattle_runner"]

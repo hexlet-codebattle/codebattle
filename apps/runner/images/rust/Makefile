@@ -1,4 +1,4 @@
 test:
-	cargo run -q --offline --target-dir /tmp/cargo-target
+	cargo run -q --offline
 
 .PHONY: test

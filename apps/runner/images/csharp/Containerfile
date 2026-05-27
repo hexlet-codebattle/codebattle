@@ -9,23 +9,23 @@ FROM --platform=$TARGETPLATFORM ${RUNNER_IMAGE} AS runner
 # ---------- .NET SDK base (Debian/glibc) ----------
 FROM --platform=$TARGETPLATFORM mcr.microsoft.com/dotnet/sdk:${DOTNET_TAG}
 
-  # We intentionally do NOT set NUGET_PACKAGES or HOME here.
-  #
-  # At runtime the runner-zig sandbox force-sets HOME=/sandbox and mounts a
-  # fresh tmpfs over /tmp per request. Anything we stash under /tmp (e.g. a
-  # pre-restored package cache) is therefore invisible to user code, which is
-  # exactly what produced the previous "NU1301: Unable to load the service
-  # index for source https://api.nuget.org/v3/index.json" error.
-  #
-  # Instead we pre-restore into ./.nuget/packages under the workdir. The
-  # runner's per-request copyWorkspace step then carries the cache into
-  # /sandbox/.nuget/packages, where dotnet finds it via the default
-  # $HOME/.nuget/packages lookup — no network needed at request time.
-  #
-  # RUN_ENV_ALLOW makes the runner forward the listed DOTNET_* vars into the
-  # sandbox env. Without DOTNET_SKIP_FIRST_TIME_EXPERIENCE at runtime, dotnet
-  # prints the "Welcome to .NET" banner and tries to install the HTTPS dev
-  # cert on every /run.
+# We intentionally do NOT set NUGET_PACKAGES or HOME here.
+#
+# At runtime the runner-zig sandbox force-sets HOME=/sandbox and mounts a
+# fresh tmpfs over /tmp per request. Anything stashed under /tmp (e.g. a
+# pre-restored package cache) is therefore invisible to user code, which is
+# what produced the previous "NU1301: Unable to load the service index for
+# source https://api.nuget.org/v3/index.json" error.
+#
+# Instead we pre-restore into ./.nuget/packages under the workdir. The
+# runner's per-request copyWorkspace step then carries the cache into
+# /sandbox/.nuget/packages, where dotnet finds it via the default
+# $HOME/.nuget/packages lookup — no network needed at request time.
+#
+# RUN_ENV_ALLOW makes the runner forward the listed DOTNET_* vars into the
+# sandbox env. Without DOTNET_SKIP_FIRST_TIME_EXPERIENCE at runtime, dotnet
+# prints the "Welcome to .NET" banner and tries to install the HTTPS dev
+# cert on every /run.
 ENV DOTNET_NOLOGO=1 \
     DOTNET_CLI_TELEMETRY_OPTOUT=1 \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
@@ -34,42 +34,44 @@ ENV DOTNET_NOLOGO=1 \
 
 WORKDIR /usr/src/app
 
-  # System deps
+# System deps
 RUN apt-get update \
   && apt-get install -y --no-install-recommends make curl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-  # Create non-root user + writable workdir. The runner-zig sandbox runs user
-  # code as RUN_UID_BASE+slot (default 10001+slot); matching that here keeps
-  # build-time and runtime UIDs aligned.
+# Create non-root user + writable workdir. UID matches RUN_UID_BASE+slot
+# (default 10001+slot) so build-time and runtime ownership line up.
 RUN groupadd -g 10001 -r runneruser \
   && useradd -r -g runneruser -u 10001 -m -d /home/runneruser -s /usr/sbin/nologin runneruser \
   && chown -R runneruser:runneruser /home/runneruser /usr/src/app
 
 USER runneruser
 
-  # Keep obj/bin project-local so they live inside /sandbox at runtime. The
-  # runner's recursive chown gives the slot UID write access to every
-  # workspace sub-path, so dotnet build can scribble into ./obj freely.
+# Keep obj/bin project-local so they live inside /sandbox at runtime. The
+# runner's umask=0 + 0o700 slot-owned top-level dir give the slot UID write
+# access to every workspace sub-path, so dotnet build can scribble into
+# ./obj freely. NuGetAudit=false silences NU1900 warnings — the audit
+# endpoint can't be reached from the netns-isolated sandbox.
 RUN cat > Directory.Build.props <<'EOF'
-  <Project>
-    <PropertyGroup>
-      <BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
-      <IntermediateOutputPath>obj/</IntermediateOutputPath>
-      <BaseOutputPath>bin/</BaseOutputPath>
-    </PropertyGroup>
-  </Project>
+<Project>
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>obj/</IntermediateOutputPath>
+    <BaseOutputPath>bin/</BaseOutputPath>
+    <NuGetAudit>false</NuGetAudit>
+  </PropertyGroup>
+</Project>
 EOF
 
-  # Restore into the workdir (--packages) so the cache survives the runtime
-  # workspace copy. Layer order: csproj first for better Docker cache reuse
-  # when only source files change.
+# Restore into the workdir (--packages) so the cache survives the runtime
+# workspace copy. Layer order: csproj first for better Docker cache reuse
+# when only source files change.
 COPY --chown=runneruser:runneruser Checker.csproj ./
 RUN dotnet restore --disable-parallel \
-        --packages /usr/src/app/.nuget/packages \
-        --source https://api.nuget.org/v3/index.json
+      --packages /usr/src/app/.nuget/packages \
+      --source https://api.nuget.org/v3/index.json
 
-  # App sources
+# App sources
 COPY --chown=runneruser:runneruser Program.cs .
 COPY --chown=runneruser:runneruser check ./check
 COPY --chown=runneruser:runneruser Makefile .
