@@ -723,8 +723,6 @@
   border-radius: 25px;
 }
 
-.cb-custom-event-stage-header {}
-
 .cb-custom-event-stage-section:nth-child(even) {
   background-color: #505360;
 }
@@ -1012,11 +1010,17 @@
   background-color: #30333f;
   border-radius: 25px;
 }
-
 .cb-evolution-panel-inner {
   padding-right: 4px;
   overflow-x: hidden;
   scrollbar-gutter: stable;
+}
+
+.cb-group-tournament-leaderboard-container {
+  min-height: 70vh;
+  max-height: 70vh;
+  background-color: #30333f;
+  border-radius: 25px;
 }
 
 .cb-evolution-panel-add-solution {
