@@ -14,7 +14,7 @@ export const tdClassName =
   "p-1 pl-4 my-2 align-middle text-nowrap position-relative cb-custom-event-td border-0";
 
 export const tabBtnClass = (active) =>
-  `btn btn-sm px-4 py-2 mr-2 shadow-none border-0 rounded-pill cb-tab-btn ${
+  `btn btn-sm px-4 py-2 mr-2 my-1 shadow-none border-0 rounded-pill text-nowrap cb-tab-btn ${
     active ? "text-white font-weight-bold cb-tab-btn--active" : "text-white-50"
   }`;
 
