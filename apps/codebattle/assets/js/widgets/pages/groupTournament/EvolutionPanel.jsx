@@ -79,7 +79,7 @@ function EvolutionPanel({
                 <RunItem
                   item={{
                     id: "stub",
-                    kind: items.some((item) => item.kind === "seed") ? "slice" : "seed",
+                    kind: groupTournament?.currentRoundPosition > 1 ? "slice" : "seed",
                     roundPosition: getStubRoundPosition(groupTournament),
                     isStub: true,
                   }}
