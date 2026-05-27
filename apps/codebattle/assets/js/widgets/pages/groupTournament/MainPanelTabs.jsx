@@ -2,9 +2,23 @@ import React from "react";
 import i18n from "../../../i18n";
 import { tabBtnClass, tabBtnStyle } from "../../utils/groupTournament";
 
-const MainPanelTabs = ({ activeTab, setActiveTab, hasLeaderboard, isAdmin, externalSetup }) => (
+const MainPanelTabs = ({
+  activeTab,
+  setActiveTab,
+  hasLeaderboard,
+  hasTaskDescription,
+  isWaiting,
+  isAdmin,
+  externalSetup,
+}) => (
   <div className="d-flex align-items-center flex-wrap mr-3">
-    {["description", "run", hasLeaderboard && "leaderboard", isAdmin && externalSetup && "settings"]
+    {[
+      "description",
+      hasTaskDescription && "task_description",
+      !isWaiting && "run",
+      !isWaiting && hasLeaderboard && "leaderboard",
+      !isWaiting && isAdmin && externalSetup && "settings",
+    ]
       .filter(Boolean)
       .map((tab) => (
         <button
@@ -27,6 +41,7 @@ const MainPanelTabs = ({ activeTab, setActiveTab, hasLeaderboard, isAdmin, exter
             i18n.t(
               {
                 description: "Description",
+                task_description: "Task",
                 run: "Run Viewer",
                 leaderboard: "Leaderboard",
               }[tab],

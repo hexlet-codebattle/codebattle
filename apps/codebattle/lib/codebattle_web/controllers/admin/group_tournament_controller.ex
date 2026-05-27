@@ -124,6 +124,53 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  @start_timer_duration_seconds 5 * 60
+
+  def start_timer(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+
+    if group_tournament.state == "waiting_participants" do
+      new_starts_at = DateTime.add(DateTime.utc_now(), @start_timer_duration_seconds, :second)
+
+      case Context.update_group_tournament(group_tournament, %{"starts_at" => new_starts_at}) do
+        {:ok, _updated} ->
+          conn
+          |> put_flash(:info, "Start timer set — tournament will begin in 5 minutes.")
+          |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+        {:error, _changeset} ->
+          conn
+          |> put_flash(:error, "Failed to set start timer.")
+          |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+      end
+    else
+      conn
+      |> put_flash(:error, "Start timer can only be set while waiting for participants.")
+      |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
+  def smooth_start(conn, %{"id" => id}) do
+    :ok = Context.ensure_server_started(id)
+
+    case Server.smooth_start(id) do
+      {:ok, group_tournament} ->
+        conn
+        |> put_flash(:info, "Group tournament started — status update will roll out to players over 60 seconds.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      {:error, :invalid_state} ->
+        conn
+        |> put_flash(:error, "Smooth start is only available while waiting for participants.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, id))
+
+      _ ->
+        conn
+        |> put_flash(:error, "Group tournament not found.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :index))
+    end
+  end
+
   def finish(conn, %{"id" => id}) do
     :ok = Context.ensure_server_started(id)
 

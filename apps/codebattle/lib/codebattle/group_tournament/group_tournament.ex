@@ -28,6 +28,7 @@ defmodule Codebattle.GroupTournament do
              :name,
              :slug,
              :description,
+             :task_description,
              :state,
              :starts_at,
              :started_at,
@@ -66,6 +67,7 @@ defmodule Codebattle.GroupTournament do
     field(:name, :string)
     field(:slug, :string)
     field(:description, :string)
+    field(:task_description, :string)
     field(:state, :string, default: "waiting_participants")
     field(:starts_at, :utc_datetime)
     field(:started_at, :utc_datetime)
@@ -111,6 +113,7 @@ defmodule Codebattle.GroupTournament do
       :name,
       :slug,
       :description,
+      :task_description,
       :state,
       :starts_at,
       :started_at,
@@ -150,6 +153,7 @@ defmodule Codebattle.GroupTournament do
     ])
     |> update_change(:slug, &normalize_slug/1)
     |> update_change(:template_id, &normalize_optional_string/1)
+    |> update_change(:task_description, &normalize_optional_string/1)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:slice_strategy, @slice_strategies)
     |> validate_inclusion(:type, @types)
@@ -162,6 +166,7 @@ defmodule Codebattle.GroupTournament do
     |> validate_length(:name, min: 2, max: 255)
     |> validate_length(:slug, min: 2, max: 255)
     |> validate_length(:description, min: 3, max: 7531)
+    |> validate_length(:task_description, max: 32_768)
     |> validate_length(:template_id, max: 255)
     |> validate_number(:rounds_count, greater_than: 0)
     |> validate_number(:round_timeout_seconds, greater_than: 0)

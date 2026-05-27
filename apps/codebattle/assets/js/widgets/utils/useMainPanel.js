@@ -5,6 +5,7 @@ const useMainPanel = ({
   run,
   leaderboard,
   roundsCount,
+  taskDescription,
   activeTab: activeTabProp,
   setActiveTab: setActiveTabProp,
 }) => {
@@ -16,7 +17,10 @@ const useMainPanel = ({
     return "description";
   };
 
-  const activeTab = activeTabProp ?? initialTab();
+  const isWaiting = status === "waiting_participants";
+  const allowedInWaiting = new Set(["description", "task_description"]);
+  const requestedTab = activeTabProp ?? initialTab();
+  const activeTab = isWaiting && !allowedInWaiting.has(requestedTab) ? "description" : requestedTab;
   const setActiveTab = setActiveTabProp ?? (() => {});
 
   const isPendingRun = run?.status === "pending";
@@ -29,6 +33,7 @@ const useMainPanel = ({
   const hasSummary = summary != null;
   const hasLeaderboard =
     Array.isArray(leaderboard) && leaderboard.length > 0 && Number.isInteger(roundsCount);
+  const hasTaskDescription = typeof taskDescription === "string" && taskDescription.length > 0;
 
   return {
     openJson,
@@ -43,6 +48,7 @@ const useMainPanel = ({
     hasHistory,
     hasSummary,
     hasLeaderboard,
+    hasTaskDescription,
   };
 };
 

@@ -15,7 +15,7 @@ const MainPanelRunViewer = ({ run, hasViewer, isPendingRun, isLoadingResult }) =
         sandbox="allow-scripts"
         style={{
           width: "100%",
-          height: "100%",
+          minHeight: "inherit",
           border: 0,
           backgroundColor: "#1a1d2b",
           borderRadius: "16px",

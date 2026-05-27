@@ -12,6 +12,7 @@ import useMainPanel from "../../utils/useMainPanel";
 function MainPanel({
   run,
   description,
+  taskDescription,
   setViewerFullscreen,
   leaderboard,
   roundsCount,
@@ -36,11 +37,13 @@ function MainPanel({
     hasHistory,
     hasSummary,
     hasLeaderboard,
+    hasTaskDescription,
   } = useMainPanel({
     status,
     run,
     leaderboard,
     roundsCount,
+    taskDescription,
     activeTab: activeTabProp,
     setActiveTab: setActiveTabProp,
   });
@@ -55,6 +58,8 @@ function MainPanel({
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           hasLeaderboard={hasLeaderboard}
+          hasTaskDescription={hasTaskDescription}
+          isWaiting={status === "waiting_participants"}
           isAdmin={isAdmin}
           externalSetup={externalSetup}
         />
@@ -85,6 +90,8 @@ function MainPanel({
           isPendingRun={isPendingRun}
           isLoadingResult={isLoadingResult}
         />
+      ) : activeTab === "task_description" && hasTaskDescription ? (
+        <MainPanelDescription description={taskDescription} />
       ) : (
         <MainPanelDescription description={description} />
       )}

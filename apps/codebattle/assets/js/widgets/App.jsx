@@ -257,6 +257,7 @@ export function GroupTournamentPage() {
   const tournamentId = container?.dataset?.groupTournamentId;
   const tournamentName = container?.dataset?.groupTournamentName;
   const tournamentDescription = container?.dataset?.groupTournamentDescription;
+  const tournamentTaskDescription = container?.dataset?.groupTournamentTaskDescription;
   const tournamentMeta = (() => {
     try {
       return camelizeKeys(JSON.parse(container?.dataset?.groupTournamentMeta || "{}"));
@@ -273,6 +274,7 @@ export function GroupTournamentPage() {
             tournamentId={tournamentId}
             tournamentName={tournamentName}
             tournamentDescription={tournamentDescription}
+            tournamentTaskDescription={tournamentTaskDescription}
             tournamentMeta={tournamentMeta}
           />
         </Suspense>

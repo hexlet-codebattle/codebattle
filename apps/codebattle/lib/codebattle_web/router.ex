@@ -133,6 +133,14 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/start_timer", CodebattleWeb.Admin.GroupTournamentController, :start_timer,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/smooth_start", CodebattleWeb.Admin.GroupTournamentController, :smooth_start,
+      as: :admin_group_tournament
+    )
+
     post("/group_tournaments/:id/finish", CodebattleWeb.Admin.GroupTournamentController, :finish,
       as: :admin_group_tournament
     )

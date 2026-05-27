@@ -696,6 +696,24 @@ defmodule Codebattle.PubSub.Events do
     end
   end
 
+  # Smooth-start fan-out: one message to a dedicated per-user "smooth" topic.
+  # Used by Codebattle.GroupTournament.Server to spread status_updated pushes
+  # evenly over time so a large room doesn't all reload at once. Players are
+  # subscribed to this separate topic on channel join, so this never duplicates
+  # the normal status_updated broadcast above.
+  def get_messages("group_tournament:smooth_status_updated", params) do
+    [
+      %Message{
+        topic: "group_tournament:#{params.group_tournament_id}:smooth:#{params.user_id}",
+        event: "group_tournament:status_updated",
+        payload: %{
+          group_tournament_id: params.group_tournament_id,
+          status: params.status
+        }
+      }
+    ]
+  end
+
   def get_messages("tournament:stream:active_game", params) do
     [
       %Message{

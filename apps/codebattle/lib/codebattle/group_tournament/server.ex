@@ -54,6 +54,12 @@ defmodule Codebattle.GroupTournament.Server do
     :exit, _ -> {:error, :not_found}
   end
 
+  def smooth_start(id) do
+    GenServer.call(server_name(id), :smooth_start, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
   def finish_tournament(id) do
     GenServer.call(server_name(id), :finish_tournament, 30_000)
   catch
@@ -100,6 +106,46 @@ defmodule Codebattle.GroupTournament.Server do
   end
 
   def handle_call(:start_now, _from, state) do
+    {:reply, {:error, :invalid_state}, state}
+  end
+
+  @smooth_start_duration_ms 60_000
+
+  def handle_call(:smooth_start, _from, %{group_tournament: %{state: "waiting_participants"} = group_tournament} = state) do
+    starting_round = starting_round_position(group_tournament)
+    slice_count = compute_slice_count(group_tournament)
+
+    updated =
+      group_tournament
+      |> GroupTournament.changeset(%{
+        state: "active",
+        starts_at: DateTime.utc_now(),
+        started_at: DateTime.utc_now(:second),
+        current_round_position: starting_round,
+        slice_count: slice_count,
+        last_round_started_at: NaiveDateTime.utc_now(:second),
+        last_round_ended_at: nil
+      })
+      |> Repo.update!()
+      |> Repo.preload([:creator, :group_task, players: [:user]])
+      |> Map.put(:is_live, true)
+
+    perform_round_start(updated)
+    enqueue_occupy_jobs(updated)
+
+    user_ids = updated.players |> Enum.map(& &1.user_id) |> Enum.uniq()
+    schedule_smooth_broadcasts(user_ids)
+
+    next_state =
+      state
+      |> cancel_start_timer()
+      |> Map.put(:group_tournament, updated)
+      |> schedule_round_finish(updated)
+
+    {:reply, {:ok, updated}, next_state}
+  end
+
+  def handle_call(:smooth_start, _from, state) do
     {:reply, {:error, :invalid_state}, state}
   end
 
@@ -188,6 +234,8 @@ defmodule Codebattle.GroupTournament.Server do
       |> cancel_finish_timer()
       |> Map.put(:group_tournament, Map.put(group_tournament, :is_live, true))
       |> schedule_start(group_tournament)
+
+    broadcast_status_update(next_state.group_tournament)
 
     {:reply, :ok, next_state}
   end
@@ -332,6 +380,22 @@ defmodule Codebattle.GroupTournament.Server do
       end
 
     {:noreply, next_state}
+  end
+
+  def handle_info({:smooth_broadcast, [], _interval}, state), do: {:noreply, state}
+
+  def handle_info({:smooth_broadcast, [user_id | rest], interval}, %{group_tournament: group_tournament} = state) do
+    PubSub.broadcast("group_tournament:smooth_status_updated", %{
+      group_tournament_id: group_tournament.id,
+      status: group_tournament.state,
+      user_id: user_id
+    })
+
+    if rest != [] do
+      Process.send_after(self(), {:smooth_broadcast, rest, interval}, interval)
+    end
+
+    {:noreply, state}
   end
 
   def handle_info(_message, state) do
@@ -590,6 +654,13 @@ defmodule Codebattle.GroupTournament.Server do
       status: group_tournament.state,
       user_ids: player_user_ids
     })
+  end
+
+  defp schedule_smooth_broadcasts([]), do: :ok
+
+  defp schedule_smooth_broadcasts(user_ids) do
+    interval = max(div(@smooth_start_duration_ms, length(user_ids)), 1)
+    send(self(), {:smooth_broadcast, user_ids, interval})
   end
 
   @finalize_chunk_size 50

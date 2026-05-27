@@ -41,8 +41,9 @@ function EvolutionPanel({
   currentUserId = 1,
 }) {
   const isFinished = tournamentStatus === "finished";
-  const externalUrl = !isFinished ? getExternalUrl(repoUrl) : null;
-  const canAddSolutionInternal = !isFinished && !externalUrl && !!onAddSolution;
+  const isWaiting = tournamentStatus === "waiting_participants";
+  const externalUrl = !isFinished && !isWaiting ? getExternalUrl(repoUrl) : null;
+  const canAddSolutionInternal = !isFinished && !isWaiting && !externalUrl && !!onAddSolution;
   const onBreak = isOnBreak(groupTournament);
 
   return (

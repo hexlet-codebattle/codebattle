@@ -31,6 +31,10 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   end
 
   defp subscribe_to_group_tournament(tournament_id, group_tournament, current_user) do
+    # Used by smooth_start to fan status_updated out evenly over time. Kept on
+    # a separate topic so the normal status broadcast doesn't double-deliver.
+    Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}:smooth:#{current_user.id}")
+
     cond do
       Codebattle.User.admin_or_moderator?(current_user) ->
         Codebattle.PubSub.subscribe("group_tournament:#{tournament_id}")

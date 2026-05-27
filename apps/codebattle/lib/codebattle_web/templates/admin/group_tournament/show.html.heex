@@ -47,6 +47,24 @@
             data: [confirm: "Start this group tournament now?"],
             class: "btn btn-success text-white cb-rounded"
           )}
+          {link("Start 5-min Timer",
+            to: Routes.admin_group_tournament_path(@conn, :start_timer, @group_tournament),
+            method: :post,
+            data: [
+              confirm:
+                "Show a 5-minute countdown to all participants and auto-start the tournament when it elapses?"
+            ],
+            class: "btn btn-outline-warning cb-rounded ml-2"
+          )}
+          {link("Smooth Start (60s)",
+            to: Routes.admin_group_tournament_path(@conn, :smooth_start, @group_tournament),
+            method: :post,
+            data: [
+              confirm:
+                "Start the tournament now but spread the status_updated push to players evenly over 60 seconds?"
+            ],
+            class: "btn btn-outline-info cb-rounded ml-2"
+          )}
         <% end %>
         <%= if @group_tournament.state == "active" do %>
           {link("Finish Tournament",

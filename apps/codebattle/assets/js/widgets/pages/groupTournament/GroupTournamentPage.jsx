@@ -14,6 +14,7 @@ function GroupTournamentPage({
   tournamentId,
   tournamentName,
   tournamentDescription,
+  tournamentTaskDescription,
   tournamentMeta,
 }) {
   const {
@@ -75,7 +76,11 @@ function GroupTournamentPage({
             runId={runId}
             setRunId={handleSelectRun}
             repoUrl={externalSetup?.repoUrl}
-            onAddSolution={runOnExternalPlatform ? null : () => setEditorFullscreen(true)}
+            onAddSolution={
+              runOnExternalPlatform || status === "waiting_participants"
+                ? null
+                : () => setEditorFullscreen(true)
+            }
             leaderboard={data?.leaderboard}
             currentUserId={currentUserId}
           />
@@ -85,6 +90,7 @@ function GroupTournamentPage({
             status={status}
             run={selectedRun}
             description={tournamentDescription}
+            taskDescription={tournamentTaskDescription}
             setViewerFullscreen={setViewerFullscreen}
             leaderboard={data?.leaderboard}
             roundsCount={data?.groupTournament?.roundsCount}

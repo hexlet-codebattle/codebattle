@@ -30,6 +30,19 @@
   </div>
 
   <div class="form-group">
+    <div>
+      <span class="text-white">
+        Task Description (optional — shown as a separate tab next to Description)
+      </span>
+    </div>
+    {textarea(f, :task_description,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      rows: 10
+    )}
+    {error_tag(f, :task_description)}
+  </div>
+
+  <div class="form-group">
     <div><span class="text-white">Group Task</span></div>
     {select(f, :group_task_id, Enum.map(@group_tasks, &{&1.slug, &1.id}),
       class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
