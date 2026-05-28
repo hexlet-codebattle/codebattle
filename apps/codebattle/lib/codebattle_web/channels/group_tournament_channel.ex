@@ -413,7 +413,8 @@ defmodule CodebattleWeb.GroupTournamentChannel do
   defp has_access?(user, group_tournament) do
     group_tournament.creator_id == user.id ||
       Codebattle.User.admin_or_moderator?(user) ||
-      UserGroupTournamentContext.get(user.id, group_tournament.id) != nil
+      (group_tournament.visible_to_users &&
+         UserGroupTournamentContext.get(user.id, group_tournament.id) != nil)
   end
 
   defp parse_tournament_id(tournament_id) do

@@ -82,6 +82,20 @@
   </div>
 
   <div class="form-group">
+    <div>
+      <span class="text-white">
+        Seed Round Timeout (sec) — optional. Used only when has_seed_round is on
+        and round 1 is the seed round; leave blank to reuse the round timeout above.
+      </span>
+    </div>
+    {number_input(f, :seed_round_timeout_seconds,
+      class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
+      min: "1"
+    )}
+    {error_tag(f, :seed_round_timeout_seconds)}
+  </div>
+
+  <div class="form-group">
     <div><span class="text-white">Max Score</span></div>
     {number_input(f, :max_score,
       class: "form-control form-control-lg cb-bg-panel cb-border-color text-white",
@@ -197,6 +211,15 @@
       bandwidth pressure during large-room events)
     </label>
     {error_tag(f, :show_leaderboard)}
+  </div>
+
+  <div class="form-group form-check mb-4">
+    {checkbox(f, :visible_to_users, class: "form-check-input")}
+    <label class="form-check-label text-white" for={input_id(f, :visible_to_users)}>
+      Visible to Players (uncheck to make the tournament admin-only — invited
+      players will get a 404 until you flip this back on)
+    </label>
+    {error_tag(f, :visible_to_users)}
   </div>
 
   <div class="form-group form-check mb-4">

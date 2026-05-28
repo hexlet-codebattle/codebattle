@@ -91,7 +91,8 @@ defmodule CodebattleWeb.GroupTournamentController do
 
   defp has_access?(user, group_tournament) do
     can_moderate?(group_tournament, user) ||
-      UserGroupTournamentContext.get(user.id, group_tournament.id) != nil
+      (group_tournament.visible_to_users &&
+         UserGroupTournamentContext.get(user.id, group_tournament.id) != nil)
   end
 
   defp can_moderate?(group_tournament, user) do

@@ -608,12 +608,22 @@ defmodule Codebattle.GroupTournament.Server do
   defp schedule_start(state, _group_tournament), do: state
 
   defp schedule_round_finish(state, group_tournament, break_seconds \\ 0) do
-    timeout_seconds =
-      group_tournament.round_timeout_seconds || group_tournament.group_task.time_to_solve_sec || 300
-
+    timeout_seconds = current_round_timeout(group_tournament)
     total = timeout_seconds + max(break_seconds, 0)
 
     %{state | finish_timer_ref: Process.send_after(self(), :finish_round, to_timeout(second: total))}
+  end
+
+  # The seed round (ranked + has_seed_round + current_round_position == 1) can
+  # take longer because players are warming up; admins can set a separate
+  # `seed_round_timeout_seconds`. Slice rounds always use `round_timeout_seconds`.
+  defp current_round_timeout(%GroupTournament{} = group_tournament) do
+    if GroupTournament.seeding_round?(group_tournament) and is_integer(group_tournament.seed_round_timeout_seconds) do
+      group_tournament.seed_round_timeout_seconds
+    else
+      group_tournament.round_timeout_seconds ||
+        (group_tournament.group_task && group_tournament.group_task.time_to_solve_sec) || 300
+    end
   end
 
   # On process restart, an active tournament has no finish timer scheduled by
@@ -622,7 +632,7 @@ defmodule Codebattle.GroupTournament.Server do
   # window has already elapsed, fire immediately so the round can advance.
   defp maybe_resume_round_finish(state, %GroupTournament{state: "active", last_round_started_at: started_at} = t)
        when not is_nil(started_at) do
-    timeout_seconds = t.round_timeout_seconds || (t.group_task && t.group_task.time_to_solve_sec) || 300
+    timeout_seconds = current_round_timeout(t)
     elapsed = NaiveDateTime.diff(NaiveDateTime.utc_now(:second), started_at, :second)
     remaining_ms = max((timeout_seconds - elapsed) * 1000, 0)
 

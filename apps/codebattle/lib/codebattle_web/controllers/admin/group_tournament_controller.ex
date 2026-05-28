@@ -285,6 +285,42 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def broadcast_redirect(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+    url = Routes.group_tournament_path(conn, :show, group_tournament)
+
+    Codebattle.PubSub.broadcast("main:redirect", %{
+      url: url,
+      group_tournament_id: group_tournament.id
+    })
+
+    conn
+    |> put_flash(:info, "Redirect broadcast sent to all non-admin users on the main channel.")
+    |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+  end
+
+  def toggle_visibility(conn, %{"id" => id}) do
+    group_tournament = Context.get_group_tournament!(id)
+    next_value = !group_tournament.visible_to_users
+
+    case Context.update_group_tournament(group_tournament, %{"visible_to_users" => next_value}) do
+      {:ok, _updated} ->
+        msg =
+          if next_value,
+            do: "Tournament is now visible to players.",
+            else: "Tournament is now hidden — only admins/moderators can access it."
+
+        conn
+        |> put_flash(:info, msg)
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Failed to toggle tournament visibility.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+    end
+  end
+
   def leaderboard(conn, %{"id" => id} = params) do
     group_tournament = Context.get_group_tournament!(id)
     :ok = Context.ensure_server_started(group_tournament)

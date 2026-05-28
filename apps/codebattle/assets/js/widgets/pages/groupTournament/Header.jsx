@@ -54,7 +54,13 @@ function WaitingStartTimer({ startsAt }) {
 
 function TournamentTimer({ groupTournament }) {
   const roundStartedAt = groupTournament?.lastRoundStartedAt || groupTournament?.startedAt;
-  const timeoutSeconds = groupTournament?.roundTimeoutSeconds;
+  const isSeedRound =
+    groupTournament?.type === "ranked" &&
+    groupTournament?.hasSeedRound &&
+    groupTournament?.currentRoundPosition === 1;
+  const timeoutSeconds =
+    (isSeedRound && groupTournament?.seedRoundTimeoutSeconds) ||
+    groupTournament?.roundTimeoutSeconds;
 
   const startMoment = roundStartedAt ? moment.utc(roundStartedAt) : null;
   const onBreak = isOnBreak(groupTournament);

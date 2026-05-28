@@ -78,6 +78,7 @@ export const channelTopics = {
   deployHandoffStarted: "deploy:handoff_started",
   deployHandoffDone: "deploy:handoff_done",
   deployHandoffFailed: "deploy:handoff_failed",
+  mainRedirect: "main:redirect",
 
   roundCreatedTopic: "round:created",
 

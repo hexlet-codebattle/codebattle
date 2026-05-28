@@ -27,6 +27,20 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  # Force-redirect every non-admin user on the main channel to a URL. Used by
+  # the group tournament admin "Gather players" button. Admin filtering is done
+  # in MainChannel.handle_info/2 (we can't filter by topic because every user
+  # shares the same one), so the broadcast itself is unconditional.
+  def get_messages("main:redirect", params) do
+    [
+      %Message{
+        topic: "main",
+        event: "main:redirect",
+        payload: params
+      }
+    ]
+  end
+
   def get_messages("deploy:handoff_done", params) do
     [
       %Message{

@@ -36,6 +36,9 @@
             @group_tournament.show_leaderboard
           )}
         </p>
+        <p>
+          <strong>Visible to Players:</strong> {inspect(@group_tournament.visible_to_users)}
+        </p>
       </div>
     </div>
     <div class="mt-3 d-flex justify-content-between align-items-start flex-wrap">
@@ -137,6 +140,36 @@
               do: "btn btn-outline-warning cb-rounded ml-2",
               else: "btn btn-outline-success cb-rounded ml-2"
             )
+        )}
+        {link(
+          if(@group_tournament.visible_to_users,
+            do: "Hide Tournament from Players",
+            else: "Show Tournament to Players"
+          ),
+          to: Routes.admin_group_tournament_path(@conn, :toggle_visibility, @group_tournament),
+          method: :post,
+          data: [
+            confirm:
+              if(@group_tournament.visible_to_users,
+                do:
+                  "Hide the tournament from players? Only admins/moderators will be able to open it.",
+                else: "Make the tournament visible to invited players again?"
+              )
+          ],
+          class:
+            if(@group_tournament.visible_to_users,
+              do: "btn btn-outline-warning cb-rounded ml-2",
+              else: "btn btn-outline-success cb-rounded ml-2"
+            )
+        )}
+        {link("Gather Players Here",
+          to: Routes.admin_group_tournament_path(@conn, :broadcast_redirect, @group_tournament),
+          method: :post,
+          data: [
+            confirm:
+              "Force-redirect every non-admin user connected to the main channel to this tournament right now?"
+          ],
+          class: "btn btn-outline-danger cb-rounded ml-2"
         )}
       </div>
     </div>

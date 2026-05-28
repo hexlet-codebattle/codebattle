@@ -135,6 +135,16 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "main:redirect", payload: payload}, socket) do
+    # Skip admins/moderators — the redirect is for gathering regular users into
+    # a tournament, not for pulling staff away from their dashboards.
+    if !User.admin_or_moderator?(socket.assigns.current_user) do
+      push(socket, "main:redirect", payload)
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "deploy:handoff_started", payload: payload}, socket) do
     push(socket, "deploy:handoff_started", payload)
     {:noreply, socket}

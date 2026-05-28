@@ -144,6 +144,12 @@ const initPresence = (followId) => (dispatch) => {
     })
     .addListener(channelTopics.deployHandoffFailed, () => {
       renderDeployBanner("Deploy handoff incomplete. Reconnecting...", "#b34d4d");
+    })
+    .addListener(channelTopics.mainRedirect, (data) => {
+      const { url } = camelizeKeys(data) || {};
+      if (typeof url === "string" && url.length > 0) {
+        window.location.href = url;
+      }
     });
 };
 

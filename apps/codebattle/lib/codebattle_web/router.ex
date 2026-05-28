@@ -173,6 +173,14 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/toggle_visibility", CodebattleWeb.Admin.GroupTournamentController, :toggle_visibility,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/broadcast_redirect", CodebattleWeb.Admin.GroupTournamentController, :broadcast_redirect,
+      as: :admin_group_tournament
+    )
+
     get("/group_tournaments/:id/leaderboard", CodebattleWeb.Admin.GroupTournamentController, :leaderboard,
       as: :admin_group_tournament
     )

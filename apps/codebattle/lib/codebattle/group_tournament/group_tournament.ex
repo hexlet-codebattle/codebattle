@@ -36,6 +36,7 @@ defmodule Codebattle.GroupTournament do
              :current_round_position,
              :rounds_count,
              :round_timeout_seconds,
+             :seed_round_timeout_seconds,
              :include_bots,
              :last_round_started_at,
              :last_round_ended_at,
@@ -55,7 +56,8 @@ defmodule Codebattle.GroupTournament do
              :inactive_rounds_to_leave,
              :break_duration_seconds,
              :has_seed_round,
-             :show_leaderboard
+             :show_leaderboard,
+             :visible_to_users
            ]}
 
   schema "group_tournaments" do
@@ -75,6 +77,7 @@ defmodule Codebattle.GroupTournament do
     field(:current_round_position, :integer, default: 0)
     field(:rounds_count, :integer, default: 1)
     field(:round_timeout_seconds, :integer)
+    field(:seed_round_timeout_seconds, :integer)
     field(:include_bots, :boolean, default: false)
     field(:require_invitation, :boolean, default: false)
     field(:run_on_external_platform, :boolean, default: false)
@@ -91,6 +94,7 @@ defmodule Codebattle.GroupTournament do
     field(:break_duration_seconds, :integer, default: 0)
     field(:has_seed_round, :boolean, default: false)
     field(:show_leaderboard, :boolean, default: true)
+    field(:visible_to_users, :boolean, default: true)
     field(:last_round_started_at, :naive_datetime)
     field(:last_round_ended_at, :naive_datetime)
     field(:meta, :map, default: %{})
@@ -121,6 +125,7 @@ defmodule Codebattle.GroupTournament do
       :current_round_position,
       :rounds_count,
       :round_timeout_seconds,
+      :seed_round_timeout_seconds,
       :include_bots,
       :require_invitation,
       :run_on_external_platform,
@@ -140,7 +145,8 @@ defmodule Codebattle.GroupTournament do
       :inactive_rounds_to_leave,
       :break_duration_seconds,
       :has_seed_round,
-      :show_leaderboard
+      :show_leaderboard,
+      :visible_to_users
     ])
     |> validate_required([
       :group_task_id,
@@ -170,6 +176,7 @@ defmodule Codebattle.GroupTournament do
     |> validate_length(:template_id, max: 255)
     |> validate_number(:rounds_count, greater_than: 0)
     |> validate_number(:round_timeout_seconds, greater_than: 0)
+    |> validate_number(:seed_round_timeout_seconds, greater_than: 0)
     |> validate_template_id()
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:group_task_id)
