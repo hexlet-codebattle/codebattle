@@ -5,24 +5,31 @@ import {
   formatDuration,
   isSliceRun,
   isRoundRun,
-  getPlaceFor,
+  // getPlaceFor,
   getTitleForRun,
 } from "../../utils/groupTournament";
 
-const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }) => {
+const RunItem = ({
+  item,
+  items,
+  runId,
+  setRunId,
+  // leaderboard,
+  // currentUserId
+}) => {
   const isActive = runId === item.id;
   const onClick = () => setRunId(item.id);
 
   const title = useMemo(() => getTitleForRun(item, items), [item, items]);
 
-  const myEntry = useMemo(() => {
-    if (!Number.isInteger(currentUserId) || !Array.isArray(leaderboard)) return null;
-    return leaderboard.find((e) => e.userId === currentUserId) || null;
-  }, [leaderboard, currentUserId]);
+  // const myEntry = useMemo(() => {
+  //   if (!Number.isInteger(currentUserId) || !Array.isArray(leaderboard)) return null;
+  //   return leaderboard.find((e) => e.userId === currentUserId) || null;
+  // }, [leaderboard, currentUserId]);
 
   const pending = item.status === "pending" || item.isStub;
   const roundRun = isRoundRun(item);
-  const place = roundRun ? (item.place ?? getPlaceFor(item, myEntry)) : null;
+  // const place = roundRun ? (item.place ?? getPlaceFor(item, myEntry)) : null;
   const duration = formatDuration(item.durationMs);
   const sliceLabel =
     !item.isStub && isSliceRun(item) && Number.isInteger(item.sliceIndex)
@@ -84,16 +91,16 @@ const RunItem = ({ item, items, runId, setRunId, leaderboard, currentUserId }) =
                   item.status !== "timeout" &&
                   i18n.t("Score: %{score}", { score: item.score ?? 0 })}
               </span>
-              {roundRun && (
-                <span
-                  className="font-weight-bold ml-auto text-nowrap text-white"
-                  style={{ opacity: 0.75 }}
-                >
-                  {Number.isInteger(place)
-                    ? i18n.t("Place: #%{place}", { place })
-                    : i18n.t("Place: pending")}
-                </span>
-              )}
+              {/* {roundRun && ( */}
+              {/*   <span */}
+              {/*     className="font-weight-bold ml-auto text-nowrap text-white" */}
+              {/*     style={{ opacity: 0.75 }} */}
+              {/*   > */}
+              {/*     {Number.isInteger(place) */}
+              {/*       ? i18n.t("Place: #%{place}", { place }) */}
+              {/*       : i18n.t("Place: pending")} */}
+              {/*   </span> */}
+              {/* )} */}
               {duration && !roundRun && (
                 <span className="ml-auto text-nowrap">
                   {i18n.t("Time: %{duration}", { duration })}
