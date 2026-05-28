@@ -119,12 +119,7 @@ export const connectToTournament = (currentUserId) => (dispatch) => {
   channel.join().receive("ok", onJoinSuccess).receive("error", onJoinFailure);
 
   const handleRunUpdated = (response) => {
-    // The tournament-wide topic fans out every player's per-row broadcast to
-    // every connected client. Each row's `userId` is the row's owning user,
-    // so only the broadcast addressed to the current user belongs in their
-    // local panel — `playerIds` is the same array for every row in a slice
-    // and would otherwise let one slice's six broadcasts add six runs here.
-    if (currentUserId != null && response.userId !== currentUserId) {
+    if (currentUserId == null || response.userId !== currentUserId) {
       return;
     }
 
