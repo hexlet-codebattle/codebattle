@@ -295,47 +295,41 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp enqueue_bulk_op(conn, id, params, action) do
     group_tournament = Context.get_group_tournament!(id)
-    throttle_seconds = parse_throttle_seconds(get_in(params, ["bulk_repo", "throttle_seconds"]))
-
-    {label, enqueued} =
-      case action do
-        :hide ->
-          {"hide", UserGroupTournamentContext.enqueue_bulk_hide(group_tournament, throttle_seconds)}
-
-        :unveil ->
-          {"unveil", UserGroupTournamentContext.enqueue_bulk_unveil(group_tournament, throttle_seconds)}
-
-        :delete ->
-          {"delete", UserGroupTournamentContext.enqueue_bulk_delete(group_tournament, throttle_seconds)}
-
-        :occupy_seats ->
-          {"occupy-seat", UserGroupTournamentContext.enqueue_bulk_occupy_seats(group_tournament, throttle_seconds)}
-
-        :release_seats ->
-          {"release-seat", UserGroupTournamentContext.enqueue_bulk_release_seats(group_tournament, throttle_seconds)}
-
-        :remove_dev_roles ->
-          {"remove-dev-role",
-           UserGroupTournamentContext.enqueue_bulk_remove_dev_roles(group_tournament, throttle_seconds)}
-
-        :add_viewer_roles ->
-          {"add-viewer-role",
-           UserGroupTournamentContext.enqueue_bulk_add_viewer_roles(group_tournament, throttle_seconds)}
-      end
-
-    flash =
-      if enqueued == 0 do
-        {:error, "No tournament users to enqueue for #{label}."}
-      else
-        {:info, "Enqueued #{label} jobs for #{enqueued} users (throttle: #{throttle_seconds}s between jobs)."}
-      end
-
-    {kind, message} = flash
+    batch_size = parse_batch_size(get_in(params, ["bulk_repo", "batch_size"]))
+    {label, unit, enqueued, rate_note} = run_bulk_op(action, group_tournament, batch_size)
+    {kind, message} = bulk_op_flash(label, unit, enqueued, rate_note)
 
     conn
     |> put_flash(kind, message)
     |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
   end
+
+  @bulk_per_user_ops %{
+    delete: {"delete", &UserGroupTournamentContext.enqueue_bulk_delete/2},
+    occupy_seats: {"occupy-seat", &UserGroupTournamentContext.enqueue_bulk_occupy_seats/2},
+    release_seats: {"release-seat", &UserGroupTournamentContext.enqueue_bulk_release_seats/2},
+    remove_dev_roles: {"remove-dev-role", &UserGroupTournamentContext.enqueue_bulk_remove_dev_roles/2},
+    add_viewer_roles: {"add-viewer-role", &UserGroupTournamentContext.enqueue_bulk_add_viewer_roles/2}
+  }
+
+  defp run_bulk_op(:hide, gt, _batch_size),
+    do: {"hide", "repos", UserGroupTournamentContext.enqueue_bulk_hide(gt), :chunked}
+
+  defp run_bulk_op(:unveil, gt, _batch_size),
+    do: {"unveil", "repos", UserGroupTournamentContext.enqueue_bulk_unveil(gt), :chunked}
+
+  defp run_bulk_op(action, gt, batch_size) do
+    {label, fun} = Map.fetch!(@bulk_per_user_ops, action)
+    {label, "users", fun.(gt, batch_size), batch_size}
+  end
+
+  defp bulk_op_flash(label, _unit, 0, _rate_note), do: {:error, "Nothing to enqueue for #{label}."}
+
+  defp bulk_op_flash(label, unit, enqueued, :chunked),
+    do: {:info, "Enqueued #{label} jobs covering #{enqueued} #{unit} (chunks of 500 per bulk call)."}
+
+  defp bulk_op_flash(label, unit, enqueued, batch_size),
+    do: {:info, "Enqueued #{label} jobs for #{enqueued} #{unit} (rate: #{batch_size} jobs/sec)."}
 
   def broadcast_redirect(conn, %{"id" => id}) do
     group_tournament = Context.get_group_tournament!(id)
@@ -478,7 +472,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     group_tournament = Context.get_group_tournament!(id)
     bulk_params = Map.get(params, "bulk_setup", %{})
     user_ids = parse_bulk_user_ids(bulk_params["user_ids"])
-    throttle_seconds = parse_throttle_seconds(bulk_params["throttle_seconds"])
+    batch_size = parse_batch_size(bulk_params["batch_size"])
 
     {enqueued, missing} =
       user_ids
@@ -492,7 +486,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
             UserGroupTournamentContext.get_or_create(user, group_tournament)
 
             %{user_id: user.id, group_tournament_id: group_tournament.id}
-            |> Codebattle.Workers.ExternalSetupWorker.new(schedule_in: idx * throttle_seconds)
+            |> Codebattle.Workers.ExternalSetupWorker.new(schedule_in: div(idx, batch_size))
             |> Oban.insert()
 
             {ok_count + 1, missing_acc}
@@ -505,10 +499,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
       if user_ids == [] do
         {:error, "No valid user IDs provided."}
       else
-        msg =
-          "Enqueued external setup for #{enqueued} users " <>
-            "(throttle: #{throttle_seconds}s between jobs)."
-
+        msg = "Enqueued external setup for #{enqueued} users (rate: #{batch_size} jobs/sec)."
         msg = if missing == [], do: msg, else: msg <> " Missing user IDs: #{Enum.join(missing, ", ")}"
         {:info, msg}
       end
@@ -536,19 +527,22 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp parse_bulk_user_ids(_), do: []
 
-  @default_throttle_seconds 2
-  @max_throttle_seconds 300
+  # Default 50 jobs/sec keeps us comfortably below the external service's 100 RPS cap
+  # even with concurrent runs from other tournaments.
+  @default_batch_size 50
+  @max_batch_size 100
 
-  defp parse_throttle_seconds(nil), do: @default_throttle_seconds
+  defp parse_batch_size(nil), do: @default_batch_size
 
-  defp parse_throttle_seconds(value) when is_binary(value) do
+  defp parse_batch_size(value) when is_binary(value) do
     case value |> String.trim() |> Integer.parse() do
-      {n, ""} when n >= 0 and n <= @max_throttle_seconds -> n
-      _ -> @default_throttle_seconds
+      {n, ""} when n >= 1 and n <= @max_batch_size -> n
+      _ -> @default_batch_size
     end
   end
 
-  defp parse_throttle_seconds(_), do: @default_throttle_seconds
+  defp parse_batch_size(value) when is_integer(value) and value >= 1 and value <= @max_batch_size, do: value
+  defp parse_batch_size(_), do: @default_batch_size
 
   def create_token(conn, %{"id" => id, "group_tournament_token" => token_params}) do
     group_tournament = Context.get_group_tournament!(id)

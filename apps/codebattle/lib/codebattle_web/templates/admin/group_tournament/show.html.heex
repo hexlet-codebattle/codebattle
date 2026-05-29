@@ -255,7 +255,9 @@
     <p class="cb-text small mb-4">
       All operations are dispatched through Oban with per-user retries
       (<code>max_attempts: 5</code>). Each job is independent — a failure for one user does
-      not block the rest, and successes are not re-run.
+      not block the rest, and successes are not re-run. Jobs are scheduled in batches of
+      <em>N per second</em>
+      (default 50, max 100) to stay under the external service's 100 RPS rate limit.
     </p>
 
     <div class="mb-4">
@@ -268,7 +270,9 @@
         the throttle delay.
       </p>
       <form
-        action={Routes.admin_group_tournament_path(@conn, :bulk_external_setup, @group_tournament)}
+        action={
+          Routes.admin_group_tournament_path(@conn, :bulk_external_setup, @group_tournament)
+        }
         method="post"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -283,15 +287,16 @@
           ></textarea>
         </div>
         <div class="form-group mb-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds between jobs)</label>
+          <label class="text-white">Rate (jobs per second)</label>
           <input
             type="number"
-            name="bulk_setup[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_setup[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
+          <small class="cb-text">External service is rate-limited to 100 RPS.</small>
         </div>
         <button
           type="submit"
@@ -308,31 +313,19 @@
     <div class="mb-4">
       <h4 class="text-white">Hide Repos</h4>
       <p class="cb-text small mb-3">
-        Enqueue one <code>RepoHideWorker</code>
-        per tournament user. Each job calls <code>/repos/hide</code>
-        for that user's repo, retrying independently on failure.
+        Enqueues <code>RepoHideWorker</code>
+        jobs that batch all tournament repos into chunks of 500 per <code>/repos/hide</code>
+        call. One job per chunk, scheduled 1 second apart, retried by Oban on failure.
       </p>
       <form
         action={Routes.admin_group_tournament_path(@conn, :hide_repos, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
-          <input
-            type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
-          />
-        </div>
         <button
           type="submit"
           class="btn btn-outline-warning cb-rounded"
-          data-confirm="Enqueue hide-repo jobs for every tournament user?"
+          data-confirm="Enqueue hide-repo jobs for every tournament repo?"
         >
           Enqueue Hide Repos
         </button>
@@ -342,30 +335,20 @@
     <div class="mb-4">
       <h4 class="text-white">Unveil Repos</h4>
       <p class="cb-text small mb-3">
-        Enqueue one <code>RepoUnveilWorker</code>
-        per tournament user. Restores visibility for hidden repositories.
+        Enqueues <code>RepoUnveilWorker</code>
+        jobs that batch all hidden tournament repos into chunks of 500 per
+        <code>/repos/unveil</code>
+        call.
       </p>
       <form
         action={Routes.admin_group_tournament_path(@conn, :unveil_repos, @group_tournament)}
         method="post"
-        class="d-flex align-items-end flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
-          <input
-            type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
-            class="form-control cb-bg-panel cb-border-color text-white mt-2"
-          />
-        </div>
         <button
           type="submit"
           class="btn btn-outline-success cb-rounded"
-          data-confirm="Enqueue unveil-repo jobs for every tournament user?"
+          data-confirm="Enqueue unveil-repo jobs for every hidden tournament repo?"
         >
           Enqueue Unveil Repos
         </button>
@@ -387,13 +370,13 @@
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
+          <label class="text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_repo[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
         </div>
@@ -422,13 +405,13 @@
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
+          <label class="text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_repo[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
         </div>
@@ -457,13 +440,13 @@
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
+          <label class="text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_repo[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
         </div>
@@ -492,13 +475,13 @@
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
+          <label class="text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_repo[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
         </div>
@@ -527,13 +510,13 @@
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
         <div class="form-group mb-0 mr-3" style="max-width: 240px;">
-          <label class="text-white">Throttle (seconds)</label>
+          <label class="text-white">Rate (jobs/sec, max 100)</label>
           <input
             type="number"
-            name="bulk_repo[throttle_seconds]"
-            value="2"
-            min="0"
-            max="300"
+            name="bulk_repo[batch_size]"
+            value="50"
+            min="1"
+            max="100"
             class="form-control cb-bg-panel cb-border-color text-white mt-2"
           />
         </div>

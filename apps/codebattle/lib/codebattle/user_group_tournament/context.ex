@@ -567,64 +567,65 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Enum.uniq()
   end
 
-  @doc """
-  Enqueues a `RepoHideWorker` per tournament user (throttled). Each job retries
-  independently on failure.
-  """
-  @spec enqueue_bulk_hide(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_hide(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoHideWorker.new/2)
-  end
+  @hide_unveil_chunk_size 500
 
   @doc """
-  Enqueues a `RepoUnveilWorker` per tournament user (throttled).
+  Enqueues `RepoHideWorker` jobs in chunks of #{@hide_unveil_chunk_size} repo IDs each.
+  Returns the number of repo IDs that were enqueued (not the number of jobs).
   """
-  @spec enqueue_bulk_unveil(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_unveil(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoUnveilWorker.new/2)
+  @spec enqueue_bulk_hide(GroupTournament.t()) :: non_neg_integer()
+  def enqueue_bulk_hide(%GroupTournament{} = group_tournament) do
+    enqueue_repo_id_chunks(group_tournament, &Codebattle.Workers.RepoHideWorker.new/2)
   end
 
-  @doc """
-  Enqueues a `RepoDeleteWorker` per tournament user (throttled).
-  """
-  @spec enqueue_bulk_delete(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_delete(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoDeleteWorker.new/2)
+  @spec enqueue_bulk_unveil(GroupTournament.t()) :: non_neg_integer()
+  def enqueue_bulk_unveil(%GroupTournament{} = group_tournament) do
+    enqueue_repo_id_chunks(group_tournament, &Codebattle.Workers.RepoUnveilWorker.new/2)
   end
 
-  @doc """
-  Enqueues a `SeatOccupyWorker` per tournament user (throttled).
-  """
-  @spec enqueue_bulk_occupy_seats(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_occupy_seats(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.SeatOccupyWorker.new/2)
+  defp enqueue_repo_id_chunks(%GroupTournament{} = group_tournament, build_job) do
+    group_tournament
+    |> list_repo_ids()
+    |> Enum.chunk_every(@hide_unveil_chunk_size)
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {chunk, idx}, count ->
+      args = %{repo_ids: chunk, group_tournament_id: group_tournament.id}
+
+      case args |> build_job.(schedule_in: idx) |> Oban.insert() do
+        {:ok, _job} -> count + length(chunk)
+        _ -> count
+      end
+    end)
   end
 
-  @doc """
-  Enqueues a `SeatReleaseWorker` per tournament user (throttled).
-  """
-  @spec enqueue_bulk_release_seats(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_release_seats(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.SeatReleaseWorker.new/2)
+  @spec enqueue_bulk_delete(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_delete(%GroupTournament{} = group_tournament, batch_size) do
+    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.RepoDeleteWorker.new/2)
   end
 
-  @doc """
-  Enqueues a `DevRoleRemoveWorker` per tournament user (throttled).
-  """
-  @spec enqueue_bulk_remove_dev_roles(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_remove_dev_roles(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.DevRoleRemoveWorker.new/2)
+  @spec enqueue_bulk_occupy_seats(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_occupy_seats(%GroupTournament{} = group_tournament, batch_size) do
+    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.SeatOccupyWorker.new/2)
   end
 
-  @doc """
-  Enqueues a `ViewerRoleAddWorker` per tournament user (throttled).
-  """
-  @spec enqueue_bulk_add_viewer_roles(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
-  def enqueue_bulk_add_viewer_roles(%GroupTournament{} = group_tournament, throttle_seconds) do
-    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.ViewerRoleAddWorker.new/2)
+  @spec enqueue_bulk_release_seats(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_release_seats(%GroupTournament{} = group_tournament, batch_size) do
+    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.SeatReleaseWorker.new/2)
   end
 
-  defp enqueue_per_user_jobs(%GroupTournament{} = group_tournament, throttle_seconds, build_job) do
+  @spec enqueue_bulk_remove_dev_roles(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_remove_dev_roles(%GroupTournament{} = group_tournament, batch_size) do
+    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.DevRoleRemoveWorker.new/2)
+  end
+
+  @spec enqueue_bulk_add_viewer_roles(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_add_viewer_roles(%GroupTournament{} = group_tournament, batch_size) do
+    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.ViewerRoleAddWorker.new/2)
+  end
+
+  defp enqueue_per_user_jobs(%GroupTournament{} = group_tournament, batch_size, build_job) do
+    safe_batch_size = max(batch_size, 1)
+
     UserGroupTournament
     |> where([record], record.group_tournament_id == ^group_tournament.id)
     |> Repo.all()
@@ -632,56 +633,11 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Enum.reduce(0, fn {record, idx}, count ->
       args = %{user_id: record.user_id, group_tournament_id: group_tournament.id}
 
-      case args |> build_job.(schedule_in: idx * throttle_seconds) |> Oban.insert() do
+      case args |> build_job.(schedule_in: div(idx, safe_batch_size)) |> Oban.insert() do
         {:ok, _job} -> count + 1
         _ -> count
       end
     end)
-  end
-
-  @doc """
-  Hides one user's repository. Called from `RepoHideWorker`. Returns `:ok` /
-  `{:error, reason}` so Oban can retry.
-  """
-  @spec hide_user_repo(pos_integer(), pos_integer()) :: :ok | {:error, term()}
-  def hide_user_repo(user_id, group_tournament_id) do
-    with %UserGroupTournament{} = record <- get(user_id, group_tournament_id),
-         repo_id when is_binary(repo_id) and repo_id != "" <- record_repo_id(record) do
-      case ExternalPlatform.hide_repos([repo_id]) do
-        {:ok, _} ->
-          update!(record, %{last_error: %{}})
-          :ok
-
-        {:error, reason} ->
-          update!(record, %{last_error: serialize_error(reason)})
-          {:error, reason}
-      end
-    else
-      nil -> {:error, :record_not_found}
-      _ -> {:error, :missing_repo_external_id}
-    end
-  end
-
-  @doc """
-  Unveils one user's repository. Called from `RepoUnveilWorker`.
-  """
-  @spec unveil_user_repo(pos_integer(), pos_integer()) :: :ok | {:error, term()}
-  def unveil_user_repo(user_id, group_tournament_id) do
-    with %UserGroupTournament{} = record <- get(user_id, group_tournament_id),
-         repo_id when is_binary(repo_id) and repo_id != "" <- record_repo_id(record) do
-      case ExternalPlatform.unveil_repos([repo_id]) do
-        {:ok, _} ->
-          update!(record, %{last_error: %{}})
-          :ok
-
-        {:error, reason} ->
-          update!(record, %{last_error: serialize_error(reason)})
-          {:error, reason}
-      end
-    else
-      nil -> {:error, :record_not_found}
-      _ -> {:error, :missing_repo_external_id}
-    end
   end
 
   @doc """
@@ -714,9 +670,6 @@ defmodule Codebattle.UserGroupTournament.Context do
         end
     end
   end
-
-  defp record_repo_id(%UserGroupTournament{repo_external_id: id}) when is_binary(id) and id != "", do: id
-  defp record_repo_id(%UserGroupTournament{repo_response: response}), do: extract_repo_id(response)
 
   @doc """
   Occupies a code-assist seat for one user. Called from `SeatOccupyWorker`.
