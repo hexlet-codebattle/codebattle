@@ -1,10 +1,14 @@
 import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { currentUserIdSelector } from "../../selectors";
+import { useSelector, useDispatch } from "react-redux";
+import { currentUserIdSelector, groupTournamentSelector } from "../../selectors";
+import { actions } from "../../slices";
 
 function RunIframe({ title = "Run Viewer", ...props }) {
   const iframeRef = useRef(null);
+  const dispatch = useDispatch();
   const currentUserId = useSelector(currentUserIdSelector);
+  const { data } = useSelector(groupTournamentSelector);
+  const runs = data?.runs || [];
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -24,6 +28,29 @@ function RunIframe({ title = "Run Viewer", ...props }) {
 
     return undefined;
   }, [currentUserId]);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (
+        event.data &&
+        typeof event.data === "object" &&
+        event.data.type === "set_current_user_id_result"
+      ) {
+        const { place, runId } = event.data;
+        const hasRun = runs.some((run) => run.id === runId);
+
+        if (hasRun) {
+          dispatch(actions.updateRun({ runId, place }));
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [runs, dispatch]);
 
   return <iframe ref={iframeRef} title={title} {...props} />;
 }

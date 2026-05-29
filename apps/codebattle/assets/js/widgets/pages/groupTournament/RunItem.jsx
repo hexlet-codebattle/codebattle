@@ -5,7 +5,7 @@ import {
   formatDuration,
   isSliceRun,
   isRoundRun,
-  // getPlaceFor,
+  getPlaceFor,
   getTitleForRun,
 } from "../../utils/groupTournament";
 
@@ -14,27 +14,29 @@ const RunItem = ({
   items,
   runId,
   setRunId,
-  // leaderboard,
-  // currentUserId
+  leaderboard,
+  currentUserId,
 }) => {
   const isActive = runId === item.id;
   const onClick = () => setRunId(item.id);
 
   const title = useMemo(() => getTitleForRun(item, items), [item, items]);
 
-  // const myEntry = useMemo(() => {
-  //   if (!Number.isInteger(currentUserId) || !Array.isArray(leaderboard)) return null;
-  //   return leaderboard.find((e) => e.userId === currentUserId) || null;
-  // }, [leaderboard, currentUserId]);
+  const myEntry = useMemo(() => {
+    if (!Number.isInteger(currentUserId) || !Array.isArray(leaderboard)) return null;
+    return leaderboard.find((e) => e.userId === currentUserId) || null;
+  }, [leaderboard, currentUserId]);
 
   const pending = item.status === "pending" || item.isStub;
   const roundRun = isRoundRun(item);
-  // const place = roundRun ? (item.place ?? getPlaceFor(item, myEntry)) : null;
+  const place = roundRun ? (item.place ?? getPlaceFor(item, myEntry)) : null;
   const duration = formatDuration(item.durationMs);
   const sliceLabel =
     !item.isStub && isSliceRun(item) && Number.isInteger(item.sliceIndex)
       ? i18n.t("Group %{n}", { n: item.sliceIndex + 1 })
       : null;
+
+  const isDisabled = item.isStub || item.status === "error" || item.status === "timeout";
 
   const buttonClasses = cn("cb-run-item", {
     "cb-run-item--group": roundRun,
@@ -43,6 +45,7 @@ const RunItem = ({
     "cb-run-item--error": item.status === "error",
     "cb-run-item--timeout": item.status === "timeout",
     "cb-run-item--pending": pending,
+    "cb-run-item--disabled": isDisabled,
   });
 
   const titleClasses = cn("mr-2 font-weight-bold", {
@@ -54,6 +57,7 @@ const RunItem = ({
     <div key={item.id} className="mb-2">
       <button
         type="button"
+        disabled={isDisabled}
         onClick={onClick}
         className={cn(buttonClasses, "d-flex flex-column align-items-start w-100")}
       >
@@ -91,16 +95,16 @@ const RunItem = ({
                   item.status !== "timeout" &&
                   i18n.t("Score: %{score}", { score: item.score ?? 0 })}
               </span>
-              {/* {roundRun && ( */}
-              {/*   <span */}
-              {/*     className="font-weight-bold ml-auto text-nowrap text-white" */}
-              {/*     style={{ opacity: 0.75 }} */}
-              {/*   > */}
-              {/*     {Number.isInteger(place) */}
-              {/*       ? i18n.t("Place: #%{place}", { place }) */}
-              {/*       : i18n.t("Place: pending")} */}
-              {/*   </span> */}
-              {/* )} */}
+              {roundRun && place && (
+                <span
+                  className="font-weight-bold ml-auto text-nowrap text-white"
+                  style={{ opacity: 0.75 }}
+                >
+                  {Number.isInteger(place)
+                    ? i18n.t("Place: #%{place}", { place })
+                    : i18n.t("Place: pending")}
+                </span>
+              )}
               {duration && !roundRun && (
                 <span className="ml-auto text-nowrap">
                   {i18n.t("Time: %{duration}", { duration })}

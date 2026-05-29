@@ -1096,7 +1096,7 @@
 }
 
 .cb-run-item--group::before {
-  background-color: rgb(245, 158, 11); // Fully opaque
+  background-color: rgb(250, 204, 21); // Fully opaque
 }
 
 .cb-run-item--test::before {
@@ -1150,8 +1150,26 @@
   background-color: rgba(160, 174, 192, 0.2);
 }
 
+.cb-run-item--disabled,
+.cb-run-item:disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
 .cb-run-item--active {
   border-color: rgba(59, 130, 246, 0.95);
+}
+
+.cb-run-item--error.cb-run-item--active {
+  border-color: rgba(239, 68, 68, 0.95);
+}
+
+.cb-run-item--timeout.cb-run-item--active {
+  border-color: rgba(160, 174, 192, 0.95);
+}
+
+.cb-run-item--group.cb-run-item--active {
+  border-color: rgba(245, 158, 11, 0.95);
 }
 
 .cb-run-item__content {

@@ -149,6 +149,19 @@ const groupTournament = createSlice({
 
       state.data.runs = currentRuns;
     },
+    updateRun: (state, { payload }) => {
+      const { runId, ...fields } = payload;
+
+      state.data = state.data || {};
+
+      const currentRuns = state.data.runs || [];
+      const existingRunIndex = currentRuns.findIndex((item) => item.id === runId);
+
+      if (existingRunIndex >= 0) {
+        currentRuns[existingRunIndex] = { ...currentRuns[existingRunIndex], ...fields };
+        state.data.runs = currentRuns;
+      }
+    },
     resetGroupTournament: () => initialState,
   },
 });
