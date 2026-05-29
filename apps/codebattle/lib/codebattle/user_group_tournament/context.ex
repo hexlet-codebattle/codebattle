@@ -183,6 +183,7 @@ defmodule Codebattle.UserGroupTournament.Context do
            state: "provisioning",
            repo_state: "completed",
            repo_url: extract_repo_url(response),
+           repo_external_id: extract_repo_id(response),
            repo_response: response,
            last_error: %{}
          })}
@@ -544,6 +545,288 @@ defmodule Codebattle.UserGroupTournament.Context do
   defp target_org_slug do
     Application.get_env(:codebattle, :external_platform_org_slug)
   end
+
+  @doc """
+  Collects external repo UUIDs for all `UserGroupTournament` records of a tournament.
+  Skips records that don't have a recognisable repo id in `repo_response`.
+  """
+  @spec list_repo_ids(GroupTournament.t() | pos_integer()) :: [String.t()]
+  def list_repo_ids(%GroupTournament{id: id}), do: list_repo_ids(id)
+
+  def list_repo_ids(group_tournament_id) do
+    UserGroupTournament
+    |> where([record], record.group_tournament_id == ^group_tournament_id)
+    |> Repo.all()
+    |> Enum.map(fn record ->
+      case record.repo_external_id do
+        id when is_binary(id) and id != "" -> id
+        _ -> extract_repo_id(record.repo_response)
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.uniq()
+  end
+
+  @doc """
+  Enqueues a `RepoHideWorker` per tournament user (throttled). Each job retries
+  independently on failure.
+  """
+  @spec enqueue_bulk_hide(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_hide(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoHideWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `RepoUnveilWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_unveil(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_unveil(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoUnveilWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `RepoDeleteWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_delete(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_delete(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.RepoDeleteWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `SeatOccupyWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_occupy_seats(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_occupy_seats(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.SeatOccupyWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `SeatReleaseWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_release_seats(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_release_seats(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.SeatReleaseWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `DevRoleRemoveWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_remove_dev_roles(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_remove_dev_roles(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.DevRoleRemoveWorker.new/2)
+  end
+
+  @doc """
+  Enqueues a `ViewerRoleAddWorker` per tournament user (throttled).
+  """
+  @spec enqueue_bulk_add_viewer_roles(GroupTournament.t(), non_neg_integer()) :: non_neg_integer()
+  def enqueue_bulk_add_viewer_roles(%GroupTournament{} = group_tournament, throttle_seconds) do
+    enqueue_per_user_jobs(group_tournament, throttle_seconds, &Codebattle.Workers.ViewerRoleAddWorker.new/2)
+  end
+
+  defp enqueue_per_user_jobs(%GroupTournament{} = group_tournament, throttle_seconds, build_job) do
+    UserGroupTournament
+    |> where([record], record.group_tournament_id == ^group_tournament.id)
+    |> Repo.all()
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {record, idx}, count ->
+      args = %{user_id: record.user_id, group_tournament_id: group_tournament.id}
+
+      case args |> build_job.(schedule_in: idx * throttle_seconds) |> Oban.insert() do
+        {:ok, _job} -> count + 1
+        _ -> count
+      end
+    end)
+  end
+
+  @doc """
+  Hides one user's repository. Called from `RepoHideWorker`. Returns `:ok` /
+  `{:error, reason}` so Oban can retry.
+  """
+  @spec hide_user_repo(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def hide_user_repo(user_id, group_tournament_id) do
+    with %UserGroupTournament{} = record <- get(user_id, group_tournament_id),
+         repo_id when is_binary(repo_id) and repo_id != "" <- record_repo_id(record) do
+      case ExternalPlatform.hide_repos([repo_id]) do
+        {:ok, _} ->
+          update!(record, %{last_error: %{}})
+          :ok
+
+        {:error, reason} ->
+          update!(record, %{last_error: serialize_error(reason)})
+          {:error, reason}
+      end
+    else
+      nil -> {:error, :record_not_found}
+      _ -> {:error, :missing_repo_external_id}
+    end
+  end
+
+  @doc """
+  Unveils one user's repository. Called from `RepoUnveilWorker`.
+  """
+  @spec unveil_user_repo(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def unveil_user_repo(user_id, group_tournament_id) do
+    with %UserGroupTournament{} = record <- get(user_id, group_tournament_id),
+         repo_id when is_binary(repo_id) and repo_id != "" <- record_repo_id(record) do
+      case ExternalPlatform.unveil_repos([repo_id]) do
+        {:ok, _} ->
+          update!(record, %{last_error: %{}})
+          :ok
+
+        {:error, reason} ->
+          update!(record, %{last_error: serialize_error(reason)})
+          {:error, reason}
+      end
+    else
+      nil -> {:error, :record_not_found}
+      _ -> {:error, :missing_repo_external_id}
+    end
+  end
+
+  @doc """
+  Deletes one user's repository. Called from `RepoDeleteWorker`.
+  """
+  @spec delete_user_repo(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def delete_user_repo(user_id, group_tournament_id) do
+    record =
+      UserGroupTournament
+      |> where([r], r.user_id == ^user_id and r.group_tournament_id == ^group_tournament_id)
+      |> preload(:user)
+      |> Repo.one()
+
+    case record do
+      nil ->
+        {:error, :record_not_found}
+
+      %UserGroupTournament{user: %User{} = user} = record ->
+        group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
+        repo_slug = repo_slug_for(user, group_tournament)
+
+        case ExternalPlatform.delete_repo(target_org_slug(), repo_slug, silent: true) do
+          {:ok, _} ->
+            update!(record, %{last_error: %{}})
+            :ok
+
+          {:error, reason} ->
+            update!(record, %{last_error: serialize_error(reason)})
+            {:error, reason}
+        end
+    end
+  end
+
+  defp record_repo_id(%UserGroupTournament{repo_external_id: id}) when is_binary(id) and id != "", do: id
+  defp record_repo_id(%UserGroupTournament{repo_response: response}), do: extract_repo_id(response)
+
+  @doc """
+  Occupies a code-assist seat for one user. Called from `SeatOccupyWorker`.
+  """
+  @spec occupy_user_seat(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def occupy_user_seat(user_id, group_tournament_id) do
+    with_user_record(user_id, group_tournament_id, fn record ->
+      occupy_seat_for_record(record)
+    end)
+  end
+
+  @doc """
+  Releases a code-assist seat for one user. Called from `SeatReleaseWorker`.
+  """
+  @spec release_user_seat(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def release_user_seat(user_id, group_tournament_id) do
+    with_user_record(user_id, group_tournament_id, fn record ->
+      release_seat_for_record(record)
+    end)
+  end
+
+  @doc """
+  Removes the developer repo role for one user. Called from `DevRoleRemoveWorker`.
+  """
+  @spec remove_user_dev_role(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def remove_user_dev_role(user_id, group_tournament_id) do
+    with_user_record(user_id, group_tournament_id, fn
+      %UserGroupTournament{dev_role_removal_state: "completed"} ->
+        :ok
+
+      record ->
+        group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
+        remove_dev_role_for_record(record, group_tournament)
+    end)
+  end
+
+  @doc """
+  Grants the viewer repo role to one user. Called from `ViewerRoleAddWorker`.
+  """
+  @spec add_user_viewer_role(pos_integer(), pos_integer()) :: :ok | {:error, term()}
+  def add_user_viewer_role(user_id, group_tournament_id) do
+    with_user_record(user_id, group_tournament_id, fn
+      %UserGroupTournament{viewer_role_state: "completed"} ->
+        :ok
+
+      record ->
+        group_tournament = GroupTournamentContext.get_group_tournament!(group_tournament_id)
+        add_viewer_role_for_record(record, group_tournament)
+    end)
+  end
+
+  defp with_user_record(user_id, group_tournament_id, fun) do
+    case UserGroupTournament
+         |> where([r], r.user_id == ^user_id and r.group_tournament_id == ^group_tournament_id)
+         |> preload(:user)
+         |> Repo.one() do
+      nil -> {:error, :record_not_found}
+      record -> fun.(record)
+    end
+  end
+
+  defp occupy_seat_for_record(%UserGroupTournament{workplace_state: "completed"}), do: :ok
+
+  defp occupy_seat_for_record(%UserGroupTournament{user: %User{} = user} = record) do
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        case ExternalPlatform.occupy_code_assist_workplaces([platform_user_id]) do
+          {:ok, response} ->
+            update!(record, %{workplace_state: "completed", workplace_response: response, last_error: %{}})
+
+            :ok
+
+          {:error, reason} ->
+            fail_step(record, :workplace, reason)
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        fail_step(record, :workplace, reason)
+        {:error, reason}
+    end
+  end
+
+  defp release_seat_for_record(%UserGroupTournament{release_state: "completed"}), do: :ok
+
+  defp release_seat_for_record(%UserGroupTournament{user: %User{} = user} = record) do
+    case resolve_platform_user_id(user) do
+      {:ok, platform_user_id} ->
+        case ExternalPlatform.release_code_assist_workplaces([platform_user_id]) do
+          {:ok, response} ->
+            update!(record, %{release_state: "completed", release_response: response, last_error: %{}})
+
+            :ok
+
+          {:error, reason} ->
+            fail_step(record, :release, reason)
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        fail_step(record, :release, reason)
+        {:error, reason}
+    end
+  end
+
+  defp extract_repo_id(%{"id" => id}) when is_binary(id) and id != "", do: id
+  defp extract_repo_id(%{id: id}) when is_binary(id) and id != "", do: id
+  defp extract_repo_id(%{"repo_id" => id}) when is_binary(id) and id != "", do: id
+  defp extract_repo_id(%{repo_id: id}) when is_binary(id) and id != "", do: id
+  defp extract_repo_id(_), do: nil
 
   defp update!(%UserGroupTournament{} = record, attrs) do
     record

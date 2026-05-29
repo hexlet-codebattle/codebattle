@@ -29,6 +29,7 @@ defmodule Codebattle.UserGroupTournament do
              :dev_role_removal_state,
              :token,
              :repo_url,
+             :repo_external_id,
              :role,
              :secret_key,
              :secret_group,
@@ -60,6 +61,7 @@ defmodule Codebattle.UserGroupTournament do
 
     field(:token, :string)
     field(:repo_url, :string)
+    field(:repo_external_id, :string)
     field(:role, :string)
     field(:secret_key, :string)
     field(:secret_group, :string)
@@ -91,6 +93,7 @@ defmodule Codebattle.UserGroupTournament do
       :dev_role_removal_state,
       :token,
       :repo_url,
+      :repo_external_id,
       :role,
       :secret_key,
       :secret_group,

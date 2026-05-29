@@ -619,6 +619,142 @@ defmodule Codebattle.ExternalPlatform do
     end
   end
 
+  @doc """
+  Hides multiple repositories at once (best-effort).
+  POST /repos/hide
+  """
+  @spec hide_repos([String.t()]) :: {:ok, map()} | {:error, term()}
+  def hide_repos(repo_ids) when is_list(repo_ids) and repo_ids != [] do
+    case adapter() do
+      nil -> do_repos_visibility("hide", repo_ids)
+      mod -> mod.hide_repos(repo_ids)
+    end
+  end
+
+  def hide_repos(_), do: {:error, :invalid_repo_ids}
+
+  @doc """
+  Unveils (restores) previously-hidden repositories (best-effort).
+  POST /repos/unveil
+  """
+  @spec unveil_repos([String.t()]) :: {:ok, map()} | {:error, term()}
+  def unveil_repos(repo_ids) when is_list(repo_ids) and repo_ids != [] do
+    case adapter() do
+      nil -> do_repos_visibility("unveil", repo_ids)
+      mod -> mod.unveil_repos(repo_ids)
+    end
+  end
+
+  def unveil_repos(_), do: {:error, :invalid_repo_ids}
+
+  @doc """
+  Deletes a repository by org/repo slug.
+  DELETE /repos/{org_slug}/{repo_slug}?silent=...
+  """
+  @spec delete_repo(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
+  def delete_repo(org_slug, repo_slug, opts \\ [])
+
+  def delete_repo(org_slug, repo_slug, opts) when is_binary(org_slug) and is_binary(repo_slug) do
+    case adapter() do
+      nil ->
+        with :ok <- validate_required_string(org_slug, :invalid_org_slug),
+             :ok <- validate_required_string(repo_slug, :invalid_repo_slug) do
+          do_delete_repo(String.trim(org_slug), String.trim(repo_slug), opts)
+        end
+
+      mod ->
+        mod.delete_repo(org_slug, repo_slug, opts)
+    end
+  end
+
+  def delete_repo(_, _, _), do: {:error, :invalid_repo_request}
+
+  defp do_delete_repo(org_slug, repo_slug, opts) do
+    silent = Keyword.get(opts, :silent)
+    base_url = "#{external_platform_service_url()}/repos/#{org_slug}/#{repo_slug}"
+    url = if is_nil(silent), do: base_url, else: base_url <> "?silent=#{silent}"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        connect_options: [timeout: @invite_timeout_ms],
+        receive_timeout: @invite_timeout_ms
+      )
+
+    Logger.info("ExternalPlatform.delete_repo START method=DELETE url=#{url}")
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:delete, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: status, body: resp_body}} when status in [200, 202, 204] ->
+        Logger.info(
+          "ExternalPlatform.delete_repo OK url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body || %{}}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.delete_repo FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.delete_repo ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
+  defp do_repos_visibility(action, repo_ids) do
+    body = %{repo_ids: repo_ids}
+    url = "#{external_platform_service_url()}/repos/#{action}"
+
+    req_opts =
+      Keyword.merge(
+        request_opts(),
+        json: body,
+        connect_options: [timeout: @invite_timeout_ms],
+        receive_timeout: @invite_timeout_ms
+      )
+
+    Logger.info(
+      "ExternalPlatform.repos_visibility START method=POST url=#{url} action=#{action} repo_ids_count=#{length(repo_ids)}"
+    )
+
+    started_at = System.monotonic_time(:millisecond)
+    result = safe_request(:post, url, req_opts)
+    duration_ms = System.monotonic_time(:millisecond) - started_at
+
+    case result do
+      {:ok, %{status: 200, body: resp_body}} ->
+        Logger.info(
+          "ExternalPlatform.repos_visibility OK url=#{url} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:ok, resp_body}
+
+      {:ok, %{status: status, body: resp_body}} ->
+        Logger.warning(
+          "ExternalPlatform.repos_visibility FAIL url=#{url} status=#{status} duration_ms=#{duration_ms} body=#{inspect(resp_body)}"
+        )
+
+        {:error, resp_body}
+
+      {:error, reason} ->
+        Logger.warning(
+          "ExternalPlatform.repos_visibility ERROR url=#{url} duration_ms=#{duration_ms} reason=#{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
+  end
+
   defp do_get_user_by_id(user_id) do
     url = external_platform_service_url() <> @users_path <> "/#{user_id}"
 
@@ -688,6 +824,13 @@ defmodule Codebattle.ExternalPlatform do
 
   defp safe_request(:put, url, opts) do
     Req.put(url, opts)
+  rescue
+    exception ->
+      {:error, {:request_exception, Exception.message(exception)}}
+  end
+
+  defp safe_request(:delete, url, opts) do
+    Req.delete(url, opts)
   rescue
     exception ->
       {:error, {:request_exception, Exception.message(exception)}}

@@ -169,6 +169,17 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post("/group_tournaments/:id/bulk_add_users", CodebattleWeb.Admin.GroupTournamentController, :bulk_add_users,
+      as: :admin_group_tournament
+    )
+
+    post(
+      "/group_tournaments/:id/bulk_external_setup",
+      CodebattleWeb.Admin.GroupTournamentController,
+      :bulk_external_setup,
+      as: :admin_group_tournament
+    )
+
     post("/group_tournaments/:id/toggle_leaderboard", CodebattleWeb.Admin.GroupTournamentController, :toggle_leaderboard,
       as: :admin_group_tournament
     )
@@ -178,6 +189,34 @@ defmodule CodebattleWeb.Router do
     )
 
     post("/group_tournaments/:id/broadcast_redirect", CodebattleWeb.Admin.GroupTournamentController, :broadcast_redirect,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/hide_repos", CodebattleWeb.Admin.GroupTournamentController, :hide_repos,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/unveil_repos", CodebattleWeb.Admin.GroupTournamentController, :unveil_repos,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/delete_repos", CodebattleWeb.Admin.GroupTournamentController, :delete_repos,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/occupy_seats", CodebattleWeb.Admin.GroupTournamentController, :occupy_seats,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/release_seats", CodebattleWeb.Admin.GroupTournamentController, :release_seats,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/remove_dev_roles", CodebattleWeb.Admin.GroupTournamentController, :remove_dev_roles,
+      as: :admin_group_tournament
+    )
+
+    post("/group_tournaments/:id/add_viewer_roles", CodebattleWeb.Admin.GroupTournamentController, :add_viewer_roles,
       as: :admin_group_tournament
     )
 

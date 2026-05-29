@@ -285,6 +285,58 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def hide_repos(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :hide)
+  def unveil_repos(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :unveil)
+  def delete_repos(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :delete)
+  def occupy_seats(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :occupy_seats)
+  def release_seats(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :release_seats)
+  def remove_dev_roles(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :remove_dev_roles)
+  def add_viewer_roles(conn, %{"id" => id} = params), do: enqueue_bulk_op(conn, id, params, :add_viewer_roles)
+
+  defp enqueue_bulk_op(conn, id, params, action) do
+    group_tournament = Context.get_group_tournament!(id)
+    throttle_seconds = parse_throttle_seconds(get_in(params, ["bulk_repo", "throttle_seconds"]))
+
+    {label, enqueued} =
+      case action do
+        :hide ->
+          {"hide", UserGroupTournamentContext.enqueue_bulk_hide(group_tournament, throttle_seconds)}
+
+        :unveil ->
+          {"unveil", UserGroupTournamentContext.enqueue_bulk_unveil(group_tournament, throttle_seconds)}
+
+        :delete ->
+          {"delete", UserGroupTournamentContext.enqueue_bulk_delete(group_tournament, throttle_seconds)}
+
+        :occupy_seats ->
+          {"occupy-seat", UserGroupTournamentContext.enqueue_bulk_occupy_seats(group_tournament, throttle_seconds)}
+
+        :release_seats ->
+          {"release-seat", UserGroupTournamentContext.enqueue_bulk_release_seats(group_tournament, throttle_seconds)}
+
+        :remove_dev_roles ->
+          {"remove-dev-role",
+           UserGroupTournamentContext.enqueue_bulk_remove_dev_roles(group_tournament, throttle_seconds)}
+
+        :add_viewer_roles ->
+          {"add-viewer-role",
+           UserGroupTournamentContext.enqueue_bulk_add_viewer_roles(group_tournament, throttle_seconds)}
+      end
+
+    flash =
+      if enqueued == 0 do
+        {:error, "No tournament users to enqueue for #{label}."}
+      else
+        {:info, "Enqueued #{label} jobs for #{enqueued} users (throttle: #{throttle_seconds}s between jobs)."}
+      end
+
+    {kind, message} = flash
+
+    conn
+    |> put_flash(kind, message)
+    |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+  end
+
   def broadcast_redirect(conn, %{"id" => id}) do
     group_tournament = Context.get_group_tournament!(id)
     url = Routes.group_tournament_path(conn, :show, group_tournament)
@@ -383,6 +435,120 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
         |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
     end
   end
+
+  def bulk_add_users(conn, %{"id" => id} = params) do
+    group_tournament = Context.get_group_tournament!(id)
+    user_ids = parse_bulk_user_ids(get_in(params, ["bulk_add_users", "user_ids"]))
+
+    {added, missing} =
+      Enum.reduce(user_ids, {0, []}, fn user_id, {ok_count, missing_acc} ->
+        case Codebattle.Repo.get(Codebattle.User, user_id) do
+          nil ->
+            {ok_count, [user_id | missing_acc]}
+
+          user ->
+            UserGroupTournamentContext.get_or_create(user, group_tournament)
+            Context.create_or_update_player(group_tournament, user.id, %{lang: "js", state: "active"})
+            {ok_count + 1, missing_acc}
+        end
+      end)
+
+    missing = Enum.reverse(missing)
+
+    flash =
+      cond do
+        user_ids == [] ->
+          {:error, "No valid user IDs provided."}
+
+        missing == [] ->
+          {:info, "Added #{added} users to the tournament."}
+
+        true ->
+          {:info, "Added #{added} users. Missing user IDs: #{Enum.join(missing, ", ")}"}
+      end
+
+    {kind, message} = flash
+
+    conn
+    |> put_flash(kind, message)
+    |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+  end
+
+  def bulk_external_setup(conn, %{"id" => id} = params) do
+    group_tournament = Context.get_group_tournament!(id)
+    bulk_params = Map.get(params, "bulk_setup", %{})
+    user_ids = parse_bulk_user_ids(bulk_params["user_ids"])
+    throttle_seconds = parse_throttle_seconds(bulk_params["throttle_seconds"])
+
+    {enqueued, missing} =
+      user_ids
+      |> Enum.with_index()
+      |> Enum.reduce({0, []}, fn {user_id, idx}, {ok_count, missing_acc} ->
+        case Codebattle.Repo.get(Codebattle.User, user_id) do
+          nil ->
+            {ok_count, [user_id | missing_acc]}
+
+          user ->
+            UserGroupTournamentContext.get_or_create(user, group_tournament)
+
+            %{user_id: user.id, group_tournament_id: group_tournament.id}
+            |> Codebattle.Workers.ExternalSetupWorker.new(schedule_in: idx * throttle_seconds)
+            |> Oban.insert()
+
+            {ok_count + 1, missing_acc}
+        end
+      end)
+
+    missing = Enum.reverse(missing)
+
+    flash =
+      if user_ids == [] do
+        {:error, "No valid user IDs provided."}
+      else
+        msg =
+          "Enqueued external setup for #{enqueued} users " <>
+            "(throttle: #{throttle_seconds}s between jobs)."
+
+        msg = if missing == [], do: msg, else: msg <> " Missing user IDs: #{Enum.join(missing, ", ")}"
+        {:info, msg}
+      end
+
+    {kind, message} = flash
+
+    conn
+    |> put_flash(kind, message)
+    |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+  end
+
+  defp parse_bulk_user_ids(nil), do: []
+
+  defp parse_bulk_user_ids(input) when is_binary(input) do
+    input
+    |> String.split([",", "\n", "\r", " ", "\t", ";"], trim: true)
+    |> Enum.flat_map(fn token ->
+      case token |> String.trim() |> Integer.parse() do
+        {n, ""} when n > 0 -> [n]
+        _ -> []
+      end
+    end)
+    |> Enum.uniq()
+  end
+
+  defp parse_bulk_user_ids(_), do: []
+
+  @default_throttle_seconds 2
+  @max_throttle_seconds 300
+
+  defp parse_throttle_seconds(nil), do: @default_throttle_seconds
+
+  defp parse_throttle_seconds(value) when is_binary(value) do
+    case value |> String.trim() |> Integer.parse() do
+      {n, ""} when n >= 0 and n <= @max_throttle_seconds -> n
+      _ -> @default_throttle_seconds
+    end
+  end
+
+  defp parse_throttle_seconds(_), do: @default_throttle_seconds
 
   def create_token(conn, %{"id" => id, "group_tournament_token" => token_params}) do
     group_tournament = Context.get_group_tournament!(id)

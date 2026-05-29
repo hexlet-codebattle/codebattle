@@ -218,6 +218,337 @@
   </div>
 
   <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <h3 class="text-white">Bulk Add Users</h3>
+    <p class="cb-text small mb-3">
+      Paste user IDs (comma, space, or newline separated). For each existing user, the same
+      add-user flow runs as the single "Add User" form above: the user is linked to the
+      tournament and a player record is created/updated with <code>lang: "js"</code>
+      and <code>state: "active"</code>. Missing IDs are reported.
+    </p>
+    <form
+      action={Routes.admin_group_tournament_path(@conn, :bulk_add_users, @group_tournament)}
+      method="post"
+    >
+      <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+      <div class="form-group mb-3">
+        <label class="text-white">User IDs</label>
+        <textarea
+          name="bulk_add_users[user_ids]"
+          rows="5"
+          class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          placeholder="e.g. 101, 102, 103"
+          required
+        ></textarea>
+      </div>
+      <button
+        type="submit"
+        class="btn btn-success text-white cb-rounded"
+        data-confirm="Add all these users to the tournament?"
+      >
+        Bulk Add Users
+      </button>
+    </form>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
+    <h3 class="text-white mb-3">Bulk External Operations</h3>
+    <p class="cb-text small mb-4">
+      All operations are dispatched through Oban with per-user retries
+      (<code>max_attempts: 5</code>). Each job is independent — a failure for one user does
+      not block the rest, and successes are not re-run.
+    </p>
+
+    <div class="mb-4">
+      <h4 class="text-white">Setup (repo + dev role + secret)</h4>
+      <p class="cb-text small mb-3">
+        Paste user IDs (comma, space, or newline separated). For each user an
+        <code>ExternalSetupWorker</code>
+        job is enqueued that idempotently creates the repo from the tournament template,
+        grants the developer role, and upserts the auth-token secret. Jobs are staggered by
+        the throttle delay.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :bulk_external_setup, @group_tournament)}
+        method="post"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-3">
+          <label class="text-white">User IDs</label>
+          <textarea
+            name="bulk_setup[user_ids]"
+            rows="5"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+            placeholder="e.g. 101, 102, 103"
+            required
+          ></textarea>
+        </div>
+        <div class="form-group mb-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds between jobs)</label>
+          <input
+            type="number"
+            name="bulk_setup[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-success text-white cb-rounded"
+          data-confirm="Enqueue bulk external setup jobs for these users?"
+        >
+          Enqueue Bulk Setup
+        </button>
+      </form>
+    </div>
+
+    <hr class="cb-border-color" />
+
+    <div class="mb-4">
+      <h4 class="text-white">Hide Repos</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>RepoHideWorker</code>
+        per tournament user. Each job calls <code>/repos/hide</code>
+        for that user's repo, retrying independently on failure.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :hide_repos, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-warning cb-rounded"
+          data-confirm="Enqueue hide-repo jobs for every tournament user?"
+        >
+          Enqueue Hide Repos
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-white">Unveil Repos</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>RepoUnveilWorker</code>
+        per tournament user. Restores visibility for hidden repositories.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :unveil_repos, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-success cb-rounded"
+          data-confirm="Enqueue unveil-repo jobs for every tournament user?"
+        >
+          Enqueue Unveil Repos
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-white">Occupy Seats</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>SeatOccupyWorker</code>
+        per tournament user. Each job calls <code>/code-assist-workplaces/occupy-bulk</code>
+        for that user. Skips users whose <code>workplace_state</code>
+        is already <code>completed</code>.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :occupy_seats, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-success cb-rounded"
+          data-confirm="Enqueue occupy-seat jobs for every tournament user?"
+        >
+          Enqueue Occupy Seats
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-white">Release Seats</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>SeatReleaseWorker</code>
+        per tournament user. Releases the code-assist seat — skips users whose
+        <code>release_state</code>
+        is already <code>completed</code>.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :release_seats, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-warning cb-rounded"
+          data-confirm="Enqueue release-seat jobs for every tournament user?"
+        >
+          Enqueue Release Seats
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-white">Remove Dev Roles</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>DevRoleRemoveWorker</code>
+        per tournament user. Removes the developer role on each user's repo. Skips users
+        whose <code>dev_role_removal_state</code>
+        is already <code>completed</code>.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :remove_dev_roles, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-warning cb-rounded"
+          data-confirm="Enqueue remove-dev-role jobs for every tournament user?"
+        >
+          Enqueue Remove Dev Roles
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h4 class="text-white">Add Viewer Roles</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>ViewerRoleAddWorker</code>
+        per tournament user. Grants the viewer role on each user's repo. Skips users whose
+        <code>viewer_role_state</code>
+        is already <code>completed</code>.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :add_viewer_roles, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-success cb-rounded"
+          data-confirm="Enqueue add-viewer-role jobs for every tournament user?"
+        >
+          Enqueue Add Viewer Roles
+        </button>
+      </form>
+    </div>
+
+    <div class="mb-2">
+      <h4 class="text-white">Delete Repos</h4>
+      <p class="cb-text small mb-3">
+        Enqueue one <code>RepoDeleteWorker</code>
+        per tournament user. <strong class="text-danger">Destructive</strong>
+        — each job calls <code>DELETE /repos/{"{org}/{repo}"}</code>
+        with <code>silent=true</code>.
+      </p>
+      <form
+        action={Routes.admin_group_tournament_path(@conn, :delete_repos, @group_tournament)}
+        method="post"
+        class="d-flex align-items-end flex-wrap"
+      >
+        <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Throttle (seconds)</label>
+          <input
+            type="number"
+            name="bulk_repo[throttle_seconds]"
+            value="2"
+            min="0"
+            max="300"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-outline-danger cb-rounded"
+          data-confirm="Permanently enqueue DELETE-repo jobs for every tournament user? This cannot be undone."
+        >
+          Enqueue Delete Repos
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="cb-bg-highlight-panel cb-border-color border cb-rounded p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h3 class="text-white mb-0">Tournament Users</h3>
       <span class="cb-text">{length(@tournament_users)} users with access</span>
