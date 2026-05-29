@@ -76,6 +76,15 @@
             data: [confirm: "Finish this group tournament now?"],
             class: "btn btn-success text-white cb-rounded"
           )}
+          {link("Force Finish Break",
+            to: Routes.admin_group_tournament_path(@conn, :force_finish_break, @group_tournament),
+            method: :post,
+            data: [
+              confirm:
+                "End the current break and start the next round now with the same slices?"
+            ],
+            class: "btn btn-outline-warning cb-rounded ml-2"
+          )}
         <% end %>
         {link("Cancel",
           to: Routes.admin_group_tournament_path(@conn, :cancel, @group_tournament),

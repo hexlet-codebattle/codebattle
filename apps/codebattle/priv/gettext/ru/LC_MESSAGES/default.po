@@ -845,7 +845,7 @@ msgid "Loading next game"
 msgstr "Ожидайте следующую игру"
 
 msgid "Tournament is over"
-msgstr "Турнир завершен"
+msgstr "Раунд с ИИ-ассистентом скоро начнется"
 
 msgid "Round is over, wait for the next round"
 msgstr "Задача решена, дождись следующую"

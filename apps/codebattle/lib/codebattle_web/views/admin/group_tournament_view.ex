@@ -14,9 +14,30 @@ defmodule CodebattleWeb.Admin.GroupTournamentView do
   end
 
   def extract_run_error(%{errors: errors}), do: inspect(errors)
+
+  def extract_run_error(%{"error" => "runner_request_failed", "reason" => reason} = result) when is_binary(reason) do
+    if timeout_reason?(reason) do
+      "timeout"
+    else
+      "runner_request_failed: #{reason}#{format_status(result["status"])}"
+    end
+  end
+
+  def extract_run_error(%{"error" => "runner_request_failed", "status" => status, "body" => body}) do
+    inner = extract_run_error(body)
+    "runner_request_failed (HTTP #{status}): #{inner}"
+  end
+
   def extract_run_error(%{"body" => %{"error" => error}}) when is_binary(error), do: error
   def extract_run_error(%{"error" => error}) when is_binary(error), do: error
   def extract_run_error(_result), do: "error"
+
+  defp timeout_reason?(reason) when is_binary(reason) do
+    String.contains?(reason, "timeout")
+  end
+
+  defp format_status(nil), do: ""
+  defp format_status(status), do: " (HTTP #{status})"
 
   @doc """
   Build the show-page URL preserving existing query params, overriding any

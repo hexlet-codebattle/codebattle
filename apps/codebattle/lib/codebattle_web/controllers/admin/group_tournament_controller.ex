@@ -192,6 +192,32 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     end
   end
 
+  def force_finish_break(conn, %{"id" => id}) do
+    :ok = Context.ensure_server_started(id)
+
+    case Server.force_finish_break(id) do
+      {:ok, group_tournament} ->
+        conn
+        |> put_flash(:info, "Break finished — next round started with the same slices.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, group_tournament))
+
+      {:error, :not_in_break} ->
+        conn
+        |> put_flash(:error, "Tournament is not currently in a break.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, id))
+
+      {:error, :invalid_state} ->
+        conn
+        |> put_flash(:error, "Break can only be force-finished while the tournament is active.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :show, id))
+
+      _ ->
+        conn
+        |> put_flash(:error, "Group tournament not found.")
+        |> redirect(to: Routes.admin_group_tournament_path(conn, :index))
+    end
+  end
+
   def cancel(conn, %{"id" => id}) do
     :ok = Context.ensure_server_started(id)
 

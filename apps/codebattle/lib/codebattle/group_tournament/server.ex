@@ -72,6 +72,12 @@ defmodule Codebattle.GroupTournament.Server do
     :exit, _ -> {:error, :not_found}
   end
 
+  def force_finish_break(id) do
+    GenServer.call(server_name(id), :force_finish_break, 30_000)
+  catch
+    :exit, _ -> {:error, :not_found}
+  end
+
   @impl true
   def init(group_tournament_id) do
     group_tournament = group_tournament_id |> Context.get_group_tournament!() |> Map.put(:is_live, true)
@@ -225,6 +231,43 @@ defmodule Codebattle.GroupTournament.Server do
       |> Map.put(:group_tournament, updated)
 
     {:reply, {:ok, updated}, next_state}
+  end
+
+  def handle_call(
+        :force_finish_break,
+        _from,
+        %{group_tournament: %{state: "active", last_round_started_at: started_at} = group_tournament} = state
+      )
+      when not is_nil(started_at) do
+    now = NaiveDateTime.utc_now(:second)
+
+    if NaiveDateTime.after?(started_at, now) do
+      # We are inside the inter-round break (last_round_started_at is in the
+      # future). Reset it to now and reschedule the round-finish timer for the
+      # standard round timeout, keeping the same slices.
+      updated =
+        group_tournament
+        |> GroupTournament.changeset(%{last_round_started_at: now})
+        |> Repo.update!()
+        |> Repo.preload([:creator, :group_task, players: [:user]])
+        |> Map.put(:is_live, true)
+
+      broadcast_status_update(updated)
+
+      next_state =
+        state
+        |> cancel_finish_timer()
+        |> Map.put(:group_tournament, updated)
+        |> schedule_round_finish(updated)
+
+      {:reply, {:ok, updated}, next_state}
+    else
+      {:reply, {:error, :not_in_break}, state}
+    end
+  end
+
+  def handle_call(:force_finish_break, _from, state) do
+    {:reply, {:error, :invalid_state}, state}
   end
 
   def handle_call({:update, group_tournament}, _from, state) do

@@ -145,6 +145,13 @@ defmodule CodebattleWeb.Router do
       as: :admin_group_tournament
     )
 
+    post(
+      "/group_tournaments/:id/force_finish_break",
+      CodebattleWeb.Admin.GroupTournamentController,
+      :force_finish_break,
+      as: :admin_group_tournament
+    )
+
     post("/group_tournaments/:id/cancel", CodebattleWeb.Admin.GroupTournamentController, :cancel,
       as: :admin_group_tournament
     )
