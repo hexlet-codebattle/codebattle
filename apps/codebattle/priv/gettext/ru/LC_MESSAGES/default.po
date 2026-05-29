@@ -1771,7 +1771,7 @@ msgid "Fullscreen"
 msgstr "Полный экран"
 
 msgid "Your next step is the AI-round group tournament. Click the button below to continue."
-msgstr "Теперь переходи к финальной задаче квалификации — её можно решить с AI-ассистентом на платформе SourceCraft. После этого квалификация будет полностью завершена."
+msgstr "Теперь переходи к задаче с AI-ассистентом на платформе SourceCraft."
 
 msgid "Go to AI-round group tournament"
 msgstr "Перейти к задаче"

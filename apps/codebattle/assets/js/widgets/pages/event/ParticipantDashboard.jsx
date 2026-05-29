@@ -38,6 +38,7 @@ function ParticipantDashboard() {
       stage.tournamentFinished &&
       stage.tournamentId &&
       stage.groupTournamentId &&
+      stage.userStatus !== "completed" &&
       !stage.groupTournamentFinished,
   );
 
@@ -136,7 +137,7 @@ function ParticipantDashboard() {
                           <a
                             type="button"
                             className="btn btn-success rounded-pill px-4"
-                            href={`/tournaments/${stage.tournamentId}`}
+                            href={`/tournaments/${stage.tournamentId}?auto_join=1`}
                           >
                             {i18n.t(stage.actionButtonText)}
                           </a>

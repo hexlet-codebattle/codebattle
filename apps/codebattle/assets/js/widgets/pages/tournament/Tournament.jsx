@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 
 import cn from "classnames";
 import has from "lodash/has";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import CustomEventStylesContext from "../../components/CustomEventStylesContext";
 import TournamentStates from "../../config/tournament";
 import { connectToChat } from "../../middlewares/Chat";
-import { connectToTournament } from "../../middlewares/Tournament";
+import { connectToTournament, joinTournament } from "../../middlewares/Tournament";
 import { connectToTournament as connectToTournamentAdmin } from "../../middlewares/TournamentAdmin";
 import * as selectors from "../../selectors";
 import { actions } from "../../slices";
@@ -178,6 +178,37 @@ function Tournament() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const autoJoinAttemptedRef = useRef(false);
+  useEffect(() => {
+    if (autoJoinAttemptedRef.current) return;
+    if (!searchParams.has("auto_join")) return;
+    if (!tournament?.channel?.online) return;
+    if (!tournament?.id || !currentUserId || isGuest) return;
+    const joinable = [TournamentStates.waitingParticipants, TournamentStates.active].includes(
+      tournament.state,
+    );
+    if (!joinable) return;
+    if (tournament.players && tournament.players[currentUserId]) {
+      autoJoinAttemptedRef.current = true;
+      return;
+    }
+
+    autoJoinAttemptedRef.current = true;
+    joinTournament();
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("auto_join");
+    window.history.replaceState({}, "", url.toString());
+  }, [
+    tournament?.id,
+    tournament.state,
+    tournament?.channel?.online,
+    tournament.players,
+    currentUserId,
+    isGuest,
+    searchParams,
+  ]);
 
   useEffect(() => {
     if (!canModerate) {
