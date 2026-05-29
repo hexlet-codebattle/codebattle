@@ -713,7 +713,7 @@ defmodule Codebattle.ExternalPlatform do
 
   defp do_repos_visibility(action, repo_ids) do
     body = %{repo_ids: repo_ids}
-    url = "#{external_platform_service_url()}/repos/#{action}"
+    url = external_platform_url("repos", action)
 
     req_opts =
       Keyword.merge(
@@ -795,6 +795,16 @@ defmodule Codebattle.ExternalPlatform do
   defp external_platform_service_url do
     Application.get_env(:codebattle, :external_platform_service_url)
   end
+
+  defp external_platform_url(segments) when is_list(segments) do
+    path = Enum.map_join(segments, "/", &to_string/1)
+
+    external_platform_service_url()
+    |> String.trim_trailing("/")
+    |> Kernel.<>("/#{path}")
+  end
+
+  defp external_platform_url(segment, rest), do: external_platform_url([segment, rest])
 
   defp default_org_slug do
     Application.get_env(:codebattle, :external_platform_org_slug)

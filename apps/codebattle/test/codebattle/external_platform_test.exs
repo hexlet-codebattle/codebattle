@@ -28,4 +28,36 @@ defmodule Codebattle.ExternalPlatformTest do
     assert {:error, {:request_exception, message}} = ExternalPlatform.create_invite("alice")
     assert message =~ "scheme is required"
   end
+
+  test "unveil_repos sends repo_ids as a JSON object to the normalized endpoint" do
+    Application.put_env(:codebattle, :external_platform_adapter, nil)
+    Application.put_env(:codebattle, :external_platform_service_url, "https://ext.test/")
+    Application.put_env(:codebattle, :auth_req_options, plug: {Req.Test, Codebattle.Auth})
+
+    test_pid = self()
+
+    Req.Test.stub(Codebattle.Auth, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+
+      send(test_pid, {
+        :request,
+        conn.method,
+        conn.request_path,
+        Plug.Conn.get_req_header(conn, "content-type"),
+        body
+      })
+
+      Req.Test.json(conn, %{"ok" => true})
+    end)
+
+    assert {:ok, %{"ok" => true}} = ExternalPlatform.unveil_repos(["repo-1", "repo-2"])
+
+    assert_receive {
+      :request,
+      "POST",
+      "/repos/unveil",
+      ["application/json"],
+      ~s({"repo_ids":["repo-1","repo-2"]})
+    }
+  end
 end
