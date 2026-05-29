@@ -367,6 +367,9 @@
           <span class="cb-ticker-line cb-ticker-line-tail">{@ticker_text}</span>
         </div>
       <% end %>
+      <%= unless @current_user.is_guest do %>
+        <div id="main-channel-root" class="d-none"></div>
+      <% end %>
       <div class="content bg-light"></div>
       <main class="d-lg-flex">
         {@inner_content}

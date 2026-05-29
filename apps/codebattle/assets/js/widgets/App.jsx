@@ -62,6 +62,7 @@ const GameMl = React.lazy(() => import("./pages/gameMl/GameMlPage"));
 const Seasons = React.lazy(() => import("./pages/seasonsPage"));
 const SeasonShow = React.lazy(() => import("./pages/seasonsPage/SeasonShowPage"));
 const InvitesContainer = React.lazy(() => import("./components/InvitesContainer"));
+const MainChannelContainer = React.lazy(() => import("./components/MainChannelContainer"));
 const LobbyWidget = React.lazy(() => import("./pages/lobby"));
 const OnlineContainer = React.lazy(() => import("./components/OnlineContainer"));
 const RatingList = React.lazy(() => import("./pages/rating"));
@@ -94,6 +95,18 @@ export function Invites() {
   return (
     <Provider store={store}>
       <InvitesContainer />
+    </Provider>
+  );
+}
+
+export function MainChannel() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <MainChannelContainer />
+        </Suspense>
+      </PersistGate>
     </Provider>
   );
 }

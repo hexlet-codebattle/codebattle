@@ -102,6 +102,11 @@ defmodule CodebattleWeb.MainChannelTest do
 
     push(socket, "user:unfollow", %{user_id: user.id})
 
+    assert_receive %Reply{
+      topic: "main",
+      payload: %{}
+    }
+
     Game.Context.create_game(%{players: [user]})
     :timer.sleep(100)
 

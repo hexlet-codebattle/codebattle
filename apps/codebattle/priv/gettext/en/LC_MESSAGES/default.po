@@ -257,8 +257,8 @@ msgstr "Tests failed"
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 msgstr "Passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 
-msgid "Yay! All tests passed!!111"
-msgstr "Yay! All tests passed!!111"
+msgid "Yay! All tests passed!"
+msgstr "Yay! All tests passed!"
 
 msgid "Success Test Message"
 msgstr "Yay! All tests passed!"
@@ -1099,6 +1099,9 @@ msgstr "Could not retrieve your external platform credentials. Please contact su
 
 msgid "Group Tournament"
 msgstr "Group Tournament"
+
+msgid "Support"
+msgstr "Support"
 
 msgid "Execution History"
 msgstr "Execution History"

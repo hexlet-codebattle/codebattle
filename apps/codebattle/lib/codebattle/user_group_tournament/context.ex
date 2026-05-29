@@ -18,7 +18,10 @@ defmodule Codebattle.UserGroupTournament.Context do
   @spec get(pos_integer(), pos_integer()) :: UserGroupTournament.t() | nil
   def get(user_id, group_tournament_id) do
     UserGroupTournament
-    |> where([record], record.user_id == ^user_id and record.group_tournament_id == ^group_tournament_id)
+    |> where(
+      [record],
+      record.user_id == ^user_id and record.group_tournament_id == ^group_tournament_id
+    )
     |> Repo.one()
   end
 
@@ -90,7 +93,8 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   def repo_slug_for(_, %GroupTournament{} = group_tournament), do: group_tournament.slug
 
-  @spec list_tokens(GroupTournament.t() | pos_integer(), keyword()) :: list(UserGroupTournament.t())
+  @spec list_tokens(GroupTournament.t() | pos_integer(), keyword()) ::
+          list(UserGroupTournament.t())
   def list_tokens(group_tournament_or_id, opts \\ [])
 
   def list_tokens(%GroupTournament{id: id}, opts), do: list_tokens(id, opts)
@@ -99,7 +103,10 @@ defmodule Codebattle.UserGroupTournament.Context do
     limit = Keyword.get(opts, :limit, 100)
 
     UserGroupTournament
-    |> where([record], record.group_tournament_id == ^group_tournament_id and not is_nil(record.token))
+    |> where(
+      [record],
+      record.group_tournament_id == ^group_tournament_id and not is_nil(record.token)
+    )
     |> preload(:user)
     |> order_by([record], desc: record.updated_at, desc: record.id)
     |> limit(^limit)
@@ -117,7 +124,10 @@ defmodule Codebattle.UserGroupTournament.Context do
       nil ->
         %UserGroupTournament{}
         |> UserGroupTournament.changeset(
-          Map.merge(defaults(%User{id: user_id}, %GroupTournament{id: group_tournament_id}), attrs)
+          Map.merge(
+            defaults(%User{id: user_id}, %GroupTournament{id: group_tournament_id}),
+            attrs
+          )
         )
         |> Repo.insert()
 
@@ -280,7 +290,11 @@ defmodule Codebattle.UserGroupTournament.Context do
     case ExternalPlatform.occupy_code_assist_workplaces(platform_user_ids) do
       {:ok, response} ->
         Enum.each(paired_records, fn record ->
-          update!(record, %{workplace_state: "completed", workplace_response: response, last_error: %{}})
+          update!(record, %{
+            workplace_state: "completed",
+            workplace_response: response,
+            last_error: %{}
+          })
         end)
 
         :ok
@@ -343,7 +357,11 @@ defmodule Codebattle.UserGroupTournament.Context do
     case ExternalPlatform.release_code_assist_workplaces(platform_user_ids) do
       {:ok, response} ->
         Enum.each(paired_records, fn record ->
-          update!(record, %{release_state: "completed", release_response: response, last_error: %{}})
+          update!(record, %{
+            release_state: "completed",
+            release_response: response,
+            last_error: %{}
+          })
         end)
 
         :ok
@@ -467,11 +485,19 @@ defmodule Codebattle.UserGroupTournament.Context do
   end
 
   defp fail_step(%UserGroupTournament{} = record, :secret, reason) do
-    update!(record, %{state: "failed", secret_state: "failed", last_error: serialize_error(reason)})
+    update!(record, %{
+      state: "failed",
+      secret_state: "failed",
+      last_error: serialize_error(reason)
+    })
   end
 
   defp fail_step(%UserGroupTournament{} = record, :workplace, reason) do
-    update!(record, %{state: "failed", workplace_state: "failed", last_error: serialize_error(reason)})
+    update!(record, %{
+      state: "failed",
+      workplace_state: "failed",
+      last_error: serialize_error(reason)
+    })
   end
 
   defp fail_step(%UserGroupTournament{} = record, :release, reason) do
@@ -540,6 +566,7 @@ defmodule Codebattle.UserGroupTournament.Context do
   def ensure_platform_identity(%User{}), do: {:error, :missing_external_platform_identity}
 
   def can_lookup_platform_identity?(%User{external_platform_id: id}) when is_binary(id) and id != "", do: true
+
   def can_lookup_platform_identity?(_), do: false
 
   defp target_org_slug do
@@ -580,7 +607,11 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   @spec enqueue_bulk_unveil(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_unveil(%GroupTournament{} = group_tournament, batch_size \\ @default_hide_unveil_chunk_size) do
-    enqueue_repo_id_chunks(group_tournament, batch_size, &Codebattle.Workers.RepoUnveilWorker.new/2)
+    enqueue_repo_id_chunks(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.RepoUnveilWorker.new/2
+    )
   end
 
   defp enqueue_repo_id_chunks(%GroupTournament{} = group_tournament, batch_size, build_job) do
@@ -602,27 +633,47 @@ defmodule Codebattle.UserGroupTournament.Context do
 
   @spec enqueue_bulk_delete(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_delete(%GroupTournament{} = group_tournament, batch_size) do
-    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.RepoDeleteWorker.new/2)
+    enqueue_per_user_jobs(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.RepoDeleteWorker.new/2
+    )
   end
 
   @spec enqueue_bulk_occupy_seats(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_occupy_seats(%GroupTournament{} = group_tournament, batch_size) do
-    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.SeatOccupyWorker.new/2)
+    enqueue_per_user_jobs(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.SeatOccupyWorker.new/2
+    )
   end
 
   @spec enqueue_bulk_release_seats(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_release_seats(%GroupTournament{} = group_tournament, batch_size) do
-    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.SeatReleaseWorker.new/2)
+    enqueue_per_user_jobs(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.SeatReleaseWorker.new/2
+    )
   end
 
   @spec enqueue_bulk_remove_dev_roles(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_remove_dev_roles(%GroupTournament{} = group_tournament, batch_size) do
-    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.DevRoleRemoveWorker.new/2)
+    enqueue_per_user_jobs(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.DevRoleRemoveWorker.new/2
+    )
   end
 
   @spec enqueue_bulk_add_viewer_roles(GroupTournament.t(), pos_integer()) :: non_neg_integer()
   def enqueue_bulk_add_viewer_roles(%GroupTournament{} = group_tournament, batch_size) do
-    enqueue_per_user_jobs(group_tournament, batch_size, &Codebattle.Workers.ViewerRoleAddWorker.new/2)
+    enqueue_per_user_jobs(
+      group_tournament,
+      batch_size,
+      &Codebattle.Workers.ViewerRoleAddWorker.new/2
+    )
   end
 
   defp enqueue_per_user_jobs(%GroupTournament{} = group_tournament, batch_size, build_job) do
@@ -733,14 +784,16 @@ defmodule Codebattle.UserGroupTournament.Context do
     end
   end
 
-  defp occupy_seat_for_record(%UserGroupTournament{workplace_state: "completed"}), do: :ok
-
   defp occupy_seat_for_record(%UserGroupTournament{user: %User{} = user} = record) do
     case resolve_platform_user_id(user) do
       {:ok, platform_user_id} ->
         case ExternalPlatform.occupy_code_assist_workplaces([platform_user_id]) do
           {:ok, response} ->
-            update!(record, %{workplace_state: "completed", workplace_response: response, last_error: %{}})
+            update!(record, %{
+              workplace_state: "completed",
+              workplace_response: response,
+              last_error: %{}
+            })
 
             :ok
 
@@ -755,14 +808,16 @@ defmodule Codebattle.UserGroupTournament.Context do
     end
   end
 
-  defp release_seat_for_record(%UserGroupTournament{release_state: "completed"}), do: :ok
-
   defp release_seat_for_record(%UserGroupTournament{user: %User{} = user} = record) do
     case resolve_platform_user_id(user) do
       {:ok, platform_user_id} ->
         case ExternalPlatform.release_code_assist_workplaces([platform_user_id]) do
           {:ok, response} ->
-            update!(record, %{release_state: "completed", release_response: response, last_error: %{}})
+            update!(record, %{
+              release_state: "completed",
+              release_response: response,
+              last_error: %{}
+            })
 
             :ok
 
@@ -790,11 +845,17 @@ defmodule Codebattle.UserGroupTournament.Context do
   end
 
   defp extract_repo_url(%{"web_url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(%{web_url: repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(%{"repo_url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(%{repo_url: repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(%{"url" => repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(%{url: repo_url}) when is_binary(repo_url) and repo_url != "", do: repo_url
+
   defp extract_repo_url(_), do: nil
 
   defp serialize_error(reason) when is_map(reason), do: reason

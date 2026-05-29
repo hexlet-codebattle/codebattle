@@ -17,9 +17,9 @@ const getMessage = (status) => {
     case "failure":
       return i18n.t("Test failed");
     case "ok":
-      return i18n.t("Yay! All tests passed!!111");
+      return i18n.t("Yay! All tests passed!");
     default:
-      return i18n.t("Press Check solution or press Give up");
+      return i18n.t("Opponent tests");
   }
 };
 

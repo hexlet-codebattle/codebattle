@@ -6,6 +6,16 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
   alias Codebattle.UserGroupTournament.Context
 
   setup do
+    original_adapter = Application.get_env(:codebattle, :external_platform_adapter)
+    original_service_url = Application.get_env(:codebattle, :external_platform_service_url)
+    original_auth_req_options = Application.get_env(:codebattle, :auth_req_options)
+
+    on_exit(fn ->
+      Application.put_env(:codebattle, :external_platform_adapter, original_adapter)
+      Application.put_env(:codebattle, :external_platform_service_url, original_service_url)
+      Application.put_env(:codebattle, :auth_req_options, original_auth_req_options)
+    end)
+
     user =
       insert(:user,
         external_oauth_login: "ext-user",
@@ -79,5 +89,75 @@ defmodule Codebattle.UserGroupTournament.ContextTest do
     assert token_record
     assert is_binary(token_record.token)
     assert String.length(token_record.token) >= 16
+  end
+
+  test "occupy_user_seat calls external platform even when workplace state is completed", %{
+    user: user,
+    group_tournament: group_tournament
+  } do
+    insert_user_group_tournament(user, group_tournament, %{
+      workplace_state: "completed",
+      release_state: "completed"
+    })
+
+    Application.put_env(:codebattle, :external_platform_adapter, nil)
+    Application.put_env(:codebattle, :external_platform_service_url, "https://ext.test")
+    Application.put_env(:codebattle, :auth_req_options, plug: {Req.Test, Codebattle.Auth})
+
+    test_pid = self()
+
+    Req.Test.stub(Codebattle.Auth, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      send(test_pid, {:request, conn.method, conn.request_path, body})
+      Req.Test.json(conn, %{"status" => "ok"})
+    end)
+
+    assert :ok = Context.occupy_user_seat(user.id, group_tournament.id)
+
+    assert_receive {:request, "POST", "/code-assist-workplaces/occupy-bulk", ~s({"user_ids":["platform-user-id"]})}
+  end
+
+  test "release_user_seat calls external platform even when release state is completed", %{
+    user: user,
+    group_tournament: group_tournament
+  } do
+    insert_user_group_tournament(user, group_tournament, %{
+      workplace_state: "completed",
+      release_state: "completed"
+    })
+
+    Application.put_env(:codebattle, :external_platform_adapter, nil)
+    Application.put_env(:codebattle, :external_platform_service_url, "https://ext.test")
+    Application.put_env(:codebattle, :auth_req_options, plug: {Req.Test, Codebattle.Auth})
+
+    test_pid = self()
+
+    Req.Test.stub(Codebattle.Auth, fn conn ->
+      {:ok, body, conn} = Plug.Conn.read_body(conn)
+      send(test_pid, {:request, conn.method, conn.request_path, body})
+      Req.Test.json(conn, %{"status" => "ok"})
+    end)
+
+    assert :ok = Context.release_user_seat(user.id, group_tournament.id)
+
+    assert_receive {:request, "POST", "/code-assist-workplaces/release-bulk", ~s({"user_ids":["platform-user-id"]})}
+  end
+
+  defp insert_user_group_tournament(user, group_tournament, attrs) do
+    %UserGroupTournament{}
+    |> UserGroupTournament.changeset(
+      Map.merge(
+        %{
+          user_id: user.id,
+          group_tournament_id: group_tournament.id,
+          state: "ready",
+          repo_state: "completed",
+          role_state: "completed",
+          secret_state: "completed"
+        },
+        attrs
+      )
+    )
+    |> Repo.insert!()
   end
 end

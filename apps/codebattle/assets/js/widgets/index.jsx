@@ -11,6 +11,7 @@ import {
   HallOfFamePage,
   HeadToHeadPage,
   Invites,
+  MainChannel,
   Lobby,
   Online,
   RegistrationPage,
@@ -41,6 +42,8 @@ export const renderGameThreejsPage = (domElement) =>
 export const renderGameMlPage = (domElement) => createRoot(domElement).render(<GameMlPage />);
 export const renderHeatmapWidget = (domElement) => createRoot(domElement).render(<Heatmap />);
 export const renderInvitesWidget = (domElement) => createRoot(domElement).render(<Invites />);
+export const renderMainChannelWidget = (domElement) =>
+  createRoot(domElement).render(<MainChannel />);
 export const renderLobby = (domElement) => createRoot(domElement).render(<Lobby />);
 export const renderOnlineWidget = (domElement) => createRoot(domElement).render(<Online />);
 export const renderRegistrationPage = (domElement) =>

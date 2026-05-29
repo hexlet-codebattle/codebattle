@@ -63,9 +63,9 @@ const camelizeKeysAndDispatch = (dispatch, actionCreator) => (data) =>
   dispatch(actionCreator(camelizeKeys(data)));
 
 const redirectToNewGame = (data) => (_dispatch, getState) => {
-  const { followPaused } = getState().gameUI;
+  const { followId, followPaused } = getState().gameUI;
 
-  if (!followPaused) {
+  if (followId && !followPaused) {
     window.location.replace(makeGameUrl(data.activeGameId));
   }
 };
@@ -199,8 +199,16 @@ export const followUser = (userId) => (dispatch, getState) => {
 };
 
 export const unfollowUser = (userId) => (dispatch) => {
-  channel.push("user:unfollow", { userId });
-  camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
+  channel
+    .push("user:unfollow", { userId })
+    .receive("ok", () => {
+      camelizeKeysAndDispatch(dispatch, actions.unfollowUser)();
+    })
+    .receive("error", console.error);
+};
+
+export const pauseFollow = (userId) => () => {
+  channel.push("user:unfollow", { userId }).receive("error", console.error);
 };
 
 export const reportOnPlayer = (playerId, gameId, onSuccess, onError) => (dispatch) => {

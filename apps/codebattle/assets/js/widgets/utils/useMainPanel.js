@@ -13,7 +13,7 @@ const useMainPanel = ({
 
   const initialTab = () => {
     if (status === "finished") return "leaderboard";
-    if (status === "active") return "run";
+    if (status === "active" && run) return "run";
     return "description";
   };
 

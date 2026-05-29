@@ -72,7 +72,7 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_in("user:unfollow", %{"user_id" => user_id}, socket) do
     Codebattle.PubSub.unsubscribe("user:#{user_id}")
-    {:noreply, socket}
+    {:reply, {:ok, %{}}, socket}
   end
 
   def handle_in("change_presence_state", %{"state" => state}, socket) do

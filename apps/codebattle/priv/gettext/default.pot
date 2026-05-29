@@ -259,7 +259,7 @@ msgstr ""
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 msgstr ""
 
-msgid "Yay! All tests passed!!111"
+msgid "Yay! All tests passed!"
 msgstr ""
 
 msgid "Success Test Message"

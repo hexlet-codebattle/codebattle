@@ -45,6 +45,7 @@ import {
   renderHeadToHeadPage,
   renderHeatmapWidget,
   renderInvitesWidget,
+  renderMainChannelWidget,
   renderLobby,
   renderOnlineWidget,
   renderRegistrationPage,
@@ -111,6 +112,7 @@ const gameThreejsRoot = document.getElementById("game-threejs-root");
 const heatmapRoot = document.getElementById("heatmap-root");
 const onlineRoot = document.getElementById("online-root");
 const invitesRoot = document.getElementById("invites-root");
+const mainChannelRoot = document.getElementById("main-channel-root");
 const streamRoot = document.getElementById("stream-classic-root");
 const tournamentThreejsStreamRoot = document.getElementById("tournament-threejs-stream-root");
 const lobbyRoot = document.getElementById("lobby-root");
@@ -131,6 +133,10 @@ const headToHeadRoot = document.getElementById("head-to-head-root");
 const seasonsRoot = document.getElementById("seasons-root");
 const seasonShowRoot = document.getElementById("season-show-root");
 const taskPreviewRoot = document.getElementById("task-preview-root");
+
+if (mainChannelRoot) {
+  renderMainChannelWidget(mainChannelRoot);
+}
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);

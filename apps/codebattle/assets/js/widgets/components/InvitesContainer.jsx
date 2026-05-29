@@ -6,15 +6,13 @@ import Popover from "react-bootstrap/Popover";
 import { useDispatch, useSelector } from "react-redux";
 
 import OverlayTrigger from "@/components/OverlayTriggerCompat";
-import { unfollowUser, followUser } from "@/middlewares/Main";
+import { unfollowUser, followUser, pauseFollow } from "@/middlewares/Main";
 
 import i18n from "../../i18n";
 import { initInvites } from "../middlewares/Invite";
-import initPresence from "../middlewares/Main";
 import * as selectors from "../selectors";
 import { actions } from "../slices";
 import { selectors as invitesSelectors } from "../slices/invites";
-import { isSafari } from "../utils/browser";
 
 import InvitesList from "./InvitesList";
 
@@ -39,16 +37,13 @@ function InvitesContainer() {
 
     if (followPaused) {
       dispatch(followUser(followId));
+    } else {
+      dispatch(pauseFollow(followId));
     }
   }, [dispatch, followPaused, followId]);
 
   useEffect(() => {
     dispatch(initInvites(currentUserId));
-    const channel = initPresence(followId)(dispatch);
-
-    return () => {
-      channel.leave();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -70,7 +65,7 @@ function InvitesContainer() {
 
   return (
     <OverlayTrigger
-      trigger={isSafari() ? "click" : "focus"}
+      trigger="click"
       key="codebattle-invites"
       placement={invites.length === 0 ? "bottom-end" : "bottom"}
       show={defaultShow}
