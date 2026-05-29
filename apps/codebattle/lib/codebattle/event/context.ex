@@ -124,7 +124,7 @@ defmodule Codebattle.Event.Context do
           event_slug :: String.t(),
           stage_slug :: String.t()
         ) ::
-          {:ok, Tournament.t()} | {:error, String.t()}
+          {:ok, Tournament.t() | integer()} | {:error, String.t()}
   def start_stage_for_user(user, event_slug, stage_slug) do
     event = Event.get_by_slug!(event_slug)
     event_stage = Event.get_stage(event, stage_slug)
@@ -185,13 +185,15 @@ defmodule Codebattle.Event.Context do
         tournament_id: tournament_id,
         status: :active,
         playing_type: :global
-      } = event_stage ->
+      } = event_stage
+      when is_integer(tournament_id) ->
         Server.handle_event(tournament_id, :join, %{user: user})
 
         UserEvent.mark_stage_as_started(
           user_event,
           event_stage.slug,
-          tournament_id
+          tournament_id,
+          event_stage.group_tournament_id
         )
 
         {:ok, tournament_id}

@@ -164,6 +164,72 @@ defmodule CodebattleWeb.PublicEventControllerTest do
       assert redirected_to(conn) == Routes.public_event_path(conn, :show, event.slug)
     end
 
+    test "redirects to configured global tournament and stores configured group tournament", %{
+      conn: conn,
+      user: user
+    } do
+      creator = insert(:user)
+      group_tournament = insert(:group_tournament)
+
+      {:ok, tournament} =
+        Tournament.Context.create(%{
+          "starts_at" => "2026-01-01T12:00",
+          "name" => "Global qualification",
+          "description" => "Global qualification tournament",
+          "user_timezone" => "Etc/UTC",
+          "level" => "easy",
+          "creator" => creator,
+          "break_duration_seconds" => 0,
+          "type" => "swiss",
+          "state" => "waiting_participants",
+          "players_limit" => 200
+        })
+
+      event =
+        insert(:event,
+          slug: "global-q",
+          stages: [
+            %{
+              name: "Global Qualification",
+              slug: "global-q",
+              status: :active,
+              type: :tournament,
+              playing_type: :global,
+              tournament_id: tournament.id,
+              group_tournament_id: group_tournament.id
+            }
+          ]
+        )
+
+      {:ok, _user_event} =
+        UserEvent.create(%{
+          user_id: user.id,
+          event_id: event.id,
+          stages: [%{slug: "global-q", status: :pending}]
+        })
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> post(Routes.public_event_path(conn, :stage, event.slug, %{stage_slug: "global-q"}))
+
+      assert redirected_to(conn) == Routes.tournament_path(conn, :show, tournament.id)
+
+      assert [user_event] = UserEvent.get_all()
+
+      assert [
+               %{
+                 slug: "global-q",
+                 status: :started,
+                 tournament_id: tournament_id,
+                 group_tournament_id: group_tournament_id
+               }
+             ] = user_event.stages
+
+      assert tournament_id == tournament.id
+      assert group_tournament_id == group_tournament.id
+    end
+
     test "shows error when user has already passed the stage", %{
       conn: conn,
       user: user,

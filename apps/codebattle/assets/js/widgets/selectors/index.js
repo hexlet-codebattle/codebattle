@@ -521,17 +521,22 @@ export const participantDataSelector = (state) => {
       const groupTournamentSeconds = userStage?.groupTournamentTimeSpentInSeconds || 0;
       const aiScoreRaw = userStage?.groupTournamentScore;
       const totalScoreRaw = userStage?.groupTournamentTotalScore;
+      const tournamentId = userStage?.tournamentId || eventStage.tournamentId;
+      const groupTournamentId = userStage?.groupTournamentId || eventStage.groupTournamentId;
+      const isGlobalTournamentStage =
+        eventStage.type === "tournament" && eventStage.playingType === "global";
+      const hasConfiguredTournament = !isGlobalTournamentStage || !!tournamentId;
 
       return {
         status: eventStage.status,
         userStatus: userStage?.status,
-        tournamentId: userStage?.tournamentId,
-        groupTournamentId: userStage?.groupTournamentId,
+        tournamentId,
+        groupTournamentId,
         tournamentFinished: !!userStage?.tournamentFinished,
         groupTournamentFinished: !!userStage?.groupTournamentFinished,
         name: eventStage.name,
         dates: eventStage.dates,
-        isStageAvailableForUser,
+        isStageAvailableForUser: isStageAvailableForUser && hasConfiguredTournament,
         isUserPassedStage,
         slug: eventStage.slug,
         placeInTotalRank: userStage?.placeInTotalRank ? userStage.placeInTotalRank : "-",

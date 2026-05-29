@@ -35,7 +35,10 @@ function ParticipantDashboard() {
 
   const pendingGroupTournamentStage = participantData?.stages?.find(
     (stage) =>
-      stage.tournamentFinished && stage.groupTournamentId && !stage.groupTournamentFinished,
+      stage.tournamentFinished &&
+      stage.tournamentId &&
+      stage.groupTournamentId &&
+      !stage.groupTournamentFinished,
   );
 
   const pendingGroupTournamentId = pendingGroupTournamentStage?.groupTournamentId;
