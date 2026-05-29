@@ -295,7 +295,7 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp enqueue_bulk_op(conn, id, params, action) do
     group_tournament = Context.get_group_tournament!(id)
-    batch_size = parse_batch_size(get_in(params, ["bulk_repo", "batch_size"]))
+    batch_size = parse_bulk_op_batch_size(action, get_in(params, ["bulk_repo", "batch_size"]))
     {label, unit, enqueued, rate_note} = run_bulk_op(action, group_tournament, batch_size)
     {kind, message} = bulk_op_flash(label, unit, enqueued, rate_note)
 
@@ -312,11 +312,11 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
     add_viewer_roles: {"add-viewer-role", &UserGroupTournamentContext.enqueue_bulk_add_viewer_roles/2}
   }
 
-  defp run_bulk_op(:hide, gt, _batch_size),
-    do: {"hide", "repos", UserGroupTournamentContext.enqueue_bulk_hide(gt), :chunked}
+  defp run_bulk_op(:hide, gt, chunk_size),
+    do: {"hide", "repos", UserGroupTournamentContext.enqueue_bulk_hide(gt, chunk_size), {:chunked, chunk_size}}
 
-  defp run_bulk_op(:unveil, gt, _batch_size),
-    do: {"unveil", "repos", UserGroupTournamentContext.enqueue_bulk_unveil(gt), :chunked}
+  defp run_bulk_op(:unveil, gt, chunk_size),
+    do: {"unveil", "repos", UserGroupTournamentContext.enqueue_bulk_unveil(gt, chunk_size), {:chunked, chunk_size}}
 
   defp run_bulk_op(action, gt, batch_size) do
     {label, fun} = Map.fetch!(@bulk_per_user_ops, action)
@@ -325,8 +325,8 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp bulk_op_flash(label, _unit, 0, _rate_note), do: {:error, "Nothing to enqueue for #{label}."}
 
-  defp bulk_op_flash(label, unit, enqueued, :chunked),
-    do: {:info, "Enqueued #{label} jobs covering #{enqueued} #{unit} (chunks of 500 per bulk call)."}
+  defp bulk_op_flash(label, unit, enqueued, {:chunked, chunk_size}),
+    do: {:info, "Enqueued #{label} jobs covering #{enqueued} #{unit} (chunks of #{chunk_size} per bulk call)."}
 
   defp bulk_op_flash(label, unit, enqueued, batch_size),
     do: {:info, "Enqueued #{label} jobs for #{enqueued} #{unit} (rate: #{batch_size} jobs/sec)."}
@@ -531,6 +531,11 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
   # even with concurrent runs from other tournaments.
   @default_batch_size 50
   @max_batch_size 100
+  @default_repo_chunk_size 500
+  @repo_chunk_sizes [1, 10, 100, 500]
+
+  defp parse_bulk_op_batch_size(action, value) when action in [:hide, :unveil], do: parse_repo_chunk_size(value)
+  defp parse_bulk_op_batch_size(_action, value), do: parse_batch_size(value)
 
   defp parse_batch_size(nil), do: @default_batch_size
 
@@ -543,6 +548,18 @@ defmodule CodebattleWeb.Admin.GroupTournamentController do
 
   defp parse_batch_size(value) when is_integer(value) and value >= 1 and value <= @max_batch_size, do: value
   defp parse_batch_size(_), do: @default_batch_size
+
+  defp parse_repo_chunk_size(nil), do: @default_repo_chunk_size
+
+  defp parse_repo_chunk_size(value) when is_binary(value) do
+    case value |> String.trim() |> Integer.parse() do
+      {n, ""} when n in @repo_chunk_sizes -> n
+      _ -> @default_repo_chunk_size
+    end
+  end
+
+  defp parse_repo_chunk_size(value) when value in @repo_chunk_sizes, do: value
+  defp parse_repo_chunk_size(_), do: @default_repo_chunk_size
 
   def create_token(conn, %{"id" => id, "group_tournament_token" => token_params}) do
     group_tournament = Context.get_group_tournament!(id)

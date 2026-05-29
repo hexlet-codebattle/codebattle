@@ -567,26 +567,28 @@ defmodule Codebattle.UserGroupTournament.Context do
     |> Enum.uniq()
   end
 
-  @hide_unveil_chunk_size 500
+  @default_hide_unveil_chunk_size 500
 
   @doc """
-  Enqueues `RepoHideWorker` jobs in chunks of #{@hide_unveil_chunk_size} repo IDs each.
+  Enqueues `RepoHideWorker` jobs in chunks of repo IDs.
   Returns the number of repo IDs that were enqueued (not the number of jobs).
   """
-  @spec enqueue_bulk_hide(GroupTournament.t()) :: non_neg_integer()
-  def enqueue_bulk_hide(%GroupTournament{} = group_tournament) do
-    enqueue_repo_id_chunks(group_tournament, &Codebattle.Workers.RepoHideWorker.new/2)
+  @spec enqueue_bulk_hide(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_hide(%GroupTournament{} = group_tournament, batch_size \\ @default_hide_unveil_chunk_size) do
+    enqueue_repo_id_chunks(group_tournament, batch_size, &Codebattle.Workers.RepoHideWorker.new/2)
   end
 
-  @spec enqueue_bulk_unveil(GroupTournament.t()) :: non_neg_integer()
-  def enqueue_bulk_unveil(%GroupTournament{} = group_tournament) do
-    enqueue_repo_id_chunks(group_tournament, &Codebattle.Workers.RepoUnveilWorker.new/2)
+  @spec enqueue_bulk_unveil(GroupTournament.t(), pos_integer()) :: non_neg_integer()
+  def enqueue_bulk_unveil(%GroupTournament{} = group_tournament, batch_size \\ @default_hide_unveil_chunk_size) do
+    enqueue_repo_id_chunks(group_tournament, batch_size, &Codebattle.Workers.RepoUnveilWorker.new/2)
   end
 
-  defp enqueue_repo_id_chunks(%GroupTournament{} = group_tournament, build_job) do
+  defp enqueue_repo_id_chunks(%GroupTournament{} = group_tournament, batch_size, build_job) do
+    safe_batch_size = max(batch_size, 1)
+
     group_tournament
     |> list_repo_ids()
-    |> Enum.chunk_every(@hide_unveil_chunk_size)
+    |> Enum.chunk_every(safe_batch_size)
     |> Enum.with_index()
     |> Enum.reduce(0, fn {chunk, idx}, count ->
       args = %{repo_ids: chunk, group_tournament_id: group_tournament.id}

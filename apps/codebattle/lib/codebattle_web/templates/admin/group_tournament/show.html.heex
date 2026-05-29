@@ -314,14 +314,27 @@
       <h4 class="text-white">Hide Repos</h4>
       <p class="cb-text small mb-3">
         Enqueues <code>RepoHideWorker</code>
-        jobs that batch all tournament repos into chunks of 500 per <code>/repos/hide</code>
+        jobs that batch all tournament repos into configurable chunks per <code>/repos/hide</code>
         call. One job per chunk, scheduled 1 second apart, retried by Oban on failure.
       </p>
       <form
         action={Routes.admin_group_tournament_path(@conn, :hide_repos, @group_tournament)}
         method="post"
+        class="d-flex align-items-end flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Batch size</label>
+          <select
+            name="bulk_repo[batch_size]"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          >
+            <option value="1">1 repo per call</option>
+            <option value="10">10 repos per call</option>
+            <option value="100">100 repos per call</option>
+            <option value="500" selected>500 repos per call</option>
+          </select>
+        </div>
         <button
           type="submit"
           class="btn btn-outline-warning cb-rounded"
@@ -336,15 +349,28 @@
       <h4 class="text-white">Unveil Repos</h4>
       <p class="cb-text small mb-3">
         Enqueues <code>RepoUnveilWorker</code>
-        jobs that batch all hidden tournament repos into chunks of 500 per
+        jobs that batch all hidden tournament repos into configurable chunks per
         <code>/repos/unveil</code>
         call.
       </p>
       <form
         action={Routes.admin_group_tournament_path(@conn, :unveil_repos, @group_tournament)}
         method="post"
+        class="d-flex align-items-end flex-wrap"
       >
         <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+        <div class="form-group mb-0 mr-3" style="max-width: 240px;">
+          <label class="text-white">Batch size</label>
+          <select
+            name="bulk_repo[batch_size]"
+            class="form-control cb-bg-panel cb-border-color text-white mt-2"
+          >
+            <option value="1">1 repo per call</option>
+            <option value="10">10 repos per call</option>
+            <option value="100">100 repos per call</option>
+            <option value="500" selected>500 repos per call</option>
+          </select>
+        </div>
         <button
           type="submit"
           class="btn btn-outline-success cb-rounded"
