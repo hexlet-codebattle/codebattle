@@ -33,16 +33,18 @@ function ParticipantDashboard() {
   const participantData = useSelector(participantDataSelector);
   const event = useSelector(eventSelector);
 
-  const pendingGroupTournamentStage = participantData?.stages?.find(
+  const pendingActiveStage = participantData?.stages?.find(
     (stage) =>
-      stage.tournamentFinished &&
-      stage.tournamentId &&
-      stage.groupTournamentId &&
+      stage.status === "active" &&
       stage.userStatus !== "completed" &&
-      !stage.groupTournamentFinished,
+      (stage.groupTournamentId || stage.tournamentId),
   );
 
-  const pendingGroupTournamentId = pendingGroupTournamentStage?.groupTournamentId;
+  const pendingGroupTournamentId = pendingActiveStage?.groupTournamentId;
+  const pendingTournamentId =
+    !pendingGroupTournamentId && pendingActiveStage?.tournamentId
+      ? pendingActiveStage.tournamentId
+      : null;
 
   useEffect(() => {
     if (pendingGroupTournamentId) {
@@ -125,7 +127,15 @@ function ParticipantDashboard() {
                   <div className="d-flex justify-content-center cb-custom-event-stage-action">
                     {stage.isStageAvailableForUser && stage.type === "tournament" && (
                       <div className="action-button">
-                        {stage.groupTournamentId && stage.tournamentFinished ? (
+                        {stage.userStatus === "completed" ? (
+                          <button
+                            type="button"
+                            className="btn btn-secondary rounded-pill px-4 disabled"
+                            disabled
+                          >
+                            {i18n.t(stage.actionButtonText)}
+                          </button>
+                        ) : stage.groupTournamentId ? (
                           <a
                             type="button"
                             className="btn btn-success rounded-pill px-4"

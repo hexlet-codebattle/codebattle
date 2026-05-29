@@ -1,4 +1,7 @@
 <div class="cb-custom-event-bg">
+  <%= unless @current_user.is_guest do %>
+    <div id="main-channel-root" class="d-none"></div>
+  <% end %>
   <div id="event-widget"></div>
 </div>
 <script>
