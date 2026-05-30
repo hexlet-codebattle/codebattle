@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import moment from "moment";
+import PictureInPicture from "@/components/PictureInPicture";
 import i18n from "../../../i18n";
 import useTimer from "../../utils/useTimer";
 import { isOnBreak } from "../../utils/groupTournament";
@@ -127,15 +128,77 @@ function TournamentTimer({ groupTournament }) {
   );
 }
 
+function PipTimerContent({ status, groupTournament }) {
+  const isWaiting = status === "waiting_participants";
+
+  if (status === "finished" || groupTournament?.state === "finished") {
+    return (
+      <span
+        className="border border-secondary bg-secondary text-white rounded-pill px-4 py-2 font-weight-bold"
+        style={{ fontSize: "1.5rem" }}
+      >
+        {i18n.t("Finished")}
+      </span>
+    );
+  }
+
+  const isTimerActive = !isWaiting && groupTournament?.state === "active";
+
+  return (
+    <div className="d-flex flex-column align-items-center justify-content-center text-center p-2">
+      {isWaiting ? (
+        <WaitingStartTimer startsAt={groupTournament?.startsAt} />
+      ) : isTimerActive ? (
+        <TournamentTimer groupTournament={groupTournament} />
+      ) : (
+        <span
+          className="text-monospace rounded-pill px-4 py-2 border border-warning text-warning"
+          style={{ fontSize: "1.5rem" }}
+        >
+          {i18n.t(statusBadge[status]?.labelKey || "Group Tournament")}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function Header({ name, status, groupTournament }) {
+  const [isPipActive, setIsPipActive] = useState(false);
   const badge = statusBadge[status] || statusBadge.loading;
   const isWaiting = status === "waiting_participants";
+  const isPipSupported = typeof window !== "undefined" && "documentPictureInPicture" in window;
+
+  useEffect(() => {
+    if (!isPipSupported) return;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        setIsPipActive(true);
+      }
+    };
+
+    const handleInteraction = () => {
+      if (document.visibilityState === "visible") {
+        setIsPipActive(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("keydown", handleInteraction);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+    };
+  }, [isPipSupported]);
 
   return (
     <div className="cb-custom-event-profile d-flex align-items-center w-100 position-relative">
       <h4 className="mb-0 mr-3 text-white">{name || i18n.t("Group Tournament")}</h4>
       <div
-        className="position-absolute"
+        className="position-absolute d-flex align-items-center"
         style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
       >
         {isWaiting ? (
@@ -158,6 +221,16 @@ function Header({ name, status, groupTournament }) {
           {i18n.t("Back to event")}
         </a>
       </div>
+      {isPipSupported && (
+        <PictureInPicture
+          isActive={isPipActive}
+          onClose={() => setIsPipActive(false)}
+          width={320}
+          height={150}
+        >
+          <PipTimerContent status={status} groupTournament={groupTournament} />
+        </PictureInPicture>
+      )}
     </div>
   );
 }
