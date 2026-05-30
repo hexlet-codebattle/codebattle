@@ -1771,7 +1771,7 @@ msgid "Fullscreen"
 msgstr "Полный экран"
 
 msgid "Your next step is the AI-round group tournament. Click the button below to continue."
-msgstr "Теперь переходи к задаче с AI-ассистентом на платформе SourceCraft."
+msgstr "Теперь переходи к задаче с ИИ-ассистентом на платформе SourceCraft."
 
 msgid "Go to AI-round group tournament"
 msgstr "Перейти к задаче"
@@ -1786,7 +1786,7 @@ msgid "%{name} stage finished"
 msgstr "Этап «%{name}» завершён"
 
 msgid "First qualification round finished"
-msgstr "Первая часть квалификации пройдена"
+msgstr "Полуфинал еще не окончен"
 
 msgid "Accepted"
 msgstr "Принято"
