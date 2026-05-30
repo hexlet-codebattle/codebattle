@@ -9,7 +9,9 @@ function MainChannelContainer() {
   const followId = useSelector((state) => state.gameUI.followId);
 
   useEffect(() => {
+    console.log("[main_channel] mounting, initPresence");
     const channel = initPresence(followId)(dispatch);
+    console.log("[main_channel] channel", channel);
 
     return () => {
       channel.leave();

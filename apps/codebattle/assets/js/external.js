@@ -13,9 +13,14 @@
 import "core-js/stable";
 import "bootstrap";
 import "phoenix_html";
-import { renderEventPage } from "./widgets";
+import { renderEventPage, renderMainChannelWidget } from "./widgets";
 
 const eventWidgetRoot = document.getElementById("event-widget");
+const mainChannelRoot = document.getElementById("main-channel-root");
+
+if (mainChannelRoot) {
+  renderMainChannelWidget(mainChannelRoot);
+}
 
 if (eventWidgetRoot) {
   renderEventPage(eventWidgetRoot);

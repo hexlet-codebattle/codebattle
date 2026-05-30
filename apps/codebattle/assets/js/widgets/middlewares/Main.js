@@ -146,6 +146,7 @@ const initPresence = (followId) => (dispatch) => {
       renderDeployBanner("Deploy handoff incomplete. Reconnecting...", "#b34d4d");
     })
     .addListener(channelTopics.mainRedirect, (data) => {
+      console.log("[main_redirect] received", data);
       const { url } = camelizeKeys(data) || {};
       if (typeof url === "string" && url.length > 0) {
         window.location.href = url;
