@@ -27,6 +27,19 @@ function InvitationPanel({ name, meta, invite, onStart }) {
               {(name || i18n.t("Group Tournament")).toUpperCase()}
             </h1>
           </div>
+          <div className="col-12 d-flex justify-content-center mt-3">
+            <p className="text-white text-center mb-0">
+              {i18n.t("Find tournament details at")}{" "}
+              <a
+                className="text-white text-decoration-underline"
+                href="https://universitybattle.ru/tournaments/2026"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                universitybattle.ru/tournaments/2026
+              </a>
+            </p>
+          </div>
         </div>
 
         <div className="row justify-content-center text-center my-4">

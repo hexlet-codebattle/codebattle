@@ -1168,3 +1168,6 @@ msgstr "Group assignment soon"
 
 msgid "Group contest soon"
 msgstr "Group contest soon"
+
+msgid "Return to game"
+msgstr "Return to game"

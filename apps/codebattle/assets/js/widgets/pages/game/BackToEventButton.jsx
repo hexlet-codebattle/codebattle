@@ -9,7 +9,7 @@ function BackToEventButton() {
   return (
     <>
       <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={supportUrl}>
-        {i18next.t("Back to event")}
+        {i18next.t("Support")}
       </a>
       <a className="btn btn-secondary cb-btn-secondary btn-block cb-rounded" href={eventUrl}>
         {i18next.t("Back to event")}

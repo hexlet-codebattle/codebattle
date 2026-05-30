@@ -1856,3 +1856,6 @@ msgstr "Скоро распределим в группы"
 
 msgid "Group contest soon"
 msgstr "Скоро баттл в группах"
+
+msgid "Return to game"
+msgstr "Вернуться к игре"
